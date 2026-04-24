@@ -1,9 +1,9 @@
-﻿/**
+/**
  * Time Utilities
  * Time-based helpers for greetings, formatting, and sanctuary time-aware features
  */
 
-import {  } from '@repo/ui';
+import { templeGold, obsidian, sacredWhite, sanctuarySaffron, lotusDeepPink, shadowViolet, shroud } from '@repo/ui';
 
 /**
  * Time of Day Types
@@ -43,7 +43,7 @@ export function getGreetingKey(): string {
  * Uses Intl.DateTimeFormat for locale-aware formatting
  */
 export function formatDate(date: Date, locale: string = 'en'): string {
-    const localeMap: { [key: string]: string } => 
+    const localeMap: { [key: string]: string } = {
         si: 'si-LK',
         ta: 'ta-LK',
         en: 'en-US'
@@ -62,7 +62,7 @@ export function formatDate(date: Date, locale: string = 'en'): string {
  * Format date and time
  */
 export function formatDateTime(date: Date, locale: string = 'en'): string {
-    const localeMap: { [key: string]: string } => 
+    const localeMap: { [key: string]: string } = {
         si: 'si-LK',
         ta: 'ta-LK',
         en: 'en-US'
@@ -172,3 +172,4 @@ export function getSanctuaryTimeTheme(): {
 
     return themes[timeOfDay];
 }
+

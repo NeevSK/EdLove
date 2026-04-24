@@ -8,17 +8,18 @@ import { navigationRef } from './src/navigation/navigationRef';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GluestackUIProvider, Spinner, Center, VStack, Text, SanctuaryGlobalStyles, FABProvider, LotusPetalFAB, ExternalLinkProvider, SanctuaryToast, ToastProvider, ErrorBoundary, NetworkStatusBanner,  EnvironmentProvider, useTheme } from '@repo/ui';
-import { config } from "./gluestack-ui.config";
+// gluestack-ui.config removed in favor of @repo/ui Zero-Legacy architecture
 import { Home, School, Library, Sparkles } from 'lucide-react-native';
 import { Session } from '@supabase/supabase-js';
 import * as Font from 'expo-font';
-import { initPostHog, trackEvent, identifyUser } from '@repo/analytics';
-import { Platform, StyleSheet, View } from 'react-native';
+import { initPostHog, trackEvent, identifyUser, posthogAnalytics as initTracker } from '@repo/analytics';
+import { Platform, StyleSheet } from 'react-native';
+import { Box } from '@repo/ui';
 import * as Linking from 'expo-linking';
 
 import { fontAssets } from './src/constants/Fonts';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { SyncManager, useStore, supabase, AuthorityTier, SchoolType, APIError, initSentry, setSentryUser, clearSentryUser, authAPI, identityAPI } from '@repo/core';
+import { SyncManager, useStore, supabase, AuthorityTier, SchoolType, APIError, initSentry, setSentryUser, clearSentryUser, authAPI, identityAPI, injectPostHog } from '@repo/core';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 // Import screens and navigation from the local authoritative index
@@ -53,6 +54,8 @@ import { PWAInstallBanner } from './src/components/web/PWAInstallBanner';
 
 // Lazy load PublicFormScreen as it's web-only and large
 const PublicFormScreen = React.lazy(() => import('@repo/form-builder').then(module => ({ default: module.PublicFormScreenWeb })));
+
+import { obsidian, sanctuarySaffron } from '@repo/ui';
 
 // Create a client
 const queryClient = new QueryClient();
@@ -151,8 +154,16 @@ function App() {
   const hideToast = useStore((state) => state.hideToast);
 
   useEffect(() => {
+    // Inject the native tracker into the Core bridge to maintain "Core Purity"
+    injectPostHog(initTracker);
+
     initSentry();
-    initPostHog().then(() => {
+    initPostHog(
+      process.env.EXPO_PUBLIC_POSTHOG_API_KEY!,
+      {
+        host: process.env.EXPO_PUBLIC_POSTHOG_HOST || 'https://eu.i.posthog.com'
+      }
+    ).then(() => {
       trackEvent('app_initialized', { platform: Platform.OS });
     });
   }, []);
@@ -300,8 +311,8 @@ function App() {
   if (loading || !fontsLoaded) {
     return (
       <SafeAreaProvider>
-        <GluestackUIProvider config={config}>
-          <Center sx={{ flex: 1, backgroundColor: obsidian }}>
+        <GluestackUIProvider>
+          <Center className="flex-1 bg-obsidian">
             <Spinner size="large" color={sanctuarySaffron} />
           </Center>
         </GluestackUIProvider>
@@ -316,10 +327,10 @@ function App() {
     <ErrorBoundary name="Absolute Root">
       <QueryClientProvider client={queryClient}>
         <EnvironmentProvider>
-          <GluestackUIProvider config={config}>
+          <GluestackUIProvider>
             <SanctuaryGlobalStyles />
             <FABProvider>
-              <View style={{ flex: 1 }}>
+              <Box className="flex-1">
                 <AppContent
                   currentTab={currentTab}
                   setCurrentTab={setCurrentTab}
@@ -332,7 +343,7 @@ function App() {
                   toast={toast}
                   hideToast={hideToast}
                 />
-              </View>
+              </Box>
             </FABProvider>
           </GluestackUIProvider>
         </EnvironmentProvider>
@@ -437,11 +448,6 @@ function AppContent({ setCurrentTab, session, onboardingCompleted, isProfileLoad
                         SettingsPanel: 'settings'}},
                     PublicForm: 'f/:slug'}}}}
             >
-              {/* <AnalyticsProvider
-                apiKey={process.env.EXPO_PUBLIC_POSTHOG_API_KEY}
-                options={{
-                  host: process.env.EXPO_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com'}}
-              > */}
                 <RootStack.Navigator
                   screenOptions={{ headerShown: false }}
                   initialRouteName={onboardingCompleted ? 'Main' : 'Welcome'}
@@ -479,7 +485,7 @@ function AppContent({ setCurrentTab, session, onboardingCompleted, isProfileLoad
                       <RootStack.Screen name="InvitationWelcome" component={InvitationWelcomeScreen} options={{ presentation: 'modal' }} />
                       <RootStack.Screen name="PublicForm" options={{ headerShown: false }}>
                         {() => (
-                          <Suspense fallback={<Center style={{flex:1}}><Spinner/></Center>}>
+                          <Suspense fallback={<Center className="flex-1"><Spinner/></Center>}>
                             <PublicFormScreen />
                           </Suspense>
                         )}
@@ -520,7 +526,7 @@ function AppContent({ setCurrentTab, session, onboardingCompleted, isProfileLoad
                       <RootStack.Screen name="InvitationWelcome" component={InvitationWelcomeScreen} options={{ presentation: 'modal' }} />
                       <RootStack.Screen name="PublicForm" options={{ headerShown: false }}>
                         {() => (
-                          <Suspense fallback={<Center style={{flex:1}}><Spinner/></Center>}>
+                          <Suspense fallback={<Center className="flex-1"><Spinner/></Center>}>
                             <PublicFormScreen />
                           </Suspense>
                         )}
@@ -528,7 +534,6 @@ function AppContent({ setCurrentTab, session, onboardingCompleted, isProfileLoad
                     </>
                   )}
                 </RootStack.Navigator>
-              {/* </AnalyticsProvider> */}
             </NavigationContainer>
             <SyncManager />
             <NetworkStatusBanner />

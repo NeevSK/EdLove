@@ -1,146 +1,95 @@
-import PostHog from 'posthog-react-native';
+import posthogWeb from 'posthog-js';
+import { PostHog as PostHogNode } from 'posthog-node';
 
-interface AnalyticsEvent {
-  event: string;
-  properties?: Record<string, any>;
-}
-
-interface UserProperties {
-  [key: string]: any;
-}
-
+/**
+ * Universal PostHog Analytics Engine
+ * Supports: Browser (posthog-js) and Server (posthog-node)
+ */
 export class PostHogAnalytics {
-  private posthog: PostHog | null = null;
+  private instance: any = null;
   private isInitialized = false;
+  private isBrowser = typeof window !== 'undefined';
 
-  constructor(apiKey?: string, options?: {
-    host?: string;
-    debug?: boolean;
-  }) {
-    if (apiKey) {
-      this.initialize(apiKey, options);
-    }
-  }
+  async initialize(apiKey: string, options?: { host?: string, debug?: boolean }) {
+    if (this.isInitialized) return;
 
-  async initialize(apiKey: string, options?: {
-    host?: string;
-    debug?: boolean;
-  }): Promise<void> {
-    if (this.isInitialized) {
-      return;
-    }
+    const host = options?.host || 'https://eu.i.posthog.com';
 
     try {
-      this.posthog = new PostHog(apiKey);
+      if (this.isBrowser) {
+        posthogWeb.init(apiKey, {
+          api_host: host,
+          ui_host: 'https://eu.posthog.com',
+          autocapture: false,
+          disable_session_recording: false, // Default to true if not needed, but here we want replay
+          loaded: (ph) => {
+            if (options?.debug) ph.debug();
+          }
+        });
+        this.instance = posthogWeb;
+      } else {
+        this.instance = new PostHogNode(apiKey, { host });
+      }
       this.isInitialized = true;
     } catch (error) {
-      console.error('Failed to initialize PostHog:', error);
+      console.error('[PostHog Universal] Initialization failed:', error);
     }
   }
 
-  track(event: string, properties?: Record<string, any>): void {
-    if (!this.isInitialized || !this.posthog) {
-      console.warn('PostHog not initialized. Event not tracked:', event);
-      return;
-    }
-
+  track(event: string, properties?: Record<string, any>) {
+    if (!this.isInitialized) return;
     try {
-      this.posthog.capture(event, properties);
-    } catch (error) {
-      console.error('Failed to track event:', error);
-    }
-  }
-
-  identify(userId: string, userProperties?: UserProperties): void {
-    if (!this.isInitialized || !this.posthog) {
-      console.warn('PostHog not initialized. User not identified:', userId);
-      return;
-    }
-
-    try {
-      this.posthog.identify(userId);
-      if (userProperties) {
-        this.posthog.register(userProperties);
+      if (this.isBrowser) {
+        this.instance.capture(event, properties);
+      } else {
+        this.instance.capture({
+          distinctId: properties?.distinctId || 'server_system',
+          event,
+          properties
+        });
       }
     } catch (error) {
-      console.error('Failed to identify user:', error);
+      console.error('[PostHog Universal] track failed:', error);
     }
   }
 
-  reset(): void {
-    if (!this.isInitialized || !this.posthog) {
-      return;
-    }
-
+  identify(userId: string, properties?: Record<string, any>) {
+    if (!this.isInitialized) return;
     try {
-      this.posthog.reset();
+      if (this.isBrowser) {
+        this.instance.identify(userId, properties);
+      } else {
+        this.instance.identify({
+          distinctId: userId,
+          properties
+        });
+      }
     } catch (error) {
-      console.error('Failed to reset PostHog:', error);
+      console.error('[PostHog Universal] identify failed:', error);
     }
   }
 
-  screen(screenName: string, properties?: Record<string, any>): void {
-    if (!this.isInitialized || !this.posthog) {
-      console.warn('PostHog not initialized. Screen not tracked:', screenName);
-      return;
-    }
-
+  reset() {
+    if (!this.isInitialized) return;
     try {
-      this.posthog.screen(screenName, properties);
+      if (this.isBrowser) {
+        this.instance.reset();
+      }
     } catch (error) {
-      console.error('Failed to track screen:', error);
+      console.error('[PostHog Universal] reset failed:', error);
     }
   }
 
-  // Educational specific tracking methods
-  trackAssignmentView(assignmentId: string, properties?: {
-    subject?: string;
-    difficulty?: string;
-    estimatedTime?: number;
-  }): void {
-    this.track('assignment_viewed', {
-      assignment_id: assignmentId,
-      ...properties,
-    });
+  capture(event: string, properties?: Record<string, any>) {
+    this.track(event, properties);
   }
 
-  trackGradeReceived(assignmentId: string, grade: number, properties?: {
-    maxGrade?: number;
-    subject?: string;
-    timeSpent?: number;
-  }): void {
-    this.track('grade_received', {
-      assignment_id: assignmentId,
-      grade,
-      ...properties,
-    });
-  }
-
-  trackStudySession(subject: string, duration: number, properties?: {
-    topics?: string[];
-    completedAssignments?: number;
-  }): void {
-    this.track('study_session', {
-      subject,
-      duration,
-      ...properties,
-    });
-  }
-
-  trackQuizAttempt(quizId: string, score: number, totalQuestions: number, properties?: {
-    topic?: string;
-    difficulty?: string;
-    timeSpent?: number;
-  }): void {
-    this.track('quiz_attempt', {
-      quiz_id: quizId,
-      score,
-      total_questions: totalQuestions,
-      percentage: Math.round((score / totalQuestions) * 100),
-      ...properties,
-    });
+  // Compatibility with IPostHog
+  async flush() {
+    if (!this.isBrowser && this.instance?.shutdown) {
+      await this.instance.shutdown();
+    }
   }
 }
 
-// Singleton instance for easy access
 export const posthogAnalytics = new PostHogAnalytics();

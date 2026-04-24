@@ -1,4 +1,4 @@
-﻿/**
+/**
  * CommandPalette — Web-exclusive Cmd+K power feature
  *
  * Brings the "developer god mode" experience to Gurudevi on web.
@@ -36,7 +36,7 @@ import { useTheme } from '@repo/ui';
 import { navigationRef } from '../../navigation/navigationRef';
 
 // Helper: type-safe reference to the browser window (this file is web-only at runtime)
-const win => typeof window !== 'undefined' ? window : null) as Window | null;
+const win = (typeof window !== 'undefined' ? window : null) as Window | null;
 
 // ─── Icons (inline SVG paths rendered as Text glyphs for zero extra deps) ─────
 const GLYPHS: Record<string, string>  = {
@@ -267,8 +267,8 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
 
     const bg = isDark ? shroud : '#FFFDF7';
     const border = isDark ? 'rgba(252,249,242,0.10)' : 'rgba(42,35,24,0.08)';
-    const sectionColor = isDark ? mistGray : willow;
-    const inputColor = isDark ? sacredWhite : '#2A2318'Truth;
+    const sectionColor = isDark ? '#A0A0A0' : '#4B4B4B';
+    const inputColor = isDark ? '#FFFFFF' : '#000000';
 
     // Flat list of commands for tracking globalIndex
     let globalIndex = 0;
@@ -291,20 +291,24 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
                     accessibilityViewIsModal
                     accessibilityRole="none"
                     style={[
-                        styles.card,>{
+                        styles.card, {
                             backgroundColor: bg,
                             borderColor: border,
-                            shadowColor: shadowViolet,
-                            boxShadow: `0 16px 40px ${isDark ? 'rgba(0,0,0,0.5)' : 'rgba(107,100,128,0.22)'}`,
-                            width: Math.min(580, width - 48)},
-                        cardStyle]}>
+                            // shadowColor: shadowViolet,
+                            // boxShadow: `0 16px 40px ${isDark ? 'rgba(0,0,0,0.5)' : 'rgba(107,100,128,0.22)'}`,
+                            width: Math.min(580, width - 48)
+                        },
+                        cardStyle
+                    ]}>
                     {/* Search input — border glows Saffron when focused */}
                     <View style={[
-                        styles.searchRow,>{
+                        styles.searchRow, {
                             borderBottomColor: searchFocused
-                                ? sanctuarySaffron
+                                ? '#D4843A'
                                 : border,
-                            borderBottomWidth: searchFocused ? 1.5 : 1}]}>
+                            borderBottomWidth: searchFocused ? 1.5 : 1
+                        }
+                    ]}>
                         <Text style={[styles.searchIcon, { color: sanctuarySaffron }]}>
                             ⌕
                         </Text>
@@ -356,7 +360,8 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
                                             {/* Active bar */}
                                             <View
                                                 style={[
-                                                    styles.activeBar,>{ opacity: isSelected ? 1 : 0 }]}
+                                                    styles.activeBar, { opacity: isSelected ? 1 : 0 }
+                                                ]}
                                             />
 
                                             <View style={[styles.glyphCircle, {
@@ -368,11 +373,13 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
 
                                             <View style={styles.labelWrap}>
                                                 <Text style={[
-                                                    styles.commandLabel,>{
+                                                    styles.commandLabel, {
                                                         color: isSelected
-                                                            ? sanctuarySaffron
+                                                            ? '#D4843A'
                                                             : inputColor,
-                                                        fontWeight: isSelected ? '700' : '500'}]}>
+                                                        fontWeight: isSelected ? '700' : '500'
+                                                    }
+                                                ]}>
                                                     {cmd.label}
                                                 </Text>
                                                 {cmd.subtitle && (
@@ -384,18 +391,22 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
 
                                             {cmd.shortcut && (
                                                 <View style={[
-                                                    styles.shortcutBadge,>{
+                                                    styles.shortcutBadge, {
                                                         backgroundColor: isSelected
-                                                            ? sanctuarySaffron + '20'
+                                                            ? '#D4843A20'
                                                             : (isDark ? 'rgba(252,249,242,0.08)' : 'rgba(42,35,24,0.06)'),
                                                         borderColor: isSelected
-                                                            ? sanctuarySaffron + '40'
-                                                            : border}]}>
+                                                            ? '#D4843A40'
+                                                            : border
+                                                    }
+                                                ]}>
                                                     <Text style={[
-                                                        styles.shortcutText,>{
+                                                        styles.shortcutText, {
                                                             color: isSelected
-                                                                ? sanctuarySaffron
-                                                                : sectionColor}]}>
+                                                                ? '#D4843A'
+                                                                : sectionColor
+                                                        }
+                                                    ]}>
                                                         {cmd.shortcut}
                                                     </Text>
                                                 </View>

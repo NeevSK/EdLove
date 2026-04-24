@@ -123,6 +123,8 @@
   },
   "include": [
     "src/**/*",
+    "App.tsx",
+    "gluestack-ui.config.ts",
     "nativewind-env.d.ts"
   ],
   "exclude": [

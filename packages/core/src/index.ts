@@ -14,6 +14,7 @@ export * from './lib/cloudinary';
 export * from './lib/inventoryScope';
 export * from './lib/mediaUtils';
 export * from './lib/monitoring/sentry';
+export * from './lib/monitoring/posthog';
 export * from './lib/pendingGateAction';
 export * from './logic/permissions/index';
 export { Runtime } from './lib/runtime';

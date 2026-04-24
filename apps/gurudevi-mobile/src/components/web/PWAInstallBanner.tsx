@@ -1,4 +1,4 @@
-﻿/**
+/**
  * PWAInstallBanner — Web-exclusive component
  *
  * Shows an on-brand "Install Gurudevi" banner at the bottom of the screen when
@@ -12,17 +12,16 @@
  */
 
 import React from 'react';
-import { Icon, View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import Animated, { SlideInDown, SlideOutDown } from 'react-native-reanimated';
-import {  } from '@repo/ui';
-import { Icon, useThemedColors } from '@repo/ui';
+import { Icon, useTheme, useThemedColors, sanctuarySaffron, shadowViolet } from '@repo/ui';
 import { usePWAInstallPrompt } from '@/utils/usePWAInstallPrompt';
 import { Download, X, Share } from 'lucide-react-native';
 
 export function PWAInstallBanner() {
     const { canInstall, promptInstall, isDismissed, dismiss, isIOS, isInstalled } = usePWAInstallPrompt();
     // All hooks must be called unconditionally — early returns come AFTER all hook calls
-    const colors = useTheme().scene;
+    const { scene: colors } = useThemedColors();
 
     // Never render on native, when already installed, or after user dismissed
     if (Platform.OS !== 'web') return null;
@@ -89,16 +88,16 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        paddingHorizontal: Theme.spacing.lg,
-        paddingVertical: Theme.spacing.md,
+        paddingHorizontal: 16,
+        paddingVertical: 12,
         borderTopWidth: 1,
-        boxShadow: `0 -4px 12px ${shadowViolet}1F`, // 1F is roughly 0.12 opacity
+        // boxShadow: `0 -4px 12px ${shadowViolet}1F`, 
         zIndex: 999},
     left: {
         flexDirection: 'row',
         alignItems: 'center',
         flex: 1,
-        gap: Theme.spacing.sm},
+        gap: 12},
     textBlock: {
         flexDirection: 'column',
         flex: 1},
@@ -111,11 +110,11 @@ const styles = StyleSheet.create({
     actions: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: Theme.spacing.sm},
+        gap: 12},
     installBtn: {
-        paddingHorizontal: Theme.spacing.md,
+        paddingHorizontal: 16,
         paddingVertical: 8,
-        borderRadius: Theme.corners.comfortable},
+        borderRadius: 12},
     installBtnText: {
         color: '#2A2318',
         fontSize: 13,

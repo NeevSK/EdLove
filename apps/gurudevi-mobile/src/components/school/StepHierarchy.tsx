@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { Icon, VStack,
     Text,
     HStack,
@@ -15,7 +15,7 @@ interface StepHierarchyProps {
         levels: string[];
         sections: { name: string; headName?: string }[];
     };
-    onUpdate: (hier: Partial<StepHierarchyProps>['data']>) => void;
+    onUpdate: (hier: Partial<StepHierarchyProps['data']>) => void;
 }
 
 const COMMON_LEVELS: { id: string; labelKey: string }[] = [
@@ -25,7 +25,7 @@ const COMMON_LEVELS: { id: string; labelKey: string }[] = [
     { id: 'Advanced Level (12-13)', labelKey: 'schoolSetup.levels.advancedLevel' }];
 
 export default function StepHierarchy({ data, onUpdate }: StepHierarchyProps) {
-    const colors = useTheme().scene;
+    const { scene: colors } = useThemedColors();
     const { t } = useTranslation();
 
     const toggleLevel = (level: string) => {

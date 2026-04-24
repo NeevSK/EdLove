@@ -42,6 +42,7 @@
     "@repo/ai": "workspace:*",
     "@repo/classroom": "workspace:*",
     "@repo/community": "workspace:*",
+    "@repo/analytics": "workspace:*",
     "@repo/core": "workspace:*",
     "@repo/workforce": "workspace:*",
     "@repo/form-builder": "workspace:*",

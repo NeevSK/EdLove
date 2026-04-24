@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import {
     VStack,
     Text,
@@ -21,13 +21,13 @@ interface StepDemographicsProps {
         religiousAffiliation: string;
         studentCount: string;
     };
-    onUpdate: (demo: Partial<StepDemographicsProps>['data']>) => void;
+    onUpdate: (demo: Partial<StepDemographicsProps['data']>) => void;
 }
 
 export default function StepDemographics({ data, onUpdate }: StepDemographicsProps) {
-    const colors = useTheme().scene;
+    const { scene: colors } = useThemedColors();
     const { t, i18n } = useTranslation();
-    const lang => i18n.resolvedLanguage ?? 'en') as 'en' | 'si' | 'ta';
+    const lang = (i18n.resolvedLanguage ?? 'en') as 'en' | 'si' | 'ta';
 
     return (
         <VStack className="gap-6">

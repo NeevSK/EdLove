@@ -148,8 +148,8 @@ export default function CommunityScreen() {
     };
 
     return (
-        <ScreenWrapper scroll={false} noTopInset={true}
-            <Box sx={{ flex: 1, backgroundColor: colors.secondary }}
+        <ScreenWrapper scroll={false} noTopInset={true}>
+            <Box className="flex-1" style={{ backgroundColor: colors.secondary }}>
                 <GlobalHeader title={t('community.title')} /
 
                 {/* Sub-Tabs via Chips - ALWAYS VISIBLE for navigation awareness */}
@@ -174,7 +174,7 @@ export default function CommunityScreen() {
                         subject="CommunityFeed"
                         fallback={
                             <ScrollView contentContainerStyle={{ paddingBottom: bottomPadding + Theme.spacing.xl }}
-                                <VStack space="md" sx={{ paddingVertical: Theme.spacing.md }}
+                                <VStack className="gap-4 py-4">
                                     {renderCommunityHearth()}
                                     <Box px="$4"
                                         <PositiveInvitation
@@ -221,12 +221,8 @@ export default function CommunityScreen() {
                             )}
                             ListEmptyComponent={
                                 !loading ? (
-                                    <VStack space="xl" alignItems="center" sx={{ padding: Theme.spacing['2xl'], marginTop: Theme.spacing['2xl'] }}
-                                        <Box sx={{
-                                            padding: Theme.spacing.xl,
-                                            backgroundColor: Theme.colors.gurudeviViolet + '11',
-                                            borderRadius: Theme.corners.full
-                                        }}
+                                    <VStack className="gap-8 items-center p-10 mt-10">
+                                        <Box className="p-6" style={{ backgroundColor: Theme.colors.gurudeviViolet + '11', borderRadius: Theme.corners.full }}>
                                             <PenTool size={48} color={Theme.colors.gurudeviViolet} /
                                         </Box
                                         <VStack space="sm" alignItems="center"
@@ -250,7 +246,7 @@ export default function CommunityScreen() {
                                 ) : null
                             }
                             ListHeaderComponent={
-                                <VStack space="md" sx={{ paddingVertical: Theme.spacing.md }}
+                                <VStack className="gap-4 py-4">
                                     <TemporalNavigator /
                                     {renderCommunityHearth()}
                                     {renderFeedFilterChips()}
@@ -275,7 +271,7 @@ export default function CommunityScreen() {
                         action="read" 
                         subject="CommunityGroups"
                         fallback={
-                            <VStack sx={{ flex: 1, justifyContent: 'center', padding: Theme.spacing.xl }}
+                            <VStack className="flex-1 justify-center p-8">
                                 <PositiveInvitation
                                     type="guest"
                                     title={t('community.groups.guestTitle')}
@@ -302,7 +298,7 @@ export default function CommunityScreen() {
                         action="read" 
                         subject="DirectMessages"
                         fallback={
-                            <VStack sx={{ flex: 1, justifyContent: 'center', padding: Theme.spacing.xl }}
+                            <VStack className="flex-1 justify-center p-8">
                                 <PositiveInvitation
                                     type="guest"
                                     title={t('community.dms.guestTitle')}

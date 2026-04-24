@@ -1,7 +1,7 @@
-﻿import React from 'react';
+import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { FounderStackParamList } from '@repo/core';
-import { use } from '@repo/ui';
+import { useTheme } from '@repo/ui';
 import { StackFallback } from '../components/web/WebScreenShimmer';
 
 const FounderDashboard = React.lazy(() => import('@repo/admin/screens/FounderDashboard.web'));
@@ -19,16 +19,19 @@ function ScreenFallback() {
 export default function PrincipalStackNavigatorWeb() {
     const { scene } = useTheme();
     return (
-        <React.Suspense, fallback={<ScreenFallback />}>
-            <Stack.Navigator, id="PrincipalStack"
+        <React.Suspense fallback={<ScreenFallback />}>
+            <Stack.Navigator 
+                id="PrincipalStack"
                 screenOptions={{
                     headerShown: false,
-                    contentStyle: { backgroundColor: scene.canvas.bg }}}>
-                <Stack.Screen, name="PrincipalDashboard" component={PrincipalDashboardWeb} />
-                <Stack.Screen, name="GuardianDashboard" component={GuardianDashboard} />
-                <Stack.Screen, name="FounderDashboard" component={FounderDashboard} />
-                <Stack.Screen, name="FounderSchoolDashboard" component={FounderSchoolDashboard} />
-                <Stack.Screen, name="SchoolCreation" component={SchoolCreationScreen} />
+                    contentStyle: { backgroundColor: scene.canvas.bg }
+                }}
+            >
+                <Stack.Screen name="PrincipalDashboard" component={PrincipalDashboardWeb} />
+                <Stack.Screen name="GuardianDashboard" component={GuardianDashboard} />
+                <Stack.Screen name="FounderDashboard" component={FounderDashboard} />
+                <Stack.Screen name="FounderSchoolDashboard" component={FounderSchoolDashboard} />
+                <Stack.Screen name="SchoolCreation" component={SchoolCreationScreen} />
             </Stack.Navigator>
         </React.Suspense>
     );

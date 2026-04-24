@@ -1,4 +1,4 @@
-﻿/**
+/**
  * useWebPageTitle \u2014 Web-only hook
  *
  * Keeps `document.title` in sync with the current navigation screen so that:
@@ -35,7 +35,7 @@ const ROUTE_LABELS: Record<string, string>  = {
     ContentLibrary: 'Content Library',
     VideoPlayer: 'Video Player'};
 
-type NavState =>  routes: Array<{ name: string; state?: NavState }>; index?: number } | undefined;
+type NavState = { routes: Array<{ name: string; state?: NavState }>; index?: number } | undefined;
 
 /** Drills into nested navigators to find the innermost active route name. */
 function getLeafRouteName(state: NavState): string | undefined {

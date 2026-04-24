@@ -116,14 +116,21 @@ export default function ClassroomScreen() {
         // A. Loading state (only if no data at all)
         if (loading && !classroomData) {
             return (
-                <ScreenWrapper scroll={false} noTopInset={true}                    <VStack sx={{ gap: Theme.spacing.md, padding: Theme.spacing.lg }}                        <SkeletonCard height={60} /                        <SkeletonCard height={200} /                        <SkeletonCard height={120} /                    </VStack                </ScreenWrapper            );
+                <ScreenWrapper scroll={false} noTopInset={true}>
+                    <VStack className="gap-4 p-6">
+                        <SkeletonCard height={60} />
+                        <SkeletonCard height={200} />
+                        <SkeletonCard height={120} />
+                    </VStack>
+                </ScreenWrapper>
         }
 
         // B. Role-based routing (Explicit matches)
         // B. Role-based routing via FeatureGuards
         if (classroomData) {
             return (
-                <Box sx={{ flex: 1 }}                    <FeatureGuard action="manage" subject="FounderDashboard"                        <FounderDashboard /                    </FeatureGuard
+                <Box className="flex-1">
+                    <FeatureGuard action="manage" subject="FounderDashboard"                        <FounderDashboard /                    </FeatureGuard
                     <FeatureGuard action="manage" subject="PrincipalDashboard"                        {(() => {
                             const schoolIdToUse = (classroomData.schoolId || storeSchoolId);
                             if (!schoolIdToUse && !isDemoModeTriggered) {
@@ -150,7 +157,10 @@ export default function ClassroomScreen() {
                                 onCreateClassroom={() => setIsCreateClassroomOpen(true)}
                                 onJoinSchool={() => navigation.navigate('Search' as any)}
                             /                        ) : (
-                            <ScreenWrapper scroll={false} noTopInset={true}                                <Box sx={{ flex: 1 }}                                    <GlobalHeader title="Classroom \uD83D\uDC9B" subtitle={undefined} /                                    {renderNudge()}
+                            <ScreenWrapper scroll={false} noTopInset={true}>
+                                <Box className="flex-1">
+                                    <GlobalHeader title="Classroom 💛" subtitle={undefined} />
+                                    {renderNudge()}
                                     {isDemoModeTriggered && <SandboxBanner />}
                                     <TeacherDashboard
                                         schoolId={classroomData?.schoolId || undefined}
@@ -165,7 +175,10 @@ export default function ClassroomScreen() {
                                 onJoinClass={() => setIsClaimInviteOpen(true)}
                                 onFindSchool={() => navigation.navigate('Search' as any)}
                             /                        ) : (
-                            <ScreenWrapper scroll={false} noTopInset={true}                                <Box sx={{ flex: 1 }}                                    <GlobalHeader title={t('classroom.mySanctuaries') || 'My Sanctuaries'} subtitle={undefined} /                                    {renderNudge()}
+                            <ScreenWrapper scroll={false} noTopInset={true}>
+                                <Box className="flex-1">
+                                    <GlobalHeader title={t('classroom.mySanctuaries') || 'My Sanctuaries'} subtitle={undefined} />
+                                    {renderNudge()}
                                     {isDemoModeTriggered && <SandboxBanner />}
                                     <StudentDashboard
                                         schoolId={classroomData?.schoolId || undefined}
@@ -205,14 +218,20 @@ export default function ClassroomScreen() {
                 action="read" 
                 subject="ClassroomList"
                 fallback={
-                    <ScreenWrapper scroll={false} noTopInset={true}                        <Box sx={{ flex: 1, padding: Theme.spacing.lg }}                            <GlobalHeader title={t('classroom.welcome') || 'Welcome to Sanctuary'} subtitle={undefined} /                            <PositiveInvitation
+                    <ScreenWrapper scroll={false} noTopInset={true}>
+                        <Box className="flex-1 p-6">
+                            <GlobalHeader title={t('classroom.welcome') || 'Welcome to Sanctuary'} subtitle={undefined} />
+                            <PositiveInvitation
                                 type="guest"
                                 onAction={() => {
                                     hapticLight();
                                     navigation.navigate('Auth' as never);
                                 }}
                             /                        </Box                    </ScreenWrapper                }
-                            <ScreenWrapper scroll={false} noTopInset={true}                    <Box sx={{ flex: 1, padding: Theme.spacing.lg }}                        <GlobalHeader title={t('classroom.journeyTitle') || 'Learning Journey'} subtitle={t('classroom.mySanctuary') || 'My Sanctuary'} /                        {renderNudge()}
+                            <ScreenWrapper scroll={false} noTopInset={true}>
+                    <Box className="flex-1 p-6">
+                        <GlobalHeader title={t('classroom.journeyTitle') || 'Learning Journey'} subtitle={t('classroom.mySanctuary') || 'My Sanctuary'} />
+                        {renderNudge()}
                         <ClassroomList
                             refreshTrigger={refreshTrigger}
                             onClassroomPress={(classroom) => {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Modal, TouchableOpacity, Platform } from 'react-native';
+import { StyleSheet, Modal, TouchableOpacity, Platform } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
@@ -77,7 +77,7 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
   };
 
   return (
-    <View style={{ flex: 1 }}>
+    <Box className="flex-1">
       {/* Living backdrop — renders behind all tabs */}
       <SanctuaryBackground />
 
@@ -130,9 +130,9 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
           options={{
             tabBarLabel: t('tabs.profile'),
             tabBarIcon: ({ color, size }) => (
-              <View>
+              <Box>
                 <Icon as={User} color={color} size={size} fill={currentTab === 'profile' ? color : 'none'} />
-              </View>
+              </Box>
             )}}>
           {() => (
             <ErrorBoundary name="Profile Stack">
@@ -162,9 +162,9 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
           options={{
             tabBarLabel: t('tabs.self'),
             tabBarIcon: ({ color, size }) => (
-              <View>
+              <Box>
                 <Heart color={color} size={size} fill={currentTab === 'self' ? color : 'none'} />
-              </View>
+              </Box>
             )}}>
           {() => (
             <ErrorBoundary name="Self Screen">
@@ -179,9 +179,9 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
           options={{
             tabBarLabel: t('tabs.community'),
             tabBarIcon: ({ color, size }) => (
-              <View>
+              <Box>
                 <Icon as={Users} color={color} size={size} fill={currentTab === 'community' ? color : 'none'} />
-              </View>
+              </Box>
             )}}>
           {() => (
             <ErrorBoundary name="Community Stack">
@@ -196,9 +196,9 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
           options={{
             tabBarLabel: t('tabs.library'),
             tabBarIcon: ({ color, size }) => (
-              <View>
+              <Box>
                 <Library color={color} size={size} fill={currentTab === 'library' ? color : 'none'} />
-              </View>
+              </Box>
             )}}
         >
           {() => (
@@ -215,9 +215,9 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
             options={{
               tabBarLabel: 'Workforce',
               tabBarIcon: ({ color, size }) => (
-                <View>
+                <Box>
                   <Hammer color={color} size={size} fill={currentTab === 'workforce' ? color : 'none'} />
-                </View>
+                </Box>
               )}}
           >
             {() => (
@@ -275,6 +275,6 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
           </Box>
         </Box>
       </Modal>
-    </View>
+    </Box>
   );
 }

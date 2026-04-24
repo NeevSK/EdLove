@@ -1,4 +1,4 @@
-﻿import React, { useMemo } from 'react';
+import React, { useMemo } from 'react';
 import {
     VStack,
     SanctuaryInput,
@@ -27,13 +27,13 @@ interface StepLocationProps {
         city: string;
         address: string;
     };
-    onUpdate: (loc: Partial<StepLocationProps>['data']>) => void;
+    onUpdate: (loc: Partial<StepLocationProps['data']>) => void;
 }
 
 export default function StepLocation({ data, onUpdate }: StepLocationProps) {
-    const colors = useTheme().scene;
+    const { scene: colors } = useThemedColors();
     const { t, i18n } = useTranslation();
-    const lang => i18n.resolvedLanguage ?? 'en') as 'en' | 'si' | 'ta';
+    const lang = (i18n.resolvedLanguage ?? 'en') as 'en' | 'si' | 'ta';
 
     const filteredDistricts = useMemo(() => {
         if (!data.provinceId) return [];

@@ -1,4 +1,4 @@
-﻿import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import * as Font from 'expo-font';
 import { fontAssets } from '../constants/Fonts';
 
@@ -8,7 +8,7 @@ interface AssetContextType {
 
 const AssetContext = createContext<AssetContextType | undefined>(undefined);
 
-export const AssetProvider: React.FC<{ children: ReactNode }> => { children }) => {
+export const AssetProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [fontsLoaded, setFontsLoaded] = useState(false);
 
   useEffect(() => {

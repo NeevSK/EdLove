@@ -5,6 +5,7 @@ import {
   v7 as uuidv7, 
   generateIdempotencyKey 
 } from "@repo/core";
+import { initPostHog, trackEvent } from "@repo/analytics";
 
 /**
  * Handle Wellbeing Mood Logged Event
@@ -65,6 +66,22 @@ export const wellbeingMoodLogged = (inngest as any).createFunction(
         if (error) throw error;
       });
     }
+
+    // 5. Unified Analytics (God Mode Visibility)
+    await step.run("track-posthog-event", async () => {
+      await initPostHog(process.env.POSTHOG_API_KEY!, { 
+        host: 'https://eu.i.posthog.com' 
+      });
+      
+      trackEvent('wellbeing_mood_processed', {
+        distinctId: studentId,
+        student_id: studentId,
+        mood_score: moodScore,
+        intervention_needed: needsIntervention,
+        school_id: schoolId,
+        worker: 'inngest-wellbeing-handler'
+      });
+    });
 
     return { 
       processed: true, 

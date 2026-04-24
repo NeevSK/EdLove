@@ -16,26 +16,27 @@
   },
   "dependencies": {
     "@repo/core": "workspace:*",
-    "@repo/ui": "workspace:*",
     "@repo/graphics": "workspace:*",
+    "@repo/ui": "workspace:*",
     "@tanstack/react-query": "^5.90.20",
-    "react-i18next": "^16.5.4",
     "lucide-react-native": "^0.563.0",
+    "posthog-js": "^1.114.0",
+    "posthog-node": "^5.29.5",
     "posthog-react-native": "^4.35.1",
-    "posthog-js": "^1.114.0"
+    "react-i18next": "^16.5.4"
   },
   "devDependencies": {
-    "@types/react": "~19.1.10",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "typescript": "~5.9.2",
-    "eslint": "^9.38.0"
+    "@types/react": "~19.1.10",
+    "eslint": "^9.38.0",
+    "typescript": "~5.9.2"
   },
   "peerDependencies": {
-    "react": "*",
-    "react-native": "*",
-    "react-i18next": "*",
     "@repo/ui": "*",
-    "lucide-react-native": "*"
+    "lucide-react-native": "*",
+    "react": "*",
+    "react-i18next": "*",
+    "react-native": "*"
   }
 }

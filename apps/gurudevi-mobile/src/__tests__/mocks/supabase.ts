@@ -1,5 +1,5 @@
-﻿export const createSupabaseMock = () => {
-    const mockResponse =>  data: null, error: null };
+export const createSupabaseMock = () => {
+    const mockResponse = { data: null, error: null };
     const mockPromise = Promise.resolve(mockResponse);
 
     const chain: any  = {

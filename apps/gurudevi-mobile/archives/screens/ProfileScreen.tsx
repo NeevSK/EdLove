@@ -59,7 +59,8 @@ const IdentitySection = ({ profile, navigation, colors, t, onGuestAction, comple
     const isWanderer = context.isAnonymous;
 
     return (
-        <Center            <IdentityCard
+        <Center>
+            <IdentityCard
                 data={profile}
                 onViewFullProfile={() => {
                     if (isWanderer) {
@@ -68,14 +69,15 @@ const IdentitySection = ({ profile, navigation, colors, t, onGuestAction, comple
                     hapticLight();
                     navigation.navigate(isWanderer ? 'Auth' : 'FullProfile', { profile });
                 }}
-            /
+            />
             {!context.isAnonymous && (
                 <SanctuaryProgressBar
                     percentage={completionResult.percentage}
                     isComplete={completionResult.isComplete}
                     nextHint={completionResult.nextHint}
-                    style={{ width: cardWidth, marginTop: Theme.spacing.md }}
-                /            )}
+                    style={{ width: cardWidth, marginTop: 16 }}
+                />
+            )}
 
             <TouchableOpacity
                 onPress={() => {
@@ -90,11 +92,11 @@ const IdentitySection = ({ profile, navigation, colors, t, onGuestAction, comple
                 accessibilityRole="button"
                 accessibilityLabel={isWanderer ? t('auth.createAccount') : t('profile.viewEditProfile')}
                 style={{
-                    marginTop: Theme.spacing.lg,
+                    marginTop: 20,
                     width: cardWidth,
                     height: 52,
                     backgroundColor: colors.secondary,
-                    borderRadius: Theme.corners.comfortable,
+                    borderRadius: 16,
                     flexDirection: 'row',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -106,13 +108,22 @@ const IdentitySection = ({ profile, navigation, colors, t, onGuestAction, comple
                     shadowRadius: 10,
                     elevation: 3,
                 }}
-                            <HStack space="sm" alignItems="center"                    {isWanderer ? (
-                        <UserPlus size={18} color={colors.action} /                    ) : (
-                        <Edit3 size={18} color={colors.action} /                    )}
-                    <Text color={colors.text} bold                        {isWanderer
+            >
+                <HStack className="gap-2 items-center">
+                    {isWanderer ? (
+                        <UserPlus size={18} color={colors.action} />
+                    ) : (
+                        <Edit3 size={18} color={colors.action} />
+                    )}
+                    <Text className="font-bold" style={{ color: colors.text }}>
+                        {isWanderer
                             ? t('auth.createAccount')
                             : t('profile.viewEditProfile')}
-                    </Text                </HStack            </TouchableOpacity        </Center    );
+                    </Text>
+                </HStack>
+            </TouchableOpacity>
+        </Center>
+    );
 };
 
 const StatsSection = ({ profile, role }: any) => {
@@ -128,13 +139,13 @@ const StatsSection = ({ profile, role }: any) => {
 };
 
 const SupportSection = ({ t, colors, navigation, cardWidth = CARD_WIDTH }: any) => (
-    <Center        <VStack
-            sx={{
+    <Center>
+        <VStack
+            className="rounded-[32px] border gap-2"
+            style={{
                 width: cardWidth,
-                p: Theme.spacing.md,
+                padding: 16,
                 backgroundColor: `${colors.secondary}${Math.round(Theme.opacity.strong * 255).toString(16).padStart(2, '0')}`,
-                borderRadius: Theme.corners.generous,
-                borderWidth: 1,
                 borderColor: colors.border,
                 shadowColor: colors.glow,
                 shadowOffset: { width: 0, height: 0 },
@@ -142,37 +153,43 @@ const SupportSection = ({ t, colors, navigation, cardWidth = CARD_WIDTH }: any) 
                 shadowRadius: 20,
                 elevation: 5,
             }}
-            space="sm"
-                    <Heading
+        >
+            <Heading
                 size="sm"
-                color={colors.textSecondary as any}
-                mt={Theme.spacing.sm}
-                mb={Theme.spacing.md}
-                            {t('profile.account.support')}
-            </Heading            <ProfileListItem
+                className="mt-2 mb-4"
+                style={{ color: colors.textSecondary as any }}
+            >
+                {t('profile.account.support')}
+            </Heading>
+            <ProfileListItem
                 icon={HelpCircle}
                 label={t('profile.faqTitle')}
                 onPress={() => hapticLight()}
-            /            <ProfileListItem
+            />
+            <ProfileListItem
                 icon={MessageSquare}
                 label={t('profile.feedbackTitle')}
                 onPress={() => hapticLight()}
-            /            <ProfileListItem
+            />
+            <ProfileListItem
                 icon={Info}
                 label={t('profile.aboutTitle')}
                 onPress={() => hapticLight()}
-            /        </VStack    </Center);
+            />
+        </VStack>
+    </Center>
+);
 
 const AppExperienceSection = ({ t, colors, cardWidth = CARD_WIDTH }: any) => {
     const showToast = useStore((state) => state.showToast);
     return (
-        <Center            <VStack
-                sx={{
+        <Center>
+            <VStack
+                className="rounded-[32px] border gap-2"
+                style={{
                     width: cardWidth,
-                    p: Theme.spacing.md,
+                    padding: 16,
                     backgroundColor: colors.secondary,
-                    borderRadius: Theme.corners.generous,
-                    borderWidth: 1,
                     borderColor: colors.border,
                     shadowColor: colors.glow,
                     shadowOffset: { width: 0, height: 0 },
@@ -180,14 +197,15 @@ const AppExperienceSection = ({ t, colors, cardWidth = CARD_WIDTH }: any) => {
                     shadowRadius: 20,
                     elevation: 5,
                 }}
-                space="sm"
-                            <Heading
+            >
+                <Heading
                     size="sm"
-                    color={colors.textSecondary as any}
-                    mt={Theme.spacing.sm}
-                    mb={Theme.spacing.md}
-                                    {t('profile.account.support_app')}
-                </Heading                <ProfileListItem
+                    className="mt-2 mb-4"
+                    style={{ color: colors.textSecondary as any }}
+                >
+                    {t('profile.account.support_app')}
+                </Heading>
+                <ProfileListItem
                     icon={Heart}
                     label={t('profile.loveApp')}
                     onPress={() => {
@@ -202,7 +220,8 @@ const AppExperienceSection = ({ t, colors, cardWidth = CARD_WIDTH }: any) => {
                             );
                         }
                     }}
-                /                <ProfileListItem
+                />
+                <ProfileListItem
                     icon={Heart}
                     label={t('profile.helpSupportApp')}
                     onPress={() => {
@@ -217,32 +236,40 @@ const AppExperienceSection = ({ t, colors, cardWidth = CARD_WIDTH }: any) => {
                             );
                         }
                     }}
-                /            </VStack        </Center    );
+                />
+            </VStack>
+        </Center>
+    );
 };
 
 const AccountActions = ({ t, colors, isGuest, navigation, cardWidth = CARD_WIDTH }: any) => {
     if (isGuest) return null;
 
     return (
-        <VStack space="md" sx={{ width: cardWidth }}            <Heading
+        <VStack className="gap-4" style={{ width: cardWidth }}>
+            <Heading
                 size="sm"
-                color={colors.textSecondary as any}
-                mb={Theme.spacing.xs}
-                            {t('profile.account.actions')}
-            </Heading            <Button
+                className="mb-1"
+                style={{ color: colors.textSecondary as any }}
+            >
+                {t('profile.account.actions')}
+            </Heading>
+            <Button
                 variant="outline"
                 size="lg"
                 onPress={() => {
                     hapticLight();
                     navigation.navigate('Auth');
                 }}
-                sx={{
-                    borderColor: colors.action,
-                    borderRadius: Theme.corners.comfortable,
-                    opacity: 0.7
-                }}
-                            <ButtonText color={colors.action}                    {t('profile.account.switch')}
-                </ButtonText            </Button        </VStack    );
+                className="border rounded-2xl opacity-70"
+                style={{ borderColor: colors.action }}
+            >
+                <ButtonText style={{ color: colors.action }}>
+                    {t('profile.account.switch')}
+                </ButtonText>
+            </Button>
+        </VStack>
+    );
 };
 
 // --- Main Screen ---
@@ -344,7 +371,7 @@ export const ProfileScreen = () => {
     }
 
     return (
-        <ScreenWrapper scroll={false} noTopInset={true}            <GlobalHeader
+            <GlobalHeader
                 title={t('profile.title')}
                 subtitle={t('profile.subtitle')}
                 rightAction={
@@ -356,19 +383,21 @@ export const ProfileScreen = () => {
                         accessible={true}
                         accessibilityRole="button"
                         accessibilityLabel={t('settings.title')}
+                        className="p-2 border rounded-xl"
                         style={{
-                            padding: 8,
-                            borderRadius: Theme.corners.comfortable,
                             backgroundColor: colors.tertiary,
                             borderColor: colors.border,
-                            borderWidth: 1,
                         }}
-                                            <Settings size={24} color={colors.action} /                    </TouchableOpacity                }
-            /
-            <Box sx={{ flex: 1, backgroundColor: colors.primary }}                <ScrollView
+                    >
+                        <Settings size={24} color={colors.action} />
+                    </TouchableOpacity>
+                }
+            />
+            <Box className="flex-1" style={{ backgroundColor: colors.primary }}>
+                <ScrollView
                     showsVerticalScrollIndicator={false}
                     contentContainerStyle={{
-                        paddingVertical: Theme.spacing.md,
+                        paddingVertical: 16,
                         paddingBottom: bottomPadding,
                     }}
                     refreshControl={
@@ -376,59 +405,96 @@ export const ProfileScreen = () => {
                             refreshing={refreshing}
                             onRefresh={refresh}
                             tintColor={Theme.colors.sanctuarySaffron}
-                        /                    }
-                                    <VStack space="2xl"                        {profile?.is_anonymous && (
-                            <Center                                <Animated.View style={[{ width: cardWidth }, animatedBannerStyle]}                                    <Box sx={{
-                                        p: Theme.spacing.md,
-                                        bg: colors.action,
-                                        borderRadius: Theme.corners.comfortable,
-                                        shadowColor: Theme.colors.shadowViolet,
-                                        shadowOffset: { width: 0, height: 4 },
-                                        shadowOpacity: 0.24,
-                                        shadowRadius: 8,
-                                        elevation: 4
-                                    }}                                        <VStack space="sm"                                            <Heading size="md" color={Theme.colors.sacredWhite}>{t('profile.guestTitle')}</Heading                                            <Text color={Theme.colors.sacredWhite} sx={{ fontSize: '$sm' }}                                                {t('profile.guestDesc')}
-                                            </Text                                            <Button
+                        />
+                    }
+                >
+                    <VStack className="gap-8">
+                        {profile?.is_anonymous && (
+                            <Center>
+                                <Animated.View style={[{ width: cardWidth }, animatedBannerStyle]}>
+                                    <Box
+                                        className="p-4 rounded-xl elevation-4"
+                                        style={{
+                                            backgroundColor: colors.action,
+                                            shadowColor: Theme.colors.shadowViolet,
+                                            shadowOffset: { width: 0, height: 4 },
+                                            shadowOpacity: 0.24,
+                                            shadowRadius: 8,
+                                        }}
+                                    >
+                                        <VStack className="gap-2">
+                                            <Heading size="md" className="text-white">
+                                                {t('profile.guestTitle')}
+                                            </Heading>
+                                            <Text className="text-white text-sm">
+                                                {t('profile.guestDesc')}
+                                            </Text>
+                                            <Button
                                                 size="sm"
                                                 onPress={() => {
                                                     hapticSuccess();
                                                     navigation.navigate('Auth');
                                                 }}
-                                                sx={{ bg: Theme.colors.sacredWhite, alignSelf: 'flex-start', mt: '$2' }}
-                                                                                            <ButtonText color={colors.action}>{t('auth.createAccount')}</ButtonText                                            </Button                                        </VStack                                    </Box                                </Animated.View                            </Center                        )}
+                                                className="bg-white self-start mt-2"
+                                            >
+                                                <ButtonText style={{ color: colors.action }}>
+                                                    {t('auth.createAccount')}
+                                                </ButtonText>
+                                            </Button>
+                                        </VStack>
+                                    </Box>
+                                </Animated.View>
+                            </Center>
+                        )}
 
-                        <Animated.View entering={FadeInDown.delay(80).duration(500)}                            <Center                                <Box
-                                    sx={{
+                        <Animated.View entering={FadeInDown.delay(80).duration(500)}>
+                            <Center>
+                                <Box
+                                    className="border rounded-[32px] elevation-4"
+                                    style={{
                                         width: cardWidth,
-                                        p: Theme.spacing.lg,
-                                        bg: colors.secondary,
-                                        borderRadius: Theme.corners.generous,
-                                        borderWidth: 1,
+                                        padding: 24,
+                                        backgroundColor: colors.secondary,
                                         borderColor: colors.border,
                                         shadowColor: colors.glow,
                                         shadowOffset: { width: 0, height: 10 },
                                         shadowOpacity: 0.1,
                                         shadowRadius: 20,
-                                        elevation: 4,
                                     }}
-                                                                    <VStack space="sm"                                        <HStack space="sm" sx={{ flexWrap: 'wrap' }}                                            {['Identity', 'Journey', 'Support'].map((pillar) => (
+                                >
+                                    <VStack className="gap-2">
+                                        <HStack className="gap-2 flex-wrap">
+                                            {['Identity', 'Journey', 'Support'].map((pillar) => (
                                                 <Box
                                                     key={pillar}
-                                                    sx={{
-                                                        px: Theme.spacing.sm,
-                                                        py: '$1',
-                                                        borderRadius: Theme.corners.full,
+                                                    className="px-3 py-1 rounded-full border"
+                                                    style={{
                                                         backgroundColor: colors.overlay,
-                                                        borderWidth: 1,
                                                         borderColor: colors.border,
                                                     }}
-                                                                                                    <Text size="xs" color={colors.textSecondary} bold                                                        {pillar}
-                                                    </Text                                                </Box                                            ))}
-                                        </HStack                                        <Text size="xs" color={colors.action} bold sx={{ letterSpacing: 0.8 }}                                            PERSONAL SANCTUARY
-                                        </Text                                        <Heading size="sm" color={colors.text}                                            Your profile is the living record of how you move through Gurudevi.
-                                        </Heading                                        <Text color={colors.textSecondary} size="sm"                                            Everything below stays the same functionally, but this space helps hold identity, progress, and support in one calmer rhythm.
-                                        </Text                                    </VStack                                </Box                            </Center                        </Animated.View
-                        <Animated.View entering={FadeInDown.delay(100).duration(500)}                            <IdentitySection
+                                                >
+                                                    <Text className="text-xs font-bold" style={{ color: colors.textSecondary }}>
+                                                        {pillar}
+                                                    </Text>
+                                                </Box>
+                                            ))}
+                                        </HStack>
+                                        <Text className="text-xs font-bold tracking-widest uppercase mb-1" style={{ color: colors.action }}>
+                                            PERSONAL SANCTUARY
+                                        </Text>
+                                        <Heading size="sm" style={{ color: colors.text }}>
+                                            {t('profile.introductionTitle')}
+                                        </Heading>
+                                        <Text style={{ color: colors.textSecondary }} size="sm">
+                                            {t('profile.introductionDesc')}
+                                        </Text>
+                                    </VStack>
+                                </Box>
+                            </Center>
+                        </Animated.View>
+
+                        <Animated.View entering={FadeInDown.delay(100).duration(500)}>
+                            <IdentitySection
                                 profile={profile}
                                 navigation={navigation}
                                 colors={colors}
@@ -436,29 +502,58 @@ export const ProfileScreen = () => {
                                 onGuestAction={triggerBannerShake}
                                 completionResult={completionResult}
                                 cardWidth={cardWidth}
-                            /                        </Animated.View
+                            />
+                        </Animated.View>
+
                         {profile?.is_thuthimal && (
-                            <Animated.View entering={FadeInDown.delay(200).duration(500)}                                <Center                                    <Box sx={{ width: cardWidth }}                                        <ThuthimalBadge
+                            <Animated.View entering={FadeInDown.delay(200).duration(500)}>
+                                <Center>
+                                    <Box style={{ width: cardWidth }}>
+                                        <ThuthimalBadge
                                             gifterName={profile.thuthimal_gifter}
                                             giftedAt={profile.thuthimal_gifted_at}
                                             compact={false}
-                                        /                                    </Box                                </Center                            </Animated.View                        )}
+                                        />
+                                    </Box>
+                                </Center>
+                            </Animated.View>
+                        )}
 
-                        <Animated.View entering={FadeInDown.delay(300).duration(500)}                            <StatsSection profile={profile} rewards={rewards} role={profile?.role as any} /                        </Animated.View
-                        <Animated.View entering={FadeInDown.delay(400).duration(500)}                            <Center                                <Box sx={{ width: cardWidth }}                                    <ProfileListItem
+                        <Animated.View entering={FadeInDown.delay(300).duration(500)}>
+                            <StatsSection profile={profile} rewards={rewards} role={profile?.role as any} />
+                        </Animated.View>
+
+                        <Animated.View entering={FadeInDown.delay(400).duration(500)}>
+                            <Center>
+                                <Box style={{ width: cardWidth }}>
+                                    <ProfileListItem
                                         icon={Settings}
                                         label={t('settings.title')}
                                         onPress={() => navigation.navigate('AppSettings')}
-                                    /                                </Box                            </Center                        </Animated.View
-                        <Animated.View entering={FadeInDown.delay(550).duration(500)}                            <SupportSection t={t} colors={colors} navigation={navigation} cardWidth={cardWidth} /                        </Animated.View
-                        <Animated.View entering={FadeInDown.delay(600).duration(500)}                            <AppExperienceSection t={t} colors={colors} cardWidth={cardWidth} /                        </Animated.View
-                        <Animated.View entering={FadeInDown.delay(700).duration(500)}                            <Center                                <Box sx={{ width: cardWidth, mt: Theme.spacing.md }}                                    <AccountActions
+                                    />
+                                </Box>
+                            </Center>
+                        </Animated.View>
+
+                        <Animated.View entering={FadeInDown.delay(550).duration(500)}>
+                            <SupportSection t={t} colors={colors} navigation={navigation} cardWidth={cardWidth} />
+                        </Animated.View>
+                        <Animated.View entering={FadeInDown.delay(600).duration(500)}>
+                            <AppExperienceSection t={t} colors={colors} cardWidth={cardWidth} />
+                        </Animated.View>
+                        <Animated.View entering={FadeInDown.delay(700).duration(500)}>
+                            <Center>
+                                <Box className="mt-4" style={{ width: cardWidth }}>
+                                    <AccountActions
                                         t={t}
                                         colors={colors}
                                         navigation={navigation}
                                         isGuest={profile?.is_anonymous}
                                         cardWidth={cardWidth}
-                                    /                                </Box                            </Center                        </Animated.View
+                                    />
+                                </Box>
+                            </Center>
+                        </Animated.View>
                         <Animated.View entering={FadeInDown.delay(750).duration(500)}                            <Center                                <Box sx={{ width: cardWidth, mb: Theme.spacing.xl, mt: Theme.spacing.md }}                                    <VStack space="md" sx={{
                                         p: Theme.spacing.md,
                                         bg: colors.tertiary,

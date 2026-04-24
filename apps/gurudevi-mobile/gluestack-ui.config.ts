@@ -1,4 +1,25 @@
-import { createConfig, gluestackConfig as defaultConfig,  } from '@repo/ui';
+import { 
+    createConfig, 
+    gluestackConfig as defaultConfig,
+    sanctuarySaffron,
+    saffronMuted,
+    gurudeviBlue,
+    gurudeviViolet,
+    obsidian,
+    shroud,
+    sacredWhite,
+    starlightGray,
+    vellum,
+    silk,
+    linen,
+    bark,
+    emberRed,
+    sageGreen,
+    mossGreen,
+    amberGlow,
+    shadowViolet,
+    mistGray
+} from '@repo/ui';
 
 // Extend the default config with our Sanctuary colors
 // This allows using bg="$sanctuarySaffron" instead of sanctuarySaffron
@@ -23,7 +44,7 @@ export const config = createConfig({
             vellum: vellum,
             silk: silk,
             linen: linen,
-            inkTruth: '#2A2318'Truth,
+            inkTruth: '#2A2318',
             bark: bark,
             // Functional
             emberRed: emberRed,

@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { VStack, SanctuaryInput } from '@repo/ui';
 import { School, Mail, Phone, Globe } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
@@ -11,7 +11,7 @@ interface StepBasicInfoProps {
         contactPhone: string;
         website?: string;
     };
-    onUpdate: (info: Partial<StepBasicInfoProps>['data']>) => void;
+    onUpdate: (info: Partial<StepBasicInfoProps['data']>) => void;
 }
 
 export default function StepBasicInfo({ data, onUpdate }: StepBasicInfoProps) {
