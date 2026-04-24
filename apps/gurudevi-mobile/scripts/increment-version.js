@@ -47,5 +47,5 @@ if (appJson.expo.ios.buildNumber) {
 
 fs.writeFileSync(appJsonPath, JSON.stringify(appJson, null, 2) + '\n');
 
-console.log(`✅ Version incremented: ${currentVersion} -> ${newVersion}`);
-console.log(`✅ Synchronized with app.json`);
+console.log(` Version incremented: ${currentVersion} -> ${newVersion}`);
+console.log(` Synchronized with app.json`);

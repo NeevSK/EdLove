@@ -10,6 +10,7 @@
   ],
   "compilerOptions": {
     "baseUrl": ".",
+    "resolveJsonModule": true,
     "paths": {
       "@repo/analytics": ["./packages/analytics/src"],
       "@repo/ui": ["./packages/ui/src"],

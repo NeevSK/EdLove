@@ -14,11 +14,9 @@
 import React, { useEffect, useState } from 'react';
 import { X, Zap } from 'lucide-react-native';
 
-import { 
-    TeacherDashboard, 
-    StudentDashboard, 
-    PrincipalDashboard 
-} from '@repo/classroom';
+import TeacherDashboard from './TeacherDashboard';
+import StudentDashboard from './StudentDashboard';
+// import PrincipalDashboard from './PrincipalDashboard';
 
 type DemoRole = 'teacher' | 'principal' | 'student';
 
@@ -65,7 +63,7 @@ export default function DemoPlaygroundPanel({ role, onClose }: DemoPlaygroundPan
                 overflow: 'hidden',
             }}
         >
-            {/* ── Demo banner ─────────────────────────────────────────────── */}
+            {/*  Demo banner  */}
             <div style={{
                 background: 'rgba(245,158,11,0.10)',
                 borderBottom: '1px solid rgba(245,158,11,0.25)',
@@ -80,7 +78,7 @@ export default function DemoPlaygroundPanel({ role, onClose }: DemoPlaygroundPan
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                     <Zap size={15} color="var(--amber-glow)" fill="var(--amber-glow)" />
                     <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--amber-glow)' }}>
-                        Demo — {ROLE_LABEL[role]} view with simulated data
+                        Demo  {ROLE_LABEL[role]} view with simulated data
                     </span>
                 </div>
                 <button
@@ -97,7 +95,7 @@ export default function DemoPlaygroundPanel({ role, onClose }: DemoPlaygroundPan
                 </button>
             </div>
 
-            {/* ── Scrollable demo content ──────────────────────────────────── */}
+            {/*  Scrollable demo content  */}
             <div
                 style={{
                     flex: 1,
@@ -107,10 +105,9 @@ export default function DemoPlaygroundPanel({ role, onClose }: DemoPlaygroundPan
             >
                 {role === 'teacher' && <TeacherDashboard />}
                 {role === 'principal' && (
-                    <PrincipalDashboard
-                        schoolId="mock-school"
-                        userId="mock-principal"
-                    />
+                    <div style={{ padding: '40px', textAlign: 'center', opacity: 0.5 }}>
+                        Principal Dashboard preview moved to @repo/admin
+                    </div>
                 )}
                 {role === 'student' && <StudentDashboard />}
             </div>

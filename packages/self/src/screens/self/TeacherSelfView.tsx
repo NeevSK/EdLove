@@ -1,20 +1,14 @@
 import React, { useState } from 'react';
+import { Box, ScreenWrapper, VStack, useTheme, useThemedColors } from '@repo/ui';
+
+
 import { useNavigation } from '@react-navigation/native';
-import {
-    VStack,
-    HStack,
-    Box,
-    Text,
-    Pressable,
-    useThemedColors,
-    ScreenWrapper,
-} from '@repo/ui';
+
 import { useTranslation } from 'react-i18next';
 import {
     supabase,
     useStore,
     usePermissions,
-    useResonanceStore,
     useJourneyHistory,
     useBanyanGrowth
 } from '@repo/core';
@@ -24,8 +18,7 @@ import { useJournalEntries } from '../../hooks/useJournalEntries';
 import { 
     JournalSection, 
     MoodSection, 
-    TeacherPulse,
-} from '../../views/sections';
+    TeacherPulse} from '../../views/sections';
 
 // Kernel Imports from @repo/self (Breaking require cycle)
 import { BaseSelfView } from '../../components/BaseSelfView';
@@ -41,17 +34,23 @@ import FireJournal from '../../components/FireJournal';
 import DailyRhythm from '../../components/DailyRhythm';
 import WindDownRitual from '../../components/WindDownRitual';
 import WisdomSeeds from '../../components/WisdomSeeds';
+import JoyJar from '../../components/JoyJar';
+import GratitudeGlimmers from '../../components/GratitudeGlimmers';
+import TomorrowPrep from '../../components/TomorrowPrep';
+import SleepTracker from '../../components/SleepTracker';
+import RemindersManager from '../../components/RemindersManager';
 import WelcomeModal from '../../components/WelcomeModal';
 import { useMoodLogs } from '../../hooks/useMoodLogs';
 import { useEnergyForecast } from '../../hooks/useEnergyForecast';
 import VoiceJournaling from '../../components/VoiceJournaling';
+import DecisionJournalSection from '../../components/DecisionJournalSection';
 
 import { PulseDashboard } from '../../components/PulseDashboard';
 
 export default function TeacherSelfView() {
     const { t } = useTranslation();
     const navigation = useNavigation<any>();
-    const colors = useThemedColors();
+    const colors = useTheme().scene;
 
     // State & Kernel Hooks
     const { context } = usePermissions();
@@ -69,31 +68,12 @@ export default function TeacherSelfView() {
     const [isPulseDashboardOpen, setIsPulseDashboardOpen] = useState(true);
     const justFinishedOnboarding = useStore((state) => state.justFinishedOnboarding);
     const setJustFinishedOnboarding = useStore((state) => state.setJustFinishedOnboarding);
-    const { viewScale, setScale } = useResonanceStore();
     const { entries: journalEntries, loading: loadingJournals } = useJournalEntries();
     const { events: journeyEvents, holisticView, isLoading: journeyLoading } = useJourneyHistory();
     const { banyan, isLoading: banyanLoading } = useBanyanGrowth();
 
     const holisticSection = (
-        <VStack space="lg" sx={{ p: 20 }}>
-            <HStack justifyContent="flex-end" space="xs">
-                {(['day', 'week', 'month', 'year'] as const).map(scale => (
-                    <Box 
-                        key={scale}
-                        sx={{ 
-                            bg: viewScale === scale ? '$amber400' : 'rgba(255,255,255,0.05)', 
-                            px: 12, 
-                            py: 4, 
-                            borderRadius: 12 
-                        }}
-                    >
-                        <Pressable onPress={() => setScale(scale)}>
-                            <Text sx={{ color: '#fff', fontSize: 10, fontWeight: '800' }}>{scale.toUpperCase()}</Text>
-                        </Pressable>
-                    </Box>
-                ))}
-            </HStack>
-
+        <VStack space="lg" style={{ padding: 20 }}>
             <JournalSection entries={journalEntries} loading={loadingJournals} />
             <MoodSection logs={moodHistory} loading={loadingMoods} />
             <TeacherPulse banyan={banyan} loading={banyanLoading} />
@@ -115,13 +95,11 @@ export default function TeacherSelfView() {
             <BaseSelfView
                 perspective="teacher"
                 description={t('self.teacherDescription', 'Refine your craft, nurture your spirit.')}
-                domains={[
-                    {
+                domains={[{
                         id: 'journey',
                         title: 'Journey Overview',
                         accentColor: '#10B981',
-                        content: holisticSection,
-                    },
+                        content: holisticSection},
                     {
                         id: 'pulse',
                         title: 'Inner Pulse',
@@ -135,7 +113,8 @@ export default function TeacherSelfView() {
                             {
                                 id: 'mood-lotus',
                                 label: 'Mood Lotus',
-                                content: <MoodLotus userId={userId ?? undefined} />
+                                content: <MoodLotus userId={userId ?? undefined} />,
+                                historyContent: <MoodSection logs={moodHistory} loading={loadingMoods} />
                             },
                             {
                                 id: 'wisdom',
@@ -152,7 +131,8 @@ export default function TeacherSelfView() {
                             {
                                 id: 'fire-journal',
                                 label: 'Fire Journal',
-                                content: <FireJournal userId={userId ?? undefined} />
+                                content: <FireJournal userId={userId ?? undefined} />,
+                                historyContent: <JournalSection entries={journalEntries} loading={loadingJournals} />
                             },
                             {
                                 id: 'voice',
@@ -172,6 +152,16 @@ export default function TeacherSelfView() {
                                         isLoading={loadingMoods}
                                     />
                                 )
+                            },
+                            {
+                                id: 'joy-jar',
+                                label: 'Joy Jar',
+                                content: <JoyJar userId={userId ?? undefined} />
+                            },
+                            {
+                                id: 'gratitude',
+                                label: 'Gratitude Glimmers',
+                                content: <GratitudeGlimmers userId={userId ?? undefined} />
                             }
                         ]
                     },
@@ -184,7 +174,7 @@ export default function TeacherSelfView() {
                                 id: 'energy-forecast',
                                 label: 'Energy Rhythm',
                                 content: (
-                                    <Box sx={{ p: 24, backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: 16 }}>
+                                    <Box style={{ padding: 24, backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: 16 }}>
                                         <EnergyBarChart
                                             bars={forecasts.slice().reverse()}
                                             height={80}
@@ -196,6 +186,11 @@ export default function TeacherSelfView() {
                                 id: 'wind-down',
                                 label: 'Restorative Ritual',
                                 content: <WindDownRitual userId={userId ?? undefined} />
+                            },
+                            {
+                                id: 'sleep',
+                                label: 'Sleep Tracker',
+                                content: <SleepTracker userId={userId ?? undefined} />
                             }
                         ]
                     },
@@ -208,6 +203,21 @@ export default function TeacherSelfView() {
                                 id: 'daily-rhythm',
                                 label: 'Working Pace',
                                 content: <DailyRhythm />
+                            },
+                            {
+                                id: 'tomorrow',
+                                label: 'Tomorrow Prep',
+                                content: <TomorrowPrep userId={userId ?? undefined} />
+                            },
+                            {
+                                id: 'reminders',
+                                label: 'Reminders',
+                                content: <RemindersManager userId={userId ?? undefined} />
+                            },
+                            {
+                                id: 'decisions',
+                                label: 'Decision Journal',
+                                content: <DecisionJournalSection userId={userId} />
                             }
                         ]
                     }
@@ -228,3 +238,4 @@ export default function TeacherSelfView() {
         </ScreenWrapper>
     );
 }
+

@@ -1,8 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { View, ScrollView, Text, TouchableOpacity, StyleSheet, Alert, Dimensions } from 'react-native';
-import { useTheme } from '@repo/ui';
-import { FadeInDown } from 'react-native-reanimated';
-import { multiTenantAnalyticsAPI, type TenantMetrics, type LiveMetrics, type CustomReportConfig } from '@repo/analytics';
+import { 
+    Box, 
+    VStack, 
+    HStack, 
+    Text, 
+    Heading, 
+    ScrollView, 
+    Pressable, 
+    ScreenWrapper,
+    GlobalHeader
+} from '@repo/ui';
+import { multiTenantAnalyticsAPI, type TenantMetrics, type LiveMetrics } from '@repo/analytics';
 
 interface AnalyticsDashboardScreenProps {
   tenantId: string;
@@ -12,8 +20,6 @@ interface AnalyticsDashboardScreenProps {
   onMetricDrillDown: (metric: string, data: any) => void;
 }
 
-const { width: screenWidth } = Dimensions.get('window');
-
 export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> = ({
   tenantId,
   tenantName,
@@ -21,15 +27,10 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
   onReportPress,
   onMetricDrillDown
 }) => {
-  const theme = useTheme();
   const [metrics, setMetrics] = useState<TenantMetrics | null>(null);
   const [liveMetrics, setLiveMetrics] = useState<LiveMetrics | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedTimeRange, setSelectedTimeRange] = useState<'week' | 'month' | 'quarter' | 'year'>('month');
-  const [selectedMetric, setSelectedMetric] = useState<string | null>(null);
-
-  const isDesktop = screenWidth > 1024;
-  const isTablet = screenWidth > 768 && screenWidth <= 1024;
 
   useEffect(() => {
     loadDashboard();
@@ -44,7 +45,7 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
       const tenantMetrics = await multiTenantAnalyticsAPI.aggregateTenantMetrics([tenantId], timeRange);
       setMetrics(tenantMetrics[0] || null);
     } catch (error) {
-      Alert.alert('Error', 'Failed to load analytics dashboard');
+      console.error('Failed to load analytics dashboard:', error);
     } finally {
       setIsLoading(false);
     }
@@ -87,7 +88,6 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
   };
 
   const getMetricColor = (value: number, metric: string) => {
-    // Define thresholds for each metric
     const thresholds = {
       attendance_rate: { good: 95, warning: 85 },
       grade_average: { good: 85, warning: 75 },
@@ -97,94 +97,24 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
     };
 
     const threshold = thresholds[metric as keyof typeof thresholds];
-    if (!threshold) return theme.text.secondary;
+    if (!threshold) return 'text-phaseText-secondary';
 
-    if (value >= threshold.good) return theme.accent.action;
-    if (value >= threshold.warning) return theme.accent.reward;
-    return theme.accent.danger;
+    if (value >= threshold.good) return 'text-phase-interactive';
+    if (value >= threshold.warning) return 'text-phase-warning';
+    return 'text-phase-danger';
   };
 
   const getSystemHealthColor = (health: string) => {
     switch (health) {
-      case 'healthy': return theme.accent.action;
-      case 'warning': return theme.templeGold;
-      case 'critical': return theme.accent.danger;
-      default: return theme.text.secondary;
+      case 'healthy': return 'text-phase-interactive';
+      case 'warning': return 'text-phase-warning';
+      case 'critical': return 'text-phase-danger';
+      default: return 'text-phaseText-secondary';
     }
   };
 
-  const renderMetricCard = (key: string, value: number, title: string, icon: string) => (
-    <TouchableOpacity
-      key={key}
-      style={[
-        styles.metricCard,
-        {
-          backgroundColor: theme.glass.surface.bg,
-          borderColor: theme.glass.surface.border,
-          borderWidth: 1,
-        }
-      ]}
-      onPress={() => onMetricDrillDown(key, { value, title })}
-    >
-      <View style={styles.metricHeader}>
-        <Text 
-          style={[
-            styles.metricIcon,
-            { 
-              color: theme.accent.action,
-              fontSize: isDesktop ? 24 : 20
-            }
-          ]}
-        >
-          {icon}
-        </Text>
-        <Text 
-          style={[
-            styles.metricTitle,
-            { 
-              color: theme.text.secondary,
-              fontFamily: 'System',
-              fontSize: isDesktop ? 12 : 10
-            }
-          ]}
-        >
-          {title}
-        </Text>
-      </View>
-      
-      <Text 
-        style={[
-          styles.metricValue,
-          { 
-            color: getMetricColor(value, key),
-            fontFamily: 'System',
-            fontWeight: '700',
-            fontSize: isDesktop ? 28 : 24
-          }
-        ]}
-      >
-        {typeof value === 'number' ? value.toFixed(1) : (value || 0)}
-        {key.includes('rate') || key.includes('engagement') || key.includes('efficiency') || key.includes('score') ? '%' : ''}
-      </Text>
-      
-      <Text 
-        style={[
-          styles.metricChange,
-          { 
-            color: theme.text.muted,
-            fontFamily: 'System',
-            fontSize: isDesktop ? 11 : 9
-          }
-        ]}
-      >
-        {getChangeIndicator(key)}
-      </Text>
-    </TouchableOpacity>
-  );
-
   const getChangeIndicator = (metric: string) => {
-    // Placeholder for trend indicators
-    const trends = {
+    const trends: Record<string, string> = {
       attendance_rate: '↑ 2.3%',
       grade_average: '↑ 1.8%',
       parent_engagement: '↓ 0.5%',
@@ -192,541 +122,133 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
       compliance_score: '→ 0.0%'
     };
     
-    return trends[metric as keyof typeof trends] || '→ 0.0%';
+    return trends[metric] || '→ 0.0%';
   };
 
-  const renderLiveMetricCard = (title: string, value: string | number, subtitle: string, color: string) => (
-    <View
-      key={title}
-      style={[
-        styles.liveMetricCard,
-        {
-          backgroundColor: theme.glass.surface.bg,
-          borderColor: theme.glass.surface.border,
-          borderWidth: 1,
-        }
-      ]}
+  const formatValue = (value: number, key: string) => {
+    const formatted = typeof value === 'number' ? value.toFixed(1) : (value || 0);
+    const suffix = key.includes('rate') || key.includes('engagement') || key.includes('efficiency') || key.includes('score') ? '%' : '';
+    return `${formatted}${suffix}`;
+  };
+
+  const renderMetricCard = (key: string, value: number, title: string, icon: string) => (
+    <Pressable
+      key={key}
+      onPress={() => onMetricDrillDown(key, { value, title })}
+      className="bg-phase-surface p-4 rounded-3xl border border-phase-border w-[47%] mb-3 active:scale-95"
     >
-      <Text 
-        style={[
-          styles.liveMetricTitle,
-          { 
-            color: theme.text.secondary,
-            fontFamily: 'System',
-            fontSize: isDesktop ? 12 : 10
-          }
-        ]}
-      >
-        {title}
-      </Text>
-      <Text 
-        style={[
-          styles.liveMetricValue,
-          { 
-            color,
-            fontFamily: 'System',
-            fontWeight: '700',
-            fontSize: isDesktop ? 20 : 16
-          }
-        ]}
-      >
-        {value}
-      </Text>
-      <Text 
-        style={[
-          styles.liveMetricSubtitle,
-          { 
-            color: theme.text.muted,
-            fontFamily: 'System',
-            fontSize: isDesktop ? 10 : 8
-          }
-        ]}
-      >
-        {subtitle}
-      </Text>
-    </View>
+      <VStack className="items-center gap-2">
+        <Text className="text-2xl">{icon}</Text>
+        <Text className="text-[10px] font-black uppercase tracking-wider text-phaseText-muted text-center">
+          {title}
+        </Text>
+        <Text className={`text-2xl font-black ${getMetricColor(value, key)}`}>
+          {formatValue(value, key)}
+        </Text>
+        <Text className="text-[10px] font-bold text-phaseText-muted/50">
+          {getChangeIndicator(key)}
+        </Text>
+      </VStack>
+    </Pressable>
   );
 
-  const renderTimeRangeSelector = () => (
-    <View style={styles.timeRangeSelector}>
-      {(['week', 'month', 'quarter', 'year'] as const).map((range) => (
-        <TouchableOpacity
-          key={range}
-          style={[
-            styles.timeRangeButton,
-            {
-              backgroundColor: selectedTimeRange === range ? theme.accent.action : theme.glass.surface.bg,
-              borderColor: selectedTimeRange === range ? theme.accent.action : theme.glass.surface.border,
-              borderWidth: 1,
-            }
-          ]}
-          onPress={() => setSelectedTimeRange(range)}
-        >
-          <Text 
-            style={[
-              styles.timeRangeText,
-              { 
-                color: selectedTimeRange === range ? theme.text.inverse : theme.text.primary,
-                fontFamily: 'System',
-                fontWeight: '500',
-                fontSize: isDesktop ? 14 : 12
-              }
-            ]}
-          >
-            {range.charAt(0).toUpperCase() + range.slice(1)}
-          </Text>
-        </TouchableOpacity>
-      ))}
-    </View>
+  const renderLiveMetricCard = (title: string, value: string | number, subtitle: string, colorClass: string) => (
+    <Box
+      key={title}
+      className="bg-phase-surface p-4 rounded-3xl border border-phase-border flex-1 min-w-[140px] mb-3 items-center"
+    >
+      <Text className="text-[10px] font-black uppercase tracking-wider text-phaseText-muted mb-2">
+        {title}
+      </Text>
+      <Text className={`text-xl font-black ${colorClass}`}>
+        {value}
+      </Text>
+      <Text className="text-[10px] font-bold text-phaseText-muted/50 mt-1">
+        {subtitle}
+      </Text>
+    </Box>
   );
 
   if (isLoading) {
     return (
-      <View style={[styles.container, { backgroundColor: theme.gradientNodes[0] }]}>
-        <Text style={[styles.loadingText, { color: theme.text.secondary }]}>
-          Loading analytics dashboard...
-        </Text>
-      </View>
+      <ScreenWrapper>
+        <Box className="flex-1 items-center justify-center p-10 bg-phase-canvas">
+          <Text className="text-phaseText-muted font-bold italic">Loading analytics dashboard...</Text>
+        </Box>
+      </ScreenWrapper>
     );
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.gradientNodes[0] }]}>
-      {/* Header */}
-      <View style={[styles.header, { borderBottomColor: theme.glass.surface.border }]}>
-        <View style={styles.headerLeft}>
-          <Text 
-            style={[
-              styles.title,
-              { 
-                color: theme.text.primary,
-                fontFamily: 'System',
-                fontWeight: '700',
-                fontSize: isDesktop ? 32 : 24
-              }
-            ]}
-          >
-            Analytics Dashboard
-          </Text>
-          <Text 
-            style={[
-              styles.subtitle,
-              { 
-                color: theme.text.secondary,
-                fontFamily: 'System',
-                fontSize: isDesktop ? 16 : 14
-              }
-            ]}
-          >
-            {tenantName}
-          </Text>
-        </View>
-        
-        {renderTimeRangeSelector()}
-      </View>
-
+    <ScreenWrapper noTopInset={true}>
+      <GlobalHeader title="Analytics" subtitle={tenantName} />
+      
       <ScrollView 
-        style={styles.content}
-        contentContainerStyle={[
-          styles.contentContainer,
-          isDesktop && styles.contentContainerDesktop
-        ]}
+        className="flex-1 bg-phase-canvas" 
+        contentContainerStyle={{ padding: 24, paddingBottom: 48 }}
         showsVerticalScrollIndicator={false}
       >
-        {/* Key Metrics */}
-        <View style={styles.section}>
-          <Text 
-            style={[
-              styles.sectionHeader,
-              { 
-                color: theme.text.primary,
-                fontFamily: 'System',
-                fontWeight: '700',
-                fontSize: isDesktop ? 20 : 16
-              }
-            ]}
-          >
-            Key Performance Metrics
-          </Text>
-          
-          <View style={[
-            styles.metricsGrid,
-            isDesktop && styles.metricsGridDesktop
-          ]}>
-            {metrics && Object.entries(metrics.metrics).map(([key, value]) => {
-              const metricTitles = {
-                attendance_rate: 'Attendance Rate',
-                grade_average: 'Grade Average',
-                enrollment_count: 'Total Enrollment',
-                staff_turnover: 'Staff Turnover',
-                resource_utilization: 'Resource Utilization',
-                parent_engagement: 'Parent Engagement',
-                document_processing_time: 'Doc Processing Time',
-                revenue_per_student: 'Revenue per Student',
-                operational_efficiency: 'Operational Efficiency',
-                compliance_score: 'Compliance Score'
-              };
-              
-              const metricIcons = {
-                attendance_rate: '📊',
-                grade_average: '🎯',
-                enrollment_count: '👥',
-                staff_turnover: '🔄',
-                resource_utilization: '📦',
-                parent_engagement: '👨‍👩‍👧‍👦',
-                document_processing_time: '📄',
-                revenue_per_student: '💰',
-                operational_efficiency: '⚡',
-                compliance_score: '✅'
-              };
-              
-              return renderMetricCard(
-                key, 
-                value, 
-                metricTitles[key as keyof typeof metricTitles] || key,
-                metricIcons[key as keyof typeof metricIcons] || '📊'
-              );
-            })}
-          </View>
-        </View>
+        <VStack className="gap-8">
+            <VStack className="gap-4">
+                <Heading className="text-base font-black text-phaseText-primary uppercase tracking-widest opacity-40">
+                    Key Performance Metrics
+                </Heading>
+                <HStack className="flex-wrap justify-between">
+                    {metrics && Object.entries(metrics.metrics).map(([key, value]) => {
+                    const metricTitles: Record<string, string> = {
+                        attendance_rate: 'Attendance',
+                        grade_average: 'Grades',
+                        enrollment_count: 'Enrollment',
+                        staff_turnover: 'Turnover',
+                        resource_utilization: 'Resources',
+                        parent_engagement: 'Engagement',
+                        document_processing_time: 'Doc Speed',
+                        revenue_per_student: 'Revenue',
+                        operational_efficiency: 'Efficiency',
+                        compliance_score: 'Compliance'
+                    };
+                    
+                    const metricIcons: Record<string, string> = {
+                        attendance_rate: '📊',
+                        grade_average: '🎯',
+                        enrollment_count: '👥',
+                        staff_turnover: '🔄',
+                        resource_utilization: '📦',
+                        parent_engagement: '👨‍👩‍👧‍👦',
+                        document_processing_time: '📄',
+                        revenue_per_student: '💰',
+                        operational_efficiency: '⚡',
+                        compliance_score: '✅'
+                    };
+                    
+                    return renderMetricCard(
+                        key, 
+                        value as number, 
+                        metricTitles[key] || key,
+                        metricIcons[key] || '📊'
+                    );
+                    })}
+                </HStack>
+            </VStack>
 
-        {/* Live System Metrics */}
-        {liveMetrics && (
-          <View style={styles.section}>
-            <Text 
-              style={[
-                styles.sectionHeader,
-                { 
-                  color: theme.text.primary,
-                  fontFamily: 'System',
-                  fontWeight: '700',
-                  fontSize: isDesktop ? 20 : 16
-                }
-              ]}
-            >
-              Live System Metrics
-            </Text>
-            
-            <View style={[
-              styles.liveMetricsGrid,
-              isDesktop && styles.liveMetricsGridDesktop
-            ]}>
-              {renderLiveMetricCard(
-                'Active Users',
-                liveMetrics.active_users,
-                'Currently online',
-                theme.sageGreen
-              )}
-              {renderLiveMetricCard(
-                'API Requests/min',
-                liveMetrics.api_requests_per_minute,
-                'Last 60 seconds',
-                getSystemHealthColor(liveMetrics.system_health)
-              )}
-              {renderLiveMetricCard(
-                'Error Rate',
-                `${liveMetrics.error_rate.toFixed(1)}%`,
-                'Last 60 seconds',
-                liveMetrics.error_rate > 5 ? theme.accent.danger : theme.sageGreen
-              )}
-              {renderLiveMetricCard(
-                'System Health',
-                liveMetrics.system_health.toUpperCase(),
-                `Updated ${new Date(liveMetrics.timestamp).toLocaleTimeString()}`,
-                getSystemHealthColor(liveMetrics.system_health)
-              )}
-            </View>
-          </View>
-        )}
-
-        {/* Resource Usage */}
-        {liveMetrics && (
-          <View style={styles.section}>
-            <Text 
-              style={[
-                styles.sectionHeader,
-                { 
-                  color: theme.text.primary,
-                  fontFamily: 'System',
-                  fontWeight: '700',
-                  fontSize: isDesktop ? 20 : 16
-                }
-              ]}
-            >
-              Resource Usage
-            </Text>
-            
-            <View style={styles.resourceUsageContainer}>
-              <View style={styles.resourceItem}>
-                <Text 
-                  style={[
-                    styles.resourceLabel,
-                    { 
-                      color: theme.text.secondary,
-                      fontFamily: 'System',
-                      fontSize: isDesktop ? 12 : 10
-                    }
-                  ]}
-                >
-                  CPU Usage
-                </Text>
-                <View style={styles.resourceBar}>
-                  <View 
-                    style={[
-                      styles.resourceFill,
-                      { 
-                        width: `${liveMetrics.resource_usage.cpu}%`,
-                        backgroundColor: liveMetrics.resource_usage.cpu > 80 ? theme.accent.danger : theme.sageGreen
-                      }
-                    ]}
-                  />
-                </View>
-                <Text 
-                  style={[
-                    styles.resourceValue,
-                    { 
-                      color: theme.text.primary,
-                      fontFamily: 'System',
-                      fontWeight: '600',
-                      fontSize: isDesktop ? 14 : 12
-                    }
-                  ]}
-                >
-                  {liveMetrics.resource_usage.cpu.toFixed(1)}%
-                </Text>
-              </View>
-              
-              <View style={styles.resourceItem}>
-                <Text 
-                  style={[
-                    styles.resourceLabel,
-                    { 
-                      color: theme.text.secondary,
-                      fontFamily: 'System',
-                      fontSize: isDesktop ? 12 : 10
-                    }
-                  ]}
-                >
-                  Memory Usage
-                </Text>
-                <View style={styles.resourceBar}>
-                  <View 
-                    style={[
-                      styles.resourceFill,
-                      { 
-                        width: `${liveMetrics.resource_usage.memory}%`,
-                        backgroundColor: liveMetrics.resource_usage.memory > 85 ? theme.accent.danger : theme.sageGreen
-                      }
-                    ]}
-                  />
-                </View>
-                <Text 
-                  style={[
-                    styles.resourceValue,
-                    { 
-                      color: theme.text.primary,
-                      fontFamily: 'System',
-                      fontWeight: '600',
-                      fontSize: isDesktop ? 14 : 12
-                    }
-                  ]}
-                >
-                  {liveMetrics.resource_usage.memory.toFixed(1)}%
-                </Text>
-              </View>
-              
-              <View style={styles.resourceItem}>
-                <Text 
-                  style={[
-                    styles.resourceLabel,
-                    { 
-                      color: theme.text.secondary,
-                      fontFamily: 'System',
-                      fontSize: isDesktop ? 12 : 10
-                    }
-                  ]}
-                >
-                  Storage Usage
-                </Text>
-                <View style={styles.resourceBar}>
-                  <View 
-                    style={[
-                      styles.resourceFill,
-                      { 
-                        width: `${liveMetrics.resource_usage.storage}%`,
-                        backgroundColor: liveMetrics.resource_usage.storage > 90 ? theme.accent.danger : theme.accent.action
-                      }
-                    ]}
-                  />
-                </View>
-                <Text 
-                  style={[
-                    styles.resourceValue,
-                    { 
-                      color: theme.text.primary,
-                      fontFamily: 'System',
-                      fontWeight: '600',
-                      fontSize: isDesktop ? 14 : 12
-                    }
-                  ]}
-                >
-                  {(liveMetrics.resource_usage.storage || 0).toFixed(1)}%
-                </Text>
-              </View>
-            </View>
-          </View>
-        )}
+            {liveMetrics && (
+            <VStack className="gap-4">
+                <Heading className="text-base font-black text-phaseText-primary uppercase tracking-widest opacity-40">
+                    Live System Health
+                </Heading>
+                <HStack className="flex-wrap gap-4">
+                    {renderLiveMetricCard('Active Users', liveMetrics.active_users, 'Currently online', 'text-phase-interactive')}
+                    {renderLiveMetricCard('API Reqs/m', liveMetrics.api_requests_per_minute, 'Last 60s', getSystemHealthColor(liveMetrics.system_health))}
+                    {renderLiveMetricCard('Error Rate', `${liveMetrics.error_rate.toFixed(1)}%`, 'Last 60s', liveMetrics.error_rate > 5 ? 'text-phase-danger' : 'text-phase-interactive')}
+                    {renderLiveMetricCard('Health', liveMetrics.system_health.toUpperCase(), `Updated ${new Date(liveMetrics.timestamp).toLocaleTimeString()}`, getSystemHealthColor(liveMetrics.system_health))}
+                </HStack>
+            </VStack>
+            )}
+        </VStack>
       </ScrollView>
-    </View>
+    </ScreenWrapper>
   );
 };
 
-// Mobile-first responsive styles
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 20,
-    borderBottomWidth: 1,
-  },
-  headerLeft: {
-    flex: 1,
-  },
-  title: {
-    marginBottom: 4,
-  },
-  subtitle: {
-    opacity: 0.7,
-  },
-  timeRangeSelector: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  timeRangeButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
-  },
-  timeRangeText: {
-    textTransform: 'capitalize',
-  },
-  content: {
-    flex: 1,
-  },
-  contentContainer: {
-    padding: 20,
-  },
-  contentContainerDesktop: {
-    padding: 32,
-  },
-  section: {
-    marginBottom: 32,
-  },
-  sectionHeader: {
-    marginBottom: 16,
-  },
-  
-  // Metrics Grid
-  metricsGrid: {
-    gap: 16,
-  },
-  metricsGridDesktop: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
-  metricCard: {
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 16,
-    alignItems: 'center',
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
-  metricHeader: {
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  metricIcon: {
-    marginBottom: 4,
-  },
-  metricTitle: {
-    textAlign: 'center',
-  },
-  metricValue: {
-    marginBottom: 4,
-  },
-  metricChange: {
-    fontSize: 10,
-  },
-  
-  // Live Metrics
-  liveMetricsGrid: {
-    gap: 16,
-  },
-  liveMetricsGridDesktop: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
-  liveMetricCard: {
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 16,
-    alignItems: 'center',
-    flex: 1,
-    minWidth: 120,
-  },
-  liveMetricTitle: {
-    marginBottom: 8,
-    textAlign: 'center',
-  },
-  liveMetricValue: {
-    marginBottom: 4,
-  },
-  liveMetricSubtitle: {
-    textAlign: 'center',
-  },
-  
-  // Resource Usage
-  resourceUsageContainer: {
-    gap: 16,
-  },
-  resourceItem: {
-    marginBottom: 16,
-  },
-  resourceLabel: {
-    marginBottom: 8,
-  },
-  resourceBar: {
-    height: 8,
-    backgroundColor: '#E0E0E0',
-    borderRadius: 4,
-    marginBottom: 8,
-    overflow: 'hidden',
-  },
-  resourceFill: {
-    height: '100%',
-    borderRadius: 4,
-  },
-  resourceValue: {
-    textAlign: 'right',
-  },
-  
-  // Loading and Error States
-  loadingText: {
-    textAlign: 'center',
-    marginTop: 60,
-    fontSize: 16,
-  },
-});
-
 export default AnalyticsDashboardScreen;
+

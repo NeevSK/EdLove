@@ -1,14 +1,12 @@
 import React from 'react';
-import {
-    VStack,
+import { Icon, VStack,
     Text,
     HStack,
     Pressable,
     useThemedColors,
-    Theme,
+    
     Box,
-    Heading
-} from '@repo/ui';
+    Heading } from '@repo/ui';
 import { Plus, Trash2 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
@@ -24,11 +22,10 @@ const COMMON_LEVELS: { id: string; labelKey: string }[] = [
     { id: 'Primary (1-5)', labelKey: 'schoolSetup.levels.primary' },
     { id: 'Junior Secondary (6-9)', labelKey: 'schoolSetup.levels.juniorSecondary' },
     { id: 'Secondary (10-11)', labelKey: 'schoolSetup.levels.secondary' },
-    { id: 'Advanced Level (12-13)', labelKey: 'schoolSetup.levels.advancedLevel' },
-];
+    { id: 'Advanced Level (12-13)', labelKey: 'schoolSetup.levels.advancedLevel' }];
 
 export default function StepHierarchy({ data, onUpdate }: StepHierarchyProps) {
-    const colors = useThemedColors();
+    const { scene: colors } = useThemedColors();
     const { t } = useTranslation();
 
     const toggleLevel = (level: string) => {
@@ -39,54 +36,42 @@ export default function StepHierarchy({ data, onUpdate }: StepHierarchyProps) {
     };
 
     return (
-        <VStack sx={{ gap: '$lg' as any }}>
+        <VStack className="gap-6">
             <Box>
-                <Heading size="sm" sx={{ marginBottom: '$2' as any }}>{t('schoolSetup.academicLevels')}</Heading>
-                <Text size="xs" color={colors.textSecondary} sx={{ marginBottom: '$4' as any }}>
+                <Heading size="sm" className="mb-2">{t('schoolSetup.academicLevels')}</Heading>
+                <Text size="xs" className="text-phaseText-secondary mb-4">
                     {t('schoolSetup.academicLevelsDesc')}
                 </Text>
-                <VStack sx={{ gap: '$2' as any }}>
-                    {COMMON_LEVELS.map(level => (
-                        <Pressable accessibilityRole="button"
-                            key={level.id}
-                            onPress={() => toggleLevel(level.id)}
-                            sx={{
-                                padding: '$3' as any,
-                                borderRadius: Theme.corners.comfortable,
-                                borderWidth: 1,
-                                borderColor: data.levels.includes(level.id) ? Theme.colors.sanctuarySaffron : colors.border,
-                                backgroundColor: data.levels.includes(level.id) ? `${Theme.colors.sanctuarySaffron}10` : colors.secondary,
-                            }}
-                        >
-                            <HStack justifyContent="space-between" alignItems="center">
-                                <Text color={data.levels.includes(level.id) ? Theme.colors.sanctuarySaffron : colors.text}>{t(level.labelKey)}</Text>
-                                {data.levels.includes(level.id) && <Box sx={{ width: 8, height: 8, borderRadius: 4, backgroundColor: Theme.colors.sanctuarySaffron }} />}
-                            </HStack>
-                        </Pressable>
-                    ))}
+                <VStack className="gap-2">
+                    {COMMON_LEVELS.map(level => {
+                        const isSelected = data.levels.includes(level.id);
+                        return (
+                            <Pressable 
+                                accessibilityRole="button"
+                                key={level.id}
+                                onPress={() => toggleLevel(level.id)}
+                                className={`p-3 rounded-xl border ${ isSelected ? 'border-phase-accent bg-phase-accent/10' : 'border-phase-interactive/10 bg-phase-canvas' }`}>
+                                <HStack className="justify-between items-center">
+                                    <Text className={isSelected ? 'text-phase-accent' : 'text-phaseText-primary'}>{t(level.labelKey)}</Text>
+                                    {isSelected && <Box className="w-2 h-2 rounded-full bg-phase-accent" />}
+                                </HStack>
+                            </Pressable>
+                        );
+                    })}
                 </VStack>
             </Box>
 
-            <Box sx={{ marginTop: '$4' as any }}>
-                <Heading size="sm" sx={{ marginBottom: '$2' as any }}>{t('schoolSetup.orgSections')}</Heading>
-                <Text size="xs" color={colors.textSecondary} sx={{ marginBottom: '$4' as any }}>
+            <Box className="mt-4">
+                <Heading size="sm" className="mb-2">{t('schoolSetup.orgSections')}</Heading>
+                <Text size="xs" className="text-phaseText-secondary mb-4">
                     {t('schoolSetup.orgSectionsDesc')}
                 </Text>
 
                 {/* Placeholder for section adding - will enhance in future phases if needed */}
                 <Box
-                    sx={{
-                        padding: '$8' as any,
-                        borderRadius: Theme.corners.comfortable,
-                        borderWidth: 2,
-                        borderStyle: 'dashed',
-                        borderColor: colors.border,
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                    }}
-                >
-                    <Plus size={24} color={colors.textTertiary} />
-                    <Text size="sm" color={colors.textTertiary} sx={{ marginTop: '$2' as any }}>{t('schoolSetup.addCustomSection')}</Text>
+                    className="p-8 rounded-xl border-2 border-dashed border-phase-interactive/10 items-center justify-center">
+                    <Icon as={Plus} size={24} color="var(--phase-text-secondary)" />
+                    <Text size="sm" className="text-phaseText-secondary mt-2">{t('schoolSetup.addCustomSection')}</Text>
                 </Box>
             </Box>
         </VStack>

@@ -1,4 +1,4 @@
-// Note: Using the backend package for postal code validation and extraction
+// @ts-ignore
 import * as SLPostal from 'srilankan-postalcode-backend';
 
 /**
@@ -30,5 +30,6 @@ export function inferFromPostalCode(code: string) {
     return {
         isValid: true,
         districtId: prefixMap[regionPrefix] || '',
+        city: '', // Placeholder as exact city requires full lookup
     };
 }

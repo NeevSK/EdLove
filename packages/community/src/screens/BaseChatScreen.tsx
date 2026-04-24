@@ -3,43 +3,31 @@
  *
  * Shared chat layout used by GroupChatScreen and (future) DirectMessageScreen.
  * Handles: message list, real-time subscription, optimistic sends, compose bar.
- *
- * Consumers provide:
- *  - `channelKey`    : unique Supabase channel identifier (e.g. "group_chat_<id>")
- *  - `fetchMessages` : fetch initial list of messages
- *  - `sendMessage`   : sends one message, returns the saved record
- *  - `subscriptionConfig` : `{ table, filter }` for postgres_changes subscription
- *  - `title` / `subtitle` : header display strings
- *  - `onPressAuthor` : called when tapping an avatar/name
+ * Refactored for Sanctuary V3.
  */
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
     FlatList,
-    TextInput,
-    TouchableOpacity,
-    KeyboardAvoidingView,
-    Platform,
-    ActivityIndicator,
-    StyleSheet,
 } from 'react-native';
 import {
     Box,
     VStack,
     HStack,
     Text,
-    Avatar,
-    AvatarFallbackText,
-    AvatarImage,
-    useThemedColors,
-    Theme,
+    UserAvatar,
     ScreenWrapper,
     GlobalHeader,
+    Pressable,
+    InputField,
+    Spinner,
+    Icon,
+    FadeInDown
 } from '@repo/ui';
-import { ChevronLeft, Send } from 'lucide-react-native';
-import { useNavigation } from '@react-navigation/native';
+import { Send, MessageSquare } from 'lucide-react-native';
 import { supabase, useStore } from '@repo/core';
+import Animated from 'react-native-reanimated';
 
 export interface ChatMessage {
     id: string;
@@ -86,9 +74,7 @@ export default function BaseChatScreen({
     blockedMessage,
     isReadOnly,
 }: BaseChatScreenProps) {
-    const navigation = useNavigation<any>();
     const user = useStore(state => state.user);
-    const colors = useThemedColors();
     const { t } = useTranslation();
 
     const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -97,7 +83,7 @@ export default function BaseChatScreen({
     const [sending, setSending] = useState(false);
     const listRef = useRef<FlatList>(null);
 
-    // ── Initial load ──────────────────────────────────────────
+    // Initial load
     const load = useCallback(async () => {
         try {
             const data = await fetchMessages();
@@ -111,7 +97,7 @@ export default function BaseChatScreen({
 
     useEffect(() => { load(); }, [load]);
 
-    // ── Real-time subscription ────────────────────────────────
+    // Real-time subscription
     useEffect(() => {
         const channel = supabase
             .channel(channelKey)
@@ -125,7 +111,7 @@ export default function BaseChatScreen({
                         if (prev.some(m => m.id === msg.id)) return prev;
                         return [...prev, msg];
                     });
-                    setTimeout(() => listRef.current?.scrollToEnd({ animated: true }), 100);
+                    setTimeout(() => listRef.current?.scrollToEnd({ animated: true }), 150);
                 }
             )
             .subscribe();
@@ -136,11 +122,11 @@ export default function BaseChatScreen({
     // Scroll to bottom on first load
     useEffect(() => {
         if (!loading && messages.length > 0) {
-            setTimeout(() => listRef.current?.scrollToEnd({ animated: false }), 50);
+            setTimeout(() => listRef.current?.scrollToEnd({ animated: false }), 100);
         }
     }, [loading]);
 
-    // ── Send ──────────────────────────────────────────────────
+    // Send
     const handleSend = async () => {
         const content = draft.trim();
         if (!content || !user) return;
@@ -156,7 +142,7 @@ export default function BaseChatScreen({
             author: { full_name: user.full_name || 'You', avatar_url: user.avatar_url },
         };
         setMessages(prev => [...prev, optimistic]);
-        setTimeout(() => listRef.current?.scrollToEnd({ animated: true }), 100);
+        setTimeout(() => listRef.current?.scrollToEnd({ animated: true }), 150);
 
         try {
             const real = await sendMessage(content);
@@ -169,57 +155,54 @@ export default function BaseChatScreen({
         }
     };
 
-    // ── Message renderer ──────────────────────────────────────
+    // Message renderer
     const renderMessage = ({ item }: { item: ChatMessage }) => {
         const isOwn = item.author_id === user?.id;
         const authorName = item.author?.full_name || 'Unknown';
-        const initials = authorName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
         const time = new Date(item.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-        const avatar = (side: 'left' | 'right') => (
-            <TouchableOpacity
-                onPress={() => onPressAuthor?.(item.author_id, authorName)}
-                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-            >
-                <Avatar size="xs" sx={{ [side === 'left' ? 'marginRight' : 'marginLeft']: 8, marginTop: 4, backgroundColor: isOwn ? Theme.colors.sanctuarySaffron : colors.action }}>
-                    {(isOwn ? item.author?.avatar_url || user?.avatar_url : item.author?.avatar_url)
-                        ? <AvatarImage source={{ uri: (isOwn ? item.author?.avatar_url || user?.avatar_url : item.author?.avatar_url)! }} alt={authorName} />
-                        : <AvatarFallbackText>{initials}</AvatarFallbackText>
-                    }
-                </Avatar>
-            </TouchableOpacity>
-        );
-
         return (
-            <HStack sx={{ justifyContent: isOwn ? 'flex-end' : 'flex-start', marginBottom: Theme.spacing.sm, paddingHorizontal: Theme.spacing.md }}>
-                {!isOwn && avatar('left')}
-                <VStack sx={{ maxWidth: '72%', gap: 2 }}>
+            <HStack className={`justify-${isOwn ? 'end' : 'start'} mb-4 px-5`}>
+                {!isOwn && (
+                    <Box className="mr-3">
+                        <Pressable 
+                            onPress={() => onPressAuthor?.(item.author_id, authorName)}
+                            className="bg-phase-surface rounded-full shadow-sm"
+                        >
+                            <UserAvatar
+                                avatarUrl={item.author?.avatar_url}
+                                fullName={authorName}
+                                size={32}
+                            />
+                        </Pressable>
+                    </Box>
+                )}
+                
+                <VStack className={`max-w-[75%] gap-1 ${isOwn ? 'items-end' : 'items-start'}`}>
                     {!isOwn && (
-                        <Text sx={{ fontSize: 11, color: colors.textTertiary, marginLeft: 2 }}>{authorName}</Text>
+                        <Text className="text-[10px] font-black uppercase tracking-widest text-ink/40 ml-1">
+                            {authorName}
+                        </Text>
                     )}
-                    <Box sx={{
-                        backgroundColor: isOwn ? Theme.colors.sanctuarySaffron : colors.secondary,
-                        borderRadius: Theme.corners.comfortable,
-                        borderBottomRightRadius: isOwn ? 4 : Theme.corners.comfortable,
-                        borderBottomLeftRadius: isOwn ? Theme.corners.comfortable : 4,
-                        paddingHorizontal: Theme.spacing.md,
-                        paddingVertical: Theme.spacing.sm,
-                        borderWidth: isOwn ? 0 : 1,
-                        borderColor: colors.border,
-                    }}>
-                        <Text sx={{ fontSize: Theme.typography.fontSize.sm, color: isOwn ? Theme.colors.sacredWhite : colors.text, lineHeight: 20 }}>
+                    <Box 
+                        className={`px-4 py-3 rounded-2xl border ${
+                            isOwn 
+                                ? 'bg-phase-interactive border-phase-interactive rounded-tr-sm' 
+                                : 'bg-phase-surface border-border rounded-tl-sm'
+                        }`}
+                    >
+                        <Text className={`text-sm leading-relaxed font-medium ${isOwn ? 'text-white' : 'text-ink'}`}>
                             {item.content}
                         </Text>
                     </Box>
-                    <Text sx={{ fontSize: 10, color: colors.textTertiary, alignSelf: isOwn ? 'flex-end' : 'flex-start' }}>{time}</Text>
+                    <Text className="text-[9px] font-bold text-ink/20 px-1">{time}</Text>
                 </VStack>
-                {isOwn && avatar('right')}
             </HStack>
         );
     };
 
     return (
-        <ScreenWrapper scroll={false} noTopInset={true}>
+        <ScreenWrapper scroll={false} noTopInset={true} className="bg-phase-canvas">
             <GlobalHeader
                 title={title}
                 subtitle={subtitle}
@@ -227,10 +210,11 @@ export default function BaseChatScreen({
                 rightAction={headerRight}
             />
 
-            <Box sx={{ flex: 1 }}>
+            <Box className="flex-1">
                 {loading ? (
-                    <Box sx={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                        <ActivityIndicator color={Theme.colors.sanctuarySaffron} />
+                    <Box className="flex-1 items-center justify-center">
+                        <Spinner />
+                        <Text className="text-ink/40 text-[10px] font-bold uppercase tracking-widest mt-4">Tuning Frequencies...</Text>
                     </Box>
                 ) : (
                     <FlatList
@@ -238,51 +222,63 @@ export default function BaseChatScreen({
                         data={messages}
                         keyExtractor={item => item.id}
                         renderItem={renderMessage}
-                        contentContainerStyle={{ paddingVertical: Theme.spacing.md, flexGrow: 1, justifyContent: messages.length === 0 ? 'center' : 'flex-start' }}
+                        contentContainerStyle={{ paddingVertical: 20, flexGrow: 1, justifyContent: messages.length === 0 ? 'center' : 'flex-start' }}
                         showsVerticalScrollIndicator={false}
                         ListEmptyComponent={
-                            <Text sx={{ textAlign: 'center', color: colors.textTertiary, fontSize: Theme.typography.fontSize.sm }}>
-                                No messages yet. Say hello 👋
-                            </Text>
+                            <Animated.View entering={FadeInDown.duration(800).springify()}>
+                                <Box className="items-center px-10">
+                                    <Box className="w-16 h-16 rounded-full bg-ink/5 items-center justify-center mb-4">
+                                        <Icon as={MessageSquare} size="lg" className="text-ink/20" />
+                                    </Box>
+                                    <Text className="text-center text-ink/40 text-sm font-medium leading-relaxed">
+                                        {t('chat.empty', 'A quiet resonance awaits. Be the first to speak in this sanctuary.')}
+                                    </Text>
+                                </Box>
+                            </Animated.View>
                         }
                     />
                 )}
 
                 {/* Compose bar */}
-                <Box sx={{ backgroundColor: colors.secondary, borderTopWidth: 1, borderTopColor: colors.border, paddingHorizontal: Theme.spacing.md, paddingVertical: Theme.spacing.sm }}>
+                <Box className="bg-phase-surface border-t border-border px-4 py-4 shadow-sm">
                     {isReadOnly ? (
-                        <Box sx={{ padding: Theme.spacing.md, alignItems: 'center' }}>
-                            <Text color={colors.textTertiary} size="sm" italic>
+                        <Box className="py-2 items-center bg-ink/5 rounded-xl border border-dashed border-border">
+                            <Text className="text-ink/40 text-[11px] font-medium italic">
                                 {t('chat.historicalView', 'Viewing historical sanctuary records.')}
                             </Text>
                         </Box>
                     ) : isBlocked ? (
-                        <Box sx={{ padding: Theme.spacing.md, alignItems: 'center' }}>
-                            <Text color={colors.textSecondary} size="sm" italic>
+                        <Box className="py-2 items-center bg-red-500/5 rounded-xl border border-dashed border-red-500/20">
+                            <Text className="text-red-500/60 text-[11px] font-medium italic">
                                 {blockedMessage || 'You cannot send messages to this sanctuary.'}
                             </Text>
                         </Box>
                     ) : (
-                        <HStack sx={{ gap: Theme.spacing.sm, alignItems: 'flex-end' }}>
-                            <TextInput
-                                value={draft}
-                                onChangeText={setDraft}
-                                placeholder="Write a message…"
-                                placeholderTextColor={colors.textTertiary}
-                                multiline
-                                style={[styles.input, { color: colors.text, backgroundColor: colors.tertiary, borderColor: colors.border }]}
-                                returnKeyType="default"
-                            />
-                            <TouchableOpacity
+                        <HStack className="gap-3 items-end">
+                            <Box className="flex-1 bg-phase-canvas border border-border rounded-[20px] px-1 py-1">
+                                <InputField
+                                    value={draft}
+                                    onChangeText={setDraft}
+                                    placeholder={t('chat.placeholder', 'Resonate...') as string}
+                                    placeholderTextColor="rgba(var(--ink), 0.2)"
+                                    multiline
+                                    className="min-h-[44px] max-h-[140px] px-4 py-2.5 text-base text-ink font-medium"
+                                    returnKeyType="default"
+                                />
+                            </Box>
+                            <Pressable
                                 onPress={handleSend}
                                 disabled={!draft.trim() || sending}
-                                style={[styles.sendBtn, { backgroundColor: draft.trim() ? Theme.colors.sanctuarySaffron : colors.border }]}
+                                className={`w-12 h-12 rounded-full items-center justify-center shadow-lg transition-all ${
+                                    draft.trim() ? 'bg-phase-interactive active:scale-95' : 'bg-ink/5'
+                                }`}
                             >
-                                {sending
-                                    ? <ActivityIndicator size="small" color={Theme.colors.sacredWhite} />
-                                    : <Send size={18} color={Theme.colors.sacredWhite} />
-                                }
-                            </TouchableOpacity>
+                                {sending ? (
+                                    <Spinner />
+                                ) : (
+                                    <Icon as={Send} size="sm" className={draft.trim() ? 'text-white' : 'text-ink/20'} />
+                                )}
+                            </Pressable>
                         </HStack>
                     )}
                 </Box>
@@ -290,24 +286,3 @@ export default function BaseChatScreen({
         </ScreenWrapper>
     );
 }
-
-const styles = StyleSheet.create({
-    input: {
-        flex: 1,
-        minHeight: 40,
-        maxHeight: 120,
-        borderRadius: Theme.corners.comfortable,
-        borderWidth: 1,
-        paddingHorizontal: Theme.spacing.md,
-        paddingVertical: 10,
-        fontSize: Theme.typography.fontSize.sm,
-        textAlignVertical: 'center',
-    },
-    sendBtn: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-});

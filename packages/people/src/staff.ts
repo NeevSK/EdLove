@@ -1,82 +1,109 @@
-import {
-  supabase,
-  staffManagementAPI,
-  type StaffLeaveDTO,
-  type StaffPresenceSummary,
-  type StudentAttendancePulse,
-  type TeacherCarouselItem,
-} from '@repo/core';
+import { supabase } from '@repo/core';
+import { APIError, StaffAttendance, StaffLeave } from '@repo/core';
 
-export type { StaffLeaveDTO, StaffPresenceSummary, StudentAttendancePulse, TeacherCarouselItem };
+export const staffAPI = { 
+    /**
+     * Check-in staff
+     */
+    async checkIn(userId: string, schoolId: string, notes?: string) {
+        const { data, error } = await supabase
+            .from('staff_attendance')
+            .insert({
+                user_id: userId,
+                school_id: schoolId,
+                notes,
+                check_in: new Date().toISOString()
+            })
+            .select()
+            .single();
 
-export interface StudentPrincipalPulse extends StudentAttendancePulse {
-  submissionRate: number | null;
-  pendingEnrollments: number;
-}
+        if (error) {
+            throw new APIError('Failed to check in', error.code, error);
+        }
 
-function getWeekStartISO(): string {
-  const date = new Date();
-  const day = date.getDay();
-  const diff = day === 0 ? 6 : day - 1;
-  date.setDate(date.getDate() - diff);
-  return date.toISOString().split('T')[0] ?? '';
-}
+        return data as StaffAttendance;
+    },
 
-async function getSubmissionRate(schoolId: string, classroomId?: string): Promise<number | null> {
-  const weekStart = getWeekStartISO();
-  let assignmentsQuery = supabase
-    .from('assignments')
-    .select('id')
-    .eq('school_id', schoolId)
-    .gte('created_at', weekStart);
+    /**
+     * Check-out staff
+     */
+    async checkOut(userId: string) {
+        // Find most recent active check-in
+        const { data: latest, error: fetchError } = await supabase
+            .from('staff_attendance')
+            .select('id')
+            .eq('user_id', userId)
+            .is('check_out', null)
+            .order('check_in', { ascending: false })
+            .limit(1)
+            .single();
 
-  if (classroomId) {
-    assignmentsQuery = assignmentsQuery.eq('classroom_id', classroomId);
-  }
+        if (fetchError || !latest) {
+            throw new APIError('No active check-in found', fetchError?.code);
+        }
 
-  const { data: assignments, error: assignmentsError } = await assignmentsQuery;
-  if (assignmentsError) throw assignmentsError;
+        const { data, error } = await supabase
+            .from('staff_attendance')
+            .update({ check_out: new Date().toISOString() })
+            .eq('id', latest.id)
+            .select()
+            .single();
 
-  const assignmentIds = (assignments ?? []).map((a) => a.id);
-  if (assignmentIds.length === 0) return null;
+        if (error) {
+            throw new APIError('Failed to check out', error.code, error);
+        }
 
-  const { data: submissions, error: submissionsError } = await supabase
-    .from('submissions')
-    .select('assignment_id')
-    .in('assignment_id', assignmentIds);
+        return data as StaffAttendance;
+    },
 
-  if (submissionsError) throw submissionsError;
+    /**
+     * Get staff attendance history
+     */
+    async getAttendance(userId: string) {
+        const { data, error } = await supabase
+            .from('staff_attendance')
+            .select('*')
+            .eq('user_id', userId)
+            .order('check_in', { ascending: false });
 
-  const distinctSubmitted = new Set((submissions ?? []).map((s) => s.assignment_id));
-  return Math.round((distinctSubmitted.size / assignmentIds.length) * 100);
-}
+        if (error) {
+            throw new APIError('Failed to fetch attendance', error.code, error);
+        }
 
-async function getPendingEnrollments(schoolId: string, classroomId?: string): Promise<number> {
-  if (classroomId) return 0;
+        return data as StaffAttendance[];
+    },
 
-  const { count, error } = await supabase
-    .from('enrollment_requests')
-    .select('id', { count: 'exact' })
-    .eq('school_id', schoolId)
-    .eq('status', 'pending');
+    /**
+     * Submit leave request
+     */
+    async submitLeave(leave: Omit<StaffLeave, 'id' | 'status' | 'created_at'>) {
+        const { data, error } = await supabase
+            .from('staff_leaves')
+            .insert(leave)
+            .select()
+            .single();
 
-  if (error) throw error;
-  return count ?? 0;
-}
+        if (error) {
+            throw new APIError('Failed to submit leave request', error.code, error);
+        }
 
-export const staffOperationsAPI = {
-  ...staffManagementAPI,
-  async getStudentPrincipalPulse(schoolId: string, classroomId?: string): Promise<StudentPrincipalPulse> {
-    const [attendancePulse, submissionRate, pendingEnrollments] = await Promise.all([
-      staffManagementAPI.getStudentAttendancePulse(schoolId, classroomId),
-      getSubmissionRate(schoolId, classroomId),
-      getPendingEnrollments(schoolId, classroomId),
-    ]);
+        return data as StaffLeave;
+    },
 
-    return {
-      ...attendancePulse,
-      submissionRate,
-      pendingEnrollments,
-    };
-  },
+    /**
+     * Get staff leaves
+     */
+    async getLeaves(userId: string) {
+        const { data, error } = await supabase
+            .from('staff_leaves')
+            .select('*')
+            .eq('user_id', userId)
+            .order('start_date', { ascending: false });
+
+        if (error) {
+            throw new APIError('Failed to fetch leaves', error.code, error);
+        }
+
+        return data as StaffLeave[];
+    }
 };

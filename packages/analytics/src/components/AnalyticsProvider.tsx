@@ -21,20 +21,21 @@ export function useAnalyticsContext() {
 interface Props {
     children: ReactNode;
     apiKey?: string;
+    enabled?: boolean;
     options?: {
         host?: string;
         debug?: boolean;
     };
 }
 
-import { ResonanceProvider } from '../context/ResonanceContext';
+import { ActivityPulseProvider } from '../context/ActivityPulseContext';
 
-export function AnalyticsProvider({ children, apiKey, options }: Props) {
-    if (!apiKey) {
+export function AnalyticsProvider({ children, apiKey, enabled = true, options }: Props) {
+    if (!apiKey || !enabled) {
         return (
-            <ResonanceProvider>
+            <ActivityPulseProvider>
                 {children}
-            </ResonanceProvider>
+            </ActivityPulseProvider>
         );
     }
 
@@ -46,9 +47,9 @@ export function AnalyticsProvider({ children, apiKey, options }: Props) {
             }}
             autocapture={false}
         >
-            <ResonanceProvider>
+            <ActivityPulseProvider>
                 {children}
-            </ResonanceProvider>
+            </ActivityPulseProvider>
         </NativePostHogProvider>
     );
 }

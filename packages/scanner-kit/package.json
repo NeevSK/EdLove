@@ -2,37 +2,49 @@
   "name": "@repo/scanner-kit",
   "version": "0.0.0",
   "private": true,
+  "sideEffects": false,
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
   },
   "scripts": {
-    "check-types": "tsc --noEmit",
-    "lint": "eslint ."
+    "check-types": "powershell -File ../../scripts/audit-wrapper.ps1 -Cmd \"pnpm exec tsc --noEmit\" -Log \"reports/check-types.txt\"",
+    "lint": "powershell -File ../../scripts/audit-wrapper.ps1 -Cmd \"pnpm exec eslint .\" -Log \"reports/lint.txt\""
   },
   "dependencies": {
-    "@repo/core": "workspace:*"
+    "@repo/core": "workspace:*",
+    "@repo/ui": "workspace:*",
+    "react-i18next": "^16.5.4"
   },
   "peerDependencies": {
+    "@react-native-async-storage/async-storage": "2.1.2",
+    "@react-native-ml-kit/barcode-scanning": "*",
     "@react-native-ml-kit/text-recognition": "*",
     "buffer": "*",
     "expo-camera": "~55.0.10",
     "expo-file-system": "~55.0.11",
     "expo-image-manipulator": "~55.0.11",
     "expo-image-picker": "~55.0.13",
+    "expo-sharing": "~55.0.11",
+    "expo-clipboard": "^55.0.8",
     "jpeg-js": "*",
     "jsqr": "*",
-    "@react-native-ml-kit/barcode-scanning": "*",
     "qrcode": "*",
-    "react": "*",
-    "react-native": "*",
+    "react": "19.2.0",
+    "react-native": "0.83.2",
     "react-native-svg": "15.15.3"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
-    "@types/react": "~19.1.10",
+    "@types/react": "19.2.14",
+    "@types/react-native": "0.83.2",
     "eslint": "^9.38.0",
     "@repo/eslint-config": "workspace:*",
     "tailwindcss": "~3.4.17",
     "typescript": "~5.9.2"
   }
 }
+

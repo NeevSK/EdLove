@@ -7,19 +7,22 @@ export { AddStudentModal } from './AddStudentModal';
 export { default as ClassroomList } from './ClassroomList';
 export { default as CreateClassroomModal } from './CreateClassroomModal';
 export { default as CreateSchoolModal } from './CreateSchoolModal';
-export { default as GlobalCreateModal } from './GlobalCreateModal';
 export { ClaimInviteModal } from './ClaimInviteModal';
 export { default as AttendanceView } from './AttendanceView';
 export { default as InventoryView } from './InventoryView';
 export { default as ResourcesView } from './ResourcesView';
 export { default as GradebookView } from './GradebookView';
-export { default as BulkStudentCreation } from './BulkStudentCreation';
+export { default as GroupManager } from './GroupManager';
 export { default as OCRScanner } from './OCRScanner';
 export { default as OCRStudentImport } from './OCRStudentImport';
+export { default as BulkStudentCreation } from './BulkStudentCreation';
 export { default as ClassroomHolisticInsights } from './ClassroomHolisticInsights';
 export { default as ClassroomEchoSection } from './ClassroomEchoSection';
+export { default as ClassroomNotes } from './ClassroomNotes';
+export { default as QuickAnalytics } from './QuickAnalytics';
 
 export { default as SubmissionModal } from './SubmissionModal';
+export { default as GlobalCreateModal } from './GlobalCreateModal';
 
 export * from './onboarding';
 export * from './poa';

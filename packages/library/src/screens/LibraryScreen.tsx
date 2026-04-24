@@ -4,14 +4,12 @@
 
 import React, { useState, useMemo, useCallback } from 'react';
 import {
-    ScrollView,
+    ScrollView as RNScrollView,
     ActivityIndicator,
     View,
     Text as RNText,
     ImageBackground,
     StyleSheet,
-    Pressable,
-    TouchableOpacity,
     Platform,
     Share,
 } from 'react-native';
@@ -21,21 +19,27 @@ import {
     VStack,
     HStack,
     Text,
-    useThemedColors,
-    SkeletonCard,
-    PositiveInvitation,
+    Heading,
+    useTheme,
     Theme,
-    GlobalHeader,
-    ScreenWrapper,
-    SmartShelf,
+    SkeletonCard,
     useBottomTabPadding,
     useRegisterFAB,
     FadeInDown,
     HorizontalChipRow,
+    TemporalNavigator,
+    CollectionCard,
+    GlobalHeader,
+    useLotusToast,
+    SmartShelf,
+    ScreenWrapper,
+    Pressable,
+    RefreshControl,
+    ScrollView,
+    Icon,
     openExternalURL,
     showExternalLinkOptions,
 } from '@repo/ui';
-import { CollectionCard } from '../components/CollectionCard';
 import { LibraryThumbnailCard } from '../components/LibraryThumbnailCard';
 import { useNavigation } from '@react-navigation/native';
 import Animated from 'react-native-reanimated';
@@ -53,6 +57,8 @@ import {
     supabase,
     useStore,
     FeatureGuard,
+    identityAPI,
+    useTemporalStore,
 } from '@repo/core';
 import { libraryAPI } from '../api/library';
 import { SHELF_DEFS, getOrderedShelfDefs } from '../constants/shelf';
@@ -68,95 +74,74 @@ const LIBRARY_UI_CATEGORIES = [
 ];
 
 function MapInvitation({ onPress }: { onPress: () => void }) {
-    const colors = useThemedColors();
+    const theme = useTheme();
 
     return (
         <Animated.View entering={FadeInDown.delay(200).springify()}>
-            <Pressable onPress={onPress}>
-                <Box sx={{
-                    margin: Theme.spacing.md,
-                    borderRadius: 24,
-                    overflow: 'hidden',
-                    backgroundColor: colors.secondary,
-                    borderWidth: 1,
-                    borderColor: colors.border,
-                }}>
-                    <LinearGradient
-                        colors={[`${Theme.colors.gurudeviViolet}26`, 'transparent']}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 1 }}
-                        style={StyleSheet.absoluteFill}
-                    />
-                    <HStack sx={{ p: 20, gap: 16, alignItems: 'center' }}>
-                        <Box sx={{
-                            width: 60,
-                            height: 60,
-                            borderRadius: 30,
-                            backgroundColor: colors.overlay,
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                        }}>
-                            <MapIcon size={32} color={Theme.colors.sanctuarySaffron} />
-                        </Box>
-                        <VStack sx={{ flex: 1, gap: 4 }}>
-                            <Text sx={{ fontSize: 18, fontWeight: '800', color: colors.textPrimary }}>
-                                Enter the Cosmos
-                            </Text>
-                            <Text sx={{ fontSize: 13, color: colors.textSecondary, lineHeight: 18 }}>
-                                Explore the hidden connections between knowledge and shared wisdom.
-                            </Text>
-                        </VStack>
-                        <Box sx={{
-                            padding: 10,
-                            backgroundColor: colors.overlay,
-                            borderRadius: 12
-                        }}>
-                            <Play size={16} color={colors.textPrimary} fill={colors.textPrimary} />
-                        </Box>
-                    </HStack>
-                </Box>
+            <Pressable 
+                onPress={onPress}
+                className="m-md rounded-[24px] overflow-hidden bg-phase-surface border border-phase-border">
+                <LinearGradient
+                    colors={[`${theme.accent.action}16`, `${theme.accent.reward}0D`]}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={StyleSheet.absoluteFill}
+                />
+                <HStack className="p-5 gap-4 items-center">
+                    <Box className="w-[60px] h-[60px] rounded-[30px] bg-white/10 justify-center items-center">
+                        <Icon as={MapIcon} size={32} color={theme.accent.action} />
+                    </Box>
+                    <VStack className="flex-1 gap-1">
+                        <Text className="text-[10px] font-extrabold text-phaseText-secondary uppercase tracking-widest">
+                            Knowledge map
+                        </Text>
+                        <Text className="text-lg font-extrabold text-phaseText-primary">
+                            Enter the Cosmos
+                        </Text>
+                        <Text className="text-[13px] text-phaseText-secondary leading-5">
+                            Shift from shelves into constellation-style discovery when you want relationships, not just a list.
+                        </Text>
+                    </VStack>
+                    <Box className="p-2.5 bg-phase-accent rounded-xl">
+                        <Icon as={Play} size={16} color="white" fill="white" />
+                    </Box>
+                </HStack>
             </Pressable>
         </Animated.View>
     );
 }
 
 function CuratorInvitation({ onPress }: { onPress: () => void }) {
-    const colors = useThemedColors();
+    const theme = useTheme();
 
     return (
         <Animated.View entering={FadeInDown.delay(300).springify()}>
-            <Pressable onPress={onPress}>
-                <Box sx={{
-                    margin: Theme.spacing.md,
-                    marginTop: 0,
-                    borderRadius: 24,
-                    overflow: 'hidden',
-                    backgroundColor: colors.secondary,
-                    borderWidth: 1,
-                    borderColor: Theme.colors.sanctuarySaffron + '33',
-                }}>
-                    <HStack sx={{ p: 16, gap: 16, alignItems: 'center' }}>
-                        <Box sx={{
-                            width: 48,
-                            height: 48,
-                            borderRadius: 24,
-                            backgroundColor: Theme.colors.sanctuarySaffron + '11',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                        }}>
-                            <FileText size={24} color={Theme.colors.sanctuarySaffron} />
-                        </Box>
-                        <VStack sx={{ flex: 1, gap: 2 }}>
-                            <Text sx={{ fontSize: 16, fontWeight: '800', color: colors.textPrimary }}>
-                                Curator Dashboard
-                            </Text>
-                            <Text sx={{ fontSize: 12, color: colors.textSecondary }}>
-                                Review {'&'} publish new knowledge streams.
-                            </Text>
-                        </VStack>
-                        <Plus size={16} color={colors.textSecondary} />
-                    </HStack>
-                </Box>
+            <Pressable 
+                onPress={onPress}
+                className="m-md mt-0 rounded-[24px] overflow-hidden bg-phase-surface border border-phase-accent/20">
+                <LinearGradient
+                    colors={[`${theme.accent.action}14`, 'rgba(255,255,255,0.2)']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={StyleSheet.absoluteFill}
+                />
+                <HStack className="p-4 gap-4 items-center">
+                    <Box className="w-12 h-12 rounded-full bg-phase-accent/10 justify-center items-center">
+                        <Icon as={FileText} size={24} color={theme.accent.action} />
+                    </Box>
+                    <VStack className="flex-1 gap-0.5">
+                        <Text className="text-[10px] font-extrabold text-phaseText-secondary uppercase tracking-widest">
+                            Curator pathway
+                        </Text>
+                        <Text className="text-base font-extrabold text-phaseText-primary">
+                            Curator Dashboard
+                        </Text>
+                        <Text className="text-[12px] text-phaseText-secondary">
+                            Review, polish, and publish new knowledge streams without leaving the sanctuary shell.
+                        </Text>
+                    </VStack>
+                    <Icon as={Plus} size={16} color={theme.text.secondary} />
+                </HStack>
             </Pressable>
         </Animated.View>
     );
@@ -165,6 +150,7 @@ function CuratorInvitation({ onPress }: { onPress: () => void }) {
 export default function LibraryScreen() {
     const { t } = useTranslation();
     const navigation = useNavigation<any>();
+    const { isPastView, viewDate, viewScale } = useTemporalStore();
 
     const [searchQuery, setSearchQuery] = useState('');
     const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
@@ -191,7 +177,7 @@ export default function LibraryScreen() {
         return () => clearTimeout(handler);
     }, [searchQuery]);
 
-    const colors = useThemedColors();
+    const theme = useTheme();
     const bottomPadding = useBottomTabPadding();
     const { discoverFeature } = useTracking();
 
@@ -249,7 +235,7 @@ export default function LibraryScreen() {
         if (!loading && rawResources.length === 0 && rawUserCollections.length === 0 && publicCollections.length === 0 && !fallbackAttempted && !isFetchingPublicRef.current) {
             isFetchingPublicRef.current = true;
             setIsFetchingPublic(true);
-            libraryAPI.getCollections({ limit: 10, visibility: 'public' })
+            libraryAPI.getCollections({ limit: 10, visibility: 'public', viewDate, viewScale })
                 .then(cols => {
                     setPublicCollections(cols);
                     setFallbackAttempted(true);
@@ -262,26 +248,24 @@ export default function LibraryScreen() {
                     isFetchingPublicRef.current = false;
                 });
         }
-    }, [loading, rawResources.length, rawUserCollections.length, publicCollections.length, fallbackAttempted]);
+    }, [loading, rawResources.length, rawUserCollections.length, publicCollections.length, fallbackAttempted, viewDate, viewScale]);
 
     const resources = useMemo(() => rawResources, [rawResources]);
     const collections = useMemo(() => 
         rawUserCollections.length > 0 ? rawUserCollections : publicCollections
     , [rawUserCollections, publicCollections]);
 
-    const trending = useMemo(() =>
+    const trending = useMemo(() => 
         [...resources].sort((a, b) => (b.endorsements ?? 0) - (a.endorsements ?? 0)).slice(0, 10),
         [resources]);
 
-    const newArrivals = useMemo(() =>
-        [...resources].sort((a, b) =>
+    const newArrivals = useMemo(() => 
+        [...resources].sort((a, b) => 
             new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime()
         ).slice(0, 10),
         [resources]);
 
     const heroResource = trending[0] ?? newArrivals[0] ?? null;
-
-    // (moved up)
 
     const handleOpenResource = useCallback((resource: LibraryResource) => {
         if (!resource.url) return;
@@ -300,7 +284,7 @@ export default function LibraryScreen() {
         if (!resource.url || resource.type === 'pdf' || resource.type === 'video' || resource.type === 'movie_trailer') {
             return;
         }
-        showExternalLinkOptions(resource.url, buildLibraryExternalLinkOptions(resource)).catch((err) =>
+        showExternalLinkOptions(resource.url, buildLibraryExternalLinkOptions(resource)).catch((err) => 
             console.error("Couldn't show external link options", err)
         );
     }, []);
@@ -315,14 +299,14 @@ export default function LibraryScreen() {
     }, [fetchResources, refetchBookmarks]);
 
     const handleBookmark = useCallback(async (resource: LibraryResource) => {
-        if (!user?.id) return;
+        if (isPastView || !user?.id) return;
         try {
             await bookmarkResource({ resourceId: resource.id, userId: user.id });
             await refetchBookmarks();
         } catch (err) {
             console.error('Failed to bookmark:', err);
         }
-    }, [user?.id, bookmarkResource, refetchBookmarks]);
+    }, [isPastView, user?.id, bookmarkResource, refetchBookmarks]);
 
     const handleShare = useCallback(async (resource: LibraryResource) => {
         if (!resource.url) return;
@@ -338,39 +322,39 @@ export default function LibraryScreen() {
     }, []);
 
     const handleAddToCollection = useCallback(async (collectionId: string) => {
-        if (!selectedResource) return;
+        if (isPastView || !selectedResource) return;
         try {
             await addToCollection({ collectionId, resourceId: selectedResource.id });
             setIsCollectionPickerVisible(false);
         } catch (err) {
             console.error('Failed to add to collection:', err);
         }
-    }, [selectedResource, addToCollection]);
+    }, [isPastView, selectedResource, addToCollection]);
 
     const onRefresh = useCallback(async () => {
         setRefreshing(true);
         await fetchResources();
-        const { data: { session } } = await supabase.auth.getSession();
-        const userId = session?.user?.id;
+        const userId = await identityAPI.getMyInternalId();
         
         if (resources.length === 0) {
-            const pub = await libraryAPI.getCollections({ limit: 10, visibility: 'public', userId });
+            const pub = await libraryAPI.getCollections({ limit: 10, visibility: 'public', userId: userId ?? undefined, viewDate, viewScale });
             setPublicCollections(pub);
         }
         setRefreshing(false);
-    }, [fetchResources, resources.length]);
+    }, [fetchResources, resources.length, viewDate, viewScale]);
 
     const handleCreateCollection = useCallback(async (data: any) => {
+        if (isPastView) return;
         try {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (!session?.user?.id) return;
+            const userId = await identityAPI.getMyInternalId();
+            if (!userId) return;
             
             await libraryAPI.createCollection({
                 ...data,
                 resource_ids: [],
                 subject: '',
                 grades: [],
-            }, session.user.id);
+            }, userId);
             
             await fetchResources();
             setRefreshing(true);
@@ -378,7 +362,7 @@ export default function LibraryScreen() {
         } catch (err) {
             console.error('Failed to create collection:', err);
         }
-    }, [fetchResources]);
+    }, [fetchResources, isPastView]);
 
     const chipData = useMemo(() => LIBRARY_UI_CATEGORIES.map(cat => ({
         label: cat.en,
@@ -386,10 +370,10 @@ export default function LibraryScreen() {
     })), []);
 
     const sortChips = useMemo(() => [
-        { label: `🕒 ${t('library.sort.recent')}`, value: 'recent' },
-        { label: `🔥 ${t('library.sort.popular')}`, value: 'popular' },
-        { label: `🌟 ${t('library.sort.most_endorsed')}`, value: 'most_endorsed' },
-        { label: `🔖 ${t('library.sort.most_bookmarked')}`, value: 'most_bookmarked' },
+        { label: `\u23F2\uFE0F ${t('library.sort.recent')}`, value: 'recent' },
+        { label: `\uD83D\uDD25 ${t('library.sort.popular')}`, value: 'popular' },
+        { label: `\uD83C\uDF1F ${t('library.sort.most_endorsed')}`, value: 'most_endorsed' },
+        { label: `\uD83D\uDD16 ${t('library.sort.most_bookmarked')}`, value: 'most_bookmarked' },
     ], [t]);
 
     const handleEndReached = useCallback(() => {
@@ -399,8 +383,8 @@ export default function LibraryScreen() {
     const fabConfig = useMemo(() => ({
         tabType: 'library' as const,
         onPress: () => setIsAddModalOpen(true),
-        visible: !loading
-    }), [loading]);
+        visible: !loading && !isPastView
+    }), [loading, isPastView]);
 
     useRegisterFAB(fabConfig);
 
@@ -413,7 +397,7 @@ export default function LibraryScreen() {
     const renderShelf = useCallback((label: string, items: LibraryResource[], onSeeAll?: () => void) => {
         if (items.length === 0) return null;
         return (
-            <Box sx={{ marginBottom: Theme.spacing.lg }}>
+            <Box className="mb-lg">
                 <SmartShelf key={label} title={label} onSeeAll={onSeeAll}>
                     {items.map(res => (
                         <LibraryThumbnailCard
@@ -437,7 +421,7 @@ export default function LibraryScreen() {
                 </SmartShelf>
             </Box>
         );
-    }, [handleOpenResource]);
+    }, [handleOpenResource, handleBookmark]);
 
     return (
         <ScreenWrapper scroll={!isSearchMode} noTopInset={true}>
@@ -451,52 +435,55 @@ export default function LibraryScreen() {
                     placeholder: t('library.searchPlaceholder')
                 }}
                 rightAction={
-                    <HStack sx={{ gap: 8, alignItems: 'center' }}>
+                    <HStack className="gap-2 items-center">
                         {isSyncing && (
                             <Animated.View entering={FadeInDown}>
-                                <Box sx={{ width: 8, height: 8, borderRadius: 4, backgroundColor: Theme.colors.sanctuarySaffron }} />
+                                <Box className="w-2 h-2 rounded-full bg-phase-accent" />
                             </Animated.View>
                         )}
-                        <TouchableOpacity
+                        <Pressable 
                             onPress={() => navigation.navigate('LibraryMap' as any)}
-                            style={styles.mapToggleButton}
-                        >
-                            <MapIcon size={20} color={colors.textPrimary} />
-                        </TouchableOpacity>
+                            style={styles.mapToggleButton}>
+                            <Icon as={MapIcon} size={20} color={theme.text.primary} />
+                        </Pressable>
                     </HStack>
                 }
             />
+            <Box className="px-md pb-sm">
+                <TemporalNavigator />
+            </Box>
 
             {libraryError ? (
-                <VStack sx={{ p: Theme.spacing.md, mt: Theme.spacing.lg, alignItems: 'center', gap: 12 }}>
-                    <Text sx={{ color: colors.error, textAlign: 'center' }}>
+                <VStack className="p-md mt-lg items-center gap-3">
+                    <Text className="text-phase-danger text-center">
                         {t('library.errorLoading') || 'Failed to load sanctuary wisdom.'}
                     </Text>
-                    <TouchableOpacity onPress={() => fetchResources()}>
-                        <Text sx={{ color: Theme.colors.sanctuarySaffron, fontWeight: '700' }}>Retry</Text>
-                    </TouchableOpacity>
+                    <Pressable onPress={() => fetchResources()}>
+                        <Text className="text-phase-accent font-bold">Retry</Text>
+                    </Pressable>
                 </VStack>
             ) : (loading || isFetchingPublic) && !refreshing ? (
-                <VStack sx={{ p: Theme.spacing.md, mt: Theme.spacing.lg, gap: 16 }}>
+                <VStack className="p-md mt-lg gap-4">
                     <SkeletonCard height={200} />
                     <SkeletonCard height={160} />
                     <SkeletonCard height={160} />
                 </VStack>
             ) : (
-                <Box sx={{ flex: 1 }}>
+                <Box className="flex-1">
                     {!isSearchMode && (
-                        <HStack sx={{ px: Theme.spacing.md, py: 12, gap: 12 }}>
-                            <TouchableOpacity 
-                                onPress={() => setIsAddCollectionModalOpen(true)}
-                                style={[styles.actionBtn, { borderColor: Theme.colors.sanctuarySaffron + '88' }]}
-                            >
-                                <Library size={14} color={Theme.colors.sanctuarySaffron} />
-                                <Text sx={{ fontSize: 13, fontWeight: '700', color: colors.textPrimary }}>+ Collection</Text>
-                            </TouchableOpacity>
-                        </HStack>
+                        <FeatureGuard feature="isLibraryManagementEnabled" action="create" subject="Library">
+                            <HStack className="px-md py-3 gap-3">
+                                <Pressable 
+                                    onPress={() => !isPastView && setIsAddCollectionModalOpen(true)}
+                                    style={[styles.actionBtn, { borderColor: `${theme.accent.action}88` }]}>
+                                    <Icon as={Library} size={14} color={theme.accent.action} />
+                                    <Text className="text-[13px] font-bold text-phaseText-primary">+ Collection</Text>
+                                </Pressable>
+                            </HStack>
+                        </FeatureGuard>
                     )}
 
-                    <Box sx={{ flex: 1, backgroundColor: colors.secondary }}>
+                    <Box className="flex-1 bg-phase-surface">
                         <Animated.View entering={FadeInDown.delay(100).springify()}>
                             <HorizontalChipRow
                                 chips={chipData}
@@ -505,10 +492,10 @@ export default function LibraryScreen() {
                                 size="sm"
                             />
                         </Animated.View>
-                        
+
                         <Animated.View entering={FadeInDown.delay(160).springify()}>
-                            <HStack sx={{ px: Theme.spacing.md, pb: Theme.spacing.sm, justifyContent: 'space-between', alignItems: 'center' }}>
-                                <Box sx={{ flex: 1 }}>
+                        <HStack className="px-md pb-sm justify-between items-center">
+                                <Box className="flex-1">
                                     <HorizontalChipRow
                                         chips={sortChips}
                                         selectedValue={selectedSort}
@@ -516,46 +503,45 @@ export default function LibraryScreen() {
                                         size="sm"
                                     />
                                 </Box>
-                                <HStack sx={{ gap: 4, backgroundColor: colors.overlay, borderRadius: 12, padding: 4, borderWidth: 1, borderColor: colors.border }}>
-                                    <TouchableOpacity 
+                                <HStack className="gap-1 p-1 rounded-xl border border-phase-border bg-phase-surface/80">
+                                    <Pressable 
                                         onPress={() => setViewMode('shelf')} 
-                                        style={[styles.toggleBtn, viewMode === 'shelf' && { backgroundColor: Theme.colors.sanctuarySaffron }]}
-                                    >
-                                        <Layers size={14} color={viewMode === 'shelf' ? Theme.colors.sacredWhite : colors.textSecondary} />
-                                    </TouchableOpacity>
-                                    <TouchableOpacity 
+                                        style={[styles.toggleBtn, viewMode === 'shelf' && { backgroundColor: theme.accent.action }]}>
+                                        <Icon as={Layers} size={14} color={viewMode === 'shelf' ? theme.text.inverse : theme.text.secondary} />
+                                    </Pressable>
+                                    <Pressable 
                                         onPress={() => setViewMode('grid')} 
-                                        style={[styles.toggleBtn, viewMode === 'grid' && { backgroundColor: Theme.colors.sanctuarySaffron }]}
-                                    >
-                                        <LayoutGrid size={14} color={viewMode === 'grid' ? Theme.colors.sacredWhite : colors.textSecondary} />
-                                    </TouchableOpacity>
-                                    <TouchableOpacity 
+                                        style={[styles.toggleBtn, viewMode === 'grid' && { backgroundColor: theme.accent.action }]}>
+                                        <Icon as={LayoutGrid} size={14} color={viewMode === 'grid' ? theme.text.inverse : theme.text.secondary} />
+                                    </Pressable>
+                                    <Pressable 
                                         onPress={() => setViewMode('list')} 
-                                        style={[styles.toggleBtn, viewMode === 'list' && { backgroundColor: Theme.colors.sanctuarySaffron }]}
-                                    >
-                                        <List size={14} color={viewMode === 'list' ? Theme.colors.sacredWhite : colors.textSecondary} />
-                                    </TouchableOpacity>
+                                        style={[styles.toggleBtn, viewMode === 'list' && { backgroundColor: theme.accent.action }]}>
+                                        <Icon as={List} size={14} color={viewMode === 'list' ? theme.text.inverse : theme.text.secondary} />
+                                    </Pressable>
                                 </HStack>
                             </HStack>
                         </Animated.View>
 
                         {viewMode === 'shelf' && !isSearchMode ? (
                             <ScrollView 
-                                style={{ flex: 1 }}
+                                className="flex-1"
                                 showsVerticalScrollIndicator={false}
-                                contentContainerStyle={{ paddingBottom: bottomPadding + Theme.spacing.xl }}
-                                refreshControl={
-                                    <ActivityIndicator animating={refreshing} color={Theme.colors.sanctuarySaffron} />
-                                }
-                            >
+                                contentContainerStyle={{ paddingBottom: bottomPadding + 40 }}
+                                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
+                                <SanctuaryPulse
+                                    resourceCount={resources.length}
+                                    collectionCount={collections.length}
+                                    bookmarkCount={bookmarkedResources.length}
+                                />
                                 {heroResource && (
                                     <HeroBanner resource={heroResource} onPress={() => handleOpenResource(heroResource)} />
                                 )}
                                 <MapInvitation onPress={() => navigation.navigate('LibraryMap' as any)} />
-                                <FeatureGuard action="manage" subject="LibraryCuratorDashboard">
+                                <FeatureGuard feature="isLibraryManagementEnabled" action="manage" subject="LibraryCuratorDashboard">
                                     <CuratorInvitation onPress={() => navigation.navigate('CuratorReview' as any)} />
                                 </FeatureGuard>
-                                <Box sx={{ paddingTop: Theme.spacing.md }}>
+                                <Box className="pt-md">
                                     {deskItems && deskItems.filter((r: any) => r.type === 'resource').length > 0 && (
                                         <SmartShelf title="▶ Continue Learning">
                                             {deskItems.filter((r: any) => r.type === 'resource').map((res: any) => (
@@ -588,13 +574,19 @@ export default function LibraryScreen() {
                                         </SmartShelf>
                                     )}
                                     {collections.length > 0 && (
-                                        <Box sx={{ marginBottom: Theme.spacing.lg }}>
+                                        <Box className="mb-lg">
                                             <SmartShelf title={rawUserCollections.length > 0 ? "📚 Your Collections" : "🌟 Discover Collections"}>
                                                 {collections.map((col: any) => (
                                                     <CollectionCard
                                                         key={col.id}
-                                                        collection={col}
-                                                        onPress={(collection) =>
+                                                        title={col.name}
+                                                        creator={col.creator_name}
+                                                        resourceCount={col.resource_ids?.length || 0}
+                                                        subjectTag={col.subjects?.[0] || 'General'}
+                                                        thumbnailUrl={col.thumbnail_url}
+                                                        verified={col.is_official}
+                                                        contextData={col}
+                                                        onPress={(collection) => 
                                                             navigation.navigate('CollectionDetail', { id: collection.id, title: collection.name })
                                                         }
                                                     />
@@ -618,8 +610,8 @@ export default function LibraryScreen() {
                                 onPullToDesk={(res) => console.log('Pull', res.id)}
                                 viewMode={viewMode === 'grid' ? 'grid' : 'list'}
                                 ListHeaderComponent={
-                                    <Box sx={{ p: Theme.spacing.md }}>
-                                        <Text sx={{ fontSize: 13, color: colors.textSecondary }}>
+                                    <Box className="p-md">
+                                        <Text className="text-[13px] text-phaseText-secondary">
                                             {searchQuery ? `Found ${resources.length} resources for "${searchQuery}"` : `Showing curated findings`}
                                         </Text>
                                     </Box>
@@ -634,17 +626,15 @@ export default function LibraryScreen() {
             )}
 
             <AddResourceModal
-                isOpen={isAddModalOpen}
+                isOpen={isAddModalOpen && !isPastView}
                 onClose={() => setIsAddModalOpen(false)}
                 onAdd={handleAddResource}
             />
-
             <AddCollectionModal
-                isOpen={isAddCollectionModalOpen}
+                isOpen={isAddCollectionModalOpen && !isPastView}
                 onClose={() => setIsAddCollectionModalOpen(false)}
-                onAdd={handleCreateCollection}
+                onSubmit={handleCreateCollection}
             />
-
             {selectedResource && (
                 <ResourceActionSheet
                     visible={isActionSheetVisible}
@@ -674,46 +664,101 @@ interface HeroBannerProps {
 
 const HERO_HEIGHT = 220;
 
+function SanctuaryPulse({
+    resourceCount,
+    collectionCount,
+    bookmarkCount,
+}: {
+    resourceCount: number;
+    collectionCount: number;
+    bookmarkCount: number;
+}) {
+    const theme = useTheme();
+
+    const items = [
+        { label: 'Resources', value: resourceCount, accent: `${theme.accent.action}18` },
+        { label: 'Collections', value: collectionCount, accent: `${theme.accent.reward}16` },
+        { label: 'Bookmarks', value: bookmarkCount, accent: `${theme.accent.sageGreen}16` },
+    ];
+
+    return (
+        <HStack className="px-md pt-sm gap-2.5">
+            {items.map((item) => (
+                <Box
+                    key={item.label}
+                    className="flex-1 rounded-[18px] border border-phase-border bg-phase-surface overflow-hidden">
+                    <Box 
+                        className="px-5 py-4"
+                        style={{ backgroundColor: item.accent }}>
+                        <Text className="text-[10px] font-extrabold tracking-widest uppercase text-phaseText-secondary">
+                            {item.label}
+                        </Text>
+                        <Text className="text-2xl font-extrabold text-phaseText-primary mt-1">
+                            {item.value}
+                        </Text>
+                    </Box>
+                </Box>
+            ))}
+        </HStack>
+    );
+}
+
 function HeroBanner({ resource, onPress }: HeroBannerProps) {
-    const colors = useThemedColors();
+    const theme = useTheme();
     return (
         <Pressable onPress={onPress}>
-            <Box sx={{ height: HERO_HEIGHT, overflow: 'hidden', backgroundColor: colors.secondary, mb: Theme.spacing.md }}>
+            <Box className="h-[240px] overflow-hidden bg-phase-surface/50 mb-md mx-md rounded-3xl border border-phase-border">
                 {resource.media?.url ? (
                     <ImageBackground source={{ uri: resource.media.url as string }} style={{ flex: 1 }} resizeMode="cover">
-                        <HeroOverlay resource={resource} colors={colors} />
+                        <HeroOverlay resource={resource} theme={theme} />
                     </ImageBackground>
                 ) : (
-                    <Box sx={{ flex: 1, backgroundColor: `${colors.action}18` }}>
-                        <HeroOverlay resource={resource} colors={colors} />
-                    </Box>
+                    <LinearGradient colors={[`${theme.accent.action}18`, `${theme.accent.reward}16`]} style={{ flex: 1 }}>
+                        <HeroOverlay resource={resource} theme={theme} />
+                    </LinearGradient>
                 )}
             </Box>
         </Pressable>
     );
 }
 
-function HeroOverlay({ resource, colors }: { resource: LibraryResource; colors: any }) {
+function HeroOverlay({ resource, theme }: { resource: LibraryResource; theme: any }) {
     return (
-        <LinearGradient 
-            colors={['transparent', `${colors.obsidian}88`, `${colors.obsidian}EE`]}
-            style={{ ...StyleSheet.absoluteFillObject, justifyContent: 'flex-end', padding: Theme.spacing.lg }}
-        >
-            <Box sx={{ alignSelf: 'flex-start', backgroundColor: Theme.colors.sanctuarySaffron, px: 8, py: 3, borderRadius: 4, mb: 8 }}>
-                <Text sx={{ fontSize: 10, fontWeight: '800', color: Theme.colors.sacredWhite, letterSpacing: 1 }}>✧ FEATURED</Text>
-            </Box>
-            <Text sx={{ fontSize: 22, fontWeight: '800', lineHeight: 28, mb: 6, color: colors.textPrimary }}>{resource.title}</Text>
-            {resource.description && (
-                <Text sx={{ fontSize: 13, lineHeight: 18, mb: 12, color: colors.textSecondary }} numberOfLines={2}>
-                    {resource.description}
-                </Text>
-            )}
-            <HStack sx={{ alignItems: 'center', gap: 10 }}>
-                <Box sx={{ flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: Theme.colors.sanctuarySaffron, px: 14, py: 8, borderRadius: 12 }}>
-                    <Play size={14} color={Theme.colors.sacredWhite} fill={Theme.colors.sacredWhite} />
-                    <Text sx={{ color: Theme.colors.sacredWhite, fontWeight: '700', fontSize: 13 }}>Open</Text>
+        <LinearGradient
+            colors={['rgba(255,255,255,0.04)', 'rgba(255,255,255,0.1)', 'rgba(252,249,242,0.94)']}
+            style={{ ...StyleSheet.absoluteFillObject, justifyContent: 'flex-end', padding: 24 }}>
+            <Box className="bg-[#FCF9F2]/90 rounded-[20px] p-5 border border-white/50">
+                <Box 
+                    className="self-start px-2 py-1 rounded-full mb-2"
+                    style={{ backgroundColor: `${theme.accent.action}18` }}>
+                    <Text 
+                        className="text-[10px] font-extrabold tracking-widest"
+                        style={{ color: theme.accent.action }}>
+                        ✧ FEATURED
+                    </Text>
                 </Box>
-            </HStack>
+                <Text className="text-[22px] font-extrabold leading-7 mb-1.5 text-phaseText-primary">
+                    {resource.title}
+                </Text>
+                {resource.description && (
+                    <Text className="text-[13px] leading-[18px] mb-3 text-phaseText-secondary" numberOfLines={3}>
+                        {resource.description}
+                    </Text>
+                )}
+                <HStack className="items-center gap-2.5">
+                    <Box 
+                        className="flex-row items-center gap-1.5 px-3.5 py-2 rounded-xl"
+                        style={{ backgroundColor: theme.accent.action }}>
+                        <Icon as={Play} size={14} color="white" fill="white" />
+                        <Text className="text-white font-bold text-[13px]">Open</Text>
+                    </Box>
+                    {resource.creator_name ? (
+                        <Text className="text-[12px] text-phaseText-secondary font-semibold">
+                            Curated by {resource.creator_name}
+                        </Text>
+                    ) : null}
+                </HStack>
+            </Box>
         </LinearGradient>
     );
 }
@@ -722,9 +767,9 @@ const styles = StyleSheet.create({
     mapToggleButton: {
         padding: 8,
         borderRadius: 12,
-        backgroundColor: Theme.colors.glass.light.highlight,
+        backgroundColor: 'rgba(var(--action-rgb), 0.1)',
         borderWidth: 1,
-        borderColor: Theme.colors.glass.light.border,
+        borderColor: 'rgba(var(--action-rgb), 0.15)',
         marginRight: 4,
     },
     toggleBtn: {
@@ -741,8 +786,8 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         paddingVertical: 10,
         borderRadius: 14,
-        backgroundColor: Theme.colors.glass.light.highlight,
+        backgroundColor: 'rgba(var(--action-rgb), 0.08)',
         borderWidth: 1,
-        borderColor: Theme.colors.glass.light.border,
+        borderColor: 'rgba(var(--action-rgb), 0.12)',
     },
 });

@@ -1,5 +1,5 @@
 /**
- * VideoPlayerScreen.web.tsx — Pattern A: full web replacement
+ * VideoPlayerScreen.web.tsx  Pattern A: full web replacement
  *
  * On native, VideoPlayerScreen wraps expo-video's components with custom
  * controls. On web we use the browser-native <video> element instead, which
@@ -94,8 +94,8 @@ export default function VideoPlayerScreen({ route }: VideoPlayerScreenProps) {
 
     if (hasError || !url) {
         return (
-            <Box sx={{ flex: 1, backgroundColor: 'black', alignItems: 'center', justifyContent: 'center' }}>
-                <Text color="white" size="lg" style={{ textAlign: 'center', padding: Theme.spacing.xl }}>
+            <Box className="flex-1 bg-black items-center justify-center">
+                <Text className="text-white text-lg text-center p-xl">
                     Unable to load video. Please check the URL and try again.
                 </Text>
                 <SanctuaryButton onPress={() => navigation.goBack()} leftIcon={X}>
@@ -106,15 +106,15 @@ export default function VideoPlayerScreen({ route }: VideoPlayerScreenProps) {
     }
 
     return (
-        <Box sx={{ flex: 1, backgroundColor: 'black' }}>
-            {/* Browser-native <video> element — full codec + PiP support */}
-            {/* @ts-ignore — Pressable style={absoluteFill} type mismatch on web */}
+        <Box className="flex-1 bg-black">
+            {/* Browser-native <video> element - full codec + PiP support */}
+            {/* @ts-ignore - Pressable style={absoluteFill} type mismatch on web */}
             <Pressable
                 onPress={() => { setShowControls(c => !c); resetHideTimer(); }}
                 style={StyleSheet.absoluteFill}
                 accessibilityLabel="Toggle controls"
             >
-                {/* @ts-ignore — 'video' is a valid DOM element in react-native-web */}
+                {/* @ts-ignore - 'video' is a valid DOM element in react-native-web */}
                 <video
                     ref={videoRef}
                     src={url}
@@ -141,7 +141,7 @@ export default function VideoPlayerScreen({ route }: VideoPlayerScreenProps) {
                         >
                             <X size={22} color="#fff" />
                         </Pressable>
-                        <VStack sx={{ flex: 1 }}>
+                        <VStack className="flex-1">
                             <Text style={styles.titleText} numberOfLines={1}>{title}</Text>
                             {creator ? <Text style={styles.creatorText}>{creator}</Text> : null}
                         </VStack>
@@ -175,7 +175,7 @@ export default function VideoPlayerScreen({ route }: VideoPlayerScreenProps) {
                     {/* Progress bar + timestamps */}
                     <View style={styles.footer} pointerEvents="auto">
                         <Text style={styles.timeText}>{formatTimeSecs(currentTime)}</Text>
-                        {/* @ts-ignore — onClick on div in react-native-web */}
+                        {/* @ts-ignore - onClick on div in react-native-web */}
                         <div
                             style={styles.progressTrack as any}
                             onClick={handleProgressClick}
@@ -279,7 +279,8 @@ const styles = StyleSheet.create({
     } as any,
     progressFill: {
         height: '100%',
-        backgroundColor: Theme.colors.sanctuarySaffron,
+        backgroundColor: 'rgba(212, 132, 58, 1)', // Fallback saffron
+        // In a real theme we'd use a CSS variable here
         borderRadius: 3,
         transition: 'width 0.1s linear',
     } as any,

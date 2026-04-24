@@ -1,4 +1,4 @@
-const fs = require('node:fs');
+﻿const fs = require('node:fs');
 const path = require('node:path');
 
 const APP_ROOT = path.resolve(__dirname, '../../..');
@@ -9,8 +9,7 @@ describe('Inventory/Resource split boundary guardrails', () => {
   it('ensures classroom components use proper resource scope', () => {
     const classroomFiles = [
       path.join(PACKAGES_ROOT, 'classroom/src/components/ResourcesView.tsx'),
-      path.join(PACKAGES_ROOT, 'classroom/src/components/InventoryView.tsx'),
-    ];
+      path.join(PACKAGES_ROOT, 'classroom/src/components/InventoryView.tsx')];
 
     classroomFiles.forEach(file => {
       if (fs.existsSync(file)) {
@@ -27,8 +26,7 @@ describe('Inventory/Resource split boundary guardrails', () => {
   it('ensures admin components use institutional resource scope', () => {
     const adminFiles = [
       path.join(PACKAGES_ROOT, 'admin/src/screens/SchoolForestScreen.web.tsx'),
-      path.join(PACKAGES_ROOT, 'admin/src/components/InventoryManagement.tsx'),
-    ];
+      path.join(PACKAGES_ROOT, 'admin/src/components/InventoryManagement.tsx')];
 
     adminFiles.forEach(file => {
       if (fs.existsSync(file)) {
@@ -44,8 +42,7 @@ describe('Inventory/Resource split boundary guardrails', () => {
     const resourceFiles = [
       path.join(PACKAGES_ROOT, 'classroom/src/components/ResourcesView.tsx'),
       path.join(PACKAGES_ROOT, 'classroom/src/components/InventoryView.tsx'),
-      path.join(PACKAGES_ROOT, 'admin/src/screens/SchoolForestScreen.web.tsx'),
-    ];
+      path.join(PACKAGES_ROOT, 'admin/src/screens/SchoolForestScreen.web.tsx')];
 
     resourceFiles.forEach(file => {
       if (fs.existsSync(file)) {
@@ -60,8 +57,7 @@ describe('Inventory/Resource split boundary guardrails', () => {
   it('prevents classroom resources in institutional inventory APIs', () => {
     const classroomFiles = [
       path.join(PACKAGES_ROOT, 'classroom/src/components/ResourcesView.tsx'),
-      path.join(PACKAGES_ROOT, 'classroom/src/components/InventoryView.tsx'),
-    ];
+      path.join(PACKAGES_ROOT, 'classroom/src/components/InventoryView.tsx')];
 
     classroomFiles.forEach(file => {
       if (fs.existsSync(file)) {
@@ -77,8 +73,7 @@ describe('Inventory/Resource split boundary guardrails', () => {
   // Test 5: Institutional assets should not route to classroom resource APIs
   it('prevents institutional assets from using classroom resource APIs', () => {
     const adminFiles = [
-      path.join(PACKAGES_ROOT, 'admin/src/screens/SchoolForestScreen.web.tsx'),
-    ];
+      path.join(PACKAGES_ROOT, 'admin/src/screens/SchoolForestScreen.web.tsx')];
 
     adminFiles.forEach(file => {
       if (fs.existsSync(file)) {

@@ -14,7 +14,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { CommunityStackParamList } from '@repo/core';
-import { supabase, useStore } from '@repo/core';
+import { supabase, useStore, useTemporalStore } from '@repo/core';
 import { getInitialsFromName, formatTimestamp } from '@repo/ui';
 import { communityAPI } from '../api/community';
 import HeaderMoreMenu from '../components/HeaderMoreMenu';
@@ -38,6 +38,7 @@ export default function GroupChatScreen() {
     const navigation = useNavigation<NativeStackNavigationProp<CommunityStackParamList>>();
     const { groupId, groupName } = route.params;
     const { user } = useStore();
+    const { viewDate, viewScale, isPastView } = useTemporalStore();
 
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [loading, setLoading] = useState(true);
@@ -52,20 +53,20 @@ export default function GroupChatScreen() {
         }, 60);
     }, []);
 
-    // ── Initial load ─────────────────────────────────────────────
+    // ── Initial load ─────────────────────────────────────────────────────────────
     useEffect(() => {
-        communityAPI.getGroupMessages(groupId)
+        communityAPI.getGroupMessages(groupId, 60, viewDate, viewScale)
             .then((data: any) => setMessages(data as ChatMessage[]))
             .catch((e: any) => console.error('[GroupChat] load error', e))
             .finally(() => setLoading(false));
-    }, [groupId]);
+    }, [groupId, viewDate, viewScale]);
 
     // Scroll to bottom on first load
     useEffect(() => {
         if (!loading) scrollToBottom(false);
-    }, [loading]);
+    }, [loading, scrollToBottom]);
 
-    // ── Real-time subscription ────────────────────────────────────
+    // ── Real-time subscription ───────────────────────────────────────────────────
     useEffect(() => {
         const channel = supabase
             .channel(`group_chat_${groupId}`)
@@ -90,10 +91,10 @@ export default function GroupChatScreen() {
         return () => { supabase.removeChannel(channel); };
     }, [groupId, scrollToBottom]);
 
-    // ── Send ──────────────────────────────────────────────────────
+    // ── Send ─────────────────────────────────────────────────────────────────────
     const handleSend = useCallback(async () => {
         const content = draft.trim();
-        if (!content || !user) return;
+        if (!content || !user || isPastView) return;
         setSending(true);
         setDraft('');
 
@@ -117,7 +118,7 @@ export default function GroupChatScreen() {
         } finally {
             setSending(false);
         }
-    }, [draft, user, groupId, scrollToBottom]);
+    }, [draft, user, groupId, isPastView, scrollToBottom]);
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
         if (e.key === 'Enter' && !e.shiftKey) {
@@ -212,8 +213,9 @@ export default function GroupChatScreen() {
                     value={draft}
                     onChange={e => setDraft(e.target.value)}
                     onKeyDown={handleKeyDown}
-                    placeholder="Write a message… (Enter to send, Shift+Enter for new line)"
+                    placeholder={isPastView ? 'Viewing historical group chat records.' : "Write a message… (Enter to send, Shift+Enter for new line)"}
                     rows={1}
+                    disabled={isPastView}
                     style={{
                         flex: 1,
                         padding: '10px 14px',
@@ -233,7 +235,7 @@ export default function GroupChatScreen() {
                 />
                 <button
                     onClick={handleSend}
-                    disabled={!draft.trim() || sending}
+                    disabled={isPastView || !draft.trim() || sending}
                     style={{
                         width: '40px',
                         height: '40px',

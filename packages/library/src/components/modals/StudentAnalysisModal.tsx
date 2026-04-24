@@ -28,8 +28,8 @@ interface StudentAnalysisModalProps {
 }
 
 /**
- * StudentAnalysisModal — Shared modal for deep student potential mapping.
- * Now isomorphic and integrated with Vatya (Radar) layout brain.
+ * StudentAnalysisModal - Shared modal for deep student potential mapping.
+ * Isomorphic and integrated with Vatya (Radar) layout brain.
  */
 export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
     visible,
@@ -88,8 +88,8 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
                 creative_spark: analysis.creative_spark || 50,
                 practical_mastery: analysis.practical_mastery || 50,
                 silver_lining: analysis.silver_lining || '',
-                potential_notes: analysis.potential_notes || [],
-            });
+                potential_notes: (analysis as any).potential_notes || [],
+            } as any);
             onSave?.(result);
             onClose();
         } catch (error) {
@@ -102,12 +102,11 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
     const handleExport = async () => {
         setIsExporting(true);
         try {
-            // Prepare visualization data for capture
             const topology = CaptureEngine.prepareForCapture({
                 nodes: [{
                     id: studentId,
                     label: studentName,
-                    type: 'topic', // Using 'topic' so it's not filtered out by CaptureEngine (which masks 'persona')
+                    type: 'topic', 
                     group: 'analysis',
                     metadata: {
                         attributes: {
@@ -122,12 +121,8 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
                 links: []
             });
 
-            // In a real app, this would send to the reporting service
             console.log('[StudentAnalysisModal] Exporting topology:', topology);
-            
-            // Artificial delay to show state
             await new Promise(resolve => setTimeout(resolve, 1500));
-            
             alert('Analysis exported to student report successfully.');
         } catch (error) {
             console.error('[StudentAnalysisModal] Export error:', error);
@@ -140,7 +135,7 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
     const handleGetAIInsights = async () => {
         setLoadingAI(true);
         try {
-            const insights = await studentPotentialAPI.getAIInsights(studentName, analysis);
+            const insights = await studentPotentialAPI.getAIInsights(studentName, analysis as StudentPotentialAnalysis);
             setAiInsights(insights);
         } catch (error) {
             console.error('[StudentAnalysisModal] AI Insight Error:', error);
@@ -149,7 +144,7 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
         }
     };
 
-    // Radar Data transformation for @repo/graphics
+    // Radar Data transformation
     const radarNode = {
         id: studentId,
         label: studentName,
@@ -166,12 +161,12 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
         }
     };
 
-    const layoutSize = Math.min(width - 80, 320);
+    const layoutSize = Math.min(width - 80, 280);
     const layout = radarLayout(radarNode, { width: layoutSize, height: layoutSize });
     const polygonPoints = layout.points.map(p => `${p.x},${p.y}`).join(' ');
 
     return (
-        <Modal visible={visible} transparent animationType="fade">
+        <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
             <View style={styles.overlay}>
                 <BlurView intensity={80} tint="dark" style={StyleSheet.absoluteFill} />
                 <View style={styles.modalContent}>
@@ -190,7 +185,7 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
                                 {isExporting ? <ActivityIndicator size="small" color={Theme.colors.sanctuarySaffron} /> : <FileCheck size={20} color={Theme.colors.sanctuarySaffron} />}
                             </TouchableOpacity>
                             <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-                                <X size={24} color={colors.textSecondary} />
+                                <X size={24} color={colors?.textSecondary || "#aaa"} />
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -213,7 +208,7 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
                                                 cy={layout.center.y}
                                                 r={layout.radius * scale}
                                                 fill="none"
-                                                stroke={colors.border}
+                                                stroke={colors?.border || "rgba(255,255,255,0.1)"}
                                                 strokeWidth={1}
                                                 opacity={0.2}
                                             />
@@ -227,14 +222,14 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
                                                     y1={layout.center.y}
                                                     x2={axis.x}
                                                     y2={axis.y}
-                                                    stroke={colors.border}
+                                                    stroke={colors?.border || "rgba(255,255,255,0.1)"}
                                                     strokeWidth={1}
                                                     opacity={0.3}
                                                 />
                                                 <SvgText
                                                     x={axis.x}
                                                     y={axis.y + (axis.y > layout.center.y ? 15 : -8)}
-                                                    fill={colors.textSecondary}
+                                                    fill={colors?.textSecondary || "#aaa"}
                                                     fontSize="10"
                                                     fontWeight="bold"
                                                     textAnchor="middle"
@@ -252,13 +247,13 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
                                             strokeWidth={3}
                                         />
 
-                                        {/* Interaction Points */}
+                                        {/* Data points */}
                                         {layout.points.map((p, i) => (
                                             <Circle
                                                 key={`pt-${i}`}
                                                 cx={p.x}
                                                 cy={p.y}
-                                                r={5}
+                                                r={4}
                                                 fill={Theme.colors.sanctuarySaffron}
                                                 stroke="white"
                                                 strokeWidth={1}
@@ -269,13 +264,13 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
                                 <Text style={styles.chartHint}>Dynamic Resonance Radar</Text>
                             </View>
 
-                            {/* Stats Summary */}
+                            {/* Dimensions Sliders */}
                             <GlassCard style={styles.slidersCard}>
                                 <View style={styles.sectionHeader}>
-                                    <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
+                                    <HStack className="gap-2 items-center flex-1">
                                         <Sparkles size={16} color={Theme.colors.sanctuarySaffron} />
                                         <Text style={styles.sectionTitle}>Nurturing Dimensions</Text>
-                                    </View>
+                                    </HStack>
                                     <TouchableOpacity 
                                         onPress={handleGetAIInsights}
                                         disabled={loadingAI}
@@ -285,7 +280,8 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
                                         <Text style={styles.aiScoutText}>AI Scout</Text>
                                     </TouchableOpacity>
                                 </View>
-                                <View style={styles.statsGrid}>
+
+                                <VStack className="gap-3">
                                     {[
                                         { label: 'Cognitive', value: analysis.cognitive_flow, key: 'cognitive_flow' },
                                         { label: 'Emotional', value: analysis.emotional_resonance, key: 'emotional_resonance' },
@@ -293,37 +289,30 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
                                         { label: 'Creative', value: analysis.creative_spark, key: 'creative_spark' },
                                         { label: 'Practical', value: analysis.practical_mastery, key: 'practical_mastery' },
                                     ].map(stat => (
-                                        <View key={stat.key} style={styles.statItem}>
-                                            <VStack sx={{ flex: 1, gap: 4 }}>
-                                                <HStack justifyContent="space-between">
-                                                    <Text style={styles.statLabel}>{stat.label}</Text>
-                                                    <Text style={styles.statValue}>{stat.value}%</Text>
-                                                </HStack>
-                                                <Slider
-                                                    minValue={0}
-                                                    maxValue={100}
-                                                    value={stat.value || 0}
-                                                    onChange={(val: number) => {
-                                                        setAnalysis(prev => ({ ...prev, [stat.key]: val }));
-                                                    }}
-                                                    sx={{ height: 30 }}
-                                                >
-                                                    <SliderTrack sx={{ backgroundColor: 'rgba(255,255,255,0.1)' }}>
-                                                        <SliderFilledTrack sx={{ backgroundColor: Theme.colors.sanctuarySaffron }} />
-                                                    </SliderTrack>
-                                                    <SliderThumb sx={{ backgroundColor: 'white', width: 20, height: 20 }} />
-                                                </Slider>
-                                            </VStack>
-                                        </View>
+                                        <VStack key={stat.key} className="gap-1">
+                                            <HStack className="justify-between items-center">
+                                                <Text style={styles.statLabel}>{stat.label}</Text>
+                                                <Text style={styles.statValue}>{stat.value || 0}%</Text>
+                                            </HStack>
+                                            <Slider
+                                                minValue={0}
+                                                maxValue={100}
+                                                value={stat.value || 0}
+                                                onValueChange={(val: number) => {
+                                                    setAnalysis(prev => ({ ...prev, [stat.key]: val }));
+                                                }}
+                                                className="h-[30px]"
+                                            />
+                                        </VStack>
                                     ))}
-                                </View>
+                                </VStack>
                             </GlassCard>
 
                             {/* AI Insights Section */}
                             {aiInsights && (
                                 <GlassCard style={styles.aiInsightsCard}>
                                     <View style={styles.sectionHeader}>
-                                        <Sparkles size={16} color={Theme.colors.sanctuarySaffron} />
+                                        <Sparkles size={16} color="rgba(212, 132, 58, 1)" />
                                         <Text style={styles.sectionTitle}>AI Potential Insights</Text>
                                     </View>
                                     <Text style={styles.aiInsightsText}>{aiInsights}</Text>
@@ -334,16 +323,16 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
                             <GlassCard style={styles.notesCard}>
                                 <Text style={styles.notesLabel}>Silver Lining & Potential</Text>
                                 <TextInput
-                                    style={[styles.textInput, { color: colors.textPrimary }]}
+                                    style={[styles.textInput, { color: colors?.textPrimary || '#fff' }]}
                                     multiline
                                     placeholder="What hidden potential do you see in this child? Finding the silver lining in every cloud..."
-                                    placeholderTextColor={colors.textSecondary}
+                                    placeholderTextColor={colors?.textSecondary || '#aaa'}
                                     value={analysis.silver_lining || ''}
                                     onChangeText={(text) => setAnalysis(prev => ({ ...prev, silver_lining: text }))}
                                 />
                             </GlassCard>
 
-                            <View style={{ height: 120 }} />
+                            <View style={{ height: 100 }} />
                         </ScrollView>
                     )}
 
@@ -360,10 +349,10 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
                             {saving ? (
                                 <ActivityIndicator color="white" size="small" />
                             ) : (
-                                <>
+                                <HStack className="gap-2 items-center">
                                     <Save size={18} color="white" />
                                     <Text style={styles.saveText}>Save Analysis</Text>
-                                </>
+                                </HStack>
                             )}
                         </TouchableOpacity>
                     </View>
@@ -382,7 +371,7 @@ const styles = StyleSheet.create({
     modalContent: {
         width: '94%',
         height: '88%',
-        backgroundColor: 'rgba(20, 20, 20, 0.85)',
+        backgroundColor: 'rgba(20, 20, 20, 0.95)',
         borderRadius: 40,
         borderWidth: 1,
         borderColor: 'rgba(255, 255, 255, 0.15)',
@@ -413,13 +402,13 @@ const styles = StyleSheet.create({
         opacity: 0.5,
     },
     title: {
-        fontSize: 26,
+        fontSize: 24,
         fontWeight: '800',
         color: 'white',
         letterSpacing: -0.5,
     },
     subtitle: {
-        fontSize: 16,
+        fontSize: 14,
         color: 'rgba(255,255,255,0.6)',
         marginTop: 2,
     },
@@ -439,14 +428,14 @@ const styles = StyleSheet.create({
         marginVertical: 10,
     },
     chartHint: {
-        fontSize: 12,
+        fontSize: 11,
         color: 'rgba(255,255,255,0.4)',
         marginTop: 8,
         fontStyle: 'italic',
         letterSpacing: 1,
     },
     slidersCard: {
-        padding: 20,
+        padding: 16,
         marginBottom: 16,
     },
     sectionHeader: {
@@ -455,10 +444,9 @@ const styles = StyleSheet.create({
         marginBottom: 16,
     },
     sectionTitle: {
-        fontSize: 15,
+        fontSize: 13,
         fontWeight: '700',
         color: Theme.colors.sanctuarySaffron,
-        marginLeft: 10,
         textTransform: 'uppercase',
         letterSpacing: 1,
     },
@@ -474,13 +462,13 @@ const styles = StyleSheet.create({
         borderColor: 'rgba(255, 179, 0, 0.2)',
     },
     aiScoutText: {
-        fontSize: 11,
+        fontSize: 10,
         fontWeight: '800',
         color: Theme.colors.sanctuarySaffron,
         textTransform: 'uppercase',
     },
     aiInsightsCard: {
-        padding: 20,
+        padding: 16,
         marginBottom: 16,
         borderWidth: 1,
         borderColor: 'rgba(255, 179, 0, 0.3)',
@@ -491,103 +479,70 @@ const styles = StyleSheet.create({
         color: 'rgba(255,255,255,0.85)',
         fontStyle: 'italic',
     },
-    statsGrid: {
-        gap: 12,
-    },
-    statItem: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 12,
-    },
     statLabel: {
         fontSize: 12,
         color: 'rgba(255,255,255,0.7)',
-        width: 70,
-    },
-    progressBarBg: {
-        flex: 1,
-        height: 6,
-        backgroundColor: 'rgba(255,255,255,0.05)',
-        borderRadius: 3,
-        overflow: 'hidden',
-    },
-    progressBarFill: {
-        height: '100%',
-        backgroundColor: Theme.colors.sanctuarySaffron,
     },
     statValue: {
         fontSize: 12,
         fontWeight: '700',
         color: 'white',
-        width: 35,
-        textAlign: 'right',
     },
     notesCard: {
-        padding: 20,
+        padding: 16,
     },
     notesLabel: {
-        fontSize: 15,
+        fontSize: 14,
         fontWeight: '700',
         color: 'white',
         marginBottom: 12,
     },
     textInput: {
-        fontSize: 16,
-        lineHeight: 24,
-        minHeight: 140,
+        fontSize: 15,
+        lineHeight: 22,
+        minHeight: 120,
         textAlignVertical: 'top',
         backgroundColor: 'rgba(0,0,0,0.3)',
-        borderRadius: 20,
-        padding: 16,
+        borderRadius: 16,
+        padding: 12,
         borderWidth: 1,
         borderColor: 'rgba(255,255,255,0.05)',
     },
     footer: {
-        position: 'absolute',
-        bottom: 0,
-        left: 0,
-        right: 0,
         flexDirection: 'row',
         paddingHorizontal: 24,
-        paddingBottom: 34,
+        paddingBottom: 30,
         paddingTop: 16,
-        backgroundColor: 'rgba(20, 20, 20, 0.95)',
+        backgroundColor: 'rgba(20, 20, 20, 0.98)',
         borderTopWidth: 1,
         borderTopColor: 'rgba(255, 255, 255, 0.1)',
-        gap: 16,
+        gap: 12,
     },
     cancelAction: {
         flex: 1,
-        height: 56,
+        height: 50,
         justifyContent: 'center',
         alignItems: 'center',
-        borderRadius: 16,
+        borderRadius: 14,
         borderWidth: 1,
         borderColor: 'rgba(255,255,255,0.1)',
     },
     cancelText: {
         color: 'rgba(255,255,255,0.5)',
-        fontSize: 16,
+        fontSize: 15,
         fontWeight: '600',
     },
     saveAction: {
-        flex: 1.8,
-        height: 56,
+        flex: 2,
+        height: 50,
         backgroundColor: Theme.colors.sanctuarySaffron,
-        borderRadius: 16,
-        flexDirection: 'row',
+        borderRadius: 14,
         justifyContent: 'center',
         alignItems: 'center',
-        gap: 10,
-        shadowColor: Theme.colors.sanctuarySaffron,
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 8,
-        elevation: 5,
     },
     saveText: {
-        color: 'white',
-        fontSize: 16,
+        color: 'black',
+        fontSize: 15,
         fontWeight: '800',
     }
 });

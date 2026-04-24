@@ -14,15 +14,14 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import Animated, { SlideInDown, SlideOutDown } from 'react-native-reanimated';
-import { Theme } from '@repo/ui';
-import { useThemedColors } from '@repo/ui';
+import { Icon, useTheme, useThemedColors, sanctuarySaffron, shadowViolet } from '@repo/ui';
 import { usePWAInstallPrompt } from '@/utils/usePWAInstallPrompt';
 import { Download, X, Share } from 'lucide-react-native';
 
 export function PWAInstallBanner() {
     const { canInstall, promptInstall, isDismissed, dismiss, isIOS, isInstalled } = usePWAInstallPrompt();
     // All hooks must be called unconditionally — early returns come AFTER all hook calls
-    const colors = useThemedColors();
+    const { scene: colors } = useThemedColors();
 
     // Never render on native, when already installed, or after user dismissed
     if (Platform.OS !== 'web') return null;
@@ -34,13 +33,12 @@ export function PWAInstallBanner() {
         <Animated.View
             entering={SlideInDown.springify().damping(18)}
             exiting={SlideOutDown.duration(220)}
-            style={[styles.banner, { backgroundColor: colors.secondary, borderTopColor: colors.border }]}
-        >
+            style={[styles.banner, { backgroundColor: colors.secondary, borderTopColor: colors.border }]}>
             <View style={styles.left}>
                 {isIOS ? (
-                    <Share size={20} color={Theme.colors.sanctuarySaffron} />
+                    <Icon as={Share} size={20} color={sanctuarySaffron} />
                 ) : (
-                    <Download size={20} color={Theme.colors.sanctuarySaffron} />
+                    <Icon as={Download} size={20} color={sanctuarySaffron} />
                 )}
                 <View style={styles.textBlock}>
                     <Text style={[styles.title, { color: colors.text }]}>
@@ -65,18 +63,16 @@ export function PWAInstallBanner() {
                                 dismiss();
                             }
                         }}
-                        style={[styles.installBtn, { backgroundColor: Theme.colors.sanctuarySaffron }]}
-                        accessibilityLabel="Install Gurudevi as an app"
-                    >
+                        style={[styles.installBtn, { backgroundColor: sanctuarySaffron }]}
+                        accessibilityLabel="Install Gurudevi as an app">
                         <Text style={styles.installBtnText}>Install</Text>
                     </TouchableOpacity>
                 )}
                 <TouchableOpacity
                     onPress={dismiss}
                     style={styles.dismissBtn}
-                    accessibilityLabel="Dismiss install prompt"
-                >
-                    <X size={18} color={colors.textSecondary} />
+                    accessibilityLabel="Dismiss install prompt">
+                    <Icon as={X} size={18} color={colors.textSecondary} />
                 </TouchableOpacity>
             </View>
         </Animated.View>
@@ -92,46 +88,36 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        paddingHorizontal: Theme.spacing.lg,
-        paddingVertical: Theme.spacing.md,
+        paddingHorizontal: 16,
+        paddingVertical: 12,
         borderTopWidth: 1,
-        boxShadow: `0 -4px 12px ${Theme.colors.shadowViolet}1F`, // 1F is roughly 0.12 opacity
-        zIndex: 999,
-    },
+        // boxShadow: `0 -4px 12px ${shadowViolet}1F`, 
+        zIndex: 999},
     left: {
         flexDirection: 'row',
         alignItems: 'center',
         flex: 1,
-        gap: Theme.spacing.sm,
-    },
+        gap: 12},
     textBlock: {
         flexDirection: 'column',
-        flex: 1,
-    },
+        flex: 1},
     title: {
         fontSize: 14,
-        fontWeight: '700',
-    },
+        fontWeight: '700'},
     sub: {
         fontSize: 12,
-        marginTop: 2,
-    },
+        marginTop: 2},
     actions: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: Theme.spacing.sm,
-    },
+        gap: 12},
     installBtn: {
-        paddingHorizontal: Theme.spacing.md,
+        paddingHorizontal: 16,
         paddingVertical: 8,
-        borderRadius: Theme.corners.comfortable,
-    },
+        borderRadius: 12},
     installBtnText: {
-        color: Theme.colors.ink,
+        color: '#2A2318',
         fontSize: 13,
-        fontWeight: '700',
-    },
+        fontWeight: '700'},
     dismissBtn: {
-        padding: 6,
-    },
-});
+        padding: 6}});

@@ -9,7 +9,7 @@ import type {
 } from '@repo/graphics';
 
 /**
- * TerraView — The "Geographical" Perspective (Native).
+ * TerraView  The "Geographical" Perspective (Native).
  * 
  * Renders nodes on a real-world map using a unified map component.
  * Features custom dark-mode styling for the "Sanctuary" aesthetic.

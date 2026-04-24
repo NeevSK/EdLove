@@ -1,33 +1,33 @@
 /**
- * dateTimeUtils.ts — Shared date/time formatting helpers.
+ * dateTimeUtils.ts \u2014 Shared date/time formatting helpers.
  *
  * These utilities were previously copy-pasted in 8+ separate files with
  * slightly inconsistent signatures. Single source of truth: import from `@repo/ui`.
  */
 
 /**
- * Format a native video duration (milliseconds → "M:SS").
+ * Format a native video duration (milliseconds \u2192 "M:SS").
  * Used by expo-video VideoPlayerScreen (native).
  *
  * @example formatTimeMs(90500) // "1:30"
  */
 export function formatTimeMs(ms: number): string {
-    const total = Math.floor(ms / 1000);
-    const mins = Math.floor(total / 60);
-    const secs = total % 60;
-    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+  const total = Math.floor(ms / 1000);
+  const mins = Math.floor(total / 60);
+  const secs = total % 60;
+  return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
 }
 
 /**
- * Format an HTML5 video duration (seconds → "M:SS").
+ * Format an HTML5 video duration (seconds \u2192 "M:SS").
  * Used by <video> element VideoPlayerScreen.web.tsx.
  *
  * @example formatTimeSecs(90) // "1:30"
  */
 export function formatTimeSecs(seconds: number): string {
-    const m = Math.floor(seconds / 60);
-    const s = Math.floor(seconds % 60);
-    return `${m}:${s < 10 ? '0' : ''}${s}`;
+  const m = Math.floor(seconds / 60);
+  const s = Math.floor(seconds % 60);
+  return `${m}:${s < 10 ? '0' : ''}${s}`;
 }
 
 /**
@@ -37,8 +37,8 @@ export function formatTimeSecs(seconds: number): string {
  * @example formatTimestamp('2026-03-08T13:45:00Z') // "1:45 PM"
  */
 export function formatTimestamp(iso: string | number): string {
-    const d = typeof iso === 'number' ? new Date(iso) : new Date(iso);
-    return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const d = typeof iso === 'number' ? new Date(iso) : new Date(iso);
+  return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 }
 
 /**
@@ -50,9 +50,9 @@ export function formatTimestamp(iso: string | number): string {
  * @example formatShortDate('2026-03-08') // "Mar 8"
  */
 export function formatShortDate(dateStr: string): string {
-    try {
-        return new Date(dateStr).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
-    } catch {
-        return dateStr;
-    }
+  try {
+    return new Date(dateStr).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+  } catch {
+    return dateStr;
+  }
 }

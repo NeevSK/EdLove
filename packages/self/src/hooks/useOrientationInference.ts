@@ -4,51 +4,51 @@
  * Derives a soft orientation fingerprint from signals already collected
  * by the app.  No quiz, no onboarding, no type labels ever shown.
  *
- * ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- * SIGNAL PRIORITY (highest → lowest confidence)
+ * \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501
+ * SIGNAL PRIORITY (highest \u2192 lowest confidence)
  *
- *  1. Explicit seeds  — set during onboarding orientation step
- *  2. Behavioral signals — mood_logs + energy_forecasts, subject to
+ *  1. Explicit seeds  \u2014 set during onboarding orientation step
+ *  2. Behavioral signals \u2014 mood_logs + energy_forecasts, subject to
  *       data-quality guardrails (see DATA QUALITY section below)
- *  3. Authority-based defaults — grounded in educational-psychology lit
+ *  3. Authority-based defaults \u2014 grounded in educational-psychology lit
  *       (Vygotsky, Kolb; teachers=reflective/deep, students=social/active)
- *  4. Neutral fallback (all 50) — only when authority is unknown
+ *  4. Neutral fallback (all 50) \u2014 only when authority is unknown
  *
  * DATA QUALITY GUARDRAILS
- * ───────────────────────
+ * \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
  * Raw behavioral data can be misleading in several ways:
  *
- *   • All-same input   user always taps "5" — high avg, near-zero
- *                      variance → appears "very active"; really just habit.
+ *   \u2022 All-same input   user always taps "5" \u2014 high avg, near-zero
+ *                      variance \u2192 appears "very active"; really just habit.
  *                      Guard: signalConsistency() returns ~0 for flat series.
  *
- *   • Too sparse       2-3 entries — any pattern is noise.
+ *   \u2022 Too sparse       2-3 entries \u2014 any pattern is noise.
  *                      Guard: hard minimums (MOOD_MIN_SAMPLES=7, ENERGY_MIN=5).
  *
- *   • Stale data       all entries from 6 weeks ago — not representative now.
+ *   \u2022 Stale data       all entries from 6 weeks ago \u2014 not representative now.
  *                      Guard: recentWeightedAvg() uses exponential decay
  *                      (half-life = 14 days); old entries matter very little.
  *
- *   • Single-session   user logs 10 times on day one then never again.
+ *   \u2022 Single-session   user logs 10 times on day one then never again.
  *     burst            Looks like rich data; is really one data point.
- *                      Guard: uniqueDays() count; < 3 unique days → treated
+ *                      Guard: uniqueDays() count; < 3 unique days \u2192 treated
  *                      as sparse regardless of total count.
  *
- *   • Contradiction    mood signals "active" but energy signals "depleted".
+ *   \u2022 Contradiction    mood signals "active" but energy signals "depleted".
  *                      Trusting either would miscalibrate reflect_act.
  *                      Guard: cross-signal contradiction check; if mood and
  *                      energy point in opposite directions on the same dim,
  *                      behavioralWeight for that dim is halved.
  *
- * The resulting `behavioralWeight` (0–1) scales how much the behavioral
+ * The resulting `behavioralWeight` (0\u20131) scales how much the behavioral
  * layer moves the needle away from authority defaults.  Explicit seeds are
- * never down-weighted — they represent deliberate user intent.
+ * never down-weighted \u2014 they represent deliberate user intent.
  *
  * EPHEMERALITY
- * ────────────
+ * \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
  * Seeds are computed on-device each mount.  Nothing is persisted unless
  * the user explicitly completed the orientation step.  Privacy-first.
- * ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ * \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501
  */
 
 import { useMemo } from 'react';
@@ -83,10 +83,10 @@ interface AuthorityDefaults {
 const AUTHORITY_DEFAULTS: Record<string, AuthorityDefaults> = {
     student: { depth_breadth: 60, reflect_act: 65, solo_social: 65, steady_surge: 60 },
     teacher: { depth_breadth: 35, reflect_act: 35, solo_social: 55, steady_surge: 40 },
-    grade_head: { depth_breadth: 30, reflect_act: 30, solo_social: 55, steady_surge: 35 },
-    section_head: { depth_breadth: 30, reflect_act: 30, solo_social: 55, steady_surge: 35 },
+    gradeHead: { depth_breadth: 30, reflect_act: 30, solo_social: 55, steady_surge: 35 },
+    sectionHead: { depth_breadth: 30, reflect_act: 30, solo_social: 55, steady_surge: 35 },
     principal: { depth_breadth: 25, reflect_act: 25, solo_social: 60, steady_surge: 30 },
-    founder: { depth_breadth: 65, reflect_act: 60, solo_social: 70, steady_surge: 65 },
+    developer: { depth_breadth: 65, reflect_act: 60, solo_social: 70, steady_surge: 65 },
     admin: { depth_breadth: 50, reflect_act: 50, solo_social: 55, steady_surge: 50 },
 };
 
@@ -141,7 +141,7 @@ function recentWeightedAvg(
 }
 
 /**
- * Signal consistency score — 0 to 1.
+ * Signal consistency score \u2014 0 to 1.
  *
  * A FLAT series (all same value) has near-zero information content:
  * user is on auto-pilot, not expressing a real tendency.
@@ -151,9 +151,9 @@ function recentWeightedAvg(
  *
  * The sweet spot is a series with moderate, interpretable variance.
  * We model this as a tent function over the coefficient of variation (CV):
- *   CV < 0.05  → flat/habitual (low consistency score)
- *   CV 0.10–0.30 → clear signal (high consistency score)
- *   CV > 0.55  → pure noise (low consistency score)
+ *   CV < 0.05  \u2192 flat/habitual (low consistency score)
+ *   CV 0.10\u20130.30 \u2192 clear signal (high consistency score)
+ *   CV > 0.55  \u2192 pure noise (low consistency score)
  */
 function signalConsistency(values: number[]): number {
     if (values.length < 2) return 0;
@@ -164,7 +164,7 @@ function signalConsistency(values: number[]): number {
     const cv = sd / mean; // coefficient of variation
 
     // Tent function: peak at cv=0.20
-    if (cv < 0.05) return cv / 0.05 * 0.3;          // flat → low but not zero
+    if (cv < 0.05) return cv / 0.05 * 0.3;          // flat \u2192 low but not zero
     if (cv <= 0.30) return 0.3 + (cv - 0.05) / 0.25 * 0.7; // rising to 1.0
     if (cv <= 0.55) return 1.0 - (cv - 0.30) / 0.25 * 0.7; // falling
     return Math.max(0, 1.0 - (cv - 0.55) / 0.45);          // noise floor
@@ -176,8 +176,8 @@ function signalConsistency(values: number[]): number {
 
 /** Per-dimension result with its own quality weight */
 interface DimSignal {
-    value: number;   // 0–100
-    weight: number;  // 0–1, how much to trust this specific signal
+    value: number;   // 0\u2013100
+    weight: number;  // 0\u20131, how much to trust this specific signal
 }
 
 interface QualifiedSignals {
@@ -188,7 +188,7 @@ interface QualifiedSignals {
 
 interface DeriveResult {
     signals: QualifiedSignals;
-    /** Overall behavioral data quality 0–1 */
+    /** Overall behavioral data quality 0\u20131 */
     quality: number;
 }
 
@@ -201,7 +201,7 @@ function deriveFromBehavior(
     let qualityPoints = 0;
     let qualityDivisor = 0;
 
-    // ── MOOD signals ──────────────────────────────────────────────────────────
+    // \u2500\u2500 MOOD signals \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
     const moodDays = uniqueDays(moodLogs.map(l => l.created_at));
     const moodReady = moodLogs.length >= MOOD_MIN_SAMPLES && moodDays >= MIN_UNIQUE_DAYS;
 
@@ -216,14 +216,14 @@ function deriveFromBehavior(
             const moodWeight = Math.min(1, consistency *
                 Math.min(1, moodDays / 10)); // cap at 10 distinct days
 
-            // High recent mood → more action-oriented
+            // High recent mood \u2192 more action-oriented
             if (recentAvg >= 3.8) {
                 signals.reflect_act = { value: 58, weight: moodWeight };
             } else if (recentAvg <= 2.5) {
                 signals.reflect_act = { value: 40, weight: moodWeight };
             }
 
-            // Variance → surge tendency (only if consistent enough)
+            // Variance \u2192 surge tendency (only if consistent enough)
             const variance = scores.reduce((a, v) => a + (v - recentAvg) ** 2, 0) / scores.length;
             if (variance > 1.2 && consistency > 0.2) {
                 signals.steady_surge = { value: 65, weight: moodWeight * 0.8 };
@@ -236,7 +236,7 @@ function deriveFromBehavior(
         qualityDivisor += 1;
     }
 
-    // ── ENERGY signals ────────────────────────────────────────────────────────
+    // \u2500\u2500 ENERGY signals \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
     const energyDays = uniqueDays(energyForecasts.map(f => f.forecast_date));
     const energyReady = energyForecasts.length >= ENERGY_MIN_SAMPLES && energyDays >= MIN_UNIQUE_DAYS;
 
@@ -268,9 +268,9 @@ function deriveFromBehavior(
         qualityDivisor += 1;
     }
 
-    // ── Cross-signal contradiction check ─────────────────────────────────────
+    // \u2500\u2500 Cross-signal contradiction check \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
     // If mood and energy point in opposite directions on reflect_act,
-    // we have a contradiction — dampen both to avoid miscalibration.
+    // we have a contradiction \u2014 dampen both to avoid miscalibration.
     if (moodReady && energyReady && signals.reflect_act) {
         const moodScores = moodLogs.map(l => l.mood_score);
         const energyLevels = energyForecasts.map(f => f.energy_level);
@@ -281,7 +281,7 @@ function deriveFromBehavior(
         const energyDirection = energyRecentAvg >= 3.5 ? 1 : energyRecentAvg <= 2.5 ? -1 : 0;
 
         if (moodDirection !== 0 && energyDirection !== 0 && moodDirection !== energyDirection) {
-            // Contradiction: scale back — blend to neutral 50 by halving each signal's weight
+            // Contradiction: scale back \u2014 blend to neutral 50 by halving each signal's weight
             signals.reflect_act = {
                 value: 50 + (signals.reflect_act.value - 50) * 0.5,
                 weight: signals.reflect_act.weight * 0.5,
@@ -303,7 +303,6 @@ function clamp(v: number): number {
 }
 
 const DIMS = ['depth_breadth', 'reflect_act', 'solo_social', 'steady_surge'] as const;
-type Dim = typeof DIMS[number];
 
 /**
  * Layered merge with per-signal quality weights.
@@ -314,7 +313,7 @@ type Dim = typeof DIMS[number];
  *   - Role default: baseline when no higher-quality data exists
  *
  * The `overallBehavioralQuality` parameter caps how far behavioral signals
- * can move dimensions away from role defaults — poor-quality data can only
+ * can move dimensions away from role defaults \u2014 poor-quality data can only
  * nudge by a small amount even if its local weight is high.
  */
 function mergeLayers(
@@ -341,8 +340,8 @@ function mergeLayers(
                 merged[dim] = hasExplicit ? (explicitValue as number) : authorityDef;
             }
         } else if (sig) {
-            // Behavioral signal present — blend proportionally to quality
-            const blendRatio = sig.weight * overallBehavioralQuality; // 0–1
+            // Behavioral signal present \u2014 blend proportionally to quality
+            const blendRatio = sig.weight * overallBehavioralQuality; // 0\u20131
             merged[dim] = clamp(authorityDef * (1 - blendRatio) + sig.value * blendRatio);
         } else {
             // Authority default only
@@ -375,15 +374,15 @@ function mergeLayers(
 // ============================================================================
 
 export interface UseOrientationInferenceInput {
-    /** Explicit seeds from onboarding — null/undefined if skipped */
+    /** Explicit seeds from onboarding \u2014 null/undefined if skipped */
     explicitSeeds?: OrientationSeeds | null;
     /** Recent mood logs from useMoodLogs */
     moodLogs?: MoodLog[];
     /** Recent energy forecasts from useEnergyForecast */
     energyForecasts?: EnergyForecast[];
-    /** User's authority — used for authority defaults */
+    /** User's authority \u2014 used for authority defaults */
     authority?: AuthorityTier | null;
-    /** Student grade number — narrows student defaults */
+    /** Student grade number \u2014 narrows student defaults */
     gradeNumber?: number | null;
 }
 
@@ -392,19 +391,19 @@ export type DataQuality = 'strong' | 'emerging' | 'default';
 
 export interface UseOrientationInferenceResult {
     seeds: OrientationSeeds;
-    /** True if based purely on role defaults — no behavioral data yet */
+    /** True if based purely on role defaults \u2014 no behavioral data yet */
     isDefault: boolean;
     /**
-     * Confidence 0–1: overall trustworthiness of the fingerprint.
-     * Explicit seeds → ≥0.9; rich behavioral data → 0.5–0.8;
-     * authority defaults only → 0.2.
+     * Confidence 0\u20131: overall trustworthiness of the fingerprint.
+     * Explicit seeds \u2192 \u22650.9; rich behavioral data \u2192 0.5\u20130.8;
+     * authority defaults only \u2192 0.2.
      */
     confidence: number;
     /**
      * Human-readable data quality band for UI use.
-     * 'strong'   — explicit seeds OR consistent multi-week behavioral data
-     * 'emerging' — behavioral signals present but still accumulating
-     * 'default'  — authority-based baseline only, no behavioral data yet
+     * 'strong'   \u2014 explicit seeds OR consistent multi-week behavioral data
+     * 'emerging' \u2014 behavioral signals present but still accumulating
+     * 'default'  \u2014 authority-based baseline only, no behavioral data yet
      */
     dataQuality: DataQuality;
 }

@@ -1,25 +1,20 @@
 import React, { useMemo } from 'react';
 import { View, StyleSheet, Platform } from 'react-native';
 import { SanctuaryCanvas } from './SanctuaryCanvas';
-import { useAnalytics } from '@repo/analytics';
+
 
 interface ResonanceVisualizerProps {
   score: number; // 0-100
   size?: number;
 }
 
-/**
- * ResonanceVisualizer combines Analytics data with Sanctuary Graphics.
- * It demonstrates a DRY way to link data to visual states.
- */
-import { useResonance } from '@repo/core';
+import { useActivityPulse } from '@repo/core';
 
 export const ResonanceVisualizer: React.FC<ResonanceVisualizerProps> = ({
   score,
   size = 200,
 }) => {
-  const { track } = useAnalytics();
-  const { state } = useResonance();
+  const { state } = useActivityPulse();
 
   // Map score AND pulse to resonance intensity
   const intensity = useMemo(() => {
@@ -27,11 +22,6 @@ export const ResonanceVisualizer: React.FC<ResonanceVisualizerProps> = ({
     const pulseBoost = state.pulse * 0.4;
     return Math.min(1, base + pulseBoost);
   }, [score, state.pulse]);
-  
-  // Track that we are visualizing resonance (Auto-analytics!)
-  React.useEffect(() => {
-    track('resonance_visualized', { score, intensity });
-  }, [score, intensity]);
 
   if (Platform.OS === 'web') {
     // Un-shimmed Web implementation using CSS gradients and animations

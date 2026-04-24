@@ -1,26 +1,29 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { StyleSheet, View, useWindowDimensions, TouchableOpacity, FlatList, ActivityIndicator, ScrollView, Alert } from 'react-native';
+import { useWindowDimensions, ActivityIndicator, Alert, StyleSheet } from 'react-native';
 import {
     ScreenWrapper,
     GlobalHeader,
-    useThemedColors,
+    useTheme,
     Theme,
     Box,
     Text,
-    HorizontalChipRow,
     HStack,
     VStack,
+    Pressable,
+    ScrollView,
+    Icon as SanctuaryIcon,
+    View,
 } from '@repo/ui';
 import Animated, {
     useSharedValue,
     useAnimatedStyle,
     withSpring,
-    FadeIn,
-    FadeOut,
     FadeInDown
 } from 'react-native-reanimated';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { BlurView } from 'expo-blur';
+// @ts-ignore - nativewind is added to package.json but may not be indexed yet
+import { cssInterop } from 'nativewind';
 import { useNavigation } from '@react-navigation/native';
 import {
     X,
@@ -30,24 +33,23 @@ import {
     Network,
     BarChart3,
     Wind,
-    FileCheck,
-    Compass,
-    Search
+    FileCheck
 } from 'lucide-react-native';
 import { libraryAPI } from '../api/library';
-import { usePermissions } from '@repo/core';
-import { SRI_LANKAN_PROVINCES, SRI_LANKAN_DISTRICTS } from '@repo/core';
+import { usePermissions, FeatureGuard } from '@repo/core';
 import { KnowledgeTopology, KnowledgeNode } from '../types/Library';
 import { AstroView } from '../components/perspectives/AstroView';
 import { VastuView } from '../components/perspectives/VastuView';
 import { JyotiView } from '../components/perspectives/JyotiView';
 import { TerraView } from '../components/perspectives/TerraView';
 import { DharmaView } from '../components/perspectives/DharmaView';
-import { VatyaView } from '../components/perspectives/VatyaView'; // Added VatyaView import
+import { VatyaView } from '../components/perspectives/VatyaView';
 import { usePerspectiveLayout } from '../hooks/usePerspectiveLayout';
 import { getAvailablePerspectives as getEnginePerspectives, KnowledgeParser, CaptureEngine } from '@repo/graphics';
 
-type PerspectiveId = 'astro' | 'terra' | 'dharma' | 'vastu' | 'jyoti' | 'vatya'; // Added 'vatya'
+cssInterop(BlurView, { className: 'style' });
+
+type PerspectiveId = 'astro' | 'terra' | 'dharma' | 'vastu' | 'jyoti' | 'vatya';
 
 interface Perspective {
     id: PerspectiveId;
@@ -63,7 +65,7 @@ const PERSPECTIVES: Perspective[] = [
     { id: 'dharma', label: 'Path', icon: Route, description: 'Sequential learning pathways' },
     { id: 'vastu', label: 'Structure', icon: Network, description: 'Mind maps & hierarchies' },
     { id: 'jyoti', label: 'Insight', icon: BarChart3, description: 'Analytic charts & metrics' },
-    { id: 'vatya', label: 'Vatya', icon: Wind, description: 'Dynamic flow of knowledge' }, // Added Vatya perspective
+    { id: 'vatya', label: 'Vatya', icon: Wind, description: 'Dynamic flow of knowledge' },
 ];
 
 const getAvailablePerspectives = (topology: any) => {
@@ -76,9 +78,8 @@ const getAvailablePerspectives = (topology: any) => {
 };
 
 export default function MapScreen() {
-    const colors = useThemedColors();
-    const { context } = usePermissions();
-    const role = context.roles[0];
+    const theme = useTheme();
+    const { can, flags } = usePermissions();
     const navigation = useNavigation();
     const { width, height } = useWindowDimensions();
     
@@ -87,16 +88,11 @@ export default function MapScreen() {
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState<KnowledgeTopology | null>(null);
     const [selectedNode, setSelectedNode] = useState<KnowledgeNode | null>(null);
-    const [geoData, setGeoData] = useState<any[] | null>(null);
-    const [geoQueryLoading, setGeoQueryLoading] = useState(false);
 
-    // Zoom and Pan state
+    // Zoom and Pan state for layout reference (though views handle their own state)
     const scale = useSharedValue(1);
-    const savedScale = useSharedValue(1);
     const translateX = useSharedValue(0);
     const translateY = useSharedValue(0);
-    const savedTranslateX = useSharedValue(0);
-    const savedTranslateY = useSharedValue(0);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -111,27 +107,11 @@ export default function MapScreen() {
             }
         };
 
-        const fetchGeoData = async () => {
-            if (geoData) return;
-            setGeoQueryLoading(true);
-            try {
-                const schools = await libraryAPI.getGeoTopology();
-                setGeoData(schools);
-            } catch (err) {
-                console.error('Failed to load geo data', err);
-            } finally {
-                setGeoQueryLoading(false);
-            }
-        };
-
         fetchData();
-        if (activePerspective === 'terra') fetchGeoData();
-    }, [activePerspective]);
+    }, []);
 
-    // Simulation: Load Mermaid data if AI mode is active
     const activeData = useMemo(() => {
-        if (activePerspective === 'astro' && !data?.nodes.length) {
-            // Demonstration of Mermaid Parsing
+        if (activePerspective === 'astro' && !data?.nodes?.length) {
             return KnowledgeParser.fromMermaid(`
                 graph TD
                 A[Retina Engine] --> B[Astro View]
@@ -154,7 +134,6 @@ export default function MapScreen() {
     const handleExport = async () => {
         setIsExporting(true);
         try {
-            // In native, we demonstrate the isomorphic intent with the layout data
             const snapshot = CaptureEngine.prepareForCapture(activeData as any);
             console.log('--- NATIVE VISUALIZATION CAPTURED ---');
             console.log('Snapshot Nodes:', snapshot.nodes.length);
@@ -178,17 +157,13 @@ export default function MapScreen() {
             translateX.value = withSpring(width / 2 - pos.x);
             translateY.value = withSpring(height / 2.5 - pos.y);
             scale.value = withSpring(2);
-            
-            savedTranslateX.value = width / 2 - pos.x;
-            savedTranslateY.value = height / 2.5 - pos.y;
-            savedScale.value = 2;
         }
     };
 
-    const renderContent = () => {
+    const renderTodayZone = () => {
         if (loading) {
             return (
-                <Box sx={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <Box className="flex-1 justify-center items-center">
                     <ActivityIndicator size="large" color={Theme.colors.sanctuarySaffron} />
                 </Box>
             );
@@ -253,12 +228,25 @@ export default function MapScreen() {
             );
         }
 
+        if (activePerspective === 'vatya' && data && layout) {
+            return (
+                <VatyaView 
+                    data={data as any} 
+                    layout={layout} 
+                    width={width}
+                    height={height}
+                />
+            );
+        }
+
         return (
-            <Box sx={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <Box className="flex-1 justify-center items-center">
                 <ActivityIndicator color={Theme.colors.sanctuarySaffron} />
             </Box>
         );
     };
+
+    const accentColor = theme.accent.action;
 
     return (
         <ScreenWrapper scroll={false}>
@@ -268,48 +256,48 @@ export default function MapScreen() {
                 showBack
                 onBack={() => navigation.goBack()}
                 rightAction={
-                    <TouchableOpacity 
-                        onPress={handleExport}
-                        disabled={isExporting}
-                        style={{ 
-                            paddingHorizontal: 16, 
-                            paddingVertical: 8, 
-                            borderRadius: 12, 
-                            backgroundColor: colors.action + '20',
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            opacity: isExporting ? 0.5 : 1,
-                            marginRight: 12
-                        }}
-                    >
-                        <FileCheck size={18} color={colors.action} style={{ marginRight: 8 }} />
-                        <Text sx={{ color: colors.action, fontSize: 13, fontWeight: '700' }}>
-                            {isExporting ? '...' : 'EXPORT'}
-                        </Text>
-                    </TouchableOpacity>
+                    <FeatureGuard feature="isProMember">
+                        <Pressable 
+                            onPress={handleExport}
+                            disabled={isExporting}
+                            className="flex-row items-center px-4 py-2 rounded-xl mr-3"
+                            style={({ pressed }) => ({ 
+                                backgroundColor: `${accentColor}20`,
+                                opacity: (isExporting || pressed) ? 0.5 : 1,
+                            })}
+                        >
+                            <SanctuaryIcon as={FileCheck} size={18} color={accentColor} className="mr-2" />
+                            <Text className="text-xs font-bold" style={{ color: accentColor }}>
+                                {isExporting ? '...' : 'EXPORT'}
+                            </Text>
+                        </Pressable>
+                    </FeatureGuard>
                 }
             />
 
-            <Box sx={{ p: 12, backgroundColor: colors.backgroundDark }}>
+            <Box className="p-3 bg-phase-surface">
                 <View style={styles.perspectiveSwitcherContainer}>
-                    <BlurView intensity={30} tint="dark" style={styles.blurContainer}>
+                    {/* @ts-ignore - className resolved via cssInterop */}
+                    <BlurView intensity={30} tint="dark" className="flex-row">
                         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ padding: 6 }}>
                             {getAvailablePerspectives(data).map((p) => {
                                 const isActive = activePerspective === p.id;
                                 const isDisabled = p.disabled;
                                 const Icon = p.icon;
                                 return (
-                                    <TouchableOpacity 
+                                    <Pressable 
                                         key={p.id}
                                         onPress={() => !isDisabled && setActivePerspective(p.id)}
                                         disabled={isDisabled}
-                                        style={[
+                                        style={({ pressed }) => [
                                             styles.perspectiveButton,
                                             isActive && styles.activePerspectiveButton,
-                                            isDisabled && { opacity: 0.3 }
+                                            isDisabled && { opacity: 0.3 },
+                                            pressed && { opacity: 0.8 }
                                         ]}
                                     >
-                                        <Icon 
+                                        <SanctuaryIcon 
+                                            as={Icon}
                                             size={18} 
                                             color={isActive ? Theme.colors.sanctuarySaffron : Theme.colors.starlightGray} 
                                         />
@@ -319,7 +307,7 @@ export default function MapScreen() {
                                         ]}>
                                             {p.label}
                                         </Text>
-                                    </TouchableOpacity>
+                                    </Pressable>
                                 );
                             })}
                         </ScrollView>
@@ -328,56 +316,51 @@ export default function MapScreen() {
             </Box>
 
             <GestureHandlerRootView style={{ flex: 1 }}>
-                <Box sx={{ 
-                    flex: 1, 
-                    backgroundColor: colors.obsidian || colors.black,
-                    overflow: 'hidden'
-                }}>
-                    {renderContent()}
+                <Box className="flex-1 bg-phase-surface overflow-hidden">
+                    {renderTodayZone()}
 
                     {selectedNode && (
                         <Animated.View 
                             entering={FadeInDown}
                             style={styles.nodeSheetContainer}
                         >
-                            <BlurView intensity={30} tint="dark" style={styles.blurSheet}>
-                                <VStack spacing={12}>
-                                    <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                            {/* @ts-ignore - className resolved via cssInterop */}
+                            <BlurView intensity={25} tint="dark" className="p-4 rounded-3xl border border-white/5">
+                                <VStack className="gap-3">
+                                    <HStack className="justify-between items-center">
                                         <VStack>
-                                            <Text sx={{ fontSize: 20, fontWeight: '900', color: Theme.colors.sacredWhite }}>
+                                            <Text className="text-xl font-black text-white">
                                                 {selectedNode.label}
                                             </Text>
-                                            <Text sx={{ fontSize: 12, fontWeight: '700', color: Theme.colors.sanctuarySaffron, textTransform: 'uppercase' }}>
-                                                {selectedNode.type} • {selectedNode.group}
+                                            <Text className="text-xs font-bold text-phase-accent uppercase">
+                                                {selectedNode.type} \u00B7 {selectedNode.group}
                                             </Text>
                                         </VStack>
-                                        <TouchableOpacity onPress={() => setSelectedNode(null)}>
-                                            <Box sx={{ p: 8, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.1)' }}>
-                                                <X size={20} color={colors.textPrimary} />
+                                        <Pressable onPress={() => setSelectedNode(null)}>
+                                            <Box className="p-2 rounded-full bg-white/10">
+                                                <SanctuaryIcon as={X} size={20} color={theme.text.primary} />
                                             </Box>
-                                        </TouchableOpacity>
+                                        </Pressable>
                                     </HStack>
 
                                     {selectedNode.metadata?.description && (
-                                        <Text sx={{ fontSize: 14, color: Theme.colors.starlightGray, lineHeight: 20 }}>
+                                        <Text className="text-sm text-phaseText-secondary leading-5">
                                             {selectedNode.metadata.description}
                                         </Text>
                                     )}
 
-                                    <TouchableOpacity 
-                                        style={[styles.actionButton, { backgroundColor: Theme.colors.sanctuarySaffron }]}
+                                    <Pressable 
+                                        className="h-14 rounded-[28px] justify-center items-center mt-2 bg-phase-accent active:opacity-90"
                                         onPress={() => {
-                                            // @ts-ignore
                                             if (selectedNode.type === 'resource') {
-                                                // @ts-ignore
-                                                navigation.navigate('ResourceDetail', { id: selectedNode.id });
+                                                (navigation as any).navigate('ResourceDetail', { id: selectedNode.id });
                                             }
                                         }}
                                     >
-                                        <Text sx={{ color: colors.obsidian || '#000', fontWeight: '800' }}>
+                                        <Text className="text-phase-surface font-extrabold">
                                             {selectedNode.type === 'topic' ? 'Explore Knowledge' : 'Begin Learning'}
                                         </Text>
-                                    </TouchableOpacity>
+                                    </Pressable>
                                 </VStack>
                             </BlurView>
                         </Animated.View>
@@ -394,9 +377,6 @@ const styles = StyleSheet.create({
         overflow: 'hidden',
         borderWidth: 1,
         borderColor: 'rgba(255, 255, 255, 0.1)',
-    },
-    blurContainer: {
-        flexDirection: 'row',
     },
     perspectiveButton: {
         paddingHorizontal: 16,
@@ -430,36 +410,17 @@ const styles = StyleSheet.create({
         overflow: 'hidden',
         borderWidth: 1,
         borderColor: 'rgba(255, 255, 255, 0.1)',
-    },
-    blurSheet: {
-        padding: 24,
-    },
-    actionButton: {
-        height: 56,
-        borderRadius: 28,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: 8
     }
 });
 
 function StatCardNative({ label, value, icon: Icon }: { label: string; value: number; icon: any }) {
     return (
-        <Box sx={{ 
-            flex: 1, 
-            backgroundColor: 'rgba(255,255,255,0.05)', 
-            padding: 16, 
-            borderRadius: 20,
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: 12
-        }}>
-            <Icon size={20} color={Theme.colors.sanctuarySaffron} />
+        <Box className="flex-1 bg-white/5 p-4 rounded-3xl flex-row items-center gap-3">
+            <SanctuaryIcon as={Icon} size={20} color={Theme.colors.sanctuarySaffron} />
             <VStack>
-                <Text sx={{ fontSize: 10, color: Theme.colors.starlightGray }}>{label}</Text>
-                <Text sx={{ fontSize: 18, fontWeight: '900', color: Theme.colors.sacredWhite }}>{value}</Text>
+                <Text className="text-[10px] text-phaseText-tertiary">{label}</Text>
+                <Text className="text-lg font-black text-white">{value}</Text>
             </VStack>
         </Box>
     );
 }
-

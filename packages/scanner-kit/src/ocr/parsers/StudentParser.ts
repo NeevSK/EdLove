@@ -1,21 +1,21 @@
 /**
- * StudentParser — extracts ScannedStudent rows from an OCRRawResult
+ * StudentParser \u2014 extracts ScannedStudent rows from an OCRRawResult
  *
  * Upgraded from OCRScanner.tsx's inline parseStudentData():
  * - Takes OCRRawResult (not raw string) for block-level processing
- * - Per-block confidence gating (< 0.4 → flagged as uncertain)
+ * - Per-block confidence gating (< 0.4 \u2192 flagged as uncertain)
  * - Handles pipe/tab delimited, double-space delimited, and heuristic patterns
- * - Supports Sinhala (U+0D80–U+0DFF) and Tamil (U+0B80–U+0BFF) scripts
+ * - Supports Sinhala (U+0D80\u2013U+0DFF) and Tamil (U+0B80\u2013U+0BFF) scripts
  */
 
 import type { OCRRawResult } from '../types';
-import type { ScannedStudent } from '../../OCRScanner';
+import type { ScannedStudent } from '../../types';
 
 /** Minimum confidence to consider a block reliable */
 const CONFIDENCE_THRESHOLD = 0.4;
 
 export interface ParsedStudent extends ScannedStudent {
-  /** Overall line confidence (0–1), averaged from blocks */
+  /** Overall line confidence (0\u20131), averaged from blocks */
   confidence: number;
   /** True when confidence is below CONFIDENCE_THRESHOLD */
   uncertain: boolean;
@@ -51,7 +51,7 @@ export function parseStudents(result: OCRRawResult): ParsedStudent[] {
   );
 }
 
-// ── Line extraction ────────────────────────────────────────────────────────
+// \u2500\u2500 Line extraction \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 interface RawLine {
   text: string;
@@ -60,7 +60,7 @@ interface RawLine {
 
 function buildLines(result: OCRRawResult): RawLine[] {
   if (result.blocks.length === 0) {
-    // Plain text fallback — no block data available
+    // Plain text fallback \u2014 no block data available
     return result.text
       .split('\n')
       .filter(t => t.trim().length > 0)
@@ -73,10 +73,10 @@ function buildLines(result: OCRRawResult): RawLine[] {
   }));
 }
 
-// ── Header detection ───────────────────────────────────────────────────────
+// \u2500\u2500 Header detection \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 const HEADER_KEYWORDS = [
-  'name', 'index', 'no.', 'number', 'ශිෂ්‍ය', 'නම', 'எண்', 'மாணவர்',
+  'name', 'index', 'no.', 'number', '\u0DC1\u0DD2\u0DC2\u0DCA\u200D\u0DBA', '\u0DB1\u0DB8', '\u0B8E\u0BA3\u0BCD', '\u0BAE\u0BBE\u0BA3\u0BB5\u0BB0\u0BCD',
 ];
 
 function isHeaderLine(line: string): boolean {
@@ -88,10 +88,10 @@ function isHeaderLine(line: string): boolean {
   );
 }
 
-// ── Per-line parsing strategies ────────────────────────────────────────────
+// \u2500\u2500 Per-line parsing strategies \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 function parseLine(line: string): ScannedStudent | null {
-  // Strategy 1: pipe or tab delimited  →  "Name | Index"
+  // Strategy 1: pipe or tab delimited  \u2192  "Name | Index"
   if (line.includes('|') || line.includes('\t')) {
     const parts = line.split(/[|\t]/).map(p => p.trim()).filter(Boolean);
     if (parts.length >= 2) {
@@ -99,7 +99,7 @@ function parseLine(line: string): ScannedStudent | null {
     }
   }
 
-  // Strategy 2: double-space delimited  →  "Kamal Perera   42"
+  // Strategy 2: double-space delimited  \u2192  "Kamal Perera   42"
   const spaceSplit = line.split(/\s{2,}/).map(p => p.trim()).filter(Boolean);
   if (spaceSplit.length >= 2) {
     const possibleIndex = spaceSplit.find(part => /^\d+$/.test(part));
@@ -113,7 +113,7 @@ function parseLine(line: string): ScannedStudent | null {
     }
   }
 
-  // Strategy 3: heuristic — line with both a name-like substring and a number
+  // Strategy 3: heuristic \u2014 line with both a name-like substring and a number
   const HAS_NUMBERS = /\d+/.test(line);
   const HAS_LETTERS = /[a-zA-Z\u0D80-\u0DFF\u0B80-\u0BFF]{3,}/.test(line);
 

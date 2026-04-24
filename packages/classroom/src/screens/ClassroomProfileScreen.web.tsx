@@ -26,24 +26,33 @@ export default function ClassroomProfileScreenWeb({ classroomId }: { classroomId
     const { classroom, loading, updateField, isEditable } = useClassroomProfile(classroomId);
 
     if (loading) return <div style={{ padding: '40px' }}><SkeletonCard /></div>;
-    if (!classroom) return <div style={{ padding: '40px', textAlign: 'center' }}>Classroom not found</div>;
+    if (!classroom) return <div style={{ padding: '40px', textAlign: 'center', color: colors.textSecondary }}>Classroom not found</div>;
 
     return (
         <div className="sub-view-container" style={{ maxWidth: '1000px', margin: '0 auto', padding: '40px 24px' }}>
-             <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '32px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '32px' }}>
                 <button
                     onClick={() => navigation.goBack()}
                     className="secondary-button"
-                    style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px' }}
+                    style={{ 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        gap: '6px', 
+                        padding: '8px 16px',
+                        background: colors.tertiary,
+                        border: `1px solid ${colors.border}`,
+                        borderRadius: '12px',
+                        color: colors.text,
+                        cursor: 'pointer'
+                    }}
                 >
-                    <ArrowLeft size={16} /> Back
+                    <ArrowLeft size={16} /> {t('common.back') || 'Back'}
                 </button>
             </div>
-
+            
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '32px' }}>
-                
                 <div>
-                    <div className="sanctuary-card" style={{ padding: '40px', marginBottom: '24px' }}>
+                    <div className="sanctuary-card" style={{ padding: '40px', marginBottom: '24px', backgroundColor: colors.secondary, borderRadius: '24px', border: `1px solid ${colors.border}` }}>
                         <div style={{ display: 'flex', gap: '32px', alignItems: 'flex-start' }}>
                             <div style={{ padding: '24px', background: 'var(--accent-action-soft)', borderRadius: '24px' }}>
                                 <GraduationCap size={48} color="var(--accent-action)" />
@@ -60,7 +69,7 @@ export default function ClassroomProfileScreenWeb({ classroomId }: { classroomId
                                     disabled={!isEditable}
                                 />
                                 
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--ink-ghost)', marginTop: '8px' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: colors.textTertiary, marginTop: '8px' }}>
                                     <BookOpen size={14} />
                                     <span style={{ fontSize: '14px', fontWeight: '600' }}>
                                         {classroom.subject || 'General Studies'}
@@ -69,9 +78,9 @@ export default function ClassroomProfileScreenWeb({ classroomId }: { classroomId
                             </div>
                         </div>
                     </div>
-
-                    <div className="sanctuary-card" style={{ padding: '32px' }}>
-                        <h3 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '20px' }}>Description</h3>
+                    
+                    <div className="sanctuary-card" style={{ padding: '32px', backgroundColor: colors.secondary, borderRadius: '24px', border: `1px solid ${colors.border}` }}>
+                        <h3 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '20px', color: colors.text }}>Description</h3>
                         <EditableItem
                             icon={BookOpen}
                             label="Classroom Description"
@@ -84,12 +93,12 @@ export default function ClassroomProfileScreenWeb({ classroomId }: { classroomId
                         />
                     </div>
                 </div>
-
+                
                 <div>
-                    <div className="sanctuary-card" style={{ padding: '24px', marginBottom: '24px' }}>
+                    <div className="sanctuary-card" style={{ padding: '24px', marginBottom: '24px', backgroundColor: colors.secondary, borderRadius: '24px', border: `1px solid ${colors.border}` }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
-                            <User size={16} color="var(--ink-ghost)" />
-                            <span style={{ fontSize: '13px', fontWeight: '700' }}>Teacher</span>
+                            <User size={16} color={colors.textTertiary} />
+                            <span style={{ fontSize: '13px', fontWeight: '700', color: colors.textTertiary }}>Teacher</span>
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                              <AvatarDisplay 
@@ -99,21 +108,20 @@ export default function ClassroomProfileScreenWeb({ classroomId }: { classroomId
                                 peekable={true}
                                 peekType="user"
                              />
-                             <div style={{ fontSize: '14px', fontWeight: '600' }}>Teacher In Charge</div>
+                             <div style={{ fontSize: '14px', fontWeight: '600', color: colors.text }}>Teacher In Charge</div>
                         </div>
                     </div>
-
-                    <div className="sanctuary-card" style={{ padding: '24px', background: 'var(--background-alt)' }}>
-                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
-                            <Clock size={16} color="var(--ink-ghost)" />
-                            <span style={{ fontSize: '13px', fontWeight: '700' }}>Academic Year</span>
+                    
+                    <div className="sanctuary-card" style={{ padding: '24px', backgroundColor: colors.tertiary, borderRadius: '24px', border: `1px solid ${colors.border}` }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
+                            <Clock size={16} color={colors.textTertiary} />
+                            <span style={{ fontSize: '13px', fontWeight: '700', color: colors.textTertiary }}>Academic Year</span>
                         </div>
-                        <div style={{ fontSize: '14px', color: 'var(--ink-ghost)' }}>
+                        <div style={{ fontSize: '14px', color: colors.textSecondary }}>
                              {classroom.academic_year || 'Current'}
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     );

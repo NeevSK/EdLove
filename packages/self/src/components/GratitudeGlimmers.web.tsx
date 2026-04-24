@@ -7,7 +7,6 @@
  * Metro resolves this over GratitudeGlimmers.tsx on the web platform.
  */
 import React, { useState } from 'react';
-import { supabase } from '@repo/core';
 import { useGratitude } from '../hooks/useGratitude';
 import type { GratitudeEntry } from '../types';
 import { Heart, Plus } from 'lucide-react-native';
@@ -20,13 +19,13 @@ interface GratitudeGlimmersProps {
 type Category = 'student-said' | 'colleague-kindness' | 'personal-win';
 
 const CATEGORIES: Array<{ value: Category; label: string; emoji: string; color: string }> = [
-    { value: 'student-said',       label: 'A student said…',    emoji: '💬', color: '#8B5CF6' },
-    { value: 'colleague-kindness', label: 'Colleague kindness', emoji: '🤝', color: '#3B82F6' },
-    { value: 'personal-win',       label: 'Personal win',        emoji: '🏆', color: '#F59E0B' },
+    { value: 'student-said',       label: 'A student said\u2026',    emoji: '\uD83D\uDCAC', color: '#8B5CF6' },
+    { value: 'colleague-kindness', label: 'Colleague kindness', emoji: '\uD83E\uDD1D', color: '#3B82F6' },
+    { value: 'personal-win',       label: 'Personal win',        emoji: '\uD83C\uDFC6', color: '#F59E0B' },
 ];
 
 export default function GratitudeGlimmers({ userId }: GratitudeGlimmersProps) {
-    const { entries, isLoading, setEntries } = useGratitude(userId);
+    const { entries, isLoading, setEntries, addGratitudeEntry } = useGratitude(userId);
     const [showForm, setShowForm] = useState(false);
     const [content, setContent] = useState('');
     const [category, setCategory] = useState<Category>('student-said');
@@ -36,11 +35,8 @@ export default function GratitudeGlimmers({ userId }: GratitudeGlimmersProps) {
         if (!content.trim() || !userId) return;
         setSaving(true);
         try {
-            const { data, error } = await supabase
-                .from('gratitude_entries')
-                .insert({ user_id: userId, content: content.trim(), category })
-                .select().single();
-            if (!error && data) {
+            const data = await addGratitudeEntry({ content: content.trim(), category });
+            if (data) {
                 setEntries(prev => [data, ...prev]);
                 setContent('');
                 setShowForm(false);
@@ -50,7 +46,7 @@ export default function GratitudeGlimmers({ userId }: GratitudeGlimmersProps) {
         }
     };
 
-    const getCategoryMeta = (cat: string) => CATEGORIES.find(c => c.value === cat) ?? CATEGORIES[0];
+    const getCategoryMeta = (cat: string) => CATEGORIES.find(c => c.value === cat) ?? CATEGORIES[0]!;
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -67,8 +63,7 @@ export default function GratitudeGlimmers({ userId }: GratitudeGlimmersProps) {
                 </div>
                 <button
                     onClick={() => setShowForm(v => !v)}
-                    style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '11px', padding: '6px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: showForm ? '#EF4444' : 'transparent', color: showForm ? '#fff' : 'var(--ink-ghost)', cursor: 'pointer', fontWeight: '700', transition: 'all 0.2s' }}
-                >
+                    style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '11px', padding: '6px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: showForm ? '#EF4444' : 'transparent', color: showForm ? '#fff' : 'var(--ink-ghost)', cursor: 'pointer', fontWeight: '700', transition: 'all 0.2s' }}>
                     <Plus size={12} color={showForm ? '#fff' : 'var(--ink-ghost)'} />
                     {showForm ? 'Cancel' : 'Add Glimmer'}
                 </button>
@@ -83,8 +78,7 @@ export default function GratitudeGlimmers({ userId }: GratitudeGlimmersProps) {
                             <button
                                 key={cat.value}
                                 onClick={() => setCategory(cat.value)}
-                                style={{ flex: 1, padding: '8px 4px', borderRadius: '8px', border: `1.5px solid ${category === cat.value ? cat.color : 'var(--border)'}`, background: category === cat.value ? `${cat.color}18` : 'transparent', cursor: 'pointer', fontSize: '10px', fontWeight: '700', color: category === cat.value ? cat.color : 'var(--ink-ghost)', transition: 'all 0.2s' }}
-                            >
+                                style={{ flex: 1, padding: '8px 4px', borderRadius: '8px', border: `1.5px solid ${category === cat.value ? cat.color : 'var(--border)'}`, background: category === cat.value ? `${cat.color}18` : 'transparent', cursor: 'pointer', fontSize: '10px', fontWeight: '700', color: category === cat.value ? cat.color : 'var(--ink-ghost)', transition: 'all 0.2s' }}>
                                 {cat.emoji} {cat.label}
                             </button>
                         ))}
@@ -101,9 +95,8 @@ export default function GratitudeGlimmers({ userId }: GratitudeGlimmersProps) {
                     <button
                         onClick={handleSave}
                         disabled={saving || !content.trim()}
-                        style={{ padding: '10px', borderRadius: '10px', background: '#EF4444', color: '#fff', border: 'none', fontWeight: '700', fontSize: '13px', cursor: saving || !content.trim() ? 'not-allowed' : 'pointer', opacity: saving || !content.trim() ? 0.6 : 1 }}
-                    >
-                        {saving ? 'Saving…' : '🙏 Add Glimmer'}
+                        style={{ padding: '10px', borderRadius: '10px', background: '#EF4444', color: '#fff', border: 'none', fontWeight: '700', fontSize: '13px', cursor: saving || !content.trim() ? 'not-allowed' : 'pointer', opacity: saving || !content.trim() ? 0.6 : 1 }}>
+                        {saving ? 'Saving...' : '🙏 Add Glimmer'}
                     </button>
                 </div>
             )}
@@ -124,8 +117,7 @@ export default function GratitudeGlimmers({ userId }: GratitudeGlimmersProps) {
                         return (
                             <div
                                 key={entry.id}
-                                style={{ padding: '14px 18px', background: 'var(--background-alt)', borderRadius: '12px', borderLeft: `3px solid ${meta.color}` }}
-                            >
+                                style={{ padding: '14px 18px', background: 'var(--background-alt)', borderRadius: '12px', borderLeft: `3px solid ${meta.color}` }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
                                     <span style={{ fontSize: '13px' }}>{meta.emoji}</span>
                                     <span style={{ fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', color: meta.color }}>{meta.label}</span>

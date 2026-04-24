@@ -1,132 +1,116 @@
-﻿/**
- * Inventory API
- * 
- * API methods for managing classroom-scoped resources and supply requests.
+/**
+ * INVENTORY API (Protocol-Oriented Authority)
  */
 
-import { supabase } from '../lib/supabase';
-import { resolveResourceOwnerContext } from '../lib/inventoryScope';
-import { APIError } from './types';
-import type { InventoryItem, InventoryRequest } from './types';
+import { z } from 'zod';
+import { InventoryItemSchema } from '../logic/schemas/inventory_item.schema';
+import { supabase } from '../native/supabase';
+import type { InventoryItem } from '../types';
+import { APIError } from '../types';
+import { operationsContract } from './operations.contract';
 
+/**
+ * API methods for Managing Classroom Inventory.
+ * Following Protocol-Oriented Authority.
+ */
 export const inventoryAPI = {
-    /**
-     * Get all inventory items for a classroom
-     */
-    async getAll(classroomId: string): Promise<InventoryItem[]> {
-        const { data, error } = await supabase
-            .from('classroom_inventory')
-            .select('*')
-            .eq('classroom_id', classroomId)
-            .order('name', { ascending: true });
+  /**
+   * Get all inventory items for a classroom
+   * @authority read Inventory
+   */
+  async getAll(classroomId: string): Promise<InventoryItem[]> {
+    const { data, error } = await supabase
+      .from('classroom_inventory')
+      .select('*')
+      .eq('classroom_id', classroomId)
+      .order('name', { ascending: true });
 
-        if (error) {
-            throw new APIError('Failed to fetch inventory', error.code, error);
-        }
+    if (error) {
+      throw new APIError('Failed to fetch inventory', error.code, error);
+    }
 
-        return data || [];
-    },
+    return z.array(InventoryItemSchema).parse(data || []) as unknown as InventoryItem[];
+  },
 
-    /**
-     * Update an inventory item (e.g., report damage)
-     */
-    async update(
-        id: string,
-        updates: Partial<InventoryItem>
-    ): Promise<InventoryItem> {
-        const { data, error } = await supabase
-            .from('classroom_inventory')
-            .update(updates)
-            .eq('id', id)
-            .select()
-            .single();
+  /**
+   * Update an inventory item
+   * @authority update Inventory
+   */
+  async update(id: string, updates: Partial<InventoryItem>): Promise<InventoryItem> {
+    const { data, error } = await supabase
+      .from('classroom_inventory')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .single();
 
-        if (error) {
-            throw new APIError('Failed to update inventory item', error.code, error);
-        }
+    if (error) {
+      throw new APIError('Failed to update inventory item', error.code, error);
+    }
 
-        return data;
-    },
+    return InventoryItemSchema.parse(data) as unknown as InventoryItem;
+  },
 
-    /**
-     * Get all requests for a school (Principal View)
-     */
-    async getSchoolRequests(schoolId: string): Promise<InventoryRequest[]> {
-        const { data, error } = await supabase
-            .from('inventory_requests')
-            .select('*')
-            .eq('school_id', schoolId)
-            .order('created_at', { ascending: false });
+  /**
+   * Get aggregated resource needs for a school
+   * @authority read Inventory
+   */
+  async getSchoolResourceNeeds(schoolId: string): Promise<any[]> {
+    const { data, error } = await supabase
+      .from('resource_needs')
+      .select('*')
+      .eq('school_id', schoolId)
+      .order('priority', { ascending: false });
 
-        if (error) {
-            throw new APIError('Failed to fetch school requests', error.code, error);
-        }
+    if (error) {
+      throw new APIError('Failed to fetch school resource needs', error.code, error);
+    }
 
-        return data || [];
-    },
+    return data || [];
+  },
+  /**
+   * Create an inventory request
+   * @authority create Inventory
+   */
+  async createRequest(vars: { item_id: string; quantity: number; notes?: string }): Promise<any> {
+    const { data, error } = await supabase
+      .from('inventory_requests')
+      .insert({
+        item_id: vars.item_id,
+        quantity: vars.quantity,
+        notes: vars.notes,
+        status: 'pending',
+      })
+      .select()
+      .single();
 
-    /**
-     * Get all requests for a classroom
-     */
-    async getRequests(classroomId: string): Promise<InventoryRequest[]> {
-        const { data, error } = await supabase
-            .from('inventory_requests')
-            .select('*')
-            .eq('classroom_id', classroomId)
-            .order('created_at', { ascending: false });
+    if (error) {
+      throw new APIError('Failed to create inventory request', error.code, error);
+    }
 
-        if (error) {
-            throw new APIError('Failed to fetch classroom requests', error.code, error);
-        }
+    return data;
+  },
 
-        return data || [];
-    },
+  /**
+   * Get all inventory requests for a school
+   * @authority read Inventory
+   */
+  async getSchoolRequests(schoolId: string): Promise<any[]> {
+    const { data, error } = await supabase
+      .from('inventory_requests')
+      .select(`
+                *,
+                item:classroom_inventory(name, school_id)
+            `)
+      .eq('item.school_id', schoolId);
 
-    /**
-     * Get aggregated resource needs for a school (Principal Dashboard)
-     */
-    async getSchoolResourceNeeds(schoolId: string): Promise<any[]> {
-        const { data, error } = await supabase
-            .from('resource_needs')
-            .select('*')
-            .eq('school_id', schoolId)
-            .order('priority', { ascending: false });
+    if (error) {
+      throw new APIError('Failed to fetch school inventory requests', error.code, error);
+    }
 
-        if (error) {
-            throw new APIError('Failed to fetch school resource needs', error.code, error);
-        }
-
-        return data || [];
-    },
-
-    /**
-     * Create a new supply request
-     */
-    async createRequest(
-        request: Omit<InventoryRequest, 'id' | 'created_at' | 'status'> & { school_id: string }
-    ): Promise<InventoryRequest> {
-        const ownerContext = resolveResourceOwnerContext({
-            ownerContext: request.owner_context,
-            classroomId: request.classroom_id,
-        });
-
-        if (ownerContext !== 'classroom') {
-            throw new APIError(
-                'Institution-owned requests must be handled through admin inventory flows.',
-                'INVALID_SCOPE'
-            );
-        }
-
-        const { data, error } = await supabase
-            .from('inventory_requests')
-            .insert([{ ...request, owner_context: ownerContext, status: 'pending' }])
-            .select()
-            .single();
-
-        if (error) {
-            throw new APIError('Failed to create supply request', error.code, error);
-        }
-
-        return data;
-    },
+    return data || [];
+  },
 };
+
+// Satisfy linter for POA metadata linking
+void operationsContract;

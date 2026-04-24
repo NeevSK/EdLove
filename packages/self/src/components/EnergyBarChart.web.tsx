@@ -1,4 +1,4 @@
-/**
+﻿/**
  * EnergyBarChart.web.tsx
  *
  * Web override of the RN EnergyBarChart. The RN version uses hardcoded white
@@ -37,12 +37,12 @@ export function EnergyBarChart({ bars, colors = ENERGY_COLORS, height = 100 }: E
             </p>
 
             {/* Bar chart */}
-            <div style={{
-                display: 'flex',
-                alignItems: 'flex-end',
-                gap: '6px',
-                height: `${height}px`,
-            }}>
+            <div
+                style={{
+                    display: 'flex',
+                    alignItems: 'flex-end',
+                    gap: '6px',
+                    height: `${height}px`}}>
                 {bars.map((f, i) => {
                     const level = Math.max(0, Math.min(5, f.energy_level ?? 3));
                     const barColor = colors[level] ?? colors[3] ?? '#8B5CF6';
@@ -66,8 +66,7 @@ export function EnergyBarChart({ bars, colors = ENERGY_COLORS, height = 100 }: E
                                     borderRadius: '4px',
                                     opacity,
                                     transition: 'height 0.4s ease',
-                                    minHeight: '4px',
-                                }}
+                                    minHeight: '4px'}}
                             />
                             <span style={{ fontSize: '9px', color: 'var(--ink-ghost)', fontWeight: '600', letterSpacing: '0.5px' }}>
                                 {label}

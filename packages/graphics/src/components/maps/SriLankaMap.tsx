@@ -47,7 +47,6 @@ export function SriLankaMap({
                                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                                 onDistrictSelect?.(district.id);
                             }}
-
                         />
                     ))}
                 </G>

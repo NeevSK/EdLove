@@ -1,5 +1,4 @@
-import type { GraphNode } from '../types/GraphNode';
-import type { KnowledgeTopology, LayoutResult } from '../types/KnowledgeTopology';
+import type { KnowledgeTopology, LayoutResult, GraphNode } from '@repo/core';
 
 export interface PathLayoutOptions {
     orchardWidth?: number;    // Total horizontal space for the path
@@ -15,7 +14,7 @@ const DEFAULT_OPTIONS: Required<PathLayoutOptions> = {
 };
 
 /**
- * pathLayout — Sequential layout for the Dharma (Learning Path) perspective.
+ * pathLayout  Sequential layout for the Dharma (Learning Path) perspective.
  *
  * Sorts nodes by `path.order`, then assigns { x, y } positions
  * along a zig-zag or linear spine. No physics needed.
@@ -29,10 +28,10 @@ export function pathLayout(
     const opts = { ...DEFAULT_OPTIONS, ...options };
 
     const pathNodes = topology.nodes
-        .filter((n) => n.path?.order !== undefined)
-        .sort((a, b) => (a.path!.order) - (b.path!.order));
+        .filter((n: GraphNode) => n.path?.order !== undefined)
+        .sort((a: GraphNode, b: GraphNode) => (a.path!.order) - (b.path!.order));
 
-    const orphanNodes = topology.nodes.filter((n) => n.path?.order === undefined);
+    const orphanNodes = topology.nodes.filter((n: GraphNode) => n.path?.order === undefined);
 
     const orderedNodes = [...pathNodes, ...orphanNodes];
 

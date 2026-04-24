@@ -15,7 +15,7 @@ import type {
 } from '@repo/graphics';
 
 /**
- * AstroView — The "Knowledge Cosmos" Perspective (Native).
+ * AstroView  The "Knowledge Cosmos" Perspective (Native).
  * 
  * Renders a force-directed graph using react-native-svg.
  * Receives pre-computed layout positions from @repo/graphics.
@@ -63,7 +63,7 @@ export const AstroView: React.FC<PerspectiveViewProps> = ({
             { translateX: translateX.value },
             { translateY: translateY.value },
             { scale: scale.value }
-        ]
+        ] as any
     }));
 
     return (

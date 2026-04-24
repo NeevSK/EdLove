@@ -1,22 +1,36 @@
 import React from 'react';
 import { BookOpen } from 'lucide-react-native';
-import { SkeletonCard, PositiveInvitation } from '@repo/ui';
+import { VStack, HStack, Box, Text, SkeletonCard, PositiveInvitation, Icon } from '@repo/ui';
 import { useNavigation } from '@react-navigation/native';
+import { Pressable } from '@repo/ui';
 
-export const StudentClassroomList = ({ classrooms, loading, isDemo }: { classrooms: any[], loading: boolean, isDemo: boolean }) => {
+interface Classroom {
+    id: string;
+    name: string;
+    subject?: string;
+    color_theme?: string;
+}
+
+interface StudentClassroomListProps {
+    classrooms: Classroom[];
+    loading: boolean;
+    isDemo: boolean;
+}
+
+export const StudentClassroomList = ({ classrooms, loading, isDemo }: StudentClassroomListProps) => {
     const navigation = useNavigation<any>();
-    
+
     if (loading) {
         return (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                {[1, 2].map(i => <SkeletonCard key={i} />)}
-            </div>
+            <VStack className="gap-4">
+                {[1, 2, 3].map(i => <SkeletonCard key={i} className="h-[120px] rounded-[32px]" />)}
+            </VStack>
         );
     }
 
     if (classrooms.length === 0) {
         return (
-            <div style={{ padding: '40px 0', textAlign: 'center' }}>
+            <Box className="py-10 items-center">
                 <PositiveInvitation
                     type="empty"
                     title={isDemo ? "Join Your First Sanctuary" : "No Classrooms found"}
@@ -27,41 +41,58 @@ export const StudentClassroomList = ({ classrooms, loading, isDemo }: { classroo
                     actionLabel="Join a Classroom"
                     onAction={() => navigation.navigate('Main', { screen: 'Community' })}
                 />
-            </div>
+            </Box>
         );
     }
 
     return (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(240px, 100%), 1fr))', gap: '24px' }}>
+            <HStack className="flex-wrap gap-6">
             {classrooms.map(cls => (
-                <div
+                <Pressable
                     key={cls.id}
-                    className="sanctuary-card interactive"
-                    style={{ padding: '0', overflow: 'hidden', display: 'flex', flexDirection: 'column', cursor: 'pointer' }}
-                    onClick={() => navigation.navigate('StudentClassroomDashboard', { classroomId: cls.id, classroomName: cls.name })}
+                    onPress={() => navigation.navigate('StudentClassroomDashboard', { classroomId: cls.id, classroomName: cls.name })}
+                    className="w-full max-w-[320px] bg-sanctuary-surface rounded-[32px] overflow-hidden border border-sanctuary-border/60"
                 >
-                    <div style={{ height: '80px', background: cls.color_theme ?? 'var(--background-alt)', padding: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', opacity: 0.9 }}>
-                        <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(255,255,255,0.9)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
-                            <BookOpen size={20} color="var(--water)" />
-                        </div>
-                        <span style={{ padding: '4px 8px', background: 'rgba(255,255,255,0.9)', borderRadius: '6px', fontSize: '10px', fontWeight: '800', color: 'var(--ink-ghost)' }}>Active</span>
-                    </div>
-                    <div style={{ padding: '24px' }}>
-                        <h3 style={{ fontSize: '18px', fontWeight: '800', margin: '0 0 4px' }}>{cls.name}</h3>
-                        {cls.subject && (
-                            <p style={{ fontSize: '12px', color: 'var(--ink-ghost)', margin: '0 0 12px' }}>{cls.subject}</p>
-                        )}
-                        <div style={{ display: 'flex', gap: '8px' }}>
-                            <span style={{ padding: '4px 8px', background: 'var(--background-alt)', borderRadius: '6px', fontSize: '11px', fontWeight: '700', color: 'var(--ink-ghost)' }}>
-                                📖 Lessons
-                            </span>
-                            <span style={{ padding: '4px 8px', background: 'var(--background-alt)', borderRadius: '6px', fontSize: '11px', fontWeight: '700', color: 'var(--ink-ghost)' }}>
-                                📋 Assignments
-                            </span>
-                        </div>
-                    </div>
-                </div>
+                    <Box 
+                        className="h-24 p-6 flex-row justify-between items-start opacity-90"
+                        style={{ backgroundColor: cls.color_theme || '#34C7DB' }}
+                    >
+                        <Box className="w-10 h-10 rounded-xl bg-white/95 items-center justify-center border border-white/20">
+                            <Icon as={BookOpen} size="sm" className="text-sanctuary-info" />
+                        </Box>
+                        <Box className="px-2.5 py-1 bg-white/95 rounded-lg border border-white/20 shadow-sm">
+                            <Text className="text-[10px] font-black text-sanctuary-text uppercase tracking-widest">Active</Text>
+                        </Box>
+                    </Box>
+                    
+                    <VStack className="p-6 gap-5">
+                        <VStack className="gap-1.5">
+                            <Text className="text-xl font-black text-sanctuary-text tracking-tight leading-tight">
+                                {cls.name}
+                            </Text>
+                            {cls.subject && (
+                                <Text className="text-xs font-bold text-sanctuary-text-tertiary">
+                                    {cls.subject}
+                                </Text>
+                            )}
+                        </VStack>
+                        
+                        <HStack className="gap-2.5">
+                            <Box className="px-3 py-2 bg-sanctuary-surface-secondary border border-sanctuary-border/40 rounded-xl">
+                                <Text className="text-[11px] font-black text-sanctuary-text-tertiary uppercase tracking-wider">
+                                    📖 Lessons
+                                </Text>
+                            </Box>
+                            <Box className="px-3 py-2 bg-sanctuary-surface-secondary border border-sanctuary-border/40 rounded-xl">
+                                <Text className="text-[11px] font-black text-sanctuary-text-tertiary uppercase tracking-wider">
+                                    📋 Tasks
+                                </Text>
+                            </Box>
+                        </HStack>
+                    </VStack>
+                </Pressable>
             ))}
-        </div>
+        </HStack>
     );
 };
+

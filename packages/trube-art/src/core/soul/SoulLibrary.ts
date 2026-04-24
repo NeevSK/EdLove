@@ -1,23 +1,23 @@
 /**
- * SoulLibrary.ts — Trübe-Art Soul Layer
+ * SoulLibrary.ts \u2014 Tr\u00FCbe-Art Soul Layer
  *
- * Single source of truth for all shader access — both WGSL (Tier 1/2) and SkSL (Tier 3).
+ * Single source of truth for all shader access \u2014 both WGSL (Tier 1/2) and SkSL (Tier 3).
  *
  * Exports:
- *   getSurfaceShader(name)  — complete WGSL string (noise prepended)
- *   getSkiaEffect(name)     — memoized Skia RuntimeEffect (SkSL compiled)
- *   getSurfaceNames()       — array of 8 canonical surface name strings
- *   soulLibrary             — singleton for backward-compat with old renderer imports
+ *   getSurfaceShader(name)  \u2014 complete WGSL string (noise prepended)
+ *   getSkiaEffect(name)     \u2014 memoized Skia RuntimeEffect (SkSL compiled)
+ *   getSurfaceNames()       \u2014 array of 8 canonical surface name strings
+ *   soulLibrary             \u2014 singleton for backward-compat with old renderer imports
  */
 
 import { Skia, type SkRuntimeEffect } from '@shopify/react-native-skia';
 import { getSKSLSurface, getSKSLSurfaceNames } from './sksl-shaders';
 
-// ── WGSL: Shared noise library (prepended to every surface shader) ─────────────
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+// \u2500\u2500 WGSL: Shared noise library (prepended to every surface shader) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+ 
 const NOISE_WGSL: string = require('../../native/shaders/shared/noise.wgsl');
 
-// ── WGSL: Surface shader map ──────────────────────────────────────────────────
+// \u2500\u2500 WGSL: Surface shader map \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 const WGSL_SURFACE_SHADERS: Record<string, string> = {
   aurora:          require('../../native/shaders/surfaces/aurora.wgsl'),
   silk:            require('../../native/shaders/surfaces/silk.wgsl'),
@@ -37,7 +37,7 @@ const ASSEMBLED_WGSL: Record<string, string> = Object.fromEntries(
   ])
 );
 
-// ── SkSL: Compiled RuntimeEffect cache ───────────────────────────────────────
+// \u2500\u2500 SkSL: Compiled RuntimeEffect cache \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 const SKIA_EFFECT_CACHE: Map<string, SkRuntimeEffect> = new Map();
 
 /**
@@ -58,12 +58,12 @@ export function getSkiaEffect(name: string): SkRuntimeEffect | null {
   }
   const sksl = getSKSLSurface(name);
   if (!sksl) {
-    console.warn(`[Trübe-Art] [SoulLibrary] No SkSL shader for surface: ${name}`);
+    console.warn(`[Tr\u00FCbe-Art] [SoulLibrary] No SkSL shader for surface: ${name}`);
     return null;
   }
   const effect = Skia.RuntimeEffect.Make(sksl);
   if (!effect) {
-    console.error(`[Trübe-Art] [SoulLibrary] SkSL compile failed for surface: ${name}`);
+    console.error(`[Tr\u00FCbe-Art] [SoulLibrary] SkSL compile failed for surface: ${name}`);
     return null;
   }
   SKIA_EFFECT_CACHE.set(name, effect);
@@ -94,7 +94,7 @@ export function getSurfaceNames(): string[] {
 
 export const SOUL_SURFACE_COUNT = Object.keys(ASSEMBLED_WGSL).length;
 
-// ── Singleton (backward-compat for existing renderer imports) ─────────────────
+// \u2500\u2500 Singleton (backward-compat for existing renderer imports) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 export const soulLibrary = {
   getSkiaEffect,
   getSurfaceShader,

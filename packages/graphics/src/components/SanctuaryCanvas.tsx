@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, ViewStyle, StyleSheet, Platform } from 'react-native';
+import { View, ViewStyle, Platform } from 'react-native';
+import { FeatureGuard } from '@repo/core';
 
 interface SanctuaryCanvasProps {
   children?: React.ReactNode;
@@ -27,20 +28,19 @@ export const SanctuaryCanvas: React.FC<SanctuaryCanvasProps> = ({
 }) => {
   const standardContent = render?.standard ? render.standard() : null;
   
-  if (Platform.OS === 'web') {
-    return (
-      <View style={[{ width, height, overflow: 'hidden' }, style]}>
-        {standardContent}
-        {children}
-      </View>
-    );
-  }
-
-  // On native, we'll eventually wrap this with Skia Canvas if skia render is provided
   return (
-    <View style={[{ width, height }, style]}>
-      {standardContent}
-      {children}
-    </View>
+    <FeatureGuard feature="isGraphicsEngineEnabled">
+      {Platform.OS === 'web' ? (
+        <View style={[{ width, height, overflow: 'hidden' }, style]}>
+          {standardContent}
+          {children}
+        </View>
+      ) : (
+        <View style={[{ width, height }, style]}>
+          {standardContent}
+          {children}
+        </View>
+      )}
+    </FeatureGuard>
   );
 };

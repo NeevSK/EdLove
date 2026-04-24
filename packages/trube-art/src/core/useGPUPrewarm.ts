@@ -1,13 +1,13 @@
 /**
- * useGPUPrewarm.ts — Startup Pre-warm Hook
- * Trübe-Art v1.0 · 2026 Production Ready
+ * useGPUPrewarm.ts \u2014 Startup Pre-warm Hook
+ * Tr\u00FCbe-Art v1.0 \u00B7 2026 Production Ready
  *
  * One-time startup hook. Must be called at app root (via TrubeProvider).
  * Compiles all 8 surface WGSL shaders via the Nitro bridge.
- * Expected total cost: ~200–400ms, amortized once at launch.
+ * Expected total cost: ~200\u2013400ms, amortized once at launch.
  *
  * "Pipeline pre-warm: Once at startup (~300ms). Per-frame cost: Near zero."
- * — Architecture v0.3, §4.2 The Critical Pre-warm Rule
+ * \u2014 Architecture v0.3, \u00A74.2 The Critical Pre-warm Rule
  */
 
 import { useEffect, useState } from 'react';

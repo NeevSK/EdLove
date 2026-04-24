@@ -1,138 +1,118 @@
-import React, { useMemo } from 'react';
-import { StyleSheet, View, useWindowDimensions, TouchableOpacity } from 'react-native';
-import Svg, { Path } from 'react-native-svg';
-import Animated, { FadeInDown } from 'react-native-reanimated';
-import { Theme, useThemedColors, SanctuaryFlashList, Text, Box } from '@repo/ui';
-import { Lock, CheckCircle2, Circle } from 'lucide-react-native';
-import type { 
-    PerspectiveViewProps, 
-    GraphNode 
-} from '@repo/graphics';
+import React from 'react';
+import { 
+    useTheme, 
+    Box, 
+    VStack, 
+    HStack, 
+    Text, 
+    ScrollView 
+} from '@repo/ui';
+import { Svg, Path, Circle } from 'react-native-svg';
+import { CheckCircle2, Circle as CircleIcon, Lock } from 'lucide-react-native';
+import { PerspectiveViewProps } from '@repo/graphics';
 
 /**
- * DharmaView — The "Path / Sequential" Perspective (Native).
+ * DharmaView  The "Pathways / Sequential" Perspective (Native).
  * 
- * Renders nodes in a scrollable vertical pathway (Kinnu/Duolingo style).
- * Features an SVG "spine" that connects the nodes visually.
+ * visualizes the knowledge graph as a learning journey. 
+ * Provides a vertical timeline of 'milestones' derived from the node connectivity.
  */
 export const DharmaView: React.FC<PerspectiveViewProps> = ({
     data,
-    onNodePress,
 }) => {
-    const colors = useThemedColors();
-    const { width: windowWidth } = useWindowDimensions();
+    const theme = useTheme();
 
-    // The pathLayout in @repo/graphics provides the sort order
-    // But since Dharma is a list, we primarily care about the ordered nodes.
-    const orderedNodes = useMemo(() => {
-        return [...data.nodes]
-            .filter(n => n.path?.order !== undefined)
-            .sort((a, b) => (a.path!.order || 0) - (b.path!.order || 0));
-    }, [data.nodes]);
+    const actionColor = theme.accent.action;
+    const textPrimary = theme.text.primary;
+    const textSecondary = theme.text.secondary;
 
-    const renderItem = ({ item, index }: { item: GraphNode, index: number }) => {
-        const isLast = index === orderedNodes.length - 1;
-        const isEven = index % 2 === 0;
-        const xOffset = isEven ? -40 : 40;
-
-        return (
-            <Box sx={{ height: 160, alignItems: 'center', justifyContent: 'center' }}>
-                {/* Connecting Spine Segment */}
-                {!isLast && (
-                    <View style={styles.spineContainer}>
-                        <Svg width={windowWidth} height={160} viewBox={`0 0 ${windowWidth} 160`}>
-                            <Path
-                                d={`M ${windowWidth/2 + xOffset} 80 
-                                   C ${windowWidth/2 + xOffset} 120, 
-                                     ${windowWidth/2 - xOffset} 120, 
-                                     ${windowWidth/2 - xOffset} 240`}
-                                stroke={colors.action}
-                                strokeWidth={4}
-                                strokeDasharray="8 8"
-                                fill="none"
-                                opacity={0.3}
-                            />
-                        </Svg>
-                    </View>
-                )}
-
-                {/* Node Button */}
-                <Animated.View 
-                    entering={FadeInDown.delay(index * 100)}
-                    style={{
-                        transform: [{ translateX: xOffset }]
-                    }}
-                >
-                    <TouchableOpacity 
-                        onPress={() => onNodePress?.(item)}
-                        style={[
-                            styles.nodeCircle, 
-                            { 
-                                backgroundColor: colors.secondary,
-                                borderColor: colors.action,
-                                shadowColor: colors.action
-                            }
-                        ]}
-                    >
-                        {item.type === 'topic' ? (
-                            <CheckCircle2 size={32} color={Theme.colors.sanctuarySaffron} />
-                        ) : (
-                            <Circle size={32} color={colors.textSecondary} />
-                        )}
-                    </TouchableOpacity>
-                    
-                    <View style={[styles.labelContainer, { transform: [{ translateX: isEven ? 80 : -140 }] }]}>
-                        <Text {...({ color: colors.text, bold: true, size: "sm" } as any)} numberOfLines={2}>
-                            {item.label}
-                        </Text>
-                        <Text {...({ color: colors.textTertiary, size: "xxs" } as any)}>
-                            {item.type.toUpperCase()}
-                        </Text>
-                    </View>
-                </Animated.View>
-            </Box>
-        );
-    };
+    // Derived logic for Dharma (Sequential Learning)
+    // In a real knowledge graph, this would use topological sorting or PR rankings.
+    // For the UI, we visualize it as a stepped pathway.
+    const steps = data.nodes.map((node, index) => ({
+        id: node.id,
+        label: node.label,
+        type: node.type,
+        completed: index < 2, // Mock progress
+        locked: index > 5,
+        resonance: ((node as any).val || 10) * 10,
+    }));
 
     return (
-        <View style={styles.container}>
-            <SanctuaryFlashList
-                data={orderedNodes}
-                renderItem={renderItem}
-                estimatedItemSize={160}
-                contentContainerStyle={{ paddingTop: 120, paddingBottom: 150 }}
-            />
-        </View>
+        <ScrollView 
+            className="flex-1"
+            contentContainerStyle={{ padding: 24, paddingTop: 100, paddingBottom: 100 }}
+        >
+            <VStack className="gap-0">
+                {steps.map((step, index) => {
+                    const isLast = index === steps.length - 1;
+                    
+                    return (
+                        <HStack key={step.id} className="items-start gap-4">
+                            {/* Visual Pathway Element */}
+                            <VStack className="items-center w-8">
+                                <Box 
+                                    className="w-8 h-8 rounded-full items-center justify-center z-10"
+                                    style={{ 
+                                        backgroundColor: step.completed ? actionColor : (step.locked ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.1)'),
+                                        borderColor: step.completed ? actionColor : 'rgba(255,255,255,0.2)',
+                                        borderWidth: 1
+                                    }}
+                                >
+                                    {step.completed ? (
+                                        <CheckCircle2 size={16} color="white" />
+                                    ) : step.locked ? (
+                                        <Lock size={14} color="rgba(255,255,255,0.3)" />
+                                    ) : (
+                                        <CircleIcon size={14} color={textSecondary} />
+                                    )}
+                                </Box>
+                                
+                                {!isLast && (
+                                    <Box 
+                                        className="w-1 flex-1 -my-1" 
+                                        style={{ backgroundColor: 'rgba(255,255,255,0.1)' }} 
+                                    />
+                                )}
+                            </VStack>
+
+                            {/* Step Description */}
+                            <Box className="flex-1 pb-8">
+                                <VStack className="gap-1">
+                                    <HStack className="items-center justify-between">
+                                        <Text 
+                                            className={`text-md font-bold ${step.completed ? 'text-phaseText-primary' : 'text-phaseText-secondary'}`}
+                                        >
+                                            {step.label}
+                                        </Text>
+                                        <Text className="text-xs text-phaseText-muted font-mono uppercase tracking-wider">
+                                            {step.type}
+                                        </Text>
+                                    </HStack>
+                                    
+                                    <Text className="text-sm text-phaseText-tertiary">
+                                        Connecting to {step.resonance}% resonance in the topology.
+                                    </Text>
+
+                                    {/* Mini SVG Connection Visualizer */}
+                                    <Box className="mt-2 h-10 w-full rounded-xl overflow-hidden bg-white/5 border border-white/5">
+                                        <Svg height="40" width="100%">
+                                            <Path 
+                                                d="M0 20 Q 50 10, 100 25 T 200 20" 
+                                                fill="none" 
+                                                stroke={step.completed ? actionColor : 'rgba(255,255,255,0.1)'} 
+                                                strokeWidth="2" 
+                                            />
+                                            <Circle cx="50" cy="15" r="3" fill={step.completed ? actionColor : 'transparent'} />
+                                            <Circle cx="150" cy="22" r="3" fill={step.completed ? actionColor : 'transparent'} />
+                                        </Svg>
+                                    </Box>
+                                </VStack>
+                            </Box>
+                        </HStack>
+                    );
+                })}
+            </VStack>
+        </ScrollView>
     );
 };
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
-    nodeCircle: {
-        width: 80,
-        height: 80,
-        borderRadius: 40,
-        borderWidth: 3,
-        alignItems: 'center',
-        justifyContent: 'center',
-        elevation: 10,
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 8,
-    },
-    spineContainer: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        zIndex: -1,
-    },
-    labelContainer: {
-        position: 'absolute',
-        width: 120,
-        top: 20,
-    }
-});

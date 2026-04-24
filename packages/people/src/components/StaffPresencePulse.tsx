@@ -1,16 +1,22 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
-import { Text, GlassCard, useTheme, SanctuaryCard, Button, ButtonText, HStack, VStack, Center, useThemedColors, Box } from '@repo/ui';
+import { 
+    Text, 
+    VStack, 
+    HStack, 
+    Box, 
+    Icon,
+    Heading,
+    Pressable,
+    ActivityIndicator,
+    hapticLight
+} from '@repo/ui';
 import { useStaffPresence } from '../hooks/useStaffPresence';
 import {
     Clock,
     Calendar,
     CheckCircle2,
-    XCircle,
-    AlertCircle,
     LogIn,
-    LogOut,
-    Plus
+    LogOut
 } from 'lucide-react-native';
 import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
@@ -21,151 +27,126 @@ interface StaffPresencePulseProps {
 }
 
 export const StaffPresencePulse: React.FC<StaffPresencePulseProps> = ({ userId, schoolId }) => {
-    const colors = useThemedColors();
     const { t, i18n } = useTranslation();
     const { attendance, isCheckedIn, checkIn, checkOut, loading } = useStaffPresence(userId, schoolId);
     const [actionLoading, setActionLoading] = useState(false);
 
     const handleToggleAttendance = async () => {
+        hapticLight();
         setActionLoading(true);
-        if (isCheckedIn) {
-            await checkOut();
-        } else {
-            await checkIn();
+        try {
+            if (isCheckedIn) {
+                await checkOut();
+            } else {
+                await checkIn();
+            }
+        } catch (err) {
+            console.error('Attendance toggle failed:', err);
+        } finally {
+            setActionLoading(false);
         }
-        setActionLoading(false);
     };
 
     if (loading) return null;
 
-    const todayAttendance = attendance.find(a =>
-        format(new Date(a.check_in), 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd')
+    const todayStr = format(new Date(), 'yyyy-MM-dd');
+    const todayAttendance = attendance.find(a => 
+        format(new Date(a.check_in), 'yyyy-MM-dd') === todayStr
     );
 
     return (
-        <View style={styles.container}>
-            <Text variant="h3" style={styles.title}>{t('staffPresence.title')}</Text>
-
-            <GlassCard style={styles.mainCard}>
-                <VStack space="lg">
-                    <HStack justifyContent="space-between" alignItems="center">
-                        <VStack>
-                            <Text variant="p2" weight="bold">{t('staffPresence.attendanceStatus')}</Text>
-                            <Text variant="p3" color={colors.textSecondary}>
-                                {new Intl.DateTimeFormat(i18n.language, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }).format(new Date())}
+        <VStack className="gap-5">
+            <VStack className="gap-1.5 px-1">
+                <Heading className="text-[20px] font-black text-phaseText-primary tracking-tight">
+                    {t('staffPresence.title') || "Presence Pulse"}
+                </Heading>
+                <Text className="text-[11px] font-bold text-phaseText-muted uppercase tracking-[2px]">Gate Monitoring</Text>
+            </VStack>
+            
+            <Box className="p-6 rounded-[32px] bg-phase-surface border border-phase-border shadow-sm">
+                <VStack className="gap-6">
+                    <HStack className="justify-between items-center">
+                        <VStack className="gap-0.5">
+                            <Text className="text-[14px] font-black text-phaseText-primary tracking-tight">
+                                {t('staffPresence.attendanceStatus') || "Shift Identity"}
+                            </Text>
+                            <Text className="text-[11px] font-bold text-phaseText-muted uppercase tracking-wider">
+                                {new Intl.DateTimeFormat(i18n.language, { 
+                                    weekday: 'long', 
+                                    day: 'numeric',
+                                    month: 'short'
+                                }).format(new Date())}
                             </Text>
                         </VStack>
-                        <View style={[
-                            styles.statusBadge,
-                            { backgroundColor: isCheckedIn ? colors.success + '20' : colors.error + '20' }
-                        ]}>
-                            <View style={[
-                                styles.statusDot,
-                                { backgroundColor: isCheckedIn ? colors.success : colors.error }
-                            ]} />
-                            <Text variant="p4" color={isCheckedIn ? colors.success : colors.error} weight="bold">
-                                {isCheckedIn ? t('staffPresence.checkedIn') : t('staffPresence.checkedOut')}
+                        <Box className={`flex-row items-center px-4 py-1.5 rounded-full border ${isCheckedIn ? 'bg-phase-success/10 border-phase-success/20' : 'bg-phase-danger/10 border-phase-danger/20'}`}>
+                            <Box className={`w-1.5 h-1.5 rounded-full mr-2 ${isCheckedIn ? 'bg-phase-success' : 'bg-phase-danger'}`} />
+                            <Text className={`text-[10px] font-black uppercase tracking-widest ${isCheckedIn ? 'text-phase-success' : 'text-phase-danger'}`}>
+                                {isCheckedIn ? (t('staffPresence.checkedIn') || "ACTIVE") : (t('staffPresence.checkedOut') || "STATIONED")}
                             </Text>
-                        </View>
+                        </Box>
                     </HStack>
 
-                    <HStack space="md">
-                        <VStack style={styles.statBox}>
-                            <Clock size={18} color={colors.primary} />
-                            <Text variant="p4" mt="$1">{t('staffPresence.checkedInAt')}</Text>
-                            <Text variant="p3" weight="bold">
+                    <HStack className="gap-3">
+                        <VStack className="flex-1 bg-phase-canvas p-4 rounded-[20px] items-center gap-1 border border-phase-border/50">
+                            <Icon as={Clock} size="sm" className="text-phase-interactive" />
+                            <Text className="text-[9px] text-phaseText-muted uppercase font-black tracking-widest mt-1">
+                                {t('staffPresence.checkedInAt') || "CHECK-IN"}
+                            </Text>
+                            <Text className="text-[15px] font-black text-phaseText-primary">
                                 {todayAttendance ? new Intl.DateTimeFormat(i18n.language, { hour: '2-digit', minute: '2-digit' }).format(new Date(todayAttendance.check_in)) : '--:--'}
                             </Text>
                         </VStack>
-                        <VStack style={styles.statBox}>
-                            <LogOut size={18} color={colors.secondary} />
-                            <Text variant="p4" mt="$1">{t('staffPresence.checkedOutAt')}</Text>
-                            <Text variant="p3" weight="bold">
+                        <VStack className="flex-1 bg-phase-canvas p-4 rounded-[20px] items-center gap-1 border border-phase-border/50">
+                            <Icon as={LogOut} size="sm" className="text-phaseText-muted" />
+                            <Text className="text-[9px] text-phaseText-muted uppercase font-black tracking-widest mt-1">
+                                {t('staffPresence.checkedOutAt') || "CHECK-OUT"}
+                            </Text>
+                            <Text className="text-[15px] font-black text-phaseText-primary">
                                 {todayAttendance?.check_out ? new Intl.DateTimeFormat(i18n.language, { hour: '2-digit', minute: '2-digit' }).format(new Date(todayAttendance.check_out)) : '--:--'}
                             </Text>
                         </VStack>
                     </HStack>
 
-                    <Button
-                        size="lg"
+                    <Pressable
                         onPress={handleToggleAttendance}
-                        isDisabled={actionLoading}
-                        style={{
-                            backgroundColor: isCheckedIn ? colors.error : colors.success,
-                            borderRadius: 12
-                        }}
-                    >
-                        <HStack space="xs" alignItems="center">
-                            {isCheckedIn ? <LogOut size={20} color="white" /> : <LogIn size={20} color="white" />}
-                            <ButtonText color="white">
-                                {isCheckedIn ? t('staffPresence.checkOutButton') : t('staffPresence.checkInButton')}
-                            </ButtonText>
-                        </HStack>
-                    </Button>
+                        disabled={actionLoading}
+                        className={`h-14 rounded-[20px] flex-row items-center justify-center gap-3 shadow-md active:scale-95 transition-all ${
+                            isCheckedIn ? 'bg-phase-danger' : 'bg-phase-interactive'
+                        }`}>
+                        {actionLoading ? (
+                            <ActivityIndicator size="small" color="white" />
+                        ) : (
+                            <>
+                                <Icon as={isCheckedIn ? LogOut : LogIn} size="sm" className="text-white" />
+                                <Text className="text-white text-[12px] font-black uppercase tracking-widest">
+                                    {isCheckedIn ? (t('staffPresence.checkOutButton') || "COMMIT SHIFT EXIT") : (t('staffPresence.checkInButton') || "AUTHORIZE ENTRANCE")}
+                                </Text>
+                            </>
+                        )}
+                    </Pressable>
                 </VStack>
-            </GlassCard>
+            </Box>
 
-            <HStack space="md" mt="$4">
-                <TouchableOpacity style={styles.secondaryAction} activeOpacity={0.7}>
-                    <SanctuaryCard variant="glass">
-                        <VStack alignItems="center">
-                            <Calendar size={20} color={colors.primary} />
-                            <Text variant="p4" mt="$2">{t('staffPresence.requestLeave')}</Text>
-                        </VStack>
-                    </SanctuaryCard>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.secondaryAction} activeOpacity={0.7}>
-                    <SanctuaryCard variant="glass">
-                        <VStack alignItems="center">
-                            <CheckCircle2 size={20} color={colors.success} />
-                            <Text variant="p4" mt="$2">{t('staffPresence.viewHistory')}</Text>
-                        </VStack>
-                    </SanctuaryCard>
-                </TouchableOpacity>
+            <HStack className="gap-4">
+                <Pressable className="flex-1 active:scale-95 transition-all">
+                    <Box className="bg-phase-surface p-5 rounded-[24px] border border-phase-border items-center gap-2 shadow-sm">
+                        <Icon as={Calendar} size="sm" className="text-phase-interactive" />
+                        <Text className="text-[11px] font-black text-phaseText-primary uppercase tracking-wider">
+                            {t('staffPresence.requestLeave') || "Leave Gateway"}
+                        </Text>
+                    </Box>
+                </Pressable>
+                <Pressable className="flex-1 active:scale-95 transition-all">
+                    <Box className="bg-phase-surface p-5 rounded-[24px] border border-phase-border items-center gap-2 shadow-sm">
+                        <Icon as={CheckCircle2} size="sm" className="text-phase-interactive" />
+                        <Text className="text-[11px] font-black text-phaseText-primary uppercase tracking-wider">
+                            {t('staffPresence.viewHistory') || "Registry View"}
+                        </Text>
+                    </Box>
+                </Pressable>
             </HStack>
-        </View>
+        </VStack>
     );
 };
 
-const styles = StyleSheet.create({
-    container: {
-        marginVertical: 16,
-        paddingHorizontal: 4,
-    },
-    title: {
-        marginBottom: 12,
-        letterSpacing: 0.5,
-    },
-    mainCard: {
-        padding: 20,
-        borderRadius: 20,
-    },
-    statusBadge: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingVertical: 6,
-        paddingHorizontal: 12,
-        borderRadius: 20,
-    },
-    statusDot: {
-        width: 6,
-        height: 6,
-        borderRadius: 3,
-        marginRight: 8,
-    },
-    statBox: {
-        flex: 1,
-        backgroundColor: 'rgba(255,255,255,0.03)',
-        padding: 12,
-        borderRadius: 16,
-        alignItems: 'center',
-    },
-    secondaryAction: {
-        flex: 1,
-    },
-    actionCard: {
-        padding: 16,
-        alignItems: 'center',
-        borderRadius: 16,
-    }
-});
+export default StaffPresencePulse;

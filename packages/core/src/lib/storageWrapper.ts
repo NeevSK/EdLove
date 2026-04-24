@@ -1,6 +1,6 @@
-import { storage } from './storage';
-import { StateStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import type { StateStorage } from 'zustand/middleware';
+import { storage } from './storage';
 
 /**
  * A failsafe storage wrapper for Zustand.
@@ -8,27 +8,27 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
  * but provides an explicit interface for Zustand's persist middleware.
  */
 export const SafeZustandStorage: StateStorage = {
-    getItem: (name: string): string | null | Promise<string | null> => {
-        // MMKV is synchronous
-        const value = storage.getString(name);
-        if (value !== undefined) return value;
+  getItem: (name: string): string | null | Promise<string | null> => {
+    // MMKV is synchronous
+    const value = storage.getString(name);
+    if (value !== undefined) return value;
 
-        // Fallback to AsyncStorage if we are in an environment where MMKV didn't init
-        return AsyncStorage.getItem(name);
-    },
-    setItem: (name: string, value: string): void | Promise<void> => {
-        try {
-            storage.set(name, value);
-        } catch (e) {
-            // Fallback for set
-            return AsyncStorage.setItem(name, value);
-        }
-    },
-    removeItem: (name: string): void | Promise<void> => {
-        try {
-            storage.delete(name);
-        } catch (e) {
-            return AsyncStorage.removeItem(name);
-        }
-    },
+    // Fallback to AsyncStorage if we are in an environment where MMKV didn't init
+    return AsyncStorage.getItem(name);
+  },
+  setItem: (name: string, value: string): void | Promise<void> => {
+    try {
+      storage.set(name, value);
+    } catch (_e) {
+      // Fallback for set
+      return AsyncStorage.setItem(name, value);
+    }
+  },
+  removeItem: (name: string): void | Promise<void> => {
+    try {
+      storage.delete(name);
+    } catch (_e) {
+      return AsyncStorage.removeItem(name);
+    }
+  },
 };

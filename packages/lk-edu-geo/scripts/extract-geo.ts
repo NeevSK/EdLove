@@ -4,14 +4,14 @@ import fs from 'fs';
 import path from 'path';
 
 async function main() {
-  console.log('🌍 Extracting Administrative Hierarchy with Postal Codes...');
+  console.log('\uD83C\uDF0D Extracting Administrative Hierarchy with Postal Codes...');
   
   try {
     const provinces = await SLGeo.GetAllProvinces();
     const districts = await SLGeo.GetAllDistricts();
     const cities = await SLGeo.GetAllCities();
 
-    console.log(`📡 Ingesting from @nishansanjuka:
+    console.log(`\uD83D\uDCE1 Ingesting from @nishansanjuka:
       - ${provinces.length} Provinces
       - ${districts.length} Districts
       - ${cities.length} Cities`);
@@ -50,13 +50,13 @@ async function main() {
       'utf8'
     );
     
-    console.log('✨ Hierarchy exported to scripts/admin-hierarchy.json');
-    console.log(`📊 Statistics:
+    console.log('\u2728 Hierarchy exported to scripts/admin-hierarchy.json');
+    console.log(`\uD83D\uDCCA Statistics:
       - Districts processed: ${enrichedDistricts.length}
       - Total units mapped: ${cities.length}`);
 
   } catch (err) {
-    console.error('❌ Extraction failed:', err);
+    console.error('\u274C Extraction failed:', err);
   }
 }
 

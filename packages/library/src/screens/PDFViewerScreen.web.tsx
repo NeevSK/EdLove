@@ -1,13 +1,13 @@
 /**
- * PDFViewerScreen.web.tsx — Pattern A: full web replacement
+ * PDFViewerScreen.web.tsx  Pattern A: full web replacement
  *
  * On native, PDFViewerScreen uses expo-file-system + expo-sharing to download
  * and open PDFs via the device's native viewer.  Neither package ships a web
  * implementation, so importing them in the Metro web bundle crashes the build.
  *
  * On web, Metro resolves this file instead.  We use two browser-native APIs:
- *   1. <iframe> embed — shows the PDF inline without any download.
- *   2. window.open()  — opens the PDF in a new tab as a fallback.
+ *   1. <iframe> embed  shows the PDF inline without any download.
+ *   2. window.open()   opens the PDF in a new tab as a fallback.
  *
  * No expo-file-system or expo-sharing imports here.
  */
@@ -18,8 +18,7 @@ import {
     VStack,
     HStack,
     Text,
-    useThemedColors,
-    Theme,
+    useTheme,
     ScreenWrapper,
     GlobalHeader,
     SanctuaryButton,
@@ -42,7 +41,7 @@ interface PDFViewerScreenProps {
 export default function PDFViewerScreen({ route }: PDFViewerScreenProps) {
     const { title, url } = route.params;
     const navigation = useNavigation();
-    const colors = useThemedColors();
+    const theme = useTheme();
     const [isBookmarked, setIsBookmarked] = useState(false);
     const [iframeKey, setIframeKey] = useState(0); // bump to reload iframe
 
@@ -53,14 +52,16 @@ export default function PDFViewerScreen({ route }: PDFViewerScreenProps) {
     };
 
     return (
-        <ScreenWrapper scroll={false} style={{ backgroundColor: colors.secondary, flex: 1 }}>
+        <ScreenWrapper scroll={false} style={{ backgroundColor: theme.glass.surface.bg, flex: 1 }}>
             <GlobalHeader
                 title={title}
                 subtitle="Document Viewer"
                 showBack
                 onBack={() => (navigation as any).goBack()}
                 rightAction={
-                    <Box sx={{ backgroundColor: isBookmarked ? colors.primary + '22' : 'transparent', borderRadius: 20 }}>
+                    <Box 
+                        className="rounded-full overflow-hidden" 
+                        style={{ backgroundColor: isBookmarked ? `${theme.accent.action}22` : 'transparent' }}>
                         <SanctuaryButton
                             variant="ghost"
                             size="sm"
@@ -76,7 +77,7 @@ export default function PDFViewerScreen({ route }: PDFViewerScreenProps) {
 
             {/* Inline iframe viewer */}
             <View style={styles.iframeContainer}>
-                {/* @ts-ignore — 'iframe' is valid in react-native-web */}
+                {/* @ts-ignore - 'iframe' is valid in react-native-web */}
                 <iframe
                     key={iframeKey}
                     src={url}
@@ -88,14 +89,7 @@ export default function PDFViewerScreen({ route }: PDFViewerScreenProps) {
 
             {/* Action bar below the iframe */}
             <HStack
-                sx={{
-                    padding: Theme.spacing.md,
-                    gap: Theme.spacing.sm,
-                    justifyContent: 'center',
-                    backgroundColor: colors.secondary,
-                    borderTopWidth: 1,
-                    borderTopColor: colors.border,
-                }}
+                className="p-md gap-sm justify-center border-t border-phase-border bg-phase-surface"
             >
                 <SanctuaryButton
                     variant="outline"

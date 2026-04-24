@@ -1,24 +1,13 @@
 /**
- * LibraryThumbnailCard — Netflix-Style Cover-Art Card for Individual Resources
- *
- * A 140 × 180 visual card used inside horizontal SmartShelf rows.
- * Each resource type gets a distinct accent colour and icon.
- * Shows title, type badge, endorsement count, and an optional thumbnail image.
- *
- * Designed to be visually consistent with CollectionCard but optimised for
- * individual resources rather than collections.
+ * LibraryThumbnailCard - sanctuary-style resource card.
+ * 
+ * Sanctuary V3: Migrated to useTheme, @repo/ui primitives, and NativeWind className utilities.
  */
 
-import React, { useMemo } from 'react';
+import React from 'react';
 import {
-    Pressable,
-    View,
-    Text,
-    StyleSheet,
-    ImageBackground,
     Platform,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import {
     BookOpen,
     Video,
@@ -33,23 +22,16 @@ import {
     StickyNote,
     ThumbsUp,
     BadgeCheck,
+    Bookmark,
 } from 'lucide-react-native';
-import { Theme } from '../../theme/Theme';
-import { useThemedColors } from '../../hooks/useThemedColors';
-
-// ============================================================================
-// CONFIG
-// ============================================================================
-
-const CARD_WIDTH = 140;
-const CARD_HEIGHT = 180;
+import { Theme, useTheme, Box, VStack, HStack, Text, Pressable, ImageBackground } from '@repo/ui';
 
 type ThumbnailType =
     | 'lesson' | 'worksheet' | 'guide' | 'reading' | 'pedagogy'
     | 'video' | 'link' | 'pdf' | 'doc' | 'note' | 'other'
     | 'map' | 'infographic' | 'story' | 'circular' | 'movie_trailer' | 'tech_guide';
 
-const TYPE_CONFIG: Record<ThumbnailType, { icon: React.ComponentType<any>; color: string; label: string }> = {
+const TYPE_CONFIG: Record<ThumbnailType, { icon: React.ComponentType<{ size?: number; color?: string; fill?: string }>; color: string; label: string }> = {
     lesson: { icon: BookOpen, color: Theme.colors.sanctuarySaffron, label: 'Lesson' },
     worksheet: { icon: FileText, color: Theme.colors.templeGold, label: 'Worksheet' },
     guide: { icon: BookMarked, color: Theme.colors.gurudeviBlue, label: 'Guide' },
@@ -70,13 +52,9 @@ const TYPE_CONFIG: Record<ThumbnailType, { icon: React.ComponentType<any>; color
 };
 
 function resolveType(type: string): ThumbnailType {
-    if (type in TYPE_CONFIG) return type as ThumbnailType;
-    return 'other';
+    const value = type?.toLowerCase();
+    return value in TYPE_CONFIG ? (value as ThumbnailType) : 'other';
 }
-
-// ============================================================================
-// PROPS
-// ============================================================================
 
 export interface LibraryThumbnailCardProps {
     title: string;
@@ -87,7 +65,6 @@ export interface LibraryThumbnailCardProps {
     verified?: boolean;
     isLocked?: boolean;
     has_bookmarked?: boolean;
-    /** Copyright/usage notice – shown as a subtle footer badge on externally-sourced content */
     copyrightNotice?: string;
     onPress: () => void;
     onLongPress?: () => void;
@@ -95,10 +72,6 @@ export interface LibraryThumbnailCardProps {
     href?: string;
     target?: '_blank' | '_self';
 }
-
-// ============================================================================
-// COMPONENT
-// ============================================================================
 
 export function LibraryThumbnailCard({
     title,
@@ -108,166 +81,126 @@ export function LibraryThumbnailCard({
     endorsements = 0,
     verified = false,
     copyrightNotice,
+    has_bookmarked = false,
+    onBookmarkToggle,
     onPress,
     onLongPress,
     href,
     target = '_self',
 }: LibraryThumbnailCardProps) {
-    const colors = useThemedColors();
+    const theme = useTheme();
     const cfg = TYPE_CONFIG[resolveType(type)];
     const Icon = cfg.icon;
 
-    const styles = useMemo(() => StyleSheet.create({
-        pressable: {
-            width: CARD_WIDTH,
-            marginRight: Theme.spacing.md,
-            borderRadius: Theme.corners.generous,
-        },
-        card: {
-            width: CARD_WIDTH,
-            height: CARD_HEIGHT,
-            borderRadius: Theme.corners.generous,
-            overflow: 'hidden',
-            backgroundColor: colors.secondary,
-            ...Theme.shadows.md,
-        },
-        fallback: {
-            flex: 1,
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: cfg.color + '18',
-        },
-        image: { flex: 1 },
-        overlay: { ...StyleSheet.absoluteFillObject, justifyContent: 'space-between' },
-        typeBadge: {
-            alignSelf: 'flex-start',
-            margin: 8,
-            paddingHorizontal: 7,
-            paddingVertical: 3,
-            borderRadius: Theme.corners.tight,
-            backgroundColor: cfg.color,
-        },
-        typeText: {
-            fontSize: 9,
-            fontWeight: '800',
-            color: '#fff',
-            letterSpacing: 0.5,
-            textTransform: 'uppercase',
-        },
-        gradient: {
-            paddingHorizontal: 8,
-            paddingBottom: 8,
-            paddingTop: 24,
-        },
-        title: {
-            fontSize: 12,
-            fontWeight: '700',
-            color: colors.text,
-            lineHeight: 16,
-            marginBottom: 4,
-        },
-        meta: {
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: 4,
-        },
-        metaText: {
-            fontSize: 10,
-            color: colors.textSecondary,
-        },
-        copyrightBadge: {
-            marginTop: 4,
-            paddingHorizontal: 5,
-            paddingVertical: 2,
-            borderRadius: 4,
-            backgroundColor: 'rgba(0,0,0,0.4)',
-            borderWidth: 0.5,
-            borderColor: 'rgba(255,255,255,0.2)',
-        },
-        copyrightText: {
-            fontSize: 8,
-            color: 'rgba(255,255,255,0.65)',
-        },
-    }), [colors, cfg]);
-
-    const gradientColors: [string, string, string] = [
-        'transparent',
-        colors.secondary + 'BB',
-        colors.primary,
-    ];
-
-    const overlay = (
-        <View style={styles.overlay}>
-            {/* Top: type badge + verified */}
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <View style={styles.typeBadge}>
-                    <Text style={styles.typeText}>{cfg.label}</Text>
-                </View>
-                {verified && (
-                    <View style={{ margin: 8 }}>
-                        <BadgeCheck color={Theme.colors.sageGreen} size={14} />
-                    </View>
-                )}
-            </View>
-
-            {/* Bottom: gradient + title + meta */}
-            <LinearGradient colors={gradientColors} style={styles.gradient}>
-                <Text style={styles.title} numberOfLines={2}>{title}</Text>
-                <View style={styles.meta}>
-                    {subject && <Text style={styles.metaText} numberOfLines={1}>{subject}</Text>}
-                    {endorsements > 0 && (
-                        <>
-                            {subject && <Text style={styles.metaText}>·</Text>}
-                            <ThumbsUp size={9} color={Theme.colors.sanctuarySaffron} />
-                            <Text style={[styles.metaText, { color: Theme.colors.sanctuarySaffron }]}>
-                                {endorsements}
-                            </Text>
-                        </>
-                    )}
-                </View>
-                {copyrightNotice && (
-                    <View style={styles.copyrightBadge}>
-                        <Text style={styles.copyrightText} numberOfLines={1}>© {copyrightNotice}</Text>
-                    </View>
-                )}
-            </LinearGradient>
-        </View>
-    );
-
-    const PressableAny = Pressable as any;
     return (
-        <PressableAny
-            onPress={onPress}
-            onLongPress={onLongPress}
-            style={({ hovered }: any) => [
-                styles.pressable,
-                Platform.OS === 'web' && hovered && { opacity: 0.9, cursor: 'pointer' }
-            ]}
-            // @ts-ignore
-            accessibilityRole={href ? 'link' : 'button'}
-            // @ts-ignore
-            href={href}
-            // @ts-ignore
-            hrefAttrs={{
-                target: target,
-                rel: target === '_blank' ? 'noopener noreferrer' : undefined,
-            }}
-        >
-            <View style={styles.card}>
-                {thumbnailUrl ? (
-                    <ImageBackground source={{ uri: thumbnailUrl }} style={styles.image} resizeMode="cover">
-                        {overlay}
-                    </ImageBackground>
-                ) : (
-                    <>
-                        <View style={styles.fallback}>
-                            <Icon color={cfg.color} size={36} />
-                        </View>
-                        {overlay}
-                    </>
-                )}
-            </View>
-        </PressableAny>
+        <Box className="w-[148px] mr-4 mb-4">
+            <Pressable
+                onPress={onPress}
+                onLongPress={onLongPress}
+                className="w-[148px] h-[192px] rounded-3xl overflow-hidden bg-phase-surface border border-phase-border shadow-sm active:opacity-90 active:scale-[0.98]"
+                accessibilityRole={href ? 'link' : 'button'}
+                // @ts-ignore
+                href={href}
+                hrefAttrs={{
+                    target,
+                    rel: target === '_blank' ? 'noopener noreferrer' : undefined,
+                }}
+            >
+                <VStack className="flex-1">
+                    {/* Artwork / Thumbnail Area */}
+                    <Box className="h-[104px] overflow-hidden bg-black/5 border-b border-phase-border relative">
+                        {thumbnailUrl ? (
+                            <ImageBackground 
+                                source={{ uri: thumbnailUrl }} 
+                                className="flex-1"
+                                resizeMode="cover"
+                            >
+                                <Box className="absolute inset-0 bg-white/5" />
+                            </ImageBackground>
+                        ) : (
+                            <Box className="flex-1 items-center justify-center bg-phase-accent/5">
+                                <Box 
+                                    className="w-14 h-14 rounded-2xl items-center justify-center"
+                                    style={{ backgroundColor: cfg.color + '20' }}
+                                >
+                                    <Icon size={24} color={cfg.color} />
+                                </Box>
+                            </Box>
+                        )}
+
+                        {/* Top Overlays */}
+                        <HStack className="absolute top-2 left-2 right-2 justify-between items-start">
+                            <Box 
+                                className="px-2 py-1 rounded-full bg-white/95 border shadow-sm"
+                                style={{ borderColor: cfg.color + '40' }}
+                            >
+                                <Text className="text-[9px] font-black uppercase tracking-widest" style={{ color: cfg.color }}>
+                                    {cfg.label}
+                                </Text>
+                            </Box>
+                            
+                            <HStack className="gap-1 items-center">
+                                {onBookmarkToggle && (
+                                    <Pressable
+                                        onPress={(event) => {
+                                            if (Platform.OS === 'web') (event as any).stopPropagation();
+                                            void onBookmarkToggle();
+                                        }}
+                                        className="p-1 rounded-full bg-white/90 shadow-sm"
+                                        accessibilityRole="button"
+                                    >
+                                        <Bookmark
+                                            size={14}
+                                            color={has_bookmarked ? theme.accent.action : theme.text.primary}
+                                            fill={has_bookmarked ? theme.accent.action : 'transparent'}
+                                        />
+                                    </Pressable>
+                                )}
+                                {verified && (
+                                    <Box className="p-1 rounded-full bg-white/90 shadow-sm">
+                                        <BadgeCheck color={theme.accent.sageGreen} size={14} />
+                                    </Box>
+                                )}
+                            </HStack>
+                        </HStack>
+                    </Box>
+
+                    {/* Content Body */}
+                    <VStack className="flex-1 p-2.5 justify-between">
+                        <VStack className="gap-1">
+                            <Text className="text-[10px] font-bold uppercase tracking-wider" style={{ color: cfg.color }} numberOfLines={1}>
+                                {subject || 'General'}
+                            </Text>
+                            <Text className="text-xs font-bold text-phaseText-primary leading-4" numberOfLines={2}>
+                                {title}
+                            </Text>
+                        </VStack>
+
+                        <VStack className="gap-1">
+                            <HStack className="justify-between items-center">
+                                {endorsements > 0 ? (
+                                    <HStack className="items-center gap-1 bg-phase-accent/10 px-1.5 py-0.5 rounded-full">
+                                        <ThumbsUp size={8} color={theme.accent.action} />
+                                        <Text className="text-[9px] font-black" style={{ color: theme.accent.action }}>
+                                            {endorsements}
+                                        </Text>
+                                    </HStack>
+                                ) : <Box />}
+                                <Text className="text-[10px] font-bold text-phaseText-tertiary uppercase">Open</Text>
+                            </HStack>
+
+                            {copyrightNotice && (
+                                <Box className="bg-black/5 rounded py-0.5 px-1 self-start">
+                                    <Text className="text-[8px] text-phaseText-tertiary italic" numberOfLines={1}>
+                                        \u00A9 {copyrightNotice}
+                                    </Text>
+                                </Box>
+                            )}
+                        </VStack>
+                    </VStack>
+                </VStack>
+            </Pressable>
+        </Box>
     );
 }
 

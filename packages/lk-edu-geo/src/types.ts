@@ -48,6 +48,7 @@ export interface DSDivision {
 export interface GNDivision {
   id: string; // GN_LK1103005
   ds_division_id: string;
+  district_id?: string;
   name: string;
   name_si?: string;
   name_ta?: string;

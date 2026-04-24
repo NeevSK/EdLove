@@ -1,5 +1,6 @@
 import dataRaw from './data/lk-edu-data.json' assert { type: 'json' };
 import { LKEduData, School, Province, District, PostalUnit, Zone, Division, DSDivision, GNDivision } from './types.js';
+export type { LKEduData, School, Province, District, PostalUnit, Zone, Division, DSDivision, GNDivision } from './types.js';
 
 const data = dataRaw as unknown as LKEduData;
 
@@ -9,50 +10,48 @@ const data = dataRaw as unknown as LKEduData;
 
 export const getProvinces = (): Province[] => data.provinces;
 
-export const getProvinceById = (id: string): Province | undefined =>
-  data.provinces.find(p => p.id === id);
+export const getProvinceById = (id: string): Province | undefined => data.provinces.find(p => p.id === id);
 
 /**
  * Filtered Drilling: Get children by Parent ID
  */
-export const getDistrictsByProvince = (provinceId: string): District[] =>
-  data.districts.filter(d => d.province_id === provinceId);
+export const getDistrictsByProvince = (provinceId: string): District[] => data.districts.filter(d => d.province_id === provinceId);
 
-export const getDSDivisionsByDistrict = (districtId: string): DSDivision[] =>
-  data.dsDivisions.filter(ds => ds.district_id === districtId);
+export const getDSDivisionsByDistrict = (districtId: string): DSDivision[] => data.dsDivisions.filter(ds => ds.district_id === districtId);
 
-export const getGNDivisionsByDSDivision = (dsId: string): GNDivision[] =>
-  data.gnDivisions.filter(gn => gn.ds_division_id === dsId);
+export const getGNDivisionsByDSDivision = (dsId: string): GNDivision[] => data.gnDivisions.filter(gn => gn.ds_division_id === dsId);
 
 /**
  * Flat Accessors (Optional use)
  */
-export const getAllDistricts = () => data.districts;
+export const getDistricts = (provinceId?: string) => 
+  provinceId ? data.districts.filter(d => d.province_id === provinceId) : data.districts;
+
 export const getAllDSDivisions = () => data.dsDivisions;
+export const getDSDivisions = (districtId?: string) => 
+  districtId ? data.dsDivisions.filter(ds => ds.district_id === districtId) : data.dsDivisions;
+
 export const getAllGNDivisions = () => data.gnDivisions;
+export const getGNDivisions = (dsId?: string) => 
+  dsId ? data.gnDivisions.filter(gn => gn.ds_division_id === dsId) : data.gnDivisions;
 
 /**
  * POSTAL QUERIES
  */
 
-export const getPostalUnitsByDistrict = (districtId: string): PostalUnit[] =>
-  data.postalUnits.filter(pu => pu.district_id === districtId);
+export const getPostalUnitsByDistrict = (districtId: string): PostalUnit[] => data.postalUnits.filter(pu => pu.district_id === districtId);
 
-export const getPostalUnitById = (id: string): PostalUnit | undefined =>
-  data.postalUnits.find(pu => pu.id === id);
+export const getPostalUnitById = (id: string): PostalUnit | undefined => data.postalUnits.find(pu => pu.id === id);
 
 /**
  * EDUCATIONAL QUERIES (Layer 2)
  */
 
-export const getZonesByProvince = (provinceId: string): Zone[] =>
-  data.zones.filter(z => z.province_id === provinceId);
+export const getZonesByProvince = (provinceId: string): Zone[] => data.zones.filter(z => z.province_id === provinceId);
 
-export const getDivisionsByZone = (zoneId: string): Division[] =>
-  data.divisions.filter(d => d.zone_id === zoneId);
+export const getDivisionsByZone = (zoneId: string): Division[] => data.divisions.filter(d => d.zone_id === zoneId);
 
-export const getZoneById = (id: string): Zone | undefined =>
-  data.zones.find(z => z.id === id);
+export const getZoneById = (id: string): Zone | undefined => data.zones.find(z => z.id === id);
 
 /**
  * SCHOOL DISCOVERY ENGINE
@@ -87,8 +86,7 @@ export const getSchools = (filter?: SchoolFilter): School[] => {
   });
 };
 
-export const getSchoolByCensusNo = (censusNo: string): School | undefined =>
-  data.schools.find(s => s.census_no === censusNo);
+export const getSchoolByCensusNo = (censusNo: string): School | undefined => data.schools.find(s => s.census_no === censusNo);
 
 /**
  * SEARCH & AUTOCOMPLETE (Context-Aware)
@@ -134,7 +132,6 @@ export const searchGNDivisions = (query: string, options?: SearchOptions): GNDiv
   if (!normQuery) return [];
   return data.gnDivisions.filter(gn => {
     if (options?.dsId && gn.ds_division_id !== options.dsId) return false;
-    if (options?.districtId && gn.district_id !== options.districtId) return false;
     return (gn.name?.toLowerCase() || '').includes(normQuery) ||
            (gn.name_si || '').includes(normQuery) ||
            (gn.name_ta || '').includes(normQuery) ||
@@ -145,6 +142,11 @@ export const searchGNDivisions = (query: string, options?: SearchOptions): GNDiv
 /**
  * BREADCRUMBS & CONTEXT UTILITIES
  */
+
+/**
+ * Resolves the full path for a school for display in summaries or breadcrumbs
+ */
+export const getPostalUnits = () => data.postalUnits;
 
 /**
  * Resolves the full path for a school for display in summaries or breadcrumbs
@@ -161,6 +163,33 @@ export const getSchoolContext = (censusNo: string) => {
     division: data.divisions.find(div => div.id === school.jurisdiction.division_id),
     postalTown: data.postalUnits.find(pu => pu.id === school.location.postal_unit_id)
   };
+};
+
+/**
+ * Resolves the administrative and educational hierarchy for a school.
+ */
+export const getHierarchyForSchool = (schoolId: string) => {
+  const school = data.schools.find(s => s.id === schoolId);
+  if (!school) return null;
+
+  return {
+    school,
+    admin: {
+      province: data.provinces.find(p => p.id === school.location.province_id),
+      district: data.districts.find(d => d.id === school.location.district_id)
+    },
+    edu: {
+      zone: data.zones.find(z => z.id === school.jurisdiction.zone_id),
+      division: data.divisions.find(div => div.id === school.jurisdiction.division_id)
+    }
+  };
+};
+
+/**
+ * Returns all schools located in a specific postal code area.
+ */
+export const getSchoolsByPostalCode = (postalCode: string): School[] => {
+  return data.schools.filter(s => s.postal_code === postalCode);
 };
 
 /**

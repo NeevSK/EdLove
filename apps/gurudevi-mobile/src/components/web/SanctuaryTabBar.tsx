@@ -1,4 +1,4 @@
-/**
+﻿/**
  * SanctuaryTabBar.tsx  (web-only)
  *
  * Generic pill-style horizontal tab bar used across SelfView panels
@@ -38,8 +38,7 @@ export function SanctuaryTabBar<T extends string>({
     tabs,
     activeId,
     onSelect,
-    style,
-}: SanctuaryTabBarProps<T>) {
+    style}: SanctuaryTabBarProps<T>) {
     return (
         <div
             style={{
@@ -47,9 +46,7 @@ export function SanctuaryTabBar<T extends string>({
                 gap: '8px',
                 flexWrap: 'wrap',
                 marginBottom: '32px',
-                ...style,
-            }}
-        >
+                ...style}}>
             {tabs.map(tab => {
                 const isActive = tab.id === activeId;
                 const activeBg = tab.activeColor ?? 'var(--moss)';
@@ -71,9 +68,7 @@ export function SanctuaryTabBar<T extends string>({
                             fontFamily: 'var(--font-body)',
                             transition: 'all 0.2s',
                             background: isActive ? activeBg : 'var(--background-alt)',
-                            color: isActive ? activeText : 'var(--ink)',
-                        }}
-                    >
+                            color: isActive ? activeText : 'var(--ink)'}}>
                         <tab.icon size={15} />
                         {tab.label}
                     </button>

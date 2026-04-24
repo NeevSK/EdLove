@@ -2,10 +2,6 @@
  * AttendanceSheet Component
  * 
  * Fast, swipe-based attendance marking interface
- * - Swipe Right: Present (Green Check)
- * - Swipe Left: Absent (Red X)
- * - Long Press: Late (Yellow Clock)
- * - Default: All students marked as Present
  */
 
 import React, { useEffect } from 'react';
@@ -20,39 +16,36 @@ import {
     Input,
     InputField,
     Icon,
+    hapticLight,
 } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 import { GestureHandlerRootView, Swipeable } from 'react-native-gesture-handler';
 import { Check, X, Clock, Search } from 'lucide-react-native';
-import { Theme } from '@repo/ui';
-import { hapticLight } from '@repo/ui';
-import { useThemedColors } from '@repo/ui';
 import { useAttendance } from '../hooks/useAttendance';
 
 // Types
 import { AttendanceStatus, StudentAttendance } from '@repo/core';
 
-interface AttendanceSheetProps {
-    classroomId: string;
-    date?: string;
-    initialStudents?: StudentAttendance[];
-    onAttendanceChange?: (attendance: StudentAttendance[]) => void;
-}
-
-// Status configuration
+// Status configuration with semantic mappings
 const STATUS_CONFIG = {
     present: {
-        color: Theme.colors.sageGreen,
+        colorClass: 'bg-sageGreen',
+        textClass: 'text-sageGreen',
+        borderClass: 'border-sageGreen',
         icon: Check,
         label: 'attendance.status.present',
     },
     absent: {
-        color: Theme.colors.emberRed,
+        colorClass: 'bg-emberRed',
+        textClass: 'text-emberRed',
+        borderClass: 'border-emberRed',
         icon: X,
         label: 'attendance.status.absent',
     },
     late: {
-        color: Theme.colors.amberGlow,
+        colorClass: 'bg-amberGlow',
+        textClass: 'text-amberGlow',
+        borderClass: 'border-amberGlow',
         icon: Clock,
         label: 'attendance.status.late',
     },
@@ -65,7 +58,6 @@ export default function AttendanceSheet({
     onAttendanceChange,
 }: AttendanceSheetProps) {
     const { t } = useTranslation();
-    const colors = useThemedColors();
     const {
         students,
         setStudents,
@@ -102,97 +94,60 @@ export default function AttendanceSheet({
 
     // Render swipeable student row
     const renderStudentRow = ({ item }: { item: StudentAttendance }) => {
-        const studentStatus = item.status as keyof typeof STATUS_CONFIG;
-        const StatusIcon = STATUS_CONFIG[studentStatus].icon;
+        const studentStatus = (item.status || 'present') as keyof typeof STATUS_CONFIG;
+        const config = STATUS_CONFIG[studentStatus];
 
         return (
             <Swipeable
                 renderRightActions={() => (
                     <Box
-                        sx={{
-                            backgroundColor: STATUS_CONFIG.present.color,
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            width: 80,
-                            borderRadius: Theme.corners.comfortable,
-                            marginVertical: Theme.spacing.xs,
-                        }}
+                        className={`justify-center items-center w-20 rounded-comfortable my-1.5 ml-2 ${STATUS_CONFIG.present.colorClass}`}
                     >
-                        <Check color={Theme.colors.sacredWhite} size={24} />
+                        <Icon as={Check} className="text-sacredWhite" size={24} />
                     </Box>
                 )}
                 renderLeftActions={() => (
                     <Box
-                        sx={{
-                            backgroundColor: STATUS_CONFIG.absent.color,
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            width: 80,
-                            borderRadius: Theme.corners.comfortable,
-                            marginVertical: Theme.spacing.xs,
-                        }}
+                        className={`justify-center items-center w-20 rounded-comfortable my-1.5 mr-2 ${STATUS_CONFIG.absent.colorClass}`}
                     >
-                        <X color={Theme.colors.sacredWhite} size={24} />
+                        <Icon as={X} className="text-sacredWhite" size={24} />
                     </Box>
                 )}
                 onSwipeableRightOpen={() => handleUpdateStatus(item.id, 'present')}
                 onSwipeableLeftOpen={() => handleUpdateStatus(item.id, 'absent')}
             >
                 <Pressable
+                    onPress={() => {}}
                     onLongPress={() => handleUpdateStatus(item.id, 'late')}
                     delayLongPress={500}
                 >
                     <Box
-                        sx={{
-                            backgroundColor: colors.secondary,
-                            borderRadius: Theme.corners.comfortable,
-                            padding: Theme.spacing.md,
-                            marginVertical: Theme.spacing.xs,
-                            borderLeftWidth: 4,
-                            borderLeftColor: (STATUS_CONFIG as any)[item.status].color,
-                        }}
+                        className={`bg-phase-surface rounded-comfortable p-4 my-1.5 border-l-4 ${config.borderClass} border border-phase-canvas/30`}
                     >
-                        <HStack alignItems="center" justifyContent="space-between" sx={{ gap: 12 }}>
-                            <HStack alignItems="center" sx={{ flex: 1, gap: 12 }}>
+                        <HStack className="items-center justify-between gap-3">
+                            <HStack className="items-center flex-1 gap-4">
                                 {item.roll_number && (
                                     <Box
-                                        sx={{
-                                            width: 40,
-                                            height: 40,
-                                            borderRadius: Theme.corners.full,
-                                            backgroundColor: colors.tertiary,
-                                            justifyContent: 'center',
-                                            alignItems: 'center',
-                                        }}
+                                        className="w-10 h-10 rounded-full bg-phase-canvas justify-center items-center"
                                     >
-                                        <Text color={colors.textSecondary} sx={{ fontWeight: '700' }}>
+                                        <Text className="text-phaseText-secondary font-bold text-sm">
                                             {item.roll_number}
                                         </Text>
                                     </Box>
                                 )}
-                                <VStack sx={{ flex: 1 }}>
-                                    <Text
-                                        color={colors.text}
-                                        sx={{ fontSize: 16, fontWeight: '700' }}
-                                    >
+                                <VStack className="flex-1">
+                                    <Text className="text-phaseText-primary text-base font-bold">
                                         {item.full_name}
                                     </Text>
-                                    <Text color={colors.textSecondary} sx={{ fontSize: 12 }}>
-                                        {t('attendance.sheet.swipeHint')}
+                                    <Text className="text-phaseText-secondary text-xs">
+                                        {t('attendance.sheet.swipeHint') || 'Swipe to mark status'}
                                     </Text>
                                 </VStack>
                             </HStack>
                             <Box
-                                sx={{
-                                    width: 40,
-                                    height: 40,
-                                    borderRadius: Theme.corners.full,
-                                    backgroundColor: (STATUS_CONFIG as any)[studentStatus].color,
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
-                                }}
+                                className={`w-10 h-10 rounded-full justify-center items-center ${config.colorClass}`}
                             >
-                                <StatusIcon color={Theme.colors.sacredWhite} size={20} />
+                                <Icon as={config.icon} className="text-sacredWhite" size={20} />
                             </Box>
                         </HStack>
                     </Box>
@@ -203,67 +158,46 @@ export default function AttendanceSheet({
 
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
-            <Box sx={{ flex: 1, backgroundColor: colors.primary }}>
-                <VStack sx={{ flex: 1, padding: 16, gap: 12 }}>
+            <Box className="flex-1 bg-phase-world">
+                <VStack className="flex-1 p-4 gap-6">
                     {/* Header with stats */}
                     <Box>
-                        <Heading color={colors.text} sx={{ fontSize: 18, marginBottom: Theme.spacing.xs }}>
-                            {t('attendance.sheet.title')}
+                        <Heading className="text-phaseText-primary text-xl mb-1 mt-2">
+                            {t('attendance.sheet.title') || 'Attendance Register'}
                         </Heading>
-                        <Text color={colors.textSecondary} sx={{ fontSize: 14, marginBottom: Theme.spacing.md }}>
+                        <Text className="text-phaseText-secondary text-sm mb-6">
                             {date}
                         </Text>
 
                         {/* Stats Row */}
-                        <HStack sx={{ gap: Theme.spacing.xs, marginBottom: Theme.spacing.md }}>
+                        <HStack className="gap-3">
                             <Box
-                                sx={{
-                                    flex: 1,
-                                    backgroundColor: colors.secondary,
-                                    padding: Theme.spacing.sm,
-                                    borderRadius: Theme.corners.comfortable,
-                                    borderLeftWidth: 3,
-                                    borderLeftColor: STATUS_CONFIG.present.color,
-                                }}
+                                className="flex-1 bg-phase-surface p-3 rounded-comfortable border-l-[3px] border-l-sageGreen border border-phase-canvas/50"
                             >
-                                <Text color={colors.textSecondary} sx={{ fontSize: 12 }}>
-                                    {t('attendance.stats.present')}
+                                <Text className="text-phaseText-secondary text-[10px] uppercase font-bold tracking-wider mb-1">
+                                    {t('attendance.stats.present') || 'Present'}
                                 </Text>
-                                <Text color={colors.text} sx={{ fontSize: 18, fontWeight: '700' }}>
+                                <Text className="text-phaseText-primary text-2xl font-bold">
                                     {stats.present}
                                 </Text>
                             </Box>
                             <Box
-                                sx={{
-                                    flex: 1,
-                                    backgroundColor: colors.secondary,
-                                    padding: Theme.spacing.sm,
-                                    borderRadius: Theme.corners.comfortable,
-                                    borderLeftWidth: 3,
-                                    borderLeftColor: STATUS_CONFIG.absent.color,
-                                }}
+                                className="flex-1 bg-phase-surface p-3 rounded-comfortable border-l-[3px] border-l-emberRed border border-phase-canvas/50"
                             >
-                                <Text color={colors.textSecondary} sx={{ fontSize: 12 }}>
-                                    {t('attendance.stats.absent')}
+                                <Text className="text-phaseText-secondary text-[10px] uppercase font-bold tracking-wider mb-1">
+                                    {t('attendance.stats.absent') || 'Absent'}
                                 </Text>
-                                <Text color={colors.text} sx={{ fontSize: 18, fontWeight: '700' }}>
+                                <Text className="text-phaseText-primary text-2xl font-bold">
                                     {stats.absent}
                                 </Text>
                             </Box>
                             <Box
-                                sx={{
-                                    flex: 1,
-                                    backgroundColor: colors.secondary,
-                                    padding: Theme.spacing.sm,
-                                    borderRadius: Theme.corners.comfortable,
-                                    borderLeftWidth: 3,
-                                    borderLeftColor: STATUS_CONFIG.late.color,
-                                }}
+                                className="flex-1 bg-phase-surface p-3 rounded-comfortable border-l-[3px] border-l-amberGlow border border-phase-canvas/50"
                             >
-                                <Text color={colors.textSecondary} sx={{ fontSize: 12 }}>
-                                    {t('attendance.stats.late')}
+                                <Text className="text-phaseText-secondary text-[10px] uppercase font-bold tracking-wider mb-1">
+                                    {t('attendance.stats.late') || 'Late'}
                                 </Text>
-                                <Text color={colors.text} sx={{ fontSize: 18, fontWeight: '700' }}>
+                                <Text className="text-phaseText-primary text-2xl font-bold">
                                     {stats.late}
                                 </Text>
                             </Box>
@@ -273,75 +207,67 @@ export default function AttendanceSheet({
                     {/* Search Bar */}
                     <Box>
                         <Input
-                            sx={{
-                                backgroundColor: colors.secondary,
-                                borderColor: Theme.colors.transparent,
-                                borderRadius: Theme.corners.comfortable,
-                                height: 48,
-                                flexDirection: 'row',
-                                alignItems: 'center'
-                            }}
+                            className="bg-phase-surface border-phase-canvas/50 rounded-comfortable h-14 flex-row items-center px-4"
                         >
-                            <Box sx={{ paddingLeft: Theme.spacing.sm }}>
-                                <Search color={colors.textSecondary} size={20} />
-                            </Box>
+                            <Icon as={Search} className="text-phaseText-secondary mr-2" size={20} />
                             <InputField
                                 placeholder={t('common.searchPlaceholder') || 'Search students...'}
                                 value={searchQuery}
                                 onChangeText={setSearchQuery}
-                                color={colors.text}
-                                placeholderTextColor={colors.textTertiary}
-                                sx={{ flex: 1 }}
+                                className="flex-1 text-phaseText-primary text-base"
                             />
                         </Input>
                     </Box>
 
                     {/* Student List */}
-                    <Box sx={{ flex: 1 }}>
+                    <Box className="flex-1">
                         {filteredStudents.length === 0 ? (
-                            <Box sx={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                                <Text color={colors.textSecondary}>
-                                    {searchQuery ? t('common.noResults') || 'No students found' : t('attendance.sheet.noStudents') || 'No students in this class'}
+                            <Box className="flex-1 justify-center items-center py-20 bg-phase-surface/50 rounded-generous border border-dashed border-phase-canvas">
+                                <Text className="text-phaseText-secondary text-center px-10">
+                                    {searchQuery ? (t('common.noResults') || 'No students match your search.') : (t('attendance.sheet.noStudents') || 'No students currently enrolled.')}
                                 </Text>
                             </Box>
                         ) : (
                             <FlatList
                                 data={filteredStudents}
-                                renderItem={renderStudentRow as any}
+                                renderItem={renderStudentRow}
                                 keyExtractor={(item: any) => item.id}
                                 showsVerticalScrollIndicator={false}
+                                contentContainerStyle={{ paddingBottom: 20 }}
                             />
                         )}
                     </Box>
 
                     {/* Legend */}
                     <Box
-                        sx={{
-                            backgroundColor: colors.secondary,
-                            padding: Theme.spacing.md,
-                            borderRadius: Theme.corners.comfortable,
-                        }}
+                        className="bg-phase-surface p-4 rounded-generous border border-phase-canvas"
                     >
-                        <Text color={colors.textSecondary} sx={{ fontSize: 12, marginBottom: Theme.spacing.xs }}>
-                            {t('common.quickActions') || 'Quick Actions:'}
+                        <Text className="text-phaseText-secondary text-[10px] uppercase font-black tracking-wider mb-3">
+                            {t('common.quickActions') || 'Interaction Protocol'}
                         </Text>
-                        <VStack sx={{ gap: 8 }}>
-                            <HStack alignItems="center" sx={{ gap: 8 }}>
-                                <Text color={colors.text} sx={{ fontSize: 12 }}>→</Text>
-                                <Text color={colors.textSecondary} sx={{ fontSize: 12 }}>
-                                    {t('attendance.sheet.swipeHintRight') || 'Swipe Right = Present'}
+                        <VStack className="gap-3">
+                            <HStack className="items-center gap-4">
+                                <Box className="w-6 h-6 rounded-full bg-sageGreen/10 items-center justify-center">
+                                    <Icon as={Check} size={12} className="text-sageGreen" />
+                                </Box>
+                                <Text className="text-phaseText-secondary text-xs font-medium">
+                                    {t('attendance.sheet.swipeHintRight') || 'Swipe Right to mark as Present'}
                                 </Text>
                             </HStack>
-                            <HStack alignItems="center" sx={{ gap: 8 }}>
-                                <Text color={colors.text} sx={{ fontSize: 12 }}>←</Text>
-                                <Text color={colors.textSecondary} sx={{ fontSize: 12 }}>
-                                    {t('attendance.sheet.swipeHintLeft') || 'Swipe Left = Absent'}
+                            <HStack className="items-center gap-4">
+                                <Box className="w-6 h-6 rounded-full bg-emberRed/10 items-center justify-center">
+                                    <Icon as={X} size={12} className="text-emberRed" />
+                                </Box>
+                                <Text className="text-phaseText-secondary text-xs font-medium">
+                                    {t('attendance.sheet.swipeHintLeft') || 'Swipe Left to mark as Absent'}
                                 </Text>
                             </HStack>
-                            <HStack alignItems="center" sx={{ gap: 8 }}>
-                                <Text color={colors.text} sx={{ fontSize: 12 }}>⏱</Text>
-                                <Text color={colors.textSecondary} sx={{ fontSize: 12 }}>
-                                    {t('attendance.sheet.swipeHintLong') || 'Long Press = Late'}
+                            <HStack className="items-center gap-4">
+                                <Box className="w-6 h-6 rounded-full bg-amberGlow/10 items-center justify-center">
+                                    <Icon as={Clock} size={12} className="text-amberGlow" />
+                                </Box>
+                                <Text className="text-phaseText-secondary text-xs font-medium">
+                                    {t('attendance.sheet.swipeHintLong') || 'Long Press to mark as Late'}
                                 </Text>
                             </HStack>
                         </VStack>
@@ -351,3 +277,11 @@ export default function AttendanceSheet({
         </GestureHandlerRootView>
     );
 }
+
+interface AttendanceSheetProps {
+    classroomId: string;
+    date?: string;
+    initialStudents?: StudentAttendance[];
+    onAttendanceChange?: (attendance: StudentAttendance[]) => void;
+}
+

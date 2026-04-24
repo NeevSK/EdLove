@@ -1,12 +1,12 @@
 /**
- * useComments — Real-time comment system for community posts.
+ * useComments  Real-time comment system for community posts.
  *
  * Provides: fetching, creating, deleting, upvoting, and live subscription.
  * Safe to mount with postId=null (does nothing).
  */
 import React from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@repo/core';
+import { supabase, usePermissions } from '@repo/core';
 import { communityAPI } from '../api/community';
 import type { Comment } from '../types/Community';
 
@@ -16,8 +16,10 @@ export const COMMENT_KEYS = {
 
 export function useComments(postId: string | null) {
     const queryClient = useQueryClient();
+    const { context } = usePermissions();
+    // (Note: ability was unused here, but context might be needed for ID)
 
-    // ── Fetch ──────────────────────────────────────────────────────────────
+    //  Fetch 
     const query = useQuery({
         queryKey: postId ? COMMENT_KEYS.list(postId) : ['community', 'comments', '__none__'],
         queryFn: () => communityAPI.getComments(postId!, 60),
@@ -25,7 +27,7 @@ export function useComments(postId: string | null) {
         staleTime: 30_000,
     });
 
-    // ── Real-time subscription ─────────────────────────────────────────────
+    //  Real-time subscription 
     React.useEffect(() => {
         if (!postId) return;
 
@@ -40,7 +42,7 @@ export function useComments(postId: string | null) {
                     filter: `post_id=eq.${postId}`,
                 },
                 () => {
-                    // Invalidate — do not manually merge to avoid auth/upvote state mismatch
+                    // Invalidate  do not manually merge to avoid auth/upvote state mismatch
                     queryClient.invalidateQueries({ queryKey: COMMENT_KEYS.list(postId) });
                 },
             )
@@ -49,7 +51,7 @@ export function useComments(postId: string | null) {
         return () => { supabase.removeChannel(channel); };
     }, [postId, queryClient]);
 
-    // ── Create ─────────────────────────────────────────────────────────────
+    //  Create 
     const createMutation = useMutation({
         mutationFn: ({
             content,
@@ -75,7 +77,7 @@ export function useComments(postId: string | null) {
                 author_id: 'me',
                 author_name: isAnonymous ? 'Anonymous' : 'Me',
                 author_avatar: null,
-                author_authority: 'student',
+                author_authority: 'student', // Optimized: default for comments is student, but should ideally come from identity
             };
 
             queryClient.setQueryData<Comment[]>(
@@ -97,7 +99,7 @@ export function useComments(postId: string | null) {
         },
     });
 
-    // ── Delete ─────────────────────────────────────────────────────────────
+    //  Delete 
     const deleteMutation = useMutation({
         mutationFn: (commentId: string) => communityAPI.deleteComment(commentId),
 
@@ -123,7 +125,7 @@ export function useComments(postId: string | null) {
         },
     });
 
-    // ── Upvote toggle ──────────────────────────────────────────────────────
+    //  Upvote toggle 
     const upvoteMutation = useMutation({
         mutationFn: (commentId: string) => communityAPI.toggleCommentUpvote(commentId),
 
@@ -156,7 +158,7 @@ export function useComments(postId: string | null) {
         },
     });
 
-    // ── Mark official answer ───────────────────────────────────────────────
+    //  Mark official answer 
     const markOfficialMutation = useMutation({
         mutationFn: ({ commentId, isOfficial }: { commentId: string; isOfficial: boolean }) =>
             communityAPI.markOfficialAnswer(commentId, isOfficial),

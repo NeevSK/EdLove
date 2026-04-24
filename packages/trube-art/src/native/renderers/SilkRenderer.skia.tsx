@@ -22,10 +22,5 @@ export function SilkRendererSkia({ width, height, surface, plan }: TrubeRenderer
   );
 
   return (
-    <Canvas style={StyleSheet.absoluteFill}>
-      <Rect x={0} y={0} width={width} height={height}>
-        <RuntimeShader source={effect} uniforms={uniforms} />
-      </Rect>
-    </Canvas>
-  );
+    <Canvas style={StyleSheet.absoluteFill}      <Rect x={0} y={0} width={width} height={height}        <RuntimeShader source={effect} uniforms={uniforms} /      </Rect    </Canvas  );
 }

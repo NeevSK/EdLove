@@ -14,7 +14,7 @@ const PREFIX_DIVISION = 'DIV_';
 const PREFIX_POSTAL = 'POST_';
 
 async function importData() {
-  console.log('🚀 Phase 9: Unified Ingestion (Structured Sources)...');
+  console.log('\uD83D\uDE80 Phase 9: Unified Ingestion (Structured Sources)...');
 
   // 1. Load Official Administrative Hierarchy (From extraction result)
   const adminRaw = JSON.parse(fs.readFileSync('./src/data/admin-hierarchy-official.json', 'utf8'));
@@ -51,7 +51,7 @@ async function importData() {
       }
     });
   }
-  console.log(`📬 Loaded ${postalUnits.length} granular postal towns.`);
+  console.log(`\uD83D\uDCEC Loaded ${postalUnits.length} granular postal towns.`);
 
   // 3. Harvest Schools from SQL (From Phase 9 Sources Path)
   const schools: School[] = [];
@@ -62,7 +62,7 @@ async function importData() {
   const chunkFiles = await glob(path.join(sqlSourcesPath, 'chunk_*.sql').replace(/\\/g, '/'));
   
   if (chunkFiles.length === 0) {
-    console.warn('⚠️ No school SQL chunks found in ./sources/');
+    console.warn('\u26A0\uFE0F No school SQL chunks found in ./sources/');
   }
 
   for (const file of chunkFiles) {
@@ -127,7 +127,7 @@ async function importData() {
   }
 
   // 4. Multi-Layer Enrichment
-  console.log(`🔗 Enriching ${schools.length} schools with granular spatial data...`);
+  console.log(`\uD83D\uDD17 Enriching ${schools.length} schools with granular spatial data...`);
   schools.forEach(s => {
     const districtTowns = postalUnits.filter(pu => pu.district_id === s.location.district_id);
     const puMatch = districtTowns.find(pu => s.address.toLowerCase().includes(pu.city.toLowerCase())) 
@@ -166,8 +166,8 @@ async function importData() {
     JSON.stringify(finalData, null, 2)
   );
 
-  console.log('✅ Ingestion (Structured) Complete!');
-  console.log(`📊 Statistics: Schools: ${schools.length}, GN: ${gnDivisions.length}, Postal: ${postalUnits.length}`);
+  console.log('\u2705 Ingestion (Structured) Complete!');
+  console.log(`\uD83D\uDCCA Statistics: Schools: ${schools.length}, GN: ${gnDivisions.length}, Postal: ${postalUnits.length}`);
 }
 
 importData().catch(console.error);

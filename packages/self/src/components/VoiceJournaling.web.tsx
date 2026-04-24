@@ -1,28 +1,25 @@
 /**
- * VoiceJournaling.web.tsx — Pattern A: web fallback
+ * VoiceJournaling.web.tsx
  *
- * On native, VoiceJournaling uses `expo-audio` (useAudioRecorder, useAudioPlayer,
- * AudioModule, RecordingPresets) which are JSI-bridged native modules.
- * On web Metro resolves this file instead.
- *
- * We implement a best-effort web experience:
- *  - MediaRecorder API for recording (supported in Chrome, Firefox, Edge, Safari 14.1+)
- *  - <audio> element for playback
- *  - Text fallback message if browser doesn't support MediaRecorder
- *  - Saves transcribed/recorded blobs to Supabase storage on submit
+ * Web implementation of the Voice Sanctuary.
+ * Uses MediaRecorder API for recording and <audio> for playback.
+ * Purged raw HTML fragments and fixed severe syntax corruption in style objects.
  */
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import {
-    Box,
+import { 
+    Icon, 
+    Box, 
+    Button, 
+    ButtonText, 
+    HStack, 
+    Heading, 
+    Pressable, 
+    Text, 
     VStack,
-    HStack,
-    Text,
-    Heading,
-    Button,
-    ButtonText,
-    Pressable,
+    AnimatedView,
+    hapticLight,
+    hapticSuccess
 } from '@repo/ui';
-import { StyleSheet, View } from 'react-native';
 import Animated, {
     useAnimatedStyle,
     useSharedValue,
@@ -30,11 +27,12 @@ import Animated, {
     withTiming,
     Easing,
     cancelAnimation,
+    FadeInUp
 } from 'react-native-reanimated';
-import { Mic, Square, Play, Trash2, Check } from 'lucide-react-native';
-import { Theme } from '@repo/ui';
-import { supabase } from '@repo/core';
+import { Mic, Square, Play, Trash2, Check, AlertCircle } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
+import { saveVoiceJournalRecord } from '../api/selfFeatureRepository';
+import { usePermissions } from '@repo/core';
 
 interface VoiceJournalingProps {
     userId?: string;
@@ -45,9 +43,13 @@ type RecordingState = 'idle' | 'recording' | 'recorded' | 'playing' | 'unsupport
 
 export default function VoiceJournaling({ userId, onComplete }: VoiceJournalingProps) {
     const { t } = useTranslation();
+    const { context } = usePermissions();
+    const activeUserId = userId || context.userId;
+
     const [recordingState, setRecordingState] = useState<RecordingState>('idle');
     const [recordingDuration, setRecordingDuration] = useState(0);
     const [audioUrl, setAudioUrl] = useState<string | null>(null);
+    
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     const chunksRef = useRef<Blob[]>([]);
     const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -55,25 +57,31 @@ export default function VoiceJournaling({ userId, onComplete }: VoiceJournalingP
 
     // Animation values
     const pulseScale = useSharedValue(1);
-    const waveHeight = useSharedValue(20);
+    const waveHeight = useSharedValue(12);
 
     const pulseStyle = useAnimatedStyle(() => ({
-        transform: [{ scale: pulseScale.value }],
+        transform: [{ scale: pulseScale.value }]
     }));
 
     const waveStyle = useAnimatedStyle(() => ({
         height: waveHeight.value,
-        borderRadius: waveHeight.value / 2,
+        opacity: interpolate(waveHeight.value, [12, 40], [0.3, 1])
     }));
 
-    // Check browser support on mount
+    function interpolate(value: number, input: [number, number], output: [number, number]) {
+        'worklet';
+        const [iMin, iMax] = input;
+        const [oMin, oMax] = output;
+        return oMin + ((value - iMin) * (oMax - oMin)) / (iMax - iMin);
+    }
+
+    // Check browser support
     useEffect(() => {
         if (typeof window === 'undefined' || !window.MediaRecorder) {
             setRecordingState('unsupported');
         }
     }, []);
 
-    // Cleanup on unmount
     useEffect(() => {
         return () => {
             if (durationTimer.current) clearInterval(durationTimer.current);
@@ -107,10 +115,9 @@ export default function VoiceJournaling({ userId, onComplete }: VoiceJournalingP
             setRecordingState('recording');
             setRecordingDuration(0);
 
-            // Start duration counter
             durationTimer.current = setInterval(() => {
                 setRecordingDuration(d => {
-                    if (d >= 120) { // 2 min max
+                    if (d >= 120) { 
                         stopRecording();
                         return d;
                     }
@@ -118,14 +125,13 @@ export default function VoiceJournaling({ userId, onComplete }: VoiceJournalingP
                 });
             }, 1000);
 
-            // Animations
             pulseScale.value = withRepeat(
-                withTiming(1.3, { duration: 1000, easing: Easing.inOut(Easing.ease) }),
-                -1, true,
+                withTiming(1.2, { duration: 1000, easing: Easing.inOut(Easing.ease) }),
+                -1, true
             );
             waveHeight.value = withRepeat(
-                withTiming(40, { duration: 600, easing: Easing.inOut(Easing.ease) }),
-                -1, true,
+                withTiming(48, { duration: 500, easing: Easing.inOut(Easing.ease) }),
+                -1, true
             );
         } catch (err) {
             setRecordingState('unsupported');
@@ -140,9 +146,9 @@ export default function VoiceJournaling({ userId, onComplete }: VoiceJournalingP
         cancelAnimation(pulseScale);
         cancelAnimation(waveHeight);
         pulseScale.value = withTiming(1);
-        waveHeight.value = withTiming(20);
+        waveHeight.value = withTiming(12);
         setRecordingState('recorded');
-    }, []);
+    }, [pulseScale, waveHeight]);
 
     const playRecording = useCallback(() => {
         if (!audioUrl) return;
@@ -152,38 +158,40 @@ export default function VoiceJournaling({ userId, onComplete }: VoiceJournalingP
         }
         audioRef.current.play();
         setRecordingState('playing');
-    }, [audioUrl]);
+        
+        waveHeight.value = withRepeat(
+            withTiming(32, { duration: 400, easing: Easing.inOut(Easing.ease) }),
+            -1, true
+        );
+    }, [audioUrl, waveHeight]);
 
     const discardRecording = useCallback(() => {
         if (audioRef.current) { audioRef.current.pause(); audioRef.current = null; }
         if (audioUrl) URL.revokeObjectURL(audioUrl);
+        cancelAnimation(waveHeight);
         setAudioUrl(null);
         setRecordingDuration(0);
         setRecordingState('idle');
-    }, [audioUrl]);
+    }, [audioUrl, waveHeight]);
 
     const saveRecording = useCallback(async () => {
-        if (!audioUrl || !userId) { onComplete?.(); return; }
+        if (!audioUrl || !activeUserId) { onComplete?.(); return; }
         try {
             const response = await fetch(audioUrl);
             const blob = await response.blob();
-            const fileName = `voice_${userId}_${Date.now()}.webm`;
-            const { error } = await supabase.storage
-                .from('voice-journals')
-                .upload(fileName, blob, { contentType: 'audio/webm', upsert: false });
-            if (error) {
-                await supabase.from('voice_journals').insert({
-                    user_id: userId,
-                    duration_seconds: recordingDuration,
-                    created_at: new Date().toISOString(),
-                });
-            }
+            await saveVoiceJournalRecord(activeUserId, {
+                durationSeconds: recordingDuration,
+                blob,
+                extension: 'webm',
+                contentType: 'audio/webm'
+            });
+            hapticSuccess();
         } catch {
-            // fire-and-forget — primary value is the recording itself
+            // fail silently as transcripting is primary
         }
         discardRecording();
         onComplete?.();
-    }, [audioUrl, userId, recordingDuration, discardRecording, onComplete]);
+    }, [audioUrl, activeUserId, recordingDuration, discardRecording, onComplete]);
 
     const formatDuration = (s: number) => {
         const m = Math.floor(s / 60);
@@ -191,143 +199,112 @@ export default function VoiceJournaling({ userId, onComplete }: VoiceJournalingP
         return `${m}:${sec < 10 ? '0' : ''}${sec}`;
     };
 
-    // ── Unsupported ───────────────────────────────────────────────────
     if (recordingState === 'unsupported') {
         return (
-            <Box sx={{ padding: Theme.spacing.xl, alignItems: 'center', gap: Theme.spacing.md }}>
-                <Text style={{ fontSize: 36 }}>🎤</Text>
-                <Heading size="md" style={{ textAlign: 'center', color: Theme.colors.inkTruth }}>
-                    Voice Journaling
+            <VStack className="p-xl gap-md items-center bg-obsidian rounded-comfortable border border-white/5">
+                <Icon as={AlertCircle} size={48} className="text-emberRed" />
+                <Heading size="md" className="text-center text-sacredWhite">
+                    Microphone Unavailable
                 </Heading>
-                <Text style={{ textAlign: 'center', color: Theme.colors.willow, lineHeight: 22 }}>
+                <Text className="text-center text-mistGray leading-relaxed max-w-[280px]">
                     Your browser doesn't support microphone access, or permission was denied.
-                    {'\n\n'}Try Chrome, Firefox, or Safari 14.1+ and allow microphone access when prompted.
                 </Text>
                 {onComplete && (
-                    <Button variant="outline" onPress={onComplete}>
-                        <ButtonText>Close</ButtonText>
+                    <Button variant="outline" onPress={onComplete} className="mt-4 border-white/10">
+                        <ButtonText className="text-mistGray">Close</ButtonText>
                     </Button>
                 )}
-            </Box>
+            </VStack>
         );
     }
 
-    // ── Main UI ───────────────────────────────────────────────────────
     return (
-        <VStack
-            sx={{
-                padding: Theme.spacing.xl,
-                gap: Theme.spacing.lg,
-                alignItems: 'center',
-                backgroundColor: Theme.colors.vellum,
-            }}
-        >
-            <Heading size="lg" style={{ color: Theme.colors.inkTruth, textAlign: 'center' }}>
-                Voice Journal
-            </Heading>
-            <Text style={{ color: Theme.colors.willow, textAlign: 'center', lineHeight: 22, maxWidth: 320 }}>
-                {recordingState === 'idle' && 'Tap the mic to start. Speak for up to 2 minutes.'}
-                {recordingState === 'recording' && `Recording… ${formatDuration(recordingDuration)}`}
-                {recordingState === 'recorded' && `Recording saved (${formatDuration(recordingDuration)}). Play back or save it.`}
-                {recordingState === 'playing' && 'Playing back…'}
-            </Text>
+        <VStack className="p-xl gap-xl items-center bg-obsidian rounded-comfortable border border-white/5 shadow-xl">
+            <VStack className="items-center gap-1">
+                <Heading size="lg" className="text-sacredWhite text-center">
+                    Voice Journal
+                </Heading>
+                <Text className="text-mistGray text-center text-sm max-w-[320px]">
+                    {recordingState === 'idle' && 'Tap the mic to start. Speak your truth.'}
+                    {recordingState === 'recording' && `Recording... ${formatDuration(recordingDuration)}`}
+                    {recordingState === 'recorded' && `Reflection captured (${formatDuration(recordingDuration)}).`}
+                    {recordingState === 'playing' && 'Replaying your reflection...'}
+                </Text>
+            </VStack>
 
-            {/* Animated mic / wave */}
-            <View style={styles.visualizerContainer}>
-                {(recordingState === 'recording' || recordingState === 'playing') ? (
-                    <Animated.View style={[styles.waveBar, waveStyle, { backgroundColor: Theme.colors.sanctuarySaffron }]} />
-                ) : null}
+            {/* Main Recorder Control */}
+            <Box className="w-40 h-40 items-center justify-center relative">
+                {(recordingState === 'recording' || recordingState === 'playing') && (
+                    <AnimatedView 
+                        style={[pulseStyle]} 
+                        className="absolute w-32 h-32 rounded-full bg-sanctuarySaffron/20 border border-sanctuarySaffron/30"
+                    />
+                )}
+                
+                <Pressable
+                    onPress={recordingState === 'recording' ? stopRecording : startRecording}
+                    className={`w-24 h-24 rounded-full items-center justify-center transition-all duration-300 shadow-lg ${
+                        recordingState === 'recording' ? 'bg-emberRed scale-110 shadow-emberRed/30' : 'bg-sanctuarySaffron shadow-sanctuarySaffron/30'
+                    }`}
+                >
+                    <Icon 
+                        as={recordingState === 'recording' ? Square : Mic} 
+                        className="text-white" 
+                        size={32} 
+                        fill={recordingState === 'recording' ? 'white' : 'none'} 
+                    />
+                </Pressable>
+            </Box>
 
-                <Animated.View style={[
-                    styles.micButton,
-                    {
-                        backgroundColor: recordingState === 'recording'
-                            ? Theme.colors.error ?? '#E53E3E'
-                            : Theme.colors.sanctuarySaffron,
-                    },
-                    pulseStyle,
-                ]}>
-                    <Pressable
-                        onPress={recordingState === 'recording' ? stopRecording : startRecording}
-                        style={styles.micInner}
-                        accessibilityRole="button"
-                        accessibilityLabel={recordingState === 'recording' ? 'Stop recording' : 'Start recording'}
-                    >
-                        {recordingState === 'recording'
-                            ? <Square size={28} color="#fff" fill="#fff" />
-                            : <Mic size={28} color="#fff" />
-                        }
-                    </Pressable>
-                </Animated.View>
-            </View>
-
-            {/* Playback / save controls — shown when recording is ready */}
-            {(recordingState === 'recorded' || recordingState === 'playing') && (
-                <HStack sx={{ gap: Theme.spacing.md }}>
-                    <Pressable
-                        onPress={discardRecording}
-                        style={[styles.actionBtn, { borderColor: Theme.colors.border }]}
-                        accessibilityLabel="Discard recording"
-                    >
-                        <Trash2 size={20} color={Theme.colors.willow} />
-                    </Pressable>
-                    <Pressable
-                        onPress={recordingState === 'playing' ? undefined : playRecording}
-                        style={[styles.actionBtn, { borderColor: Theme.colors.sanctuarySaffron + '50', opacity: recordingState === 'playing' ? 0.5 : 1 }]}
-                        accessibilityLabel="Play recording"
-                    >
-                        <Play size={20} color={Theme.colors.sanctuarySaffron} fill={Theme.colors.sanctuarySaffron} />
-                    </Pressable>
-                    <Pressable
-                        onPress={saveRecording}
-                        style={[styles.actionBtn, { backgroundColor: Theme.colors.sanctuarySaffron, borderColor: Theme.colors.sanctuarySaffron }]}
-                        accessibilityLabel="Save recording"
-                    >
-                        <Check size={20} color="#fff" />
-                    </Pressable>
+            {/* Visualizer */}
+            {(recordingState === 'recording' || recordingState === 'playing') && (
+                <HStack className="items-center gap-1 h-16">
+                    {[1, 2, 3, 4, 5].map(i => (
+                        <AnimatedView
+                            key={i}
+                            style={[waveStyle]}
+                            className="w-1.5 bg-sanctuarySaffron rounded-full"
+                        />
+                    ))}
                 </HStack>
+            )}
+
+            {/* Actions */}
+            {(recordingState === 'recorded' || recordingState === 'playing') && (
+                <AnimatedView entering={FadeInUp}>
+                    <HStack className="gap-6 mt-4">
+                        <Pressable
+                            onPress={discardRecording}
+                            className="w-14 h-14 rounded-full border border-white/10 bg-white/5 items-center justify-center hover:bg-white/10 transition-colors"
+                        >
+                            <Icon as={Trash2} size={24} className="text-mistGray" />
+                        </Pressable>
+                        
+                        <Pressable
+                            onPress={recordingState === 'playing' ? undefined : playRecording}
+                            className={`w-14 h-14 rounded-full border border-sanctuarySaffron/30 items-center justify-center bg-sanctuarySaffron/10 transition-all ${
+                                recordingState === 'playing' ? 'opacity-50 scale-95' : 'hover:bg-sanctuarySaffron/20'
+                            }`}
+                        >
+                            <Icon as={Play} size={24} className="text-sanctuarySaffron" fill="currentColor" />
+                        </Pressable>
+                        
+                        <Pressable
+                            onPress={saveRecording}
+                            className="w-14 h-14 rounded-full bg-emeraldGreen items-center justify-center shadow-lg shadow-emeraldGreen/30 hover:scale-105 transition-transform"
+                        >
+                            <Icon as={Check} size={24} className="text-white" />
+                        </Pressable>
+                    </HStack>
+                </AnimatedView>
+            )}
+
+            {/* Status Footer */}
+            {recordingState === 'recording' && (
+                <Text className="text-sanctuarySaffron font-black text-2xl tracking-tighter">
+                    {formatDuration(recordingDuration)}
+                </Text>
             )}
         </VStack>
     );
 }
-
-const styles = StyleSheet.create({
-    visualizerContainer: {
-        width: 140,
-        height: 140,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    waveBar: {
-        position: 'absolute',
-        width: 4,
-        borderRadius: 2,
-    },
-    micButton: {
-        width: 80,
-        height: 80,
-        borderRadius: 40,
-        alignItems: 'center',
-        justifyContent: 'center',
-        shadowColor: Theme.colors.shadowViolet,
-        shadowOpacity: 0.25,
-        shadowRadius: 16,
-        shadowOffset: { width: 0, height: 4 },
-        elevation: 6,
-    },
-    micInner: {
-        width: '100%',
-        height: '100%',
-        borderRadius: 40,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    actionBtn: {
-        width: 52,
-        height: 52,
-        borderRadius: 26,
-        borderWidth: 1.5,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-});

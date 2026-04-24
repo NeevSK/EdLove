@@ -4,27 +4,23 @@
  * Modal for adding or editing a student in a classroom.
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
-import { TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
 import {
     VStack,
     HStack,
+    Box,
     Text,
     Button,
     ButtonText,
     Input,
     InputField,
     SanctuaryModal,
-    Theme,
-    useTheme,
-    Toast,
-    ToastTitle,
-    ToastDescription,
     useToast,
-    SanctuaryToast
+    Pressable
 } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
-import { studentsAPI, Student } from '@repo/core';
+import { studentsAPI } from '@repo/core';
+import type { Student } from '@repo/core';
 import OCRStudentImport from './OCRStudentImport';
 
 interface AddStudentModalProps {
@@ -46,7 +42,7 @@ export const AddStudentModal = ({
 }: AddStudentModalProps) => {
     const { t } = useTranslation();
     const toast = useToast();
-    const { text, accent, glass } = useTheme();
+    
     const [activeTab, setActiveTab] = useState<AddStudentTab>('manual');
     const [fullName, setFullName] = useState('');
     const [rollNumber, setRollNumber] = useState('');
@@ -67,16 +63,9 @@ export const AddStudentModal = ({
 
     const handleSave = async () => {
         if (!fullName.trim()) {
-            toast.show({
-                placement: 'top',
-                render: ({ id }: { id: string }) => (
-                    <SanctuaryToast
-                        message={t('students.error.nameRequired') || 'Name is required'}
-                        type="error"
-                        visible={true}
-                        onHide={() => toast.close(id)}
-                    />
-                ),
+            toast.showToast({
+                message: t('students.error.nameRequired') || 'Name is required',
+                type: 'error'
             });
             return;
         }
@@ -84,54 +73,32 @@ export const AddStudentModal = ({
         setIsLoading(true);
         try {
             if (studentToEdit) {
-                await studentsAPI.update(studentToEdit.id, {
-                    full_name: fullName.trim(),
+                await (studentsAPI.update as any)(studentToEdit.id, {
                     roll_number: rollNumber.trim(),
                     notes: notes.trim(),
                 });
-                toast.show({
-                    placement: 'top',
-                    render: ({ id }: { id: string }) => (
-                        <SanctuaryToast
-                            message={t('students.success.updated') || 'Student updated successfully'}
-                            type="success"
-                            visible={true}
-                            onHide={() => toast.close(id)}
-                        />
-                    ),
+                toast.showToast({
+                    message: t('students.success.updated') || 'Student updated successfully',
+                    type: 'success'
                 });
             } else {
-                await studentsAPI.create({
+                await (studentsAPI.create as any)({
                     full_name: fullName.trim(),
                     roll_number: rollNumber.trim(),
                     notes: notes.trim(),
-                    class_id: classroomId,
-                } as any);
-                toast.show({
-                    placement: 'top',
-                    render: ({ id }: { id: string }) => (
-                        <SanctuaryToast
-                            message={t('students.success.created') || 'Student added successfully'}
-                            type="success"
-                            visible={true}
-                            onHide={() => toast.close(id)}
-                        />
-                    ),
+                    classroom_id: classroomId,
+                });
+                toast.showToast({
+                    message: t('students.success.created') || 'Student added successfully',
+                    type: 'success'
                 });
             }
             onSuccess();
         } catch (error) {
             console.error('Error saving student:', error);
-            toast.show({
-                placement: 'top',
-                render: ({ id }: { id: string }) => (
-                    <SanctuaryToast
-                        message={t('students.error.saveFailed') || 'Failed to save student'}
-                        type="error"
-                        visible={true}
-                        onHide={() => toast.close(id)}
-                    />
-                ),
+            toast.showToast({
+                message: t('students.error.saveFailed') || 'Failed to save student',
+                type: 'error'
             });
         } finally {
             setIsLoading(false);
@@ -139,33 +106,23 @@ export const AddStudentModal = ({
     };
 
     const footer = (
-        <HStack sx={{ gap: Theme.spacing.md, width: '100%' }}>
+        <HStack className="gap-4 w-full">
             <Button
+                variant="outline"
                 onPress={onClose}
-                sx={{
-                    flex: 1,
-                    backgroundColor: 'transparent',
-                    borderColor: glass.interact.border,
-                    borderWidth: 1,
-                    borderRadius: Theme.corners.comfortable
-                }}
+                className="flex-1 bg-transparent border-phase-canvas rounded-full"
             >
-                <ButtonText {...({ color: text.secondary } as any)}>
+                <ButtonText className="text-phaseText-secondary font-black">
                     {t('common.cancel') || 'Cancel'}
                 </ButtonText>
             </Button>
             <Button
                 onPress={handleSave}
-                disabled={isLoading}
-                sx={{
-                    flex: 1,
-                    backgroundColor: accent.action,
-                    borderRadius: Theme.corners.comfortable,
-                    opacity: isLoading ? 0.6 : 1
-                }}
+                isDisabled={isLoading}
+                className="flex-[1.5] bg-templeGold rounded-full shadow-md shadow-templeGold/20"
             >
-                <ButtonText {...({ color: text.inverse } as any)}>
-                    {isLoading ? (t('common.saving') || 'Saving...') : (t('common.save') || 'Save')}
+                <ButtonText className="text-black font-black">
+                    {isLoading ? (t('common.saving') || 'Saving...') : (t('common.save') || 'Save Member')}
                 </ButtonText>
             </Button>
         </HStack>
@@ -175,126 +132,90 @@ export const AddStudentModal = ({
         <SanctuaryModal
             isOpen={isOpen}
             onClose={onClose}
-            title={studentToEdit ? (t('students.editStudent') || 'Edit Student') : (t('students.addStudent') || 'Add Student')}
+            title={studentToEdit ? (t('students.editStudent') || 'Update Member') : (t('students.addStudent') || 'Admit Member')}
             footer={footer}
         >
-            {/* Tab switcher — only shown when adding (not editing) */}
-            {!studentToEdit && (
-                <HStack sx={{ gap: 0, marginBottom: Theme.spacing.md, borderRadius: Theme.corners.comfortable, overflow: 'hidden', borderWidth: 1, borderColor: glass.interact.border }}>
-                    {(['manual', 'scan'] as AddStudentTab[]).map(tab => (
-                        <TouchableOpacity
-                            key={tab}
-                            onPress={() => setActiveTab(tab)}
-                            style={{
-                                flex: 1,
-                                paddingVertical: 10,
-                                alignItems: 'center',
-                                backgroundColor: activeTab === tab ? accent.action : 'transparent',
-                            }}
-                        >
-                            <Text style={{
-                                color: activeTab === tab ? text.inverse : text.secondary,
-                                fontWeight: activeTab === tab ? '700' : '400',
-                                fontSize: 14,
-                            }}>
-                                {tab === 'manual' ? '✏️ Manual' : '📷 Scan Register'}
+            <VStack className="gap-6">
+                {/* Tab switcher */}
+                {!studentToEdit && (
+                    <Box className="bg-phase-canvas p-1 rounded-full flex-row border border-phase-canvas">
+                        {(['manual', 'scan'] as AddStudentTab[]).map(tab => (
+                            <Pressable
+                                key={tab}
+                                onPress={() => setActiveTab(tab)}
+                                className={`flex-1 py-3 rounded-full items-center ${activeTab === tab ? 'bg-phase-surface shadow-sm' : 'bg-transparent'}`}
+                            >
+                                <Text className={`text-[10px] font-black uppercase tracking-widest ${activeTab === tab ? 'text-templeGold' : 'text-phaseText-secondary'}`}>
+                                    {tab === 'manual' ? 'Manual entry' : 'Scan register'}
+                                </Text>
+                            </Pressable>
+                        ))}
+                    </Box>
+                )}
+
+                {activeTab === 'scan' && !studentToEdit ? (
+                    <OCRStudentImport
+                        classroomId={classroomId}
+                        onImported={(count) => {
+                            toast.showToast({
+                                message: `${count} student${count !== 1 ? 's' : ''} imported successfully`,
+                                type: 'success'
+                            });
+                            onSuccess();
+                        }}
+                        onCancel={onClose}
+                    />
+                ) : (
+                    <VStack className="gap-6 py-2">
+                        <VStack className="gap-2">
+                            <Text className="text-[10px] font-black uppercase tracking-widest text-phaseText-secondary ml-1">
+                                {t('students.fullName') || 'Identity'} *
                             </Text>
-                        </TouchableOpacity>
-                    ))}
-                </HStack>
-            )}
-
-            {/* Scan Register tab */}
-            {activeTab === 'scan' && !studentToEdit && (
-                <OCRStudentImport
-                    classroomId={classroomId}
-                    onImported={(count) => {
-                        toast.show({
-                            placement: 'top',
-                            render: ({ id }: { id: string }) => (
-                                <SanctuaryToast
-                                    message={`${count} student${count !== 1 ? 's' : ''} imported successfully`}
-                                    type="success"
-                                    visible
-                                    onHide={() => toast.close(id)}
+                            <Input className="bg-phase-canvas/50 border-phase-canvas h-16 rounded-generous">
+                                <InputField
+                                    placeholder={t('students.fullNamePlaceholder') || "Full Student Name"}
+                                    value={fullName}
+                                    onChangeText={setFullName}
+                                    className="text-phaseText-primary font-black"
+                                    placeholderTextColor="rgba(0,0,0,0.3)"
                                 />
-                            ),
-                        });
-                        onSuccess();
-                    }}
-                    onCancel={onClose}
-                />
-            )}
+                            </Input>
+                        </VStack>
 
-            {/* Manual entry tab */}
-            {(activeTab === 'manual' || studentToEdit) && (
-                <VStack sx={{ gap: Theme.spacing.md, paddingVertical: Theme.spacing.md }}>
-                    <VStack sx={{ gap: Theme.spacing.xs }}>
-                        <Text sx={{ fontSize: Theme.typography.fontSize.sm, fontWeight: '600' as any }}
-                            {...({ color: text.primary } as any)}>
-                            {t('students.fullName') || 'Full Name'} *
-                        </Text>
-                        <Input
-                            sx={{
-                                backgroundColor: glass.interact.bg,
-                                borderColor: glass.interact.border,
-                                borderRadius: Theme.corners.comfortable
-                            }}
-                        >
-                            <InputField
-                                placeholder={t('students.fullNamePlaceholder') || "E.g. John Doe"}
-                                value={fullName}
-                                onChangeText={setFullName}
-                                {...({ color: text.primary } as any)}
-                            />
-                        </Input>
-                    </VStack>
+                        <VStack className="gap-2">
+                            <Text className="text-[10px] font-black uppercase tracking-widest text-phaseText-secondary ml-1">
+                                {t('students.rollNumber') || 'Institutional ID'}
+                            </Text>
+                            <Input className="bg-phase-canvas/50 border-phase-canvas h-14 rounded-2xl">
+                                <InputField
+                                    placeholder={t('students.rollNumberPlaceholder') || "Roll Number"}
+                                    value={rollNumber}
+                                    onChangeText={setRollNumber}
+                                    className="text-phaseText-primary font-bold"
+                                    placeholderTextColor="rgba(0,0,0,0.3)"
+                                />
+                            </Input>
+                        </VStack>
 
-                    <VStack sx={{ gap: Theme.spacing.xs }}>
-                        <Text sx={{ fontSize: Theme.typography.fontSize.sm, fontWeight: '600' as any }}
-                            {...({ color: text.primary } as any)}>
-                            {t('students.rollNumber') || 'Roll Number / ID'}
-                        </Text>
-                        <Input
-                            sx={{
-                                backgroundColor: glass.interact.bg,
-                                borderColor: glass.interact.border,
-                                borderRadius: Theme.corners.comfortable
-                            }}
-                        >
-                            <InputField
-                                placeholder={t('students.rollNumberPlaceholder') || "E.g. 01"}
-                                value={rollNumber}
-                                onChangeText={setRollNumber}
-                                {...({ color: text.primary } as any)}
-                            />
-                        </Input>
+                        <VStack className="gap-2">
+                            <Text className="text-[10px] font-black uppercase tracking-widest text-phaseText-secondary ml-1">
+                                {t('students.notes') || 'Member Insights'}
+                            </Text>
+                            <Input className="bg-phase-canvas/50 border-phase-canvas rounded-generous min-h-[120px] p-2">
+                                <InputField
+                                    placeholder={t('students.notesPlaceholder') || "Add notes about potential, behavioral traits, or special needs..."}
+                                    value={notes}
+                                    onChangeText={setNotes}
+                                    multiline={true}
+                                    className="text-phaseText-primary text-sm font-medium"
+                                    textAlignVertical="top"
+                                    placeholderTextColor="rgba(0,0,0,0.3)"
+                                />
+                            </Input>
+                        </VStack>
                     </VStack>
-
-                    <VStack sx={{ gap: Theme.spacing.xs }}>
-                        <Text sx={{ fontSize: Theme.typography.fontSize.sm, fontWeight: '600' as any }}
-                            {...({ color: text.primary } as any)}>
-                            {t('students.notes') || 'Notes'}
-                        </Text>
-                        <Input
-                            sx={{
-                                backgroundColor: glass.interact.bg,
-                                borderColor: glass.interact.border,
-                                borderRadius: Theme.corners.comfortable,
-                                minHeight: 80
-                            }}
-                        >
-                            <InputField
-                                placeholder={t('students.notesPlaceholder') || "Add any relevant notes..."}
-                                value={notes}
-                                onChangeText={setNotes}
-                                multiline
-                                {...({ color: text.primary, textAlignVertical: 'top' } as any)}
-                            />
-                        </Input>
-                    </VStack>
-                </VStack>
-            )}
+                )}
+            </VStack>
         </SanctuaryModal>
     );
 };

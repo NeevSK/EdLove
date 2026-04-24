@@ -1,23 +1,15 @@
-/**
- * QRShareButton — QR code display + share controls
- *
- * Wraps QRCodeGenerator and adds:
- *   - "Share Image" → captures QR as PNG via react-native-view-shot → expo-sharing
- *   - "Copy Link"   → copies the QR URL to clipboard via expo-clipboard
- *
- * Optional `shortUrl` prop: if provided, the copied/shared URL is the short URL
- * rather than the full gurudevi://qr?... scheme URL.
- *
- * Used in: InviteManager, SchoolCreationScreen (success), IdentityCard.
- */
-
 import React, { useRef } from 'react';
-import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { 
+  Box, 
+  Text, 
+  Pressable, 
+  HStack, 
+  VStack,
+} from '@repo/ui';
 import QRCodeGenerator from '../QRCodeGenerator';
 
 // Lazy-loaded to avoid hard native deps crashing in environments where
 // they may not be linked (e.g. storybook, web preview).
-// react-native-view-shot is an optional peer dependency.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const loadViewShot = async (): Promise<any> => {
   try {
@@ -27,7 +19,10 @@ const loadViewShot = async (): Promise<any> => {
     return null;
   }
 };
+
+// @ts-ignore
 const loadSharing = () => import('expo-sharing');
+// @ts-ignore
 const loadClipboard = () => import('expo-clipboard');
 
 interface QRShareButtonProps {
@@ -53,7 +48,7 @@ export default function QRShareButton({
   backgroundColor = '#1a1a2e',
   accentColor = '#f5a623',
 }: QRShareButtonProps) {
-  const viewRef = useRef<View>(null);
+  const viewRef = useRef<any>(null);
 
   const shareUrl = shortUrl ?? value;
 
@@ -93,59 +88,50 @@ export default function QRShareButton({
   };
 
   return (
-    <View style={[styles.container, { backgroundColor }]}>
+    <Box 
+      className="items-center p-4 rounded-2xl" 
+      style={{ backgroundColor }}
+    >
       {/* QR code — captured by ViewShot */}
-      <View ref={viewRef} collapsable={false} style={[styles.qrWrapper, { backgroundColor }]}>
+      <Box 
+        ref={viewRef} 
+        collapsable={false} 
+        className="p-3 rounded-xl mb-4"
+        style={{ backgroundColor }}
+      >
         <QRCodeGenerator value={value} size={size} label={label} />
-      </View>
+      </Box>
 
       {/* Action buttons */}
-      <View style={styles.buttonRow}>
-        <TouchableOpacity
+      <HStack className="w-full gap-3">
+        <Pressable
           onPress={handleShareImage}
-          style={[styles.button, { borderColor: accentColor }]}
+          className="flex-1 border rounded-lg py-[10px] items-center"
+          style={{ borderColor: accentColor }}
           accessibilityLabel="Share QR code as image"
         >
-          <Text style={[styles.buttonText, { color: accentColor }]}>📤 Share Image</Text>
-        </TouchableOpacity>
+          <Text 
+            className="text-[13px] font-semibold" 
+            style={{ color: accentColor }}
+          >
+            📤 Share Image
+          </Text>
+        </Pressable>
 
-        <TouchableOpacity
+        <Pressable
           onPress={handleCopyLink}
-          style={[styles.button, { borderColor: accentColor }]}
+          className="flex-1 border rounded-lg py-[10px] items-center"
+          style={{ borderColor: accentColor }}
           accessibilityLabel="Copy QR link to clipboard"
         >
-          <Text style={[styles.buttonText, { color: accentColor }]}>🔗 Copy Link</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+          <Text 
+            className="text-[13px] font-semibold" 
+            style={{ color: accentColor }}
+          >
+            🔗 Copy Link
+          </Text>
+        </Pressable>
+      </HStack>
+    </Box>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    gap: 16,
-    padding: 16,
-    borderRadius: 16,
-  },
-  qrWrapper: {
-    padding: 12,
-    borderRadius: 12,
-  },
-  buttonRow: {
-    flexDirection: 'row',
-    gap: 12,
-    width: '100%',
-  },
-  button: {
-    flex: 1,
-    borderWidth: 1,
-    borderRadius: 10,
-    paddingVertical: 10,
-    alignItems: 'center',
-  },
-  buttonText: {
-    fontSize: 13,
-    fontWeight: '600',
-  },
-});

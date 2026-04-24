@@ -1,50 +1,55 @@
-/**
+﻿/**
  * ProgressTree.web.tsx
  *
  * Web override. The native version uses react-native-reanimated for a breathing
  * tree animation. On web we deliver the same organic growth visual using CSS
- * animations and the same interaction-count data from Supabase.
+ * animations and a temporal-aware interaction count from the self repository.
  * Metro resolves this over ProgressTree.tsx on the web platform.
  */
-import React, { useState, useEffect } from 'react';
-import { supabase } from '@repo/core';
+import React, { useEffect, useState } from 'react';
+import { useTemporalStore } from '@repo/core';
+import { fetchInteractionCountForView } from '../api/selfInsightsRepository';
 
 interface ProgressTreeProps {
     userId?: string;
 }
 
 const GROWTH_STAGES = [
-    { minInteractions: 0,  stage: 'seed',       emoji: '🌰', label: 'Seed',       description: 'Just beginning' },
-    { minInteractions: 5,  stage: 'sprout',      emoji: '🌱', label: 'Sprout',     description: 'Taking root' },
-    { minInteractions: 15, stage: 'sapling',     emoji: '🌿', label: 'Sapling',    description: 'Growing steadily' },
-    { minInteractions: 30, stage: 'young_tree',  emoji: '🌳', label: 'Young Tree', description: 'Finding strength' },
-    { minInteractions: 50, stage: 'tree',        emoji: '🌲', label: 'Tree',       description: 'Standing tall' },
-    { minInteractions: 75, stage: 'blooming',    emoji: '🌸', label: 'Blooming',   description: 'Flourishing' },
-];
+    { minInteractions: 0, stage: 'seed', emoji: '🌱', label: 'Seed', description: 'Just beginning' },
+    { minInteractions: 5, stage: 'sprout', emoji: '🌿', label: 'Sprout', description: 'Taking root' },
+    { minInteractions: 15, stage: 'sapling', emoji: '🪴', label: 'Sapling', description: 'Growing steadily' },
+    { minInteractions: 30, stage: 'young_tree', emoji: '🌳', label: 'Young Tree', description: 'Finding strength' },
+    { minInteractions: 50, stage: 'tree', emoji: '🌲', label: 'Tree', description: 'Standing tall' },
+    { minInteractions: 75, stage: 'blooming', emoji: '🌸', label: 'Blooming', description: 'Flourishing' },
+] as const;
 
 export default function ProgressTree({ userId }: ProgressTreeProps) {
     const [interactionCount, setInteractionCount] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
+    const { viewDate, isPastView } = useTemporalStore();
 
     useEffect(() => {
-        if (!userId) { setIsLoading(false); return; }
+        if (!userId) {
+            setIsLoading(false);
+            return;
+        }
 
         const fetch = async () => {
             try {
-                const [moodRes, fireRes] = await Promise.all([
-                    supabase.from('mood_logs').select('id', { count: 'exact', head: true }).eq('user_id', userId),
-                    supabase.from('fire_journal').select('id', { count: 'exact', head: true }).eq('user_id', userId),
-                ]);
-                setInteractionCount((moodRes.count ?? 0) + (fireRes.count ?? 0));
-            } catch { /* non-fatal */ } finally {
+                const count = await fetchInteractionCountForView(userId, { viewDate, isPastView });
+                setInteractionCount(count);
+            } catch {
+                // Non-fatal; the card can still render a neutral state.
+            } finally {
                 setIsLoading(false);
             }
         };
-        fetch();
-    }, [userId]);
 
-    const currentStage = [...GROWTH_STAGES].reverse().find(s => interactionCount >= s.minInteractions) ?? GROWTH_STAGES[0];
-    const nextStage = GROWTH_STAGES.find(s => s.minInteractions > interactionCount);
+        fetch();
+    }, [isPastView, userId, viewDate]);
+
+    const currentStage = [...GROWTH_STAGES].reverse().find((stage) => interactionCount >= stage.minInteractions) ?? GROWTH_STAGES[0];
+    const nextStage = GROWTH_STAGES.find((stage) => stage.minInteractions > interactionCount);
     const progressPct = nextStage
         ? Math.round(((interactionCount - currentStage.minInteractions) / (nextStage.minInteractions - currentStage.minInteractions)) * 100)
         : 100;
@@ -58,14 +63,12 @@ export default function ProgressTree({ userId }: ProgressTreeProps) {
             <div style={{ fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1.5px', color: 'var(--ink-ghost)', marginBottom: '16px' }}>
                 Growth Journey
             </div>
-
             <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '20px' }}>
-                {/* Breathing tree emoji */}
-                <div style={{
-                    fontSize: '56px',
-                    animation: 'breathe 4s ease-in-out infinite',
-                    lineHeight: 1,
-                }}>
+                <div
+                    style={{
+                        fontSize: '56px',
+                        animation: 'breathe 4s ease-in-out infinite',
+                        lineHeight: 1}}>
                     {currentStage.emoji}
                 </div>
                 <div>
@@ -80,8 +83,6 @@ export default function ProgressTree({ userId }: ProgressTreeProps) {
                     </div>
                 </div>
             </div>
-
-            {/* Progress to next stage */}
             {nextStage && (
                 <div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
@@ -101,11 +102,10 @@ export default function ProgressTree({ userId }: ProgressTreeProps) {
 
             {progressPct === 100 && (
                 <div style={{ fontSize: '13px', color: 'var(--moss)', fontWeight: '700', textAlign: 'center', marginTop: '8px' }}>
-                    🌸 Fully bloomed — your growth is beautiful.
+                    🌸 Fully bloomed, your growth is beautiful.
                 </div>
             )}
 
-            {/* CSS animation */}
             <style>{`
                 @keyframes breathe {
                     0%, 100% { transform: scale(0.95); }

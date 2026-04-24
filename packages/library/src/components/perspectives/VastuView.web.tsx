@@ -6,7 +6,7 @@ import type {
 } from '@repo/graphics';
 
 /**
- * VastuView.web — The "Mind Map" Perspective (Web).
+ * VastuView.web  The "Mind Map" Perspective (Web).
  * 
  * Renders hierarchical mind maps using web-standard SVG.
  */

@@ -1,5 +1,5 @@
 /**
- * usePendingActions — Real pending work for the teacher's PulseDashboard.
+ * usePendingActions  Real pending work for the teacher's PulseDashboard.
  *
  * Returns two lists:
  *   - attendancePending: classrooms where today's attendance has NOT been recorded yet
@@ -7,11 +7,11 @@
  *                        least one submission without a grade
  *
  * Both lists are capped at 5 items so the dashboard stays concise.
- * Gracefully degrades on any DB error — returns empty arrays rather than throwing.
+ * Gracefully degrades on any DB error  returns empty arrays rather than throwing.
  */
 
-import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '../lib/supabase';
+import { useCallback, useEffect, useState } from 'react';
+import { supabase } from '../native/supabase';
 
 export interface PendingAttendanceItem {
   classroomId: string;
@@ -49,7 +49,7 @@ export function usePendingActions(teacherId: string | null | undefined): Pending
     const todayEnd = `${today}T23:59:59`;
 
     try {
-      // ── 1. Classrooms owned by this teacher ───────────────────────────────
+      //  1. Classrooms owned by this teacher
       const { data: classrooms, error: clsErr } = await supabase
         .from('classrooms')
         .select('id, name')
@@ -64,7 +64,7 @@ export function usePendingActions(teacherId: string | null | undefined): Pending
 
       const classroomIds = classrooms.map((c) => c.id);
 
-      // ── 2. Classrooms that already have attendance today ──────────────────
+      //  2. Classrooms that already have attendance today
       const { data: markedToday } = await supabase
         .from('attendance')
         .select('classroom_id')
@@ -80,7 +80,7 @@ export function usePendingActions(teacherId: string | null | undefined): Pending
 
       setAttendancePending(pending);
 
-      // ── 3. Assignments due today or overdue with ungraded submissions ─────
+      //  3. Assignments due today or overdue with ungraded submissions
       const { data: assignments } = await supabase
         .from('assignments')
         .select('id, title, classroom_id, due_date')
@@ -130,7 +130,7 @@ export function usePendingActions(teacherId: string | null | undefined): Pending
 
       setGradingPending(pendingGrading);
     } catch {
-      // Silently degrade — PulseDashboard shows nothing rather than crashing
+      // Silently degrade  PulseDashboard shows nothing rather than crashing
       setAttendancePending([]);
       setGradingPending([]);
     } finally {

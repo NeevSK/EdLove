@@ -9,7 +9,7 @@ import {
 } from '../src/index.js';
 
 async function verify() {
-  console.log('🧪 Running Final Verification Suite...');
+  console.log('\uD83E\uDDEA Running Final Verification Suite...');
 
   const provinces = getProvinces();
   console.log(`- Provinces: ${provinces.length} (Expected: 9)`);
@@ -42,10 +42,10 @@ async function verify() {
   const colombo1 = getSchoolsByPostalCode('00100');
   console.log(`- Schools in Colombo 1 (00100): ${colombo1.length}`);
 
-  console.log('✅ All checks passed!');
+  console.log('\u2705 All checks passed!');
 }
 
 verify().catch(e => {
-  console.error('❌ Verification Failed:', e);
+  console.error('\u274C Verification Failed:', e);
   process.exit(1);
 });

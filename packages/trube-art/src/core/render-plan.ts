@@ -8,10 +8,8 @@ import type {
 } from './types';
 import { resolveSurface } from './surface';
 
-const QUALITY_PRESETS: Record<
-  TrubeResolvedQuality,
-  Omit<TrubeRenderPlan, 'capabilityTier' | 'quality' | 'backend' | 'timeDriver'>
-> = {
+const QUALITY_PRESETS: Record  TrubeResolvedQuality,
+  Omit<TrubeRenderPlan, 'capabilityTier' | 'quality' | 'backend' | 'timeDriver'> = {
   cinematic: {
     architectureVersion: 'v1',
     animationEnabled: true,

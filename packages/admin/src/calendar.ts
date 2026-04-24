@@ -2,7 +2,7 @@ import { staffManagementAPI, type CalendarEvent } from '@repo/core';
 
 export type { CalendarEvent };
 
-export const adminCalendarAPI = {
+export const adminCalendarAPI = { 
   async listUpcomingEvents(schoolId: string, limit = 5, viewDate?: string): Promise<CalendarEvent[]> {
     return staffManagementAPI.getUpcomingCalendarEvents(schoolId, limit, viewDate);
   },
@@ -19,5 +19,5 @@ export const adminCalendarAPI = {
     },
   ): Promise<boolean> {
     return staffManagementAPI.createCalendarEvent(schoolId, principalId, event);
-  },
+  }
 };

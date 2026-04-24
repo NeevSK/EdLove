@@ -8,7 +8,7 @@ import { isFieldFilled } from '../lib/isFieldFilled';
 const CELEBRATION_KEY = '@gurudevi/profile_completed_celebrated';
 
 export interface ProfileCompletionResult {
-  percentage: number;       // 0–100 integer
+  percentage: number;       // 0\u2013100 integer
   isComplete: boolean;
   nextHint: string;         // e.g. "Add your profile photo to complete"
   sectionBreakdown: {
@@ -27,7 +27,7 @@ export function useProfileCompletion(
 
   useEffect(() => {
     AsyncStorage.getItem(CELEBRATION_KEY).then(val => {
-      // val === null means never set → hasn't seen it
+      // val === null means never set \u2192 hasn't seen it
       setHasSeenCelebration(val === 'true');
     });
   }, []);
@@ -102,7 +102,7 @@ export function useProfileCompletion(
       isComplete: percentage === 100,
       nextHint: topUnfilled
         ? `Add your ${topUnfilled.label} to complete`
-        : '🎉 Profile complete!',
+        : '\uD83C\uDF89 Profile complete!',
       sectionBreakdown,
     };
   }, [profile, role]);

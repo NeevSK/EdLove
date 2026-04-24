@@ -9,12 +9,12 @@ if (!fs.existsSync(OUTPUT_DIR)) {
 }
 
 async function generate() {
-  console.log('🚀 Loading master data...');
+  console.log('\uD83D\uDE80 Loading master data...');
   const data = JSON.parse(fs.readFileSync(DATA_PATH, 'utf-8'));
   const { provinces, districts, dsDivisions, gnDivisions, postalUnits, schools } = data;
 
   // 1. GEO HIERARCHY SEED
-  console.log('📦 Generating geo_hierarchy seed...');
+  console.log('\uD83D\uDCE6 Generating geo_hierarchy seed...');
   let geoSql = `-- Sri Lankan Geo-Hierarchy Seed\n\n`;
   
   // Provinces
@@ -32,7 +32,7 @@ async function generate() {
   fs.writeFileSync(path.join(OUTPUT_DIR, '01_geo_hierarchy_base.sql'), geoSql);
 
   // 2. GN DIVISIONS (Large - Batching)
-  console.log('📦 Generating geo_gn_divisions seed...');
+  console.log('\uD83D\uDCE6 Generating geo_gn_divisions seed...');
   const GN_BATCH_SIZE = 1000;
   for (let i = 0; i < gnDivisions.length; i += GN_BATCH_SIZE) {
     const batch = gnDivisions.slice(i, i + GN_BATCH_SIZE);
@@ -47,7 +47,7 @@ async function generate() {
   }
 
   // 3. POSTAL TOWNS
-  console.log('📦 Generating geo_postal_towns seed...');
+  console.log('\uD83D\uDCE6 Generating geo_postal_towns seed...');
   let postalSql = `-- Postal Towns\nINSERT INTO geo_postal_towns (id, district_id, city, postal_code, location) VALUES\n`;
   postalSql += postalUnits.map((pt: any) => {
     const lat = pt.location?.lat || 0;
@@ -57,7 +57,7 @@ async function generate() {
   fs.writeFileSync(path.join(OUTPUT_DIR, '03_geo_postal_towns.sql'), postalSql);
 
   // 4. SCHOOLS (Core facts)
-  console.log('📦 Generating edu_schools seeds...');
+  console.log('\uD83D\uDCE6 Generating edu_schools seeds...');
   const SCH_BATCH_SIZE = 500;
   for (let i = 0; i < schools.length; i += SCH_BATCH_SIZE) {
     const batch = schools.slice(i, i + SCH_BATCH_SIZE);
@@ -95,7 +95,7 @@ async function generate() {
     }
   }
 
-  console.log(`✅ SQL Seeds generated in ${OUTPUT_DIR}`);
+  console.log(`\u2705 SQL Seeds generated in ${OUTPUT_DIR}`);
 }
 
 function escape(str: string): string {

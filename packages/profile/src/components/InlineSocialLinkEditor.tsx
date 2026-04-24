@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TextInput, TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import { Platform } from 'react-native';
 import { 
     X, 
     Check, 
@@ -8,22 +8,21 @@ import {
     Linkedin, 
     Instagram, 
     Globe, 
-    Mail, 
-    ShieldCheck, 
     Users, 
     Lock,
-    ExternalLink
 } from 'lucide-react-native';
 import { 
     HStack, 
     VStack, 
     Text, 
-    useThemedColors, 
-    Theme,
-    SanctuaryCard,
-    hapticLight
+    Box,
+    hapticLight,
+    Pressable,
+    Input,
+    InputField,
+    Icon,
 } from '@repo/ui';
-import { SocialLink, SocialPlatform, PrivacyLevel } from '@repo/core';
+import type { SocialLink, SocialPlatform, PrivacyLevel } from '@repo/core';
 
 interface InlineSocialLinkEditorProps {
     link?: Partial<SocialLink>;
@@ -34,10 +33,10 @@ interface InlineSocialLinkEditorProps {
 }
 
 const PLATFORMS: { label: string; value: SocialPlatform; icon: any; color: string }[] = [
-    { label: 'WhatsApp', value: 'whatsapp', icon: MessagesSquare, color: Theme.colors.whatsapp },
-    { label: 'LinkedIn', value: 'linkedin', icon: Linkedin, color: Theme.colors.linkedin },
-    { label: 'Instagram', value: 'instagram', icon: Instagram, color: Theme.colors.instagram },
-    { label: 'Website', value: 'website', icon: Globe, color: Theme.colors.portfolio },
+    { label: 'WhatsApp', value: 'whatsapp', icon: MessagesSquare, color: '#25D366' },
+    { label: 'LinkedIn', value: 'linkedin', icon: Linkedin, color: '#0077B5' },
+    { label: 'Instagram', value: 'instagram', icon: Instagram, color: '#E4405F' },
+    { label: 'Website', value: 'website', icon: Globe, color: '#4A90E2' },
 ];
 
 const PRIVACY_LEVELS: { value: PrivacyLevel; icon: any; emoji: string; label: string }[] = [
@@ -46,8 +45,11 @@ const PRIVACY_LEVELS: { value: PrivacyLevel; icon: any; emoji: string; label: st
     { value: 'private', icon: Lock, emoji: '🔒', label: 'Private' },
 ];
 
+/**
+ * INLINE SOCIAL LINK EDITOR
+ * Sanctuary V3 standard for editing social links in-place.
+ */
 export function InlineSocialLinkEditor({ link, onSave, onCancel, onDelete, isNew }: InlineSocialLinkEditorProps) {
-    const colors = useThemedColors();
     const [platform, setPlatform] = useState<SocialPlatform>(link?.platform || 'whatsapp');
     const [url, setUrl] = useState(link?.url || '');
     const [privacy, setPrivacy] = useState<PrivacyLevel>(link?.privacy_level || 'public');
@@ -60,7 +62,7 @@ export function InlineSocialLinkEditor({ link, onSave, onCancel, onDelete, isNew
             await onSave({
                 ...link,
                 platform,
-                url,
+                url: url.trim(),
                 privacy_level: privacy,
                 is_public: privacy !== 'private'
             });
@@ -71,146 +73,92 @@ export function InlineSocialLinkEditor({ link, onSave, onCancel, onDelete, isNew
     };
 
     return (
-        <SanctuaryCard variant="glass" style={styles.container}>
-            <VStack space="md" sx={{ padding: Theme.spacing.md }}>
+        <Box className="mb-4 bg-phase-canvas border border-phase-interactive rounded-3xl shadow-md overflow-hidden">
+            <VStack space="md" className="p-5">
                 {/* Platform Selection */}
-                <HStack space="sm" sx={{ flexWrap: 'wrap' }}>
-                    {PLATFORMS.map((p) => (
-                        <TouchableOpacity
-                            key={p.value}
-                            onPress={() => setPlatform(p.value)}
-                            style={[
-                                styles.platformChip,
-                                {
-                                    borderColor: platform === p.value ? p.color : colors.border,
-                                    backgroundColor: platform === p.value ? `${p.color}20` : 'transparent',
-                                }
-                            ]}
-                        >
-                            <p.icon size={16} color={platform === p.value ? p.color : colors.textTertiary} />
-                        </TouchableOpacity>
-                    ))}
-                </HStack>
-
-                {/* URL Input */}
-                <HStack space="sm" alignItems="center">
-                    <TextInput
-                        value={url}
-                        onChangeText={setUrl}
-                        placeholder={platform === 'whatsapp' ? 'Phone number' : 'Username or link'}
-                        placeholderTextColor={colors.textTertiary}
-                        style={[
-                            styles.input,
-                            { 
-                                color: colors.textPrimary, 
-                                borderColor: colors.border,
-                                backgroundColor: colors.secondary 
-                            }
-                        ]}
-                    />
-                    
-                    {/* Privacy Selection */}
-                    <HStack space="xs" style={styles.privacyContainer}>
-                        {PRIVACY_LEVELS.map((pl) => (
-                            <TouchableOpacity
-                                key={pl.value}
-                                onPress={() => setPrivacy(pl.value)}
-                                style={[
-                                    styles.privacyBtn,
-                                    {
-                                        backgroundColor: privacy === pl.value ? colors.action + '30' : 'transparent',
-                                        borderColor: privacy === pl.value ? colors.action : 'transparent',
-                                    }
-                                ]}
+                <VStack space="xs">
+                    <Text className="text-[10px] font-bold text-phase-text-tertiary uppercase tracking-wider mb-1">PLATFORM</Text>
+                    <HStack space="sm" className="flex-wrap">
+                        {PLATFORMS.map((p) => (
+                            <Pressable
+                                key={p.value}
+                                onPress={() => setPlatform(p.value)}
+                                className={`w-10 h-10 rounded-xl border-2 items-center justify-center ${
+                                    platform === p.value 
+                                        ? 'border-phase-interactive bg-phase-interactive/5' 
+                                        : 'border-phase-surface bg-phase-surface/30'
+                                }`}
+                                style={{ 
+                                    borderColor: platform === p.value ? p.color : undefined,
+                                }}
                             >
-                                <Text style={{ fontSize: 16 }}>{pl.emoji}</Text>
-                            </TouchableOpacity>
+                                <Icon as={p.icon} size={18} color={platform === p.value ? p.color : '#9DA1A3'} />
+                            </Pressable>
                         ))}
                     </HStack>
-                </HStack>
+                </VStack>
 
-                {/* Actions */}
-                <HStack space="md" justifyContent="flex-end" alignItems="center">
-                    {!isNew && onDelete && link?.id && (
-                        <TouchableOpacity 
-                            onPress={() => onDelete(link.id!)} 
-                            style={styles.actionBtn}
-                            disabled={isSaving}
-                        >
-                            <Trash2 size={18} color={Theme.colors.emberOrange} />
-                        </TouchableOpacity>
-                    )}
-                    <TouchableOpacity onPress={onCancel} style={styles.actionBtn} disabled={isSaving}>
-                        <X size={20} color={colors.textTertiary} />
-                    </TouchableOpacity>
-                    <TouchableOpacity 
-                        onPress={handleSave} 
-                        style={[styles.saveBtn, { backgroundColor: colors.action }]}
-                        disabled={isSaving || !url.trim()}
-                    >
-                        {isSaving ? (
-                            <Text color="white" bold>...</Text>
-                        ) : (
-                            <Check size={20} color="white" />
+                {/* URL Input */}
+                <VStack space="xs">
+                    <Text className="text-[10px] font-bold text-phase-text-tertiary uppercase tracking-wider mb-1">CONTACT INFO</Text>
+                    <HStack space="sm" className="items-center">
+                        <Input className="flex-1 h-12 px-2 rounded-xl border-phase-surface bg-phase-canvas">
+                            <InputField
+                                value={url}
+                                onChangeText={setUrl}
+                                placeholder={platform === 'whatsapp' ? 'Phone number' : 'Username or link'}
+                                placeholderTextColor="#9DA1A3"
+                                className="text-phase-text-primary text-sm font-medium"
+                            />
+                        </Input>
+                    </HStack>
+                </VStack>
+
+                {/* Privacy and Actions */}
+                <HStack className="justify-between items-center mt-2">
+                    <HStack space="xs" className="rounded-xl p-1 bg-phase-surface">
+                        {PRIVACY_LEVELS.map((pl) => (
+                            <Pressable
+                                key={pl.value}
+                                onPress={() => setPrivacy(pl.value)}
+                                className={`w-9 h-9 rounded-lg items-center justify-center border ${
+                                    privacy === pl.value 
+                                        ? 'bg-phase-canvas border-phase-interactive shadow-sm' 
+                                        : 'border-transparent'
+                                }`}
+                            >
+                                <Text className="text-base">{pl.emoji}</Text>
+                            </Pressable>
+                        ))}
+                    </HStack>
+
+                    <HStack space="md" className="items-center">
+                        {!isNew && onDelete && link?.id && (
+                            <Pressable 
+                                onPress={() => onDelete(link.id!)} 
+                                className="p-2 bg-phase-error/10 rounded-xl"
+                                disabled={isSaving}
+                            >
+                                <Icon as={Trash2} size={18} color="#FF6B6B" />
+                            </Pressable>
                         )}
-                    </TouchableOpacity>
+                        <Pressable onPress={onCancel} className="p-2" disabled={isSaving}>
+                            <Icon as={X} size={22} color="#9DA1A3" />
+                        </Pressable>
+                        <Pressable 
+                            onPress={handleSave} 
+                            className="w-12 h-12 rounded-2xl items-center justify-center bg-phase-interactive shadow-lg shadow-blue-500/30"
+                            disabled={isSaving || !url.trim()}
+                        >
+                            {isSaving ? (
+                                <Box className="scale-75"><Text>...</Text></Box>
+                            ) : (
+                                <Icon as={Check} size={24} color="white" strokeWidth={3} />
+                            )}
+                        </Pressable>
+                    </HStack>
                 </HStack>
             </VStack>
-        </SanctuaryCard>
+        </Box>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        borderWidth: 1,
-        borderColor: 'var(--action)',
-        marginBottom: 12,
-    },
-    platformChip: {
-        width: 36,
-        height: 36,
-        borderRadius: 18,
-        borderWidth: 1.5,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    input: {
-        flex: 1,
-        height: 44,
-        paddingHorizontal: 12,
-        borderRadius: 10,
-        borderWidth: 1,
-        fontSize: 14,
-        ...Platform.select({
-            web: { outlineStyle: 'none' } as any
-        })
-    },
-    privacyContainer: {
-        backgroundColor: 'var(--border)',
-        borderRadius: 8,
-        padding: 2,
-    },
-    privacyBtn: {
-        width: 32,
-        height: 32,
-        borderRadius: 6,
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderWidth: 1,
-    },
-    actionBtn: {
-        padding: 8,
-    },
-    saveBtn: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        alignItems: 'center',
-        justifyContent: 'center',
-        elevation: 2,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-    }
-});

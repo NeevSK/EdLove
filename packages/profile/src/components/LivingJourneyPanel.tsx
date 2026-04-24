@@ -4,68 +4,60 @@
  * The holistic profile view — a place where the user can see their full growth
  * picture across all four nature paths, their moon context, and their discovered
  * Whispered Moments.
- *
- * See: docs/Core/GROWTH_MODEL.md §15 "The Living Journey Panel"
- *
- * Design principles:
- *   - Private — visible only to this user; never shown to colleagues
- *   - Story, not score — each row is human language, not a number
- *   - All paths shown — Bhumi + Banyan (teachers) or River + Crystal (students) + Moon (all)
- *   - Moon is live — computed in real time from the device's current date
- *   - Whispered Moments as memory — the moments that have been discovered are kept here
- *
- * This panel REPLACES UserStatsCard + AchievementGallery in ProfileScreen.
  */
 
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Platform, ActivityIndicator } from 'react-native';
+import { Platform } from 'react-native';
 import {
     Box,
     VStack,
     HStack,
     Text,
     Heading,
-    Theme,
-    useThemedColors,
+    Spinner,
+    AnimatedView,
 } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import {
     moonPhaseAPI,
-    userGrowthStateAPI,
+    useTemporalStore,
     type UserGrowthState,
     type MoonPhase,
     type BhumiStage,
     type BanyanStage,
     type RiverStage,
     type CrystalTier,
+    usePermissions,
+    communityAPI,
 } from '@repo/core';
-import { usePermissions } from '@repo/core';
-import { communityAPI } from "@repo/community/api";
+import { profileAPI } from '../api/profile';
 
-// ─────────────────────────────────────────────────────────────────────────────
+// —————————————————————————————————————————————————————————————————————————————
 // TYPES
-// ─────────────────────────────────────────────────────────────────────────────
+// —————————————————————————————————————————————————————————————————————————————
 
 interface LivingJourneyPanelProps {
     userId: string;
+    authority?: string;
+    role?: string;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// —————————————————————————————————————————————————————————————————————————————
 // STAGE → HUMAN LANGUAGE
-// ─────────────────────────────────────────────────────────────────────────────
+// —————————————————————————————————————————————————————————————————————————————
 
 const BHUMI_NARRATIVES: Record<BhumiStage, { label: string; description: string }> = {
     bijam: {
-        label: 'Bijam 🌰',
+        label: 'Bijam 🌱',
         description: 'The seed is here — and seeds are beautiful.',
     },
     mula: {
-        label: 'Mūla 🌱',
+        label: 'Mūla 🌿',
         description: 'Roots finding their ground. The foundation is real.',
     },
     nala: {
-        label: 'Nāla 🌿',
+        label: 'Nāla 🍀',
         description: 'Rising through the water. Your presence is consistent.',
     },
     patra: {
@@ -104,43 +96,34 @@ const CRYSTAL_NARRATIVES: Record<CrystalTier, string> = {
     fractal: 'The fractal pattern is visible. You see how everything connects.',
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
+// —————————————————————————————————————————————————————————————————————————————
 // PATH ROW COMPONENT
-// ─────────────────────────────────────────────────────────────────────────────
+// —————————————————————————————————————————————————————————————————————————————
 
 interface PathRowProps {
     emoji: string;
     pathName: string;
     stageLabel: string;
     narrative: string;
-    colors: ReturnType<typeof useThemedColors>;
 }
 
-function PathRow({ emoji, pathName, stageLabel, narrative, colors }: PathRowProps) {
+function PathRow({ emoji, pathName, stageLabel, narrative }: PathRowProps) {
     return (
-        <Box
-            sx={{
-                paddingVertical: Theme.spacing.md,
-                borderBottomWidth: 1,
-                borderBottomColor: `${colors.border}60`,
-            }}
-        >
-            <HStack space="md" alignItems="flex-start">
-                <Text style={styles.pathEmoji}>{emoji}</Text>
-                <VStack flex={1} space="xs">
-                    <HStack justifyContent="space-between" alignItems="center">
-                        <Text
-                            size="xs"
-                            color={colors.textTertiary}
-                            style={{ textTransform: 'uppercase', letterSpacing: 0.8 }}
-                        >
+        <Box className="py-5 border-b border-phase-surface/40">
+            <HStack className="items-start gap-4">
+                <Box className="w-12 h-12 rounded-2xl bg-white/5 items-center justify-center border border-white/10 shadow-sm">
+                    <Text className="text-2xl leading-8">{emoji}</Text>
+                </Box>
+                <VStack className="flex-1 gap-1">
+                    <HStack className="justify-between items-center">
+                        <Text className="text-[10px] font-bold text-phase-text-tertiary uppercase tracking-widest">
                             {pathName}
                         </Text>
-                        <Text size="sm" bold color={colors.text}>
+                        <Text className="text-sm font-bold text-phase-text-primary">
                             {stageLabel}
                         </Text>
                     </HStack>
-                    <Text size="sm" color={colors.textSecondary} style={{ lineHeight: 18 }}>
+                    <Text className="text-sm text-phase-text-secondary leading-relaxed">
                         {narrative}
                     </Text>
                 </VStack>
@@ -149,47 +132,40 @@ function PathRow({ emoji, pathName, stageLabel, narrative, colors }: PathRowProp
     );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// —————————————————————————————————————————————————————————————————————————————
 // MOON ROW COMPONENT
-// ─────────────────────────────────────────────────────────────────────────────
+// —————————————————————————————————————————————————————————————————————————————
 
 interface MoonRowProps {
     moon: MoonPhase;
-    colors: ReturnType<typeof useThemedColors>;
-    t: ReturnType<typeof useTranslation>['t'];
+    t: (key: string) => string;
 }
 
-function MoonRow({ moon, colors, t }: MoonRowProps) {
+function MoonRow({ moon, t }: MoonRowProps) {
     return (
-        <Box
-            sx={{
-                paddingVertical: Theme.spacing.md,
-                borderBottomWidth: 1,
-                borderBottomColor: `${colors.border}60`,
-            }}
-        >
-            <HStack space="md" alignItems="flex-start">
-                <Text style={styles.pathEmoji}>{moon.emoji}</Text>
-                <VStack flex={1} space="xs">
-                    <HStack justifyContent="space-between" alignItems="center">
-                        <Text
-                            size="xs"
-                            color={colors.textTertiary}
-                            style={{ textTransform: 'uppercase', letterSpacing: 0.8 }}
-                        >
+        <Box className="py-5 border-b border-phase-surface/40">
+            <HStack className="items-start gap-4">
+                <Box className="w-12 h-12 rounded-2xl bg-phase-interactive/5 items-center justify-center border border-phase-interactive/10 shadow-sm">
+                    <Text className="text-2xl leading-8">{moon.emoji}</Text>
+                </Box>
+                <VStack className="flex-1 gap-1">
+                    <HStack className="justify-between items-center">
+                        <Text className="text-[10px] font-bold text-phase-text-tertiary uppercase tracking-widest">
                             {t('journey.moonTonight')}
                         </Text>
-                        <Text size="sm" bold color={colors.text}>
+                        <Text className="text-sm font-bold text-phase-text-primary">
                             {moon.name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
                         </Text>
                     </HStack>
-                    <Text size="sm" color={colors.textSecondary} style={{ lineHeight: 18, fontStyle: 'italic' }}>
+                    <Text className="text-sm text-phase-text-secondary leading-relaxed italic">
                         {moon.invitation_en}
                     </Text>
                     {moon.is_poya && (
-                        <Text size="xs" color={`${colors.action}`} style={{ marginTop: 2 }}>
-                            {t('journey.poyaDay')}
-                        </Text>
+                        <Box className="bg-phase-interactive/10 self-start px-2 py-0.5 rounded-md mt-1">
+                            <Text className="text-[10px] font-bold text-phase-interactive uppercase tracking-wider">
+                                {t('journey.poyaDay')}
+                            </Text>
+                        </Box>
                     )}
                 </VStack>
             </HStack>
@@ -197,16 +173,15 @@ function MoonRow({ moon, colors, t }: MoonRowProps) {
     );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// —————————————————————————————————————————————————————————————————————————————
 // RESONANCE ROW COMPONENT
-// ─────────────────────────────────────────────────────────────────────────────
+// —————————————————————————————————————————————————————————————————————————————
 
 interface ResonanceRowProps {
     stats: { likes: number; comments: number; shares: number };
-    colors: ReturnType<typeof useThemedColors>;
 }
 
-function ResonanceRow({ stats, colors }: ResonanceRowProps) {
+function ResonanceRow({ stats }: ResonanceRowProps) {
     const total = stats.likes + stats.comments + stats.shares;
     let label = 'Quiet Presence 🤫';
     let narrative = 'Your voice is being found. Each interaction is a resonance.';
@@ -223,38 +198,34 @@ function ResonanceRow({ stats, colors }: ResonanceRowProps) {
     }
 
     return (
-        <Box
-            sx={{
-                paddingVertical: Theme.spacing.md,
-                borderBottomWidth: 1,
-                borderBottomColor: `${colors.border}60`,
-            }}
-        >
-            <HStack space="md" alignItems="flex-start">
-                <Text style={styles.pathEmoji}>✨</Text>
-                <VStack flex={1} space="xs">
-                    <HStack justifyContent="space-between" alignItems="center">
-                        <Text
-                            size="xs"
-                            color={colors.textTertiary}
-                            style={{ textTransform: 'uppercase', letterSpacing: 0.8 }}
-                        >
+        <Box className="py-5 border-b border-phase-surface/40">
+            <HStack className="items-start gap-4">
+                <Box className="w-12 h-12 rounded-2xl bg-white/5 items-center justify-center border border-white/10 shadow-sm">
+                    <Text className="text-2xl leading-8">✨</Text>
+                </Box>
+                <VStack className="flex-1 gap-1">
+                    <HStack className="justify-between items-center">
+                        <Text className="text-[10px] font-bold text-phase-text-tertiary uppercase tracking-widest">
                             COMMUNITY RESONANCE
                         </Text>
-                        <Text size="sm" bold color={colors.text}>
+                        <Text className="text-sm font-bold text-phase-text-primary">
                             {label}
                         </Text>
                     </HStack>
-                    <Text size="sm" color={colors.textSecondary} style={{ lineHeight: 18 }}>
+                    <Text className="text-sm text-phase-text-secondary leading-relaxed">
                         {narrative}
                     </Text>
-                    <HStack space="sm" mt={4}>
-                        <Text size="xs" sx={{ bg: `${colors.action}15`, px: 8, py: 2, borderRadius: 4, color: colors.action }}>
-                            {stats.likes} Likes
-                        </Text>
-                        <Text size="xs" sx={{ bg: `${colors.action}15`, px: 8, py: 2, borderRadius: 4, color: colors.action }}>
-                            {stats.comments} Comments
-                        </Text>
+                    <HStack className="gap-2 mt-2">
+                        <Box className="bg-phase-interactive/10 px-3 py-1 rounded-full">
+                            <Text className="text-[11px] font-bold text-phase-interactive">
+                                {stats.likes} Likes
+                            </Text>
+                        </Box>
+                        <Box className="bg-phase-interactive/10 px-3 py-1 rounded-full">
+                            <Text className="text-[11px] font-bold text-phase-interactive">
+                                {stats.comments} Comments
+                            </Text>
+                        </Box>
                     </HStack>
                 </VStack>
             </HStack>
@@ -262,115 +233,150 @@ function ResonanceRow({ stats, colors }: ResonanceRowProps) {
     );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// —————————————————————————————————————————————————————————————————————————————
+// RECOGNITION ROW COMPONENT
+// —————————————————————————————————————————————————————————————————————————————
 
-// ─────────────────────────────────────────────────────────────────────────────
-// WHISPERED MOMENTS SECTION
-// ─────────────────────────────────────────────────────────────────────────────
+interface RecognitionRowProps {
+    badges: string[];
+}
+
+function RecognitionRow({ badges }: RecognitionRowProps) {
+    const visibleBadges = badges.slice(0, 3);
+    const label = badges.length === 0
+        ? 'Recognition Still Gathering'
+        : badges.length >= 4
+            ? 'Recognition Constellation'
+            : 'Recognition Taking Shape';
+    const narrative = badges.length === 0
+        ? 'Your journey is being noticed quietly. Meaningful signals will gather here over time.'
+        : `Your path has already left ${badges.length} memorable ${badges.length === 1 ? 'signal' : 'signals'} in the platform.`;
+
+    return (
+        <Box className="py-5 border-b border-phase-surface/40">
+            <HStack className="items-start gap-4">
+                <Box className="w-12 h-12 rounded-2xl bg-white/5 items-center justify-center border border-white/10 shadow-sm">
+                    <Text className="text-2xl leading-8">🏅</Text>
+                </Box>
+                <VStack className="flex-1 gap-1">
+                    <HStack className="justify-between items-center">
+                        <Text className="text-[10px] font-bold text-phase-text-tertiary uppercase tracking-widest">
+                            JOURNEY RECOGNITION
+                        </Text>
+                        <Text className="text-sm font-bold text-phase-text-primary">
+                            {label}
+                        </Text>
+                    </HStack>
+                    <Text className="text-sm text-phase-text-secondary leading-relaxed">
+                        {narrative}
+                    </Text>
+                    {visibleBadges.length > 0 && (
+                        <HStack className="flex-wrap gap-2 mt-2">
+                            {visibleBadges.map((badge) => (
+                                <Box
+                                    key={badge}
+                                    className="px-3 py-1 bg-phase-canvas border border-phase-surface rounded-full"
+                                >
+                                    <Text className="text-[11px] font-bold text-phase-text-primary">
+                                        {badge}
+                                    </Text>
+                                </Box>
+                            ))}
+                        </HStack>
+                    )}
+                </VStack>
+            </HStack>
+        </Box>
+    );
+}
+
+// —————————————————————————————————————————————————————————————————————————————
+// WHISPERED MOMENTS ROW COMPONENT
+// —————————————————————————————————————————————————————————————————————————————
 
 interface WhisperedMomentsRowProps {
     moments: Array<{ key: string; name_en: string; name_si: string }>;
-    colors: ReturnType<typeof useThemedColors>;
-    t: ReturnType<typeof useTranslation>['t'];
+    t: (key: string) => string;
 }
 
-function WhisperedMomentsRow({ moments, colors, t }: WhisperedMomentsRowProps) {
-    if (moments.length === 0) {
-        return (
-            <Box sx={{ paddingVertical: Theme.spacing.md }}>
-                <HStack space="md" alignItems="center">
-                    <Text style={styles.pathEmoji}>✨</Text>
-                    <VStack flex={1} space="xs">
-                        <Text
-                            size="xs"
-                            color={colors.textTertiary}
-                            style={{ textTransform: 'uppercase', letterSpacing: 0.8 }}
-                        >
+function WhisperedMomentsRow({ moments, t }: WhisperedMomentsRowProps) {
+    return (
+        <Box className="py-5">
+            <HStack className="items-start gap-4">
+                <Box className="w-12 h-12 rounded-2xl bg-white/5 items-center justify-center border border-white/10 shadow-sm">
+                    <Text className="text-2xl leading-8">✨</Text>
+                </Box>
+                <VStack className="flex-1 gap-1">
+                    <HStack className="justify-between items-center">
+                        <Text className="text-[10px] font-bold text-phase-text-tertiary uppercase tracking-widest">
                             {t('journey.whisperedMoments')}
                         </Text>
-                        <Text size="sm" color={colors.textSecondary} style={{ fontStyle: 'italic' }}>
+                        {moments.length > 0 && (
+                            <Text className="text-[11px] font-bold text-phase-text-tertiary">
+                                {moments.length} {moments.length === 1 ? 'discovery' : 'discoveries'}
+                            </Text>
+                        )}
+                    </HStack>
+                    {moments.length === 0 ? (
+                        <Text className="text-sm text-phase-text-secondary italic leading-relaxed">
                             {t('journey.noMoments')}
                         </Text>
-                    </VStack>
-                </HStack>
-            </Box>
-        );
-    }
-
-    return (
-        <Box sx={{ paddingVertical: Theme.spacing.md }}>
-            <HStack space="md" alignItems="flex-start">
-                <Text style={styles.pathEmoji}>✨</Text>
-                <VStack flex={1} space="sm">
-                    <HStack justifyContent="space-between" alignItems="center">
-                        <Text
-                            size="xs"
-                            color={colors.textTertiary}
-                            style={{ textTransform: 'uppercase', letterSpacing: 0.8 }}
-                        >
-                            {t('journey.whisperedMoments')}
-                        </Text>
-                        <Text size="xs" color={colors.textTertiary}>
-                            {moments.length} {moments.length === 1 ? 'discovery' : 'discoveries'}
-                        </Text>
-                    </HStack>
-                    <HStack flexWrap="wrap" style={{ gap: 6 }}>
-                        {moments.map(m => (
-                            <Box
-                                key={m.key}
-                                sx={{
-                                    paddingHorizontal: Theme.spacing.sm,
-                                    paddingVertical: 4,
-                                    backgroundColor: `${colors.action}15`,
-                                    borderRadius: Theme.corners.full,
-                                    borderWidth: 1,
-                                    borderColor: `${colors.action}30`,
-                                }}
-                            >
-                                <Text size="xs" color={colors.text}>
-                                    {m.name_en}
-                                </Text>
-                            </Box>
-                        ))}
-                    </HStack>
+                    ) : (
+                        <HStack className="flex-wrap gap-2 mt-2">
+                            {moments.map(m => (
+                                <Box
+                                    key={m.key}
+                                    className="px-3 py-1 bg-phase-canvas border border-phase-surface rounded-full"
+                                >
+                                    <Text className="text-[11px] font-bold text-phase-text-primary">
+                                        {m.name_en}
+                                    </Text>
+                                </Box>
+                            ))}
+                        </HStack>
+                    )}
                 </VStack>
             </HStack>
         </Box>
     );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// —————————————————————————————————————————————————————————————————————————————
 // MAIN PANEL
-// ─────────────────────────────────────────────────────────────────────────────
+// —————————————————————————————————————————————————————————————————————————————
 
 export default function LivingJourneyPanel({ userId }: LivingJourneyPanelProps) {
     const { can } = usePermissions();
-    const colors = useThemedColors();
     const { t } = useTranslation();
+    const viewDate = useTemporalStore(state => state.viewDate);
+    const viewScale = useTemporalStore(state => state.viewScale);
+    const phase = useTemporalStore(state => state.phase);
 
     const [growth, setGrowth] = useState<UserGrowthState | null>(null);
+    const [journeyRewards, setJourneyRewards] = useState<{ points: number; badges: string[] } | null>(null);
     const [moon, setMoon] = useState<MoonPhase | null>(null);
-    const [moments, setMoments] = useState<
-        Array<{ key: string; name_en: string; name_si: string }>
-    >([]);
+    const [moments, setMoments] = useState<Array<{ key: string; name_en: string; name_si: string }>>([]);
     const [resonance, setResonance] = useState({ likes: 0, comments: 0, shares: 0 });
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                // Moon is pure computation — instant, no network needed
-                setMoon(moonPhaseAPI.getCurrentMoonPhase());
+                setMoon(moonPhaseAPI.getCurrentMoonPhase(new Date(viewDate)));
 
-                // Fetch growth state, moments, and resonance in parallel
-                const [state, momentsData, resonanceData] = await Promise.all([
-                    userGrowthStateAPI.getOrCreateState(userId),
-                    userGrowthStateAPI.getWhisperedMoments(userId),
-                    communityAPI.getCommunityResonance(userId)
+                const [journeySnapshot, resonanceData] = await Promise.all([
+                    profileAPI.getJourneySnapshot(userId, {
+                        asOf: phase === 'past' ? viewDate : undefined,
+                        viewDate,
+                        viewScale,
+                    }),
+                    communityAPI.getCommunityResonance(userId, { viewDate, viewScale })
                 ]);
 
-                if (state) setGrowth(state);
-                if (momentsData) setMoments(momentsData);
+                if (journeySnapshot?.growth) setGrowth(journeySnapshot.growth);
+                else setGrowth(null);
+                setJourneyRewards(journeySnapshot?.rewards ?? null);
+                setMoments(journeySnapshot?.whispered_moments ?? []);
                 if (resonanceData) setResonance(resonanceData);
 
             } catch (err) {
@@ -380,35 +386,23 @@ export default function LivingJourneyPanel({ userId }: LivingJourneyPanelProps) 
             }
         };
 
-        fetchData();
-    }, [userId]);
+        void fetchData();
+    }, [userId, phase, viewDate, viewScale]);
 
     if (loading) {
         return (
             <Box
-                sx={{
-                    backgroundColor: colors.secondary,
-                    borderRadius: Theme.corners.generous,
-                    borderWidth: 1,
-                    borderColor: colors.border,
-                    padding: Theme.spacing.xl,
-                    marginHorizontal: Theme.spacing.md,
-                    marginTop: Theme.spacing.lg,
-                    minHeight: 180,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                }}
+                className="bg-phase-canvas rounded-3xl border border-phase-surface p-10 mx-5 mt-8 min-h-[200px] items-center justify-center shadow-lg"
             >
-                <ActivityIndicator color={colors.action} />
+                <Spinner className="text-phase-interactive" size="large" />
             </Box>
         );
     }
 
-    // 1. Data Guards (Defensive Coding)
     if (!growth) {
         return (
-            <Box sx={{ p: Theme.spacing.xl, alignItems: 'center' }}>
-                <Text color={colors.textSecondary}>{t('profile.noJourneyData') || 'No journey data found'}</Text>
+            <Box className="p-12 items-center">
+                <Text className="text-phase-text-tertiary italic">{t('profile.noJourneyData') || 'No journey data found'}</Text>
             </Box>
         );
     }
@@ -423,56 +417,42 @@ export default function LivingJourneyPanel({ userId }: LivingJourneyPanelProps) 
     const isTeacherRole = can('read', 'TeacherPulse') || can('read', 'PrincipalPulse') || can('read', 'FounderPulse');
     const isStudentRole = can('read', 'StudentPulse');
 
-    // 2. Animation Gating (Ensuring web-safe defaults)
     const enteringAnimation = Platform.OS === 'web'
-        ? undefined  // Skip complex entering animations on web
+        ? undefined
         : FadeInDown.springify();
 
     return (
-        <Animated.View entering={enteringAnimation}>
+        <AnimatedView entering={enteringAnimation} className="px-5">
             <Box
-                sx={{
-                    backgroundColor: colors.secondary,
-                    borderRadius: Theme.corners.generous,
-                    borderWidth: 1,
-                    borderColor: colors.border,
-                    shadowColor: colors.glow,
-                    shadowOffset: { width: 0, height: 0 },
-                    shadowOpacity: 0.4,
-                    shadowRadius: 15,
-                    elevation: 5,
-                    marginHorizontal: Theme.spacing.md,
-                    marginTop: Theme.spacing.lg,
-                    overflow: 'hidden',
-                }}
+                className="bg-phase-canvas rounded-[40px] border border-phase-surface shadow-xl overflow-hidden mb-10"
             >
                 {/* Header */}
                 <Box
-                    sx={{
-                        paddingHorizontal: Theme.spacing.xl,
-                        paddingTop: Theme.spacing.xl,
-                        paddingBottom: Theme.spacing.md,
-                        borderBottomWidth: 1,
-                        borderBottomColor: `${colors.border}60`,
-                    }}
+                    className="px-8 pt-8 pb-6 border-b border-phase-surface/40 bg-phase-surface/30"
                 >
-                    <Heading size="sm" color={colors.textSecondary as string}>
-                        {t('journey.title')}
+                    <Heading size="md" className="text-phase-text-primary">
+                        {t('journey.title') || "Living Journey"}
                     </Heading>
-                    <Text size="xs" color={colors.textTertiary} style={{ marginTop: 4 }}>
-                        {t('journey.subtitle')}
+                    <Text className="text-xs text-phase-text-secondary mt-2 leading-relaxed">
+                        {t('journey.subtitle') || "Observe the evolution of your presence across the sanctuary paths."}
                     </Text>
+                    {phase !== 'present' && (
+                        <Box className="bg-phase-interactive/10 px-3 py-1 rounded-full self-start mt-4">
+                            <Text className="text-[10px] font-bold text-phase-interactive uppercase tracking-wider">
+                                HISTORICAL PERSPECTIVE
+                            </Text>
+                        </Box>
+                    )}
                 </Box>
 
                 {/* Path rows */}
-                <Box sx={{ paddingHorizontal: Theme.spacing.xl }}>
+                <Box className="px-8">
                     {/* Bhumi (Lotus) — all users */}
                     <PathRow
                         emoji="🌸"
                         pathName={t('journey.lotusPath')}
                         stageLabel={bhumiData.label}
                         narrative={bhumiData.description}
-                        colors={colors}
                     />
 
                     {/* Banyan — teachers and principals */}
@@ -482,7 +462,6 @@ export default function LivingJourneyPanel({ userId }: LivingJourneyPanelProps) 
                             pathName={t('journey.banyanPath')}
                             stageLabel={banyan.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
                             narrative={BANYAN_NARRATIVES[banyan]}
-                            colors={colors}
                         />
                     )}
 
@@ -493,7 +472,6 @@ export default function LivingJourneyPanel({ userId }: LivingJourneyPanelProps) 
                             pathName={t('journey.riverPath')}
                             stageLabel={river.charAt(0).toUpperCase() + river.slice(1)}
                             narrative={RIVER_NARRATIVES[river]}
-                            colors={colors}
                         />
                     )}
 
@@ -504,33 +482,25 @@ export default function LivingJourneyPanel({ userId }: LivingJourneyPanelProps) 
                             pathName={t('journey.crystalPath')}
                             stageLabel={crystal.charAt(0).toUpperCase() + crystal.slice(1)}
                             narrative={CRYSTAL_NARRATIVES[crystal]}
-                            colors={colors}
                         />
                     )}
 
                     {/* Moon — all users, live */}
-                    {moon && <MoonRow moon={moon} colors={colors} t={t} />}
+                    {moon && <MoonRow moon={moon} t={t} />}
 
                     {/* Community Resonance — aggregated from social actions */}
-                    <ResonanceRow stats={resonance} colors={colors} />
+                    <ResonanceRow stats={resonance} />
+
+                    {/* Rewards / recognition — shown as narrative signals rather than a score */}
+                    <RecognitionRow badges={journeyRewards?.badges ?? []} />
 
                     {/* Whispered Moments — all users */}
                     <WhisperedMomentsRow
                         moments={moments}
-                        colors={colors}
                         t={t}
                     />
                 </Box>
             </Box>
-        </Animated.View>
+        </AnimatedView>
     );
 }
-
-const styles = StyleSheet.create({
-    pathEmoji: {
-        fontSize: 24,
-        lineHeight: 32,
-        width: 32,
-        textAlign: 'center',
-    },
-});

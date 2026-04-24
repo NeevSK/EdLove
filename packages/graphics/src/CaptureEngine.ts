@@ -1,7 +1,7 @@
-import { KnowledgeTopology } from './types/KnowledgeTopology';
+import { type KnowledgeTopology, type GraphNode } from '@repo/core';
 
 /**
- * CaptureEngine — Prepares and optimizes visualizations for static export.
+ * CaptureEngine  Prepares and optimizes visualizations for static export.
  * 
  * Used for including maps/charts in generated PDF/HTML reports.
  */
@@ -15,7 +15,7 @@ export const CaptureEngine = {
         // We filter out any 'persona' or helper nodes that might be in the live view.
         return {
             ...topology,
-            nodes: topology.nodes.filter(n => n.type !== 'persona'),
+            nodes: topology.nodes.filter((n: GraphNode) => n.type !== 'persona'),
         };
     },
 

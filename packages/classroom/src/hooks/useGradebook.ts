@@ -1,33 +1,34 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
-import { StudentGrade, ClassroomGradingSettings, api, ClassroomStudent } from '@repo/core';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { StudentGrade, ClassroomGradingSettings, gradingAPI, studentsAPI, useStore, growthSignalsAPI } from '@repo/core';
 
 export type SortOption = 'name' | 'marks' | 'rank';
 
 export const useGradebook = (classroomId: string) => {
     const [grades, setGrades] = useState<StudentGrade[]>([]);
+    const [studentNames, setStudentNames] = useState<{ [key: string]: string }>({});
     const [gradingSettings, setGradingSettings] = useState<ClassroomGradingSettings | null>(null);
-    const [studentNames, setStudentNames] = useState<{ [studentId: string]: string }>({});
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [sortBy, setSortBy] = useState<SortOption>('rank');
+    const currentUser = useStore((state) => state.user);
 
     const loadData = useCallback(async () => {
         setIsLoading(true);
         setError(null);
         try {
-            const [gradesData, settingsData, studentsData] = await Promise.all([
-                api.grading.getClassroomGrades(classroomId),
-                api.grading.getGradingSettings(classroomId),
-                api.classroomStudents.getAll(classroomId)
+            const viewDate = new Date().toISOString().split('T')[0] || new Date().toISOString();
+            const [snapshot, studentsData] = await Promise.all([
+                gradingAPI.getGradebookSnapshot(classroomId, viewDate),
+                studentsAPI.getAll(classroomId)
             ]);
 
-            setGrades(gradesData);
-            setGradingSettings(settingsData);
+            setGrades(snapshot.grades);
+            setGradingSettings(snapshot.gradingSettings);
 
             const names: { [key: string]: string } = {};
-            studentsData.forEach((student: ClassroomStudent) => {
-                const idToUse = student.student_id || student.id;
-                names[idToUse] = student.full_name;
+            (studentsData as any[]).forEach((student: any) => {
+                const idToUse = String(student.id);
+                names[idToUse] = student.full_name || 'Student';
             });
             setStudentNames(names);
         } catch (err: any) {
@@ -44,7 +45,7 @@ export const useGradebook = (classroomId: string) => {
 
     const updateSettings = async (settings: Omit<ClassroomGradingSettings, 'classroom_id'>) => {
         try {
-            const updated = await api.grading.updateGradingSettings(classroomId, settings);
+            const updated = await gradingAPI.updateGradingSettings(classroomId, settings);
             setGradingSettings(updated);
             return updated;
         } catch (err: any) {
@@ -80,13 +81,17 @@ export const useGradebook = (classroomId: string) => {
         return { totalStudents: total, averageMarks: average };
     }, [grades]);
 
-    const submitGrade = async (
+    const saveDraftGrade = async (
         studentId: string,
         marks: number,
         feedback?: string,
         assignmentId?: string,
     ) => {
-        const saved = await api.grading.submitGrade(studentId, classroomId, marks, assignmentId, feedback);
+        const saved = await gradingAPI.saveGradeDraft(studentId, classroomId, marks, assignmentId, feedback, {
+            actorId: currentUser?.id,
+            reason: 'grade_draft',
+            accessKind: 'teacher_authoring',
+        });
         // Refresh grades so the table reflects the new entry
         setGrades(prev => {
             const idx = prev.findIndex(g => g.student_id === studentId && g.assignment_id === (assignmentId ?? null));
@@ -95,6 +100,24 @@ export const useGradebook = (classroomId: string) => {
                 : [saved, ...prev];
         });
         return saved;
+    };
+
+    const handleSave = async (gradingId: string, marks: number, feedback: string) => {
+        if (!gradingId) return;
+        await saveDraftGrade(gradingId, marks, feedback);
+        if (currentUser?.id) {
+            growthSignalsAPI.emitSilent(currentUser.id, 'assignment_graded', { classroom_id: classroomId });
+        }
+    };
+
+    const publishGrade = async (gradeId: string) => {
+        const published = await gradingAPI.publishGrade(gradeId, {
+            actorId: currentUser?.id,
+            reason: 'grade_publish',
+            accessKind: 'teacher_authoring',
+        });
+        setGrades(prev => prev.map((grade) => (grade.id === gradeId ? published : grade)));
+        return published;
     };
 
     return {
@@ -108,7 +131,9 @@ export const useGradebook = (classroomId: string) => {
         sortedGrades,
         stats,
         updateSettings,
-        submitGrade,
+        submitGrade: handleSave,
+        saveDraftGrade,
+        publishGrade,
         refreshData: loadData,
     };
 };

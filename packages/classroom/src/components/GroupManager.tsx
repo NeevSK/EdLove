@@ -29,10 +29,9 @@ import {
     Checkbox,
     CheckboxIndicator,
     CheckboxIcon,
-    CheckboxLabel,
-    Theme,
     hapticLight,
-    useThemedColors,
+    Icon,
+    SanctuaryModal,
 } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 import { Users, Plus, Trash2, Edit2, Check as CheckIcon } from 'lucide-react-native';
@@ -59,11 +58,11 @@ interface GroupManagerProps {
 
 // Predefined colors for groups
 const GROUP_COLORS = [
-    Theme.colors.sanctuarySaffron,
-    Theme.colors.sageGreen,
-    Theme.colors.twilightBlue,
-    Theme.colors.amberGlow,
-    Theme.colors.lotusDeepPink,
+    '#F6BF8C', // sanctuarySaffron
+    '#8BBF7A', // sageGreen
+    '#6A5ACD', // twilightBlue
+    '#FFB84D', // amberGlow
+    '#DA70D6', // lotusDeepPink
 ];
 
 export default function GroupManager({ classroomId }: GroupManagerProps) {
@@ -75,7 +74,6 @@ export default function GroupManager({ classroomId }: GroupManagerProps) {
     const [groupDescription, setGroupDescription] = useState('');
     const [selectedStudentIds, setSelectedStudentIds] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState(true);
-    const colors = useThemedColors();
     const { t } = useTranslation();
 
     useEffect(() => {
@@ -155,7 +153,6 @@ export default function GroupManager({ classroomId }: GroupManagerProps) {
             return;
         }
 
-        // Generate a unique ID using crypto or fallback to timestamp
         const generateId = () => {
             if (typeof crypto !== 'undefined' && crypto.randomUUID) {
                 return crypto.randomUUID();
@@ -164,21 +161,19 @@ export default function GroupManager({ classroomId }: GroupManagerProps) {
         };
 
         if (editingGroup) {
-            // Update existing group
             setGroups((prev) =>
                 prev.map((g) =>
                     g.id === editingGroup.id
                         ? {
-                            ...g,
-                            name: groupName,
-                            description: groupDescription || undefined,
-                            studentIds: selectedStudentIds,
-                        }
+                              ...g,
+                              name: groupName,
+                              description: groupDescription || undefined,
+                              studentIds: selectedStudentIds,
+                          }
                         : g
                 )
             );
         } else {
-            // Create new group
             const newGroup: StudentGroup = {
                 id: generateId(),
                 name: groupName,
@@ -212,103 +207,71 @@ export default function GroupManager({ classroomId }: GroupManagerProps) {
         return (
             <Box
                 key={group.id}
-                sx={{
-                    backgroundColor: colors.secondary,
-                    borderRadius: Theme.corners.generous,
-                    padding: Theme.spacing.md,
-                    marginBottom: Theme.spacing.md,
+                className="bg-phase-surface-secondary rounded-[24px] p-4 mb-4 border border-phase-border"
+                style={{
                     borderLeftWidth: 4,
                     borderLeftColor: group.color,
-                    borderColor: colors.border,
-                    borderWidth: 1,
                 }}
             >
-                <VStack sx={{ gap: Theme.spacing.sm }}>
-                    {/* Header */}
-                    <HStack alignItems="flex-start" justifyContent="space-between" sx={{ gap: Theme.spacing.md }}>
-                        <HStack alignItems="center" sx={{ flex: 1, gap: Theme.spacing.sm }}>
+                <VStack className="gap-2">
+                    <HStack className="items-start justify-between gap-4">
+                        <HStack className="flex-1 items-center gap-2">
                             <Box
-                                sx={{
-                                    width: 40,
-                                    height: 40,
-                                    borderRadius: Theme.corners.full,
+                                className="w-10 h-10 rounded-full justify-center items-center opacity-90"
+                                style={{
                                     backgroundColor: group.color,
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
-                                    opacity: Theme.opacity.heavy,
                                 }}
                             >
-                                <Users color={Theme.colors.white} size={20} />
+                                <Icon as={Users} color="white" size="sm" />
                             </Box>
-                            <VStack sx={{ flex: 1 }}>
-                                <Text sx={{ color: colors.text, fontSize: Theme.typography.fontSize.md, fontWeight: '600' as any }}>
+                            <VStack className="flex-1">
+                                <Text className="text-phase-text-primary text-base font-bold">
                                     {group.name}
                                 </Text>
-                                <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.xs }}>
+                                <Text className="text-phase-text-tertiary text-xs">
                                     {t('groups.selectedCount', { count: groupStudents.length }) || `${groupStudents.length} students`}
                                 </Text>
                             </VStack>
                         </HStack>
 
-                        {/* Actions */}
-                        <HStack sx={{ gap: Theme.spacing.xs }}>
+                        <HStack className="gap-2">
                             <Pressable onPress={() => openEditModal(group)}>
                                 <Box
-                                    sx={{
-                                        padding: Theme.spacing.sm,
-                                        borderRadius: Theme.corners.comfortable,
-                                        backgroundColor: colors.tertiary,
-                                        borderColor: colors.border,
-                                        borderWidth: 1,
-                                    }}
+                                    className="p-2 rounded-xl bg-phase-surface border border-phase-border"
                                 >
-                                    <Edit2 color={colors.textSecondary} size={16} />
+                                    <Icon as={Edit2} className="text-phase-text-tertiary" size="xs" />
                                 </Box>
                             </Pressable>
                             <Pressable onPress={() => deleteGroup(group.id)}>
                                 <Box
-                                    sx={{
-                                        padding: Theme.spacing.sm,
-                                        borderRadius: Theme.corners.comfortable,
-                                        backgroundColor: colors.tertiary,
-                                        borderColor: colors.border,
-                                        borderWidth: 1,
-                                    }}
+                                    className="p-2 rounded-xl bg-phase-surface border border-phase-border"
                                 >
-                                    <Trash2 color={Theme.colors.emberRed} size={16} />
+                                    <Icon as={Trash2} className="text-sanctuary-error" size="xs" />
                                 </Box>
                             </Pressable>
                         </HStack>
                     </HStack>
 
-                    {/* Description */}
                     {group.description && (
-                        <Text color={colors.textSecondary} sx={{ fontSize: Theme.typography.fontSize.sm }}>
+                        <Text className="text-phase-text-tertiary text-sm">
                             {group.description}
                         </Text>
                     )}
 
-                    {/* Student List */}
                     <Box
-                        sx={{
-                            backgroundColor: colors.tertiary,
-                            borderRadius: Theme.corners.comfortable,
-                            padding: Theme.spacing.sm,
-                            borderColor: colors.border,
-                            borderWidth: 1,
-                        }}
+                        className="bg-phase-surface rounded-xl p-2 border border-phase-border"
                     >
-                        <VStack sx={{ gap: Theme.spacing.xs }}>
+                        <VStack className="gap-1">
                             {groupStudents.map((student, index) => (
-                                <HStack key={student.id} alignItems="center" sx={{ gap: Theme.spacing.xs }}>
-                                    <Text color={colors.textSecondary} sx={{ fontSize: Theme.typography.fontSize.xs }}>
+                                <HStack key={student.id} className="items-center gap-1">
+                                    <Text className="text-phase-text-tertiary text-xs text-right w-4">
                                         {index + 1}.
                                     </Text>
-                                    <Text color={colors.text} sx={{ fontSize: Theme.typography.fontSize.xs }}>
+                                    <Text className="text-phase-text-primary text-xs">
                                         {student.full_name}
                                     </Text>
                                     {student.roll_number && (
-                                        <Text color={colors.textTertiary} sx={{ fontSize: Theme.typography.fontSize.xs }}>
+                                        <Text className="text-phase-text-tertiary text-xs">
                                             (#{student.roll_number})
                                         </Text>
                                     )}
@@ -322,245 +285,149 @@ export default function GroupManager({ classroomId }: GroupManagerProps) {
     };
 
     return (
-        <Box sx={{ flex: 1, backgroundColor: colors.primary }}>
-            <ScrollView sx={{ flex: 1 }} contentContainerStyle={{ padding: Theme.spacing.lg }}>
-                {/* Header */}
-                <VStack sx={{ marginBottom: Theme.spacing.xl, gap: Theme.spacing.xs }}>
-                    <Heading color={colors.text} sx={{ fontSize: Theme.typography.fontSize['2xl'] }}>
+        <Box className="flex-1 bg-phase-surface">
+            <ScrollView className="flex-1" contentContainerStyle={{ padding: 24 }}>
+                <VStack className="mb-8 gap-1">
+                    <Heading className="text-phase-text-primary text-3xl font-black tracking-tighter">
                         {t('groups.title') || 'Group Manager'}
                     </Heading>
-                    <Text color={colors.textSecondary} sx={{ fontSize: Theme.typography.fontSize.sm }}>
+                    <Text className="text-phase-text-tertiary text-sm font-medium">
                         {t('groups.subtitle') || 'Create temporary student groups for activities'}
                     </Text>
                 </VStack>
 
-                {/* Groups List */}
                 {isLoading ? (
-                    <Box sx={{ padding: Theme.spacing.xl, alignItems: 'center' }}>
-                        <Text color={Theme.colors.mistGray}>Loading groups...</Text>
+                    <Box className="p-8 items-center">
+                        <Text className="text-phase-text-tertiary">Loading groups...</Text>
                     </Box>
                 ) : groups.length === 0 ? (
                     <Box
-                        sx={{
-                            padding: Theme.spacing.xl,
-                            alignItems: 'center',
-                            backgroundColor: colors.secondary,
-                            borderRadius: Theme.corners.generous,
-                            borderColor: colors.border,
-                            borderWidth: 1,
-                        }}
+                        className="p-12 items-center bg-phase-surface-secondary rounded-[32px] border border-phase-border"
                     >
-                        <Users color={colors.textSecondary} size={48} />
-                        <Text color={colors.textSecondary} sx={{ marginTop: Theme.spacing.md, textAlign: 'center' }}>
+                        <Icon as={Users} className="text-phase-text-tertiary" size="xl" />
+                        <Text className="text-phase-text-tertiary mt-4 text-center font-medium">
                             {t('groups.emptyState') || 'No groups yet. Tap the + button to create your first group.'}
                         </Text>
                     </Box>
                 ) : (
-                    <VStack sx={{ gap: Theme.spacing.md }}>{groups.map(renderGroupCard)}</VStack>
+                    <VStack className="gap-4">
+                        {groups.map(renderGroupCard)}
+                    </VStack>
                 )}
             </ScrollView>
 
-            {/* Floating Action Button */}
             <Pressable
                 onPress={openCreateModal}
-                style={{
-                    position: 'absolute',
-                    bottom: 24,
-                    right: 24,
-                }}
+                className="absolute bottom-10 right-8 w-16 h-16 rounded-full bg-sanctuarySaffron justify-center items-center shadow-lg shadow-sanctuarySaffron/40 active:opacity-90"
             >
-                <Box
-                    sx={{
-                        width: 56,
-                        height: 56,
-                        borderRadius: Theme.corners.full,
-                        backgroundColor: Theme.colors.sanctuarySaffron,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        ...Theme.shadows.lg,
-                    }}
-                >
-                    <Plus color={Theme.colors.white} size={24} />
-                </Box>
+                <Icon as={Plus} color="white" size="md" />
             </Pressable>
 
-            {/* Create/Edit Group Modal */}
-            <Modal isOpen={showCreateModal} onClose={() => setShowCreateModal(false)}>
-                <ModalBackdrop />
-                <ModalContent
-                    sx={{
-                        backgroundColor: colors.primary,
-                        maxWidth: 500,
-                        maxHeight: '80%',
-                        borderColor: colors.border,
-                        borderWidth: 1,
-                    }}
-                >
-                    <ModalHeader>
-                        <Heading color={colors.text} sx={{ fontSize: Theme.typography.fontSize.lg }}>
-                            {editingGroup ? (t('groups.editGroup') || 'Edit Group') : (t('groups.createGroup') || 'Create Group')}
-                        </Heading>
-                    </ModalHeader>
+            <SanctuaryModal
+                isOpen={showCreateModal}
+                onClose={() => setShowCreateModal(false)}
+                title={editingGroup ? (t('groups.editGroup') || 'Edit Group') : (t('groups.createGroup') || 'Create Group')}
+                footer={
+                    <HStack className="gap-3 w-full">
+                        <Button
+                            variant="outline"
+                            onPress={() => setShowCreateModal(false)}
+                            className="flex-1 h-14 rounded-[24px] border-phase-border bg-phase-surface-secondary active:opacity-70"
+                        >
+                            <ButtonText className="text-phase-text-secondary font-bold">Cancel</ButtonText>
+                        </Button>
+                        <Button
+                            onPress={saveGroup}
+                            className={`flex-1 h-14 rounded-[24px] shadow-lg active:opacity-90 ${(!groupName.trim() || selectedStudentIds.length === 0) ? 'bg-phase-surface-tertiary opacity-50' : 'bg-sanctuarySaffron shadow-sanctuarySaffron/20'}`}
+                            isDisabled={!groupName.trim() || selectedStudentIds.length === 0}
+                        >
+                            <ButtonText className="text-sanctuary-ink font-bold">
+                                {editingGroup ? 'Update' : 'Initialize'}
+                            </ButtonText>
+                        </Button>
+                    </HStack>
+                }
+            >
+                <VStack className="gap-6">
+                    <VStack className="gap-2">
+                        <Text className="text-phase-text-secondary font-bold ml-1">
+                            {t('groups.nameLabel') || 'Group Name'}
+                        </Text>
+                        <Input className="h-16 rounded-[24px] border-phase-border bg-phase-surface shadow-sm">
+                            <InputField
+                                placeholder={t('groups.namePlaceholder') || "e.g., Lab Group A"}
+                                value={groupName}
+                                onChangeText={setGroupName}
+                                className="text-phase-text-primary font-bold"
+                            />
+                        </Input>
+                    </VStack>
 
-                    <ModalBody>
-                        <ScrollView showsVerticalScrollIndicator={false}>
-                            <VStack sx={{ gap: Theme.spacing.md }}>
-                                {/* Group Name */}
-                                <VStack sx={{ gap: Theme.spacing.xs }}>
-                                    <Text color={colors.textSecondary} sx={{ fontSize: Theme.typography.fontSize.sm }}>
-                                        {t('groups.nameLabel') || 'Group Name *'}
-                                    </Text>
-                                    <Input
-                                        sx={{
-                                            backgroundColor: colors.tertiary,
-                                            borderColor: colors.border,
-                                            borderRadius: Theme.corners.comfortable,
-                                        }}
-                                    >
-                                        <InputField
-                                            placeholder={t('groups.namePlaceholder') || "e.g., Lab Group A"}
-                                            value={groupName}
-                                            onChangeText={setGroupName}
-                                            color={colors.text}
-                                            placeholderTextColor={colors.textTertiary}
-                                        />
-                                    </Input>
-                                </VStack>
+                    <VStack className="gap-2">
+                        <Text className="text-phase-text-secondary font-bold ml-1">
+                            {t('groups.descriptionLabel') || 'Description (Optional)'}
+                        </Text>
+                        <Input className="h-16 rounded-[24px] border-phase-border bg-phase-surface shadow-sm">
+                            <InputField
+                                placeholder={t('groups.descriptionPlaceholder') || "e.g., First lab rotation"}
+                                value={groupDescription}
+                                onChangeText={setGroupDescription}
+                                className="text-phase-text-primary font-bold"
+                            />
+                        </Input>
+                    </VStack>
 
-                                {/* Group Description */}
-                                <VStack sx={{ gap: Theme.spacing.xs }}>
-                                    <Text color={colors.textSecondary} sx={{ fontSize: Theme.typography.fontSize.sm }}>
-                                        {t('groups.descriptionLabel') || 'Description (Optional)'}
-                                    </Text>
-                                    <Input
-                                        sx={{
-                                            backgroundColor: colors.tertiary,
-                                            borderColor: colors.border,
-                                            borderRadius: Theme.corners.comfortable,
-                                        }}
-                                    >
-                                        <InputField
-                                            placeholder={t('groups.descriptionPlaceholder') || "e.g., First lab rotation"}
-                                            value={groupDescription}
-                                            onChangeText={setGroupDescription}
-                                            color={colors.text}
-                                            placeholderTextColor={colors.textTertiary}
-                                        />
-                                    </Input>
-                                </VStack>
-
-                                {/* Student Selection */}
-                                <VStack sx={{ gap: Theme.spacing.xs }}>
-                                    <Text color={colors.textSecondary} sx={{ fontSize: Theme.typography.fontSize.sm }}>
-                                        {t('groups.selectStudentsLabel', { count: selectedStudentIds.length }) || `Select Students * (${selectedStudentIds.length} selected)`}
-                                    </Text>
-                                    <Box
-                                        sx={{
-                                            backgroundColor: colors.secondary,
-                                            borderRadius: Theme.corners.comfortable,
-                                            padding: Theme.spacing.sm,
-                                            maxHeight: 300,
-                                            borderColor: colors.border,
-                                            borderWidth: 1,
-                                        }}
-                                    >
-                                        <ScrollView showsVerticalScrollIndicator={true}>
-                                            <VStack sx={{ gap: Theme.spacing.xs }}>
-                                                {students.map((student) => (
-                                                    <Pressable
-                                                        key={student.id}
-                                                        onPress={() => toggleStudentSelection(student.id)}
+                    <VStack className="gap-2">
+                        <Text className="text-phase-text-secondary font-bold ml-1">
+                            {t('groups.selectStudentsLabel', { count: selectedStudentIds.length }) || `Select Students (${selectedStudentIds.length} selected)`}
+                        </Text>
+                        <Box
+                            className="bg-phase-surface-secondary rounded-[24px] p-2 max-h-[300px] border border-phase-border overflow-hidden"
+                        >
+                            <ScrollView showsVerticalScrollIndicator={true}>
+                                <VStack className="gap-1 p-2">
+                                     {students.map((student) => {
+                                        const isChecked = selectedStudentIds.includes(student.id);
+                                        return (
+                                            <Pressable
+                                                key={student.id}
+                                                onPress={() => toggleStudentSelection(student.id)}
+                                                className={`flex-row items-center gap-3 p-3 rounded-[16px] ${isChecked ? 'bg-sanctuarySaffron/10' : 'bg-transparent active:bg-phase-border/10'}`}
+                                            >
+                                                 <Checkbox
+                                                    value={student.id}
+                                                    isChecked={isChecked}
+                                                    onChange={() => toggleStudentSelection(student.id)}
+                                                    aria-label="Select student"
+                                                    size="sm"
+                                                >
+                                                    <CheckboxIndicator
+                                                        className={isChecked ? 'border-sanctuarySaffron bg-sanctuarySaffron' : 'border-phase-border bg-phase-surface'}
                                                     >
-                                                        <HStack
-                                                            alignItems="center"
-                                                            sx={{
-                                                                gap: Theme.spacing.sm,
-                                                                padding: Theme.spacing.sm,
-                                                                borderRadius: Theme.corners.comfortable,
-                                                                backgroundColor: selectedStudentIds.includes(
-                                                                    student.id
-                                                                )
-                                                                    ? Theme.colors.sanctuarySaffron + '20'
-                                                                    : Theme.colors.transparent,
-                                                            }}
+                                                        <CheckboxIcon as={CheckIcon} className="text-sanctuary-ink" />
+                                                    </CheckboxIndicator>
+                                                </Checkbox>
+                                                 <VStack className="flex-1">
+                                                    <Text className="text-phase-text-primary text-sm font-bold">
+                                                        {student.full_name}
+                                                    </Text>
+                                                    {student.roll_number && (
+                                                        <Text
+                                                            className="text-phase-text-tertiary text-xs"
                                                         >
-                                                            <Checkbox
-                                                                value={student.id}
-                                                                isChecked={selectedStudentIds.includes(student.id)}
-                                                                onChange={(isChecked: boolean) => toggleStudentSelection(student.id)}
-                                                                aria-label="Select student"
-                                                            >
-                                                                <CheckboxIndicator
-                                                                    sx={{
-                                                                        borderColor: selectedStudentIds.includes(
-                                                                            student.id
-                                                                        )
-                                                                            ? Theme.colors.sanctuarySaffron
-                                                                            : colors.textSecondary,
-                                                                        backgroundColor: selectedStudentIds.includes(
-                                                                            student.id
-                                                                        )
-                                                                            ? Theme.colors.sanctuarySaffron
-                                                                            : Theme.colors.transparent,
-                                                                    }}
-                                                                >
-                                                                    <CheckboxIcon as={CheckIcon} />
-                                                                </CheckboxIndicator>
-                                                            </Checkbox>
-                                                            <VStack sx={{ flex: 1 }}>
-                                                                <Text color={colors.text} sx={{ fontSize: Theme.typography.fontSize.sm }}>
-                                                                    {student.full_name}
-                                                                </Text>
-                                                                {student.roll_number && (
-                                                                    <Text
-                                                                        color={colors.textTertiary}
-                                                                        sx={{ fontSize: Theme.typography.fontSize.xs }}
-                                                                    >
-                                                                        Roll #{student.roll_number}
-                                                                    </Text>
-                                                                )}
-                                                            </VStack>
-                                                        </HStack>
-                                                    </Pressable>
-                                                ))}
-                                            </VStack>
-                                        </ScrollView>
-                                    </Box>
+                                                            Roll #{student.roll_number}
+                                                        </Text>
+                                                    )}
+                                                </VStack>
+                                            </Pressable>
+                                        );
+                                    })}
                                 </VStack>
-                            </VStack>
-                        </ScrollView>
-                    </ModalBody>
-
-                    <ModalFooter>
-                        <HStack sx={{ gap: Theme.spacing.sm }}>
-                            <Button
-                                variant="outline"
-                                action="secondary"
-                                onPress={() => setShowCreateModal(false)}
-                                sx={{
-                                    flex: 1,
-                                    borderColor: colors.border,
-                                }}
-                            >
-                                <ButtonText color={colors.textSecondary}>Cancel</ButtonText>
-                            </Button>
-                            <Button
-                                action="primary"
-                                onPress={saveGroup}
-                                sx={{
-                                    flex: 1,
-                                    backgroundColor: Theme.colors.sanctuarySaffron,
-                                }}
-                                isDisabled={!groupName.trim() || selectedStudentIds.length === 0}
-                            >
-                                <ButtonText color={Theme.colors.white}>
-                                    {editingGroup ? 'Update' : 'Create'}
-                                </ButtonText>
-                            </Button>
-                        </HStack>
-                    </ModalFooter>
-                </ModalContent>
-            </Modal>
+                            </ScrollView>
+                        </Box>
+                    </VStack>
+                </VStack>
+            </SanctuaryModal>
         </Box>
     );
 }

@@ -1,4 +1,4 @@
-// Manual mock for EnvironmentContext — provides a working context without native deps.
+// Manual mock for EnvironmentContext  provides a working context without native deps.
 const React = require('react');
 
 const defaultEnv = {

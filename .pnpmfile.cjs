@@ -19,6 +19,27 @@ module.exports = {
                 }
             }
 
+            // Fix ZenStack peer dependency on zod (ZenStack 3.5.1 incorrectly flags zod ^4.0.0)
+            if (pkg.name && pkg.name.startsWith('@zenstackhq/')) {
+                if (pkg.peerDependencies && pkg.peerDependencies['zod']) {
+                    pkg.peerDependencies['zod'] = '^3.23.8 || ^4.0.0';
+                }
+            }
+
+            // Fix zod-validation-error peer dependency range
+            if (pkg.name === 'zod-validation-error') {
+                if (pkg.peerDependencies && pkg.peerDependencies['zod']) {
+                    pkg.peerDependencies['zod'] = '^3.23.8 || ^4.0.0';
+                }
+            }
+
+            // Fix ts-rest core peer dependency
+            if (pkg.name === '@ts-rest/core') {
+                if (pkg.peerDependencies && pkg.peerDependencies['zod']) {
+                    pkg.peerDependencies['zod'] = '^3.23.8 || ^4.0.0';
+                }
+            }
+
             return pkg;
         }
     }

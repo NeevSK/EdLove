@@ -36,6 +36,57 @@ export function SankeyDiagram({
 }: SankeyDiagramProps) {
   const { width: screenWidth } = Dimensions.get('window');
   const actualWidth = Math.min(width, screenWidth - 40);
+
+  const styles = StyleSheet.create({
+    container: {
+      padding: 16, // Use numeric value instead of Theme.spacing.md
+    },
+    title: {
+      fontSize: 18,
+      fontWeight: '700',
+      color: '#333', // Use color instead of Theme.colors.text
+      marginBottom: 16, // Use numeric value instead of Theme.spacing.md
+      textAlign: 'center',
+    },
+    diagramContainer: {
+      position: 'relative',
+      backgroundColor: '#f9f9f9', // Use color instead of Theme.colors.background
+    },
+    linkContainer: {
+      position: 'absolute',
+    },
+    linkPath: {
+      position: 'absolute',
+      borderRadius: 1,
+    },
+    linkLabel: {
+      position: 'absolute',
+      fontSize: 10,
+      color: '#333', // Use color instead of Theme.colors.text
+      backgroundColor: '#fff', // Use color instead of Theme.colors.silk
+      paddingHorizontal: 4,
+      paddingVertical: 2,
+      borderRadius: 4, // Use numeric value instead of Theme.corners.medium
+    },
+    node: {
+      position: 'absolute',
+      borderRadius: 8, // Use numeric value instead of Theme.corners.medium
+      borderWidth: 2,
+      borderColor: '#ddd', // Use color instead of Theme.colors.border
+      justifyContent: 'center',
+      alignItems: 'center',
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+    },
+    nodeLabel: {
+      fontSize: 12,
+      fontWeight: '600',
+      color: '#333', // Use color instead of Theme.colors.text
+      textAlign: 'center',
+    },
+  });
   
   // Calculate node positions
   const nodePositions: { [key: string]: { x: number; y: number } } = {};
@@ -82,7 +133,6 @@ export function SankeyDiagram({
                 }
               ]}
             />
-            
             {/* Link value label */}
             {showLabels && (
               <Text style={styles.linkLabel}>
@@ -94,18 +144,15 @@ export function SankeyDiagram({
         
         {/* Nodes */}
         {nodes.map((node, index) => (
-          <View
-            key={node.id}
-            style={[
-              styles.node,
-              {
-                backgroundColor: node.color || Theme.colors.background,
-                left: nodePositions[node.id]?.x,
-                top: nodePositions[node.id]?.y,
-                width: nodeWidth,
-              }
-            ]}
-          >
+          <View key={node.id} style={[
+            styles.node,
+            {
+              backgroundColor: node.color || Theme.colors.background,
+              left: nodePositions[node.id]?.x,
+              top: nodePositions[node.id]?.y,
+              width: nodeWidth,
+            }
+          ]}>
             <Text style={styles.nodeLabel}>
               {showLabels ? node.label : ''}
             </Text>
@@ -115,54 +162,3 @@ export function SankeyDiagram({
     </Card>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    padding: Theme.spacing.md,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: Theme.colors.text,
-    marginBottom: Theme.spacing.md,
-    textAlign: 'center',
-  },
-  diagramContainer: {
-    position: 'relative',
-    backgroundColor: Theme.colors.background,
-  },
-  linkContainer: {
-    position: 'absolute',
-  },
-  linkPath: {
-    position: 'absolute',
-    borderRadius: 1,
-  },
-  linkLabel: {
-    position: 'absolute',
-    fontSize: 10,
-    color: Theme.colors.text,
-    backgroundColor: Theme.colors.silk,
-    paddingHorizontal: 4,
-    paddingVertical: 2,
-    borderRadius: Theme.corners.medium,
-  },
-  node: {
-    position: 'absolute',
-    borderRadius: Theme.corners.medium,
-    borderWidth: 2,
-    borderColor: Theme.colors.border,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: Theme.colors.shadowAmbient,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
-  nodeLabel: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: Theme.colors.text,
-    textAlign: 'center',
-  },
-});

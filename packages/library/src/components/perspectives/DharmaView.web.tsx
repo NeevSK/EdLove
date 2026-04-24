@@ -8,7 +8,7 @@ import type {
 } from '@repo/graphics';
 
 /**
- * DharmaView.web — The "Path" Perspective (Web).
+ * DharmaView.web  The "Path" Perspective (Web).
  * 
  * Renders nodes in a scrollable vertical pathway.
  * Uses standard div/flex for the list and SVG for the spine.
@@ -43,7 +43,7 @@ export const DharmaView: React.FC<PerspectiveViewProps> = ({
                     const xOffset = isEven ? -40 : 40;
 
                     return (
-                        <Box key={item.id} sx={{ height: 160, width: '100%', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+                        <Box key={item.id} className="h-[160px] w-full items-center justify-center relative">
                             {/* Connecting Spine Segment */}
                             {!isLast && (
                                 <div style={{ position: 'absolute', top: 80, left: 0, right: 0, bottom: -80, zIndex: -1 }}>
@@ -89,10 +89,10 @@ export const DharmaView: React.FC<PerspectiveViewProps> = ({
                                     top: 20,
                                     textAlign: isEven ? 'left' : 'right'
                                 }}>
-                                    <Text {...({ color: colors.text, bold: true, size: "sm" } as any)} numberOfLines={2}>
+                                    <Text className="font-bold text-sm text-phaseText-primary" numberOfLines={2}>
                                         {item.label}
                                     </Text>
-                                    <Text {...({ color: colors.textTertiary, size: "xxs" } as any)}>
+                                    <Text className="text-[10px] text-phaseText-tertiary">
                                         {item.type.toUpperCase()}
                                     </Text>
                                 </div>

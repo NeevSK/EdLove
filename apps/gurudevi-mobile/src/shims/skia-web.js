@@ -1,13 +1,21 @@
 /**
- * Web shim for @shopify/react-native-skia
+ * Self-Healing Web Shim for @shopify/react-native-skia
  */
-
-const React = require('react');
+import React from 'react';
+import bridge from './universal-bridge';
 
 const View = (props) => React.createElement('div', props, props.children);
 const Group = (props) => React.createElement('div', props, props.children);
+const Canvas = (props) => React.createElement('div', props, props.children);
+const BackdropBlur = (props) => React.createElement('div', { 
+    ...props,
+    style: { ...(props.style || {}), backdropFilter: `blur(10px)` } 
+});
 
-const Skia = {
+// Components usually returned as null or simple divs
+const NoOpComponent = () => null;
+
+const Skia = bridge('Skia', {
     Color: () => '#000000',
     Paint: () => ({}),
     Font: () => ({}),
@@ -22,65 +30,44 @@ const Skia = {
             toSVGString: () => '',
         }),
     },
-};
+});
 
-const Canvas = (props) => React.createElement('div', props, props.children);
-const Circle = () => null;
-const Rect = () => null;
-const Path = () => null;
-const Image = () => null;
-const Text = () => null;
-const DropShadow = () => null;
-const Blur = () => null;
-const LinearGradient = () => null;
-const RadialGradient = () => null;
-const SweepGradient = () => null;
-const ImageShader = () => null;
-const ColorMatrix = () => null;
-const BackdropFilter = () => null;
-const BackdropBlur = () => React.createElement('div', { style: { backdropFilter: `blur(10px)` } });
-const Mask = () => null;
-const Fill = () => null;
-const FitBox = () => null;
-const Box = () => null;
-const BoxShadow = () => null;
-const mix = (value, x, y) => x * (1 - value) + y * value;
-
-module.exports = {
+const skiaShim = bridge('@shopify/react-native-skia', {
     Skia,
     Canvas,
     Group,
-    Circle,
-    Rect,
-    Path,
-    Image,
-    Text,
-    DropShadow,
-    Blur,
-    LinearGradient,
-    RadialGradient,
-    SweepGradient,
-    ImageShader,
-    ColorMatrix,
-    BackdropFilter,
     BackdropBlur,
-    Mask,
-    Fill,
-    FitBox,
-    Box,
-    BoxShadow,
-    mix,
+    Circle: NoOpComponent,
+    Rect: NoOpComponent,
+    Path: NoOpComponent,
+    Image: NoOpComponent,
+    Text: NoOpComponent,
+    DropShadow: NoOpComponent,
+    Blur: NoOpComponent,
+    LinearGradient: NoOpComponent,
+    RadialGradient: NoOpComponent,
+    SweepGradient: NoOpComponent,
+    ImageShader: NoOpComponent,
+    ColorMatrix: NoOpComponent,
+    BackdropFilter: NoOpComponent,
+    Mask: NoOpComponent,
+    Fill: NoOpComponent,
+    FitBox: NoOpComponent,
+    Box: NoOpComponent,
+    BoxShadow: NoOpComponent,
+    mix: (value, x, y) => x * (1 - value) + y * value,
     useFont: () => null,
     useImage: () => null,
     usePath: () => null,
-    useRSXformBuffer: () => null,
     useValue: (v) => ({ current: v }),
     useComputedValue: (v) => ({ current: null }),
-    useTouchHandler: () => null,
-    runSpring: () => { },
-    runTiming: () => { },
-    useSpring: () => null,
-    useTiming: () => null,
-    interpolate: () => null,
-    interpolateColors: () => null,
+});
+
+export { 
+    Skia, 
+    Canvas, 
+    Group, 
+    BackdropBlur 
 };
+
+export default skiaShim;

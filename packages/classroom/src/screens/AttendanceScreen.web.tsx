@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useRoute, useNavigation } from '@react-navigation/native';
-import { api, StudentAttendance, growthSignalsAPI, useStore } from '@repo/core';
+import { api, StudentAttendance, AttendanceRecord, growthSignalsAPI, useStore } from '@repo/core';
 import { Check, X, Clock, ChevronLeft, Save } from 'lucide-react-native';
 
 type Status = 'present' | 'absent' | 'late';
@@ -31,14 +31,22 @@ export default function AttendanceScreenWeb() {
     void (async () => {
       setLoading(true);
       try {
-        const data = await api.classroomStudents.getAll(classroomId);
+        const attendanceDate = new Date().toISOString().split('T')[0] || new Date().toISOString();
+        const [data, snapshot] = await Promise.all([
+          api.classroomStudents.getAll(classroomId),
+          api.attendance.getClassroomAttendanceSnapshot(classroomId, attendanceDate)
+            .catch(() => ({ records: [] as AttendanceRecord[] })),
+        ]);
+        const savedStatus = new Map<string, string>(
+          snapshot.records.map((record) => [record.student_id, record.status] as [string, string]),
+        );
         setStudents(
           data.map((student) => ({
             id: student.id,
             student_id: student.student_id || student.id,
             full_name: student.full_name,
             roll_number: student.roll_number,
-            status: 'present' as Status,
+            status: (savedStatus.get(student.student_id || student.id) ?? 'present') as Status,
           })),
         );
       } catch (caughtError: any) {
@@ -79,9 +87,14 @@ export default function AttendanceScreenWeb() {
           status: student.status,
           date: attendanceDate,
         })),
+        {
+          actorId: user?.id,
+          reason: 'daily_roll_call',
+          accessKind: 'teacher_marking',
+        },
       );
       if (user?.id) {
-        growthSignalsAPI.emitSignal(user.id, 'attendance_marked', { classroom_id: classroomId }).catch(() => {});
+        growthSignalsAPI.emitSilent(user.id, 'attendance_marked', { classroom_id: classroomId });
       }
       setSaved(true);
     } catch (caughtError: any) {
@@ -134,7 +147,7 @@ export default function AttendanceScreenWeb() {
         {loading && <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--ink-ghost)' }}>Loading class list...</div>}
 
         {!loading && error && (
-          <div style={{ padding: '16px', background: 'rgba(239,68,68,0.08)', borderRadius: '10px', color: 'var(--ember)', fontSize: '13px' }}>
+          <div style={{ padding: '16px', background: 'rgba(239,68,68,0.08)', borderRadius: '10px', color: 'var(--ember)', fontSize: '13px', marginBottom: '20px' }}>
             {error}
           </div>
         )}
@@ -143,7 +156,8 @@ export default function AttendanceScreenWeb() {
           <>
             <div style={{ display: 'flex', gap: '12px', marginBottom: '20px', flexWrap: 'wrap' }}>
               {(Object.keys(STATUS_CONFIG) as Status[]).map((status) => {
-                const Icon = STATUS_CONFIG[status].Icon;
+                const config = STATUS_CONFIG[status];
+                const Icon = config.Icon;
                 return (
                   <div
                     key={status}
@@ -153,13 +167,13 @@ export default function AttendanceScreenWeb() {
                       gap: '8px',
                       padding: '8px 16px',
                       borderRadius: '100px',
-                      background: STATUS_CONFIG[status].bg,
-                      border: `1px solid ${STATUS_CONFIG[status].color}33`,
+                      background: config.bg,
+                      border: `1px solid ${config.color}33`,
                     }}
                   >
-                    <Icon size={13} color={STATUS_CONFIG[status].color} />
-                    <span style={{ fontSize: '13px', fontWeight: '700', color: STATUS_CONFIG[status].color }}>
-                      {counts[status] ?? 0} {STATUS_CONFIG[status].label}
+                    <Icon size={13} color={config.color} />
+                    <span style={{ fontSize: '13px', fontWeight: '700', color: config.color }}>
+                      {counts[status] ?? 0} {config.label}
                     </span>
                   </div>
                 );
@@ -271,6 +285,7 @@ export default function AttendanceScreenWeb() {
                   justifyContent: 'center',
                   gap: '8px',
                   padding: '14px',
+                  cursor: 'pointer',
                 }}
                 onClick={handleSave}
                 disabled={saving}

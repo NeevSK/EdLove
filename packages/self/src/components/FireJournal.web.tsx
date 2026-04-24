@@ -1,15 +1,25 @@
 /**
  * FireJournal.web.tsx
  *
- * Web override. The native version uses react-native-reanimated for a dramatic
- * burn/smoke animation and expo-haptics. On web we deliver the same cathartic
- * release with a CSS "burn and fade" animation and the same Supabase backend.
- * Metro resolves this over FireJournal.tsx on the web platform.
+ * Web-specific implementation for the fire journal catharsis.
+ * Purged raw HTML fragments in favor of @repo/ui primitives and NativeWind v4.
  */
+
 import React, { useState } from 'react';
-import { supabase } from '@repo/core';
 import { useFireJournal } from '../hooks/useFireJournal';
-import { Flame } from 'lucide-react-native';
+import { 
+    Box, 
+    VStack, 
+    HStack, 
+    Text, 
+    Heading, 
+    Input, 
+    InputField, 
+    Button, 
+    ButtonText,
+    Icon
+} from '@repo/ui';
+import { Flame, CheckCircle } from 'lucide-react-native';
 
 interface FireJournalProps {
     userId?: string;
@@ -17,7 +27,7 @@ interface FireJournalProps {
 }
 
 export default function FireJournal({ userId, onBurned }: FireJournalProps) {
-    const { refreshData } = useFireJournal(userId);
+    const { burnEntry } = useFireJournal(userId);
     const [content, setContent] = useState('');
     const [burning, setBurning] = useState(false);
     const [burned, setBurned] = useState(false);
@@ -32,21 +42,15 @@ export default function FireJournal({ userId, onBurned }: FireJournalProps) {
         if (!content.trim() || burning) return;
         setBurning(true);
 
-        // Dramatic pause — let the user "see" it burning
+        // Dramatic pause – let the user "see" it burning
         await new Promise(r => setTimeout(r, 1200));
 
         try {
             if (userId) {
-                await supabase.from('fire_journal').insert({
-                    user_id: userId,
-                    content_preview: content.slice(0, 50),
-                    is_burned: true,
-                    created_at: new Date().toISOString(),
-                });
+                await burnEntry(content);
             }
-            refreshData();
             onBurned?.();
-        } catch { /* non-fatal — the release is in the writing, not the save */ }
+        } catch { /* non-fatal – the release is in the writing, not the save */ }
 
         setContent('');
         setCharCount(0);
@@ -56,96 +60,82 @@ export default function FireJournal({ userId, onBurned }: FireJournalProps) {
     };
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <VStack className="gap-lg">
             {/* Header */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <div style={{ padding: '8px', background: 'rgba(239,68,68,0.1)', borderRadius: '8px' }}>
-                    <Flame size={18} color="#EF4444" />
-                </div>
-                <div>
-                    <div style={{ fontSize: '14px', fontWeight: '800' }}>Fire Journal</div>
-                    <div style={{ fontSize: '12px', color: 'var(--ink-ghost)' }}>Write it. Burn it. Release it.</div>
-                </div>
-            </div>
+            <HStack className="items-center gap-3">
+                <Box className="p-2 bg-emberRed/10 rounded-lg">
+                    <Icon as={Flame} className="text-emberRed" size={20} />
+                </Box>
+                <VStack className="gap-0">
+                    <Heading size="sm" className="text-sacredWhite font-bold">Fire Journal</Heading>
+                    <Text className="text-xs text-mistGray">Write it. Burn it. Release it.</Text>
+                </VStack>
+            </HStack>
 
             {burned ? (
-                <div style={{ padding: '28px', background: 'rgba(239,68,68,0.06)', borderRadius: '14px', textAlign: 'center', border: '1px solid rgba(239,68,68,0.15)', animation: 'fadeIn 0.5s ease' }}>
-                    <div style={{ fontSize: '40px', marginBottom: '10px' }}>🔥</div>
-                    <div style={{ fontSize: '15px', fontWeight: '800', color: '#EF4444', marginBottom: '6px' }}>Released.</div>
-                    <p style={{ fontSize: '13px', color: 'var(--ink-ghost)', margin: 0 }}>
+                <Box className="p-xl bg-emberRed/10 rounded-comfortable items-center border border-emberRed/20 animate-in fade-in slide-in-from-bottom-2 duration-500">
+                    <Text className="text-5xl mb-4">🔥</Text>
+                    <HStack className="items-center gap-2 mb-2">
+                        <Icon as={CheckCircle} className="text-emberRed" size={18} />
+                        <Text className="text-lg font-bold text-emberRed">Released.</Text>
+                    </HStack>
+                    <Text className="text-sm text-mistGray text-center">
                         The words are ash now. You're lighter.
-                    </p>
-                </div>
+                    </Text>
+                </Box>
             ) : (
-                <>
-                    <div style={{ position: 'relative' }}>
-                        <textarea
-                            value={content}
-                            onChange={e => handleChange(e.target.value)}
-                            placeholder="Write what's weighing on you. No one will read this. It will burn."
-                            rows={5}
-                            disabled={burning}
-                            style={{
-                                width: '100%',
-                                padding: '16px',
-                                borderRadius: '12px',
-                                border: `1.5px solid ${burning ? '#EF4444' : 'var(--border)'}`,
-                                background: burning ? 'rgba(239,68,68,0.04)' : 'var(--background-alt)',
-                                color: burning ? 'rgba(239,68,68,0.6)' : 'var(--ink)',
-                                fontSize: '14px',
-                                fontFamily: 'var(--font-body)',
-                                lineHeight: '1.6',
-                                outline: 'none',
-                                resize: 'vertical',
-                                boxSizing: 'border-box',
-                                transition: 'all 0.3s ease',
-                                opacity: burning ? 0.4 : 1,
-                                animation: burning ? 'flicker 0.1s infinite' : 'none',
-                            }}
-                        />
+                <VStack className="gap-4">
+                    <Box className="relative">
+                        <Input
+                            className={`rounded-comfortable min-h-[160px] transition-all duration-300 border-2 ${
+                                burning 
+                                    ? 'border-emberRed bg-emberRed/5 opacity-40 animate-pulse' 
+                                    : 'border-white/10 bg-white/5 focus:border-sanctuarySaffron'
+                            }`}
+                        >
+                            <InputField
+                                placeholder="Write what's weighing on you. No one will read this. It will burn."
+                                value={content}
+                                onChangeText={handleChange}
+                                multiline
+                                readOnly={burning}
+                                className={`text-base p-4 leading-relaxed ${burning ? 'text-emberRed/60' : 'text-sacredWhite'}`}
+                                placeholderTextColor="#6A6358"
+                                style={{ outline: 'none' } as any}
+                            />
+                        </Input>
                         {charCount > 0 && !burning && (
-                            <div style={{ position: 'absolute', bottom: '10px', right: '14px', fontSize: '11px', color: 'var(--ink-ghost)' }}>
-                                {charCount}
-                            </div>
+                            <Box className="absolute bottom-3 right-4">
+                                <Text className="text-[10px] text-mistGray">{charCount} characters</Text>
+                            </Box>
                         )}
                         {burning && (
-                            <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none' }}>
-                                <div style={{ fontSize: '48px', animation: 'burnPulse 0.3s ease-in-out infinite alternate' }}>🔥</div>
-                            </div>
+                            <Box className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                <Text className="text-6xl animate-bounce">🔥</Text>
+                            </Box>
                         )}
-                    </div>
+                    </Box>
 
-                    <button
-                        onClick={handleBurn}
-                        disabled={burning || !content.trim()}
-                        style={{
-                            padding: '13px 24px',
-                            borderRadius: '12px',
-                            background: burning ? '#EF4444' : content.trim() ? 'linear-gradient(135deg, #EF4444, #DC2626)' : 'var(--border)',
-                            color: content.trim() ? '#fff' : 'var(--ink-ghost)',
-                            border: 'none',
-                            fontWeight: '800',
-                            fontSize: '14px',
-                            cursor: burning || !content.trim() ? 'not-allowed' : 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '8px',
-                            letterSpacing: '0.5px',
-                            transition: 'all 0.2s',
-                        }}
+                    <Button
+                        onPress={handleBurn}
+                        isDisabled={burning || !content.trim()}
+                        className={`h-14 rounded-comfortable flex-row items-center justify-center gap-2 ${
+                            content.trim() && !burning ? 'bg-emberRed shadow-lg shadow-emberRed/20' : 'bg-white/10'
+                        }`}
                     >
-                        <Flame size={16} color={content.trim() ? '#fff' : 'var(--ink-ghost)'} />
-                        {burning ? 'Burning…' : 'Burn & Release 🔥'}
-                    </button>
-                </>
+                        <Icon as={Flame} className={content.trim() ? 'text-white' : 'text-mistGray'} size={20} />
+                        <ButtonText className={`font-bold text-base ${content.trim() ? 'text-white' : 'text-mistGray'}`}>
+                            {burning ? 'Burning...' : 'Burn & Release 🔥'}
+                        </ButtonText>
+                    </Button>
+                </VStack>
             )}
 
-            <style>{`
-                @keyframes flicker { 0% { opacity: 0.35; } 100% { opacity: 0.5; } }
-                @keyframes burnPulse { 0% { transform: scale(0.9); } 100% { transform: scale(1.1); } }
-                @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-            `}</style>
-        </div>
+            <Box className="p-md bg-obsidian rounded-comfortable border border-white/5 mt-4">
+                <Text className="text-mistGray text-center text-[11px] italic">
+                    GuruDevi: "Let the smoke carry away the weight of what you cannot change."
+                </Text>
+            </Box>
+        </VStack>
     );
 }

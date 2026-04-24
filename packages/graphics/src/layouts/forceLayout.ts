@@ -1,6 +1,6 @@
 import type { KnowledgeTopology, LayoutResult, GraphNode, GraphLink } from '@repo/core';
 
-// D3 force simulation — pure JS, no rendering, works in RN Hermes
+// D3 force simulation  pure JS, no rendering, works in RN Hermes
 import {
     forceSimulation,
     forceLink,
@@ -34,7 +34,7 @@ const DEFAULT_OPTIONS: Required<ForceLayoutOptions> = {
 };
 
 /**
- * forceLayout — Runs a D3 force simulation to completion.
+ * forceLayout  Runs a D3 force simulation to completion.
  *
  * Returns a LayoutResult with stable { x, y } for every node.
  * This is "pre-computed" physics: run once, get positions, render static SVG.
@@ -70,12 +70,12 @@ export function forceLayout(
         .stop();
 
     if (opts.ticks === 0) {
-        // Web mode — return live simulation for real-time animation
+        // Web mode  return live simulation for real-time animation
         simulation.restart();
         return { positions: extractPositions(nodes), bounds: computeBounds(nodes, opts), rawSimulation: simulation as Simulation<GraphNode, undefined> };
     }
 
-    // Native mode — pre-compute all ticks synchronously
+    // Native mode  pre-compute all ticks synchronously
     for (let i = 0; i < opts.ticks; i++) {
         simulation.tick();
     }

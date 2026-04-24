@@ -1,0 +1,631 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+plugin policy {
+  provider = "@zenstackhq/plugin-policy"
+}
+
+plugin zod {
+  provider = "@zenstackhq/zod"
+  output   = "./generated/zod"
+}
+
+/*
+ * POA Authorization Mapping
+ * --------------------------
+ * Capabilities defined in CASL are mapped here to ZenStack policies.
+ */
+
+model User {
+  id        String   @id @default(uuid())
+  email     String?  @unique
+  full_name String
+  username  String?  @unique
+  avatar_url String?
+  bio       String?
+  phone     String?
+  index_number String?
+  nic_number String?
+  public_profile Boolean? @default(true)
+  profile_completed Boolean? @default(false)
+  is_anonymous Boolean? @default(false)
+  experience_years Int?
+  subjects_taught String[]
+  qualifications String[]
+  authority String   @default("student") // Maps to RoleSchema
+  posts     Post[]
+  memberships GroupMember[]
+  social_links UserSocialLink[]
+  
+  classrooms Classroom[] @relation("TeacherClassrooms")
+  student_attendance AttendanceRecord[] @relation("StudentAttendance")
+  student_enrollments ClassroomStudent[] @relation("StudentEnrollments")
+  student_grades Grade[] @relation("StudentGrades")
+  grades_given Grade[] @relation("GradedBy")
+  reactions CommunityReaction[]
+  messages  GroupMessage[]
+  mood_logs MoodLog[]
+  journal_entries FireJournalEntry[]
+  preferences UserPreferences?
+
+  // Growth & Wellbeing
+  gifts_given ThuthimalGift[] @relation("GiftsGiven")
+  gifts_received ThuthimalGift[] @relation("GiftsReceived")
+  impact_ripples ImpactRipple[] @relation("RecipientRipples")
+  actions_rippled ImpactRipple[] @relation("ActorRipples")
+  whispered_moments WhisperedMoment[]
+  growth_events GrowthEvent[]
+  growth_state UserGrowthState?
+  manifesto_endorsements ManifestoEndorsement[]
+
+  // Only the user themselves or a platform admin can update profile details
+  @@allow('all', auth() != null && auth().id == id)
+  @@allow('all', auth() != null && auth().authority == 'admin')
+  
+  // Everyone can read basic profile info
+  @@allow('read', auth() != null)
+
+  @@map("users")
+}
+
+model UserSocialLink {
+  id            String   @id @default(uuid())
+  user_id       String
+  platform      String
+  url           String
+  is_public     Boolean  @default(true)
+  privacy_level String   @default("public")
+  order_index   Int      @default(0)
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  user          User     @relation(fields: [user_id], references: [id])
+
+  @@allow('read', auth() != null && (is_public == true || user_id == auth().id || auth().authority == 'admin'))
+  @@allow('all', auth() != null && (user_id == auth().id || auth().authority == 'admin'))
+
+  @@map("user_social_links")
+}
+
+model Classroom {
+  id               String   @id @default(uuid())
+  school_id        String?
+  grade_id         String?
+  teacher_id       String?
+  section_id       String?
+  name             String
+  handle           String?
+  subject          String?
+  description      String?
+  color_theme      String?
+  syllabus_version String?
+  is_archived      Boolean  @default(false)
+  academic_year    String?
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+
+  school           School?    @relation(fields: [school_id], references: [id])
+  teacher          User?      @relation("TeacherClassrooms", fields: [teacher_id], references: [id])
+  students         ClassroomStudent[]
+  assignments      Assignment[]
+  grades           Grade[]
+  settings         ClassroomGradingSettings?
+  lessons          Lesson[]
+  materials        Material[]
+  attendance       AttendanceRecord[]
+  inventory        InventoryItem[]
+
+  // Permissions
+  @@allow('read', auth() != null)
+  @@allow('all', auth().id == teacher_id || auth().authority == 'admin')
+}
+
+model ClassroomStudent {
+  id           String    @id @default(uuid())
+  classroom_id String
+  student_id   String
+  status       String    @default("active") // active, left, suspended
+  joined_at    DateTime  @default(now())
+
+  classroom    Classroom @relation(fields: [classroom_id], references: [id])
+  student      User      @relation("StudentEnrollments", fields: [student_id], references: [id])
+
+  @@unique([classroom_id, student_id])
+
+  @@allow('read', classroom.teacher_id == auth().id || student_id == auth().id || auth().authority == 'admin')
+  @@allow('all', classroom.teacher_id == auth().id || auth().authority == 'admin')
+}
+
+model Assignment {
+  id           String   @id @default(uuid())
+  title        String
+  description  String?
+  classroom_id String
+  lesson_id    String?
+  due_date     DateTime?
+  max_points   Int      @default(100)
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  classroom    Classroom @relation(fields: [classroom_id], references: [id])
+  grades       Grade[]
+
+  // Permissions
+  @@allow('read', classroom.teacher_id == auth().id || (auth() != null && classroom.is_archived == false))
+  @@allow('all', classroom.teacher_id == auth().id || auth().authority == 'admin')
+}
+
+model Grade {
+  id            String   @id @default(uuid())
+  classroom_id  String
+  assignment_id String?
+  student_id    String
+  graded_by     String
+  marks         Float
+  grade         String
+  gpa           Float
+  feedback      String?
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  classroom     Classroom  @relation(fields: [classroom_id], references: [id])
+  assignment    Assignment? @relation(fields: [assignment_id], references: [id])
+  student       User       @relation("StudentGrades", fields: [student_id], references: [id])
+  grader        User       @relation("GradedBy", fields: [graded_by], references: [id])
+
+  // Permissions
+  @@allow('read', auth().id == student_id || auth().id == graded_by || classroom.teacher_id == auth().id || auth().authority == 'admin')
+  @@allow('all', auth().id == graded_by || classroom.teacher_id == auth().id || auth().authority == 'admin')
+}
+
+model ClassroomGradingSettings {
+  classroom_id String @id
+  grading_mode String @default("both")
+  show_ranks   Boolean @default(true)
+  classroom    Classroom @relation(fields: [classroom_id], references: [id])
+
+  // Permissions
+  @@allow('read', classroom.teacher_id == auth().id || (auth() != null && classroom.is_archived == false))
+  @@allow('all', classroom.teacher_id == auth().id || auth().authority == 'admin')
+}
+
+model Group {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  school_id   String?
+  creator_id  String
+  type        String   @default("general") // class, interest, general
+  visibility  String   @default("public")  // public, private
+  join_policy String   @default("open")    // open, restricted, closed
+  is_public   Boolean  @default(true)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  members     GroupMember[]
+  posts       Post[]
+  messages    GroupMessage[]
+  school      School?  @relation(fields: [school_id], references: [id])
+
+  // Permissions
+  @@allow('read', is_public || visibility == 'public')
+  @@allow('read', members?[user_id == auth().id])
+  @@allow('all', creator_id == auth().id || auth().authority == 'admin')
+}
+
+model GroupMember {
+  id       String @id @default(uuid())
+  user_id  String
+  group_id String
+  role     String @default("member") // owner, moderator, member
+  status   String @default("active") // active, pending, rejected
+  
+  user     User   @relation(fields: [user_id], references: [id])
+  group    Group  @relation(fields: [group_id], references: [id])
+
+  @@unique([user_id, group_id])
+
+  @@allow('read', group.is_public || group.members?[user_id == auth().id])
+  @@allow('all', auth() != null && user_id == auth().id)
+  @@allow('all', group.creator_id == auth().id || auth().authority == 'admin')
+}
+
+model Post {
+  id               String   @id @default(uuid())
+  group_id         String
+  author_id        String
+  school_id        String?
+  content          String
+  author_tier      String   // Maps to RoleSchema
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+
+  group            Group    @relation(fields: [group_id], references: [id])
+  author           User     @relation(fields: [author_id], references: [id])
+  reactions        CommunityReaction[]
+
+  // Authors can manage their own posts
+  @@allow('all', auth() != null && author_id == auth().id)
+  
+  // Members of the group can read posts
+  @@allow('read', group.is_public || group.members?[user_id == auth().id])
+}
+
+model GroupMessage {
+  id          String   @id @default(uuid())
+  group_id    String
+  author_id   String
+  content     String
+  created_at  DateTime @default(now())
+
+  group       Group    @relation(fields: [group_id], references: [id])
+  author      User     @relation(fields: [author_id], references: [id])
+
+  @@allow('read', group.members?[user_id == auth().id])
+  @@allow('create', group.members?[user_id == auth().id])
+}
+
+model CommunityReaction {
+  id          String @id @default(uuid())
+  post_id     String
+  user_id     String
+  emoji       String @default("❤️")
+  
+  post        Post   @relation(fields: [post_id], references: [id])
+  user        User   @relation(fields: [user_id], references: [id])
+
+  @@unique([post_id, user_id])
+
+  @@allow('read', post.group.is_public || post.group.members?[user_id == auth().id])
+  @@allow('all', user_id == auth().id)
+}
+model Lesson {
+  id           String   @id @default(uuid())
+  classroom_id String
+  title        String
+  content      String?
+  order_index  Int      @default(0)
+  published_at DateTime?
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  classroom    Classroom @relation(fields: [classroom_id], references: [id])
+  materials    Material[]
+
+  // Permissions
+  @@allow('read', classroom.teacher_id == auth().id || (auth() != null && classroom.is_archived == false))
+  @@allow('all', classroom.teacher_id == auth().id || auth().authority == 'admin')
+}
+
+model Material {
+  id           String   @id @default(uuid())
+  classroom_id String
+  lesson_id    String?
+  title        String
+  type         String   // Maps to ResourceType
+  url          String?
+  content      String?
+  is_pinned    Boolean  @default(false)
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  classroom    Classroom @relation(fields: [classroom_id], references: [id])
+  lesson       Lesson?   @relation(fields: [lesson_id], references: [id])
+
+  // Permissions
+  @@allow('read', classroom.teacher_id == auth().id || (auth() != null && classroom.is_archived == false))
+  @@allow('all', classroom.teacher_id == auth().id || auth().authority == 'admin')
+
+  @@map("classroom_resources")
+}
+
+model AttendanceRecord {
+  id           String   @id @default(uuid())
+  classroom_id String
+  student_id    String
+  status       String   // e.g., "present", "absent", "late"
+  date         DateTime @default(now())
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  classroom    Classroom @relation(fields: [classroom_id], references: [id])
+  student      User      @relation("StudentAttendance", fields: [student_id], references: [id])
+
+  // Permissions: Teachers and Admins can manage attendance for their classroom
+  @@allow('read', classroom.teacher_id == auth().id || auth().id == student_id || auth().authority == 'admin')
+  @@allow('all', classroom.teacher_id == auth().id || auth().authority == 'admin')
+}
+
+model School {
+  id         String   @id @default(uuid())
+  name       String
+  handle     String?  @unique
+  status     String   @default("pending") // active, pending, rejected
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  classrooms Classroom[]
+  groups     Group[]
+  manifestos SanctuaryManifesto[]
+
+  // Permissions: Only admins can manage schools; everyone authenticated can read basic info
+  @@allow('read', auth() != null)
+  @@allow('all', auth().authority == 'admin')
+}
+
+model InventoryItem {
+  id           String   @id @default(uuid())
+  classroom_id String
+  name         String
+  category     String
+  quantity     Int      @default(0)
+  condition    String   @default("good")
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  classroom    Classroom @relation(fields: [classroom_id], references: [id])
+
+  // Permissions: Teachers and Admins can manage their classroom inventory
+  @@allow('read', classroom.teacher_id == auth().id || auth() != null)
+  @@allow('all', classroom.teacher_id == auth().id || auth().authority == 'admin')
+}
+
+// ============================================================================
+// SELF DOMAIN
+// ============================================================================
+
+model MoodLog {
+  id         String   @id @default(uuid())
+  user_id    String
+  mood_score Int
+  mood       String?
+  note       String?
+  created_at DateTime @default(now())
+  user       User     @relation(fields: [user_id], references: [id])
+
+  @@allow('all', auth().id == user_id || auth().authority == 'admin')
+  @@map("mood_logs")
+}
+
+model FireJournalEntry {
+  id              String   @id @default(uuid())
+  user_id         String
+  content_preview String
+  is_burned       Boolean  @default(true)
+  created_at      DateTime @default(now())
+  user            User     @relation(fields: [user_id], references: [id])
+
+  @@allow('all', auth().id == user_id || auth().authority == 'admin')
+  @@map("fire_journal")
+}
+
+model UserPreferences {
+  id                        String   @id @default(uuid())
+  user_id                   String   @unique
+  favorite_features         String[]
+  hidden_features           String[]
+  morning_check_time        String?
+  afternoon_check_time      String?
+  evening_wind_down_time    String?
+  enable_contextual_prompts Boolean  @default(true)
+  enable_usage_tracking     Boolean  @default(true)
+  updated_at                DateTime @updatedAt
+  created_at                DateTime @default(now())
+  user                      User     @relation(fields: [user_id], references: [id])
+
+  @@allow('all', auth().id == user_id || auth().authority == 'admin')
+  @@map("user_preferences")
+}
+
+//  ============================================================================
+// LIBRARY DOMAIN
+// ============================================================================
+
+model LibraryResource {
+  id               String   @id @default(uuid())
+  title            String
+  description      String?
+  type             String
+  format           String
+  url              String?
+  file_path        String?
+  subjects         String[]
+  topics           String[]
+  grades           Int[]
+  difficulty       String?
+  language         String[]
+  visibility       String   @default("public")
+  creator_id       String
+  creator_role     String
+  verified         Boolean  @default(false)
+  is_community     Boolean  @default(false)
+  views            Int      @default(0)
+  uses_count       Int      @default(0)
+  endorsements     Int      @default(0)
+  bookmarks        Int      @default(0)
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+  
+  engagements      ResourceEngagement[]
+  collections      LibraryCollection[] @relation("CollectionNodes")
+
+  @@allow('read', visibility == 'public' || auth().id == creator_id || auth().authority == 'admin')
+  @@allow('all', auth().id == creator_id || auth().authority == 'admin')
+  @@map("nodes")
+}
+
+model LibraryCollection {
+  id             String   @id @default(uuid())
+  name           String
+  description    String?
+  creator_id     String
+  visibility     String   @default("public")
+  subjects       String[]
+  topics         String[]
+  grades         Int[]
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+  
+  nodes          LibraryResource[] @relation("CollectionNodes")
+
+  @@allow('read', visibility == 'public' || auth().id == creator_id || auth().authority == 'admin')
+  @@allow('all', auth().id == creator_id || auth().authority == 'admin')
+  @@map("collections")
+}
+
+model ResourceEngagement {
+  id              String   @id @default(uuid())
+  resource_id     String
+  user_id         String
+  engagement_type String   // view, use, endorse, bookmark
+  classroom_id    String?
+  created_at      DateTime @default(now())
+  
+  resource        LibraryResource @relation(fields: [resource_id], references: [id])
+
+  @@allow('read', auth().id == user_id || auth().authority == 'admin')
+  @@allow('all', auth().id == user_id || auth().authority == 'admin')
+  @@map("resource_engagements")
+}
+
+// ============================================================================
+// GROWTH & WELLBEING (BHUMI STACK)
+// ============================================================================
+
+model ThuthimalGift {
+  id               String   @id @default(uuid())
+  gift_token       String   @unique @default(uuid())
+  gifter_id        String
+  recipient_id     String?
+  gifter_name      String?
+  recipient_role   String?
+  gift_message     String?
+  claimed          Boolean  @default(false)
+  claimed_at       DateTime?
+  expires_at       DateTime?
+  created_at       DateTime @default(now())
+
+  gifter           User     @relation("GiftsGiven", fields: [gifter_id], references: [id])
+  recipient        User?    @relation("GiftsReceived", fields: [recipient_id], references: [id])
+
+  @@allow('all', auth().id == gifter_id || auth().id == recipient_id || auth().authority == 'admin')
+  @@map("thuthimal_gifts")
+}
+
+model ImpactRipple {
+  id               String   @id @default(uuid())
+  recipient_user_id String
+  actor_user_id     String
+  entity_id        String?
+  ripple_type      String
+  warm_message_en  String?
+  warm_message_si  String?
+  delivered        Boolean  @default(false)
+  delivered_at     DateTime?
+  created_at       DateTime @default(now())
+
+  recipient        User     @relation("RecipientRipples", fields: [recipient_user_id], references: [id])
+  actor            User     @relation("ActorRipples", fields: [actor_user_id], references: [id])
+
+  @@allow('read', auth() != null)
+  @@allow('all', auth().id == actor_user_id || auth().id == recipient_user_id || auth().authority == 'admin')
+  @@map("impact_ripples")
+}
+
+model WhisperedMoment {
+  id            String   @id @default(uuid())
+  user_id       String
+  moment_key    String
+  moment_name_en String
+  moment_name_si String?
+  awarded_at    DateTime @default(now())
+
+  user          User     @relation(fields: [user_id], references: [id])
+
+  @@allow('read', auth().id == user_id || auth().authority == 'admin')
+  @@allow('all', auth().authority == 'admin')
+  @@map("whispered_moments")
+}
+
+model GrowthEvent {
+  id             String   @id @default(uuid())
+  user_id        String
+  dimension      String   // presence, flowering, etc.
+  event_type     String
+  event_metadata Json?
+  created_at     DateTime @default(now())
+
+  user           User     @relation(fields: [user_id], references: [id])
+
+  @@allow('read', auth().id == user_id || auth().authority == 'admin')
+  @@allow('create', auth().id == user_id || auth().authority == 'admin')
+  @@map("growth_events")
+}
+
+model UserGrowthState {
+  id                          String   @id @default(uuid())
+  user_id                     String   @unique
+  bhumi_stage                 String   @default("seed")
+  banyan_stage                String?
+  river_stage                 String?
+  crystal_tier                String?
+  presence_signals             Int      @default(0)
+  nourishing_signals           Int      @default(0)
+  witnessing_signals           Int      @default(0)
+  weaving_signals              Int      @default(0)
+  blooming_signals             Int      @default(0)
+  peer_mentored_count          Int      @default(0)
+  circles_facilitated_count    Int      @default(0)
+  lessons_completed_count      Int      @default(0)
+  reflections_submitted_count Int      @default(0)
+  crystals_found_count         Int      @default(0)
+  fractal_moments_count        Int      @default(0)
+  last_seen_at                DateTime @default(now())
+  created_at                  DateTime @default(now())
+  updated_at                  DateTime @updatedAt
+
+  user                        User     @relation(fields: [user_id], references: [id])
+
+  @@allow('read', auth().id == user_id || auth().authority == 'admin')
+  @@allow('all', auth().id == user_id || auth().authority == 'admin')
+  @@map("user_growth_state")
+}
+
+model SanctuaryManifesto {
+  id          String   @id @default(uuid())
+  school_id   String
+  creator_id  String
+  title       String
+  content     String
+  vibe        String?
+  status      String   @default("active")
+  target_date DateTime?
+  metadata    Json?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  school      School   @relation(fields: [school_id], references: [id])
+  endorsements ManifestoEndorsement[]
+
+  @@allow('read', auth() != null)
+  @@allow('all', auth().authority == 'admin')
+  @@map("sanctuary_manifestos")
+}
+
+model ManifestoEndorsement {
+  id             String   @id @default(uuid())
+  manifesto_id   String
+  user_id        String
+  commitment_text String?
+  created_at     DateTime @default(now())
+
+  manifesto      SanctuaryManifesto @relation(fields: [manifesto_id], references: [id])
+  user           User               @relation(fields: [user_id], references: [id])
+
+  @@unique([manifesto_id, user_id])
+  @@allow('read', auth() != null)
+  @@allow('create', auth() != null)
+  @@map("manifesto_endorsements")
+}

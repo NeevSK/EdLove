@@ -13,11 +13,9 @@ import {
     Button,
     ButtonText,
     Spinner,
-    Theme
 } from '@repo/ui';
 import { TouchableOpacity } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { StudentGrade, ClassroomGradingSettings } from '@repo/core';
 import { useGradebook } from '../hooks/useGradebook';
 import GradebookTable from '../components/grading/GradebookTable';
 import GradingSettings from '../components/grading/GradingSettings';
@@ -30,7 +28,6 @@ interface GradebookScreenProps {
 
 export default function GradebookScreen({
     classroomId,
-    onEditGrade,
 }: GradebookScreenProps) {
     const { t } = useTranslation();
     const {
@@ -45,14 +42,15 @@ export default function GradebookScreen({
         stats,
         updateSettings,
         submitGrade,
-    } = useGradebook(classroomId);
+        publishGrade,
+    } = useGradebook(classroomId) as any;
 
     const [showSettings, setShowSettings] = useState(false);
     // studentId of the student whose grade entry form is open, or null when closed
     const [gradingStudentId, setGradingStudentId] = useState<string | null>(null);
 
     const handleSaveSettings = async (
-        settings: Omit<ClassroomGradingSettings, 'classroom_id'>
+        settings: any
     ) => {
         try {
             await updateSettings(settings);
@@ -73,20 +71,18 @@ export default function GradebookScreen({
         }
     };
 
-    if (showSettings) {
+    if (showSettings && gradingSettings) {
         return (
-            gradingSettings && (
-                <GradingSettings
-                    currentSettings={gradingSettings}
-                    onSave={handleSaveSettings}
-                    onCancel={() => setShowSettings(false)}
-                />
-            )
+            <GradingSettings
+                currentSettings={gradingSettings}
+                onSave={handleSaveSettings}
+                onCancel={() => setShowSettings(false)}
+            />
         );
     }
 
     if (gradingStudentId) {
-        const existingGrade = grades.find(g => g.student_id === gradingStudentId);
+        const existingGrade = grades.find((g: any) => g.student_id === gradingStudentId);
         return (
             <GradeEntryForm
                 studentName={studentNames[gradingStudentId] ?? 'Student'}
@@ -99,112 +95,60 @@ export default function GradebookScreen({
     }
 
     return (
-        <Box
-            sx={{
-                flex: 1,
-                backgroundColor: Theme.colors.ink,
-            }}
-        >
-            <ScrollView>
-                <VStack
-                    sx={{ padding: Theme.spacing.lg, gap: 24 }}
-                >
+        <Box className="flex-1 bg-phase-world">
+            <ScrollView showsVerticalScrollIndicator={false}>
+                <VStack className="p-lg gap-6">
                     {/* Header */}
-                    <HStack
-                        sx={{
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                        }}
-                    >
-                        <Heading
-                            color={Theme.colors.sanctuarySaffron}
-                            sx={{ fontSize: 32 }}
-                        >
+                    <HStack className="justify-between items-center">
+                        <Heading className="text-3xl text-templeGold font-black">
                             {t('grading.gradebook.title') || 'Gradebook'}
                         </Heading>
 
                         <Button
                             variant="outline"
                             size="sm"
-                            sx={{
-                                borderColor: Theme.colors.sanctuarySaffron,
-                            }}
+                            className="border-templeGold"
                             onPress={() => setShowSettings(true)}
                         >
-                            <ButtonText color={Theme.colors.sanctuarySaffron}>
+                            <ButtonText className="text-templeGold">
                                 {t('grading.settings.button') || 'Settings'}
                             </ButtonText>
                         </Button>
                     </HStack>
 
                     {/* Stats Summary */}
-                    <HStack
-                        sx={{
-                            padding: Theme.spacing.md,
-                            backgroundColor: Theme.colors.ink,
-                            borderRadius: Theme.corners.comfortable,
-                            gap: 16
-                        }}
-                    >
-                        <VStack sx={{ flex: 1 }}>
-                            <Text
-                                color={Theme.colors.mistGray}
-                                sx={{ fontSize: 14 }}
-                            >
+                    <HStack className="p-md bg-phase-surface rounded-comfortable gap-4">
+                        <VStack className="flex-1">
+                            <Text className="text-sm text-phaseText-secondary">
                                 {t('grading.gradebook.totalStudents') || 'Total Students'}
                             </Text>
-                            <Text
-                                color={Theme.colors.sacredWhite}
-                                sx={{ fontWeight: '700', fontSize: 20 }}
-                            >
+                            <Text className="text-xl font-bold text-phaseText-primary">
                                 {grades.length}
                             </Text>
                         </VStack>
 
-                        <VStack sx={{ flex: 1 }}>
-                            <Text
-                                color={Theme.colors.mistGray}
-                                sx={{ fontSize: 14 }}
-                            >
+                        <VStack className="flex-1">
+                            <Text className="text-sm text-phaseText-secondary">
                                 {t('grading.gradebook.averageMarks') || 'Average'}
                             </Text>
-                            <Text
-                                color={Theme.colors.sacredWhite}
-                                sx={{ fontWeight: '700', fontSize: 20 }}
-                            >
-                                {stats.averageMarks}
+                            <Text className="text-xl font-bold text-phaseText-primary">
+                                {stats.averageMarks}%
                             </Text>
                         </VStack>
                     </HStack>
 
                     {/* Sort Options */}
-                    <HStack
-                        sx={{ flexWrap: 'wrap', gap: 8 }}
-                    >
-                        <Text
-                            color={Theme.colors.starlightGray}
-                            sx={{ marginRight: Theme.spacing.sm }}
-                        >
+                    <HStack className="flex-wrap gap-2 items-center">
+                        <Text className="text-phaseText-secondary mr-2">
                             {t('grading.gradebook.sortBy') || 'Sort by:'}
                         </Text>
 
                         {(['rank', 'marks', 'name'] as const).map(option => (
                             <TouchableOpacity key={option} onPress={() => setSortBy(option)}>
                                 <Box
-                                    sx={{
-                                        padding: Theme.spacing.sm,
-                                        paddingHorizontal: Theme.spacing.md,
-                                        backgroundColor:
-                                            sortBy === option
-                                                ? Theme.colors.sanctuarySaffron
-                                                : Theme.colors.ink,
-                                        borderRadius: Theme.corners.tight,
-                                    }}
+                                    className={`p-sm px-md rounded-tight ${sortBy === option ? 'bg-templeGold' : 'bg-phase-surface'}`}
                                 >
-                                    <Text
-                                        color={Theme.colors.sacredWhite}
-                                        sx={{ fontSize: 14 }}
-                                    >
+                                    <Text className={`text-sm ${sortBy === option ? 'text-ink font-bold' : 'text-phaseText-primary'}`}>
                                         {t(`grading.gradebook.sort${option.charAt(0).toUpperCase() + option.slice(1)}`) || option.charAt(0).toUpperCase() + option.slice(1)}
                                     </Text>
                                 </Box>
@@ -214,17 +158,9 @@ export default function GradebookScreen({
 
                     {/* Loading State */}
                     {isLoading && (
-                        <Box
-                            sx={{
-                                padding: Theme.spacing.xl,
-                                alignItems: 'center',
-                            }}
-                        >
-                            <Spinner color={Theme.colors.sanctuarySaffron} />
-                            <Text
-                                color={Theme.colors.starlightGray}
-                                sx={{ marginTop: Theme.spacing.md }}
-                            >
+                        <Box className="p-xl items-center">
+                            <Spinner className="text-templeGold" />
+                            <Text className="mt-md text-phaseText-secondary">
                                 {t('common.loading') || 'Loading...'}
                             </Text>
                         </Box>
@@ -232,56 +168,64 @@ export default function GradebookScreen({
 
                     {/* Error State */}
                     {error && !isLoading && (
-                        <Box
-                            sx={{
-                                padding: Theme.spacing.md,
-                                backgroundColor: Theme.colors.emberRed,
-                                borderRadius: Theme.corners.comfortable,
-                            }}
-                        >
-                            <Text color={Theme.colors.sacredWhite}>
+                        <Box className="p-md bg-emberRed rounded-comfortable">
+                            <Text className="text-sacredWhite">
                                 {error}
                             </Text>
                         </Box>
                     )}
 
-                    {/* Gradebook Table — tapping a row opens the grade entry form */}
+                    {/* Gradebook Table */}
                     {!isLoading && !error && grades.length > 0 && gradingSettings && (
-                        <>
+                        <VStack className="gap-md">
                             <GradebookTable
                                 grades={sortedGrades}
                                 gradingSettings={gradingSettings}
                                 studentNames={studentNames}
                             />
-                            <Text color={Theme.colors.starlightGray} sx={{ fontSize: 12, textAlign: 'center', marginTop: -Theme.spacing.sm }}>
+                            <Text className="text-xs text-center text-phaseText-secondary">
                                 {t('grading.gradebook.tapToGrade') || 'Tap a student row to enter or update their grade'}
                             </Text>
-                            {/* Per-student grade buttons */}
-                            <VStack sx={{ gap: 8, marginTop: 8 }}>
-                                {sortedGrades.map(g => (
-                                    <TouchableOpacity
+                            
+                            {/* Per-student grade list for mobile-friendly editing */}
+                            <VStack className="gap-2 mt-2">
+                                {sortedGrades.map((g: any) => (
+                                    <TouchableOpacity 
                                         key={g.student_id}
                                         onPress={() => setGradingStudentId(g.student_id)}
                                     >
-                                        <HStack
-                                            sx={{
-                                                justifyContent: 'space-between',
-                                                alignItems: 'center',
-                                                padding: Theme.spacing.md,
-                                                backgroundColor: Theme.colors.ink,
-                                                borderRadius: Theme.corners.comfortable,
-                                            }}
-                                        >
-                                            <Text color={Theme.colors.sacredWhite} sx={{ fontWeight: '600' }}>
-                                                {studentNames[g.student_id] ?? g.student_id}
-                                            </Text>
-                                            <HStack sx={{ gap: 12, alignItems: 'center' }}>
-                                                <Text color={Theme.colors.sanctuarySaffron} sx={{ fontWeight: '700' }}>
+                                        <HStack className="justify-between items-center p-md bg-phase-surface rounded-comfortable">
+                                            <VStack>
+                                                <Text className="font-semibold text-phaseText-primary">
+                                                    {studentNames[g.student_id] ?? g.student_id}
+                                                </Text>
+                                                <Text className={`text-[11px] font-bold ${g.publication_state === 'published' ? 'text-sageGreen' : 'text-phaseText-secondary'}`}>
+                                                    {g.publication_state === 'published' ? 'Published' : 'Draft'}
+                                                </Text>
+                                            </VStack>
+                                            
+                                            <HStack className="gap-3 items-center">
+                                                <Text className="text-lg font-bold text-templeGold">
                                                     {g.marks}/100
                                                 </Text>
-                                                <Button size="xs" variant="outline" sx={{ borderColor: Theme.colors.sanctuarySaffron }} onPress={() => setGradingStudentId(g.student_id)}>
-                                                    <ButtonText color={Theme.colors.sanctuarySaffron} sx={{ fontSize: 11 }}>
-                                                        {t('grading.gradebook.grade') || 'Grade'}
+                                                <Button 
+                                                    size="sm" 
+                                                    variant="outline" 
+                                                    className="border-templeGold h-8 px-3" 
+                                                    onPress={() => setGradingStudentId(g.student_id)}
+                                                >
+                                                    <ButtonText className="text-templeGold text-[11px]">
+                                                        {t('grading.gradebook.grade') || 'Edit'}
+                                                    </ButtonText>
+                                                </Button>
+                                                <Button
+                                                    size="sm"
+                                                    variant="outline"
+                                                    className="border-sageGreen h-8 px-3"
+                                                    onPress={() => publishGrade(g.id)}
+                                                >
+                                                    <ButtonText className="text-sageGreen text-[11px]">
+                                                        {g.publication_state === 'published' ? 'Republish' : 'Publish'}
                                                     </ButtonText>
                                                 </Button>
                                             </HStack>
@@ -289,24 +233,14 @@ export default function GradebookScreen({
                                     </TouchableOpacity>
                                 ))}
                             </VStack>
-                        </>
+                        </VStack>
                     )}
 
-                    {/* Empty State — show a "Grade First Student" prompt */}
+                    {/* Empty State */}
                     {!isLoading && !error && grades.length === 0 && (
-                        <Box
-                            sx={{
-                                padding: Theme.spacing.xl,
-                                alignItems: 'center',
-                                gap: 16,
-                            }}
-                        >
-                            <Text
-                                color={Theme.colors.starlightGray}
-                                sx={{ textAlign: 'center', fontSize: 18 }}
-                            >
-                                {t('grading.gradebook.noGrades') ||
-                                    'No grades recorded yet'}
+                        <Box className="p-xl items-center gap-4">
+                            <Text className="text-center text-lg text-phaseText-secondary">
+                                {t('grading.gradebook.noGrades') || 'No grades recorded yet'}
                             </Text>
                         </Box>
                     )}

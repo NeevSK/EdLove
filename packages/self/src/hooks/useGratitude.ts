@@ -1,6 +1,7 @@
-import { SafeZustandStorage, supabase, useStore } from '@repo/core';
+﻿import { SafeZustandStorage, useStore } from '@repo/core';
 import { useState, useCallback, useEffect } from 'react';
 import { GratitudeEntry } from '../types';
+import { createGratitudeEntry, fetchGratitudeEntries } from '../api/selfFeatureRepository';
 
 const GRATITUDE_CACHE_KEY = 'gurudevi-gratitude-cache';
 
@@ -40,15 +41,7 @@ export function useGratitude(userId?: string) {
         if (!userId || !isOnline) return;
 
         try {
-            const { data, error } = await supabase
-                .from('gratitude_entries')
-                .select('*')
-                .eq('user_id', userId)
-                .order('created_at', { ascending: false })
-                .limit(20);
-
-            if (error) throw error;
-
+            const data = await fetchGratitudeEntries(userId);
             if (data) {
                 setEntries(data);
                 // Persist to cache
@@ -71,6 +64,9 @@ export function useGratitude(userId?: string) {
         entries,
         isLoading,
         refreshData,
-        setEntries
-    };
+        setEntries,
+        addGratitudeEntry: async (input: Pick<GratitudeEntry, 'content' | 'category'>) => {
+            if (!userId) return null;
+            return createGratitudeEntry(userId, input);
+        }};
 }

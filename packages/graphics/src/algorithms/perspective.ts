@@ -1,8 +1,7 @@
-import type { KnowledgeTopology } from '../types/KnowledgeTopology';
-import type { PerspectiveId } from '../types/GraphNode';
+import type { KnowledgeTopology, PerspectiveId, GraphNode } from '@repo/core';
 
 /**
- * getAvailablePerspectives — Data-driven perspective enablement.
+ * getAvailablePerspectives  Data-driven perspective enablement.
  *
  * Instead of hardcoding which tabs are enabled, this function
  * inspects the topology and returns which perspectives make sense.
@@ -23,26 +22,26 @@ export function getAvailablePerspectives(topology: KnowledgeTopology): Perspecti
     }
 
     // Terra (Geo Map): available if at least 20% of nodes have geo data
-    const geoNodeCount = topology.nodes.filter((n) => n.geo).length;
+    const geoNodeCount = topology.nodes.filter((n: GraphNode) => n.geo).length;
     if (geoNodeCount > 0 && geoNodeCount / topology.nodes.length >= 0.2) {
         available.push('terra');
     }
 
     // Dharma (Learning Path): available if nodes have `path.order` fields
-    const pathNodeCount = topology.nodes.filter((n) => n.path?.order !== undefined).length;
+    const pathNodeCount = topology.nodes.filter((n: GraphNode) => n.path?.order !== undefined).length;
     if (pathNodeCount >= 3) {
         available.push('dharma');
     }
 
     // Vastu (Mind Map / Structure): available if nodes have `parentId` relationships
-    const treeNodeCount = topology.nodes.filter((n) => n.parentId).length;
+    const treeNodeCount = topology.nodes.filter((n: GraphNode) => n.parentId).length;
     if (treeNodeCount >= 2) {
         available.push('vastu');
     }
 
     // Jyoti (Analytics / Charts): available if nodes have quantifiable metadata
     const chartableNodeCount = topology.nodes.filter(
-        (n) => n.metadata?.subjects && n.metadata.subjects.length > 0
+        (n: GraphNode) => n.metadata?.subjects && n.metadata.subjects.length > 0
     ).length;
     if (chartableNodeCount >= 3) {
         available.push('jyoti');

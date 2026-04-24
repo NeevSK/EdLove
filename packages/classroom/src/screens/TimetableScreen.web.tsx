@@ -5,7 +5,7 @@
  * Uses the TimetableScheduler agent to generate a draft from real school data.
  * Renders a CSS grid weekly view with period slots.
  *
- * Navigation: ClassroomStack → Timetable
+ * Navigation: ClassroomStack \u2192 Timetable
  */
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -74,15 +74,15 @@ export default function TimetableScreen() {
                     onClick={() => navigation.goBack()}
                     style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ink-ghost)', fontFamily: 'var(--font-body)', fontSize: '14px', fontWeight: '600', padding: '4px 8px', borderRadius: '8px' }}
                 >
-                    ← Back
+                    \u2190 Back
                 </button>
                 <div style={{ flex: 1 }}>
                     <div style={{ fontSize: '18px', fontWeight: '800', color: 'var(--ink)' }}>
-                        📅 Weekly Timetable
+                        \uD83D\uDCC5 Weekly Timetable
                     </div>
                     <div style={{ fontSize: '12px', color: 'var(--ink-ghost)' }}>
                         {draft?.status === 'draft'
-                            ? `Draft — ${draft.total_classrooms ?? 0} classroom${draft.total_classrooms !== 1 ? 's' : ''}, ${draft.total_teachers ?? 0} teacher${draft.total_teachers !== 1 ? 's' : ''}`
+                            ? `Draft \u2014 ${draft.total_classrooms ?? 0} classroom${draft.total_classrooms !== 1 ? 's' : ''}, ${draft.total_teachers ?? 0} teacher${draft.total_teachers !== 1 ? 's' : ''}`
                             : 'Generate a timetable from your school data'}
                     </div>
                 </div>
@@ -92,7 +92,7 @@ export default function TimetableScreen() {
                     disabled={loading || !schoolId}
                     style={{ fontSize: '13px' }}
                 >
-                    {loading ? '⏳ Generating…' : '🔄 Regenerate'}
+                    {loading ? '\u23F3 Generating\u2026' : '\uD83D\uDD04 Regenerate'}
                 </button>
             </div>
 
@@ -106,7 +106,7 @@ export default function TimetableScreen() {
             {draft?.recommendations?.length > 0 && (
                 <div style={{ padding: '12px 24px', background: 'rgba(245,158,11,0.08)', borderBottom: '1px solid rgba(245,158,11,0.2)' }}>
                     {draft.recommendations.map((rec: string, i: number) => (
-                        <div key={i} style={{ fontSize: '12px', color: '#b45309', marginBottom: '2px' }}>⚠ {rec}</div>
+                        <div key={i} style={{ fontSize: '12px', color: '#b45309', marginBottom: '2px' }}>\u26A0 {rec}</div>
                     ))}
                 </div>
             )}
@@ -129,7 +129,7 @@ export default function TimetableScreen() {
                                     fontSize: '13px', fontFamily: 'var(--font-body)', marginBottom: '4px', fontWeight: selectedClassroomId === id ? '700' : '400',
                                 }}
                             >
-                                {draft?.classroom_names?.[id] ?? id.slice(0, 12) + '…'}
+                                {draft?.classroom_names?.[id] ?? id.slice(0, 12) + '\u2026'}
                             </button>
                         ))}
                     </div>
@@ -139,11 +139,11 @@ export default function TimetableScreen() {
                 <div style={{ flex: 1, overflowX: 'auto', overflowY: 'auto', padding: '24px' }}>
                     {loading ? (
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '200px', color: 'var(--ink-ghost)', fontSize: '14px' }}>
-                            ⏳ Reading classrooms and teachers…
+                            \u23F3 Reading classrooms and teachers\u2026
                         </div>
                     ) : !draft ? (
                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '200px', gap: '12px' }}>
-                            <div style={{ fontSize: '40px' }}>📅</div>
+                            <div style={{ fontSize: '40px' }}>\uD83D\uDCC5</div>
                             <div style={{ fontSize: '16px', fontWeight: '800', color: 'var(--ink)' }}>No timetable yet</div>
                             <button className="premium-button" onClick={generate}>Generate Timetable</button>
                         </div>
@@ -163,13 +163,13 @@ export default function TimetableScreen() {
                                 ))}
                             </div>
 
-                            {/* Period rows */}
-                            {PERIODS.map(p => (
+                             {/* Period rows */}
+                             {PERIODS.map(p => (
                                 <div key={p} style={{ display: 'grid', gridTemplateColumns: '80px repeat(5, 1fr)', gap: '4px', marginBottom: '4px' }}>
                                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: '700', color: 'var(--ink-ghost)', background: 'var(--background-alt)', borderRadius: '8px', padding: '4px' }}>
                                         P{p}
                                     </div>
-                                    {DAYS.map(day => {
+                                     {DAYS.map(day => {
                                         const slot = (currentSchedule[day] ?? []).find((s: any) => s.period === p);
                                         return (
                                             <div
@@ -185,7 +185,7 @@ export default function TimetableScreen() {
                                                         <div style={{ fontSize: '10px', color: 'var(--ink-ghost)' }}>{slot.teacher_name}</div>
                                                     </>
                                                 ) : (
-                                                    <div style={{ fontSize: '10px', color: 'var(--ink-ghost)', opacity: 0.5 }}>—</div>
+                                                    <div style={{ fontSize: '10px', color: 'var(--ink-ghost)', opacity: 0.5 }}>\u2014</div>
                                                 )}
                                             </div>
                                         );

@@ -19,7 +19,7 @@ export const SURFACE_REFRESH_RATES = {
 export type SurfaceType = keyof typeof SURFACE_REFRESH_RATES;
 
 /**
- * useTrubeTime — The core hook for the Time Layer.
+ * useTrubeTime  The core hook for the Time Layer.
  * Synchronizes with the C++ Entropy Clock (Single Source of Truth).
  */
 export function useTrubeTime(surfaceType: SurfaceType, enabled: boolean = true) {

@@ -1,17 +1,17 @@
 import React from 'react';
 import {
-    Box,
-    VStack,
-    HStack,
-    Text,
-    Heading,
-    useThemedColors,
-    Theme,
-    LivingGlow,
-    SanctuaryCard,
+  VStack,
+  HStack,
+  Box,
+  Text,
+  Heading,
+  LivingGlow,
+  SanctuaryCard,
+  Pressable,
+  Theme
 } from '@repo/ui';
 import { Heart, Target, Star, ShieldCheck } from 'lucide-react-native';
-import { SanctuaryManifesto } from '../index';
+import { SanctuaryManifesto } from '../types';
 import Animated, { LinearTransition } from 'react-native-reanimated';
 
 interface ManifestoCardProps extends SanctuaryManifesto {
@@ -29,93 +29,70 @@ export default function ManifestoCard({
     onEndorse,
     onPress,
 }: ManifestoCardProps) {
-    const colors = useThemedColors();
-
-    const vibeConfig = {
-        visionary: { icon: Star, color: colors.action },
-        supportive: { icon: Heart, color: colors.primary },
-        academic: { icon: Target, color: colors.secondary },
-        wellbeing: { icon: ShieldCheck, color: colors.success },
+    const vibeConfig: Record<string, { icon: any; color: string; textColorClass: string }> = {
+        visionary: { icon: Star, color: '#E67E22', textColorClass: 'text-primary-500' },
+        supportive: { icon: Heart, color: '#E74C3C', textColorClass: 'text-error-500' },
+        academic: { icon: Target, color: '#3498DB', textColorClass: 'text-secondary-500' },
+        wellbeing: { icon: ShieldCheck, color: '#2ECC71', textColorClass: 'text-success-500' },
     };
 
-    const config = vibeConfig[vibe] || vibeConfig.visionary;
+    const config = (vibeConfig[vibe] || vibeConfig.visionary) as { icon: any; color: string; textColorClass: string };
     const VibeIcon = config.icon;
 
     return (
-        <SanctuaryCard onPress={onPress} elevated={has_endorsed}>
-            <VStack space="md">
-                <HStack justifyContent="space-between" alignItems="center">
-                    <HStack space="xs" alignItems="center">
-                        <Box
-                            p="$1"
-                            sx={{
-                                backgroundColor: colors.overlay,
-                                borderRadius: Theme.corners.tight,
-                            }}
-                        >
+        <SanctuaryCard onPress={onPress} elevated={has_endorsed} className="bg-surface-lowest">
+            <VStack className="gap-4">
+                <HStack className="justify-between items-center">
+                    <HStack className="items-center gap-2">
+                        <Box className="p-1 bg-white/5 border border-outline-variant rounded-md">
                             <VibeIcon size={16} color={config.color} />
                         </Box>
-                        <Text
-                            size="xs"
-                            color={config.color}
-                            bold
-                            sx={{ textTransform: 'uppercase' }}
-                        >
+                        <Text className={`text-[10px] font-extrabold uppercase ${config.textColorClass}`}>
                             {vibe} Manifesto
                         </Text>
                     </HStack>
 
-                    <HStack space="xs" alignItems="center">
+                    <HStack className="items-center gap-1">
                         <Heart
                             size={16}
-                            color={has_endorsed ? colors.error : colors.textTertiary}
-                            fill={has_endorsed ? colors.error : 'none'}
+                            fill={has_endorsed ? '#E74C3C' : 'none'}
+                            color={has_endorsed ? '#E74C3C' : 'rgba(255,255,255,0.4)'}
                         />
-                        <Text size="xs" color={colors.textTertiary} bold>
+                        <Text className="text-[12px] font-bold text-muted-foreground">
                             {endorsement_count}
                         </Text>
                     </HStack>
                 </HStack>
 
-                <VStack space="xs">
-                    <Heading size="md" color={colors.text}>
+                <VStack className="gap-1">
+                    <Heading size="md" className="text-foreground">
                         {title}
                     </Heading>
                     <Text
-                        size="sm"
                         numberOfLines={onPress ? 3 : undefined}
-                        color={colors.textSecondary}
-                        sx={{ lineHeight: 22 }}
+                        className="text-sm leading-relaxed text-muted-foreground"
                     >
                         {content}
                     </Text>
                 </VStack>
 
                 <Animated.View layout={LinearTransition}>
-                    <HStack justifyContent="space-between" alignItems="center" mt="$1">
-                        <Box
-                            sx={{
-                                backgroundColor: has_endorsed ? colors.action : 'transparent',
-                                paddingVertical: 6,
-                                paddingHorizontal: 12,
-                                borderRadius: Theme.corners.comfortable,
-                                borderWidth: has_endorsed ? 0 : 1,
-                                borderColor: colors.border,
+                    <HStack className="justify-between items-center mt-1">
+                        <Pressable
+                            onPress={(e) => {
+                                e.stopPropagation();
+                                onEndorse?.(id);
                             }}
+                            className={`py-1.5 px-3 rounded-full border ${has_endorsed ? 'bg-primary-500 border-primary-500' : 'bg-transparent border-outline-variant'}`}
                         >
-                            <Text
-                                size="xs"
-                                bold
-                                color={has_endorsed ? Theme.colors.white : colors.textTertiary}
-                                onPress={() => onEndorse?.(id)}
-                            >
+                            <Text className={`text-[11px] font-bold ${has_endorsed ? 'text-white' : 'text-muted-foreground'}`}>
                                 {has_endorsed ? 'Identified with Mission' : 'Endorse Mission'}
                             </Text>
-                        </Box>
+                        </Pressable>
 
                         {has_endorsed && (
                             <LivingGlow duration={3000}>
-                                <Star size={18} color={colors.action} />
+                                <Star size={18} color="#E67E22" />
                             </LivingGlow>
                         )}
                     </HStack>

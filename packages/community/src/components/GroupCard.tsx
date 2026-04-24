@@ -1,9 +1,6 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import { Box, HStack, VStack, Text } from '@repo/ui';
+import { Box, HStack, VStack, Text, SanctuaryCard, Icon } from '@repo/ui';
 import { Users, Lock, Globe } from 'lucide-react-native';
-import { SanctuaryCard } from '@repo/ui';
-import { Theme } from '@repo/ui';
 
 interface GroupCardProps {
     id: string;
@@ -25,100 +22,58 @@ const GroupCard = React.memo(function GroupCard({
 
     const getIcon = () => {
         switch (type) {
-            case 'staff': return <Lock size={14} color={Theme.colors.emberRed} />;
-            case 'public': return <Globe size={14} color={Theme.colors.sageGreen} />;
-            default: return <Users size={14} color={Theme.colors.sanctuarySaffron} />;
+            case 'staff': return <Icon as={Lock} size="xs" className="text-phase-interactive" />;
+            case 'public': return <Icon as={Globe} size="xs" className="text-phase-interactive" />;
+            default: return <Icon as={Users} size="xs" className="text-phase-interactive" />;
         }
     };
 
     return (
-        <SanctuaryCard 
+        <SanctuaryCard
             onPress={onPress}
-            style={{
-                marginBottom: 8,
-                borderRadius: 16,
-                backgroundColor: 'rgba(255, 255, 255, 0.03)',
-                borderWidth: 1,
-                borderColor: 'rgba(255, 255, 255, 0.05)',
-            }}
+            className="mb-3 rounded-3xl bg-phase-surface border border-border shadow-sm p-4 overflow-hidden"
         >
-            <HStack space="md" alignItems="center">
+            <HStack className="items-center gap-4">
                 {/* Avatar with Modern Gradient/Placeholder */}
                 <Box
-                    sx={{
-                        width: 56,
-                        height: 56,
-                        borderRadius: 28,
-                        backgroundColor: type === 'public' ? 'rgba(108, 92, 231, 0.15)' : 'rgba(247, 183, 49, 0.15)',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        borderWidth: 2,
-                        borderColor: 'rgba(255, 255, 255, 0.1)',
-                    }}
+                    className={`w-14 h-14 rounded-2xl justify-center items-center ${type === 'public' ? 'bg-phase-interactive/10' : 'bg-phase-interactive/5'}`}
                 >
-                    <Text 
-                        sx={{ 
-                            fontSize: 22, 
-                            fontWeight: '700',
-                            color: type === 'public' ? Theme.colors.gurudeviViolet : Theme.colors.sanctuarySaffron,
-                            textShadow: '0 2px 4px rgba(0,0,0,0.2)'
-                        }}
+                    <Text
+                        className="text-2xl font-bold text-phase-interactive shadow-sm"
                     >
                         {(name || 'G').charAt(0).toUpperCase()}
                     </Text>
                 </Box>
 
-                <VStack flex={1}>
-                    <HStack justifyContent="space-between" alignItems="center">
-                        <Text 
-                            sx={{ 
-                                color: Theme.colors.sacredWhite, 
-                                fontWeight: '600', 
-                                fontSize: 17 
-                            }} 
+                <VStack className="flex-1 gap-1">
+                    <HStack className="justify-between items-center">
+                        <Text
+                            className="text-ink font-bold text-[17px] flex-1 mr-2"
                             numberOfLines={1}
                         >
                             {name}
                         </Text>
-                        <HStack space="xs" alignItems="center">
+                        <Box className="px-2 py-0.5 rounded-full bg-phase-interactive/10 border border-phase-interactive/20">
                             {getIcon()}
-                        </HStack>
+                        </Box>
                     </HStack>
 
-                    {description ? (
-                        <Text 
-                            sx={{ 
-                                color: Theme.colors.mistGray, 
-                                fontSize: 13, 
-                                marginTop: 2,
-                                lineHeight: 18
-                            }} 
-                            numberOfLines={1}
-                        >
-                            {description}
-                        </Text>
-                    ) : (
-                        <Text 
-                            sx={{ 
-                                color: Theme.colors.dimGray, 
-                                fontSize: 13, 
-                                marginTop: 2,
-                                fontStyle: 'italic'
-                            }}
-                        >
-                            No description available
-                        </Text>
-                    )}
+                    <Text
+                        className="text-ink/60 text-[13px] leading-relaxed pr-2"
+                        numberOfLines={1}
+                    >
+                        {description || "A space for shared exploration and connection."}
+                    </Text>
 
-                    <HStack space="sm" alignItems="center" mt={6}>
-                        <HStack space="xs" alignItems="center">
-                            <Users size={12} color={Theme.colors.dimGray} />
-                            <Text sx={{ color: Theme.colors.dimGray, fontSize: 12 }}>
+                    <HStack className="items-center mt-1 gap-3">
+                        <HStack className="items-center gap-1.5">
+                            <Icon as={Users} size="xs" className="text-ink/40" />
+                            <Text className="text-ink/40 text-xs font-medium">
                                 {memberCount} members
                             </Text>
                         </HStack>
-                        <Text sx={{ color: 'rgba(255,255,255,0.15)', fontSize: 12 }}>•</Text>
-                        <Text sx={{ color: Theme.colors.dimGray, fontSize: 11, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                        <Text className="text-ink/10 text-xs">•</Text>
+                        <Text className="text-ink/40 text-[10px] font-bold uppercase tracking-widest">
                             {type}
                         </Text>
                     </HStack>

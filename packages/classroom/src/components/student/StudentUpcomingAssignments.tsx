@@ -1,52 +1,106 @@
 import React from 'react';
 import { CheckCircle2, Clock } from 'lucide-react-native';
+import {
+    Box,
+    HStack,
+    VStack,
+    Text,
+    Button,
+    ButtonText,
+    Icon
+} from '@repo/ui';
 
-export const StudentUpcomingAssignments = ({ assignments, onOpenSubmission, isPastView }: { assignments: any[], onOpenSubmission: (a: any) => void, isPastView: boolean }) => {
-    const pendingAssignments = assignments.filter((a: any) => !a.submitted);
+interface Assignment {
+    id: string;
+    title: string;
+    submitted: boolean;
+    due_date: string | Date;
+    classroom?: string;
+    classrooms?: { name: string };
+}
 
+interface StudentUpcomingAssignmentsProps {
+    assignments: Assignment[];
+    onOpenSubmission: (assignment: Assignment) => void;
+    isPastView: boolean;
+}
+
+export const StudentUpcomingAssignments = ({
+    assignments,
+    onOpenSubmission,
+    isPastView
+}: StudentUpcomingAssignmentsProps) => {
+    const pendingAssignments = assignments.filter((a) => !a.submitted);
+ 
     if (assignments.length === 0) return null;
-
+ 
     return (
-        <div style={{ marginTop: '40px' }}>
-            <h2 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <CheckCircle2 size={18} color="var(--moss)" />
-                Upcoming Assignments
+        <VStack className="mt-10 gap-5">
+            <HStack className="items-center justify-between px-1">
+                <HStack className="items-center gap-2.5">
+                    <Box className="w-8 h-8 bg-sanctuarySaffron/10 rounded-xl items-center justify-center border border-sanctuarySaffron/20">
+                        <Icon as={Clock} size="xs" className="text-sanctuarySaffron" />
+                    </Box>
+                    <Text className="text-sm font-black text-sanctuary-text uppercase tracking-widest">
+                        {isPastView ? 'Completed Work' : 'Upcoming Work'}
+                    </Text>
+                </HStack>
                 {pendingAssignments.length > 0 && (
-                    <span style={{ padding: '4px 8px', background: 'rgba(239,68,68,0.1)', borderRadius: '6px', fontSize: '11px', color: 'var(--ember)', fontWeight: '700' }}>
-                        {pendingAssignments.length} pending
-                    </span>
+                    <Box className="px-3 py-1.5 bg-sanctuary-error/10 border border-sanctuary-error/20 rounded-full">
+                        <Text className="text-[10px] text-sanctuary-error font-black uppercase tracking-widest">
+                            {pendingAssignments.length} pending
+                        </Text>
+                    </Box>
                 )}
-            </h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                {assignments.map((a: any) => (
-                    <div key={a.id} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '14px 16px', borderRadius: '12px', background: 'var(--background-alt)', border: `1px solid ${a.submitted ? 'var(--moss)' : 'var(--border-light)'}` }}>
-                        <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: a.submitted ? 'var(--moss)' : 'var(--ember)', flexShrink: 0 }} />
-                        <div style={{ flex: 1 }}>
-                            <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--ink)' }}>{a.title}</div>
-                            <div style={{ fontSize: '11px', color: 'var(--ink-ghost)', display: 'flex', alignItems: 'center', gap: '6px', marginTop: '2px' }}>
-                                <span>{a.classroom ?? (a.classrooms as any)?.name ?? ''}</span>
-                                <span>·</span>
-                                <Clock size={10} />
-                                <span>Due {typeof a.due_date === 'string' ? a.due_date : new Date(a.due_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</span>
-                            </div>
-                        </div>
+            </HStack>
+ 
+            <VStack className="gap-3">
+                {assignments.map((a) => (
+                    <HStack
+                        key={a.id}
+                        className={`items-center gap-4 p-5 rounded-[24px] border ${a.submitted ? 'bg-sanctuary-surface-secondary border-sanctuary-success/20' : 'bg-sanctuary-surface border-sanctuary-border'}`}
+                    >
+                        <Box className={`w-3 h-3 rounded-full border-2 ${a.submitted ? 'bg-sanctuary-success border-sanctuary-success/30' : 'bg-sanctuary-error border-sanctuary-error/30'}`} />
+ 
+                        <VStack className="flex-1 gap-1">
+                            <Text className="text-sm font-black text-sanctuary-text tracking-tight">
+                                {a.title}
+                            </Text>
+                            <HStack className="items-center gap-2">
+                                <Text className="text-[11px] font-bold text-sanctuary-text-tertiary">
+                                    {a.classroom ?? a.classrooms?.name ?? 'Classroom'}
+                                </Text>
+                                <Text className="text-[11px] text-sanctuary-text-tertiary/50">•</Text>
+                                <Text className="text-[11px] font-bold text-sanctuary-text-tertiary">
+                                    Due {typeof a.due_date === 'string' ? a.due_date : new Date(a.due_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
+                                </Text>
+                            </HStack>
+                        </VStack>
+ 
                         {!a.submitted && !isPastView && (
-                            <button
-                                className="premium-button"
-                                style={{ fontSize: '11px', padding: '6px 12px' }}
-                                onClick={() => onOpenSubmission(a)}
+                            <Button
+                                size="sm"
+                                variant="outline"
+                                onPress={() => onOpenSubmission(a)}
+                                className="h-10 rounded-xl border-sanctuarySaffron/40 bg-sanctuarySaffron/5"
                             >
-                                Submit
-                            </button>
+                                <ButtonText className="text-xs font-bold text-sanctuarySaffron px-2">
+                                    Submit
+                                </ButtonText>
+                            </Button>
                         )}
+ 
                         {a.submitted && (
-                            <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--moss)', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                <CheckCircle2 size={13} /> Submitted
-                            </span>
+                            <HStack className="items-center gap-2 bg-sanctuary-success/10 px-3 py-1.5 rounded-full">
+                                <Icon as={CheckCircle2} size="xs" className="text-sanctuary-success" />
+                                <Text className="text-[10px] font-black text-sanctuary-success uppercase tracking-widest">
+                                    Done
+                                </Text>
+                            </HStack>
                         )}
-                    </div>
+                    </HStack>
                 ))}
-            </div>
-        </div>
+            </VStack>
+        </VStack>
     );
 };

@@ -1,10 +1,11 @@
-import React from "react";
+﻿import React from "react";
+import { Icon, View, Platform } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
-import { ErrorBoundary, AchievementUnlockOverlay, useTheme, UniversalModal, Box, HStack, Text, Theme } from "@repo/ui";
+import { ErrorBoundary, AchievementUnlockOverlay, useTheme, UniversalModal, Box, VStack, HStack, Text, hapticLight} from '@repo/ui';
 import { BreathGuide } from "@repo/self";
-import { useUserRole, useRewards, useNotifications, useStore } from "@repo/core";
+import { usePermissions, useRewards, useNotifications, useStore } from "@repo/core";
 import {
   User,
   School,
@@ -15,8 +16,7 @@ import {
   ChevronLeft,
   Menu,
   Settings,
-  X,
-} from "lucide-react-native";
+  X} from "lucide-react-native";
 import { StackFallback } from "../components/web/WebScreenShimmer";
 
 // ── Preload helper ──────────────────────────────────────────────────────────
@@ -62,14 +62,15 @@ schedulePreload(() => import("./LibraryStackNavigator.web"));
 
 // In-shell panel screens — lazy loaded (rendered as Tab.Screen for URL-native navigation)
 const NotificationsScreenWeb = React.lazy(
-  () => import("../screens/NotificationsScreen.web"),
+  () => import("@repo/ui/screens/NotificationsScreen.web"),
 );
-schedulePreload(() => import("../screens/NotificationsScreen.web"));
+schedulePreload(() => import("@repo/ui/screens/NotificationsScreen.web"));
 
 const AppSettingsScreenWeb = React.lazy(
-  () => import("../screens/AppSettingsScreen.web"),
+  () => import("@repo/ui/screens/AppSettingsScreen.web"),
 );
-schedulePreload(() => import("../screens/AppSettingsScreen.web"));
+schedulePreload(() => import("@repo/ui/screens/AppSettingsScreen.web"));
+
 
 // ── Tab navigator ────────────────────────────────────────────────────────────
 
@@ -82,74 +83,50 @@ const TAB_CONFIG = [
     name: "Self",
     icon: Heart,
     labelKey: "tabs.self",
-    mobileLabelKey: "tabs.self",
-  },
+    mobileLabelKey: "tabs.self"},
   {
     name: "Community",
     icon: Users,
     labelKey: "tabs.community",
-    mobileLabelKey: "tabs.community",
-  },
+    mobileLabelKey: "tabs.community"},
   {
     name: "Classroom",
     icon: School,
     labelKey: "tabs.classroom",
-    mobileLabelKey: "tabs.classroom",
-  },
+    mobileLabelKey: "tabs.classroom"},
   {
     name: "Library",
     icon: Library,
     labelKey: "tabs.library",
-    mobileLabelKey: "tabs.library",
-  },
+    mobileLabelKey: "tabs.library"},
   {
     name: "Profile",
     icon: User,
     labelKey: "tabs.profile",
-    mobileLabelKey: "tabs.profile",
-  },
-];
+    mobileLabelKey: "tabs.profile"}];
 
 // ─── MAIN NAVIGATOR (Overlay Architecture) ─────────────────────────────────
 
 /** Reusable notification badge dot for Bell icons */
 function NotificationBadge({ count, size = 'md' }: { count: number; size?: 'sm' | 'md' }) {
   if (count <= 0) return null;
-  const dim = size === 'sm' ? 
-    { minW: '14px', h: '14px', fs: '8px', top: '-3px', right: '-5px' } : 
-    { minW: '16px', h: '16px', fs: '9px', top: '-4px', right: '-6px' };
-  
+  const dim = size === 'sm' ? { minW: '14px', h: '14px', fs: '8px', top: '-3px', right: '-5px' } : { minW: '16px', h: '16px', fs: '9px', top: '-4px', right: '-6px' };
   return (
-    <div style={{ 
-      display: 'flex', 
-      alignItems: 'center', 
-      justifyContent: 'center', 
-      minWidth: dim.minW, 
-      height: dim.h, 
-      padding: '0 4px', 
-      fontSize: dim.fs, 
-      fontWeight: '800', 
-      background: 'var(--lotus)', 
-      color: 'white', 
-      borderRadius: '8px', 
-      position: 'absolute', 
-      top: dim.top, 
-      right: dim.right,
-      zIndex: 1
-    }}>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: dim.minW, height: dim.h, padding: '0 4px', fontSize: dim.fs, fontWeight: '800', background: 'var(--lotus)', color: 'white', borderRadius: '8px', position: 'absolute', top: dim.top, right: dim.right }}>
       {count > 99 ? '99+' : String(count)}
     </div>
   );
 }
 
 export default function TabNavigator({
-  onTabChange,
-}: {
+  onTabChange}: {
   onTabChange?: (tab: string) => void;
 }) {
   const { t } = useTranslation();
-  const { role, userId } = useUserRole();
-  const { scene, text } = useTheme();
+  const { context } = usePermissions();
+  const role = context.roles[0];
+  const userId = context.userId;
+  const { isDark } = useTheme();
   const { newAchievements } = useRewards();
   const { unreadCount } = useNotifications(userId);
   const navigation = useNavigation();
@@ -160,7 +137,8 @@ export default function TabNavigator({
   const [activeTab, setActiveTab] = React.useState("Self");
   const [showCelebration, setShowCelebration] = React.useState(false);
   const [currentAchievement, setCurrentAchievement] = React.useState("");
-  const { isBreathingOpen, setBreathingOpen } = useStore();
+  const store = useStore() as any;
+  const { isBreathingOpen, setBreathingOpen } = store;
 
   // Ref to the sidebar element — used for focus trap
   const sidebarRef = React.useRef<HTMLElement>(null);
@@ -254,22 +232,11 @@ export default function TabNavigator({
     }
   }, [activeTab, t]);
 
-  // Sync active tab to parent state via effect to avoid "setState during render" warnings.
-  // Using a stable callback from parent and checking values prevents infinite loops.
-  React.useEffect(() => {
-    if (activeTab) {
-      const mainTabs = ["Self", "Community", "Classroom", "Library", "Profile"];
-      if (mainTabs.includes(activeTab)) {
-        onTabChange?.(activeTab.toLowerCase());
-      }
-    }
-  }, [activeTab, onTabChange]);
-
   const getClassroomLabel = () => {
     if (role === "principal") return t("tabs.mySchool");
     if (role === "founder") return t("tabs.school");
-    if (role === "section_head") return t("tabs.section");
-    if (role === "grade_head") return t("tabs.grade");
+    if (role === "sectionHead") return t("tabs.section");
+    if (role === "gradeHead") return t("tabs.grade");
     return t("tabs.classroom");
   };
 
@@ -289,7 +256,7 @@ export default function TabNavigator({
 
   return (
     <div className="vellum-app-shell">
-      <div className="world-bg" aria-hidden="true" />
+      <div className="world-bg" />
 
       {/* ── TOP BAR ── */}
       <header className="top-bar">
@@ -299,9 +266,7 @@ export default function TabNavigator({
             paddingLeft: 24,
             display: "flex",
             alignItems: "center",
-            gap: "16px",
-          }}
-        >
+            gap: "16px"}}>
           {isMobileView && (
             <button
               className="mobile-menu-toggle"
@@ -314,10 +279,8 @@ export default function TabNavigator({
                 color: "var(--ink)",
                 display: "flex",
                 alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Menu size={24} />
+                justifyContent: "center"}}>
+              <Icon as={Menu} size={24} />
             </button>
           )}
           <span className="brand-lotus">🪷</span>
@@ -355,9 +318,7 @@ export default function TabNavigator({
             boxShadow:
               isMobileView && isSidebarExpanded
                 ? "4px 0 40px rgba(107,100,128,0.2)"
-                : "none",
-          }}
-        >
+                : "none"}}>
           <div className="sidebar-header" style={{ 
             display: "flex", 
             justifyContent: isSidebarExpanded ? 'space-between' : 'center', 
@@ -368,8 +329,7 @@ export default function TabNavigator({
             {(isSidebarExpanded || isMobileView) && (
               <span
                 className="sidebar-group-label"
-                style={{ marginLeft: "0", fontSize: '11px', fontWeight: '700', letterSpacing: '0.05em', opacity: 0.6 }}
-              >
+                style={{ marginLeft: "0", fontSize: '11px', fontWeight: '700', letterSpacing: '0.05em', opacity: 0.6 }}>
                 {t("webNav.menu") || "MENU"}
               </span>
             )}
@@ -386,12 +346,11 @@ export default function TabNavigator({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center'
-              }}
-            >
+              }}>
               {isSidebarExpanded ? (
-                <ChevronLeft size={16} />
+                <Icon as={ChevronLeft} size={16} />
               ) : (
-                <Menu size={16} />
+                <Icon as={Menu} size={16} />
               )}
             </button>
           </div>
@@ -410,8 +369,7 @@ export default function TabNavigator({
                   }}
                   title={getLabel(conf.name, conf.labelKey)}
                   aria-current={isActive ? "page" : undefined}
-                  style={{ justifyContent: isSidebarExpanded ? 'flex-start' : 'center', paddingLeft: isSidebarExpanded ? '16px' : '0' }}
-                >
+                  style={{ justifyContent: isSidebarExpanded ? 'flex-start' : 'center', paddingLeft: isSidebarExpanded ? '16px' : '0' }}>
                   <Icon
                     size={20}
                     color={isActive ? "var(--water)" : "var(--ink-ghost)"}
@@ -433,14 +391,12 @@ export default function TabNavigator({
               title={t("common.notifications")}
               onClick={() => {
                 (navigation.navigate as any)("Main", {
-                  screen: activeTab === "NotificationsPanel" ? "Self" : "NotificationsPanel",
-                });
+                  screen: activeTab === "NotificationsPanel" ? "Self" : "NotificationsPanel"});
                 if (isMobileView) closeSidebar();
               }}
-              style={{ justifyContent: isSidebarExpanded ? 'flex-start' : 'center', paddingLeft: isSidebarExpanded ? '16px' : '0' }}
-            >
+              style={{ justifyContent: isSidebarExpanded ? 'flex-start' : 'center', paddingLeft: isSidebarExpanded ? '16px' : '0' }}>
               <div style={{ position: "relative" }}>
-                <Bell
+                <Icon as={Bell}
                   size={20}
                   color={
                     activeTab === "NotificationsPanel"
@@ -448,7 +404,9 @@ export default function TabNavigator({
                       : "var(--ink-ghost)"
                   }
                 />
-                <NotificationBadge count={unreadCount} />
+                <div className="bell-dot" style={unreadCount > 0 ? { display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: '16px', height: '16px', padding: '0 4px', fontSize: '9px', fontWeight: '800', background: 'var(--lotus)', color: 'white', borderRadius: '8px', top: '-4px', right: '-6px' } : {}}>
+                  {unreadCount > 0 ? (unreadCount > 99 ? '99+' : String(unreadCount)) : ''}
+                </div>
               </div>
               {(isSidebarExpanded || isMobileView) && (
                 <span className="sidebar-label">Notifications</span>
@@ -460,14 +418,12 @@ export default function TabNavigator({
               title={t("common.settings")}
               onClick={() => {
                 (navigation.navigate as any)("Main", {
-                  screen: activeTab === "SettingsPanel" ? "Self" : "SettingsPanel",
-                });
+                  screen: activeTab === "SettingsPanel" ? "Self" : "SettingsPanel"});
                 if (isMobileView) closeSidebar();
               }}
-              style={{ justifyContent: isSidebarExpanded ? 'flex-start' : 'center', paddingLeft: isSidebarExpanded ? '16px' : '0' }}
-            >
+              style={{ justifyContent: isSidebarExpanded ? 'flex-start' : 'center', paddingLeft: isSidebarExpanded ? '16px' : '0' }}>
               <div style={{ width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Settings size={20} color="var(--ink-ghost)" />
+                <Icon as={Settings} size={20} color="var(--ink-ghost)" />
               </div>
               {(isSidebarExpanded || isMobileView) && (
                 <div className="profile-info" style={{ marginLeft: '12px' }}>
@@ -493,27 +449,27 @@ export default function TabNavigator({
               sceneContainerStyle={{
                 backgroundColor: "transparent",
                 minHeight: "100%",
-                overflow: "visible",
-              }}
+                overflow: "visible"}}
               screenListeners={{
                 state: (e) => {
                   const s = (e.data as any)?.state;
-                  if (!s || s.index === undefined || !s.routes) return;
+                  if (!s || s.index === undefined) return;
                   const routeName = s.routes[s.index]?.name;
-                  if (routeName && routeName !== activeTab) {
-                    // Update local tab state — the useEffect above handles notifying parent
+                  if (routeName) {
                     setActiveTab(routeName);
+                    // Only report main tabs to parent (not panel screens)
+                    const mainTabs = ["Self", "Community", "Classroom", "Library", "Profile"];
+                    if (mainTabs.includes(routeName)) {
+                      onTabChange?.(routeName.toLowerCase());
+                    }
                   }
-                },
-              }}
-              screenOptions={{ headerShown: false }}
-            >
+                }}}
+              screenOptions={{ headerShown: false }}>
               <Tab.Screen name="Self">
                 {() => (
                   <ErrorBoundary name="Self">
                     <React.Suspense
-                      fallback={<StackFallback />}
-                    >
+                      fallback={<StackFallback />}>
                       <SelfStackNavigatorWeb />
                     </React.Suspense>
                   </ErrorBoundary>
@@ -523,8 +479,7 @@ export default function TabNavigator({
                 {() => (
                   <ErrorBoundary name="Community">
                     <React.Suspense
-                      fallback={<StackFallback />}
-                    >
+                      fallback={<StackFallback />}>
                       <CommunityStackNavigatorWeb />
                     </React.Suspense>
                   </ErrorBoundary>
@@ -534,8 +489,7 @@ export default function TabNavigator({
                 {() => (
                   <ErrorBoundary name="Classroom">
                     <React.Suspense
-                      fallback={<StackFallback />}
-                    >
+                      fallback={<StackFallback />}>
                       <ClassroomStackNavigatorWeb />
                     </React.Suspense>
                   </ErrorBoundary>
@@ -545,8 +499,7 @@ export default function TabNavigator({
                 {() => (
                   <ErrorBoundary name="Library">
                     <React.Suspense
-                      fallback={<StackFallback />}
-                    >
+                      fallback={<StackFallback />}>
                       <LibraryStackNavigatorWeb />
                     </React.Suspense>
                   </ErrorBoundary>
@@ -556,8 +509,7 @@ export default function TabNavigator({
                 {() => (
                   <ErrorBoundary name="Profile">
                     <React.Suspense
-                      fallback={<StackFallback />}
-                    >
+                      fallback={<StackFallback />}>
                       <ProfileStackNavigatorWeb />
                     </React.Suspense>
                   </ErrorBoundary>
@@ -568,8 +520,7 @@ export default function TabNavigator({
                 {() => (
                   <ErrorBoundary name="Notifications">
                     <React.Suspense
-                      fallback={<StackFallback />}
-                    >
+                      fallback={<StackFallback />}>
                       <NotificationsScreenWeb />
                     </React.Suspense>
                   </ErrorBoundary>
@@ -579,8 +530,7 @@ export default function TabNavigator({
                 {() => (
                   <ErrorBoundary name="Settings">
                     <React.Suspense
-                      fallback={<StackFallback />}
-                    >
+                      fallback={<StackFallback />}>
                       <AppSettingsScreenWeb />
                     </React.Suspense>
                   </ErrorBoundary>
@@ -597,8 +547,7 @@ export default function TabNavigator({
       {isMobileView && !isSidebarExpanded && (
         <nav
           className="mobile-bottom-nav"
-          aria-label={t("webNav.tabNavigation")}
-        >
+          aria-label={t("webNav.tabNavigation")}>
           {TAB_CONFIG.map((conf) => {
             const isActive = activeTab === conf.name;
             const Icon = conf.icon;
@@ -609,8 +558,7 @@ export default function TabNavigator({
                 onClick={() => {
                   (navigation.navigate as any)("Main", { screen: conf.name });
                 }}
-                aria-current={isActive ? "page" : undefined}
-              >
+                aria-current={isActive ? "page" : undefined}>
                 <Icon
                   size={22}
                   color={isActive ? "var(--water)" : "var(--ink-ghost)"}
@@ -625,13 +573,11 @@ export default function TabNavigator({
             className={`mobile-nav-item ${activeTab === "NotificationsPanel" ? "active" : ""}`}
             onClick={() =>
               (navigation.navigate as any)("Main", {
-                screen: activeTab === "NotificationsPanel" ? "Self" : "NotificationsPanel",
-              })
+                screen: activeTab === "NotificationsPanel" ? "Self" : "NotificationsPanel"})
             }
-            aria-current={activeTab === "NotificationsPanel" ? "page" : undefined}
-          >
+            aria-current={activeTab === "NotificationsPanel" ? "page" : undefined}>
             <div style={{ position: "relative" }}>
-              <Bell
+              <Icon as={Bell}
                 size={22}
                 color={
                   activeTab === "NotificationsPanel"
@@ -639,7 +585,9 @@ export default function TabNavigator({
                     : "var(--ink-ghost)"
                 }
               />
-              <NotificationBadge count={unreadCount} size="sm" />
+              <div className="bell-dot" style={unreadCount > 0 ? { display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: '14px', height: '14px', padding: '0 3px', fontSize: '8px', fontWeight: '800', background: 'var(--lotus)', color: 'white', borderRadius: '7px', top: '-3px', right: '-5px' } : {}}>
+                {unreadCount > 0 ? (unreadCount > 99 ? '99+' : String(unreadCount)) : ''}
+              </div>
             </div>
             <span className="mobile-nav-label">{t("webNav.alerts")}</span>
           </button>
@@ -655,37 +603,16 @@ export default function TabNavigator({
 
       <UniversalModal
         isOpen={isBreathingOpen}
-        onClose={() => setBreathingOpen(false)}
-      >
-        <Box sx={{ 
-          backgroundColor: scene.elevated.bg,
-          borderColor: scene.elevated.border,
-          borderWidth: 1,
-          borderRadius: '$xl' as any,
-          padding: Theme.spacing.xl, 
-          alignItems: 'center',
-          maxWidth: 600,
-          width: '90%'
-        }}>
-          <HStack justifyContent="space-between" alignItems="center" sx={{ width: '100%', marginBottom: Theme.spacing.md }}>
-            <Text color={text.onElevated} sx={{ fontSize: '$lg' as any, fontWeight: '700' }}>
+        onClose={() => setBreathingOpen(false)}>
+        <Box className="bg-phase-canvas rounded-3xl p-xl items-center max-w-[600px] w-11/12 mx-auto">
+          <HStack className="justify-between items-center w-full mb-md">
+            <Text className="text-phaseText-primary text-lg font-bold">
               {t('self.breathingReset') || 'Breathing Reset'}
             </Text>
             <button 
               onClick={() => setBreathingOpen(false)}
-              style={{
-                background: scene.interactive.bg,
-                border: `1px solid ${scene.interactive.border}`,
-                borderRadius: 9999,
-                cursor: 'pointer',
-                color: text.onInteractive,
-                padding: 8,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <X size={24} />
+              style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--ink-ghost)' }}>
+              <Icon as={X} size={24} />
             </button>
           </HStack>
           <BreathGuide onComplete={() => setBreathingOpen(false)} />

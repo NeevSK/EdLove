@@ -1,31 +1,28 @@
-// Mock expo-camera BEFORE any imports
+﻿// Mock expo-camera BEFORE any imports
 jest.mock('expo-camera', () => ({
     CameraView: 'CameraView',
     CameraType: { back: 'back', front: 'front' },
-    useCameraPermissions: () => [{ granted: true }, jest.fn()],
-}));
+    useCameraPermissions: () => [{ granted: true }, jest.fn()]}));
 jest.mock('expo-image-picker', () => ({
     launchImageLibraryAsync: jest.fn(),
-    MediaTypeOptions: { Images: 'Images' },
-}));
+    MediaTypeOptions: { Images: 'Images' }}));
 
 // TDD Unit Tests for OnboardingScreen Component
 // Component facts (from reading OnboardingScreen.tsx):
 //   - totalSteps = 9: steps 0-Name, 1-Role, 2-Orientation, 3-7 Tour, 8-Auth
-//   - fireEvent.press / changeText are async in RTLRN v14 — must be awaited
-//   - isDisabled lives on Button (View), not ButtonText (Text) — test via behaviour
+//   - fireEvent.press / changeText are async in RTLRN v14  must be awaited
+//   - isDisabled lives on Button (View), not ButtonText (Text)  test via behaviour
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
-import OnboardingScreen from '../../screens/OnboardingScreen';
+import { OnboardingScreen } from '@repo/ui';
 
 jest.mock('@react-navigation/native', () => ({
-    useNavigation: () => ({ navigate: jest.fn() }),
-}));
+    useNavigation: () => ({ navigate: jest.fn() })}));
 
 jest.mock('react-i18next', () => ({
     useTranslation: () => ({
         t: (key: string, fallback?: string) => {
-            const map: Record<string, string> = {
+            const map: Record<string, string>  = {
                 'onboarding.nameTitle': 'Welcome! What should we call you?',
                 'onboarding.namePlaceholder': 'Enter your name',
                 'onboarding.roleTitle': 'What is your role?',
@@ -34,13 +31,10 @@ jest.mock('react-i18next', () => ({
                 'onboarding.next': 'Next',
                 'onboarding.skip': 'Skip',
                 'role.teacher': 'Teacher',
-                'role.student': 'Student',
-            };
+                'role.student': 'Student'};
             return map[key] || fallback || key;
         },
-        i18n: { language: 'en', changeLanguage: jest.fn() },
-    }),
-}));
+        i18n: { language: 'en', changeLanguage: jest.fn() }})}));
 
 jest.mock('@repo/core', () => ({
     UserRole: {},
@@ -50,14 +44,11 @@ jest.mock('@repo/core', () => ({
             setTeacherName: jest.fn(),
             setUserRole: jest.fn(),
             setOnboardingCompleted: jest.fn(),
-            setJustFinishedOnboarding: jest.fn(),
-        }),
-    }),
+            setJustFinishedOnboarding: jest.fn()})}),
     supabase: {
         auth: {
             getUser: () => Promise.resolve({ data: { user: { id: 'test-user-id' } }, error: null }),
-            getSession: () => Promise.resolve({ data: { session: { user: { is_anonymous: true } } }, error: null }),
-        },
+            getSession: () => Promise.resolve({ data: { session: { user: { is_anonymous: true } } }, error: null })},
         from: () => ({
             insert: () => ({ select: () => ({ single: () => Promise.resolve({ data: { id: 'school-id' }, error: null }) }) }),
             upsert: () => Promise.resolve({ error: null }),
@@ -66,23 +57,17 @@ jest.mock('@repo/core', () => ({
                 select: () => ({ eq: () => ({ maybeSingle: () => Promise.resolve({ data: null, error: null }) }) }),
                 eq: () => ({ 
                     maybeSingle: () => Promise.resolve({ data: null, error: null }),
-                    single: () => Promise.resolve({ data: null, error: null }),
-                }) 
-            }),
-        }),
-    },
+                    single: () => Promise.resolve({ data: null, error: null })}) 
+            })})},
     identityAPI: {
-        getMyInternalId: jest.fn().mockResolvedValue('test-internal-id'),
-    },
+        getMyInternalId: jest.fn().mockResolvedValue('test-internal-id')},
     hapticLight: jest.fn(),
     hapticSuccess: jest.fn(),
-    hapticError: jest.fn(),
-}));
+    hapticError: jest.fn()}));
 
 jest.mock('expo-haptics', () => ({
     impactAsync: jest.fn(),
-    ImpactFeedbackStyle: { Light: 'light' },
-}));
+    ImpactFeedbackStyle: { Light: 'light' }}));
 
 // Stub components rendered at steps not tested here (steps 2+ and auth)
 jest.mock('../../screens/AuthScreen', () => {
@@ -93,8 +78,7 @@ jest.mock('@repo/self', () => ({
     OrientationCaptureStep: () => {
         const React = require('react');
         return React.createElement('View', { testID: 'orientation-step' });
-    },
-}));
+    }}));
 
 describe('OnboardingScreen Component', () => {
     const mockOnComplete = jest.fn();
@@ -116,7 +100,7 @@ describe('OnboardingScreen Component', () => {
     describe('Name Step Validation', () => {
         it('Continue does not advance step when name is empty (disabled behaviour)', async () => {
             const { getByText } = await render(<OnboardingScreen onComplete={mockOnComplete} />);
-            // Press Continue with no name — component guards: if (!canProceed) return
+            // Press Continue with no name  component guards: if (!canProceed) return
             await fireEvent.press(getByText('Continue'));
             // Step must remain at 1 of 9 (not advance)
             expect(getByText('Step 1 of 9')).toBeTruthy();

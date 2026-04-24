@@ -1,28 +1,27 @@
-import React from 'react';
+﻿import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { useTheme } from '@repo/ui';
+import { useThemedColors } from '@repo/ui';
 import { ProfileStackParamList } from '@repo/core';
 
 // Static imports instead of React.lazy for stability on web
-import ProfileScreenWeb from '../screens/ProfileScreen.web';
-import AppSettingsScreenWeb from '../screens/AppSettingsScreen.web';
-import FullProfileScreen from '../screens/profile/FullProfileScreen';
-import { PrivacyLedgerScreen } from '@repo/self';
+// Direct imports for stability on web, avoiding barrel file bloat
+import ProfileScreenWeb from '@repo/profile/screens/ProfileScreen.web';
+import FullProfileScreen from '@repo/profile/screens/FullProfileScreen.web';
+import AppSettingsScreenWeb from '@repo/ui/screens/AppSettingsScreen.web';
+import PrivacyLedgerScreen from '@repo/self/screens/PrivacyLedgerScreen';
 
 const Stack = createNativeStackNavigator<ProfileStackParamList>();
 
 export default function ProfileStackNavigatorWeb() {
-    const { scene } = useTheme();
+    const colors = useTheme().scene;
 
     return (
         <Stack.Navigator
             id="ProfileStack"
             screenOptions={{
                 headerShown: false,
-                contentStyle: { backgroundColor: scene.canvas.bg },
-                animation: 'slide_from_right',
-            }}
-        >
+                contentStyle: { backgroundColor: colors.primary },
+                animation: 'slide_from_right'}}>
             <Stack.Screen name="ProfileMain" component={ProfileScreenWeb} />
             <Stack.Screen name="FullProfile" component={FullProfileScreen} />
             <Stack.Screen name="AppSettings" component={AppSettingsScreenWeb} />

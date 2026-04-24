@@ -6,51 +6,48 @@
  * Shows all teacher "trees" in the school's wellbeing forest, with health
  * indicators, care-needed alerts, mood history sparklines, and the overall
  * forest weather narrative.
- *
- * Accessible from PrincipalSelfView sidebar widget ("View Full Forest →")
- * and from ClassroomStackNavigator as the 'SchoolForest' route.
  */
 import React, { useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
-import { usePermissions, useStore, schoolForestAPI } from '@repo/core';
+import { usePermissions, schoolForestAPI } from '@repo/core';
 import type { SchoolForestState, TeacherTree } from '@repo/core';
-import { SkeletonCard } from '@repo/ui';
+import { SkeletonCard, Icon } from '@repo/ui';
 import { ArrowLeft, RefreshCw } from 'lucide-react-native';
 
-const WEATHER_EMOJI: Record<string, string> = {
-    radiant: '☀️',
-    lush: '🌿',
-    resting: '🌙',
-    steady: '⛅',
-    quiet: '🌫️',
-    changing: '🌤',
+const WEATHER_EMOJI: Record<string, string>  = {
+    radiant: '\u2600\uFE0F',
+    lush: '\uD83C\uDF3F',
+    resting: '\uD83C\uDF19',
+    steady: '\u26C5',
+    quiet: '\uD83C\uDF2B\uFE0F',
+    changing: '\uD83C\uDF24'
 };
 
-const HEALTH_EMOJI: Record<TeacherTree['tree_health'], string> = {
-    seedling: '🌱',
-    growing: '🌿',
-    flourishing: '🌳',
-    flowering: '🌸',
-    ancient: '🪵',
+const HEALTH_EMOJI: Record<TeacherTree['tree_health'], string> = { 
+    seedling: '\uD83C\uDF31',
+    growing: '\uD83C\uDF3F',
+    flourishing: '\uD83C\uDF33',
+    flowering: '\uD83C\uDF38',
+    ancient: '\uD83E\uDEB5'
 };
 
-const HEALTH_COLOR: Record<TeacherTree['tree_health'], string> = {
+const HEALTH_COLOR: Record<TeacherTree['tree_health'], string> = { 
     seedling: 'var(--amber-glow)',
     growing: 'var(--water)',
     flourishing: 'var(--moss)',
     flowering: 'var(--lotus)',
-    ancient: 'var(--sanctuary-saffron)',
+    ancient: 'var(--sanctuary-saffron)'
 };
 
 function lastSignalLabel(days: number): string {
-    if (days === 0) return '✅ Active today';
-    if (days === 1) return '🕐 Active yesterday';
-    if (days <= 7) return `🕐 ${days} days ago`;
-    return '⚠️ Over a week silent';
+    if (days === 0) return '\u2705 Active today';
+    if (days === 1) return '\uD83D\uDD50 Active yesterday';
+    if (days <= 7) return `\uD83D\uDD50 ${days} days ago`;
+    return '\u26A0\uFE0F Over a week silent';
 }
 
+export default function SchoolForestScreen() {
     const { can, context } = usePermissions();
-    const role = context.roles[0];
     const navigation = useNavigation();
     const schoolId = context.schoolId ?? '';
 
@@ -73,7 +70,7 @@ function lastSignalLabel(days: number): string {
         }
     };
 
-    useEffect(() => { void load(); }, [schoolId]);
+    useEffect(() => { load(); }, [schoolId]);
 
     return (
         <div className="sub-view-container" style={{ maxWidth: '900px', margin: '0 auto', padding: '40px 24px' }}>
@@ -81,13 +78,26 @@ function lastSignalLabel(days: number): string {
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '32px' }}>
                 <button
                     onClick={() => navigation.goBack()}
-                    style={{ background: 'var(--background-alt)', border: 'none', borderRadius: '10px', padding: '8px 12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '700', fontSize: '13px', color: 'var(--ink)', fontFamily: 'var(--font-body)' }}
+                    style={{ 
+                        background: 'var(--background-alt)', 
+                        border: 'none', 
+                        borderRadius: '10px', 
+                        padding: '8px 12px', 
+                        cursor: 'pointer', 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        gap: '6px', 
+                        fontWeight: '700', 
+                        fontSize: '13px', 
+                        color: 'var(--ink)', 
+                        fontFamily: 'var(--font-body)' 
+                    }}
                 >
-                    <ArrowLeft size={16} /> Back
+                    <Icon as={ArrowLeft} size={16} /> Back
                 </button>
                 <div style={{ flex: 1 }}>
                     <h1 style={{ margin: 0, fontSize: '28px', fontWeight: '800', color: 'var(--ink)' }}>
-                        School Forest 🌳
+                        School Forest {'\uD83C\uDF33'}
                     </h1>
                     <p style={{ margin: '4px 0 0', fontSize: '13px', color: 'var(--ink-ghost)' }}>
                         A living map of your staff's wellbeing and growth
@@ -96,10 +106,23 @@ function lastSignalLabel(days: number): string {
                 <button
                     onClick={() => void load(true)}
                     disabled={refreshing}
-                    style={{ background: 'var(--background-alt)', border: 'none', borderRadius: '10px', padding: '8px 12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '700', fontSize: '13px', color: 'var(--ink)', fontFamily: 'var(--font-body)', opacity: refreshing ? 0.6 : 1 }}
+                    style={{ 
+                        background: 'var(--background-alt)', 
+                        border: 'none', 
+                        borderRadius: '10px', 
+                        padding: '8px 12px', 
+                        cursor: 'pointer', 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        gap: '6px', 
+                        fontWeight: '700', 
+                        fontSize: '13px', 
+                        color: 'var(--ink)', 
+                        fontFamily: 'var(--font-body)', 
+                        opacity: refreshing ? 0.6 : 1 
+                    }}
                 >
-                    <RefreshCw size={14} />
-                    Refresh
+                    <RefreshCw size={14} /> Refresh
                 </button>
             </div>
 
@@ -122,7 +145,7 @@ function lastSignalLabel(days: number): string {
             )}
 
             {!loading && forest && (
-                <>
+                <React.Fragment>
                     {/* Forest Weather Banner */}
                     <div
                         className="sanctuary-card"
@@ -130,12 +153,11 @@ function lastSignalLabel(days: number): string {
                             padding: '28px',
                             marginBottom: '24px',
                             background: 'linear-gradient(135deg, var(--moss-soft) 0%, var(--background-alt) 100%)',
-                            border: '1px solid var(--moss-soft)',
-                        }}
+                            border: '1px solid var(--moss-soft)'}}
                     >
                         <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '12px' }}>
                             <span style={{ fontSize: '36px' }}>
-                                {WEATHER_EMOJI[forest.forest_weather] ?? '🌤'}
+                                {WEATHER_EMOJI[forest.forest_weather] ?? '\uD83C\uDF24'}
                             </span>
                             <div>
                                 <div style={{ fontSize: '18px', fontWeight: '800', color: 'var(--moss)', textTransform: 'capitalize' }}>
@@ -145,7 +167,7 @@ function lastSignalLabel(days: number): string {
                                     {forest.trees.length} teacher{forest.trees.length !== 1 ? 's' : ''} in your forest
                                     {forest.trees.filter(t => t.needs_rain).length > 0 && (
                                         <span style={{ color: '#c0392b', marginLeft: '8px', fontWeight: '700' }}>
-                                            · {forest.trees.filter(t => t.needs_rain).length} needing care
+                                            {'\u00B7'} {forest.trees.filter(t => t.needs_rain).length} needing care
                                         </span>
                                     )}
                                 </div>
@@ -161,8 +183,7 @@ function lastSignalLabel(days: number): string {
                         style={{
                             display: 'grid',
                             gridTemplateColumns: 'repeat(auto-fill, minmax(min(260px, 100%), 1fr))',
-                            gap: '16px',
-                        }}
+                            gap: '16px'}}
                     >
                         {forest.trees.map(tree => (
                             <div
@@ -171,11 +192,10 @@ function lastSignalLabel(days: number): string {
                                 style={{
                                     padding: '20px',
                                     border: tree.needs_rain ? '1px solid rgba(192,57,43,0.3)' : undefined,
-                                    background: tree.needs_rain ? 'rgba(231,76,60,0.03)' : undefined,
-                                }}
+                                    background: tree.needs_rain ? 'rgba(231,76,60,0.03)' : undefined}}
                             >
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
-                                    <span style={{ fontSize: '32px' }}>{HEALTH_EMOJI[tree.tree_health] ?? '🌱'}</span>
+                                    <span style={{ fontSize: '32px' }}>{HEALTH_EMOJI[tree.tree_health] ?? '\uD83C\uDF31'}</span>
                                     <div style={{ flex: 1 }}>
                                         <div style={{ fontSize: '14px', fontWeight: '800', color: 'var(--ink)', textTransform: 'capitalize' }}>
                                             {tree.tree_health}
@@ -190,8 +210,7 @@ function lastSignalLabel(days: number): string {
                                                 fontWeight: '700',
                                                 color: HEALTH_COLOR[tree.tree_health],
                                                 textTransform: 'uppercase',
-                                                letterSpacing: '0.5px',
-                                            }}
+                                                letterSpacing: '0.5px'}}
                                         >
                                             {tree.tree_health}
                                         </div>
@@ -204,15 +223,14 @@ function lastSignalLabel(days: number): string {
                                                 borderRadius: '6px',
                                                 fontSize: '10px',
                                                 fontWeight: '800',
-                                                color: '#c0392b',
-                                            }}
+                                                color: '#c0392b'}}
                                         >
-                                            💧 Needs care
+                                            {'\uD83D\uDCA7'} Needs care
                                         </div>
                                     )}
                                 </div>
 
-                                {/* Days since last signal — proxy for engagement */}
+                                {/* Days since last signal proxy for engagement */}
                                 <div style={{ fontSize: '11px', color: 'var(--ink-ghost)', marginTop: '8px' }}>
                                     {lastSignalLabel(tree.days_since_signal)}
                                 </div>
@@ -227,8 +245,9 @@ function lastSignalLabel(days: number): string {
                             </p>
                         </div>
                     )}
-                </>
+                </React.Fragment>
             )}
         </div>
     );
 }
+

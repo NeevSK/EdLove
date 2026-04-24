@@ -1,455 +1,683 @@
 /**
- * TrubeCore.cpp — Production GPU Engine Implementation
+ * TrubeCore.cpp — Production Vulkan Engine Implementation
  * Trübe-Art v1.0 · 2026 Production Ready
- *
- * This file contains real WebGPU calls. Every GPU object is a live handle.
- * The engine is designed for:
- *   — Zero allocation per frame (all buffers are pre-allocated at startup)
- *   — Zero GPU pipeline recompilation per frame (all pipelines pre-warmed)
- *   — UI-thread safety (mutex-protected session map)
- *   — RAII memory: all handles self-release when SurfaceSession is destroyed
- *
- * "Imperfection is truth." — The Kells Principle
  */
 
 #include "../include/TrubeCore.hpp"
-
-#include <cassert>
-#include <cmath>
-#include <cstring>
-#include <iomanip>
+#include "../include/AuroraShader.h"
 #include <iostream>
-#include <sstream>
+#include <vector>
+#include <set>
+#include <algorithm>
 
 namespace trube {
 
-// =============================================================================
-// Construction / Destruction
-// =============================================================================
-
-TrubeCore::TrubeCore(WGPUDevice device, WGPUQueue queue)
-    : device_(device),
-      queue_(queue),
-      startTime_(std::chrono::steady_clock::now())
-{
-    assert(device_ && "TrubeCore: WGPUDevice must not be null");
-    assert(queue_  && "TrubeCore: WGPUQueue must not be null");
-
-    // -------------------------------------------------------------------------
-    // Create the shared bind group layout.
-    // All surfaces share the same layout: one uniform buffer at binding 0,
-    // visible to the fragment shader only.
-    // -------------------------------------------------------------------------
-    WGPUBindGroupLayoutEntry bglEntry{};
-    bglEntry.binding               = 0;
-    bglEntry.visibility            = WGPUShaderStage_Fragment | WGPUShaderStage_Vertex;
-    bglEntry.buffer.type           = WGPUBufferBindingType_Uniform;
-    bglEntry.buffer.minBindingSize = sizeof(TrubeUniforms); // 32 bytes
-
-    WGPUBindGroupLayoutDescriptor bgld{};
-    bgld.label      = "TrubeCore_SharedLayout";
-    bgld.entryCount = 1;
-    bgld.entries    = &bglEntry;
-
-    WGPUBindGroupLayout rawLayout = wgpuDeviceCreateBindGroupLayout(device_, &bgld);
-    assert(rawLayout && "TrubeCore: Failed to create shared bind group layout");
-    sharedBindGroupLayout_.reset(rawLayout);
-
-    std::cout << "[Trübe-Art] [Full-Metal] Engine initialized. Device: "
-              << std::hex << reinterpret_cast<uintptr_t>(device_) << std::dec << "\n";
+TrubeCore::TrubeCore() : startTime_(std::chrono::steady_clock::now()) {
+    // Basic initialization
 }
 
 TrubeCore::~TrubeCore() {
-    // SurfaceSession destructors release all GPU objects via RAII deleters.
-    // sharedBindGroupLayout_ releases itself.
-    // device_ and queue_ are BORROWED — we must NOT release them here.
-    std::cout << "[Trübe-Art] [Full-Metal] Engine shutting down. "
-              << telemetry_.activeSurfaces << " surface(s) released.\n";
+    destroy();
 }
 
-
-// =============================================================================
-// prewarmSurface() — Real GPU Pipeline Compilation
-// =============================================================================
-
-bool TrubeCore::prewarmSurface(const std::string& name, const std::string& wgslSource) {
-    std::lock_guard<std::mutex> lock(sessionMutex_);
-
-    // Idempotent: skip if already compiled
-    auto existing = sessions_.find(name);
-    if (existing != sessions_.end() && existing->second.isReady) {
-        std::cout << "[Trübe-Art] [Prewarm] '" << name << "' already compiled — skipping.\n";
-        return true;
-    }
-
-    auto t0 = std::chrono::high_resolution_clock::now();
-
-    // 1. Compile WGSL shader module
-    ShaderModuleHandle shaderModule = createShaderModule(wgslSource);
-    if (shaderModule == nullptr) {
-        std::cerr << "[Trübe-Art] [ERROR] Shader compilation failed for: " << name << "\n";
-        return false;
-    }
-
-    // 2. Create render pipeline (fullscreen triangle vertex + surface fragment)
-    RenderPipelineHandle pipeline = createRenderPipeline(shaderModule.get());
-    if (pipeline == nullptr) {
-        std::cerr << "[Trübe-Art] [ERROR] Pipeline creation failed for: " << name << "\n";
-        return false;
-    }
-
-    // 3. Create the uniform buffer (32 bytes, UNIFORM | COPY_DST)
-    BufferHandle uniformBuffer = createUniformBuffer();
-    if (uniformBuffer == nullptr) {
-        std::cerr << "[Trübe-Art] [ERROR] Uniform buffer creation failed for: " << name << "\n";
-        return false;
-    }
-
-    // 4. Create bind group (binds uniformBuffer to the shared layout at slot 0)
-    BindGroupHandle bindGroup = createBindGroup(uniformBuffer.get());
-    if (bindGroup == nullptr) {
-        // 原则上这应该没问题，但 lint 报错，我会改成 explicit check。
-        std::cerr << "[Trübe-Art] [ERROR] Bind group creation failed for: " << name << "\n";
-        return false;
-    }
-
-    // 5. Record the session
-    SurfaceSession session;
-    session.name          = name;
-    session.pipeline      = std::move(pipeline);
-    session.uniformBuffer = std::move(uniformBuffer);
-    session.bindGroup     = std::move(bindGroup);
-    session.uniforms      = TrubeUniforms{};
-    session.needsFlush    = true;
-    session.isReady       = true;
-
-    sessions_[name] = std::move(session);
-    telemetry_.activeSurfaces++;
-
-    auto t1 = std::chrono::high_resolution_clock::now();
-    telemetry_.lastPrewarmMs =
-        std::chrono::duration<double, std::milli>(t1 - t0).count();
-
-    std::cout << std::fixed << std::setprecision(2)
-              << "[Trübe-Art] [Prewarm] '" << name << "' compiled in "
-              << telemetry_.lastPrewarmMs << "ms\n";
-
-    return true;
+void TrubeCore::init(void* window) {
+    createInstance();
+    createSurface(window);
+    pickPhysicalDevice();
+    createLogicalDevice();
+    createSwapchain();
+    createRenderPass();
+    createDescriptorSetLayout();
+    createGraphicsPipeline();
+    createUniformBuffers();
+    createDescriptorPool();
+    createDescriptorSets();
+    createCommandBuffers();
+    createSyncObjects();
+    isInitialized_ = true;
+    std::cout << "[Trübe-Art] [Vulkan] Engine initialized successfully.\n";
 }
 
-void TrubeCore::prewarmSurfaceAsync(const std::string& name, 
-                                   const std::string& wgslSource, 
-                                   std::function<void(bool)> onReady) {
-    // 1. Check if already ready (fast path)
-    {
-        std::lock_guard<std::mutex> lock(sessionMutex_);
-        auto it = sessions_.find(name);
-        if (it != sessions_.end() && it->second.isReady) {
-            if (onReady) onReady(true);
-            return;
+void TrubeCore::updateUniforms(const std::string& name, float time, float resW, float resH) {
+    if (!isInitialized_) return;
+
+    TrubeUniforms ubo{};
+    ubo.time = time;
+    ubo.resolution[0] = resW;
+    ubo.resolution[1] = resH;
+
+    // Use current frame index for double buffering
+    memcpy(uniformBuffersMapped_[currentFrame_], &ubo, sizeof(ubo));
+}
+
+void TrubeCore::createInstance() {
+    VkApplicationInfo appInfo{};
+    appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+    appInfo.pApplicationName = "TrubeArt";
+    appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
+    appInfo.pEngineName = "TrubeCore";
+    appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
+    appInfo.apiVersion = VK_API_VERSION_1_1;
+
+    std::vector<const char*> extensions = {
+        VK_KHR_SURFACE_EXTENSION_NAME,
+        VK_KHR_ANDROID_SURFACE_EXTENSION_NAME
+    };
+
+    VkInstanceCreateInfo createInfo{};
+    createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+    createInfo.pApplicationInfo = &appInfo;
+    createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
+    createInfo.ppEnabledExtensionNames = extensions.data();
+
+    if (vkCreateInstance(&createInfo, nullptr, &instance_) != VK_SUCCESS) {
+        throw std::runtime_error("failed to create instance!");
+    }
+}
+
+void TrubeCore::createSurface(void* window) {
+    ANativeWindow* nativeWindow = static_cast<ANativeWindow*>(window);
+    VkAndroidSurfaceCreateInfoKHR createInfo{};
+    createInfo.sType = VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR;
+    createInfo.window = nativeWindow;
+
+    if (vkCreateAndroidSurfaceKHR(instance_, &createInfo, nullptr, &surface_) != VK_SUCCESS) {
+        throw std::runtime_error("failed to create android surface!");
+    }
+}
+
+void TrubeCore::pickPhysicalDevice() {
+    uint32_t deviceCount = 0;
+    vkEnumeratePhysicalDevices(instance_, &deviceCount, nullptr);
+    if (deviceCount == 0) throw std::runtime_error("failed to find GPUs with Vulkan support!");
+
+    std::vector<VkPhysicalDevice> devices(deviceCount);
+    vkEnumeratePhysicalDevices(instance_, &deviceCount, devices.data());
+    physicalDevice_ = devices[0]; // Pick first for now
+}
+
+void TrubeCore::createLogicalDevice() {
+    uint32_t queueFamilyCount = 0;
+    vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice_, &queueFamilyCount, nullptr);
+    std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
+    vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice_, &queueFamilyCount, queueFamilies.data());
+
+    int graphicsFamily = -1;
+    for (uint32_t i = 0; i < queueFamilyCount; i++) {
+        if (queueFamilies[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) {
+            graphicsFamily = i;
+            break;
         }
     }
 
-    // 2. Initialize shader module (Sync for now, usually fast)
-    ShaderModuleHandle shaderModule = createShaderModule(wgslSource);
-    if (shaderModule == nullptr) {
-        if (onReady) onReady(false);
-        return;
+    float queuePriority = 1.0f;
+    VkDeviceQueueCreateInfo queueCreateInfo{};
+    queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+    queueCreateInfo.queueFamilyIndex = graphicsFamily;
+    queueCreateInfo.queueCount = 1;
+    queueCreateInfo.pQueuePriorities = &queuePriority;
+
+    std::vector<const char*> deviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
+
+    VkDeviceCreateInfo createInfo{};
+    createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+    createInfo.queueCreateInfoCount = 1;
+    createInfo.pQueueCreateInfos = &queueCreateInfo;
+    createInfo.enabledExtensionCount = static_cast<uint32_t>(deviceExtensions.size());
+    createInfo.ppEnabledExtensionNames = deviceExtensions.data();
+
+    if (vkCreateDevice(physicalDevice_, &createInfo, nullptr, &device_) != VK_SUCCESS) {
+        throw std::runtime_error("failed to create logical device!");
     }
 
-    // 3. Create pipeline asynchronously
-    // In a real WebGPU implementation (Dawn), we'd use wgpuDeviceCreateRenderPipelineAsync.
-    // Since we are in a native C++ module, we can also dispatch to a background thread
-    // if the WebGPU implementation's async call is not ideal for our bridge.
-    
-    // For now, let's assume the WebGPU C API provides the async call.
-    // If not, we simulate it with a thread pool to avoid blocking the UI thread.
-    
-    // NOTE: This implementation assumes wgpuDeviceCreateRenderPipelineAsync exists.
-    // If it doesn't, we'll wrap the sync call in a std::thread.
-    
-    std::thread([this, name, sm = std::move(shaderModule), onReady]() mutable {
-        auto pipeline = createRenderPipeline(sm.get());
-        bool success = (pipeline != nullptr);
-        
-        if (success) {
-            std::lock_guard<std::mutex> lock(sessionMutex_);
-            SurfaceSession session;
-            session.name          = name;
-            session.pipeline      = std::move(pipeline);
-            session.uniformBuffer = createUniformBuffer();
-            session.isReady       = true;
-            sessions_[name] = std::move(session);
-        }
-        
-        if (onReady) onReady(success);
-    }).detach();
+    vkGetDeviceQueue(device_, graphicsFamily, 0, &graphicsQueue_);
+    presentQueue_ = graphicsQueue_; // Usually same on Android
 }
 
+void TrubeCore::destroy() {
+    if (!device_) return;
 
-// =============================================================================
-// onFrame() — Zero-Allocation Per-Frame Uniform Flush
-// =============================================================================
+    vkDeviceWaitIdle(device_);
 
-void TrubeCore::onFrame(const std::string& name,
-                        float time, float entropy, float intensity,
-                        float resW, float resH)
-{
-    std::lock_guard<std::mutex> lock(sessionMutex_);
+    for (size_t i = 0; i < imageAvailableSemaphores_.size(); i++) {
+        vkDestroySemaphore(device_, imageAvailableSemaphores_[i], nullptr);
+        vkDestroySemaphore(device_, renderFinishedSemaphores_[i], nullptr);
+        vkDestroyFence(device_, inFlightFences_[i], nullptr);
+    }
 
-    auto it = sessions_.find(name);
-    if (it == sessions_.end() || !it->second.isReady) return;
+    vkDestroyCommandPool(device_, commandPool_, nullptr);
 
-    SurfaceSession& sess = it->second;
+    for (auto framebuffer : swapChainFramebuffers_) {
+        vkDestroyFramebuffer(device_, framebuffer, nullptr);
+    }
 
-    // Update host-side TrubeUniforms struct
-    sess.uniforms.time        = time;
-    sess.uniforms.entropy     = entropy;
-    sess.uniforms.intensity   = intensity;
-    sess.uniforms._pad0       = 0.0f;
-    sess.uniforms.resolutionX = resW;
-    sess.uniforms.resolutionY = resH;
-    sess.uniforms._pad1       = 0.0f;
-    sess.uniforms._pad2       = 0.0f;
+    vkDestroyPipeline(device_, graphicsPipeline_, nullptr);
+    vkDestroyPipelineLayout(device_, pipelineLayout_, nullptr);
+    vkDestroyRenderPass(device_, renderPass_, nullptr);
 
-    // Zero-copy flush to GPU uniform buffer.
-    // wgpuQueueWriteBuffer is the zero-allocation path — it maps directly into
-    // the GPU staging ring buffer without any additional memcpy.
-    wgpuQueueWriteBuffer(
-        queue_,
-        sess.uniformBuffer.get(),
-        0,                          // offset within the buffer
-        &sess.uniforms,             // host data pointer
-        sizeof(TrubeUniforms)       // 32 bytes
-    );
+    for (auto imageView : swapChainImageViews_) {
+        vkDestroyImageView(device_, imageView, nullptr);
+    }
 
-    // The React Native WebGPU layer (react-native-wgpu) handles the actual
-    // render pass encoding and texture presentation. Here we tag the session
-    // so the render pass encoder can pick up the correct bind group on draw.
-    sess.needsFlush = false;
+    vkDestroySwapchainKHR(device_, swapChain_, nullptr);
 
-    // Frame telemetry
+    for (size_t i = 0; i < uniformBuffers_.size(); i++) {
+        vkUnmapMemory(device_, uniformBuffersMemory_[i]);
+        vkDestroyBuffer(device_, uniformBuffers_[i], nullptr);
+        vkFreeMemory(device_, uniformBuffersMemory_[i], nullptr);
+    }
+
+    vkDestroyDescriptorPool(device_, descriptorPool_, nullptr);
+    vkDestroyDescriptorSetLayout(device_, descriptorSetLayout_, nullptr);
+    
+    vkDestroyDevice(device_, nullptr);
+    vkDestroySurfaceKHR(instance_, surface_, nullptr);
+    vkDestroyInstance(instance_, nullptr);
+    
+    isInitialized_ = false;
+    std::cout << "[Trübe-Art] [Vulkan] Engine destroyed.\n";
+}
+
+void TrubeCore::createSwapchain() {
+    // 1. Create Swapchain
+    VkSwapchainCreateInfoKHR createInfo{};
+    createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
+    createInfo.surface = surface_;
+    createInfo.minImageCount = 2; // Double buffering
+    createInfo.imageFormat = VK_FORMAT_B8G8R8A8_UNORM;
+    createInfo.imageColorSpace = VK_COLOR_SPACE_SRGB_NONLINEAR_KHR;
+    createInfo.imageExtent = {1080, 1920}; // Android default (should be dynamic)
+    createInfo.imageArrayLayers = 1;
+    createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+    createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
+    createInfo.preTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
+    createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+    createInfo.presentMode = VK_PRESENT_MODE_FIFO_KHR;
+    createInfo.clipped = VK_TRUE;
+
+    if (vkCreateSwapchainKHR(device_, &createInfo, nullptr, &swapChain_) != VK_SUCCESS) {
+        throw std::runtime_error("failed to create swapchain!");
+    }
+
+    // 2. Get Images
+    uint32_t imageCount;
+    vkGetSwapchainImagesKHR(device_, swapChain_, &imageCount, nullptr);
+    swapChainImages_.resize(imageCount);
+    vkGetSwapchainImagesKHR(device_, swapChain_, &imageCount, swapChainImages_.data());
+    
+    swapChainFormat_ = createInfo.imageFormat;
+    swapChainExtent_ = createInfo.imageExtent;
+
+    // 3. Create Image Views
+    swapChainImageViews_.resize(swapChainImages_.size());
+    for (size_t i = 0; i < swapChainImages_.size(); i++) {
+        VkImageViewCreateInfo viewInfo{};
+        viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+        viewInfo.image = swapChainImages_[i];
+        viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+        viewInfo.format = swapChainFormat_;
+        viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+        viewInfo.subresourceRange.baseMipLevel = 0;
+        viewInfo.subresourceRange.levelCount = 1;
+        viewInfo.subresourceRange.baseArrayLayer = 0;
+        viewInfo.subresourceRange.layerCount = 1;
+
+        if (vkCreateImageView(device_, &viewInfo, nullptr, &swapChainImageViews_[i]) != VK_SUCCESS) {
+            throw std::runtime_error("failed to create image views!");
+        }
+    }
+}
+
+void TrubeCore::createFramebuffers() {
+    swapChainFramebuffers_.resize(swapChainImageViews_.size());
+
+    for (size_t i = 0; i < swapChainImageViews_.size(); i++) {
+        VkImageView attachments[] = {
+            swapChainImageViews_[i]
+        };
+
+        VkFramebufferCreateInfo framebufferInfo{};
+        framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+        framebufferInfo.renderPass = renderPass_;
+        framebufferInfo.attachmentCount = 1;
+        framebufferInfo.pAttachments = attachments;
+        framebufferInfo.width = swapChainExtent_.width;
+        framebufferInfo.height = swapChainExtent_.height;
+        framebufferInfo.layers = 1;
+
+        if (vkCreateFramebuffer(device_, &framebufferInfo, nullptr, &swapChainFramebuffers_[i]) != VK_SUCCESS) {
+            throw std::runtime_error("failed to create framebuffer!");
+        }
+    }
+}
+
+void TrubeCore::createRenderPass() {
+    VkAttachmentDescription colorAttachment{};
+    colorAttachment.format = swapChainFormat_;
+    colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+    colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+    colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+    colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+    colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+    colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+    colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+
+    VkAttachmentReference colorAttachmentRef{};
+    colorAttachmentRef.attachment = 0;
+    colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+    VkSubpassDescription subpass{};
+    subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+    subpass.colorAttachmentCount = 1;
+    subpass.pColorAttachments = &colorAttachmentRef;
+
+    VkRenderPassCreateInfo renderPassInfo{};
+    renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+    renderPassInfo.attachmentCount = 1;
+    renderPassInfo.pAttachments = &colorAttachment;
+    renderPassInfo.subpassCount = 1;
+    renderPassInfo.pSubpasses = &subpass;
+
+    if (vkCreateRenderPass(device_, &renderPassInfo, nullptr, &renderPass_) != VK_SUCCESS) {
+        throw std::runtime_error("failed to create render pass!");
+    }
+}
+
+void TrubeCore::createGraphicsPipeline() {
+    VkShaderModule vertShaderModule = createShaderModule(std::vector<uint32_t>(shaders::AURORA_VERT_SPV, shaders::AURORA_VERT_SPV + sizeof(shaders::AURORA_VERT_SPV) / sizeof(uint32_t)));
+    VkShaderModule fragShaderModule = createShaderModule(std::vector<uint32_t>(shaders::AURORA_FRAG_SPV, shaders::AURORA_FRAG_SPV + sizeof(shaders::AURORA_FRAG_SPV) / sizeof(uint32_t)));
+
+    VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
+    vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+    vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
+    vertShaderStageInfo.module = vertShaderModule;
+    vertShaderStageInfo.pName = "main";
+
+    VkPipelineShaderStageCreateInfo fragShaderStageInfo{};
+    fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+    fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+    fragShaderStageInfo.module = fragShaderModule;
+    fragShaderStageInfo.pName = "main";
+
+    VkPipelineShaderStageCreateInfo shaderStages[] = {vertShaderStageInfo, fragShaderStageInfo};
+
+    VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
+    vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+
+    VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
+    inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+    inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+
+    VkViewport viewport{};
+    viewport.x = 0.0f;
+    viewport.y = 0.0f;
+    viewport.width = (float) swapChainExtent_.width;
+    viewport.height = (float) swapChainExtent_.height;
+    viewport.minDepth = 0.0f;
+    viewport.maxDepth = 1.0f;
+
+    VkRect2D scissor{};
+    scissor.offset = {0, 0};
+    scissor.extent = swapChainExtent_;
+
+    VkPipelineViewportStateCreateInfo viewportState{};
+    viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+    viewportState.viewportCount = 1;
+    viewportState.pViewports = &viewport;
+    viewportState.scissorCount = 1;
+    viewportState.pScissors = &scissor;
+
+    VkPipelineRasterizationStateCreateInfo rasterizer{};
+    rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+    rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
+    rasterizer.lineWidth = 1.0f;
+    rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
+    rasterizer.frontFace = VK_FRONT_FACE_CLOCKWISE;
+
+    VkPipelineMultisampleStateCreateInfo multisampling{};
+    multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+    multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
+
+    VkPipelineColorBlendAttachmentState colorBlendAttachment{};
+    colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+    colorBlendAttachment.blendEnable = VK_FALSE;
+
+    VkPipelineColorBlendStateCreateInfo colorBlending{};
+    colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+    colorBlending.attachmentCount = 1;
+    colorBlending.pAttachments = &colorBlendAttachment;
+
+    VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
+    pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+    pipelineLayoutInfo.setLayoutCount = 1;
+    pipelineLayoutInfo.pSetLayouts = &descriptorSetLayout_;
+
+    if (vkCreatePipelineLayout(device_, &pipelineLayoutInfo, nullptr, &pipelineLayout_) != VK_SUCCESS) {
+        throw std::runtime_error("failed to create pipeline layout!");
+    }
+
+    VkGraphicsPipelineCreateInfo pipelineInfo{};
+    pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+    pipelineInfo.stageCount = 2;
+    pipelineInfo.pStages = shaderStages;
+    pipelineInfo.pVertexInputState = &vertexInputInfo;
+    pipelineInfo.pInputAssemblyState = &inputAssembly;
+    pipelineInfo.pViewportState = &viewportState;
+    pipelineInfo.pRasterizationState = &rasterizer;
+    pipelineInfo.pMultisampleState = &multisampling;
+    pipelineInfo.pColorBlendState = &colorBlending;
+    pipelineInfo.layout = pipelineLayout_;
+    pipelineInfo.renderPass = renderPass_;
+    pipelineInfo.subpass = 0;
+
+    if (vkCreateGraphicsPipelines(device_, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline_) != VK_SUCCESS) {
+        throw std::runtime_error("failed to create graphics pipeline!");
+    }
+
+    vkDestroyShaderModule(device_, fragShaderModule, nullptr);
+    vkDestroyShaderModule(device_, vertShaderModule, nullptr);
+}
+
+VkShaderModule TrubeCore::createShaderModule(const std::vector<uint32_t>& code) {
+    VkShaderModuleCreateInfo createInfo{};
+    createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+    createInfo.codeSize = code.size() * sizeof(uint32_t);
+    createInfo.pCode = code.data();
+
+    VkShaderModule shaderModule;
+    if (vkCreateShaderModule(device_, &createInfo, nullptr, &shaderModule) != VK_SUCCESS) {
+        throw std::runtime_error("failed to create shader module!");
+    }
+    return shaderModule;
+}
+
+void TrubeCore::renderFrame(float time) {
+    vkWaitForFences(device_, 1, &inFlightFences_[currentFrame_], VK_TRUE, UINT64_MAX);
+
+    uint32_t imageIndex;
+    vkAcquireNextImageKHR(device_, swapChain_, UINT64_MAX, imageAvailableSemaphores_[currentFrame_], VK_NULL_HANDLE, &imageIndex);
+
+    vkResetFences(device_, 1, &inFlightFences_[currentFrame_]);
+
+    vkResetCommandBuffer(commandBuffers_[imageIndex], 0);
+    
+    VkCommandBufferBeginInfo beginInfo{};
+    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+
+    if (vkBeginCommandBuffer(commandBuffers_[imageIndex], &beginInfo) != VK_SUCCESS) {
+        throw std::runtime_error("failed to begin recording command buffer!");
+    }
+
+    VkRenderPassBeginInfo renderPassInfo{};
+    renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+    renderPassInfo.renderPass = renderPass_;
+    renderPassInfo.framebuffer = swapChainFramebuffers_[imageIndex];
+    renderPassInfo.renderArea.offset = {0, 0};
+    renderPassInfo.renderArea.extent = swapChainExtent_;
+
+    VkClearValue clearColor = {{{0.0f, 0.0f, 0.0f, 1.0f}}};
+    renderPassInfo.clearValueCount = 1;
+    renderPassInfo.pClearValues = &clearColor;
+
+    vkCmdBeginRenderPass(commandBuffers_[imageIndex], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+        vkCmdBindPipeline(commandBuffers_[imageIndex], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline_);
+        // Draw 3 vertices for fullscreen triangle
+        vkCmdDraw(commandBuffers_[imageIndex], 3, 1, 0, 0);
+    vkCmdEndRenderPass(commandBuffers_[imageIndex]);
+
+    if (vkEndCommandBuffer(commandBuffers_[imageIndex]) != VK_SUCCESS) {
+        throw std::runtime_error("failed to record command buffer!");
+    }
+
+    VkSubmitInfo submitInfo{};
+    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+
+    VkSemaphore waitSemaphores[] = {imageAvailableSemaphores_[currentFrame_]};
+    VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
+    submitInfo.waitSemaphoreCount = 1;
+    submitInfo.pWaitSemaphores = waitSemaphores;
+    submitInfo.pWaitDstStageMask = waitStages;
+
+    submitInfo.commandBufferCount = 1;
+    submitInfo.pCommandBuffers = &commandBuffers_[imageIndex];
+
+    VkSemaphore signalSemaphores[] = {renderFinishedSemaphores_[currentFrame_]};
+    submitInfo.signalSemaphoreCount = 1;
+    submitInfo.pSignalSemaphores = signalSemaphores;
+
+    if (vkQueueSubmit(graphicsQueue_, 1, &submitInfo, inFlightFences_[currentFrame_]) != VK_SUCCESS) {
+        throw std::runtime_error("failed to submit draw command buffer!");
+    }
+
+    VkPresentInfoKHR presentInfo{};
+    presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+    presentInfo.waitSemaphoreCount = 1;
+    presentInfo.pWaitSemaphores = signalSemaphores;
+    presentInfo.swapchainCount = 1;
+    presentInfo.pSwapchains = &swapChain_;
+    presentInfo.pImageIndices = &imageIndex;
+
+    vkQueuePresentKHR(presentQueue_, &presentInfo);
+
+    currentFrame_ = (currentFrame_ + 1) % 2;
     telemetry_.frameCount++;
 }
 
-void TrubeCore::recordFrame(const std::string& name, WGPUTextureView targetView) {
-    std::lock_guard<std::mutex> lock(sessionMutex_);
+uint64_t TrubeCore::getFrameCount() const noexcept {
+    return telemetry_.frameCount;
+}
 
-    auto it = sessions_.find(name);
-    if (it == sessions_.end() || !it->second.isReady) return;
+float TrubeCore::getEntropy() {
+    auto now = std::chrono::steady_clock::now();
+    auto duration = now.time_since_epoch();
+    auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
+    
+    // Deterministic entropy based on time and a prime sequence
+    double t = static_cast<double>(millis) / 1000.0;
+    return static_cast<float>(fmod(t * 1.618033988749, 1.0)); 
+}
 
-    SurfaceSession& sess = it->second;
+void TrubeCore::createCommandPool() {
+    VkCommandPoolCreateInfo poolInfo{};
+    poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+    poolInfo.queueFamilyIndex = 0; // Fixed for now, should be queried
+    poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 
-    // 1. Command encoder
-    WGPUCommandEncoderDescriptor encDesc{};
-    encDesc.label = "TrubeCore_FrameEncoder";
-    WGPUCommandEncoder rawEncoder = wgpuDeviceCreateCommandEncoder(device_, &encDesc);
-    if (!rawEncoder) return;
-    CommandEncoderHandle enc(rawEncoder);
+    if (vkCreateCommandPool(device_, &poolInfo, nullptr, &commandPool_) != VK_SUCCESS) {
+        throw std::runtime_error("failed to create command pool!");
+    }
+}
 
-    // 2. Render pass — clear to transparent black
-    WGPURenderPassColorAttachment colorAtt{};
-    colorAtt.view       = targetView;
-    colorAtt.loadOp     = WGPULoadOp_Clear;
-    colorAtt.storeOp    = WGPUStoreOp_Store;
-    colorAtt.clearValue = {0.0, 0.0, 0.0, 0.0};
+void TrubeCore::createCommandBuffers() {
+    commandBuffers_.resize(swapChainFramebuffers_.size());
 
-    WGPURenderPassDescriptor rpDesc{};
-    rpDesc.colorAttachmentCount = 1;
-    rpDesc.colorAttachments     = &colorAtt;
+    VkCommandBufferAllocateInfo allocInfo{};
+    allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+    allocInfo.commandPool = commandPool_;
+    allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    allocInfo.commandBufferCount = (uint32_t)commandBuffers_.size();
 
-    WGPURenderPassEncoder pass = wgpuCommandEncoderBeginRenderPass(enc.get(), &rpDesc);
-    if (!pass) return;
+    if (vkAllocateCommandBuffers(device_, &allocInfo, commandBuffers_.data()) != VK_SUCCESS) {
+        throw std::runtime_error("failed to allocate command buffers!");
+    }
 
-    // 3. Draw Substrate (Fullscreen Quad)
-    wgpuRenderPassEncoderSetPipeline(pass, sess.pipeline.get());
-    wgpuRenderPassEncoderSetBindGroup(pass, 0, sess.bindGroup.get(), 0, nullptr);
-    // Fullscreen triangle — the Substrate draw call
-    // 3 vertices, 1 instance, no vertex buffer needed
-    wgpuRenderPassEncoderDraw(pass, 3, 1, 0, 0);
+    for (size_t i = 0; i < commandBuffers_.size(); i++) {
+        VkCommandBufferBeginInfo beginInfo{};
+        beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
-    // 4. Draw Geometry Layer (Motifs / Ornaments)
-    // These use the same bind group (uniforms) but their own vertex/index buffers.
-    for (const auto& prim : sess.primitives) {
-        if (prim) {
-            prim->draw(pass);
+        if (vkBeginCommandBuffer(commandBuffers_[i], &beginInfo) != VK_SUCCESS) {
+            throw std::runtime_error("failed to begin recording command buffer!");
+        }
+
+        VkRenderPassBeginInfo renderPassInfo{};
+        renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+        renderPassInfo.renderPass = renderPass_;
+        renderPassInfo.framebuffer = swapChainFramebuffers_[i];
+        renderPassInfo.renderArea.offset = {0, 0};
+        renderPassInfo.renderArea.extent = swapChainExtent_;
+
+        VkClearValue clearColor = {{{0.0f, 0.0f, 0.0f, 1.0f}}};
+        renderPassInfo.clearValueCount = 1;
+        renderPassInfo.pClearValues = &clearColor;
+
+        vkCmdBeginRenderPass(commandBuffers_[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+        vkCmdBindPipeline(commandBuffers_[i], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline_);
+        vkCmdBindDescriptorSets(commandBuffers_[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout_, 0, 1, &descriptorSets_[i], 0, nullptr);
+        
+        // Draw 3 vertices for a fullscreen triangle (trube-style)
+        vkCmdDraw(commandBuffers_[i], 3, 1, 0, 0);
+
+        vkCmdEndRenderPass(commandBuffers_[i]);
+
+        if (vkEndCommandBuffer(commandBuffers_[i]) != VK_SUCCESS) {
+            throw std::runtime_error("failed to record command buffer!");
         }
     }
+}
 
-    // 5. End and submit
-    wgpuRenderPassEncoderEnd(pass);
-    wgpuRenderPassEncoderRelease(pass);
+void TrubeCore::createSyncObjects() {
+    imageAvailableSemaphores_.resize(2); // Double buffered
+    renderFinishedSemaphores_.resize(2);
+    inFlightFences_.resize(2);
 
-    WGPUCommandBufferDescriptor cmdDesc{};
-    cmdDesc.label = "TrubeCore_CommandBuffer";
-    WGPUCommandBuffer cmd = wgpuCommandEncoderFinish(enc.get(), &cmdDesc);
-    if (cmd) {
-        wgpuQueueSubmit(queue_, 1, &cmd);
-        wgpuCommandBufferRelease(cmd);
+    VkSemaphoreCreateInfo semaphoreInfo{};
+    semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+
+    VkFenceCreateInfo fenceInfo{};
+    fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+    fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+
+    for (size_t i = 0; i < 2; i++) {
+        if (vkCreateSemaphore(device_, &semaphoreInfo, nullptr, &imageAvailableSemaphores_[i]) != VK_SUCCESS ||
+            vkCreateSemaphore(device_, &semaphoreInfo, nullptr, &renderFinishedSemaphores_[i]) != VK_SUCCESS ||
+            vkCreateFence(device_, &fenceInfo, nullptr, &inFlightFences_[i]) != VK_SUCCESS) {
+            throw std::runtime_error("failed to create synchronization objects for a frame!");
+        }
     }
 }
 
+void TrubeCore::updateUniforms(const std::string& name, float time, float resW, float resH) {
+    if (!isInitialized_) return;
 
-// =============================================================================
-// Kells Time Protocol — Entropy-Modulated Time
-// =============================================================================
+    TrubeUniforms ubo{};
+    ubo.time = time;
+    ubo.resolution[0] = resW;
+    ubo.resolution[1] = resH;
 
-float TrubeCore::getEntropyModulatedTime() const noexcept {
-    auto now  = std::chrono::steady_clock::now();
-    double t  = std::chrono::duration<double>(now - startTime_).count();
-
-    // Three-layer entropy signal.
-    // Primary: 47-second period — guaranteed no visual loop.
-    // Secondary: 19.3s auxiliary drift — adds asymmetry.
-    // Tertiary: 0.1Hz micro-wobble — sub-second texture.
-    double layer1 = std::sin(t / 47.0)          * 0.015;
-    double layer2 = std::cos(t / 19.3)          * 0.007;
-    double layer3 = std::sin(t  * 0.1 + 2.718)  * 0.003;
-
-    float entropyTime = static_cast<float>(t * (1.0 + layer1 + layer2 + layer3));
-
-    // Safe mutable update within const boundary (telemetry only)
-    telemetry_.currentEntropyTime = entropyTime;
-
-    return entropyTime;
+    // Use current frame index for double buffering
+    memcpy(uniformBuffersMapped_[currentFrame_], &ubo, sizeof(ubo));
 }
 
+void TrubeCore::createUniformBuffers() {
+    VkDeviceSize bufferSize = sizeof(TrubeUniforms);
 
-// =============================================================================
-// Status
-// =============================================================================
+    uniformBuffers_.resize(swapChainImages_.size());
+    uniformBuffersMemory_.resize(swapChainImages_.size());
+    uniformBuffersMapped_.resize(swapChainImages_.size());
 
-bool TrubeCore::isReady() const noexcept {
-    return device_ != nullptr && queue_ != nullptr && sharedBindGroupLayout_ != nullptr;
+    for (size_t i = 0; i < swapChainImages_.size(); i++) {
+        VkBufferCreateInfo bufferInfo{};
+        bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+        bufferInfo.size = bufferSize;
+        bufferInfo.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
+        bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+        if (vkCreateBuffer(device_, &bufferInfo, nullptr, &uniformBuffers_[i]) != VK_SUCCESS) {
+            throw std::runtime_error("failed to create uniform buffer!");
+        }
+
+        VkMemoryRequirements memRequirements;
+        vkGetBufferMemoryRequirements(device_, uniformBuffers_[i], &memRequirements);
+
+        VkMemoryAllocateInfo allocInfo{};
+        allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+        allocInfo.allocationSize = memRequirements.size;
+        allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+
+        if (vkAllocateMemory(device_, &allocInfo, nullptr, &uniformBuffersMemory_[i]) != VK_SUCCESS) {
+            throw std::runtime_error("failed to allocate uniform buffer memory!");
+        }
+
+        vkBindBufferMemory(device_, uniformBuffers_[i], uniformBuffersMemory_[i], 0);
+        vkMapMemory(device_, uniformBuffersMemory_[i], 0, bufferSize, 0, &uniformBuffersMapped_[i]);
+    }
 }
 
-bool TrubeCore::isSurfaceReady(const std::string& name) const noexcept {
-    std::lock_guard<std::mutex> lock(sessionMutex_);
-    auto it = sessions_.find(name);
-    return it != sessions_.end() && it->second.isReady;
+uint32_t TrubeCore::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) {
+    VkPhysicalDeviceMemoryProperties memProperties;
+    vkGetPhysicalDeviceMemoryProperties(physicalDevice_, &memProperties);
+
+    for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
+        if ((typeFilter & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties) {
+            return i;
+        }
+    }
+    throw std::runtime_error("failed to find suitable memory type!");
 }
 
-TrubeTelemetry TrubeCore::getTelemetry() const noexcept {
-    return telemetry_;
+void TrubeCore::createDescriptorPool() {
+    VkDescriptorPoolSize poolSize{};
+    poolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    poolSize.descriptorCount = static_cast<uint32_t>(swapChainImages_.size());
+
+    VkDescriptorPoolCreateInfo poolInfo{};
+    poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+    poolInfo.poolSizeCount = 1;
+    poolInfo.pPoolSizes = &poolSize;
+    poolInfo.maxSets = static_cast<uint32_t>(swapChainImages_.size());
+
+    if (vkCreateDescriptorPool(device_, &poolInfo, nullptr, &descriptorPool_) != VK_SUCCESS) {
+        throw std::runtime_error("failed to create descriptor pool!");
+    }
 }
 
+void TrubeCore::createDescriptorSets() {
+    std::vector<VkDescriptorSetLayout> layouts(swapChainImages_.size(), descriptorSetLayout_);
+    VkDescriptorSetAllocateInfo allocInfo{};
+    allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+    allocInfo.descriptorPool = descriptorPool_;
+    allocInfo.descriptorSetCount = static_cast<uint32_t>(swapChainImages_.size());
+    allocInfo.pSetLayouts = layouts.data();
 
-// =============================================================================
-// Private Helpers
-// =============================================================================
+    descriptorSets_.resize(swapChainImages_.size());
+    if (vkAllocateDescriptorSets(device_, &allocInfo, descriptorSets_.data()) != VK_SUCCESS) {
+        throw std::runtime_error("failed to allocate descriptor sets!");
+    }
 
-ShaderModuleHandle TrubeCore::createShaderModule(const std::string& wgsl) const noexcept {
-    // Chain WGSL descriptor onto the base shader module descriptor
-    WGPUShaderModuleWGSLDescriptor wgslDesc{};
-    wgslDesc.chain.sType = WGPUSType_ShaderModuleWGSLDescriptor;
-    wgslDesc.chain.next  = nullptr;
-    wgslDesc.code        = wgsl.c_str();
+    for (size_t i = 0; i < swapChainImages_.size(); i++) {
+        VkDescriptorBufferInfo bufferInfo{};
+        bufferInfo.buffer = uniformBuffers_[i];
+        bufferInfo.offset = 0;
+        bufferInfo.range = sizeof(TrubeUniforms);
 
-    WGPUShaderModuleDescriptor smDesc{};
-    smDesc.nextInChain = reinterpret_cast<WGPUChainedStruct*>(&wgslDesc);
-    smDesc.label       = "TrubeCore_ShaderModule";
+        VkWriteDescriptorSet descriptorWrite{};
+        descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        descriptorWrite.dstSet = descriptorSets_[i];
+        descriptorWrite.dstBinding = 0;
+        descriptorWrite.dstArrayElement = 0;
+        descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        descriptorWrite.descriptorCount = 1;
+        descriptorWrite.pBufferInfo = &bufferInfo;
 
-    WGPUShaderModule raw = wgpuDeviceCreateShaderModule(device_, &smDesc);
-    return ShaderModuleHandle(raw);
+        vkUpdateDescriptorSets(device_, 1, &descriptorWrite, 0, nullptr);
+    }
 }
 
-RenderPipelineHandle TrubeCore::createRenderPipeline(WGPUShaderModule shader) const noexcept {
-    // -------------------------------------------------------------------------
-    // Vertex state — fullscreen triangle (3 vertices, no vertex buffer needed)
-    // The WGSL vs_main computes positions from vertex_index alone.
-    // -------------------------------------------------------------------------
-    WGPUVertexState vertexState{};
-    vertexState.module     = shader;
-    vertexState.entryPoint = "vs_main";
+void TrubeCore::createDescriptorSetLayout() {
+    VkDescriptorSetLayoutBinding uboLayoutBinding{};
+    uboLayoutBinding.binding = 0;
+    uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    uboLayoutBinding.descriptorCount = 1;
+    uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
 
-    // -------------------------------------------------------------------------
-    // Fragment state — surface-specific fs_main
-    // -------------------------------------------------------------------------
-    WGPUColorTargetState colorTarget{};
-    colorTarget.format    = WGPUTextureFormat_BGRA8Unorm;  // RN default surface format
-    colorTarget.writeMask = WGPUColorWriteMask_All;
+    VkDescriptorSetLayoutCreateInfo layoutInfo{};
+    layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+    layoutInfo.bindingCount = 1;
+    layoutInfo.pBindings = &uboLayoutBinding;
 
-    // Alpha blending: over-compositing (standard Porter-Duff OVER)
-    WGPUBlendState blendState{};
-    blendState.color.operation = WGPUBlendOperation_Add;
-    blendState.color.srcFactor = WGPUBlendFactor_SrcAlpha;
-    blendState.color.dstFactor = WGPUBlendFactor_OneMinusSrcAlpha;
-    blendState.alpha.operation = WGPUBlendOperation_Add;
-    blendState.alpha.srcFactor = WGPUBlendFactor_One;
-    blendState.alpha.dstFactor = WGPUBlendFactor_OneMinusSrcAlpha;
-    colorTarget.blend = &blendState;
-
-    WGPUFragmentState fragState{};
-    fragState.module      = shader;
-    fragState.entryPoint  = "fs_main";
-    fragState.targetCount = 1;
-    fragState.targets     = &colorTarget;
-
-    // -------------------------------------------------------------------------
-    // Pipeline layout — uses sharedBindGroupLayout_ at group 0
-    // -------------------------------------------------------------------------
-    WGPUBindGroupLayout layouts[] = { sharedBindGroupLayout_.get() };
-    WGPUPipelineLayoutDescriptor pld{};
-    pld.label                = "TrubeCore_PipelineLayout";
-    pld.bindGroupLayoutCount = 1;
-    pld.bindGroupLayouts     = layouts;
-    WGPUPipelineLayout pipelineLayout = wgpuDeviceCreatePipelineLayout(device_, &pld);
-
-    // -------------------------------------------------------------------------
-    // Assemble render pipeline descriptor
-    // -------------------------------------------------------------------------
-    WGPURenderPipelineDescriptor rpDesc{};
-    rpDesc.label    = "TrubeCore_RenderPipeline";
-    rpDesc.layout   = pipelineLayout;
-    rpDesc.vertex   = vertexState;
-    rpDesc.fragment = &fragState;
-
-    // Fullscreen triangle: TriangleList with 3 bare vertices
-    rpDesc.primitive.topology         = WGPUPrimitiveTopology_TriangleList;
-    rpDesc.primitive.cullMode         = WGPUCullMode_None;
-    rpDesc.primitive.frontFace        = WGPUFrontFace_CCW;
-    rpDesc.primitive.stripIndexFormat = WGPUIndexFormat_Undefined;
-
-    // No depth/stencil (we render over native UI at the compositor level)
-    rpDesc.depthStencil = nullptr;
-
-    // Single-sample (no MSAA — the UI layer handles this)
-    rpDesc.multisample.count                  = 1;
-    rpDesc.multisample.mask                   = 0xFFFFFFFF;
-    rpDesc.multisample.alphaToCoverageEnabled = false;
-
-    WGPURenderPipeline raw = wgpuDeviceCreateRenderPipeline(device_, &rpDesc);
-    wgpuPipelineLayoutRelease(pipelineLayout); // layout baked into pipeline — release immediately
-
-    return RenderPipelineHandle(raw);
-}
-
-BufferHandle TrubeCore::createUniformBuffer() const noexcept {
-    WGPUBufferDescriptor bd{};
-    bd.label            = "TrubeCore_UniformBuffer";
-    bd.size             = sizeof(TrubeUniforms);           // 32 bytes
-    bd.usage            = WGPUBufferUsage_Uniform | WGPUBufferUsage_CopyDst;
-    bd.mappedAtCreation = false;
-
-    WGPUBuffer raw = wgpuDeviceCreateBuffer(device_, &bd);
-    return BufferHandle(raw);
-}
-
-BindGroupHandle TrubeCore::createBindGroup(WGPUBuffer uniformBuffer) const noexcept {
-    WGPUBindGroupEntry entry{};
-    entry.binding = 0;
-    entry.buffer  = uniformBuffer;
-    entry.offset  = 0;
-    entry.size    = sizeof(TrubeUniforms);
-
-    WGPUBindGroupDescriptor bgd{};
-    bgd.label      = "TrubeCore_BindGroup";
-    bgd.layout     = sharedBindGroupLayout_.get();
-    bgd.entryCount = 1;
-    bgd.entries    = &entry;
-
-    WGPUBindGroup raw = wgpuDeviceCreateBindGroup(device_, &bgd);
-    return BindGroupHandle(raw);
+    if (vkCreateDescriptorSetLayout(device_, &layoutInfo, nullptr, &descriptorSetLayout_) != VK_SUCCESS) {
+        throw std::runtime_error("failed to create descriptor set layout!");
+    }
 }
 
 } // namespace trube

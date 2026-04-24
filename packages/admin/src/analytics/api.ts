@@ -37,7 +37,7 @@ export interface MultiTenantAnalyticsAPI {
   benchmarkPerformance(tenantId: string, industry: EducationSector): Promise<BenchmarkInsights>;
 }
 
-export const multiTenantAnalyticsAPI: MultiTenantAnalyticsAPI = {
+export const multiTenantAnalyticsAPI: MultiTenantAnalyticsAPI  = {
   // Data aggregation
   async aggregateTenantMetrics(tenantIds: string[], timeRange: DateRange): Promise<TenantMetrics[]> {
     return await multiTenantAnalyticsEngine.aggregateTenantMetrics(tenantIds, timeRange);

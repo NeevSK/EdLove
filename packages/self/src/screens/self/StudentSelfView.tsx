@@ -1,19 +1,13 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
+import { Box, ScreenWrapper, VStack, useTheme, useThemedColors } from '@repo/ui';
+
+
 import { useNavigation } from '@react-navigation/native';
-import {
-    VStack,
-    HStack,
-    Box,
-    Text,
-    Pressable,
-    useThemedColors,
-    ScreenWrapper,
-} from '@repo/ui';
+
 import { useTranslation } from 'react-i18next';
 import {
     useStore,
     usePermissions,
-    useResonanceStore,
     useJourneyHistory
 } from '@repo/core';
 
@@ -46,12 +40,20 @@ import WindDownRitual from '../../components/WindDownRitual';
 import WisdomSeeds from '../../components/WisdomSeeds';
 import ProgressTree from '../../components/ProgressTree';
 import MyGradesView from '../../components/MyGradesView';
+import StudentGoals from '../../components/StudentGoals';
+import BreathGuide from '../../components/BreathGuide';
+import JoyJar from '../../components/JoyJar';
+import SleepTracker from '../../components/SleepTracker';
+import FireJournal from '../../components/FireJournal';
+import TomorrowPrep from '../../components/TomorrowPrep';
+import VoiceJournaling from '../../components/VoiceJournaling';
+import RemindersManager from '../../components/RemindersManager';
 import { PulseDashboard } from '../../components/PulseDashboard';
 
 export default function StudentSelfView() {
     const { t } = useTranslation();
     const navigation = useNavigation<any>();
-    const colors = useThemedColors();
+    const colors = useTheme().scene;
 
     // State & Kernel Hooks
     const { context } = usePermissions();
@@ -68,33 +70,14 @@ export default function StudentSelfView() {
     const [isSavingMood, setIsSavingMood] = useState(false);
     const justFinishedOnboarding = useStore((state) => state.justFinishedOnboarding);
     const setJustFinishedOnboarding = useStore((state) => state.setJustFinishedOnboarding);
-    const { viewScale, setScale } = useResonanceStore();
     const { entries: journalEntries, loading: loadingJournals } = useJournalEntries();
     const { events: journeyEvents, holisticView, isLoading: journeyLoading } = useJourneyHistory();
 
     const holisticSection = (
-        <VStack space="lg" sx={{ p: 20 }}>
-            <HStack justifyContent="flex-end" space="xs">
-                {(['day', 'week', 'month', 'year'] as const).map(scale => (
-                    <Box 
-                        key={scale}
-                        sx={{ 
-                            bg: viewScale === scale ? '$amber400' : 'rgba(255,255,255,0.05)', 
-                            px: 12, 
-                            py: 4, 
-                            borderRadius: 12 
-                        }}
-                    >
-                        <Pressable onPress={() => setScale(scale)}>
-                            <Text sx={{ color: '#fff', fontSize: 10, fontWeight: '800' }}>{scale.toUpperCase()}</Text>
-                        </Pressable>
-                    </Box>
-                ))}
-            </HStack>
-
+        <VStack space="lg" style={{ padding: 20 }}>
             <JournalSection entries={journalEntries} loading={loadingJournals} />
             <MoodSection logs={moodHistory} loading={loadingMoods} />
-            <GoalSection goals={[]} loading={false} /> {/* TODO: Connect to actual goals hook if available */}
+            <GoalSection goals={[]} loading={false} /> 
             <NatureSection paths={null} loading={false} />
             <IdentitySection />
             <TeacherFeedbackSection />
@@ -116,13 +99,11 @@ export default function StudentSelfView() {
             <BaseSelfView
                 perspective="student"
                 description={t('self.studentDescription', 'A steady space to grow your mind and heart.')}
-                domains={[
-                    {
+                domains={[{
                         id: 'journey',
                         title: 'Journey Overview',
                         accentColor: '#8B5CF6',
-                        content: holisticSection,
-                    },
+                        content: holisticSection},
                     {
                         id: 'pulse',
                         title: 'Inner Pulse',
@@ -136,7 +117,8 @@ export default function StudentSelfView() {
                             {
                                 id: 'mood-lotus',
                                 label: 'Mood Lotus',
-                                content: <MoodLotus userId={userId ?? undefined} />
+                                content: <MoodLotus userId={userId ?? undefined} />,
+                                historyContent: <MoodSection logs={moodHistory} loading={loadingMoods} />
                             },
                             {
                                 id: 'wisdom',
@@ -146,8 +128,36 @@ export default function StudentSelfView() {
                         ]
                     },
                     {
-                        id: 'physical',
-                        title: 'Physical Sanctuary',
+                        id: 'growth',
+                        title: 'Growth Sanctuary',
+                        accentColor: '#10B981',
+                        features: [
+                            {
+                                id: 'goals',
+                                label: 'Growth Goals',
+                                content: <StudentGoals userId={userId ?? ''} />,
+                                historyContent: <GoalSection goals={[]} loading={false} />
+                            },
+                            {
+                                id: 'progress',
+                                label: 'Growth Tree',
+                                content: <ProgressTree userId={userId ?? undefined} />
+                            },
+                            {
+                                id: 'grades',
+                                label: 'Academic Mirror',
+                                content: <MyGradesView userId={userId ?? undefined} />
+                            },
+                            {
+                                id: 'breath',
+                                label: 'Breath Guide',
+                                content: <BreathGuide />
+                            },
+                        ]
+                    },
+                    {
+                        id: 'care',
+                        title: 'Care & Rhythm',
                         accentColor: '#F59E0B',
                         features: [
                             {
@@ -169,7 +179,7 @@ export default function StudentSelfView() {
                                 id: 'energy-forecast',
                                 label: 'Energy Rhythm',
                                 content: (
-                                    <Box sx={{ p: 24, backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: 16 }}>
+                                    <Box style={{ padding: 24, backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: 16 }}>
                                         <EnergyBarChart
                                             bars={forecasts.slice().reverse()}
                                             height={80}
@@ -181,13 +191,18 @@ export default function StudentSelfView() {
                                 id: 'wind-down',
                                 label: 'Restorative Ritual',
                                 content: <WindDownRitual userId={userId ?? undefined} />
+                            },
+                            {
+                                id: 'sleep',
+                                label: 'Sleep Tracker',
+                                content: <SleepTracker userId={userId ?? undefined} />
                             }
                         ]
                     },
                     {
-                        id: 'working',
-                        title: 'Working Rhythm',
-                        accentColor: '#10B981',
+                        id: 'reflection',
+                        title: 'Reflection Tools',
+                        accentColor: '#EF4444',
                         features: [
                             {
                                 id: 'daily-rhythm',
@@ -195,14 +210,30 @@ export default function StudentSelfView() {
                                 content: <DailyRhythm />
                             },
                             {
-                                id: 'progress',
-                                label: 'Growth Tree',
-                                content: <ProgressTree userId={userId ?? undefined} />
+                                id: 'joy-jar',
+                                label: 'Joy Jar',
+                                content: <JoyJar userId={userId ?? undefined} />
                             },
                             {
-                                id: 'grades',
-                                label: 'Academic Mirror',
-                                content: <MyGradesView userId={userId ?? undefined} />
+                                id: 'fire-journal',
+                                label: 'Fire Journal',
+                                content: <FireJournal userId={userId ?? undefined} />,
+                                historyContent: <JournalSection entries={journalEntries} loading={loadingJournals} />
+                            },
+                            {
+                                id: 'tomorrow',
+                                label: 'Tomorrow Prep',
+                                content: <TomorrowPrep userId={userId ?? undefined} />
+                            },
+                            {
+                                id: 'voice',
+                                label: 'Voice Journal',
+                                content: <VoiceJournaling userId={userId ?? undefined} />
+                            },
+                            {
+                                id: 'reminders',
+                                label: 'Reminders',
+                                content: <RemindersManager userId={userId ?? undefined} />
                             }
                         ]
                     }
@@ -215,7 +246,6 @@ export default function StudentSelfView() {
                 }
             />
 
-
             <WelcomeModal
                 isOpen={justFinishedOnboarding}
                 onClose={() => setJustFinishedOnboarding(false)}
@@ -223,3 +253,4 @@ export default function StudentSelfView() {
         </ScreenWrapper>
     );
 }
+

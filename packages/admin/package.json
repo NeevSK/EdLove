@@ -5,27 +5,55 @@
   "types": "src/index.ts",
   "exports": {
     ".": "./src/index.ts",
+    "./founder": "./src/entrypoints/founder.ts",
+    "./screens/FounderDashboard": "./src/screens/FounderDashboard.tsx",
+    "./screens/FounderDashboard.web": "./src/screens/FounderDashboard.web.tsx",
+    "./screens/FounderSchoolDashboard": "./src/screens/FounderSchoolDashboard.tsx",
+    "./screens/AdminDashboard": "./src/screens/AdminDashboard.tsx",
+    "./screens/AdminDashboard.web": "./src/screens/AdminDashboard.web.tsx",
+    "./screens/AdminIncidentQueue": "./src/screens/AdminIncidentQueue.tsx",
+    "./screens/AdminTenantDetail": "./src/screens/AdminTenantDetail.tsx",
+    "./screens/AdminAuthorityRepair": "./src/screens/AdminAuthorityRepair.tsx",
+    "./screens/AdminJobControl": "./src/screens/AdminJobControl.tsx",
+    "./screens/AdminAuditLog": "./src/screens/AdminAuditLog.tsx",
+    "./screens/AdminReleaseControl": "./src/screens/AdminReleaseControl.tsx",
+    "./screens/SchoolCreationScreen": "./src/screens/SchoolCreationScreen.tsx",
+    "./screens/SchoolForestScreen.web": "./src/screens/SchoolForestScreen.web.tsx",
+    "./screens/PrincipalDashboard.web": "./src/screens/PrincipalDashboard.web.tsx",
+    "./screens/PrincipalDashboard": "./src/screens/PrincipalDashboard.tsx",
+    "./components/CreateSchoolModal": "./src/components/school/CreateSchoolModal.tsx",
+    "./components/StaffPulse": "./src/components/principal/StaffPulse.tsx",
     "./package.json": "./package.json"
   },
   "scripts": {
-    "lint": "eslint .",
-    "check-types": "tsc --noEmit"
+    "lint": "powershell -File ../../scripts/audit-wrapper.ps1 -Cmd \"pnpm exec eslint .\" -Log \"reports/lint.txt\"",
+    "check-types": "powershell -File ../../scripts/audit-wrapper.ps1 -Cmd \"pnpm exec tsc --noEmit\" -Log \"reports/check-types.txt\""
   },
   "dependencies": {
+    "@repo/ai": "workspace:*",
+    "@repo/analytics": "workspace:*",
+    "@repo/community": "workspace:*",
     "@repo/core": "workspace:*",
+    "@repo/graphics": "workspace:*",
+    "@repo/library": "workspace:*",
     "@repo/people": "workspace:*",
+    "@repo/profile": "workspace:*",
     "@repo/scanner-kit": "workspace:*",
     "@repo/ui": "workspace:*",
-    "@repo/analytics": "workspace:*",
+    "@tanstack/react-query": "^5.90.20",
+    "date-fns": "^4.1.0",
     "expo-clipboard": "~55.0.9",
     "lucide-react-native": "^0.563.0",
-    "react-i18next": "^16.5.4"
+    "react-i18next": "^16.5.4",
+    "react-native-reanimated": "~4.2.1"
   },
   "devDependencies": {
-    "@types/react": "~19.1.10",
+    "@jest/globals": "^30.3.0",
     "@repo/eslint-config": "workspace:*",
-    "typescript": "~5.9.2",
-    "eslint": "^9.38.0"
+    "@types/react": "19.2.14",
+    "@types/react-native": "workspace:*",
+    "eslint": "^9.38.0",
+    "typescript": "~5.9.2"
   },
   "peerDependencies": {
     "react": "*",

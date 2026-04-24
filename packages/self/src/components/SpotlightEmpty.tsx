@@ -1,90 +1,67 @@
+/**
+ * SPOTLIGHT EMPTY
+ * An encouraging empty state view for dates with no resonance data.
+ * Standardized to Zero-Legacy: purged corrupted StyleSheet and migrated to NativeWind v4.
+ */
+
 import React from 'react';
-import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { 
+    Box, 
+    Text, 
+    VStack, 
+    HStack, 
+    Button, 
+    ButtonText, 
+    Icon 
+} from '@repo/ui';
 import { Sparkles, Plus } from 'lucide-react-native';
-import { Theme } from '@repo/ui';
+import Animated, { FadeIn } from 'react-native-reanimated';
 
 interface SpotlightEmptyProps {
     date: string;
     onAction?: () => void;
 }
 
-/**
- * SpotlightEmpty
- * 
- * An encouraging view for dates with no resonance data.
- */
 export const SpotlightEmpty: React.FC<SpotlightEmptyProps> = ({ date, onAction }) => {
     return (
-        <View style={styles.container}>
-            <View style={styles.iconContainer}>
-                <Sparkles size={40} color="rgba(246, 191, 140, 0.3)" />
-            </View>
-            
-            <Text style={styles.title}>QUIET RESONANCE</Text>
-            <Text style={styles.subtitle}>
-                No whispers from the past on {new Date(date).toLocaleDateString()}.
-            </Text>
-            
-            <Text style={styles.description}>
-                Every quiet moment is a canvas. Start a new thread in your journey today.
-            </Text>
-
-            <TouchableOpacity style={styles.button} onPress={onAction}>
-                <Plus size={18} color="#000" />
-                <Text style={styles.buttonText}>CREATE RESONANCE</Text>
-            </TouchableOpacity>
-        </View>
+        <Animated.View entering={FadeIn.duration(1000)}>
+            <VStack className="flex-1 items-center justify-center p-10 min-h-[400px]">
+                {/* Ethereal Icon Container */}
+                <Box className="mb-6 p-8 rounded-full bg-sanctuarySaffron/5 border border-sanctuarySaffron/10">
+                    <Icon as={Sparkles} size={48} className="text-sanctuarySaffron opacity-40" />
+                </Box>
+                
+                <VStack className="gap-2 items-center">
+                    <Text className="text-sanctuarySaffron font-black text-lg tracking-[0.3em] uppercase">
+                        Quiet Resonance
+                    </Text>
+                    <Text className="text-mistGray/50 text-sm text-center px-4">
+                        No whispers from the past on {new Date(date).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })}.
+                    </Text>
+                </VStack>
+                
+                <Box className="my-6 w-12 h-px bg-white/5" />
+                
+                <Text className="text-mistGray/30 text-xs text-center leading-relaxed italic max-w-[240px]">
+                    Every quiet moment is a canvas. Start a new thread in your journey today.
+                </Text>
+                
+                {onAction && (
+                    <Button 
+                        onPress={onAction}
+                        className="mt-10 bg-sanctuarySaffron rounded-full px-8 py-3 shadow-xl shadow-sanctuarySaffron/20 h-14"
+                    >
+                        <HStack className="items-center gap-2">
+                            <Icon as={Plus} size={18} className="text-obsidian" />
+                            <ButtonText className="text-obsidian font-black uppercase tracking-widest text-xs">
+                                Create Resonance
+                            </ButtonText>
+                        </HStack>
+                    </Button>
+                )}
+            </VStack>
+        </Animated.View>
     );
 };
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 32,
-        minHeight: 400,
-    },
-    iconContainer: {
-        marginBottom: 24,
-        padding: 24,
-        borderRadius: 40,
-        backgroundColor: 'rgba(246, 191, 140, 0.05)',
-    },
-    title: {
-        fontSize: 18,
-        fontWeight: '900',
-        color: '#F6BF8C',
-        letterSpacing: 4,
-        marginBottom: 8,
-    },
-    subtitle: {
-        fontSize: 14,
-        color: 'rgba(255, 255, 255, 0.5)',
-        textAlign: 'center',
-        marginBottom: 16,
-    },
-    description: {
-        fontSize: 13,
-        color: 'rgba(255, 255, 255, 0.3)',
-        textAlign: 'center',
-        lineHeight: 20,
-        marginBottom: 32,
-        fontStyle: 'italic',
-    },
-    button: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: '#F6BF8C',
-        paddingVertical: 12,
-        paddingHorizontal: 24,
-        borderRadius: 24,
-    },
-    buttonText: {
-        fontSize: 12,
-        fontWeight: '800',
-        color: '#000',
-        marginLeft: 8,
-        letterSpacing: 1,
-    }
-});
+export default SpotlightEmpty;

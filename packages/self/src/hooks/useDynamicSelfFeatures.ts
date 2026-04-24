@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+﻿import { useMemo } from 'react';
 import { useFeatureActivity } from './useFeatureActivity';
 import { SelfViewFeature } from '../components/BaseSelfView.types';
 
@@ -38,8 +38,7 @@ export function useDynamicSelfFeatures(features: SelfViewFeature[]) {
     return {
         sortedFeatures,
         topItems,
-        remainingItems,
-    };
+        remainingItems};
 }
 
 function calculateScore(

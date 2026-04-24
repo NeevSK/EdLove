@@ -8,71 +8,64 @@ import {
     Pressable,
     ScrollView,
     Center,
-    Modal,
-    ModalBackdrop,
-    ModalContent,
-    ModalHeader,
-    ModalCloseButton,
-    ModalBody,
     Heading,
     Icon,
-    CloseIcon,
     Button,
     ButtonText,
+    hapticLight,
+    hapticMedium,
+    SanctuaryModal,
 } from '@repo/ui';
 import { ActivityIndicator } from 'react-native';
 import {
-    User,
     MoreVertical,
     Edit2,
     Trash2,
     Plus,
     Sparkles,
+    QrCode,
+    X,
 } from 'lucide-react-native';
-import { Theme } from '@repo/ui';
 import { QRCodeGenerator } from '@repo/scanner-kit';
-import { ClassroomStudent, api } from '@repo/core';
-import { hapticLight, hapticMedium } from '@repo/ui';
+import { studentsAPI } from '@repo/core';
+import type { Student } from '@repo/core';
 import { AddStudentModal } from './AddStudentModal';
-import { useThemedColors } from '@repo/ui';
 import * as Clipboard from 'expo-clipboard';
-import { QrCode } from 'lucide-react-native';
+
 interface StudentListProps {
     classroomId: string;
-    students: ClassroomStudent[];
+    students: Student[];
     onRefresh: () => void;
-    onAnalyzePotential?: (student: ClassroomStudent) => void;
+    onAnalyzePotential?: (student: Student) => void;
 }
 
 export default function StudentList({ classroomId, students, onRefresh, onAnalyzePotential }: StudentListProps) {
     const { t } = useTranslation();
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-    const [selectedStudent, setSelectedStudent] = useState<ClassroomStudent | null>(null);
+    const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
     const [isDeleting, setIsDeleting] = useState<string | null>(null);
-    const [studentForQr, setStudentForQr] = useState<ClassroomStudent | null>(null);
-    const colors = useThemedColors();
+    const [studentForQr, setStudentForQr] = useState<Student | null>(null);
 
     const handleRemoveStudent = async (studentId: string) => {
         try {
             hapticMedium();
             setIsDeleting(studentId);
-            await api.classroomStudents.remove(studentId);
+            await studentsAPI.remove(classroomId, studentId);
             onRefresh();
         } catch (error) {
             console.error('Failed to remove student:', error);
-            // Consider using a localized toast here in the future
         } finally {
             setIsDeleting(null);
         }
     };
 
-    const handleEditStudent = (student: ClassroomStudent) => {
+    const handleEditStudent = (student: Student) => {
         hapticLight();
         setSelectedStudent(student);
         setIsAddModalOpen(true);
     };
 
-    const handleShowQr = (student: ClassroomStudent) => {
+    const handleShowQr = (student: Student) => {
         hapticLight();
         setStudentForQr(student);
     };
@@ -83,122 +76,105 @@ export default function StudentList({ classroomId, students, onRefresh, onAnalyz
     };
 
     return (
-        <VStack sx={{ flex: 1, backgroundColor: colors.primary }}>
-            <VStack sx={{ padding: Theme.spacing.md, gap: Theme.spacing.md }}>
-                {students.length === 0 ? (
-                    <Center sx={{ padding: Theme.spacing.xl, marginTop: 40 }}>
-                        <Text sx={{ color: colors.textSecondary, textAlign: 'center' }}>
-                            {t('classroom.students.emptyState') || 'No students in this class yet.'}
-                        </Text>
-                    </Center>
-                ) : (
-                    students.map((student) => (
-                        <Box
-                            key={student.id}
-                            sx={{
-                                backgroundColor: colors.secondary,
-                                borderRadius: Theme.corners.comfortable,
-                                padding: Theme.spacing.md,
-                                borderWidth: 1,
-                                borderColor: student.student_id ? colors.border : Theme.colors.amberGlow,
-                                opacity: student.student_id ? 1 : 0.9,
-                            }}
-                        >
-                            {!student.student_id && (
-                                <Box sx={{ position: 'absolute', top: -Theme.spacing.xs, right: 12, backgroundColor: Theme.colors.amberGlow, paddingHorizontal: 6, borderRadius: Theme.corners.tight }}>
-                                    <Text sx={{ fontSize: 10, color: Theme.colors.black, fontWeight: '700' }}>
-                                        {t('classroom.students.unclaimed') || 'UNCLAIMED'}
-                                    </Text>
-                                </Box>
-                            )}
-                            <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                                <HStack sx={{ gap: Theme.spacing.md, alignItems: 'center' }}>
-                                    <Box
-                                        sx={{
-                                            width: 42,
-                                            height: 42,
-                                            borderRadius: Theme.corners.full,
-                                            backgroundColor: colors.tertiary,
-                                            justifyContent: 'center',
-                                            alignItems: 'center',
-                                        }}
-                                    >
-                                        <Text sx={{ color: Theme.colors.sanctuarySaffron, fontWeight: '700', fontSize: Theme.typography.fontSize.md }}>
-                                            {student.roll_number || '#'}
+        <VStack className="flex-1 bg-sanctuary-surface">
+            <ScrollView showsVerticalScrollIndicator={false}>
+                <VStack className="p-4 gap-4">
+                    {students.length === 0 ? (
+                        <Center className="py-20">
+                            <Text className="text-sanctuary-text-secondary text-center px-10 leading-relaxed">
+                                {t('classroom.students.emptyState') || 'No students in this class yet. Start building your academic community.'}
+                            </Text>
+                        </Center>
+                    ) : (
+                        students.map((student) => (
+                            <Box
+                                key={student.id}
+                                className={`
+                                    bg-sanctuary-surface-secondary rounded-[24px] p-5 border
+                                    ${student.student_id ? 'border-sanctuary-border' : 'border-sanctuarySaffron/30 shadow-sm'}
+                                `}
+                            >
+                                {!student.student_id && (
+                                    <Box className="absolute -top-2.5 right-4 bg-sanctuarySaffron px-2.5 py-0.5 rounded-full z-10 shadow-sm">
+                                        <Text className="text-[9px] text-white font-black tracking-widest leading-tight">
+                                            {t('classroom.students.unclaimed') || 'GUEST'}
                                         </Text>
                                     </Box>
-                                    <VStack sx={{ flex: 1 }}>
-                                        <Text sx={{ color: colors.text, fontWeight: '700', fontSize: Theme.typography.fontSize.md }}>
-                                            {student.full_name}
-                                        </Text>
-                                        {student.notes && (
-                                            <Text sx={{ fontSize: Theme.typography.fontSize.xs, color: colors.textSecondary }}>
-                                                {student.notes}
+                                )}
+                                <HStack className="justify-between items-center">
+                                    <HStack className="gap-4 items-center flex-1">
+                                        <Box
+                                            className="w-12 h-12 rounded-full bg-sanctuary-surface justify-center items-center border border-sanctuary-border/30"
+                                        >
+                                            <Text className="text-sanctuarySaffron font-bold text-base">
+                                                {student.roll_number || '#'}
                                             </Text>
-                                        )}
-                                    </VStack>
-                                </HStack>
-
-                                <HStack sx={{ gap: Theme.spacing.sm }}>
-                                    {onAnalyzePotential && (
-                                        <Pressable onPress={() => { hapticLight(); onAnalyzePotential(student); }}>
-                                            <Box sx={{ padding: Theme.spacing.xs }}>
-                                                <Sparkles size={20} color={Theme.colors.sanctuarySaffron} />
-                                            </Box>
-                                        </Pressable>
-                                    )}
-                                    {!student.student_id && student.invite_code && (
-                                        <Pressable onPress={() => handleShowQr(student)}>
-                                            <Box sx={{ padding: Theme.spacing.xs }}>
-                                                <QrCode size={20} color={Theme.colors.sanctuarySaffron} />
-                                            </Box>
-                                        </Pressable>
-                                    )}
-                                    <Pressable onPress={() => handleEditStudent(student)}>
-                                        <Box sx={{ padding: Theme.spacing.xs }}>
-                                            <Edit2 size={20} color={colors.textSecondary} />
                                         </Box>
-                                    </Pressable>
-                                    <Pressable
-                                        onPress={() => handleRemoveStudent(student.id)}
-                                        disabled={isDeleting === student.id}
-                                    >
-                                        <Box sx={{ padding: Theme.spacing.xs }}>
-                                            {isDeleting === student.id ? (
-                                                <ActivityIndicator size="small" color={Theme.colors.emberRed} />
-                                            ) : (
-                                                <Trash2 size={20} color={Theme.colors.emberRed} />
+                                        <VStack className="flex-1 gap-0.5">
+                                            <Text className="text-sanctuary-text font-bold text-base leading-tight">
+                                                {student.full_name}
+                                            </Text>
+                                            {student.notes && (
+                                                <Text className="text-xs text-sanctuary-text-tertiary italic" numberOfLines={1}>
+                                                    {student.notes}
+                                                </Text>
                                             )}
-                                        </Box>
-                                    </Pressable>
-                                </HStack>
-                            </HStack>
-                        </Box>
-                    ))
-                )}
-            </VStack>
+                                        </VStack>
+                                    </HStack>
 
-            {/* Floating Action Button for Adding Students */}
+                                    <HStack className="gap-1 items-center">
+                                        {onAnalyzePotential && (
+                                            <Pressable 
+                                                onPress={() => { hapticLight(); onAnalyzePotential(student); }}
+                                                className="p-2.5 bg-sanctuary-surface/50 rounded-full border border-sanctuary-border/20"
+                                            >
+                                                <Icon as={Sparkles} size={18} className="text-sanctuarySaffron" />
+                                            </Pressable>
+                                        )}
+                                        {!student.student_id && student.invite_code && (
+                                            <Pressable 
+                                                onPress={() => handleShowQr(student)}
+                                                className="p-2.5 bg-sanctuary-surface/50 rounded-full border border-sanctuary-border/20"
+                                            >
+                                                <Icon as={QrCode} size={18} className="text-sanctuarySaffron" />
+                                            </Pressable>
+                                        )}
+                                        <Pressable 
+                                            onPress={() => handleEditStudent(student)}
+                                            className="p-2.5"
+                                        >
+                                            <Icon as={Edit2} size={18} className="text-sanctuary-text-tertiary" />
+                                        </Pressable>
+                                        <Pressable
+                                            onPress={() => handleRemoveStudent(student.id)}
+                                            disabled={isDeleting === student.id}
+                                            className="p-2.5"
+                                        >
+                                            {isDeleting === student.id ? (
+                                                <ActivityIndicator size="small" color="#ef4444" />
+                                            ) : (
+                                                <Icon as={Trash2} size={18} className="text-sanctuary-error" />
+                                            )}
+                                        </Pressable>
+                                    </HStack>
+                                </HStack>
+                            </Box>
+                        ))
+                    )}
+                </VStack>
+                <Box className="h-24" />
+            </ScrollView>
+
+            {/* Floating Action Button */}
             <Pressable
                 onPress={() => {
                     hapticLight();
                     setSelectedStudent(null);
                     setIsAddModalOpen(true);
                 }}
-                sx={{
-                    position: 'absolute',
-                    right: 24,
-                    bottom: 24,
-                    backgroundColor: Theme.colors.sanctuarySaffron,
-                    width: 64,
-                    height: 64,
-                    borderRadius: Theme.corners.full,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    ...Theme.shadows.lg,
-                }}
+                className="absolute right-6 bottom-6 bg-sanctuarySaffron w-16 h-16 rounded-full justify-center items-center shadow-xl border-4 border-white/10"
             >
-                <Plus color={Theme.colors.sacredWhite} size={32} />
+                <Icon as={Plus} className="text-white" size={32} />
             </Pressable>
 
             <AddStudentModal
@@ -216,56 +192,53 @@ export default function StudentList({ classroomId, students, onRefresh, onAnalyz
                 studentToEdit={selectedStudent}
             />
 
-            {/* View QR Modal for Shadow Students */}
-            <Modal isOpen={!!studentForQr} onClose={() => setStudentForQr(null)}>
-                <ModalBackdrop />
-                <ModalContent sx={{ backgroundColor: colors.secondary, borderColor: colors.border, borderWidth: 1 }}>
-                    <ModalHeader>
-                        <Heading sx={{ color: colors.text, fontSize: Theme.typography.fontSize.xl }}>
-                            {t('classroom.students.inviteTitle') || 'Invite Student'}
+            {/* View QR Modal */}
+            <SanctuaryModal
+                isOpen={!!studentForQr} 
+                onClose={() => setStudentForQr(null)}
+                title={t('classroom.students.inviteTitle') || 'Invite Student'}
+                footer={
+                    <Button
+                        onPress={() => setStudentForQr(null)}
+                        className="bg-sanctuary-surface-tertiary w-full rounded-full h-12"
+                    >
+                        <ButtonText className="text-sanctuary-text">
+                            {t('common.close') || 'Close'}
+                        </ButtonText>
+                    </Button>
+                }
+            >
+                <VStack className="gap-8 items-center py-4">
+                    <Box className="p-6 bg-white rounded-[32px] shadow-sm border border-sanctuary-border/10">
+                        <QRCodeGenerator
+                            value={studentForQr?.invite_code || ''}
+                            size={200}
+                            color="black"
+                            backgroundColor="white"
+                        />
+                    </Box>
+                    <VStack className="gap-2 items-center">
+                        <Heading className="text-lg text-sanctuary-text text-center font-bold">
+                            {studentForQr?.full_name}
                         </Heading>
-                        <ModalCloseButton>
-                            <Icon as={CloseIcon} sx={{ color: colors.textSecondary }} />
-                        </ModalCloseButton>
-                    </ModalHeader>
-                    <ModalBody>
-                        <VStack sx={{ gap: Theme.spacing.lg, alignItems: 'center', paddingBottom: Theme.spacing.xl }}>
-                            <Box sx={{ padding: Theme.spacing.lg, backgroundColor: 'white', borderRadius: Theme.corners.generous, ...Theme.shadows.md }}>
-                                <QRCodeGenerator
-                                    value={studentForQr?.invite_code || ''}
-                                    size={200}
-                                    color="black"
-                                    backgroundColor="white"
-                                />
-                            </Box>
-                            <VStack sx={{ gap: Theme.spacing.xs, alignItems: 'center' }}>
-                                <Heading sx={{ fontSize: Theme.typography.fontSize.md, color: colors.text, textAlign: 'center' }}>
-                                    {studentForQr?.full_name}
-                                </Heading>
-                                <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.xs }}>
-                                    {t('classroom.students.individualCode') || 'Individual Invite Code'}
-                                </Text>
-                                <Pressable onPress={() => copyToClipboard(studentForQr?.invite_code || '')}>
-                                    <Text sx={{ color: Theme.colors.sanctuarySaffron, fontWeight: '700', fontSize: Theme.typography.fontSize.lg }}>
-                                        {studentForQr?.invite_code}
-                                    </Text>
-                                </Pressable>
-                                <Text sx={{ fontSize: 10, color: colors.textTertiary, marginTop: Theme.spacing.xs }}>
-                                    {t('common.tapToCopy') || 'Tap to copy'}
-                                </Text>
-                            </VStack>
-                            <Button
-                                onPress={() => setStudentForQr(null)}
-                                sx={{ backgroundColor: colors.tertiary, width: '100%', borderRadius: Theme.corners.comfortable }}
-                            >
-                                <ButtonText sx={{ color: colors.text }}>
-                                    {t('common.close') || 'Close'}
-                                </ButtonText>
-                            </Button>
-                        </VStack>
-                    </ModalBody>
-                </ModalContent>
-            </Modal>
+                        <Text className="text-sanctuary-text-tertiary text-xs uppercase font-bold tracking-widest">
+                            {t('classroom.students.individualCode') || 'Individual Invite Code'}
+                        </Text>
+                        <Pressable 
+                            onPress={() => copyToClipboard(studentForQr?.invite_code || '')}
+                            className="bg-sanctuary-surface-secondary px-6 py-3 rounded-2xl border border-sanctuary-border"
+                        >
+                            <Text className="text-sanctuarySaffron font-black text-2xl tracking-tighter">
+                                {studentForQr?.invite_code}
+                            </Text>
+                        </Pressable>
+                        <Text className="text-[10px] text-sanctuary-text-tertiary mt-2">
+                            {t('common.tapToCopy') || 'Tap code to copy to clipboard'}
+                        </Text>
+                    </VStack>
+                </VStack>
+            </SanctuaryModal>
         </VStack>
     );
 }
+

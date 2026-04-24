@@ -1,15 +1,33 @@
 /**
- * DailyRhythm.web.tsx
- *
- * Web override. The native version uses @repo/ui Modal/Select components.
- * On web we deliver the same weekly timetable manager with HTML dialogs,
- * native <select>, and the same useTimetable hook.
- * Metro resolves this over DailyRhythm.tsx on the web platform.
+ * DAILY RHYTHM COMPONENT (WEB)
+ * Web-specific implementation for the timetable manager.
+ * Standardized to Zero-Legacy: purged corrupted imports and migrated to Sanctuary V3 architecture.
  */
+
 import React, { useState } from 'react';
+import { 
+    Box, 
+    VStack, 
+    HStack, 
+    Text, 
+    Heading, 
+    Button, 
+    ButtonText, 
+    Icon, 
+    Pressable,
+    Input,
+    InputField,
+    Select,
+    SelectTrigger,
+    SelectInput,
+    SelectPortal,
+    SelectBackdrop,
+    SelectContent,
+    SelectItem
+} from '@repo/ui';
 import { useTimetable } from '../hooks/useTimetable';
 import type { Period } from '../types';
-import { Plus, Trash2, Clock } from 'lucide-react-native';
+import { Plus, Trash2, Clock, ChevronDown, Calendar, MapPin, Activity } from 'lucide-react-native';
 
 const DAYS = [
     { id: 1, label: 'Mon' },
@@ -20,9 +38,9 @@ const DAYS = [
 ];
 
 const PERIOD_TYPES: Array<{ value: Period['type']; label: string }> = [
-    { value: 'subject', label: 'Subject' },
-    { value: 'relief',  label: 'Relief / Cover' },
-    { value: 'interval', label: 'Interval / Break' },
+    { value: 'subject', label: 'Standard Focus' },
+    { value: 'relief',  label: 'Relief / Alternative' },
+    { value: 'interval', label: 'Internal Interval' },
 ];
 
 export default function DailyRhythm() {
@@ -37,7 +55,7 @@ export default function DailyRhythm() {
         class_name: '',
         type: 'subject' as Period['type'],
         start_time: '08:00',
-        end_time: '09:00',
+        end_time: '09:00'
     });
     const [saving, setSaving] = useState(false);
     const [deleting, setDeleting] = useState<string | null>(null);
@@ -54,7 +72,7 @@ export default function DailyRhythm() {
                 class_name: form.class_name || undefined,
                 type: form.type,
                 start_time: form.start_time,
-                end_time: form.end_time,
+                end_time: form.end_time
             } as Omit<Period, 'id' | 'user_id'>);
             setForm({ subject: '', activity: '', class_name: '', type: 'subject', start_time: '08:00', end_time: '09:00' });
             setShowForm(false);
@@ -68,141 +86,189 @@ export default function DailyRhythm() {
         try { await deletePeriod(id); } finally { setDeleting(null); }
     };
 
-    const TYPE_COLORS: Record<Period['type'], string> = {
-        subject: 'var(--water)',
-        relief: 'var(--moss)',
-        interval: 'var(--ink-ghost)',
-    };
-
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <VStack className="gap-8">
             {/* Header */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div style={{ fontSize: '14px', fontWeight: '800' }}>Daily Rhythm</div>
-                <button
-                    onClick={() => setShowForm(v => !v)}
-                    style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', padding: '7px 14px', borderRadius: '8px', border: '1px solid var(--border)', background: showForm ? 'var(--water)' : 'transparent', color: showForm ? '#fff' : 'var(--ink-ghost)', cursor: 'pointer', fontWeight: '700', transition: 'all 0.2s' }}
+            <HStack className="items-center justify-between">
+                <VStack className="gap-1">
+                    <Heading size="md" className="text-sacredWhite font-black tracking-tighter">
+                        Daily Rhythm
+                    </Heading>
+                    <Text className="text-mistGray/40 text-[10px] font-black uppercase tracking-[0.2em]">
+                        Sequence Mapping
+                    </Text>
+                </VStack>
+                <Button
+                    size="sm"
+                    onPress={() => setShowForm(v => !v)}
+                    className={`rounded-xl px-4 h-10 transition-all ${showForm ? 'bg-emberRed/10 border border-emberRed/20' : 'bg-sanctuarySaffron shadow-lg shadow-sanctuarySaffron/20'}`}
                 >
-                    <Plus size={14} color={showForm ? '#fff' : 'var(--ink-ghost)'} />
-                    {showForm ? 'Cancel' : 'Add Period'}
-                </button>
-            </div>
+                    <Icon as={showForm ? Trash2 : Plus} size={14} className={showForm ? 'text-emberRed' : 'text-obsidian'} />
+                    <ButtonText className={`ml-2 font-black uppercase tracking-widest text-[10px] ${showForm ? 'text-emberRed' : 'text-obsidian'}`}>
+                        {showForm ? 'Cancel' : 'Add Resonance'}
+                    </ButtonText>
+                </Button>
+            </HStack>
 
             {/* Day selector */}
-            <div style={{ display: 'flex', gap: '8px' }}>
+            <HStack className="gap-2 bg-white/5 p-1 rounded-2xl border border-white/5">
                 {DAYS.map(d => (
-                    <button
+                    <Pressable
                         key={d.id}
-                        onClick={() => setActiveDay(d.id)}
-                        style={{ flex: 1, padding: '10px 4px', borderRadius: '10px', border: `1.5px solid ${activeDay === d.id ? 'var(--water)' : 'var(--border)'}`, background: activeDay === d.id ? 'var(--water)' : 'var(--background-alt)', color: activeDay === d.id ? '#fff' : 'var(--ink-ghost)', fontWeight: '700', fontSize: '12px', cursor: 'pointer', transition: 'all 0.2s' }}
+                        onPress={() => setActiveDay(d.id)}
+                        className={`flex-1 py-3 rounded-xl items-center justify-center transition-all ${
+                            activeDay === d.id ? 'bg-sanctuarySaffron' : 'hover:bg-white/5'
+                        }`}
                     >
-                        {d.label}
+                        <Text className={`text-[10px] font-black uppercase tracking-widest ${activeDay === d.id ? 'text-obsidian' : 'text-mistGray/40'}`}>
+                            {d.label}
+                        </Text>
                         {d.id === today && (
-                            <div style={{ width: '4px', height: '4px', borderRadius: '50%', background: activeDay === d.id ? 'rgba(255,255,255,0.8)' : 'var(--water)', margin: '4px auto 0' }} />
+                            <Box className={`w-1 h-1 rounded-full mt-1 ${activeDay === d.id ? 'bg-obsidian/40' : 'bg-sanctuarySaffron'}`} />
                         )}
-                    </button>
+                    </Pressable>
                 ))}
-            </div>
+            </HStack>
 
             {/* Add period form */}
             {showForm && (
-                <div style={{ padding: '20px', background: 'var(--background-alt)', borderRadius: '14px', border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                        <div>
-                            <label style={{ fontSize: '11px', fontWeight: '700', color: 'var(--ink-ghost)', display: 'block', marginBottom: '4px' }}>Subject / Topic</label>
-                            <input value={form.subject} onChange={e => setForm(f => ({ ...f, subject: e.target.value }))} placeholder="e.g. Mathematics" style={inputStyle} />
-                        </div>
-                        <div>
-                            <label style={{ fontSize: '11px', fontWeight: '700', color: 'var(--ink-ghost)', display: 'block', marginBottom: '4px' }}>Class</label>
-                            <input value={form.class_name} onChange={e => setForm(f => ({ ...f, class_name: e.target.value }))} placeholder="e.g. Grade 10A" style={inputStyle} />
-                        </div>
-                        <div>
-                            <label style={{ fontSize: '11px', fontWeight: '700', color: 'var(--ink-ghost)', display: 'block', marginBottom: '4px' }}>Start</label>
-                            <input type="time" value={form.start_time} onChange={e => setForm(f => ({ ...f, start_time: e.target.value }))} style={inputStyle} />
-                        </div>
-                        <div>
-                            <label style={{ fontSize: '11px', fontWeight: '700', color: 'var(--ink-ghost)', display: 'block', marginBottom: '4px' }}>End</label>
-                            <input type="time" value={form.end_time} onChange={e => setForm(f => ({ ...f, end_time: e.target.value }))} style={inputStyle} />
-                        </div>
-                    </div>
-                    <div>
-                        <label style={{ fontSize: '11px', fontWeight: '700', color: 'var(--ink-ghost)', display: 'block', marginBottom: '4px' }}>Type</label>
-                        <select value={form.type} onChange={e => setForm(f => ({ ...f, type: e.target.value as Period['type'] }))} style={{ ...inputStyle, cursor: 'pointer' }}>
-                            {PERIOD_TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
-                        </select>
-                    </div>
-                    <button
-                        onClick={handleAdd}
-                        disabled={saving || (!form.subject.trim() && !form.activity.trim())}
-                        style={{ padding: '10px 20px', borderRadius: '10px', background: 'var(--water)', color: '#fff', border: 'none', fontWeight: '700', fontSize: '13px', cursor: saving ? 'wait' : 'pointer', opacity: saving ? 0.7 : 1 }}
+                <VStack className="p-8 bg-shroud rounded-3xl border border-white/10 gap-6 shadow-2xl">
+                    <Box className="grid grid-cols-2 gap-6">
+                        <VStack className="gap-2">
+                            <Text className="text-[10px] font-black text-mistGray/40 uppercase tracking-widest px-1">Identity</Text>
+                            <Input className="bg-white/5 border-white/10 h-12 rounded-xl px-3 flex-row items-center">
+                                <InputField 
+                                    value={form.subject} 
+                                    onChangeText={text => setForm(f => ({ ...f, subject: text }))} 
+                                    placeholder="Mathematics, etc."
+                                    className="text-sacredWhite text-sm font-bold"
+                                    placeholderTextColor="#333"
+                                />
+                            </Input>
+                        </VStack>
+                        <VStack className="gap-2">
+                            <Text className="text-[10px] font-black text-mistGray/40 uppercase tracking-widest px-1">Space</Text>
+                            <Input className="bg-white/5 border-white/10 h-12 rounded-xl px-3 flex-row items-center">
+                                <InputField 
+                                    value={form.class_name} 
+                                    onChangeText={text => setForm(f => ({ ...f, class_name: text }))} 
+                                    placeholder="Room 101"
+                                    className="text-sacredWhite text-sm font-bold"
+                                    placeholderTextColor="#333"
+                                />
+                            </Input>
+                        </VStack>
+                        <VStack className="gap-2">
+                            <Text className="text-[10px] font-black text-mistGray/40 uppercase tracking-widest px-1">Arrival</Text>
+                            <Input className="bg-white/5 border-white/10 h-12 rounded-xl px-3 flex-row items-center">
+                                <InputField 
+                                    value={form.start_time} 
+                                    onChangeText={text => setForm(f => ({ ...f, start_time: text }))} 
+                                    className="text-sacredWhite text-sm font-bold"
+                                />
+                                <Icon as={Clock} size={14} className="text-mistGray/20 ml-2" />
+                            </Input>
+                        </VStack>
+                        <VStack className="gap-2">
+                            <Text className="text-[10px] font-black text-mistGray/40 uppercase tracking-widest px-1">Departure</Text>
+                            <Input className="bg-white/5 border-white/10 h-12 rounded-xl px-3 flex-row items-center">
+                                <InputField 
+                                    value={form.end_time} 
+                                    onChangeText={text => setForm(f => ({ ...f, end_time: text }))} 
+                                    className="text-sacredWhite text-sm font-bold"
+                                />
+                                <Icon as={Clock} size={14} className="text-mistGray/20 ml-2" />
+                            </Input>
+                        </VStack>
+                    </Box>
+                    <VStack className="gap-2">
+                        <Text className="text-[10px] font-black text-mistGray/40 uppercase tracking-widest px-1">Resonance Type</Text>
+                        <Select
+                            selectedValue={form.type}
+                            onValueChange={(value: string | null) => setForm(f => ({ ...f, type: value as Period['type'] }))}
+                        >
+                            <SelectTrigger className="bg-white/5 border-white/10 h-12 px-4 rounded-xl flex-row items-center justify-between">
+                                <SelectInput placeholder="Select frequency" className="text-sacredWhite text-sm font-bold" />
+                                <Icon as={ChevronDown} className="text-mistGray/40" size={16} />
+                            </SelectTrigger>
+                            <SelectPortal>
+                                <SelectBackdrop />
+                                <SelectContent className="bg-shroud border-white/10">
+                                    {PERIOD_TYPES.map(t => (
+                                        <SelectItem key={t.value} label={t.label} value={t.value} />
+                                    ))}
+                                </SelectContent>
+                            </SelectPortal>
+                        </Select>
+                    </VStack>
+                    <Button
+                        onPress={handleAdd}
+                        isDisabled={saving || (!form.subject.trim() && !form.activity.trim())}
+                        className="bg-sanctuarySaffron shadow-lg shadow-sanctuarySaffron/20 rounded-2xl h-14 active:scale-[0.98]"
                     >
-                        {saving ? 'Saving…' : '+ Add to Schedule'}
-                    </button>
-                </div>
+                        <ButtonText className="text-obsidian font-black uppercase tracking-[0.2em] text-sm">
+                            {saving ? 'Synchronizing...' : 'Establish Resonance'}
+                        </ButtonText>
+                    </Button>
+                </VStack>
             )}
 
             {/* Period list */}
             {loading ? (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    {[1, 2].map(i => <div key={i} style={{ height: '52px', background: 'var(--background-alt)', borderRadius: '10px' }} />)}
-                </div>
+                <VStack className="gap-3">
+                    <Box className="h-20 bg-white/5 rounded-3xl animate-pulse" />
+                    <Box className="h-20 bg-white/5 rounded-3xl animate-pulse" />
+                </VStack>
             ) : periods.length === 0 ? (
-                <div style={{ padding: '24px', background: 'var(--background-alt)', borderRadius: '14px', textAlign: 'center' }}>
-                    <p style={{ fontSize: '13px', color: 'var(--ink-ghost)', margin: 0 }}>
-                        No periods scheduled for this day. Add one above.
-                    </p>
-                </div>
+                <Box className="p-16 bg-white/2 rounded-[40px] items-center border border-dashed border-white/5 group hover:border-sanctuarySaffron/20 transition-all">
+                    <Icon as={Calendar} size={32} className="text-mistGray/10 group-hover:text-sanctuarySaffron/10 mb-4" />
+                    <Text className="text-xs text-mistGray/30 font-bold uppercase tracking-widest italic text-center">
+                        No periods scheduled for this day
+                    </Text>
+                </Box>
             ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <VStack className="gap-3">
                     {periods.map(p => (
-                        <div
+                        <HStack
                             key={p.id}
-                            style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '12px 16px', background: 'var(--background-alt)', borderRadius: '12px', borderLeft: `3px solid ${TYPE_COLORS[p.type]}` }}
+                            className="items-center p-6 bg-white/5 rounded-3xl border border-white/5 gap-6 group hover:border-white/10 transition-all shadow-sm"
                         >
-                            {/* Time */}
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--ink-ghost)', flexShrink: 0 }}>
-                                <Clock size={13} color="var(--ink-ghost)" />
-                                <span style={{ fontSize: '11px', fontWeight: '600' }}>{p.start_time}–{p.end_time}</span>
-                            </div>
-                            {/* Content */}
-                            <div style={{ flex: 1, minWidth: 0 }}>
-                                <div style={{ fontSize: '13px', fontWeight: '700', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            <VStack className="items-center gap-1 w-20 border-r border-white/5 pr-4">
+                                <Text className="text-[10px] font-black text-mistGray/40 tracking-tighter">{p.start_time}</Text>
+                                <Box className={`w-0.5 h-3 rounded-full ${p.type === 'subject' ? 'bg-sanctuarySaffron' : 'bg-emeraldGreen'}`} />
+                                <Text className="text-[10px] font-black text-mistGray/80 tracking-tighter">{p.end_time}</Text>
+                            </VStack>
+                            
+                            <VStack className="flex-1 min-w-0 gap-1">
+                                <Text className="text-sacredWhite font-black text-sm tracking-tight truncate">
                                     {p.subject ?? p.activity ?? p.type}
-                                </div>
-                                {p.class_name && (
-                                    <div style={{ fontSize: '11px', color: 'var(--ink-ghost)' }}>{p.class_name}</div>
-                                )}
-                            </div>
-                            {/* Type badge */}
-                            <span style={{ fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', color: TYPE_COLORS[p.type], background: `${TYPE_COLORS[p.type]}18`, padding: '3px 8px', borderRadius: '5px', flexShrink: 0 }}>
+                                </Text>
+                                <HStack className="items-center gap-2">
+                                    <Icon as={MapPin} size={10} className="text-mistGray/20" />
+                                    <Text className="text-[11px] font-medium text-mistGray/40 truncate">{p.class_name ?? 'Fluid Space'}</Text>
+                                </HStack>
+                            </VStack>
+
+                            <Box className={`px-3 py-1 rounded-full border text-[9px] font-black uppercase tracking-widest ${
+                                p.type === 'subject' ? 'bg-sanctuarySaffron/10 border-sanctuarySaffron/20 text-sanctuarySaffron' :
+                                p.type === 'relief' ? 'bg-emeraldGreen/10 border-emeraldGreen/20 text-emeraldGreen' :
+                                'bg-white/10 border-white/20 text-mistGray'
+                            }`}>
                                 {p.type}
-                            </span>
-                            {/* Delete */}
-                            <button
-                                onClick={() => handleDelete(p.id)}
+                            </Box>
+
+                            <Pressable
+                                onPress={() => handleDelete(p.id)}
                                 disabled={deleting === p.id}
-                                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', borderRadius: '6px', opacity: deleting === p.id ? 0.4 : 1 }}
-                                title="Remove period"
+                                className={`w-10 h-10 items-center justify-center rounded-xl bg-white/3 hover:bg-emberRed/10 group/btn transition-all ${deleting === p.id ? 'opacity-40' : 'opacity-100'}`}
                             >
-                                <Trash2 size={14} color="var(--ink-ghost)" />
-                            </button>
-                        </div>
+                                <Icon as={Trash2} size={16} className="text-mistGray/20 group-hover/btn:text-emberRed" />
+                            </Pressable>
+                        </HStack>
                     ))}
-                </div>
+                </VStack>
             )}
-        </div>
+        </VStack>
     );
 }
 
-const inputStyle: React.CSSProperties = {
-    width: '100%',
-    padding: '9px 12px',
-    borderRadius: '8px',
-    border: '1px solid var(--border)',
-    background: 'white',
-    color: 'var(--ink)',
-    fontSize: '13px',
-    fontFamily: 'var(--font-body)',
-    outline: 'none',
-    boxSizing: 'border-box',
-};

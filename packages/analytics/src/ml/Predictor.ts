@@ -49,7 +49,7 @@ export class Predictor {
 
     // Simple linear regression for demonstration
     const trend = this.calculateTrend(historicalGrades);
-    const currentAverage = historicalGrades.reduce((sum, g) => sum + g.marks, 0) / historicalGrades.length;
+    const currentAverage = historicalGrades.reduce((sum: number, g: any) => sum + g.marks, 0) / historicalGrades.length;
     
     // Predict based on trend and time horizon
     const timeMultiplier = this.getTimeMultiplier(request.timeHorizon);
@@ -102,12 +102,12 @@ export class Predictor {
       .eq('student_id', request.studentId);
 
     // Calculate risk factors
-    const presentAttendance = attendanceData?.filter(a => a?.status === 'present') || [];
+    const presentAttendance = attendanceData?.filter((a: any) => a?.status === 'present') || [];
     const attendanceRate = attendanceData && attendanceData.length > 0
       ? presentAttendance.length / attendanceData.length 
       : 0;
 
-    const totalMarks = gradesData?.reduce((sum, g) => sum + (g?.marks ?? 0), 0) ?? 0;
+    const totalMarks = gradesData?.reduce((sum: number, g: any) => sum + (g?.marks ?? 0), 0) ?? 0;
     const averageGrade = gradesData && gradesData.length > 0 
       ? totalMarks / gradesData.length 
       : 0;

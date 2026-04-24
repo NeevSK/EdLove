@@ -18,7 +18,7 @@ export default function GroupDetailsScreenWeb() {
 
     if (isLoading) {
         return (
-            <Center sx={{ height: '100vh' }}>
+            <Center className="h-screen">
                 <Spinner size="large" />
             </Center>
         );
@@ -26,14 +26,14 @@ export default function GroupDetailsScreenWeb() {
 
     if (error || !instance) {
         return (
-            <Box sx={{ padding: '40px', textAlign: 'center', color: 'var(--ink-ghost)' }}>
+            <Box className="p-10 text-center text-muted-foreground">
                 Community Circle Not Found or Error Loading
             </Box>
         );
     }
 
     return (
-        <Box sx={{ maxWidth: 1200, margin: '0 auto', padding: '$6' }}>
+        <Box className="max-w-[1200px] mx-auto p-6">
             <EntityView 
                 definition={instance.definition} 
                 instance={instance} 

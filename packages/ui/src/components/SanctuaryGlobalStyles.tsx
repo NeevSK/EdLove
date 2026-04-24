@@ -7,17 +7,17 @@ import { hexToRgba } from '../utils/colorUtils';
  * SanctuaryGlobalStyles (Web-only)
  *
  * Injects global CSS for the web platform.  Consumes the full adaptive
- * token set from useTheme() — including WCAG-computed textOnAccent /
- * textOnReward — so that text colors automatically adapt whenever the
- * temporal phase changes the active accent (Saffron → Sage → Blue → Gold).
+ * token set from useTheme() \u2014 including WCAG-computed textOnAccent /
+ * textOnReward \u2014 so that text colors automatically adapt whenever the
+ * temporal phase changes the active accent (Saffron \u2192 Sage \u2192 Blue \u2192 Gold).
  */
 const STATIC_CSS = `
-    /* ── RESET ── */
+    /* \u2500\u2500 RESET \u2500\u2500 */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; outline: none !important; }
     body {
       font-family: var(--font-body); 
       color: var(--ink); 
-      /* overflow: clip (not hidden) — doesn't create a scroll container,
+      /* overflow: clip (not hidden) \u2014 doesn't create a scroll container,
          so browser scroll restoration and URL-hash navigation work correctly.
          All actual scrolling is handled by .sanctuary-screen (overflow-y: auto). */
       overflow: clip; 
@@ -31,7 +31,7 @@ const STATIC_CSS = `
     }
     button { background: none; border: none; cursor: pointer; font-family: inherit; transition: var(--transition-snap); }
 
-    /* ── APP SHELL (Flexbox Architecture) ── */
+    /* \u2500\u2500 APP SHELL (Flexbox Architecture) \u2500\u2500 */
     .vellum-app-shell {
       display: flex;
       flex-direction: column;
@@ -49,7 +49,7 @@ const STATIC_CSS = `
       position: relative;
     }
 
-    /* ── WORLD BACKGROUND (VELLUM) ── */
+    /* \u2500\u2500 WORLD BACKGROUND (VELLUM) \u2500\u2500 */
     .world-bg {
       position: fixed;
       inset: 0;
@@ -69,7 +69,7 @@ const STATIC_CSS = `
       z-index: 1;
     }
 
-    /* ── TOP BAR ── */
+    /* \u2500\u2500 TOP BAR \u2500\u2500 */
     .top-bar {
       height: var(--top-bar-h);
       display: flex;
@@ -103,7 +103,7 @@ const STATIC_CSS = `
       font-style: italic;
     }
 
-    /* ── SIDEBAR ── */
+    /* \u2500\u2500 SIDEBAR \u2500\u2500 */
     .sidebar {
       width: var(--sidebar-w);
       display: flex;
@@ -115,7 +115,7 @@ const STATIC_CSS = `
       overflow: hidden;
 
       background: var(--sidebar-bg);
-      /* Reduced blur (16px) vs topbar (28px) — avoids stacking two heavy
+      /* Reduced blur (16px) vs topbar (28px) \u2014 avoids stacking two heavy
          backdrop-filter compositing layers on mid-range Android devices. */
       backdrop-filter: blur(36px) saturate(1.2);
       -webkit-backdrop-filter: blur(36px) saturate(1.2);
@@ -263,7 +263,7 @@ const STATIC_CSS = `
       border: 1.5px solid white;
     }
 
-    /* ── CARDS (THE HEART OF THE DEPTH) ── */
+    /* \u2500\u2500 CARDS (THE HEART OF THE DEPTH) \u2500\u2500 */
     .sanctuary-card {
       position: relative;
       border-radius: 20px;
@@ -335,7 +335,7 @@ const STATIC_CSS = `
       padding: 24px;
     }
 
-    /* ── BUTTONS ── */
+    /* \u2500\u2500 BUTTONS \u2500\u2500 */
     .premium-button {
       display: inline-flex;
       align-items: center;
@@ -388,7 +388,7 @@ const STATIC_CSS = `
       box-shadow: var(--shadow-sm);
     }
 
-    /* ── INTERACTIVE CARD ── */
+    /* \u2500\u2500 INTERACTIVE CARD \u2500\u2500 */
     .sanctuary-card.interactive {
       cursor: pointer;
     }
@@ -396,7 +396,7 @@ const STATIC_CSS = `
       transform: translateY(-6px) scale(1.012);
     }
 
-    /* ── SIDEBAR LABEL ── */
+    /* \u2500\u2500 SIDEBAR LABEL \u2500\u2500 */
     .sidebar-label {
       font-size: 14px;
       font-weight: 500;
@@ -406,7 +406,7 @@ const STATIC_CSS = `
       text-overflow: ellipsis;
     }
 
-    /* ── PROFILE GEM ── */
+    /* \u2500\u2500 PROFILE GEM \u2500\u2500 */
     .profile-gem {
       width: 36px;
       height: 36px;
@@ -452,7 +452,7 @@ const STATIC_CSS = `
       width: 100%;
     }
 
-    /* ── GREETING & TYPOGRAPHY ── */
+    /* \u2500\u2500 GREETING & TYPOGRAPHY \u2500\u2500 */
     .greeting {
       margin-bottom: 48px;
     }
@@ -481,7 +481,7 @@ const STATIC_CSS = `
       letter-spacing: 0.01em;
     }
 
-    /* ── FILTER TABS (top-tab) ── */
+    /* \u2500\u2500 FILTER TABS (top-tab) \u2500\u2500 */
     .top-tab {
       display: inline-flex;
       align-items: center;
@@ -589,14 +589,14 @@ const STATIC_CSS = `
       border: 1px solid rgba(var(--action-rgb), 0.18);
     }
 
-    /* ──────────────────────────────────────────────────────────────────
+    /* \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
        ADAPTIVE COLOUR UTILITY CLASSES
        These classes automatically adapt when the temporal phase changes
-       the active accent colour (Saffron → Sage → Blue → Gold etc.).
-       Text colours are WCAG-computed so contrast is always ≥ 4.5 : 1.
-    ────────────────────────────────────────────────────────────────── */
+       the active accent colour (Saffron \u2192 Sage \u2192 Blue \u2192 Gold etc.).
+       Text colours are WCAG-computed so contrast is always \u2265 4.5 : 1.
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
 
-    /* Solid accent background — text colour auto-adapts */
+    /* Solid accent background \u2014 text colour auto-adapts */
     .action-bg {
       background: var(--action);
       color: var(--text-on-action);
@@ -606,7 +606,7 @@ const STATIC_CSS = `
       color: var(--action);
     }
 
-    /* Solid reward background — text colour auto-adapts */
+    /* Solid reward background \u2014 text colour auto-adapts */
     .reward-bg {
       background: var(--reward);
       color: var(--text-on-reward);
@@ -657,7 +657,7 @@ const STATIC_CSS = `
       border-color: var(--border);
     }
 
-    /* Stat chip — metric pill used in dashboards */
+    /* Stat chip \u2014 metric pill used in dashboards */
     .stat-chip {
       display: flex;
       flex-direction: column;
@@ -688,7 +688,7 @@ const STATIC_CSS = `
       outline-offset: 3px;
     }
 
-    /* Phase-aware action button — adapts to current phase accent */
+    /* Phase-aware action button \u2014 adapts to current phase accent */
     .action-button {
       display: inline-flex;
       align-items: center;
@@ -722,7 +722,7 @@ const STATIC_CSS = `
       background: var(--action-medium);
     }
 
-    /* Ghost button — subtle, no fill, used for secondary actions (e.g. "Mark all read") */
+    /* Ghost button \u2014 subtle, no fill, used for secondary actions (e.g. "Mark all read") */
     .sanctuary-button-ghost {
       display: inline-flex;
       align-items: center;
@@ -745,7 +745,7 @@ const STATIC_CSS = `
     }
     .sanctuary-button-ghost:active { transform: scale(0.97); }
 
-    /* ── LAYOUT UTILS ── */
+    /* \u2500\u2500 LAYOUT UTILS \u2500\u2500 */
     .sub-view-container {
       display: grid;
       grid-template-columns: minmax(0, 1fr) 340px;
@@ -773,7 +773,7 @@ const STATIC_CSS = `
       min-height: min-content;
     }
 
-    /* ── SCROLLBAR ── */
+    /* \u2500\u2500 SCROLLBAR \u2500\u2500 */
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb {
@@ -782,7 +782,7 @@ const STATIC_CSS = `
     }
     ::-webkit-scrollbar-thumb:hover { background: rgba(160, 150, 130, 0.4); }
 
-    /* ── COMMUNITY LAYOUT ── */
+    /* \u2500\u2500 COMMUNITY LAYOUT \u2500\u2500 */
     .community-grid {
       display: grid;
       grid-template-columns: 200px 1fr 340px;
@@ -827,7 +827,7 @@ const STATIC_CSS = `
       }
     }
 
-    /* ── SUB-NAV (Horizontal Tabs) ── */
+    /* \u2500\u2500 SUB-NAV (Horizontal Tabs) \u2500\u2500 */
     .community-sub-nav {
       display: none;
       gap: 8px;
@@ -863,7 +863,7 @@ const STATIC_CSS = `
       color: var(--ink-soft);
     }
 
-    /* ── SUB-NAV-TABS (3rd Level) ── */
+    /* \u2500\u2500 SUB-NAV-TABS (3rd Level) \u2500\u2500 */
     .sub-nav-tabs-container {
       display: flex;
       align-items: center;
@@ -895,7 +895,7 @@ const STATIC_CSS = `
       color: var(--ink-soft);
     }
 
-    /* ── RESPONSIVE — TABLET (768–1023px) ── */
+    /* \u2500\u2500 RESPONSIVE \u2014 TABLET (768\u20131023px) \u2500\u2500 */
     @media (max-width: 1023px) {
       .sidebar {
         transform: translateX(-100%);
@@ -928,7 +928,7 @@ const STATIC_CSS = `
       .community-sub-nav { display: flex !important; }
     }
 
-    /* ── RESPONSIVE — MOBILE (< 768px) ── */
+    /* \u2500\u2500 RESPONSIVE \u2014 MOBILE (< 768px) \u2500\u2500 */
     @media (max-width: 767px) {
       .sanctuary-screen {
         padding: 20px 14px 88px 14px;
@@ -942,7 +942,7 @@ const STATIC_CSS = `
       .premium-button, .secondary-button { padding: 10px 16px; font-size: 13px; }
     }
 
-    /* ── SIDEBAR OVERLAY (mobile backdrop) ── */
+    /* \u2500\u2500 SIDEBAR OVERLAY (mobile backdrop) \u2500\u2500 */
     .sidebar-overlay {
       display: none;
       position: fixed;
@@ -955,7 +955,7 @@ const STATIC_CSS = `
     }
     .sidebar-overlay.visible { display: block; }
 
-    /* ── MOBILE BOTTOM NAV ── */
+    /* \u2500\u2500 MOBILE BOTTOM NAV \u2500\u2500 */
     .mobile-bottom-nav {
       display: none;
     }
@@ -1008,7 +1008,7 @@ const STATIC_CSS = `
       .mobile-nav-item:not(.active) .mobile-nav-label { color: var(--ink-ghost); }
     }
 
-    /* ── PWA SAFE AREA ── */
+    /* \u2500\u2500 PWA SAFE AREA \u2500\u2500 */
     @supports (padding: env(safe-area-inset-bottom)) {
       .sanctuary-screen { padding-bottom: calc(88px + env(safe-area-inset-bottom)); }
       @media (max-width: 767px) {
@@ -1021,9 +1021,16 @@ export function SanctuaryGlobalStyles() {
   if (Platform.OS !== 'web') return null;
 
   const {
-    accent, text, isDark, gradientNodes, scene,
-    textOnAccent, textOnReward,
-    accentRgb, rewardRgb, surfaceRgb,
+    accent,
+    text,
+    isDark,
+    gradientNodes,
+    scene,
+    textOnAccent,
+    textOnReward,
+    accentRgb,
+    rewardRgb,
+    surfaceRgb,
     phase,
   } = useTheme();
 
@@ -1075,13 +1082,13 @@ export function SanctuaryGlobalStyles() {
       --action-soft:        ${hexToRgba(accent.action, 0.09)};
       --action-medium:      ${hexToRgba(accent.action, 0.18)};
       --action-glow:        ${hexToRgba(accent.action, 0.28)};
-      --action-border:      ${hexToRgba(accent.action, 0.40)};
+      --action-border:      ${hexToRgba(accent.action, 0.4)};
       /* Text that is WCAG-safe on top of --action backgrounds */
       --text-on-action:     ${textOnAccent};
       --sanctuary-saffron:  ${accent.action};
       --sanctuary-saffron-soft: ${hexToRgba(accent.action, 0.09)};
 
-      /* Reward (achievement / celebration — phase-aware) */
+      /* Reward (achievement / celebration \u2014 phase-aware) */
       --reward:             ${accent.reward};
       --reward-rgb:         ${rewardRgb};
       --reward-soft:        ${hexToRgba(accent.reward, 0.09)};
@@ -1114,7 +1121,7 @@ export function SanctuaryGlobalStyles() {
       --text-on-interactive:${text.onInteractive};
       --text-on-danger: ${text.onDanger};
 
-      /* Phase identifier — useful for CSS [data-phase="morning"] overrides */
+      /* Phase identifier \u2014 useful for CSS [data-phase="morning"] overrides */
       --phase: "${phase}";
 
       /* Backgrounds */

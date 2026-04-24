@@ -1,16 +1,17 @@
 import {
     supabase,
     APIError,
-    requireAuth,
-    requireClassroomAccess,
-    requireStudentAccess,
-    AuthorityTier,
-    getPlatformAccessContext,
-    can as canCapability,
     growthSignalsAPI,
     impactRipplesAPI,
+    identityAPI,
+    libraryContract,
+    composeUserAbilities,
+    createTemporalPOAProxy,
+    assertContractCoverage,
+    defineContractCoverage,
+    applyTemporalFilter,
+    type Role,
 } from '@repo/core';
-import { Platform } from 'react-native';
 
 import {
     LibraryResource,
@@ -31,17 +32,22 @@ import { knowledgeSync } from './sync';
 // ============================================================================
 const capitalize = (s: string) => s ? s.charAt(0).toUpperCase() + s.slice(1) : '';
 
+const getTemporalAsOf = (viewDate?: string): string | undefined => {
+    if (!viewDate) return undefined;
+    return new Date(`${viewDate}T23:59:59.999Z`).toISOString();
+};
+
 // ============================================================================
 // LIBRARY API - Resource Management for Educational Ecology
 // ============================================================================
 
-export const libraryAPI = {
+const rawLibraryAPI = {
     // ========================================================================
     // RESOURCES
     // ========================================================================
 
     /**
-     * Get all resources with optional filtering
+     * @authority read Library
      */
     async getResources(filters: ResourceFilters = {}): Promise<LibraryResource[]> {
         let query = supabase
@@ -82,10 +88,10 @@ export const libraryAPI = {
         }
         if (filters.search) {
             // Trim and sanitize.
-            // â€¢ Single-quotes are escaped to prevent breaking the PostgREST filter string.
-            // â€¢ Curly braces are stripped because they have special meaning in Postgres
+            // " Single-quotes are escaped to prevent breaking the PostgREST filter string.
+            // " Curly braces are stripped because they have special meaning in Postgres
             //   array literals (used by the cs operator below).
-            // â€¢ User-supplied % / _ wildcards are also stripped so callers cannot craft
+            // " User-supplied % / _ wildcards are also stripped so callers cannot craft
             //   their own ilike patterns.
             // Note: the Supabase JS client URL-encodes the entire filter string, which
             // provides an additional layer of protection in transit.
@@ -96,7 +102,7 @@ export const libraryAPI = {
                 .replace(/'/g, "''");      // escape single quotes
 
             if (term.length === 0) {
-                // Nothing left after sanitisation — skip the filter entirely
+                // Nothing left after sanitisation  skip the filter entirely
             } else {
                 // Robust case-insensitive search logic for Web/Guest
                 query = query.or(
@@ -109,6 +115,15 @@ export const libraryAPI = {
                     ].join(',')
                 );
             }
+        }
+
+        if (filters.viewDate) {
+            query = applyTemporalFilter(query, {
+                column: 'created_at',
+                mode: 'event_time',
+                capability: 'event_stream',
+                scale: filters.viewScale,
+            });
         }
 
         // Sorting
@@ -150,7 +165,7 @@ export const libraryAPI = {
      * Search resources locally using SQLite FTS5 index.
      */
     /**
-     * Unified Map & Layer Search
+     * @authority read Library
      */
     async searchMapUniverse(query: string, limit: number = 10): Promise<any[]> {
         const { data, error } = await supabase.rpc('search_map_universe', {
@@ -166,6 +181,9 @@ export const libraryAPI = {
         return data || [];
     },
 
+    /**
+     * @authority read Library
+     */
     async searchResourcesLocal(query: string, limit: number = 20): Promise<LibraryResource[]> {
         try {
             const ids = await knowledgeDB.search(query, limit);
@@ -202,7 +220,7 @@ export const libraryAPI = {
     },
 
     /**
-     * Versatile Server-Side Search (Keyword + Vector)
+     * @authority read Library
      */
     async searchLibrary(params: {
         query: string,
@@ -233,7 +251,7 @@ export const libraryAPI = {
     },
 
     /**
-     * Get a single resource by ID
+     * @authority read Library
      */
     async getResourceById(id: string, userId?: string): Promise<LibraryResource> {
         const { data, error } = await supabase
@@ -278,7 +296,7 @@ export const libraryAPI = {
     },
 
     /**
-     * Create a new resource
+     * @authority create Library
      */
     async createResource(input: CreateResourceInput, creatorId: string, creatorRole: string): Promise<LibraryResource> {
         const { data, error } = await supabase
@@ -293,7 +311,7 @@ export const libraryAPI = {
                     uses_count: 0,
                     endorsements: 0,
                     bookmarks: 0,
-                    verified: canCapability('knowledge.verify', getPlatformAccessContext({ role: creatorRole } as any), {}).allowed, // Auto-verify for staff
+                    verified: composeUserAbilities({ roles: [creatorRole as Role] }).can('verify', 'Library'), // Auto-verify for staff
                 },
             ])
             .select(`
@@ -307,10 +325,14 @@ export const libraryAPI = {
         }
 
         // Trigger Growth Signals (Whispered Moment & Nourishing dimension)
-        void growthSignalsAPI.emitSignal(creatorId, 'resource_uploaded', {
-            resource_id: data.id,
-            resource_type: input.type,
-        }).catch(() => { });
+        growthSignalsAPI.emitSilent({
+            user_id: creatorId,
+            event_type: 'resource_uploaded',
+            event_metadata: {
+                resource_id: data.id,
+                resource_type: input.type,
+            },
+        });
 
         // Direct Rewards: Add 50 points for contribution
         try {
@@ -327,7 +349,7 @@ export const libraryAPI = {
     },
 
     /**
-     * Update an existing resource
+     * @authority update Library
      */
     async updateResource(id: string, updates: Partial<LibraryResource>): Promise<LibraryResource> {
         const { data, error } = await supabase
@@ -353,7 +375,7 @@ export const libraryAPI = {
     },
 
     /**
-     * Delete a resource
+     * @authority delete Library
      */
     async deleteResource(id: string): Promise<void> {
         const { error } = await supabase
@@ -371,7 +393,7 @@ export const libraryAPI = {
     // ========================================================================
 
     /**
-     * Track a resource view
+     * @authority create Library
      */
     async trackView(resourceId: string, userId?: string): Promise<void> {
         // Increment view count
@@ -393,15 +415,19 @@ export const libraryAPI = {
                 },
             ]);
 
-            // Growth signal: user explored a resource (Witnessing dimension â€” absorbing, growing inward)
-            void growthSignalsAPI.emitSignal(userId, 'resource_read', {
-                resource_id: resourceId,
-            }).catch(() => { });
+            // Growth signal: user explored a resource (Witnessing dimension  absorbing, growing inward)
+            growthSignalsAPI.emitSilent({
+                user_id: userId,
+                event_type: 'resource_read',
+                event_metadata: {
+                    resource_id: resourceId,
+                },
+            });
         }
     },
 
     /**
-     * Track resource use (e.g., used in a class)
+     * @authority create Library
      */
     async trackUse(resourceId: string, userId: string, classroomId?: string): Promise<void> {
         // Increment uses count
@@ -425,7 +451,7 @@ export const libraryAPI = {
     },
 
     /**
-     * Endorse a resource
+     * @authority create Library
      */
     async endorseResource(resourceId: string, userId: string): Promise<void> {
         // Check if already endorsed
@@ -475,7 +501,7 @@ export const libraryAPI = {
     },
 
     /**
-     * Bookmark a resource
+     * @authority create Library
      */
     async bookmarkResource(resourceId: string, userId: string): Promise<void> {
         // Check if already bookmarked
@@ -513,7 +539,7 @@ export const libraryAPI = {
                 resource_id: resourceId,
             });
 
-            // Impact Ripple: the resource creator gets a warm echo â€”
+            // Impact Ripple: the resource creator gets a warm echo 
             // "a teacher in your school kept your resource close"
             const { data: resource } = await supabase
                 .from('nodes')
@@ -534,7 +560,7 @@ export const libraryAPI = {
     },
 
     /**
-     * Verify a resource (teachers/principals only)
+     * @authority update Library
      */
     async verifyResource(resourceId: string, verifiedBy: string): Promise<LibraryResource> {
         const { data, error } = await supabase
@@ -563,10 +589,13 @@ export const libraryAPI = {
     },
 
     /**
-     * Get bookmarked resources for a user
+     * @authority read Library
      */
-    async getBookmarkedResources(userId: string): Promise<LibraryResource[]> {
-        const { data, error } = await supabase
+    async getBookmarkedResources(
+        userId: string,
+        options: Pick<ResourceFilters, 'viewDate' | 'viewScale'> = {}
+    ): Promise<LibraryResource[]> {
+        let query = supabase
             .from('resource_engagements')
             .select(`
 resource: nodes!resource_engagements_resource_id_fkey(
@@ -575,8 +604,20 @@ resource: nodes!resource_engagements_resource_id_fkey(
 )
   `)
             .eq('user_id', userId)
-            .eq('engagement_type', 'bookmark')
-            .order('created_at', { ascending: false });
+            .eq('engagement_type', 'bookmark');
+
+        if (options.viewDate) {
+            query = applyTemporalFilter(query, {
+                column: 'created_at',
+                mode: 'event_time',
+                capability: 'event_stream',
+                scale: options.viewScale,
+            });
+        } else {
+            query = query.order('created_at', { ascending: false });
+        }
+
+        const { data, error } = await query;
 
         if (error) {
             throw new APIError('Failed to fetch bookmarked resources', error.code, error);
@@ -601,9 +642,11 @@ resource: nodes!resource_engagements_resource_id_fkey(
     // ========================================================================
 
     /**
-     * Get all collections with optional filtering
+     * @authority read Library
      */
     async getCollections(filters: CollectionFilters = {}): Promise<LibraryCollection[]> {
+        const asOf = getTemporalAsOf(filters.viewDate);
+
         // 1. Fetch explicit collections from the DB
         let query = supabase
             .from('collections')
@@ -614,8 +657,7 @@ resource: nodes!resource_engagements_resource_id_fkey(
             `);
 
         // RLS alignment: For guests/unauthenticated users, allow public OR verified collections
-        const { data: { session } } = await supabase.auth.getSession();
-        const userId = session?.user?.id;
+        const userId = await identityAPI.getMyInternalId();
 
         if (!userId) {
             query = query.or('visibility.eq.public,verified.eq.true');
@@ -639,6 +681,15 @@ resource: nodes!resource_engagements_resource_id_fkey(
             query = query.or(`name.ilike.%${term}%,description.ilike.%${term}%`);
         }
 
+        if (filters.viewDate) {
+            query = applyTemporalFilter(query, {
+                column: 'created_at',
+                mode: 'event_time',
+                capability: 'event_stream',
+                scale: filters.viewScale,
+            });
+        }
+
         query = query.order('created_at', { ascending: false });
         
         // Use a generous limit for explicit data if we're combining, but respect filter limit if provided
@@ -652,6 +703,22 @@ resource: nodes!resource_engagements_resource_id_fkey(
         const explicitCollections = await Promise.all(
             (explicitData || []).map(async (col: any) => {
                 let nodeIds = (col.collection_nodes || []).map((cn: any) => cn.node_id);
+                if (asOf) {
+                    const { data: membershipData, error: membershipError } = await supabase.rpc(
+                        'get_collection_membership_as_of',
+                        {
+                            p_collection_id: col.id,
+                            p_as_of: asOf,
+                        }
+                    );
+
+                    if (membershipError) {
+                        throw new APIError('Failed to reconstruct collection membership history', membershipError.code, membershipError);
+                    }
+
+                    nodeIds = (membershipData || []).map((entry: any) => entry.node_id);
+                }
+
                 if (nodeIds.length === 0 && col.resource_ids?.length > 0) {
                     nodeIds = col.resource_ids;
                 }
@@ -755,15 +822,21 @@ resource: nodes!resource_engagements_resource_id_fkey(
     },
 
     /**
-     * Get a single collection by ID
+     * @authority read Library
      */
-    async getCollectionById(id: string, userId?: string): Promise<LibraryCollection> {
+    async getCollectionById(
+        id: string,
+        userId?: string,
+        options: Pick<ResourceFilters, 'viewDate' | 'viewScale'> = {}
+    ): Promise<LibraryCollection> {
+        const asOf = getTemporalAsOf(options.viewDate);
+
         // Handle Virtual Collections (Subjects or Topics)
         if (id.startsWith('subject:') || id.startsWith('topic:')) {
             const isSubject = id.startsWith('subject:');
             const term = id.split(':')[1] || '';
             const filters = isSubject ? { subject: term } : { topic: term };
-            const resources = await this.getResources({ ...filters, limit: 50 });
+            const resources = await this.getResources({ ...filters, limit: 50, viewDate: options.viewDate, viewScale: options.viewScale });
             
             return {
                 id,
@@ -813,16 +886,37 @@ resource: nodes!resource_engagements_resource_id_fkey(
         if (error) throw new APIError('Failed to fetch collection', error.code, error);
 
         // Combine resources from junction table and array fallback
-        let resources: LibraryResource[] = (data.collection_nodes || []).map((cn: any) => ({
-            ...cn.nodes,
-            creator_name: cn.nodes?.creator_name || 'System', // Use denormalized name from node
-        }));
+        let membershipNodeIds: string[] = [];
+        if (asOf) {
+            const { data: membershipData, error: membershipError } = await supabase.rpc(
+                'get_collection_membership_as_of',
+                {
+                    p_collection_id: id,
+                    p_as_of: asOf,
+                }
+            );
 
-        if (resources.length === 0 && data.resource_ids?.length > 0) {
+            if (membershipError) {
+                throw new APIError('Failed to reconstruct collection membership history', membershipError.code, membershipError);
+            }
+
+            membershipNodeIds = (membershipData || []).map((entry: any) => entry.node_id);
+        }
+
+        let resources: LibraryResource[] = asOf
+            ? []
+            : (data.collection_nodes || []).map((cn: any) => ({
+                ...cn.nodes,
+                creator_name: cn.nodes?.creator_name || 'System', // Use denormalized name from node
+            }));
+
+        const fallbackNodeIds = membershipNodeIds.length > 0 ? membershipNodeIds : data.resource_ids;
+
+        if (resources.length === 0 && fallbackNodeIds?.length > 0) {
             const { data: resData } = await supabase
                 .from('nodes')
                 .select('*')
-                .in('id', data.resource_ids);
+                .in('id', fallbackNodeIds);
             resources = resData || [];
         }
 
@@ -904,27 +998,6 @@ resource: nodes!resource_engagements_resource_id_fkey(
      * Add a resource to a collection
      */
     async addToCollection(collection_id: string, node_id: string): Promise<void> {
-        // 1. Maintain the array-based field for backward compatibility
-        const { data: collection } = await supabase
-            .from('collections')
-            .select('resource_ids, sequence_order')
-            .eq('id', collection_id)
-            .single();
-
-        if (collection) {
-            const newResourceIds = [...(collection.resource_ids || []), node_id];
-            const newSequenceOrder = [...(collection.sequence_order || []), newResourceIds.length - 1];
-
-            await supabase
-                .from('collections')
-                .update({
-                    resource_ids: newResourceIds,
-                    sequence_order: newSequenceOrder,
-                })
-                .eq('id', collection_id);
-        }
-
-        // 2. Insert into the formal junction table (upgrade)
         const { error } = await supabase
             .from('collection_nodes')
             .insert([{ collection_id, node_id }]);
@@ -938,30 +1011,6 @@ resource: nodes!resource_engagements_resource_id_fkey(
      * Remove a resource from a collection
      */
     async removeFromCollection(collectionId: string, resourceId: string): Promise<void> {
-        // 1. Update the array-based field
-        const { data: collection } = await supabase
-            .from('collections')
-            .select('resource_ids, sequence_order')
-            .eq('id', collectionId)
-            .single();
-
-        if (collection) {
-            const index = collection.resource_ids.indexOf(resourceId);
-            if (index !== -1) {
-                const newResourceIds = collection.resource_ids.filter((id: string) => id !== resourceId);
-                const newSequenceOrder = collection.sequence_order.filter((_: any, i: number) => i !== index);
-                
-                await supabase
-                    .from('collections')
-                    .update({
-                        resource_ids: newResourceIds,
-                        sequence_order: newSequenceOrder,
-                    })
-                    .eq('id', collectionId);
-            }
-        }
-
-        // 2. Delete from junction table
         const { error } = await supabase
             .from('collection_nodes')
             .delete()
@@ -1213,3 +1262,26 @@ resource: nodes!resource_engagements_resource_id_fkey(
         return schools;
     }
 };
+
+const libraryCoverage = assertContractCoverage(rawLibraryAPI, defineContractCoverage({
+    moduleName: 'library',
+    contract: libraryContract,
+    methodMapping: {
+        getResourceById: 'getResource',
+        trackView: 'engage',
+        trackUse: 'engage',
+        endorseResource: 'engage',
+        bookmarkResource: 'engage',
+        getCollectionById: 'getCollection',
+    },
+}));
+
+export const libraryAPI = createTemporalPOAProxy(
+    'library',
+    rawLibraryAPI,
+    libraryCoverage.contract,
+    libraryCoverage.methodMapping,
+    { strictUnmappedMethods: true }
+);
+
+void [libraryContract, libraryCoverage];

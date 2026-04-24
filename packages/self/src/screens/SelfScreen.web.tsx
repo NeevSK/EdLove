@@ -1,25 +1,49 @@
-import React from 'react';
-import { Intent, usePermissions } from '@repo/core';
+﻿import React from 'react';
 import { WebScreenHeader } from '@repo/ui';
 
+
+import { usePermissions } from '@repo/core';
+
+import { 
+    StudentSelfView, 
+    TeacherSelfView, 
+    PrincipalSelfView, 
+    FounderSelfView, 
+    GuardianSelfView,
+    AdminSelfView 
+} from './self';
+
 /**
- * SelfScreenWeb — declarative entry point for the user's sanctuary on Web.
- * Resolves to the correct Vow (Student/Teacher/etc.) via ProtocolRegistry.
+ * SelfScreenWeb declarative entry point for the user's sanctuary on Web.
+ * Now capability-driven (POA) instead of registry-intent based.
  */
 export default function SelfScreenWeb() {
-  const { can } = usePermissions();
+  const { can, context } = usePermissions();
 
   const getHeaderDetails = () => {
     if (can('manage', 'StudentDashboard')) {
       return { title: 'Mastery Hub', note: 'Personal Growth Stream' };
     }
+    if (context.roles.includes('guardian') || context.roles.includes('parent')) {
+      return { title: 'Sadhana', note: 'Guardian Sanctuary' };
+    }
     if (can('manage', 'PrincipalDashboard')) {
        return { title: 'Sadhana', note: "Principal's Inner Sanctuary" };
     }
-    if (can('platform.observe.all')) {
+    if (can('manage', 'FounderDashboard')) {
        return { title: 'Sadhana', note: "Founder's Vision Lab" };
     }
     return { title: 'Sadhana', note: 'Personal Growth Stream' };
+  };
+
+  const renderDashboard = () => {
+    if (can('manage', 'FounderDashboard')) return <FounderSelfView />;
+    if (can('manage', 'AdminDashboard')) return <AdminSelfView />;
+    if (can('manage', 'PrincipalDashboard')) return <PrincipalSelfView />;
+    if (can('manage', 'TeacherDashboard')) return <TeacherSelfView />;
+    if (context.roles.includes('guardian') || context.roles.includes('parent')) return <GuardianSelfView />;
+    if (can('manage', 'StudentDashboard')) return <StudentSelfView />;
+    return <StudentSelfView />;
   };
 
   const { title, note } = getHeaderDetails();
@@ -33,7 +57,7 @@ export default function SelfScreenWeb() {
           showPersonalizedGreeting
         />
         <div style={{ marginTop: 24 }}>
-            <Intent intent="identity.self.view" />
+          {renderDashboard()}
         </div>
       </div>
     </div>

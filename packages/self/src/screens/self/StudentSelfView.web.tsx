@@ -1,18 +1,14 @@
-import React from 'react';
+﻿import React from 'react';
+import { JourneyHistoryCard, TemporalProvider, TemporalShield } from '@repo/ui';
+
+
 import { useTranslation } from 'react-i18next';
-import {
-    ResonanceProvider,
-    ResonanceShield,
-    TemporalNavigator,
-    JourneyHistoryCard,
-} from '@repo/ui';
+
 import {
     usePermissions,
-    useResonanceStore,
     useNaturePaths,
     useStudentGoals,
-    useJourneyHistory,
-} from '@repo/core';
+    useJourneyHistory} from '@repo/core';
 import { useMoodLogs } from '../../hooks/useMoodLogs';
 import { useJournalEntries } from '../../hooks/useJournalEntries';
 import { ResonanceTimeline } from '../../components/ResonanceTimeline';
@@ -32,80 +28,49 @@ import {
     JournalSection,
     MoodSection,
     GoalSection,
-    NatureSection,
-} from '../../views/sections';
+    NatureSection} from '../../views/sections';
 
 export default function StudentSelfView() {
     const { t } = useTranslation();
     const { context } = usePermissions();
     const userId = context.userId;
-    const { viewMode, viewScale, setScale } = useResonanceStore();
 
     const { entries: journalEntries, loading: loadingJournals } = useJournalEntries();
     const { logs: moodLogs, loading: loadingMoods } = useMoodLogs();
     const { goals, isLoading: loadingGoals } = useStudentGoals();
     const { paths, isLoading: loadingPaths } = useNaturePaths();
-    const { events: journeyEvents, holisticView, isLoading: journeyLoading } = useJourneyHistory();
+    const { events: journeyEvents, holisticView, isLoading: journeyLoading, currentScale: viewScale } = useJourneyHistory();
 
     const holisticSection = (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginBottom: '-8px' }}>
-                {(['day', 'week', 'month', 'year'] as const).map((scale) => (
-                    <button
-                        key={scale}
-                        className={`sanctuary-chip ${viewScale === scale ? 'active' : ''}`}
-                        onClick={() => setScale(scale)}
-                        style={{
-                            background: viewScale === scale ? 'var(--saffron-glass)' : 'rgba(255,255,255,0.05)',
-                            border: 'none',
-                            color: '#fff',
-                            padding: '4px 12px',
-                            borderRadius: '12px',
-                            fontSize: '11px',
-                            cursor: 'pointer',
-                            textTransform: 'uppercase',
-                        }}
-                    >
-                        {scale}
-                    </button>
-                ))}
-            </div>
             <JourneyHistoryCard
                 events={journeyEvents}
                 summary={holisticView.summary}
                 loading={journeyLoading}
                 scale={viewScale as any}
             />
-
-            <ResonanceShield label="JOURNAL RESONANCE">
+            <TemporalShield label="JOURNAL HISTORY">
                 <JournalSection entries={journalEntries} loading={loadingJournals} />
-            </ResonanceShield>
-
-            <ResonanceShield label="MOOD RESONANCE">
+            </TemporalShield>
+            <TemporalShield label="MOOD HISTORY">
                 <MoodSection logs={moodLogs} loading={loadingMoods} />
-            </ResonanceShield>
-
+            </TemporalShield>
             <GoalSection goals={goals} loading={loadingGoals} />
             <NatureSection paths={paths} loading={loadingPaths} />
         </div>
     );
 
     return (
-        <ResonanceProvider>
-            <div style={{ padding: '20px 40px 0' }}>
-                <TemporalNavigator />
-            </div>
-
+        <TemporalProvider>
             <BaseSelfView
                 perspective="student"
                 description={t('self.studentDesc', 'A steady space to grow your mind and heart.')}
-                domains={[
-                    {
+                domains={[{
                         id: 'journey',
                         title: 'Journey Overview',
                         accentColor: '#8B5CF6',
-                        content: viewMode === 'timeline' ? <ResonanceTimeline /> : holisticSection,
-                    },
+                        content: holisticSection,
+                        historyContent: <ResonanceTimeline />},
                     {
                         id: 'discovery',
                         title: 'My Tools',
@@ -115,14 +80,12 @@ export default function StudentSelfView() {
                                 id: 'mood_lotus',
                                 label: 'Mood Lotus',
                                 content: <MoodLotus userId={userId ?? undefined} />,
-                                historyContent: <MoodSection logs={moodLogs} loading={loadingMoods} />,
-                            },
+                                historyContent: <MoodSection logs={moodLogs} loading={loadingMoods} />},
                             {
                                 id: 'goals',
                                 label: 'Growth Goals',
                                 content: <StudentGoals userId={userId ?? ''} />,
-                                historyContent: <GoalSection goals={goals} loading={loadingGoals} />,
-                            },
+                                historyContent: <GoalSection goals={goals} loading={loadingGoals} />},
                             { id: 'grades', label: 'My Grades', content: <MyGradesView /> },
                             { id: 'breath', label: 'Breath Guide', content: <BreathGuide /> },
                             { id: 'joy_jar', label: 'Joy Jar', content: <JoyJar /> },
@@ -132,10 +95,10 @@ export default function StudentSelfView() {
                             { id: 'tomorrow', label: 'Tomorrow Prep', content: <TomorrowPrep /> },
                             { id: 'voice', label: 'Voice Journal', content: <VoiceJournaling /> },
                             { id: 'reminders', label: 'Reminders', content: <RemindersManager /> },
-                        ],
-                    },
+                        ]},
                 ]}
             />
-        </ResonanceProvider>
+        </TemporalProvider>
     );
 }
+

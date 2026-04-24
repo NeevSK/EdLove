@@ -25,7 +25,7 @@ export class WebGPUDriver {
   private root: any = null;
 
   constructor() {
-    console.log('[Trübe-Art] [Tier 2] WebGPUDriver Initialized.');
+    console.log('[Tr\u00FCbe-Art] [Tier 2] WebGPUDriver Initialized.');
   }
 
   async ensureDevice(): Promise<GPUDevice | null> {
@@ -38,7 +38,7 @@ export class WebGPUDriver {
 
       if (this.device) {
         this.device.lost.then((info) => {
-          console.error(`[Trübe-Art] [Tier 2] GPU Device Lost: ${info.message}`, info.reason);
+          console.error(`[Tr\u00FCbe-Art] [Tier 2] GPU Device Lost: ${info.message}`, info.reason);
           this.handleDeviceLoss();
         });
         this.root = t.initFromDevice({ device: this.device });
@@ -46,7 +46,7 @@ export class WebGPUDriver {
 
       return this.device;
     } catch (e) {
-      console.warn('[Trübe-Art] [Tier 2] WebGPU Device Acquisition Failed.', e);
+      console.warn('[Tr\u00FCbe-Art] [Tier 2] WebGPU Device Acquisition Failed.', e);
       return null;
     }
   }
@@ -57,10 +57,11 @@ export class WebGPUDriver {
     this.pipelineCache.clear();
     this.pipelines.clear();
     this.buffers.clear();
-    // Signal DriverManager to failover to Tier 3 if recovery fails
-    const { driverManager } = require('./DriverManager');
-    driverManager.triggerGlobalFailover('WebGPU Device Loss');
+    // Signal to failover to Tier 3 if recovery fails
+    this.onDeviceLost?.('WebGPU Device Loss');
   }
+
+  public onDeviceLost?: (reason: string) => void;
 
   async submitShader(name: string, source: string): Promise<string> {
     const device = await this.ensureDevice();
@@ -72,7 +73,7 @@ export class WebGPUDriver {
     let pipeline = this.pipelineCache.get(name);
 
     if (!pipeline) {
-      console.log(`[Trübe-Art] [WebGPU] Compiling Pipeline (In-line): ${name}`);
+      console.log(`[Tr\u00FCbe-Art] [WebGPU] Compiling Pipeline (In-line): ${name}`);
       const module = device.createShaderModule({
         label: `SoulShader_${name}`,
         code: source,
@@ -96,7 +97,7 @@ export class WebGPUDriver {
       });
       this.pipelineCache.set(name, pipeline);
     } else {
-      console.log(`[Trübe-Art] [WebGPU] Using Pre-warmed Pipeline for: ${name}`);
+      console.log(`[Tr\u00FCbe-Art] [WebGPU] Using Pre-warmed Pipeline for: ${name}`);
     }
 
     this.pipelines.set(sessionId, pipeline);
@@ -128,7 +129,7 @@ export class WebGPUDriver {
     // Also store by name for the onFrame lookup
     this.buffers.set(name, buffer);
 
-    console.log(`[Trübe-Art] [Tier 2] TypeGPU Pipeline & BindGroup Created: ${name}`);
+    console.log(`[Tr\u00FCbe-Art] [Tier 2] TypeGPU Pipeline & BindGroup Created: ${name}`);
     return sessionId;
   }
 
@@ -156,7 +157,7 @@ export class WebGPUDriver {
     });
 
     this.pipelineCache.set(name, pipeline);
-    console.log(`[Trübe-Art] [Tier 2] WebGPU Pre-warmed Surface: ${name}`);
+    console.log(`[Tr\u00FCbe-Art] [Tier 2] WebGPU Pre-warmed Surface: ${name}`);
   }
 
   onFrame(
@@ -206,7 +207,7 @@ export class WebGPUDriver {
       this.pipelines.delete(id);
     }
     this.bindGroups.delete(id);
-    console.log(`[Trübe-Art] [Tier 2] WebGPU Resources Released: ${id}`);
+    console.log(`[Tr\u00FCbe-Art] [Tier 2] WebGPU Resources Released: ${id}`);
   }
 
   get isSupported(): boolean {

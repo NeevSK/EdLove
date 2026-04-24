@@ -5,7 +5,7 @@ import { radarLayout } from '@repo/graphics';
 import type { PerspectiveViewProps } from '@repo/graphics';
 
 /**
- * VatyaView.web — The "Whirlwind" Radar Perspective (Web).
+ * VatyaView.web  The "Whirlwind" Radar Perspective (Web).
  * 
  * Achieves isomorphic parity with the native version using standard SVG.
  */

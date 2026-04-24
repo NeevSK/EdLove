@@ -2,13 +2,7 @@
  * ANNOUNCEMENTS SCREEN
  * 
  * School-wide news feed for announcements.
- * Features:
- * - Pinned posts at the top (distinct background)
- * - Regular posts in chronological order
- * - "+ Create Announcement" FAB for principals
- * - Filter by school_id
- * 
- * Mission 06: Community & Onboarding
+ * Refactored for Sanctuary V3.
  */
 
 import React, { useState, useEffect } from 'react';
@@ -19,24 +13,18 @@ import {
     Heading,
     Box,
     ScrollView,
-    Button,
-    ButtonText,
-    Textarea,
-    TextareaInput,
-    Modal,
-    ModalBackdrop,
-    ModalContent,
-    ModalHeader,
-    ModalBody,
-    ModalFooter,
+    SanctuaryButton,
+    InputField,
+    SanctuaryModal,
     Spinner,
     Switch,
-    SkeletonCard,
+    Icon,
+    ScreenWrapper,
 } from '@repo/ui';
+import { Megaphone, Pin, Plus, X, Globe } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { communityAPI as community } from '../api/community';
 import { AnnouncementWithAuthor } from '../types/Community';
-import { Theme } from '@repo/ui';
 import { AuthorityTier, usePermissions } from '@repo/core';
 
 interface AnnouncementsScreenProps {
@@ -123,111 +111,84 @@ export default function AnnouncementsScreen({
         }
     };
 
-    // Separate pinned and regular announcements
     const pinnedAnnouncements = announcements.filter((a) => a.is_pinned);
     const regularAnnouncements = announcements.filter((a) => !a.is_pinned);
 
     return (
-        <Box
-            sx={{
-                flex: 1,
-                backgroundColor: Theme.colors.obsidian,
-            }}
-        >
-            <ScrollView>
-                <VStack space="lg" sx={{ padding: Theme.spacing.lg }}>
-                    {/* Header */}
-                    <HStack
-                        sx={{
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                        }}
-                    >
-                        <Heading size="2xl" color={Theme.colors.sanctuarySaffron}>
-                            {t('announcements.title') || '📢 Announcements'}
-                        </Heading>
-                    </HStack>
+        <ScreenWrapper noTopInset scroll={false} className="bg-phase-canvas">
+            <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
+                <VStack className="p-5 gap-6">
+                    {/* Hero Section */}
+                    <Box className="bg-phase-surface p-6 rounded-[32px] border border-border shadow-sm">
+                        <VStack className="gap-4">
+                            <HStack className="items-center gap-3">
+                                <Box className="w-12 h-12 rounded-2xl bg-phase-interactive/10 items-center justify-center">
+                                    <Icon as={Megaphone} size="md" className="text-phase-interactive" />
+                                </Box>
+                                <VStack className="gap-0.5">
+                                    <Heading className="text-2xl font-black text-ink">
+                                        The Broadcaster
+                                    </Heading>
+                                    <Text className="text-ink/60 text-sm">
+                                        School-wide resonance and critical updates.
+                                    </Text>
+                                </VStack>
+                            </HStack>
 
-                    {/* Create Button (Privileged Roles Only) */}
-                    {can('create', 'Announcement') && (
-                        <Button
-                            sx={{
-                                backgroundColor: Theme.colors.sanctuarySaffron,
-                                padding: Theme.spacing.lg,
-                            }}
-                            onPress={() => setShowCreateModal(true)}
-                        >
-                            <ButtonText color={Theme.colors.sacredWhite}>
-                                {t('announcements.create') || '+ Create Announcement'}
-                            </ButtonText>
-                        </Button>
-                    )}
+                            {can('create', 'Announcement') && (
+                                <SanctuaryButton
+                                    action="primary"
+                                    className="h-12 rounded-xl mt-2"
+                                    onPress={() => setShowCreateModal(true)}
+                                >
+                                    <HStack className="items-center gap-2">
+                                        <Icon as={Plus} size="sm" className="text-white" />
+                                        <Text className="text-white font-bold">New Announcement</Text>
+                                    </HStack>
+                                </SanctuaryButton>
+                            )}
+                        </VStack>
+                    </Box>
 
                     {/* Loading State */}
                     {isLoading && (
-                        <VStack space="md">
-                            <SkeletonCard height={120} />
-                            <SkeletonCard height={120} />
-                            <SkeletonCard height={120} />
-                        </VStack>
+                        <Box className="py-20 items-center">
+                            <Spinner />
+                            <Text className="text-ink/40 text-sm mt-4 font-medium uppercase tracking-widest">Gathering Updates...</Text>
+                        </Box>
                     )}
 
                     {/* Error State */}
                     {error && !isLoading && (
-                        <Box
-                            sx={{
-                                padding: Theme.spacing.md,
-                                backgroundColor: Theme.colors.emberRed,
-                                borderRadius: Theme.corners.comfortable,
-                            }}
-                        >
-                            <Text color={Theme.colors.sacredWhite}>{error}</Text>
+                        <Box className="p-4 bg-red-500/10 rounded-2xl border border-red-500/20">
+                            <Text className="text-red-500 font-medium text-center">{error}</Text>
                         </Box>
                     )}
 
                     {/* Pinned Announcements */}
                     {!isLoading && pinnedAnnouncements.length > 0 && (
-                        <VStack space="md">
-                            <Text
-                                color={Theme.colors.starlightGray}
-                                size="sm"
-                                sx={{ fontWeight: '600' }}
-                            >
-                                {t('announcements.pinned') || '📌 PINNED'}
-                            </Text>
-
+                        <VStack className="gap-4">
+                            <HStack className="items-center gap-2 px-1">
+                                <Icon as={Pin} size="xs" className="text-phase-interactive" />
+                                <Text className="text-ink/40 text-[10px] font-bold tracking-[2px] uppercase">
+                                    {t('announcements.pinned') || 'Pinned to Top'}
+                                </Text>
+                            </HStack>
                             {pinnedAnnouncements.map((announcement) => (
                                 <Box
                                     key={announcement.id}
-                                    sx={{
-                                        padding: Theme.spacing.md,
-                                        backgroundColor: Theme.colors.shadowViolet,
-                                        borderRadius: Theme.corners.comfortable,
-                                        borderLeftWidth: 4,
-                                        borderLeftColor: Theme.colors.templeGold,
-                                    }}
+                                    className="p-5 bg-phase-interactive/5 rounded-3xl border border-phase-interactive/20"
                                 >
-                                    <VStack space="sm">
-                                        {/* Header */}
-                                        <HStack
-                                            sx={{
-                                                justifyContent: 'space-between',
-                                                alignItems: 'center',
-                                            }}
-                                        >
-                                            <HStack space="sm" sx={{ alignItems: 'center' }}>
-                                                <Text color={Theme.colors.sacredWhite}>
-                                                    {announcement.author_name || 'Unknown'}
-                                                </Text>
-                                            </HStack>
-
-                                            <Text color={Theme.colors.mistGray} size="xs">
+                                    <VStack className="gap-3">
+                                        <HStack className="justify-between items-center">
+                                            <Text className="text-ink font-bold text-sm">
+                                                {announcement.author_name || 'Authority'}
+                                            </Text>
+                                            <Text className="text-ink/40 text-[10px] font-bold">
                                                 {formatDate(announcement.created_at)}
                                             </Text>
                                         </HStack>
-
-                                        {/* Content */}
-                                        <Text color={Theme.colors.sacredWhite} size="md">
+                                        <Text className="text-ink text-base leading-relaxed">
                                             {announcement.content}
                                         </Text>
                                     </VStack>
@@ -238,47 +199,29 @@ export default function AnnouncementsScreen({
 
                     {/* Regular Announcements */}
                     {!isLoading && regularAnnouncements.length > 0 && (
-                        <VStack space="md">
-                            {pinnedAnnouncements.length > 0 && (
-                                <Text
-                                    color={Theme.colors.starlightGray}
-                                    size="sm"
-                                    sx={{ fontWeight: '600', marginTop: Theme.spacing.md }}
-                                >
-                                    {t('announcements.recent') || 'RECENT'}
+                        <VStack className="gap-4">
+                            <HStack className="items-center gap-2 px-1">
+                                <Icon as={Globe} size="xs" className="text-ink/40" />
+                                <Text className="text-ink/40 text-[10px] font-bold tracking-[2px] uppercase">
+                                    {t('announcements.recent') || 'Recent Streams'}
                                 </Text>
-                            )}
+                            </HStack>
 
                             {regularAnnouncements.map((announcement) => (
                                 <Box
                                     key={announcement.id}
-                                    sx={{
-                                        padding: Theme.spacing.md,
-                                        backgroundColor: Theme.colors.ink,
-                                        borderRadius: Theme.corners.comfortable,
-                                    }}
+                                    className="p-5 bg-phase-surface rounded-3xl border border-border shadow-sm"
                                 >
-                                    <VStack space="sm">
-                                        {/* Header */}
-                                        <HStack
-                                            sx={{
-                                                justifyContent: 'space-between',
-                                                alignItems: 'center',
-                                            }}
-                                        >
-                                            <HStack space="sm" sx={{ alignItems: 'center' }}>
-                                                <Text color={Theme.colors.sacredWhite}>
-                                                    {announcement.author_name || 'Unknown'}
-                                                </Text>
-                                            </HStack>
-
-                                            <Text color={Theme.colors.mistGray} size="xs">
+                                    <VStack className="gap-3">
+                                        <HStack className="justify-between items-center">
+                                            <Text className="text-ink font-bold text-sm">
+                                                {announcement.author_name || 'Staff Member'}
+                                            </Text>
+                                            <Text className="text-ink/40 text-[10px] font-bold">
                                                 {formatDate(announcement.created_at)}
                                             </Text>
                                         </HStack>
-
-                                        {/* Content */}
-                                        <Text color={Theme.colors.starlightGray} size="md">
+                                        <Text className="text-ink/70 text-base leading-relaxed">
                                             {announcement.content}
                                         </Text>
                                     </VStack>
@@ -289,116 +232,83 @@ export default function AnnouncementsScreen({
 
                     {/* Empty State */}
                     {!isLoading && announcements.length === 0 && (
-                        <Box
-                            sx={{
-                                padding: Theme.spacing.xl,
-                                alignItems: 'center',
-                            }}
-                        >
-                            <Text
-                                size="lg"
-                                color={Theme.colors.starlightGray}
-                                textAlign="center"
-                            >
-                                {t('announcements.noAnnouncements') ||
-                                    'No announcements yet. Check back soon!'}
+                        <Box className="py-20 items-center justify-center">
+                            <Box className="w-16 h-16 rounded-full bg-ink/5 items-center justify-center mb-4">
+                                <Icon as={Megaphone} size="lg" className="text-ink/20" />
+                            </Box>
+                            <Text className="text-lg text-ink/20 font-bold text-center">
+                                All is Quiet
+                            </Text>
+                            <Text className="text-sm text-ink/40 text-center px-10 mt-2">
+                                No school-wide resonance has been broadcast yet. Check back for future updates.
                             </Text>
                         </Box>
                     )}
                 </VStack>
             </ScrollView>
 
-            {/* Create Announcement Modal */}
-            <Modal
+            <SanctuaryModal
                 isOpen={showCreateModal}
                 onClose={() => {
                     setShowCreateModal(false);
                     setNewAnnouncementContent('');
                     setIsPinned(false);
                 }}
+                title="Draft Resonance"
             >
-                <ModalBackdrop />
-                <ModalContent
-                    sx={{
-                        backgroundColor: Theme.colors.ink,
-                    }}
-                >
-                    <ModalHeader>
-                        <Heading size="lg" color={Theme.colors.sanctuarySaffron}>
-                            {t('announcements.createTitle') || 'Create Announcement'}
-                        </Heading>
-                    </ModalHeader>
-                    <ModalBody>
-                        <VStack space="md">
-                            <Textarea
-                                sx={{
-                                    backgroundColor: Theme.colors.obsidian,
-                                    minHeight: 150,
-                                }}
-                            >
-                                <TextareaInput
-                                    placeholder={
-                                        t('announcements.contentPlaceholder') ||
-                                        'Type your announcement...'
-                                    }
-                                    value={newAnnouncementContent}
-                                    onChangeText={setNewAnnouncementContent}
-                                    sx={{
-                                        color: Theme.colors.sacredWhite,
-                                    }}
-                                />
-                            </Textarea>
+                <VStack className="gap-6 py-6 px-4">
+                    <VStack className="gap-2">
+                        <Text className="text-ink/60 text-xs font-bold uppercase tracking-wider">Announcement Content</Text>
+                        <Box className="bg-ink/5 rounded-2xl border border-border p-1">
+                            <InputField
+                                className="text-ink text-base py-3 px-4 min-h-[150px]"
+                                placeholder={t('announcements.contentPlaceholder') || 'What needs to be heard?'}
+                                placeholderTextColor="#94a3b8"
+                                value={newAnnouncementContent}
+                                onChangeText={setNewAnnouncementContent}
+                                multiline
+                            />
+                        </Box>
+                    </VStack>
 
-                            {/* Pin Toggle */}
-                            <HStack
-                                sx={{
-                                    justifyContent: 'space-between',
-                                    alignItems: 'center',
-                                }}
-                            >
-                                <Text color={Theme.colors.starlightGray}>
-                                    {t('announcements.pinAnnouncement') || 'Pin to top'}
-                                </Text>
-                                <Switch value={isPinned} onValueChange={setIsPinned} />
-                            </HStack>
-                        </VStack>
-                    </ModalBody>
-                    <ModalFooter>
-                        <HStack space="md" sx={{ width: '100%' }}>
-                            <Button
-                                variant="outline"
-                                sx={{ flex: 1, borderColor: Theme.colors.mistGray }}
-                                onPress={() => {
-                                    setShowCreateModal(false);
-                                    setNewAnnouncementContent('');
-                                    setIsPinned(false);
-                                }}
-                                disabled={isCreating}
-                            >
-                                <ButtonText color={Theme.colors.sacredWhite}>
-                                    {t('common.cancel') || 'Cancel'}
-                                </ButtonText>
-                            </Button>
-                            <Button
-                                sx={{
-                                    flex: 1,
-                                    backgroundColor: Theme.colors.sanctuarySaffron,
-                                }}
-                                onPress={handleCreateAnnouncement}
-                                disabled={isCreating}
-                            >
-                                {isCreating ? (
-                                    <Spinner color={Theme.colors.sacredWhite} size="small" />
-                                ) : (
-                                    <ButtonText color={Theme.colors.sacredWhite}>
-                                        {t('announcements.post') || 'Post'}
-                                    </ButtonText>
-                                )}
-                            </Button>
+                    <HStack className="justify-between items-center p-3 bg-ink/5 rounded-2xl">
+                        <HStack className="items-center gap-3">
+                            <Icon as={Pin} size="sm" className={isPinned ? 'text-phase-interactive' : 'text-ink/40'} />
+                            <Text className="text-ink text-sm font-bold">
+                                {t('announcements.pinAnnouncement') || 'Pin to Sanctuary Top'}
+                            </Text>
                         </HStack>
-                    </ModalFooter>
-                </ModalContent>
-            </Modal>
-        </Box>
+                        <Switch value={isPinned} onValueChange={setIsPinned} />
+                    </HStack>
+
+                    <HStack className="gap-3 mt-4">
+                        <SanctuaryButton
+                            action="secondary"
+                            className="flex-1 h-14 rounded-2xl"
+                            onPress={() => {
+                                setShowCreateModal(false);
+                                setNewAnnouncementContent('');
+                                setIsPinned(false);
+                            }}
+                            isDisabled={isCreating}
+                        >
+                            <Text className="text-ink font-bold">Withdraw</Text>
+                        </SanctuaryButton>
+                        <SanctuaryButton
+                            action="primary"
+                            className="flex-[2] h-14 rounded-2xl"
+                            onPress={handleCreateAnnouncement}
+                            isDisabled={isCreating}
+                        >
+                            {isCreating ? (
+                                <Spinner />
+                            ) : (
+                                <Text className="text-white font-bold text-lg">Broadcast</Text>
+                            )}
+                        </SanctuaryButton>
+                    </HStack>
+                </VStack>
+            </SanctuaryModal>
+        </ScreenWrapper>
     );
 }

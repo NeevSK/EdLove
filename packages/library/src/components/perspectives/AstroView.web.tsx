@@ -8,7 +8,7 @@ import type {
 } from '@repo/graphics';
 
 /**
- * AstroView.web — The "Cosmos" Perspective (Web).
+ * AstroView.web  The "Cosmos" Perspective (Web).
  * 
  * Uses standard SVG but leverages d3-selection for high-performance 
  * live physics if needed, or static rendering from our engine.

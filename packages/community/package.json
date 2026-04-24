@@ -5,13 +5,20 @@
   "types": "src/index.ts",
   "exports": {
     ".": "./src/index.ts",
-    "./api": "./src/api/community.ts",
-    "./components/*": "./src/components/*.tsx",
+    "./screens": "./src/screens/index.ts",
+    "./screens/CommunityScreen.web": "./src/screens/CommunityScreen.web.tsx",
+    "./screens/UserPublicProfileScreen.web": "./src/screens/UserPublicProfileScreen.web.tsx",
+    "./screens/GroupDetailsScreen.web": "./src/screens/GroupDetailsScreen.web.tsx",
+    "./screens/GroupChatScreen.web": "./src/screens/GroupChatScreen.web.tsx",
+    "./screens/DirectMessagesListScreen": "./src/screens/DirectMessagesListScreen.tsx",
+    "./screens/DirectMessageScreen.web": "./src/screens/DirectMessageScreen.web.tsx",
+    "./screens/AnnouncementsScreen": "./src/screens/AnnouncementsScreen.tsx",
+    "./api/community": "./src/api/community.ts",
     "./package.json": "./package.json"
   },
   "scripts": {
-    "lint": "eslint .",
-    "check-types": "tsc --noEmit",
+    "lint": "powershell -File ../../scripts/audit-wrapper.ps1 -Cmd \"pnpm exec eslint .\" -Log \"reports/lint.txt\"",
+    "check-types": "powershell -File ../../scripts/audit-wrapper.ps1 -Cmd \"pnpm exec tsc --noEmit\" -Log \"reports/check-types.txt\"",
     "clean": "rm -rf .turbo node_modules dist"
   },
   "dependencies": {
@@ -20,10 +27,16 @@
     "@repo/scanner-kit": "workspace:*",
     "@repo/ui": "workspace:*",
     "@repo/self": "workspace:*",
+    "@repo/profile": "workspace:*",
     "@tanstack/react-query": "^5.90.20",
     "expo-clipboard": "~55.0.9",
+    "lucide-react-native": "^0.563.0",
     "react-i18next": "^16.5.4",
-    "lucide-react-native": "^0.563.0"
+    "date-fns": "^4.1.0",
+    "expo-image-picker": "~55.0.10",
+    "react-native-reanimated": "~4.2.1",
+    "@supabase/supabase-js": "2.102.1",
+    "@supabase/postgrest-js": "2.102.1"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
@@ -38,6 +51,8 @@
     "react-native": "*",
     "react-i18next": "*",
     "@repo/ui": "*",
-    "lucide-react-native": "*"
+    "lucide-react-native": "*",
+    "@supabase/supabase-js": "2.102.1",
+    "@supabase/postgrest-js": "2.102.1"
   }
 }

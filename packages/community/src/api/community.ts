@@ -1,16 +1,17 @@
-import { supabase, identityAPI, applyResonanceFilter } from '@repo/core';
-import { CommunityPost, CommunityGroup, Group, Post, Comment, GroupFilters } from '../types';
+import { supabase, identityAPI, applyTemporalFilter, communityAPI as coreCommunityAPI } from '@repo/core';
+import { CommunityGroup, Comment, GroupFilters, Post } from '../types';
 
 /**
  * Community API
- * 
- * Unified API for community interactions, extending core announcement logic.
- * Located in @repo/community for domain-specific locality.
+ *
+ * Canonical shared behavior lives in @repo/core.
+ * This package keeps only community-specific extensions that are not yet
+ * contract-backed in core, while delegating all shared reads/writes to the
+ * canonical core API.
  */
 export const communityAPI = {
-    /**
-     * Get all announcements for a school (Core logic)
-     */
+    ...coreCommunityAPI,
+
     async getAnnouncements(schoolId: string) {
         const { data, error } = await supabase
             .from('announcements')
@@ -34,18 +35,15 @@ export const communityAPI = {
         }));
     },
 
-    /**
-     * Create a new announcement (Core logic)
-     */
     async createAnnouncement(schoolId: string, authorId: string, content: string, isPinned: boolean = false) {
         const { data, error } = await supabase
             .from('announcements')
             .insert([{
                 school_id: schoolId,
                 author_id: authorId,
-                content: content,
+                content,
                 is_pinned: isPinned,
-                created_at: new Date().toISOString()
+                created_at: new Date().toISOString(),
             }])
             .select()
             .single();
@@ -54,9 +52,6 @@ export const communityAPI = {
         return data;
     },
 
-    /**
-     * Get Groups with filtering and pagination
-     */
     async getGroups(filters: GroupFilters) {
         let query = supabase
             .from('community_groups')
@@ -83,35 +78,38 @@ export const communityAPI = {
 
         const { data, error } = await query
             .range(offset, offset + limit - 1)
-
-
             .order('created_at', { ascending: false });
 
         if (error) throw error;
         return (data || []).map((group: any) => ({
             ...group,
-            type: group.group_type || group.type || 'general'
+            type: group.group_type || group.type || 'general',
         })) as CommunityGroup[];
     },
 
-    /**
-     * Search groups globally across the platform
-     */
     async searchGroups(query: string, filters: Partial<GroupFilters> = {}) {
         return this.getGroups({ ...filters, search: query });
     },
 
-    /**
-     * Get Posts with filtering and pagination
-     */
-    async getPosts(filters: { limit: number; offset: number; groupId?: string; viewDate?: string }) {
+    async getPosts(filters: {
+        limit: number;
+        offset: number;
+        groupId?: string;
+        viewDate?: string;
+        viewScale?: import('@repo/core').TemporalScale;
+    }) {
         let query = supabase
             .from('community_posts_with_counts')
             .select('*')
             .range(filters.offset, filters.offset + filters.limit - 1);
 
         if (filters.viewDate) {
-            query = applyResonanceFilter(query, 'created_at');
+            query = applyTemporalFilter(query, {
+                column: 'created_at',
+                mode: 'event_time',
+                capability: 'event_stream',
+                scale: filters.viewScale,
+            });
         } else {
             query = query.order('created_at', { ascending: false });
         }
@@ -125,9 +123,6 @@ export const communityAPI = {
         return data as Post[];
     },
 
-    /**
-     * Create a new post
-     */
     async createPost(post: any, userId: string, userAuthority: string, schoolId: string) {
         const { data, error } = await supabase
             .from('community_posts')
@@ -137,7 +132,7 @@ export const communityAPI = {
                 author_authority: userAuthority,
                 school_id: schoolId,
                 created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString()
+                updated_at: new Date().toISOString(),
             }])
             .select()
             .single();
@@ -146,16 +141,13 @@ export const communityAPI = {
         return data as Post;
     },
 
-    /**
-     * Create a new group
-     */
-    async createGroup(group: any, userId: string, userAuthority: string) {
+    async createGroup(group: any, userId: string, _userAuthority: string) {
         const { data, error } = await supabase
             .from('community_groups')
             .insert([{
                 ...group,
                 created_by: userId,
-                created_at: new Date().toISOString()
+                created_at: new Date().toISOString(),
             }])
             .select()
             .single();
@@ -164,13 +156,7 @@ export const communityAPI = {
         return data as CommunityGroup;
     },
 
-    /**
-     * Create a group and immediately add the creator as Owner.
-     * This is the canonical group-creation entry point — always use this
-     * instead of createGroup() to ensure the creator has supreme authority.
-     */
     async createGroupWithOwner(group: any, userId: string): Promise<CommunityGroup> {
-        // 1. Create the group
         const { data: created, error: groupErr } = await supabase
             .from('community_groups')
             .insert([{
@@ -189,7 +175,6 @@ export const communityAPI = {
 
         if (groupErr) throw groupErr;
 
-        // 2. Add creator as supreme owner (status = 'active', role = 'owner')
         const { error: memberErr } = await supabase
             .from('community_group_members')
             .insert([{
@@ -199,20 +184,15 @@ export const communityAPI = {
                 status: 'active',
             }]);
 
-        // Non-fatal: if this fails (e.g. duplicate), the group still exists.
         if (memberErr) console.warn('createGroupWithOwner: member insert warning', memberErr);
 
         return {
             ...created,
-            type: created.group_type || 'general'
+            type: created.group_type || 'general',
         } as CommunityGroup;
     },
 
-    /**
-     * Join a group
-     */
     async joinGroup(groupId: string, userId: string, joinPolicy: string = 'open') {
-        // status is 'active' for open groups, 'pending' for approval_required / invite_only
         const status = joinPolicy === 'open' ? 'active' : 'pending';
         const { data, error } = await supabase
             .from('community_group_members')
@@ -229,9 +209,6 @@ export const communityAPI = {
         return data;
     },
 
-    /**
-     * Get a single group by ID
-     */
     async getGroupById(groupId: string): Promise<CommunityGroup> {
         const { data, error } = await supabase
             .from('community_groups')
@@ -242,37 +219,37 @@ export const communityAPI = {
         if (error) throw error;
         return {
             ...(data as any),
-            type: (data as any).group_type || (data as any).type || 'general'
+            type: (data as any).group_type || (data as any).type || 'general',
         } as CommunityGroup;
     },
 
-    // ── Group Chat ───────────────────────────────────────────
-
-    /**
-     * Fetch the most recent messages for a group, oldest-first for chat display.
-     */
-    async getGroupMessages(groupId: string, limit = 60, viewDate?: string) {
+    async getGroupMessages(
+        groupId: string,
+        limit = 60,
+        viewDate?: string,
+        viewScale?: import('@repo/core').TemporalScale
+    ) {
         let query = supabase
             .from('group_messages')
             .select('*, author:users!group_messages_author_id_fkey(full_name, avatar_url)')
             .eq('group_id', groupId);
 
         if (viewDate) {
-            query = applyResonanceFilter(query, 'created_at');
+            query = applyTemporalFilter(query, {
+                column: 'created_at',
+                mode: 'event_time',
+                capability: 'event_stream',
+                scale: viewScale,
+            });
         } else {
             query = query.order('created_at', { ascending: false }).limit(limit);
         }
 
         const { data, error } = await query;
-
         if (error) throw error;
-        // Reverse so oldest is at top
         return (data || []).reverse();
     },
 
-    /**
-     * Send a message to a group chat.
-     */
     async sendGroupMessage(groupId: string, content: string) {
         const userId = await identityAPI.getMyInternalId();
         if (!userId) throw new Error('Not authenticated');
@@ -287,9 +264,6 @@ export const communityAPI = {
         return data;
     },
 
-    /**
-     * Toggle a reaction (❤️) on a post for the current user.
-     */
     async togglePostReaction(postId: string, userId: string): Promise<boolean> {
         const { data: existing } = await supabase
             .from('community_reactions')
@@ -305,17 +279,176 @@ export const communityAPI = {
                 .eq('post_id', postId)
                 .eq('user_id', userId);
             return false;
-        } else {
-            await supabase
-                .from('community_reactions')
-                .insert([{ post_id: postId, user_id: userId, reaction_code: '❤️' }]);
-            return true;
         }
+
+        await supabase
+            .from('community_reactions')
+            .insert([{ post_id: postId, user_id: userId, reaction_code: 'd' }]);
+        return true;
     },
 
-    /**
-     * Get pending members for a group
-     */
+    async handleMemberRequest(groupId: string, userId: string, status: 'active' | 'rejected') {
+        const { data, error } = await supabase
+            .from('community_group_members')
+            .update({ status })
+            .eq('group_id', groupId)
+            .eq('user_id', userId)
+            .select()
+            .single();
+
+        if (error) throw error;
+        return data;
+    },
+
+    async updateJoiningPolicy(groupId: string, newPolicy: string) {
+        const { data, error } = await supabase
+            .from('community_groups')
+            .update({ join_policy: newPolicy })
+            .eq('id', groupId)
+            .select()
+            .single();
+
+        if (error) throw error;
+        return data;
+    },
+
+    async getDirectConversations() {
+        const userId = await identityAPI.getMyInternalId();
+        if (!userId) throw new Error('Not authenticated');
+
+        const { data, error } = await supabase
+            .from('direct_conversations')
+            .select(`
+                *,
+                user1:users!direct_conversations_user1_id_fkey(full_name, avatar_url),
+                user2:users!direct_conversations_user2_id_fkey(full_name, avatar_url)
+            `)
+            .or(`user1_id.eq.${userId},user2_id.eq.${userId}`)
+            .order('updated_at', { ascending: false });
+
+        if (error) throw error;
+
+        return (data || []).map((conv: any) => {
+            const otherUser = conv.user1_id === userId ? conv.user2 : conv.user1;
+            return {
+                ...conv,
+                other_user_name: otherUser?.full_name || 'Anonymous User',
+                other_user_avatar: otherUser?.avatar_url,
+            };
+        });
+    },
+
+    async getOrCreateDirectConversation(targetUserId: string): Promise<string> {
+        const { data, error } = await supabase.rpc('get_or_create_direct_conversation', {
+            target_user_id: targetUserId,
+        });
+
+        if (error) throw error;
+        return data;
+    },
+
+    async getDirectMessages(
+        conversationId: string,
+        limit = 60,
+        viewDate?: string,
+        viewScale?: import('@repo/core').TemporalScale
+    ) {
+        let query = supabase
+            .from('direct_messages')
+            .select('*, author:users!direct_messages_author_id_fkey(full_name, avatar_url)')
+            .eq('conversation_id', conversationId);
+
+        if (viewDate) {
+            query = applyTemporalFilter(query, {
+                column: 'created_at',
+                mode: 'event_time',
+                capability: 'event_stream',
+                scale: viewScale,
+            });
+        } else {
+            query = query.order('created_at', { ascending: false }).limit(limit);
+        }
+
+        const { data, error } = await query;
+        if (error) throw error;
+        return (data || []).reverse();
+    },
+
+    async sendDirectMessage(conversationId: string, content: string) {
+        const userId = await identityAPI.getMyInternalId();
+        if (!userId) throw new Error('Not authenticated');
+
+        const { data, error } = await supabase
+            .from('direct_messages')
+            .insert([{
+                conversation_id: conversationId,
+                author_id: userId,
+                content: content.trim(),
+            }])
+            .select('*, author:users!direct_messages_author_id_fkey(full_name, avatar_url)')
+            .single();
+
+        if (error) throw error;
+        return data;
+    },
+
+    async voteInPoll(postId: string, optionId: string, allowMultiple: boolean = false): Promise<string[]> {
+        const myId = await identityAPI.getMyInternalId();
+        if (!myId) throw new Error('Authentication required');
+
+        const { data: existing, error: fetchErr } = await supabase
+            .from('community_poll_votes')
+            .select('option_id')
+            .eq('post_id', postId)
+            .eq('user_id', myId);
+
+        if (fetchErr) throw new Error(fetchErr.message);
+
+        const existingIds: string[] = (existing ?? []).map((row: any) => row.option_id);
+        const alreadyVotedThis = existingIds.includes(optionId);
+
+        if (allowMultiple) {
+            if (alreadyVotedThis) {
+                const { error } = await supabase
+                    .from('community_poll_votes')
+                    .delete()
+                    .eq('post_id', postId)
+                    .eq('user_id', myId)
+                    .eq('option_id', optionId);
+                if (error) throw new Error(error.message);
+                return existingIds.filter(id => id !== optionId);
+            }
+
+            const { error } = await supabase
+                .from('community_poll_votes')
+                .insert({ post_id: postId, user_id: myId, option_id: optionId });
+            if (error) throw new Error(error.message);
+            return [...existingIds, optionId];
+        }
+
+        if (alreadyVotedThis) {
+            const { error } = await supabase
+                .from('community_poll_votes')
+                .delete()
+                .eq('post_id', postId)
+                .eq('user_id', myId);
+            if (error) throw new Error(error.message);
+            return [];
+        }
+
+        await supabase
+            .from('community_poll_votes')
+            .delete()
+            .eq('post_id', postId)
+            .eq('user_id', myId);
+
+        const { error } = await supabase
+            .from('community_poll_votes')
+            .insert({ post_id: postId, user_id: myId, option_id: optionId });
+        if (error) throw new Error(error.message);
+        return [optionId];
+    },
+
     async getPendingMembers(groupId: string) {
         const { data, error } = await supabase
             .from('community_group_members')
@@ -336,25 +469,6 @@ export const communityAPI = {
         return data;
     },
 
-    /**
-     * Handle member request (approve/reject)
-     */
-    async handleMemberRequest(groupId: string, userId: string, status: 'active' | 'rejected') {
-        const { data, error } = await supabase
-            .from('community_group_members')
-            .update({ status })
-            .eq('group_id', groupId)
-            .eq('user_id', userId)
-            .select()
-            .single();
-
-        if (error) throw error;
-        return data;
-    },
-
-    /**
-     * Get all active members for a group
-     */
     async getActiveMembers(groupId: string) {
         const { data, error } = await supabase
             .from('community_group_members')
@@ -370,18 +484,15 @@ export const communityAPI = {
             `)
             .eq('group_id', groupId)
             .eq('status', 'active')
-            .order('capacity', { ascending: true }); // Manual sort might be needed for owner priority
+            .order('capacity', { ascending: true });
 
         if (error) throw error;
         return (data || []).map((member: any) => ({
             ...member,
-            capacity: member.capacity || member.role || 'member'
+            capacity: member.capacity || member.role || 'member',
         }));
     },
 
-    /**
-     * Update a member's role (only owner can do this via RLS)
-     */
     async updateMemberAuthority(groupId: string, userId: string, newCapacity: 'admin' | 'member') {
         const { data, error } = await supabase
             .from('community_group_members')
@@ -395,24 +506,6 @@ export const communityAPI = {
         return data;
     },
 
-    /**
-     * Update joining policy for a group
-     */
-    async updateJoiningPolicy(groupId: string, newPolicy: string) {
-        const { data, error } = await supabase
-            .from('community_groups')
-            .update({ join_policy: newPolicy })
-            .eq('id', groupId)
-            .select()
-            .single();
-
-        if (error) throw error;
-        return data;
-    },
-
-    /**
-     * Approve all pending members
-     */
     async approveAllPending(groupId: string) {
         const { data, error } = await supabase
             .from('community_group_members')
@@ -424,9 +517,6 @@ export const communityAPI = {
         return data;
     },
 
-    /**
-     * Update an existing group
-     */
     async updateGroup(groupId: string, updates: Partial<CommunityGroup>) {
         const { data, error } = await supabase
             .from('community_groups')
@@ -439,20 +529,18 @@ export const communityAPI = {
         return data as CommunityGroup;
     },
 
-    /**
-     * Report content (post, group, or user)
-     * Automatically routes to appropriate handler (Teacher/Principal/Platform)
-     */
-    async reportContent(params: {
-        postId?: string;
-        groupId?: string;
-        targetUserId?: string;
-        reason: string;
-        report_target: 'teacher' | 'principal' | 'platform';
-    }, reporterId: string) {
+    async reportContent(
+        params: {
+            postId?: string;
+            groupId?: string;
+            targetUserId?: string;
+            reason: string;
+            report_target: 'teacher' | 'principal' | 'platform';
+        },
+        reporterId: string
+    ) {
         let assignedHandlerId: string | null = null;
 
-        // 1. Fetch routing info (school_id, classroom_id) if needed
         const { data: reporterData } = await supabase
             .from('users')
             .select('school_id, section_id, grade_id')
@@ -460,16 +548,14 @@ export const communityAPI = {
             .single();
 
         if (params.report_target === 'teacher' && reporterData?.school_id) {
-            // Find classroom teacher - for simplicity, we look for the main classroom teacher
-            // In a real scenario, this might need more complex logic to find "the" teacher for this reporter
             const { data: classroom } = await supabase
                 .from('classrooms')
                 .select('teacher_id')
                 .eq('school_id', reporterData.school_id)
                 .is('is_archived', false)
-                .limit(1) // Simplified: pick first active classroom
+                .limit(1)
                 .single();
-            
+
             assignedHandlerId = classroom?.teacher_id || null;
         } else if (params.report_target === 'principal' && reporterData?.school_id) {
             const { data: principal } = await supabase
@@ -479,13 +565,13 @@ export const communityAPI = {
                 .eq('role', 'principal')
                 .limit(1)
                 .single();
-            
+
             assignedHandlerId = principal?.id || null;
         }
 
         const { data, error } = await supabase
             .from('community_reports')
-            .insert([{ 
+            .insert([{
                 reporter_id: reporterId,
                 post_id: params.postId,
                 group_id: params.groupId,
@@ -493,7 +579,7 @@ export const communityAPI = {
                 reason: params.reason,
                 report_target: params.report_target,
                 assigned_handler_id: assignedHandlerId,
-                status: 'pending'
+                status: 'pending',
             }])
             .select()
             .single();
@@ -502,9 +588,6 @@ export const communityAPI = {
         return data;
     },
 
-    /**
-     * Create a Sanctuary Group (Classroom-linked)
-     */
     async createSanctuaryGroup(input: any) {
         const { data, error } = await supabase
             .from('community_groups')
@@ -513,7 +596,7 @@ export const communityAPI = {
                 type: 'class',
                 visibility: 'class',
                 join_policy: 'restricted',
-                created_at: new Date().toISOString()
+                created_at: new Date().toISOString(),
             }])
             .select()
             .single();
@@ -522,167 +605,6 @@ export const communityAPI = {
         return data as CommunityGroup;
     },
 
-    // ── Direct Messaging ──────────────────────────────────────
-
-    /**
-     * Get all active direct conversations for the current user.
-     */
-    async getDirectConversations() {
-        const userId = await identityAPI.getMyInternalId();
-        if (!userId) throw new Error('Not authenticated');
-
-        const { data, error } = await supabase
-            .from('direct_conversations')
-            .select(`
-                *,
-                user1:users!direct_conversations_user1_id_fkey(full_name, avatar_url),
-                user2:users!direct_conversations_user2_id_fkey(full_name, avatar_url)
-            `)
-            .or(`user1_id.eq.${userId},user2_id.eq.${userId}`)
-            .order('updated_at', { ascending: false });
-
-        if (error) throw error;
-
-        // Transform to return the "other" participant's info easily
-        return (data || []).map((conv: any) => {
-            const otherUser = conv.user1_id === userId ? conv.user2 : conv.user1;
-            return {
-                ...conv,
-                other_user_name: otherUser?.full_name || 'Anonymous User',
-                other_user_avatar: otherUser?.avatar_url,
-            };
-        });
-    },
-
-    /**
-     * Get or create a 1:1 conversation with another user.
-     */
-    async getOrCreateDirectConversation(targetUserId: string): Promise<string> {
-        const { data, error } = await supabase.rpc('get_or_create_direct_conversation', {
-            target_user_id: targetUserId
-        });
-
-        if (error) throw error;
-        return data;
-    },
-
-    /**
-     * Fetch the most recent direct messages for a conversation.
-     */
-    async getDirectMessages(conversationId: string, limit = 60, viewDate?: string) {
-        let query = supabase
-            .from('direct_messages')
-            .select('*, author:users!direct_messages_author_id_fkey(full_name, avatar_url)')
-            .eq('conversation_id', conversationId);
-
-        if (viewDate) {
-            query = applyResonanceFilter(query, 'created_at');
-        } else {
-            query = query.order('created_at', { ascending: false }).limit(limit);
-        }
-
-        const { data, error } = await query;
-
-        if (error) throw error;
-        // Reverse so oldest is at top
-        return (data || []).reverse();
-    },
-
-    /**
-     * Send a direct message.
-     */
-    async sendDirectMessage(conversationId: string, content: string) {
-        const userId = await identityAPI.getMyInternalId();
-        if (!userId) throw new Error('Not authenticated');
-
-        const { data, error } = await supabase
-            .from('direct_messages')
-            .insert([{
-                conversation_id: conversationId,
-                author_id: userId,
-                content: content.trim()
-            }])
-            .select('*, author:users!direct_messages_author_id_fkey(full_name, avatar_url)')
-            .single();
-
-        if (error) throw error;
-        return data;
-    },
-
-    /**
-     * Cast or toggle a vote in a community poll.
-     *
-     * Single-choice (allowMultiple = false):
-     *   Tap same option → retract (returns []). Tap different → replace.
-     *
-     * Multi-choice (allowMultiple = true):
-     *   Tap unselected → add. Tap selected → remove (toggle).
-     *
-     * Returns the caller's active option IDs after the operation.
-     */
-    async voteInPoll(
-        postId: string,
-        optionId: string,
-        allowMultiple: boolean = false,
-    ): Promise<string[]> {
-        const myId = await identityAPI.getMyInternalId();
-        if (!myId) throw new Error('Authentication required');
-
-        const { data: existing, error: fetchErr } = await supabase
-            .from('community_poll_votes')
-            .select('option_id')
-            .eq('post_id', postId)
-            .eq('user_id', myId);
-        if (fetchErr) throw new Error(fetchErr.message);
-
-        const existingIds: string[] = (existing ?? []).map((r: any) => r.option_id);
-        const alreadyVotedThis = existingIds.includes(optionId);
-
-        if (allowMultiple) {
-            if (alreadyVotedThis) {
-                const { error } = await supabase
-                    .from('community_poll_votes')
-                    .delete()
-                    .eq('post_id', postId)
-                    .eq('user_id', myId)
-                    .eq('option_id', optionId);
-                if (error) throw new Error(error.message);
-                return existingIds.filter(id => id !== optionId);
-            } else {
-                const { error } = await supabase
-                    .from('community_poll_votes')
-                    .insert({ post_id: postId, user_id: myId, option_id: optionId });
-                if (error) throw new Error(error.message);
-                return [...existingIds, optionId];
-            }
-        } else {
-            if (alreadyVotedThis) {
-                const { error } = await supabase
-                    .from('community_poll_votes')
-                    .delete()
-                    .eq('post_id', postId)
-                    .eq('user_id', myId);
-                if (error) throw new Error(error.message);
-                return [];
-            } else {
-                await supabase
-                    .from('community_poll_votes')
-                    .delete()
-                    .eq('post_id', postId)
-                    .eq('user_id', myId);
-                const { error } = await supabase
-                    .from('community_poll_votes')
-                    .insert({ post_id: postId, user_id: myId, option_id: optionId });
-                if (error) throw new Error(error.message);
-                return [optionId];
-            }
-        }
-    },
-
-    /**
-     * Completely remove all of the current user's votes from a poll.
-     * Used by the explicit "Remove my vote" action.
-     */
     async retractAllVotes(postId: string): Promise<void> {
         const myId = await identityAPI.getMyInternalId();
         if (!myId) throw new Error('Authentication required');
@@ -692,141 +614,19 @@ export const communityAPI = {
             .delete()
             .eq('post_id', postId)
             .eq('user_id', myId);
+
         if (error) throw new Error(error.message);
     },
 
-    /**
-     * Block a user
-     */
-    async blockUser(targetUserId: string): Promise<void> {
-        const myId = await identityAPI.getMyInternalId();
-        if (!myId) throw new Error('Authentication required');
 
-        const { error } = await supabase
-            .from('user_blocks')
-            .insert([{
-                blocker_id: myId,
-                blocked_id: targetUserId
-            }]);
-
-        if (error && error.code !== '23505') throw error;
-    },
-
-    /**
-     * Unblock a user
-     */
-    async unblockUser(targetUserId: string): Promise<void> {
-        const myId = await identityAPI.getMyInternalId();
-        if (!myId) throw new Error('Authentication required');
-
-        const { error } = await supabase
-            .from('user_blocks')
-            .delete()
-            .eq('blocker_id', myId)
-            .eq('blocked_id', targetUserId);
-
-        if (error) throw error;
-    },
-
-    /**
-     * Check if a user is blocked by me or has blocked me
-     */
-    async isBlockingActive(targetUserId: string): Promise<boolean> {
-        const myId = await identityAPI.getMyInternalId();
-        if (!myId) return false;
-
-        const { data, error } = await supabase
-            .from('user_blocks')
-            .select('blocker_id')
-            .or(`and(blocker_id.eq.${myId},blocked_id.eq.${targetUserId}),and(blocker_id.eq.${targetUserId},blocked_id.eq.${myId})`)
-            .maybeSingle();
-
-        if (error) throw error;
-        return !!data;
-    },
-
-    /**
-     * Get aggregate resonance for a user's content.
-     */
-    async getCommunityResonance(userId: string) {
-        // Prefer the view, but do not hard-code optional column names.
-        // Some DB states expose `reaction_count` while others expose `likes_count`.
-        const { data, error } = await supabase
-            .from('community_posts_with_counts')
-            .select('*')
-            .eq('author_id', userId);
-
-        if (!error) {
-            return (data || []).reduce(
-                (acc, curr: any) => ({
-                    likes: acc.likes + (curr.likes_count ?? curr.reaction_count ?? curr.reactions_count ?? 0),
-                    comments: acc.comments + (curr.comments_count ?? curr.comment_count ?? 0),
-                    shares: acc.shares + (curr.shares_count ?? curr.share_count ?? 0),
-                }),
-                { likes: 0, comments: 0, shares: 0 }
-            );
-        }
-
-        // Fallback path for environments where the view is missing/outdated.
-        const { data: posts, error: postsError } = await supabase
-            .from('community_posts')
-            .select('id, comments_count, comment_count, shares_count, share_count')
-            .eq('author_id', userId);
-
-        if (postsError) throw postsError;
-
-        const postIds = (posts || []).map((p: any) => p.id).filter(Boolean);
-        let likes = 0;
-        if (postIds.length > 0) {
-            const { count, error: reactionError } = await supabase
-                .from('community_reactions')
-                .select('id', { count: 'exact', head: true })
-                .in('post_id', postIds);
-            if (reactionError) throw reactionError;
-            likes = count || 0;
-        }
-
-        const comments = (posts || []).reduce(
-            (sum: number, p: any) => sum + (p.comments_count ?? p.comment_count ?? 0),
-            0
-        );
-        const shares = (posts || []).reduce(
-            (sum: number, p: any) => sum + (p.shares_count ?? p.share_count ?? 0),
-            0
-        );
-
-        return { likes, comments, shares };
-    },
-
-    /**
-     * Get list of muted (blocked) users
-     */
-    async getMutedUsers() {
-        const myId = await identityAPI.getMyInternalId();
-        if (!myId) return [];
-
-        const { data, error } = await supabase
-            .from('user_blocks')
-            .select(`
-                blocked_id, 
-                blocked:users(id, full_name, avatar_url)
-            `)
-            .eq('blocker_id', myId);
-
-        if (error) throw error;
-        return (data || []).map((b: any) => b.blocked).filter(Boolean);
-    },
-
-    // ── COMMENTS ─────────────────────────────────────────────────────────────
-
-    /**
-     * Fetch comments for a post, newest first up to `limit`.
-     * Each comment includes the author's name/avatar and the caller's upvote state.
-     */
-    async getComments(postId: string, limit = 60): Promise<Comment[]> {
+    async getComments(
+        postId: string,
+        limit = 60,
+        options: { viewDate?: string; viewScale?: import('@repo/core').TemporalScale } = {}
+    ): Promise<Comment[]> {
         const myId = await identityAPI.getMyInternalId();
 
-        const { data, error } = await supabase
+        let query = supabase
             .from('community_comments')
             .select(`
                 id,
@@ -845,13 +645,22 @@ export const communityAPI = {
                     authority:role
                 )
             `)
-            .eq('post_id', postId)
-            .order('created_at', { ascending: false })
-            .limit(limit);
+            .eq('post_id', postId);
 
+        if (options.viewDate) {
+            query = applyTemporalFilter(query, {
+                column: 'created_at',
+                mode: 'event_time',
+                capability: 'event_stream',
+                scale: options.viewScale,
+            });
+        } else {
+            query = query.order('created_at', { ascending: false }).limit(limit);
+        }
+
+        const { data, error } = await query;
         if (error) throw new Error(error.message);
 
-        // Fetch caller's upvotes in one query
         let upvotedIds = new Set<string>();
         if (myId && data && data.length > 0) {
             const { data: uv } = await supabase
@@ -859,7 +668,7 @@ export const communityAPI = {
                 .select('comment_id')
                 .eq('user_id', myId)
                 .in('comment_id', data.map((c: any) => c.id));
-            (uv ?? []).forEach((r: any) => upvotedIds.add(r.comment_id));
+            (uv ?? []).forEach((row: any) => upvotedIds.add(row.comment_id));
         }
 
         return (data ?? []).map((c: any) => ({
@@ -879,19 +688,10 @@ export const communityAPI = {
         } as Comment));
     },
 
-    /**
-     * Create a new comment on a post.
-     * Returns the full comment object (with optimistic author data).
-     */
-    async createComment(
-        postId: string,
-        content: string,
-        isAnonymous = false,
-    ): Promise<Comment> {
+    async createComment(postId: string, content: string, isAnonymous = false): Promise<Comment> {
         const myId = await identityAPI.getMyInternalId();
         if (!myId) throw new Error('Authentication required');
 
-        // Fetch caller profile for optimistic return
         const { data: me } = await supabase
             .from('users')
             .select('full_name, avatar_url, role')
@@ -911,7 +711,6 @@ export const communityAPI = {
 
         if (error) throw new Error(error.message);
 
-        // Increment comment_count on the post (best-effort, trigger should also do it)
         const { error: incrementCountError } = await supabase.rpc('increment_comment_count', { p_post_id: postId });
         if (incrementCountError) {
             console.warn('[communityAPI] increment_comment_count failed:', incrementCountError.message);
@@ -934,20 +733,15 @@ export const communityAPI = {
         } as Comment;
     },
 
-    /**
-     * Delete a comment.  Only the comment author can delete (enforced by RLS too).
-     */
     async deleteComment(commentId: string): Promise<void> {
         const { error } = await supabase
             .from('community_comments')
             .delete()
             .eq('id', commentId);
+
         if (error) throw new Error(error.message);
     },
 
-    /**
-     * Toggle upvote on a comment.  Returns true if now upvoted, false if retracted.
-     */
     async toggleCommentUpvote(commentId: string): Promise<boolean> {
         const myId = await identityAPI.getMyInternalId();
         if (!myId) throw new Error('Authentication required');
@@ -965,67 +759,54 @@ export const communityAPI = {
                 .delete()
                 .eq('comment_id', commentId)
                 .eq('user_id', myId);
-            // Decrement counter
+
             const { error: decrementUpvoteError } = await supabase.rpc('decrement_comment_upvote', { p_comment_id: commentId });
             if (decrementUpvoteError) {
                 console.warn('[communityAPI] decrement_comment_upvote failed:', decrementUpvoteError.message);
             }
+
             return false;
-        } else {
-            await supabase
-                .from('community_comment_upvotes')
-                .insert({ comment_id: commentId, user_id: myId });
-            const { error: incrementUpvoteError } = await supabase.rpc('increment_comment_upvote', { p_comment_id: commentId });
-            if (incrementUpvoteError) {
-                console.warn('[communityAPI] increment_comment_upvote failed:', incrementUpvoteError.message);
-            }
-            return true;
         }
+
+        await supabase
+            .from('community_comment_upvotes')
+            .insert({ comment_id: commentId, user_id: myId });
+
+        const { error: incrementUpvoteError } = await supabase.rpc('increment_comment_upvote', { p_comment_id: commentId });
+        if (incrementUpvoteError) {
+            console.warn('[communityAPI] increment_comment_upvote failed:', incrementUpvoteError.message);
+        }
+
+        return true;
     },
 
-    /**
-     * Mark a comment as the official answer to a question.
-     * Only the post author should call this.
-     */
     async markOfficialAnswer(commentId: string, isOfficial: boolean): Promise<void> {
         const { error } = await supabase
             .from('community_comments')
             .update({ is_official_answer: isOfficial })
             .eq('id', commentId);
+
         if (error) throw new Error(error.message);
     },
 
-    // ── POST MANAGEMENT ───────────────────────────────────────────────────────
-
-    /**
-     * Hard-delete a post.  Only the post author can do this (RLS enforced).
-     */
     async deletePost(postId: string): Promise<void> {
         const { error } = await supabase
             .from('community_posts')
             .delete()
             .eq('id', postId);
+
         if (error) throw new Error(error.message);
     },
 
-    /**
-     * Edit the text content of an existing post.
-     * Only the post author can do this (RLS enforced).
-     */
     async updatePost(postId: string, content: string): Promise<void> {
         const { error } = await supabase
             .from('community_posts')
             .update({ content: content.trim(), updated_at: new Date().toISOString() })
             .eq('id', postId);
+
         if (error) throw new Error(error.message);
     },
 
-    // ── RESONANCE (✨ Sparkles) ────────────────────────────────────────────────
-
-    /**
-     * Toggle a ✨ resonance reaction on a post (separate from ❤️ likes).
-     * Returns true if now resonated, false if retracted.
-     */
     async toggleResonance(postId: string): Promise<boolean> {
         const myId = await identityAPI.getMyInternalId();
         if (!myId) throw new Error('Authentication required');
@@ -1035,7 +816,7 @@ export const communityAPI = {
             .select('user_id')
             .eq('post_id', postId)
             .eq('user_id', myId)
-            .eq('reaction_code', '✨')
+            .eq('reaction_code', '(')
             .maybeSingle();
 
         if (existing) {
@@ -1044,82 +825,104 @@ export const communityAPI = {
                 .delete()
                 .eq('post_id', postId)
                 .eq('user_id', myId)
-                .eq('reaction_code', '✨');
+                .eq('reaction_code', '(');
             return false;
-        } else {
-            await supabase
-                .from('community_reactions')
-                .insert({ post_id: postId, user_id: myId, reaction_code: '✨' });
-            return true;
         }
+
+        await supabase
+            .from('community_reactions')
+            .insert({ post_id: postId, user_id: myId, reaction_code: '(' });
+        return true;
     },
 
-    /**
-     * Fetch whether the current user has resonated with a post.
-     */
     async hasResonated(postId: string): Promise<boolean> {
         const myId = await identityAPI.getMyInternalId();
         if (!myId) return false;
+
         const { data } = await supabase
             .from('community_reactions')
             .select('user_id')
             .eq('post_id', postId)
             .eq('user_id', myId)
-            .eq('reaction_code', '✨')
+            .eq('reaction_code', '(')
             .maybeSingle();
+
         return !!data;
     },
 
-    // ── NOTIFICATIONS ─────────────────────────────────────────────────────────
-
-    /**
-     * Fetch the caller's notifications, newest first.
-     */
-    async getNotifications(limit = 30): Promise<import('../types/Community').Notification[]> {
+    async getNotifications(
+        limit = 30,
+        options: { viewDate?: string; viewScale?: import('@repo/core').TemporalScale } = {}
+    ): Promise<import('../types/Community').Notification[]> {
         const myId = await identityAPI.getMyInternalId();
         if (!myId) return [];
 
-        const { data, error } = await supabase
+        let query = supabase
             .from('notifications')
             .select('*')
-            .eq('user_id', myId)
-            .order('created_at', { ascending: false })
-            .limit(limit);
+            .eq('user_id', myId);
 
+        if (options.viewDate) {
+            query = applyTemporalFilter(query, {
+                column: 'created_at',
+                mode: 'event_time',
+                capability: 'event_stream',
+                scale: options.viewScale,
+            });
+        } else {
+            query = query.order('created_at', { ascending: false }).limit(limit);
+        }
+
+        const { data, error } = await query;
         if (error) throw new Error(error.message);
         return (data ?? []) as import('../types/Community').Notification[];
     },
 
-    /** Count of unread notifications for the current user. */
     async getUnreadNotificationCount(): Promise<number> {
         const myId = await identityAPI.getMyInternalId();
         if (!myId) return 0;
+
         const { count, error } = await supabase
             .from('notifications')
             .select('*', { count: 'exact', head: true })
             .eq('user_id', myId)
             .eq('is_read', false);
+
         if (error) return 0;
         return count ?? 0;
     },
 
-    /** Mark a single notification as read. */
     async markNotificationRead(notificationId: string): Promise<void> {
         const { error } = await supabase
             .from('notifications')
             .update({ is_read: true, read_at: new Date().toISOString() })
             .eq('id', notificationId);
+
         if (error) throw new Error(error.message);
     },
 
-    /** Mark ALL of the current user's notifications as read. */
     async markAllNotificationsRead(): Promise<void> {
         const myId = await identityAPI.getMyInternalId();
         if (!myId) return;
+
         await supabase
             .from('notifications')
             .update({ is_read: true, read_at: new Date().toISOString() })
             .eq('user_id', myId)
             .eq('is_read', false);
+    },
+
+    async isBlockingActive(targetUserId: string): Promise<boolean> {
+        const myId = await identityAPI.getMyInternalId();
+        if (!myId) return false;
+
+        const { data, error } = await supabase
+            .from('user_blocks')
+            .select('blocker_id')
+            .or(`and(blocker_id.eq.${myId},blocked_id.eq.${targetUserId}),and(blocker_id.eq.${targetUserId},blocked_id.eq.${myId})`)
+            .maybeSingle();
+
+        if (error) return false;
+        return !!data;
     },
 };

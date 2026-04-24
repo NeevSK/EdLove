@@ -1,4 +1,4 @@
-import i18n from 'i18next';
+﻿import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
 // Import translation files
@@ -24,8 +24,7 @@ i18n
         resources: {
             si: { translation: si },
             ta: { translation: ta },
-            en: { translation: en },
-        },
+            en: { translation: en }},
 
         // Interpolation settings
         interpolation: {
@@ -42,7 +41,6 @@ i18n
 
         // Namespace
         defaultNS: 'translation',
-        ns: ['translation'],
-    });
+        ns: ['translation']});
 
 export default i18n;

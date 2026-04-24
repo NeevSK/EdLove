@@ -5,7 +5,7 @@ export interface StructureOverview {
   grades: SchoolGrade[];
 }
 
-export const structureAPI = {
+export const structureAPI = { 
   async createSection(schoolId: string, name: string): Promise<Section> {
     const { data, error } = await supabase
       .from('sections')
@@ -60,7 +60,7 @@ export const structureAPI = {
 
     return {
       sections,
-      grades: gradeGroups.flat(),
+      grades: gradeGroups.flat()
     };
-  },
+  }
 };

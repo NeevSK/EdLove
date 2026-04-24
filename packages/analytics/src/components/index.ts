@@ -1,5 +1,5 @@
 // Analytics Components - UI dependent exports
-// This file isolates UI-dependent components to prevent circular dependencies
+// This file isolates UI-dependent components from the root analytics entrypoint.
 
 export * from './AnalyticsChart';
 export * from './PerformanceDashboard';

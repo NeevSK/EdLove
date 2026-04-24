@@ -1,62 +1,73 @@
+/**
+ * IMPACT RIPPLES CARD
+ * Renders pending Impact Ripple notifications from the community.
+ * Standardized to Zero-Legacy: purged corrupted StyleSheet and migrated to NativeWind v4.
+ */
+
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { 
+    Box, 
+    Text, 
+    VStack, 
+    HStack, 
+    Icon 
+} from '@repo/ui';
+import { Droplet, Heart, Sparkles } from 'lucide-react-native';
 import type { ImpactRipple } from '@repo/core';
+import { AnimatedView } from '@repo/ui';
+import { FadeInDown } from 'react-native-reanimated';
 
 interface ImpactRipplesCardProps {
     ripples: ImpactRipple[];
 }
 
-/**
- * ImpactRipplesCard
- * 
- * Renders pending Impact Ripple notifications from the community.
- */
 export function ImpactRipplesCard({ ripples }: ImpactRipplesCardProps) {
-    if (!ripples.length) return null;
+    if (!ripples || !ripples.length) return null;
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.tag}>💧 IMPACT RIPPLES</Text>
-            <View style={styles.list}>
-                {ripples.map(r => (
-                    <View key={r.id} style={styles.rippleItem}>
-                        <Text style={styles.message}>
-                            {r.warm_message_en ?? r.ripple_type}
+        <AnimatedView entering={FadeInDown.duration(800)}>
+            <Box className="p-xl bg-skyBlue/5 rounded-3xl border border-skyBlue/10 shadow-sm overflow-hidden">
+                <VStack className="gap-lg">
+                    {/* Header */}
+                    <HStack className="items-center gap-2">
+                        <Icon as={Droplet} size={14} className="text-skyBlue" />
+                        <Text className="text-skyBlue text-[10px] font-black uppercase tracking-[0.2em]">
+                            Impact Ripples
                         </Text>
-                    </View>
-                ))}
-            </View>
-        </View>
+                    </HStack>
+
+                    {/* Ripple List */}
+                    <VStack className="gap-3">
+                        {ripples.map((ripple, index) => (
+                            <AnimatedView 
+                                key={ripple.id} 
+                                entering={FadeInDown.delay(index * 150)}
+                            >
+                                <Box className="p-4 bg-white/5 rounded-2xl border border-white/5 shadow-sm">
+                                    <HStack className="gap-4 items-center">
+                                        <Box className="w-8 h-8 rounded-full bg-skyBlue/10 items-center justify-center">
+                                            <Icon 
+                                                as={ripple.ripple_type === 'principal_recognition' ? Heart : Sparkles} 
+                                                size={12} 
+                                                className="text-skyBlue" 
+                                            />
+                                        </Box>
+                                        <VStack className="flex-1">
+                                            <Text className="text-sacredWhite/80 text-sm leading-relaxed italic font-medium">
+                                                "{ripple.warm_message_en ?? ripple.ripple_type}"
+                                            </Text>
+                                        </VStack>
+                                    </HStack>
+                                </Box>
+                            </AnimatedView>
+                        ))}
+                    </VStack>
+
+                    <Box className="mt-2 h-0.5 bg-skyBlue/10 rounded-full w-full opacity-50" />
+                </VStack>
+            </Box>
+        </AnimatedView>
     );
 }
 
-const styles = StyleSheet.create({
-    container: {
-        padding: 24,
-        backgroundColor: 'rgba(58, 122, 154, 0.1)', // water-soft
-        borderRadius: 14,
-        borderWidth: 1,
-        borderColor: 'rgba(58, 122, 154, 0.2)',
-    },
-    tag: {
-        fontSize: 10,
-        fontWeight: '900',
-        letterSpacing: 2,
-        color: '#3A7A9A',
-        marginBottom: 12,
-    },
-    list: {
-        gap: 10,
-    },
-    rippleItem: {
-        padding: 12,
-        paddingHorizontal: 16,
-        backgroundColor: 'rgba(255, 255, 255, 0.05)',
-        borderRadius: 10,
-    },
-    message: {
-        fontSize: 13,
-        lineHeight: 20,
-        color: 'rgba(255,255,255,0.9)',
-    }
-});
+export default ImpactRipplesCard;

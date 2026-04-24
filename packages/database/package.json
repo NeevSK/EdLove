@@ -1,0 +1,34 @@
+{
+  "name": "@repo/database",
+  "version": "1.0.0",
+  "private": true,
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "lint": "powershell -File ../../scripts/audit-wrapper.ps1 -Cmd \"pnpm exec eslint .\" -Log \"reports/lint.txt\"",
+    "check-types": "powershell -File ../../scripts/audit-wrapper.ps1 -Cmd \"pnpm exec tsc --noEmit\" -Log \"reports/check-types.txt\"",
+    "generate": "pnpm exec zen generate --schema protocol/schema.zmodel",
+    "db:push": "pnpm exec zen db push --schema protocol/schema.zmodel",
+    "db:studio": "pnpm exec zen studio --schema protocol/schema.zmodel",
+    "db:migrate": "pnpm exec zen migrate dev --schema protocol/schema.zmodel"
+  },
+  "dependencies": {
+    "@zenstackhq/orm": "3.5.5",
+    "kysely": "~0.28.8",
+    "pg": "^8.13.3",
+    "zod": "4.3.6",
+    "@zenstackhq/schema": "3.5.5"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.20.0",
+    "@zenstackhq/cli": "3.5.5",
+    "@zenstackhq/language": "3.5.5",
+    "@zenstackhq/plugin-policy": "3.5.5",
+    "@zenstackhq/sdk": "3.5.5",
+    "@zenstackhq/zod": "3.5.5"
+  }
+}

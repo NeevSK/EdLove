@@ -11,6 +11,29 @@ export interface AnnouncementWithAuthor extends Announcement {
 }
 
 // ============================================================================
+// MANIFESTO TYPES
+// ============================================================================
+
+export type ManifestoVibe = 'visionary' | 'supportive' | 'academic' | 'wellbeing';
+export type ManifestoStatus = 'active' | 'archived' | 'fulfilled';
+
+export interface SanctuaryManifesto {
+    id: string;
+    school_id: string;
+    creator_id: string;
+    title: string;
+    content: string;
+    vibe: ManifestoVibe;
+    status: ManifestoStatus;
+    target_date?: string;
+    metadata: Record<string, any>;
+    created_at: string;
+    updated_at: string;
+    endorsement_count?: number;
+    has_endorsed?: boolean;
+}
+
+// ============================================================================
 // POLL TYPES
 // ============================================================================
 

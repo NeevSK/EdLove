@@ -5,7 +5,6 @@
  * Metro resolves this over StudentGoals.tsx on the web platform.
  */
 import React, { useState } from 'react';
-import { supabase } from '@repo/core';
 import { useStudentGoals } from '../hooks/useStudentGoals';
 import type { Goal } from '../types';
 import { Target, Plus, CheckCircle2, Circle } from 'lucide-react-native';
@@ -15,7 +14,7 @@ interface StudentGoalsProps {
 }
 
 export default function StudentGoals({ userId }: StudentGoalsProps) {
-    const { goals, isLoading, setGoals } = useStudentGoals(userId);
+    const { goals, isLoading, addGoal, updateGoal } = useStudentGoals(userId);
     const [showForm, setShowForm] = useState(false);
     const [text, setText] = useState('');
     const [saving, setSaving] = useState(false);
@@ -25,25 +24,21 @@ export default function StudentGoals({ userId }: StudentGoalsProps) {
         if (!text.trim()) return;
         setSaving(true);
         try {
-            const { data, error } = await supabase
-                .from('student_goals')
-                .insert({ user_id: userId, text: text.trim(), progress: 0, is_completed: false })
-                .select().single();
-            if (!error && data) { setGoals(p => [data, ...p]); setText(''); setShowForm(false); }
+            await addGoal(text.trim());
+            setText('');
+            setShowForm(false);
         } finally { setSaving(false); }
     };
 
     const handleToggle = async (goal: Goal) => {
         setUpdating(goal.id);
         const newVal = !goal.is_completed;
-        setGoals(p => p.map(g => g.id === goal.id ? { ...g, is_completed: newVal, progress: newVal ? 100 : g.progress } : g));
-        await supabase.from('student_goals').update({ is_completed: newVal, progress: newVal ? 100 : goal.progress }).eq('id', goal.id);
+        await updateGoal(goal.id, { is_completed: newVal, progress: newVal ? 100 : goal.progress });
         setUpdating(null);
     };
 
     const handleProgress = async (goal: Goal, progress: number) => {
-        setGoals(p => p.map(g => g.id === goal.id ? { ...g, progress } : g));
-        await supabase.from('student_goals').update({ progress }).eq('id', goal.id);
+        await updateGoal(goal.id, { progress });
     };
 
     return (
@@ -67,7 +62,7 @@ export default function StudentGoals({ userId }: StudentGoalsProps) {
                 <div style={{ display: 'flex', gap: '8px' }}>
                     <input autoFocus value={text} onChange={e => setText(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleAdd()} placeholder="What do you want to achieve?" style={{ flex: 1, padding: '9px 12px', borderRadius: '10px', border: '1.5px solid var(--water)', background: 'var(--background-alt)', color: 'var(--ink)', fontSize: '13px', fontFamily: 'var(--font-body)', outline: 'none' }} />
                     <button onClick={handleAdd} disabled={saving || !text.trim()} style={{ padding: '9px 14px', borderRadius: '10px', background: 'var(--water)', color: '#fff', border: 'none', fontWeight: '700', fontSize: '12px', cursor: saving || !text.trim() ? 'not-allowed' : 'pointer', opacity: saving || !text.trim() ? 0.6 : 1 }}>
-                        {saving ? '…' : 'Add'}
+                        {saving ? '...' : 'Add'}
                     </button>
                 </div>
             )}
@@ -94,7 +89,7 @@ export default function StudentGoals({ userId }: StudentGoalsProps) {
                             {!goal.is_completed && (
                                 <input type="range" min={0} max={100} step={5} value={goal.progress ?? 0}
                                     onChange={e => handleProgress(goal, Number(e.target.value))}
-                                    style={{ width: '100%', accentColor: 'var(--water)', marginLeft: '28px', display: 'block', width: 'calc(100% - 28px)' }}
+                                    style={{ accentColor: 'var(--water)', marginLeft: '28px', display: 'block', width: 'calc(100% - 28px)' }}
                                 />
                             )}
                         </div>

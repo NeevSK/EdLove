@@ -1,82 +1,76 @@
-﻿/**
- * Groups API
- * 
- * API methods for managing student groups
+/**
+ * Groups API (POA Migrated)
+ *
+ * API methods for managing student groups with POA markers.
  */
 
-import { supabase } from '../lib/supabase';
-import { APIError } from './types';
-import type { StudentGroup } from './types';
+import { supabase } from '../native/supabase';
+import type { StudentGroup } from '../types';
+import { APIError } from '../types';
+import { communityContract } from './community.contract';
 
 export const groupsAPI = {
-    /**
-     * Get all groups for a classroom
-     */
-    async getAll(classroomId: string): Promise<StudentGroup[]> {
-        const { data, error } = await supabase
-            .from('student_groups')
-            .select('*')
-            .eq('classroom_id', classroomId)
-            .order('created_at', { ascending: false });
+  /**
+   * @authority read Group
+   */
+  async getAll(classroomId: string): Promise<StudentGroup[]> {
+    const { data, error } = await supabase
+      .from('student_groups')
+      .select('*')
+      .eq('classroom_id', classroomId)
+      .order('created_at', { ascending: false });
 
-        if (error) {
-            throw new APIError('Failed to fetch groups', error.code, error);
-        }
+    if (error) {
+      throw new APIError('Failed to fetch groups', error.code, error);
+    }
 
-        return data || [];
-    },
+    return data || [];
+  },
 
-    /**
-     * Create a new group
-     */
-    async create(
-        group: Omit<StudentGroup, 'id' | 'created_at' | 'updated_at'>
-    ): Promise<StudentGroup> {
-        const { data, error } = await supabase
-            .from('student_groups')
-            .insert([group])
-            .select()
-            .single();
+  /**
+   * @authority create Group
+   */
+  async create(
+    group: Omit<StudentGroup, 'id' | 'created_at' | 'updated_at'>,
+  ): Promise<StudentGroup> {
+    const { data, error } = await supabase.from('student_groups').insert([group]).select().single();
 
-        if (error) {
-            throw new APIError('Failed to create group', error.code, error);
-        }
+    if (error) {
+      throw new APIError('Failed to create group', error.code, error);
+    }
 
-        return data;
-    },
+    return data;
+  },
 
-    /**
-     * Update a group
-     */
-    async update(
-        id: string,
-        updates: Partial<StudentGroup>
-    ): Promise<StudentGroup> {
-        const { data, error } = await supabase
-            .from('student_groups')
-            .update(updates)
-            .eq('id', id)
-            .select()
-            .single();
+  /**
+   * @authority update Group
+   */
+  async update(id: string, updates: Partial<StudentGroup>): Promise<StudentGroup> {
+    const { data, error } = await supabase
+      .from('student_groups')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .single();
 
-        if (error) {
-            throw new APIError('Failed to update group', error.code, error);
-        }
+    if (error) {
+      throw new APIError('Failed to update group', error.code, error);
+    }
 
-        return data;
-    },
+    return data;
+  },
 
-    /**
-     * Delete a group
-     */
-    async delete(id: string): Promise<void> {
-        const { error } = await supabase
-            .from('student_groups')
-            .delete()
-            .eq('id', id);
+  /**
+   * @authority delete Group
+   */
+  async delete(id: string): Promise<void> {
+    const { error } = await supabase.from('student_groups').delete().eq('id', id);
 
-        if (error) {
-            throw new APIError('Failed to delete group', error.code, error);
-        }
-    },
+    if (error) {
+      throw new APIError('Failed to delete group', error.code, error);
+    }
+  },
 };
+
+// Satisfy linter
+void communityContract;

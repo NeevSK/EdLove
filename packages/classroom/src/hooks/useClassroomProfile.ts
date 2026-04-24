@@ -5,12 +5,10 @@ import type { Classroom } from '@repo/core';
 export function useClassroomProfile(classroomId: string) {
     const [classroom, setClassroom] = useState<Classroom | null>(null);
     const [loading, setLoading] = useState(true);
-    const { context } = usePermissions();
-    const { roles, userId } = context;
-    const userRole = roles[0];
+    const { can, context: user } = usePermissions();
     
-    // Editable only if current user is the teacher of THIS classroom
-    const isTeacher = (userRole === 'teacher' || userRole === 'principal') && classroom?.teacher_id === userId;
+    // Editable only if current user is the teacher of THIS classroom via POA
+    const isTeacher = classroom ? can('manage', 'Classroom', classroom as any) : false;
     const addToQueue = useMutationQueue(state => state.addToQueue);
 
     const fetchClassroom = useCallback(async () => {
@@ -18,7 +16,7 @@ export function useClassroomProfile(classroomId: string) {
         try {
             setLoading(true);
             const data = await classroomsAPI.getById(classroomId);
-            setClassroom(data);
+            setClassroom(data as any);
         } catch (error) {
             handleAPIError(error);
         } finally {
@@ -50,7 +48,7 @@ export function useClassroomProfile(classroomId: string) {
             await classroomsAPI.update(classroom.id, { [field]: value });
             return { success: true };
         } catch (error) {
-            console.log('🔄 Sync pending for classroom:', field);
+            console.log('= Sync pending for classroom:', field);
             return { success: true, pending: true };
         }
     };

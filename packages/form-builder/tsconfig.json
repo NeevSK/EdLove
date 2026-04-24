@@ -4,7 +4,6 @@
     "outDir": "dist",
     "rootDir": "src",
     "baseUrl": ".",
-    "jsx": "react-native",
     "esModuleInterop": true,
     "skipLibCheck": true,
     "paths": {

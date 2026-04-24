@@ -5,11 +5,11 @@
   "type": "module",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
-      "require": "./dist/index.cjs",
-      "types": "./dist/index.d.ts"
+      "require": "./dist/index.cjs"
     },
-    "./data": "./data/lk-edu-data.json"
+    "./package.json": "./package.json"
   },
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -29,13 +29,15 @@
     "gn-divisions",
     "educational-zones"
   ],
-  "packageManager": "pnpm@10.x",
+  "packageManager": "pnpm@10.30.2",
   "scripts": {
-    "build": "tsup src/index.ts --format esm,cjs --dts --clean",
-    "test": "vitest",
-    "validate": "tsx scripts/validate.ts",
-    "import:xlsx": "tsx scripts/import-xlsx.ts",
-    "import:pdf": "tsx scripts/import-pdf.ts"
+    "build": "pnpm exec tsup src/index.ts --format esm,cjs --dts --clean",
+    "test": "powershell -File ../../scripts/audit-wrapper.ps1 -Cmd \"pnpm exec vitest run\" -Log \"reports/test.txt\"",
+    "validate": "powershell -File ../../scripts/audit-wrapper.ps1 -Cmd \"pnpm exec tsx scripts/validate.ts\" -Log \"reports/validate.txt\"",
+    "lint": "powershell -File ../../scripts/audit-wrapper.ps1 -Cmd \"pnpm exec eslint .\" -Log \"reports/lint.txt\"",
+    "check-types": "powershell -File ../../scripts/audit-wrapper.ps1 -Cmd \"pnpm exec tsc --noEmit\" -Log \"reports/check-types.txt\"",
+    "import:xlsx": "pnpm exec tsx scripts/import-xlsx.ts",
+    "import:pdf": "pnpm exec tsx scripts/import-pdf.ts"
   },
   "devDependencies": {
     "@nishansanjuka/srilanka_geographics": "^0.0.1",

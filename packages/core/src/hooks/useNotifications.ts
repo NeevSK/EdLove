@@ -1,13 +1,13 @@
 /**
- * useNotifications — Real notification data for NotificationDrawer.
+ * useNotifications  Real notification data for NotificationDrawer.
  *
  * Fetches the 20 most recent notifications for the current user.
  * Provides `markAsRead` and `markAllRead` helpers.
  * Gracefully degrades on DB error (returns empty array).
  */
 
-import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '../lib/supabase';
+import { useCallback, useEffect, useState } from 'react';
+import { supabase } from '../native/supabase';
 
 export interface AppNotification {
   id: string;
@@ -46,7 +46,9 @@ export function useNotifications(userId: string | null | undefined): UseNotifica
       if (!error && count !== null) {
         setUnreadCount(count);
       }
-    } catch { /* degrade */ }
+    } catch {
+      /* degrade */
+    }
   }, [userId]);
 
   const load = useCallback(async () => {
@@ -65,7 +67,7 @@ export function useNotifications(userId: string | null | undefined): UseNotifica
         await loadUnreadCount();
       }
     } catch {
-      // Silently degrade — drawer shows empty state rather than crashing
+      // Silently degrade  drawer shows empty state rather than crashing
     } finally {
       setIsLoading(false);
     }
@@ -75,7 +77,7 @@ export function useNotifications(userId: string | null | undefined): UseNotifica
     load();
   }, [load]);
 
-  // Real-time subscription — new notifications arrive instantly without polling
+  // Real-time subscription  new notifications arrive instantly without polling
   useEffect(() => {
     if (!userId) return;
 
@@ -95,7 +97,7 @@ export function useNotifications(userId: string | null | undefined): UseNotifica
           if (!incoming.is_read) {
             setUnreadCount((prev) => prev + 1);
           }
-        }
+        },
       )
       .on(
         'postgres_changes',
@@ -107,10 +109,10 @@ export function useNotifications(userId: string | null | undefined): UseNotifica
         },
         async (payload) => {
           const updated = payload.new as AppNotification;
-          const old = payload.old as AppNotification | undefined;
-          
+          const _old = payload.old as AppNotification | undefined;
+
           setNotifications((prev) =>
-            prev.map((n) => (n.id === updated.id ? { ...n, is_read: updated.is_read } : n))
+            prev.map((n) => (n.id === updated.id ? { ...n, is_read: updated.is_read } : n)),
           );
 
           // Update unread count if is_read changed
@@ -118,7 +120,7 @@ export function useNotifications(userId: string | null | undefined): UseNotifica
             // Recalculate accurately to avoid desync
             await loadUnreadCount();
           }
-        }
+        },
       )
       .subscribe();
 
@@ -135,10 +137,8 @@ export function useNotifications(userId: string | null | undefined): UseNotifica
         .update({ is_read: true })
         .eq('id', id)
         .eq('user_id', userId);
-      
-      setNotifications((prev) =>
-        prev.map((n) => (n.id === id ? { ...n, is_read: true } : n)),
-      );
+
+      setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, is_read: true } : n)));
       await loadUnreadCount();
     },
     [userId, loadUnreadCount],
@@ -151,7 +151,7 @@ export function useNotifications(userId: string | null | undefined): UseNotifica
       .update({ is_read: true })
       .eq('user_id', userId)
       .eq('is_read', false);
-    
+
     setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })));
     setUnreadCount(0);
   }, [userId]);

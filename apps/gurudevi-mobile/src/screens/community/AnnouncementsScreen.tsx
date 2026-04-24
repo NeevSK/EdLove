@@ -1,7 +1,17 @@
-/**
- * AnnouncementsScreen (Adapter)
- * 
- * Thin adapter pointing to @repo/community implementation.
- * Follows the "Library First" and "Thin App Layer" architectural rules.
+﻿/**
+ * AnnouncementsScreen.tsx
+ *
+ * Thin wrapper for the Community Announcements UI.
  */
-export { AnnouncementsScreen as default } from '@repo/community';
+
+import React from 'react';
+import { ErrorBoundary } from '@repo/ui';
+import { AnnouncementsScreen as PackageAnnouncementsScreen } from '@repo/community';
+
+const AnnouncementsWrapper = (props: any) => (
+  <ErrorBoundary name="Announcements">
+    <PackageAnnouncementsScreen {...props} />
+  </ErrorBoundary>
+);
+
+export default AnnouncementsWrapper;

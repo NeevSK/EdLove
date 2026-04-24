@@ -3,7 +3,6 @@ import { CitizenGate } from '@repo/ui';
 import { useStore } from '@repo/core';
 import { usePermissions } from '@repo/core';
 import { useTranslation } from 'react-i18next';
-import { useNavigation } from '@react-navigation/native';
 import {
     FileText,
     Briefcase,
@@ -11,6 +10,12 @@ import {
     Globe,
     Edit3,
     CheckCircle2,
+    Search,
+    Shield,
+    Plus,
+    Building,
+    ExternalLink,
+    ArrowUpRight,
 } from 'lucide-react-native';
 import { useProfile } from '../hooks/useProfile';
 import { ContactLinktree } from '../components/ContactLinktree';
@@ -20,14 +25,20 @@ import { AvatarDisplay } from '../components/AvatarDisplay';
 import LivingJourneyPanel from '../components/LivingJourneyPanel';
 import { useSocialLinks } from '../hooks/useSocialLinks';
 import { QRCodeGenerator } from '@repo/scanner-kit';
+import { toFullProfileParams, useProfileNavigation } from '../navigation';
+
+// Skeleton Component logic (mocked because it was used in corrupt code)
+const SkeletonCard = ({ height }: { height: number }) => (
+    <div style={{ height: `${height}px`, background: 'var(--border)', borderRadius: '16px', opacity: 0.3 }} />
+);
 
 export default function ProfileScreenWeb({ userId, isPublic }: { userId?: string; isPublic?: boolean }) {
     const { t } = useTranslation();
-    const navigation = useNavigation<any>();
+    const navigation = useProfileNavigation();
     const { can, context } = usePermissions();
-    const authority = context.roles[0]; // For legacy compatibility with completionResult
+    const authority = context.roles[0]; 
     const { user } = useStore();
-    const { profile, loading: isProfileLoading, updateField, refresh } = useProfile(userId);
+    const { profile, loading: isProfileLoading, updateField, refresh, uploadAvatar } = useProfile(userId);
     const completionResult = useProfileCompletion(profile, (authority as any) ?? null);
     const [copiedLink, setCopiedLink] = useState(false);
     const [editForm, setEditForm] = useState<{ full_name: string; bio: string; phone: string; username: string } | null>(null);
@@ -36,13 +47,12 @@ export default function ProfileScreenWeb({ userId, isPublic }: { userId?: string
     const isOwnProfile = !userId || userId === user?.id;
     const { links: socialLinks } = useSocialLinks(userId || user?.id);
 
-    const openInlineEdit = () =>
-        setEditForm({
-            full_name: profile?.full_name ?? '',
-            bio: profile?.bio ?? '',
-            phone: profile?.phone ?? '',
-            username: profile?.username ?? '',
-        });
+    const openInlineEdit = () => setEditForm({
+        full_name: profile?.full_name ?? '',
+        bio: profile?.bio ?? '',
+        phone: profile?.phone ?? '',
+        username: profile?.username ?? '',
+    });
 
     const cancelEdit = () => setEditForm(null);
 
@@ -87,7 +97,7 @@ export default function ProfileScreenWeb({ userId, isPublic }: { userId?: string
                     <div style={{ height: '220px', background: 'var(--border)', borderRadius: '24px', marginBottom: '32px', opacity: 0.4 }} />
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(240px, 100%), 1fr))', gap: '24px' }}>
                         {[1, 2, 3, 4].map((i) => (
-                            <div key={i} style={{ height: '140px', background: 'var(--border)', borderRadius: '16px', opacity: 0.3 }} />
+                            <SkeletonCard key={i} height={140} />
                         ))}
                     </div>
                 </div>
@@ -120,7 +130,6 @@ export default function ProfileScreenWeb({ userId, isPublic }: { userId?: string
                             pointerEvents: 'none',
                         }}
                     />
-
                     <div className="profile-hero-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto', gap: '32px', position: 'relative', zIndex: 1, alignItems: 'start' }}>
                         <div className="profile-identity-column" style={{ display: 'flex', alignItems: 'flex-start', gap: '28px', flexWrap: 'wrap' }}>
                             <div style={{ flexShrink: 0 }}>
@@ -130,42 +139,41 @@ export default function ProfileScreenWeb({ userId, isPublic }: { userId?: string
                                     fullName={profile.full_name}
                                     size={88}
                                     editable={isOwnProfile}
-                                    onAvatarUpdated={async (url: string) => {
-                                        await updateField('avatar_url', url);
+                                    onAvatarSelected={async (localUri: string) => {
+                                        const result = await uploadAvatar(localUri);
+                                        if (result.success) {
+                                            refresh?.();
+                                        }
                                     }}
                                     peekable={!isOwnProfile || isPublic}
                                     peekType="user"
                                 />
                             </div>
-
                             <div className="profile-identity-copy" style={{ flex: 1, minWidth: '180px' }}>
                                 <div className="profile-title-row" style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '4px', flexWrap: 'wrap' }}>
                                     <h1 style={{ margin: 0, fontSize: '30px', fontWeight: '800', color: 'var(--ink)' }}>
                                         {profile.full_name}
                                     </h1>
                                     {profile.is_thuthimal && (
-                                        <span
-                                            style={{
-                                                padding: '4px 10px',
-                                                background: 'var(--sanctuary-saffron)',
-                                                color: 'var(--text-on-action)',
-                                                borderRadius: '8px',
-                                                fontSize: '11px',
-                                                fontWeight: '800',
-                                            }}
-                                        >
+                                        <span style={{
+                                            padding: '4px 10px',
+                                            background: 'var(--sanctuary-saffron)',
+                                            color: 'var(--text-on-action)',
+                                            borderRadius: '8px',
+                                            fontSize: '11px',
+                                            fontWeight: '800',
+                                        }}>
                                             Thuthimal
                                         </span>
                                     )}
                                 </div>
-
                                 <div className="profile-context-row" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px', flexWrap: 'wrap' }}>
                                     <span style={{ fontSize: '15px', color: 'var(--action)', fontWeight: '600', textTransform: 'capitalize' }}>
                                         {profile.role?.split('_').join(' ')}
                                     </span>
                                     {profile.school_name && (
                                         <>
-                                            <span style={{ color: 'var(--border)', fontWeight: '300' }}>·</span>
+                                            <span style={{ color: 'var(--border)', fontWeight: '300' }}>\u00B7</span>
                                             <span style={{ fontSize: '14px', color: 'var(--ink-ghost)' }}>{profile.school_name}</span>
                                         </>
                                     )}
@@ -197,51 +205,54 @@ export default function ProfileScreenWeb({ userId, isPublic }: { userId?: string
                                                 {completionResult.nextHint}
                                             </p>
                                         )}
-                                        <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
-                                            {completionResult.isComplete ? (
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--success)', fontSize: '14px', fontWeight: 600 }}>
-                                                    <CheckCircle2 size={18} />
-                                                    {t('profile.completion.done')}
-                                                </div>
-                                            ) : (
-                                                <div style={{ padding: '4px 12px', background: 'var(--warning-surface)', color: 'var(--warning)', borderRadius: '100px', fontSize: '12px', fontWeight: 600 }}>
-                                                    {t('profile.completion.incomplete')}
-                                                </div>
-                                            )}
-                                        </div>
                                     </div>
                                 )}
+
+                                <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+                                    {completionResult.isComplete ? (
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--success)', fontSize: '14px', fontWeight: 600 }}>
+                                            <CheckCircle2 size={18} />
+                                            {t('profile.completion.done')}
+                                        </div>
+                                    ) : (
+                                        <div style={{ padding: '4px 12px', background: 'var(--warning-surface)', color: 'var(--warning)', borderRadius: '100px', fontSize: '12px', fontWeight: 600 }}>
+                                            {t('profile.completion.incomplete')}
+                                        </div>
+                                    )}
+                                </div>
 
                                 {isOwnProfile && !context.isAnonymous && (
                                     <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                                         <button
                                             className="secondary-button"
                                             style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
-                                            onClick={openInlineEdit}
-                                        >
+                                            onClick={openInlineEdit}>
                                             <Edit3 size={16} />
                                             {t('profile.viewEditProfile')}
                                         </button>
                                         <button
                                             className="secondary-button"
                                             style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
-                                            onClick={() => (navigation as any).navigate('FullProfile', { profile })}
-                                        >
+                                            onClick={() => navigation.openFullProfile(toFullProfileParams(profile))}>
                                             Full Profile
                                         </button>
                                         <button
                                             className="secondary-button"
                                             style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
-                                            onClick={() => (navigation as any).navigate('AppSettings')}
-                                        >
+                                            onClick={() => navigation.openSettings?.()}>
                                             Settings
                                         </button>
                                         <button
                                             className="secondary-button"
                                             style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
-                                            onClick={() => (navigation as any).navigate('PrivacyLedger')}
-                                        >
+                                            onClick={() => navigation.openPrivacyLedger?.()}>
                                             Privacy Ledger
+                                        </button>
+                                        <button
+                                            className="secondary-button"
+                                            style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
+                                            onClick={() => navigation.openPublicProfile?.({ id: profile.id, type: 'user' })}>
+                                            Public Preview
                                         </button>
                                     </div>
                                 )}
@@ -253,7 +264,7 @@ export default function ProfileScreenWeb({ userId, isPublic }: { userId?: string
                                             title="Upgrade to edit your profile"
                                             description="Create an account to save your identity across devices and unlock citizen features."
                                             actionLabel="Create account"
-                                            onAction={() => (navigation as any).navigate('Auth')}
+                                            onAction={() => navigation.openAuth?.()}
                                         />
                                     </div>
                                 )}
@@ -315,7 +326,7 @@ export default function ProfileScreenWeb({ userId, isPublic }: { userId?: string
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
                             <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '800' }}>Edit Profile</h3>
                             <button onClick={cancelEdit} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ink-ghost)', fontSize: '20px' }}>
-                                x
+                                \u00D7
                             </button>
                         </div>
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(280px, 100%), 1fr))', gap: '20px', marginBottom: '24px' }}>
@@ -331,7 +342,7 @@ export default function ProfileScreenWeb({ userId, isPublic }: { userId?: string
                             </div>
                             <div>
                                 <label style={{ display: 'block', fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.8px', color: 'var(--ink-ghost)', marginBottom: '6px' }}>
-                                    Handle/Username
+                                    Handle / Username
                                 </label>
                                 <input
                                     value={editForm.username}
@@ -413,7 +424,7 @@ export default function ProfileScreenWeb({ userId, isPublic }: { userId?: string
                                             <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--ink-ghost)', textTransform: 'uppercase', marginBottom: '8px' }}>Qualifications</div>
                                             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                                                 {qualifications.map((qualification: string) => (
-                                                    <span key={qualification} style={{ padding: '4px 12px', background: 'var(--moss-soft)', color: 'var(--moss)', borderRadius: '8px', fontSize: '13px', fontWeight: '600' }}>
+                                                    <span key={qualification} style={{ padding: '4px 12px', background: 'var(--moss-soft)', color: 'var(--moss)', borderRadius: '8px', fontSize: '13px', fontWeight: '600', display: 'flex', alignItems: 'center' }}>
                                                         <GraduationCap size={12} style={{ marginRight: 4 }} />
                                                         {qualification}
                                                     </span>
@@ -439,7 +450,6 @@ export default function ProfileScreenWeb({ userId, isPublic }: { userId?: string
                                     </h3>
                                 </div>
                             </div>
-
                             <ContactLinktree
                                 links={socialLinks || []}
                                 userName={profile.full_name}
@@ -450,7 +460,6 @@ export default function ProfileScreenWeb({ userId, isPublic }: { userId?: string
                             />
                         </div>
                     </div>
-
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                         {isStaff && profile.school_id && (
                             <div className="sanctuary-card" style={{ padding: '24px' }}>

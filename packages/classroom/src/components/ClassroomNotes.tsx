@@ -21,15 +21,7 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
-    View,
-    TextInput,
-    TouchableOpacity,
-    FlatList,
-    KeyboardAvoidingView,
     Platform,
-    Alert,
-    ActivityIndicator,
-    StyleSheet,
 } from 'react-native';
 import {
     VStack,
@@ -37,10 +29,15 @@ import {
     Box,
     Text,
     Pressable,
-    useThemedColors,
-    Theme,
+    Spinner,
+    Input,
+    InputField,
     PositiveInvitation,
     useLotusToast,
+    hapticLight,
+    FlatList,
+    KeyboardAvoidingView,
+    Icon,
 } from '@repo/ui';
 import {
     NotebookPen,
@@ -53,12 +50,11 @@ import {
     StickyNote,
     X,
     ChevronDown,
-    ChevronUp,
 } from 'lucide-react-native';
 import { api } from '@repo/core';
 import type { ClassroomNote } from '@repo/core';
 
-// ── Types ────────────────────────────────────────────────────
+// ─── Types ──────────────────────────────────────────────────────────────────
 
 interface ClassroomNotesProps {
     classroomId: string;
@@ -70,7 +66,7 @@ type NoteGroup = {
     data: ClassroomNote[];
 };
 
-// ── Helpers ──────────────────────────────────────────────────
+// ─── Helpers ────────────────────────────────────────────────────────────────
 
 function getRelativeDateLabel(dateStr: string): string {
     const now = new Date();
@@ -103,7 +99,6 @@ function groupNotesByDate(notes: ClassroomNote[]): NoteGroup[] {
     const result: NoteGroup[] = [];
     if (pinned.length > 0) result.push({ label: '📌 Pinned', data: pinned });
 
-    // Explicitly handle noUncheckedIndexedAccess: true from base.json
     for (const label of Object.keys(groups)) {
         const data = groups[label];
         if (data) {
@@ -113,7 +108,7 @@ function groupNotesByDate(notes: ClassroomNote[]): NoteGroup[] {
     return result;
 }
 
-// ── Note type metadata ────────────────────────────────────────
+// ─── Note type metadata ──────────────────────────────────────────────
 
 const NOTE_TYPE_META: Record<
     ClassroomNote['note_type'],
@@ -122,39 +117,38 @@ const NOTE_TYPE_META: Record<
     note: {
         label: 'Note',
         icon: StickyNote,
-        color: Theme.colors.sanctuarySaffron,
+        color: '#F6BF8C',
         teacherOnly: true,
     },
     announcement: {
         label: 'Announcement',
         icon: Megaphone,
-        color: Theme.colors.gurudeviViolet,
+        color: '#7A5AF8',
         teacherOnly: true,
     },
     lesson_recap: {
         label: 'Lesson Recap',
         icon: BookOpen,
-        color: Theme.colors.sageGreen,
+        color: '#32D583',
         teacherOnly: true,
     },
     reminder: {
         label: 'Reminder',
         icon: Bell,
-        color: Theme.colors.amberGlow,
+        color: '#FDB022',
         teacherOnly: true,
     },
     personal: {
         label: 'Personal Note',
         icon: StickyNote,
-        color: Theme.colors.gurudeviBlue,
+        color: '#2E90FA',
         teacherOnly: false,
     },
 };
 
-// ── Main Component ───────────────────────────────────────────
+// ─── Main Component ─────────────────────────────────────────────────────────
 
 export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNotesProps) {
-    const colors = useThemedColors();
     const { showToast } = useLotusToast();
     const [notes, setNotes] = useState<ClassroomNote[]>([]);
     const [loading, setLoading] = useState(true);
@@ -164,7 +158,7 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
         isTeacher ? 'note' : 'personal'
     );
     const [draftVisibility, setDraftVisibility] = useState<ClassroomNote['visibility']>(
-        isTeacher ? 'private' : 'private'
+        'private'
     );
     const [saving, setSaving] = useState(false);
 
@@ -198,6 +192,7 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
             setNotes((prev) => [created, ...prev]);
             setDraft('');
             setComposing(false);
+            hapticLight();
         } catch (err) {
             showToast({ message: 'Could not save note. Please try again.', type: 'error' });
         } finally {
@@ -206,6 +201,7 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
     };
 
     const handleDelete = async (id: string) => {
+        hapticLight();
         try {
             await api.classroomNotes.delete(id);
             setNotes((prev) => prev.filter((n) => n.id !== id));
@@ -216,6 +212,7 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
     };
 
     const handleTogglePin = async (note: ClassroomNote) => {
+        hapticLight();
         try {
             const updated = await api.classroomNotes.update(note.id, {
                 is_pinned: !note.is_pinned,
@@ -227,6 +224,7 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
     };
 
     const handleToggleVisibility = async (note: ClassroomNote) => {
+        hapticLight();
         const next: ClassroomNote['visibility'] =
             note.visibility === 'private' ? 'class' : 'private';
         try {
@@ -237,8 +235,6 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
         }
     };
 
-    // ── Compose sheet available note types ───────────────────
-
     const availableTypes = useMemo(
         () =>
             (Object.entries(NOTE_TYPE_META) as [ClassroomNote['note_type'], typeof NOTE_TYPE_META[keyof typeof NOTE_TYPE_META]][])
@@ -247,11 +243,9 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
         [isTeacher]
     );
 
-    // ── Render helpers ───────────────────────────────────────
-
     const renderNoteCard = ({ item: note }: { item: ClassroomNote }) => {
         const meta = NOTE_TYPE_META[note.note_type];
-        if (!meta) return null; // Defensive check for unexpected note types
+        if (!meta) return null;
         const NoteIcon = meta.icon;
         const isClassVisible = note.visibility === 'class';
         const time = new Date(note.created_at || new Date()).toLocaleTimeString([], {
@@ -261,103 +255,75 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
 
         return (
             <Box
-                sx={{
-                    backgroundColor: note.is_pinned ? colors.tertiary : colors.secondary,
-                    borderRadius: Theme.corners.comfortable,
-                    borderWidth: 1,
-                    borderColor: Theme.colors.glassBorder,
-                    borderLeftWidth: 3,
-                    borderLeftColor: meta.color,
-                    padding: Theme.spacing.md,
-                    marginBottom: Theme.spacing.sm,
-                }}
+                key={note.id}
+                className={`mb-2 p-4 rounded-xl border border-sanctuary-border border-l-[3px] ${note.is_pinned ? 'bg-sanctuary-surface-secondary' : 'bg-sanctuary-surface'}`}
+                style={{ borderLeftColor: meta.color }}
             >
-                <HStack sx={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                    {/* Type badge */}
-                    <HStack sx={{ gap: 6, alignItems: 'center', flex: 1 }}>
-                        <NoteIcon size={14} color={meta.color} />
-                        <Text
-                            sx={{
-                                fontSize: Theme.typography.fontSize.xs,
-                                fontWeight: '700',
-                                color: meta.color,
-                                textTransform: 'uppercase',
-                                letterSpacing: 0.5,
-                            }}
-                        >
-                            {meta.label}
-                        </Text>
-                        {isClassVisible && (
-                            <Globe size={12} color={colors.textTertiary} />
-                        )}
-                        {!isClassVisible && (
-                            <Lock size={12} color={colors.textTertiary} />
-                        )}
+                <VStack className="gap-1">
+                    <HStack className="justify-between items-start">
+                        <HStack className="gap-1.5 items-center flex-1">
+                            <NoteIcon size={14} color={meta.color} />
+                                <Text
+                                    className="text-[10px] font-bold uppercase tracking-wider"
+                                    style={{ color: meta.color }}
+                                >
+                                    {meta.label}
+                                </Text>
+                                {isClassVisible && <Icon as={Globe} size={12} className="text-sanctuary-text-tertiary" />}
+                                {!isClassVisible && <Icon as={Lock} size={12} className="text-sanctuary-text-tertiary" />}
+                            </HStack>
+
+                        <HStack className="gap-2.5 items-center">
+                            <Text className="text-[11px] text-sanctuary-text-tertiary">{time}</Text>
+                            {isTeacher && (
+                                <HStack className="gap-2">
+                                    <Pressable onPress={() => handleTogglePin(note)} hitSlop={8}>
+                                        <Icon
+                                            as={Pin}
+                                            size={14}
+                                            className={note.is_pinned ? 'text-sanctuarySaffron' : 'text-typography-400'}
+                                            fill={note.is_pinned ? '#F6BF8C' : 'transparent'}
+                                        />
+                                    </Pressable>
+                                    <Pressable onPress={() => handleToggleVisibility(note)} hitSlop={8}>
+                                        {isClassVisible ? (
+                                            <Icon as={Globe} size={14} className="text-primary-500" />
+                                        ) : (
+                                            <Icon as={Lock} size={14} className="text-typography-400" />
+                                        )}
+                                    </Pressable>
+                                </HStack>
+                            )}
+                            <Pressable onPress={() => handleDelete(note.id)} hitSlop={8}>
+                                <Icon as={X} size={14} className="text-typography-400" />
+                            </Pressable>
+                        </HStack>
                     </HStack>
 
-                    {/* Actions (own notes only) */}
-                    <HStack sx={{ gap: 10, alignItems: 'center' }}>
-                        <Text sx={{ fontSize: 11, color: colors.textTertiary }}>{time}</Text>
-                        {isTeacher && (
-                            <>
-                                <TouchableOpacity onPress={() => handleTogglePin(note)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-                                    <Pin
-                                        size={14}
-                                        color={note.is_pinned ? Theme.colors.sanctuarySaffron : colors.textTertiary}
-                                        fill={note.is_pinned ? Theme.colors.sanctuarySaffron : 'transparent'}
-                                    />
-                                </TouchableOpacity>
-                                <TouchableOpacity onPress={() => handleToggleVisibility(note)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-                                    {isClassVisible
-                                        ? <Globe size={14} color={Theme.colors.gurudeviViolet} />
-                                        : <Lock size={14} color={colors.textTertiary} />
-                                    }
-                                </TouchableOpacity>
-                            </>
-                        )}
-                        <TouchableOpacity onPress={() => handleDelete(note.id)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-                            <X size={14} color={colors.textTertiary} />
-                        </TouchableOpacity>
-                    </HStack>
-                </HStack>
-
-                <Text
-                    sx={{
-                        fontSize: Theme.typography.fontSize.sm,
-                        color: colors.text,
-                        marginTop: Theme.spacing.xs,
-                        lineHeight: 20,
-                    }}
-                >
-                    {note.content}
-                </Text>
-
-                {/* Author line for class-visible notes (shows who wrote it) */}
-                {isClassVisible && note.author && (
-                    <Text sx={{ fontSize: 11, color: colors.textTertiary, marginTop: 4 }}>
-                        — {note.author.full_name}
+                     <Text
+                        className="text-sm text-sanctuary-text leading-5"
+                    >
+                        {note.content}
                     </Text>
-                )}
+
+                    {isClassVisible && note.author && (
+                         <Text className="text-[11px] text-sanctuary-text-tertiary mt-1">
+                            — {note.author.full_name}
+                        </Text>
+                    )}
+                </VStack>
             </Box>
         );
     };
 
     const renderGroup = ({ item: group }: { item: NoteGroup }) => (
-        <VStack sx={{ marginBottom: Theme.spacing.md }}>
-            <Text
-                sx={{
-                    fontSize: Theme.typography.fontSize.xs,
-                    fontWeight: '700',
-                    color: colors.textTertiary,
-                    textTransform: 'uppercase',
-                    letterSpacing: 1,
-                    marginBottom: Theme.spacing.sm,
-                    paddingHorizontal: Theme.spacing.lg,
-                }}
+        <VStack className="mb-4">
+             <Text
+                className="text-[10px] font-bold text-sanctuary-text-tertiary uppercase tracking-[1px] mb-2 px-6"
             >
                 {group.label}
             </Text>
-            <VStack sx={{ paddingHorizontal: Theme.spacing.lg }}>
+            <VStack className="px-6">
                 {group.data.map((note) => renderNoteCard({ item: note }))}
             </VStack>
         </VStack>
@@ -365,8 +331,8 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
 
     if (loading) {
         return (
-            <Box sx={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingTop: 40 }}>
-                <ActivityIndicator color={Theme.colors.sanctuarySaffron} />
+            <Box className="flex-1 items-center justify-center pt-10">
+                <Spinner color="#F6BF8C" />
             </Box>
         );
     }
@@ -377,10 +343,9 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
             behavior={Platform.OS === 'ios' ? 'padding' : undefined}
             keyboardVerticalOffset={120}
         >
-            <VStack sx={{ flex: 1 }}>
-                {/* Note list */}
+            <VStack className="flex-1">
                 {grouped.length === 0 ? (
-                    <Box sx={{ paddingHorizontal: Theme.spacing.lg, paddingTop: Theme.spacing.xl }}>
+                    <Box className="px-6 pt-8">
                         <PositiveInvitation
                             title="No notes yet"
                             description={
@@ -396,144 +361,115 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
                         keyExtractor={(g) => g.label}
                         renderItem={renderGroup}
                         contentContainerStyle={{
-                            paddingTop: Theme.spacing.md,
+                            paddingTop: 16,
                             paddingBottom: composing ? 0 : 100,
                         }}
                         showsVerticalScrollIndicator={false}
                     />
                 )}
 
-                {/* Compose sheet */}
-                {composing ? (
+                 {composing ? (
                     <Box
-                        sx={{
-                            backgroundColor: colors.secondary,
-                            borderTopWidth: 1,
-                            borderTopColor: colors.border,
-                            padding: Theme.spacing.md,
-                        }}
+                        className="bg-sanctuary-surface border-t border-sanctuary-border p-4"
                     >
-                        {/* Type selector (teacher only: all types; student: personal only) */}
-                        {isTeacher && (
-                            <ScrollableTypeSelector
-                                types={availableTypes}
-                                selected={draftType}
-                                onSelect={setDraftType}
-                                colors={colors}
-                            />
-                        )}
+                        <VStack className="gap-2">
+                            {isTeacher && (
+                                <ScrollableTypeSelector
+                                    types={availableTypes}
+                                    selected={draftType}
+                                    onSelect={(t) => { hapticLight(); setDraftType(t); }}
+                                />
+                            )}
 
-                        {/* Visibility toggle (teacher only) */}
-                        {isTeacher && (
-                            <TouchableOpacity
-                                onPress={() =>
-                                    setDraftVisibility((v) =>
-                                        v === 'private' ? 'class' : 'private'
-                                    )
-                                }
-                                style={styles.visibilityToggle}
-                            >
-                                <HStack sx={{ gap: 6, alignItems: 'center' }}>
-                                    {draftVisibility === 'class' ? (
-                                        <Globe size={14} color={Theme.colors.gurudeviViolet} />
+                            {isTeacher && (
+                                <Pressable
+                                    onPress={() => {
+                                        hapticLight();
+                                        setDraftVisibility((v) => (v === 'private' ? 'class' : 'private'));
+                                    }}
+                                    className="mt-2 mb-1"
+                                >
+                                    <HStack className="gap-1.5 items-center">
+                                        {draftVisibility === 'class' ? (
+                                            <Icon as={Globe} size={14} className="text-primary-500" />
+                                        ) : (
+                                            <Icon as={Lock} size={14} className="text-typography-400" />
+                                        )}
+                                        <Text className={`text-xs ${draftVisibility === 'class' ? 'text-primary-500' : 'text-typography-400'}`}>
+                                            {draftVisibility === 'class' ? 'Visible to class' : 'Private to me'}
+                                        </Text>
+                                        <Icon as={ChevronDown} size={12} className="text-typography-400" />
+                                    </HStack>
+                                </Pressable>
+                            )}
+
+                             <Input className="min-h-[80px] max-h-[160px] rounded-xl border border-sanctuary-border mt-2 bg-sanctuary-surface-secondary">
+                                <InputField
+                                    value={draft}
+                                    onChangeText={setDraft}
+                                    placeholder={
+                                        draftType === 'announcement'
+                                            ? "Write an announcement for the class..."
+                                            : draftType === 'lesson_recap'
+                                                ? "What did you cover today?..."
+                                                : draftType === 'reminder'
+                                                    ? "What do you need to remember?..."
+                                                    : draftType === 'personal'
+                                                        ? "Write your study note..."
+                                                        : "Write your note..."
+                                    }
+                                    multiline
+                                    autoFocus
+                                    className="text-typography-900"
+                                    textAlignVertical="top"
+                                />
+                            </Input>
+
+                            <HStack className="justify-end gap-2 mt-2">
+                                <Pressable
+                                    onPress={() => {
+                                        hapticLight();
+                                        setComposing(false);
+                                        setDraft('');
+                                    }}
+                                    className="px-4 py-2"
+                                >
+                                     <Text className="text-sm text-sanctuary-text-tertiary font-semibold">
+                                        Cancel
+                                    </Text>
+                                </Pressable>
+                                <Pressable
+                                    onPress={handleSave}
+                                    disabled={!draft.trim() || saving}
+                                    className={`px-5 py-2 rounded-xl min-w-[70px] items-center ${
+                                        draft.trim() ? 'bg-sanctuarySaffron' : 'bg-background-100'
+                                    }`}
+                                >
+                                    {saving ? (
+                                        <Spinner color="white" />
                                     ) : (
-                                        <Lock size={14} color={colors.textTertiary} />
+                                         <Text
+                                            className={`text-sm font-bold ${
+                                                draft.trim() ? 'text-white' : 'text-sanctuary-text-tertiary'
+                                            }`}
+                                        >
+                                            Save
+                                        </Text>
                                     )}
-                                    <Text sx={{ fontSize: 12, color: draftVisibility === 'class' ? Theme.colors.gurudeviViolet : colors.textTertiary }}>
-                                        {draftVisibility === 'class' ? 'Visible to class' : 'Private to me'}
-                                    </Text>
-                                    <ChevronDown size={12} color={colors.textTertiary} />
-                                </HStack>
-                            </TouchableOpacity>
-                        )}
-
-                        {/* Text input */}
-                        <TextInput
-                            value={draft}
-                            onChangeText={setDraft}
-                            placeholder={
-                                draftType === 'announcement'
-                                    ? "Write an announcement for the class…"
-                                    : draftType === 'lesson_recap'
-                                        ? "What did you cover today?…"
-                                        : draftType === 'reminder'
-                                            ? "What do you need to remember?…"
-                                            : draftType === 'personal'
-                                                ? "Write your study note…"
-                                                : "Write your note…"
-                            }
-                            placeholderTextColor={colors.textTertiary}
-                            multiline
-                            autoFocus
-                            style={[
-                                styles.textInput,
-                                {
-                                    color: colors.text,
-                                    backgroundColor: colors.tertiary,
-                                    borderColor: colors.border,
-                                },
-                            ]}
-                        />
-
-                        {/* Action row */}
-                        <HStack sx={{ justifyContent: 'flex-end', gap: Theme.spacing.sm, marginTop: Theme.spacing.sm }}>
-                            <TouchableOpacity
-                                onPress={() => {
-                                    setComposing(false);
-                                    setDraft('');
-                                }}
-                                style={styles.cancelBtn}
-                            >
-                                <Text sx={{ fontSize: 14, color: colors.textSecondary, fontWeight: '600' }}>
-                                    Cancel
-                                </Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                onPress={handleSave}
-                                disabled={!draft.trim() || saving}
-                                style={[
-                                    styles.saveBtn,
-                                    {
-                                        backgroundColor: draft.trim()
-                                            ? Theme.colors.sanctuarySaffron
-                                            : colors.tertiary,
-                                    },
-                                ]}
-                            >
-                                {saving ? (
-                                    <ActivityIndicator size="small" color={Theme.colors.sacredWhite} />
-                                ) : (
-                                    <Text
-                                        sx={{
-                                            fontSize: 14,
-                                            fontWeight: '700',
-                                            color: draft.trim()
-                                                ? Theme.colors.sacredWhite
-                                                : colors.textTertiary,
-                                        }}
-                                    >
-                                        Save
-                                    </Text>
-                                )}
-                            </TouchableOpacity>
-                        </HStack>
+                                </Pressable>
+                            </HStack>
+                        </VStack>
                     </Box>
                 ) : (
-                    /* Floating add button */
                     <Box
-                        sx={{
-                            position: 'absolute',
-                            bottom: 24,
-                            right: 20,
-                        }}
+                        className="absolute bottom-6 right-5"
                     >
-                        <TouchableOpacity
-                            onPress={() => setComposing(true)}
-                            style={[styles.fabButton, { backgroundColor: Theme.colors.sanctuarySaffron }]}
-                            activeOpacity={0.85}
+                        <Pressable
+                            onPress={() => { hapticLight(); setComposing(true); }}
+                            className="w-13 h-13 rounded-full bg-sanctuarySaffron items-center justify-center shadow-md"
                         >
-                            <NotebookPen size={20} color={Theme.colors.sacredWhite} />
-                        </TouchableOpacity>
+                            <Icon as={NotebookPen} size={20} className="text-white" />
+                        </Pressable>
                     </Box>
                 )}
             </VStack>
@@ -541,107 +477,42 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
     );
 }
 
-// ── Scrollable type chip row ─────────────────────────────────
-
 function ScrollableTypeSelector({
     types,
     selected,
     onSelect,
-    colors,
 }: {
     types: ClassroomNote['note_type'][];
     selected: ClassroomNote['note_type'];
     onSelect: (t: ClassroomNote['note_type']) => void;
-    colors: ReturnType<typeof useThemedColors>;
 }) {
     return (
-        <View style={styles.typeRow}>
+        <Box className="flex-row gap-2 flex-wrap mb-1">
             {types.map((type) => {
                 const meta = NOTE_TYPE_META[type];
                 const isActive = selected === type;
                 const Icon = meta.icon;
                 return (
-                    <TouchableOpacity
+                    <Pressable
                         key={type}
                         onPress={() => onSelect(type)}
-                        style={[
-                            styles.typeChip,
-                            {
-                                backgroundColor: isActive ? meta.color : colors.tertiary,
-                                borderColor: isActive ? meta.color : colors.border,
-                            },
-                        ]}
+                        className={`flex-row items-center px-2.5 py-1.5 rounded-full border ${
+                             isActive ? '' : 'bg-sanctuary-surface-secondary border-sanctuary-border'
+                        }`}
+                        style={isActive ? { backgroundColor: meta.color, borderColor: meta.color } : {}}
                     >
-                        <Icon size={12} color={isActive ? Theme.colors.sacredWhite : colors.textSecondary} />
+                        <Icon size={12} color={isActive ? 'white' : '#667085'} />
                         <Text
-                            style={{
-                                fontSize: 11,
-                                fontWeight: isActive ? '700' : '400',
-                                color: isActive ? Theme.colors.sacredWhite : colors.textSecondary,
-                                marginLeft: 4,
-                            }}
+                            className={`text-[11px] ml-1 ${
+                                isActive ? 'text-white font-bold' : 'text-sanctuary-text-tertiary'
+                            }`}
                         >
                             {meta.label}
                         </Text>
-                    </TouchableOpacity>
+                        </Pressable>
                 );
             })}
-        </View>
+        </Box>
     );
 }
 
-// ── Styles ───────────────────────────────────────────────────
-
-const styles = StyleSheet.create({
-    textInput: {
-        minHeight: 80,
-        maxHeight: 160,
-        borderRadius: Theme.corners.comfortable,
-        borderWidth: 1,
-        padding: Theme.spacing.md,
-        fontSize: Theme.typography.fontSize.sm,
-        marginTop: Theme.spacing.sm,
-        textAlignVertical: 'top',
-    },
-    cancelBtn: {
-        paddingHorizontal: 16,
-        paddingVertical: 8,
-    },
-    saveBtn: {
-        paddingHorizontal: 20,
-        paddingVertical: 8,
-        borderRadius: Theme.corners.comfortable,
-        minWidth: 70,
-        alignItems: 'center',
-    },
-    fabButton: {
-        width: 52,
-        height: 52,
-        borderRadius: 26,
-        alignItems: 'center',
-        justifyContent: 'center',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 3 },
-        shadowOpacity: 0.2,
-        shadowRadius: 6,
-        elevation: 5,
-    },
-    visibilityToggle: {
-        marginTop: Theme.spacing.sm,
-        marginBottom: Theme.spacing.xs,
-    },
-    typeRow: {
-        flexDirection: 'row',
-        gap: 8,
-        flexWrap: 'wrap',
-        marginBottom: Theme.spacing.xs,
-    },
-    typeChip: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: 10,
-        paddingVertical: 5,
-        borderRadius: Theme.corners.full,
-        borderWidth: 1,
-    },
-});

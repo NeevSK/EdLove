@@ -6,6 +6,15 @@ Premium analytics engine for polymath-platform providing advanced student perfor
 
 This package owns all analytics, grading calculations, and performance prediction logic for the platform. It provides reusable analytics capabilities across web and mobile applications.
 
+## Public Entry Points
+
+- `@repo/analytics`
+  - Engines, types, grading helpers, benchmarking helpers, and runtime analytics utilities
+- `@repo/analytics/hooks`
+  - Query and data hooks such as `useStudentPerformance`, `useClassPerformance`, and `usePredictions`
+- `@repo/analytics/ui`
+  - Analytics UI components, `AnalyticsProvider`, and the app-facing `useAnalytics` tracking hook
+
 ## What It Owns
 
 - **GPA Calculation Engine**: Enhanced grading calculations with multiple grading scales
@@ -13,7 +22,7 @@ This package owns all analytics, grading calculations, and performance predictio
 - **Predictive Analytics**: ML-powered predictions for student outcomes
 - **Benchmarking**: Industry and peer comparison capabilities
 - **Insights Generation**: Automated insights and recommendations
-- **Analytics Components**: Reusable charts, dashboards, and visualizations
+- **Analytics Components**: Reusable charts, dashboards, and visualizations exposed from `@repo/analytics/ui`
 
 ## What It Must Not Own
 

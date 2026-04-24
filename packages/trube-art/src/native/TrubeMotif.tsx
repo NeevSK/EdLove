@@ -32,8 +32,7 @@ export function TrubeMotif({
 
   const onLayout = React.useCallback((event: LayoutChangeEvent) => {
     const { width, height } = event.nativeEvent.layout;
-    setBounds((current) =>
-      current.width === width && current.height === height ? current : { width, height },
+    setBounds((current) =      current.width === width && current.height === height ? current : { width, height },
     );
   }, []);
 
@@ -52,11 +51,8 @@ export function TrubeMotif({
         },
         style,
       ]}
-    >
-      {bounds.width > 0 && bounds.height > 0 ? (
-        <Canvas style={{ flex: 1 }}>
-          <Group opacity={breathingOpacity}>
-            {resolved.strokes.map((stroke, index) => {
+          {bounds.width > 0 && bounds.height > 0 ? (
+        <Canvas style={{ flex: 1 }}          <Group opacity={breathingOpacity}            {resolved.strokes.map((stroke, index) => {
               const path = Skia.Path.MakeFromSVGString(stroke.svg);
               if (!path) {
                 return null;
@@ -73,12 +69,8 @@ export function TrubeMotif({
                   strokeJoin="round"
                   strokeWidth={stroke.width}
                   transform={[{ translateX }, { translateY }, { scale }]}
-                />
-              );
+                /              );
             })}
-          </Group>
-        </Canvas>
-      ) : null}
-    </View>
-  );
+          </Group        </Canvas      ) : null}
+    </View  );
 }

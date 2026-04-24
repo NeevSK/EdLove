@@ -1,52 +1,34 @@
-import React, { useState, useMemo } from 'react';
-import { TouchableOpacity, ScrollView } from 'react-native';
+import React, { useState } from 'react';
+
 import {
-    SanctuaryModal,
-    useTheme,
-    SanctuaryInput,
+    Modal,
+    ModalBackdrop,
+    ModalContent,
+    ModalHeader,
+    ModalBody,
+    ModalFooter,
+    Heading,
     VStack,
     HStack,
     Box,
     Text,
-    Heading,
+    Input,
+    InputField,
     Button,
     ButtonText,
     FormControl,
     FormControlLabel,
     FormControlLabelText,
     Spinner,
-    Icon,
+    hapticSuccess,
+    hapticLight,
+    Pressable,
     Theme,
+    Icon,
 } from '@repo/ui';
-import { 
-    ChevronDown, 
-    CheckCircle, 
-    School as SchoolIcon, 
-    MessageSquare, 
-    Globe, 
-    MapPin, 
-    Users, 
-    ChevronRight, 
-    ChevronLeft,
-    Building2,
-    BookOpen
-} from 'lucide-react-native';
-import { 
-    api, 
-    identityAPI, 
-    communityAPI, 
-    useSchoolCreation,
-    useEntity,
-    useStore,
-    SRI_LANKAN_PROVINCES,
-    SRI_LANKAN_DISTRICTS,
-    SRI_LANKAN_SCHOOL_TYPES,
-    STUDENT_TYPES,
-    RELIGIOUS_AFFILIATIONS
-} from '@repo/core';
+import { CheckCircle, School, MessageSquare } from 'lucide-react-native';
+import { api, identityAPI, communityAPI } from '@repo/core';
 import { useTranslation } from 'react-i18next';
-import { hapticLight, hapticSuccess } from '@repo/ui';
-import { useThemedColors } from '@repo/ui';
 import { useNavigation } from '@react-navigation/native';
 
 interface CreateSchoolModalProps {
@@ -57,7 +39,7 @@ interface CreateSchoolModalProps {
         id: string;
         name: string;
         handle?: string;
-        type?: string;
+        type: 'primary' | 'secondary' | 'mixed';
     };
 }
 
@@ -69,47 +51,31 @@ export default function CreateSchoolModal({
 }: CreateSchoolModalProps) {
     const { t } = useTranslation();
     const navigation = useNavigation<any>();
-    const user = useStore((state) => state.user);
-    const setUser = useStore((state) => state.setUser);
-    const colors = useThemedColors();
-    const { text, glass } = useTheme();
-    const isEdit = !!initialData;
-    
-    // Use unified entity hook for logic, but keep custom step state for the wizard UI
-    const { 
-        instance: schoolInstance,
-        updateInstance,
-        create,
-        isLoading: isEntityLoading
-    } = useEntity({
-        type: 'school',
-        id: initialData?.id,
-        mode: isEdit ? 'edit' : 'create'
-    });
-
-    const { 
-        state, 
-        updateStep, 
-        updateBasicInfo, 
-        updateLocation, 
-        updateDemographics, 
-        updateHierarchy,
-        resetProgress 
-    } = useSchoolCreation();
-
+    const [step, setStep] = useState<'details' | 'type' | 'success'>('details');
+    const [name, setName] = useState(initialData?.name ?? '');
+    const [handle, setHandle] = useState(initialData?.handle ?? '');
+    const [type, setType] = useState<'primary' | 'secondary' | 'mixed'>(initialData?.type ?? 'mixed');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [createdIds, setCreatedIds] = useState<{ schoolId: string; groupId?: string } | null>(null);
 
-    const currentStep = state.step;
+    const isEdit = !!initialData;
 
-    // Derived Location Data
-    const availableDistricts = useMemo(() => {
-        if (!state.location.provinceId) return [];
-        return SRI_LANKAN_DISTRICTS.filter(d => d.provinceId === state.location.provinceId);
-    }, [state.location.provinceId]);
+    React.useEffect(() => {
+        if (isOpen) {
+            setName(initialData?.name ?? '');
+            setHandle(initialData?.handle ?? '');
+            setType(initialData?.type ?? 'mixed');
+            setStep('details');
+        }
+    }, [isOpen, initialData]);
 
     const handleSubmit = async () => {
+        if (!name.trim()) {
+            setError(t('school.errorNameRequired') || 'School name is required');
+            return;
+        }
+
         setIsSubmitting(true);
         setError(null);
         hapticLight();
@@ -118,46 +84,36 @@ export default function CreateSchoolModal({
             const userId = await identityAPI.getMyInternalId();
             if (!userId) throw new Error('Not authenticated');
 
-            const payload: any = {
-                name: state.basicInfo.name.trim(),
-                handle: state.basicInfo.handle.trim(),
-                official_type: state.basicInfo.officialType,
-                province_id: state.location.provinceId,
-                district_id: state.location.districtId,
-                city: state.location.city,
-                address: state.location.address,
-                student_type: state.demographics.studentType,
-                religious_affiliation: state.demographics.religiousAffiliation,
-                student_count: parseInt(state.demographics.studentCount) || 0,
-                type: state.basicInfo.officialType.includes('Primary') ? 'primary' : 'mixed', // Back-compat
-            };
-
-            let school;
+            let updatedSchool;
             if (isEdit && initialData) {
-                school = await updateInstance(payload);
+                updatedSchool = await api.school.update(initialData.id, {
+                    name: name.trim(),
+                    handle: handle.trim(),
+                    type,
+                });
                 hapticSuccess();
-                onSuccess(school);
+                onSuccess(updatedSchool);
                 handleClose();
+                return;
             } else {
-                payload.created_by = userId;
-                school = await create(payload);
-
-                // Sync school_id to both Supabase profile and local store
-                if (userId) {
-                    await identityAPI.updateProfile(userId, { school_id: school.id });
-                }
-                if (user) {
-                    setUser({ ...user, school_id: school.id } as any);
-                }
+                // 1. Create real School
+                updatedSchool = await api.school.create({
+                    name: name.trim(),
+                    handle: handle.trim() || name.trim().toLowerCase().replace(/\s+/g, '-'),
+                    type,
+                    created_by: userId
+                });
 
                 let communityGroupId: string | undefined;
+
+                // 2. Create default Community Group
                 try {
                     const group = await communityAPI.createGroupWithOwner({
-                        name: `${state.basicInfo.name.trim()} HQ`,
-                        description: `Official community portal for ${state.basicInfo.name.trim()}`,
-                        group_type: 'general',
+                        name: `${name.trim()} HQ`,
+                        description: `Official community portal for ${name.trim()}`,
+                        type: 'general',
                         join_policy: 'open',
-                        school_id: school.id,
+                        school_id: updatedSchool.id,
                     }, userId);
                     communityGroupId = group.id;
                 } catch (groupErr) {
@@ -165,10 +121,9 @@ export default function CreateSchoolModal({
                 }
 
                 hapticSuccess();
-                setCreatedIds({ schoolId: school.id, groupId: communityGroupId });
-                updateStep(5); // Success step
-                onSuccess(school);
-                resetProgress();
+                setCreatedIds({ schoolId: updatedSchool.id, groupId: communityGroupId });
+                setStep('success');
+                onSuccess(updatedSchool);
             }
         } catch (err: any) {
             console.error('Failed to save school:', err);
@@ -178,373 +133,278 @@ export default function CreateSchoolModal({
         }
     };
 
-    const handleEnterDashboard = () => {
-        if (!createdIds?.schoolId) return;
-        const sId = createdIds.schoolId;
-        handleClose();
-        navigation.navigate('FounderSchoolView' as never, { id: sId } as never);
-    };
-
     const handleClose = () => {
+        setName('');
+        setHandle('');
+        setType('mixed');
         setError(null);
-        if (!isEdit && state.step === 5) {
-            resetProgress();
-        }
+        setStep('details');
         onClose();
     };
 
-    const renderFooter = () => {
-        if (state.step === 5) {
-            return (
-                <VStack sx={{ width: '100%', gap: Theme.spacing.md }}>
-                    <Button
-                        action="primary"
-                        onPress={handleEnterDashboard}
-                        sx={{ backgroundColor: Theme.colors.sanctuarySaffron }}
-                    >
-                        <ButtonText color={Theme.colors.sacredWhite}>Enter Dashboard</ButtonText>
-                        <Icon as={ChevronRight} color={Theme.colors.sacredWhite} sx={{ marginLeft: 8 }} />
-                    </Button>
-                </VStack>
-            );
+    const navigateToCommunity = () => {
+        if (createdIds?.groupId) {
+            // @ts-ignore - CommunityStack exists
+            navigation.navigate('CommunityStack', {
+                screen: 'GroupDetails',
+                params: { groupId: createdIds.groupId }
+            });
+            handleClose();
         }
-
-        return (
-            <HStack sx={{ width: '100%', gap: Theme.spacing.md }}>
-                {state.step > 1 && (
-                    <Button
-                        variant="outline"
-                        onPress={() => updateStep(state.step - 1)}
-                        sx={{ flex: 1, borderColor: colors.border }}
-                    >
-                        <Icon as={ChevronLeft} color={colors.textSecondary} sx={{ marginRight: 8 }} />
-                        <ButtonText color={colors.textSecondary}>Back</ButtonText>
-                    </Button>
-                )}
-                <Button
-                    action="primary"
-                    onPress={state.step === 4 ? handleSubmit : () => updateStep(state.step + 1)}
-                    sx={{
-                        flex: 2,
-                        backgroundColor: Theme.colors.sanctuarySaffron,
-                    }}
-                    isDisabled={isSubmitting || (state.step === 1 && !state.basicInfo.name)}
-                >
-                    {isSubmitting ? (
-                        <Spinner color={Theme.colors.sacredWhite} />
-                    ) : (
-                        <>
-                            <ButtonText color={Theme.colors.sacredWhite}>
-                                {state.step === 4 ? 'Establish Sanctuary' : 'Next Step'}
-                            </ButtonText>
-                            {state.step < 4 && <Icon as={ChevronRight} color={Theme.colors.sacredWhite} sx={{ marginLeft: 8 }} />}
-                        </>
-                    )}
-                </Button>
-            </HStack>
-        );
     };
 
     return (
-        <SanctuaryModal
-            isOpen={isOpen}
-            onClose={handleClose}
-            title={isEdit ? 'Refine Sanctuary' : 'Found New Sanctuary'}
-            footer={renderFooter()}
-        >
-            <VStack sx={{ gap: Theme.spacing.lg }}>
-                {/* Step Indicator */}
-                {state.step < 5 && (
-                    <HStack sx={{ gap: 4, justifyContent: 'center' }}>
-                        {[1, 2, 3, 4].map((s) => (
-                            <Box
-                                key={s}
-                                sx={{
-                                    height: 4,
-                                    flex: 1,
-                                    borderRadius: 2,
-                                    backgroundColor: s <= state.step ? Theme.colors.sanctuarySaffron : colors.tertiary,
-                                }}
-                            />
-                        ))}
-                    </HStack>
-                )}
-
-                <ScrollView showsVerticalScrollIndicator={false} style={{ maxHeight: 500 }}>
-                    <VStack sx={{ gap: Theme.spacing.xl, paddingBottom: 20 }}>
-                        {state.step === 1 && (
-                            <VStack sx={{ gap: Theme.spacing.lg }}>
-                                <Heading size="md" color={colors.text}>Identity & Calling</Heading>
-                                <SanctuaryInput
-                                    label="Sanctuary Name"
-                                    placeholder="e.g. Nalanda College"
-                                    value={state.basicInfo.name}
-                                    onChangeText={(val) => {
-                                        updateBasicInfo({ name: val });
-                                        if (!isEdit) updateBasicInfo({ handle: val.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9_-]/g, '') });
-                                    }}
-                                    leftIcon={Building2}
-                                />
-                                <SanctuaryInput
-                                    label="Unique Handle"
-                                    value={state.basicInfo.handle}
-                                    onChangeText={(val) => updateBasicInfo({ handle: val.toLowerCase().replace(/[^a-z0-9_-]/g, '') })}
-                                    leftIcon={Globe}
-                                    helperText="Used for QR codes and deep links"
-                                />
-                                <VStack sx={{ gap: 8 }}>
-                                    <Text sx={{ fontSize: 13, fontWeight: '700', color: colors.textSecondary }}>Classification</Text>
-                                    <HStack flexWrap="wrap" sx={{ gap: 8 }}>
-                                        {Object.values(SRI_LANKAN_SCHOOL_TYPES).map((type) => (
-                                            <TouchableOpacity 
-                                                key={type.key}
-                                                onPress={() => updateBasicInfo({ officialType: type.key })}
-                                                style={{
-                                                    paddingHorizontal: 12,
-                                                    paddingVertical: 8,
-                                                    borderRadius: 20,
-                                                    borderWidth: 1,
-                                                    borderColor: state.basicInfo.officialType === type.key ? Theme.colors.sanctuarySaffron : colors.border,
-                                                    backgroundColor: state.basicInfo.officialType === type.key ? 'rgba(212,132,58,0.1)' : 'transparent'
-                                                }}
-                                            >
-                                                <Text sx={{ fontSize: 12, color: state.basicInfo.officialType === type.key ? Theme.colors.sanctuarySaffron : colors.text }}>
-                                                    {type.en}
-                                                </Text>
-                                            </TouchableOpacity>
-                                        ))}
-                                    </HStack>
-                                </VStack>
+        <Modal isOpen={isOpen} onClose={handleClose}>
+            <ModalBackdrop />
+            <ModalContent
+                className="bg-sanctuary-surface max-w-[400px] border-sanctuary-border border rounded-generous"
+            >
+                {step === 'details' && (
+                    <>
+                        <ModalHeader>
+                            <VStack className="gap-1">
+                                <Heading className="text-sanctuary-text" size="lg">
+                                    {isEdit ? 'Refine Sanctuary Identity' : (t('school.createTitle') || 'Sanctuary Identity')}
+                                </Heading>
+                                <Text size="xs" className="text-sanctuary-text-secondary">
+                                    {isEdit ? 'Update the details of your institution' : 'Step 1 of 2: Name your institution'}
+                                </Text>
                             </VStack>
-                        )}
+                        </ModalHeader>
 
-                        {state.step === 2 && (
-                            <VStack sx={{ gap: Theme.spacing.lg }}>
-                                <Heading size="md" color={colors.text}>Sacred Geography</Heading>
-                                <VStack sx={{ gap: 8 }}>
-                                    <Text sx={{ fontSize: 13, fontWeight: '700', color: colors.textSecondary }}>Province</Text>
-                                    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                                        <HStack sx={{ gap: 8 }}>
-                                            {SRI_LANKAN_PROVINCES.map((p) => (
-                                                <TouchableOpacity 
-                                                    key={p.id}
-                                                    onPress={() => updateLocation({ provinceId: p.id, districtId: '' })}
-                                                    style={{
-                                                        paddingHorizontal: 16,
-                                                        paddingVertical: 10,
-                                                        borderRadius: 12,
-                                                        borderWidth: 1,
-                                                        borderColor: state.location.provinceId === p.id ? Theme.colors.sanctuarySaffron : colors.border,
-                                                        backgroundColor: state.location.provinceId === p.id ? 'rgba(212,132,58,0.1)' : colors.tertiary
-                                                    }}
-                                                >
-                                                    <Text sx={{ fontWeight: '600', color: state.location.provinceId === p.id ? Theme.colors.sanctuarySaffron : colors.text }}>
-                                                        {p.en}
-                                                    </Text>
-                                                </TouchableOpacity>
-                                            ))}
-                                        </HStack>
-                                    </ScrollView>
-                                </VStack>
-
-                                {state.location.provinceId && (
-                                    <VStack sx={{ gap: 8 }}>
-                                        <Text sx={{ fontSize: 13, fontWeight: '700', color: colors.textSecondary }}>District</Text>
-                                        <HStack flexWrap="wrap" sx={{ gap: 8 }}>
-                                            {availableDistricts.map((d) => (
-                                                <TouchableOpacity 
-                                                    key={d.id}
-                                                    onPress={() => updateLocation({ districtId: d.id })}
-                                                    style={{
-                                                        paddingHorizontal: 12,
-                                                        paddingVertical: 8,
-                                                        borderRadius: 8,
-                                                        borderWidth: 1,
-                                                        borderColor: state.location.districtId === d.id ? Theme.colors.sanctuarySaffron : colors.border,
-                                                        backgroundColor: state.location.districtId === d.id ? 'rgba(212,132,58,0.05)' : 'transparent'
-                                                    }}
-                                                >
-                                                    <Text sx={{ fontSize: 13, color: state.location.districtId === d.id ? Theme.colors.sanctuarySaffron : colors.text }}>
-                                                        {d.en}
-                                                    </Text>
-                                                </TouchableOpacity>
-                                            ))}
-                                        </HStack>
-                                    </VStack>
+                        <ModalBody>
+                            <VStack className="gap-xl py-md">
+                                {error && (
+                                    <Box
+                                        className="p-md bg-emberRed/20 rounded-comfortable border border-emberRed"
+                                    >
+                                        <Text className="text-emberRed text-sm">
+                                            {error}
+                                        </Text>
+                                    </Box>
                                 )}
 
-                                <SanctuaryInput
-                                    label="City / Town"
-                                    placeholder="e.g. Colombo 07"
-                                    value={state.location.city}
-                                    onChangeText={(val) => updateLocation({ city: val })}
-                                    leftIcon={MapPin}
-                                />
-                                <SanctuaryInput
-                                    label="Full Address"
-                                    placeholder="Number, Street details..."
-                                    value={state.location.address}
-                                    onChangeText={(val) => updateLocation({ address: val })}
-                                    multiline
-                                    numberOfLines={2}
-                                />
-                            </VStack>
-                        )}
+                                <FormControl isRequired isInvalid={!!error}>
+                                    <FormControlLabel>
+                                        <FormControlLabelText className="text-sanctuary-text-secondary">
+                                            {t('school.labelName') || 'What shall we call your Sanctuary?'}
+                                        </FormControlLabelText>
+                                    </FormControlLabel>
+                                    <Input
+                                        className="h-14 bg-sanctuary-surface-elevated border-sanctuary-border border rounded-generous"
+                                    >
+                                        <InputField
+                                            placeholder={t('school.placeholderName') || "e.g., Green Valley Sanctuary"}
+                                            value={name}
+                                            onChangeText={(text: string) => {
+                                                setName(text);
+                                                if (!isEdit) {
+                                                    setHandle(text.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9_-]/g, ''));
+                                                }
+                                                if (error) setError(null);
+                                            }}
+                                            className="text-sanctuary-text text-lg font-semibold"
+                                            placeholderTextColor={Theme.colors.mistGray}
+                                        />
+                                    </Input>
+                                </FormControl>
 
-                        {state.step === 3 && (
-                            <VStack sx={{ gap: Theme.spacing.lg }}>
-                                <Heading size="md" color={colors.text}>Nature & Pulse</Heading>
-                                <VStack sx={{ gap: 8 }}>
-                                    <Text sx={{ fontSize: 13, fontWeight: '700', color: colors.textSecondary }}>Student Demographic</Text>
-                                    <HStack sx={{ gap: 12 }}>
-                                        {STUDENT_TYPES.map((type) => (
-                                            <TouchableOpacity 
-                                                key={type.id}
-                                                onPress={() => updateDemographics({ studentType: type.id as any })}
-                                                style={{
-                                                    flex: 1,
-                                                    padding: 16,
-                                                    borderRadius: 16,
-                                                    borderWidth: 2,
-                                                    borderColor: state.demographics.studentType === type.id ? Theme.colors.sanctuarySaffron : colors.border,
-                                                    backgroundColor: state.demographics.studentType === type.id ? 'rgba(212,132,58,0.05)' : colors.tertiary,
-                                                    alignItems: 'center'
-                                                }}
-                                            >
-                                                <Text sx={{ fontSize: 24, marginBottom: 4 }}>
-                                                    {type.id === 'mixed' ? '👫' : type.id === 'boys' ? '👦' : '👧'}
-                                                </Text>
-                                                <Text sx={{ fontWeight: '700', textTransform: 'capitalize', color: colors.text }}>{type.en}</Text>
-                                            </TouchableOpacity>
-                                        ))}
-                                    </HStack>
-                                </VStack>
-
-                                <VStack sx={{ gap: 8 }}>
-                                    <Text sx={{ fontSize: 13, fontWeight: '700', color: colors.textSecondary }}>Religious Affiliation</Text>
-                                    <HStack flexWrap="wrap" sx={{ gap: 8 }}>
-                                        {RELIGIOUS_AFFILIATIONS.map((r) => (
-                                            <TouchableOpacity 
-                                                key={r.id}
-                                                onPress={() => updateDemographics({ religiousAffiliation: r.id })}
-                                                style={{
-                                                    paddingHorizontal: 16,
-                                                    paddingVertical: 10,
-                                                    borderRadius: 12,
-                                                    borderWidth: 1,
-                                                    borderColor: state.demographics.religiousAffiliation === r.id ? Theme.colors.sanctuarySaffron : colors.border,
-                                                    backgroundColor: state.demographics.religiousAffiliation === r.id ? 'rgba(212,132,58,0.1)' : 'transparent'
-                                                }}
-                                            >
-                                                <Text sx={{ fontSize: 13, color: state.demographics.religiousAffiliation === r.id ? Theme.colors.sanctuarySaffron : colors.text }}>
-                                                    {r.en}
-                                                </Text>
-                                            </TouchableOpacity>
-                                        ))}
-                                    </HStack>
-                                </VStack>
-
-                                <SanctuaryInput
-                                    label="Estimated Student Count"
-                                    placeholder="e.g. 1500"
-                                    value={state.demographics.studentCount}
-                                    onChangeText={(val) => updateDemographics({ studentCount: val })}
-                                    keyboardType="numeric"
-                                    leftIcon={Users}
-                                />
-                            </VStack>
-                        )}
-
-                        {state.step === 4 && (
-                            <VStack sx={{ gap: Theme.spacing.lg }}>
-                                <Heading size="md" color={colors.text}>Hierarchy & Vision</Heading>
-                                <Box sx={{ 
-                                    padding: 20, 
-                                    borderRadius: 20, 
-                                    backgroundColor: colors.tertiary,
-                                    borderWidth: 1,
-                                    borderColor: colors.border
-                                }}>
-                                    <VStack sx={{ gap: 16 }}>
-                                        <HStack sx={{ gap: 12, alignItems: 'center' }}>
-                                            <Box sx={{ width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(212,132,58,0.1)', alignItems: 'center', justifyContent: 'center' }}>
-                                                <Icon as={SchoolIcon} color={Theme.colors.sanctuarySaffron} size={20} />
-                                            </Box>
-                                            <VStack>
-                                                <Text sx={{ fontSize: 16, fontWeight: '700', color: colors.text }}>{state.basicInfo.name}</Text>
-                                                <Text sx={{ fontSize: 12, color: colors.textSecondary }}>@{state.basicInfo.handle}</Text>
-                                            </VStack>
-                                        </HStack>
-                                        
-                                        <HStack sx={{ justifyContent: 'space-between', borderTopWidth: 1, borderColor: colors.border, paddingTop: 12 }}>
-                                            <VStack>
-                                                <Text sx={{ fontSize: 11, color: colors.textTertiary }}>Classification</Text>
-                                                <Text sx={{ fontSize: 13, fontWeight: '600', color: colors.text }}>{state.basicInfo.officialType}</Text>
-                                            </VStack>
-                                            <VStack sx={{ alignItems: 'flex-end' }}>
-                                                <Text sx={{ fontSize: 11, color: colors.textTertiary }}>Demographic</Text>
-                                                <Text sx={{ fontSize: 13, fontWeight: '600', color: colors.text, textTransform: 'capitalize' }}>{state.demographics.studentType}</Text>
-                                            </VStack>
-                                        </HStack>
-
-                                        <HStack sx={{ gap: 8, alignItems: 'center' }}>
-                                            <Icon as={MapPin} size={14} color={colors.textSecondary} />
-                                            <Text sx={{ fontSize: 13, color: colors.textSecondary, flex: 1 }}>
-                                                {state.location.city}, {SRI_LANKAN_DISTRICTS.find(d => d.id === state.location.districtId)?.en}
-                                            </Text>
-                                        </HStack>
-                                    </VStack>
-                                </Box>
-
-                                <Box sx={{ padding: 16, borderRadius: 16, backgroundColor: 'rgba(34,197,94,0.05)', borderWidth: 1, borderColor: 'rgba(34,197,94,0.2)' }}>
-                                    <HStack sx={{ gap: 12, alignItems: 'center' }}>
-                                        <Icon as={CheckCircle} color="#22C55E" size={20} />
-                                        <Text sx={{ fontSize: 12, color: colors.textSecondary, flex: 1 }}>
-                                            Establishing this sanctuary will automatically create a Community HQ and assign you as the Principal.
-                                        </Text>
-                                    </HStack>
-                                </Box>
-                            </VStack>
-                        )}
-
-                        {state.step === 5 && (
-                            <VStack sx={{ gap: Theme.spacing.xl, alignItems: 'center', paddingVertical: Theme.spacing.lg }}>
-                                <Box sx={{ backgroundColor: 'rgba(34,197,94,0.1)', padding: 24, borderRadius: 60 }}>
-                                    <Icon as={CheckCircle} color="#22C55E" size={64} />
-                                </Box>
-                                
-                                <VStack sx={{ gap: Theme.spacing.sm, alignItems: 'center' }}>
-                                    <Heading color={colors.text} size="xl" sx={{ textAlign: 'center' }}>
-                                        Sanctuary Founded!
-                                    </Heading>
-                                    <Text sx={{ textAlign: 'center', color: colors.textSecondary }}>
-                                        Your institution is now part of the Gurudevi ecosystem. 
+                                <FormControl isRequired isInvalid={!!error}>
+                                    <FormControlLabel>
+                                        <FormControlLabelText className="text-sanctuary-text-secondary">
+                                            URL Handle (unique ID)
+                                        </FormControlLabelText>
+                                    </FormControlLabel>
+                                    <Input
+                                        className="h-14 bg-sanctuary-surface-elevated border-sanctuary-border border rounded-generous"
+                                    >
+                                        <InputField
+                                            placeholder="e.g., green-valley"
+                                            value={handle}
+                                            onChangeText={(text: string) => {
+                                                setHandle(text.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9_-]/g, ''));
+                                                if (error) setError(null);
+                                            }}
+                                            className="text-sanctuary-text text-base font-medium"
+                                            placeholderTextColor={Theme.colors.mistGray}
+                                        />
+                                    </Input>
+                                    <Text size="xs" className="text-sanctuary-text-tertiary mt-1">
+                                        Used in your Sanctuary's QR codes and links.
                                     </Text>
-                                </VStack>
+                                </FormControl>
+                            </VStack>
+                        </ModalBody>
 
-                                <Box sx={{ backgroundColor: colors.tertiary, padding: 16, borderRadius: 16, width: '100%' }}>
-                                    <VStack sx={{ gap: 12 }}>
-                                        <HStack sx={{ gap: 8, alignItems: 'center' }}>
-                                            <Icon as={BookOpen} color={Theme.colors.sanctuarySaffron} size={16} />
-                                            <Text sx={{ fontSize: 14 }}>Academic Cycle Initialized</Text>
+                        <ModalFooter>
+                            <HStack className="w-full gap-md">
+                                <Button
+                                    variant="outline"
+                                    action="secondary"
+                                    onPress={handleClose}
+                                    className="flex-1 border-phase-border"
+                                    isDisabled={isSubmitting}
+                                >
+                                    <ButtonText className="text-sanctuary-text-secondary font-English">
+                                        {t('common.cancel') || 'Cancel'}
+                                    </ButtonText>
+                                </Button>
+                                <Button
+                                    action="primary"
+                                    onPress={() => setStep('type')}
+                                    className="flex-[2] bg-sanctuarySaffron"
+                                    isDisabled={!name.trim() || !handle.trim()}
+                                >
+                                    <ButtonText className="text-sacredWhite font-English">
+                                        {isEdit ? 'Continue to Focus' : 'Next — Academic Focus'}
+                                    </ButtonText>
+                                </Button>
+                            </HStack>
+                        </ModalFooter>
+                    </>
+                )}
+
+                {step === 'type' && (
+                    <>
+                        <ModalHeader>
+                            <VStack className="gap-1">
+                                <Heading className="text-sanctuary-text" size="lg">
+                                    Academic Focus
+                                </Heading>
+                                <Text size="xs" className="text-sanctuary-text-secondary">
+                                    {isEdit ? 'Update your scope' : 'Step 2 of 2: Define your scope'}
+                                </Text>
+                            </VStack>
+                        </ModalHeader>
+
+                        <ModalBody>
+                            <VStack className="gap-lg py-md">
+                                <Text className="text-sanctuary-text-secondary text-sm">
+                                    What is the core mission of <Text className="font-bold text-sanctuary-text">{name}</Text>?
+                                </Text>
+
+                                {([
+                                    { id: 'primary', label: 'Primary Excellence', emoji: '🏫', desc: 'Foundational years (Grades 1-5). Focus on literacy and logic.' },
+                                    { id: 'secondary', label: 'Higher Foundations', emoji: '🎓', desc: 'Advanced development (Grades 6-13). Specialized disciplines.' },
+                                    { id: 'mixed', label: 'All-Grade Sanctuary', emoji: '🌿', desc: 'Holistic journey across all levels. Complete integration.' },
+                                ] as const).map((tType) => {
+                                    const isSelected = type === tType.id;
+                                    return (
+                                        <Pressable
+                                            onPress={() => {
+                                                hapticLight();
+                                                setType(tType.id);
+                                            }}
+                                        >
+                                            <Box
+                                                className={`p-md rounded-generous border-2 ${
+                                                    isSelected ? 'border-sanctuarySaffron bg-sanctuarySaffron/5' : 'border-sanctuary-border bg-sanctuary-surface-elevated'
+                                                }`}
+                                            >
+                                                <HStack className="gap-md items-center">
+                                                    <Text className="text-[32px]">{tType.emoji}</Text>
+                                                    <VStack className="flex-1">
+                                                        <Text className="font-extrabold text-sanctuary-text">{tType.label}</Text>
+                                                        <Text size="xs" className="text-sanctuary-text-secondary">{tType.desc}</Text>
+                                                    </VStack>
+                                                    {isSelected && <Icon as={CheckCircle} className="text-sanctuarySaffron" size="sm" />}
+                                                </HStack>
+                                            </Box>
+                                        </Pressable>
+                                    );
+                                })}
+                            </VStack>
+                        </ModalBody>
+
+                        <ModalFooter>
+                            <HStack className="w-full gap-md">
+                                <Button
+                                    variant="outline"
+                                    action="secondary"
+                                    onPress={() => setStep('details')}
+                                    className="flex-1 border-sanctuary-border"
+                                    isDisabled={isSubmitting}
+                                >
+                                    <ButtonText className="text-sanctuary-text-secondary font-English">Back</ButtonText>
+                                </Button>
+                                <Button
+                                    action="primary"
+                                    onPress={handleSubmit}
+                                    className="flex-[2] bg-sanctuarySaffron"
+                                    isDisabled={isSubmitting}
+                                >
+                                    {isSubmitting ? (
+                                        <Spinner size="small" className="text-sacredWhite" />
+                                    ) : (
+                                        <ButtonText className="text-sacredWhite font-English">
+                                            {isEdit ? 'Save Changes' : 'Establish Sanctuary'}
+                                        </ButtonText>
+                                    )}
+                                </Button>
+                            </HStack>
+                        </ModalFooter>
+                    </>
+                )}
+
+                {step === 'success' && (
+                    <>
+                        <ModalHeader>
+                            <VStack className="items-center w-full gap-sm">
+                                <Icon as={CheckCircle} className="text-sanctuarySaffron" size="xl" />
+                                <Heading className="text-sanctuary-text text-center" size="lg">
+                                    Sanctuary Established!
+                                </Heading>
+                            </VStack>
+                        </ModalHeader>
+
+                        <ModalBody>
+                            <VStack className="gap-lg items-center">
+                                <Text className="text-center text-sanctuary-text-secondary">
+                                    Congratulations! <Text className="font-bold text-sanctuary-text">{name}</Text> is now live.
+                                </Text>
+                                
+                                <Box className="bg-sanctuary-surface-elevated p-md rounded-comfortable w-full">
+                                    <VStack className="gap-sm">
+                                        <HStack className="gap-sm items-center">
+                                            <Icon as={School} className="text-sanctuarySaffron" size="sm" />
+                                            <Text className="text-sm text-sanctuary-text">School Dashboard Ready</Text>
                                         </HStack>
-                                        <HStack sx={{ gap: 8, alignItems: 'center' }}>
-                                            <Icon as={MessageSquare} color={Theme.colors.sanctuarySaffron} size={16} />
-                                            <Text sx={{ fontSize: 14 }}>Community Space Ready</Text>
+                                        <HStack className="gap-sm items-center">
+                                            <Icon as={MessageSquare} className="text-sanctuarySaffron" size="sm" />
+                                            <Text className="text-sm text-sanctuary-text">Community HQ Created</Text>
                                         </HStack>
                                     </VStack>
                                 </Box>
-                            </VStack>
-                        )}
-                    </VStack>
-                </ScrollView>
 
-                {error && (
-                    <Box sx={{ padding: 12, backgroundColor: 'rgba(239,68,68,0.1)', borderRadius: 12 }}>
-                        <Text sx={{ color: '#EF4444', fontSize: 13 }}>{error}</Text>
-                    </Box>
+                                <Text className="text-[13px] text-sanctuary-text-tertiary text-center">
+                                    You've been assigned as the Principal. You can now invite staff and start building your curriculum.
+                                </Text>
+                            </VStack>
+                        </ModalBody>
+
+                        <ModalFooter>
+                            <VStack className="w-full gap-md">
+                                <Button
+                                    action="primary"
+                                    onPress={handleClose}
+                                    className="w-full bg-sanctuarySaffron"
+                                >
+                                    <ButtonText className="text-sacredWhite font-English">Enter School Dashboard</ButtonText>
+                                </Button>
+                                {createdIds?.groupId && (
+                                    <Button
+                                        variant="outline"
+                                        onPress={navigateToCommunity}
+                                        className="w-full border-sanctuary-border"
+                                    >
+                                        <ButtonText className="text-sanctuary-text-secondary font-English">Visit Community HQ</ButtonText>
+                                    </Button>
+                                )}
+                            </VStack>
+                        </ModalFooter>
+                    </>
                 )}
-            </VStack>
-        </SanctuaryModal>
+            </ModalContent>
+        </Modal>
     );
 }

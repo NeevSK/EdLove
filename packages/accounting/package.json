@@ -8,8 +8,8 @@
     "./package.json": "./package.json"
   },
   "scripts": {
-    "lint": "eslint .",
-    "check-types": "tsc --noEmit"
+    "lint": "powershell -File ../../scripts/audit-wrapper.ps1 -Cmd \"pnpm exec eslint .\" -Log \"reports/lint.txt\"",
+    "check-types": "powershell -File ../../scripts/audit-wrapper.ps1 -Cmd \"pnpm exec tsc --noEmit\" -Log \"reports/check-types.txt\""
   },
   "dependencies": {
     "@repo/core": "workspace:*",
@@ -17,6 +17,7 @@
   },
   "devDependencies": {
     "typescript": "~5.9.2",
-    "eslint": "^9.38.0"
+    "eslint": "^9.38.0",
+    "@types/node": "^22.10.2"
   }
 }

@@ -1,7 +1,17 @@
-/**
- * DemoPlaygroundPanel (Web Adapter)
- * 
- * Thin adapter pointing to @repo/classroom implementation.
- * Follows the "Library First" and "Thin App Layer" architectural rules.
+﻿/**
+ * DemoPlaygroundPanel.web.tsx
+ *
+ * Thin wrapper for the Classroom Demo UI.
  */
-export { DemoPlaygroundPanel as default } from '@repo/classroom';
+
+import React from 'react';
+import { ErrorBoundary } from '@repo/ui';
+import { DemoPlaygroundPanel as PackageDemoPlaygroundPanel } from '@repo/classroom';
+
+const DemoPlaygroundPanel = (props: any) => (
+  <ErrorBoundary name="Demo Playground">
+    <PackageDemoPlaygroundPanel {...props} />
+  </ErrorBoundary>
+);
+
+export default DemoPlaygroundPanel;

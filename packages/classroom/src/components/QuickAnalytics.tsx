@@ -1,256 +1,279 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import { VStack, HStack, Card, Theme } from '@repo/ui';
+import { VStack, HStack, Card, Text, Box, Icon, Theme, Pressable, ScrollView } from '@repo/ui';
 import { marksToGPA } from '@repo/analytics';
-import { SimpleBarChart, ProgressRing } from '@repo/graphics';
+import { ProgressRing } from '@repo/graphics';
+import {
+    TrendingUp,
+    TrendingDown,
+    Minus,
+    ArrowRight,
+    Trophy,
+    GraduationCap,
+    CalendarCheck,
+    LineChart as ChartIcon,
+    Zap,
+    Lightbulb,
+    FileText,
+    CircleCheck
+} from 'lucide-react-native';
 
 interface AnalyticsWidgetProps {
-  title: string;
-  value: number | string;
-  subtitle?: string;
-  trend?: 'up' | 'down' | 'stable';
-  color?: string;
-  showGrade?: boolean;
-  marks?: number;
+    title: string;
+    value: number | string;
+    subtitle?: string;
+    trend?: 'up' | 'down' | 'stable';
+    color?: string;
+    showGrade?: boolean;
+    marks?: number;
+    icon?: any;
 }
 
-function AnalyticsWidget({ 
-  title, 
-  value, 
-  subtitle, 
-  trend, 
-  color = Theme.colors.gurudeviBlue,
-  showGrade = false,
-  marks 
+function AnalyticsWidget({
+    title,
+    value,
+    subtitle,
+    trend,
+    color = '#F6BF8C', // sanctuarySaffron
+    showGrade = false,
+    marks,
+    icon
 }: AnalyticsWidgetProps) {
-  const gradeInfo = showGrade && marks ? marksToGPA(marks) : null;
+    const gradeInfo = showGrade && marks !== undefined ? marksToGPA(marks) : null;
 
-  return (
-    <Card style={styles.widget}>
-      <VStack space="xs">
-        <HStack style={styles.header}>
-          <Text style={styles.title}>{title}</Text>
-          {trend && (
-            <Text style={[
-              styles.trend,
-              { color: trend === 'up' ? Theme.colors.success : trend === 'down' ? Theme.colors.error : Theme.colors.warning }
-            ]}>
-              {trend === 'up' ? '↑' : trend === 'down' ? '↓' : '→'}
-            </Text>
-          )}
-        </HStack>
-        
-        <Text style={[styles.value, { color }]}>{value}</Text>
-        
-        {subtitle && (
-          <Text style={styles.subtitle}>{subtitle}</Text>
-        )}
-        
-        {gradeInfo && (
-          <HStack style={styles.gradeRow}>
-            <Text style={styles.gradeText}>Grade: {gradeInfo.grade}</Text>
-            <Text style={styles.gpaText}>GPA: {gradeInfo.gpa.toFixed(2)}</Text>
-          </HStack>
-        )}
-      </VStack>
-    </Card>
-  );
+    const TrendIcon = trend === 'up' ? TrendingUp : trend === 'down' ? TrendingDown : Minus;
+    const trendColor = trend === 'up' ? 'text-sageGreen' : trend === 'down' ? 'text-emberRed' : 'text-phase-text-tertiary';
+
+    return (
+        <Card className="p-6 bg-phase-surface-secondary rounded-[32px] border border-phase-border shadow-sm">
+            <VStack className="gap-4">
+                <HStack className="justify-between items-center">
+                    <HStack className="items-center gap-2">
+                        {icon && <Icon as={icon} size="xs" className="text-phase-text-tertiary" />}
+                        <Text className="text-xs font-bold text-phase-text-secondary uppercase tracking-widest">
+                            {title}
+                        </Text>
+                    </HStack>
+                    {trend && (
+                        <HStack className="items-center gap-1">
+                            <Icon as={TrendIcon} size="xs" className={trendColor} />
+                        </HStack>
+                    )}
+                </HStack>
+
+                <VStack className="gap-1">
+                    <Text 
+                        className="text-4xl font-black tracking-tighter" 
+                        style={{ color: color }}
+                    >
+                        {value}
+                    </Text>
+                    {subtitle && (
+                        <Text className="text-sm font-medium text-phase-text-tertiary">
+                            {subtitle}
+                        </Text>
+                    )}
+                </VStack>
+
+                {gradeInfo && (
+                    <HStack className="bg-phase-surface p-3 rounded-[20px] justify-between items-center border border-phase-border/50">
+                        <HStack className="items-center gap-2">
+                            <Box className="w-2 h-2 rounded-full bg-sanctuarySaffron" />
+                            <Text className="text-sm font-bold text-phase-text-primary">
+                                Grade: {gradeInfo.grade}
+                            </Text>
+                        </HStack>
+                        <Text className="text-xs font-black text-phase-text-tertiary uppercase">
+                            GPA: {gradeInfo.gpa.toFixed(2)}
+                        </Text>
+                    </HStack>
+                )}
+            </VStack>
+        </Card>
+    );
 }
 
 interface QuickAnalyticsProps {
-  studentId?: string;
-  classId?: string;
-  marks?: number;
-  averageGPA?: number;
-  attendanceRate?: number;
-  rank?: number;
+    studentId?: string;
+    classId?: string;
+    marks?: number;
+    averageGPA?: number;
+    attendanceRate?: number;
+    rank?: number;
 }
 
-export default function QuickAnalytics({ 
-  studentId, 
-  classId, 
-  marks, 
-  averageGPA = 0, 
-  attendanceRate = 0, 
-  rank = 0 
+export default function QuickAnalytics({
+    studentId,
+    classId,
+    marks,
+    averageGPA = 0,
+    attendanceRate = 0,
+    rank = 0
 }: QuickAnalyticsProps) {
-  const currentGrade = marks ? marksToGPA(marks) : null;
-  
-  return (
-    <ScrollView style={styles.container}>
-      <VStack space="md">
-        {/* Header */}
-        <Text style={styles.headerTitle}>📊 Quick Analytics</Text>
-        
-        {/* Main Stats */}
-        <VStack space="sm">
-          <AnalyticsWidget
-            title="Current Grade"
-            value={currentGrade ? `${currentGrade.grade} (${marks}%)` : 'N/A'}
-            showGrade={true}
-            marks={marks || 0}
-            color={currentGrade ? getGradeColor(currentGrade.grade) : Theme.colors.textSecondary}
-          />
-          
-          <AnalyticsWidget
-            title="Average GPA"
-            value={averageGPA.toFixed(2)}
-            subtitle="This semester"
-            trend={averageGPA > 3.0 ? 'up' : averageGPA < 2.0 ? 'down' : 'stable'}
-            color={averageGPA >= 3.0 ? Theme.colors.success : averageGPA < 2.0 ? Theme.colors.error : Theme.colors.warning}
-          />
-          
-          <AnalyticsWidget
-            title="Class Rank"
-            value={`#${rank}`}
-            subtitle={`of ${rank ? rank + 20 : 'N/A'} students`}
-            color={Theme.colors.gurudeviBlue}
-          />
-          
-          <AnalyticsWidget
-            title="Attendance Rate"
-            value={`${(attendanceRate * 100).toFixed(1)}%`}
-            subtitle="This month"
-            trend={attendanceRate > 0.9 ? 'up' : attendanceRate < 0.7 ? 'down' : 'stable'}
-            color={attendanceRate > 0.9 ? Theme.colors.success : attendanceRate < 0.7 ? Theme.colors.error : Theme.colors.warning}
-          />
-        </VStack>
-        
-        {/* Progress Visualization */}
-        <Card>
-          <Text style={styles.sectionTitle}>📈 Progress Overview</Text>
-          <VStack space="sm" style={styles.progressContainer}>
-            <ProgressRing
-              value={averageGPA}
-              max={4.0}
-              size={120}
-              color={averageGPA >= 3.0 ? Theme.colors.success : averageGPA < 2.0 ? Theme.colors.error : Theme.colors.warning}
-            />
-            <Text style={styles.progressLabel}>GPA Progress: {((averageGPA / 4.0) * 100).toFixed(0)}%</Text>
-          </VStack>
-        </Card>
-        
-        {/* Quick Actions */}
-        <Card>
-          <Text style={styles.sectionTitle}>🚀 Quick Actions</Text>
-          <VStack space="sm">
-            <Text style={styles.actionText}>📤 View detailed gradebook</Text>
-            <Text style={styles.actionText}>📈 Track performance trends</Text>
-            <Text style={styles.actionText}>🎯 Set GPA goals</Text>
-            <Text style={styles.actionText}>📤 Download progress report</Text>
-          </VStack>
-        </Card>
-        
-        {/* Performance Tips */}
-        <Card>
-          <Text style={styles.sectionTitle}>💡 Performance Tips</Text>
-          <VStack space="xs">
-            {averageGPA < 2.0 && (
-              <Text style={styles.tipText}>• Focus on improving attendance and assignment completion</Text>
-            )}
-            {attendanceRate < 0.8 && (
-              <Text style={styles.tipText}>• Better attendance strongly correlates with higher grades</Text>
-            )}
-            {rank <= 5 && (
-              <Text style={styles.tipText}>• Great job! You're in top 25% of class</Text>
-            )}
-            {averageGPA >= 3.5 && (
-              <Text style={styles.tipText}>• Excellent performance! Consider advanced coursework</Text>
-            )}
-          </VStack>
-        </Card>
-      </VStack>
-    </ScrollView>
-  );
+    const currentGrade = marks !== undefined ? marksToGPA(marks) : null;
+
+    return (
+        <ScrollView className="flex-1 bg-phase-surface" showsVerticalScrollIndicator={false}>
+            <VStack className="p-6 gap-8 pb-32">
+                <HStack className="items-center gap-4 mt-2">
+                    <Box className="p-3.5 bg-sanctuarySaffron rounded-[24px] shadow-lg shadow-sanctuarySaffron/20">
+                        <Icon as={ChartIcon} size="md" className="text-sanctuary-ink" />
+                    </Box>
+                    <VStack>
+                        <Text className="text-3xl font-black text-phase-text-primary tracking-tighter leading-none">
+                            Quick Analytics
+                        </Text>
+                        <Text className="text-base font-medium text-phase-text-tertiary">
+                            Academic Performance & Engagement
+                        </Text>
+                    </VStack>
+                </HStack>
+
+                <VStack className="gap-4">
+                    <AnalyticsWidget
+                        title="Current Grade"
+                        value={currentGrade ? `${currentGrade.grade} (${marks}%)` : 'N/A'}
+                        showGrade={true}
+                        marks={marks}
+                        color={currentGrade ? getGradeColor(currentGrade.grade) : undefined}
+                        icon={GraduationCap}
+                    />
+                    <HStack className="gap-4">
+                        <Box className="flex-1">
+                            <AnalyticsWidget
+                                title="Average GPA"
+                                value={averageGPA.toFixed(2)}
+                                subtitle="This semester"
+                                trend={averageGPA > 3.0 ? 'up' : averageGPA < 2.0 ? 'down' : 'stable'}
+                                color={averageGPA >= 3.0 ? Theme.colors.sanctuarySaffron : averageGPA < 2.0 ? Theme.colors.emberRed : Theme.colors.templeGold}
+                                icon={ChartIcon}
+                            />
+                        </Box>
+                        <Box className="flex-1">
+                            <AnalyticsWidget
+                                title="Class Rank"
+                                value={`#${rank || 'N/A'}`}
+                                subtitle={`of ${rank ? rank + 20 : 'N/A'} students`}
+                                color={Theme.colors.sacredWhite}
+                                icon={Trophy}
+                            />
+                        </Box>
+                    </HStack>
+                    <AnalyticsWidget
+                        title="Attendance Rate"
+                        value={`${(attendanceRate * 100).toFixed(1)}%`}
+                        subtitle="This month"
+                        trend={attendanceRate > 0.9 ? 'up' : attendanceRate < 0.7 ? 'down' : 'stable'}
+                        color={attendanceRate > 0.9 ? Theme.colors.sageGreen : attendanceRate < 0.7 ? Theme.colors.emberRed : Theme.colors.templeGold}
+                        icon={CircleCheck}
+                    />
+                </VStack>
+
+                <Card className="p-8 bg-phase-surface-secondary rounded-[40px] border border-phase-border shadow-md">
+                    <HStack className="items-center gap-2 mb-8">
+                        <Icon as={TrendingUp} size="sm" className="text-sanctuarySaffron" />
+                        <Text className="text-xl font-black text-phase-text-primary tracking-tighter uppercase">
+                            Progress Overview
+                        </Text>
+                    </HStack>
+                    <VStack className="gap-8 items-center">
+                        <Box className="p-4 bg-phase-surface rounded-full shadow-inner border border-phase-border/30">
+                            <ProgressRing
+                                value={averageGPA}
+                                max={4.0}
+                                size={180}
+                                color={averageGPA >= 3.0 ? Theme.colors.sanctuarySaffron : averageGPA < 2.0 ? Theme.colors.emberRed : Theme.colors.templeGold}
+                            />
+                        </Box>
+                        <VStack className="items-center gap-1">
+                            <Text className="text-4xl font-black text-phase-text-primary tracking-tight">
+                                {((averageGPA / 4.0) * 100).toFixed(0)}%
+                            </Text>
+                            <Text className="text-sm font-bold text-phase-text-tertiary uppercase tracking-widest">
+                                GPA Progress
+                            </Text>
+                        </VStack>
+                    </VStack>
+                </Card>
+
+                <VStack className="gap-4">
+                    <HStack className="items-center gap-2 px-2">
+                        <Icon as={Zap} size="sm" className="text-sanctuarySaffron" />
+                        <Text className="text-xl font-black text-phase-text-primary tracking-tighter uppercase">
+                            Quick Actions
+                        </Text>
+                    </HStack>
+                    <VStack className="gap-3">
+                        {[
+                            { icon: FileText, label: "View detailed gradebook" },
+                            { icon: ChartIcon, label: "Track performance trends" },
+                            { icon: GraduationCap, label: "Set GPA goals" },
+                            { icon: FileText, label: "Download progress report" }
+                        ].map((action, i) => (
+                            <Pressable 
+                                key={i} 
+                                className="flex-row items-center justify-between p-5 bg-phase-surface-secondary rounded-[24px] border border-phase-border active:bg-phase-border/10 transition-colors"
+                            >
+                                <HStack className="items-center gap-4">
+                                    <Box className="p-2 bg-phase-surface rounded-xl">
+                                        <Icon as={action.icon} size="xs" className="text-sanctuarySaffron" />
+                                    </Box>
+                                    <Text className="text-base font-bold text-phase-text-primary">
+                                        {action.label}
+                                    </Text>
+                                </HStack>
+                                <Icon as={ArrowRight} size="xs" className="text-phase-text-tertiary" />
+                            </Pressable>
+                        ))}
+                    </VStack>
+                </VStack>
+
+                <Card className="p-8 bg-phase-surface-secondary rounded-[40px] border border-phase-border relative overflow-hidden">
+                    <Box className="absolute -top-10 -right-10 w-40 h-40 bg-sanctuarySaffron/5 rounded-full" />
+                    <HStack className="items-center gap-2 mb-6">
+                        <Icon as={Lightbulb} size="sm" className="text-sanctuarySaffron" />
+                        <Text className="text-xl font-black text-phase-text-primary tracking-tighter uppercase">
+                            Performance Tips
+                        </Text>
+                    </HStack>
+                    <VStack className="gap-4">
+                        {averageGPA < 2.0 && (
+                            <Tip text="Focus on improving attendance and assignment completion to build a stronger foundation." />
+                        )}
+                        {attendanceRate < 0.8 && (
+                            <Tip text="Regular attendance is the strongest predictor of academic success. Try to minimize absences." />
+                        )}
+                        {rank > 0 && rank <= 5 && (
+                            <Tip text="Elite performance! You are currently among the top students in your class. Keep it up!" />
+                        )}
+                        {averageGPA >= 3.5 && (
+                            <Tip text="Outstanding scholarship. This is the perfect time to explore advanced coursework or research topics." />
+                        )}
+                    </VStack>
+                </Card>
+            </VStack>
+        </ScrollView>
+    );
+}
+
+function Tip({ text }: { text: string }) {
+    return (
+        <HStack className="gap-4 items-start p-4 bg-phase-surface rounded-[20px] border border-phase-border/30">
+            <Box className="w-2 h-2 rounded-full bg-sanctuarySaffron mt-2" />
+            <Text className="flex-1 text-sm font-bold text-phase-text-secondary leading-relaxed">
+                {text}
+            </Text>
+        </HStack>
+    );
 }
 
 function getGradeColor(grade: string): string {
-  const colors: { [key: string]: string } = {
-    'A': Theme.colors.success,
-    'B': Theme.colors.gurudeviBlue,
-    'C': Theme.colors.warning,
-    'S': Theme.colors.textSecondary,
-    'F': Theme.colors.error,
-  };
-  
-  return colors[grade] || Theme.colors.textSecondary;
-}
+    const gradeColors: { [key: string]: string } = {
+        'A': '#F6BF8C', // sanctuarySaffron
+        'B': '#B8A9E0', // Aurora Violet
+        'C': '#FDD925', // Temple Gold
+        'S': '#C8BFB0', // Starlight Gray
+        'F': '#FF6347', // emberRed
+    };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Theme.colors.background,
-  },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: Theme.colors.text,
-    marginBottom: Theme.spacing.md,
-  },
-  widget: {
-    padding: Theme.spacing.md,
-    marginBottom: Theme.spacing.sm,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: Theme.spacing.xs,
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: Theme.colors.text,
-  },
-  trend: {
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  value: {
-    fontSize: 20,
-    fontWeight: '700',
-    marginBottom: Theme.spacing.xs,
-  },
-  subtitle: {
-    fontSize: 12,
-    color: Theme.colors.textSecondary,
-  },
-  gradeRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: Theme.spacing.xs,
-  },
-  gradeText: {
-    fontSize: 14,
-    color: Theme.colors.text,
-  },
-  gpaText: {
-    fontSize: 14,
-    color: Theme.colors.text,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: Theme.colors.text,
-    marginBottom: Theme.spacing.sm,
-  },
-  actionText: {
-    fontSize: 16,
-    color: Theme.colors.gurudeviBlue,
-    marginBottom: Theme.spacing.xs,
-  },
-  tipText: {
-    fontSize: 14,
-    color: Theme.colors.text,
-    lineHeight: 20,
-  },
-  progressContainer: {
-    alignItems: 'center',
-  },
-  progressLabel: {
-    fontSize: 14,
-    color: Theme.colors.text,
-    textAlign: 'center',
-    marginTop: Theme.spacing.sm,
-  },
-});
+    return gradeColors[grade] || '#968E80';
+}

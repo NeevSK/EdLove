@@ -1,14 +1,27 @@
 import React, { useState, useCallback, useMemo } from 'react';
-import { FlatList, ActivityIndicator, TextInput, Platform } from 'react-native';
-import { Box, VStack, HStack, Text, Pressable, useThemedColors, SkeletonCard, PositiveInvitation, Theme, FadeInDown, SanctuaryButton, SanctuaryFlashList, Heading } from '@repo/ui';
+import { Platform } from 'react-native';
+import { 
+    Box, 
+    VStack, 
+    HStack, 
+    Text, 
+    Pressable, 
+    SkeletonCard, 
+    FadeInDown, 
+    SanctuaryButton, 
+    SanctuaryFlashList, 
+    Heading, 
+    Icon,
+    InputField,
+    Spinner
+} from '@repo/ui';
 import Animated from 'react-native-reanimated';
 import GroupCard from '../components/GroupCard';
 import { useCommunityGroups } from '../hooks/useCommunityGroups';
-import { useTranslation } from 'react-i18next';
 // @ts-ignore - Temporary until we decide on demo logic location
-import { isDemo } from '@repo/core';
-import { Compass, Shield, Users, Plus } from 'lucide-react-native';
-import { Group } from '../index';
+import { isDemo, usePermissions } from '@repo/core';
+import { Compass, Shield, Users, Plus, X, Globe } from 'lucide-react-native';
+import { Group } from '../types';
 
 type GroupsSubTab = 'sanctuary' | 'galaxy';
 
@@ -22,6 +35,7 @@ interface GroupsScreenProps {
 
 export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateGroup, onNavigateToGroup }: GroupsScreenProps) {
     const { t } = useTranslation();
+    const { can, flags } = usePermissions();
     const [activeSubTab, setActiveSubTab] = useState<GroupsSubTab>(userId ? 'sanctuary' : 'galaxy');
     const [searchQuery, setSearchQuery] = useState('');
 
@@ -39,9 +53,6 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
         isPublicOnly: activeSubTab === 'galaxy' && !searchQuery
     });
 
-    const colors = useThemedColors();
-    const isGuest = !userId;
-
     const activeGroups = useMemo(() => 
         activeSubTab === 'sanctuary' ? sanctuaryGroups : galaxyGroups,
     [activeSubTab, sanctuaryGroups, galaxyGroups]);
@@ -56,37 +67,22 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
 
     const renderSearchBar = () => (
         <Animated.View entering={FadeInDown.delay(100).springify()}>
-            <Box px="$4" mb="$3">
-                <HStack 
-                    space="sm" 
-                    alignItems="center" 
-                    sx={{ 
-                        backgroundColor: colors.secondary, 
-                        borderRadius: Theme.corners.comfortable,
-                        paddingHorizontal: Theme.spacing.md,
-                        height: 48,
-                        borderWidth: 1,
-                        borderColor: colors.border
-                    }}
+            <Box className="px-5 mb-4">
+                <HStack
+                    className="items-center bg-phase-surface border border-border h-14 px-4 rounded-[20px] shadow-sm"
                 >
-                    <Compass size={18} color={colors.textSecondary} />
-                    <TextInput
-                        style={{ 
-                            flex: 1, 
-                            fontSize: 15, 
-                            color: colors.text,
-                            height: '100%',
-                            paddingHorizontal: 0, // Remove default padding for clean look
-                            ...(Platform.OS === 'web' ? { outline: 'none' } : {})
-                        }}
-                        placeholder={activeSubTab === 'sanctuary' ? "Search your groups..." : "Discover groups in the galaxy..."}
-                        placeholderTextColor={colors.textSecondary}
+                    <Icon as={Compass} size="sm" className="text-ink/30 mr-2" />
+                    <InputField
+                        className="flex-1 text-base text-ink h-full py-0 font-medium"
+                        placeholder={activeSubTab === 'sanctuary' ? "Search school circles..." : "Discover the wider galaxy..."}
+                        placeholderTextColor="rgba(var(--ink), 0.3)"
                         value={searchQuery}
                         onChangeText={handleSearchChange}
+                        autoCapitalize="none"
                     />
                     {searchQuery ? (
-                        <Pressable onPress={handleClearSearch}>
-                            <Text sx={{ color: colors.textSecondary, fontSize: 18 }}>×</Text>
+                        <Pressable onPress={handleClearSearch} className="w-8 h-8 rounded-full bg-ink/5 items-center justify-center">
+                            <Icon as={X} size="xs" className="text-ink/60" />
                         </Pressable>
                     ) : null}
                 </HStack>
@@ -96,52 +92,28 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
 
     const renderSubTabs = () => (
         <Animated.View entering={FadeInDown.delay(150).springify()}>
-            <HStack space="sm" mx="$4" mb="$3" mt="$1">
+            <HStack className="gap-2 mx-5 mb-4 mt-2 bg-phase-surface p-1 rounded-2xl border border-border">
                 <Pressable
                     onPress={() => setActiveSubTab('sanctuary')}
-                    sx={{
-                        flex: 1,
-                        paddingVertical: Theme.spacing.sm,
-                        backgroundColor: activeSubTab === 'sanctuary' ? Theme.colors.sanctuarySaffron : colors.secondary,
-                        borderRadius: Theme.corners.comfortable,
-                        alignItems: 'center',
-                        borderWidth: 1,
-                        borderColor: activeSubTab === 'sanctuary' ? Theme.colors.sanctuarySaffron : colors.border,
-                    }}
+                    className={`flex-1 py-3 rounded-xl flex-row items-center justify-center gap-2 ${activeSubTab === 'sanctuary' ? 'bg-phase-interactive shadow-sm' : 'bg-transparent'}`}
                 >
-                    <HStack space="xs" alignItems="center">
-                        <Shield size={14} color={activeSubTab === 'sanctuary' ? Theme.colors.sacredWhite : colors.textSecondary} />
-                        <Text
-                            size="sm"
-                            bold
-                            color={activeSubTab === 'sanctuary' ? Theme.colors.sacredWhite : colors.text}
-                        >
-                            {t('community.groups.sanctuary')}
-                        </Text>
-                    </HStack>
+                    <Icon as={Shield} size="xs" className={activeSubTab === 'sanctuary' ? 'text-white' : 'text-ink/40'} />
+                    <Text
+                        className={`text-sm font-black uppercase tracking-wider ${activeSubTab === 'sanctuary' ? 'text-white' : 'text-ink/40'}`}
+                    >
+                        {t('community.groups.sanctuary')}
+                    </Text>
                 </Pressable>
                 <Pressable
                     onPress={() => setActiveSubTab('galaxy')}
-                    sx={{
-                        flex: 1,
-                        paddingVertical: Theme.spacing.sm,
-                        backgroundColor: activeSubTab === 'galaxy' ? Theme.colors.gurudeviViolet : colors.secondary,
-                        borderRadius: Theme.corners.comfortable,
-                        alignItems: 'center',
-                        borderWidth: 1,
-                        borderColor: activeSubTab === 'galaxy' ? Theme.colors.gurudeviViolet : colors.border,
-                    }}
+                    className={`flex-1 py-3 rounded-xl flex-row items-center justify-center gap-2 ${activeSubTab === 'galaxy' ? 'bg-phase-interactive shadow-sm' : 'bg-transparent'}`}
                 >
-                    <HStack space="xs" alignItems="center">
-                        <Compass size={14} color={activeSubTab === 'galaxy' ? Theme.colors.sacredWhite : colors.textSecondary} />
-                        <Text
-                            size="sm"
-                            bold
-                            color={activeSubTab === 'galaxy' ? Theme.colors.sacredWhite : colors.text}
-                        >
-                            {t('community.groups.galaxy')}
-                        </Text>
-                    </HStack>
+                    <Icon as={Globe} size="xs" className={activeSubTab === 'galaxy' ? 'text-white' : 'text-ink/40'} />
+                    <Text
+                        className={`text-sm font-black uppercase tracking-wider ${activeSubTab === 'galaxy' ? 'text-white' : 'text-ink/40'}`}
+                    >
+                        {t('community.groups.galaxy')}
+                    </Text>
                 </Pressable>
             </HStack>
         </Animated.View>
@@ -149,17 +121,20 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
 
     const renderGalaxyActions = () => {
         if (activeSubTab !== 'galaxy') return null;
+        if (!flags.isCommunityEnabled || !can('create', 'Group')) return null;
 
         return (
             <Animated.View entering={FadeInDown.duration(600).delay(300).springify()}>
-                <Box sx={{ mx: '$4', mb: '$4' }}>
+                <Box className="mx-5 mb-5">
                     <SanctuaryButton
-                        action="primary"
                         onPress={() => onCreateGroup?.()}
-                        leftIcon={Plus}
-                        fullWidth
+                        action="primary"
+                        className="w-full h-14 rounded-2xl"
                     >
-                        {t('community.groups.create')}
+                        <HStack className="items-center gap-2">
+                            <Icon as={Plus} size="sm" className="text-white" />
+                            <Text className="text-white font-black">{t('community.groups.create')}</Text>
+                        </HStack>
                     </SanctuaryButton>
                 </Box>
             </Animated.View>
@@ -169,66 +144,59 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
     const getEmptyComponent = () => {
         if (loading) {
             return (
-                <VStack space="md" py="$4" px="$4">
-                    <SkeletonCard height={72} />
-                    <SkeletonCard height={72} />
-                    <SkeletonCard height={72} />
+                <VStack className="gap-5 py-4 px-5">
+                    <SkeletonCard height={80} />
+                    <SkeletonCard height={80} />
+                    <SkeletonCard height={80} />
                 </VStack>
             );
         }
 
         if (activeSubTab === 'sanctuary') {
             return (
-                <VStack space="xl" alignItems="center" sx={{ padding: Theme.spacing['2xl'], marginTop: Theme.spacing.xl }}>
-                    <Box sx={{
-                        padding: Theme.spacing.xl,
-                        backgroundColor: Theme.colors.sanctuarySaffron + '11',
-                        borderRadius: Theme.corners.full
-                    }}>
-                        <Shield size={48} color={Theme.colors.sanctuarySaffron} />
+                <VStack className="gap-6 items-center p-10 mt-10">
+                    <Box className="w-24 h-24 bg-phase-interactive/10 rounded-full items-center justify-center">
+                        <Icon as={Shield} size="xl" className="text-phase-interactive" />
                     </Box>
-                    <VStack space="sm" alignItems="center">
-                        <Heading size="md" textAlign="center" color={Theme.colors.sanctuarySaffron}>
+                    <VStack className="gap-2 items-center">
+                        <Heading className="text-2xl text-center text-ink font-black">
                             {t('community.groups.noSanctuaryTitle') || 'Your Sanctuary is Quiet'}
                         </Heading>
-                        <Text textAlign="center" color={colors.textSecondary}>
-                            {t('community.groups.noSanctuaryDesc') || 'You haven\'t joined any school circles yet. Explore the Galaxy to find your tribe.'}
+                        <Text className="text-center text-ink/60 font-medium leading-relaxed px-4">
+                            {t('community.groups.noSanctuaryDesc') || "You haven't joined any school circles yet. Explore the Galaxy to find your tribe."}
                         </Text>
                     </VStack>
                     <SanctuaryButton
+                        action="secondary"
                         onPress={() => setActiveSubTab('galaxy')}
-                        variant="outline"
-                        size="lg"
+                        className="border-border bg-transparent h-14 rounded-2xl px-10"
                     >
-                        {t('community.groups.exploreGalaxy') || 'Explore the Infinite Galaxy'}
+                        <Text className="text-ink font-bold">{t('community.groups.exploreGalaxy') || 'Explore the Infinite Galaxy'}</Text>
                     </SanctuaryButton>
                 </VStack>
             );
         }
-
+ 
         return (
-            <VStack space="xl" alignItems="center" sx={{ padding: Theme.spacing['2xl'], marginTop: Theme.spacing.xl }}>
-                <Box sx={{
-                    padding: Theme.spacing.xl,
-                    backgroundColor: Theme.colors.gurudeviViolet + '11',
-                    borderRadius: Theme.corners.full
-                }}>
-                    <Compass size={48} color={Theme.colors.gurudeviViolet} />
+            <VStack className="gap-6 items-center p-10 mt-10">
+                <Box className="w-24 h-24 bg-ink/5 rounded-full items-center justify-center">
+                    <Icon as={Globe} size="xl" className="text-ink/20" />
                 </Box>
-                <VStack space="sm" alignItems="center">
-                    <Heading size="md" textAlign="center" color={Theme.colors.gurudeviViolet}>
+                <VStack className="gap-2 items-center">
+                    <Heading className="text-2xl text-center text-ink font-black">
                         {t('community.groups.noGalaxyTitle') || 'Galaxy Waiting to Bloom'}
                     </Heading>
-                    <Text textAlign="center" color={colors.textSecondary}>
+                    <Text className="text-center text-ink/60 font-medium leading-relaxed px-4">
                         {t('community.groups.noGalaxyDesc') || 'Be the first to create a club, interest group, or inter-school circle.'}
                     </Text>
                 </VStack>
                 <SanctuaryButton
-                    onPress={() => onCreateGroup?.()}
                     action="primary"
-                    size="lg"
+                    onPress={() => onCreateGroup?.()}
+                    className="h-14 rounded-2xl px-10"
+                    isDisabled={!flags.isCommunityEnabled || !can('create', 'Group')}
                 >
-                    {t('community.groups.foundCircle') || 'Found a New Circle'}
+                    <Text className="text-white font-black">{t('community.groups.foundCircle') || 'Found a New Circle'}</Text>
                 </SanctuaryButton>
             </VStack>
         );
@@ -238,21 +206,23 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
         const animationDelay = Math.min(index * 150, 1500);
         return (
             <Animated.View entering={FadeInDown.duration(400).delay(animationDelay).springify()}>
-                <GroupCard
-                    id={item.id}
-                    name={isDemo() ? `(Sample) ${item.name}` : item.name}
-                    memberCount={item.member_count}
-                    type={(item.type || (item as any).group_type || 'general') as any}
-                    description={item.description}
-                    onPress={() => onNavigateToGroup(item.id)}
-                />
+                <Box className="mb-4">
+                    <GroupCard
+                        id={item.id}
+                        name={isDemo() ? `(Sample) ${item.name}` : item.name}
+                        memberCount={item.member_count}
+                        type={(item.type || (item as any).group_type || 'general') as any}
+                        description={item.description}
+                        onPress={() => onNavigateToGroup(item.id)}
+                    />
+                </Box>
             </Animated.View>
         );
     }, [onNavigateToGroup]);
 
     const keyExtractor = useCallback((item: Group) => item.id, []);
 
-    const ListEmptyComponent = useMemo(() => getEmptyComponent(), [loading, activeSubTab, colors]);
+    const ListEmptyComponent = useMemo(() => getEmptyComponent(), [loading, activeSubTab]);
 
     const handleEndReached = useCallback(() => {
         if (hasNextGroups && !isFetchingNextGroups) {
@@ -261,7 +231,7 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
     }, [hasNextGroups, isFetchingNextGroups, fetchNextGroups]);
 
     return (
-        <Box sx={{ flex: 1 }}>
+        <Box className="flex-1 bg-phase-canvas">
             {renderSubTabs()}
             {renderSearchBar()}
             {renderGalaxyActions()}
@@ -269,14 +239,16 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
                 data={activeGroups as any}
                 renderItem={renderItem}
                 keyExtractor={keyExtractor}
-                estimatedItemSize={Theme.listSizes.communityCard}
+                estimatedItemSize={120}
                 onEndReached={handleEndReached}
                 onEndReachedThreshold={0.5}
                 ListFooterComponent={isFetchingNextGroups ? (
-                    <ActivityIndicator size="small" color={colors.action} style={{ padding: 20 }} />
+                    <Box className="py-8 items-center">
+                        <Spinner />
+                    </Box>
                 ) : null}
                 ListEmptyComponent={ListEmptyComponent}
-                contentContainerStyle={{ paddingHorizontal: Theme.spacing.md, paddingBottom: 120 }}
+                contentContainerStyle={{ paddingHorizontal: 0, paddingBottom: 120 }}
             />
         </Box>
     );

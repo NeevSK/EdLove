@@ -1,13 +1,13 @@
 import React from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { 
-    Theme, 
-    useThemedColors, 
+    useTheme, 
     Box, 
     VStack, 
     HStack, 
     Text,
-    SanctuaryStatsCard 
+    SanctuaryStatsCard,
+    ScrollView
 } from '@repo/ui';
 import { Network, Orbit, Route } from 'lucide-react-native';
 import type { 
@@ -15,7 +15,7 @@ import type {
 } from '@repo/graphics';
 
 /**
- * JyotiView.web — The "Insight" Perspective (Web).
+ * JyotiView.web  The "Insight" Perspective (Web).
  * 
  * An analytical dashboard showing knowledge metrics.
  * Parity with native version but using standard web layout.
@@ -23,7 +23,7 @@ import type {
 export const JyotiView: React.FC<PerspectiveViewProps> = ({
     data,
 }) => {
-    const colors = useThemedColors();
+    const { accent, text, textOnAccent } = useTheme();
 
     const nodeTypes = Array.from(new Set(data.nodes.map(n => n.type)));
     const typeDistribution = nodeTypes.map(type => ({
@@ -33,52 +33,40 @@ export const JyotiView: React.FC<PerspectiveViewProps> = ({
 
     return (
         <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-            <VStack spacing={32}>
+            <VStack className="gap-8">
                 {/* Stats Cards */}
                 <SanctuaryStatsCard 
                     title="Knowledge Resonance"
                     items={[
-                        { label: "Total Nodes", value: data.nodes.length, icon: Network, color: colors.action },
-                        { label: "Connections", value: data.links.length, icon: Orbit, color: colors.action },
-                        { label: "Pathways", value: data.nodes.filter(n => n.path).length, icon: Route, color: colors.secondary }
+                        { label: "Total Nodes", value: data.nodes.length, icon: Network, color: accent.action },
+                        { label: "Connections", value: data.links.length, icon: Orbit, color: accent.action },
+                        { label: "Pathways", value: data.nodes.filter(n => n.path).length, icon: Route, color: accent.reward }
                     ]}
                     progressLabel="Overall Discovery"
                     progressValue={Math.min(100, Math.floor((data.nodes.length / 100) * 100))}
                 />
 
                 {/* Distribution Chart (CSS-based Bar Chart for Web) */}
-                <Box sx={{ 
-                    backgroundColor: 'rgba(255,255,255,0.03)', 
-                    borderRadius: 24, 
-                    padding: 32,
-                    borderWidth: 1,
-                    borderColor: 'rgba(255,255,255,0.05)'
-                }}>
-                    <Text sx={{ fontSize: 18, fontWeight: '800', color: colors.text, marginBottom: 24 }}>
+                <Box className="bg-white/5 rounded-[24px] p-8 border border-white/5">
+                    <Text className="text-lg font-extrabold text-phase-text-primary mb-6">
                         Knowledge Distribution
                     </Text>
-                    <VStack spacing={20}>
+                    <VStack className="gap-5">
                         {typeDistribution.map(item => (
-                            <Box key={item.type} sx={{ width: '100%' }}>
-                                <HStack sx={{ justifyContent: 'space-between', marginBottom: 8 }}>
-                                    <Text sx={{ fontSize: 14, color: colors.textSecondary, textTransform: 'capitalize' }}>
+                            <Box key={item.type} className="w-full">
+                                <HStack className="justify-between mb-2">
+                                    <Text className="text-sm text-phase-text-secondary capitalize">
                                         {item.type}
                                     </Text>
-                                    <Text sx={{ fontSize: 14, fontWeight: '700', color: colors.text }}>
+                                    <Text className="text-sm font-bold text-phase-text-primary">
                                         {item.count}
                                     </Text>
                                 </HStack>
-                                <Box sx={{ 
-                                    height: 8, 
-                                    width: '100%', 
-                                    backgroundColor: 'rgba(255,255,255,0.05)', 
-                                    borderRadius: 4,
-                                    overflow: 'hidden'
-                                }}>
+                                <Box className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
                                     <div style={{ 
                                         height: '100%', 
                                         width: `${(item.count / data.nodes.length) * 100}%`,
-                                        backgroundColor: Theme.colors.sanctuarySaffron,
+                                        backgroundColor: accent.action,
                                         borderRadius: 4,
                                         transition: 'width 1s ease-out'
                                     }} />

@@ -1,70 +1,40 @@
 import React from 'react';
-import { View, StyleSheet, Pressable } from 'react-native';
+import { View, Pressable } from 'react-native';
 
 export interface UniversalModalProps {
-    isOpen: boolean;
-    onClose: () => void;
-    children: React.ReactNode;
-    transparent?: boolean;
-    /** Whether to show a backdrop that closes on press */
-    hasBackdrop?: boolean;
+  isOpen: boolean;
+  onClose: () => void;
+  children: React.ReactNode;
+  transparent?: boolean;
+  /** Whether to show a backdrop that closes on press */
+  hasBackdrop?: boolean;
 }
 
 /**
- * UniversalModal.web — Web-optimized overlay.
- * 
- * Uses fixed-positioning instead of native Modals to ensure
- * reliable rendering in nested layouts and portal-like behavior.
+ * UniversalModal.web - Web-optimized overlay.
+ * Hardened v3 implementation with NativeWind.
  */
 export const UniversalModal = ({
-    isOpen,
-    onClose,
-    children,
-    hasBackdrop = true
+  isOpen,
+  onClose,
+  children,
+  hasBackdrop = true,
 }: UniversalModalProps) => {
-    if (!isOpen) return null;
+  if (!isOpen) return null;
 
-    return (
-        <View style={styles.webOverlay}>
-            {hasBackdrop && (
-                <Pressable
-                    style={styles.webBackdrop}
-                    onPress={onClose}
-                    accessibilityRole="button"
-                    accessibilityLabel="Close modal"
-                />
-            )}
-            <View style={styles.webContent}>
-                {children}
-            </View>
-        </View>
-    );
+  return (
+    <View className="fixed top-0 left-0 right-0 bottom-0 z-[9999] justify-center items-center">
+      {hasBackdrop && (
+        <Pressable
+          className="absolute top-0 left-0 right-0 bottom-0 bg-black/50"
+          onPress={onClose}
+          accessibilityRole="button"
+          accessibilityLabel="Close modal"
+        />
+      )}
+      <View className="z-[10000] w-full h-full justify-center items-center pointer-events-none">
+        <View className="pointer-events-auto">{children}</View>
+      </View>
+    </View>
+  );
 };
-
-const styles = StyleSheet.create({
-    webOverlay: {
-        position: 'fixed' as any,
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        zIndex: 9999,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    webBackdrop: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0,0,0,0.5)',
-    },
-    webContent: {
-        zIndex: 10000,
-        width: '100%',
-        height: '100%',
-        justifyContent: 'center',
-        alignItems: 'center',
-    }
-});

@@ -1,15 +1,15 @@
 /**
- * OCRPipeline — registry-based OCR orchestrator
+ * OCRPipeline  registry-based OCR orchestrator
  *
  * Providers are registered by name. When a recognize() call is made,
  * the requested provider is used. If it throws, the pipeline
  * transparently falls back to 'mlkit' (always registered by default).
  *
  * Usage:
- *   // Default pipeline — MLKit only:
+ *   // Default pipeline  MLKit only:
  *   const result = await defaultOCRPipeline.recognize(uri);
  *
- *   // Pro pipeline — register cloud providers at runtime:
+ *   // Pro pipeline  register cloud providers at runtime:
  *   const proPipeline = new OCRPipeline()
  *     .register(new MLKitProvider())
  *     .register(new GoogleVisionProvider());
@@ -58,7 +58,7 @@ export class OCRPipeline {
 
 /**
  * App-wide default pipeline.
- * Cloud providers are intentionally NOT registered here — they are added at
+ * Cloud providers are intentionally NOT registered here  they are added at
  * runtime for Pro users (e.g. in OCRScanner when user selects a cloud backend).
  */
 export const defaultOCRPipeline = new OCRPipeline().register(new MLKitProvider());

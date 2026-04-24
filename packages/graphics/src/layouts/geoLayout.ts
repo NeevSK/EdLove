@@ -1,20 +1,20 @@
-import type { KnowledgeTopology, LayoutResult } from '../types/KnowledgeTopology';
+import type { KnowledgeTopology, LayoutResult, GraphNode } from '@repo/core';
 
 /**
- * geoLayout — Converts lat/lng geo coordinates to { x, y } canvas positions.
+ * geoLayout \u2014 Converts lat/lng geo coordinates to { x, y } canvas positions.
  *
  * For the Terra (Geo Map) perspective, nodes with `geo` data are projected
  * onto a 2D canvas. react-native-maps handles the actual map rendering,
  * so this layout is used by web-based Leaflet overlays that need SVG coordinates.
  *
- * Uses a simple equirectangular (Plate Carrée) projection.
+ * Uses a simple equirectangular (Plate Carr\u00E9e) projection.
  */
 export function geoLayout(
     topology: KnowledgeTopology,
     canvasWidth: number = 800,
     canvasHeight: number = 600
 ): LayoutResult & { hasGeoData: boolean } {
-    const geoNodes = topology.nodes.filter((n) => n.geo);
+    const geoNodes = topology.nodes.filter((n: GraphNode) => n.geo);
 
     if (geoNodes.length === 0) {
         return {

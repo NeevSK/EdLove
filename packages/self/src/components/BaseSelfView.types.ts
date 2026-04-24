@@ -1,11 +1,16 @@
-import React from 'react';
+﻿import React from 'react';
+import type { TemporalScale } from '@repo/core';
 
 export interface SelfViewFeature {
     id: string;
     label: string;
     content: React.ReactNode;
+    historyContent?: React.ReactNode;
     icon?: string;
     category?: 'pulse' | 'wisdom' | 'reflection' | 'rhythm' | 'growth' | 'ritual';
+    summary?: string;
+    historySummary?: string;
+    supportedScales?: TemporalScale[];
     timing?: {
         startTime?: string; // HH:mm
         endTime?: string;
@@ -13,7 +18,6 @@ export interface SelfViewFeature {
     };
     domainColor?: string;
     domainId?: string;
-    historyContent?: React.ReactNode;
 }
 
 export interface SelfViewDomain {
@@ -22,7 +26,9 @@ export interface SelfViewDomain {
     accentColor: string; // The "vibe" color (e.g., Amber, Lotus, Teal)
     features?: SelfViewFeature[];
     content?: React.ReactNode;
+    historyContent?: React.ReactNode;
     description?: string;
+    supportedScales?: TemporalScale[];
 }
 
 export interface BaseSelfViewProps {

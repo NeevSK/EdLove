@@ -1,8 +1,7 @@
 import React from 'react';
-import { VStack, Button, ButtonText } from '../gluestack';
-import { Theme } from '../theme/Theme';
+import { VStack } from '../gluestack';
 import PositiveInvitation from './PositiveInvitation';
-import { useThemedColors } from '../hooks/useThemedColors';
+import SanctuaryButton from './SanctuaryButton';
 
 export interface CitizenGateProps {
   context?: 'self' | 'library' | 'classroom' | 'community' | 'profile' | 'general';
@@ -23,13 +22,10 @@ export default function CitizenGate({
   secondaryLabel,
   onSecondary,
 }: CitizenGateProps) {
-  const colors = useThemedColors();
-
-  const mappedContext =
-    context === 'profile' || context === 'general' ? 'self' : (context as any);
+  const mappedContext = context === 'profile' || context === 'general' ? 'self' : (context as any);
 
   return (
-    <VStack {...({ space: 'md', width: '100%', alignItems: 'center' } as any)}>
+    <VStack className="gap-4 w-full items-center">
       <PositiveInvitation
         title={title}
         description={description}
@@ -39,20 +35,15 @@ export default function CitizenGate({
         onAction={onAction}
       />
       {secondaryLabel && onSecondary && (
-        <Button
+        <SanctuaryButton
           variant="outline"
           action="secondary"
           onPress={onSecondary}
-          sx={{
-            borderColor: colors.border,
-            borderRadius: Theme.corners.full,
-            paddingHorizontal: Theme.spacing.lg,
-          }}
+          className="px-8"
         >
-          <ButtonText color={colors.textSecondary}>{secondaryLabel}</ButtonText>
-        </Button>
+          {secondaryLabel}
+        </SanctuaryButton>
       )}
     </VStack>
   );
 }
-

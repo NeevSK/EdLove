@@ -78,10 +78,8 @@ export function TrubeProvider({
   }), [environment, telemetry]);
 
   return (
-    <TrubeContext.Provider value={value}>
-      {children}
-    </TrubeContext.Provider>
-  );
+    <TrubeContext.Provider value={value}      {children}
+    </TrubeContext.Provider  );
 }
 
 export function useTrubeEnvironment() {

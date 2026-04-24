@@ -7,7 +7,7 @@ import type {
 } from '@repo/graphics';
 
 /**
- * TerraView.web — The "Geographical" Perspective (Web Placeholder).
+ * TerraView.web  The "Geographical" Perspective (Web Placeholder).
  * 
  * In a real implementation, this would use a Leaflet or Mapbox WebView.
  * For now, it provides a high-fidelity placeholder that maintains 

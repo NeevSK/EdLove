@@ -1,33 +1,28 @@
-/**
- * CommentSheet
- *
- * A full-featured comment system that works on both React Native (native modal
- * bottom-sheet) and web (fixed bottom drawer). Features:
- *
- * - Real-time comment feed (via useComments hook)
- * - Anonymous posting toggle
- * - Upvote toggle with optimistic update
- * - Delete own comment (long-press menu)
- * - Mark "official answer" for Question-type posts (post author only)
- * - Keyboard-aware layout on both platforms
- */
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
     Modal,
-    View,
     FlatList,
-    TextInput,
-    TouchableOpacity,
     KeyboardAvoidingView,
     Platform,
-    ActivityIndicator,
     Alert,
-    StyleSheet,
 } from 'react-native';
-import { Theme, useTheme, getInitialsFromName, formatTimestamp } from '@repo/ui';
-import { Text, Box, HStack, VStack } from '@repo/ui';
+import { 
+    Text, 
+    Box, 
+    HStack, 
+    VStack, 
+    Pressable, 
+    View,
+    Icon,
+    InputField,
+    Spinner,
+    getInitialsFromName,
+    formatTimestamp,
+    Actionsheet
+} from '@repo/ui';
 import { ChevronDown, Send, ThumbsUp, Trash2, Shield, Lock, EyeOff } from 'lucide-react-native';
 import { useComments } from '../hooks/useComments';
+import { usePermissions } from '@repo/core';
 import type { Comment } from '../types/Community';
 
 interface CommentSheetProps {
@@ -39,9 +34,9 @@ interface CommentSheetProps {
     onClose: () => void;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Single comment row
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * Single comment row refactored for Sanctuary V3
+ */
 function CommentRow({
     comment,
     currentUserId,
@@ -59,7 +54,6 @@ function CommentRow({
     onUpvote: (id: string) => void;
     onMarkOfficial: (id: string, flag: boolean) => void;
 }) {
-    const { text, accent, glass } = useTheme();
     const isOwn = comment.author_id === currentUserId;
     const initials = getInitialsFromName(comment.author_name);
 
@@ -75,73 +69,83 @@ function CommentRow({
     };
 
     return (
-        <View style={[styles.commentRow, comment.is_official_answer && { borderLeftWidth: 3, borderLeftColor: accent.reward }]}>
+        <View 
+            className={`flex-row mb-5 pl-1 ${comment.is_official_answer ? 'border-l-4 border-l-phase-reward' : ''}`}
+        >
             {/* Avatar */}
-            <View style={[styles.avatar, { backgroundColor: comment.is_anonymous ? glass.interact.bg as string : accent.muted as string }]}>
-                {comment.is_anonymous
-                    ? <EyeOff size={14} color={text.muted as string} />
-                    : (comment.author_avatar
-                        ? null // we keep it simple — initials only for now
-                        : <Text sx={{ fontSize: 11, fontWeight: '700', color: accent.action }}>{initials}</Text>
-                    )
-                }
+            <View 
+                className={`w-9 h-9 rounded-full items-center justify-center mr-3 mt-1 shrink-0 ${comment.is_anonymous ? 'bg-phase-surface border border-border' : 'bg-phase-interactive/10'}`}
+            >
+                {comment.is_anonymous ? (
+                    <Icon as={EyeOff} size="xs" className="text-ink/40" />
+                ) : (
+                    <Text className="text-[12px] font-bold text-phase-interactive">{initials}</Text>
+                )}
             </View>
 
-            <View style={styles.commentBody}>
-                <HStack justifyContent="space-between" alignItems="center">
-                    <HStack {...({ space: 'xs', alignItems: 'center' } as any)}>
-                        <Text sx={{ fontSize: 12, fontWeight: '700', color: text.primary }}>
+            <View className="flex-1">
+                <HStack className="justify-between items-center h-5">
+                    <HStack className="items-center gap-1.5">
+                        <Text className="text-xs font-bold text-ink">
                             {comment.author_name}
                         </Text>
                         {comment.is_official_answer && (
-                            <View style={[styles.officialBadge, { backgroundColor: accent.reward as string }]}>
-                                <Shield size={9} color="#fff" />
-                                <Text sx={{ fontSize: 9, color: '#fff', fontWeight: '700', marginLeft: 2 }}>Official</Text>
-                            </View>
+                            <HStack className="items-center px-1.5 py-0.5 rounded-md bg-phase-reward">
+                                <Icon as={Shield} size="xs" className="text-white" />
+                                <Text className="text-[9px] text-white font-bold ml-0.5 uppercase tracking-tighter">Official</Text>
+                            </HStack>
                         )}
                     </HStack>
-                    <Text sx={{ fontSize: 10, color: text.muted }}>
+                    <Text className="text-[10px] text-ink/40">
                         {formatTimestamp(comment.created_at)}
                     </Text>
                 </HStack>
 
-                <Text sx={{ fontSize: 14, color: text.secondary, marginTop: 3, lineHeight: 20 }}>
+                <Text className="text-sm text-ink/70 mt-1 leading-relaxed">
                     {comment.content}
                 </Text>
 
-                <HStack {...({ space: 'md', alignItems: 'center', marginTop: 6 } as any)}>
+                <HStack className="items-center mt-2.5 gap-6">
                     {/* Upvote */}
-                    <TouchableOpacity onPress={() => onUpvote(comment.id)} style={styles.actionBtn}>
-                        <ThumbsUp
-                            size={13}
-                            color={comment.has_upvoted ? accent.action as string : text.muted as string}
-                            fill={comment.has_upvoted ? accent.action as string : 'transparent'}
+                    <Pressable onPress={() => onUpvote(comment.id)} className="flex-row items-center">
+                        <Icon 
+                            as={ThumbsUp}
+                            size="xs"
+                            className={comment.has_upvoted ? 'text-phase-interactive' : 'text-ink/40'}
                         />
                         {comment.upvotes > 0 && (
-                            <Text sx={{ fontSize: 11, color: comment.has_upvoted ? accent.action : text.muted, marginLeft: 3 }}>
+                            <Text 
+                                className={`text-[11px] font-bold ml-1.5 ${comment.has_upvoted ? 'text-phase-interactive' : 'text-ink/40'}`}
+                            >
                                 {comment.upvotes}
                             </Text>
                         )}
-                    </TouchableOpacity>
+                    </Pressable>
 
-                    {/* Mark official (post author, question type) */}
+                    {/* Mark official (post author, question type) - Not anonymous only */}
                     {isPostAuthor && postType === 'question' && !comment.is_anonymous && (
-                        <TouchableOpacity
+                        <Pressable
                             onPress={() => onMarkOfficial(comment.id, !comment.is_official_answer)}
-                            style={styles.actionBtn}
+                            className="flex-row items-center"
                         >
-                            <Shield size={13} color={comment.is_official_answer ? accent.reward as string : text.muted as string} />
-                            <Text sx={{ fontSize: 11, color: comment.is_official_answer ? accent.reward : text.muted, marginLeft: 3 }}>
+                            <Icon 
+                                as={Shield} 
+                                size="xs" 
+                                className={comment.is_official_answer ? 'text-phase-reward' : 'text-ink/40'} 
+                            />
+                            <Text 
+                                className={`text-[11px] font-bold ml-1.5 ${comment.is_official_answer ? 'text-phase-reward' : 'text-ink/40'}`}
+                            >
                                 {comment.is_official_answer ? 'Unmark' : 'Mark answer'}
                             </Text>
-                        </TouchableOpacity>
+                        </Pressable>
                     )}
 
-                    {/* Delete own */}
-                    {isOwn && (
-                        <TouchableOpacity onPress={confirmDelete} style={styles.actionBtn}>
-                            <Trash2 size={13} color={text.muted as string} />
-                        </TouchableOpacity>
+                    {/* Delete own or if has manage permissions */}
+                    {(isOwn || can('delete', 'Comment')) && flags.isCommunityEnabled && (
+                        <Pressable onPress={confirmDelete} className="flex-row items-center p-1">
+                            <Icon as={Trash2} size="xs" className="text-ink/40" />
+                        </Pressable>
                     )}
                 </HStack>
             </View>
@@ -149,9 +153,9 @@ function CommentRow({
     );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Main CommentSheet
-// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * Main CommentSheet refactored for Sanctuary V3
+ */
 export function CommentSheet({
     postId,
     postAuthorId,
@@ -159,7 +163,7 @@ export function CommentSheet({
     postType,
     onClose,
 }: CommentSheetProps) {
-    const { text, accent, glass } = useTheme();
+    const { can, flags } = usePermissions();
     const {
         comments,
         isLoading,
@@ -170,16 +174,17 @@ export function CommentSheet({
         markOfficialAnswer,
     } = useComments(postId);
 
-    const [draft, setDraft] = React.useState('');
-    const [isAnonymous, setIsAnonymous] = React.useState(false);
-    const flatListRef = React.useRef<FlatList>(null);
+    const [draft, setDraft] = useState('');
+    const [isAnonymous, setIsAnonymous] = useState(false);
+    const flatListRef = useRef<FlatList>(null);
 
     const isPostAuthor = !!currentUserId && currentUserId === postAuthorId;
 
     // Scroll to bottom when new comments arrive
-    React.useEffect(() => {
+    useEffect(() => {
         if (comments.length > 0) {
-            setTimeout(() => flatListRef.current?.scrollToEnd({ animated: true }), 100);
+            const timer = setTimeout(() => flatListRef.current?.scrollToEnd({ animated: true }), 150);
+            return () => clearTimeout(timer);
         }
     }, [comments.length]);
 
@@ -196,42 +201,46 @@ export function CommentSheet({
 
     const sheetContent = (
         <KeyboardAvoidingView
-            style={[
-                styles.sheet,
-                {
-                    backgroundColor: (glass?.modal?.bg ?? glass?.surface?.bg ?? Theme.colors.vellum) as string,
-                    borderTopColor: (glass?.interact?.border ?? 'rgba(42,35,24,0.08)') as string,
-                },
-            ]}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 24}
+            style={{ flex: 1 }}
         >
-            {/* ── Header ── */}
-            <View style={styles.header}>
-                <TouchableOpacity onPress={onClose} style={styles.dragHandle} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
-                    <ChevronDown size={22} color={text.secondary as string} />
-                </TouchableOpacity>
-                <Text sx={{ fontSize: 15, fontWeight: '700', color: text.primary, flex: 1, textAlign: 'center' }}>
-                    {`${comments.length} Comment${comments.length !== 1 ? 's' : ''}`}
-                </Text>
-                <View style={{ width: 34 }} />
-            </View>
+            <Box className="flex-1 bg-phase-surface overflow-hidden">
+            {/* Header Handle managed by Actionsheet */}
 
-            {/* ── Comment list ── */}
+            {/* Header */}
+            <HStack className="items-center px-5 py-4">
+                <Pressable 
+                    onPress={onClose} 
+                    className="w-10 h-10 items-center justify-center rounded-full bg-ink/5"
+                    hitSlop={12}
+                >
+                    <Icon as={ChevronDown} size="md" className="text-ink/60" />
+                </Pressable>
+                <Text className="text-md font-bold text-ink flex-1 text-center">
+                    {isLoading ? 'Loading resonance\u2026' : `${comments.length} Reflection${comments.length !== 1 ? 's' : ''}`}
+                </Text>
+                <Box className="w-10" />
+            </HStack>
+
+            {/* Comment list */}
             {isLoading ? (
-                <ActivityIndicator color={accent.action as string} style={{ marginVertical: 40 }} />
+                <Box className="flex-1 items-center justify-center py-20">
+                    <Spinner />
+                </Box>
             ) : comments.length === 0 ? (
-                <View style={styles.empty}>
-                    <Text sx={{ fontSize: 14, color: text.muted, textAlign: 'center' }}>
-                        Be the first to share a thought 🌱
+                <VStack className="flex-1 items-center justify-center py-12 px-8 gap-3">
+                    <Text className="text-md font-bold text-ink/20">The Heart is Quiet</Text>
+                    <Text className="text-sm text-ink/40 text-center leading-relaxed">
+                        Be the first to seed a reflection into this conversation circle.
                     </Text>
-                </View>
+                </VStack>
             ) : (
                 <FlatList
                     ref={flatListRef}
                     data={comments}
                     keyExtractor={item => item.id}
-                    contentContainerStyle={styles.listContent}
+                    contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 10, paddingBottom: 24 }}
                     showsVerticalScrollIndicator={false}
                     renderItem={({ item }) => (
                         <CommentRow
@@ -247,189 +256,55 @@ export function CommentSheet({
                 />
             )}
 
-            {/* ── Composer ── */}
-            <View style={[styles.composer, { borderTopColor: glass.interact.border as string }]}>
+            {/* Composer */}
+            <HStack 
+                className="items-end p-4 gap-3 border-t border-border bg-phase-surface/80"
+            >
                 {/* Anonymous toggle */}
-                <TouchableOpacity
+                <Pressable
                     onPress={() => setIsAnonymous(v => !v)}
-                    style={[styles.anonBtn, { borderColor: isAnonymous ? accent.action as string : glass.interact.border as string }]}
-                    hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                    className={`w-11 h-11 rounded-2xl border items-center justify-center shrink-0 ${isAnonymous ? 'bg-phase-interactive border-phase-interactive' : 'bg-phase-surface border-border'}`}
+                    hitSlop={8}
                 >
-                    <Lock size={14} color={isAnonymous ? accent.action as string : text.muted as string} />
-                </TouchableOpacity>
+                    <Icon as={Lock} size="sm" className={isAnonymous ? 'text-white' : 'text-ink/40'} />
+                </Pressable>
 
-                <TextInput
-                    style={[
-                        styles.input,
-                        {
-                            backgroundColor: glass.interact.bg as string,
-                            borderColor: glass.interact.border as string,
-                            color: text.primary as string,
-                        },
-                    ]}
-                    placeholder={isAnonymous ? 'Reply anonymously…' : 'Add a comment…'}
-                    placeholderTextColor={text.muted as string}
-                    value={draft}
-                    onChangeText={setDraft}
-                    multiline
-                    maxLength={1000}
-                    returnKeyType="default"
-                    blurOnSubmit={false}
-                />
+                <Box className="flex-1 bg-ink/5 rounded-2xl border border-border px-1">
+                    <InputField
+                        className="text-ink text-sm py-2.5 px-3 min-h-[44px] max-h-[120px]"
+                        placeholder={isAnonymous ? 'Reflect anonymously\u2026' : 'Add a reflection\u2026'}
+                        placeholderTextColor="#94a3b8"
+                        value={draft}
+                        onChangeText={setDraft}
+                        multiline
+                        maxLength={1000}
+                    />
+                </Box>
 
-                <TouchableOpacity
+                <Pressable
                     onPress={handleSend}
                     disabled={!draft.trim() || isCreatingComment}
-                    style={[
-                        styles.sendBtn,
-                        { backgroundColor: !draft.trim() ? glass.interact.bg as string : accent.action as string },
-                    ]}
+                    className={`w-11 h-11 rounded-2xl items-center justify-center shrink-0 ${!draft.trim() ? 'bg-ink/5' : 'bg-phase-interactive'}`}
                 >
-                    {isCreatingComment
-                        ? <ActivityIndicator size="small" color="#fff" />
-                        : <Send size={16} color={!draft.trim() ? text.muted as string : '#fff'} />
-                    }
-                </TouchableOpacity>
-            </View>
+                    {isCreatingComment ? (
+                        <Spinner />
+                    ) : (
+                        <Icon as={Send} size="sm" className={!draft.trim() ? 'text-ink/20' : 'text-white'} />
+                    )}
+                </Pressable>
+            </HStack>
+            </Box>
         </KeyboardAvoidingView>
     );
 
-    if (Platform.OS === 'web') {
-        // Web: fixed bottom drawer, no RN Modal needed
-        if (!postId) return null;
-        return (
-            <View
-                style={{
-                    position: 'fixed' as any,
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    maxHeight: '70vh',
-                    zIndex: 1000,
-                    borderTopLeftRadius: Theme.corners.comfortable,
-                    borderTopRightRadius: Theme.corners.comfortable,
-                    boxShadow: '0 -4px 32px rgba(107,100,128,0.18)',
-                    overflow: 'hidden',
-                } as any}
-            >
-                {sheetContent}
-            </View>
-        );
-    }
-
-    // Native: Modal bottom sheet
     return (
-        <Modal
-            visible={!!postId}
-            animationType="slide"
-            transparent
-            onRequestClose={onClose}
+        <Actionsheet
+            isOpen={!!postId}
+            onClose={onClose}
         >
-            <TouchableOpacity
-                activeOpacity={1}
-                onPress={onClose}
-                style={styles.backdrop}
-            />
-            {sheetContent}
-        </Modal>
+            <Box style={{ height: '80%' }}>
+                {sheetContent}
+            </Box>
+        </Actionsheet>
     );
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
-const styles = StyleSheet.create({
-    backdrop: {
-        flex: 1,
-        backgroundColor: 'rgba(17,12,36,0.55)',
-    },
-    sheet: {
-        borderTopLeftRadius: Theme.corners.comfortable,
-        borderTopRightRadius: Theme.corners.comfortable,
-        borderTopWidth: 1,
-        maxHeight: '80%',
-        minHeight: 320,
-    },
-    header: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: 16,
-        paddingVertical: 12,
-    },
-    dragHandle: {
-        width: 34,
-        alignItems: 'flex-start',
-    },
-    listContent: {
-        paddingHorizontal: 16,
-        paddingBottom: 8,
-    },
-    empty: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        paddingVertical: 40,
-        paddingHorizontal: 24,
-    },
-    commentRow: {
-        flexDirection: 'row',
-        marginBottom: 16,
-        paddingLeft: 4,
-    },
-    avatar: {
-        width: 32,
-        height: 32,
-        borderRadius: 16,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginRight: 10,
-        marginTop: 2,
-        flexShrink: 0,
-    },
-    commentBody: {
-        flex: 1,
-    },
-    officialBadge: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: 5,
-        paddingVertical: 2,
-        borderRadius: 8,
-    },
-    actionBtn: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    composer: {
-        flexDirection: 'row',
-        alignItems: 'flex-end',
-        padding: 12,
-        gap: 8,
-        borderTopWidth: 1,
-    },
-    anonBtn: {
-        width: 36,
-        height: 36,
-        borderRadius: 18,
-        borderWidth: 1.5,
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexShrink: 0,
-    },
-    input: {
-        flex: 1,
-        borderWidth: 1,
-        borderRadius: Theme.corners.comfortable,
-        paddingHorizontal: 12,
-        paddingVertical: 8,
-        fontSize: 14,
-        maxHeight: 120,
-        lineHeight: 20,
-    },
-    sendBtn: {
-        width: 36,
-        height: 36,
-        borderRadius: 18,
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexShrink: 0,
-    },
-});

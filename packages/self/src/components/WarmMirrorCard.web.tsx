@@ -1,13 +1,19 @@
 /**
- * WarmMirrorCard.web.tsx
- *
- * Web override of the RN WarmMirrorCard. The RN version uses hardcoded white
- * text (designed for dark-themed screens). On web, BaseSelfView renders on a
- * light sanctuary surface so we use CSS variables instead.
- *
- * Metro automatically resolves .web.tsx over .tsx on the web platform.
+ * WARM MIRROR CARD (Web)
+ * Displays the user's weekly story/reflection summary on web.
+ * Standardized to Zero-Legacy: purged raw HTML/inline styles and fixed syntax corruption in style objects.
  */
+
 import React from 'react';
+import { 
+    Box, 
+    Text, 
+    VStack, 
+    HStack, 
+    Icon 
+} from '@repo/ui';
+import { BookOpen } from 'lucide-react-native';
+import Animated, { FadeInUp } from 'react-native-reanimated';
 
 interface WarmMirrorCardProps {
     text: string | null;
@@ -17,31 +23,25 @@ export function WarmMirrorCard({ text }: WarmMirrorCardProps) {
     if (!text) return null;
 
     return (
-        <div style={{
-            padding: '24px 28px',
-            backgroundColor: 'rgba(139, 92, 246, 0.08)',
-            borderRadius: '16px',
-            border: '1px solid rgba(139, 92, 246, 0.18)',
-        }}>
-            <div style={{
-                fontSize: '10px',
-                fontWeight: '900',
-                letterSpacing: '2px',
-                color: '#8B5CF6',
-                marginBottom: '12px',
-                textTransform: 'uppercase',
-            }}>
-                🌸 YOUR WEEK AS A STORY
-            </div>
-            <p style={{
-                fontSize: '14px',
-                lineHeight: '1.7',
-                color: 'var(--ink-soft)',
-                fontStyle: 'italic',
-                margin: 0,
-            }}>
-                {text}
-            </p>
-        </div>
+        <Animated.View entering={FadeInUp.duration(600)}>
+            <Box className="p-xl bg-skyBlue/5 rounded-2xl border border-skyBlue/10 shadow-sm">
+                <VStack className="gap-4">
+                    <HStack className="items-center gap-2">
+                        <Icon as={BookOpen} size={14} className="text-skyBlue" />
+                        <Text className="text-[10px] uppercase font-black tracking-[0.2em] text-skyBlue">
+                            Your week as a story
+                        </Text>
+                    </HStack>
+                    
+                    <Text className="text-sacredWhite/80 text-base leading-relaxed italic font-medium">
+                        "{text}"
+                    </Text>
+
+                    <Box className="w-8 h-1 bg-skyBlue/20 rounded-full mt-2" />
+                </VStack>
+            </Box>
+        </Animated.View>
     );
 }
+
+export default WarmMirrorCard;

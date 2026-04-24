@@ -1,55 +1,49 @@
 import React, { useState } from 'react';
-import { Pressable, Icon, InfoIcon, Box } from '../gluestack';
+import { Pressable } from 'react-native';
+import { Info } from 'lucide-react-native';
 import FeatureDiscoveryModal from './FeatureDiscoveryModal';
-import { Theme } from '../theme/Theme';
 
 export interface FeatureInfoIconProps {
-    title: string;
-    discoveryInfo?: {
-        whatIsIt: string;
-        whereToFind: string;
-    };
-    color?: string;
+  title: string;
+  discoveryInfo?: {
+    whatIsIt: string;
+    whereToFind: string;
+  };
+  color?: string;
 }
 
 /**
- * FeatureInfoIcon — A subtle info icon that triggers the discovery modal.
+ * FeatureInfoIcon - A subtle info icon that triggers the discovery modal.
  * Uses a soft ripple effect and identity-aware coloring.
  */
 export default function FeatureInfoIcon({
-    title,
-    discoveryInfo,
-    color = 'var(--ink-ghost)',
+  title,
+  discoveryInfo,
+  color = 'text-phase-text-secondary opacity-60',
 }: FeatureInfoIconProps) {
-    const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
-    if (!discoveryInfo) return null;
+  if (!discoveryInfo) return null;
 
-    return (
-        <>
-            <Pressable
-                onPress={() => setIsOpen(true)}
-                sx={{
-                    padding: 4,
-                    borderRadius: Theme.corners.full,
-                    ':hover': {
-                        backgroundColor: 'rgba(0,0,0,0.05)',
-                    },
-                    ':active': {
-                        transform: [{ scale: 0.92 }],
-                    }
-                }}
-            >
-                <Icon as={InfoIcon} color={color} size="sm" />
-            </Pressable>
-
-            <FeatureDiscoveryModal
-                isOpen={isOpen}
-                onClose={() => setIsOpen(false)}
-                title={title}
-                whatIsIt={discoveryInfo.whatIsIt}
-                whereToFind={discoveryInfo.whereToFind}
-            />
-        </>
-    );
+  return (
+    <>
+      <Pressable
+        accessibilityRole="button"
+        onPress={() => setIsOpen(true)}
+        className="p-1 rounded-full active:scale-90 hover:bg-phase-surface/10"
+      >
+        <Info
+          size={16}
+          className={color.startsWith('text-') ? color : 'text-phase-text-secondary'}
+        />
+      </Pressable>
+      <FeatureDiscoveryModal
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        title={title}
+        whatIsIt={discoveryInfo.whatIsIt}
+        whereToFind={discoveryInfo.whereToFind}
+      />
+    </>
+  );
 }

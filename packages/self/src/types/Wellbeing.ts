@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Types for progressive wellbeing features
  * Aligned with teacher sanctuary philosophy
  */
@@ -8,6 +8,7 @@ export interface Goal {
     user_id: string;
     text: string;
     progress: number; // 0-100
+    is_completed?: boolean;
     created_at: string;
 }
 

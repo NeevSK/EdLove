@@ -1,5 +1,3 @@
-import { supabase } from '@repo/core';
-
 export type RelationshipType = 'parent' | 'guardian' | 'caregiver';
 export type GuardianPermission = 
   | 'attendance' 

@@ -1,8 +1,23 @@
 import React, { useEffect, useState } from 'react';
-import { Modal, TouchableOpacity } from 'react-native';
+import { Modal } from 'react-native';
 import { X } from 'lucide-react-native';
-import { Box, HStack, Heading, ScrollView, SkeletonCard, Text, Theme, useThemedColors } from '@repo/ui';
+import { 
+    Box, 
+    HStack, 
+    ScrollView, 
+    SkeletonCard, 
+    Text, 
+    VStack,
+    Pressable,
+    Icon,
+    Heading,
+    hapticLight
+} from '@repo/ui';
 import { teacherFeedbackAPI, type TeacherSentEcho } from '../feedback';
+
+// —————————————————————————————————————————————————————————————————————————————
+// TYPES
+// —————————————————————————————————————————————————————————————————————————————
 
 interface TeacherEchoHistoryModalProps {
   visible: boolean;
@@ -10,12 +25,20 @@ interface TeacherEchoHistoryModalProps {
   onClose: () => void;
 }
 
+// —————————————————————————————————————————————————————————————————————————————
+// COMPONENT
+// —————————————————————————————————————————————————————————————————————————————
+
+/**
+ * TEACHER ECHO HISTORY MODAL
+ * Sanctuary V3 standard for reviewing sent feedback.
+ * Features hierarchical priority display and premium styling.
+ */
 export default function TeacherEchoHistoryModal({
   visible,
   teacherId,
   onClose,
 }: TeacherEchoHistoryModalProps) {
-  const colors = useThemedColors();
   const [echoes, setEchoes] = useState<TeacherSentEcho[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -26,8 +49,10 @@ export default function TeacherEchoHistoryModal({
     const load = async () => {
       setLoading(true);
       try {
-        const data = await teacherFeedbackAPI.listSentEchoes(teacherId, 10);
+        const data = await teacherFeedbackAPI.listSentEchoes(teacherId, 20);
         if (mounted) setEchoes(data);
+      } catch (err) {
+        console.error('Failed to load feedback history:', err);
       } finally {
         if (mounted) setLoading(false);
       }
@@ -46,83 +71,113 @@ export default function TeacherEchoHistoryModal({
       presentationStyle="pageSheet"
       onRequestClose={onClose}
     >
-      <Box flex={1} sx={{ backgroundColor: colors.primary }}>
-        <Box
-          sx={{
-            paddingTop: 50,
-            paddingBottom: Theme.spacing.md,
-            paddingHorizontal: Theme.spacing.md,
-            borderBottomWidth: 1,
-            borderBottomColor: colors.border,
-          }}
-        >
-          <HStack justifyContent="space-between" alignItems="center">
-            <Heading size="lg" color={colors.text}>
-              My Feedback History
-            </Heading>
-            <TouchableOpacity onPress={onClose}>
-              <X size={24} color={colors.textTertiary} />
-            </TouchableOpacity>
+      <Box className="flex-1 bg-phase-canvas">
+        {/* Header */}
+        <Box className="pt-8 pb-6 px-6 border-b border-phase-surface shadow-sm">
+          <HStack className="justify-between items-center">
+            <VStack>
+                <Heading className="text-2xl font-bold text-phase-text-primary tracking-tight">
+                    Echo History
+                </Heading>
+                <Text className="text-[10px] font-bold text-phase-text-tertiary uppercase tracking-widest mt-0.5">
+                    SOVEREIGN FEEDBACK
+                </Text>
+            </VStack>
+            <Pressable 
+              onPress={() => {
+                hapticLight();
+                onClose();
+              }} 
+              className="w-10 h-10 rounded-full bg-phase-surface items-center justify-center border border-phase-surface shadow-sm active:scale-90 transition-all"
+            >
+              <Icon as={X} size="lg" className="text-phase-text-primary" />
+            </Pressable>
           </HStack>
         </Box>
-        <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 16, gap: 12 }}>
+
+        {/* Content */}
+        <ScrollView 
+            className="flex-1" 
+            contentContainerStyle={{ padding: 24, paddingBottom: 60 }}
+            showsVerticalScrollIndicator={false}
+        >
           {loading ? (
-            <SkeletonCard />
+            <VStack space="md">
+                <SkeletonCard />
+                <SkeletonCard />
+                <SkeletonCard />
+            </VStack>
           ) : echoes.length === 0 ? (
-            <Box sx={{ padding: Theme.spacing.xl, alignItems: 'center' }}>
-              <Text color={colors.textTertiary} style={{ fontStyle: 'italic', textAlign: 'center' }}>
-                No echoes sent yet. Use the "Principal Echo" action to share feedback.
+            <Box className="px-12 py-20 items-center justify-center mt-10">
+              <Text className="text-sm text-phase-text-tertiary italic text-center font-medium leading-6">
+                No echoes sent yet. Use the "Principal Echo" action to share feedback with the governing body.
               </Text>
             </Box>
           ) : (
-            echoes.map((echo) => (
-              <Box
-                key={echo.id}
-                sx={{
-                  padding: Theme.spacing.md,
-                  backgroundColor: colors.secondary,
-                  borderRadius: Theme.corners.comfortable,
-                  borderLeftWidth: 4,
-                  borderLeftColor: echo.priority === 'high' ? Theme.colors.emberRed : colors.action,
-                  marginBottom: Theme.spacing.sm,
-                }}
-              >
-                <HStack justifyContent="space-between" style={{ marginBottom: 4 }}>
-                  <Text style={{ fontSize: 10, fontWeight: '800', textTransform: 'uppercase', color: colors.textSecondary }}>
-                    {echo.category} · {echo.priority}
-                    {echo.is_read ? '  read' : '  pending'}
-                  </Text>
-                  <Text style={{ fontSize: 10, color: colors.textTertiary }}>
-                    {new Date(echo.created_at).toLocaleDateString()}
-                  </Text>
-                </HStack>
-                <Text color={colors.text} style={{ fontSize: 13, lineHeight: 20, marginBottom: 6 }}>
-                  {echo.content}
-                </Text>
-                {echo.principal_response ? (
-                  <Box
-                    sx={{
-                      padding: Theme.spacing.sm,
-                      backgroundColor: colors.primary,
-                      borderRadius: Theme.corners.comfortable,
-                      borderLeftWidth: 3,
-                      borderLeftColor: colors.action,
-                    }}
-                  >
-                    <Text style={{ fontSize: 10, fontWeight: '800', color: colors.action, marginBottom: 2 }}>
-                      Principal's Reply
+            <VStack space="lg">
+              {echoes.map((echo) => (
+                <Box
+                  key={echo.id}
+                  className="bg-phase-surface/20 rounded-[32px] border border-phase-surface shadow-sm overflow-hidden"
+                >
+                  {/* Priority Indicator */}
+                  <Box className={`absolute left-0 top-0 bottom-0 w-1.5 ${
+                    echo.priority === 'high' ? 'bg-phase-error' : 'bg-phase-interactive'
+                  }`} />
+                  
+                  <VStack className="p-6">
+                    <HStack className="justify-between items-center mb-4">
+                        <HStack space="xs" className="items-center flex-wrap">
+                            <Box className="bg-phase-surface px-2.5 py-1 rounded-full border border-phase-surface">
+                                <Text className="text-[10px] font-bold uppercase text-phase-text-secondary tracking-tight">
+                                    {echo.category}
+                                </Text>
+                            </Box>
+                            <Box className={`px-2.5 py-1 rounded-full border ${
+                                echo.priority === 'high' ? 'bg-phase-error/10 border-phase-error/20' : 'bg-phase-interactive/10 border-phase-interactive/20'
+                            }`}>
+                                <Text className={`text-[10px] font-bold uppercase ${
+                                    echo.priority === 'high' ? 'text-phase-error' : 'text-phase-interactive'
+                                }`}>
+                                    {echo.priority}
+                                </Text>
+                            </Box>
+                            <Box className={`px-2.5 py-1 rounded-full border ${
+                                echo.is_read ? 'bg-phase-success/10 border-phase-success/20' : 'bg-phase-warning/10 border-phase-warning/20'
+                            }`}>
+                                <Text className={`text-[10px] font-bold uppercase ${
+                                    echo.is_read ? 'text-phase-success' : 'text-phase-warning'
+                                }`}>
+                                    {echo.is_read ? 'read' : 'pending'}
+                                </Text>
+                            </Box>
+                        </HStack>
+                    </HStack>
+                    
+                    <Text className="text-base text-phase-text-primary leading-7 font-medium mb-4">
+                        {echo.content}
                     </Text>
-                    <Text color={colors.text} style={{ fontSize: 12 }}>
-                      {echo.principal_response}
-                    </Text>
-                  </Box>
-                ) : (
-                  <Text color={colors.textTertiary} style={{ fontSize: 11, fontStyle: 'italic' }}>
-                    Awaiting principal response...
-                  </Text>
-                )}
-              </Box>
-            ))
+
+                    <HStack className="justify-between items-center pt-4 border-t border-phase-surface/50">
+                        <Text className="text-[10px] font-bold text-phase-text-tertiary uppercase tracking-widest">
+                            SENT ON {new Date(echo.created_at).toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' })}
+                        </Text>
+                    </HStack>
+
+                    {echo.principal_response && (
+                        <Box className="mt-5 p-5 bg-phase-canvas rounded-2xl border-l-[4px] border-phase-interactive shadow-sm">
+                            <Text className="text-[10px] font-bold text-phase-interactive uppercase tracking-widest mb-2">
+                                PRINCIPAL RESPONSE
+                            </Text>
+                            <Text className="text-sm text-phase-text-primary leading-6 font-medium">
+                                {echo.principal_response}
+                            </Text>
+                        </Box>
+                    )}
+                  </VStack>
+                </Box>
+              ))}
+            </VStack>
           )}
         </ScrollView>
       </Box>

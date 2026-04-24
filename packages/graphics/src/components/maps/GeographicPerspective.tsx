@@ -32,14 +32,12 @@ export function GeographicPerspective({
                 <Text style={styles.title}>{title}</Text>
                 {description && <Text style={styles.description}>{description}</Text>}
             </View>
-            
-            <SriLankaMap 
+            <SriLankaMap
                 districtColors={districtColors}
                 onDistrictSelect={onDistrictSelect}
                 width={350}
                 height={550}
             />
-
             <View style={styles.legend}>
                 <Text style={styles.legendText}>Low</Text>
                 <View style={[
@@ -48,8 +46,6 @@ export function GeographicPerspective({
                 ]} />
                 <Text style={styles.legendText}>High</Text>
             </View>
-
-
         </View>
     );
 }

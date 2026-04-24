@@ -13,7 +13,7 @@ function isMissingTable(error: unknown): boolean {
 
 export type { InstitutionalAsset, InventoryRequest, ResourceNeedSummary };
 
-export const adminInventoryAPI = {
+export const adminInventoryAPI = { 
   async listInstitutionalAssets(schoolId: string): Promise<InstitutionalAsset[]> {
     const { data, error } = await supabase
       .from('school_inventory')
@@ -35,5 +35,5 @@ export const adminInventoryAPI = {
 
   async getResourceNeeds(schoolId: string): Promise<ResourceNeedSummary[]> {
     return (await inventoryAPI.getSchoolResourceNeeds(schoolId)) as ResourceNeedSummary[];
-  },
+  }
 };

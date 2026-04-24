@@ -16,22 +16,22 @@ export const Fonts = {
     sinhala: {
         regular: 'AbhayaLibre-Regular',
         medium: 'AbhayaLibre-Medium',
-        bold: 'AbhayaLibre-Bold',
+        bold: 'AbhayaLibre-Bold'
     },
 
     // Tamil fonts (Baloo Thambi 2)
     tamil: {
         regular: 'BalooThambi2-Regular',
         medium: 'BalooThambi2-Medium',
-        bold: 'BalooThambi2-Bold',
+        bold: 'BalooThambi2-Bold'
     },
 
     // English/Latin fonts (System default)
     english: {
         regular: 'System',
         medium: 'System',
-        bold: 'System',
-    },
+        bold: 'System'
+    }
 } as const;
 
 export type FontWeight = 'regular' | 'medium' | 'bold';
@@ -68,5 +68,5 @@ export const fontAssets = {
     // Baloo Thambi 2 (Tamil) - 3 weights
     'BalooThambi2-Regular': require('@/assets/fonts/static/BalooThambi2-Regular.ttf'),
     'BalooThambi2-Medium': require('@/assets/fonts/static/BalooThambi2-Medium.ttf'),
-    'BalooThambi2-Bold': require('@/assets/fonts/static/BalooThambi2-Bold.ttf'),
+    'BalooThambi2-Bold': require('@/assets/fonts/static/BalooThambi2-Bold.ttf')
 };

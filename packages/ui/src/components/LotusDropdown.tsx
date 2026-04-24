@@ -1,177 +1,104 @@
-/**
- * LOTUS DROPDOWN - Reusable Dropdown Component
- * 
- * A themed dropdown component that supports:
- * - Label above dropdown
- * - Error state with error message
- * - Options array with label/value pairs
- * - Matches LotusTextInput styling
- * 
- * Philosophy: Consistent, accessible dropdown that matches sanctuary aesthetic
- * 
- * @example
- * ```tsx
- * import LotusDropdown from './components/LotusDropdown';
- * 
- * function MyForm() {
- *   const [category, setCategory] = useState('');
-    const styles = useMemo(() => StyleSheet.create({'');
- *   const options = [
- *     { label: 'Self', value: 'self' },
- *     { label: 'Classroom', value: 'classroom' },
- *   ];
- * 
- *   return (
- *     <LotusDropdown
- *       label="Category"
- *       value={category}
- *       options={options}
- *       onChange={setCategory}
- *     />
- *   );
- * }
- * ```
- */
-
-import React, { FC, useMemo } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { Pressable } from 'react-native';
 import {
-    Select,
-    SelectTrigger,
-    SelectInput,
-    SelectIcon,
-    SelectPortal,
-    SelectBackdrop,
-    SelectContent,
-    SelectItem
+  VStack,
+  HStack,
+  Text,
+  Box,
+  Actionsheet,
+  ActionsheetContent,
+  ActionsheetDragIndicatorWrapper,
+  ActionsheetDragIndicator,
+  ActionsheetItem,
+  ActionsheetItemText,
 } from '../gluestack';
-import { ChevronDown } from 'lucide-react-native';
-import { Theme, typography } from '../theme/Theme';
-
-// ============================================================================
-// TYPES
-// ============================================================================
+import { ChevronDown, AlertCircle } from 'lucide-react-native';
 
 interface LotusDropdownProps {
-    label: string;
-    value: string;
-    options: Array<{ label: string; value: string }>;
-    onChange: (value: string) => void;
-    error?: string;
+  label?: string;
+  value: string;
+  options: Array<{ label: string; value: string }>;
+  onChange: (value: string) => void;
+  error?: string;
+  placeholder?: string;
+  isDisabled?: boolean;
 }
 
-// ============================================================================
-// MAIN COMPONENT
-// ============================================================================
+/**
+ * LotusDropdown
+ *
+ * A hardened, phase-aware dropdown component.
+ * Uses Actionsheet for a premium mobile experience.
+ */
+export default function LotusDropdown({
+  label,
+  value,
+  options,
+  onChange,
+  error,
+  placeholder = 'Select an option',
+  isDisabled = false,
+}: LotusDropdownProps) {
+  const [showActionsheet, setShowActionsheet] = useState(false);
 
-const LotusDropdown: FC<LotusDropdownProps> = ({
-    label,
-    value,
-    options,
-    onChange,
-    error,
-}) => {
-    const styles = useMemo(() => StyleSheet.create({
-        container: {
-            marginBottom: Theme.spacing.md,
-        },
-        label: {
-            fontSize: Theme.typography.fontSize.md,
-            color: Theme.colors.sacredWhite,
-            marginBottom: Theme.spacing.xs,
-            fontWeight: '600',
-        },
-        trigger: {
-            backgroundColor: Theme.colors.shroud,
-            borderRadius: Theme.corners.comfortable,
-            borderWidth: 1,
-            borderColor: Theme.colors.shroud, // Default border
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            // height: 48, // Default height
-        },
-        triggerError: {
-            borderColor: Theme.colors.emberRed,
-        },
-        input: {
-            color: Theme.colors.sacredWhite,
-            flex: 1,
-        },
-        icon: {
-            marginRight: 8,
-        },
-        content: {
-            backgroundColor: Theme.colors.shroud,
-            borderColor: Theme.colors.dimGray,
-            borderWidth: 1,
-            borderRadius: Theme.corners.comfortable,
-        },
-        item: {
-            fontSize: 16,
-            backgroundColor: Theme.colors.shroud,
-            padding: 12,
-        },
-        errorText: {
-            fontSize: Theme.typography.fontSize.sm,
-            color: Theme.colors.emberRed,
-            marginTop: Theme.spacing.xs,
-        },
-    }), []);
+  const selectedOption = options.find((opt) => opt.value === value);
+  const hasError = !!error;
 
-    return (
-        <View style={styles.container}>
-            {/* Label */}
-            <Text style={styles.label}>{label}</Text>
+  const handleClose = () => setShowActionsheet(false);
 
-            {/* Select Dropdown */}
-            <Select
-                selectedValue={value}
-                onValueChange={onChange}
-            >
-                <SelectTrigger
-                    style={[
-                        styles.trigger,
-                        error && styles.triggerError,
-                    ]}
+  return (
+    <VStack className="w-full gap-2">
+      {label && <Text className="text-phase-text-primary font-medium tracking-wide">{label}</Text>}
+
+      <Pressable
+        onPress={() => !isDisabled && setShowActionsheet(true)}
+        className={`
+                    flex-row items-center justify-between h-12 px-4 rounded-xl border
+                    ${isDisabled ? 'opacity-50' : 'active:opacity-70'}
+                    ${hasError ? 'border-phase-danger bg-phase-danger/5' : 'border-phase-surface bg-phase-surface'}
+                `}
+      >
+        <Text
+          className={`text-base ${selectedOption ? 'text-phase-text-primary' : 'text-phase-text-secondary'}`}
+        >
+          {selectedOption ? selectedOption.label : placeholder}
+        </Text>
+        <ChevronDown size={20} className="text-phase-text-secondary" />
+      </Pressable>
+
+      {hasError && (
+        <HStack className="items-center gap-1.5 px-1">
+          <AlertCircle size={14} className="text-phase-danger" />
+          <Text className="text-phase-danger text-xs font-medium">{error}</Text>
+        </HStack>
+      )}
+
+      <Actionsheet isOpen={showActionsheet} onClose={handleClose}>
+        <ActionsheetContent className="bg-phase-elevated border-t border-phase-surface pb-8">
+          <ActionsheetDragIndicatorWrapper>
+            <ActionsheetDragIndicator />
+          </ActionsheetDragIndicatorWrapper>
+
+          <VStack className="w-full p-2">
+            {options.map((option) => (
+              <ActionsheetItem
+                key={option.value}
+                onPress={() => {
+                  onChange(option.value);
+                  handleClose();
+                }}
+                className={`rounded-xl mb-1 ${value === option.value ? 'bg-phase-accent/10 border border-phase-accent/20' : 'active:bg-phase-surface'}`}
+              >
+                <ActionsheetItemText
+                  className={`text-base ${value === option.value ? 'text-phase-accent font-bold' : 'text-phase-text-primary'}`}
                 >
-                    <SelectInput
-                        placeholder="Select an option"
-                        style={styles.input}
-                    />
-                    {/* @ts-ignore */}
-                    <SelectIcon style={styles.icon}>
-                        <View>
-                            {/* @ts-ignore */}
-                            <ChevronDown
-                                size={20}
-                                color={Theme.colors.sacredWhite}
-                            />
-                        </View>
-                    </SelectIcon>
-                </SelectTrigger>
-
-                <SelectPortal>
-                    <SelectBackdrop />
-                    <SelectContent style={styles.content}>
-                        {options.map((option) => (
-                            <SelectItem
-                                key={option.value}
-                                label={option.label}
-                                value={option.value}
-                                style={styles.item}
-                            />
-                        ))}
-                    </SelectContent>
-                </SelectPortal>
-            </Select>
-
-            {/* Error Message */}
-            {error && (
-                <Text style={styles.errorText}>{error}</Text>
-            )}
-        </View>
-    );
-};
-
-export default LotusDropdown;
+                  {option.label}
+                </ActionsheetItemText>
+              </ActionsheetItem>
+            ))}
+          </VStack>
+        </ActionsheetContent>
+      </Actionsheet>
+    </VStack>
+  );
+}

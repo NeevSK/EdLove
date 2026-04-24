@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ERRORMESSAGE DEMO - Visual Test
  * 
  * This file demonstrates all three types of ErrorMessage component
@@ -8,7 +8,7 @@
 import React, { useState } from 'react';
 import { View, ScrollView, StyleSheet, Text, TextStyle } from 'react-native';
 import { ErrorMessage } from '@repo/ui';
-import { Theme } from '@repo/ui';
+import {  } from '@repo/ui';
 
 export default function ErrorMessageDemo() {
     const [showGentle, setShowGentle] = useState(true);
@@ -86,28 +86,22 @@ export default function ErrorMessageDemo() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: Theme.colors.obsidian,
-    },
+        backgroundColor: obsidian},
     section: {
-        padding: Theme.spacing.lg,
-    },
+        padding: Theme.spacing.lg},
     title: {
         fontSize: Theme.typography.h1.fontSize,
         fontWeight: Theme.typography.h1.fontWeight as TextStyle['fontWeight'],
-        color: Theme.colors.sacredWhite,
-        marginBottom: Theme.spacing.xl,
-    },
+        color: sacredWhite,
+        marginBottom: Theme.spacing.xl},
     sectionTitle: {
         fontSize: Theme.typography.h3.fontSize,
         fontWeight: Theme.typography.h3.fontWeight as TextStyle['fontWeight'],
-        color: Theme.colors.starlightGray,
+        color: starlightGray,
         marginTop: Theme.spacing.lg,
-        marginBottom: Theme.spacing.sm,
-    },
+        marginBottom: Theme.spacing.sm},
     dismissedText: {
-        color: Theme.colors.mistGray,
+        color: mistGray,
         fontSize: Theme.typography.fontSize.sm,
         fontStyle: 'italic',
-        marginBottom: Theme.spacing.md,
-    },
-});
+        marginBottom: Theme.spacing.md}});

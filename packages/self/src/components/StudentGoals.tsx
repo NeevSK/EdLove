@@ -1,38 +1,33 @@
 /**
- * STUDENT GOALS COMPONENT
- * 
- * Student-specific feature for the Self tab.
- * Features:
- * - Goal setter ("I want to get an A in Math")
- * - Motivation bar ("Current Streak: 5 Days")
- * - Progress tracking
- * 
- * Mission 05: Student Path
+ * STUDENT GOALS
+ * Student-specific feature for tracking personal momentum and goals.
+ * Standardized to Zero-Legacy: purified className utilities and ensured tag closure integrity.
  */
 
 import React, { useState, useEffect } from 'react';
-import {
+import { 
+    Box, 
+    Button, 
+    ButtonText, 
+    HStack, 
+    Heading, 
+    Input, 
+    InputField, 
+    Progress, 
+    ProgressFilledTrack, 
+    Text, 
     VStack,
-    HStack,
-    Text,
-    Heading,
-    Box,
-    Button,
-    ButtonText,
-    Input,
-    InputField,
-    Progress,
-    ProgressFilledTrack,
+    AnimatedView,
+    Icon,
+    hapticLight, 
+    hapticSuccess,
+    SkeletonCard
 } from '@repo/ui';
-import { TouchableOpacity } from 'react-native';
+import { Plus, Minus, Trophy, Flame, Target, Sparkles, ChevronRight, Goal } from 'lucide-react-native';
+import { supabase, useSafeMutation } from '@repo/core';
 import { useTranslation } from 'react-i18next';
-import { Theme } from '@repo/ui';
-
-import { supabase } from '@repo/core';
-import { hapticLight, hapticSuccess } from '@repo/ui';
-import { useSafeMutation } from '@repo/core';
 import { useStudentGoals } from '../hooks/useStudentGoals';
-import type { Goal } from '../types';
+import Animated, { FadeInUp, FadeInRight, Layout } from 'react-native-reanimated';
 
 interface StudentGoalsProps {
     userId: string;
@@ -40,25 +35,16 @@ interface StudentGoalsProps {
 
 export default function StudentGoals({ userId }: StudentGoalsProps) {
     const { t } = useTranslation();
-
-    // Resilient Data Hook
-    const { goals, refreshData } = useStudentGoals(userId);
+    const { goals, refreshData, isLoading } = useStudentGoals(userId);
 
     const [newGoalText, setNewGoalText] = useState('');
     const [streak, setStreak] = useState(0);
     const [showAddGoal, setShowAddGoal] = useState(false);
 
     useEffect(() => {
-        loadStreak();
-    }, [userId]);
-
-    // Removed manual loadGoals as it's handled by generic hook
-
-    const loadStreak = async () => {
-        // In a real app, would calculate from mood logs or activity
-        // For now, using mock data
+        // Mock streak for now
         setStreak(5);
-    };
+    }, [userId]);
 
     const { mutate: saveGoal, isLoading: isSaving } = useSafeMutation(
         async (text: string) => {
@@ -109,274 +95,175 @@ export default function StudentGoals({ userId }: StudentGoalsProps) {
     };
 
     const getStreakMessage = (days: number): string => {
-        if (days === 0) {
-            return t('studentGoals.streakStart') || 'Start your streak today!';
-        } else if (days === 1) {
-            return t('studentGoals.streak1') || '1 Day Streak 🌱';
-        } else if (days < 7) {
-            return t('studentGoals.streakDays', { days }) || `${days} Day Streak 🔥`;
-        } else if (days < 30) {
-            return t('studentGoals.streakWeeks', { weeks: Math.floor(days / 7) }) ||
-                `${Math.floor(days / 7)} Week Streak 💪`;
-        } else {
-            return t('studentGoals.streakMonths', { months: Math.floor(days / 30) }) ||
-                `${Math.floor(days / 30)} Month Streak ⭐`;
-        }
+        if (days === 0) return t('studentGoals.streakStart') || 'Start your streak!';
+        return t('studentGoals.streakDays', { days }) || `${days} Day Streak`;
     };
 
+    if (isLoading && userId) {
+        return (
+            <VStack className="gap-lg p-lg">
+                <SkeletonCard height={120} />
+                <SkeletonCard height={200} />
+            </VStack>
+        );
+    }
+
     return (
-        <VStack space="lg">
-            {/* Motivation Bar / Streak */}
-            <Box
-                sx={{
-                    padding: Theme.spacing.lg,
-                    backgroundColor: Theme.colors.ink,
-                    borderRadius: Theme.corners.comfortable,
-                    borderLeftWidth: 4,
-                    borderLeftColor: Theme.colors.templeGold,
-                }}
-            >
-                <VStack space="md">
-                    <HStack
-                        sx={{
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                        }}
-                    >
-                        <Text
-                            color={Theme.colors.sacredWhite}
-                            size="lg"
-                            sx={{ fontWeight: '700' }}
-                        >
-                            {t('studentGoals.motivationTitle') || '✨ Your Momentum'}
-                        </Text>
+        <VStack className="gap-lg p-lg">
+            {/* Momentum Card */}
+            <AnimatedView entering={FadeInUp.duration(600)}>
+                <Box className="p-lg bg-obsidian rounded-comfortable border-l-4 border-l-sanctuarySaffron border-y border-r border-white/5 shadow-2xl">
+                    <VStack className="gap-4">
+                        <HStack className="justify-between items-center">
+                            <HStack className="items-center gap-2">
+                                <Icon as={Flame} className="text-sanctuarySaffron" size={20} />
+                                <Text className="text-sacredWhite/60 font-black uppercase tracking-[0.2em] text-[10px]">
+                                    Momentum
+                                </Text>
+                            </HStack>
+                            <Box className="bg-sanctuarySaffron/10 px-2 py-1 rounded-full">
+                                <Text className="text-sanctuarySaffron text-[10px] font-bold">Active</Text>
+                            </Box>
+                        </HStack>
+
+                        <VStack className="items-center py-2">
+                            <Text className="text-sanctuarySaffron text-4xl font-black tracking-tight text-center">
+                                {getStreakMessage(streak)}
+                            </Text>
+                            <Text className="text-mistGray text-xs text-center mt-2 opacity-60 italic">
+                                {t('studentGoals.streakDesc') || 'Keep completing tasks to fuel the fire.'}
+                            </Text>
+                        </VStack>
+                    </VStack>
+                </Box>
+            </AnimatedView>
+
+            {/* Goals Header */}
+            <VStack className="gap-md">
+                <HStack className="justify-between items-center px-1">
+                    <HStack className="items-center gap-3">
+                        <Icon as={Goal} className="text-sanctuarySaffron" size={24} />
+                        <Heading size="lg" className="text-sacredWhite font-black tracking-tight">
+                            {t('studentGoals.goalsTitle') || 'My Intentions'}
+                        </Heading>
                     </HStack>
-
-                    <HStack
-                        sx={{
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            padding: Theme.spacing.md,
-                        }}
-                    >
-                        <Text
-                            color={Theme.colors.templeGold}
-                            sx={{
-                                fontSize: 32,
-                                fontWeight: '700',
-                            }}
-                        >
-                            {getStreakMessage(streak)}
-                        </Text>
-                    </HStack>
-
-                    <Text
-                        color={Theme.colors.starlightGray}
-                        size="sm"
-                        textAlign="center"
-                    >
-                        {t('studentGoals.streakDesc') ||
-                            'Keep logging your mood and completing assignments!'}
-                    </Text>
-                </VStack>
-            </Box>
-
-            {/* Goals Section */}
-            <VStack space="md">
-                <HStack
-                    sx={{
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                    }}
-                >
-                    <Heading size="lg" color={Theme.colors.sanctuarySaffron}>
-                        {t('studentGoals.goalsTitle') || '🎯 My Goals'}
-                    </Heading>
 
                     <Button
-                        variant="link"
-                        size="sm"
-                        onPress={() => setShowAddGoal(!showAddGoal)}
+                        variant="ghost"
+                        onPress={() => { hapticLight(); setShowAddGoal(!showAddGoal); }}
+                        className="px-0"
                     >
-                        <ButtonText color={Theme.colors.sanctuarySaffron}>
-                            {showAddGoal
-                                ? t('common.cancel') || 'Cancel'
-                                : t('studentGoals.addGoal') || '+ Add Goal'}
+                        <ButtonText className="text-sanctuarySaffron font-bold text-sm">
+                            {showAddGoal ? t('common.cancel') || 'Close' : t('studentGoals.addGoal') || '+ New Goal'}
                         </ButtonText>
                     </Button>
                 </HStack>
 
                 {/* Add Goal Input */}
                 {showAddGoal && (
-                    <Box
-                        sx={{
-                            padding: Theme.spacing.md,
-                            backgroundColor: Theme.colors.ink,
-                            borderRadius: Theme.corners.comfortable,
-                        }}
-                    >
-                        <VStack space="md">
-                            <Input
-                                sx={{
-                                    backgroundColor: Theme.colors.obsidian,
-                                }}
-                            >
-                                <InputField
-                                    placeholder={
-                                        t('studentGoals.goalPlaceholder') ||
-                                        'I want to...'
-                                    }
-                                    value={newGoalText}
-                                    onChangeText={setNewGoalText}
-                                    sx={{
-                                        color: Theme.colors.sacredWhite,
-                                    }}
-                                />
-                            </Input>
+                    <AnimatedView entering={FadeInUp} layout={Layout.springify()}>
+                        <Box className="p-lg bg-white/5 rounded-3xl border border-white/10 mb-4 shadow-xl">
+                            <VStack className="gap-lg">
+                                <Box className="bg-obsidian rounded-2xl border border-white/10 p-2 h-16 justify-center">
+                                    <InputField
+                                        placeholder={t('studentGoals.goalPlaceholder') || 'What do you want to master?'}
+                                        value={newGoalText}
+                                        onChangeText={setNewGoalText}
+                                        className="text-sacredWhite px-4"
+                                        placeholderTextColor="rgba(255,255,255,0.2)"
+                                    />
+                                </Box>
 
-                            <Button
-                                sx={{
-                                    backgroundColor: Theme.colors.sanctuarySaffron,
-                                }}
-                                onPress={handleAddGoal}
-                                isDisabled={!newGoalText.trim() || isSaving}
-                            >
-                                <ButtonText color={Theme.colors.sacredWhite}>
-                                    {isSaving ? 'Saving...' : (t('studentGoals.saveGoal') || 'Save Goal')}
-                                </ButtonText>
-                            </Button>
-                        </VStack>
-                    </Box>
+                                <Button
+                                    onPress={handleAddGoal}
+                                    isDisabled={!newGoalText.trim() || isSaving}
+                                    className="bg-emeraldGreen h-14 rounded-full shadow-lg shadow-emeraldGreen/20"
+                                >
+                                    <HStack className="items-center gap-2">
+                                        <Icon as={Sparkles} className="text-white" size={18} />
+                                        <ButtonText className="text-white font-black uppercase tracking-widest text-xs">
+                                            {isSaving ? 'Planting...' : 'Set Foundation'}
+                                        </ButtonText>
+                                    </HStack>
+                                </Button>
+                            </VStack>
+                        </Box>
+                    </AnimatedView>
                 )}
 
                 {/* Goals List */}
-                {goals.map((goal) => (
-                    <Box
-                        key={goal.id}
-                        sx={{
-                            padding: Theme.spacing.md,
-                            backgroundColor: Theme.colors.ink,
-                            borderRadius: Theme.corners.comfortable,
-                        }}
-                    >
-                        <VStack space="md">
-                            {/* Goal Text */}
-                            <Text
-                                color={Theme.colors.sacredWhite}
-                                size="md"
-                                sx={{ fontWeight: '600' }}
-                            >
-                                {goal.text}
-                            </Text>
-
-                            {/* Progress Bar */}
-                            <VStack space="xs">
-                                <HStack
-                                    sx={{
-                                        justifyContent: 'space-between',
-                                        alignItems: 'center',
-                                    }}
-                                >
-                                    <Text color={Theme.colors.mistGray} size="sm">
-                                        {t('studentGoals.progress') || 'Progress'}
-                                    </Text>
-                                    <Text
-                                        color={Theme.colors.sanctuarySaffron}
-                                        size="sm"
-                                        sx={{ fontWeight: '700' }}
-                                    >
-                                        {goal.progress}%
-                                    </Text>
-                                </HStack>
-
-                                <Progress
-                                    value={goal.progress}
-                                    sx={{
-                                        height: 8,
-                                        backgroundColor: Theme.colors.obsidian,
-                                    }}
-                                >
-                                    <ProgressFilledTrack
-                                        sx={{
-                                            backgroundColor:
-                                                goal.progress === 100
-                                                    ? Theme.colors.sageGreen
-                                                    : Theme.colors.sanctuarySaffron,
-                                        }}
-                                    />
-                                </Progress>
-                            </VStack>
-
-                            {/* Progress Controls */}
-                            {goal.progress < 100 && (
-                                <HStack space="sm">
-                                    <TouchableOpacity
-                                        onPress={() =>
-                                            handleUpdateProgress(goal.id, goal.progress - 10)
-                                        }
-                                    >
-                                        <Box
-                                            sx={{
-                                                padding: Theme.spacing.sm,
-                                                backgroundColor: Theme.colors.obsidian,
-                                                borderRadius: Theme.corners.tight,
-                                            }}
-                                        >
-                                            <Text color={Theme.colors.mistGray}>➖</Text>
-                                        </Box>
-                                    </TouchableOpacity>
-
-                                    <TouchableOpacity
-                                        onPress={() =>
-                                            handleUpdateProgress(goal.id, goal.progress + 10)
-                                        }
-                                    >
-                                        <Box
-                                            sx={{
-                                                padding: Theme.spacing.sm,
-                                                backgroundColor: Theme.colors.sanctuarySaffron,
-                                                borderRadius: Theme.corners.tight,
-                                            }}
-                                        >
-                                            <Text color={Theme.colors.sacredWhite}>➕</Text>
-                                        </Box>
-                                    </TouchableOpacity>
-                                </HStack>
-                            )}
-
-                            {/* Completion Badge */}
-                            {goal.progress === 100 && (
-                                <HStack space="sm" sx={{ alignItems: 'center' }}>
-                                    <Text style={{ fontSize: 20 }}>🎉</Text>
-                                    <Text
-                                        color={Theme.colors.sageGreen}
-                                        sx={{ fontWeight: '700' }}
-                                    >
-                                        {t('studentGoals.completed') || 'Goal Achieved!'}
-                                    </Text>
-                                </HStack>
-                            )}
-                        </VStack>
-                    </Box>
-                ))}
-
-                {/* Empty State */}
-                {goals.length === 0 && !showAddGoal && (
-                    <Box
-                        sx={{
-                            padding: Theme.spacing.xl,
-                            alignItems: 'center',
-                        }}
-                    >
-                        <Text
-                            color={Theme.colors.starlightGray}
-                            textAlign="center"
+                <VStack className="gap-4">
+                    {goals.map((goal, index) => (
+                        <AnimatedView 
+                            key={goal.id} 
+                            entering={FadeInRight.delay(index * 100)}
+                            layout={Layout.springify()}
                         >
-                            {t('studentGoals.noGoals') ||
-                                'Set your first goal to start tracking your progress!'}
-                        </Text>
-                    </Box>
-                )}
+                            <Box className="p-lg bg-white/5 rounded-3xl border border-white/5 shadow-sm">
+                                <VStack className="gap-5">
+                                    <HStack className="justify-between items-start">
+                                        <Text className="text-sacredWhite font-bold text-md flex-1 pr-4 leading-relaxed">
+                                            {goal.text}
+                                        </Text>
+                                        <Box className={`px-3 py-1 rounded-full ${goal.progress === 100 ? 'bg-emeraldGreen/10' : 'bg-sanctuarySaffron/10'}`}>
+                                            <Text className={`text-[10px] font-black tracking-widest uppercase ${goal.progress === 100 ? 'text-emeraldGreen' : 'text-sanctuarySaffron'}`}>
+                                                {goal.progress}%
+                                            </Text>
+                                        </Box>
+                                    </HStack>
+
+                                    <VStack className="gap-3">
+                                        <Progress value={goal.progress} className="h-2.5 bg-white/5 rounded-full overflow-hidden">
+                                            <ProgressFilledTrack className={goal.progress === 100 ? 'bg-emeraldGreen' : 'bg-sanctuarySaffron'} />
+                                        </Progress>
+
+                                        <HStack className="justify-between items-center">
+                                            {goal.progress < 100 ? (
+                                                <HStack className="gap-4">
+                                                    <Button
+                                                        onPress={() => { hapticLight(); handleUpdateProgress(goal.id, goal.progress - 10); }}
+                                                        className="w-12 h-12 rounded-full bg-white/5 border border-white/10 items-center justify-center p-0"
+                                                    >
+                                                        <Icon as={Minus} className="text-mistGray" size={20} />
+                                                    </Button>
+
+                                                    <Button
+                                                        onPress={() => { hapticLight(); handleUpdateProgress(goal.id, goal.progress + 10); }}
+                                                        className="w-12 h-12 rounded-full bg-sanctuarySaffron items-center justify-center p-0 shadow-lg shadow-sanctuarySaffron/20"
+                                                    >
+                                                        <Icon as={Plus} className="text-obsidian" size={20} />
+                                                    </Button>
+                                                </HStack>
+                                            ) : (
+                                                <HStack className="items-center gap-2 bg-emeraldGreen/20 px-4 py-2 rounded-full border border-emeraldGreen/30">
+                                                    <Icon as={Trophy} className="text-emeraldGreen" size={16} />
+                                                    <Text className="text-emeraldGreen font-black uppercase tracking-widest text-[11px]">
+                                                        {t('studentGoals.completed') || 'Mastered!'}
+                                                    </Text>
+                                                </HStack>
+                                            )}
+                                            
+                                            <Icon as={ChevronRight} size={20} className="text-mistGray/20" />
+                                        </HStack>
+                                    </VStack>
+                                </VStack>
+                            </Box>
+                        </AnimatedView>
+                    ))}
+
+                    {/* Empty State */}
+                    {goals.length === 0 && !showAddGoal && (
+                        <AnimatedView entering={FadeInUp} className="py-20 items-center justify-center opacity-40">
+                            <Icon as={Target} size={64} className="text-white mb-4" />
+                            <Text className="text-mistGray text-center italic font-medium">
+                                {t('studentGoals.noGoals') || 'No intentions set yet.'}
+                            </Text>
+                            <Text className="text-mistGray/50 text-[10px] uppercase font-bold tracking-widest mt-2">
+                                Define your path to mastery.
+                            </Text>
+                        </AnimatedView>
+                    )}
+                </VStack>
             </VStack>
         </VStack>
     );

@@ -11,30 +11,30 @@ export interface ProfileStats {
 }
 
 /**
- * OrientationSeeds — a private, four-dimensional fingerprint of how the user
+ * OrientationSeeds  a private, four-dimensional fingerprint of how the user
  * tends to orient towards learning and energy.
  *
- * These are TENDENCIES, not types. All values are 0–100 continuous scores.
+ * These are TENDENCIES, not types. All values are 0100 continuous scores.
  * They are never shown as labels; they influence content ordering and the
  * ResonancePatternCard visualization only.
  *
- * • depth_breadth  — 0 = loves going very deep on one thing,
+ * " depth_breadth   0 = loves going very deep on one thing,
  *                    100 = loves exploring wide across many things
- * • reflect_act    — 0 = prefers to reflect/observe before engaging,
+ * " reflect_act     0 = prefers to reflect/observe before engaging,
  *                    100 = prefers to jump in and learn by doing
- * • solo_social    — 0 = recharges and thinks best alone,
+ * " solo_social     0 = recharges and thinks best alone,
  *                    100 = energised and thinks best with others
- * • steady_surge   — 0 = prefers a steady, predictable rhythm,
+ * " steady_surge    0 = prefers a steady, predictable rhythm,
  *                    100 = thrives on bursts of intense focus then rest
  *
- * source — 'seeded' means the user answered the onboarding orientation step;
+ * source  'seeded' means the user answered the onboarding orientation step;
  *          'inferred' means derived purely from behavioral signals.
  */
 export interface OrientationSeeds {
-    depth_breadth: number;   // 0–100
-    reflect_act: number;     // 0–100
-    solo_social: number;     // 0–100
-    steady_surge: number;    // 0–100
+    depth_breadth: number;   // 0100
+    reflect_act: number;     // 0100
+    solo_social: number;     // 0100
+    steady_surge: number;    // 0100
     source: 'seeded' | 'inferred' | 'mixed';
     seeded_at?: string;      // ISO timestamp
     last_updated?: string;
@@ -66,7 +66,7 @@ export interface UserProfile extends ProfileStats {
     qualifications?: string | string[];
     social_links?: SocialLink[];
     /**
-     * Private orientation fingerprint — never shown as a type label.
+     * Private orientation fingerprint  never shown as a type label.
      * Used to subtly personalize content ordering and self-section visuals.
      */
     orientation_seeds?: OrientationSeeds | null;

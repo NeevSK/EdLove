@@ -3,16 +3,19 @@
     "type": "module",
     "version": "0.0.1",
     "scripts": {
-        "dev": "astro dev",
-        "build": "astro build",
-        "preview": "astro preview",
-        "astro": "astro"
+        "dev": "pnpm exec astro dev",
+        "build": "pnpm exec astro build",
+        "preview": "pnpm exec astro preview",
+        "astro": "pnpm exec astro",
+        "lint": "powershell -File ../../scripts/audit-wrapper.ps1 -Cmd \"pnpm exec eslint .\" -Log \"reports/lint.txt\"",
+        "check-types": "powershell -File ../../scripts/audit-wrapper.ps1 -Cmd \"pnpm exec astro check\" -Log \"reports/check-types.txt\""
     },
     "dependencies": {
-        "@astrojs/svelte": "^7.2.5",
+        "@astrojs/sitemap": "^3.6.0",
+        "@astrojs/svelte": "^8.0.5",
         "@tailwindcss/vite": "^4.1.18",
-        "astro": "^5.17.1",
-        "svelte": "^5.49.1",
+        "astro": "^6.1.7",
+        "svelte": "^5.55.4",
         "tailwindcss": "^4.1.18",
         "typescript": "^5.9.3"
     }

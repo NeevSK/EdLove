@@ -1,25 +1,24 @@
 import React, { useState, useEffect, useRef } from 'react';
-import {
+import { 
+    FlatList, 
+    useWindowDimensions, 
+    Platform
+} from 'react-native';
+import { 
+    Text, 
+    HStack, 
+    VStack, 
     Box,
-    VStack,
-    HStack,
-    Text,
+    GlassCard,
     Heading,
-    useThemedColors,
-    Theme,
-    SanctuaryCard,
-    SanctuaryButton,
+    Pressable,
+    View,
+    Icon
 } from '@repo/ui';
-import { uploadToCloudinary } from '@repo/core';
-import { SanctuaryManifesto } from '../api/sacredMissions';
-import { Star, Sparkles, Megaphone, Users } from 'lucide-react-native';
-import { ScrollView, useWindowDimensions, NativeSyntheticEvent, NativeScrollEvent, Pressable, Platform } from 'react-native';
-import Animated, { LinearTransition } from 'react-native-reanimated';
-import { Post } from '../index';
-import { CommunityPresence } from '@repo/self';
+import { Sparkles, Megaphone, Users, Heart } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
 
-
-const AUTO_SWIPE_INTERVAL = 8000;
+import { SanctuaryManifesto, CommunityPost as Post } from '../types/Community';
 
 interface CommunityHearthProps {
     manifestos?: SanctuaryManifesto[];
@@ -30,212 +29,135 @@ interface CommunityHearthProps {
     onPressSpotlight?: (id: string) => void;
 }
 
+const AUTO_SWIPE_INTERVAL = 8000;
+
 export default function CommunityHearth({
-    manifestos,
+    manifestos = [],
     spotlightPost,
     userVibe = 'active',
-    userId,
     onEndorseManifesto,
     onPressSpotlight,
 }: CommunityHearthProps) {
-    const colors = useThemedColors();
+    const { t } = useTranslation();
     const { width: windowWidth } = useWindowDimensions();
+    const flatListRef = useRef<FlatList>(null);
+    const [activeIndex, setActiveIndex] = useState(0);
 
-    // Responsive card width: 85% on mobile, max 700px on web/tablet
+    // Responsive card width
     const CARD_WIDTH = Platform.OS === 'web'
         ? Math.min(windowWidth - 120, 700)
         : windowWidth * 0.85;
 
-    const SNAP_INTERVAL = CARD_WIDTH + Theme.spacing.md;
+    const SNAP_INTERVAL = CARD_WIDTH + 16; 
 
-    const [activeIndex, setActiveIndex] = useState(0);
-    const scrollRef = useRef<ScrollView>(null);
-    const timerRef = useRef<NodeJS.Timeout | null>(null);
-
-    const slides: { key: string; content: React.ReactNode }[] = [];
-
-    // Guest Welcome Slide - always first if guest
-    if (userId === 'guest' || !userId) {
-        slides.push({
-            key: 'welcome',
-            content: (
-                <VStack space="sm">
-                    <HStack space="xs" alignItems="center">
-                        <Sparkles size={14} color={Theme.colors.sanctuarySaffron} />
-                        <Text size="xs" color={Theme.colors.sanctuarySaffron} bold sx={{ textTransform: 'uppercase' }}>
-                            Welcome to the Circle
-                        </Text>
-                    </HStack>
-                    <Heading size="md" color={colors.text}>
-                        Feel the School's Pulse
-                    </Heading>
-                    <Text size="sm" color={colors.textSecondary}>
-                        The Hearth is where we share wisdom, celebrate growth, and align our visions. Explore what's blooming today.
-                    </Text>
-                </VStack>
-            )
-        });
-    }
-
-    slides.push({
-        key: 'presence',
-        content: <CommunityPresence compact={false} hidePadding={true} userVibe={userVibe} userId={userId} />
-    });
-
-    if (manifestos && manifestos.length > 0) {
-        manifestos.forEach((manifesto, index) => {
-            slides.push({
-                key: `manifesto-${manifesto.id}`,
-                content: (
-                    <VStack space="sm">
-                        <HStack space="xs" alignItems="center">
-                            <Star size={14} color={Theme.colors.sanctuarySaffron} />
-                            <Text size="xs" color={Theme.colors.sanctuarySaffron} bold sx={{ textTransform: 'uppercase' }}>
-                                {manifesto.vibe || 'Vision'} Manifesto
-                            </Text>
-                        </HStack>
-                        <Heading size="md" color={colors.text}>
-                            {manifesto.title}
-                        </Heading>
-                        <Text size="sm" color={colors.textSecondary} numberOfLines={3} sx={{ lineHeight: 22 }}>
-                            {manifesto.content}
-                        </Text>
-                        {onEndorseManifesto && (
-                            <Pressable onPress={() => onEndorseManifesto(manifesto.id)}>
-                                <HStack space="xs" alignItems="center" mt="$2">
-                                    <Sparkles size={14} color={Theme.colors.sanctuarySaffron} />
-                                    <Text size="xs" color={Theme.colors.sanctuarySaffron} bold>
-                                        Align with Vision →
-                                    </Text>
-                                </HStack>
-                            </Pressable>
-                        )}
-                    </VStack>
-                )
-            });
-        });
-    }
-
-    if (spotlightPost && spotlightPost.content) {
-        slides.push({
-            key: 'spotlight',
-            content: (
-                <VStack space="sm">
-                    <HStack space="xs" alignItems="center">
-                        <Megaphone size={14} color={Theme.colors.gurudeviViolet} />
-                        <Text size="xs" color={Theme.colors.gurudeviViolet} bold sx={{ textTransform: 'uppercase' }}>
-                            Community Spotlight
-                        </Text>
-                    </HStack>
-                    <Heading size="md" color={colors.text}>
-                        {spotlightPost.content.substring(0, 40)}...
-                    </Heading>
-                    <Text size="sm" color={colors.textSecondary} numberOfLines={2}>
-                        {spotlightPost.content}
-                    </Text>
-                    {spotlightPost.author_name && (
-                        <Text size="xs" color={colors.textTertiary}>
-                            Shared by {spotlightPost.author_name}
-                        </Text>
-                    )}
-                </VStack>
-            )
-        });
-    }
-
-
-    // Auto-swipe logic
     useEffect(() => {
-        startTimer();
-        return () => stopTimer();
-    }, [activeIndex, slides.length]);
-
-    const startTimer = () => {
-        stopTimer();
-        if (slides.length <= 1) return;
-
-        timerRef.current = setInterval(() => {
-            const nextIndex = (activeIndex + 1) % slides.length;
-            scrollRef.current?.scrollTo({
-                x: nextIndex * SNAP_INTERVAL,
-                animated: true
-            });
+        if (!manifestos || !manifestos.length) return;
+        const interval = setInterval(() => {
+            const nextIndex = (activeIndex + 1) % manifestos.length;
+            flatListRef.current?.scrollToIndex({ index: nextIndex, animated: true });
             setActiveIndex(nextIndex);
         }, AUTO_SWIPE_INTERVAL);
-    };
+        return () => clearInterval(interval);
+    }, [activeIndex, manifestos?.length]);
 
-    const stopTimer = () => {
-        if (timerRef.current) {
-            clearInterval(timerRef.current);
-            timerRef.current = null;
-        }
-    };
+    const renderManifesto = ({ item }: { item: SanctuaryManifesto }) => (
+        <GlassCard 
+            className="p-6 rounded-3xl min-h-[180px] border border-white/10" 
+            style={{ width: CARD_WIDTH }}
+        >
+            <VStack className="gap-4">
+                <HStack className="items-center gap-2">
+                    <Icon as={Sparkles} size="xs" className="text-phase-interactive" />
+                    <Text className="font-bold text-phase-interactive uppercase tracking-wider text-[10px]">
+                        {t('community.manifestoTopic') || 'Community Manifesto'}
+                    </Text>
+                </HStack>
+                
+                <VStack className="gap-1">
+                    <Heading className="text-lg font-bold text-ink">{item.title}</Heading>
+                    <Text className="text-sm text-ink/60 leading-relaxed" numberOfLines={3}>
+                        {item.content}
+                    </Text>
+                </VStack>
 
-    const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-        const scrollOffset = event.nativeEvent.contentOffset.x;
-        const index = Math.round(scrollOffset / SNAP_INTERVAL);
-        if (index !== activeIndex) {
-            setActiveIndex(index);
-        }
-    };
+                <HStack className="justify-between items-center mt-2">
+                    <HStack className="items-center gap-1.5">
+                        <Icon as={Users} size="xs" className="text-ink/40" />
+                        <Text className="text-xs text-ink/40 font-medium">
+                            {item.endorsement_count || 0} {t('community.endorsers') || 'Endorsers'}
+                        </Text>
+                    </HStack>
+                    
+                    <Pressable 
+                        onPress={() => onEndorseManifesto?.(item.id)}
+                        className="flex-row items-center bg-phase-interactive px-4 py-2.5 rounded-2xl active:opacity-80 shadow-sm"
+                    >
+                        <Icon as={Heart} size="sm" className="text-white fill-white" />
+                        <Text className="text-xs font-bold text-white ml-2">
+                            {t('community.endorse') || 'Endorse'}
+                        </Text>
+                    </Pressable>
+                </HStack>
+            </VStack>
+        </GlassCard>
+    );
 
     return (
-        <VStack space="sm" sx={{ marginBottom: Theme.spacing.lg }}>
-            <HStack justifyContent="space-between" alignItems="center" px="$4">
-                <Text size="sm" color={Theme.colors.mistGray} bold>
-                    The Community Hearth
-                </Text>
-                <HStack space="xs">
-                    {slides.map((_, i) => (
-                        <Box
-                            key={i}
-                            sx={{
-                                width: i === activeIndex ? 16 : 6,
-                                height: 6,
-                                borderRadius: 3,
-                                backgroundColor: i === activeIndex ? colors.action : colors.border,
-                            }}
-                        />
-                    ))}
-                </HStack>
-            </HStack>
-
-            <ScrollView
-                ref={scrollRef}
-                horizontal
-                pagingEnabled={false} // Disable paging for "Netflix-style" peaking
-                showsHorizontalScrollIndicator={false}
-                onScroll={handleScroll}
-                onScrollBeginDrag={stopTimer}
-                onScrollEndDrag={startTimer}
-                scrollEventThrottle={16}
-                snapToInterval={SNAP_INTERVAL}
-                decelerationRate="fast"
-                contentContainerStyle={{ paddingHorizontal: Theme.spacing.md }}
-            >
-                {slides.map((slide, index) => (
-                    <Box
-                        key={slide.key}
-                        sx={{
-                            width: CARD_WIDTH,
-                            marginRight: index === slides.length - 1 ? 0 : Theme.spacing.md,
-                        }}
-                    >
-                        <SanctuaryCard
-                            onPress={slide.key === 'spotlight' ? () => onPressSpotlight?.(spotlightPost!.id) : undefined}
-                            elevated={false} // Disable elevation to fix perceived glow layer issues
-                            variant="glass"
-                            style={{ minHeight: 180 }} // Dynamic minHeight
-                        >
-                            <Box sx={{ flex: 1, justifyContent: 'center' }}>
-                                <Animated.View layout={LinearTransition}>
-                                    {slide.content}
-                                </Animated.View>
-                            </Box>
-                        </SanctuaryCard>
+        <View className="py-6">
+            <VStack className="gap-6">
+                <HStack className="justify-between items-center px-6">
+                    <VStack className="gap-0.5">
+                        <Heading className="text-2xl font-bold text-ink">{t('community.hearthTitle') || 'The Hearth'}</Heading>
+                        <Text className="text-xs text-ink/60">
+                            {t('community.hearthSubtitle') || 'Where the community pulse beats strongest'}
+                        </Text>
+                    </VStack>
+                    <Box className="bg-phase-interactive/10 px-3.5 py-1.5 rounded-full border border-phase-interactive/20">
+                        <Text className="text-[10px] font-bold text-phase-interactive tracking-widest">
+                            {userVibe.toUpperCase()}
+                        </Text>
                     </Box>
-                ))}
-            </ScrollView>
-        </VStack>
+                </HStack>
+
+                <FlatList
+                    ref={flatListRef}
+                    data={manifestos}
+                    renderItem={renderManifesto}
+                    keyExtractor={(item) => item.id}
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    snapToInterval={SNAP_INTERVAL}
+                    decelerationRate="fast"
+                    contentContainerStyle={{ paddingHorizontal: 20 }}
+                    ItemSeparatorComponent={() => <Box className="w-4" />}
+                    onMomentumScrollEnd={(e) => {
+                        const index = Math.round(e.nativeEvent.contentOffset.x / SNAP_INTERVAL);
+                        setActiveIndex(index);
+                    }}
+                />
+
+                {spotlightPost && (
+                    <Box className="px-6 mt-2">
+                        <Pressable onPress={() => onPressSpotlight?.(spotlightPost.id)}>
+                            <GlassCard className="p-5 rounded-3xl border-l-4 border-l-phase-interactive border border-border">
+                                <HStack className="items-center gap-4">
+                                    <Box className="w-12 h-12 rounded-2xl bg-phase-interactive/10 items-center justify-center">
+                                        <Icon as={Megaphone} size="md" className="text-phase-interactive" />
+                                    </Box>
+                                    <VStack className="flex-1 gap-0.5">
+                                        <Text className="text-[10px] font-bold text-phase-interactive uppercase tracking-[2px]">
+                                            {t('community.spotlight') || 'SPOTLIGHT'}
+                                        </Text>
+                                        <Text className="text-sm font-semibold text-ink leading-tight" numberOfLines={2}>
+                                            {spotlightPost.content}
+                                        </Text>
+                                    </VStack>
+                                </HStack>
+                            </GlassCard>
+                        </Pressable>
+                    </Box>
+                )}
+            </VStack>
+        </View>
     );
 }

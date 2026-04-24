@@ -7,167 +7,170 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { TouchableOpacity } from 'react-native';
-import { Box, HStack, VStack, Text, SkeletonCard, useThemedColors, formatShortDate } from '@repo/ui';
-import { Theme } from '@repo/ui';
-import { approvalsAPI } from '../../approvals';
-import type { StaffLeaveDTO } from '@repo/people';
+import {
+    Box,
+    HStack,
+    VStack,
+    Text,
+    Pressable,
+    Icon,
+    hapticLight,
+    Spinner,
+    Heading
+} from '@repo/ui';
+import { Check, X, AlertCircle, Clock, FileText } from 'lucide-react-native';
+import { staffManagementAPI, type StaffLeaveDTO } from '@repo/core';
 
 interface LeaveApprovalSectionProps {
-  schoolId: string;
-  principalId: string;
+    schoolId: string;
+    principalId: string;
 }
 
-const LEAVE_TYPE_COLORS: Record<string, string> = {
-  sick: Theme.colors.emberRed ?? '#f44336',
-  casual: Theme.colors.gurudeviBlue ?? '#2196f3',
-  annual: Theme.colors.sageGreen ?? '#4caf50',
-  maternity: Theme.colors.sanctuarySaffron ?? '#ff9800',
-  paternity: Theme.colors.sanctuarySaffron ?? '#ff9800',
-  other: '#9e9e9e',
-};
+export default function LeaveApprovalSection({
+    schoolId,
+    principalId
+}: LeaveApprovalSectionProps) {
+    const [loading, setLoading] = useState(true);
+    const [leaves, setLeaves] = useState<StaffLeaveDTO[]>([]);
+    const [processingId, setProcessingId] = useState<string | null>(null);
 
-function leaveTypeColor(type: string): string {
-  return LEAVE_TYPE_COLORS[type.toLowerCase()] ?? '#9e9e9e';
-}
+    const getLeaveTypeColorClass = (type: string): string => {
+        const t = type.toLowerCase();
+        if (t.includes('sick')) return 'bg-phase-danger';
+        if (t.includes('annual')) return 'bg-phase-success';
+        if (t.includes('casual')) return 'bg-phase-interactive';
+        return 'bg-phase-warning';
+    };
 
-function shortId(id: string): string {
-  return id.substring(0, 8);
-}
-
-export default function LeaveApprovalSection({ schoolId, principalId }: LeaveApprovalSectionProps) {
-  const colors = useThemedColors();
-  const [loading, setLoading] = useState(true);
-  const [leaves, setLeaves] = useState<StaffLeaveDTO[]>([]);
-  const [processingId, setProcessingId] = useState<string | null>(null);
-
-  async function fetchLeaves() {
-    const data = await approvalsAPI.listPendingLeaveApprovals(schoolId);
-    setLeaves(data);
-    setLoading(false);
-  }
-
-  useEffect(() => {
-    setLoading(true);
-    fetchLeaves();
-  }, [schoolId]);
-
-  async function handleDecision(leaveId: string, approve: boolean) {
-    setProcessingId(leaveId);
-    if (approve) {
-      await approvalsAPI.approveLeave(leaveId, principalId);
-    } else {
-      await approvalsAPI.rejectLeave(leaveId, principalId);
+    async function fetchLeaves() {
+        try {
+            const data = await staffManagementAPI.getPendingLeaves(schoolId);
+            setLeaves(data);
+        } catch (err) {
+            console.error('LeaveApprovalSection: fetch error', err);
+        } finally {
+            setLoading(false);
+        }
     }
-    setProcessingId(null);
-    await fetchLeaves();
-  }
 
-  return (
-    <Box
-      sx={{
-        backgroundColor: colors.primary,
-        borderRadius: Theme.corners.comfortable,
-        borderWidth: 1,
-        borderColor: colors.border,
-        padding: Theme.spacing.md,
-      }}
-    >
-      <HStack sx={{ alignItems: 'center', gap: Theme.spacing.sm, marginBottom: Theme.spacing.sm }}>
-        <Text sx={{ fontSize: 15, fontWeight: '700', color: colors.text }}>Leave Requests</Text>
-        {leaves.length > 0 && (
-          <Box
-            sx={{
-              backgroundColor: Theme.colors.amberGlow ?? '#ffc107',
-              borderRadius: 10,
-              paddingHorizontal: 8,
-              paddingVertical: 2,
-            }}
-          >
-            <Text sx={{ fontSize: 12, fontWeight: '700', color: '#fff' }}>{leaves.length}</Text>
-          </Box>
-        )}
-      </HStack>
+    useEffect(() => {
+        setLoading(true);
+        fetchLeaves();
+    }, [schoolId]);
 
-      {loading && <SkeletonCard height={70} />}
+    async function handleDecision(leaveId: string, approve: boolean) {
+        hapticLight();
+        setProcessingId(leaveId);
+        try {
+            await staffManagementAPI.approveLeave(leaveId, principalId, approve);
+            await fetchLeaves();
+        } catch (err) {
+            console.error('LeaveApprovalSection: decision error', err);
+        } finally {
+            setProcessingId(null);
+        }
+    }
 
-      {!loading && leaves.length === 0 && (
-        <Text sx={{ fontSize: 13, color: colors.textSecondary, textAlign: 'center', paddingVertical: Theme.spacing.md }}>
-          No pending leave requests
-        </Text>
-      )}
+    return (
+        <Box className="bg-phase-surface rounded-[32px] border border-phase-border p-6 shadow-sm">
+            <HStack className="justify-between items-center mb-8">
+                <HStack className="items-center gap-3">
+                    <Heading className="text-[18px] font-black text-phaseText-primary tracking-tight">
+                        Leave Requests
+                    </Heading>
+                    {leaves.length > 0 && (
+                        <Box className="bg-phase-interactive/10 rounded-full px-3 py-1 border border-phase-interactive/20">
+                            <Text className="text-[10px] font-black text-phase-interactive uppercase tracking-widest">
+                                {leaves.length} Pending
+                            </Text>
+                        </Box>
+                    )}
+                </HStack>
+                {loading && <Spinner size="small" className="text-phase-interactive" />}
+            </HStack>
 
-      {!loading &&
-        leaves.map((leave) => {
-          const isProcessing = processingId === leave.id;
-          return (
-            <VStack
-              key={leave.id}
-              sx={{
-                paddingVertical: Theme.spacing.sm,
-                borderBottomWidth: 1,
-                borderBottomColor: colors.border,
-                gap: 6,
-              }}
-            >
-              <HStack sx={{ alignItems: 'center', gap: Theme.spacing.sm }}>
-                <Box
-                  sx={{
-                    backgroundColor: leaveTypeColor(leave.leave_type),
-                    borderRadius: 8,
-                    paddingHorizontal: 7,
-                    paddingVertical: 2,
-                  }}
-                >
-                  <Text sx={{ fontSize: 10, fontWeight: '700', color: '#fff', textTransform: 'capitalize' }}>{leave.leave_type}</Text>
-                </Box>
-                <Text sx={{ flex: 1, fontSize: 13, color: colors.text, fontWeight: '600' }}>{shortId(leave.user_id)}...</Text>
-                <Text sx={{ fontSize: 11, color: colors.textSecondary }}>
-                  {formatShortDate(leave.start_date)} - {formatShortDate(leave.end_date)}
-                </Text>
-              </HStack>
+            {loading && !leaves.length && (
+                <VStack className="gap-4">
+                    <Box className="h-32 bg-phase-canvas border border-phase-border rounded-[24px] opacity-40" />
+                </VStack>
+            )}
 
-              {leave.reason ? (
-                <Text sx={{ fontSize: 12, color: colors.textSecondary }} numberOfLines={1}>
-                  {leave.reason}
-                </Text>
-              ) : null}
+            {!loading && leaves.length === 0 && (
+                <VStack className="items-center py-10 gap-4 bg-phase-canvas rounded-[24px] border border-dashed border-phase-border">
+                    <Box className="w-14 h-14 rounded-full bg-phase-success/10 items-center justify-center border border-phase-success/20">
+                        <Icon as={Check} size="sm" className="text-phase-success" />
+                    </Box>
+                    <Text className="text-[13px] font-bold text-phaseText-muted text-center opacity-70">
+                        Institutional presence is optimized.{"\n"}No pending requests.
+                    </Text>
+                </VStack>
+            )}
 
-              <HStack sx={{ gap: Theme.spacing.sm }}>
-                <TouchableOpacity onPress={() => handleDecision(leave.id, true)} activeOpacity={0.8} disabled={isProcessing} style={{ flex: 1 }}>
-                  <Box
-                    sx={{
-                      backgroundColor: Theme.colors.sageGreen ?? '#4caf50',
-                      borderRadius: Theme.corners.medium ?? 8,
-                      padding: Theme.spacing.xs,
-                      alignItems: 'center',
-                      opacity: isProcessing ? 0.5 : 1,
-                    }}
-                  >
-                    <Text sx={{ fontSize: 13, fontWeight: '700', color: '#fff' }}>Approve</Text>
-                  </Box>
-                </TouchableOpacity>
+            {!loading && leaves.map((leave) => {
+                const isProcessing = processingId === leave.id;
+                return (
+                    <VStack
+                        key={leave.id}
+                        className="pb-6 mb-6 border-b border-phase-border last:border-b-0 last:mb-0 last:pb-0 gap-5"
+                    >
+                        <VStack className="gap-3">
+                            <HStack className="justify-between items-center">
+                                <HStack className="items-center gap-2">
+                                    <Box className={`rounded-lg px-2 py-1 ${getLeaveTypeColorClass(leave.leave_type)}`}>
+                                        <Text className="text-[9px] font-black text-white uppercase tracking-widest">
+                                            {leave.leave_type}
+                                        </Text>
+                                    </Box>
+                                    <Text className="text-[14px] font-black text-phaseText-primary tracking-tight">
+                                        Staff ID: {leave.user_id.substring(0, 8)}
+                                    </Text>
+                                </HStack>
+                                <HStack className="gap-1.5 items-center">
+                                    <Icon as={Clock} size="xs" className="text-phaseText-muted/40" />
+                                    <Text className="text-[11px] font-black text-phaseText-muted uppercase tracking-tighter">
+                                        {new Date(leave.start_date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                                    </Text>
+                                </HStack>
+                            </HStack>
 
-                <TouchableOpacity onPress={() => handleDecision(leave.id, false)} activeOpacity={0.8} disabled={isProcessing} style={{ flex: 1 }}>
-                  <Box
-                    sx={{
-                      backgroundColor: colors.border,
-                      borderRadius: Theme.corners.medium ?? 8,
-                      padding: Theme.spacing.xs,
-                      alignItems: 'center',
-                      opacity: isProcessing ? 0.5 : 1,
-                      borderWidth: 1,
-                      borderColor: Theme.colors.emberRed ?? '#f44336',
-                    }}
-                  >
-                    <Text sx={{ fontSize: 13, fontWeight: '700', color: Theme.colors.emberRed ?? '#f44336' }}>Reject</Text>
-                  </Box>
-                </TouchableOpacity>
-              </HStack>
-            </VStack>
-          );
-        })}
-    </Box>
-  );
+                            {leave.reason && (
+                                <Box className="bg-phase-canvas p-4 rounded-[20px] border border-phase-border border-l-4 border-l-phase-interactive/30">
+                                    <HStack className="gap-3 items-start">
+                                        <Icon as={FileText} size="xs" className="text-phaseText-muted/30 mt-0.5" />
+                                        <Text className="text-[13px] leading-[20px] text-phaseText-secondary font-bold italic flex-1">
+                                            "{leave.reason}"
+                                        </Text>
+                                    </HStack>
+                                </Box>
+                            )}
+                        </VStack>
+
+                        <HStack className="gap-4">
+                            <Pressable
+                                onPress={() => handleDecision(leave.id, true)}
+                                disabled={isProcessing}
+                                className={`flex-1 flex-row items-center justify-center gap-2 bg-phase-interactive h-14 rounded-[18px] shadow-sm active:scale-95 transition-all ${isProcessing ? 'opacity-50' : ''}`}
+                            >
+                                {isProcessing && processingId === leave.id ? <Spinner color="#FFFFFF" size="small" /> : (
+                                    <>
+                                        <Icon as={Check} size="xs" className="text-white" />
+                                        <Text className="text-[11px] font-black text-white uppercase tracking-widest">Authorize</Text>
+                                    </>
+                                )}
+                            </Pressable>
+
+                            <Pressable
+                                onPress={() => handleDecision(leave.id, false)}
+                                disabled={isProcessing}
+                                className={`flex-1 flex-row items-center justify-center gap-2 border border-phase-danger rounded-[18px] h-14 active:scale-95 transition-all ${isProcessing ? 'opacity-50' : ''}`}
+                            >
+                                <Icon as={X} size="xs" className="text-phase-danger" />
+                                <Text className="text-[11px] font-black text-phase-danger uppercase tracking-widest">Reject</Text>
+                            </Pressable>
+                        </HStack>
+                    </VStack>
+                );
+            })}
+        </Box>
+    );
 }
-

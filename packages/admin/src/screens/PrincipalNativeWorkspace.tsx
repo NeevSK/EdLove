@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ScreenWrapper } from '@repo/ui';
-import { useCapabilities } from '@repo/core';
+import { usePermissions } from '@repo/core';
 import { HierarchyBuilder, InviteManager } from '../components';
 import { PrincipalWorkspaceContainer } from './PrincipalWorkspaceContainer';
 import type { PrincipalWorkspaceView } from '../principal/workspace';
@@ -26,12 +26,12 @@ export function PrincipalNativeWorkspace({
   activeView: controlledActiveView,
   onActiveViewChange,
   renderMain,
-  renderAdditionalView,
+  renderAdditionalView
 }: PrincipalNativeWorkspaceProps) {
-  const { policy } = useCapabilities();
+  const { can } = usePermissions();
   const [internalActiveView, setInternalActiveView] = useState<PrincipalWorkspaceView>('main');
   const activeView = controlledActiveView ?? internalActiveView;
-  const canManageSchoolScope = policy.can('school.manage', { schoolId });
+  const canManageSchoolScope = can('manage', 'School');
 
   const navigatePrincipalView = (view: PrincipalWorkspaceView) => {
     if (view === 'main') {
@@ -59,10 +59,10 @@ export function PrincipalNativeWorkspace({
     }
   }, [activeView, canManageSchoolScope, controlledActiveView, onActiveViewChange]);
 
-  const ctx: PrincipalNativeWorkspaceRenderCtx = {
+  const ctx: PrincipalNativeWorkspaceRenderCtx  = {
     activeView,
     canManageSchoolScope,
-    navigatePrincipalView,
+    navigatePrincipalView
   };
 
   const renderWorkspaceView = () => {
@@ -94,3 +94,4 @@ export function PrincipalNativeWorkspace({
     />
   );
 }
+

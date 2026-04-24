@@ -1,70 +1,72 @@
-import React, { useState, useEffect } from 'react';
-import { View, ScrollView, Text, TouchableOpacity, StyleSheet, Alert, Dimensions } from 'react-native';
-import { useTheme } from '@repo/ui';
-import { FadeInDown } from 'react-native-reanimated';
+import React, { useState, useEffect, useCallback } from 'react';
+import { 
+    Box, 
+    VStack, 
+    HStack, 
+    Text, 
+    Heading, 
+    Pressable, 
+    ScrollView, 
+    useTheme, 
+    useThemedColors,
+    ScreenWrapper,
+    Icon
+} from '@repo/ui';
+import { LayoutGrid, List } from 'lucide-react-native';
+import { usePermissions, api } from '@repo/core';
 import { documentWorkflowAPI, type DocumentWorkflow, type DocumentStatus } from '../document-workflow/api';
 
 interface DocumentListScreenWebProps {
   schoolId: string;
-  userId: string;
-  userRole: string;
   onDocumentPress: (document: DocumentWorkflow) => void;
   onCreateNew: () => void;
+  viewDate?: string;
+  isPastView?: boolean;
 }
-
-const { width: screenWidth } = Dimensions.get('window');
 
 const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
   schoolId,
-  userId,
-  userRole,
   onDocumentPress,
-  onCreateNew
+  onCreateNew,
+  viewDate,
+  isPastView
 }) => {
   const theme = useTheme();
+  const colors = useThemedColors();
+  const { can, context: user } = usePermissions();
   const [documents, setDocuments] = useState<DocumentWorkflow[]>([]);
   const [filteredDocuments, setFilteredDocuments] = useState<DocumentWorkflow[]>([]);
   const [selectedStatus, setSelectedStatus] = useState<DocumentStatus | 'all'>('all');
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'updatedAt' | 'title' | 'status'>('updatedAt');
-  const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
+  const [viewMode, setViewMode] = useState<'list' | 'grid'>('grid');
 
   const statusFilters: (DocumentStatus | 'all')[] = ['all', 'draft', 'review', 'approved', 'published', 'archived'];
 
-  useEffect(() => {
-    loadDocuments();
-  }, [schoolId]);
-
-  useEffect(() => {
-    filterAndSortDocuments();
-  }, [documents, selectedStatus, searchQuery, sortBy]);
-
-  const loadDocuments = async () => {
+  const loadDocuments = useCallback(async () => {
     try {
       setIsLoading(true);
-      const userDocuments = await documentWorkflowAPI.getDocuments(schoolId, undefined, userId);
-      const reviewDocuments = userRole === 'admin' || userRole === 'principal' 
-        ? await documentWorkflowAPI.getDocumentsForReview(schoolId, userId)
+      const userDocuments = await documentWorkflowAPI.getDocuments(schoolId, undefined, user.userId || '');
+      const reviewDocuments = (can('manage', 'AdminDashboard') || can('manage', 'PrincipalDashboard')) 
+        ? await documentWorkflowAPI.getDocumentsForReview(schoolId, user.userId || '')
         : [];
       
       setDocuments([...userDocuments, ...reviewDocuments]);
     } catch (error) {
-      Alert.alert('Error', 'Failed to load documents');
+      console.error('Failed to load documents:', error);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [schoolId, user.userId, can]);
 
-  const filterAndSortDocuments = () => {
-    let filtered = documents;
+  const filterAndSortDocuments = useCallback(() => {
+    let filtered = [...documents];
 
-    // Filter by status
     if (selectedStatus !== 'all') {
       filtered = filtered.filter(doc => doc.status === selectedStatus);
     }
 
-    // Filter by search query
     if (searchQuery.trim()) {
       filtered = filtered.filter(doc => 
         doc.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -72,7 +74,6 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
       );
     }
 
-    // Sort documents
     filtered.sort((a, b) => {
       switch (sortBy) {
         case 'title':
@@ -86,16 +87,24 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
     });
 
     setFilteredDocuments(filtered);
-  };
+  }, [documents, selectedStatus, searchQuery, sortBy]);
 
-  const getStatusColor = (status: DocumentStatus) => {
+  useEffect(() => {
+    loadDocuments();
+  }, [loadDocuments]);
+
+  useEffect(() => {
+    filterAndSortDocuments();
+  }, [filterAndSortDocuments]);
+
+  const getStatusColors = (status: DocumentStatus) => {
     switch (status) {
-      case 'draft': return theme.accent.danger;
-      case 'review': return theme.accent.action;
-      case 'approved': return theme.text.secondary;
-      case 'published': return theme.accent.action;
-      case 'archived': return theme.text.muted;
-      default: return theme.text.muted;
+      case 'draft': return { bg: 'bg-error/10', text: 'text-error' };
+      case 'review': return { bg: 'bg-action/10', text: 'text-action' };
+      case 'approved': return { bg: 'bg-green-100', text: 'text-green-600' };
+      case 'published': return { bg: 'bg-action', text: 'text-white' };
+      case 'archived': return { bg: 'bg-ink/10', text: 'text-ink/40' };
+      default: return { bg: 'bg-ink/5', text: 'text-ink/30' };
     }
   };
 
@@ -103,517 +112,199 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
     return new Date(dateString).toLocaleDateString();
   };
 
-  const isDesktop = screenWidth > 1024;
-  const isTablet = screenWidth > 768 && screenWidth <= 1024;
-
-  const renderDocumentItem = (document: DocumentWorkflow, index: number) => {
-    if (viewMode === 'grid' && isDesktop) {
+  const renderDocumentItem = (document: DocumentWorkflow) => {
+    const statusStyle = getStatusColors(document.status);
+    
+    if (viewMode === 'grid') {
       return (
-        <TouchableOpacity
+        <Pressable
           key={document.id}
-          style={[
-            styles.documentCardGrid,
-            { 
-              backgroundColor: theme.glass.surface.bg,
-              borderColor: theme.glass.surface.border,
-            }
-          ]}
           onPress={() => onDocumentPress(document)}
+          className="bg-white p-6 rounded-[32px] border border-border w-[31%] mb-6 active:scale-95 transition-all shadow-sm"
         >
-          <View style={styles.cardHeader}>
-            <Text 
-              style={[
-                styles.documentTitleGrid,
-                { color: theme.text.primary, fontFamily: 'System', fontWeight: '600' }
-              ]}
-              numberOfLines={3}
-            >
-              {document.title}
-            </Text>
-            <View 
-              style={[
-                styles.statusBadge,
-                { backgroundColor: getStatusColor(document.status) }
-              ]}
-            >
-              <Text 
-                style={[
-                  styles.statusText,
-                  { color: theme.text.inverse, fontFamily: 'System', fontWeight: '500' }
-                ]}
-              >
-                {document.status.toUpperCase()}
-              </Text>
-            </View>
-          </View>
-          
-          <Text 
-            style={[
-              styles.documentMeta,
-              { color: theme.text.secondary, fontFamily: 'System' }
-            ]}
-          >
-            Version {document.version}
-          </Text>
-          
-          <Text 
-            style={[
-              styles.documentMeta,
-              { color: theme.text.secondary, fontFamily: 'System' }
-            ]}
-          >
-            Updated {formatDate(document.updatedAt)}
-          </Text>
-          
-          {document.status === 'review' && document.authorId !== userId && (
-            <View style={[styles.reviewBadge, { backgroundColor: theme.accent.action + '20' }]}>
-              <Text style={[styles.reviewText, { color: theme.accent.action }]}>
-                Pending Review
-              </Text>
-            </View>
-          )}
-        </TouchableOpacity>
+          <VStack className="gap-4">
+            <HStack className="justify-between items-start">
+              <Box className={`${statusStyle.bg} px-3 py-1 rounded-full`}>
+                <Text className={`text-[10px] font-black uppercase tracking-widest ${statusStyle.text}`}>
+                  {document.status}
+                </Text>
+              </Box>
+              <Text className="text-[10px] font-bold text-ink/30">V{document.version}</Text>
+            </HStack>
+            
+            <VStack className="gap-2">
+                <Text className="text-lg font-black text-ink leading-tight" numberOfLines={2}>
+                {document.title}
+                </Text>
+                <Text className="text-xs font-bold text-ink/40">
+                Updated {formatDate(document.updatedAt)}
+                </Text>
+            </VStack>
+
+            {document.status === 'review' && document.authorId !== user.userId && (
+              <Box className="bg-action/10 p-3 rounded-2xl border border-action/20">
+                <Text className="text-[11px] font-black text-action uppercase tracking-wider text-center">
+                  Needs Review
+                </Text>
+              </Box>
+            )}
+          </VStack>
+        </Pressable>
       );
     }
 
     return (
-      <TouchableOpacity
+      <Pressable
         key={document.id}
-        style={[
-          styles.documentItem,
-          { 
-            backgroundColor: theme.glass.surface.bg,
-            borderColor: theme.glass.surface.border,
-            marginBottom: index === filteredDocuments.length - 1 ? 0 : 12
-          }
-        ]}
         onPress={() => onDocumentPress(document)}
+        className="bg-white p-5 rounded-[24px] border border-border mb-3 flex-row items-center justify-between active:scale-[0.99] transition-all"
       >
-        <View style={styles.documentHeader}>
-          <Text 
-            style={[
-              styles.documentTitle, 
-              { color: theme.text.primary, fontFamily: 'System', fontWeight: '600' }
-            ]}
-            numberOfLines={2}
-          >
-            {document.title}
-          </Text>
-          <View 
-            style={[
-              styles.statusBadge,
-              { backgroundColor: getStatusColor(document.status) }
-            ]}
-          >
-            <Text 
-              style={[
-                styles.statusText,
-                { color: theme.text.inverse, fontFamily: 'System', fontWeight: '500' }
-              ]}
-            >
-              {document.status.toUpperCase()}
+        <HStack className="gap-4 items-center flex-1">
+          <Box className={`${statusStyle.bg} w-2 h-12 rounded-full`} />
+          <VStack className="flex-1">
+            <Text className="text-base font-black text-ink" numberOfLines={1}>
+              {document.title}
             </Text>
-            </View>
-        </View>
-        
-        <Text 
-          style={[
-            styles.documentMeta,
-            { color: theme.text.secondary, fontFamily: 'System' }
-          ]}
-        >
-          Version {document.version} • Updated {formatDate(document.updatedAt)}
-        </Text>
-        
-        {document.status === 'review' && document.authorId !== userId && (
-          <View style={[styles.reviewBadge, { backgroundColor: theme.accent.action + '20' }]}>
-            <Text style={[styles.reviewText, { color: theme.accent.action }]}>
-              Pending Review
+            <Text className="text-xs font-bold text-ink/40">
+              Version {document.version} • {formatDate(document.updatedAt)}
             </Text>
-          </View>
-        )}
-      </TouchableOpacity>
-    );
-  };
+          </VStack>
+        </HStack>
 
-  const renderStatusFilter = (status: DocumentStatus | 'all') => {
-    const isActive = selectedStatus === status;
-    const count = status === 'all' 
-      ? documents.length 
-      : documents.filter(doc => doc.status === status).length;
-
-    return (
-      <TouchableOpacity
-        key={status}
-        style={[
-          styles.filterChip,
-          {
-            backgroundColor: isActive ? theme.accent.action : theme.glass.surface.bg,
-            borderColor: isActive ? theme.accent.action : theme.glass.surface.border
-          }
-        ]}
-        onPress={() => setSelectedStatus(status)}
-      >
-        <Text 
-          style={[
-            styles.filterText,
-            { 
-              color: isActive ? theme.text.inverse : theme.text.primary,
-              fontFamily: 'System', fontWeight: '500'
-            }
-          ]}
-        >
-          {status === 'all' ? 'All' : status.charAt(0).toUpperCase() + status.slice(1)}
-          {count > 0 && ` (${count})`}
-        </Text>
-      </TouchableOpacity>
+        <HStack className="gap-6 items-center">
+            <Box className={`${statusStyle.bg} px-3 py-1 rounded-full`}>
+                <Text className={`text-[10px] font-black uppercase tracking-widest ${statusStyle.text}`}>
+                    {document.status}
+                </Text>
+            </Box>
+            {document.status === 'review' && document.authorId !== user.userId && (
+                <Box className="bg-action/10 px-3 py-1 rounded-full border border-action/20">
+                     <Text className="text-[10px] font-black text-action uppercase tracking-widest">Review</Text>
+                </Box>
+            )}
+        </HStack>
+      </Pressable>
     );
   };
 
   if (isLoading) {
     return (
-      <View style={[styles.container, { backgroundColor: theme.gradientNodes[0] }]}>
-        <Text style={[styles.loadingText, { color: theme.text.secondary }]}>
-          Loading documents...
-        </Text>
-      </View>
+        <ScreenWrapper>
+            <Box className="flex-1 items-center justify-center bg-silk p-20">
+                <Text className="text-ink/40 font-bold italic">Gathering documentation...</Text>
+            </Box>
+        </ScreenWrapper>
     );
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.gradientNodes[0] }]}>
-      {/* Enhanced Header */}
-      <View style={[styles.headerWeb, { borderBottomColor: theme.glass.surface.border }]}>
-        <View style={styles.headerLeft}>
-          <Text style={[styles.title, { color: theme.text.primary, fontFamily: 'System', fontWeight: '700' }]}>
-            Documents
-          </Text>
-          <Text style={[styles.subtitle, { color: theme.text.secondary, fontFamily: 'System' }]}>
-            {filteredDocuments.length} {filteredDocuments.length === 1 ? 'document' : 'documents'}
-          </Text>
-        </View>
-        
-        <View style={styles.headerActions}>
-          <TouchableOpacity
-            style={[styles.createButton, { backgroundColor: theme.accent.action }]}
-            onPress={onCreateNew}
-          >
-            <Text style={[styles.createButtonText, { color: theme.text.inverse }]}>
-              + New Document
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+    <ScreenWrapper noTopInset={true}>
+      <Box className="flex-1 bg-silk">
+        {/* Web Header */}
+        <Box className="px-12 py-10 bg-white border-b border-border">
+          <HStack className="justify-between items-center">
+            <VStack>
+              <Heading className="text-4xl font-black text-ink tracking-tight">Documents</Heading>
+              <Text className="text-base font-bold text-ink/40">{filteredDocuments.length} total items</Text>
+            </VStack>
+            
+            <Pressable
+              onPress={onCreateNew}
+              className="bg-action px-8 py-4 rounded-full active:scale-95 shadow-lg shadow-action/20"
+            >
+              <Text className="text-white font-black uppercase tracking-widest">+ New Document</Text>
+            </Pressable>
+          </HStack>
+        </Box>
 
-      {/* Web Controls */}
-      <View style={[styles.webControls, { backgroundColor: theme.glass.surface.bg }]}>
-        <View style={styles.searchSection}>
-          <input
-            type="text"
-            placeholder="Search documents..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            style={styles.searchInputWeb}
-          />
-        </View>
+        {/* Controls Bar */}
+        <Box className="px-12 py-6 bg-silk">
+          <HStack className="gap-8 items-center bg-white p-3 rounded-[32px] border border-border">
+            <Box className="flex-1 pl-4">
+              <input
+                type="text"
+                placeholder="Search documents by title or content..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-transparent border-none outline-none text-ink font-bold placeholder:text-ink/20"
+              />
+            </Box>
 
-        <View style={styles.controlGroup}>
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value as any)}
-            style={styles.sortSelectWeb}
-          >
-            <option value="updatedAt">Last Updated</option>
-            <option value="title">Title</option>
-            <option value="status">Status</option>
-          </select>
-
-          {isDesktop && (
-            <View style={styles.viewToggle}>
-              <TouchableOpacity
-                style={[
-                  styles.viewButton,
-                  viewMode === 'list' && { backgroundColor: theme.accent.action }
-                ]}
-                onPress={() => setViewMode('list')}
+            <HStack className="gap-4 pr-3">
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as any)}
+                className="bg-silk/50 border border-border rounded-2xl px-4 py-2 text-xs font-bold text-ink/60 outline-none"
               >
-                <Text style={[
-                  styles.viewButtonText,
-                  { color: viewMode === 'list' ? theme.text.inverse : theme.text.primary }
-                ]}>
-                  List
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[
-                  styles.viewButton,
-                  viewMode === 'grid' && { backgroundColor: theme.accent.action }
-                ]}
-                onPress={() => setViewMode('grid')}
-              >
-                <Text style={[
-                  styles.viewButtonText,
-                  { color: viewMode === 'grid' ? theme.text.inverse : theme.text.primary }
-                ]}>
-                  Grid
-                </Text>
-              </TouchableOpacity>
-            </View>
+                <option value="updatedAt">Latest First</option>
+                <option value="title">Alphabetical</option>
+                <option value="status">By Status</option>
+              </select>
+
+              <HStack className="bg-silk/50 rounded-2xl p-1 border border-border">
+                <Pressable 
+                  onPress={() => setViewMode('list')}
+                  className={`p-2 rounded-xl ${viewMode === 'list' ? 'bg-white shadow-sm' : ''}`}
+                >
+                  <Icon as={List} size={18} className={viewMode === 'list' ? 'text-action' : 'text-ink/20'} />
+                </Pressable>
+                <Pressable 
+                  onPress={() => setViewMode('grid')}
+                  className={`p-2 rounded-xl ${viewMode === 'grid' ? 'bg-white shadow-sm' : ''}`}
+                >
+                  <Icon as={LayoutGrid} size={18} className={viewMode === 'grid' ? 'text-action' : 'text-ink/20'} />
+                </Pressable>
+              </HStack>
+            </HStack>
+          </HStack>
+        </Box>
+
+        {/* Status Filter Bar */}
+        <ScrollView 
+          horizontal 
+          showsHorizontalScrollIndicator={false}
+          className="max-h-16 flex-none"
+          contentContainerStyle={{ paddingLeft: 48, paddingRight: 48, gap: 12, paddingTop: 8, paddingBottom: 8 }}
+        >
+          {statusFilters.map(status => (
+            <Pressable
+              key={status}
+              onPress={() => setSelectedStatus(status)}
+              className={`px-6 py-2 rounded-full border transition-all ${
+                selectedStatus === status 
+                  ? 'bg-ink border-ink transform scale-105' 
+                  : 'bg-white border-border'
+              }`}
+            >
+              <Text className={`text-xs font-black uppercase tracking-widest ${
+                selectedStatus === status ? 'text-white' : 'text-ink/40'
+              }`}>
+                {status}
+                {status !== 'all' && ` (${documents.filter(d => d.status === status).length})`}
+              </Text>
+            </Pressable>
+          ))}
+        </ScrollView>
+
+        {/* Results Area */}
+        <ScrollView 
+          className="flex-1" 
+          contentContainerStyle={{ padding: 48, paddingBottom: 96 }}
+        >
+          {filteredDocuments.length === 0 ? (
+            <Box className="items-center justify-center p-20 opacity-20">
+                <Text className="text-2xl font-black text-ink">No Documents Found</Text>
+                <Text className="text-sm font-bold text-ink mt-2">Try adjusting your filters or search query.</Text>
+            </Box>
+          ) : (
+            <Box className={viewMode === 'grid' ? 'flex-row flex-wrap justify-between' : 'flex-col'}>
+              {filteredDocuments.map(renderDocumentItem)}
+            </Box>
           )}
-        </View>
-      </View>
-
-      {/* Status Filters */}
-      <ScrollView 
-        horizontal 
-        showsHorizontalScrollIndicator={false}
-        style={styles.filterContainer}
-        contentContainerStyle={styles.filterContent}
-      >
-        {statusFilters.map(renderStatusFilter)}
-      </ScrollView>
-
-      {/* Documents List/Grid */}
-      <ScrollView 
-        style={styles.documentsContainer}
-        contentContainerStyle={[
-          styles.documentsContent,
-          viewMode === 'grid' && styles.documentsGrid
-        ]}
-        showsVerticalScrollIndicator={false}
-      >
-        {filteredDocuments.length === 0 ? (
-          <View style={styles.emptyState}>
-            <Text style={[styles.emptyText, { color: theme.text.secondary }]}>
-              {searchQuery 
-                ? `No documents found matching "${searchQuery}"`
-                : selectedStatus === 'all' 
-                  ? 'No documents yet. Create your first document to get started.'
-                  : `No ${selectedStatus} documents found.`
-              }
-            </Text>
-          </View>
-        ) : (
-          filteredDocuments.map(renderDocumentItem)
-        )}
-      </ScrollView>
-    </View>
+        </ScrollView>
+      </Box>
+    </ScreenWrapper>
   );
 };
 
 export default DocumentListScreenWeb;
-
-// Web-enhanced responsive styles
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  headerWeb: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    paddingHorizontal: 32,
-    paddingVertical: 24,
-    borderBottomWidth: 1,
-  },
-  headerLeft: {
-    flex: 1,
-  },
-  headerActions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 16,
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: '700',
-    marginBottom: 4,
-  },
-  subtitle: {
-    fontSize: 16,
-    opacity: 0.7,
-  },
-  createButton: {
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 8,
-  },
-  createButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  webControls: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 32,
-    paddingVertical: 16,
-    marginHorizontal: 32,
-    marginTop: 16,
-    borderRadius: 12,
-    borderWidth: 1,
-  },
-  searchSection: {
-    flex: 1,
-    marginRight: 16,
-  },
-  searchInput: {
-    height: 40,
-    paddingHorizontal: 12,
-    borderRadius: 8,
-    borderWidth: 1,
-    fontSize: 16,
-    fontFamily: 'System',
-  },
-  searchInputWeb: {
-    height: 40,
-    paddingHorizontal: 12,
-    borderRadius: 8,
-    borderWidth: 1,
-    fontSize: 16,
-    fontFamily: 'System',
-    backgroundColor: '#F5EDD6',
-    borderColor: '#E8E2CF',
-    color: '#2A2318',
-  },
-  controlGroup: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  sortSelect: {
-    height: 40,
-    paddingHorizontal: 12,
-    borderRadius: 8,
-    borderWidth: 1,
-    fontSize: 14,
-    fontFamily: 'System',
-  },
-  sortSelectWeb: {
-    height: 40,
-    paddingHorizontal: 12,
-    borderRadius: 8,
-    borderWidth: 1,
-    fontSize: 14,
-    fontFamily: 'System',
-    backgroundColor: '#F5EDD6',
-    borderColor: '#E8E2CF',
-    color: '#2A2318',
-  },
-  viewToggle: {
-    flexDirection: 'row',
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#ccc',
-  },
-  viewButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 6,
-  },
-  viewButtonText: {
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  filterContainer: {
-    maxHeight: 60,
-  },
-  filterContent: {
-    paddingHorizontal: 32,
-    paddingVertical: 12,
-    gap: 8,
-  },
-  filterChip: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
-    borderWidth: 1,
-  },
-  filterText: {
-    fontSize: 14,
-  },
-  documentsContainer: {
-    flex: 1,
-  },
-  documentsContent: {
-    padding: 32,
-  },
-  documentsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
-  documentItem: {
-    padding: 16,
-    borderRadius: 12,
-    borderWidth: 1,
-  },
-  documentCardGrid: {
-    width: '48%',
-    padding: 16,
-    borderRadius: 12,
-    borderWidth: 1,
-    marginBottom: 16,
-  },
-  cardHeader: {
-    marginBottom: 12,
-  },
-  documentHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 8,
-  },
-  documentTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    flex: 1,
-    marginRight: 12,
-  },
-  documentTitleGrid: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 8,
-    lineHeight: 22,
-  },
-  statusBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-  },
-  statusText: {
-    fontSize: 10,
-    fontWeight: '600',
-  },
-  documentMeta: {
-    fontSize: 14,
-    marginBottom: 4,
-  },
-  reviewBadge: {
-    alignSelf: 'flex-start',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
-    marginTop: 8,
-  },
-  reviewText: {
-    fontSize: 12,
-    fontWeight: '500',
-  },
-  emptyState: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: 60,
-  },
-  emptyText: {
-    fontSize: 16,
-    textAlign: 'center',
-    lineHeight: 24,
-  },
-  loadingText: {
-    fontSize: 16,
-    textAlign: 'center',
-    marginTop: 60,
-  },
-});

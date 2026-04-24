@@ -1,9 +1,17 @@
-
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity, Share, Platform } from 'react-native';
-import { Text, GlassCard, useThemedColors, Icon, SanctuaryCard, Theme, openExternalURL, showExternalLinkOptions } from '@repo/ui';
+import { Share, Platform } from 'react-native';
+import { 
+    Text, 
+    Box, 
+    openExternalURL, 
+    showExternalLinkOptions, 
+    HStack, 
+    VStack, 
+    Pressable,
+    Icon
+} from '@repo/ui';
 import { useSocialLinks } from '../hooks/useSocialLinks';
-import { SocialLink, SocialPlatform } from '@repo/core';
+import type { SocialLink, SocialPlatform } from '@repo/core';
 import * as Clipboard from 'expo-clipboard';
 import {
     Instagram,
@@ -42,15 +50,17 @@ const PRIVACY_ICONS = {
     private: ShieldAlert,
 };
 
+/**
+ * SOCIAL SANCTUARY
+ * Sanctuary V3 standard for displaying and sharing social connections.
+ */
 export const SocialSanctuary: React.FC<SocialSanctuaryProps> = ({ userId, isOwnProfile }) => {
-    const colors = useThemedColors();
     const { t } = useTranslation();
-    const { links, loading, deleteLink, updateLink } = useSocialLinks(userId);
+    const { links, loading } = useSocialLinks(userId);
 
     const handlePress = async (link: SocialLink) => {
         let url = link.url;
         if (link.platform === 'whatsapp' && !url.startsWith('http')) {
-            // Handle whatsapp numbers
             url = `https://wa.me/${url.replace(/[^0-9]/g, '')}`;
         } else if (!url.startsWith('http')) {
             url = `https://${url}`;
@@ -85,14 +95,12 @@ export const SocialSanctuary: React.FC<SocialSanctuaryProps> = ({ userId, isOwnP
     };
 
     const shareProfile = async () => {
-        const profileUrl = `https://app.gurudevi.edlove.org/app`; // Deep link placeholder
+        const profileUrl = `https://app.gurudevi.edlove.org/app`;
         if (Platform.OS === 'web') {
-            // Web Share API (modern browsers) or clipboard fallback
             if (typeof navigator !== 'undefined' && navigator.share) {
                 try {
                     await navigator.share({ title: 'Gurudevi Profile', url: profileUrl });
                 } catch {
-                    // Cancelled or unavailable — fall back to clipboard
                     try { await Clipboard.setStringAsync(profileUrl); } catch { /* ignore */ }
                 }
             } else {
@@ -112,123 +120,66 @@ export const SocialSanctuary: React.FC<SocialSanctuaryProps> = ({ userId, isOwnP
     if (visibleLinks.length === 0 && !isOwnProfile) return null;
 
     return (
-        <View style={styles.container}>
-            <View style={styles.header}>
-                <Text variant="h3" style={styles.title}>{t('socialSanctuary.title')}</Text>
+        <VStack className="my-6 px-4" space="lg">
+            <HStack className="justify-between items-center px-1">
+                <Text className="text-phase-text-primary text-xl font-bold tracking-tight">
+                    {t('socialSanctuary.title', 'Social Connections')}
+                </Text>
                 {isOwnProfile && (
-                    <TouchableOpacity onPress={shareProfile} style={styles.shareBtn}>
-                        <Share2 size={20} color={Theme.colors.ink} />
-                    </TouchableOpacity>
+                    <Pressable 
+                        onPress={shareProfile} 
+                        className="w-10 h-10 rounded-full bg-phase-surface items-center justify-center hover:bg-phase-interactive/10 transition-colors"
+                    >
+                        <Share2 size={18} color="#4A90E2" />
+                    </Pressable>
                 )}
-            </View>
+            </HStack>
 
-            <View style={styles.linksContainer}>
+            <VStack space="sm">
                 {visibleLinks.map((link) => {
                     const PlatformIcon = PLATFORM_ICONS[link.platform] || ExternalLink;
-                    const PrivacyIcon = PRIVACY_ICONS[link.privacy_level];
+                    const PrivacyIcon = PRIVACY_ICONS[link.privacy_level as keyof typeof PRIVACY_ICONS] || Shield;
 
                     return (
-                        <TouchableOpacity
+                        <Pressable
                             key={link.id}
                             onPress={() => handlePress(link)}
                             onLongPress={() => handleOpenOptions(link)}
-                            activeOpacity={0.7}
+                            className="bg-phase-canvas border border-phase-surface rounded-3xl overflow-hidden shadow-sm active:scale-[0.98] transition-all"
                         >
-                            <GlassCard style={styles.linkCard}>
-                                <View style={styles.linkContent}>
-                                    <View style={[styles.platformIcon, { backgroundColor: colors.primary + '20' }]}>
-                                        <PlatformIcon size={24} color={colors.primary} />
-                                    </View>
-                                    <View style={styles.linkTextContainer}>
-                                        <Text variant="p2" weight="bold" style={styles.platformName}>
-                                            {link.platform.charAt(0).toUpperCase() + link.platform.slice(1)}
-                                        </Text>
-                                        <Text variant="p3" numberOfLines={1} style={styles.linkUrl}>
-                                            {link.url}
-                                        </Text>
-                                    </View>
-                                    {isOwnProfile && (
-                                        <View style={styles.privacyIndicator}>
-                                            <PrivacyIcon size={16} color={colors.textTertiary} />
-                                        </View>
+                            <HStack className="items-center p-4">
+                                <Box className="w-12 h-12 rounded-2xl justify-center items-center mr-4 bg-phase-interactive/10 border border-phase-interactive/10">
+                                    <PlatformIcon size={24} color="#4A90E2" />
+                                </Box>
+                                <VStack className="flex-1">
+                                    <Text className="text-base font-bold text-phase-text-primary">
+                                        {link.platform.charAt(0).toUpperCase() + link.platform.slice(1)}
+                                    </Text>
+                                    <Text className="text-xs text-phase-text-tertiary font-medium mt-0.5" numberOfLines={1}>
+                                        {link.url}
+                                    </Text>
+                                </VStack>
+                                <HStack space="md" className="items-center">
+                                    {isOwnProfile && PrivacyIcon && (
+                                        <Box className="p-1.5 rounded-lg bg-phase-surface/50">
+                                            <PrivacyIcon size={14} color="#9DA1A3" />
+                                        </Box>
                                     )}
-                                    <ExternalLink size={18} color={colors.textTertiary} style={styles.arrowIcon} />
-                                </View>
-                            </GlassCard>
-                        </TouchableOpacity>
+                                    <Icon as={ExternalLink} size={18} color="#9DA1A3" className="opacity-40" />
+                                </HStack>
+                            </HStack>
+                        </Pressable>
                     );
                 })}
 
                 {isOwnProfile && visibleLinks.length === 0 && (
-                    <SanctuaryCard variant="glass" style={{ padding: 20, alignItems: 'center' }}>
-                        <Text variant="p3" style={styles.emptyText}>
-                            {t('socialSanctuary.empty')}
+                    <Box className="bg-phase-canvas border border-dashed border-phase-surface rounded-3xl p-8 items-center justify-center">
+                        <Text className="text-sm text-phase-text-tertiary text-center italic leading-relaxed">
+                            {t('socialSanctuary.empty', 'No social links added yet.')}
                         </Text>
-                    </SanctuaryCard>
+                    </Box>
                 )}
-            </View>
-        </View>
+            </VStack>
+        </VStack>
     );
 };
-
-const styles = StyleSheet.create({
-    container: {
-        marginVertical: 16,
-        paddingHorizontal: 4,
-    },
-    header: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: 12,
-    },
-    title: {
-        letterSpacing: 0.5,
-    },
-    shareBtn: {
-        padding: 8,
-    },
-    linksContainer: {
-        gap: 12,
-    },
-    linkCard: {
-        padding: 12,
-        borderRadius: 16,
-    },
-    linkContent: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    platformIcon: {
-        width: 44,
-        height: 44,
-        borderRadius: 12,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginRight: 12,
-    },
-    linkTextContainer: {
-        flex: 1,
-    },
-    platformName: {
-        marginBottom: 2,
-    },
-    linkUrl: {
-        opacity: 0.6,
-    },
-    privacyIndicator: {
-        marginRight: 8,
-    },
-    arrowIcon: {
-        opacity: 0.4,
-    },
-    emptyCard: {
-        padding: 20,
-        alignItems: 'center',
-        borderStyle: 'dashed',
-    },
-    emptyText: {
-        textAlign: 'center',
-        opacity: 0.6,
-    }
-});

@@ -1,257 +1,164 @@
 import React, { useMemo } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import { GlassCard } from './GlassCard';
+import { Pressable, ScrollView } from 'react-native';
+import SanctuaryCard from './SanctuaryCard';
 import { SanctuaryChip } from './SanctuaryChip';
-import { Theme } from '../theme/Theme';
-import { LucideIcon, History, Calendar, Clock, Sparkles, MessageSquare, Zap, Camera, TrendingUp } from 'lucide-react-native';
-import { useManualSnapshot, useResonantHeatmap } from '@repo/core';
+import {
+  LucideIcon,
+  History,
+  Calendar,
+  Clock,
+  Sparkles,
+  MessageSquare,
+  Zap,
+  Camera,
+  TrendingUp,
+} from 'lucide-react-native';
+import { useManualSnapshot, useTemporalHeatmap } from '@repo/core/logic';
 import { ResonantHeatmap } from './ResonantHeatmap';
-import { TouchableOpacity } from 'react-native';
+import { Box, VStack, HStack, Text } from '../gluestack';
 
 export interface JourneyEvent {
-    id: string;
-    timestamp: string;
-    type: 'mood' | 'journal' | 'growth' | 'impact' | 'system';
-    title: string;
-    description?: string;
-    accentColor?: string;
+  id: string;
+  timestamp: string;
+  type: 'mood' | 'journal' | 'growth' | 'impact' | 'system' | 'reward' | 'moment';
+  title: string;
+  description?: string;
+  accentColor?: string;
 }
 
 interface JourneyHistoryCardProps {
-    events: JourneyEvent[];
-    summary?: string;
-    loading?: boolean;
-    scale?: 'day' | 'week' | 'month' | 'year';
+  events: JourneyEvent[];
+  summary?: string;
+  loading?: boolean;
+  scale?: 'day' | 'week' | 'month' | 'year';
+  className?: string;
 }
 
 const getEventIcon = (type: string): LucideIcon => {
-    switch (type) {
-        case 'mood': return Sparkles;
-        case 'journal': return MessageSquare;
-        case 'impact': return Zap;
-        case 'growth': return Calendar;
-        default: return History;
-    }
+  switch (type) {
+    case 'mood':
+      return Sparkles;
+    case 'journal':
+      return MessageSquare;
+    case 'impact':
+      return Zap;
+    case 'growth':
+      return Calendar;
+    case 'reward':
+      return Sparkles;
+    case 'moment':
+      return Clock;
+    default:
+      return History;
+  }
 };
 
-export const JourneyHistoryCard: React.FC<JourneyHistoryCardProps> = ({ 
-    events, 
-    summary, 
-    loading,
-    scale = 'day'
+export const JourneyHistoryCard: React.FC<JourneyHistoryCardProps> = ({
+  events,
+  summary,
+  loading,
+  scale = 'day',
+  className,
 }) => {
-    if (loading) {
-        return (
-            <GlassCard style={styles.container}>
-                <Text style={styles.loadingText}>Tuning resonance...</Text>
-            </GlassCard>
-        );
-    }
+  const { takeSnapshot, isSaving } = useManualSnapshot();
+  const currentYear = useMemo(() => new Date().getFullYear(), []);
+  const { heatmap, isLoading: heatmapLoading } = useTemporalHeatmap(currentYear);
 
-    const { takeSnapshot, isSaving } = useManualSnapshot();
-    const currentYear = useMemo(() => new Date().getFullYear(), []);
-    const { heatmap, isLoading: heatmapLoading } = useResonantHeatmap(currentYear);
-
+  if (loading) {
     return (
-        <GlassCard style={styles.container}>
-            <View style={styles.header}>
-                <View style={styles.titleRow}>
-                    <History size={18} color="#F6BF8C" />
-                    <Text style={styles.title}>Consecutive Resonance</Text>
-                </View>
-                <View style={styles.headerActions}>
-                    <TouchableOpacity 
-                        style={styles.snapshotButton}
-                        onPress={() => takeSnapshot(`Moment: ${new Date().toLocaleDateString()}`)}
-                        disabled={isSaving}
-                    >
-                        <Camera size={16} color={isSaving ? 'rgba(255, 255, 255, 0.2)' : '#F6BF8C'} />
-                    </TouchableOpacity>
-                    <SanctuaryChip 
-                        label={scale.toUpperCase()} 
-                        variant="tag" 
-                        size="sm"
-                    />
-                </View>
-            </View>
-
-            {summary && <Text style={styles.summary}>{summary}</Text>}
-
-            {scale === 'year' ? (
-                <View style={styles.heatmapWrapper}>
-                    <View style={styles.heatmapHeader}>
-                        <TrendingUp size={14} color="#F6BF8C" />
-                        <Text style={styles.heatmapTitle}>Growth Arc Intensity</Text>
-                    </View>
-                    <ResonantHeatmap data={heatmap} loading={heatmapLoading} />
-                    <Text style={styles.heatmapSub}>Tapping a cell zooms into that temporal focus.</Text>
-                </View>
-            ) : (
-                <View style={styles.stream}>
-                    {events.length === 0 ? (
-                        <Text style={styles.emptyText}>The temporal field is quiet here.</Text>
-                    ) : (
-                        events.map((event, index) => {
-                            const Icon = getEventIcon(event.type);
-                            const time = new Date(event.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                            
-                            return (
-                                <View key={event.id} style={styles.eventItem}>
-                                    <View style={styles.timeline}>
-                                        <View style={[styles.dot, { backgroundColor: event.accentColor || '#F6BF8C' }]} />
-                                        {index < events.length - 1 && <View style={styles.line} />}
-                                    </View>
-                                    <View style={styles.eventContent}>
-                                        <View style={styles.eventHeader}>
-                                            <View style={styles.eventTitleRow}>
-                                                <Icon size={14} color={event.accentColor || '#F6BF8C'} style={{ marginRight: 6 }} />
-                                                <Text style={styles.eventTitle}>{event.title}</Text>
-                                            </View>
-                                            <Text style={styles.eventTime}>{time}</Text>
-                                        </View>
-                                        {event.description && (
-                                            <Text style={styles.eventDesc} numberOfLines={2}>
-                                                {event.description}
-                                            </Text>
-                                        )}
-                                    </View>
-                                </View>
-                            );
-                        })
-                    )}
-                </View>
-            )}
-        </GlassCard>
+      <SanctuaryCard className={className}>
+        <Text className="text-phase-text-secondary text-center italic my-10">
+          Loading temporal history...
+        </Text>
+      </SanctuaryCard>
     );
-};
+  }
 
-const styles = StyleSheet.create({
-    container: {
-        padding: 24,
-        minHeight: 120,
-    },
-    header: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: 16,
-    },
-    headerActions: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 12,
-    },
-    snapshotButton: {
-        padding: 6,
-        borderRadius: 8,
-        backgroundColor: 'rgba(246, 191, 140, 0.1)',
-        borderWidth: 1,
-        borderColor: 'rgba(246, 191, 140, 0.2)',
-    },
-    titleRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 8,
-    },
-    title: {
-        fontSize: 14,
-        fontWeight: '800',
-        color: '#F6BF8C',
-        textTransform: 'uppercase',
-        letterSpacing: 1,
-    },
-    summary: {
-        fontSize: 13,
-        color: 'rgba(255, 255, 255, 0.6)',
-        fontStyle: 'italic',
-        marginBottom: 20,
-    },
-    stream: {
-        marginTop: 8,
-    },
-    eventItem: {
-        flexDirection: 'row',
-        marginBottom: 20,
-    },
-    timeline: {
-        width: 20,
-        alignItems: 'center',
-    },
-    dot: {
-        width: 8,
-        height: 8,
-        borderRadius: 4,
-        zIndex: 2,
-        marginTop: 6,
-    },
-    line: {
-        width: 1,
-        flex: 1,
-        backgroundColor: 'rgba(255, 255, 255, 0.1)',
-        position: 'absolute',
-        top: 14,
-        bottom: -10,
-    },
-    eventContent: {
-        flex: 1,
-        marginLeft: 12,
-    },
-    eventHeader: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: 4,
-    },
-    eventTitleRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    eventTitle: {
-        fontSize: 14,
-        fontWeight: '600',
-        color: '#fff',
-    },
-    eventTime: {
-        fontSize: 11,
-        color: 'rgba(255, 255, 255, 0.4)',
-    },
-    eventDesc: {
-        fontSize: 13,
-        color: 'rgba(255, 255, 255, 0.5)',
-        lineHeight: 18,
-    },
-    loadingText: {
-        color: 'rgba(255, 255, 255, 0.4)',
-        textAlign: 'center',
-        marginVertical: 40,
-        fontStyle: 'italic',
-    },
-    emptyText: {
-        color: 'rgba(255, 255, 255, 0.2)',
-        textAlign: 'center',
-        marginVertical: 20,
-        fontSize: 13,
-    },
-    heatmapWrapper: {
-        marginTop: 10,
-    },
-    heatmapHeader: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 6,
-        marginBottom: 12,
-    },
-    heatmapTitle: {
-        fontSize: 12,
-        fontWeight: '700',
-        color: 'rgba(255, 255, 255, 0.6)',
-        textTransform: 'uppercase',
-        letterSpacing: 0.5,
-    },
-    heatmapSub: {
-        fontSize: 11,
-        color: 'rgba(255, 255, 255, 0.3)',
-        marginTop: 12,
-        fontStyle: 'italic',
-    }
-});
+  return (
+    <SanctuaryCard className={className}>
+      <HStack className="items-center justify-between mb-4">
+        <HStack className="items-center gap-2">
+          <History size={18} className="text-phase-accent" />
+          <Text className="text-sm font-extrabold text-phase-accent uppercase tracking-widest">
+            Temporal History
+          </Text>
+        </HStack>
+        <HStack className="items-center gap-3">
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => takeSnapshot(`Snapshot: ${new Date().toLocaleDateString()}`)}
+            disabled={isSaving}
+            className={`p-1.5 rounded-lg bg-phase-accent/10 border border-phase-accent/20 ${isSaving ? 'opacity-30' : ''}`}
+          >
+            <Camera size={16} className="text-phase-accent" />
+          </Pressable>
+          <SanctuaryChip label={scale.toUpperCase()} variant="tag" size="sm" />
+        </HStack>
+      </HStack>
+
+      {summary && <Text className="text-xs italic text-phase-text-secondary mb-5">{summary}</Text>}
+
+      {scale === 'year' ? (
+        <VStack className="mt-2.5">
+          <HStack className="items-center gap-1.5 mb-3">
+            <TrendingUp size={14} className="text-phase-accent" />
+            <Text className="text-xs font-bold text-phase-text-secondary uppercase tracking-[0.5px]">
+              Growth Arc Intensity
+            </Text>
+          </HStack>
+          <ResonantHeatmap data={heatmap} loading={heatmapLoading} />
+          <Text className="text-[11px] italic text-phase-text-secondary/50 mt-3">
+            Tapping a cell zooms into that temporal focus.
+          </Text>
+        </VStack>
+      ) : (
+        <VStack className="mt-2">
+          {events.length === 0 ? (
+            <Text className="text-sm text-center text-phase-text-secondary/40 my-5">
+              The temporal field is quiet here.
+            </Text>
+          ) : (
+            events.map((event, index) => {
+              const Icon = getEventIcon(event.type);
+              const time = new Date(event.timestamp).toLocaleTimeString([], {
+                hour: '2-digit',
+                minute: '2-digit',
+              });
+
+              return (
+                <HStack key={event.id} className="mb-5">
+                  <VStack className="w-5 items-center">
+                    <Box
+                      style={{ backgroundColor: event.accentColor || '#F6BF8C' }}
+                      className="w-2 h-2 rounded-full z-[2] mt-1.5"
+                    />
+                    {index < events.length - 1 && (
+                      <Box className="absolute top-3.5 bottom-[-10px] w-px bg-white/10" />
+                    )}
+                  </VStack>
+                  <VStack className="flex-1 ml-3">
+                    <HStack className="items-center justify-between mb-1">
+                      <HStack className="items-center gap-1.5">
+                        <Icon size={14} color={event.accentColor || '#F6BF8C'} />
+                        <Text className="text-sm font-semibold text-white">{event.title}</Text>
+                      </HStack>
+                      <Text className="text-[11px] text-phase-text-secondary/60">{time}</Text>
+                    </HStack>
+                    {event.description && (
+                      <Text
+                        className="text-sm text-phase-text-secondary leading-4.5"
+                        numberOfLines={2}
+                      >
+                        {event.description}
+                      </Text>
+                    )}
+                  </VStack>
+                </HStack>
+              );
+            })
+          )}
+        </VStack>
+      )}
+    </SanctuaryCard>
+  );
+};

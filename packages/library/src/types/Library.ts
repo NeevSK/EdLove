@@ -2,7 +2,7 @@
 // LIBRARY RESOURCE TYPES
 // ============================================================================
 
-import { AuthorityTier, BaseResource, ResourceFormat, ResourceType } from '@repo/core';
+import { AuthorityTier, BaseResource, ResourceFormat, ResourceType, LinkRelationship, type TemporalScale } from '@repo/core';
 
 export type { ResourceFormat, ResourceType }; // Re-export for package consumers
 
@@ -42,7 +42,7 @@ export interface LibraryResource extends BaseResource {
     /**
      * Human-readable copyright/usage notice displayed prominently to users.
      * Required for externally-sourced content (movie trailers, maps, circulars).
-     * Examples: "© Ministry of Education, Sri Lanka", "YouTube — fair use for education",
+     * Examples: "\u00A9 Ministry of Education, Sri Lanka", "YouTube \u2014 fair use for education",
      *           "Creative Commons CC-BY-SA 4.0"
      */
     copyright_notice?: string;
@@ -58,6 +58,7 @@ export interface LibraryResource extends BaseResource {
     // Metadata
     tags: string[];
     school_id: string;
+    thumbnail_url?: string;
     media?: import('@repo/core').MediaAsset; // Abstracted Media Asset
 
     // Link Reliability
@@ -118,6 +119,8 @@ export interface ResourceFilters {
     sort_by?: 'recent' | 'popular' | 'most_used' | 'most_endorsed' | 'most_bookmarked';
     limit?: number;
     offset?: number;
+    viewDate?: string;
+    viewScale?: TemporalScale;
 }
 
 export interface CollectionFilters {
@@ -129,6 +132,8 @@ export interface CollectionFilters {
     search?: string;
     limit?: number;
     offset?: number;
+    viewDate?: string;
+    viewScale?: TemporalScale;
 }
 
 export interface CreateResourceInput {
@@ -181,12 +186,12 @@ export interface CreateCollectionInput {
 // ============================================================================
 
 export const LIBRARY_UI_CATEGORIES = [
-    { id: 'All', en: 'All', si: 'සියල්ල', ta: 'அனைத்தும்' },
-    { id: 'lesson', en: 'Lessons', si: 'පාඩම්', ta: 'பாடங்கள்' },
-    { id: 'worksheet', en: 'Worksheets', si: 'වැඩපත්', ta: 'பயிற்சித் தாள்கள்' },
-    { id: 'guide', en: 'Guides', si: 'මඟපෙන්වන්නන්', ta: 'வழிகாட்டிகள்' },
-    { id: 'video', en: 'Videos', si: 'වීඩියෝ', ta: 'வீடியோக்கள்' },
-    { id: 'pedagogy', en: 'Pedagogy', si: 'ශික්ෂණ විද්‍යාව', ta: 'கற்பித்தல் முறை' },
+    { id: 'All', en: 'All', si: '\u0DC3\u0DD2\u0DBA\u0DBD\u0DCA\u0DBD', ta: '\u0B85\u0BA9\u0BC8\u0BA4\u0BCD\u0BA4\u0BC1\u0BAE\u0BCD' },
+    { id: 'lesson', en: 'Lessons', si: '\u0DB4\u0DCF\u0DA9\u0DB8\u0DCA', ta: '\u0BAA\u0BBE\u0B9F\u0B99\u0BCD\u0B95\u0BB3\u0BCD' },
+    { id: 'worksheet', en: 'Worksheets', si: '\u0DC0\u0DD0\u0DA9\u0DB4\u0DAD\u0DCA', ta: '\u0BAA\u0BAF\u0BBF\u0BB1\u0BCD\u0B9A\u0BBF\u0BA4\u0BCD \u0BA4\u0BBE\u0BB3\u0BCD\u0B95\u0BB3\u0BCD' },
+    { id: 'guide', en: 'Guides', si: '\u0DB8\u0D9F\u0DB4\u0DD9\u0DB1\u0DCA\u0DC0\u0DB1\u0DCA\u0DB1\u0DB1\u0DCA', ta: '\u0BB5\u0BB4\u0BBF\u0B95\u0BBE\u0B9F\u0BCD\u0B9F\u0BBF\u0B95\u0BB3\u0BCD' },
+    { id: 'video', en: 'Videos', si: '\u0DC0\u0DD3\u0DA9\u0DD2\u0DBA\u0DDD', ta: '\u0BB5\u0BC0\u0B9F\u0BBF\u0BAF\u0BCB\u0B95\u0BCD\u0B95\u0BB3\u0BCD' },
+    { id: 'pedagogy', en: 'Pedagogy', si: '\u0DC1\u0DD2\u0D9A\u0DCA\u0DC2\u0DAB \u0DC0\u0DD2\u0DAF\u0DCA\u200D\u0DBA\u0DCF\u0DC0', ta: '\u0B95\u0BB1\u0BCD\u0BAA\u0BBF\u0BA4\u0BCD\u0BA4\u0BB2\u0BCD \u0BAE\u0BC1\u0BB1\u0BC8' },
 ];
 
 export interface KnowledgeNode {
@@ -251,13 +256,7 @@ export interface KnowledgeTopology {
 // GRAPH & JOURNEY TYPES
 // ============================================================================
 
-export type NodeRelationship =
-    | 'prerequisite'
-    | 'related'
-    | 'leads_to'
-    | 'part_of'
-    | 'opposite'
-    | 'example';
+export type NodeRelationship = LinkRelationship;
 
 export interface LibraryEdge {
     id: string;

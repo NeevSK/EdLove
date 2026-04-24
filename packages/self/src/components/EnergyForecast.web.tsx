@@ -1,58 +1,67 @@
 /**
- * EnergyForecast.web.tsx
- *
- * Web override of the RN EnergyForecast. The native version uses expo-haptics
- * and RN UI components. On web we deliver the same 1-5 energy level log for
- * today with a battery-style visual and notes field.
- * Metro resolves this over EnergyForecast.tsx on the web platform.
+ * ENERGY FORECAST (Web)
+ * Daily energy level log (1-5) with battery-style visualization.
+ * Standardized to Zero-Legacy: purged raw HTML/inline styles and fixed syntax corruption in style objects.
  */
+
 import React, { useState, useEffect } from 'react';
-import { supabase, useTemporalStore } from '@repo/core';
+import { useTemporalStore } from '@repo/core';
+import { 
+    Box, 
+    VStack, 
+    HStack, 
+    Text, 
+    Heading, 
+    Input, 
+    InputField, 
+    Pressable,
+    Icon,
+    SkeletonCard
+} from '@repo/ui';
 import { useEnergyForecast } from '../hooks/useEnergyForecast';
 import { ENERGY_COLORS } from '../constants/wellbeing';
-import { Battery } from 'lucide-react-native';
+import { Battery, CheckCircle2 } from 'lucide-react-native';
+import Animated, { FadeIn, SlideInUp } from 'react-native-reanimated';
 
 interface EnergyForecastProps {
     userId?: string;
 }
 
-const LEVEL_LABELS: Record<number, { label: string; emoji: string; desc: string }> = {
-    1: { label: 'Depleted',    emoji: '🪫', desc: 'Running on empty. Rest is medicine.' },
-    2: { label: 'Low',         emoji: '😔', desc: 'Conserve energy. Be gentle with yourself.' },
-    3: { label: 'Moderate',    emoji: '😐', desc: 'Steady and present. Enough to show up.' },
-    4: { label: 'Energised',   emoji: '🌟', desc: 'Clear and capable. Use this well.' },
-    5: { label: 'Flourishing', emoji: '⚡', desc: 'Full vitality. Channel this energy wisely.' },
+const LEVEL_LABELS: Record<number, { label: string; emoji: string; desc: string; colorClass: string }> = {
+    1: { label: 'Depleted',    emoji: '🍂', desc: 'Running on empty. Rest is medicine.', colorClass: 'text-terracotta' },
+    2: { label: 'Low',         emoji: '☁️', desc: 'Conserve energy. Be gentle with yourself.', colorClass: 'text-mistGray' },
+    3: { label: 'Moderate',    emoji: '🌿', desc: 'Steady and present. Enough to show up.', colorClass: 'text-emeraldGreen' },
+    4: { label: 'Energised',   emoji: '✨', desc: 'Clear and capable. Use this well.', colorClass: 'text-skyBlue' },
+    5: { label: 'Flourishing', emoji: '⚡', desc: 'Full vitality. Channel this energy wisely.', colorClass: 'text-sanctuarySaffron' }
 };
 
 export default function EnergyForecast({ userId }: EnergyForecastProps) {
-    const { forecasts, refreshData, isLoading } = useEnergyForecast(userId);
-    const isPastView = useTemporalStore(s => s.isPastView);
-    const today = new Date().toISOString().split('T')[0];
+    const { forecasts, refreshData, isLoading, saveForecast } = useEnergyForecast(userId);
+    const { isPastView, viewDate } = useTemporalStore();
 
-    const todayForecast = forecasts.find(f => f.forecast_date === today) ?? null;
-    const [selectedLevel, setSelectedLevel] = useState<number | null>(todayForecast?.energy_level ?? null);
+    const currentForecast = forecasts.find(f => f.forecast_date === viewDate) ?? null;
+    const [selectedLevel, setSelectedLevel] = useState<number | null>(null);
     const [notes, setNotes] = useState('');
     const [saving, setSaving] = useState(false);
     const [saved, setSaved] = useState(false);
 
     useEffect(() => {
-        if (todayForecast) {
-            setSelectedLevel(todayForecast.energy_level);
-            setNotes(todayForecast.notes ?? '');
-        }
-    }, [todayForecast?.energy_level]);
+        setSelectedLevel(currentForecast?.energy_level ?? null);
+        setNotes(currentForecast?.notes ?? '');
+    }, [currentForecast?.energy_level, currentForecast?.notes]);
 
     const handleSave = async (level: number) => {
-        if (!userId) return;
+        if (!userId || saving || isPastView) return;
+        
         setSelectedLevel(level);
         setSaving(true);
         try {
-            const existing = forecasts.find(f => f.forecast_date === today);
-            if (existing) {
-                await supabase.from('energy_forecasts').update({ energy_level: level, notes }).eq('id', existing.id);
-            } else {
-                await supabase.from('energy_forecasts').insert({ user_id: userId, energy_level: level, forecast_date: today, notes });
-            }
+            await saveForecast({
+                forecastDate: viewDate,
+                energyLevel: level as 1 | 2 | 3 | 4 | 5,
+                notes,
+                existingId: currentForecast?.id
+            });
             await refreshData();
             setSaved(true);
             setTimeout(() => setSaved(false), 2000);
@@ -62,75 +71,88 @@ export default function EnergyForecast({ userId }: EnergyForecastProps) {
     };
 
     if (isLoading) {
-        return <div style={{ height: '60px', background: 'var(--background-alt)', borderRadius: '12px' }} />;
+        return <SkeletonCard height={120} />;
     }
 
     const meta = selectedLevel ? LEVEL_LABELS[selectedLevel] : null;
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <VStack className="gap-4">
             {/* Header */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <Battery size={16} color="var(--sanctuary-saffron)" />
-                <span style={{ fontSize: '14px', fontWeight: '800' }}>Energy Forecast</span>
-                {saved && <span style={{ marginLeft: 'auto', fontSize: '11px', color: 'var(--moss)', fontWeight: '700' }}>✓ Logged</span>}
-            </div>
+            <HStack className="items-center justify-between">
+                <HStack className="items-center gap-2">
+                    <Icon as={Battery} className="text-sanctuarySaffron" size={16} />
+                    <Heading size="xs" className="text-sacredWhite/80 uppercase tracking-widest font-black">
+                        Energy Resonance
+                    </Heading>
+                </HStack>
+                {saved && (
+                    <Animated.View entering={FadeIn}>
+                        <HStack className="items-center gap-1 bg-emeraldGreen/10 px-2 py-1 rounded-full border border-emeraldGreen/20">
+                            <Icon as={CheckCircle2} size={10} className="text-emeraldGreen" />
+                            <Text className="text-emeraldGreen text-[9px] font-black uppercase">Logged</Text>
+                        </HStack>
+                    </Animated.View>
+                )}
+            </HStack>
 
-            {/* Level selector */}
-            <div style={{ display: 'flex', gap: '8px' }}>
+            <HStack className="gap-2 justify-between">
                 {[1, 2, 3, 4, 5].map(level => {
-                    const m = LEVEL_LABELS[level];
+                    const m = LEVEL_LABELS[level]!;
                     const isSelected = selectedLevel === level;
-                    const color = ENERGY_COLORS[level] ?? '#8B5CF6';
+                    const colorHex = ENERGY_COLORS[level] || '#8B5CF6';
+                    
                     return (
-                        <button
+                        <Pressable
                             key={level}
-                            onClick={() => !isPastView && handleSave(level)}
+                            onPress={() => handleSave(level)}
                             disabled={saving || isPastView}
-                            title={isPastView ? 'Viewing past energy resonance' : m!.label}
-                            style={{
-                                flex: 1,
-                                padding: '12px 4px',
-                                borderRadius: '10px',
-                                border: `2px solid ${isSelected ? color : 'var(--border)'}`,
-                                background: isSelected ? `${color}18` : 'var(--background-alt)',
-                                cursor: (saving || isPastView) ? 'default' : 'pointer',
-                                display: 'flex',
-                                flexDirection: 'column',
-                                alignItems: 'center',
-                                gap: '4px',
-                                transition: 'all 0.2s',
-                                transform: isSelected ? 'scale(1.08)' : 'scale(1)',
-                                opacity: isPastView && !isSelected ? 0.4 : 1,
-                            }}
+                            className={`flex-1 py-4 items-center gap-1 rounded-xl border-2 transition-all duration-300 ${
+                                isSelected 
+                                    ? 'bg-white/10 border-white/20' 
+                                    : 'bg-white/5 border-transparent'
+                            } ${isPastView && !isSelected ? 'opacity-30' : 'opacity-100'}`}
+                            style={isSelected ? { borderColor: colorHex, backgroundColor: `${colorHex}15` } : {}}
                         >
-                            <span style={{ fontSize: '20px' }}>{m!.emoji}</span>
-                            <span style={{ fontSize: '9px', fontWeight: '700', color: isSelected ? color : 'var(--ink-ghost)', textTransform: 'uppercase' }}>{m!.label}</span>
-                        </button>
+                            <Text className="text-2xl mb-1">{m.emoji}</Text>
+                            <Text className={`text-[9px] font-black uppercase tracking-tighter ${
+                                isSelected ? m.colorClass : 'text-mistGray/40'
+                            }`}>
+                                {m.label}
+                            </Text>
+                        </Pressable>
                     );
                 })}
-            </div>
+            </HStack>
 
-            {/* Description */}
+            {/* Description & Notes */}
             {meta && (
-                <p style={{ fontSize: '13px', color: 'var(--ink-ghost)', margin: 0, fontStyle: 'italic' }}>
-                    {meta.desc}
-                </p>
+                <Animated.View entering={SlideInUp.duration(400)}>
+                    <VStack className="gap-3">
+                        <Text className="text-mistGray text-xs italic opacity-80 pl-1">
+                            {meta.desc}
+                        </Text>
+                        
+                        <Box className="bg-white/5 rounded-xl border border-white/10 overflow-hidden">
+                            <InputField
+                                value={notes}
+                                onChangeText={setNotes}
+                                onBlur={() => !isPastView && selectedLevel && handleSave(selectedLevel)}
+                                placeholder={isPastView ? "Historical resonance log" : "Add context (optional)..."}
+                                readOnly={isPastView}
+                                className="text-sacredWhite text-xs px-4 h-10"
+                                placeholderTextColor="rgba(255,255,255,0.2)"
+                            />
+                        </Box>
+                    </VStack>
+                </Animated.View>
             )}
 
-            {/* Notes */}
-            {selectedLevel && (
-                <div style={{ display: 'flex', gap: '8px' }}>
-                    <input
-                        value={notes}
-                        onChange={e => setNotes(e.target.value)}
-                        onBlur={() => !isPastView && selectedLevel && handleSave(selectedLevel)}
-                        placeholder={isPastView ? "Viewing historical context" : "Add context (optional)…"}
-                        disabled={isPastView}
-                        style={{ flex: 1, padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--background-alt)', color: 'var(--ink)', fontSize: '13px', fontFamily: 'var(--font-body)', outline: 'none', opacity: isPastView ? 0.7 : 1 }}
-                    />
-                </div>
+            {!selectedLevel && (
+                <Text className="text-mistGray/40 text-[10px] italic text-center border-t border-white/5 pt-2 uppercase tracking-widest">
+                    Record your energetic state for {viewDate === new Date().toISOString().split('T')[0] ? 'today' : viewDate}
+                </Text>
             )}
-        </div>
+        </VStack>
     );
 }

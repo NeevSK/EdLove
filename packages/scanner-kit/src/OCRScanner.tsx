@@ -18,11 +18,7 @@ import { defaultOCRPipeline, OCRPipeline } from "./ocr/OCRPipeline";
 import { parseStudents, ParsedStudent } from "./ocr/parsers/StudentParser";
 import type { OCRProviderName } from "./ocr/types";
 
-export interface ScannedStudent {
-  name: string;
-  index_number: string;
-  notes?: string;
-}
+import { ScannedStudent } from "./types";
 
 interface OCRScannerProps {
   onStudentsScanned: (students: ScannedStudent[]) => void;
@@ -210,9 +206,7 @@ export default function OCRScanner({
           borderBottomColor: colors.border,
         }}
       >
-        <Text
-          style={{ color: colors.accent, fontSize: 20, fontWeight: "bold" }}
-        >
+        <Text style={{ color: colors.accent, fontSize: 20, fontWeight: "bold" }}>
           {t("ocr.title")}
         </Text>
         <TouchableOpacity onPress={onCancel}>
@@ -351,15 +345,11 @@ export default function OCRScanner({
                       <Text style={{ color: colors.text, fontWeight: "600" }}>
                         {student.name}
                       </Text>
-                      <Text
-                        style={{ color: colors.textSecondary, fontSize: 13 }}
-                      >
+                      <Text style={{ color: colors.textSecondary, fontSize: 13 }}>
                         Index: {student.index_number}
                       </Text>
                       {student.notes && (
-                        <Text
-                          style={{ color: colors.textSecondary, fontSize: 13 }}
-                        >
+                        <Text style={{ color: colors.textSecondary, fontSize: 13 }}>
                           {student.notes}
                         </Text>
                       )}

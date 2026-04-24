@@ -1,30 +1,28 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { ScrollView, ActivityIndicator } from "react-native";
+import { ScrollView } from "react-native";
 import {
   Box,
   VStack,
   HStack,
   Text,
-  Heading,
   UserAvatar,
-  useThemedColors,
-  Theme,
   ScreenWrapper,
   GlobalHeader,
   SanctuaryCard,
-  Button,
+  SanctuaryButton,
+  Spinner,
   useRegisterFAB,
+  Icon
 } from '@repo/ui';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTranslation } from "react-i18next";
-import { supabase } from '@repo/core';
-import { BadgeCheck, BookOpen, MessageSquare, ThumbsUp, School, Send, Shield, Info, ShieldAlert } from 'lucide-react-native';
+import { supabase, usePermissions } from '@repo/core';
+import { BadgeCheck, BookOpen, MessageSquare, ThumbsUp, School, Send, Info, ShieldAlert, Shield } from 'lucide-react-native';
 import { communityAPI } from '../api/community';
 import { useStore } from '@repo/core';
 import type { CommunityStackParamList } from '@repo/core';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import SocialShieldModal from '../components/SocialShieldModal';
-import { useLotusToast } from '@repo/ui';
 
 type Nav = NativeStackNavigationProp<CommunityStackParamList, "UserProfile">;
 
@@ -55,8 +53,8 @@ export default function UserPublicProfileScreen() {
   const { userId: userIdParam, id, userName } =
     ((route as { params?: { userId?: string; id?: string; userName?: string } }).params ?? {});
   const userId = userIdParam || id || '';
+  const { can, flags } = usePermissions();
   const currentUserId = useStore((state) => state.user?.id);
-  const colors = useThemedColors();
 
   const [user, setUser] = useState<PublicUser | null>(null);
   const [stats, setStats] = useState({ posts: 0, endorsements: 0 });
@@ -72,7 +70,7 @@ export default function UserPublicProfileScreen() {
         setLoading(false);
         return;
       }
-      // Fetch public fields only
+      
       const { data: userData } = await supabase
         .from('users')
         .select('id, full_name, authority, avatar_url, public_profile, bio, school:schools(name)')
@@ -91,14 +89,12 @@ export default function UserPublicProfileScreen() {
         });
       }
 
-      // Post count from community_posts
       const { count: postCount } = await supabase
         .from("community_posts")
         .select("id", { count: "exact", head: true })
         .eq("author_id", userId)
         .eq("is_anonymous", false);
 
-      // Endorsements given (library)
       const { count: endorseCount } = await supabase
         .from("resource_engagements")
         .select("id", { count: "exact", head: true })
@@ -120,15 +116,7 @@ export default function UserPublicProfileScreen() {
     fetchProfile();
   }, [fetchProfile]);
 
-  const initials = (user?.full_name ?? userName ?? "?")
-    .split(" ")
-    .map((w) => w[0])
-    .join("")
-    .toUpperCase()
-    .slice(0, 2);
-
   const authorityLabel = AUTHORITY_LABELS[user?.authority ?? ""] ?? user?.authority ?? "";
-
   const isPrivate = user && user.public_profile === false && currentUserId !== userId;
 
   const handleMessagePress = async () => {
@@ -147,174 +135,201 @@ export default function UserPublicProfileScreen() {
     }
   };
 
-  // Register FAB globally
   useRegisterFAB({
     tabType: 'profile',
-    visible: !loading && !!user && !!currentUserId && currentUserId !== userId,
+    visible: !loading && !!user && !!currentUserId && currentUserId !== userId && flags.isMessagingEnabled && can('create', 'DirectConversation'),
     onPress: handleMessagePress,
-    icon: <Send size={24} color="white" />
+    icon: <Icon as={Send} size="md" className="text-white" />
   });
 
   return (
-    <ScreenWrapper scroll={false} noTopInset={true}>
+    <ScreenWrapper noTopInset scroll={false} className="bg-phase-canvas">
       <GlobalHeader
-        title={user?.full_name ?? userName}
+        title={user?.full_name ?? userName ?? "Profile"}
         subtitle={authorityLabel}
         showBack
         onBack={() => navigation.goBack()}
       />
 
       {loading ? (
-        <Box sx={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-          <ActivityIndicator color={Theme.colors.sanctuarySaffron} />
+        <Box className="flex-1 items-center justify-center">
+          <Spinner />
+          <Text className="text-ink/40 text-xs font-bold uppercase tracking-widest mt-4">Gathering Presence...</Text>
         </Box>
       ) : (
         <ScrollView
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ padding: Theme.spacing.lg, gap: Theme.spacing.md }}
+          contentContainerStyle={{ padding: 20, paddingBottom: 100 }}
         >
-          {/* Basic Identity Card - Always Visible */}
-          <SanctuaryCard>
-            <VStack space="md" sx={{ alignItems: 'center', padding: Theme.spacing.lg }}>
-              <UserAvatar
-                avatarUrl={user?.avatar_url}
-                fullName={user?.full_name ?? userName}
-                authority={user?.authority}
-                size={120}
-              />
+          <VStack className="gap-5">
+            {/* Basic Identity Card */}
+            <SanctuaryCard className="bg-phase-surface border border-border rounded-[32px] overflow-hidden">
+              <VStack className="items-center p-6 gap-5">
+                <Box className="shadow-xl">
+                  <UserAvatar
+                    avatarUrl={user?.avatar_url}
+                    fullName={user?.full_name ?? userName ?? "?"}
+                    authority={user?.authority}
+                    size={120}
+                  />
+                </Box>
 
-              <VStack space="xs" sx={{ alignItems: "center" }}>
-                <Text color={colors.text} size="xl" bold>
-                  {user?.full_name ?? userName}
-                </Text>
-
-                {/* Authority badge */}
-                <HStack space="xs" alignItems="center">
-                  <BadgeCheck color={Theme.colors.sanctuarySaffron} size={14} />
-                  <Text color={colors.textSecondary} size="sm">
-                    {authorityLabel}
+                <VStack className="items-center gap-2">
+                  <Text className="text-ink text-2xl font-black">
+                    {user?.full_name ?? userName}
                   </Text>
-                </HStack>
 
-                {user?.school_name && (
-                  <HStack space="xs" alignItems="center">
-                    <School color={colors.textTertiary} size={12} />
-                    <Text color={colors.textTertiary} size="xs">{user.school_name}</Text>
+                  <HStack className="items-center gap-2 bg-phase-interactive/10 px-3 py-1 rounded-full border border-phase-interactive/20">
+                    <Icon as={BadgeCheck} size="xs" className="text-phase-interactive" />
+                    <Text className="text-phase-interactive text-[12px] font-bold">
+                      {authorityLabel}
+                    </Text>
+                  </HStack>
+
+                  {user?.school_name && (
+                    <HStack className="items-center gap-1.5 mt-1">
+                      <Icon as={School} size="xs" className="text-ink/40" />
+                      <Text className="text-ink/60 text-xs font-medium">{user.school_name}</Text>
+                    </HStack>
+                  )}
+                </VStack>
+
+                {isPrivate && (
+                  <HStack className="mt-1 items-center gap-2 px-3 py-1.5 bg-ink/5 rounded-xl border border-border/50">
+                    <Icon as={Shield} size="xs" className="text-ink/40" />
+                    <Text className="text-[11px] text-ink/60 font-medium italic">
+                      {t("community.profile.privateSanctuary") || "Private Sanctuary"}
+                    </Text>
                   </HStack>
                 )}
+
+                {user && currentUserId && currentUserId !== userId && (
+                  <VStack className="w-full mt-4 gap-3">
+                    {flags.isMessagingEnabled && can('create', 'DirectConversation') && (
+                        <SanctuaryButton
+                            action="primary"
+                            onPress={handleMessagePress}
+                            isDisabled={initiatingDM}
+                            className="h-12 rounded-xl"
+                        >
+                            <HStack className="items-center gap-2">
+                                {initiatingDM ? <Spinner /> : <Icon as={Send} size="sm" className="text-white" />}
+                                <Text className="text-white font-bold">
+                                    {t("community.profile.sendMessage")}
+                                </Text>
+                            </HStack>
+                        </SanctuaryButton>
+                    )}
+
+                    {flags.isSocialShieldEnabled && (
+                        <SanctuaryButton
+                            action="secondary"
+                            onPress={() => setShowShieldModal(true)}
+                            className="h-12 rounded-xl border-border bg-transparent"
+                        >
+                            <HStack className="items-center gap-2">
+                                <Icon as={ShieldAlert} size="sm" className="text-ink/60" />
+                                <Text className="text-ink/60 font-bold">
+                                    {t("community.profile.reportAccount")}
+                                </Text>
+                            </HStack>
+                        </SanctuaryButton>
+                    )}
+                  </VStack>
+                )}
               </VStack>
+            </SanctuaryCard>
 
-              {/* Private Indicator */}
-              {isPrivate && (
-                <HStack space="xs" sx={{ mt: '$1', alignItems: 'center', opacity: 0.6 }}>
-                  <Shield size={14} color={colors.textTertiary} />
-                  <Text size="xs" color={colors.textTertiary} italic>
-                    {t("community.profile.privateSanctuary") || "Private Sanctuary"}
-                  </Text>
-                </HStack>
-              )}
-
-              {/* Main Message Action */}
-              {user && currentUserId && currentUserId !== userId && (
-                <VStack space="sm" sx={{ width: '100%', mt: Theme.spacing.md }}>
-                  <Button
-                    label={t("community.profile.sendMessage")}
-                    onPress={handleMessagePress}
-                    icon={<Send size={20} color="white" />}
-                    variant="primary"
-                    loading={initiatingDM}
-                    sx={{ width: '100%' }}
-                  />
-                  <Button
-                    label={t("community.profile.reportAccount")}
-                    onPress={() => setShowShieldModal(true)}
-                    icon={<ShieldAlert size={18} color={colors.textSecondary} />}
-                    variant="outline"
-                    sx={{ width: '100%' }}
-                  />
-                </VStack>
-              )}
-            </VStack>
-          </SanctuaryCard>
-
-          {isPrivate ? (
-            <Box sx={{ p: Theme.spacing.md, alignItems: 'center' }}>
-              <Text textAlign="center" color={colors.textTertiary} size="sm">
-                {t("community.profile.privateNote") || "This explorer has chosen to keep their detailed presence private."}
-              </Text>
-            </Box>
-          ) : (
-            <>
-              {/* Bio / Aspiration section if available */}
-              {user?.bio && (
-                <SanctuaryCard>
-                  <VStack space="xs" sx={{ padding: Theme.spacing.md }}>
-                    <HStack space="xs" alignItems="center" sx={{ mb: '$1' }}>
-                      <Info size={14} color={colors.action} />
-                      <Text color={colors.textSecondary} size="xs" bold sx={{ textTransform: 'uppercase', letterSpacing: 0.8 }}>
-                        {t("community.profile.aspiration")}
+            {isPrivate ? (
+              <Box className="p-6 items-center bg-ink/5 rounded-2xl border border-dashed border-border/60">
+                <Text className="text-center text-ink/40 text-xs font-medium leading-relaxed">
+                  {t("community.profile.privateNote") || "This explorer has chosen to keep their detailed presence private within the sanctuary."}
+                </Text>
+              </Box>
+            ) : (
+              <>
+                {user?.bio && (
+                  <SanctuaryCard className="bg-phase-surface border border-border rounded-3xl">
+                    <VStack className="p-5 gap-3">
+                      <HStack className="items-center gap-2 opacity-60">
+                        <Icon as={Info} size="xs" className="text-phase-interactive" />
+                        <Text className="text-ink text-[10px] font-bold uppercase tracking-widest">
+                          {t("community.profile.aspiration")}
+                        </Text>
+                      </HStack>
+                      <Text className="text-ink/70 text-sm leading-relaxed px-1">
+                        {user.bio}
                       </Text>
-                    </HStack>
-                    <Text color={colors.text} size="sm" sx={{ lineHeight: '$md' }}>
-                      {user.bio}
+                    </VStack>
+                  </SanctuaryCard>
+                )}
+
+                <SanctuaryCard className="bg-phase-surface border border-border rounded-3xl">
+                  <VStack className="p-5 gap-6">
+                    <Text className="text-ink/40 text-[10px] font-bold uppercase tracking-[2px]">
+                      {t("community.profile.contributions")}
                     </Text>
+                    <HStack className="justify-between items-center px-4">
+                      <VStack className="items-center flex-1 gap-2">
+                        <Box className="w-10 h-10 rounded-xl bg-phase-interactive/10 items-center justify-center">
+                            <Icon as={MessageSquare} size="sm" className="text-phase-interactive" />
+                        </Box>
+                        <VStack className="items-center gap-0.5">
+                            <Text className="text-ink text-xl font-black">{stats.posts}</Text>
+                            <Text className="text-ink/40 text-[10px] font-bold uppercase tracking-tight">
+                            {t("community.profile.posts")}
+                            </Text>
+                        </VStack>
+                      </VStack>
+
+                      <Box className="w-[1px] bg-border h-12 mx-2" />
+
+                      <VStack className="items-center flex-1 gap-2">
+                        <Box className="w-10 h-10 rounded-xl bg-green-500/10 items-center justify-center">
+                            <Icon as={ThumbsUp} size="sm" className="text-green-600" />
+                        </Box>
+                        <VStack className="items-center gap-0.5">
+                            <Text className="text-ink text-xl font-black">{stats.endorsements}</Text>
+                            <Text className="text-ink/40 text-[10px] font-bold uppercase tracking-tight">
+                            {t("community.profile.endorsements")}
+                            </Text>
+                        </VStack>
+                      </VStack>
+
+                      <Box className="w-[1px] bg-border h-12 mx-2" />
+
+                      <VStack className="items-center flex-1 gap-2">
+                        <Box className="w-10 h-10 rounded-xl bg-ink/5 items-center justify-center">
+                            <Icon as={BookOpen} size="sm" className="text-ink/40" />
+                        </Box>
+                        <VStack className="items-center gap-0.5">
+                            <Text className="text-ink/20 text-md font-black">---</Text>
+                            <Text className="text-ink/40 text-[10px] font-bold uppercase tracking-tight text-center">
+                            Badges
+                            </Text>
+                        </VStack>
+                      </VStack>
+                    </HStack>
                   </VStack>
                 </SanctuaryCard>
-              )}
 
-              {/* Contribution stats */}
-              <SanctuaryCard>
-                <VStack space="sm" sx={{ padding: Theme.spacing.md }}>
-                  <Text color={colors.textSecondary} size="xs" bold sx={{ textTransform: 'uppercase', letterSpacing: 0.8 }}>
-                    {t("community.profile.contributions")}
-                  </Text>
-                  <HStack space="lg">
-                    <VStack space="xs" sx={{ alignItems: 'center', flex: 1 }}>
-                      <MessageSquare color={colors.action} size={20} />
-                      <Text color={colors.text} size="lg" bold>{stats.posts}</Text>
-                      <Text color={colors.textTertiary} size="xs">
-                        {t("community.profile.posts")}
-                      </Text>
-                    </VStack>
-                    <Box sx={{ width: 1, backgroundColor: colors.border }} />
-                    <VStack space="xs" sx={{ alignItems: 'center', flex: 1 }}>
-                      <ThumbsUp color={Theme.colors.sageGreen} size={20} />
-                      <Text color={colors.text} size="lg" bold>{stats.endorsements}</Text>
-                      <Text color={colors.textTertiary} size="xs">
-                        {t("community.profile.endorsements")}
-                      </Text>
-                    </VStack>
-                    <Box sx={{ width: 1, backgroundColor: colors.border }} />
-                    <VStack space="xs" sx={{ alignItems: 'center', flex: 1 }}>
-                      <BookOpen color={Theme.colors.gurudeviViolet} size={20} />
-                      <Text color={colors.textTertiary} size="xs" sx={{ textAlign: 'center' }}>
-                        {t("community.profile.badgesComingSoon")}
-                      </Text>
-                    </VStack>
-                  </HStack>
-                </VStack>
-              </SanctuaryCard>
-
-              {/* Privacy note */}
-              <Text
-                color={colors.textTertiary}
-                size="xs"
-                sx={{ textAlign: 'center', paddingHorizontal: Theme.spacing.lg }}
-              >
-                {t("community.profile.privacyNote")}
-              </Text>
-            </>
-          )}
+                <Text className="text-ink/40 text-[10px] font-medium text-center px-10 leading-relaxed">
+                  {t("community.profile.privacyNote") || "Profile data is maintained securely within the Sanctuary network."}
+                </Text>
+              </>
+            )}
+          </VStack>
         </ScrollView>
       )}
 
-      {/* Social Shield Modal */}
-      <SocialShieldModal
-        isOpen={showShieldModal}
-        onClose={() => setShowShieldModal(false)}
-        targetUserId={userId}
-        targetUserName={user?.full_name ?? userName}
-      />
+      {showShieldModal && (
+        <SocialShieldModal
+          isOpen={showShieldModal}
+          onClose={() => setShowShieldModal(false)}
+          targetUserId={userId}
+          targetUserName={user?.full_name ?? userName ?? ""}
+        />
+      )}
     </ScreenWrapper>
   );
 }

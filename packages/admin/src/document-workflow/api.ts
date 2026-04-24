@@ -45,7 +45,7 @@ export interface DocumentWorkflowAPI {
   getPublishedDocuments(schoolId: string): Promise<DocumentWorkflow[]>;
 }
 
-export const documentWorkflowAPI: DocumentWorkflowAPI = {
+export const documentWorkflowAPI: DocumentWorkflowAPI  = {
   // Lifecycle management
   async createDraft(template: DocumentTemplate, data: any, authorId: string, schoolId: string): Promise<DocumentWorkflow> {
     return await documentWorkflowEngine.createDraft(template, data, authorId, schoolId);

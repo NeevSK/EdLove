@@ -10,7 +10,7 @@
 
 /**
  * Convert string to URL-friendly slug
- * Example: "Maria Montessori" → "maria-montessori"
+ * Example: "Maria Montessori" \u2192 "maria-montessori"
  */
 export function slugify(text: string): string {
     return text
@@ -39,7 +39,7 @@ export function capitalize(text: string): string {
 
 /**
  * Convert to title case
- * Example: "hello world" → "Hello World"
+ * Example: "hello world" \u2192 "Hello World"
  */
 export function toTitleCase(text: string): string {
     return text
@@ -55,7 +55,7 @@ export function toTitleCase(text: string): string {
 
 /**
  * Format date to readable string
- * Example: "2026-02-03" → "February 3, 2026"
+ * Example: "2026-02-03" \u2192 "February 3, 2026"
  */
 export function formatDate(dateString: string): string {
     const date = new Date(dateString);
@@ -68,7 +68,7 @@ export function formatDate(dateString: string): string {
 
 /**
  * Format date to short format
- * Example: "2026-02-03" → "Feb 3, 2026"
+ * Example: "2026-02-03" \u2192 "Feb 3, 2026"
  */
 export function formatDateShort(dateString: string): string {
     const date = new Date(dateString);
@@ -242,7 +242,7 @@ export function removeFromLocalStorage(key: string): void {
 
 /**
  * Convert hex to RGBA
- * Example: hexToRgba('#2D3561', 0.5) → 'rgba(45, 53, 97, 0.5)'
+ * Example: hexToRgba('#2D3561', 0.5) \u2192 'rgba(45, 53, 97, 0.5)'
  */
 export function hexToRgba(hex: string, alpha: number = 1): string {
     // Remove # if present

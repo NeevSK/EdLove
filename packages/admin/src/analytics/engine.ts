@@ -15,7 +15,7 @@ import {
   EducationSector
 } from './types';
 import { forceLayout, type ForceLayoutOptions } from '@repo/graphics';
-import { supabase } from '@repo/core';
+import { supabase, type GraphNode } from '@repo/core';
 
 export class MultiTenantAnalyticsEngine {
   private static instance: MultiTenantAnalyticsEngine;
@@ -255,8 +255,13 @@ export class MultiTenantAnalyticsEngine {
     const tenantMetrics = await this.aggregateTenantMetrics([tenantId], this.getLastQuarterRange());
     const industryBenchmarks = await this.getIndustryBenchmarks(industry);
     
+    const metrics = tenantMetrics[0];
+    if (!metrics) {
+      throw new Error(`Could not calculate metrics for tenant ${tenantId}`);
+    }
+    
     const tenantPerformance = this.calculatePerformanceRanking(
-      tenantMetrics[0], 
+      metrics, 
       industryBenchmarks
     );
     
@@ -327,11 +332,14 @@ export class MultiTenantAnalyticsEngine {
 
   private async createLineChart(config: CustomReportConfig, data: any[]) {
     // Use graphics package for visualization
-    const nodes = data.map((item, index) => ({
+    const nodes: GraphNode[] = data.map((item, index) => ({
       id: `node-${index}`,
+      label: `Node ${index}`,
+      type: 'resource',
+      group: 'analytics',
       x: index * 50,
-      y: item.value * 10,
-      data: item
+      y: (item.value ?? 0) * 10,
+      metadata: item
     }));
     
     const layoutOptions: ForceLayoutOptions = {
@@ -342,16 +350,19 @@ export class MultiTenantAnalyticsEngine {
       ticks: 100
     };
     
-    const layout = forceLayout(nodes, [], layoutOptions);
+    const layout = forceLayout({ nodes, links: [] }, layoutOptions);
     
     return {
       type: 'line',
       title: config.name,
-      data: layout.nodes.map(node => ({
-        x: node.x,
-        y: node.y,
-        ...node.data
-      })),
+      data: nodes.map(node => {
+        const pos = layout.positions.get(node.id);
+        return {
+          x: pos?.x ?? 0,
+          y: pos?.y ?? 0,
+          ...node.metadata
+        };
+      }),
       config: {
         responsive: true,
         interactive: true,
@@ -363,10 +374,37 @@ export class MultiTenantAnalyticsEngine {
 
   private async createBarChart(config: CustomReportConfig, data: any[]) {
     // Similar implementation using graphics package
+    const nodes: GraphNode[] = data.map((item, index) => ({
+      id: `node-${index}`,
+      label: `Node ${index}`,
+      type: 'resource',
+      group: 'analytics',
+      x: index * 50,
+      y: (item.value ?? 0) * 10,
+      metadata: item
+    }));
+    
+    const layoutOptions: ForceLayoutOptions = {
+      width: 800,
+      height: 400,
+      linkDistance: 100,
+      chargeStrength: -50,
+      ticks: 100
+    };
+    
+    const layout = forceLayout({ nodes, links: [] }, layoutOptions);
+    
     return {
       type: 'bar',
       title: config.name,
-      data,
+      data: nodes.map(node => {
+        const pos = layout.positions.get(node.id);
+        return {
+          x: pos?.x ?? 0,
+          y: pos?.y ?? 0,
+          ...node.metadata
+        };
+      }),
       config: {
         responsive: true,
         interactive: true,

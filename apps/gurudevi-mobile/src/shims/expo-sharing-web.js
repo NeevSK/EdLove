@@ -20,7 +20,7 @@ module.exports = {
                 await navigator.share({ url: url, title: _options?.dialogTitle });
                 return;
             } catch {
-                // user cancelled or API not available — fall through
+                // user cancelled or API not available  fall through
             }
         }
         // Fallback: open in new tab

@@ -1,6 +1,7 @@
-import type { Role } from '../permissions/schemas/role.schema';
+import type { Role } from '../logic/schemas/role.schema';
+import type { TenantKind } from '../logic/schemas/user.schema';
 
-export type TenantKind = 'internal' | 'customer' | 'demo' | 'sandbox';
+export type { TenantKind };
 
 export type ScopeType =
   | 'platform'
@@ -23,6 +24,8 @@ export interface Membership {
   id?: string;
   userId: string;
   schoolId: string;
+  schoolRole?: string | null;
+  workRoles?: string[] | null;
   roles: Role[];
   scopes: ScopeRef[];
   status?: 'active' | 'inactive' | 'invited';
@@ -51,4 +54,3 @@ export interface PlatformAccessContext {
   hasGlobalAccess: boolean;
   isPersonal: boolean;
 }
-

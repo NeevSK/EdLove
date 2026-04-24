@@ -1,149 +1,113 @@
 /**
  * SHADOW AGENT DRAWER
- * The Quiet Drawer - A space for reflection and gentle guidance
- * 
- * This is NOT a chatbot. It's a contemplative companion.
- * Features:
- * - Glowing orb trigger
- * - Half-screen bottom sheet
- * - Thought Seeds (random reflection questions)
- * - Fade-in text animation
+ * The Quiet Drawer - A space for reflection and gentle guidance.
+ * Standardized to Zero-Legacy: purged corrupted StyleSheet and migrated to NativeWind v4.
  */
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { Box, VStack, Text, Pressable, hapticLight, Theme, typography } from '@repo/ui';
-import { Modal, StyleSheet, Dimensions } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { X } from 'lucide-react-native';
+import { 
+    Icon, 
+    Box, 
+    Pressable, 
+    Text, 
+    VStack, 
+    HStack, 
+    Heading, 
+    hapticLight 
+} from '@repo/ui';
+import { Modal, Dimensions } from 'react-native';
+import { X, Sparkles, Moon, Sun, Coffee, Zap } from 'lucide-react-native';
 import Animated, {
     useAnimatedStyle,
     useSharedValue,
     withRepeat,
     withTiming,
-    withSpring,
     Easing,
     FadeIn,
+    FadeInDown,
+    Layout
 } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 export default function ShadowAgentDrawer() {
-    const { bottom: bottomInset } = useSafeAreaInsets();
     const { t, i18n } = useTranslation();
     const [isOpen, setIsOpen] = useState(false);
     const [currentSeed, setCurrentSeed] = useState('');
     const [contextualSuggestion, setContextualSuggestion] = useState<{
         message: string;
-        emoji: string;
+        icon: any;
     } | null>(null);
 
     const THOUGHT_SEEDS = useMemo(() => [
-        t('shadowAgent.prompts.heavy'),
-        t('shadowAgent.prompts.peace'),
-        t('shadowAgent.prompts.holding'),
-        t('shadowAgent.prompts.release'),
-        t('shadowAgent.prompts.joy'),
-        t('shadowAgent.prompts.yourself'),
-        t('shadowAgent.prompts.attention'),
-        t('shadowAgent.prompts.truth'),
-        t('shadowAgent.prompts.forgiveness'),
-        t('shadowAgent.prompts.grateful'),
-    ], [i18n.resolvedLanguage]);
+        t('shadowAgent.prompts.heavy') || "What feels heavy today?",
+        t('shadowAgent.prompts.peace') || "Where did you find peace?",
+        t('shadowAgent.prompts.holding') || "What are you holding onto?",
+        t('shadowAgent.prompts.release') || "What can you release?",
+        t('shadowAgent.prompts.joy') || "Recall a moment of joy.",
+    ], [i18n.resolvedLanguage, t]);
 
     const CONTEXTUAL_SUGGESTIONS = useMemo(() => [
         {
-            condition: 'working_long',
-            message: t('shadowAgent.nudges.longWork'),
-            emoji: '🌙'
-        },
-        {
             condition: 'late_night',
-            message: t('shadowAgent.nudges.lateNight'),
-            emoji: '🌜'
+            message: t('shadowAgent.nudges.lateNight') || "The world is quiet. Take a breath.",
+            icon: Moon
         },
         {
             condition: 'early_morning',
-            message: t('shadowAgent.nudges.earlyStart'),
-            emoji: '🌅'
+            message: t('shadowAgent.nudges.earlyStart') || "A new genesis awaits you.",
+            icon: Sun
         },
         {
             condition: 'midday',
-            message: t('shadowAgent.nudges.lowEnergy'),
-            emoji: '☕'
+            message: t('shadowAgent.nudges.lowEnergy') || "A gentle pause for momentum.",
+            icon: Coffee
         },
-    ], [i18n.resolvedLanguage]);
-
-    const styles = useMemo(() => StyleSheet.create({
-        orbContainer: {
-            position: 'absolute',
-            bottom: bottomInset + 80, // Positioned above the tab bar
-            right: 24,
-            zIndex: Theme.zIndex.fab,
-        },
-        orb: {
-            borderRadius: 28,
-        },
-        modalOverlay: {
-            flex: 1,
-            backgroundColor: 'rgba(0, 0, 0, 0.6)',
-            justifyContent: 'flex-end',
-        },
-        drawerContainer: {
-            width: '100%',
-        },
-    }), [bottomInset]);
+    ], [i18n.resolvedLanguage, t]);
 
     // Orb breathing animation
     const orbScale = useSharedValue(1);
-    const orbGlow = useSharedValue(0.3);
+    const orbGlow = useSharedValue(0.4);
 
     useEffect(() => {
-        // Breathing animation for the orb
         orbScale.value = withRepeat(
-            withTiming(1.1, {
-                duration: Theme.motion.breathing,
-                easing: Easing.inOut(Easing.ease),
+            withTiming(1.15, {
+                duration: 4000,
+                easing: Easing.inOut(Easing.ease)
             }),
             -1,
             true
         );
 
         orbGlow.value = withRepeat(
-            withTiming(0.6, {
-                duration: Theme.motion.breathing,
-                easing: Easing.inOut(Easing.ease),
+            withTiming(0.8, {
+                duration: 4000,
+                easing: Easing.inOut(Easing.ease)
             }),
             -1,
             true
         );
     }, []);
 
-    const orbStyle = useAnimatedStyle(() => {
-        return {
-            transform: [{ scale: orbScale.value }],
-            opacity: orbGlow.value,
-        };
-    });
+    const orbStyle = useAnimatedStyle(() => ({
+        transform: [{ scale: orbScale.value }],
+        opacity: orbGlow.value
+    }));
 
     const handleOpenDrawer = () => {
         hapticLight();
-        // Pick a random thought seed
         const randomSeed = THOUGHT_SEEDS[Math.floor(Math.random() * THOUGHT_SEEDS.length)];
         setCurrentSeed(randomSeed || '');
 
-        // Determine contextual suggestion based on time
         const hour = new Date().getHours();
         let suggestion = null;
 
         if (hour >= 22 || hour < 5) {
-            // Late night
             suggestion = CONTEXTUAL_SUGGESTIONS.find(s => s.condition === 'late_night');
         } else if (hour >= 5 && hour < 8) {
-            // Early morning
             suggestion = CONTEXTUAL_SUGGESTIONS.find(s => s.condition === 'early_morning');
         } else if (hour >= 11 && hour < 14) {
-            // Midday
             suggestion = CONTEXTUAL_SUGGESTIONS.find(s => s.condition === 'midday');
         }
 
@@ -159,26 +123,15 @@ export default function ShadowAgentDrawer() {
     return (
         <>
             {/* Glowing Orb Trigger */}
-            <Pressable
-                onPress={handleOpenDrawer}
-                style={styles.orbContainer}
-            >
-                <Animated.View style={[styles.orb, orbStyle]}>
-                    <Box
-                        sx={{
-                            width: 56,
-                            height: 56,
-                            borderRadius: Theme.corners.full,
-                            backgroundColor: Theme.colors.sanctuarySaffron,
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            ...Theme.shadows.glow,
-                        }}
-                    >
-                        <Text style={{ fontSize: 24 }}>🪷</Text>
-                    </Box>
-                </Animated.View>
-            </Pressable>
+            <Box className="absolute bottom-24 right-6 z-50">
+                <Pressable onPress={handleOpenDrawer}>
+                    <Animated.View style={orbStyle}>
+                        <Box className="w-14 h-14 rounded-full bg-sanctuarySaffron items-center justify-center shadow-xl shadow-sanctuarySaffron/40">
+                            <Icon as={Sparkles} size={24} className="text-obsidian" />
+                        </Box>
+                    </Animated.View>
+                </Pressable>
+            </Box>
 
             {/* Bottom Sheet Modal */}
             <Modal
@@ -188,196 +141,86 @@ export default function ShadowAgentDrawer() {
                 onRequestClose={handleCloseDrawer}
             >
                 <Pressable
-                    style={styles.modalOverlay}
+                    className="flex-1 bg-black/60 justify-end"
                     onPress={handleCloseDrawer}
                 >
                     <Pressable
-                        style={styles.drawerContainer}
-                        onPress={(e: any) => e.stopPropagation()}
+                        className="w-full h-1/2"
+                        onPress={(e) => e.stopPropagation()}
                     >
-                        <Box
-                            sx={{
-                                backgroundColor: Theme.colors.ink,
-                                borderTopLeftRadius: Theme.corners.generous,
-                                borderTopRightRadius: Theme.corners.generous,
-                                padding: Theme.spacing.xl,
-                                minHeight: SCREEN_HEIGHT * 0.5,
-                            }}
-                        >
+                        <Box className="flex-1 bg-obsidian rounded-t-[40px] border-t border-white/10 p-xl">
                             {/* Handle bar */}
-                            <Box
-                                sx={{
-                                    width: 40,
-                                    height: 4,
-                                    backgroundColor: Theme.colors.starlightGray,
-                                    borderRadius: 2,
-                                    alignSelf: 'center',
-                                    marginBottom: Theme.spacing.md,
-                                    opacity: 0.3,
-                                }}
-                            />
+                            <Box className="w-10 h-1 bg-white/20 rounded-full self-center mb-8 opacity-50" />
 
                             {/* Close Button */}
                             <Pressable
                                 onPress={handleCloseDrawer}
-                                style={{
-                                    position: 'absolute',
-                                    top: 16,
-                                    right: 16,
-                                    zIndex: 10,
-                                    padding: 8,
-                                }}
+                                className="absolute top-8 right-8 z-10 p-2 bg-white/5 rounded-full border border-white/5 active:scale-90 transition-all"
                             >
-                                <Box sx={{
-                                    backgroundColor: 'rgba(255,255,255,0.05)',
-                                    borderRadius: 20,
-                                    padding: 4
-                                }}>
-                                    <X color={Theme.colors.mistGray} size={20} />
-                                </Box>
+                                <Icon as={X} className="text-mistGray" size={18} />
                             </Pressable>
 
-                            <VStack space="xl">
+                            <VStack className="gap-8">
                                 {/* Title */}
-                                <Animated.View entering={FadeIn.duration(Theme.motion.gentle)}>
-                                    <Text
-                                        color={Theme.colors.sacredWhite}
-                                        size="2xl"
-                                        sx={{ fontWeight: Theme.typography.fontWeight.semibold }}
-                                    >
-                                        {t('shadowAgent.title')}
-                                    </Text>
-                                    <Text
-                                        color={Theme.colors.mistGray}
-                                        size="sm"
-                                        mt="$2"
-                                    >
-                                        {t('shadowAgent.subtitle')}
+                                <Animated.View entering={FadeIn.duration(800)}>
+                                    <Heading size="xl" className="text-sacredWhite font-black tracking-tight">
+                                        {t('shadowAgent.title') || "The Quiet Space"}
+                                    </Heading>
+                                    <Text className="text-mistGray/60 text-sm mt-1 font-medium">
+                                        {t('shadowAgent.subtitle') || "A moment for reflection."}
                                     </Text>
                                 </Animated.View>
 
                                 {/* Contextual Suggestion */}
                                 {contextualSuggestion && (
-                                    <Animated.View
-                                        entering={FadeIn.duration(Theme.motion.gentle).delay(Theme.motion.quick)}
-                                    >
-                                        <Box
-                                            sx={{
-                                                backgroundColor: Theme.colors.ink,
-                                                padding: Theme.spacing.lg,
-                                                borderRadius: Theme.corners.comfortable,
-                                                borderWidth: 1,
-                                                borderColor: Theme.colors.twilightBlue,
-                                            }}
-                                        >
-                                            <Text
-                                                color={Theme.colors.shroud}
-                                                size="xs"
-                                                sx={{
-                                                    textTransform: 'uppercase',
-                                                    letterSpacing: 1,
-                                                    marginBottom: Theme.spacing.sm,
-                                                }}
-                                            >
-                                                Gentle Reminder
-                                            </Text>
-                                            <Text
-                                                color={Theme.colors.starlightGray}
-                                                size="lg"
-                                                sx={{
-                                                    fontWeight: typography.fontWeight.medium,
-                                                    lineHeight: typography.lineHeight.relaxed * typography.fontSize.lg,
-                                                }}
-                                            >
-                                                {contextualSuggestion.emoji} {contextualSuggestion.message}
-                                            </Text>
+                                    <Animated.View entering={FadeInDown.delay(200)}>
+                                        <Box className="bg-white/5 p-6 rounded-3xl border border-white/10 shadow-sm">
+                                            <VStack className="gap-3">
+                                                <HStack className="items-center gap-2 opacity-50">
+                                                    <Icon as={contextualSuggestion.icon} size={12} className="text-sanctuarySaffron" />
+                                                    <Text className="text-[10px] font-black uppercase tracking-[0.2em] text-sanctuarySaffron">
+                                                        Gentle Nudge
+                                                    </Text>
+                                                </HStack>
+                                                <Text className="text-sacredWhite/80 text-lg font-medium leading-relaxed italic">
+                                                    {contextualSuggestion.message}
+                                                </Text>
+                                            </VStack>
                                         </Box>
                                     </Animated.View>
                                 )}
 
                                 {/* Thought Seed */}
-                                <Animated.View
-                                    entering={FadeIn.duration(Theme.motion.gentle).delay(Theme.motion.standard)}
-                                >
-                                    <Box
-                                        sx={{
-                                            backgroundColor: Theme.colors.ink,
-                                            padding: Theme.spacing.lg,
-                                            borderRadius: Theme.corners.comfortable,
-                                            borderLeftWidth: 3,
-                                            borderLeftColor: Theme.colors.sanctuarySaffron,
-                                        }}
-                                    >
-                                        <Text
-                                            color={Theme.colors.shroud}
-                                            size="xs"
-                                            sx={{
-                                                textTransform: 'uppercase',
-                                                letterSpacing: 1,
-                                                marginBottom: Theme.spacing.sm,
-                                            }}
-                                        >
-                                            Thought Seed
-                                        </Text>
-                                        <Text
-                                            color={Theme.colors.sacredWhite}
-                                            size="xl"
-                                            sx={{
-                                                fontWeight: typography.fontWeight.medium,
-                                                lineHeight: typography.lineHeight.relaxed * typography.fontSize.xl,
-                                            }}
-                                        >
-                                            {currentSeed}
-                                        </Text>
+                                <Animated.View entering={FadeInDown.delay(400)}>
+                                    <Box className="bg-white/5 p-6 rounded-3xl border-l-4 border-sanctuarySaffron border-y border-r border-white/5">
+                                        <VStack className="gap-3">
+                                            <HStack className="items-center gap-2 opacity-50">
+                                                <Icon as={Zap} size={12} className="text-sanctuarySaffron" />
+                                                <Text className="text-[10px] font-black uppercase tracking-[0.2em] text-sanctuarySaffron">
+                                                    Thought Seed
+                                                </Text>
+                                            </HStack>
+                                            <Text className="text-sacredWhite text-xl font-bold leading-relaxed">
+                                                {currentSeed}
+                                            </Text>
+                                        </VStack>
                                     </Box>
                                 </Animated.View>
 
                                 {/* Contemplation Space */}
-                                <Animated.View
-                                    entering={FadeIn.duration(Theme.motion.gentle).delay(Theme.motion.standard * 2)}
-                                >
-                                    <VStack space="md">
-                                        <Text
-                                            color={Theme.colors.mistGray}
-                                            size="sm"
-                                        >
-                                            Take a moment to sit with this question.
-                                        </Text>
-                                        <Text
-                                            color={Theme.colors.mistGray}
-                                            size="sm"
-                                        >
-                                            There's no need to answer right away.
-                                        </Text>
-                                        <Text
-                                            color={Theme.colors.mistGray}
-                                            size="sm"
-                                            sx={{ fontStyle: 'italic' }}
-                                        >
-                                            Sometimes questions are more valuable than answers.
+                                <Animated.View entering={FadeInDown.delay(600)}>
+                                    <VStack className="gap-2 px-1">
+                                        <Text className="text-mistGray/50 text-xs font-medium italic">
+                                            "Sometimes questions are more valuable than answers. Take your time."
                                         </Text>
                                     </VStack>
                                 </Animated.View>
 
-                                {/* Note about future feature */}
-                                <Animated.View
-                                    entering={FadeIn.duration(Theme.motion.gentle).delay(Theme.motion.standard * 3)}
-                                >
-                                    <Box
-                                        sx={{
-                                            marginTop: Theme.spacing.xl,
-                                            padding: Theme.spacing.md,
-                                            borderRadius: Theme.corners.comfortable,
-                                            backgroundColor: Theme.colors.ink,
-                                            opacity: 0.5,
-                                        }}
-                                    >
-                                        <Text
-                                            color={Theme.colors.shroud}
-                                            size="xs"
-                                            textAlign="center"
-                                        >
-                                            💫 This space will grow with you
+                                {/* Future Growth Hook */}
+                                <Animated.View entering={FadeIn.delay(1000)}>
+                                    <Box className="mt-4 py-3 border-t border-white/5 items-center">
+                                        <Text className="text-[9px] font-black uppercase tracking-[0.3em] text-mistGray/30">
+                                            ✨ This Sanctuary evolves with you
                                         </Text>
                                     </Box>
                                 </Animated.View>

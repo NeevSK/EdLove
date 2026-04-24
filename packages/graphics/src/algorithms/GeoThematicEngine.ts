@@ -29,8 +29,7 @@ export const GeoThematicEngine = {
     },
 
     /**
-     * Map a dataset of { districtId: value } to a Record<districtId, color>
-     */
+     * Map a dataset of { districtId: value } to a Record<districtId, color     */
     generateChoropleth: (data: Record<string, number>, palette: ColorPalette = 'saffron'): Record<string, string> => {
         const values = Object.values(data);
         const min = Math.min(...values);

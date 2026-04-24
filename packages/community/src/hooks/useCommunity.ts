@@ -1,20 +1,21 @@
 import { useMemo, useCallback } from 'react';
-import { storage, StorageKeys, requireAuth, useStore, growthSignalsAPI, useTemporalStore } from '@repo/core';
-import { CommunityPost, CommunityGroup, Group, Post } from '../types';
-import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
+import { identityAPI, APIError, useStore, growthSignalsAPI, useTemporalStore } from '@repo/core';
+import { CommunityPost, Post } from '../types';
+import { useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import { communityAPI } from '../api/community';
 
 // Keys for React Query
 export const COMMUNITY_KEYS = {
     all: ['community'] as const,
     groups: () => [...COMMUNITY_KEYS.all, 'groups'] as const,
-    posts: (groupId?: string, date?: string) => [...COMMUNITY_KEYS.all, 'posts', groupId || 'all', date || 'now'] as const,
+    posts: (groupId?: string, date?: string, scale?: string) => [...COMMUNITY_KEYS.all, 'posts', groupId || 'all', date || 'now', scale || 'day'] as const,
 };
 
 export const useCommunity = (groupId?: string, options: { searchQuery?: string; isPublicOnly?: boolean } = {}) => {
     const queryClient = useQueryClient();
     const storeUser = useStore(state => state.user);
     const viewDate = useTemporalStore(state => state.viewDate);
+    const viewScale = useTemporalStore(state => state.viewScale);
 
     // Fetch Groups with Infinite Scroll
     const groupsInfiniteQuery = useInfiniteQuery({
@@ -35,13 +36,14 @@ export const useCommunity = (groupId?: string, options: { searchQuery?: string; 
 
     // Fetch Posts with Infinite Scroll
     const postsInfiniteQuery = useInfiniteQuery({
-        queryKey: COMMUNITY_KEYS.posts(groupId || 'all', viewDate),
+        queryKey: COMMUNITY_KEYS.posts(groupId || 'all', viewDate, viewScale),
         queryFn: async ({ pageParam = 0 }) => {
             return communityAPI.getPosts({
                 limit: 10,
                 offset: pageParam,
                 groupId: groupId,
-                viewDate: viewDate
+                viewDate: viewDate,
+                viewScale,
             });
         },
         initialPageParam: 0,
@@ -53,28 +55,31 @@ export const useCommunity = (groupId?: string, options: { searchQuery?: string; 
     // Create Post Mutation
     const createPostMutation = useMutation({
         mutationFn: async (input: any) => {
-            const user = await requireAuth();
-            const schoolId = storeUser?.school_id ?? user.school_id;
+            const loggedInId = await identityAPI.getMyInternalId();
+            if (!loggedInId) throw new APIError('Not authenticated', 'UNAUTHORIZED');
+
+            const schoolId = storeUser?.school_id;
             if (!schoolId) {
-                throw new Error('No school context — please complete your profile before posting.');
+                throw new APIError('No school context  please complete your profile before posting.', 'BAD_REQUEST');
             }
-            return communityAPI.createPost(input, user.id, storeUser?.authority ?? 'teacher', schoolId);
+            const authority = storeUser?.authority || 'student'; 
+            return communityAPI.createPost(input, loggedInId, authority, schoolId);
         },
         onMutate: async (newPost) => {
             // Optimistic Update
-            await queryClient.cancelQueries({ queryKey: COMMUNITY_KEYS.posts(newPost.group_id, viewDate) });
+            await queryClient.cancelQueries({ queryKey: COMMUNITY_KEYS.posts(newPost.group_id, viewDate, viewScale) });
 
-            const previousPosts = queryClient.getQueryData<Post[]>(COMMUNITY_KEYS.posts(newPost.group_id, viewDate));
+            const previousPosts = queryClient.getQueryData<Post[]>(COMMUNITY_KEYS.posts(newPost.group_id, viewDate, viewScale));
 
             if (previousPosts) {
-                queryClient.setQueryData<Post[]>(COMMUNITY_KEYS.posts(newPost.group_id, viewDate), [
+                queryClient.setQueryData<Post[]>(COMMUNITY_KEYS.posts(newPost.group_id, viewDate, viewScale), [
                     {
                         ...newPost,
                         id: 'temp-id',
                         created_at: new Date().toISOString(),
                         reactions: {},
                         author_name: 'Me',
-                        author_authority: storeUser?.authority ?? 'teacher',
+                        author_authority: storeUser?.authority || 'student',
                         post_type: newPost.post_type || 'discussion',
                         visibility: 'school',
                         media_url: newPost.media_url,
@@ -97,26 +102,29 @@ export const useCommunity = (groupId?: string, options: { searchQuery?: string; 
         },
         onError: (err, newPost, context: any) => {
             if (context?.previousPosts) {
-                queryClient.setQueryData(COMMUNITY_KEYS.posts(newPost.group_id, viewDate), context.previousPosts);
+                queryClient.setQueryData(COMMUNITY_KEYS.posts(newPost.group_id, viewDate, viewScale), context.previousPosts);
             }
         },
         onSettled: (data, error, variables) => {
-            queryClient.invalidateQueries({ queryKey: COMMUNITY_KEYS.posts(variables.group_id, viewDate) });
+            queryClient.invalidateQueries({ queryKey: COMMUNITY_KEYS.posts(variables.group_id, viewDate, viewScale) });
         },
-        onSuccess: (_data, _variables) => {
-            // Growth signal — post created, fire-and-forget
+        onSuccess: () => {
+            // Growth signal  post created, fire-and-forget
             if (storeUser?.id) {
-                growthSignalsAPI.emitSignal(storeUser.id, 'community_post_created')
-                    .catch((err) => console.warn('[useCommunity] growth signal failed:', err));
+                growthSignalsAPI.emitSilent({
+                    user_id: storeUser.id,
+                    event_type: 'community_post_created'
+                });
             }
         },
     });
 
-    // Create Group Mutation — always uses createGroupWithOwner so creator gets owner rights
+    // Create Group Mutation  always uses createGroupWithOwner so creator gets owner rights
     const createGroupMutation = useMutation({
         mutationFn: async (input: any) => {
-            const user = await requireAuth();
-            return communityAPI.createGroupWithOwner(input, user.id);
+            const loggedInId = await identityAPI.getMyInternalId();
+            if (!loggedInId) throw new APIError('Not authenticated', 'UNAUTHORIZED');
+            return communityAPI.createGroupWithOwner(input, loggedInId);
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: COMMUNITY_KEYS.groups() });
@@ -133,13 +141,13 @@ export const useCommunity = (groupId?: string, options: { searchQuery?: string; 
         }
     });
 
-    // Toggle ❤️ reaction — optimistic update on the cached post list
+    // Toggle d reaction  optimistic update on the cached post list
     const toggleReactionMutation = useMutation({
         mutationFn: async ({ postId, userId }: { postId: string; userId: string }) => {
             return communityAPI.togglePostReaction(postId, userId);
         },
         onMutate: async ({ postId }) => {
-            const key = COMMUNITY_KEYS.posts(groupId || 'all', viewDate);
+            const key = COMMUNITY_KEYS.posts(groupId || 'all', viewDate, viewScale);
             await queryClient.cancelQueries({ queryKey: key });
             const previous = queryClient.getQueryData(key);
 
@@ -147,11 +155,11 @@ export const useCommunity = (groupId?: string, options: { searchQuery?: string; 
                 if (post.id !== postId) return post;
                 const wasLiked = post.has_liked ?? false;
                 const delta = wasLiked ? -1 : 1;
-                const prev = post.reactions?.['❤️'] ?? 0;
+                const prev = post.reactions?.['d'] ?? 0;
                 return {
                     ...post,
                     has_liked: !wasLiked,
-                    reactions: { ...post.reactions, '❤️': Math.max(0, prev + delta) },
+                    reactions: { ...post.reactions, 'd': Math.max(0, prev + delta) },
                     reaction_count: Math.max(0, (post.reaction_count ?? 0) + delta),
                 };
             };
@@ -167,16 +175,16 @@ export const useCommunity = (groupId?: string, options: { searchQuery?: string; 
         },
         onError: (_err, _vars, context: any) => {
             if (context?.previous !== undefined) {
-                queryClient.setQueryData(COMMUNITY_KEYS.posts(groupId || 'all', viewDate), context.previous);
+                queryClient.setQueryData(COMMUNITY_KEYS.posts(groupId || 'all', viewDate, viewScale), context.previous);
             }
         },
     });
 
-    // Delete post — optimistic remove
+    // Delete post  optimistic remove
     const deletePostMutation = useMutation({
         mutationFn: (postId: string) => communityAPI.deletePost(postId),
         onMutate: async (postId) => {
-            const key = COMMUNITY_KEYS.posts(groupId || 'all', viewDate);
+            const key = COMMUNITY_KEYS.posts(groupId || 'all', viewDate, viewScale);
             await queryClient.cancelQueries({ queryKey: key });
             const previous = queryClient.getQueryData(key);
 
@@ -192,11 +200,11 @@ export const useCommunity = (groupId?: string, options: { searchQuery?: string; 
         },
         onError: (_err, _vars, context: any) => {
             if (context?.previous !== undefined) {
-                queryClient.setQueryData(COMMUNITY_KEYS.posts(groupId || 'all', viewDate), context.previous);
+                queryClient.setQueryData(COMMUNITY_KEYS.posts(groupId || 'all', viewDate, viewScale), context.previous);
             }
         },
         onSettled: () => {
-            queryClient.invalidateQueries({ queryKey: COMMUNITY_KEYS.posts(groupId || 'all', viewDate) });
+            queryClient.invalidateQueries({ queryKey: COMMUNITY_KEYS.posts(groupId || 'all', viewDate, viewScale) });
         },
     });
 
@@ -205,8 +213,8 @@ export const useCommunity = (groupId?: string, options: { searchQuery?: string; 
 
     const fetchGroups = useCallback(() => groupsInfiniteQuery.refetch(), [groupsInfiniteQuery]);
     const fetchPosts = useCallback((gid?: string) => 
-        queryClient.invalidateQueries({ queryKey: COMMUNITY_KEYS.posts(gid || 'all', viewDate) }), 
-        [queryClient, viewDate]
+        queryClient.invalidateQueries({ queryKey: COMMUNITY_KEYS.posts(gid || 'all', viewDate, viewScale) }), 
+        [queryClient, viewDate, viewScale]
     );
 
     return useMemo(() => ({

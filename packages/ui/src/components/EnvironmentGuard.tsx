@@ -1,7 +1,7 @@
 /**
  * Environment Guard Component
  * Adaptively renders components based on device capabilities and fidelity settings
- * 
+ *
  * Philosophy: "The Mud Rule" - If it works on iPhone but lags on $100 Android, it's broken
  */
 
@@ -17,12 +17,12 @@ interface EnvironmentGuardProps {
 /**
  * Environment Guard Component
  * Conditionally renders children based on effective fidelity level
- * 
+ *
  * Usage:
  * ```tsx
- * <EnvironmentGuard lowFidelityFallback={<SolidBackground />}>
- *   <GlassmorphismBackground />
- * </EnvironmentGuard>
+ * <EnvironmentGuard lowFidelityFallback={<SolidBackground />}
+ *   <GlassmorphismBackground /
+ * </EnvironmentGuard
  * ```
  */
 export function EnvironmentGuard({
@@ -48,7 +48,7 @@ export function EnvironmentGuard({
 
 /**
  * Hook version of EnvironmentGuard for conditional logic
- * 
+ *
  * Usage:
  * ```tsx
  * const shouldRenderBlur = useHighFidelity();

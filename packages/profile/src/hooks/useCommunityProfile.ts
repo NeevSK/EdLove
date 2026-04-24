@@ -1,19 +1,14 @@
 import { useCallback, useEffect, useState } from 'react';
-import { communityAPI, supabase, useStore } from '@repo/core';
-
-type CommunityProfile = {
-  id: string;
-  name: string;
-  description?: string | null;
-  visibility?: string | null;
-  member_count?: number | null;
-  creator_id?: string | null;
-};
+import { useStore, useTemporalStore } from '@repo/core';
+import { profileAPI } from '../api/profile';
+import type { CommunityProfile } from '../domains/profile/ports';
 
 type EditableCommunityField = 'name' | 'description';
 
 export function useCommunityProfile(communityId: string) {
   const userId = useStore((state) => state.user?.id);
+  const viewDate = useTemporalStore((state) => state.viewDate);
+  const phase = useTemporalStore((state) => state.phase);
   const [community, setCommunity] = useState<CommunityProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -26,14 +21,16 @@ export function useCommunityProfile(communityId: string) {
 
     setLoading(true);
     try {
-      const data = await communityAPI.getGroupById(communityId);
-      setCommunity((data as CommunityProfile) ?? null);
+      const data = phase === 'past'
+        ? await profileAPI.getCommunityProfileAsOf(communityId, viewDate)
+        : await profileAPI.getCommunityProfile(communityId);
+      setCommunity(data ?? null);
     } catch {
       setCommunity(null);
     } finally {
       setLoading(false);
     }
-  }, [communityId]);
+  }, [communityId, phase, viewDate]);
 
   useEffect(() => {
     void loadCommunity();
@@ -42,15 +39,8 @@ export function useCommunityProfile(communityId: string) {
   const updateField = useCallback(
     async (field: EditableCommunityField, value: string) => {
       if (!communityId) return;
-      const { data, error } = await supabase
-        .from('community_groups')
-        .update({ [field]: value, updated_at: new Date().toISOString() })
-        .eq('id', communityId)
-        .select('*')
-        .single();
-
-      if (error) throw error;
-      setCommunity((data as CommunityProfile) ?? null);
+      const data = await profileAPI.updateCommunityProfile(communityId, field, value);
+      setCommunity(data ?? null);
     },
     [communityId],
   );

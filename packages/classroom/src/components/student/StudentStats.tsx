@@ -1,27 +1,41 @@
 import React from 'react';
-import { BookOpen, Zap, Trophy } from 'lucide-react-native';
+import { Box, Text, Icon, HStack, VStack } from '@repo/ui';
 
 export const StudentStatCard = ({ stat, isDemo }: { stat: any, isDemo: boolean }) => {
     if (!stat) return null;
+    
     return (
-        <div className="sanctuary-card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '12px', minWidth: '180px' }}>
-            <stat.icon size={20} color={stat.color} />
-            <div>
-                <div style={{ fontSize: '32px', fontWeight: '800' }}>
-                    {stat.value}{isDemo && stat.value !== '—' && <span style={{ fontSize: '14px', color: 'var(--sanctuary-saffron)', marginLeft: 4 }}>✦</span>}
-                </div>
-                <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--ink-ghost)', textTransform: 'uppercase' }}>{stat.label}</div>
-            </div>
-        </div>
+        <VStack
+            className="flex-1 bg-sanctuary-surface rounded-[32px] border border-sanctuary-border p-6 gap-4 min-w-[150px]"
+        >
+            <Box className="w-10 h-10 bg-sanctuary-surface-secondary rounded-2xl items-center justify-center border border-sanctuary-border/30">
+                <Icon as={stat.icon} size="sm" className={stat.colorClass || 'text-sanctuarySaffron'} />
+            </Box>
+            <Box>
+                <HStack className="items-baseline gap-1">
+                    <Text className="text-3xl font-black text-sanctuary-text tracking-tighter">
+                        {stat.value}
+                    </Text>
+                    {isDemo && stat.value !== '' && (
+                        <Text className="text-sm font-black text-sanctuarySaffron mb-1">
+                           &
+                        </Text>
+                    )}
+                </HStack>
+                <Text className="text-[10px] font-black text-sanctuary-text-tertiary uppercase tracking-widest mt-1">
+                    {stat.label}
+                </Text>
+            </Box>
+        </VStack>
     );
 };
 
 export const StudentStats = ({ stats, isDemo }: { stats: any[], isDemo: boolean }) => {
     return (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px', marginBottom: '40px' }}>
+        <HStack className="flex-wrap gap-4 mb-10 w-full">
             {stats.map((stat, i) => (
                 <StudentStatCard key={i} stat={stat} isDemo={isDemo} />
             ))}
-        </div>
+        </HStack>
     );
 };

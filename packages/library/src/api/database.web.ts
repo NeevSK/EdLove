@@ -23,7 +23,7 @@ export interface KnowledgeNodeIndex {
 }
 
 /**
- * Knowledge Database Manager (Web — IndexedDB)
+ * Knowledge Database Manager (Web \u2014 IndexedDB)
  * High-fidelity un-shimming: Using browser-native standards for local state.
  */
 export const knowledgeDB = {
@@ -139,8 +139,8 @@ export const knowledgeDB = {
         if (query.includes('sync_state')) {
             const key = params[0] as string;
             // Two SQL variants are called by sync.ts:
-            //   3-param: INSERT … (key, last_sync_timestamp, sync_status)
-            //   2-param: INSERT … (key, sync_status)  ← error path
+            //   3-param: INSERT \u2026 (key, last_sync_timestamp, sync_status)
+            //   2-param: INSERT \u2026 (key, sync_status)  \u2190 error path
             let record: Record<string, unknown>;
             if (query.includes('last_sync_timestamp')) {
                 record = { key, last_sync_timestamp: params[1], sync_status: params[2] ?? 'idle' };

@@ -1,149 +1,141 @@
 import React from 'react';
-import {
-    FormControl,
-    FormControlLabel,
-    FormControlLabelText,
-    Input,
-    InputField,
-    FormControlError,
-    FormControlErrorText,
-    FormControlErrorIcon,
-    Box,
-    InputSlot,
-    InputIcon
-} from '../gluestack';
 import { AlertCircle } from 'lucide-react-native';
+import {
+  FormControl,
+  FormControlLabel,
+  FormControlLabelText,
+  FormControlError,
+  FormControlErrorText,
+  FormControlErrorIcon,
+  Input,
+  InputField,
+  InputSlot,
+  InputIcon,
+  HStack,
+  Text,
+  useFormControlContext,
+} from './ui';
 import { Theme } from '../theme/Theme';
-import { useTheme } from '../hooks/useTheme';
 
 interface SanctuaryInputProps {
-    label?: string;
-    placeholder?: string;
-    value: string;
-    onChangeText: (text: string) => void;
-    error?: string;
-    isInvalid?: boolean;
-    type?: 'text' | 'password';
-    leftIcon?: React.ElementType;
-    rightIcon?: React.ElementType;
-    onRightIconPress?: () => void;
-    helperText?: string;
-    isDisabled?: boolean;
-    multiline?: boolean;
-    numberOfLines?: number;
-    keyboardType?: 'default' | 'number-pad' | 'decimal-pad' | 'numeric' | 'email-address' | 'phone-pad';
-    autoFocus?: boolean;
-    accessibilityLabel?: string;
-    accessibilityHint?: string;
+  label?: string;
+  placeholder?: string;
+  value: string;
+  onChangeText: (text: string) => void;
+  error?: string;
+  isInvalid?: boolean;
+  type?: 'text' | 'password';
+  leftIcon?: React.ElementType;
+  rightIcon?: React.ElementType;
+  onRightIconPress?: () => void;
+  helperText?: string;
+  isDisabled?: boolean;
+  multiline?: boolean;
+  numberOfLines?: number;
+  keyboardType?:
+    | 'default'
+    | 'number-pad'
+    | 'decimal-pad'
+    | 'numeric'
+    | 'email-address'
+    | 'phone-pad';
+  autoFocus?: boolean;
+  accessibilityLabel?: string;
+  accessibilityHint?: string;
 }
 
+/**
+ * SanctuaryInput
+ *
+ * A hardened, phase-aware input component.
+ * Uses NativeWind for styling and hardened gluestack primitives.
+ */
 export default function SanctuaryInput({
-    label,
-    placeholder,
-    value,
-    onChangeText,
-    error,
-    isInvalid = false,
-    type = 'text',
-    leftIcon,
-    rightIcon,
-    onRightIconPress,
-    helperText,
-    isDisabled = false,
-    multiline = false,
-    numberOfLines = 1,
-    autoFocus = false,
-    keyboardType = 'default',
-    accessibilityLabel,
-    accessibilityHint
+  label,
+  placeholder,
+  value,
+  onChangeText,
+  error,
+  isInvalid = false,
+  type = 'text',
+  leftIcon,
+  rightIcon,
+  onRightIconPress,
+  helperText,
+  isDisabled = false,
+  multiline = false,
+  numberOfLines = 1,
+  autoFocus = false,
+  keyboardType = 'default',
+  accessibilityLabel,
+  accessibilityHint,
 }: SanctuaryInputProps) {
-    const hasError = isInvalid || !!error;
-    const { accent, scene, text } = useTheme();
+  const { id } = useFormControlContext();
+  const hasError = isInvalid || !!error;
 
-    return (
-        <FormControl isInvalid={hasError} isDisabled={isDisabled}>
-            {label && (
-                <FormControlLabel sx={{ marginBottom: '$2' as any }}>
-                    <FormControlLabelText
-                        color={text.secondary}
-                        sx={{ fontSize: '$sm' as any, fontWeight: '$medium' }}
-                    >
-                        {label}
-                    </FormControlLabelText>
-                </FormControlLabel>
+  return (
+    <FormControl isInvalid={hasError} isDisabled={isDisabled} className="w-full">
+      {label && (
+        <FormControlLabel className="mb-2">
+          <HStack className="justify-between items-center w-full">
+            <FormControlLabelText className="text-phase-text-primary font-medium tracking-wide">
+              {label}
+            </FormControlLabelText>
+            {helperText && !hasError && (
+              <Text className="text-[10px] text-phase-text-secondary uppercase tracking-widest font-bold">
+                {helperText}
+              </Text>
             )}
+          </HStack>
+        </FormControlLabel>
+      )}
 
-            <Input
-                variant="outline"
-                isDisabled={isDisabled}
-                isInvalid={hasError}
-                accessible={true}
-                accessibilityLabel={accessibilityLabel || label}
-                accessibilityHint={accessibilityHint}
-                accessibilityRole="text"
-                accessibilityState={{
-                    disabled: isDisabled,
-                    invalid: hasError
-                }}
-                {...({ size: 'md' } as any)}
-                sx={{
-                    borderColor: hasError ? Theme.colors.error : scene.interactive.border,
-                    backgroundColor: scene.interactive.bg,
-                    borderRadius: Theme.corners.comfortable,
-                    minHeight: multiline ? (24 * numberOfLines + 24) : 48,
-                    paddingHorizontal: Theme.spacing.md,
-                    borderWidth: 1,
-                    ':focus': {
-                        borderColor: accent.action,
-                        borderWidth: 2,
-                        backgroundColor: scene.interactive.bg
-                    },
-                    ':disabled': {
-                        opacity: 0.5,
-                        backgroundColor: scene.surface.bg
-                    }
-                }}
-            >
-                {leftIcon && (
-                    <InputSlot sx={{ paddingLeft: '$0' as any, paddingRight: '$3' as any }}>
-                        <InputIcon as={leftIcon} color={Theme.colors.dimGray} />
-                    </InputSlot>
-                )}
+      <Input
+        isDisabled={isDisabled}
+        isInvalid={hasError}
+        className="bg-phase-surface border-phase-surface focus:border-phase-accent h-12 rounded-xl"
+      >
+        {leftIcon && (
+          <InputSlot className="pl-3">
+            <InputIcon as={leftIcon} className="text-phase-text-secondary" />
+          </InputSlot>
+        )}
 
-                <InputField
-                    placeholder={placeholder}
-                    value={value}
-                    onChangeText={onChangeText}
-                    autoFocus={autoFocus}
-                    type={type}
-                    keyboardType={keyboardType as any}
-                    color={text.onInteractive}
-                    placeholderTextColor={text.muted}
-                    multiline={multiline}
-                    numberOfLines={numberOfLines}
-                    textAlignVertical={multiline ? 'top' : 'center'}
-                    sx={{
-                        fontFamily: Theme.typography.fontFamily.english,
-                        paddingVertical: multiline ? Theme.spacing.sm : 0,
-                    }}
-                />
+        <InputField
+          placeholder={placeholder}
+          placeholderTextColor={Theme.colors.shadowViolet}
+          value={value}
+          onChangeText={onChangeText}
+          autoFocus={autoFocus}
+          secureTextEntry={type === 'password'}
+          keyboardType={keyboardType as any}
+          className="text-phase-text-primary px-3 text-base"
+          multiline={multiline}
+          numberOfLines={numberOfLines}
+          accessibilityLabel={accessibilityLabel || label}
+          accessibilityHint={accessibilityHint}
+          accessibilityLabelledBy={id ? `${id}-label` : undefined}
+          accessibilityDescribedBy={hasError && id ? `${id}-error` : undefined}
+        />
 
-                {rightIcon && (
-                    <InputSlot sx={{ paddingRight: '$0' as any, paddingLeft: '$3' as any }} onPress={onRightIconPress}>
-                        <InputIcon as={rightIcon} color={Theme.colors.sanctuarySaffron} />
-                    </InputSlot>
-                )}
-            </Input>
+        {rightIcon && (
+          <InputSlot onPress={onRightIconPress} className="pr-3">
+            <InputIcon
+              as={rightIcon}
+              className="text-phase-text-secondary active:text-phase-accent"
+            />
+          </InputSlot>
+        )}
+      </Input>
 
-            {hasError && (
-                <FormControlError sx={{ marginTop: '$1' as any }}>
-                    <FormControlErrorIcon as={AlertCircle} color={Theme.colors.error} {...({ size: 'xs' } as any)} />
-                    <FormControlErrorText color={Theme.colors.error} sx={{ fontSize: '$xs' as any, marginLeft: '$1' as any }}>
-                        {error || 'Invalid input'}
-                    </FormControlErrorText>
-                </FormControlError>
-            )}
-        </FormControl>
-    );
+      {hasError && (
+        <FormControlError className="mt-2">
+          <FormControlErrorIcon as={AlertCircle} className="text-phase-danger" />
+          <FormControlErrorText className="text-phase-danger text-sm">
+            {error || 'Invalid input'}
+          </FormControlErrorText>
+        </FormControlError>
+      )}
+    </FormControl>
+  );
 }
-

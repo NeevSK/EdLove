@@ -1,5 +1,5 @@
 /**
- * DirectMessageScreen.web.tsx — Pattern A: full web replacement
+ * DirectMessageScreen.web.tsx \u2014 Pattern A: full web replacement
  *
  * The native DirectMessageScreen wraps BaseChatScreen which uses RN FlatList,
  * TextInput, and KeyboardAvoidingView.  On web Metro resolves this file instead.
@@ -13,7 +13,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { CommunityStackParamList } from '@repo/core';
-import { supabase, useStore, useTemporalStore } from '@repo/core';
+import { supabase, useStore, useTemporalStore, socialAPI } from '@repo/core';
 import { getInitialsFromName, formatTimestamp } from '@repo/ui';
 import { communityAPI } from '../api/community';
 import HeaderMoreMenu from '../components/HeaderMoreMenu';
@@ -44,7 +44,7 @@ export default function DirectMessageScreen() {
     const [sending, setSending] = useState(false);
     const [targetUserId, setTargetUserId] = useState<string | undefined>();
     const [isBlocked, setIsBlocked] = useState(false);
-    const { viewDate, isPastView } = useTemporalStore();
+    const { viewDate, viewScale, isPastView } = useTemporalStore();
 
     const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -54,11 +54,11 @@ export default function DirectMessageScreen() {
         }, 60);
     }, []);
 
-    // ── Initial load ─────────────────────────────────────────────
+    // \u2500\u2500 Initial load \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
     useEffect(() => {
         async function fetchContext() {
             try {
-                const msgs = await communityAPI.getDirectMessages(conversationId, 60, viewDate) as ChatMessage[];
+                const msgs = await communityAPI.getDirectMessages(conversationId, 60, viewDate, viewScale) as ChatMessage[];
                 setMessages(msgs);
 
                 const { data: convData } = await supabase
@@ -71,7 +71,7 @@ export default function DirectMessageScreen() {
                     const otherId = convData.user1_id === user.id ? convData.user2_id : convData.user1_id;
                     setTargetUserId(otherId);
                     
-                    const blocked = await communityAPI.isBlockingActive(otherId);
+                    const blocked = await socialAPI.isBlockingActive(otherId);
                     setIsBlocked(blocked);
                 }
             } catch (e: any) {
@@ -81,13 +81,13 @@ export default function DirectMessageScreen() {
             }
         }
         fetchContext();
-    }, [conversationId, user, viewDate]);
+    }, [conversationId, user, viewDate, viewScale]);
 
     useEffect(() => {
         if (!loading) scrollToBottom(false);
     }, [loading]);
 
-    // ── Real-time subscription ────────────────────────────────────
+    // \u2500\u2500 Real-time subscription \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
     useEffect(() => {
         const channel = supabase
             .channel(`dm_${conversationId}`)
@@ -112,7 +112,7 @@ export default function DirectMessageScreen() {
         return () => { supabase.removeChannel(channel); };
     }, [conversationId, scrollToBottom]);
 
-    // ── Send ──────────────────────────────────────────────────────
+    // \u2500\u2500 Send \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
     const handleSend = useCallback(async () => {
         const content = draft.trim();
         if (!content || !user || isPastView) return;
@@ -139,7 +139,7 @@ export default function DirectMessageScreen() {
         } finally {
             setSending(false);
         }
-    }, [draft, user, conversationId, scrollToBottom]);
+    }, [draft, user, conversationId, isPastView, scrollToBottom]);
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
         if (e.key === 'Enter' && !e.shiftKey) {
@@ -162,7 +162,7 @@ export default function DirectMessageScreen() {
                     <div style={{ fontSize: '16px', fontWeight: '800', color: 'var(--ink)' }}>{userName}</div>
                     <div style={{ fontSize: '12px', color: 'var(--ink-ghost)' }}>Private Message</div>
                 </div>
-                <HeaderMoreMenu 
+                <HeaderMoreMenu
                     conversationId={conversationId}
                     targetUserId={targetUserId}
                     targetUserName={userName}
@@ -173,7 +173,7 @@ export default function DirectMessageScreen() {
             <div style={{ flex: 1, overflowY: 'auto', padding: '24px 24px 8px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {loading ? (
                     <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--ink-ghost)', fontSize: '14px' }}>
-                        Loading messages…
+                        Loading messages...
                     </div>
                 ) : messages.length === 0 ? (
                     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'var(--ink-ghost)', gap: '8px' }}>
@@ -240,7 +240,7 @@ export default function DirectMessageScreen() {
                             value={draft}
                             onChange={e => setDraft(e.target.value)}
                             onKeyDown={handleKeyDown}
-                            placeholder={`Message ${userName}… (Enter to send, Shift+Enter for new line)`}
+                            placeholder={`Message ${userName}... (Enter to send, Shift+Enter for new line)`}
                             rows={1}
                             style={{
                                 flex: 1,
@@ -278,7 +278,7 @@ export default function DirectMessageScreen() {
                                 transition: 'background 0.2s',
                             }}
                         >
-                            {sending ? '…' : '➤'}
+                            {sending ? '...' : '➤'}
                         </button>
                     </>
                 )}

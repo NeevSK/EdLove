@@ -1,5 +1,5 @@
 /**
- * ScannerModal — Web fallback (Pattern A: platform file pair)
+ * ScannerModal \u2014 Web fallback (Pattern A: platform file pair)
  *
  * expo-camera is a native-only module. On web, Metro resolves this .web.tsx
  * file instead of ScannerModal.tsx, preventing the unconditional
@@ -11,7 +11,7 @@
  * than pointing a webcam at a printed page.
  *
  * Design tokens: colors below are intentionally hardcoded to match the
- * Vellum (#F5EDD6) · Ink (#2A2318) · Saffron (#D4843A) palette for this
+ * Vellum (#F5EDD6) \u00B7 Ink (#2A2318) \u00B7 Saffron (#D4843A) palette for this
  * isolated web fallback, keeping it free of any native theme/token utilities.
  */
 
@@ -86,13 +86,13 @@ export default function ScannerModal({
                 style={styles.closeButton}
                 accessibilityLabel={t("scanner.web.closeScanner")}
               >
-                <Text style={styles.closeText}>✕</Text>
+                <Text style={styles.closeText}>\u2715</Text>
               </TouchableOpacity>
             </View>
 
             {/* Icon + message */}
             <View style={styles.iconArea}>
-              {/* Lotus / QR icon — inline SVG-style using text */}
+              {/* Lotus / QR icon \u2014 inline SVG-style using text */}
               <View
                 style={[
                   styles.iconCircle,
@@ -100,7 +100,7 @@ export default function ScannerModal({
                 ]}
               >
                 <Text style={[styles.iconGlyph, { color: accentColor }]}>
-                  ⊞
+                  \u229E
                 </Text>
               </View>
               <Text style={styles.messageText}>

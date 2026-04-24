@@ -26,3 +26,5 @@ export interface WorkforceAssignment {
   endDate?: string | null;
   status: 'active' | 'inactive' | 'planned';
 }
+
+export { default as WorkforceShell } from './WorkforceShell';

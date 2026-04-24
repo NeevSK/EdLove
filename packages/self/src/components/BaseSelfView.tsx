@@ -1,19 +1,30 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable, Dimensions } from 'react-native';
-import { VStack, GlobalHeader, FeatureInfoIcon, HStack, TemporalNavigator } from '@repo/ui';
-import { BaseSelfViewProps } from './BaseSelfView.types';
-import { Theme } from '@repo/ui';
+import { 
+    VStack, 
+    GlobalHeader, 
+    FeatureInfoIcon, 
+    HStack, 
+    TemporalNavigator, 
+    Box, 
+    Text, 
+    ScrollView, 
+    Pressable 
+} from '@repo/ui';
+import { useTemporalStore, type TemporalScale } from '@repo/core';
+import { BaseSelfViewProps, SelfViewFeature } from './BaseSelfView.types';
 import { FEATURE_DISCOVERY_DATA, FEATURE_EMOJIS } from '../constants/selfRegistry';
 import { useFeatureActivity } from '../hooks/useFeatureActivity';
 import { useDynamicSelfFeatures } from '../hooks/useDynamicSelfFeatures';
 
+const TEMPORAL_SCALES = ['day', 'week', 'month', 'year'] as const;
+
 /**
  * BaseSelfView - The architectural kernel for GuruDevi Self sections on Mobile.
- * This component implements the "Discovery Hub" with circular feature icons.
+ * Present-focused by default, with a shell-owned temporal layer that can surface
+ * feature history when a domain or feature opts in.
  */
 export function BaseSelfView({
     perspective,
-    description,
     domains,
     sideBar,
     reminders,
@@ -21,149 +32,165 @@ export function BaseSelfView({
     nightRitual,
     voiceJournal,
 }: BaseSelfViewProps) {
-    // Default background based on perspective
-    const surfaceBg = perspective === 'student' ? '#F5F3FF' : '#FFF7ED';
+    const surfaceBgClass = perspective === 'student' ? 'bg-[#F5F3FF]' : 'bg-[#FFF7ED]';
+    const { viewMode, setViewMode, viewScale, setScale } = useTemporalStore();
+    const isHistoryMode = viewMode === 'timeline';
 
-    const allFeatures = React.useMemo(() => [
-        ...domains.flatMap(domain =>
-            (domain.features || []).map(feature => ({
-                ...feature,
-                domainId: domain.id,
-                domainColor: domain.accentColor
-            }))
-        ),
-        // Inject Holistic History if any domain provides content
-        ...(domains.some(domain => domain.content) ? [{
-            id: 'holistic_history',
-            label: 'History',
-            content: domains.find(domain => domain.content)?.content,
-            domainId: 'journey',
-            domainColor: '#8B5CF6'
-        }] : []),
-        // Inject Mirrors as "Reflections" if provided
-        ...(sideBar ? [{
-            id: 'mirrors',
-            label: 'Reflections',
-            content: sideBar,
-            domainId: 'reflections',
-            domainColor: '#8B5CF6' // Purple for deep reflection
-        }] : []),
-        // Inject Reminders if provided
-        ...(reminders ? [{
-            id: 'reminders',
-            label: 'Reminders',
-            content: reminders,
-            domainId: 'reminders',
-            domainColor: '#F59E0B' // Amber for attention
-        }] : [])
-    ], [domains, sideBar, reminders]);
+    const allFeatures = React.useMemo(
+        () => [
+            ...domains.flatMap((domain) =>
+                (domain.features || []).map((feature) => ({
+                    ...feature,
+                    domainId: domain.id,
+                    domainColor: domain.accentColor,
+                }))
+            ),
+            ...(domains.some((domain) => domain.content)
+                ? [
+                      {
+                          id: 'holistic_history',
+                          label: 'Journey',
+                          content: domains.find((domain) => domain.content)?.content,
+                          historyContent:
+                              domains.find((domain) => domain.historyContent)?.historyContent ??
+                              domains.find((domain) => domain.content)?.content,
+                          domainId: 'journey',
+                          domainColor: '#8B5CF6',
+                          supportedScales: [...TEMPORAL_SCALES] as TemporalScale[],
+                      },
+                  ]
+                : []),
+            ...(sideBar
+                ? [
+                      {
+                          id: 'mirrors',
+                          label: 'Reflections',
+                          content: sideBar,
+                          historyContent: sideBar,
+                          domainId: 'reflections',
+                          domainColor: '#8B5CF6',
+                      },
+                  ]
+                : []),
+            ...(reminders
+                ? [
+                      {
+                          id: 'reminders',
+                          label: 'Reminders',
+                          content: reminders,
+                          historyContent: reminders,
+                          domainId: 'reminders',
+                          domainColor: '#F59E0B',
+                      },
+                  ]
+                : []),
+        ],
+        [domains, sideBar, reminders]
+    );
 
     const { getPinnedFeatures, togglePin, trackFeatureAccess } = useFeatureActivity();
     const { topItems: sortedFeatures } = useDynamicSelfFeatures(allFeatures);
     const pinned = getPinnedFeatures();
 
     const [activeFeatureId, setActiveFeatureId] = React.useState(
-        sortedFeatures.find(f => f.id === 'energy_pulse' || f.id === 'mood_checkin')?.id || sortedFeatures[0]?.id
+        sortedFeatures.find((f) => f.id === 'energy_pulse' || f.id === 'mood_checkin')?.id || sortedFeatures[0]?.id
     );
 
-    const activeFeature = sortedFeatures.find(f => f.id === activeFeatureId) || sortedFeatures[0];
+    React.useEffect(() => {
+        if (!sortedFeatures.length) return;
+        const hasActiveFeature = sortedFeatures.some((feature) => feature.id === activeFeatureId);
+        if (!hasActiveFeature) {
+            setActiveFeatureId(sortedFeatures[0]?.id);
+        }
+    }, [sortedFeatures, activeFeatureId]);
 
-    const getEmoji = (feature: any) => {
-        return FEATURE_EMOJIS[feature.id as keyof typeof FEATURE_EMOJIS] || '✨';
-    };
+    const activeFeature = sortedFeatures.find((f) => f.id === activeFeatureId) || sortedFeatures[0];
+
+    const getEmoji = (feature: SelfViewFeature) =>
+        FEATURE_EMOJIS[feature.id as keyof typeof FEATURE_EMOJIS] || '\u2728';
 
     const handleFeaturePress = (featureId: string) => {
         setActiveFeatureId(featureId);
         trackFeatureAccess(featureId);
     };
 
+    const renderFeatureContent = (feature?: SelfViewFeature & { domainColor?: string }) => {
+        if (!feature) return null;
+        if (!isHistoryMode) return feature.content;
+        return feature.historyContent ?? <HistoryScaffold feature={feature} viewScale={viewScale} />;
+    };
+
     return (
-        <VStack style={[nativeStyles.container, { backgroundColor: surfaceBg }]}>
-            {/* Global Header Restored */}
-            <GlobalHeader
-                isSelfView={true}
-                subtitle={perspective.toUpperCase()}
-                title="Sadhana"
-            />
+        <VStack className={`flex-1 ${surfaceBgClass}`}>
+            <GlobalHeader isSelfView={true} subtitle={perspective.toUpperCase()} title="Sadhana" />
 
             <TemporalNavigator />
 
+            <TemporalShellControls
+                isHistoryMode={isHistoryMode}
+                viewScale={viewScale}
+                onModeChange={setViewMode}
+                onScaleChange={setScale}
+            />
+
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
-                {voiceJournal && (
-                    <View style={nativeStyles.ritualWrapper}>
-                        {voiceJournal}
-                    </View>
-                )}
+                {voiceJournal && <Box className="px-lg pt-sm">{voiceJournal}</Box>}
+                {morningRitual && <Box className="px-lg pt-sm">{morningRitual}</Box>}
 
-                {morningRitual && (
-                    <View style={nativeStyles.ritualWrapper}>
-                        {morningRitual}
-                    </View>
-                )}
-
-                {/* Horizontal Circular Carousel with Domain Rings */}
-                <View style={nativeStyles.carouselContainer}>
+                <Box className="py-md bg-transparent">
                     <ScrollView
                         horizontal
                         showsHorizontalScrollIndicator={false}
-                        contentContainerStyle={nativeStyles.carouselContent}
+                        contentContainerStyle={{ paddingHorizontal: 20, gap: 12 }}
                     >
                         {sortedFeatures.map((feature) => {
                             const isActive = activeFeatureId === feature.id;
                             const isPinned = pinned.includes(feature.id);
                             const isInsight = feature.id === 'mirrors' || feature.id === 'reminders';
+                            const hasHistory = Boolean(feature.historyContent);
 
                             return (
                                 <Pressable
                                     key={feature.id}
                                     onPress={() => handleFeaturePress(feature.id)}
                                     onLongPress={() => togglePin(feature.id)}
-                                    style={nativeStyles.circleItem}
+                                    className="items-center w-[72px]"
                                 >
-                                    <View
-                                        style={[
-                                            nativeStyles.circleRing,
-                                            {
-                                                borderColor: isActive ? feature.domainColor : 'rgba(0,0,0,0.05)',
-                                                borderWidth: 2,
-                                                // Insights get a subtle dash or glow if needed
-                                                borderStyle: isInsight && !isActive ? 'dashed' : 'solid',
-                                            }
-                                        ]}
+                                    <Box
+                                        className={`w-16 h-16 rounded-full p-[3px] justify-center items-center mb-1 border-2 ${
+                                            isActive ? '' : 'border-black/5'
+                                        }`}
+                                        style={isActive ? { borderColor: feature.domainColor } : { borderStyle: isInsight ? 'dashed' : 'solid' }}
                                     >
-                                        <View
-                                            style={[
-                                                nativeStyles.circle,
-                                                {
-                                                    backgroundColor: isActive ? 'white' : 'white',
-                                                    shadowColor: feature.domainColor,
-                                                    shadowOpacity: isActive ? 0.3 : 0.05,
-                                                }
-                                            ]}
+                                        <Box
+                                            className="w-full h-full rounded-[30px] bg-white justify-center items-center shadow-sm"
+                                            style={isActive ? { shadowColor: feature.domainColor, shadowOpacity: 0.3 } : { shadowOpacity: 0.05 }}
                                         >
-                                            <Text style={nativeStyles.circleIcon}>
-                                                {getEmoji(feature)}
-                                            </Text>
+                                            <Text className="text-2xl">{getEmoji(feature)}</Text>
                                             {isPinned && (
-                                                <View style={[nativeStyles.pinIndicator, { backgroundColor: feature.domainColor }]}>
-                                                    <Text style={{ fontSize: 10, color: 'white' }}>📌</Text>
-                                                </View>
+                                                <Box
+                                                    className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full justify-center items-center border-2 border-white shadow-sm"
+                                                    style={{ backgroundColor: feature.domainColor }}
+                                                >
+                                                    <Text className="text-[10px] text-white">📌</Text>
+                                                </Box>
                                             )}
-                                        </View>
-                                    </View>
-                                    <View style={[
-                                        nativeStyles.activeIndicator,
-                                        { backgroundColor: isActive ? feature.domainColor : 'transparent' }
-                                    ]} />
+                                            {hasHistory && (
+                                                <Box className="absolute -bottom-1.5 -right-0.5 w-[18px] h-[18px] rounded-full justify-center items-center bg-[#EBE5FA] border border-white">
+                                                    <Text className="text-[8px] text-[#5B3FD6]">⏳</Text>
+                                                </Box>
+                                            )}
+                                        </Box>
+                                    </Box>
+                                    <Box
+                                        className={`w-1 h-1 rounded-full mb-1 ${isActive ? '' : 'bg-transparent'}`}
+                                        style={isActive ? { backgroundColor: feature.domainColor } : {}}
+                                    />
                                     <Text
                                         numberOfLines={1}
-                                        style={[
-                                            nativeStyles.circleLabel,
-                                            {
-                                                color: isActive ? '#000' : 'rgba(0,0,0,0.4)',
-                                                fontWeight: isActive ? '800' : '600'
-                                            }
-                                        ]}
+                                        className={`text-[9px] text-center uppercase tracking-wider font-bold ${
+                                            isActive ? 'text-black' : 'text-black/40'
+                                        }`}
                                     >
                                         {feature.label}
                                     </Text>
@@ -171,160 +198,134 @@ export function BaseSelfView({
                             );
                         })}
                     </ScrollView>
-                </View>
+                </Box>
 
-                {/* Active Feature Content */}
-                <View style={nativeStyles.activeFeatureContainer}>
+                <Box className="px-md pt-md min-h-[400px]">
                     {activeFeature && (
-                        <VStack sx={{ space: 'md', mb: 16 } as any}>
-                            <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' } as any}>
-                                <HStack sx={{ alignItems: 'center', space: 'sm' } as any}>
-                                    <Text style={nativeStyles.activeLabel}>
+                        <VStack className="mb-4">
+                            <HStack className="justify-between items-center mb-3">
+                                <HStack className="items-center flex-1 gap-1">
+                                    <Text className="text-lg font-extrabold text-[#1A1610] tracking-tighter">
                                         {activeFeature.label}
+                                        {isHistoryMode ? ' History' : ''}
                                     </Text>
-                                    <FeatureInfoIcon 
+                                    <FeatureInfoIcon
                                         title={activeFeature.label}
-                                        discoveryInfo={FEATURE_DISCOVERY_DATA[activeFeature.id]}
+                                        discoveryInfo={FEATURE_DISCOVERY_DATA[activeFeature.id as keyof typeof FEATURE_DISCOVERY_DATA]}
                                         color={activeFeature.domainColor}
                                     />
                                     {activeFeature.id !== 'holistic_history' && (
-                                        <Pressable 
-                                            onPress={() => handleFeaturePress('holistic_history')}
-                                            style={{ padding: 4, marginLeft: 4 }}
+                                        <Pressable
+                                            onPress={() => { 
+                                                setViewMode('timeline');
+                                                handleFeaturePress('holistic_history');
+                                            }}
+                                            className="p-1 ml-1"
                                         >
-                                            <Text style={{ fontSize: 16 }}>⏳</Text>
+                                            <Text className="text-lg">⏳</Text>
                                         </Pressable>
                                     )}
                                 </HStack>
-                                {activeFeature.id !== 'mirrors' && activeFeature.id !== 'reminders' && (
-                                    <Text style={{ fontSize: 10, color: 'rgba(0,0,0,0.3)', fontWeight: 'bold' }}>
-                                        ACTIVE FEATURE
-                                    </Text>
-                                )}
+                                <Text className="text-[10px] text-black/35 font-bold tracking-widest uppercase">
+                                    {isHistoryMode ? `${viewScale.toUpperCase()} VIEW` : 'PRESENT FOCUS'}
+                                </Text>
                             </HStack>
-                            {activeFeature.content}
+                            {renderFeatureContent(activeFeature)}
                         </VStack>
                     )}
-                </View>
+                </Box>
 
-                {nightRitual && (
-                    <View style={nativeStyles.ritualWrapper}>
-                        {nightRitual}
-                    </View>
-                )}
+                {nightRitual && <Box className="px-lg pt-sm">{nightRitual}</Box>}
             </ScrollView>
         </VStack>
     );
 }
 
-const nativeStyles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
-    ritualWrapper: {
-        paddingHorizontal: 20,
-        paddingTop: 8,
-    },
-    carouselContainer: {
-        paddingVertical: 16,
-        backgroundColor: 'transparent',
-    },
-    carouselContent: {
-        paddingHorizontal: 20,
-        gap: 12,
-    } as any,
-    circleItem: {
-        alignItems: 'center',
-        width: 72,
-    },
-    circleRing: {
-        width: 64,
-        height: 64,
-        borderRadius: 32,
-        padding: 3,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginBottom: 4,
-    },
-    circle: {
-        width: '100%',
-        height: '100%',
-        borderRadius: 30,
-        backgroundColor: 'white',
-        justifyContent: 'center',
-        alignItems: 'center',
-        shadowOffset: { width: 0, height: 2 },
-        shadowRadius: 4,
-        elevation: 3,
-    },
-    circleIcon: {
-        fontSize: 24,
-    },
-    pinIndicator: {
-        position: 'absolute',
-        top: -6,
-        right: -6,
-        width: 20,
-        height: 20,
-        borderRadius: 10,
-        justifyContent: 'center',
-        alignItems: 'center',
-        borderWidth: 2,
-        borderColor: 'white',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.2,
-        shadowRadius: 1,
-        elevation: 2,
-    },
-    activeIndicator: {
-        width: 4,
-        height: 4,
-        borderRadius: 2,
-        marginBottom: 4,
-    },
-    circleLabel: {
-        fontSize: 9,
-        textAlign: 'center',
-        textTransform: 'uppercase',
-        letterSpacing: 0.5,
-    },
-    activeFeatureContainer: {
-        paddingHorizontal: 16,
-        paddingTop: 12,
-        minHeight: 400,
-    },
-    insightsSection: {
-        marginTop: 40,
-        paddingHorizontal: 20,
-        paddingBottom: 40,
-    },
-    insightsHeader: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 20,
-    },
-    insightsLine: {
-        flex: 1,
-        height: 1,
-        opacity: 0.2,
-    },
-    insightsTitle: {
-        marginHorizontal: 12,
-        fontSize: 10,
-        fontWeight: '800',
-        letterSpacing: 1.5,
-        textTransform: 'uppercase',
-        color: '#8B5CF6',
-        opacity: 0.6,
-    },
-    insightsContent: {
-        gap: 16,
-    } as any,
-    activeLabel: {
-        fontSize: 18,
-        fontWeight: '800',
-        color: '#1A1610',
-        letterSpacing: -0.5,
-    },
-});
+function TemporalShellControls({
+    isHistoryMode,
+    viewScale,
+    onModeChange,
+    onScaleChange,
+}: {
+    isHistoryMode: boolean;
+    viewScale: string;
+    onModeChange: (mode: 'spotlight' | 'timeline') => void;
+    onScaleChange: (scale: any) => void;
+}) {
+    return (
+        <Box className="px-lg pt-sm pb-sm gap-2">
+            <HStack className="gap-2 items-center">
+                <Pressable
+                    onPress={() => onModeChange('spotlight')}
+                    className={`px-3.5 py-2 rounded-full border ${
+                        !isHistoryMode ? 'bg-[#DEF2E8] border-[#29A17D40]' : 'bg-white/60 border-black/10'
+                    }`}
+                >
+                    <Text className={`text-[11px] font-bold uppercase tracking-wider ${
+                        !isHistoryMode ? 'text-[#29A17D]' : 'text-[#6E594F]'
+                    }`}>
+                        Now
+                    </Text>
+                </Pressable>
+                <Pressable
+                    onPress={() => onModeChange('timeline')}
+                    className={`px-3.5 py-2 rounded-full border ${
+                        isHistoryMode ? 'bg-[#EBE5FA] border-[#835CF630]' : 'bg-white/60 border-black/10'
+                    }`}
+                >
+                    <Text className={`text-[11px] font-bold uppercase tracking-wider ${
+                        isHistoryMode ? 'text-[#29A17D]' : 'text-[#6E594F]'
+                    }`}>
+                        History
+                    </Text>
+                </Pressable>
+            </HStack>
+            {isHistoryMode && (
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8, paddingRight: 20 }}>
+                    {TEMPORAL_SCALES.map((scale) => (
+                        <Pressable
+                            key={scale}
+                            onPress={() => onScaleChange(scale)}
+                            className={`px-3 py-1.5 rounded-full border ${
+                                viewScale === scale ? 'bg-[#EBE5FA] border-[#835CF630]' : 'bg-white/60 border-black/10'
+                            }`}
+                        >
+                            <Text
+                                className={`text-[10px] font-extrabold tracking-wider ${
+                                    viewScale === scale ? 'text-[#5B3FD6]' : 'text-[#6E594F]'
+                                }`}
+                            >
+                                {scale.toUpperCase()}
+                            </Text>
+                        </Pressable>
+                    ))}
+                </ScrollView>
+            )}
+        </Box>
+    );
+}
+
+function HistoryScaffold({
+    feature,
+    viewScale,
+}: {
+    feature: SelfViewFeature & { domainColor?: string };
+    viewScale: string;
+}) {
+    return (
+        <Box
+            className="border rounded-[20px] px-[18px] py-5"
+            style={{ 
+                borderColor: feature.domainColor || '#8B5CF6', 
+                backgroundColor: 'rgba(255,255,255,0.72)' 
+            }}
+        >
+            <Text className="text-sm font-extrabold text-[#2E2924] mb-2 uppercase tracking-wider">
+                {feature.label} history scaffold
+            </Text>
+            <Text className="text-[13px] leading-5 text-[#6E594F]">
+                {`The shell is ready to show ${viewScale}-range history here once this feature exposes its temporal view.`}
+            </Text>
+        </Box>
+    );
+}

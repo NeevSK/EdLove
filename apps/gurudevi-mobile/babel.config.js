@@ -21,7 +21,7 @@ module.exports = function (api) {
         },
       ],
     ],
-    plugins: ['react-native-reanimated/plugin'],
+    plugins: ['nativewind/babel', 'react-native-reanimated/plugin'],
     // Ensure ESM-first packages are transformed by Babel.
     // i18next v23+ and react-i18next v14+ ship pre-compiled ESM that Metro
     // cannot wrap as CJS without this transformation step, leading to the

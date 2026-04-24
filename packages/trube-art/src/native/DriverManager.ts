@@ -27,7 +27,7 @@ class DriverManager {
   public triggerGlobalFailover(reason: string) {
     if (this.globalFailover) return;
     this.globalFailover = true;
-    console.warn(`[Trübe-Art] [FAILOVER] Global failover activated: ${reason}`);
+    console.warn(`[Tr\u00FCbe-Art] [FAILOVER] Global failover activated: ${reason}`);
     this.onFailoverListener?.(reason);
   }
 
@@ -39,9 +39,9 @@ class DriverManager {
     // 1. Attempt to load Tier 1 (Capture C++ via Nitro)
     try {
       this.nativeDriver = NitroModules.createHybridObject<TrubeGPUDriver>('TrubeGPUDriver');
-      console.log('[Trübe-Art] [Tier 1] Native Driver Linked.');
+      console.log('[Tr\u00FCbe-Art] [Tier 1] Native Driver Linked.');
     } catch (e) {
-      console.log('[Trübe-Art] [Tier 1] Native Driver not available.');
+      console.log('[Tr\u00FCbe-Art] [Tier 1] Native Driver not available.');
     }
 
     // 2. Initialize Tier 3 (Skia) immediately as it's the rock-solid fallback
@@ -51,21 +51,21 @@ class DriverManager {
   public async prewarm() {
     if (this.prewarmed) return;
     
-    console.log('[Trübe-Art] Initializing Global Pre-warm Sequence...');
+    console.log('[Tr\u00FCbe-Art] Initializing Global Pre-warm Sequence...');
     
     const { getSurfaceNames, getSurfaceShader } = require('../core/soul/SoulLibrary');
     const bestBackend = this.getBestBackend();
     const t0 = Date.now();
 
     if (bestBackend === 'native-vulkan' || bestBackend === 'native-metal') {
-      // Tier 1: compile real WGSL via Nitro → TrubeCore.prewarmSurfaceAsync()
+      // Tier 1: compile real WGSL via Nitro \u2192 TrubeCore.prewarmSurfaceAsync()
       if (this.nativeDriver) {
         const promises = getSurfaceNames().map(async (name: string) => {
           const wgsl = getSurfaceShader(name);
           if (wgsl) {
-            console.log(`[Trübe-Art] [Prewarm] [Async] Starting ${name}...`);
+            console.log(`[Tr\u00FCbe-Art] [Prewarm] [Async] Starting ${name}...`);
             const ok = await this.nativeDriver!.prewarmSurfaceAsync(name, wgsl);
-            if (!ok) console.error(`[Trübe-Art] [Prewarm] GPU compile failed: ${name}`);
+            if (!ok) console.error(`[Tr\u00FCbe-Art] [Prewarm] GPU compile failed: ${name}`);
             return ok;
           }
           return true;
@@ -85,7 +85,7 @@ class DriverManager {
     this.skiaDriver?.prewarm();
 
     this.prewarmed = true;
-    console.log(`[Trübe-Art] Global Pre-warm Complete in ${Date.now() - t0}ms.`);
+    console.log(`[Tr\u00FCbe-Art] Global Pre-warm Complete in ${Date.now() - t0}ms.`);
   }
 
   public isPrewarmed(): boolean {
@@ -93,9 +93,9 @@ class DriverManager {
   }
 
   public releaseResources(surfaceName: string) {
-    console.log(`[Trübe-Art] [Lifecycle] Releasing resources for: ${surfaceName}`);
+    console.log(`[Tr\u00FCbe-Art] [Lifecycle] Releasing resources for: ${surfaceName}`);
     // Tier 1 (Native C++): resources are managed by RAII inside TrubeCore.
-    // No explicit release call needed — SurfaceSession RAII handles it.
+    // No explicit release call needed \u2014 SurfaceSession RAII handles it.
     // Tier 2 (WebGPU)
     if (this.webgpuDriver) {
       this.webgpuDriver.release(surfaceName);
@@ -120,20 +120,20 @@ class DriverManager {
       return 'compatibility-static';
     }
 
-    // Attempt Tier 1 (Native / Nitro) — isEngineReady() is the real check
+    // Attempt Tier 1 (Native / Nitro) \u2014 isEngineReady() is the real check
     if (this.nativeDriver?.isEngineReady()) {
-       console.log('[Trübe-Art] [Tier 1] Dispatching Native Path.');
+       console.log('[Tr\u00FCbe-Art] [Tier 1] Dispatching Native Path.');
        return 'native-vulkan';
     }
     
     // Attempt Tier 2 (WebGPU)
     if (this.getWebGPUDriver().isSupported) {
-      console.log('[Trübe-Art] [Tier 2] Dispatching WebGPU Path.');
+      console.log('[Tr\u00FCbe-Art] [Tier 2] Dispatching WebGPU Path.');
       return 'webgpu';
     }
 
     // Default to Tier 3 (Skia)
-    console.log('[Trübe-Art] [Tier 3] Dispatching Skia Path.');
+    console.log('[Tr\u00FCbe-Art] [Tier 3] Dispatching Skia Path.');
     return 'skia-runtime-effect';
   }
 
@@ -142,7 +142,10 @@ class DriverManager {
   }
 
   public getWebGPUDriver(): WebGPUDriver {
-    if (!this.webgpuDriver) this.webgpuDriver = new WebGPUDriver();
+    if (!this.webgpuDriver) {
+      this.webgpuDriver = new WebGPUDriver();
+      this.webgpuDriver.onDeviceLost = (reason) => this.triggerGlobalFailover(reason);
+    }
     return this.webgpuDriver;
   }
 

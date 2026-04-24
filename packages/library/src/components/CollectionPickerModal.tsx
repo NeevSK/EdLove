@@ -33,7 +33,6 @@ export const CollectionPickerModal: React.FC<CollectionPickerModalProps> = ({
                             <MaterialCommunityIcons name="close" size={24} color="#666" />
                         </TouchableOpacity>
                     </View>
-
                     <FlatList
                         data={collections}
                         keyExtractor={(item) => item.id}

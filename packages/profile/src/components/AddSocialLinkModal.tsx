@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, StyleSheet, ScrollView, TouchableOpacity, Platform } from 'react-native';
+import { Modal, ScrollView, Platform } from 'react-native';
 import {
     Box,
     VStack,
@@ -10,10 +10,7 @@ import {
     InputField,
     Button,
     ButtonText,
-    Theme,
-    useThemedColors,
-    useTheme,
-    SanctuaryCard,
+    Pressable,
 } from '@repo/ui';
 import {
     X,
@@ -40,11 +37,11 @@ interface AddSocialLinkModalProps {
 }
 
 const PLATFORMS: { labelKey: string; value: SocialPlatform; icon: any; color: string }[] = [
-    { labelKey: 'addSocialLink.platforms.whatsapp', value: 'whatsapp', icon: MessagesSquare, color: Theme.colors.whatsapp },
-    { labelKey: 'addSocialLink.platforms.linkedin', value: 'linkedin', icon: Linkedin, color: Theme.colors.linkedin },
-    { labelKey: 'addSocialLink.platforms.instagram', value: 'instagram', icon: Instagram, color: Theme.colors.instagram },
-    { labelKey: 'addSocialLink.platforms.portfolio', value: 'website', icon: Globe, color: Theme.colors.portfolio },
-    { labelKey: 'addSocialLink.platforms.email', value: 'website', icon: Mail, color: Theme.colors.emberOrange },
+    { labelKey: 'addSocialLink.platforms.whatsapp', value: 'whatsapp', icon: MessagesSquare, color: '#25D366' },
+    { labelKey: 'addSocialLink.platforms.linkedin', value: 'linkedin', icon: Linkedin, color: '#0077B5' },
+    { labelKey: 'addSocialLink.platforms.instagram', value: 'instagram', icon: Instagram, color: '#E4405F' },
+    { labelKey: 'addSocialLink.platforms.portfolio', value: 'website', icon: Globe, color: '#4A90E2' },
+    { labelKey: 'addSocialLink.platforms.email', value: 'website', icon: Mail, color: '#F44336' },
 ];
 
 const PRIVACY_LEVELS: { value: PrivacyLevel; icon: any; labelKey: string; descKey: string }[] = [
@@ -53,10 +50,12 @@ const PRIVACY_LEVELS: { value: PrivacyLevel; icon: any; labelKey: string; descKe
     { value: 'private', icon: ShieldAlert, labelKey: 'addSocialLink.privateLabel', descKey: 'addSocialLink.privateDesc' },
 ];
 
+/**
+ * ADD SOCIAL LINK MODAL
+ * Sanctuary V3 standard for managing contact sharing.
+ */
 export const AddSocialLinkModal: React.FC<AddSocialLinkModalProps> = ({ visible, onClose, userId, initialLink }) => {
     const { links, addLink, updateLink } = useSocialLinks(userId);
-    const colors = useThemedColors();
-    const { text, isDark } = useTheme();
     const { t } = useTranslation();
     
     const [platform, setPlatform] = useState<SocialPlatform>(initialLink?.platform || 'whatsapp');
@@ -104,124 +103,104 @@ export const AddSocialLinkModal: React.FC<AddSocialLinkModalProps> = ({ visible,
 
     return (
         <Modal visible={visible} animationType="slide" transparent presentationStyle="overFullScreen">
-            <Box style={styles.overlay}>
-                <Box sx={{
-                    flex: 1,
-                    backgroundColor: isDark ? 'rgba(107,100,128,0.65)' : 'rgba(107,100,128,0.45)',
-                    width: '100%',
-                }}>
-                    <TouchableOpacity style={{ flex: 1 }} onPress={onClose} />
-
-                    <Box sx={{
-                        backgroundColor: colors.primary,
-                        borderTopLeftRadius: Theme.corners.generous,
-                        borderTopRightRadius: Theme.corners.generous,
-                        padding: Theme.spacing.xl,
-                        maxHeight: '85%',
-                        borderWidth: 1,
-                        borderColor: colors.border
-                    }}>
-                        <HStack justifyContent="space-between" alignItems="center" mb="$6">
+            <Box className="flex-1 justify-end">
+                <Box className="flex-1 w-full bg-black/40">
+                    <Pressable className="flex-1" onPress={onClose} />
+                    <Box className="bg-phase-canvas rounded-t-[40px] p-6 max-h-[85%] border-t border-phase-surface">
+                        <HStack className="justify-between items-center mb-8">
                             <VStack>
-                                <Heading color={colors.textPrimary}>
+                                <Heading className="text-phase-text-primary text-xl">
                                     {initialLink ? t('addSocialLink.editTitle') : t('addSocialLink.title')}
                                 </Heading>
-                                <Text size="xs" color={colors.textTertiary}>
+                                <Text className="text-xs text-phase-text-tertiary">
                                     {initialLink ? t('addSocialLink.editSubtitle') : t('addSocialLink.subtitle')}
                                 </Text>
                             </VStack>
-                            <TouchableOpacity
+                            <Pressable
                                 onPress={onClose}
-                                style={{
-                                    padding: 8,
-                                    borderRadius: Theme.corners.full,
-                                    backgroundColor: colors.tertiary
-                                }}
+                                className="p-2 rounded-full bg-phase-surface"
                             >
-                                <X size={20} color={colors.textSecondary} />
-                            </TouchableOpacity>
+                                <X size={20} color="#9DA1A3" />
+                            </Pressable>
                         </HStack>
 
                         <ScrollView showsVerticalScrollIndicator={false}>
                             <VStack space="xl">
-                                <VStack space="xs">
-                                    <Text size="xs" bold color={colors.textSecondary}>{t('addSocialLink.selectPlatform')}</Text>
-                                    <HStack space="sm" sx={{ flexWrap: 'wrap' }}>
+                                <VStack space="sm">
+                                    <Text className="text-xs font-bold text-phase-text-secondary uppercase tracking-wider">{t('addSocialLink.selectPlatform')}</Text>
+                                    <HStack className="flex-wrap">
                                         {PLATFORMS.map((p) => (
-                                            <TouchableOpacity
+                                            <Pressable
                                                 key={p.value}
                                                 onPress={() => setPlatform(p.value)}
-                                                style={[
-                                                    styles.platformChip,
-                                                    {
-                                                        borderColor: platform === p.value ? p.color : colors.border,
-                                                        backgroundColor: platform === p.value ? `${p.color}15` : colors.secondary
-                                                    }
-                                                ]}
+                                                className={`flex-row items-center px-4 py-3 rounded-2xl mr-2 mb-2 border ${
+                                                    platform === p.value 
+                                                        ? 'border-phase-interactive bg-phase-interactive/5' 
+                                                        : 'border-phase-surface bg-phase-canvas'
+                                                }`}
                                             >
-                                                <p.icon size={16} color={platform === p.value ? p.color : colors.textTertiary} />
+                                                <p.icon size={18} color={platform === p.value ? '#4A90E2' : '#9DA1A3'} />
                                                 <Text
-                                                    size="xs"
-                                                    bold={platform === p.value}
-                                                    sx={{
-                                                        color: platform === p.value ? p.color : colors.textSecondary,
-                                                        marginLeft: 6
-                                                    }}
+                                                    className={`text-[13px] ml-2 ${
+                                                        platform === p.value ? 'font-bold text-phase-interactive' : 'text-phase-text-secondary'
+                                                    }`}
                                                 >
                                                     {t(p.labelKey)}
                                                 </Text>
-                                            </TouchableOpacity>
+                                            </Pressable>
                                         ))}
                                     </HStack>
                                 </VStack>
 
-                                <VStack space="xs">
-                                    <Text size="xs" bold color={colors.textSecondary}>{t('addSocialLink.handleOrLink')}</Text>
-                                    <Input variant="outline" sx={{
-                                        height: 54,
-                                        borderRadius: Theme.corners.comfortable,
-                                        backgroundColor: colors.secondary,
-                                        borderColor: colors.border
-                                    }}>
+                                <VStack space="sm">
+                                    <Text className="text-xs font-bold text-phase-text-secondary uppercase tracking-wider">{t('addSocialLink.handleOrLink')}</Text>
+                                    <Input className="h-14 rounded-2xl bg-phase-canvas border-phase-surface px-4">
                                         <InputField
-                                            color={colors.textPrimary}
+                                            className="text-phase-text-primary text-base"
                                             value={url}
                                             onChangeText={setUrl}
                                             placeholder={platform === 'whatsapp' ? t('addSocialLink.phoneOrLink') : t('addSocialLink.usernameOrLink')}
-                                            placeholderTextColor={colors.textTertiary}
+                                            placeholderTextColor="#9DA1A3"
                                         />
                                     </Input>
                                 </VStack>
 
-                                <VStack space="xs">
-                                    <Text size="xs" bold color={colors.textSecondary}>{t('addSocialLink.privacyLevel')}</Text>
+                                <VStack space="sm">
+                                    <Text className="text-xs font-bold text-phase-text-secondary uppercase tracking-wider">{t('addSocialLink.privacyLevel')}</Text>
                                     <VStack space="sm">
                                         {PRIVACY_LEVELS.map((pl) => (
-                                            <TouchableOpacity
+                                            <Pressable
                                                 key={pl.value}
                                                 onPress={() => setPrivacy(pl.value)}
+                                                className={`p-4 rounded-[24px] border border-phase-surface bg-phase-canvas ${
+                                                    privacy === pl.value ? 'border-phase-interactive bg-phase-interactive/5' : ''
+                                                }`}
                                             >
-                                                <SanctuaryCard
-                                                    variant={privacy === pl.value ? 'glass' : 'solid'}
-                                                    style={{
-                                                        padding: Theme.spacing.md,
-                                                        borderColor: privacy === pl.value ? Theme.colors.sanctuarySaffron : colors.border
-                                                    }}
-                                                >
-                                                    <HStack space="md" alignItems="center">
-                                                        <pl.icon size={20} color={privacy === pl.value ? colors.action : colors.textTertiary} />
-                                                        <VStack flex={1}>
-                                                            <Text bold color={privacy === pl.value ? colors.textPrimary : colors.textSecondary}>
-                                                                {t(pl.labelKey)}
-                                                            </Text>
-                                                            <Text size="xs" color={colors.textTertiary}>
-                                                                {t(pl.descKey)}
-                                                            </Text>
-                                                        </VStack>
-                                                        {privacy === pl.value && <ShieldCheck size={18} color={colors.action} />}
-                                                    </HStack>
-                                                </SanctuaryCard>
-                                            </TouchableOpacity>
+                                                <HStack space="md" className="items-center">
+                                                    <Box 
+                                                        className={`p-3 rounded-full ${
+                                                            privacy === pl.value ? 'bg-phase-interactive/10' : 'bg-phase-surface'
+                                                        }`}
+                                                    >
+                                                        <pl.icon size={20} color={privacy === pl.value ? '#4A90E2' : '#9DA1A3'} />
+                                                    </Box>
+                                                    <VStack className="flex-1">
+                                                        <Text className={`font-bold ${
+                                                            privacy === pl.value ? 'text-phase-text-primary' : 'text-phase-text-secondary'
+                                                        }`}>
+                                                            {t(pl.labelKey)}
+                                                        </Text>
+                                                        <Text className="text-xs text-phase-text-tertiary">
+                                                            {t(pl.descKey)}
+                                                        </Text>
+                                                    </VStack>
+                                                    {privacy === pl.value && (
+                                                        <Box className="w-6 h-6 rounded-full bg-phase-interactive items-center justify-center">
+                                                            <Check size={14} color="white" strokeWidth={3} />
+                                                        </Box>
+                                                    )}
+                                                </HStack>
+                                            </Pressable>
                                         ))}
                                     </VStack>
                                 </VStack>
@@ -230,22 +209,17 @@ export const AddSocialLinkModal: React.FC<AddSocialLinkModalProps> = ({ visible,
                                     size="lg"
                                     onPress={handleSave}
                                     isDisabled={loading || !url}
-                                    sx={{
-                                        marginTop: Theme.spacing.md,
-                                        backgroundColor: colors.action,
-                                        borderRadius: Theme.corners.comfortable,
-                                        height: 56
-                                    }}
+                                    className="mt-6 bg-phase-interactive rounded-2xl h-16 shadow-lg shadow-blue-500/30"
                                 >
-                                    <HStack space="xs" alignItems="center">
-                                        {initialLink ? <Check size={20} color={text.inverse} /> : <Plus size={20} color={text.inverse} />}
-                                        <ButtonText {...({ color: text.inverse, bold: true } as any)}>
+                                    <HStack space="sm" className="items-center">
+                                        {initialLink ? <Check size={20} color="white" /> : <Plus size={20} color="white" />}
+                                        <ButtonText className="text-white font-bold text-lg">
                                             {initialLink ? t('addSocialLink.saveButton') : t('addSocialLink.addButton')}
                                         </ButtonText>
                                     </HStack>
                                 </Button>
                             </VStack>
-                            <Box h={Theme.spacing.xl} />
+                            <Box className="h-12" />
                         </ScrollView>
                     </Box>
                 </Box>
@@ -253,19 +227,3 @@ export const AddSocialLinkModal: React.FC<AddSocialLinkModalProps> = ({ visible,
         </Modal>
     );
 };
-
-const styles = StyleSheet.create({
-    overlay: {
-        flex: 1,
-        justifyContent: 'flex-end',
-    },
-    platformChip: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: 12,
-        paddingVertical: 8,
-        borderRadius: 20,
-        borderWidth: 1,
-        marginBottom: 8,
-    }
-});

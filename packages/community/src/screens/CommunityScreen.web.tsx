@@ -1,650 +1,597 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { ActivityIndicator } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { PositiveInvitation, WebScreenHeader, Box, VStack, Heading, Text, Icon } from '@repo/ui';
 import {
-    useTheme,
-    PositiveInvitation,
-    LotusPetalFAB,
-    Theme,
-    useThemedColors,
-    WebScreenHeader,
-    Avatar,
-    AvatarFallbackText,
-    AvatarImage,
-    HStack,
-    VStack,
-    Text,
-    Box,
-    SanctuaryFlashList,
-} from '@repo/ui';
-import { 
-    usePendingGateAction, 
-    useStore, 
-    setPendingGateAction,
     communityAPI,
-    usePermissions 
+    setPendingGateAction,
+    usePendingGateAction,
+    usePermissions,
+    useStore,
 } from '@repo/core';
+import { Bell, Compass, Plus, Shield, Users2, Info } from 'lucide-react-native';
+import type { AnnouncementWithAuthor, DirectConversation } from '../types';
+import CommunityHearth from '../components/CommunityHearth';
+import CreateGroupModal from '../components/CreateGroupModal';
+import CreatePostModal from '../components/CreatePostModal';
+import { CommentSheet } from '../components/CommentSheet';
+import PostCard from '../components/PostCard';
 import { useCommunity } from '../hooks/useCommunity';
 import { useCommunityGroups } from '../hooks/useCommunityGroups';
 import { useManifestos } from '../hooks/useManifestos';
 import { useNotifications } from '../hooks/useNotifications';
-import CommunityHearth from '../components/CommunityHearth';
-import PostCard from '../components/PostCard';
-import CreatePostModal from '../components/CreatePostModal';
-import CreateGroupModal from '../components/CreateGroupModal';
-import { CommentSheet } from '../components/CommentSheet';
-
-import { CommunityPresence } from '@repo/self';
+import AnnouncementsScreen from './AnnouncementsScreen';
 import {
-    Hash,
-    MessageSquare,
-    Trophy,
-    Compass,
-    Activity,
-    Users2,
-    Heart,
-    Flame,
-    Plus,
-    PenLine,
-    ArrowRight,
-    Globe,
-    Lock,
-    Bell,
-} from 'lucide-react-native';
-import { ActivityIndicator } from 'react-native';
-// Replaced relative path import with a generic fallback or prop-injected component if needed
-// For now, I'll assume standard components or placeholders for internal app-only parts
-// import { StackFallback } from '../components/web/WebScreenShimmer'; 
-import { useTranslation } from 'react-i18next';
-import { useNavigation } from '@react-navigation/native';
-import { formatDistanceToNow } from 'date-fns';
-
-// Simple fallback for StackFallback if not available in repo/ui
-const StackFallback = ({ variant }: { variant?: string }) => (
-    <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-        {[1, 2, 3].map(i => (
-            <div key={i} style={{ height: '100px', backgroundColor: 'var(--background-alt)', borderRadius: '12px', opacity: 0.5 }} />
-        ))}
-    </div>
-);
-
-type CommunityTab = 'feed' | 'groups' | 'dms';
-type GroupsSubTab = 'joined' | 'global';
+    deriveCommunityPulse,
+    getCommunityFilterOptions,
+    getCommunityModeOptions,
+    getCommunityQuickPaths,
+    mapCommunitySurfaceSlots,
+    type CommunityWorkspaceMode,
+} from './communityWorkspace.shared';
 
 export default function CommunityScreenWeb() {
-    const { t } = useTranslation();
     const navigation = useNavigation<any>();
-    const { context, can } = usePermissions();
-    const { user } = useStore();
+    const { can } = usePermissions();
+    const { user, flags } = useStore();
+    const { isCommunityEnabled, isMessagingEnabled, isSocialShieldEnabled } = flags;
     const pending = usePendingGateAction();
+    const { unreadCount } = useNotifications();
 
-    const [activeTab, setActiveTab] = useState<CommunityTab>('feed');
-    const [groupsSubTab, setGroupsSubTab] = useState<GroupsSubTab>('joined');
-    const [selectedGroupId, setSelectedGroupId] = useState<string | 'all' | 'my' | 'pulse'>('all');
+    const userId = user?.id ?? 'guest';
+    const schoolId = user?.school_id ?? undefined;
+    const userAuthority = (user?.authority as any) ?? 'student';
+
+    const canReadFeed = can('read', 'CommunityFeed');
+    const canReadGroups = can('read', 'CommunityGroups');
+    const canReadMessages = can('read', 'DirectMessages');
+    const canCreatePost = can('create', 'Post');
+    const canCreateGroup = can('create', 'Group');
+    const canReadAnnouncements = Boolean(schoolId) && can('read', 'Group');
+
+    const [activeMode, setActiveMode] = useState<CommunityWorkspaceMode>('feed');
+    const [selectedFilter, setSelectedFilter] = useState<string>('all');
     const [searchQuery, setSearchQuery] = useState('');
     const [showCreatePost, setShowCreatePost] = useState(false);
     const [showCreateGroup, setShowCreateGroup] = useState(false);
-
-    // Comment sheet state
     const [commentPostId, setCommentPostId] = useState<string | null>(null);
-    const [commentPostAuthorId, setCommentPostAuthorId] = useState<string | undefined>();
-    const [commentPostType, setCommentPostType] = useState<string | undefined>();
+    const [commentPostAuthorId, setCommentPostAuthorId] = useState<string | undefined>(undefined);
+    const [commentPostType, setCommentPostType] = useState<string | undefined>(undefined);
+    const [conversations, setConversations] = useState<DirectConversation[]>([]);
+    const [loadingMessages, setLoadingMessages] = useState(false);
+    const [announcementCount, setAnnouncementCount] = useState(0);
 
-    // Notification badge
-    const { unreadCount: notifCount } = useNotifications();
-
-    // DM Logic
-    const [conversations, setConversations] = useState<any[]>([]);
-    const [loadingDMs, setLoadingDMs] = useState(false);
-
-    // Real data wiring
-    const { posts, isLoadingPosts, fetchPosts } = useCommunity(
-        selectedGroupId === 'all' || selectedGroupId === 'my' || selectedGroupId === 'pulse'
-            ? undefined
-            : selectedGroupId
+    const { posts, isLoadingPosts, fetchPosts, fetchGroups } = useCommunity(
+        selectedFilter !== 'all' ? selectedFilter : undefined
     );
-    const {
-        sanctuaryGroups: joinedGroups,
-        galaxyGroups: discoverGroups,
-        loading: isLoadingGroups,
-        fetchGroups
-    } = useCommunityGroups({ 
-        schoolId: user?.school_id,
-        searchQuery: searchQuery,
-        isPublicOnly: groupsSubTab === 'global' && !searchQuery
-    });
 
-    const { manifestos } = useManifestos(user?.school_id, user?.id);
+    if (!isCommunityEnabled) {
+        return (
+            <Box className="flex-1 bg-phase-canvas">
+                <WebScreenHeader title="Community" />
+                <Box className="flex-1 items-center justify-center p-12">
+                     <VStack space="xl" className="items-center max-w-md">
+                        <Box className="w-16 h-16 bg-phase-warning/10 rounded-full items-center justify-center">
+                            <Icon as={Info} size="xl" className="text-phase-warning" />
+                        </Box>
+                        <Heading className="text-center">Sanctuary Maintenance</Heading>
+                        <Text className="text-center text-phase-text-secondary">
+                            The community spaces are currently undergoing a structural expansion. 
+                            Please check back soon for a calmer, more resonant experience.
+                        </Text>
+                     </VStack>
+                </Box>
+            </Box>
+        );
+    }
 
-    const isEcosystemRole = can('manage', 'Ecosystem');
-    const colors = useThemedColors();
+    const { sanctuaryGroups, galaxyGroups } = useCommunityGroups({ schoolId, searchQuery });
+    const { manifestos } = useManifestos(schoolId, user?.id);
 
-    // Fetch DMs when activeTab is 'dms'
-    useEffect(() => {
-        if (activeTab === 'dms' && can('create', 'DirectMessage')) {
-            setLoadingDMs(true);
-            communityAPI.getDirectConversations()
-                .then(data => setConversations(data as any[]))
-                .catch(console.error)
-                .finally(() => setLoadingDMs(false));
-        } else if (activeTab === 'dms' && !can('create', 'DirectMessage')) {
-            setConversations([]);
-        }
-    }, [activeTab, can]);
+    const slots = useMemo(() => mapCommunitySurfaceSlots('web', userId), [userId]);
+    const pulse = useMemo(
+        () => deriveCommunityPulse(posts, [...sanctuaryGroups, ...galaxyGroups], manifestos, conversations),
+        [conversations, galaxyGroups, manifestos, posts, sanctuaryGroups]
+    );
+    const filters = useMemo(
+        () => getCommunityFilterOptions([...sanctuaryGroups, ...galaxyGroups]),
+        [galaxyGroups, sanctuaryGroups]
+    );
+    const modeOptions = useMemo(
+        () => getCommunityModeOptions(canReadAnnouncements, isMessagingEnabled),
+        [canReadAnnouncements, isMessagingEnabled]
+    );
+    const quickPaths = useMemo(() => getCommunityQuickPaths(canReadAnnouncements), [canReadAnnouncements]);
 
-    // Resume-after-upgrade: open Create Group modal if it was the gated action.
+    const filteredPosts = useMemo(() => {
+        const query = searchQuery.trim().toLowerCase();
+        if (!query) return posts;
+        return posts.filter((post) => (
+            post.content?.toLowerCase().includes(query) ||
+            post.author_name?.toLowerCase().includes(query) ||
+            post.group_name?.toLowerCase().includes(query) ||
+            post.tags?.some((tag) => tag.toLowerCase().includes(query))
+        ));
+    }, [posts, searchQuery]);
+
     useEffect(() => {
         if (!pending.action) return;
-        if (pending.action.kind !== 'community_open_create_group') return;
-        if (!can('create', 'CommunityGroup')) return;
-        setShowCreateGroup(true);
-        pending.clear().catch(() => { });
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [pending.action, can]);
+        if (pending.action.kind === 'community_open_create_group' && canCreateGroup) {
+            setShowCreateGroup(true);
+            pending.clear().catch(() => {});
+        }
+    }, [canCreateGroup, pending]);
 
-    // Feed should be group-bounded
     useEffect(() => {
-        if (activeTab !== 'feed') return;
-        if (!can('read', 'CommunityFeed')) return;
-        if (selectedGroupId !== 'all' && selectedGroupId !== 'my' && selectedGroupId !== 'pulse') return;
-        const firstJoined = joinedGroups?.[0]?.id;
-        if (firstJoined) setSelectedGroupId(firstJoined);
-    }, [activeTab, can, joinedGroups, selectedGroupId]);
+        if (activeMode !== 'messages' || !canReadMessages) return;
+        let cancelled = false;
+        setLoadingMessages(true);
+        communityAPI.getDirectConversations()
+            .then((data) => {
+                if (!cancelled) setConversations(data as DirectConversation[]);
+            })
+            .catch((error) => {
+                console.error('[CommunityScreen.web] Failed to load direct conversations', error);
+            })
+            .finally(() => {
+                if (!cancelled) setLoadingMessages(false);
+            });
+        return () => {
+            cancelled = true;
+        };
+    }, [activeMode, canReadMessages]);
 
-    // Client-side search filter — runs over fetched posts and groups
-    const q = searchQuery.toLowerCase().trim();
-    const filteredPosts = q
-        ? (posts || []).filter(p =>
-            p.content?.toLowerCase().includes(q) ||
-            p.author_name?.toLowerCase().includes(q) ||
-            p.subject?.toLowerCase().includes(q) ||
-            (p.tags || []).some((tag: string) => tag.toLowerCase().includes(q))
-          )
-        : posts;
+    useEffect(() => {
+        if (!canReadAnnouncements || !schoolId) return;
+        let cancelled = false;
+        communityAPI.getAnnouncements(schoolId)
+            .then((data) => {
+                if (!cancelled) setAnnouncementCount((data as AnnouncementWithAuthor[]).length);
+            })
+            .catch((error) => {
+                console.error('[CommunityScreen.web] Failed to load announcements', error);
+            });
+        return () => {
+            cancelled = true;
+        };
+    }, [canReadAnnouncements, schoolId]);
 
-    const allGroups = [...(joinedGroups || []), ...(discoverGroups || [])];
-    const filteredGroups = q
-        ? allGroups.filter(g =>
-            g.name?.toLowerCase().includes(q) ||
-            g.description?.toLowerCase().includes(q)
-          )
-        : null; // null = not in search mode, show normal group sidebar
+    const openAuthFlow = () => {
+        setPendingGateAction({ kind: 'community_open_create_group', createdAt: Date.now() }).catch(() => {});
+        navigation.navigate('Auth');
+    };
+
+    const handleOpenGroup = (groupId: string, groupName?: string) => {
+        navigation.navigate('GroupDetails', { groupId, groupName });
+    };
+
+    const renderGuestGate = (title: string, description: string) => (
+        <div className="community-empty-card">
+            <PositiveInvitation
+                title={title}
+                description={description}
+                type="guest"
+                context="community"
+                actionLabel="Create account"
+                onAction={openAuthFlow}
+            />
+        </div>
+    );
+
+    const renderPostStream = () => {
+        if (!canReadFeed) {
+            return renderGuestGate(
+                'The hearth opens with citizenship',
+                'Create an account to join circles, post with intention, and let your community feed emerge.'
+            );
+        }
+
+        if (isLoadingPosts) {
+            return (
+                <div className="community-empty-card" style={{ textAlign: 'center', padding: '48px 24px' }}>
+                    <ActivityIndicator color="var(--action)" />
+                </div>
+            );
+        }
+
+        if (filteredPosts.length === 0) {
+            return (
+                <div className="community-empty-card">
+                    <h3>Start the next note</h3>
+                    <p>Your circles are ready for a first post, question, or shared resource.</p>
+                    <button
+                        className="premium-button"
+                        onClick={() => (canCreatePost ? setShowCreatePost(true) : openAuthFlow())}
+                    >
+                        {canCreatePost ? 'New Post' : 'Create account'}
+                    </button>
+                </div>
+            );
+        }
+
+        return filteredPosts.map((post) => (
+            <PostCard
+                key={post.id}
+                post={post}
+                currentUserId={user?.id}
+                isSocialShieldEnabled={isSocialShieldEnabled}
+                onPress={() => {
+                    if (post.group_id) handleOpenGroup(post.group_id, post.group_name ?? 'Circle');
+                }}
+                onLike={() => {
+                    if (user?.id) communityAPI.togglePostReaction(post.id, user.id).catch(console.error);
+                }}
+                onComment={() => {
+                    setCommentPostId(post.id);
+                    setCommentPostAuthorId(post.author_id ?? undefined);
+                    setCommentPostType(post.post_type);
+                }}
+                onAuthorPress={() => {
+                    if (post.author_id && !post.is_anonymous && navigation?.navigate) {
+                        navigation.navigate('PublicProfile', {
+                            id: post.author_id,
+                            type: 'user',
+                        });
+                    }
+                }}
+            />
+        ));
+    };
+
+    const renderCircles = () => {
+        if (!canReadGroups) {
+            return renderGuestGate(
+                'Circles are part of belonging',
+                'Create an account to discover groups, join your sanctuary circles, and contribute to shared resonance.'
+            );
+        }
+
+        const visibleGroups = searchQuery
+            ? [...sanctuaryGroups, ...galaxyGroups].filter(
+                  (group) =>
+                      group.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                      group.description?.toLowerCase().includes(searchQuery.toLowerCase())
+              )
+            : [...sanctuaryGroups, ...galaxyGroups];
+
+        return (
+            <div className="community-circle-grid">
+                {visibleGroups.map((group) => (
+                    <button
+                        key={group.id}
+                        className="community-circle-card"
+                        onClick={() => handleOpenGroup(group.id, group.name)}
+                    >
+                        <div className="community-circle-avatar">{group.name.charAt(0).toUpperCase()}</div>
+                        <div className="community-circle-copy">
+                            <strong>{group.name}</strong>
+                            <span>{group.description || 'Shared resonance and practical conversation.'}</span>
+                            <small>{group.member_count} members</small>
+                        </div>
+                    </button>
+                ))}
+            </div>
+        );
+    };
+
+    const renderMessages = () => {
+        if (!canReadMessages) {
+            return renderGuestGate(
+                'Messages become available with citizenship',
+                'Create an account to continue 1:1 conversations from within the community shell.'
+            );
+        }
+
+        if (loadingMessages) {
+            return (
+                <div className="community-empty-card" style={{ textAlign: 'center', padding: '48px 24px' }}>
+                    <ActivityIndicator color="var(--action)" />
+                </div>
+            );
+        }
+
+        if (conversations.length === 0) {
+            return (
+                <div className="community-empty-card">
+                    <h3>No direct conversations yet</h3>
+                    <p>Messages stay close by, but they only appear once you begin a 1:1 thread.</p>
+                </div>
+            );
+        }
+
+        return (
+            <div className="community-message-list">
+                {conversations.map((conversation) => (
+                    <button
+                        key={conversation.id}
+                        className="community-message-row"
+                        onClick={() => {
+                            navigation.navigate('DirectMessage', {
+                                conversationId: conversation.id,
+                                userName: conversation.other_user_name,
+                            });
+                        }}
+                    >
+                        <div className="community-message-avatar">
+                            {conversation.other_user_name
+                                .split(' ')
+                                .map((word) => word[0])
+                                .join('')
+                                .slice(0, 2)
+                                .toUpperCase()}
+                        </div>
+                        <div className="community-message-copy">
+                            <strong>{conversation.other_user_name}</strong>
+                            <span>Continue the conversation from the hearth.</span>
+                        </div>
+                        <small>{new Date(conversation.updated_at).toLocaleDateString()}</small>
+                    </button>
+                ))}
+            </div>
+        );
+    };
+
+    const renderAnnouncements = () => {
+        if (!canReadAnnouncements || !schoolId || !user?.id) {
+            return renderGuestGate(
+                'Announcements require school attachment',
+                'Attach to a sanctuary and accept your invitation to receive school-wide guidance here.'
+            );
+        }
+
+        return <AnnouncementsScreen schoolId={schoolId} userId={user.id} userAuthority={userAuthority} />;
+    };
+
+    const renderActiveSurface = () => {
+        switch (activeMode) {
+            case 'circles':
+                return renderCircles();
+            case 'messages':
+                return renderMessages();
+            case 'announcements':
+                return renderAnnouncements();
+            case 'feed':
+            default:
+                return renderPostStream();
+        }
+    };
 
     return (
-        <div className="sanctuary-screen">
+        <div className="sanctuary-screen community-screen">
             <div className="sanctuary-container">
-                {/* 1. GREETING */}
-                    <WebScreenHeader
-                        title={t('community.title') || "The Heart"}
-                        note={t('community.subtitle') || "Ecosystem Resonance"}
-                        timeText={isEcosystemRole ? "Architect's Stream" : "Global Resonance"}
-                    actions={(can('create', 'CommunityPost') || can('create', 'CommunityGroup')) ? (
-                        <>
+                <WebScreenHeader
+                    title="The Heart becomes the center of community."
+                    note="Same capabilities, wiser order: pulse first, conversation second, circles and messages close by, trust visible but quiet."
+                    timeText="Community workspace"
+                    actions={
+                        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                             <button
                                 className="premium-button"
-                                style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: '13px' }}
-                                onClick={() => {
-                                    if (!can('create', 'CommunityPost')) {
-                                        setPendingGateAction({ kind: 'community_open_create_group', createdAt: Date.now() }).catch(() => { });
-                                        navigation.navigate('Auth');
-                                        return;
-                                    }
-                                    setShowCreatePost(true);
-                                }}
+                                onClick={() => (canCreatePost ? setShowCreatePost(true) : openAuthFlow())}
                             >
-                                <PenLine size={15} />
-                                {t('community.actions.newPost') || "New Post"}
+                                <Plus size={15} />
+                                New Post
                             </button>
                             <button
                                 className="secondary-button"
-                                style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: '13px' }}
-                                onClick={() => {
-                                    if (!can('create', 'CommunityGroup')) {
-                                        setPendingGateAction({ kind: 'community_open_create_group', createdAt: Date.now() }).catch(() => { });
-                                        navigation.navigate('Auth');
-                                        return;
-                                    }
-                                    setShowCreateGroup(true);
-                                }}
+                                onClick={() => (canCreateGroup ? setShowCreateGroup(true) : openAuthFlow())}
                             >
-                                <Plus size={15} />
-                                {t('community.actions.newGroup') || "New Group"}
+                                <Users2 size={15} />
+                                New Group
                             </button>
-                            {/* Notification bell with unread badge */}
-                            <div style={{ position: 'relative', display: 'inline-flex' }}>
-                                <button
-                                    className="secondary-button"
-                                    style={{ display: 'inline-flex', alignItems: 'center', padding: '8px' }}
-                                    title="Notifications"
-                                    onClick={() => {/* TODO: open notifications panel */}}
-                                >
-                                    <Bell size={17} />
-                                </button>
-                                {notifCount > 0 && (
-                                    <span style={{
-                                        position: 'absolute',
-                                        top: '-4px',
-                                        right: '-4px',
-                                        minWidth: '16px',
-                                        height: '16px',
-                                        borderRadius: '8px',
-                                        backgroundColor: 'var(--error)',
-                                        color: 'var(--text-on-danger)',
-                                        fontSize: '10px',
-                                        fontWeight: '700',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        padding: '0 3px',
-                                        lineHeight: 1,
-                                    }}>
-                                        {notifCount > 99 ? '99+' : notifCount}
-                                    </span>
-                                )}
-                            </div>
-                        </>
-                    ) : undefined}
-                />
-
-                {/* 2. COMMUNITY GRID */}
-                <div className="community-grid">
-
-                    {/* LEFT: Sanctuary Explorer */}
-                    <aside className="community-sidebar">
-                        <nav className="sidebar-nav" style={{ gap: '8px' }}>
-                            <SidebarItem
-                                icon={<Compass size={18} />}
-                                label={t('community.tabs.feed') || "Feed"}
-                                active={activeTab === 'feed'}
-                                onClick={() => setActiveTab('feed')}
-                            />
-                            <SidebarItem
-                                icon={<Users2 size={18} />}
-                                label={t('community.tabs.groups') || "Groups"}
-                                active={activeTab === 'groups'}
-                                onClick={() => setActiveTab('groups')}
-                            />
-                            <SidebarItem
-                                icon={<MessageSquare size={18} />}
-                                label={t('community.tabs.dms') || "Messages"}
-                                active={activeTab === 'dms'}
-                                onClick={() => setActiveTab('dms')}
-                            />
-                        </nav>
-
-                        {activeTab === 'feed' && (
-                            <>
-                                <div className="sidebar-divider" style={{ margin: '20px 16px 12px 16px', opacity: 0.1, backgroundColor: 'var(--ink)' }} />
-                                <div style={{ padding: '0 16px' }}>
-                                    <div className="sidebar-group-label" style={{ marginBottom: '12px', opacity: 0.6 }}>{t('community.filters.title') || "Filters"}</div>
-                                    <SidebarItem
-                                        icon={<Activity size={16} />}
-                                        label={t('community.filters.allUpdates') || "All Updates"}
-                                        active={selectedGroupId === 'all'}
-                                        onClick={() => setSelectedGroupId('all')}
-                                    />
-                                    <SidebarItem
-                                        icon={<Heart size={16} />}
-                                        label={t('community.filters.joined') || "Joined"}
-                                        active={selectedGroupId === 'pulse'}
-                                        onClick={() => setSelectedGroupId('pulse')}
-                                    />
-                                </div>
-                            </>
-                        )}
-
-                        {activeTab === 'groups' && (
-                            <>
-                                <div className="sidebar-divider" style={{ margin: '20px 16px 12px 16px', opacity: 0.1, backgroundColor: 'var(--ink)' }} />
-                                <div style={{ padding: '0 16px' }}>
-                                    <div className="sidebar-group-label" style={{ marginBottom: '12px', opacity: 0.6 }}>{t('community.groups.myGroups') || "My Sanctuary"}</div>
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                                        {joinedGroups?.map((g) => (
-                                            <button
-                                                key={g.id}
-                                                className={`sidebar-item ${selectedGroupId === g.id ? 'active' : ''}`}
-                                                style={{ padding: '8px 12px' }}
-                                                onClick={() => { setSelectedGroupId(g.id); }}
-                                            >
-                                                <span className="sidebar-icon">
-                                                    <Hash size={14} />
-                                                </span>
-                                                <span className="sidebar-label" style={{ fontWeight: '400' }}>{g.name}</span>
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-                            </>
-                        )}
-                    </aside>
-
-                    {/* CENTER: Main Feed / Groups / DMs */}
-                    <div className="community-feed">
-                        {/* ── Responsive Upper Bar (Hidden on Desktop via CSS) ── */}
-                        <div className="community-sub-nav">
-                            <button
-                                className={`sub-nav-item ${activeTab === 'feed' ? 'active' : ''}`}
-                                onClick={() => setActiveTab('feed')}
-                            >
-                                <Compass size={16} />
-                                <span>{t('community.tabs.feed') || "Feed"}</span>
-                            </button>
-                            <button
-                                className={`sub-nav-item ${activeTab === 'groups' ? 'active' : ''}`}
-                                onClick={() => setActiveTab('groups')}
-                            >
-                                <Users2 size={16} />
-                                <span>{t('community.tabs.groups') || "Groups"}</span>
-                            </button>
-                            <button
-                                className={`sub-nav-item ${activeTab === 'dms' ? 'active' : ''}`}
-                                onClick={() => setActiveTab('dms')}
-                            >
-                                <MessageSquare size={16} />
-                                <span>{t('community.tabs.dms') || "DMs"}</span>
+                            <button className="secondary-button" aria-label="Notifications">
+                                <Bell size={15} />
+                                {unreadCount > 0 ? `${unreadCount}` : '0'}
                             </button>
                         </div>
+                    }
+                />
 
-                        {/* Search bar (Persistent across Feed and Groups) */}
-                        {activeTab !== 'dms' && (
-                            <div className="sanctuary-search-shell" style={{ marginBottom: '16px' }}>
-                                <Compass size={16} color="var(--ink-ghost)" />
+                <div className="community-layout">
+                    <aside className="community-left-rail">
+                        <section className="community-rail-card">
+                            <span className="community-section-eyebrow">{slots.modes ? 'Modes' : 'Community'}</span>
+                            <div className="community-mode-stack">
+                                {modeOptions.map((mode) => (
+                                    <button
+                                        key={mode.key}
+                                        className={`community-mode-button ${activeMode === mode.key ? 'active' : ''}`}
+                                        onClick={() => setActiveMode(mode.key)}
+                                    >
+                                        {mode.label}
+                                    </button>
+                                ))}
+                            </div>
+                        </section>
+
+                        <section className="community-rail-card">
+                            <span className="community-section-eyebrow">Joined circles</span>
+                            <div className="community-chip-stack">
+                                {sanctuaryGroups.slice(0, 4).map((group) => (
+                                    <button
+                                        key={group.id}
+                                        className={`community-chip ${selectedFilter === group.id ? 'active' : ''}`}
+                                        onClick={() => {
+                                            setSelectedFilter(group.id);
+                                            setActiveMode('feed');
+                                            fetchPosts(group.id);
+                                        }}
+                                    >
+                                        {group.name}
+                                    </button>
+                                ))}
+                            </div>
+                        </section>
+
+                        <section className="community-rail-card">
+                            <span className="community-section-eyebrow">Trust</span>
+                            <p>Social shield and positive safety cues stay visible in the shell.</p>
+                            <div className="community-icon-row">
+                                <Shield size={16} />
+                                <span>Safety and reporting remain one step away.</span>
+                            </div>
+                        </section>
+
+                        <section className="community-rail-card">
+                            <span className="community-section-eyebrow">Quick path</span>
+                            <div className="community-quick-paths">
+                                {quickPaths.map((path) => (
+                                    <button
+                                        key={path.key}
+                                        className="community-quick-path"
+                                        onClick={() => setActiveMode(path.key as CommunityWorkspaceMode)}
+                                    >
+                                        <strong>{path.title}</strong>
+                                        <span>{path.description}</span>
+                                    </button>
+                                ))}
+                            </div>
+                        </section>
+                    </aside>
+
+                    <main className="community-center-column">
+                        <section className="community-hearth-card">
+                            <div className="community-hearth-copy">
+                                <div>
+                                    <span className="community-section-eyebrow">The Community Hearth</span>
+                                    <h2>Presence, welcome, manifestos, and spotlight belong together.</h2>
+                                    <p>
+                                        The school should feel emotionally alive before it feels operational. That is why the hearth
+                                        remains first.
+                                    </p>
+                                </div>
+
+                                <div className="community-pulse-box">
+                                    <span className="community-section-eyebrow">Community pulse</span>
+                                    <strong>{pulse.membersSeen} school members seen this cycle</strong>
+                                    <span>{pulse.circlesActive} circles active</span>
+                                    <span>{pulse.newPostsToday} new posts today</span>
+                                </div>
+                            </div>
+                            <CommunityHearth manifestos={manifestos} userId={userId} />
+                        </section>
+
+                        <section className="community-search-row">
+                            <div className="community-search-shell">
+                                <Compass size={16} />
                                 <input
-                                    placeholder={t('community.search.placeholder') || 'Search posts, groups, members…'}
                                     value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    onChange={(event) => setSearchQuery(event.target.value)}
+                                    placeholder="Search posts, circles, members, announcements..."
                                     aria-label="Search community"
                                 />
-                                {searchQuery && (
-                                    <button onClick={() => setSearchQuery('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ink-ghost)', fontSize: '16px', lineHeight: 1 }} aria-label="Clear search">✕</button>
-                                )}
                             </div>
-                        )}
+                            <div className="community-mode-inline">
+                                {modeOptions.map((mode) => (
+                                    <button
+                                        key={mode.key}
+                                        className={`community-inline-chip ${activeMode === mode.key ? 'active' : ''}`}
+                                        onClick={() => setActiveMode(mode.key)}
+                                    >
+                                        {mode.label}
+                                    </button>
+                                ))}
+                            </div>
+                        </section>
 
-                        {activeTab === 'feed' && (
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                                {!can('read', 'CommunityFeed') ? (
-                                    <div className="sanctuary-card" style={{ padding: '28px' }}>
-                                        <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 800 }}>
-                                            The Feed is born from Groups
-                                        </h3>
-                                        <p style={{ marginTop: 8, marginBottom: 16, color: 'var(--ink-ghost)' }}>
-                                            As a wanderer, you can discover groups and explore the ecosystem. Upgrade your account to join circles and let your feed emerge.
-                                        </p>
-                                        <PositiveInvitation
-                                            title="Become a Citizen"
-                                            description="Create an account to join groups, post, and build resonance."
-                                            type="guest"
-                                            context="community"
-                                            actionLabel="Create account"
-                                            onAction={() => navigation.navigate('Auth')}
-                                        />
-                                        <div style={{ marginTop: 12, display: 'flex', justifyContent: 'center' }}>
-                                            <button
-                                                className="secondary-button"
-                                                onClick={() => setActiveTab('groups')}
-                                            >
-                                                Explore groups
-                                            </button>
-                                        </div>
-                                    </div>
-                                ) : (!joinedGroups || joinedGroups.length === 0) ? (
-                                    <div className="sanctuary-card" style={{ padding: '28px' }}>
-                                        <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 800 }}>
-                                            Your feed will appear after you join a group
-                                        </h3>
-                                        <p style={{ marginTop: 8, marginBottom: 16, color: 'var(--ink-ghost)' }}>
-                                            Posts live inside circles. Discover a group first, then your feed becomes meaningful.
-                                        </p>
+                        {(activeMode === 'feed' || activeMode === 'circles') && (
+                            <section className="community-compose-card">
+                                <div>
+                                    <span className="community-section-eyebrow">Compose into the right circle</span>
+                                    <h3>Contribution before utility.</h3>
+                                    <p>
+                                        New Post and New Group stay visible, but composition is framed as contribution to shared
+                                        resonance rather than just pressing a tool button.
+                                    </p>
+                                </div>
+                                <div className="community-action-row">
+                                    <button
+                                        className="premium-button"
+                                        onClick={() => (canCreatePost ? setShowCreatePost(true) : openAuthFlow())}
+                                    >
+                                        New Post
+                                    </button>
+                                    <button
+                                        className="secondary-button"
+                                        onClick={() => (canCreateGroup ? setShowCreateGroup(true) : openAuthFlow())}
+                                    >
+                                        New Group
+                                    </button>
+                                    {sanctuaryGroups[0] && (
                                         <button
-                                            className="premium-button"
-                                            style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
-                                            onClick={() => setActiveTab('groups')}
+                                            className="secondary-button"
+                                            onClick={() => {
+                                                const mainGroup = sanctuaryGroups[0];
+                                                if (mainGroup) {
+                                                    handleOpenGroup(mainGroup.id, mainGroup.name);
+                                                }
+                                            }}
                                         >
-                                            Explore Groups <ArrowRight size={16} />
+                                            Open Circle
                                         </button>
-                                    </div>
-                                ) : isLoadingPosts ? (
-                                    <StackFallback variant="cards" />
-                                ) : (() => {
-                                    const isConcreteGroup = selectedGroupId !== 'all' && selectedGroupId !== 'my' && selectedGroupId !== 'pulse';
-                                    const visiblePosts = isConcreteGroup
-                                        ? (filteredPosts || []).filter(p => p.group_id === selectedGroupId)
-                                        : [];
-                                    if (visiblePosts.length === 0) {
-                                        return (
-                                            <div style={{ padding: '80px 40px', textAlign: 'center' }}>
-                                                <p style={{ color: 'var(--ink-ghost)', fontStyle: 'italic' }}>
-                                                    {q ? `No posts match "${searchQuery}"` : t('community.empty.title')}
-                                                </p>
-                                            </div>
-                                        );
-                                    }
-                                    return visiblePosts.map((post) => (
-                                        <PostCard
-                                            key={post.id}
-                                            post={post}
-                                            currentUserId={user?.id}
-                                            onPress={() => {
-                                                if (post.group_id) {
-                                                    navigation.navigate('GroupDetails', {
-                                                        groupId: post.group_id,
-                                                        groupName: post.group_name ?? 'Group',
-                                                    });
-                                                }
-                                            }}
-                                            onLike={() => {
-                                                if (user?.id) communityAPI.togglePostReaction(post.id, user.id).catch(console.error);
-                                            }}
-                                            onComment={() => {
-                                                setCommentPostId(post.id);
-                                                setCommentPostAuthorId(post.author_id ?? undefined);
-                                                setCommentPostType(post.post_type);
-                                            }}
-                                            onAuthorPress={() => {
-                                                if (post.author_id && !post.is_anonymous) {
-                                                    navigation.navigate('PublicProfile', {
-                                                        id: post.author_id,
-                                                        type: 'user',
-                                                    });
-                                                }
-                                            }}
-                                        />
-                                    ));
-                                })()}
-                            </div>
-                        )}
-
-                        {activeTab === 'groups' && (
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                                <div style={{ display: 'flex', gap: '8px' }}>
-                                    <button 
-                                        className={`top-tab ${groupsSubTab === 'joined' ? 'active' : ''}`}
-                                        onClick={() => setGroupsSubTab('joined')}
-                                    >
-                                        <Lock size={14} style={{ marginRight: 4 }} />
-                                        {t('community.groups.joinedTitle') || "Joined Schools"}
-                                    </button>
-                                    <button 
-                                        className={`top-tab ${groupsSubTab === 'global' ? 'active' : ''}`}
-                                        onClick={() => setGroupsSubTab('global')}
-                                    >
-                                        <Globe size={14} style={{ marginRight: 4 }} />
-                                        {t('community.tabs.infiniteGalaxy') || "Global Groups"}
-                                    </button>
+                                    )}
                                 </div>
-
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '16px' }}>
-                                    {(groupsSubTab === 'joined' ? joinedGroups : discoverGroups)?.map(g => {
-                                        const initials = (g.name || 'G').charAt(0).toUpperCase();
-                                        const isJoined = groupsSubTab === 'joined' || g.is_member;
-                                        
-                                        return (
-                                            <button
-                                                key={g.id}
-                                                onClick={() => navigation.navigate('GroupDetails', { groupId: g.id, groupName: g.name })}
-                                                className="sanctuary-card interactive group-web-card"
-                                                style={{ 
-                                                    padding: '16px', 
-                                                    textAlign: 'left', 
-                                                    display: 'flex', 
-                                                    alignItems: 'center', 
-                                                    gap: '16px',
-                                                    background: 'linear-gradient(180deg, var(--scene-elevated) 0%, var(--scene-surface) 100%)',
-                                                    border: '1px solid var(--scene-surface-border)',
-                                                    borderRadius: '16px',
-                                                    transition: 'all 0.2s ease'
-                                                }}
-                                            >
-                                                {/* Modern Avatar Placeholder */}
-                                                <div className="sanctuary-icon-well soft" style={{
-                                                    width: '52px', 
-                                                    height: '52px', 
-                                                    borderRadius: '26px', 
-                                                    fontSize: '20px',
-                                                    fontWeight: '700',
-                                                    color: g.is_public ? 'var(--reward)' : 'var(--action)',
-                                                    background: g.is_public
-                                                        ? 'linear-gradient(180deg, var(--reward-soft), rgba(var(--reward-rgb), 0.14))'
-                                                        : 'linear-gradient(180deg, var(--action-soft), rgba(var(--action-rgb), 0.14))',
-                                                    border: g.is_public
-                                                        ? '1px solid rgba(var(--reward-rgb), 0.18)'
-                                                        : '1px solid rgba(var(--action-rgb), 0.18)'
-                                                }}>
-                                                    {initials}
-                                                </div>
-
-                                                <div style={{ flex: 1, minWidth: 0 }}>
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
-                                                        <span style={{ fontWeight: '600', fontSize: '15px', color: 'var(--ink)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                                            {g.name}
-                                                        </span>
-                                                        {g.join_policy === 'invite_only' && <Lock size={12} color="var(--ink-ghost)" />}
-                                                    </div>
-                                                    <div style={{ fontSize: '13px', color: 'var(--ink-ghost)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                                        {g.description || "Building resonance together..."}
-                                                    </div>
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '6px' }}>
-                                                        <span style={{ fontSize: '11px', color: 'var(--ink-ghost)', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                                            <Users2 size={10} />
-                                                            {g.member_count} members
-                                                        </span>
-                                                        {!isJoined && (
-                                                            <span className="status-pill" style={{
-                                                                background: 'var(--reward-soft)',
-                                                                color: 'var(--reward)',
-                                                                borderColor: 'rgba(var(--reward-rgb), 0.18)',
-                                                            }}>
-                                                                Discover
-                                                            </span>
-                                                        )}
-                                                    </div>
-                                                </div>
-                                                
-                                                <div style={{ color: 'var(--ink-ghost)', opacity: 0.5 }}>
-                                                    {isJoined ? <MessageSquare size={16} /> : <Plus size={16} />}
-                                                </div>
-                                            </button>
-                                        );
-                                    })}
+                                <div className="community-filter-row">
+                                    {filters.map((filter) => (
+                                        <button
+                                            key={filter.value}
+                                            className={`community-inline-chip ${selectedFilter === filter.value ? 'active' : ''}`}
+                                            onClick={() => {
+                                                setSelectedFilter(filter.value);
+                                                fetchPosts(filter.value === 'all' ? undefined : filter.value);
+                                            }}
+                                        >
+                                            {filter.label}
+                                        </button>
+                                    ))}
                                 </div>
-                            </div>
+                            </section>
                         )}
 
-                        {activeTab === 'dms' && (
-                            <div className="sanctuary-card" style={{ padding: '0', overflow: 'hidden' }}>
-                                {!can('create', 'DirectMessage') ? (
-                                    <div style={{ padding: '56px 32px', textAlign: 'center' }}>
-                                        <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 800 }}>Messages are for Citizens</h3>
-                                        <p style={{ marginTop: 10, marginBottom: 18, color: 'var(--ink-ghost)' }}>
-                                            Upgrade your account to start private conversations.
-                                        </p>
-                                        <PositiveInvitation
-                                            title="Unlock Messages"
-                                            description="Create an account to join groups and connect 1:1."
-                                            type="guest"
-                                            context="community"
-                                            actionLabel="Create account"
-                                            onAction={() => navigation.navigate('Auth')}
-                                        />
-                                    </div>
-                                ) : loadingDMs ? (
-                                    <div style={{ padding: '40px', textAlign: 'center' }}>
-                                        <ActivityIndicator color="var(--action)" />
-                                    </div>
-                                ) : conversations.length === 0 ? (
-                                    <div style={{ padding: '80px 40px', textAlign: 'center' }}>
-                                        <p style={{ color: 'var(--ink-ghost)', fontStyle: 'italic' }}>
-                                            No messages yet. Start a conversation from a user's profile!
-                                        </p>
-                                    </div>
-                                ) : (
-                                    <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                        {conversations.map((item, index) => {
-                                            const initials = item.other_user_name?.split(' ').map((w: any) => w[0]).join('').slice(0, 2).toUpperCase();
-                                            return (
-                                                <button
-                                                    key={item.id}
-                                                    onClick={() => navigation.navigate('DirectMessage', {
-                                                        conversationId: item.id,
-                                                        userName: item.other_user_name
-                                                    })}
-                                                    style={{ 
-                                                        display: 'flex', 
-                                                        alignItems: 'center', 
-                                                        padding: '16px 20px', 
-                                                        gap: '16px',
-                                                        borderBottom: index === conversations.length - 1 ? 'none' : '1px solid var(--border)',
-                                                        textAlign: 'left',
-                                                        width: '100%',
-                                                        background: 'transparent'
-                                                    }}
-                                                    className="interactive-row"
-                                                >
-                                                    <div style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: 'var(--action-soft)', overflow: 'hidden' }}>
-                                                        {item.other_user_avatar 
-                                                            ? <img src={item.other_user_avatar} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                                            : <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--action)', fontWeight: '700' }}>{initials}</div>
-                                                        }
-                                                    </div>
-                                                    <div style={{ flex: 1 }}>
-                                                        <div style={{ fontWeight: '700', fontSize: '15px' }}>{item.other_user_name}</div>
-                                                        <div style={{ fontSize: '12px', color: 'var(--ink-ghost)', marginTop: '2px' }}>Tap to continue conversation</div>
-                                                    </div>
-                                                    <div style={{ fontSize: '11px', color: 'var(--ink-ghost)' }}>
-                                                        {new Date(item.updated_at).toLocaleDateString()}
-                                                    </div>
-                                                </button>
-                                            );
-                                        })}
-                                    </div>
-                                )}
-                            </div>
-                        )}
-                    </div>
+                        <section className="community-main-stream">{renderActiveSurface()}</section>
+                    </main>
 
-                    {/* RIGHT: Presence & Stats */}
-                    <aside className="community-panel">
-                        <CommunityHearth
-                            manifestos={manifestos}
-                            userId={user?.id || 'guest'}
-                        />
+                    <aside className="community-right-rail">
+                        <section className="community-rail-card">
+                            <span className="community-section-eyebrow">Context</span>
+                        </section>
+                        <section className="community-rail-card">
+                            <strong>Community pulse</strong>
+                            <p>Live presence and school energy remain visible without stealing the page.</p>
+                        </section>
+                        <section className="community-rail-card">
+                            <strong>Joined circles</strong>
+                            <p>Fast routes into the groups you already belong to.</p>
+                        </section>
+                        <section className="community-rail-card">
+                            <strong>Trust + safety</strong>
+                            <p>Shielding, reporting, and guest/citizen gating stay easy to reach.</p>
+                        </section>
+                        <section className="community-rail-card">
+                            <strong>Messages</strong>
+                            <p>Direct conversations remain one step away from the hearth.</p>
+                        </section>
                     </aside>
                 </div>
             </div>
 
-            {/* Create Post Modal */}
             <CreatePostModal
                 isOpen={showCreatePost}
-                onClose={() => { setShowCreatePost(false); fetchPosts?.(); }}
-                groupId={typeof selectedGroupId === 'string' && selectedGroupId !== 'all' && selectedGroupId !== 'my' && selectedGroupId !== 'pulse' ? selectedGroupId : undefined}
+                onClose={() => {
+                    setShowCreatePost(false);
+                    fetchPosts(selectedFilter === 'all' ? undefined : selectedFilter);
+                }}
+                groupId={selectedFilter !== 'all' ? selectedFilter : undefined}
             />
 
-            {/* Create Group Modal */}
             <CreateGroupModal
                 isOpen={showCreateGroup}
-                onClose={() => { setShowCreateGroup(false); fetchGroups?.(); }}
+                onClose={() => {
+                    setShowCreateGroup(false);
+                    fetchGroups?.();
+                }}
             />
 
-            {/* Comment Sheet — slides up over the feed when a comment button is tapped */}
             <CommentSheet
                 postId={commentPostId}
                 postAuthorId={commentPostAuthorId}
@@ -652,28 +599,235 @@ export default function CommunityScreenWeb() {
                 postType={commentPostType}
                 onClose={() => setCommentPostId(null)}
             />
-            
-            <style dangerouslySetInnerHTML={{ __html: `
-                .interactive-row:hover {
-                    background: var(--background-alt) !important;
-                }
-            ` }} />
-        </div>
-    );
-}
 
-function SidebarItem({ icon, label, active, onClick }: { icon: any, label: string, active: boolean, onClick: () => void }) {
-    return (
-        <button
-            onClick={onClick}
-            className={`sidebar-item ${active ? 'active' : ''}`}
-        >
-            {React.cloneElement(icon, {
-                size: 18,
-                className: 'sidebar-icon',
-                color: active ? 'var(--water)' : 'var(--ink-ghost)'
-            })}
-            <span className="sidebar-label">{label}</span>
-        </button>
+            <style
+                dangerouslySetInnerHTML={{
+                    __html: `
+                .community-screen .sanctuary-container {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 24px;
+                }
+                .community-layout {
+                    display: grid;
+                    grid-template-columns: 218px minmax(0, 812px) 290px;
+                    gap: 24px;
+                    align-items: start;
+                }
+                .community-left-rail,
+                .community-right-rail,
+                .community-center-column {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 20px;
+                }
+                .community-rail-card,
+                .community-hearth-card,
+                .community-compose-card,
+                .community-empty-card {
+                    border-radius: 24px;
+                    border: 1px solid rgba(42, 35, 24, 0.08);
+                    background: linear-gradient(180deg, rgba(252, 247, 238, 0.98) 0%, rgba(248, 242, 232, 0.98) 100%);
+                    padding: 20px;
+                }
+                .community-hearth-card {
+                    padding: 28px;
+                }
+                .community-hearth-copy {
+                    display: grid;
+                    grid-template-columns: minmax(0, 1fr) 300px;
+                    gap: 20px;
+                    margin-bottom: 18px;
+                }
+                .community-hearth-copy h2,
+                .community-compose-card h3,
+                .community-empty-card h3 {
+                    margin: 8px 0;
+                    font-size: 24px;
+                    line-height: 1.2;
+                    color: #2d2418;
+                }
+                .community-hearth-copy p,
+                .community-compose-card p,
+                .community-empty-card p,
+                .community-rail-card p {
+                    margin: 0;
+                    color: rgba(45, 36, 24, 0.72);
+                    line-height: 1.6;
+                }
+                .community-section-eyebrow {
+                    display: inline-block;
+                    font-size: 11px;
+                    font-weight: 700;
+                    letter-spacing: 0.08em;
+                    text-transform: uppercase;
+                    color: rgba(45, 36, 24, 0.58);
+                    margin-bottom: 10px;
+                }
+                .community-mode-stack,
+                .community-chip-stack,
+                .community-quick-paths,
+                .community-mode-inline,
+                .community-action-row,
+                .community-filter-row {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 10px;
+                }
+                .community-mode-button,
+                .community-inline-chip,
+                .community-chip {
+                    border: 1px solid rgba(42, 35, 24, 0.08);
+                    background: rgba(255, 255, 255, 0.8);
+                    color: #4d4030;
+                    border-radius: 999px;
+                    padding: 10px 14px;
+                    font-weight: 600;
+                    cursor: pointer;
+                }
+                .community-mode-button.active,
+                .community-inline-chip.active,
+                .community-chip.active {
+                    background: rgba(182, 224, 205, 0.45);
+                    color: #22594b;
+                }
+                .community-pulse-box {
+                    border-radius: 22px;
+                    background: rgba(227, 232, 255, 0.65);
+                    padding: 18px;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 8px;
+                    color: #2d2418;
+                }
+                .community-search-row {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 14px;
+                    align-items: center;
+                }
+                .community-search-shell {
+                    flex: 1;
+                    min-width: 280px;
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    border: 1px solid rgba(42, 35, 24, 0.08);
+                    background: rgba(255, 255, 255, 0.78);
+                    border-radius: 999px;
+                    padding: 12px 16px;
+                }
+                .community-search-shell input {
+                    width: 100%;
+                    background: transparent;
+                    border: none;
+                    outline: none;
+                    color: #2d2418;
+                    font-size: 14px;
+                }
+                .community-main-stream {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 18px;
+                }
+                .community-circle-grid {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+                    gap: 14px;
+                }
+                .community-circle-card {
+                    display: flex;
+                    align-items: center;
+                    gap: 14px;
+                    width: 100%;
+                    text-align: left;
+                    border: 1px solid rgba(42, 35, 24, 0.08);
+                    background: rgba(255, 255, 255, 0.84);
+                    border-radius: 20px;
+                    padding: 16px;
+                    cursor: pointer;
+                }
+                .community-circle-avatar,
+                .community-message-avatar {
+                    width: 46px;
+                    height: 46px;
+                    border-radius: 999px;
+                    background: rgba(182, 224, 205, 0.55);
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-weight: 700;
+                    color: #22594b;
+                    flex-shrink: 0;
+                }
+                .community-circle-copy,
+                .community-message-copy {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 4px;
+                    min-width: 0;
+                }
+                .community-circle-copy span,
+                .community-message-copy span,
+                .community-circle-copy small {
+                    color: rgba(45, 36, 24, 0.68);
+                    line-height: 1.4;
+                }
+                .community-message-list {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 10px;
+                }
+                .community-message-row,
+                .community-quick-path {
+                    border: 1px solid rgba(42, 35, 24, 0.08);
+                    background: rgba(255, 255, 255, 0.82);
+                    border-radius: 18px;
+                    padding: 16px;
+                    display: flex;
+                    align-items: center;
+                    gap: 14px;
+                    cursor: pointer;
+                    text-align: left;
+                    width: 100%;
+                }
+                .community-quick-path {
+                    flex-direction: column;
+                    align-items: flex-start;
+                }
+                .community-message-row small {
+                    margin-left: auto;
+                    color: rgba(45, 36, 24, 0.58);
+                }
+                .community-icon-row {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    color: rgba(45, 36, 24, 0.72);
+                    margin-top: 12px;
+                }
+                @media (max-width: 1260px) {
+                    .community-layout {
+                        grid-template-columns: 218px minmax(0, 1fr);
+                    }
+                    .community-right-rail {
+                        display: none;
+                    }
+                }
+                @media (max-width: 920px) {
+                    .community-layout {
+                        grid-template-columns: 1fr;
+                    }
+                    .community-left-rail {
+                        order: 2;
+                    }
+                    .community-hearth-copy {
+                        grid-template-columns: 1fr;
+                    }
+                }
+            `,
+                }}
+            />
+        </div>
     );
 }

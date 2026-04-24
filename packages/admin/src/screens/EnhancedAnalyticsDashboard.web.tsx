@@ -1,9 +1,8 @@
 import React from 'react';
 import { View, Text, ScrollView, StyleSheet } from 'react-native';
-import { VStack, HStack, Card, Theme } from '@repo/ui';
-import { useStudentPerformance, useClassPerformance, usePredictions } from '@repo/analytics';
-import { PerformanceDashboard } from '@repo/analytics/components';
-import { GPAInsights } from '@repo/analytics/components';
+import { VStack, HStack, Card, Theme, colors } from '@repo/ui';
+import { useClassPerformance, usePredictions, useStudentPerformance } from '@repo/analytics/hooks';
+import { GPAInsights, PerformanceDashboard } from '@repo/analytics/ui';
 
 interface EnhancedAnalyticsDashboardProps {
   schoolId?: string;
@@ -37,7 +36,7 @@ export default function EnhancedAnalyticsDashboard({
       <VStack space="md">
         {/* Header */}
         <Card style={styles.headerCard}>
-          <Text style={styles.title}>📊 Analytics Dashboard</Text>
+          <Text style={styles.title}>{'\uD83D\uDCCA'} Analytics Dashboard</Text>
           <Text style={styles.subtitle}>
             {studentId ? 'Student Performance' : 
              classId ? 'Class Analytics' : 
@@ -60,29 +59,29 @@ export default function EnhancedAnalyticsDashboard({
         {classId && classPerformance && (
           <Card>
             <VStack space="md">
-              <Text style={styles.sectionTitle}>📈 Class Performance</Text>
+              <Text style={styles.sectionTitle}>{'\uD83D\uDCC8'} Class Performance</Text>
               
               <HStack style={styles.metricsRow}>
-                <VStack flex={1} alignItems="center">
+                <VStack style={{ flex: 1, alignItems: 'center' }}>
                   <Text style={styles.metricValue}>{classPerformance.averageGPA.toFixed(2)}</Text>
                   <Text style={styles.metricLabel}>Average GPA</Text>
                 </VStack>
-                <VStack flex={1} alignItems="center">
+                <VStack style={{ flex: 1, alignItems: 'center' }}>
                   <Text style={styles.metricValue}>{classPerformance.totalStudents}</Text>
                   <Text style={styles.metricLabel}>Total Students</Text>
                 </VStack>
-                <VStack flex={1} alignItems="center">
+                <VStack style={{ flex: 1, alignItems: 'center' }}>
                   <Text style={styles.metricValue}>{classPerformance.topPerformers.length}</Text>
                   <Text style={styles.metricLabel}>Top Performers</Text>
                 </VStack>
               </HStack>
 
-              <Text style={styles.sectionTitle}>⚠️ At-Risk Students</Text>
+              <Text style={styles.sectionTitle}>{'\u26A0\uFE0F'} At-Risk Students</Text>
               {classPerformance.atRiskStudents.length > 0 ? (
                 <VStack space="xs">
-                  {classPerformance.atRiskStudents.slice(0, 5).map((studentId: string, index: number) => (
+                  {classPerformance.atRiskStudents.slice(0, 5).map((sId: string, index: number) => (
                     <Text key={index} style={styles.atRiskText}>
-                      • Student {studentId}
+                      {'\u2022'} Student {sId}
                     </Text>
                   ))}
                   {classPerformance.atRiskStudents.length > 5 && (
@@ -92,14 +91,14 @@ export default function EnhancedAnalyticsDashboard({
                   )}
                 </VStack>
               ) : (
-                <Text style={styles.noRiskText}>✅ No at-risk students identified</Text>
+                <Text style={styles.noRiskText}>{'\u2705'} No at-risk students identified</Text>
               )}
 
-              <Text style={styles.sectionTitle}>💡 Key Insights</Text>
+              <Text style={styles.sectionTitle}>{'\uD83D\uDCA1'} Key Insights</Text>
               <VStack space="xs">
                 {classPerformance.insights.map((insight: string, index: number) => (
                   <Text key={index} style={styles.insightText}>
-                    • {insight}
+                    {'\u2022'} {insight}
                   </Text>
                 ))}
               </VStack>
@@ -119,19 +118,19 @@ export default function EnhancedAnalyticsDashboard({
 
         {/* Quick Stats */}
         <Card>
-          <Text style={styles.sectionTitle}>🎯 Quick Actions</Text>
+          <Text style={styles.sectionTitle}>{'\uD83C\uDFAF'} Quick Actions</Text>
           <VStack space="sm">
             <Text style={styles.actionText}>
-              📤 Generate detailed performance reports
+              {'\uD83D\uDCE4'} Generate detailed performance reports
             </Text>
             <Text style={styles.actionText}>
-              👥 Schedule parent-teacher conferences
+              {'\uD83D\uDC65'} Schedule parent-teacher conferences
             </Text>
             <Text style={styles.actionText}>
-              📈 View benchmark comparisons
+              {'\uD83D\uDCC8'} View benchmark comparisons
             </Text>
             <Text style={styles.actionText}>
-              🚨 Set up at-risk alerts
+              {'\uD83D\uDEA8'} Set up at-risk alerts
             </Text>
           </VStack>
         </Card>
@@ -143,67 +142,53 @@ export default function EnhancedAnalyticsDashboard({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Theme.colors.background,
-  },
+    backgroundColor: '#FCF9F2'},
   headerCard: {
     padding: Theme.spacing.lg,
-    marginBottom: Theme.spacing.md,
-  },
+    marginBottom: Theme.spacing.md},
   title: {
     fontSize: 24,
     fontWeight: '700',
-    color: Theme.colors.text,
-    marginBottom: Theme.spacing.xs,
-  },
+    color: '#2A2318',
+    marginBottom: Theme.spacing.xs},
   subtitle: {
     fontSize: 16,
-    color: Theme.colors.textSecondary,
-    marginBottom: Theme.spacing.md,
-  },
+    color: '#6B6480',
+    marginBottom: Theme.spacing.md},
   sectionTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: Theme.colors.text,
-    marginBottom: Theme.spacing.sm,
-  },
+    color: '#2A2318',
+    marginBottom: Theme.spacing.sm},
   metricsRow: {
     justifyContent: 'space-around',
-    marginBottom: Theme.spacing.lg,
-  },
+    marginBottom: Theme.spacing.lg},
   metricValue: {
     fontSize: 20,
     fontWeight: '700',
-    color: Theme.colors.text,
-    textAlign: 'center',
-  },
+    color: '#2A2318',
+    textAlign: 'center'},
   metricLabel: {
     fontSize: 12,
-    color: Theme.colors.textSecondary,
-    textAlign: 'center',
-  },
+    color: '#6B6480',
+    textAlign: 'center'},
   atRiskText: {
     fontSize: 14,
-    color: Theme.colors.error,
-    marginBottom: Theme.spacing.xs,
-  },
+    color: colors.error,
+    marginBottom: Theme.spacing.xs},
   moreText: {
     fontSize: 14,
-    color: Theme.colors.textSecondary,
-    fontStyle: 'italic',
-  },
+    color: '#6B6480',
+    fontStyle: 'italic'},
   noRiskText: {
     fontSize: 14,
-    color: Theme.colors.success,
-    fontWeight: '600',
-  },
+    color: colors.success,
+    fontWeight: '600'},
   insightText: {
     fontSize: 14,
-    color: Theme.colors.text,
-    lineHeight: 20,
-  },
+    color: '#2A2318',
+    lineHeight: 20},
   actionText: {
     fontSize: 16,
-    color: Theme.colors.gurudeviBlue,
-    marginBottom: Theme.spacing.xs,
-  },
-});
+    color: colors.gurudeviBlue,
+    marginBottom: Theme.spacing.xs}});

@@ -1,14 +1,5 @@
 import React from 'react';
-import {
-    Text,
-    VStack,
-    Button,
-    ButtonText,
-    SanctuaryModal,
-    Theme,
-    useTheme,
-    hapticSuccess,
-} from '@repo/ui';
+import { Button, ButtonText, SanctuaryModal, Text, Theme, VStack, hapticSuccess, useTheme } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 
 interface WelcomeModalProps {
@@ -29,8 +20,7 @@ export default function WelcomeModal({ isOpen, onClose }: WelcomeModalProps) {
         <Button
             size="md"
             onPress={handleStart}
-            sx={{ backgroundColor: accent.action, width: '100%', borderRadius: Theme.corners.comfortable }}
-        >
+            style={{ backgroundColor: accent.action, width: '100%', borderRadius: Theme.corners.comfortable }}>
             <ButtonText {...({ color: text.inverse } as any)}>
                 {t('welcome.start')}
             </ButtonText>
@@ -43,13 +33,12 @@ export default function WelcomeModal({ isOpen, onClose }: WelcomeModalProps) {
             onClose={onClose}
             title={t('welcome.title')}
             showCloseButton={false}
-            footer={footer}
-        >
-            <VStack {...({ space: "md" } as any)}>
-                <Text {...({ size: "lg", lineHeight: "$xl", color: text.primary } as any)}>
+            footer={footer}>
+            <VStack space="md">
+                <Text size="lg" className="text-sacredWhite leading-relaxed">
                     {t('welcome.message')}
                 </Text>
-                <Text {...({ size: "md", lineHeight: "$lg", color: text.secondary } as any)}>
+                <Text size="md" className="text-mistGray leading-normal">
                     {t('welcome.description')}
                 </Text>
             </VStack>
@@ -57,3 +46,4 @@ export default function WelcomeModal({ isOpen, onClose }: WelcomeModalProps) {
     );
 }
 
+export { WelcomeModal };

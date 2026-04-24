@@ -1,12 +1,24 @@
 /**
- * WelcomeModal.web.tsx
- *
- * Web override of WelcomeModal.tsx. The native version uses SanctuaryModal +
- * hapticSuccess from @repo/ui. On web we use a CSS portal-style overlay dialog.
- * Metro resolves this over WelcomeModal.tsx on the web platform.
+ * WELCOME MODAL (Web)
+ * Web override of WelcomeModal.tsx with portal-style overlay dialog.
+ * Standardized to Zero-Legacy: purged raw HTML/inline styles and fixed syntax corruption in style objects.
  */
+
 import React, { useEffect } from 'react';
+import {
+    Box,
+    VStack,
+    Text,
+    Heading,
+    Button,
+    ButtonText,
+    Icon,
+    HStack,
+    AnimatedView
+} from '@repo/ui';
+import { Sparkles, ArrowRight } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
+import Animated, { FadeIn, SlideInUp } from 'react-native-reanimated';
 
 interface WelcomeModalProps {
     isOpen: boolean;
@@ -16,96 +28,77 @@ interface WelcomeModalProps {
 export default function WelcomeModal({ isOpen, onClose }: WelcomeModalProps) {
     const { t } = useTranslation();
 
-    // Close on Escape (focus trap would require cycling focusable elements)
+    // Escape listener
     useEffect(() => {
         if (!isOpen) return;
         const handler = (e: KeyboardEvent) => {
             if (e.key === 'Escape') onClose();
         };
-        document.addEventListener('keydown', handler);
-        return () => document.removeEventListener('keydown', handler);
+        window.addEventListener('keydown', handler);
+        return () => window.removeEventListener('keydown', handler);
     }, [isOpen, onClose]);
 
     if (!isOpen) return null;
 
     return (
-        <div
-            style={{
-                position: 'fixed', inset: 0, zIndex: 9999,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                background: 'rgba(30,20,10,0.55)', backdropFilter: 'blur(6px)',
-                animation: 'fadeIn 0.25s ease',
-            }}
-            onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+        <Box 
+            className="fixed inset-0 z-[9999] flex items-center justify-center p-md bg-obsidian/80 backdrop-blur-md"
+            // Ensure clicking the overlay closes the modal
+            nativeID="modal-overlay"
         >
-            <div
-                role="dialog"
-                aria-modal="true"
-                aria-label={t('welcome.title')}
-                style={{
-                    background: 'var(--glass-surface, #fff)',
-                    borderRadius: '24px',
-                    padding: '48px 40px',
-                    maxWidth: '460px',
-                    width: '90%',
-                    boxShadow: '0 32px 80px rgba(0,0,0,0.18)',
-                    border: '1px solid var(--border, rgba(255,255,255,0.2))',
-                    textAlign: 'center',
-                    animation: 'slideUp 0.3s cubic-bezier(0.34,1.56,0.64,1)',
-                }}
+            <AnimatedView 
+                entering={SlideInUp.duration(500).springify()}
+                className="w-full max-w-md bg-sacredWhite rounded-3xl p-lg shadow-2xl border border-mistGray/10 overflow-hidden"
             >
-                {/* Lotus Icon */}
-                <div style={{ fontSize: '56px', marginBottom: '24px', lineHeight: 1 }}>🌸</div>
+                <VStack className="items-center gap-6">
+                    {/* Lotus/Sparkles Container */}
+                    <Box className="w-20 h-20 bg-sanctuarySaffron/10 rounded-full items-center justify-center">
+                        <Text className="text-5xl leading-none">🪷</Text>
+                    </Box>
 
-                <h2 style={{
-                    fontSize: '26px', fontWeight: '800',
-                    color: 'var(--ink, #1a1a2e)', marginBottom: '16px',
-                    fontFamily: 'var(--font-heading, serif)',
-                }}>
-                    {t('welcome.title')}
-                </h2>
+                    <VStack className="items-center gap-3">
+                        <Heading className="text-obsidian text-center leading-tight" size="xl">
+                            {t('welcome.title') || 'Welcome Home'}
+                        </Heading>
+                        <Text className="text-mistGray text-center text-sm px-4">
+                            {t('welcome.message') || 'A sacred space for your teaching journey to flourish.'}
+                        </Text>
+                    </VStack>
 
-                <p style={{
-                    fontSize: '16px', lineHeight: '1.7',
-                    color: 'var(--ink-soft, #4a4a6a)', marginBottom: '12px',
-                }}>
-                    {t('welcome.message')}
-                </p>
+                    <Box className="w-full h-px bg-mistGray/5" />
 
-                <p style={{
-                    fontSize: '14px', lineHeight: '1.6',
-                    color: 'var(--ink-ghost, #8a8aaa)', marginBottom: '36px',
-                }}>
-                    {t('welcome.description')}
-                </p>
+                    <VStack className="w-full gap-4">
+                        <Box className="bg-emeraldGreen/5 p-4 rounded-2xl border border-emeraldGreen/10">
+                            <Text className="text-emeraldGreen text-xs text-center font-bold">
+                                {t('welcome.description') || 'Join our global community of mindful educators.'}
+                            </Text>
+                        </Box>
 
-                <button
-                    onClick={onClose}
-                    autoFocus
-                    style={{
-                        padding: '14px 40px',
-                        borderRadius: '14px',
-                        background: 'var(--sanctuary-saffron, #f97316)',
-                        color: '#fff',
-                        border: 'none',
-                        fontSize: '15px',
-                        fontWeight: '700',
-                        fontFamily: 'var(--font-body, sans-serif)',
-                        cursor: 'pointer',
-                        width: '100%',
-                        transition: 'transform 0.15s, opacity 0.15s',
-                    }}
-                    onMouseEnter={e => (e.currentTarget.style.opacity = '0.9')}
-                    onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
-                >
-                    {t('welcome.start')}
-                </button>
-            </div>
+                        <Button
+                            onPress={onClose}
+                            className="bg-sanctuarySaffron h-16 rounded-2xl shadow-xl shadow-sanctuarySaffron/30 active:scale-95 transition-transform"
+                        >
+                            <HStack className="items-center gap-2">
+                                <ButtonText className="text-obsidian font-black uppercase tracking-widest text-sm">
+                                    {t('welcome.start') || 'Begin Journey'}
+                                </ButtonText>
+                                <Icon as={ArrowRight} size={18} className="text-obsidian" />
+                            </HStack>
+                        </Button>
+                    </VStack>
+                </VStack>
+            </AnimatedView>
 
-            <style>{`
-                @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
-                @keyframes slideUp { from { opacity: 0; transform: translateY(32px) scale(0.96) } to { opacity: 1; transform: translateY(0) scale(1) } }
-            `}</style>
-        </div>
+            {/* Custom keyframe styles for web portal feel */}
+            <style dangerouslySetInnerHTML={{ __html: `
+                #modal-overlay {
+                    animation: fadeIn 0.3s ease-out;
+                }
+                @keyframes fadeIn {
+                    from { opacity: 0; }
+                    to { opacity: 1; }
+                }
+            `}} />
+        </Box>
     );
 }

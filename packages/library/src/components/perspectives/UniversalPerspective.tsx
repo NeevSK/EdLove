@@ -38,7 +38,7 @@ import {
 
 interface UniversalPerspectiveProps {
     topology: KnowledgeTopology;
-    topologyId?: string; // Optional ID for sharing and peering
+    topologyId?: string;
     initialPerspective?: PerspectiveId;
     onNodePress?: (node: any) => void;
     selectedNodeId?: string;
@@ -46,12 +46,6 @@ interface UniversalPerspectiveProps {
     title?: string;
 }
 
-/**
- * UniversalPerspective — The "Versatile Toolkit" Shell.
- * 
- * Allows any role (Student, Teacher, Founder) to render any topology
- * through any decoupled "lens" (Mind-map, Flowchart, Constellation, etc).
- */
 export const UniversalPerspective: React.FC<UniversalPerspectiveProps> = ({
     topology,
     topologyId,
@@ -65,9 +59,8 @@ export const UniversalPerspective: React.FC<UniversalPerspectiveProps> = ({
     const [perspective, setPerspective] = useState<PerspectiveId>(initialPerspective);
     const [isSharing, setIsSharing] = useState(false);
     
-    // Auto-calculate layout based on chosen perspective lens
     const layout = usePerspectiveLayout(topology, {
-        width: 1000, // Virtual coordinates for @repo/graphics
+        width: 1000,
         height: 1000,
         perspective
     });
@@ -77,14 +70,10 @@ export const UniversalPerspective: React.FC<UniversalPerspectiveProps> = ({
         setIsSharing(true);
         try {
             const link = await mappingAPI.createShareLink(topologyId);
-            console.log('Generated Peer-to-Peer Link:', link);
-            // In a real app, use Share.share({ message: link })
-            
-            // Emit an Echo signal for "Sharing"
             await echoAPI.sendEcho({
                 content: `Shared perspective "${perspective}" for topology "${title || topologyId}"`,
                 is_anonymous: true,
-                classroom_id: 'global', // Generic scope for ecological pulses
+                classroom_id: 'global',
             });
         } catch (err) {
             console.error('Sharing failed:', err);
@@ -95,7 +84,6 @@ export const UniversalPerspective: React.FC<UniversalPerspectiveProps> = ({
 
     const handleNodePress = (node: any) => {
         onNodePress?.(node);
-        // Peering: Interaction resonance
         if (topologyId) {
             echoAPI.sendEcho({
                 content: `Interacted with node "${node.label}" in "${perspective}" view`,
@@ -149,7 +137,7 @@ export const UniversalPerspective: React.FC<UniversalPerspectiveProps> = ({
 
             {showToggle && (
                 <GlassCard style={styles.toggleBar}>
-                    <HStack space="md" justifyContent="center">
+                    <HStack className="justify-center gap-3">
                         <LensButton 
                             active={perspective === 'astro'} 
                             icon={Network} 
@@ -174,7 +162,7 @@ export const UniversalPerspective: React.FC<UniversalPerspectiveProps> = ({
                             onPress={() => setPerspective('vatya')} 
                             label="Analysis"
                         />
-                         <LensButton 
+                        <LensButton 
                             active={perspective === 'terra'} 
                             icon={MapIcon} 
                             onPress={() => setPerspective('terra')} 
@@ -246,7 +234,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: 12,
         paddingVertical: 8,
         borderRadius: 12,
-        gap: 8,
     },
     lensBtnActive: {
         backgroundColor: 'rgba(255, 179, 0, 0.15)',
@@ -255,5 +242,6 @@ const styles = StyleSheet.create({
         fontSize: 12,
         fontWeight: '600',
         color: Theme.colors.sanctuarySaffron,
+        marginLeft: 8,
     }
 });

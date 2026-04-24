@@ -2,7 +2,7 @@ import { principalNotesAPI, type PrincipalNote } from '@repo/core';
 
 export type { PrincipalNote };
 
-export const notesAPI = {
+export const notesAPI = { 
   async listBySchool(schoolId: string): Promise<PrincipalNote[]> {
     return principalNotesAPI.getAll(schoolId);
   },
@@ -26,6 +26,6 @@ export const notesAPI = {
 
   async remove(id: string): Promise<void> {
     return principalNotesAPI.delete(id);
-  },
+  }
 };
 

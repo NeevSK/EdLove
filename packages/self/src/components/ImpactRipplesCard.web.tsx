@@ -1,61 +1,49 @@
 /**
  * ImpactRipplesCard.web.tsx
  *
- * Web override of the RN ImpactRipplesCard. The RN version uses hardcoded
- * white text (designed for dark-themed screens). On web, BaseSelfView renders
- * on a light sanctuary surface so we use CSS variables instead.
- *
- * Metro automatically resolves .web.tsx over .tsx on the web platform.
+ * Web-specific implementation of the Impact Ripples card.
+ * Purged raw HTML fragments and malformed inline styles in favor of @repo/ui primitives and Sanctuary design tokens.
  */
 import React from 'react';
 import type { ImpactRipple } from '@repo/core';
+import { Box, VStack, Text, Icon } from '@repo/ui';
+import { Waves } from 'lucide-react-native';
 
 interface ImpactRipplesCardProps {
     ripples: ImpactRipple[];
 }
 
-export function ImpactRipplesCard({ ripples }: ImpactRipplesCardProps) {
+export default function ImpactRipplesCard({ ripples }: ImpactRipplesCardProps) {
     if (!ripples.length) return null;
 
     return (
-        <div style={{
-            padding: '20px 24px',
-            backgroundColor: 'rgba(58, 122, 154, 0.07)',
-            borderRadius: '14px',
-            border: '1px solid rgba(58, 122, 154, 0.18)',
-        }}>
-            <div style={{
-                fontSize: '10px',
-                fontWeight: '900',
-                letterSpacing: '2px',
-                color: '#3A7A9A',
-                marginBottom: '14px',
-                textTransform: 'uppercase',
-            }}>
-                💧 IMPACT RIPPLES
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        <Box className="p-6 bg-indigo-400/5 rounded-comfortable border border-indigo-400/10 shadow-sm animate-in fade-in slide-in-from-bottom-2 duration-500">
+            {/* Header */}
+            <VStack className="gap-1 mb-4">
+                <Text className="text-[10px] font-black uppercase tracking-[2px] text-indigo-400">
+                    💧 IMPACT RIPPLES
+                </Text>
+                <Text className="text-xs text-mistGray italic">The subtle effects of your positive choices.</Text>
+            </VStack>
+
+            <VStack className="gap-3">
                 {ripples.map(r => (
-                    <div
+                    <Box
                         key={r.id}
-                        style={{
-                            padding: '10px 14px',
-                            backgroundColor: 'rgba(58, 122, 154, 0.06)',
-                            borderRadius: '10px',
-                            border: '1px solid rgba(58, 122, 154, 0.12)',
-                        }}
+                        className="p-4 bg-indigo-400/5 rounded-xl border border-indigo-400/10 hover:border-indigo-400/20 transition-all duration-300"
                     >
-                        <p style={{
-                            fontSize: '13px',
-                            lineHeight: '1.55',
-                            color: 'var(--ink-soft)',
-                            margin: 0,
-                        }}>
-                            {r.warm_message_en ?? r.ripple_type}
-                        </p>
-                    </div>
+                        <VStack className="gap-2">
+                            <Box className="flex-row items-center gap-2">
+                                <Icon as={Waves} size={12} className="text-indigo-400" />
+                                <Text className="text-xs font-bold text-sacredWhite/80">Positive Momentum</Text>
+                            </Box>
+                            <Text className="text-sm leading-relaxed text-sacredWhite/70 italic">
+                                "{r.warm_message_en ?? r.ripple_type}"
+                            </Text>
+                        </VStack>
+                    </Box>
                 ))}
-            </div>
-        </div>
+            </VStack>
+        </Box>
     );
 }

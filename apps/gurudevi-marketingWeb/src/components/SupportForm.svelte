@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { FormManager, validators, type FormConfig } from '@repo/core';
+  import { FormManager, type FormConfig } from '@repo/core/forms/form-manager';
+  import { validators } from '@repo/core/utils/validators';
 
   const formAction = import.meta.env.PUBLIC_SUPPORT_FORM_ACTION as string | undefined;
   const SUPPORT_EMAIL = "support@gurudevi.lk";
@@ -104,7 +105,7 @@
         <label class="space-y-2">
           <div class="text-sm font-semibold text-mud-brown">Name (optional)</div>
           <input
-            class="w-full rounded-2xl border border-mud-brown/20 bg-temple-stone/30 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-sanctuary-saffron/40"
+            class="w-full rounded-2xl border border-mud-brown/20 bg-temple-stone/30 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-sanctuary-saffron/40 ph-no-capture"
             type="text"
             bind:value={state.values.name}
             onblur={() => manager.validateField('name')}
@@ -115,7 +116,7 @@
         <label class="space-y-2">
           <div class="text-sm font-semibold text-mud-brown">Email (optional)</div>
           <input
-            class="w-full rounded-2xl border border-mud-brown/20 bg-temple-stone/30 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-sanctuary-saffron/40"
+            class="w-full rounded-2xl border border-mud-brown/20 bg-temple-stone/30 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-sanctuary-saffron/40 ph-no-capture"
             type="email"
             bind:value={state.values.email}
             onblur={() => manager.validateField('email')}

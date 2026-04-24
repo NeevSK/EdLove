@@ -305,7 +305,7 @@ export class DocumentWorkflowEngine {
   }
 
   private processTemplateVariables(template: DocumentTemplate, data: any): any {
-    let processedContent = { ...data };
+    const processedContent = { ...data };
     
     template.variables.forEach(variable => {
       if (variable.type === 'date') {

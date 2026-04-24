@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { handleAPIError, StaffAttendance, StaffLeave, supabase, growthSignalsAPI } from '@repo/core';
-import { staffAPI } from '../api/staff';
+import { staffAPI } from '../staff';
 
 export function useStaffPresence(userId?: string, schoolId?: string) {
     const [attendance, setAttendance] = useState<StaffAttendance[]>([]);
@@ -28,7 +28,7 @@ export function useStaffPresence(userId?: string, schoolId?: string) {
         fetchData();
     }, [fetchData]);
 
-    // Real-time subscription — reflect check-in/out changes from any device immediately
+    // Real-time subscription to reflect check-in/out changes immediately
     useEffect(() => {
         if (!userId) return;
 
@@ -40,13 +40,12 @@ export function useStaffPresence(userId?: string, schoolId?: string) {
                     event: '*',
                     schema: 'public',
                     table: 'staff_attendance',
-                    filter: `user_id=eq.${userId}`,
-                },
+                    filter: `user_id=eq.${userId}`},
                 (payload) => {
                     if (payload.eventType === 'INSERT') {
                         setAttendance(prev => [payload.new as StaffAttendance, ...prev]);
                     } else if (payload.eventType === 'UPDATE') {
-                        setAttendance(prev =>
+                        setAttendance(prev => 
                             prev.map(a => a.id === (payload.new as StaffAttendance).id
                                 ? (payload.new as StaffAttendance)
                                 : a)
@@ -66,11 +65,15 @@ export function useStaffPresence(userId?: string, schoolId?: string) {
         try {
             const result = await staffAPI.checkIn(userId, schoolId, notes);
             setAttendance(prev => [result, ...prev]);
-            // Growth signal — teacher/principal chose to be present
-            void growthSignalsAPI.emitSignal(userId, 'attendance_marked', {
-                school_id: schoolId,
-                type: 'check_in',
-            }).catch(() => {});
+            // Growth signal: teacher/principal chose to be present
+            growthSignalsAPI.emitSilent({
+                user_id: userId,
+                event_type: 'attendance_marked',
+                event_metadata: {
+                    school_id: schoolId,
+                    type: 'check_in'
+                }
+            });
             return { success: true, data: result };
         } catch (error) {
             handleAPIError(error);

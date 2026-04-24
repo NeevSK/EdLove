@@ -36,7 +36,7 @@ export function useSocialLinks(userId?: string) {
 
     const updateLink = async (id: string, updates: Partial<SocialLink>) => {
         try {
-            const updatedLink = await socialAPI.upsertSocialLink({ id, ...updates });
+            const updatedLink = await socialAPI.upsertSocialLink({ id, user_id: userId, ...updates });
             setLinks(prev => prev.map(l => l.id === id ? updatedLink : l));
             return { success: true, data: updatedLink };
         } catch (error) {

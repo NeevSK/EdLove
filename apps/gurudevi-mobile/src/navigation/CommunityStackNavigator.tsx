@@ -1,24 +1,28 @@
-import React from 'react';
+﻿import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { GroupDetailsScreen, GroupChatScreen, UserPublicProfileScreen } from '@repo/community';
+import {
+    AnnouncementsScreen,
+    DirectMessageScreen,
+    DirectMessagesListScreen,
+    GroupDetailsScreen,
+    GroupChatScreen,
+    UserPublicProfileScreen} from '@repo/community';
 import { CommunityScreen } from '../screens';
-import { useTheme } from '@repo/ui';
+import { useThemedColors } from '@repo/ui';
 
 import { CommunityStackParamList } from '@repo/core';
 
 const Stack = createNativeStackNavigator<CommunityStackParamList>();
 
 export default function CommunityStackNavigator() {
-    const { scene } = useTheme();
+    const colors = useTheme().scene;
 
     return (
         <Stack.Navigator
             id="CommunityStack"
             screenOptions={{
                 headerShown: false,
-                contentStyle: { backgroundColor: scene.canvas.bg },
-            }}
-        >
+                contentStyle: { backgroundColor: colors.secondary }}}>
             <Stack.Screen name="CommunityMain" component={CommunityScreen} />
             <Stack.Screen
                 name="GroupDetails"
@@ -36,8 +40,18 @@ export default function CommunityStackNavigator() {
                 options={{ headerShown: false, animation: 'slide_from_right' }}
             />
             <Stack.Screen
-                name="PublicProfile"
-                component={UserPublicProfileScreen}
+                name="DirectMessagesList"
+                component={DirectMessagesListScreen}
+                options={{ headerShown: false, animation: 'slide_from_right' }}
+            />
+            <Stack.Screen
+                name="DirectMessage"
+                component={DirectMessageScreen}
+                options={{ headerShown: false, animation: 'slide_from_right' }}
+            />
+            <Stack.Screen
+                name="Announcements"
+                component={AnnouncementsScreen as any}
                 options={{ headerShown: false, animation: 'slide_from_right' }}
             />
         </Stack.Navigator>

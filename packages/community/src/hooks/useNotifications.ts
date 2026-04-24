@@ -1,5 +1,5 @@
 /**
- * useNotifications — Real-time notification feed for the current user.
+ * useNotifications  Real-time notification feed for the current user.
  *
  * Provides: fetching, unread count badge, mark-as-read, real-time subscription.
  */
@@ -19,7 +19,7 @@ export function useNotifications() {
     const queryClient = useQueryClient();
     const userId = useStore(state => state.user?.id);
 
-    // ── Fetch list ─────────────────────────────────────────────────────────
+    //  Fetch list 
     const listQuery = useQuery({
         queryKey: NOTIF_KEYS.list(userId),
         queryFn: () => communityAPI.getNotifications(40),
@@ -27,7 +27,7 @@ export function useNotifications() {
         staleTime: 60_000,
     });
 
-    // ── Unread badge count ─────────────────────────────────────────────────
+    //  Unread badge count 
     const countQuery = useQuery({
         queryKey: NOTIF_KEYS.count(userId),
         queryFn: communityAPI.getUnreadNotificationCount,
@@ -36,7 +36,7 @@ export function useNotifications() {
         refetchInterval: 60_000,   // poll every 60 s as fallback
     });
 
-    // ── Real-time subscription ─────────────────────────────────────────────
+    //  Real-time subscription 
     React.useEffect(() => {
         if (!userId) return;
 
@@ -77,7 +77,7 @@ export function useNotifications() {
         return () => { supabase.removeChannel(channel); };
     }, [userId, queryClient]);
 
-    // ── Mark single as read ────────────────────────────────────────────────
+    //  Mark single as read 
     const markReadMutation = useMutation({
         mutationFn: (notifId: string) => communityAPI.markNotificationRead(notifId),
         onMutate: async (notifId) => {
@@ -105,7 +105,7 @@ export function useNotifications() {
         },
     });
 
-    // ── Mark all as read ───────────────────────────────────────────────────
+    //  Mark all as read 
     const markAllReadMutation = useMutation({
         mutationFn: communityAPI.markAllNotificationsRead,
         onMutate: async () => {
@@ -113,8 +113,7 @@ export function useNotifications() {
             const previous = queryClient.getQueryData<Notification[]>(NOTIF_KEYS.list(userId));
             const now = new Date().toISOString();
 
-            queryClient.setQueryData<Notification[]>(NOTIF_KEYS.list(userId), prev =>
-                (prev ?? []).map(n => ({ ...n, is_read: true, read_at: now })),
+            queryClient.setQueryData<Notification[]>(NOTIF_KEYS.list(userId), prev => (prev ?? []).map(n => ({ ...n, is_read: true, read_at: now })),
             );
             queryClient.setQueryData<number>(NOTIF_KEYS.count(userId), 0);
 

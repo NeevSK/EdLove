@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { usePermissions, useRewards, handleAPIError, useMutationQueue, supabase, identityAPI, authAPI } from '@repo/core';
+import { useRewards, handleAPIError, useMutationQueue, identityAPI, authAPI, useTemporalStore } from '@repo/core';
 import { profileAPI } from '../api/profile';
 import { UserProfile } from '../types';
 import { ProfileValidator } from '../lib/validator';
@@ -8,11 +8,11 @@ export function useProfile(userId?: string) {
     const [profile, setProfile] = useState<UserProfile | null>(null);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
-    const { context } = usePermissions();
-    const currentUserAuthority = context.roles[0];
-    const { rewards, isLoading: isRewardsLoading } = useRewards();
+    const { rewards, isLoading: isRewardsLoading } = useRewards({ userId });
     const addToQueue = useMutationQueue(state => state.addToQueue);
-
+    const viewDate = useTemporalStore(state => state.viewDate);
+    const phase = useTemporalStore(state => state.phase);
+ 
     const fetchProfile = useCallback(async () => {
         try {
             setLoading(true);
@@ -21,14 +21,22 @@ export function useProfile(userId?: string) {
             // Otherwise, get the current authenticated user's ID and fetch their profile.
             const targetId = userId || (await identityAPI.getMyInternalId());
             if (!targetId) return;
-
-            const data = await profileAPI.getUserProfile(targetId);
+ 
+            const data = phase === 'past'
+                ? await profileAPI.getUserProfileAsOf(targetId, viewDate)
+                : await profileAPI.getUserProfile(targetId);
             if (data) {
+                // Determine authority based on capability or stored role string
+                // Normalizing to lowercase/camelCase for RoleSchema SSOT
+                const rawRole = data.role?.toLowerCase() || 'student';
+                
                 setProfile({
                     ...data,
-                    authority: data.role ?? (!userId ? currentUserAuthority : undefined) ?? 'teacher',
+                    authority: rawRole as any, // Temporary cast until UserProfile types are fully updated
                     school_name: data.schools?.name || null
                 } as UserProfile);
+            } else {
+                setProfile(null);
             }
         } catch (error) {
             // Only log if it's not the HMR client error
@@ -40,7 +48,7 @@ export function useProfile(userId?: string) {
             setLoading(false);
             setRefreshing(false);
         }
-    }, [userId, currentUserAuthority]);
+    }, [phase, userId, viewDate]);
 
     useEffect(() => {
         fetchProfile();
@@ -81,11 +89,11 @@ export function useProfile(userId?: string) {
             // 4. Persistence (Attempt immediate sync)
             await profileAPI.updateProfile(profile.id, { [field]: value });
             return { success: true };
-        } catch (error) {
+        } catch (_error) {
             // 5. No Reversion!
             // Change stays in local state and persistent queue for retry.
             // We only notify the user that sync is pending or failed.
-            console.log('≡ƒöä Sync pending for:', field);
+            console.log('\u2261\u0192\u00F6\u00E4 Sync pending for:', field);
             return { success: true, pending: true };
         }
     };
@@ -94,12 +102,28 @@ export function useProfile(userId?: string) {
         await authAPI.signOut();
     }, []);
 
+    const uploadAvatar = useCallback(async (localUri: string) => {
+        if (!profile?.id) {
+            return { success: false };
+        }
+
+        try {
+            const updatedProfile = await profileAPI.uploadAvatar(profile.id, localUri);
+            setProfile(prev => prev ? { ...prev, ...updatedProfile } as UserProfile : prev);
+            return { success: true, data: updatedProfile };
+        } catch (error) {
+            handleAPIError(error);
+            return { success: false, error };
+        }
+    }, [profile?.id]);
+
     return {
         profile,
         loading: loading || isRewardsLoading,
         refreshing,
         refresh,
         logout,
+        uploadAvatar,
         rewards,
         updateField
     };

@@ -1,5 +1,5 @@
 /**
- * TableParser — reconstructs table rows from spatial block layout
+ * TableParser  reconstructs table rows from spatial block layout
  *
  * Groups OCRBlocks into rows using Y-coordinate proximity, then sorts
  * each row's cells by X-coordinate. Produces an OCRTable with structured
@@ -30,7 +30,7 @@ export function parseTable(result: OCRRawResult): OCRTable {
   return parseTableFromBlocks(blocks);
 }
 
-// ── Spatial grouping ───────────────────────────────────────────────────────
+//  Spatial grouping 
 
 function parseTableFromBlocks(blocks: OCRBlock[]): OCRTable {
   // Sort blocks by their Y midpoint
@@ -76,7 +76,7 @@ function midY(block: OCRBlock): number {
   return box.y + box.height / 2;
 }
 
-// ── Text fallback ──────────────────────────────────────────────────────────
+//  Text fallback 
 
 function parseTableFromText(text: string): OCRTable {
   const rows: OCRTableRow[] = text

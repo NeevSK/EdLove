@@ -8,7 +8,7 @@ export interface SchoolSectionRow {
   created_at: string;
 }
 
-export const sectionsAPI = {
+export const sectionsAPI = { 
   async listSchoolSections(schoolId: string): Promise<SchoolSectionRow[]> {
     const { data, error } = await supabase
       .from('school_sections')
@@ -30,13 +30,12 @@ export const sectionsAPI = {
       .insert({
         school_id: input.schoolId,
         name: input.name.trim(),
-        grade: input.grade?.trim() || null,
-      })
+        grade: input.grade?.trim() || null})
       .select('*')
       .single();
 
     if (error) throw error;
     return data as SchoolSectionRow;
-  },
+  }
 };
 

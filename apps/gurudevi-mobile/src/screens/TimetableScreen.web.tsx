@@ -1,7 +1,14 @@
-/**
- * TimetableScreen (Web Adapter)
- * 
- * Thin adapter pointing to @repo/classroom implementation.
- * Follows the "Library First" and "Thin App Layer" architectural rules.
+﻿/**
+ * TimetableScreen.web.tsx
  */
-export { TimetableScreen as default } from '@repo/classroom';
+import React from 'react';
+import { ErrorBoundary } from '@repo/ui';
+import { TimetableScreen } from '@repo/classroom';
+
+const TimetableWrapper = (props: any) => (
+  <ErrorBoundary name="Classroom Timetable">
+    <TimetableScreen {...props} />
+  </ErrorBoundary>
+);
+
+export default TimetableWrapper;

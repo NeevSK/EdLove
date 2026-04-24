@@ -1,8 +1,8 @@
 /**
- * useWebPageTitle — Web-only hook
+ * useWebPageTitle \u2014 Web-only hook
  *
  * Keeps `document.title` in sync with the current navigation screen so that:
- *   - Browser tab titles are human-readable ("Gurudevi · Profile")
+ *   - Browser tab titles are human-readable ("Gurudevi \u00B7 Profile")
  *   - Back/forward navigation shows meaningful titles in browser history
  *   - Screen readers and assistive tech announce the correct page name
  *
@@ -14,7 +14,7 @@ import { Platform } from 'react-native';
 const APP_NAME = 'Gurudevi';
 
 /** Maps internal route names to human-friendly tab titles. */
-const ROUTE_LABELS: Record<string, string> = {
+const ROUTE_LABELS: Record<string, string>  = {
     Home: 'Sanctuary',
     Self: 'Your Inner Compass',
     Community: 'The Circle',
@@ -33,8 +33,7 @@ const ROUTE_LABELS: Record<string, string> = {
     PulseDashboard: 'Pulse',
     Scanner: 'Scanner',
     ContentLibrary: 'Content Library',
-    VideoPlayer: 'Video Player',
-};
+    VideoPlayer: 'Video Player'};
 
 type NavState = { routes: Array<{ name: string; state?: NavState }>; index?: number } | undefined;
 
@@ -57,5 +56,5 @@ export function updateWebPageTitle(state: NavState | undefined) {
     if (!state) return;
     const routeName = getLeafRouteName(state);
     const label = routeName ? (ROUTE_LABELS[routeName] ?? routeName) : null;
-    document.title = label ? `${APP_NAME} · ${label}` : APP_NAME;
+    document.title = label ? `${APP_NAME} \u00B7 ${label}` : APP_NAME;
 }

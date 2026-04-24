@@ -1,23 +1,7 @@
 import { supabase } from '@repo/core';
 
-export type ManifestoVibe = 'visionary' | 'supportive' | 'academic' | 'wellbeing';
-export type ManifestoStatus = 'active' | 'archived' | 'fulfilled';
-
-export interface SanctuaryManifesto {
-    id: string;
-    school_id: string;
-    creator_id: string;
-    title: string;
-    content: string;
-    vibe: ManifestoVibe;
-    status: ManifestoStatus;
-    target_date?: string;
-    metadata: Record<string, any>;
-    created_at: string;
-    updated_at: string;
-    endorsement_count?: number;
-    has_endorsed?: boolean;
-}
+import type { ManifestoVibe, ManifestoStatus, SanctuaryManifesto } from '../types';
+export type { ManifestoVibe, ManifestoStatus, SanctuaryManifesto };
 
 export const sacredMissionsAPI = {
     /**

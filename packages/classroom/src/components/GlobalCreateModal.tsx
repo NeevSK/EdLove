@@ -13,7 +13,6 @@ import {
     FormControlLabelText,
     Spinner,
     SanctuaryModal,
-    useThemedColors,
     Theme,
     Actionsheet,
     ActionsheetBackdrop,
@@ -22,12 +21,14 @@ import {
     ActionsheetDragIndicator,
     ActionsheetItem,
     ActionsheetItemText,
-    Icon
+    Icon,
+    Textarea,
+    TextareaInput,
 } from '@repo/ui';
 import { api, supabase, School, handleAPIError, growthSignalsAPI, identityAPI } from '@repo/core';
 import { communityAPI } from '@repo/community';
 import { useTranslation } from 'react-i18next';
-import { hapticLight, hapticSuccess, Textarea } from '@repo/ui';
+import { hapticLight, hapticSuccess } from '@repo/ui';
 import {
     School as SchoolIcon,
     LayoutGrid,
@@ -57,7 +58,6 @@ export default function GlobalCreateModal({
     availableSchools
 }: GlobalCreateModalProps) {
     const { t } = useTranslation();
-    const colors = useThemedColors();
 
     const [type, setType] = useState<CreateType>('school');
     const [name, setName] = useState('');
@@ -154,10 +154,14 @@ export default function GlobalCreateModal({
             hapticSuccess();
             // Growth signals — fire-and-forget
             if (type === 'classroom' && result) {
-                void growthSignalsAPI.emitSignal(userId, 'classroom_created', {
-                    classroom_id: result.id,
-                    school_id: selectedSchoolId,
-                }).catch(() => { });
+                growthSignalsAPI.emitSilent({
+                    user_id: userId,
+                    event_type: 'classroom_created',
+                    event_metadata: {
+                        classroom_id: result.id,
+                        school_id: selectedSchoolId,
+                    }
+                });
             }
             onSuccess(type, result);
             handleClose();
@@ -178,123 +182,109 @@ export default function GlobalCreateModal({
                 onClose={handleClose}
                 title="Ecosystem Creation"
                 footer={
-                    <HStack sx={{ gap: Theme.spacing.md, width: '100%' }}>
+                    <HStack className="gap-4 w-full">
                         <Button
                             variant="outline"
-                            action="secondary"
                             onPress={handleClose}
-                            sx={{ flex: 1, borderColor: colors.border }}
+                            className="flex-1 h-14 rounded-[24px] border-sanctuary-border bg-sanctuary-surface-secondary active:opacity-70"
                             isDisabled={isSubmitting}
                         >
-                            <ButtonText color={colors.textSecondary}>Cancel</ButtonText>
+                            <ButtonText className="text-sanctuary-text-secondary font-bold">Cancel</ButtonText>
                         </Button>
                         <Button
-                            action="primary"
                             onPress={handleSubmit}
-                            sx={{
-                                flex: 1,
-                                backgroundColor: Theme.colors.sanctuarySaffron,
-                            }}
+                            className="flex-1 h-14 rounded-[24px] bg-sanctuarySaffron shadow-lg shadow-sanctuarySaffron/20 active:opacity-90"
                             isDisabled={isSubmitting || !name.trim()}
                         >
                             {isSubmitting ? (
-                                <Spinner color={Theme.colors.sacredWhite} size="small" />
+                                <Spinner color="#fff" size="small" />
                             ) : (
-                                <ButtonText color={Theme.colors.sacredWhite}>Initialize</ButtonText>
+                                <ButtonText className="text-sanctuary-ink font-bold">Initialize</ButtonText>
                             )}
                         </Button>
                     </HStack>
                 }
             >
-                <VStack sx={{ gap: Theme.spacing.xl }}>
+                <VStack className="gap-8">
                     {/* Entity Type Selector */}
-                    <HStack sx={{ gap: Theme.spacing.sm }}>
+                    <Box className="flex-row gap-2 bg-sanctuary-border/10 p-1.5 rounded-[24px]">
                         <TypeButton
                             active={type === 'school'}
                             onPress={() => setType('school')}
                             label="School"
-                            icon={<SchoolIcon size={16} />}
+                            icon={SchoolIcon}
                         />
                         <TypeButton
                             active={type === 'classroom'}
                             onPress={() => setType('classroom')}
                             label="Class"
-                            icon={<LayoutGrid size={16} />}
+                            icon={LayoutGrid}
                         />
                         <TypeButton
                             active={type === 'group'}
                             onPress={() => setType('group')}
                             label="Group"
-                            icon={<Users size={16} />}
+                            icon={Users}
                         />
-                    </HStack>
+                    </Box>
 
                     {error && (
-                        <Box sx={{ padding: 12, backgroundColor: '#fee2e2', borderRadius: 8, borderWidth: 1, borderColor: '#ef4444' }}>
-                            <Text sx={{ color: '#b91c1c', fontSize: 13 }}>{error}</Text>
+                        <Box className="p-4 bg-sanctuary-error/10 rounded-[20px] border border-sanctuary-error/20">
+                            <Text className="text-sanctuary-error text-sm font-medium">{error}</Text>
                         </Box>
                     )}
 
-                    <VStack sx={{ gap: Theme.spacing.md }}>
+                    <VStack className="gap-6">
                         {/* Target School Picker for non-school entities */}
                         {type !== 'school' && (
-                            <FormControl isRequired>
+                            <FormControl isRequired className="gap-2">
                                 <FormControlLabel>
-                                    <FormControlLabelText color={colors.textSecondary}>Target Institution</FormControlLabelText>
+                                    <FormControlLabelText className="text-sanctuary-text-secondary font-bold ml-1">Target Institution</FormControlLabelText>
                                 </FormControlLabel>
                                 <Button
                                     variant="outline"
                                     onPress={() => setShowSchoolPicker(true)}
-                                    sx={{
-                                        justifyContent: 'space-between',
-                                        borderColor: colors.border,
-                                        backgroundColor: colors.tertiary,
-                                        height: 48
-                                    }}
+                                    className="justify-between h-16 rounded-[24px] border-sanctuary-border bg-sanctuary-surface-secondary shadow-sm active:bg-sanctuary-border/10"
                                 >
-                                    <ButtonText color={selectedSchoolId ? colors.text : colors.textTertiary}>
+                                    <ButtonText className={`font-bold ${selectedSchoolId ? 'text-sanctuary-text' : 'text-sanctuary-text-tertiary'}`}>
                                         {selectedSchool ? selectedSchool.name : "Select School..."}
                                     </ButtonText>
-                                    <ChevronDown size={18} color={colors.textSecondary} />
+                                    <Icon as={ChevronDown} size="sm" className="text-sanctuary-text-secondary" />
                                 </Button>
                             </FormControl>
                         )}
 
-                        <FormControl isRequired>
+                        <FormControl isRequired className="gap-2">
                             <FormControlLabel>
-                                <FormControlLabelText color={colors.textSecondary}>
+                                <FormControlLabelText className="text-sanctuary-text-secondary font-bold ml-1">
                                     {type === 'school' ? 'Institution Name' : type === 'classroom' ? 'Class Name/ID' : 'Group Name'}
                                 </FormControlLabelText>
                             </FormControlLabel>
-                            <Input sx={{ height: 48, backgroundColor: colors.tertiary, borderColor: colors.border }}>
+                            <Input className="h-16 rounded-[24px] border-sanctuary-border bg-sanctuary-surface shadow-sm">
                                 <InputField
                                     value={name}
                                     onChangeText={setName}
-                                    color={colors.text}
+                                    className="text-sanctuary-text font-bold"
                                     placeholder="e.g., Royal Academy"
+                                    placeholderTextColor="rgba(0,0,0,0.3)"
                                 />
                             </Input>
                         </FormControl>
 
                         {type === 'school' && (
-                            <FormControl>
+                            <FormControl className="gap-2">
                                 <FormControlLabel>
-                                    <FormControlLabelText color={colors.textSecondary}>Category</FormControlLabelText>
+                                    <FormControlLabelText className="text-sanctuary-text-secondary font-bold ml-1">Category</FormControlLabelText>
                                 </FormControlLabel>
-                                <HStack sx={{ gap: 8 }}>
+                                <HStack className="gap-3">
                                     {(['primary', 'secondary', 'mixed'] as const).map(t => (
                                         <Button
                                             key={t}
-                                            variant={schoolType === t ? 'solid' : 'outline'}
                                             onPress={() => setSchoolType(t)}
-                                            sx={{
-                                                flex: 1,
-                                                backgroundColor: schoolType === t ? Theme.colors.sanctuarySaffron : 'transparent',
-                                                borderColor: schoolType === t ? Theme.colors.sanctuarySaffron : colors.border
-                                            }}
+                                            className={`flex-1 h-14 rounded-[20px] shadow-sm ${schoolType === t ? 'bg-sanctuarySaffron shadow-sanctuarySaffron/20' : 'bg-sanctuary-surface border border-sanctuary-border active:bg-sanctuary-border/10'}`}
                                             size="sm"
                                         >
-                                            <ButtonText color={schoolType === t ? '#fff' : colors.textSecondary}>
+                                            <ButtonText className={`font-bold ${schoolType === t ? 'text-sanctuary-ink' : 'text-sanctuary-text-secondary'}`}>
                                                 {t.charAt(0).toUpperCase() + t.slice(1)}
                                             </ButtonText>
                                         </Button>
@@ -304,19 +294,19 @@ export default function GlobalCreateModal({
                         )}
 
                         {type === 'group' && (
-                            <FormControl>
+                            <FormControl className="gap-2">
                                 <FormControlLabel>
-                                    <FormControlLabelText color={colors.textSecondary}>Purpose / Description</FormControlLabelText>
+                                    <FormControlLabelText className="text-sanctuary-text-secondary font-bold ml-1">Purpose / Description</FormControlLabelText>
                                 </FormControlLabel>
-                                <Input sx={{ minHeight: 80, backgroundColor: colors.tertiary, borderColor: colors.border }}>
-                                    <InputField
+                                <Textarea className="min-h-[100px] rounded-[24px] border-sanctuary-border bg-sanctuary-surface shadow-sm">
+                                    <TextareaInput
                                         value={description}
                                         onChangeText={setDescription}
-                                        multiline
-                                        color={colors.text}
+                                        className="text-sanctuary-text font-medium p-4"
                                         placeholder="Briefly describe this community space..."
+                                        placeholderTextColor="rgba(0,0,0,0.3)"
                                     />
-                                </Input>
+                                </Textarea>
                             </FormControl>
                         )}
                     </VStack>
@@ -326,11 +316,11 @@ export default function GlobalCreateModal({
             {/* School Picker Sheet */}
             <Actionsheet isOpen={showSchoolPicker} onClose={() => setShowSchoolPicker(false)}>
                 <ActionsheetBackdrop />
-                <ActionsheetContent sx={{ backgroundColor: colors.secondary }}>
+                <ActionsheetContent className="bg-sanctuary-surface-secondary pb-10">
                     <ActionsheetDragIndicatorWrapper>
                         <ActionsheetDragIndicator />
                     </ActionsheetDragIndicatorWrapper>
-                    <VStack sx={{ padding: 16, gap: 8 }}>
+                    <VStack className="p-4 gap-2 w-full">
                         {availableSchools.map(school => (
                             <ActionsheetItem
                                 key={school.id}
@@ -338,8 +328,9 @@ export default function GlobalCreateModal({
                                     setSelectedSchoolId(school.id);
                                     setShowSchoolPicker(false);
                                 }}
+                                className="rounded-[20px] active:bg-sanctuary-border/10 h-16"
                             >
-                                <ActionsheetItemText color={colors.text}>{school.name}</ActionsheetItemText>
+                                <ActionsheetItemText className="text-sanctuary-text font-bold">{school.name}</ActionsheetItemText>
                             </ActionsheetItem>
                         ))}
                     </VStack>
@@ -350,21 +341,14 @@ export default function GlobalCreateModal({
 }
 
 function TypeButton({ active, onPress, label, icon }: { active: boolean, onPress: () => void, label: string, icon: any }) {
-    const colors = useThemedColors();
     return (
         <Button
-            variant={active ? 'solid' : 'outline'}
             onPress={onPress}
-            sx={{
-                flex: 1,
-                gap: 4,
-                backgroundColor: active ? Theme.colors.sanctuarySaffron : 'transparent',
-                borderColor: active ? Theme.colors.sanctuarySaffron : colors.border
-            }}
+            className={`flex-1 h-12 rounded-[18px] gap-2 ${active ? 'bg-sanctuarySaffron shadow-md shadow-sanctuarySaffron/30' : 'bg-transparent active:bg-sanctuary-border/10'}`}
             size="sm"
         >
-            {React.cloneElement(icon, { color: active ? '#fff' : colors.textSecondary })}
-            <ButtonText color={active ? '#fff' : colors.textSecondary}>{label}</ButtonText>
+            <Icon as={icon} size="xs" className={active ? 'text-sanctuary-ink' : 'text-sanctuary-text-secondary'} />
+            <ButtonText className={`font-bold ${active ? 'text-sanctuary-ink' : 'text-sanctuary-text-secondary'}`}>{label}</ButtonText>
         </Button>
     );
 }

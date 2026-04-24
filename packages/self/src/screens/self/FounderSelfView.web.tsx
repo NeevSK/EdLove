@@ -1,18 +1,14 @@
-import React from 'react';
+﻿import React from 'react';
+import { JourneyHistoryCard, TemporalProvider, TemporalShield, ink, useTheme, useThemedColors } from '@repo/ui';
+
+
 import { useTranslation } from 'react-i18next';
 import {
     usePermissions,
     useStore,
-    useResonanceStore,
-    useJourneyHistory,
-} from '@repo/core';
+    useJourneyHistory} from '@repo/core';
 import { useNavigation } from '@react-navigation/native';
-import {
-    TemporalNavigator,
-    ResonanceProvider,
-    JourneyHistoryCard,
-    ResonanceShield,
-} from '@repo/ui';
+
 import { Sparkles, Lightbulb } from 'lucide-react-native';
 import { useMoodLogs } from '../../hooks/useMoodLogs';
 import { useJournalEntries } from '../../hooks/useJournalEntries';
@@ -23,63 +19,45 @@ import { ImpactRipplesCard } from '../../components/ImpactRipplesCard';
 import { WarmMirrorCard } from '../../components/WarmMirrorCard';
 import { BaseSelfView } from '../../components/BaseSelfView';
 import MoodLotus from '../../components/MoodLotus';
+import VoiceJournaling from '../../components/VoiceJournaling';
+import WisdomSeeds from '../../components/WisdomSeeds';
 import WelcomeModal from '../../components/WelcomeModal';
 import { PulseDashboard } from '../../components/PulseDashboard';
+import { useWellbeingEnrichment } from '../../hooks/useWellbeingEnrichment';
 import {
     VisionSection,
     PhilosophySection,
-    MoodSection,
-} from '../../views/sections';
+    MoodSection} from '../../views/sections';
 
 export default function FounderSelfView() {
     const { t } = useTranslation();
     const navigation = useNavigation<any>();
     const { context } = usePermissions();
     const { userId } = context;
-    const { viewMode, viewScale, setScale } = useResonanceStore();
+    const colors = useTheme().scene;
     const justFinishedOnboarding = useStore((s) => s.justFinishedOnboarding);
     const setJustFinishedOnboarding = useStore((s) => s.setJustFinishedOnboarding);
+    const { warmMirrorText, ripples } = useWellbeingEnrichment(userId);
 
     const { logs: moodLogs, loading: moodLoading, addMoodLog } = useMoodLogs();
     useJournalEntries();
     const { notes: wisdomNotes, isLoading: wisdomLoading } = useWisdom();
-    const { events: journeyEvents, holisticView, isLoading: journeyLoading } = useJourneyHistory();
+    const { events: journeyEvents, holisticView, isLoading: journeyLoading, currentScale: viewScale } = useJourneyHistory();
 
     const holisticSection = (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginBottom: '-8px' }}>
-                {(['day', 'week', 'month', 'year'] as const).map((scale) => (
-                    <button
-                        key={scale}
-                        className={`sanctuary-chip ${viewScale === scale ? 'active' : ''}`}
-                        onClick={() => setScale(scale)}
-                        style={{
-                            background: viewScale === scale ? 'var(--saffron-glass)' : 'rgba(255,255,255,0.05)',
-                            border: 'none',
-                            color: '#fff',
-                            padding: '4px 12px',
-                            borderRadius: '12px',
-                            fontSize: '11px',
-                            cursor: 'pointer',
-                            textTransform: 'uppercase',
-                        }}
-                    >
-                        {scale}
-                    </button>
-                ))}
-            </div>
             <JourneyHistoryCard
                 events={journeyEvents}
                 summary={holisticView.summary}
                 loading={journeyLoading}
                 scale={viewScale as any}
             />
-            <ResonanceShield label="ECOSYSTEM VISION">
+            <TemporalShield label="ECOSYSTEM VISION">
                 <VisionSection />
-            </ResonanceShield>
-            <ResonanceShield label="PHILOSOPHICAL ANCHORS">
+            </TemporalShield>
+            <TemporalShield label="PHILOSOPHICAL ANCHORS">
                 <PhilosophySection wisdom={wisdomNotes} loading={wisdomLoading} />
-            </ResonanceShield>
+            </TemporalShield>
         </div>
     );
 
@@ -110,47 +88,55 @@ export default function FounderSelfView() {
                     </button>
                 </div>
             </div>
-            <ImpactRipplesCard ripples={[]} />
-            <WarmMirrorCard text="Your vision is the horizon of this ecology." />
+            <ImpactRipplesCard ripples={ripples} />
+            <WarmMirrorCard text={warmMirrorText ?? 'Your vision is the horizon of this ecology.'} />
         </>
     );
 
     return (
-        <ResonanceProvider>
-            <div style={{ padding: '20px 40px 0' }}>
-                <TemporalNavigator />
-            </div>
+        <TemporalProvider>
             <BaseSelfView
                 perspective="founder"
                 description={t('self.founderDesc', 'Navigate the vast currents of the educational ecosystem.')}
-                domains={[
-                    {
+                domains={[{
                         id: 'journey',
                         title: 'Ecosystem Overview',
                         accentColor: '#FBBF24',
-                        content: viewMode === 'timeline' ? <ResonanceTimeline /> : holisticSection,
-                    },
+                        content: holisticSection,
+                        historyContent: <ResonanceTimeline />},
                     {
                         id: 'tools',
                         title: 'Visionary Tools',
                         accentColor: '#8B5CF6',
                         features: [
-                            { id: 'vision_lab', label: 'Vision Lab', content: <PulseDashboard onEnterDetails={() => {}} /> },
+                            { id: 'vision_lab', label: 'Vision Lab', content: <VisionSection /> },
                             {
                                 id: 'philosophy_lab',
                                 label: 'Philosophy Lab',
-                                content: <PulseDashboard onEnterDetails={() => {}} />,
-                                historyContent: <PhilosophySection wisdom={wisdomNotes} loading={wisdomLoading} />,
-                            },
+                                content: <PhilosophySection wisdom={wisdomNotes} loading={wisdomLoading} />,
+                                historyContent: <PhilosophySection wisdom={wisdomNotes} loading={wisdomLoading} />},
                             { id: 'ecosystem_dash', label: 'Global Dash', content: <PulseDashboard onEnterDetails={() => {}} /> },
                             {
                                 id: 'mood_lotus',
                                 label: 'Mood Lotus',
                                 content: <MoodLotus userId={userId ?? undefined} />,
-                                historyContent: <MoodSection logs={moodLogs} loading={moodLoading} />,
-                            },
-                        ],
-                    },
+                                historyContent: <MoodSection logs={moodLogs} loading={moodLoading} />},
+                            { id: 'voice', label: 'Voice Journal', content: <VoiceJournaling userId={userId ?? undefined} /> },
+                            { id: 'wisdom', label: 'Wisdom Seeds', content: <WisdomSeeds userId={userId ?? undefined} /> },
+                            {
+                                id: 'monthly_reflection',
+                                label: 'Monthly Reflection',
+                                content: (
+                                    <div className="sanctuary-card" style={{ padding: '24px' }}>
+                                        <h3 style={{ fontSize: '14px', fontWeight: '800', marginBottom: '10px', color: 'var(--ink)' }}>
+                                            {t('founder.visionComingSoon', 'Architecting the Future')}
+                                        </h3>
+                                        <p style={{ fontSize: '13px', lineHeight: 1.6, color: 'var(--ink-ghost)' }}>
+                                            {t('founder.visionComingSoonDesc', 'The vision alignment dashboard is currently being synthesized.')}
+                                        </p>
+                                    </div>
+                                )},
+                        ]},
                 ]}
                 sideBar={sideBar}
             />
@@ -158,6 +144,7 @@ export default function FounderSelfView() {
                 isOpen={justFinishedOnboarding}
                 onClose={() => setJustFinishedOnboarding(false)}
             />
-        </ResonanceProvider>
+        </TemporalProvider>
     );
 }
+

@@ -6,17 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <title>Gurudevi</title>
 
-    <!-- ── Primary SEO ───────────────────────────────────────────────── -->
-    <meta name="description" content="A sacred space for teachers — wellbeing, classroom tools, and community." />
+    <!-- \u2500\u2500 Primary SEO \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 -->
+    <meta name="description" content="A sacred space for teachers \u2014 wellbeing, classroom tools, and community." />
     <meta name="theme-color" content="#D4843A" />
 
-    <!-- ── Open Graph ────────────────────────────────────────────────── -->
+    <!-- \u2500\u2500 Open Graph \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 -->
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="Gurudevi — A Sanctuary for Teachers" />
+    <meta property="og:title" content="Gurudevi \u2014 A Sanctuary for Teachers" />
     <meta property="og:description" content="Mending the teaching-learning impedance match through care." />
     <meta property="og:image" content="/og-image.png" />
 
-    <!-- ── Zero-Flash Theme Init ─────────────────────────────────────── -->
+    <!-- \u2500\u2500 Zero-Flash Theme Init \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 -->
     <script>
       (function () {
         try {
@@ -42,15 +42,15 @@
       })();
     </script>
 
-    <!-- Google Fonts — loaded here (not inside React) to prevent FOUC on theme change -->
+    <!-- Google Fonts \u2014 loaded here (not inside React) to prevent FOUC on theme change -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=Noto+Sans+Sinhala:wght@400;500;600;700&family=Noto+Sans+Tamil:wght@400;500;600;700&display=swap" />
 
     <!-- Expo root element reset -->
     <style id="expo-reset">
       html, body { height: 100%; margin: 0; padding: 0; }
-      /* overflow:clip (not hidden) — avoids creating a scroll container so
+      /* overflow:clip (not hidden) \u2014 avoids creating a scroll container so
          hash navigation and browser scroll restoration work correctly. */
       body { overflow: clip; }
       #root { display: flex; height: 100%; flex: 1; flex-direction: column; }
@@ -70,6 +70,21 @@
 
       /* Global */
       * { scroll-behavior: smooth; box-sizing: border-box; }
+      /* Global font stack with Sinhala/Tamil fallbacks */
+      :root {
+        --font-main: 'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+        --font-sinhala: 'Noto Sans Sinhala', sans-serif;
+        --font-tamil: 'Noto Sans Tamil', sans-serif;
+      }
+
+      * { 
+        font-family: var(--font-main);
+      }
+
+      /* Native script support */
+      :lang(si) { font-family: var(--font-sinhala); }
+      :lang(ta) { font-family: var(--font-tamil); }
+
       html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
       body {
         -webkit-font-smoothing: antialiased;
@@ -246,7 +261,7 @@
     DARK MODE FOUC PREVENTION
     Reads themeMode from Zustand's persisted localStorage BEFORE React mounts.
     Sets data-theme="dark" on <html> so CSS variables resolve correctly on
-    the very first paint — zero flash of wrong theme.
+    the very first paint \u2014 zero flash of wrong theme.
     =========================================================================
     -->
     <script>
@@ -261,7 +276,7 @@
             } else if (mode === 'light') {
               document.documentElement.setAttribute('data-theme', 'light');
             } else {
-              // system — match prefers-color-scheme
+              // system \u2014 match prefers-color-scheme
               if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
                 document.documentElement.setAttribute('data-theme', 'dark');
               }
@@ -327,14 +342,14 @@
     <div id="bg-breathe" aria-hidden="true"></div>
 
     <!-- Ambient lotus petals - pure CSS, zero JS -->
-    <div class="lotus-petal petal-1" aria-hidden="true">🪷</div>
-    <div class="lotus-petal petal-2" aria-hidden="true">🌸</div>
-    <div class="lotus-petal petal-3" aria-hidden="true">🪷</div>
-    <div class="lotus-petal petal-4" aria-hidden="true">🌸</div>
-    <div class="lotus-petal petal-5" aria-hidden="true">🪷</div>
-    <div class="lotus-petal petal-6" aria-hidden="true">🌸</div>
-    <div class="lotus-petal petal-7" aria-hidden="true">🪷</div>
-    <div class="lotus-petal petal-8" aria-hidden="true">🪷</div>
+    <div class="lotus-petal petal-1" aria-hidden="true">\uD83E\uDEB7</div>
+    <div class="lotus-petal petal-2" aria-hidden="true">\uD83C\uDF38</div>
+    <div class="lotus-petal petal-3" aria-hidden="true">\uD83E\uDEB7</div>
+    <div class="lotus-petal petal-4" aria-hidden="true">\uD83C\uDF38</div>
+    <div class="lotus-petal petal-5" aria-hidden="true">\uD83E\uDEB7</div>
+    <div class="lotus-petal petal-6" aria-hidden="true">\uD83C\uDF38</div>
+    <div class="lotus-petal petal-7" aria-hidden="true">\uD83E\uDEB7</div>
+    <div class="lotus-petal petal-8" aria-hidden="true">\uD83E\uDEB7</div>
 
     <noscript>
       <style>
@@ -347,7 +362,7 @@
       </style>
       <div class="noscript-msg">
         <div>
-          <h1>🪷 Gurudevi</h1>
+          <h1>\uD83E\uDEB7 Gurudevi</h1>
           <p>Gurudevi requires JavaScript to run. Please enable JavaScript in your browser to access this sanctuary for teachers.</p>
         </div>
       </div>

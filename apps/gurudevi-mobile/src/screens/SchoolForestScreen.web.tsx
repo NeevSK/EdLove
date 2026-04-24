@@ -1,7 +1,17 @@
-/**
- * SchoolForestScreen (Web Adapter)
- * 
- * Thin adapter pointing to @repo/admin implementation.
- * Follows the "Library First" and "Thin App Layer" architectural rules.
+﻿/**
+ * SchoolForestScreen.web.tsx
+ *
+ * Thin wrapper for the Classroom School Forest (Vibes) UI.
  */
-export { SchoolForestScreen as default } from '@repo/admin';
+
+import React from 'react';
+import { ErrorBoundary } from '@repo/ui';
+import { SchoolForestScreenWeb } from '@repo/admin';
+
+const SchoolForestWrapper = (props: any) => (
+  <ErrorBoundary name="School Forest">
+    <SchoolForestScreenWeb {...props} />
+  </ErrorBoundary>
+);
+
+export default SchoolForestWrapper;

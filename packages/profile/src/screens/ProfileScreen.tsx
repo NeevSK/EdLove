@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView, RefreshControl, Alert, Dimensions, Modal, TouchableOpacity, Platform, useWindowDimensions } from 'react-native';
+import { ScrollView, RefreshControl, Alert, Platform, useWindowDimensions } from 'react-native';
 import {
     Box,
     VStack,
@@ -9,16 +9,15 @@ import {
     Button,
     ButtonText,
     Text,
-    Theme,
-    useThemedColors,
     useBottomTabPadding,
     DeleteAccountModal,
     LogoutModal,
+    DeviceAccountManager,
     ScreenWrapper,
     GlobalHeader,
-    useEnvironment,
-    Switch,
-    IdentityCard
+    IdentityCard,
+    Pressable,
+    Icon,
 } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 import { useAccountDeletion, useTracking, useStore, usePermissions } from '@repo/core';
@@ -26,7 +25,7 @@ import { hapticSuccess, hapticLight, hapticError } from '@repo/ui';
 import {
     Edit3,
     UserPlus,
-    X,
+    Eye,
     Settings,
     LogOut,
     Trash2,
@@ -37,92 +36,79 @@ import {
 } from 'lucide-react-native';
 
 import Animated, { FadeInDown, useSharedValue, useAnimatedStyle, withSequence, withTiming, withRepeat } from 'react-native-reanimated';
-import { useNavigation } from '@react-navigation/native';
 import { SanctuaryProgressBar } from '@repo/ui';
 
 // Local Package Imports
 import ProfileSkeleton from '../components/ProfileSkeleton';
 import LivingJourneyPanel from '../components/LivingJourneyPanel';
 import ThuthimalBadge from '../components/ThuthimalBadge';
-import { default as ProfileListItem } from '../components/ProfileListItem';
+import ProfileListItem from '../components/ProfileListItem';
 import { useProfile } from '../hooks/useProfile';
 import { useProfileCompletion } from '../hooks/useProfileCompletion';
-
-// --- Constants ---
-const SCREEN_WIDTH = Dimensions.get('window').width;
-const CARD_WIDTH = Math.min(SCREEN_WIDTH, 600) - Theme.spacing.xl;
+import { toFullProfileParams, useProfileNavigation } from '../navigation';
 
 // --- Internal Sub-Components ---
 
-const IdentitySection = ({ profile, navigation, colors, t, onGuestAction, completionResult, cardWidth = CARD_WIDTH }: any) => {
+const IdentitySection = ({ profile, navigation, t, onGuestAction, completionResult, cardWidth }: any) => {
     const { context } = usePermissions();
     const isWanderer = context.isAnonymous;
 
     return (
         <Center>
-            <IdentityCard
-                data={profile}
-                onViewFullProfile={() => {
-                    if (isWanderer) {
-                        onGuestAction?.();
-                    }
-                    hapticLight();
-                    navigation.navigate(isWanderer ? 'Auth' : 'FullProfile', { profile });
-                }}
-            />
-
-            {!context.isAnonymous && (
-                <SanctuaryProgressBar
-                    percentage={completionResult.percentage}
-                    isComplete={completionResult.isComplete}
-                    nextHint={completionResult.nextHint}
-                    style={{ width: cardWidth, marginTop: Theme.spacing.md }}
+            <Box style={{ width: cardWidth }}>
+                <IdentityCard
+                    data={profile}
+                    onViewFullProfile={() => {
+                        if (isWanderer) {
+                            onGuestAction?.();
+                        }
+                        hapticLight();
+                        if (isWanderer) {
+                            navigation.openAuth?.();
+                        } else {
+                            navigation.openFullProfile(toFullProfileParams(profile));
+                        }
+                    }}
                 />
+            </Box>
+            {!context.isAnonymous && completionResult && (
+                <Box style={{ width: cardWidth }} className="mt-4">
+                    <SanctuaryProgressBar
+                        percentage={completionResult.percentage}
+                        isComplete={completionResult.isComplete}
+                        nextHint={completionResult.nextHint}
+                    />
+                </Box>
             )}
 
-            <TouchableOpacity
+            <Pressable
                 onPress={() => {
                     hapticLight();
                     if (isWanderer) {
-                        navigation.navigate('Auth');
+                        navigation.openAuth?.();
                     } else {
-                        navigation.navigate('FullProfile', { profile });
+                        navigation.openFullProfile(toFullProfileParams(profile));
                     }
                 }}
                 accessible={true}
                 accessibilityRole="button"
                 accessibilityLabel={isWanderer ? t('auth.createAccount') : t('profile.viewEditProfile')}
-                style={{
-                    marginTop: Theme.spacing.lg,
-                    width: cardWidth,
-                    height: 52,
-                    backgroundColor: colors.secondary,
-                    borderRadius: Theme.corners.comfortable,
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    borderWidth: 1,
-                    borderColor: colors.border,
-                    shadowColor: Theme.colors.shadowViolet,
-                    shadowOffset: { width: 0, height: 4 },
-                    shadowOpacity: 0.12,
-                    shadowRadius: 10,
-                    elevation: 3,
-                }}
+                className="mt-6 h-[52px] bg-phase-canvas rounded-2xl flex-row items-center justify-center border border-phase-surface shadow-sm"
+                style={{ width: cardWidth }}
             >
-                <HStack space="sm" alignItems="center">
+                <HStack space="sm" className="items-center">
                     {isWanderer ? (
-                        <UserPlus size={18} color={colors.action} />
+                        <UserPlus size={18} color="#4A90E2" />
                     ) : (
-                        <Edit3 size={18} color={colors.action} />
+                        <Edit3 size={18} color="#4A90E2" />
                     )}
-                    <Text color={colors.text} bold>
+                    <Text className="text-phase-text-primary font-bold">
                         {isWanderer
                             ? t('auth.createAccount')
                             : t('profile.viewEditProfile')}
                     </Text>
                 </HStack>
-            </TouchableOpacity>
+            </Pressable>
         </Center>
     );
 };
@@ -140,29 +126,15 @@ const StatsSection = ({ profile, role }: any) => {
     );
 };
 
-const SupportSection = ({ t, colors, navigation, cardWidth = CARD_WIDTH }: any) => (
+const SupportSection = ({ t, navigation, cardWidth }: any) => (
     <Center>
         <VStack
-            sx={{
-                width: cardWidth,
-                p: Theme.spacing.md,
-                backgroundColor: `${colors.secondary}${Math.round(Theme.opacity.strong * 255).toString(16).padStart(2, '0')}`,
-                borderRadius: Theme.corners.generous,
-                borderWidth: 1,
-                borderColor: colors.border,
-                shadowColor: colors.glow,
-                shadowOffset: { width: 0, height: 0 },
-                shadowOpacity: 0.6,
-                shadowRadius: 20,
-                elevation: 5,
-            }}
+            className="bg-phase-canvas rounded-3xl p-4 border border-phase-surface shadow-md"
+            style={{ width: cardWidth, shadowColor: '#9DA1A3', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 10 }}
             space="sm"
         >
             <Heading
-                size="sm"
-                color={colors.textSecondary as any}
-                mt={Theme.spacing.sm}
-                mb={Theme.spacing.md}
+                className="text-phase-text-secondary text-sm mt-1 mb-3 px-1"
             >
                 {t('profile.account.support')}
             </Heading>
@@ -185,31 +157,17 @@ const SupportSection = ({ t, colors, navigation, cardWidth = CARD_WIDTH }: any) 
     </Center>
 );
 
-const AppExperienceSection = ({ t, colors, cardWidth = CARD_WIDTH }: any) => {
+const AppExperienceSection = ({ t, cardWidth }: any) => {
     const showToast = useStore((state) => state.showToast);
     return (
         <Center>
             <VStack
-                sx={{
-                    width: cardWidth,
-                    p: Theme.spacing.md,
-                    backgroundColor: colors.secondary,
-                    borderRadius: Theme.corners.generous,
-                    borderWidth: 1,
-                    borderColor: colors.border,
-                    shadowColor: colors.glow,
-                    shadowOffset: { width: 0, height: 0 },
-                    shadowOpacity: 0.6,
-                    shadowRadius: 20,
-                    elevation: 5,
-                }}
+                className="bg-phase-canvas rounded-3xl p-4 border border-phase-surface shadow-md"
+                style={{ width: cardWidth, shadowColor: '#9DA1A3', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 10 }}
                 space="sm"
             >
                 <Heading
-                    size="sm"
-                    color={colors.textSecondary as any}
-                    mt={Theme.spacing.sm}
-                    mb={Theme.spacing.md}
+                    className="text-phase-text-secondary text-sm mt-1 mb-3 px-1"
                 >
                     {t('profile.account.support_app')}
                 </Heading>
@@ -250,44 +208,11 @@ const AppExperienceSection = ({ t, colors, cardWidth = CARD_WIDTH }: any) => {
     );
 };
 
-const AccountActions = ({ t, colors, isGuest, navigation, cardWidth = CARD_WIDTH }: any) => {
-    if (isGuest) return null;
-
-    return (
-        <VStack space="md" sx={{ width: cardWidth }}>
-            <Heading
-                size="sm"
-                color={colors.textSecondary as any}
-                mb={Theme.spacing.xs}
-            >
-                {t('profile.account.actions')}
-            </Heading>
-            <Button
-                variant="outline"
-                size="lg"
-                onPress={() => {
-                    hapticLight();
-                    navigation.navigate('Auth');
-                }}
-                sx={{
-                    borderColor: colors.action,
-                    borderRadius: Theme.corners.comfortable,
-                    opacity: 0.7
-                }}
-            >
-                <ButtonText color={colors.action}>
-                    {t('profile.account.switch')}
-                </ButtonText>
-            </Button>
-        </VStack>
-    );
-};
-
 // --- Main Screen ---
 
 export const ProfileScreen = () => {
     const { t } = useTranslation();
-    const navigation = useNavigation<any>();
+    const navigation = useProfileNavigation();
     const {
         profile,
         loading,
@@ -297,21 +222,16 @@ export const ProfileScreen = () => {
         rewards
     } = useProfile();
 
-    // Extract authority from access state
     const { context } = usePermissions();
-    const authority = context.roles[0];
+    const authority = context.roles?.[0];
     const completionResult = useProfileCompletion(profile, authority ?? null);
-    const colors = useThemedColors();
     const bottomPadding = useBottomTabPadding();
     const { width: windowWidth } = useWindowDimensions();
-    const cardWidth = Math.min(windowWidth, 600) - Theme.spacing.xl;
+    const cardWidth = Math.min(windowWidth, 600) - 32;
     
     const [isDeleteModalVisible, setDeleteModalVisible] = useState(false);
     const [isLogoutModalVisible, setLogoutModalVisible] = useState(false);
     const [isLoggingOut, setLoggingOut] = useState(false);
-    
-    // Note: Settings are handled by the app-level navigator or a separate screen
-    // We keep the logic for consistent UI but it may be wired to navigation.navigate('Settings')
     
     const { deleteAccount, isDeleting } = useAccountDeletion();
     const { discoverFeature } = useTracking();
@@ -390,39 +310,32 @@ export const ProfileScreen = () => {
                 title={t('profile.title')}
                 subtitle={t('profile.subtitle')}
                 rightAction={
-                    <TouchableOpacity
+                    <Pressable
                         onPress={() => {
                             hapticLight();
-                            navigation.navigate('AppSettings');
+                            navigation.openSettings?.();
                         }}
                         accessible={true}
                         accessibilityRole="button"
                         accessibilityLabel={t('settings.title')}
-                        style={{
-                            padding: 8,
-                            borderRadius: Theme.corners.comfortable,
-                            backgroundColor: colors.tertiary,
-                            borderColor: colors.border,
-                            borderWidth: 1,
-                        }}
+                        className="p-2 rounded-xl bg-phase-canvas border border-phase-surface"
                     >
-                        <Settings size={24} color={colors.action} />
-                    </TouchableOpacity>
+                        <Settings size={24} color="#4A90E2" />
+                    </Pressable>
                 }
             />
-
-            <Box sx={{ flex: 1, backgroundColor: colors.primary }}>
+            <Box className="flex-1 bg-phase-canvas">
                 <ScrollView
                     showsVerticalScrollIndicator={false}
                     contentContainerStyle={{
-                        paddingVertical: Theme.spacing.md,
-                        paddingBottom: bottomPadding,
+                        paddingVertical: 16,
+                        paddingBottom: bottomPadding + 32,
                     }}
                     refreshControl={
                         <RefreshControl
                             refreshing={refreshing}
                             onRefresh={refresh}
-                            tintColor={Theme.colors.sanctuarySaffron}
+                            tintColor="#E67E22"
                         />
                     }
                 >
@@ -430,30 +343,21 @@ export const ProfileScreen = () => {
                         {profile?.is_anonymous && (
                             <Center>
                                 <Animated.View style={[{ width: cardWidth }, animatedBannerStyle]}>
-                                    <Box sx={{
-                                        p: Theme.spacing.md,
-                                        bg: colors.action,
-                                        borderRadius: Theme.corners.comfortable,
-                                        shadowColor: Theme.colors.shadowViolet,
-                                        shadowOffset: { width: 0, height: 4 },
-                                        shadowOpacity: 0.24,
-                                        shadowRadius: 8,
-                                        elevation: 4
-                                    }}>
+                                    <Box className="p-4 bg-phase-interactive rounded-2xl shadow-lg shadow-purple-900/40">
                                         <VStack space="sm">
-                                            <Heading size="md" color={Theme.colors.sacredWhite}>{t('profile.guestTitle')}</Heading>
-                                            <Text color={Theme.colors.sacredWhite} sx={{ fontSize: '$sm' }}>
+                                            <Heading className="text-white text-lg">{t('profile.guestTitle')}</Heading>
+                                            <Text className="text-white text-sm">
                                                 {t('profile.guestDesc')}
                                             </Text>
                                             <Button
                                                 size="sm"
                                                 onPress={() => {
                                                     hapticSuccess();
-                                                    navigation.navigate('Auth');
+                                                    navigation.openAuth?.();
                                                 }}
-                                                sx={{ bg: Theme.colors.sacredWhite, alignSelf: 'flex-start', mt: '$2' }}
+                                                className="bg-white self-start mt-2"
                                             >
-                                                <ButtonText color={colors.action}>{t('auth.createAccount')}</ButtonText>
+                                                <ButtonText className="text-phase-interactive">{t('auth.createAccount')}</ButtonText>
                                             </Button>
                                         </VStack>
                                     </Box>
@@ -464,47 +368,29 @@ export const ProfileScreen = () => {
                         <Animated.View entering={FadeInDown.delay(80).duration(500)}>
                             <Center>
                                 <Box
-                                    sx={{
-                                        width: cardWidth,
-                                        p: Theme.spacing.lg,
-                                        bg: colors.secondary,
-                                        borderRadius: Theme.corners.generous,
-                                        borderWidth: 1,
-                                        borderColor: colors.border,
-                                        shadowColor: colors.glow,
-                                        shadowOffset: { width: 0, height: 10 },
-                                        shadowOpacity: 0.1,
-                                        shadowRadius: 20,
-                                        elevation: 4,
-                                    }}
+                                    className="bg-phase-canvas rounded-3xl p-6 border border-phase-surface shadow-md"
+                                    style={{ width: cardWidth, shadowColor: '#9DA1A3', shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.1, shadowRadius: 20 }}
                                 >
                                     <VStack space="sm">
-                                        <HStack space="sm" sx={{ flexWrap: 'wrap' }}>
+                                        <HStack space="sm" className="flex-wrap">
                                             {['Identity', 'Journey', 'Support'].map((pillar) => (
                                                 <Box
                                                     key={pillar}
-                                                    sx={{
-                                                        px: Theme.spacing.sm,
-                                                        py: '$1',
-                                                        borderRadius: Theme.corners.full,
-                                                        backgroundColor: colors.overlay,
-                                                        borderWidth: 1,
-                                                        borderColor: colors.border,
-                                                    }}
+                                                    className="px-3 py-1 rounded-full bg-phase-surface border border-phase-surface"
                                                 >
-                                                    <Text size="xs" color={colors.textSecondary} bold>
+                                                    <Text className="text-[10px] text-phase-text-secondary font-bold uppercase">
                                                         {pillar}
                                                     </Text>
                                                 </Box>
                                             ))}
                                         </HStack>
-                                        <Text size="xs" color={colors.action} bold sx={{ letterSpacing: 0.8 }}>
+                                        <Text className="text-[10px] text-phase-interactive font-bold tracking-widest">
                                             PERSONAL SANCTUARY
                                         </Text>
-                                        <Heading size="sm" color={colors.text}>
+                                        <Heading className="text-base text-phase-text-primary">
                                             Your profile is the living record of how you move through Gurudevi.
                                         </Heading>
-                                        <Text color={colors.textSecondary} size="sm">
+                                        <Text className="text-phase-text-secondary text-sm">
                                             Everything below stays the same functionally, but this space helps hold identity, progress, and support in one calmer rhythm.
                                         </Text>
                                     </VStack>
@@ -516,7 +402,6 @@ export const ProfileScreen = () => {
                             <IdentitySection
                                 profile={profile}
                                 navigation={navigation}
-                                colors={colors}
                                 t={t}
                                 onGuestAction={triggerBannerShake}
                                 completionResult={completionResult}
@@ -527,7 +412,7 @@ export const ProfileScreen = () => {
                         {profile?.is_thuthimal && (
                             <Animated.View entering={FadeInDown.delay(200).duration(500)}>
                                 <Center>
-                                    <Box sx={{ width: cardWidth }}>
+                                    <Box style={{ width: cardWidth }}>
                                         <ThuthimalBadge
                                             gifterName={profile.thuthimal_gifter}
                                             giftedAt={profile.thuthimal_gifted_at}
@@ -539,38 +424,59 @@ export const ProfileScreen = () => {
                         )}
 
                         <Animated.View entering={FadeInDown.delay(300).duration(500)}>
-                            <StatsSection profile={profile} rewards={rewards} role={profile?.role as any} />
+                            <StatsSection profile={profile} role={profile?.role as any} />
                         </Animated.View>
 
                         <Animated.View entering={FadeInDown.delay(400).duration(500)}>
                             <Center>
-                                <Box sx={{ width: cardWidth }}>
+                                <Box style={{ width: cardWidth }}>
                                     <ProfileListItem
                                         icon={Settings}
                                         label={t('settings.title')}
-                                        onPress={() => navigation.navigate('AppSettings')}
+                                        onPress={() => navigation.openSettings?.()}
+                                    />
+                                </Box>
+                            </Center>
+                        </Animated.View>
+
+                        <Animated.View entering={FadeInDown.delay(475).duration(500)}>
+                            <Center>
+                                <Box style={{ width: cardWidth }}>
+                                    <ProfileListItem
+                                        icon={Info}
+                                        label={t('profile.privacyLedgerTitle', 'Privacy Ledger')}
+                                        onPress={() => navigation.openPrivacyLedger?.()}
+                                    />
+                                </Box>
+                            </Center>
+                        </Animated.View>
+
+                        <Animated.View entering={FadeInDown.delay(500).duration(500)}>
+                            <Center>
+                                <Box style={{ width: cardWidth }}>
+                                    <ProfileListItem
+                                        icon={Eye}
+                                        label={t('profile.publicPreviewTitle', 'Public Preview')}
+                                        onPress={() => profile?.id ? navigation.openPublicProfile?.({ id: profile.id, type: 'user' }) : undefined}
                                     />
                                 </Box>
                             </Center>
                         </Animated.View>
 
                         <Animated.View entering={FadeInDown.delay(550).duration(500)}>
-                            <SupportSection t={t} colors={colors} navigation={navigation} cardWidth={cardWidth} />
+                            <SupportSection t={t} navigation={navigation} cardWidth={cardWidth} />
                         </Animated.View>
 
                         <Animated.View entering={FadeInDown.delay(600).duration(500)}>
-                            <AppExperienceSection t={t} colors={colors} cardWidth={cardWidth} />
+                            <AppExperienceSection t={t} cardWidth={cardWidth} />
                         </Animated.View>
 
                         <Animated.View entering={FadeInDown.delay(700).duration(500)}>
                             <Center>
-                                <Box sx={{ width: cardWidth, mt: Theme.spacing.md }}>
-                                    <AccountActions
-                                        t={t}
-                                        colors={colors}
-                                        navigation={navigation}
-                                        isGuest={profile?.is_anonymous}
-                                        cardWidth={cardWidth}
+                                <Box style={{ width: cardWidth }} className="mt-4">
+                                    <DeviceAccountManager
+                                        title={t('profile.account.actions', 'Shared device accounts')}
+                                        subtitle={t('profile.account.shared_device_desc', 'Switch, protect, and remove accounts stored on this device without leaving this screen.')}
                                     />
                                 </Box>
                             </Center>
@@ -578,74 +484,55 @@ export const ProfileScreen = () => {
 
                         <Animated.View entering={FadeInDown.delay(750).duration(500)}>
                             <Center>
-                                <Box sx={{ width: cardWidth, mb: Theme.spacing.xl, mt: Theme.spacing.md }}>
-                                    <VStack space="md" sx={{
-                                        p: Theme.spacing.md,
-                                        bg: colors.tertiary,
-                                        borderRadius: Theme.corners.generous,
-                                        borderWidth: 1,
-                                        borderColor: colors.border
-                                    }}>
-                                        <TouchableOpacity
+                                <Box className="mt-4 mb-20" style={{ width: cardWidth }}>
+                                    <VStack 
+                                        space="md" 
+                                        className="p-4 bg-phase-surface rounded-3xl border border-phase-surface"
+                                    >
+                                        <Pressable
                                             onPress={handleLogout}
                                             accessible={true}
                                             accessibilityRole="button"
                                             accessibilityLabel={t('profile.logout')}
-                                            style={{
-                                                flexDirection: 'row',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                padding: Theme.spacing.md,
-                                                backgroundColor: colors.secondary,
-                                                borderRadius: Theme.corners.comfortable,
-                                                borderWidth: 1,
-                                                borderColor: colors.border
-                                            }}
+                                            className="flex-row items-center justify-center p-4 bg-phase-canvas rounded-2xl border border-phase-surface"
                                         >
-                                            <LogOut size={20} color={colors.error} style={{ marginRight: 8 }} />
-                                            <Text color={colors.error} bold>
+                                            <Icon as={LogOut} size={20} color="#FF6B6B" className="mr-2" />
+                                            <Text className="text-phase-error font-bold">
                                                 {t('profile.logout')}
                                             </Text>
-                                        </TouchableOpacity>
-
-                                        <TouchableOpacity
+                                        </Pressable>
+                                        <Pressable
                                             onPress={handleDeleteAccount}
                                             accessible={true}
                                             accessibilityRole="button"
                                             accessibilityLabel={t('profile.deleteAccount')}
-                                            style={{
-                                                flexDirection: 'row',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                padding: Theme.spacing.xs,
-                                            }}
+                                            className="flex-row items-center justify-center p-1"
                                         >
-                                            <Trash2 size={16} color={colors.textTertiary} style={{ marginRight: 6 }} />
-                                            <Text color={colors.textTertiary} size="xs">
+                                            <Icon as={Trash2} size={16} color="#9DA1A3" className="mr-1.5" />
+                                            <Text className="text-phase-text-tertiary text-xs">
                                                 {t('profile.deleteAccount')}
                                             </Text>
-                                        </TouchableOpacity>
+                                        </Pressable>
                                     </VStack>
                                 </Box>
                             </Center>
                         </Animated.View>
                     </VStack>
                 </ScrollView>
+            </Box>
 
-                <DeleteAccountModal
-                    isOpen={isDeleteModalVisible}
-                    onClose={() => setDeleteModalVisible(false)}
-                    onDelete={confirmDeleteAccount}
-                    isLoading={isDeleting}
-                />
-
-                <LogoutModal
-                    isOpen={isLogoutModalVisible}
-                    onClose={() => setLogoutModalVisible(false)}
-                    onLogout={confirmLogout}
-                    isLoading={isLoggingOut}
-                />
-            </Box >
-        </ScreenWrapper >
+            <DeleteAccountModal
+                isOpen={isDeleteModalVisible}
+                onClose={() => setDeleteModalVisible(false)}
+                onDelete={confirmDeleteAccount}
+                isLoading={isDeleting}
+            />
+            <LogoutModal
+                isOpen={isLogoutModalVisible}
+                onClose={() => setLogoutModalVisible(false)}
+                onLogout={confirmLogout}
+                isLoading={isLoggingOut}
+            />
+        </ScreenWrapper>
     );
 };

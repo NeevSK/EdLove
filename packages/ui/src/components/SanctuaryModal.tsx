@@ -1,139 +1,91 @@
-﻿/**
- * SanctuaryModal â€” Phase-aware base modal for the Gurudevi ecosystem.
- *
- * Design laws enforced here:
- * - Backdrop uses Shadow Violet rgba(107,100,128,x) â€” NEVER black
- * - Background resolves from glass.modal tokens (phase + world aware)
- * - All text uses token-resolved colors â€” no hardcoded hex
- * - Border radius: Theme.corners.generous (24) â€” organic, never sharp
- * - Shadow: Shadow Violet only
- *
- * Usage:
- *   <SanctuaryModal isOpen={open} onClose={close} title="Confirm">
- *     <Text>Your content</Text>
- *   </SanctuaryModal>
- */
-
 import React from 'react';
 import {
-    Modal,
-    ModalBackdrop,
-    ModalContent,
-    ModalHeader,
-    ModalCloseButton,
-    ModalBody,
-    ModalFooter,
-    Heading,
-    Text,
-    Icon,
-    CloseIcon,
-    HStack,
-    VStack,
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Text,
+  HStack,
+  VStack,
 } from '../gluestack';
-import { useTheme } from '../hooks/useTheme';
-import { Theme } from '../theme/Theme';
+import { X } from 'lucide-react-native';
+import { Pressable } from 'react-native';
+
+const Heading = ({ children, className }: any) => (
+  <Text className={`text-xl font-bold ${className || ''}`}>{children}</Text>
+);
 
 export interface SanctuaryModalProps {
-    /** Controls visibility */
-    isOpen: boolean;
-    /** Called when the modal requests to close */
-    onClose: () => void;
-    /** Modal title â€” shown in header */
-    title: string;
-    /** Optional subtitle below the title */
-    subtitle?: string;
-    /** Optional leading icon element in the header */
-    icon?: React.ReactNode;
-    /** Modal body content */
-    children: React.ReactNode;
-    /** Optional footer content (action buttons live here) */
-    footer?: React.ReactNode;
-    /** Whether to show the top-right close button (default: true) */
-    showCloseButton?: boolean;
-    /** Gluestack size token */
-    size?: 'xs' | 'sm' | 'md' | 'lg' | 'full';
+  /** Controls visibility */
+  isOpen: boolean;
+  /** Called when the modal requests to close */
+  onClose: () => void;
+  /** Modal title - shown in header */
+  title: string;
+  /** Optional subtitle below the title */
+  subtitle?: string;
+  /** Optional leading icon element in the header */
+  icon?: React.ReactNode;
+  /** Modal body content */
+  children: React.ReactNode;
+  /** Optional footer content (action buttons live here) */
+  footer?: React.ReactNode;
+  /** Whether to show the top-right close button (default: true) */
+  showCloseButton?: boolean;
+  /** Gluestack size token */
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'full';
+  /** Custom class name for modal content */
+  className?: string;
 }
 
+/**
+ * SanctuaryModal
+ *
+ * A premium, phase-aware modal for mobile.
+ * Hardened v3 implementation with NativeWind.
+ */
 export default function SanctuaryModal({
-    isOpen,
-    onClose,
-    title,
-    subtitle,
-    icon,
-    children,
-    footer,
-    showCloseButton = true,
-    size = 'md',
+  isOpen,
+  onClose,
+  title,
+  subtitle,
+  icon,
+  children,
+  footer,
+  showCloseButton = true,
+  className = '',
 }: SanctuaryModalProps) {
-    const { scene, text, isDark } = useTheme();
+  return (
+    <Modal isOpen={isOpen} onClose={onClose}>
+      <ModalContent className={`bg-phase-elevated border-phase-surface shadow-2xl ${className}`}>
+        <ModalHeader className="border-b-0">
+          <HStack className="items-center flex-1 gap-3">
+            {icon && icon}
+            <VStack className="flex-1">
+              <Heading className="text-phase-text-primary">{title}</Heading>
+              {subtitle ? (
+                <Text className="text-phase-text-secondary text-xs">{subtitle}</Text>
+              ) : null}
+            </VStack>
+          </HStack>
 
-    return (
-        <Modal
-            isOpen={isOpen}
-            onClose={onClose}
-            {...({ size } as any)}
-        >
-            {/* Backdrop: Shadow Violet â€” NEVER black */}
-            <ModalBackdrop
-                sx={{
-                    backgroundColor: isDark
-                        ? 'rgba(107,100,128,0.65)'
-                        : 'rgba(107,100,128,0.45)',
-                }}
-            />
-
-            <ModalContent
-                sx={{
-                    width: '90%',
-                    backgroundColor: scene.elevated.bg,
-                    borderColor: scene.elevated.border,
-                    borderWidth: 1,
-                    borderRadius: Theme.corners.generous,
-                    // Shadow Violet only â€” never black
-                    shadowColor: Theme.colors.shadowViolet,
-                    shadowOffset: { width: 0, height: isDark ? 0 : 4 },
-                    shadowOpacity: isDark ? 0.28 : 0.10,
-                    shadowRadius: isDark ? 20 : 12,
-                    elevation: 8,
-                }}
+          {showCloseButton && (
+            <Pressable
+              onPress={onClose}
+              className="p-2 active:opacity-60"
+              accessibilityRole="button"
+              accessibilityLabel="Close modal"
             >
-                <ModalHeader>
-                    <HStack
-                        {...({ space: 'sm', alignItems: 'center', flex: 1 } as any)}
-                    >
-                        {icon && icon}
-                        <VStack {...({ flex: 1 } as any)}>
-                            <Heading
-                                size="md"
-                                {...({ color: text.onElevated } as any)}
-                            >
-                                {title}
-                            </Heading>
-                            {subtitle ? (
-                                <Text
-                                    {...({ size: 'xs', color: text.secondary } as any)}
-                                >
-                                    {subtitle}
-                                </Text>
-                            ) : null}
-                        </VStack>
-                    </HStack>
+              <X size={20} className="text-phase-text-primary" />
+            </Pressable>
+          )}
+        </ModalHeader>
 
-                    {showCloseButton && (
-                        <ModalCloseButton>
-                            <Icon
-                                as={CloseIcon}
-                                {...({ color: text.onElevated } as any)}
-                            />
-                        </ModalCloseButton>
-                    )}
-                </ModalHeader>
+        <ModalBody className="py-2">{children}</ModalBody>
 
-                <ModalBody>{children}</ModalBody>
-
-                {footer ? <ModalFooter>{footer}</ModalFooter> : null}
-            </ModalContent>
-        </Modal>
-    );
+        {footer ? <ModalFooter className="border-t-0">{footer}</ModalFooter> : null}
+      </ModalContent>
+    </Modal>
+  );
 }
-

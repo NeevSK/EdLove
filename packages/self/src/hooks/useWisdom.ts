@@ -1,4 +1,4 @@
-import { SafeZustandStorage, supabase, useStore, useTemporalStore } from '@repo/core';
+﻿import { SafeZustandStorage, supabase, useStore, useTemporalStore, getTemporalRange } from '@repo/core';
 import { useState, useCallback, useEffect } from 'react';
 import { WisdomNote } from '../types';
 
@@ -47,9 +47,8 @@ export function useWisdom(userId?: string) {
                 .eq('user_id', userId);
 
             if (isPastView) {
-                const startOfDay = `${viewDate}T00:00:00.000Z`;
-                const endOfDay = `${viewDate}T23:59:59.999Z`;
-                query = query.gte('created_at', startOfDay).lte('created_at', endOfDay);
+                const range = getTemporalRange(viewDate, 'day');
+                query = query.gte('created_at', range.start).lte('created_at', range.end);
             } else {
                 query = query.order('created_at', { ascending: false }).limit(30);
             }

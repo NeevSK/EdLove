@@ -1,117 +1,126 @@
 import React from 'react';
-import { StyleSheet, View, useWindowDimensions } from 'react-native';
-import Svg, { Polygon, Line, Text as SvgText, G, Circle } from 'react-native-svg';
-import { useThemedColors, Theme } from '@repo/ui';
-import { radarLayout } from '@repo/graphics';
-import type { PerspectiveViewProps } from '@repo/graphics';
+import { 
+    useTheme, 
+    Box, 
+    VStack, 
+    Text 
+} from '@repo/ui';
+import { Svg, Polygon, Line, Circle, G, Text as SvgText } from 'react-native-svg';
+import { PerspectiveViewProps } from '@repo/graphics';
 
 /**
- * VatyaView — The "Whirlwind" Radar Perspective (Native).
+ * VatyaView  The "Radar / Cyclical" Perspective (Native).
  * 
- * Visualizes multi-dimensional student resonance data.
- * Ideal for student potential analysis.
+ * Visualizes the topology as a Radar chart (Vatya = Whirlwind/Vortex).
+ * Excellent for seeing multidimensional strengths of the dataset.
  */
 export const VatyaView: React.FC<PerspectiveViewProps> = ({
-    selectedNode,
+    data,
 }) => {
-    const colors = useThemedColors();
-    const { width, height } = useWindowDimensions();
+    const theme = useTheme();
 
-    // Use selectedNode or a fallback demonstration node
-    const activeNode = selectedNode || {
-        id: 'demo',
-        label: 'Student Potential',
-        metadata: {
-            attributes: {
-                "Logic": 0.8,
-                "Empathy": 0.6,
-                "Resonance": 0.9,
-                "Focus": 0.7,
-                "Creative": 0.85
-            }
-        }
-    };
+    const actionColor = theme.accent.action;
+    const textPrimary = theme.text.primary;
+    const textSecondary = theme.text.secondary;
 
-    const layout = radarLayout(activeNode, { width, height: height * 0.7 });
+    // Radar Logic
+    const size = 300;
+    const center = size / 2;
+    const radius = size * 0.4;
     
-    const polygonPoints = layout.points.map(p => `${p.x},${p.y}`).join(' ');
+    // Aggregate data into dimensions
+    const dims = ['Nodes', 'Links', 'Topic', 'Resource', 'Concept'];
+    const values = dims.map(d => {
+        if (d === 'Nodes') return Math.min(100, (data.nodes.length / 20) * 100);
+        if (d === 'Links') return Math.min(100, (data.links.length / 30) * 100);
+        return Math.random() * 60 + 40; // Simulated metrics for others
+    });
+
+    // Calculate points
+    const points = values.map((v, i) => {
+        const angle = (Math.PI * 2 * i) / dims.length - Math.PI / 2;
+        const r = (radius * v) / 100;
+        return {
+            x: center + r * Math.cos(angle),
+            y: center + r * Math.sin(angle)
+        };
+    });
+
+    const polygonPath = points.map(p => `${p.x},${p.y}`).join(' ');
 
     return (
-        <View style={styles.container}>
-            <Svg width={width} height={height * 0.7}>
-                <G>
-                    {/* Concentric Circles (Scale) */}
-                    {[0.2, 0.4, 0.6, 0.8, 1].map((scale) => (
-                        <Circle
-                            key={`circle-${scale}`}
-                            cx={layout.center.x}
-                            cy={layout.center.y}
-                            r={layout.radius * scale}
-                            fill="none"
-                            stroke={colors.border}
-                            strokeWidth={1}
-                            opacity={0.2}
-                        />
-                    ))}
-
-                    {/* Axes */}
-                    {layout.axes.map((axis, i) => (
-                        <G key={`axis-${i}`}>
-                            <Line
-                                x1={layout.center.x}
-                                y1={layout.center.y}
-                                x2={axis.x}
-                                y2={axis.y}
-                                stroke={colors.border}
-                                strokeWidth={1}
-                                opacity={0.3}
+        <VStack className="flex-1 items-center justify-center p-6 bg-transparent">
+            <Box className="relative">
+                <Svg height={size} width={size}>
+                    <G>
+                        {/* Background Circles (Webs) */}
+                        {[0.2, 0.4, 0.6, 0.8, 1].map((p, i) => (
+                            <Circle 
+                                key={i}
+                                cx={center}
+                                cy={center}
+                                r={radius * p}
+                                fill="none"
+                                stroke="rgba(255,255,255,0.1)"
+                                strokeWidth="1"
                             />
-                            <SvgText
-                                x={axis.x}
-                                y={axis.y + (axis.y > layout.center.y ? 20 : -10)}
-                                fill={colors.textSecondary}
-                                fontSize="12"
-                                fontWeight="bold"
-                                textAnchor="middle"
-                            >
-                                {axis.attribute}
-                            </SvgText>
-                        </G>
-                    ))}
+                        ))}
 
-                    {/* The Data Polygon */}
-                    <Polygon
-                        points={polygonPoints}
-                        fill={`${Theme.colors.sanctuarySaffron}40`}
-                        stroke={Theme.colors.sanctuarySaffron}
-                        strokeWidth={3}
-                    />
+                        {/* Axis Lines */}
+                        {dims.map((_, i) => {
+                            const angle = (Math.PI * 2 * i) / dims.length - Math.PI / 2;
+                            return (
+                                <Line 
+                                    key={i}
+                                    x1={center}
+                                    y1={center}
+                                    x2={center + radius * Math.cos(angle)}
+                                    y2={center + radius * Math.sin(angle)}
+                                    stroke="rgba(255,255,255,0.2)"
+                                    strokeWidth="1"
+                                />
+                            );
+                        })}
 
-                    {/* Data Points */}
-                    {layout.points.map((p, i) => (
-                        <Circle
-                            key={`point-${i}`}
-                            cx={p.x}
-                            cy={p.y}
-                            r={5}
-                            fill={Theme.colors.sanctuarySaffron}
-                            stroke={colors.obsidian}
-                            strokeWidth={2}
+                        {/* The Data Polygon */}
+                        <Polygon 
+                            points={polygonPath}
+                            fill={actionColor + '33'}
+                            stroke={actionColor}
+                            strokeWidth="3"
                         />
-                    ))}
-                </G>
-            </Svg>
-        </View>
+
+                        {/* Labels */}
+                        {dims.map((d, i) => {
+                            const angle = (Math.PI * 2 * i) / dims.length - Math.PI / 2;
+                            const lx = center + (radius + 20) * Math.cos(angle);
+                            const ly = center + (radius + 20) * Math.sin(angle);
+                            return (
+                                <SvgText
+                                    key={i}
+                                    x={lx}
+                                    y={ly}
+                                    fill={textPrimary}
+                                    fontSize="12"
+                                    fontWeight="bold"
+                                    textAnchor="middle"
+                                >
+                                    {d}
+                                </SvgText>
+                            );
+                        })}
+                    </G>
+                </Svg>
+            </Box>
+
+            <VStack className="mt-8 items-center gap-2">
+                <Text className="text-phaseText-primary font-bold text-xl uppercase tracking-widest text-center">
+                    Vortex Resonance
+                </Text>
+                <Text className="text-sm text-phaseText-secondary text-center px-8">
+                    Analyzing the high-dimensional balance of the current knowledge topology.
+                </Text>
+            </VStack>
+        </VStack>
     );
 };
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        width: '100%',
-        height: '100%',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: 'transparent',
-    }
-});

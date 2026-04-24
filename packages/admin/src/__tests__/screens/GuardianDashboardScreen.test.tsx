@@ -14,10 +14,9 @@ describe('GuardianDashboardScreen', () => {
     guardianId: 'test-guardian-1',
     onStudentPress: jest.fn(),
     onNotificationPress: jest.fn(),
-    onEventPress: jest.fn(),
-  };
+    onEventPress: jest.fn()};
 
-  const mockDashboard: GuardianDashboard = {
+  const mockDashboard: GuardianDashboard  = {
     guardianId: 'test-guardian-1',
     students: [
       {
@@ -30,20 +29,15 @@ describe('GuardianDashboardScreen', () => {
           absent: 2,
           late: 1,
           total: 21,
-          percentage: 85.7,
-        },
+          percentage: 85.7},
         grades: {
           latest: [
             { subject: 'Math', grade: 'A', percentage: 92, date: '2024-01-15', type: 'exam' },
-            { subject: 'Science', grade: 'B+', percentage: 87, date: '2024-01-14', type: 'assignment' },
-          ],
-          average: 89.5,
-        },
+            { subject: 'Science', grade: 'B+', percentage: 87, date: '2024-01-14', type: 'assignment' }],
+          average: 89.5},
         upcomingAssignments: [
-          { id: 'assign-1', title: 'Math Homework', subject: 'Math', dueDate: '2024-01-20', status: 'pending', grade: undefined },
-        ],
-        recentAnnouncements: [],
-      },
+          { id: 'assign-1', title: 'Math Homework', subject: 'Math', dueDate: '2024-01-20', status: 'pending', grade: undefined }],
+        recentAnnouncements: []},
       {
         studentId: 'student-2',
         name: 'Jane Doe',
@@ -54,18 +48,13 @@ describe('GuardianDashboardScreen', () => {
           absent: 1,
           late: 0,
           total: 21,
-          percentage: 95.2,
-        },
+          percentage: 95.2},
         grades: {
           latest: [
-            { subject: 'Reading', grade: 'A-', percentage: 90, date: '2024-01-15', type: 'exam' },
-          ],
-          average: 90.0,
-        },
+            { subject: 'Reading', grade: 'A-', percentage: 90, date: '2024-01-15', type: 'exam' }],
+          average: 90.0},
         upcomingAssignments: [],
-        recentAnnouncements: [],
-      },
-    ],
+        recentAnnouncements: []}],
     notifications: [
       {
         id: 'notif-1',
@@ -74,9 +63,7 @@ describe('GuardianDashboardScreen', () => {
         message: 'John received an A in Math',
         isRead: false,
         createdAt: '2024-01-15T10:00:00Z',
-        actionUrl: '/grades/student-1',
-      },
-    ],
+        actionUrl: '/grades/student-1'}],
     upcomingEvents: [
       {
         id: 'event-1',
@@ -87,11 +74,8 @@ describe('GuardianDashboardScreen', () => {
         location: 'Classroom A',
         type: 'meeting',
         requiresRsvp: true,
-        rsvpStatus: undefined,
-      },
-    ],
-    recentActivity: [],
-  };
+        rsvpStatus: undefined}],
+    recentActivity: []};
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -126,16 +110,15 @@ describe('GuardianDashboardScreen', () => {
       await waitFor(() => {
         expect(screen.getByText('John Doe')).toBeTruthy();
         expect(screen.getByText('Jane Doe')).toBeTruthy();
-        expect(screen.getByText('Grade 5 • Class A')).toBeTruthy();
-        expect(screen.getByText('Grade 3 • Class B')).toBeTruthy();
+        expect(screen.getByText('Grade 5 " Class A')).toBeTruthy();
+        expect(screen.getByText('Grade 3 " Class B')).toBeTruthy();
       });
     });
 
     it('should display empty state when no students', async () => {
       mockedGuardianAPI.getGuardianDashboard.mockResolvedValue({
         ...mockDashboard,
-        students: [],
-      });
+        students: []});
       
       render(<GuardianDashboardScreen {...mockProps} />);
       
@@ -153,7 +136,7 @@ describe('GuardianDashboardScreen', () => {
       await waitFor(() => {
         expect(screen.getByText('85.7%')).toBeTruthy(); // John's attendance
         expect(screen.getByText('95.2%')).toBeTruthy(); // Jane's attendance
-        expect(screen.getByText('18 present • 2 absent • 1 late')).toBeTruthy();
+        expect(screen.getByText('18 present " 2 absent " 1 late')).toBeTruthy();
       });
     });
 
@@ -234,7 +217,7 @@ describe('GuardianDashboardScreen', () => {
       await waitFor(() => {
         expect(screen.getByText('Upcoming Events')).toBeTruthy();
         expect(screen.getByText('Parent-Teacher Conference')).toBeTruthy();
-        expect(screen.getByText('15:00 • Classroom A')).toBeTruthy();
+        expect(screen.getByText('15:00 " Classroom A')).toBeTruthy();
       });
     });
 
@@ -346,7 +329,7 @@ describe('GuardianDashboardScreen', () => {
 
   describe('Performance', () => {
     it('should render efficiently with multiple students', async () => {
-      const largeDashboard = {
+      const largeDashboard = { 
         ...mockDashboard,
         students: Array(10).fill(null).map((_, index) => ({
           ...mockDashboard.students[0],
@@ -359,16 +342,12 @@ describe('GuardianDashboardScreen', () => {
             absent: 2,
             late: 1,
             total: 21,
-            percentage: 85.7,
-          },
+            percentage: 85.7},
           grades: mockDashboard.students[0]?.grades || {
             latest: [],
-            average: 0,
-          },
+            average: 0},
           upcomingAssignments: mockDashboard.students[0]?.upcomingAssignments || [],
-          recentAnnouncements: mockDashboard.students[0]?.recentAnnouncements || [],
-        })),
-      };
+          recentAnnouncements: mockDashboard.students[0]?.recentAnnouncements || []}))};
       
       mockedGuardianAPI.getGuardianDashboard.mockResolvedValue(largeDashboard);
       

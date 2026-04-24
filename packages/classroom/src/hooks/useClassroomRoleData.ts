@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { supabase, usePermissions, AuthorityTier, useStore } from '@repo/core';
+import { api, usePermissions, useStore } from '@repo/core';
 
 export interface ClassroomRoleData {
     userId: string;
@@ -10,8 +10,7 @@ export interface ClassroomRoleData {
 
 export function useClassroomRoleData(refreshTrigger: number = 0) {
     const { context } = usePermissions();
-    const { roles, userId, schoolId } = context;
-    const role = roles[0];
+    const { userId, schoolId } = context;
     const { realClassCount: storeClassCount, setRealClassCount, setUser, user: localUser } = useStore();
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState<ClassroomRoleData | null>(null);
@@ -35,32 +34,15 @@ export function useClassroomRoleData(refreshTrigger: number = 0) {
                 userId,
                 schoolId,
                 profileCompleted: !!localUser?.profile_completed,
-                realClassCount: currentClassCount
+                realClassCount: currentClassCount as number
             };
         });
 
         try {
-            // 2. Background Sync: Fetch from network
-            let realClassCount = 0;
-
-            // Parallel fetch for speed
-            const [classesCheck, profileCheck] = await Promise.all([
-                // Fetch counts based on role
-                role === 'student'
-                    ? supabase.from('classroom_students').select('*', { count: 'exact', head: true }).eq('student_id', userId)
-                    : role === 'teacher'
-                        ? supabase.from('classrooms').select('*', { count: 'exact', head: true }).eq('teacher_id', userId)
-                        : Promise.resolve({ count: 0 }),
-
-                // Verify profile status in background
-                supabase
-                    .from('users')
-                    .select('school_id, profile_completed, role, full_name, email, platform_roles, school_role, work_roles, tenant_kind')
-                    .eq('id', userId)
-                    .maybeSingle()
-            ]);
-
-            realClassCount = classesCheck.count || 0;
+            // 2. Background Sync: Fetch from the core API boundary
+            const summary = await api.identity.getClassroomRoleSummary(userId);
+            const profileCheck = { data: summary.profile };
+            const realClassCount = summary.realClassCount;
 
             // Update store if server data is newer/different (Convergence)
             if (profileCheck.data) {
@@ -78,7 +60,7 @@ export function useClassroomRoleData(refreshTrigger: number = 0) {
                     serverUser.email !== localUser?.email;
                                   
                 if (hasSignificantChanges) {
-                    console.log('🔄 useClassroomRoleData: Syncing user data from server (Changes detected)');
+                    console.log('= useClassroomRoleData: Syncing user data from server (Changes detected)');
                     setUser({ ...localUser, ...serverUser, id: userId } as any);
                 }
             }
@@ -90,8 +72,8 @@ export function useClassroomRoleData(refreshTrigger: number = 0) {
 
             setData({
                 userId,
-                schoolId: profileCheck.data?.school_id || schoolId,
-                profileCompleted: !!profileCheck.data?.profile_completed,
+                schoolId: summary.schoolId || schoolId,
+                profileCompleted: summary.profileCompleted,
                 realClassCount
             });
         } catch (error) {
@@ -99,7 +81,7 @@ export function useClassroomRoleData(refreshTrigger: number = 0) {
         } finally {
             setLoading(false);
         }
-    }, [userId, schoolId, role, setUser, setRealClassCount, storeClassCount, localUser?.profile_completed, localUser?.school_id]);
+    }, [userId, schoolId, setUser, setRealClassCount, storeClassCount, localUser, localUser?.profile_completed, localUser?.school_id]);
 
     useEffect(() => {
         fetchData();

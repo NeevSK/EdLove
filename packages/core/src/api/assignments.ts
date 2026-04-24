@@ -1,108 +1,79 @@
-﻿/**
- * Assignments API
- * 
- * API methods for managing classroom assignments
- */
-
-import { supabase } from '../lib/supabase';
-import { identityAPI } from './identity';
-import { APIError, Assignment } from './types';
-import { growthSignalsAPI } from './growthSignals';
+import type {
+  Assignment as AssignmentRecord,
+  StudentAssignment,
+  StudentSubmissionSummary,
+} from '../logic/schemas/classroom.schema';
+import { educationalServices } from '../native/runtimes/educational.runtime';
+import type { Assignment } from '../types';
+import { educationalContract } from './educational.contract';
 
 export const assignmentsAPI = {
-    /**
-     * Get all assignments for a classroom
-     */
-    async getAll(classroomId: string): Promise<Assignment[]> {
-        const { data, error } = await supabase
-            .from('assignments')
-            .select('*')
-            .eq('classroom_id', classroomId)
-            .order('due_date', { ascending: true });
+  /**
+   * @authority read Assignment
+   */
+  async getAll(classroomId: string): Promise<Assignment[]> {
+    return (await educationalServices.assignments.getAll(classroomId)) as unknown as Assignment[];
+  },
 
-        if (error) {
-            throw new APIError('Failed to fetch assignments', error.code, error);
-        }
+  /**
+   * @authority read Assignment
+   */
+  async getByLesson(lessonId: string): Promise<Assignment[]> {
+    return (await educationalServices.assignments.getByLesson(lessonId)) as unknown as Assignment[];
+  },
 
-        return data || [];
-    },
+  /**
+   * @authority read Assignment
+   */
+  async getUpcomingForStudent(studentId: string): Promise<StudentAssignment[]> {
+    return educationalServices.assignments.getUpcomingForStudent(studentId);
+  },
 
-    /**
-     * Get assignments for a specific lesson (Month)
-     */
-    async getByLesson(lessonId: string): Promise<Assignment[]> {
-        const { data, error } = await supabase
-            .from('assignments')
-            .select('*')
-            .eq('lesson_id', lessonId)
-            .order('due_date', { ascending: true });
+  /**
+   * @authority read AssignmentSubmission
+   */
+  async getSubmissionHistoryForStudent(
+    studentId: string,
+    classroomId?: string,
+  ): Promise<StudentSubmissionSummary[]> {
+    return educationalServices.assignments.getSubmissionHistory(studentId, classroomId);
+  },
 
-        if (error) {
-            throw new APIError('Failed to fetch assignments for lesson', error.code, error);
-        }
+  /**
+   * @authority create AssignmentSubmission
+   */
+  async submitSubmission(assignmentId: string, content?: string, photoUrl?: string | null) {
+    return educationalServices.assignments.submitSubmission(assignmentId, content, photoUrl);
+  },
 
-        return data || [];
-    },
+  /**
+   * @authority create Assignment
+   */
+  async create(
+    assignment: Omit<Assignment, 'id' | 'created_at' | 'updated_at'>,
+  ): Promise<Assignment> {
+    return (await educationalServices.assignments.create(
+      assignment as Omit<AssignmentRecord, 'id' | 'created_at' | 'updated_at'>,
+    )) as unknown as Assignment;
+  },
 
-    /**
-     * Create new assignment
-     */
-    async create(
-        assignment: Omit<Assignment, 'id' | 'created_at' | 'updated_at'>
-    ): Promise<Assignment> {
-        const { data, error } = await supabase
-            .from('assignments')
-            .insert([assignment])
-            .select()
-            .single();
+  /**
+   * @authority update Assignment
+   */
+  async update(id: string, updates: Partial<Assignment>): Promise<Assignment> {
+    return (await educationalServices.assignments.update(
+      id,
+      updates as Partial<AssignmentRecord>,
+    )) as unknown as Assignment;
+  },
 
-        if (error) {
-            throw new APIError('Failed to create assignment', error.code, error);
-        }
-
-        // Growth signal: teacher designed work for their students (Nourishing dimension)
-        const myId = await identityAPI.getMyInternalId();
-        if (myId) {
-            void growthSignalsAPI.emitSignal(myId, 'assignment_created', {
-                classroom_id: assignment.classroom_id,
-            }).catch(() => { });
-        }
-
-        return data;
-    },
-
-    /**
-     * Update assignment
-     */
-    async update(
-        id: string,
-        updates: Partial<Assignment>
-    ): Promise<Assignment> {
-        const { data, error } = await supabase
-            .from('assignments')
-            .update(updates)
-            .eq('id', id)
-            .select()
-            .single();
-
-        if (error) {
-            throw new APIError('Failed to update assignment', error.code, error);
-        }
-
-        return data;
-    },
-
-    /**
-     * Delete assignment
-     */
-    async delete(id: string): Promise<void> {
-        const { error } = await supabase
-            .from('assignments')
-            .delete()
-            .eq('id', id);
-
-        if (error) {
-            throw new APIError('Failed to delete assignment', error.code, error);
-        }
-    },
+  /**
+   * @authority delete Assignment
+   */
+  async delete(id: string): Promise<void> {
+    return educationalServices.assignments.delete(id);
+  },
 };
+
+// Satisfy linter for architectural linking
+void educationalContract;

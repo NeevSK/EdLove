@@ -1,6 +1,6 @@
 import React from 'react';
 import { FeatureGuard } from '@repo/core';
-import { Box } from '@repo/ui';
+import { Box, Text, HStack, Icon, hapticLight, Pressable } from '@repo/ui';
 import { Plus, QrCode, MessageSquare, History } from 'lucide-react-native';
 
 interface ActionProps {
@@ -9,80 +9,48 @@ interface ActionProps {
 
 export const TeacherCreateClassroomAction: React.FC<ActionProps> = ({ onCreateClassroom }) => (
     <FeatureGuard action="create" subject="Classroom">
-        <Box 
-            as="button" 
-            onClick={onCreateClassroom}
-            sx={{ 
-                flexDirection: 'row', 
-                alignItems: 'center', 
-                gap: 8, 
-                padding: '8px 16px', 
-                borderRadius: 8, 
-                backgroundColor: '$primary',
-                color: 'white'
-            }}
+        <Pressable 
+            onPress={() => { hapticLight(); onCreateClassroom?.(); }}
+            className="flex-row items-center gap-2.5 px-8 py-3 rounded-full bg-templeGold shadow-lg shadow-templeGold/20 active:opacity-85"
         >
-            <Plus size={16} /> Create Sanctuary
-        </Box>
+            <Icon as={Plus} size="sm" className="text-black" />
+            <Text className="text-black font-black uppercase text-[10px] tracking-[0.2em]">Create Sanctuary</Text>
+        </Pressable>
     </FeatureGuard>
 );
 
 export const TeacherScanQRAction: React.FC = () => (
     <FeatureGuard action="manage" subject="Attendance">
-        <Box 
-            as="button" 
-            sx={{ 
-                flexDirection: 'row', 
-                alignItems: 'center', 
-                gap: 8, 
-                padding: '8px 16px', 
-                borderRadius: 8, 
-                backgroundColor: '$surface',
-                borderWidth: 1,
-                borderColor: '$border'
-            }}
+        <Pressable 
+            onPress={hapticLight}
+            className="flex-row items-center gap-2.5 px-8 py-3 rounded-full bg-phase-surface/50 border border-phase-canvas shadow-sm active:bg-phase-canvas/20"
         >
-            <QrCode size={16} /> Scan Resonance
-        </Box>
+            <Icon as={QrCode} size="sm" className="text-phaseText-primary" />
+            <Text className="text-phaseText-primary font-black uppercase text-[10px] tracking-[0.2em]">Scan Resonance</Text>
+        </Pressable>
     </FeatureGuard>
 );
 
 export const TeacherPrincipalEchoAction: React.FC = () => (
     <FeatureGuard action="read" subject="Announcement">
-        <Box 
-            as="button" 
-            sx={{ 
-                flexDirection: 'row', 
-                alignItems: 'center', 
-                gap: 8, 
-                padding: '8px 16px', 
-                borderRadius: 8, 
-                backgroundColor: '$surface',
-                borderWidth: 1,
-                borderColor: '$border'
-            }}
+        <Pressable 
+            onPress={hapticLight}
+            className="flex-row items-center gap-2.5 px-8 py-3 rounded-full bg-phase-surface/50 border border-phase-canvas shadow-sm active:bg-phase-canvas/20"
         >
-            <MessageSquare size={16} /> Principal's Echo
-        </Box>
+            <Icon as={MessageSquare} size="sm" className="text-phaseText-primary" />
+            <Text className="text-phaseText-primary font-black uppercase text-[10px] tracking-[0.2em]">Principal's Echo</Text>
+        </Pressable>
     </FeatureGuard>
 );
 
 export const TeacherMyEchoesAction: React.FC = () => (
     <FeatureGuard action="manage" subject="Announcement">
-        <Box 
-            as="button" 
-            sx={{ 
-                flexDirection: 'row', 
-                alignItems: 'center', 
-                gap: 8, 
-                padding: '8px 16px', 
-                borderRadius: 8, 
-                backgroundColor: '$surface',
-                borderWidth: 1,
-                borderColor: '$border'
-            }}
+        <Pressable 
+            onPress={hapticLight}
+            className="flex-row items-center gap-2.5 px-8 py-3 rounded-full bg-phase-surface/50 border border-phase-canvas shadow-sm active:bg-phase-canvas/20"
         >
-            <History size={16} /> My Echoes
-        </Box>
+            <Icon as={History} size="sm" className="text-phaseText-primary" />
+            <Text className="text-phaseText-primary font-black uppercase text-[10px] tracking-[0.2em]">My Echoes</Text>
+        </Pressable>
     </FeatureGuard>
 );

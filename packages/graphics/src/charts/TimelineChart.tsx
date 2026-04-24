@@ -66,12 +66,12 @@ export function TimelineChart({
   const getEventIcon = (type: TimelineEvent['type'], icon?: string) => {
     if (icon) return icon;
     switch (type) {
-      case 'milestone': return '🏆';
-      case 'warning': return '⚠️';
-      case 'success': return '✅';
-      case 'info': return 'ℹ️';
-      case 'error': return '❌';
-      default: return '📅';
+      case 'milestone': return '\uD83C\uDFC6';
+      case 'warning': return '\u26A0\uFE0F';
+      case 'success': return '\u2705';
+      case 'info': return '\u2139\uFE0F';
+      case 'error': return '\u274C';
+      default: return '\uD83D\uDCC5';
     }
   };
 
@@ -79,7 +79,7 @@ export function TimelineChart({
     <Card style={styles.container}>
       {title && <Text style={styles.title}>{title}</Text>}
       
-      <ScrollView 
+      <ScrollView
         style={[styles.timelineContainer, { maxHeight }]}
         showsVerticalScrollIndicator={false}
       >
@@ -93,7 +93,7 @@ export function TimelineChart({
               
               {/* Event dot */}
               <View style={styles.eventDot}>
-                <View 
+                <View
                   style={[
                     styles.dotInner,
                     { backgroundColor: event.color || getEventColor(event.type) }
@@ -105,13 +105,12 @@ export function TimelineChart({
                   </Text>
                 )}
               </View>
-              
+
               {/* Event content */}
               <View style={styles.eventContent}>
                 <Text style={styles.eventTitle}>
                   {event.title}
                 </Text>
-                
                 {event.description && (
                   <Text style={styles.eventDescription}>
                     {event.description}

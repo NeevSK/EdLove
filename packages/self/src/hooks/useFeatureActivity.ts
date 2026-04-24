@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+﻿import { useCallback } from 'react';
 import { storage } from '@repo/core';
 import { usePermissions } from '@repo/core';
 
@@ -67,6 +67,5 @@ export function useFeatureActivity() {
         getStats,
         trackFeatureAccess,
         getPinnedFeatures,
-        togglePin,
-    };
+        togglePin};
 }

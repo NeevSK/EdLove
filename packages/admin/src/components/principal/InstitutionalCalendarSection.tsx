@@ -7,216 +7,226 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { TouchableOpacity, TextInput, ScrollView as RNScrollView } from 'react-native';
-import { Box, HStack, VStack, Text, SkeletonCard, useThemedColors, formatShortDate } from '@repo/ui';
-import { Theme } from '@repo/ui';
-import { adminCalendarAPI, type CalendarEvent } from '../../calendar';
+import {
+    Box,
+    HStack,
+    VStack,
+    Text,
+    Pressable,
+    Icon,
+    Input,
+    InputField,
+    ScrollView,
+    hapticLight
+} from '@repo/ui';
+import { Plus } from 'lucide-react-native';
+import { staffManagementAPI, type CalendarEvent } from '@repo/core';
 
 interface InstitutionalCalendarSectionProps {
-  schoolId: string;
-  principalId: string;
-  onAddEvent?: () => void;
+    schoolId: string;
+    principalId: string;
+    onAddEvent?: () => void;
 }
 
-const TYPE_COLORS: Record<string, string> = {
-  term_start: Theme.colors.gurudeviBlue ?? '#2196f3',
-  exam: Theme.colors.amberGlow ?? '#f44336',
-  holiday: Theme.colors.sageGreen ?? '#4caf50',
-  event: Theme.colors.sanctuarySaffron ?? '#ff9800',
-  other: '#9e9e9e',
-};
-
 const TYPE_LABELS: Record<string, string> = {
-  term_start: 'Term Start',
-  exam: 'Exam',
-  holiday: 'Holiday',
-  event: 'Event',
-  other: 'Other',
+    term_start: 'Term Start',
+    exam: 'Exam',
+    holiday: 'Holiday',
+    event: 'Event',
+    other: 'Other'
 };
 
 const TYPE_OPTIONS = ['term_start', 'exam', 'holiday', 'event', 'other'];
 
-function typeBadgeColor(type: string): string {
-  return TYPE_COLORS[type] ?? '#9e9e9e';
-}
-
 export default function InstitutionalCalendarSection({
-  schoolId,
-  principalId,
-  onAddEvent,
+    schoolId,
+    principalId,
+    onAddEvent
 }: InstitutionalCalendarSectionProps) {
-  const colors = useThemedColors();
-  const [loading, setLoading] = useState(true);
-  const [events, setEvents] = useState<CalendarEvent[]>([]);
-  const [showForm, setShowForm] = useState(false);
-  const [saving, setSaving] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [events, setEvents] = useState<CalendarEvent[]>([]);
+    const [showForm, setShowForm] = useState(false);
+    const [saving, setSaving] = useState(false);
 
-  const [title, setTitle] = useState('');
-  const [selectedType, setSelectedType] = useState('event');
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
+    // Form state
+    const [title, setTitle] = useState('');
+    const [selectedType, setSelectedType] = useState('event');
+    const [startDate, setStartDate] = useState('');
+    const [endDate, setEndDate] = useState('');
 
-  async function fetchEvents() {
-    const data = await adminCalendarAPI.listUpcomingEvents(schoolId, 5);
-    setEvents(data);
-    setLoading(false);
-  }
+    const getTypeColorClass = (type: string): string => {
+        switch (type) {
+            case 'term_start': return 'bg-phase-interactive';
+            case 'exam': return 'bg-phase-danger';
+            case 'holiday': return 'bg-phase-success';
+            case 'event': return 'bg-phase-interactive';
+            default: return 'bg-phaseText-muted';
+        }
+    };
 
-  useEffect(() => {
-    setLoading(true);
-    fetchEvents();
-  }, [schoolId]);
-
-  async function handleSave() {
-    if (!title.trim() || !startDate.trim()) return;
-    setSaving(true);
-    const ok = await adminCalendarAPI.createEvent(schoolId, principalId, {
-      title: title.trim(),
-      type: selectedType,
-      start_date: startDate.trim(),
-      end_date: endDate.trim() || undefined,
-    });
-    setSaving(false);
-    if (ok) {
-      setTitle('');
-      setStartDate('');
-      setEndDate('');
-      setSelectedType('event');
-      setShowForm(false);
-      await fetchEvents();
+    async function fetchEvents() {
+        try {
+            const data = await staffManagementAPI.getUpcomingCalendarEvents(schoolId, 5);
+            setEvents(data);
+        } catch (err) {
+            console.error('InstitutionalCalendar: fetch error', err);
+        } finally {
+            setLoading(false);
+        }
     }
-  }
 
-  const inputStyle = {
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: Theme.corners.medium ?? 8,
-    padding: Theme.spacing.sm,
-    color: colors.text,
-    backgroundColor: colors.primary,
-    fontSize: 14,
-    marginBottom: Theme.spacing.sm,
-  } as const;
+    useEffect(() => {
+        setLoading(true);
+        fetchEvents();
+    }, [schoolId]);
 
-  return (
-    <Box
-      sx={{
-        backgroundColor: colors.primary,
-        borderRadius: Theme.corners.comfortable,
-        borderWidth: 1,
-        borderColor: colors.border,
-        padding: Theme.spacing.md,
-      }}
-    >
-      <HStack sx={{ justifyContent: 'space-between', alignItems: 'center', marginBottom: Theme.spacing.sm }}>
-        <Text sx={{ fontSize: 15, fontWeight: '700', color: colors.text }}>School Calendar</Text>
-        <TouchableOpacity
-          onPress={() => {
-            setShowForm(!showForm);
-            onAddEvent?.();
-          }}
-          activeOpacity={0.8}
-        >
-          <Box
-            sx={{
-              backgroundColor: Theme.colors.gurudeviBlue ?? '#2196f3',
-              borderRadius: Theme.corners.medium ?? 8,
-              paddingHorizontal: 10,
-              paddingVertical: 4,
-            }}
-          >
-            <Text sx={{ fontSize: 12, fontWeight: '700', color: '#fff' }}>+ Add</Text>
-          </Box>
-        </TouchableOpacity>
-      </HStack>
+    async function handleSave() {
+        if (!title.trim() || !startDate.trim()) return;
+        setSaving(true);
+        try {
+            const ok = await staffManagementAPI.createCalendarEvent(schoolId, principalId, {
+                title: title.trim(),
+                type: selectedType,
+                start_date: startDate.trim(),
+                end_date: endDate.trim() || undefined
+            });
+            if (ok) {
+                hapticLight();
+                setTitle('');
+                setStartDate('');
+                setEndDate('');
+                setSelectedType('event');
+                setShowForm(false);
+                await fetchEvents();
+            }
+        } catch (err) {
+            console.error('InstitutionalCalendar: save error', err);
+        } finally {
+            setSaving(false);
+        }
+    }
 
-      {loading && <SkeletonCard height={60} />}
-
-      {!loading && events.length === 0 && (
-        <Text sx={{ fontSize: 13, color: colors.textSecondary, textAlign: 'center', paddingVertical: Theme.spacing.md }}>
-          No upcoming events
-        </Text>
-      )}
-
-      {!loading &&
-        events.map((event) => (
-          <HStack
-            key={event.id}
-            sx={{ alignItems: 'center', gap: Theme.spacing.sm, paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: colors.border }}
-          >
-            <Box
-              sx={{
-                backgroundColor: typeBadgeColor(event.type),
-                borderRadius: 8,
-                paddingHorizontal: 7,
-                paddingVertical: 2,
-              }}
-            >
-              <Text sx={{ fontSize: 10, fontWeight: '700', color: '#fff' }}>{TYPE_LABELS[event.type] ?? event.type}</Text>
-            </Box>
-            <Text sx={{ flex: 1, fontSize: 13, color: colors.text }} numberOfLines={1}>
-              {event.title}
-            </Text>
-            <Text sx={{ fontSize: 11, color: colors.textSecondary }}>{formatShortDate(event.start_date)}</Text>
-          </HStack>
-        ))}
-
-      {showForm && (
-        <VStack sx={{ marginTop: Theme.spacing.md, gap: 0 }}>
-          <TextInput placeholder="Event title" placeholderTextColor={colors.textSecondary} value={title} onChangeText={setTitle} style={inputStyle} />
-
-          <RNScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: Theme.spacing.sm }}>
-            <HStack sx={{ gap: Theme.spacing.xs }}>
-              {TYPE_OPTIONS.map((type) => (
-                <TouchableOpacity key={type} onPress={() => setSelectedType(type)} activeOpacity={0.8}>
-                  <Box
-                    sx={{
-                      borderRadius: 14,
-                      paddingHorizontal: 10,
-                      paddingVertical: 4,
-                      backgroundColor: selectedType === type ? typeBadgeColor(type) : colors.border,
-                    }}
-                  >
-                    <Text sx={{ fontSize: 12, fontWeight: '600', color: selectedType === type ? '#fff' : colors.textSecondary }}>
-                      {TYPE_LABELS[type]}
+    return (
+        <Box className="bg-phase-surface rounded-[32px] border border-phase-border p-6 shadow-sm">
+            <HStack className="justify-between items-center mb-6">
+                <VStack className="gap-0.5">
+                    <Text className="text-[18px] font-black text-phaseText-primary tracking-tight">
+                        Institution Calendar
                     </Text>
-                  </Box>
-                </TouchableOpacity>
-              ))}
+                    <Text className="text-[11px] font-bold text-phaseText-muted uppercase tracking-wider">Upcoming Cycles</Text>
+                </VStack>
+                <Pressable
+                    onPress={() => {
+                        hapticLight();
+                        setShowForm(!showForm);
+                        onAddEvent?.();
+                    }}
+                    className={`rounded-2xl px-5 py-2 flex-row items-center gap-2 active:scale-95 transition-all ${showForm ? 'bg-phase-canvas border border-phase-border' : 'bg-phase-interactive'}`}
+                >
+                    <Icon as={Plus} size="xs" className={showForm ? 'text-phaseText-primary' : 'text-white'} />
+                    <Text className={`text-[12px] font-black uppercase tracking-wider ${showForm ? 'text-phaseText-primary' : 'text-white'}`}>
+                        {showForm ? 'Hide' : 'Add Event'}
+                    </Text>
+                </Pressable>
             </HStack>
-          </RNScrollView>
 
-          <TextInput
-            placeholder="Start date (YYYY-MM-DD)"
-            placeholderTextColor={colors.textSecondary}
-            value={startDate}
-            onChangeText={setStartDate}
-            style={inputStyle}
-          />
-          <TextInput
-            placeholder="End date (YYYY-MM-DD, optional)"
-            placeholderTextColor={colors.textSecondary}
-            value={endDate}
-            onChangeText={setEndDate}
-            style={inputStyle}
-          />
+            {loading && (
+                <VStack className="gap-3">
+                    <Box className="h-16 bg-phase-canvas border border-phase-border rounded-2xl opacity-50" />
+                    <Box className="h-16 bg-phase-canvas border border-phase-border rounded-2xl opacity-30" />
+                </VStack>
+            )}
 
-          <TouchableOpacity onPress={handleSave} activeOpacity={0.8} disabled={saving}>
-            <Box
-              sx={{
-                backgroundColor: Theme.colors.gurudeviBlue ?? '#2196f3',
-                borderRadius: Theme.corners.medium ?? 8,
-                padding: Theme.spacing.sm,
-                alignItems: 'center',
-                opacity: saving ? 0.6 : 1,
-              }}
-            >
-              <Text sx={{ fontSize: 14, fontWeight: '700', color: '#fff' }}>{saving ? 'Saving...' : 'Save Event'}</Text>
-            </Box>
-          </TouchableOpacity>
-        </VStack>
-      )}
-    </Box>
-  );
+            {!loading && events.length === 0 && !showForm && (
+                <Box className="bg-phase-canvas rounded-[24px] border border-dashed border-phase-border py-10 items-center">
+                    <Text className="text-[14px] font-bold text-phaseText-muted text-center opacity-60">
+                        No institutional events scheduled.
+                    </Text>
+                </Box>
+            )}
+
+            {!loading && events.map((ev, index) => (
+                <HStack
+                    key={ev.id}
+                    className={`items-center gap-5 py-5 ${index !== events.length - 1 ? 'border-b border-phase-border/50' : ''}`}
+                >
+                    <Box className={`rounded-lg px-3 py-1 ${getTypeColorClass(ev.type)}`}>
+                        <Text className="text-[10px] font-black text-white uppercase tracking-widest leading-none">
+                            {TYPE_LABELS[ev.type] || ev.type}
+                        </Text>
+                    </Box>
+                    <Text className="flex-1 text-[15px] font-bold text-phaseText-primary tracking-tight" numberOfLines={1}>
+                        {ev.title}
+                    </Text>
+                    <Text className="text-[11px] font-black text-phaseText-muted uppercase">
+                        {new Date(ev.start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                    </Text>
+                </HStack>
+            ))}
+
+            {showForm && (
+                <VStack className="mt-8 gap-5 border-t border-phase-border pt-8">
+                    <Input className="border border-phase-border rounded-[20px] bg-phase-canvas h-14 shadow-sm px-4">
+                        <InputField
+                            placeholder="Event Title"
+                            placeholderTextColor="rgba(0,0,0,0.3)"
+                            value={title}
+                            onChangeText={setTitle}
+                            className="text-[15px] font-black text-phaseText-primary"
+                        />
+                    </Input>
+
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                        <HStack className="gap-2.5">
+                            {TYPE_OPTIONS.map((t) => {
+                                const isSelected = selectedType === t;
+                                return (
+                                    <Pressable key={t} onPress={() => { hapticLight(); setSelectedType(t); }}>
+                                        <Box
+                                            className={`rounded-full px-5 py-2 border transition-all ${isSelected ? `${getTypeColorClass(t)} border-transparent` : 'bg-phase-canvas border-phase-border'}`}
+                                        >
+                                            <Text className={`text-[11px] font-black uppercase tracking-wider ${isSelected ? 'text-white' : 'text-phaseText-secondary'}`}>
+                                                {TYPE_LABELS[t]}
+                                            </Text>
+                                        </Box>
+                                    </Pressable>
+                                );
+                            })}
+                        </HStack>
+                    </ScrollView>
+
+                    <HStack className="gap-3">
+                        <Input className="flex-1 border border-phase-border rounded-[20px] bg-phase-canvas h-14 shadow-sm px-4">
+                            <InputField
+                                placeholder="YYYY-MM-DD"
+                                placeholderTextColor="rgba(0,0,0,0.2)"
+                                value={startDate}
+                                onChangeText={setStartDate}
+                                className="text-[14px] font-bold text-phaseText-primary"
+                            />
+                        </Input>
+                        <Input className="flex-1 border border-phase-border rounded-[20px] bg-phase-canvas h-14 shadow-sm px-4">
+                            <InputField
+                                placeholder="End (Opt)"
+                                placeholderTextColor="rgba(0,0,0,0.2)"
+                                value={endDate}
+                                onChangeText={setEndDate}
+                                className="text-[14px] font-bold text-phaseText-primary"
+                            />
+                        </Input>
+                    </HStack>
+
+                    <Pressable
+                        onPress={handleSave}
+                        disabled={saving}
+                        className={`bg-phase-interactive rounded-[20px] py-4 items-center shadow-md active:scale-95 transition-all ${saving ? 'opacity-50' : ''}`}
+                    >
+                        <Text className="text-[13px] font-black text-white uppercase tracking-[2px]">
+                            {saving ? 'Scheduling...' : 'Commit to Calendar'}
+                        </Text>
+                    </Pressable>
+                </VStack>
+            )}
+        </Box>
+    );
 }
-

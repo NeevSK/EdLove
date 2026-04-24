@@ -3,7 +3,7 @@
  * Time-based helpers for greetings, formatting, and sanctuary time-aware features
  */
 
-import { Theme } from '@repo/ui';
+import { templeGold, obsidian, sacredWhite, sanctuarySaffron, lotusDeepPink, shadowViolet, shroud } from '@repo/ui';
 
 /**
  * Time of Day Types
@@ -138,33 +138,33 @@ export function getSanctuaryTimeTheme(): {
     const themes = {
         dawn: {
             timeOfDay: 'dawn' as TimeOfDay,
-            primaryColor: Theme.colors.templeGold,
-            backgroundColor: Theme.colors.obsidian,
-            textColor: Theme.colors.sacredWhite,
+            primaryColor: templeGold,
+            backgroundColor: obsidian,
+            textColor: sacredWhite,
             description: 'First light, gentle awakening',
             warmth: 0.3
         },
         day: {
             timeOfDay: 'day' as TimeOfDay,
-            primaryColor: Theme.colors.sanctuarySaffron,
-            backgroundColor: Theme.colors.obsidian,
-            textColor: Theme.colors.sacredWhite,
+            primaryColor: sanctuarySaffron,
+            backgroundColor: obsidian,
+            textColor: sacredWhite,
             description: 'Full energy, active teaching',
             warmth: 0
         },
         evening: {
             timeOfDay: 'evening' as TimeOfDay,
-            primaryColor: Theme.colors.lotusDeepPink,
-            backgroundColor: Theme.colors.ink,
-            textColor: Theme.colors.sacredWhite,
+            primaryColor: lotusDeepPink,
+            backgroundColor: '#2A2318',
+            textColor: sacredWhite,
             description: 'Winding down, reflection',
             warmth: 0.5
         },
         night: {
             timeOfDay: 'night' as TimeOfDay,
-            primaryColor: Theme.colors.shadowViolet,
-            backgroundColor: Theme.colors.shroud,
-            textColor: Theme.colors.sacredWhite,
+            primaryColor: shadowViolet,
+            backgroundColor: shroud,
+            textColor: sacredWhite,
             description: 'Rest, preparation for tomorrow',
             warmth: 0.8
         }
@@ -172,3 +172,4 @@ export function getSanctuaryTimeTheme(): {
 
     return themes[timeOfDay];
 }
+

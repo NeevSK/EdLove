@@ -1,7 +1,9 @@
 import { useMutation, useQueryClient, useInfiniteQuery, useQuery } from '@tanstack/react-query';
-import { useMemo } from 'react';
+import { useMemo, useCallback } from 'react';
 import { libraryAPI } from '../api/library';
+import { knowledgeSync } from '../api/sync';
 import { ResourceFilters, CollectionFilters, CreateResourceInput } from '../types';
+import { useTemporalStore } from '@repo/core';
 
 // Keys for React Query
 export const LIBRARY_KEYS = {
@@ -10,44 +12,52 @@ export const LIBRARY_KEYS = {
     collections: (filters: CollectionFilters = {}) => [...LIBRARY_KEYS.all, 'collections', filters] as const,
     collection: (id: string) => [...LIBRARY_KEYS.all, 'collection', id] as const,
     resource: (id: string) => [...LIBRARY_KEYS.all, 'resource', id] as const,
-    bookmarked: (userId: string) => [...LIBRARY_KEYS.all, 'bookmarked', userId] as const,
+    bookmarked: (userId: string, viewDate?: string, viewScale?: string) => [...LIBRARY_KEYS.all, 'bookmarked', userId, viewDate || 'now', viewScale || 'day'] as const,
     sync: () => [...LIBRARY_KEYS.all, 'sync'] as const,
 };
-import { knowledgeSync } from '../api/sync';
-import { useCallback } from 'react';
 
 export const useLibrary = (resourceFilters: ResourceFilters = {}, collectionFilters: CollectionFilters = {}) => {
     const queryClient = useQueryClient();
+    const viewDate = useTemporalStore(state => state.viewDate);
+    const viewScale = useTemporalStore(state => state.viewScale);
+    const temporalResourceFilters = useMemo(
+        () => ({ ...resourceFilters, viewDate, viewScale }),
+        [resourceFilters, viewDate, viewScale]
+    );
+    const temporalCollectionFilters = useMemo(
+        () => ({ ...collectionFilters, viewDate, viewScale }),
+        [collectionFilters, viewDate, viewScale]
+    );
 
     // Fetch Resources with Infinite Scroll
     const resourcesInfiniteQuery = useInfiniteQuery({
-        queryKey: LIBRARY_KEYS.resources(resourceFilters),
+        queryKey: LIBRARY_KEYS.resources(temporalResourceFilters),
         queryFn: async ({ pageParam = 0 }) => {
             // Prefer Server-Side Search for reliability on web (Guest and Auth)
-            if (resourceFilters.search || resourceFilters.type) {
+            if (temporalResourceFilters.search || temporalResourceFilters.type) {
                 return libraryAPI.searchLibrary({
-                    query: resourceFilters.search || '',
-                    type: resourceFilters.type,
+                    query: temporalResourceFilters.search || '',
+                    type: temporalResourceFilters.type,
                     limit: 20
                 });
             }
 
-            return libraryAPI.getResources({ ...resourceFilters, limit: 10, offset: pageParam });
+            return libraryAPI.getResources({ ...temporalResourceFilters, limit: 10, offset: pageParam });
         },
         initialPageParam: 0,
         getNextPageParam: (lastPage, allPages) => {
             // For local search, we don't handle pagination yet in the same way (simple limit for now)
-            if (resourceFilters.search) return undefined;
+            if (temporalResourceFilters.search) return undefined;
             return lastPage.length === 10 ? allPages.length * 10 : undefined;
         }
     });
 
     // Fetch Collections with Infinite Scroll
     const collectionsInfiniteQuery = useInfiniteQuery({
-        queryKey: LIBRARY_KEYS.collections(collectionFilters),
+        queryKey: LIBRARY_KEYS.collections(temporalCollectionFilters),
         queryFn: async ({ pageParam = 0 }) => {
             // Apply search filter to collections as well
-            return libraryAPI.getCollections({ ...collectionFilters, limit: 10, offset: pageParam });
+            return libraryAPI.getCollections({ ...temporalCollectionFilters, limit: 10, offset: pageParam });
         },
         initialPageParam: 0,
         getNextPageParam: (lastPage, allPages) => {
@@ -142,9 +152,11 @@ export const useLibrary = (resourceFilters: ResourceFilters = {}, collectionFilt
     };
 };
 export const useCollection = (id: string, userId?: string) => {
+    const viewDate = useTemporalStore(state => state.viewDate);
+    const viewScale = useTemporalStore(state => state.viewScale);
     const { data, isLoading, error, refetch } = useQuery({
-        queryKey: LIBRARY_KEYS.collection(id),
-        queryFn: () => libraryAPI.getCollectionById(id, userId),
+        queryKey: [...LIBRARY_KEYS.collection(id), viewDate, viewScale],
+        queryFn: () => libraryAPI.getCollectionById(id, userId, { viewDate, viewScale }),
         enabled: !!id,
     });
 
@@ -157,9 +169,13 @@ export const useCollection = (id: string, userId?: string) => {
 };
 
 export const useBookmarkedResources = (userId?: string) => {
+    const viewDate = useTemporalStore(state => state.viewDate);
+    const viewScale = useTemporalStore(state => state.viewScale);
     const { data, isLoading, error, refetch } = useInfiniteQuery({
-        queryKey: LIBRARY_KEYS.bookmarked(userId || ''),
-        queryFn: () => userId ? libraryAPI.getBookmarkedResources(userId) : Promise.resolve([]),
+        queryKey: LIBRARY_KEYS.bookmarked(userId || '', viewDate, viewScale),
+        queryFn: () => userId
+            ? libraryAPI.getBookmarkedResources(userId, { viewDate, viewScale })
+            : Promise.resolve([]),
         enabled: !!userId,
         initialPageParam: 0,
         getNextPageParam: () => undefined,

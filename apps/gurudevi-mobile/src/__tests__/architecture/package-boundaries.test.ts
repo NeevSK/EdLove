@@ -1,4 +1,4 @@
-const fs = require('node:fs');
+﻿const fs = require('node:fs');
 const path = require('node:path');
 
 const APP_ROOT = path.resolve(__dirname, '../../..');
@@ -131,8 +131,7 @@ describe('Package architecture boundaries', () => {
       'LeaveApprovalSection',
       'InstitutionalCalendarSection',
       'ManagementStation',
-      'AddStudentModal',
-    ];
+      'AddStudentModal'];
 
     for (const symbol of forbiddenWidgets) {
       expect(classroomRootImport.includes(symbol)).toBe(false);
@@ -141,7 +140,8 @@ describe('Package architecture boundaries', () => {
 
   it('principal web keeps capability gating for governance navigation', () => {
     const source = fs.readFileSync(ADMIN_PRINCIPAL_WEB_SCREEN, 'utf8');
-    expect(source.includes("policy.can('school.manage'")).toBe(true);
+    expect(source.includes('canManageSchoolScope')).toBe(true);
+    expect(source.includes("can('manage', 'School')")).toBe(true);
     expect(source.includes('navigatePrincipalView')).toBe(true);
   });
 
@@ -155,8 +155,7 @@ describe('Package architecture boundaries', () => {
       'LeaveApprovalSection',
       'InstitutionalCalendarSection',
       'ManagementStation',
-      'PrincipalObservationsSection',
-    ];
+      'PrincipalObservationsSection'];
 
     for (const symbol of forbiddenExports) {
       expect(source.includes(`as ${symbol}`)).toBe(false);
@@ -183,7 +182,8 @@ describe('Package architecture boundaries', () => {
     const principalScreenSource = fs.readFileSync(CLASSROOM_PRINCIPAL_SCREEN, 'utf8');
 
     expect(teacherDashboardSource.includes('from \'@repo/people\'')).toBe(true);
-    expect(principalScreenSource.includes('from \'@repo/people\'')).toBe(true);
+    expect(principalScreenSource.includes('from \'@repo/admin\'')).toBe(true);
+    expect(principalScreenSource.includes('from \'@repo/people\'')).toBe(false);
     expect(teacherDashboardSource.includes('./TeacherAdminWidget')).toBe(false);
     expect(teacherDashboardSource.includes('./teacher/TeacherFeedbackModal')).toBe(false);
     expect(teacherDashboardSource.includes('TeacherEchoHistoryModal')).toBe(true);
@@ -199,11 +199,14 @@ describe('Package architecture boundaries', () => {
     expect(principalScreenSource.includes('InviteManager')).toBe(false);
   });
 
-  it('principal web resolves student pulse from classroom-owned analytics instead of people', () => {
-    const source = fs.readFileSync(PRINCIPAL_WEB_SCREEN, 'utf8');
+  it('principal web reads official oversight routes directly instead of legacy injected analytics', () => {
+    const classroomSource = fs.readFileSync(PRINCIPAL_WEB_SCREEN, 'utf8');
+    const adminSource = fs.readFileSync(ADMIN_PRINCIPAL_WEB_SCREEN, 'utf8');
 
-    expect(source.includes('classroomAnalyticsAPI')).toBe(true);
-    expect(source.includes('classroomAnalyticsAPI.getStudentAttendancePulse')).toBe(true);
-    expect(source.includes('staffOperationsAPI.getStudentAttendancePulse')).toBe(false);
+    expect(classroomSource.includes('classroomAnalyticsAPI')).toBe(false);
+    expect(classroomSource.includes('getStudentAttendancePulse=')).toBe(false);
+    expect(adminSource.includes('api.attendance.getSchoolAttendancePulse')).toBe(true);
+    expect(adminSource.includes('api.grading.getSchoolPublishedGradingCompletion')).toBe(true);
+    expect(adminSource.includes('staffOperationsAPI.getStudentAttendancePulse')).toBe(false);
   });
 });

@@ -98,15 +98,11 @@ export function UnifiedRenderer(props: TrubeRendererProps) {
         key={index}
         pointerEvents="none"
         style={[StyleSheet.absoluteFill, { opacity: layer.opacity ?? 1 }]}
-      >
-        {renderContent()}
-      </View>
-    );
+              {renderContent()}
+      </View    );
   };
 
   return (
-    <View style={StyleSheet.absoluteFill}>
-      {stage.layers.map((layer, index) => renderLayer(layer, index))}
-    </View>
-  );
+    <View style={StyleSheet.absoluteFill}      {stage.layers.map((layer, index) => renderLayer(layer, index))}
+    </View  );
 }

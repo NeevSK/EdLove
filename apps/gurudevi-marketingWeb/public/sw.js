@@ -1,5 +1,5 @@
 // Standard Workbox Service Worker via CDN importScripts
-// Using importScripts is required for service workers — bare ESM imports are not supported in SW context
+// Using importScripts is required for service workers  bare ESM imports are not supported in SW context
 
 try {
   importScripts('https://storage.googleapis.com/workbox-cdn/releases/7.0.0/workbox-sw.js');
@@ -45,7 +45,7 @@ if (typeof workbox !== 'undefined' && workbox && workbox.core) {
     })
   );
 
-  // API caching (Supabase/Internal) — StaleWhileRevalidate for fast feedback
+  // API caching (Supabase/Internal)  StaleWhileRevalidate for fast feedback
   registerRoute(
     ({url}) => url.pathname.startsWith('/api/v1'),
     new StaleWhileRevalidate({

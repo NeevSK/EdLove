@@ -1,7 +1,6 @@
 import React from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, ScrollView, Modal } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Modal } from 'react-native'; // Simple modal for now as ActionSheet
 import { LibraryResource } from '../types';
 
 interface ResourceActionSheetProps {
@@ -21,6 +20,8 @@ export const ResourceActionSheet: React.FC<ResourceActionSheetProps> = ({
     onAddToCollection,
     onShare,
 }) => {
+    if (!resource) return null;
+
     return (
         <Modal
             visible={visible}
@@ -41,11 +42,16 @@ export const ResourceActionSheet: React.FC<ResourceActionSheetProps> = ({
                             size={24} 
                             color="#2E5CFF" 
                         />
-                        <Text style={styles.title} numberOfLines={1}>{resource.title}</Text>
+                        <Text style={styles.title} numberOfLines={1}>
+                            {resource.title}
+                        </Text>
                     </View>
-
+                    
                     <ScrollView style={styles.optionsList}>
-                        <TouchableOpacity style={styles.option} onPress={() => { onBookmark(); onClose(); }}>
+                        <TouchableOpacity 
+                            style={styles.option} 
+                            onPress={() => { onBookmark(); onClose(); }}
+                        >
                             <MaterialCommunityIcons 
                                 name={resource.has_bookmarked ? "bookmark" : "bookmark-outline"} 
                                 size={22} 
@@ -56,12 +62,18 @@ export const ResourceActionSheet: React.FC<ResourceActionSheetProps> = ({
                             </Text>
                         </TouchableOpacity>
 
-                        <TouchableOpacity style={styles.option} onPress={() => { onAddToCollection(); onClose(); }}>
+                        <TouchableOpacity 
+                            style={styles.option} 
+                            onPress={() => { onAddToCollection(); onClose(); }}
+                        >
                             <MaterialCommunityIcons name="folder-plus-outline" size={22} color="#666" />
                             <Text style={styles.optionText}>Add to Collection</Text>
                         </TouchableOpacity>
 
-                        <TouchableOpacity style={styles.option} onPress={() => { onShare(); onClose(); }}>
+                        <TouchableOpacity 
+                            style={styles.option} 
+                            onPress={() => { onShare(); onClose(); }}
+                        >
                             <MaterialCommunityIcons name="share-variant-outline" size={22} color="#666" />
                             <Text style={styles.optionText}>Share Resource</Text>
                         </TouchableOpacity>
@@ -86,7 +98,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFF',
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
-        paddingBottom: 20,
+        paddingBottom: 40,
         paddingHorizontal: 16,
         maxHeight: '60%',
     },

@@ -3,20 +3,23 @@
     "type": "module",
     "version": "0.0.1",
     "scripts": {
-        "dev": "astro dev",
-        "build": "astro build",
-        "preview": "astro preview",
-        "astro": "astro"
+        "dev": "pnpm exec astro dev",
+        "build": "pnpm exec astro build",
+        "preview": "pnpm exec astro preview",
+        "astro": "pnpm exec astro",
+        "lint": "powershell -File ../../scripts/audit-wrapper.ps1 -Cmd \"pnpm exec eslint .\" -Log \"reports/lint.txt\"",
+        "check-types": "powershell -File ../../scripts/audit-wrapper.ps1 -Cmd \"pnpm exec astro check\" -Log \"reports/check-types.txt\""
     },
     "dependencies": {
-        "@astrojs/react": "^4.4.2",
-        "@astrojs/svelte": "^7.2.5",
+        "@astrojs/react": "^5.0.3",
+        "@astrojs/sitemap": "^3.6.0",
+        "@astrojs/svelte": "^8.0.5",
         "@tailwindcss/vite": "^4.1.18",
-        "astro": "^5.17.1",
+        "astro": "^6.1.7",
         "gsap": "^3.14.2",
-        "react": "19.1.0",
-        "react-dom": "19.1.0",
-        "svelte": "^5.49.1",
+        "react": "19.2.0",
+        "react-dom": "19.2.0",
+        "svelte": "^5.55.4",
         "tailwindcss": "^4.1.18",
         "typescript": "^5.9.3"
     },

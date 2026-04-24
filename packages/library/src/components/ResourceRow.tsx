@@ -27,11 +27,10 @@ import {
     Theme,
     SanctuaryCard,
     SanctuaryButton,
-    useThemedColors,
+    useTheme,
 } from '@repo/ui';
 import { formatFileSize, formatDuration } from '@repo/core';
 import type { BaseResource } from '@repo/core';
-import type { LibraryResource } from '../types';
 
 // ============================================================================
 // CONFIG
@@ -73,7 +72,14 @@ export function resolveResourceDisplayType(type: string): DisplayResourceType {
 // ============================================================================
 
 export interface ResourceRowProps {
-    resource: BaseResource & { subjects?: string[]; verified?: boolean; is_community?: boolean; link_status?: string };
+    resource: BaseResource & { 
+        subjects?: string[]; 
+        verified?: boolean; 
+        is_community?: boolean; 
+        link_status?: string 
+        format?: string;
+        metadata?: { size?: number; duration?: number };
+    };
     onOpen: () => void;
     onOpenAnotherWay?: () => void;
     onFlashPlay?: () => void;
@@ -84,9 +90,19 @@ export interface ResourceRowProps {
     onGenerateGraphic?: () => void;
 }
 
-export function ResourceRow({ resource, onOpen, onOpenAnotherWay, onFlashPlay, onPullToDesk, onDelete, onAISparkle, onGenerateQuiz, onGenerateGraphic }: ResourceRowProps) {
-    const colors = useThemedColors();
-    const displayType = resolveResourceDisplayType(resource.type);
+export function ResourceRow({ 
+    resource, 
+    onOpen, 
+    onOpenAnotherWay, 
+    onFlashPlay, 
+    onPullToDesk, 
+    onDelete, 
+    onAISparkle, 
+    onGenerateQuiz, 
+    onGenerateGraphic 
+}: ResourceRowProps) {
+    const theme = useTheme();
+    const displayType = resolveResourceDisplayType(resource.type || '');
     const config = RESOURCE_TYPE_CONFIG[displayType];
     const Icon = config.icon;
 
@@ -100,65 +116,67 @@ export function ResourceRow({ resource, onOpen, onOpenAnotherWay, onFlashPlay, o
     ].filter(Boolean);
 
     return (
-        <Box sx={{ marginBottom: Theme.spacing.sm }}>
+        <Box className="mb-2">
             <SanctuaryCard onPress={onOpen}>
-                <HStack space="md" alignItems="center" sx={{ padding: Theme.spacing.sm }}>
+                <HStack className="gap-4 items-center p-2">
                     {/* File Type Icon - Refined Glass Effect */}
                     <Box
-                        sx={{
-                            width: 48,
-                            height: 48,
-                            borderRadius: Theme.corners.comfortable,
+                        className="w-12 h-12 rounded-xl items-center justify-center border"
+                        style={{
                             backgroundColor: `${config.color}15`,
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            borderWidth: 1,
                             borderColor: `${config.color}30`,
                         }}
                     >
                         <Icon color={config.color} size={20} />
-                        <Text size="2xs" bold color={config.color} sx={{ marginTop: Theme.spacing.xs }}>{config.label}</Text>
+                        <Text className="text-[10px] font-bold mt-1" style={{ color: config.color }}>
+                            {config.label}
+                        </Text>
                     </Box>
 
                     {/* Content */}
-                    <VStack sx={{ flex: 1, gap: 2 }}>
-                        <Text color={colors.text} size="sm" bold numberOfLines={1}>{resource.title}</Text>
-                        <HStack space="xs" alignItems="center">
-                            <Text size="xs" color={colors.textSecondary}>{resource.subjects?.[0] || ''}</Text>
+                    <VStack className="flex-1 gap-0.5">
+                        <Text className="text-sm font-bold text-phaseText-primary" numberOfLines={1}>
+                            {resource.title}
+                        </Text>
+                        <HStack className="gap-1 items-center">
+                            <Text className="text-xs text-phaseText-secondary">
+                                {resource.subjects?.[0] || ''}
+                            </Text>
                             {metaParts.length > 0 && (
-                                <>
-                                    <Box sx={{ width: 3, height: 3, borderRadius: 1.5, backgroundColor: colors.border }} />
-                                    <Text size="xs" color={colors.textTertiary}>{metaParts.join(' · ')}</Text>
-                                </>
+                                <HStack className="gap-1 items-center">
+                                    <Box className="w-0.5 h-0.5 rounded-full bg-phase-border" />
+                                    <Text className="text-xs text-phaseText-tertiary">
+                                        {metaParts.join(' \u00B7 ')}
+                                    </Text>
+                                </HStack>
                             )}
                         </HStack>
-                        <HStack space="xs" alignItems="center">
+                        <HStack className="gap-1 items-center">
                             {resource.verified && (
-                                <Box sx={{ backgroundColor: Theme.colors.sageGreen, borderRadius: 4, paddingHorizontal: 4 }}>
-                                    <Text size="2xs" color="white" bold>VERIFIED</Text>
+                                <Box className="bg-phase-success px-1 rounded">
+                                    <Text className="text-[10px] text-white font-bold">VERIFIED</Text>
                                 </Box>
                             )}
                             {resource.is_community && (
-                                <Box sx={{ backgroundColor: Theme.colors.skyBlue, borderRadius: 4, paddingHorizontal: 4 }}>
-                                    <Text size="2xs" color="white" bold>COMMUNITY</Text>
+                                <Box className="bg-phase-accent px-1 rounded">
+                                    <Text className="text-[10px] text-white font-bold">COMMUNITY</Text>
                                 </Box>
                             )}
                             {resource.link_status === 'broken' && (
-                                <Box sx={{ backgroundColor: Theme.colors.emberRed, borderRadius: 4, paddingHorizontal: 4 }}>
-                                    <Text size="2xs" color="white" bold>BROKEN LINK</Text>
+                                <Box className="bg-phase-danger px-1 rounded">
+                                    <Text className="text-[10px] text-white font-bold">BROKEN LINK</Text>
                                 </Box>
                             )}
                         </HStack>
                     </VStack>
 
                     {/* Actions */}
-                    <HStack space="xs" alignItems="center">
+                    <HStack className="gap-1 items-center">
                         {onFlashPlay && (
                             <SanctuaryButton
                                 onPress={onFlashPlay}
                                 variant="ghost"
                                 size="xs"
-                                action="secondary"
                                 leftIcon={Play}
                             >
                                 {''}
@@ -169,7 +187,6 @@ export function ResourceRow({ resource, onOpen, onOpenAnotherWay, onFlashPlay, o
                                 onPress={onPullToDesk}
                                 variant="ghost"
                                 size="xs"
-                                action="secondary"
                                 leftIcon={Bookmark}
                             >
                                 {''}
@@ -180,7 +197,6 @@ export function ResourceRow({ resource, onOpen, onOpenAnotherWay, onFlashPlay, o
                                 onPress={onOpenAnotherWay}
                                 variant="ghost"
                                 size="xs"
-                                action="secondary"
                                 leftIcon={ArrowLeftRight}
                             >
                                 {''}
@@ -191,7 +207,6 @@ export function ResourceRow({ resource, onOpen, onOpenAnotherWay, onFlashPlay, o
                                 onPress={onDelete}
                                 variant="ghost"
                                 size="xs"
-                                action="negative"
                                 leftIcon={Trash2}
                             >
                                 {''}
@@ -203,7 +218,6 @@ export function ResourceRow({ resource, onOpen, onOpenAnotherWay, onFlashPlay, o
                                 onPress={onAISparkle}
                                 variant="ghost"
                                 size="xs"
-                                action="primary"
                                 leftIcon={Sparkles}
                             >
                                 {''}
@@ -215,7 +229,6 @@ export function ResourceRow({ resource, onOpen, onOpenAnotherWay, onFlashPlay, o
                                 onPress={onGenerateQuiz}
                                 variant="ghost"
                                 size="xs"
-                                action="secondary"
                                 leftIcon={ClipboardCheck}
                             >
                                 {''}
@@ -227,7 +240,6 @@ export function ResourceRow({ resource, onOpen, onOpenAnotherWay, onFlashPlay, o
                                 onPress={onGenerateGraphic}
                                 variant="ghost"
                                 size="xs"
-                                action="secondary"
                                 leftIcon={Brain}
                             >
                                 {''}
@@ -239,3 +251,5 @@ export function ResourceRow({ resource, onOpen, onOpenAnotherWay, onFlashPlay, o
         </Box>
     );
 }
+
+export default ResourceRow;

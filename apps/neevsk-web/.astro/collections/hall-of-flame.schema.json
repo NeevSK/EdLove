@@ -1,45 +1,39 @@
 {
-  "$ref": "#/definitions/hall-of-flame",
-  "definitions": {
-    "hall-of-flame": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "subtitle": {
-          "type": "string"
-        },
-        "chamber": {
-          "type": "string",
-          "enum": [
-            "The First Light",
-            "Chamber of Love",
-            "Chamber of Tribute",
-            "Chamber of Mastery",
-            "Chamber of Inspiration & Respect",
-            "Chamber of Support"
-          ]
-        },
-        "order": {
-          "type": "number",
-          "default": 0
-        },
-        "draft": {
-          "type": "boolean",
-          "default": false
-        },
-        "$schema": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "name",
-        "subtitle",
-        "chamber"
-      ],
-      "additionalProperties": false
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "subtitle": {
+      "type": "string"
+    },
+    "chamber": {
+      "type": "string",
+      "enum": [
+        "The First Light",
+        "Chamber of Love",
+        "Chamber of Tribute",
+        "Chamber of Mastery",
+        "Chamber of Inspiration & Respect",
+        "Chamber of Support"
+      ]
+    },
+    "order": {
+      "default": 0,
+      "type": "number"
+    },
+    "draft": {
+      "default": false,
+      "type": "boolean"
+    },
+    "$schema": {
+      "type": "string"
     }
   },
-  "$schema": "http://json-schema.org/draft-07/schema#"
+  "required": [
+    "name",
+    "subtitle",
+    "chamber"
+  ]
 }

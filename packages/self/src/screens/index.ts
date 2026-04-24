@@ -1,5 +1,4 @@
-import PrivacyLedgerScreen from './PrivacyLedgerScreen';
+﻿import PrivacyLedgerScreen from './PrivacyLedgerScreen';
 
 export {
-    PrivacyLedgerScreen,
-};
+    PrivacyLedgerScreen};

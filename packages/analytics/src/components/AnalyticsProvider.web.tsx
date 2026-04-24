@@ -10,7 +10,7 @@ interface Props {
     };
 }
 
-import { ResonanceProvider } from '../context/ResonanceContext';
+import { ActivityPulseProvider } from '../context/ActivityPulseContext';
 
 export function AnalyticsProvider({ children, apiKey, options }: Props) {
     useEffect(() => {
@@ -20,8 +20,8 @@ export function AnalyticsProvider({ children, apiKey, options }: Props) {
     }, [apiKey, options]);
 
     return (
-        <ResonanceProvider>
+        <ActivityPulseProvider>
             {children}
-        </ResonanceProvider>
+        </ActivityPulseProvider>
     );
 }

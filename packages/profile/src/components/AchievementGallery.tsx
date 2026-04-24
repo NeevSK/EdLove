@@ -1,13 +1,10 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
 import {
     Box,
     VStack,
     HStack,
     Text,
     Heading,
-    Theme,
-    useThemedColors
 } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
 import { Trophy, Compass, Clock, Zap, Users, BookOpen, QrCode } from 'lucide-react-native';
@@ -25,48 +22,47 @@ interface AchievementGalleryProps {
 }
 
 export default function AchievementGallery({ unlockedBadges = [] }: AchievementGalleryProps) {
-    const colors = useThemedColors();
     const { t } = useTranslation();
 
     const achievements: Achievement[] = [
         {
             id: 'Sanctuary Seeker',
-            title: t('achievements.sanctuarySeeker'),
+            title: t('achievements.sanctuarySeeker', 'Sanctuary Seeker'),
             description: 'Visit all 4 main sections of the app',
             icon: Compass,
             unlocked: unlockedBadges.includes('Sanctuary Seeker'),
         },
         {
             id: 'Early Riser',
-            title: t('achievements.earlyRiser'),
+            title: t('achievements.earlyRiser', 'Early Riser'),
             description: 'Log mood or attendance before 8 AM',
             icon: Clock,
             unlocked: unlockedBadges.includes('Early Riser'),
         },
         {
             id: 'Energy Master',
-            title: t('achievements.energyMaster'),
+            title: t('achievements.energyMaster', 'Energy Master'),
             description: 'Log energy levels 3 days in a row',
             icon: Zap,
             unlocked: unlockedBadges.includes('Energy Master'),
         },
         {
             id: 'Community Builder',
-            title: t('achievements.communityBuilder'),
+            title: t('achievements.communityBuilder', 'Community Builder'),
             description: 'Join your first group or post an announcement',
             icon: Users,
             unlocked: unlockedBadges.includes('Community Builder'),
         },
         {
             id: 'Wisdom Collector',
-            title: t('achievements.wisdomCollector'),
+            title: t('achievements.wisdomCollector', 'Wisdom Collector'),
             description: 'Save 5 items to your personal library',
             icon: BookOpen,
             unlocked: unlockedBadges.includes('Wisdom Collector'),
         },
         {
             id: 'QR Hunter',
-            title: t('achievements.qrHunter'),
+            title: t('achievements.qrHunter', 'QR Hunter'),
             description: 'Scan your first QR code',
             icon: QrCode,
             unlocked: unlockedBadges.includes('QR Hunter'),
@@ -74,37 +70,25 @@ export default function AchievementGallery({ unlockedBadges = [] }: AchievementG
     ];
 
     const AchievementItem = ({ achievement }: { achievement: Achievement }) => {
-        const Icon = achievement.icon;
+        const IconComponent = achievement.icon;
         return (
             <VStack
-                alignItems="center"
-                space="xs"
-                style={[
-                    styles.itemContainer,
-                    !achievement.unlocked && { opacity: 0.4 }
-                ]}
+                className={`items-center w-[30%] mb-4 ${!achievement.unlocked ? 'opacity-30' : ''}`}
             >
                 <Box
-                    style={{
-                        padding: Theme.spacing.md,
-                        backgroundColor: achievement.unlocked
-                            ? `${colors.action}15`
-                            : `${colors.textTertiary}10`,
-                        borderRadius: Theme.corners.full,
-                        borderWidth: achievement.unlocked ? 1 : 0,
-                        borderColor: `${colors.action}40`,
-                    }}
+                    className={`p-4 rounded-full border ${
+                        achievement.unlocked
+                            ? 'bg-phase-interactive/10 border-phase-interactive/30'
+                            : 'bg-phase-surface border-transparent'
+                    }`}
                 >
-                    <Icon
+                    <IconComponent
                         size={24}
-                        color={achievement.unlocked ? colors.action : colors.textTertiary}
+                        color={achievement.unlocked ? '#4A90E2' : '#9DA1A3'}
                     />
                 </Box>
                 <Text
-                    size="xs"
-                    bold={achievement.unlocked}
-                    textAlign="center"
-                    color={achievement.unlocked ? colors.text : colors.textTertiary}
+                    className={`text-center text-[10px] mt-2 px-1 ${achievement.unlocked ? 'font-bold text-phase-text-primary' : 'text-phase-text-tertiary'}`}
                     numberOfLines={1}
                 >
                     {achievement.title}
@@ -114,53 +98,24 @@ export default function AchievementGallery({ unlockedBadges = [] }: AchievementG
     };
 
     return (
-        <VStack sx={{ mt: Theme.spacing.lg, px: Theme.spacing.md }}>
+        <VStack className="mt-8 px-4">
             <Box
-                sx={{
-                    backgroundColor: colors.secondary,
-                    borderRadius: Theme.corners.generous,
-                    padding: Theme.spacing.xl,
-                    borderWidth: 1,
-                    borderColor: colors.border,
-                    shadowColor: colors.glow,
-                    shadowOffset: { width: 0, height: 0 },
-                    shadowOpacity: 0.5,
-                    shadowRadius: 15,
-                    elevation: 5,
-                }}
+                className="bg-phase-canvas rounded-3xl p-6 border border-phase-surface shadow-md"
+                style={{ shadowColor: '#9DA1A3', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 10 }}
             >
                 <Heading
-                    color={colors.textSecondary as any}
-                    size="sm"
-                    mt={Theme.spacing.sm}
-                    mb={Theme.spacing.md}
+                    className="text-phase-text-secondary text-sm mb-6"
                 >
-                    {t('achievements.title')}
+                    {t('achievements.title', 'Achievements')}
                 </Heading>
-                <HStack style={styles.galleryGrid}>
+                <HStack className="flex-row flex-wrap justify-between">
                     {achievements.map((item) => (
                         <AchievementItem key={item.id} achievement={item} />
                     ))}
+                    {/* Spacer for proper alignment */}
+                    <Box className="w-[30%]" />
                 </HStack>
             </Box>
         </VStack>
     );
 }
-
-const styles = StyleSheet.create({
-    galleryGrid: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        justifyContent: 'flex-start',
-        gap: Theme.spacing.md,
-    },
-    itemContainer: {
-        width: '28%',
-        alignItems: 'center',
-        marginBottom: Theme.spacing.xs,
-    },
-    unlockedIcon: {
-        borderWidth: 1,
-        borderColor: `${Theme.colors.sanctuarySaffron}40`, // sanctuarySaffron at ~25% opacity
-    }
-});

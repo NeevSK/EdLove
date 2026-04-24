@@ -35,10 +35,8 @@ interface MLKitBarcode {
 }
 let BarcodeScanning: any = null;
 try {
-   
   // @ts-ignore - Module may not be available in all environments/configurations
-  BarcodeScanning = require("@react-native-ml-kit/barcode-scanning")
-    .default as any;
+  BarcodeScanning = require("@react-native-ml-kit/barcode-scanning").default as any;
 } catch {
   // Not installed or not linked — will fall back gracefully
   BarcodeScanning = null;
@@ -251,7 +249,7 @@ export default function ScannerModal({
                 style={[styles.controlButton, { marginRight: 20 }]}
                 disabled={processing}
               >
-                <Text style={{ fontSize: 24 }}>🖼</Text>
+                <Text style={{ fontSize: 24 }}>🖼️</Text>
                 <Text
                   style={[styles.controlLabel, processing && { color: "gray" }]}
                 >
@@ -340,4 +338,4 @@ const styles = StyleSheet.create({
   },
   button: { paddingVertical: 10, paddingHorizontal: 20, borderRadius: 8 },
   buttonText: { color: "white", fontWeight: "bold" },
-});
+}) as any;

@@ -1,28 +1,22 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { 
     VStack, 
     HStack, 
     Box, 
     Text, 
     Heading, 
-    Button, 
-    ButtonText, 
     Icon,
-    useThemedColors,
-    Theme
+    Pressable
 } from '@repo/ui';
 import { 
     Plus, 
-    Trash2, 
     Settings2, 
-    Eye, 
-    Save, 
-    GripVertical,
-    Layout
+    Layout,
+    Zap,
+    Building2,
+    ArrowRightCircle,
+    Building
 } from 'lucide-react-native';
-import { FormHydrator } from '@repo/core';
-import { NativeForm } from '@repo/form-builder';
-
 
 interface PrincipalOnboardingViewProps {
     onTryDemo: () => void;
@@ -31,22 +25,12 @@ interface PrincipalOnboardingViewProps {
     isGuest: boolean;
 }
 
-interface FieldDefinition {
-    id: string;
-    name: string;
-    label: string;
-    type: 'text' | 'email' | 'password' | 'select' | 'textarea' | 'number';
-    placeholder: string;
-    required: boolean;
-}
-
 export default function PrincipalOnboardingViewWeb({ 
     onTryDemo, 
     onCreateSchool, 
     onJoinSchool,
     isGuest 
 }: PrincipalOnboardingViewProps) {
-    const colors = useThemedColors();
     
     const openFormBuilder = () => {
         // Open the builder in a new window/tab
@@ -57,96 +41,99 @@ export default function PrincipalOnboardingViewWeb({
     };
 
     return (
-        <VStack sx={{ 
-            flex: 1, 
-            backgroundColor: colors.backgroundDark, 
-            padding: 40,
-            maxWidth: 1200,
-            alignSelf: 'center',
-            width: '100%',
-            gap: 48
-        }}>
+        <VStack className="flex-1 bg-phase-canvas p-10 max-w-[1200px] self-center w-full gap-12">
             {/* Header */}
-            <VStack sx={{ gap: 8, alignItems: 'center', textAlign: 'center' }}>
-                <Heading size="2xl">Welcome to Your Management Sanctuary</Heading>
-                <Text sx={{ color: colors.textSecondary, maxWidth: 600 }}>
+            <VStack className="gap-2 items-center">
+                <Box className="p-4 rounded-generous bg-templeGold/10 mb-3">
+                    <Icon as={Building2} className="text-templeGold" size="xl" />
+                </Box>
+                <Heading className="text-4xl font-black text-phaseText-primary text-center">
+                    Welcome to Your Management Sanctuary
+                </Heading>
+                <Text className="text-phaseText-secondary text-lg max-w-[600px] text-center leading-relaxed font-medium">
                     Gurudevi provides principal-specific tools to monitor, manage, and grow your institutional resonance.
                 </Text>
             </VStack>
 
-            <HStack sx={{ gap: 32, flexWrap: 'wrap', justifyContent: 'center' }}>
+            <HStack className="gap-8 flex-wrap justify-center">
                 {/* Visual Form Builder Promotion */}
-                <Box sx={{ 
-                    flex: 1, 
-                    minWidth: 350,
-                    padding: 32, 
-                    backgroundColor: 'white', 
-                    borderRadius: 32, 
-                    borderWidth: 1, 
-                    borderColor: colors.border,
-                    ...Theme.shadows.lg,
-                    gap: 20
-                }}>
-                    <HStack sx={{ gap: 12, alignItems: 'center' }}>
-                        <Box sx={{ padding: 12, backgroundColor: Theme.colors.sanctuarySaffron + '22', borderRadius: 16 }}>
-                            <Icon as={Layout} color={Theme.colors.sanctuarySaffron} size={24} />
+                <Box className="flex-1 min-w-[350px] p-8 bg-phase-surface rounded-generous border border-phase-canvas shadow-xl">
+                    <VStack className="gap-6">
+                        <HStack className="gap-4 items-center">
+                            <Box className="p-3 bg-templeGold/10 rounded-comfortable">
+                                <Icon as={Layout} className="text-templeGold" size="lg" />
+                            </Box>
+                            <Heading className="text-xl font-black text-phaseText-primary">Institutional Form Builder</Heading>
+                        </HStack>
+                        
+                        <Text className="text-phaseText-secondary text-sm font-medium leading-relaxed">
+                            Create bespoke data collection experiences for student registration, teacher feedback, and community polls. 
+                            Professional, high-conversion forms that match your school's brand.
+                        </Text>
+                        
+                        <Box className="p-4 bg-phase-canvas/50 rounded-comfortable border border-dashed border-phase-canvas flex-row items-center gap-3">
+                            <Icon as={Zap} className="text-templeGold" size="xs" />
+                            <Text className="text-xs text-phaseText-secondary font-black uppercase tracking-widest">
+                                AI-powered curriculum alignment incoming
+                            </Text>
                         </Box>
-                        <Heading size="md">Institutional Form Builder</Heading>
-                    </HStack>
-                    
-                    <Text sx={{ color: colors.textSecondary, fontSize: 14 }}>
-                        Create bespoke data collection experiences for student registration, teacher feedback, and community polls. 
-                        Professional, high-conversion forms that match your school's brand.
-                    </Text>
 
-                    <Button 
-                        action="primary" 
-                        onPress={openFormBuilder}
-                        sx={{ backgroundColor: Theme.colors.sanctuarySaffron, borderRadius: 16, height: 50 }}
-                    >
-                        <Icon as={Plus} color="white" sx={{ marginRight: 8 }} />
-                        <ButtonText>Launch Visual Builder</ButtonText>
-                    </Button>
+                        <Pressable 
+                            onPress={openFormBuilder}
+                            className="bg-templeGold h-14 rounded-full items-center justify-center shadow-lg shadow-templeGold/20 active:scale-95 transition-transform"
+                        >
+                            <HStack className="items-center gap-2">
+                                <Plus color="white" size={20} />
+                                <Text className="text-white font-black uppercase tracking-widest">Launch Visual Builder</Text>
+                            </HStack>
+                        </Pressable>
+                    </VStack>
                 </Box>
 
                 {/* Core Onboarding Options */}
-                <VStack sx={{ flex: 1, minWidth: 350, gap: 16 }}>
-                    <Box sx={{ 
-                        padding: 24, 
-                        backgroundColor: colors.tertiary, 
-                        borderRadius: 24,
-                        borderWidth: 1,
-                        borderColor: colors.border,
-                        gap: 16
-                    }}>
-                        <Heading size="sm">Get Started</Heading>
-                        <VStack sx={{ gap: 12 }}>
-                            <Button variant="outline" onPress={onCreateSchool} sx={{ borderRadius: 12, justifyContent: 'flex-start' }}>
-                                <Icon as={Plus} sx={{ marginRight: 12 }} />
-                                <ButtonText>Create New School Profile</ButtonText>
-                            </Button>
-                            <Button variant="outline" onPress={onJoinSchool} sx={{ borderRadius: 12, justifyContent: 'flex-start' }}>
-                                <Icon as={Settings2} sx={{ marginRight: 12 }} />
-                                <ButtonText>Claim Existing Institution</ButtonText>
-                            </Button>
-                            <Button variant="link" onPress={onTryDemo}>
-                                <ButtonText sx={{ color: Theme.colors.sanctuarySaffron }}>Explore Demo Sanctuary</ButtonText>
-                            </Button>
+                <VStack className="flex-1 min-w-[350px] gap-6">
+                    <Box className="p-8 bg-phase-surface rounded-generous border border-phase-canvas shadow-sm">
+                        <VStack className="gap-6">
+                            <Heading className="text-lg font-black text-phaseText-primary">Get Started</Heading>
+                            <VStack className="gap-4">
+                                <Pressable 
+                                    onPress={onCreateSchool} 
+                                    className="flex-row items-center p-4 bg-phase-canvas/50 rounded-comfortable border border-phase-canvas active:bg-phase-canvas transition-colors"
+                                >
+                                    <Icon as={Plus} className="mr-4 text-phaseText-primary" size="sm" />
+                                    <Text className="text-phaseText-primary font-black">Create New School Profile</Text>
+                                </Pressable>
+                                
+                                <Pressable 
+                                    onPress={onJoinSchool} 
+                                    className="flex-row items-center p-4 bg-phase-canvas/50 rounded-comfortable border border-phase-canvas active:bg-phase-canvas transition-colors"
+                                >
+                                    <Icon as={Settings2} className="mr-4 text-phaseText-primary" size="sm" />
+                                    <Text className="text-phaseText-primary font-black">Claim Existing Institution</Text>
+                                </Pressable>
+
+                                <Pressable 
+                                    onPress={onTryDemo}
+                                    className="items-center p-4 active:opacity-60"
+                                >
+                                    <HStack className="items-center gap-2">
+                                        <Text className="text-templeGold font-black uppercase tracking-widest text-sm">
+                                            Explore Demo Sanctuary
+                                        </Text>
+                                        <ArrowRightCircle size={16} color="#D4843A" />
+                                    </HStack>
+                                </Pressable>
+                            </VStack>
                         </VStack>
                     </Box>
 
-                    <Box sx={{ 
-                        padding: 24, 
-                        backgroundColor: colors.tertiary, 
-                        borderRadius: 24,
-                        borderWidth: 1,
-                        borderColor: colors.border,
-                        gap: 8
-                    }}>
-                        <Heading size="xs">Platform Trust</Heading>
-                        <Text sx={{ fontSize: 12, color: colors.textSecondary }}>
-                            Your institutional data is protected by Gurudevi's sovereign encryption and local-first architecture.
-                        </Text>
+                    <Box className="p-6 bg-phase-canvas/50 rounded-comfortable border border-phase-canvas">
+                        <VStack className="gap-2">
+                            <Heading className="text-sm font-black text-phaseText-primary uppercase tracking-widest">Platform Trust</Heading>
+                            <Text className="text-[12px] text-phaseText-secondary font-medium leading-normal">
+                                Your institutional data is protected by Gurudevi's sovereign encryption and local-first architecture.
+                            </Text>
+                        </VStack>
                     </Box>
                 </VStack>
             </HStack>

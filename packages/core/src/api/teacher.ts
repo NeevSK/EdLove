@@ -1,111 +1,102 @@
-﻿import { supabase } from '../lib/supabase';
-import { APIError, Task, TeacherNote } from './types';
 import { requireTeacherAccess } from '../lib/authorization';
+import { supabase } from '../native/supabase';
+import { APIError, type Task, type TeacherNote } from '../types';
+import { teacherInsightsAPI } from './teacherInsights';
 
 // ============================================================================
 // TASKS API
 // ============================================================================
 
 export const tasksAPI = {
-    /**
-     * Get all tasks for a teacher
-     */
-    async getAll(teacherId: string): Promise<Task[]> {
-        await requireTeacherAccess(teacherId);
-        const { data, error } = await supabase
-            .from('tasks')
-            .select('*')
-            .eq('teacher_id', teacherId)
-            .order('created_at', { ascending: false });
+  /**
+   * Get all tasks for a teacher
+   */
+  async getAll(teacherId: string): Promise<Task[]> {
+    await requireTeacherAccess(teacherId);
+    const { data, error } = await supabase
+      .from('tasks')
+      .select('*')
+      .eq('teacher_id', teacherId)
+      .order('created_at', { ascending: false });
 
-        if (error) {
-            throw new APIError('Failed to fetch tasks', error.code, error);
-        }
+    if (error) {
+      throw new APIError('Failed to fetch tasks', error.code, error);
+    }
 
-        return data || [];
-    },
+    return data || [];
+  },
 
-    /**
-     * Create a new task
-     */
-    async create(title: string, teacherId: string, description?: string): Promise<Task> {
-        await requireTeacherAccess(teacherId);
-        const { data, error } = await supabase
-            .from('tasks')
-            .insert([
-                {
-                    title,
-                    description,
-                    teacher_id: teacherId,
-                    is_completed: false,
-                },
-            ])
-            .select()
-            .single();
+  /**
+   * Create a new task
+   */
+  async create(title: string, teacherId: string, description?: string): Promise<Task> {
+    await requireTeacherAccess(teacherId);
+    const { data, error } = await supabase
+      .from('tasks')
+      .insert([
+        {
+          title,
+          description,
+          teacher_id: teacherId,
+          is_completed: false,
+        },
+      ])
+      .select()
+      .single();
 
-        if (error) {
-            throw new APIError('Failed to create task', error.code, error);
-        }
+    if (error) {
+      throw new APIError('Failed to create task', error.code, error);
+    }
 
-        return data;
-    },
+    return data;
+  },
 
-    /**
-     * Update task completion status
-     */
-    async updateStatus(id: string, status: boolean): Promise<void> {
-        const { error } = await supabase
-            .from('tasks')
-            .update({ is_completed: status })
-            .eq('id', id);
+  /**
+   * Update task completion status
+   */
+  async updateStatus(id: string, status: boolean): Promise<void> {
+    const { error } = await supabase.from('tasks').update({ is_completed: status }).eq('id', id);
 
-        if (error) {
-            throw new APIError('Failed to update task', error.code, error);
-        }
-    },
+    if (error) {
+      throw new APIError('Failed to update task', error.code, error);
+    }
+  },
 
-    /**
-     * Update task details
-     */
-    async update(id: string, updates: Partial<Task>): Promise<Task> {
-        // First verify owner
-        const { data: task } = await supabase
-            .from('tasks')
-            .select('teacher_id')
-            .eq('id', id)
-            .single();
+  /**
+   * Update task details
+   */
+  async update(id: string, updates: Partial<Task>): Promise<Task> {
+    // First verify owner
+    const { data: task } = await supabase.from('tasks').select('teacher_id').eq('id', id).single();
 
-        if (task) {
-            await requireTeacherAccess(task.teacher_id);
-        }
+    if (task) {
+      await requireTeacherAccess(task.teacher_id);
+    }
 
-        const { data, error } = await supabase
-            .from('tasks')
-            .update(updates)
-            .eq('id', id)
-            .select()
-            .single();
+    const { data, error } = await supabase
+      .from('tasks')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .single();
 
-        if (error) {
-            throw new APIError('Failed to update task', error.code, error);
-        }
+    if (error) {
+      throw new APIError('Failed to update task', error.code, error);
+    }
 
-        return data;
-    },
+    return data;
+  },
 
-    /**
-     * Delete a task
-     */
-    async delete(id: string): Promise<void> {
-        const { error } = await supabase
-            .from('tasks')
-            .delete()
-            .eq('id', id);
+  /**
+   * Delete a task
+   */
+  async delete(id: string): Promise<void> {
+    const { error } = await supabase.from('tasks').delete().eq('id', id);
 
-        if (error) {
-            throw new APIError('Failed to delete task', error.code, error);
-        }
-    },
+    if (error) {
+      throw new APIError('Failed to delete task', error.code, error);
+    }
+  },
 };
 
 // ============================================================================
@@ -113,69 +104,38 @@ export const tasksAPI = {
 // ============================================================================
 
 export const notesAPI = {
-    /**
-     * Get all notes for a teacher
-     */
-    async getAll(teacherId: string, type?: TeacherNote['type']): Promise<TeacherNote[]> {
-        await requireTeacherAccess(teacherId);
-        let query = supabase
-            .from('teacher_notes')
-            .select('*')
-            .eq('teacher_id', teacherId)
-            .order('created_at', { ascending: false });
+  /**
+   * Get all private notes for a teacher.
+   * Routed through the teacherInsights seam.
+   */
+  async getAll(teacherId: string, type?: TeacherNote['type']): Promise<TeacherNote[]> {
+    await requireTeacherAccess(teacherId);
+    const data = await teacherInsightsAPI.listPrivateNotes(teacherId, type);
+    return data.map(({ audit, visibility, ...note }) => note as TeacherNote);
+  },
 
-        if (type) {
-            query = query.eq('type', type);
-        }
+  /**
+   * Create a private note.
+   */
+  async create(
+    teacherId: string,
+    content: string,
+    type: TeacherNote['type'] = 'note',
+  ): Promise<TeacherNote> {
+    await requireTeacherAccess(teacherId);
+    const data = await teacherInsightsAPI.createPrivateNote({
+      teacherId,
+      content,
+      type,
+    });
+    const { audit, visibility, ...note } = data;
+    return note as TeacherNote;
+  },
 
-        const { data, error } = await query;
-
-        if (error) {
-            throw new APIError('Failed to fetch notes', error.code, error);
-        }
-
-        return data || [];
-    },
-
-    /**
-     * Create a new note
-     */
-    async create(
-        teacherId: string,
-        content: string,
-        type: TeacherNote['type'] = 'note'
-    ): Promise<TeacherNote> {
-        await requireTeacherAccess(teacherId);
-        const { data, error } = await supabase
-            .from('teacher_notes')
-            .insert([
-                {
-                    teacher_id: teacherId,
-                    content,
-                    type,
-                },
-            ])
-            .select()
-            .single();
-
-        if (error) {
-            throw new APIError('Failed to create note', error.code, error);
-        }
-
-        return data;
-    },
-
-    /**
-     * Delete a note
-     */
-    async delete(id: string): Promise<void> {
-        const { error } = await supabase
-            .from('teacher_notes')
-            .delete()
-            .eq('id', id);
-
-        if (error) {
-            throw new APIError('Failed to delete note', error.code, error);
-        }
-    },
+  /**
+   * Delete a private note.
+   */
+  async delete(id: string): Promise<void> {
+    await teacherInsightsAPI.deletePrivateNote(id);
+  },
 };

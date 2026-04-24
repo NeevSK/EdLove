@@ -9,7 +9,7 @@ export class SkiaDriver {
   private cache: Map<string, SkRuntimeEffect> = new Map();
 
   constructor() {
-    console.log('[Trübe-Art] SkiaDriver Initialized (Tier 3)');
+    console.log('[Tr\u00FCbe-Art] SkiaDriver Initialized (Tier 3)');
   }
 
   /**
@@ -20,7 +20,7 @@ export class SkiaDriver {
       const effect = soulLibrary.getSkiaEffect(name);
       if (effect) this.cache.set(name, effect);
     }
-    console.log(`[Trübe-Art] [Tier 3] Skia Pre-warmed ${this.cache.size} surfaces.`);
+    console.log(`[Tr\u00FCbe-Art] [Tier 3] Skia Pre-warmed ${this.cache.size} surfaces.`);
   }
 
   /**

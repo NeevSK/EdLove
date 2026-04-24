@@ -1,45 +1,24 @@
-import React from 'react';
+﻿import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useTheme } from '@repo/ui';
 import { StackFallback } from '../components/web/WebScreenShimmer';
 import { ClassroomStackParamList } from '@repo/core';
 
 // Web-specific screens — lazy loaded for code splitting
-const ClassroomScreenWeb = React.lazy(() => import('../screens/ClassroomScreen.web'));
-const TeacherClassroomDashboardWeb = React.lazy(() =>
-    import('@repo/classroom').then(m => ({ default: m.TeacherClassroomDashboard }))
-);
-const StudentClassroomDashboardWeb = React.lazy(() =>
-    import('@repo/classroom').then(m => ({ default: m.StudentClassroomDashboard }))
-);
+// Web-specific screens — lazy loaded for code splitting
+const ClassroomScreenWeb = React.lazy(() => import('@repo/classroom/screens/ClassroomScreen.web'));
+const ClassroomDetailScreenWeb = React.lazy(() => import('@repo/classroom/screens/ClassroomDetailScreen.web'));
 
-// Web-native attendance and gradebook (HTML/CSS, no RN gesture handlers)
-const AttendanceScreen = React.lazy(() => import('../screens/AttendanceScreen.web'));
-const GradebookScreen  = React.lazy(() => import('../screens/GradebookScreen.web'));
-const StudentProfileScreen = React.lazy(() =>
-    import('@repo/classroom').then(m => ({ default: m.StudentProfileScreen }))
-);
-const FounderDashboard = React.lazy(() =>
-    import('@repo/classroom').then(m => ({ default: m.FounderDashboard }))
-);
-const FounderSchoolDashboard = React.lazy(() =>
-    import('@repo/classroom').then(m => ({ default: m.FounderSchoolDashboard }))
-);
-const SchoolCreationScreen = React.lazy(() =>
-    import('../screens/SchoolCreationScreen')
-);
-const TimetableScreen = React.lazy(() =>
-    import('../screens/TimetableScreen.web')
-);
-const SchoolForestScreen = React.lazy(() =>
-    import('../screens/SchoolForestScreen.web')
-);
-const FormBuilderScreen = React.lazy(() =>
-    import('../screens/classroom/FormBuilderScreen.web')
-);
-const PublicFormScreen = React.lazy(() =>
-    import('../screens/classroom/PublicFormScreen.web')
-);
+// Web-native attendance and gradebook
+const AttendanceScreen = React.lazy(() => import('@repo/classroom/screens/AttendanceScreen.web'));
+const GradebookScreen  = React.lazy(() => import('@repo/classroom/screens/GradebookScreen.web'));
+const StudentProfileScreen = React.lazy(() => import('@repo/classroom/screens/StudentProfileScreen'));
+const FounderDashboard = React.lazy(() => import('@repo/admin/screens/FounderDashboard.web'));
+const FounderSchoolView = React.lazy(() => import('@repo/admin/screens/FounderSchoolDashboard'));
+const SchoolCreationScreen = React.lazy(() => import('@repo/admin/screens/SchoolCreationScreen'));
+const TimetableScreen = React.lazy(() => import('@repo/classroom/screens/TimetableScreen.web'));
+const SchoolForestScreen = React.lazy(() => import('@repo/admin/screens/SchoolForestScreen.web'));
+
 
 const Stack = createNativeStackNavigator<ClassroomStackParamList>();
 
@@ -48,7 +27,7 @@ function ScreenFallback() {
 }
 
 export default function ClassroomStackNavigatorWeb() {
-    const { scene } = useTheme();
+    const { gradientNodes } = useTheme();
 
     return (
         <React.Suspense fallback={<ScreenFallback />}>
@@ -56,22 +35,17 @@ export default function ClassroomStackNavigatorWeb() {
             id="ClassroomStack"
             screenOptions={{
                 headerShown: false,
-                contentStyle: { backgroundColor: scene.canvas.bg },
-            }}
-        >
+                contentStyle: { backgroundColor: gradientNodes[0] }}}>
             <Stack.Screen name="ClassroomList" component={ClassroomScreenWeb} />
-            <Stack.Screen name="TeacherClassroomDashboard" component={TeacherClassroomDashboardWeb} />
-            <Stack.Screen name="StudentClassroomDashboard" component={StudentClassroomDashboardWeb} />
+            <Stack.Screen name="ClassroomDetails" component={ClassroomDetailScreenWeb} />
             <Stack.Screen name="Attendance" component={AttendanceScreen} />
             <Stack.Screen name="Gradebook" component={GradebookScreen} />
             <Stack.Screen name="StudentProfile" component={StudentProfileScreen} />
             <Stack.Screen name="FounderDashboard" component={FounderDashboard} />
-            <Stack.Screen name="FounderSchoolDashboard" component={FounderSchoolDashboard} />
+            <Stack.Screen name="FounderSchoolView" component={FounderSchoolView} />
             <Stack.Screen name="SchoolCreation" component={SchoolCreationScreen} />
             <Stack.Screen name="Timetable" component={TimetableScreen} />
             <Stack.Screen name="SchoolForest" component={SchoolForestScreen} />
-            <Stack.Screen name="FormBuilder" component={FormBuilderScreen} />
-            <Stack.Screen name="PublicForm" component={PublicFormScreen} />
         </Stack.Navigator>
         </React.Suspense>
     );

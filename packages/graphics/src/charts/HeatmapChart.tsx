@@ -81,7 +81,7 @@ export function HeatmapChart({
             </HStack>
           ))}
         </View>
-
+        
         {/* Legend */}
         {showLegend && (
           <View style={styles.legend}>

@@ -1,5 +1,5 @@
 /**
- * sksl-shaders.ts — Trübe-Art Soul Layer · SkSL Shader Library
+ * sksl-shaders.ts \u2014 Tr\u00FCbe-Art Soul Layer \u00B7 SkSL Shader Library
  * Tier 3 (Skia RuntimeEffect path)
  *
  * SkSL is Skia's dialect of GLSL. These shaders are compiled at startup by
@@ -7,7 +7,7 @@
  *
  * Uniform convention (identical across all 8 surfaces):
  *   uniform float u_time;       // entropy-modulated time
- *   uniform float u_entropy;    // ±0.02 meta-noise signal
+ *   uniform float u_entropy;    // \u00B10.02 meta-noise signal
  *   uniform float u_res[2];     // [width, height] in pixels
  *   uniform float u_intensity;  // surface opacity [0,1]
  *   uniform float u_base[3];    // palette.base   (RGB)
@@ -17,19 +17,19 @@
  */
 
 // =============================================================================
-// § 1 — Shared noise library (GLSL/SkSL)
-//       Ported from noise.wgsl — same math, GLSL syntax.
+// \u00A7 1 \u2014 Shared noise library (GLSL/SkSL)
+//       Ported from noise.wgsl \u2014 same math, GLSL syntax.
 // =============================================================================
 
 export const SKSL_NOISE = `
-// ── Value noise (fast, no texture) ───────────────────────────────────────────
+// \u2500\u2500 Value noise (fast, no texture) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 float hash21(vec2 p) {
   p = fract(p * vec2(127.1, 311.7));
   p += dot(p, p + 19.19);
   return fract(p.x * p.y);
 }
 
-// ── Smooth noise ──────────────────────────────────────────────────────────────
+// \u2500\u2500 Smooth noise \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 float vnoise(vec2 p) {
   vec2 i = floor(p);
   vec2 f = fract(p);
@@ -41,7 +41,7 @@ float vnoise(vec2 p) {
   return mix(mix(a, b, u.x), mix(c, d, u.x), u.y);
 }
 
-// ── Simplex-like gradient noise ───────────────────────────────────────────────
+// \u2500\u2500 Simplex-like gradient noise \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 float gnoise(vec2 p) {
   vec2 i = floor(p);
   vec2 f = fract(p);
@@ -53,7 +53,7 @@ float gnoise(vec2 p) {
   return mix(a, b, u.x) + (c - a)*u.y*(1.0-u.x) + (d - b)*u.x*u.y;
 }
 
-// ── Fractal Brownian Motion ──────────────────────────────────────────────────
+// \u2500\u2500 Fractal Brownian Motion \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 float fbm(vec2 p, int octaves) {
   mat2 m = mat2(1.6, 1.2, -1.2, 1.6);
   float v = 0.0;
@@ -67,7 +67,7 @@ float fbm(vec2 p, int octaves) {
   return v;
 }
 
-// ── Domain Warp ───────────────────────────────────────────────────────────────
+// \u2500\u2500 Domain Warp \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 float domainWarp(vec2 p, float strength) {
   vec2 q = vec2(
     fbm(p + vec2(0.0, 0.0), 4),
@@ -76,8 +76,8 @@ float domainWarp(vec2 p, float strength) {
   return fbm(p + strength * q, 4);
 }
 
-// ── Meta-Noise (Kells entropy signal) ────────────────────────────────────────
-// Min period 47s — prevents any surface from ever perfectly looping.
+// \u2500\u2500 Meta-Noise (Kells entropy signal) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+// Min period 47s \u2014 prevents any surface from ever perfectly looping.
 float metaNoise(float t) {
   float e0 = gnoise(vec2(t / 47.0,  0.371)) * 0.012;
   float e1 = gnoise(vec2(t / 53.3,  3.141)) * 0.006;
@@ -91,7 +91,7 @@ float entropyTime(float t) {
 `;
 
 // =============================================================================
-// § 2 — Standard uniform header (prepended to every surface)
+// \u00A7 2 \u2014 Standard uniform header (prepended to every surface)
 // =============================================================================
 
 const UNIFORM_HEADER = `
@@ -116,7 +116,7 @@ function makeSKSL(body: string): string {
 }
 
 // =============================================================================
-// § 3 — Surface SkSL shaders
+// \u00A7 3 \u2014 Surface SkSL shaders
 // =============================================================================
 
 const AURORA_SKSL = makeSKSL(`
@@ -247,7 +247,7 @@ half4 main(vec2 fragCoord) {
   vec2 uv = fragCoord / skRes();
   float et = entropyTime(u_time);
 
-  // Rayleigh per-channel transmittance (λ^-4 approximation)
+  // Rayleigh per-channel transmittance (\u03BB^-4 approximation)
   float cosTheta = clamp(uv.y, 0.02, 1.0);
   float pathLen = 1.0 / cosTheta;
   float tauR = exp(-pathLen * 0.18);
@@ -337,7 +337,7 @@ half4 main(vec2 fragCoord) {
 `);
 
 // =============================================================================
-// § 4 — Surface map and public API
+// \u00A7 4 \u2014 Surface map and public API
 // =============================================================================
 
 export const SKSL_SURFACES: Record<string, string> = {

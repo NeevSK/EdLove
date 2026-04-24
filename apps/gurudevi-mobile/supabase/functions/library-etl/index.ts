@@ -2,14 +2,13 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type'};
 
 /**
- * library-etl — The Enrichment Protocol
+ * library-etl  The Enrichment Protocol
  *
  * Actions:
- *   enrich — Extract topics via AI + generate vector embedding + store in library_resources.
+ *   enrich  Extract topics via AI + generate vector embedding + store in library_resources.
  *
  * Secrets required:
  *   OPENAI_API_KEY                      (for embeddings + topic extraction)
@@ -39,7 +38,7 @@ Deno.serve(async (req: Request) => {
 
             if (fetchError || !resource) throw new Error('Resource not found');
 
-            // 2. Build text for embedding — title + description + subjects + existing topics
+            // 2. Build text for embedding  title + description + subjects + existing topics
             // Include localized strings for better semantic density
             const textForEmbedding = [
                 resource.title,
@@ -66,17 +65,13 @@ Deno.serve(async (req: Request) => {
                             messages: [
                                 {
                                     role: 'system',
-                                    content: 'You extract educational topic tags for a Sri Lankan school library resource. Return ONLY a JSON array of 3-6 concise topic strings (e.g. ["mathematics", "fractions", "grade 7"]). No explanation.',
-                                },
+                                    content: 'You extract educational topic tags for a Sri Lankan school library resource. Return ONLY a JSON array of 3-6 concise topic strings (e.g. ["mathematics", "fractions", "grade 7"]). No explanation.'},
                                 {
                                     role: 'user',
-                                    content: `Title: ${resource.title}\nDescription: ${resource.description ?? 'N/A'}\nSubjects: ${resource.subjects?.join(', ') ?? 'N/A'}`,
-                                },
+                                    content: `Title: ${resource.title}\nDescription: ${resource.description ?? 'N/A'}\nSubjects: ${resource.subjects?.join(', ') ?? 'N/A'}`},
                             ],
                             max_tokens: 120,
-                            temperature: 0.2,
-                        }),
-                    });
+                            temperature: 0.2})});
                     if (topicRes.ok) {
                         const topicData = await topicRes.json();
                         const raw = topicData.choices?.[0]?.message?.content?.trim() ?? '';
@@ -99,9 +94,7 @@ Deno.serve(async (req: Request) => {
                         headers: { 'Authorization': `Bearer ${openAiKey}`, 'Content-Type': 'application/json' },
                         body: JSON.stringify({
                             model: 'text-embedding-3-small',
-                            input: textForEmbedding,
-                        }),
-                    });
+                            input: textForEmbedding})});
                     if (embRes.ok) {
                         const embData = await embRes.json();
                         embedding = embData.data?.[0]?.embedding ?? null;
@@ -130,8 +123,7 @@ Deno.serve(async (req: Request) => {
                     success: true,
                     enrichedTopics,
                     embeddingGenerated: !!embedding,
-                    aiEnriched: !!openAiKey,
-                }),
+                    aiEnriched: !!openAiKey}),
                 { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
             );
         }

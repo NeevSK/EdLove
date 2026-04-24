@@ -11,13 +11,14 @@ import {
     TextareaInput,
     Input,
     InputField,
-    useTheme,
-    Theme,
+    Icon,
+    Pressable,
+    Image,
+    Spinner
 } from '@repo/ui';
-import { Mic, Image as ImageIcon, Trash2, BarChart3, Plus, X, Lock, Users, Clock } from 'lucide-react-native';
 import { useCommunity } from '../hooks/useCommunity';
-import { uploadToCloudinary } from '@repo/core';
-import { TouchableOpacity, Image, ActivityIndicator, ScrollView, Switch, Platform } from 'react-native';
+import { uploadToCloudinary, usePermissions } from '@repo/core';
+import { ScrollView, Switch, Platform } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import type { PollData } from '../types/Community';
 
@@ -26,19 +27,17 @@ interface PostMetadata {
     [key: string]: unknown;
 }
 
-// Education tag catalogue — stored in metadata.education_tags
 const EDUCATION_TAGS = [
-    { id: 'lesson', label: '📚 Lesson' },
-    { id: 'assignment', label: '📝 Assignment' },
-    { id: 'tip', label: '💡 Tip' },
-    { id: 'resource', label: '🔗 Resource' },
-    { id: 'celebration', label: '🎉 Celebration' },
-    { id: 'question', label: '❓ Question' },
-    { id: 'announcement', label: '📢 Announcement' },
-    { id: 'wellbeing', label: '🌱 Wellbeing' },
+    { id: 'lesson', label: '\uD83D\uDCDA Lesson' },
+    { id: 'assignment', label: '\uD83D\uDCDD Assignment' },
+    { id: 'tip', label: '\uD83D\uDCA1 Tip' },
+    { id: 'resource', label: '\uD83D\uDD17 Resource' },
+    { id: 'celebration', label: '\uD83C\uDF89 Celebration' },
+    { id: 'question', label: '\u2753 Question' },
+    { id: 'announcement', label: '\uD83D\uDCE2 Announcement' },
+    { id: 'wellbeing', label: '\uD83C\uDF31 Wellbeing' },
 ];
 
-// Quick-pick durations for poll end time (null = no expiry)
 const DURATION_PRESETS: { label: string; hours: number | null }[] = [
     { label: 'No end', hours: null },
     { label: '1 h',   hours: 1 },
@@ -55,7 +54,7 @@ interface CreatePostModalProps {
 
 export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePostModalProps) {
     const { createPost } = useCommunity();
-    const { text, accent, glass } = useTheme();
+    const { can, flags } = usePermissions();
 
     const [content, setContent] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -63,14 +62,11 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
     const [isUploading, setIsUploading] = useState(false);
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
-    // ── Poll state ────────────────────────────────────────────────────────────
     const [isPollMode, setIsPollMode] = useState(false);
     const [pollOptions, setPollOptions] = useState<string[]>(['', '']);
     const [pollIsAnonymous, setPollIsAnonymous] = useState(false);
     const [pollAllowMultiple, setPollAllowMultiple] = useState(false);
-    /** Selected hours preset; null = no expiry; 'custom' = show custom input */
     const [pollDurationHours, setPollDurationHours] = useState<number | null>(null);
-    /** Web-only custom ISO datetime string from <input type="datetime-local"> */
     const [pollCustomEndsAt, setPollCustomEndsAt] = useState<string>('');
     const [showCustomDate, setShowCustomDate] = useState(false);
 
@@ -82,7 +78,7 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
 
     const pickImage = async () => {
         const result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ['images'],
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
             allowsEditing: true,
             aspect: [4, 3],
             quality: 0.8,
@@ -124,7 +120,6 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
         if (pollOptions.length > 2) setPollOptions(pollOptions.filter((_, i) => i !== index));
     };
 
-    /** Compute the ISO ends_at string from the current duration selection. */
     const computeEndsAt = (): string | null => {
         if (showCustomDate && pollCustomEndsAt) return new Date(pollCustomEndsAt).toISOString();
         if (pollDurationHours === null) return null;
@@ -166,11 +161,7 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
                 metadata: selectedTags.length > 0 ? ({ education_tags: selectedTags } as PostMetadata) : undefined,
             });
 
-            setContent('');
-            setSelectedImage(null);
-            setSelectedTags([]);
-            resetPoll();
-            onClose();
+            handleClose();
         } catch (error) {
             console.error('Failed to create post:', error);
             setIsUploading(false);
@@ -181,16 +172,11 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
 
     const footer = (
         <Button
-            action="primary"
             onPress={handleSubmit}
             isDisabled={(!content.trim() && !selectedImage) || isSubmitting || isUploading}
-            sx={{
-                backgroundColor: accent.action,
-                borderRadius: Theme.corners.comfortable,
-                width: '100%',
-            }}
+            className="w-full bg-phase-interactive h-12 rounded-2xl active:opacity-90"
         >
-            <ButtonText {...({ color: text.inverse, bold: true } as any)}>Post Resonance</ButtonText>
+            <ButtonText className="text-inverted font-bold">Post Resonance</ButtonText>
         </Button>
     );
 
@@ -201,162 +187,121 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
             title="Share with the Circle"
             footer={footer}
         >
-            <VStack {...({ space: 'md' } as any)}>
-                <Textarea sx={{
-                    backgroundColor: glass.interact.bg,
-                    borderColor: glass.interact.border,
-                    minHeight: isPollMode ? 80 : 180,
-                }}>
+            <VStack className="gap-4">
+                <Textarea className="bg-phase-surface border-border min-h-[180px] rounded-2xl">
                     <TextareaInput
-                        placeholder={isPollMode ? 'Ask your question…' : "What's on your mind?"}
-                        placeholderTextColor={text.muted}
-                        {...({ color: text.primary } as any)}
+                        placeholder={isPollMode ? 'Ask your question\u2026' : "What's on your mind?"}
+                        className="text-ink text-base"
                         value={content}
                         onChangeText={setContent}
-                        sx={{ lineHeight: 22 }}
                     />
                 </Textarea>
 
-                {/* ── Poll builder ── */}
                 {isPollMode && (
-                    <VStack {...({ space: 'md' } as any)}>
-
-                        {/* Options */}
-                        <VStack {...({ space: 'sm' } as any)}>
+                    <VStack className="gap-4">
+                        <VStack className="gap-2">
                             {pollOptions.map((opt, idx) => (
-                                <HStack key={idx} {...({ space: 'sm', alignItems: 'center' } as any)}>
-                                    <Input sx={{
-                                        flex: 1,
-                                        backgroundColor: glass.interact.bg,
-                                        borderColor: glass.interact.border,
-                                        borderRadius: Theme.corners.comfortable,
-                                        height: 48,
-                                    }}>
+                                <HStack key={idx} className="items-center gap-2">
+                                    <Input className="flex-1 bg-phase-surface border-border h-12 rounded-xl">
                                         <InputField
                                             placeholder={`Option ${idx + 1}`}
                                             value={opt}
                                             onChangeText={(val: string) => updatePollOption(idx, val)}
-                                            {...({ color: text.primary, size: 'sm' } as any)}
+                                            className="text-ink text-sm"
                                         />
                                     </Input>
                                     {pollOptions.length > 2 && (
-                                        <TouchableOpacity onPress={() => removePollOption(idx)}>
-                                            <X size={18} color={text.muted} />
-                                        </TouchableOpacity>
+                                        <Pressable onPress={() => removePollOption(idx)} className="p-2">
+                                            <Icon as={X} size="sm" className="text-ink/40" />
+                                        </Pressable>
                                     )}
                                 </HStack>
                             ))}
                             {pollOptions.length < 5 && (
-                                <TouchableOpacity
+                                <Pressable
                                     onPress={addPollOption}
-                                    style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 6, gap: 6 }}
+                                    className="flex-row items-center py-2 gap-2"
                                 >
-                                    <Plus size={15} color={accent.action} />
-                                    <Text {...({ color: accent.action, size: '$sm' } as any)} sx={{ fontWeight: '600' }}>
+                                    <Icon as={Plus} size="xs" className="text-phase-interactive" />
+                                    <Text className="text-phase-interactive text-sm font-semibold">
                                         Add option
                                     </Text>
-                                </TouchableOpacity>
+                                </Pressable>
                             )}
                         </VStack>
 
-                        {/* ── Poll settings ── */}
                         <VStack
-                            {...({ space: 'sm' } as any)}
-                            sx={{
-                                backgroundColor: glass.interact.bg,
-                                borderRadius: Theme.corners.comfortable,
-                                borderWidth: 1,
-                                borderColor: glass.interact.border,
-                                padding: Theme.spacing.md,
-                            }}
+                            className="gap-3 bg-phase-surface/50 p-4 border border-border rounded-2xl"
                         >
-                            {/* Anonymous votes */}
-                            <HStack justifyContent="space-between" alignItems="center">
-                                <HStack {...({ space: 'xs', alignItems: 'center' } as any)}>
-                                    <Lock size={14} color={text.secondary} />
-                                    <Text {...({ color: text.primary, size: '$sm' } as any)}>Anonymous votes</Text>
+                            <HStack className="justify-between items-center">
+                                <HStack className="items-center gap-2">
+                                    <Icon as={Lock} size="xs" className="text-ink/60" />
+                                    <Text className="text-ink text-sm">Anonymous votes</Text>
                                 </HStack>
                                 <Switch
                                     value={pollIsAnonymous}
                                     onValueChange={setPollIsAnonymous}
-                                    trackColor={{ false: glass.interact.border, true: accent.action }}
+                                    trackColor={{ false: '#e2e8f0', true: '#6366f1' }}
                                     thumbColor="#fff"
                                 />
                             </HStack>
-
-                            {/* Multiple choice */}
-                            <HStack justifyContent="space-between" alignItems="center">
-                                <HStack {...({ space: 'xs', alignItems: 'center' } as any)}>
-                                    <Users size={14} color={text.secondary} />
-                                    <Text {...({ color: text.primary, size: '$sm' } as any)}>Allow multiple choices</Text>
+ 
+                            <HStack className="justify-between items-center">
+                                <HStack className="items-center gap-2">
+                                    <Icon as={Users} size="xs" className="text-ink/60" />
+                                    <Text className="text-ink text-sm">Allow multiple choices</Text>
                                 </HStack>
                                 <Switch
                                     value={pollAllowMultiple}
                                     onValueChange={setPollAllowMultiple}
-                                    trackColor={{ false: glass.interact.border, true: accent.action }}
+                                    trackColor={{ false: '#e2e8f0', true: '#6366f1' }}
                                     thumbColor="#fff"
                                 />
                             </HStack>
-
-                            {/* End time */}
-                            <VStack {...({ space: 'xs' } as any)}>
-                                <HStack {...({ space: 'xs', alignItems: 'center' } as any)}>
-                                    <Clock size={14} color={text.secondary} />
-                                    <Text {...({ color: text.secondary, size: '$xs' } as any)} sx={{ fontWeight: '600' }}>
+ 
+                            <VStack className="gap-2">
+                                <HStack className="items-center gap-2">
+                                    <Icon as={Clock} size="xs" className="text-ink/60" />
+                                    <Text className="text-ink/60 text-xs font-semibold">
                                         Poll closes
                                     </Text>
                                 </HStack>
                                 <ScrollView
                                     horizontal
                                     showsHorizontalScrollIndicator={false}
-                                    contentContainerStyle={{ gap: 6 }}
                                 >
-                                    {DURATION_PRESETS.map(p => {
-                                        const isActive = !showCustomDate && pollDurationHours === p.hours;
-                                        return (
-                                            <TouchableOpacity
-                                                key={p.label}
-                                                onPress={() => {
-                                                    setShowCustomDate(false);
-                                                    setPollDurationHours(p.hours);
-                                                }}
-                                                style={{
-                                                    paddingHorizontal: 12,
-                                                    paddingVertical: 6,
-                                                    borderRadius: Theme.corners.full,
-                                                    backgroundColor: isActive ? accent.action : glass.interact.bg,
-                                                    borderWidth: 1,
-                                                    borderColor: isActive ? accent.action : glass.interact.border,
-                                                }}
-                                            >
-                                                <Text sx={{ fontSize: 12, color: isActive ? text.inverse : text.secondary, fontWeight: isActive ? '600' : '400' }}>
-                                                    {p.label}
-                                                </Text>
-                                            </TouchableOpacity>
-                                        );
-                                    })}
+                                    <HStack className="gap-2">
+                                        {DURATION_PRESETS.map(p => {
+                                            const isActive = !showCustomDate && pollDurationHours === p.hours;
+                                            return (
+                                                <Pressable
+                                                    key={p.label || 'none'}
+                                                    onPress={() => {
+                                                        setShowCustomDate(false);
+                                                        setPollDurationHours(p.hours);
+                                                    }}
+                                                    className={`px-3 py-1.5 rounded-full border ${isActive ? 'bg-phase-interactive border-phase-interactive' : 'bg-phase-surface border-border'}`}
+                                                >
+                                                    <Text className={`text-xs ${isActive ? 'text-inverted font-semibold' : 'text-ink/60'}`}>
+                                                        {p.label}
+                                                    </Text>
+                                                </Pressable>
+                                            );
+                                        })}
 
-                                    {/* Custom — web gets a real datetime-local input */}
-                                    {Platform.OS === 'web' && (
-                                        <TouchableOpacity
-                                            onPress={() => { setShowCustomDate(true); setPollDurationHours(null); }}
-                                            style={{
-                                                paddingHorizontal: 12,
-                                                paddingVertical: 6,
-                                                borderRadius: Theme.corners.full,
-                                                backgroundColor: showCustomDate ? accent.action : glass.interact.bg,
-                                                borderWidth: 1,
-                                                borderColor: showCustomDate ? accent.action : glass.interact.border,
-                                            }}
-                                        >
-                                            <Text sx={{ fontSize: 12, color: showCustomDate ? text.inverse : text.secondary, fontWeight: showCustomDate ? '600' : '400' }}>
-                                                Custom
-                                            </Text>
-                                        </TouchableOpacity>
-                                    )}
+                                        {Platform.OS === 'web' && (
+                                            <Pressable
+                                                onPress={() => { setShowCustomDate(true); setPollDurationHours(null); }}
+                                                className={`px-3 py-1.5 rounded-full border ${showCustomDate ? 'bg-phase-interactive border-phase-interactive' : 'bg-phase-surface border-border'}`}
+                                            >
+                                                <Text className={`text-xs ${showCustomDate ? 'text-inverted font-semibold' : 'text-ink/60'}`}>
+                                                    Custom
+                                                </Text>
+                                            </Pressable>
+                                        )}
+                                    </HStack>
                                 </ScrollView>
 
-                                {/* Web custom datetime input */}
                                 {Platform.OS === 'web' && showCustomDate && (
                                     <input
                                         type="datetime-local"
@@ -366,10 +311,10 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
                                         style={{
                                             marginTop: 6,
                                             padding: '8px 12px',
-                                            borderRadius: Theme.corners.comfortable,
-                                            border: `1px solid ${glass.interact.border}`,
-                                            backgroundColor: glass.interact.bg,
-                                            color: text.primary,
+                                            borderRadius: '12px',
+                                            border: '1px solid #e2e8f0',
+                                            backgroundColor: '#f8fafc',
+                                            color: '#0f172a',
                                             fontSize: 14,
                                             width: '100%',
                                             outline: 'none',
@@ -382,93 +327,74 @@ export default function CreatePostModal({ isOpen, onClose, groupId }: CreatePost
                 )}
 
                 {/* Education Tags */}
-                <VStack {...({ space: 'xs' } as any)}>
-                    <Text {...({ color: text.secondary, size: '$xs' } as any)} sx={{ fontWeight: '600' }}>
+                <VStack className="gap-2">
+                    <Text className="text-ink/60 text-xs font-semibold">
                         Tag this post (optional)
                     </Text>
                     <ScrollView
                         horizontal
                         showsHorizontalScrollIndicator={false}
-                        contentContainerStyle={{ gap: 8 }}
                     >
-                        {EDUCATION_TAGS.map((tag) => {
-                            const active = selectedTags.includes(tag.id);
-                            return (
-                                <TouchableOpacity
-                                    key={tag.id}
-                                    onPress={() => toggleTag(tag.id)}
-                                    style={{
-                                        paddingHorizontal: 12,
-                                        paddingVertical: 6,
-                                        borderRadius: Theme.corners.full,
-                                        backgroundColor: active ? accent.action : glass.interact.bg,
-                                        borderWidth: 1,
-                                        borderColor: active ? accent.action : glass.interact.border,
-                                    }}
-                                >
-                                    <Text sx={{
-                                        fontSize: 12,
-                                        color: active ? text.inverse : text.secondary,
-                                        fontWeight: active ? '600' : '400',
-                                    }}>
-                                        {tag.label}
-                                    </Text>
-                                </TouchableOpacity>
-                            );
-                        })}
+                        <HStack className="gap-2">
+                            {EDUCATION_TAGS.map((tag) => {
+                                const active = selectedTags.includes(tag.id);
+                                return (
+                                    <Pressable
+                                        key={tag.id}
+                                        onPress={() => toggleTag(tag.id)}
+                                        className={`px-3 py-1.5 rounded-full border ${active ? 'bg-phase-interactive border-phase-interactive' : 'bg-phase-surface border-border'}`}
+                                    >
+                                        <Text className={`text-xs ${active ? 'text-inverted font-semibold' : 'text-ink/60'}`}>
+                                            {tag.label}
+                                        </Text>
+                                    </Pressable>
+                                );
+                            })}
+                        </HStack>
                     </ScrollView>
                 </VStack>
 
                 {selectedImage && (
-                    <Box sx={{ position: 'relative', borderRadius: Theme.corners.comfortable, overflow: 'hidden', height: 200 }}>
+                    <Box className="relative rounded-2xl overflow-hidden h-[200px]">
                         <Image
                             source={{ uri: selectedImage }}
-                            style={{ width: '100%', height: '100%', borderRadius: Theme.corners.comfortable }}
-                            resizeMode="cover"
+                            className="w-full h-full rounded-2xl"
+                            alt="Selected post image"
                         />
-                        <TouchableOpacity
+                        <Pressable
                             onPress={() => setSelectedImage(null)}
-                            style={{
-                                position: 'absolute', top: 8, right: 8,
-                                backgroundColor: 'rgba(107,100,128,0.60)',
-                                padding: 8, borderRadius: 20,
-                            }}
+                            className="absolute top-2 right-2 bg-black/40 p-2 rounded-full"
                         >
-                            <Trash2 size={16} color={text.inverse} />
-                        </TouchableOpacity>
+                            <Icon as={Trash2} size="sm" className="text-inverted" />
+                        </Pressable>
                         {isUploading && (
-                            <Box sx={{
-                                position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-                                backgroundColor: 'rgba(107,100,128,0.40)',
-                                justifyContent: 'center', alignItems: 'center',
-                            }}>
-                                <ActivityIndicator color={accent.action} />
+                            <Box className="absolute inset-0 bg-black/20 justify-center items-center">
+                                <Spinner />
                             </Box>
                         )}
                     </Box>
                 )}
 
                 {/* Toolbar */}
-                <HStack {...({ space: 'md' } as any)}>
-                    <TouchableOpacity
+                <HStack className="gap-4">
+                    <Pressable
                         onPress={pickImage}
-                        style={{ padding: 8, backgroundColor: glass.interact.bg, borderRadius: 8 }}
+                        className={`p-3 rounded-xl ${selectedImage ? 'bg-phase-interactive/10' : 'bg-phase-surface'}`}
                     >
-                        <ImageIcon size={20} color={selectedImage ? accent.action : text.secondary} />
-                    </TouchableOpacity>
-                    <TouchableOpacity style={{ padding: 8, backgroundColor: glass.interact.bg, borderRadius: 8 }}>
-                        <Mic size={20} color={text.secondary} />
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={() => { if (isPollMode) resetPoll(); else setIsPollMode(true); }}
-                        style={{
-                            padding: 8,
-                            backgroundColor: isPollMode ? accent.action : glass.interact.bg,
-                            borderRadius: 8,
-                        }}
-                    >
-                        <BarChart3 size={20} color={isPollMode ? text.inverse : text.secondary} />
-                    </TouchableOpacity>
+                        <Icon as={ImageIcon} size="md" className={selectedImage ? 'text-phase-interactive' : 'text-ink/40'} />
+                    </Pressable>
+                    <Pressable className="p-3 bg-phase-surface rounded-xl">
+                        <Icon as={Mic} size="md" className="text-ink/40" />
+                    </Pressable>
+                    {/* Polls gated by permissions or a specific flag if we add it, for now using general community flag */}
+                    {flags.isCommunityEnabled && (
+                        <Pressable
+                            onPress={() => { if (isPollMode) resetPoll(); else setIsPollMode(true); }}
+                            className={`p-3 rounded-xl ${isPollMode ? 'bg-phase-interactive' : 'bg-phase-surface'}`}
+                        >
+                            <Icon as={BarChart3} size="md" className={isPollMode ? 'text-inverted' : 'text-ink/40'} />
+                        </Pressable>
+                    )}
                 </HStack>
             </VStack>
         </SanctuaryModal>

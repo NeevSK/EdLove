@@ -7,11 +7,9 @@ import {
     InputField,
     SanctuaryButton,
     SanctuaryModal,
-    Theme,
-    useTheme,
 } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
-import { LIBRARY_RESOURCE_CATEGORIES, isDemo } from '@repo/core';
+import { LIBRARY_RESOURCE_CATEGORIES } from '@repo/core';
 
 type LibResourceType = 'link' | 'video' | 'pdf' | 'doc' | 'note';
 
@@ -23,7 +21,6 @@ interface AddResourceModalProps {
 
 export default function AddResourceModal({ isOpen, onClose, onAdd }: AddResourceModalProps) {
     const { t } = useTranslation();
-    const { text, glass } = useTheme();
     const [title, setTitle] = useState('');
     const [url, setUrl] = useState('');
     const [description, setDescription] = useState('');
@@ -54,8 +51,10 @@ export default function AddResourceModal({ isOpen, onClose, onAdd }: AddResource
     };
 
     const footer = (
-        <HStack {...({ space: "md" } as any)}>
-            <SanctuaryButton onPress={onClose} variant="ghost" action="secondary">{t('library.addResource.dismiss')}</SanctuaryButton>
+        <HStack className="gap-4">
+            <SanctuaryButton onPress={onClose} variant="ghost">
+                {t('library.addResource.dismiss')}
+            </SanctuaryButton>
             <SanctuaryButton
                 onPress={handleAdd}
                 isDisabled={!title || !url}
@@ -73,12 +72,14 @@ export default function AddResourceModal({ isOpen, onClose, onAdd }: AddResource
             subtitle={t('library.addResource.subtitle')}
             footer={footer}
         >
-            <VStack {...({ space: "md", mt: "$4" } as any)}>
-                <VStack {...({ space: "xs" } as any)}>
-                    <Text {...({ color: text.secondary, size: "xs", bold: true } as any)}>{t('library.addResource.infoSection')}</Text>
-                    <Input sx={{ backgroundColor: glass.interact.bg, borderColor: glass.interact.border }}>
+            <VStack className="gap-4 mt-4">
+                <VStack className="gap-1">
+                    <Text className="text-phaseText-secondary text-xs font-bold">
+                        {t('library.addResource.infoSection')}
+                    </Text>
+                    <Input className="bg-phase-surface border-phase-border">
                         <InputField
-                            {...({ color: text.primary } as any)}
+                            className="text-phaseText-primary"
                             placeholder={t('library.addResource.titlePlaceholder')}
                             value={title}
                             onChangeText={setTitle}
@@ -86,9 +87,9 @@ export default function AddResourceModal({ isOpen, onClose, onAdd }: AddResource
                     </Input>
                 </VStack>
 
-                <Input sx={{ backgroundColor: glass.interact.bg, borderColor: glass.interact.border }}>
+                <Input className="bg-phase-surface border-phase-border">
                     <InputField
-                        {...({ color: text.primary } as any)}
+                        className="text-phaseText-primary"
                         placeholder={t('library.addResource.urlPlaceholder')}
                         value={url}
                         onChangeText={setUrl}
@@ -96,9 +97,9 @@ export default function AddResourceModal({ isOpen, onClose, onAdd }: AddResource
                     />
                 </Input>
 
-                <Input sx={{ minHeight: 80, backgroundColor: glass.interact.bg, borderColor: glass.interact.border }}>
+                <Input className="min-h-[80px] bg-phase-surface border-phase-border">
                     <InputField
-                        {...({ color: text.primary } as any)}
+                        className="text-phaseText-primary"
                         placeholder={t('library.addResource.descriptionPlaceholder')}
                         value={description}
                         onChangeText={setDescription}
@@ -106,16 +107,17 @@ export default function AddResourceModal({ isOpen, onClose, onAdd }: AddResource
                     />
                 </Input>
 
-                <VStack {...({ space: "xs" } as any)}>
-                    <Text {...({ color: text.secondary, size: "xs", bold: true } as any)}>{t('library.addResource.typeSection')}</Text>
-                    <HStack {...({ space: "xs", flexWrap: "wrap" } as any)}>
+                <VStack className="gap-1">
+                    <Text className="text-phaseText-secondary text-xs font-bold">
+                        {t('library.addResource.typeSection')}
+                    </Text>
+                    <HStack className="gap-2 flex-wrap">
                         {LIBRARY_RESOURCE_CATEGORIES.map(cat => (
                             <SanctuaryButton
                                 key={cat.id}
                                 onPress={() => setType(cat.id as LibResourceType)}
                                 variant={type === cat.id ? 'solid' : 'outline'}
                                 size="xs"
-                                action="secondary"
                             >
                                 {t(`library.types.${cat.id}` as any)}
                             </SanctuaryButton>
@@ -123,11 +125,13 @@ export default function AddResourceModal({ isOpen, onClose, onAdd }: AddResource
                     </HStack>
                 </VStack>
 
-                <VStack {...({ space: "xs" } as any)}>
-                    <Text {...({ color: text.secondary, size: "xs", bold: true } as any)}>{t('library.addResource.tagsSection')}</Text>
-                    <Input sx={{ backgroundColor: glass.interact.bg, borderColor: glass.interact.border }}>
+                <VStack className="gap-1">
+                    <Text className="text-phaseText-secondary text-xs font-bold">
+                        {t('library.addResource.tagsSection')}
+                    </Text>
+                    <Input className="bg-phase-surface border-phase-border">
                         <InputField
-                            {...({ color: text.primary } as any)}
+                            className="text-phaseText-primary"
                             placeholder={t('library.addResource.tagsPlaceholder')}
                             value={tags}
                             onChangeText={setTags}

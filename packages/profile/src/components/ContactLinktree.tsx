@@ -6,33 +6,30 @@
  */
 
 import React, { useCallback, useState } from 'react';
-import { Platform, TouchableOpacity } from 'react-native';
+import { Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import {
     VStack,
     HStack,
     Box,
     Text,
-    Theme,
-    SanctuaryCard,
-    SanctuaryButton,
-    useThemedColors,
+    Button,
+    ButtonText,
     LivingGlow,
     FadeInDown,
     openExternalURL,
     showExternalLinkOptions,
+    hapticLight,
+    hapticHeavy,
+    Pressable,
 } from '@repo/ui';
 import {
-    Phone,
     Linkedin,
     Instagram,
     Globe,
     ExternalLink,
     Mail,
     MessagesSquare,
-    ShieldCheck,
-    Shield,
-    ShieldAlert,
     Link,
     Edit2,
     Trash2,
@@ -44,7 +41,6 @@ import * as Clipboard from 'expo-clipboard';
 import { AddSocialLinkModal } from './AddSocialLinkModal';
 import { useSocialLinks } from '../hooks/useSocialLinks';
 import { InlineSocialLinkEditor } from './InlineSocialLinkEditor';
-import { hapticLight, hapticHeavy } from '@repo/ui';
 
 interface ContactLinktreeProps {
     links: SocialLink[];
@@ -57,9 +53,9 @@ interface ContactLinktreeProps {
 }
 
 const PRIVACY_ICONS: Record<string, string> = {
-    public: '🌍',
-    particulars: '👥',
-    private: '🔒',
+    public: '\uD83C\uDF10',      // 🌐
+    particulars: '\uD83D\uDC65', // 👥
+    private: '\uD83D\uDD12',     // 🔒
 };
 
 
@@ -71,38 +67,37 @@ const PROVIDER_CONFIG: Record<string, {
 }> = {
     whatsapp: {
         icon: MessagesSquare,
-        color: Theme.colors.whatsapp,
+        color: '#25D366', // Brand color
         label: 'WhatsApp',
         getUri: (value) => `whatsapp://send?phone=${value.replace(/\D/g, '')}`
     },
     linkedin: {
         icon: Linkedin,
-        color: Theme.colors.linkedin,
+        color: '#0077B5', // Brand color
         label: 'LinkedIn',
         getUri: (value) => value.startsWith('http') ? value : `https://www.linkedin.com/in/${value}`
     },
     instagram: {
         icon: Instagram,
-        color: Theme.colors.instagram,
+        color: '#E4405F', // Brand color
         label: 'Instagram',
         getUri: (value) => value.startsWith('http') ? value : `https://instagram.com/${value}`
     },
     portfolio: {
         icon: Globe,
-        color: Theme.colors.portfolio,
+        color: '#4A90E2', // Legacy portfolio color
         label: 'Portfolio',
         getUri: (value) => value.startsWith('http') ? value : `https://${value}`
     },
     email: {
         icon: Mail,
-        color: Theme.colors.emberOrange,
+        color: '#F44336', // Semantic error/danger for alert
         label: 'Email',
         getUri: (value) => `mailto:${value}`
     }
 };
 
 export function ContactLinktree({ links, userName, bio, isOwnProfile, userId, editable, inline }: ContactLinktreeProps) {
-    const colors = useThemedColors();
     const { t } = useTranslation();
     const [isEditing, setIsEditing] = useState(false);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -186,9 +181,9 @@ export function ContactLinktree({ links, userName, bio, isOwnProfile, userId, ed
         if (Platform.OS === 'web' && typeof navigator !== 'undefined' && navigator.share) {
             try {
                 await navigator.share({ title: `${userName} on Gurudevi`, url });
-                return; // Share succeeded — no clipboard needed
+                return; // Share succeeded  no clipboard needed
             } catch {
-                // User cancelled or Share unavailable — fall through to clipboard
+                // User cancelled or Share unavailable  fall through to clipboard
             }
         }
         // Clipboard fallback (native path + web Share cancel/unavailable)
@@ -221,60 +216,61 @@ export function ContactLinktree({ links, userName, bio, isOwnProfile, userId, ed
     };
 
     return (
-        <VStack space="lg" sx={{ width: '100%' }}>
+        <VStack space="lg" className="w-full">
             {/* Header / Intro */}
-            <VStack space="xs" alignItems="center" sx={{ marginBottom: Theme.spacing.md }}>
-                <LivingGlow size={64} glowColor={Theme.colors.sanctuarySaffron}>
+            <VStack space="xs" className="items-center mb-10">
+                <LivingGlow size={72} glowColor="#F6BF8C">
                     <Box
-                        sx={{
-                            width: 64,
-                            height: 64,
-                            borderRadius: Theme.corners.full,
-                            backgroundColor: colors.primary,
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            borderWidth: 2,
-                            borderColor: Theme.colors.sanctuarySaffron
-                        }}
+                        className="w-[72px] h-[72px] rounded-full bg-phase-canvas items-center justify-center border-2 border-phase-interactive"
                     >
-                        <Text size="xl" bold color={colors.textPrimary}>
+                        <Text className="text-2xl font-bold text-phase-text-primary">
                             {userName.charAt(0)}
                         </Text>
                     </Box>
                 </LivingGlow>
-                <Text size="xl" bold color={colors.textPrimary} sx={{ marginTop: Theme.spacing.sm }}>
+                <Text className="text-xl font-bold text-phase-text-primary mt-4">
                     {userName}
                 </Text>
                 {bio && (
-                    <Text size="sm" color={colors.textSecondary} textAlign="center" sx={{ paddingHorizontal: Theme.spacing.xl }}>
+                    <Text className="text-sm text-phase-text-secondary text-center px-10 mt-1">
                         {bio}
                     </Text>
                 )}
-                {/* Copy/Share profile link — visible on web always, on native only for own profile */}
-                <HStack space="sm">
+                
+                <HStack space="md" className="mt-6">
                     {(Platform.OS === 'web' || isOwnProfile) && (
-                        <SanctuaryButton
+                        <Button
                             size="sm"
                             variant="outline"
                             onPress={handleCopyProfileLink}
-                            leftIcon={Link}
+                            className="border-phase-surface rounded-xl px-4"
                         >
-                            {Platform.OS === 'web' ? 'Share Profile Link' : 'Copy Profile Link'}
-                        </SanctuaryButton>
+                            <HStack space="xs" className="items-center">
+                                <Link size={14} color="#4A90E2" />
+                                <ButtonText className="text-phase-text-primary text-xs">
+                                    {Platform.OS === 'web' ? 'Share Profile' : 'Copy Link'}
+                                </ButtonText>
+                            </HStack>
+                        </Button>
                     )}
                     
                     {isOwnProfile && editable && (
-                        <SanctuaryButton
+                        <Button
                             size="sm"
                             variant={isEditing ? "solid" : "outline"}
                             onPress={() => {
                                 hapticLight();
                                 setIsEditing(!isEditing);
                             }}
-                            leftIcon={Edit2}
+                            className={`${isEditing ? 'bg-phase-interactive' : 'border-phase-surface'} rounded-xl px-4`}
                         >
-                            {isEditing ? 'Done' : 'Edit Contacts'}
-                        </SanctuaryButton>
+                            <HStack space="xs" className="items-center">
+                                <Edit2 size={14} color={isEditing ? "white" : "#4A90E2"} />
+                                <ButtonText className={`${isEditing ? 'text-white' : 'text-phase-text-primary'} text-xs`}>
+                                    {isEditing ? 'Done' : 'Edit Hub'}
+                                </ButtonText>
+                            </HStack>
+                        </Button>
                     )}
                 </HStack>
             </VStack>
@@ -310,52 +306,45 @@ export function ContactLinktree({ links, userName, bio, isOwnProfile, userId, ed
                             key={`${link.platform}-${index}`}
                             entering={FadeInDown.delay(index * 100).springify()}
                         >
-                            <SanctuaryCard
-                                variant="glass"
+                            <Pressable 
                                 onPress={() => isEditing ? handleEditLink(link) : handlePress(link.platform, link.url)}
                                 onLongPress={() => !isEditing && handleLinkOptions(link.platform, link.url)}
+                                className="bg-phase-canvas border border-phase-surface rounded-3xl overflow-hidden shadow-sm"
                             >
-                                <HStack space="md" alignItems="center" sx={{ padding: Theme.spacing.md }}>
+                                <HStack space="md" className="items-center p-5">
                                     <Box
-                                        sx={{
-                                            width: 40,
-                                            height: 40,
-                                            borderRadius: Theme.corners.comfortable,
-                                            backgroundColor: `${config.color}20`,
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                        }}
+                                        className="w-12 h-12 rounded-2xl items-center justify-center"
+                                        style={{ backgroundColor: `${config.color}15` }}
                                     >
-                                        <Icon color={config.color} size={20} />
+                                        <Icon color={config.color} size={24} />
                                     </Box>
-                                    <VStack sx={{ flex: 1 }}>
-                                        <HStack space="xs" alignItems="center">
-                                            <Text size="md" bold color={colors.textPrimary}>
+                                    <VStack className="flex-1">
+                                        <HStack space="xs" className="items-center">
+                                            <Text className="text-lg font-bold text-phase-text-primary">
                                                 {config.label}
                                             </Text>
                                             {isOwnProfile && PrivacyEmoji && (
-                                                <Text style={{ fontSize: 13, marginLeft: 4 }}>{PrivacyEmoji}</Text>
+                                                <Text className="text-[14px] ml-1">{PrivacyEmoji}</Text>
                                             )}
                                         </HStack>
-                                        <Text size="xs" color={colors.textTertiary} numberOfLines={1}>
+                                        <Text className="text-xs text-phase-text-tertiary" numberOfLines={1}>
                                             {link.url}
                                         </Text>
                                     </VStack>
-                                    
                                     {isEditing ? (
-                                        <HStack space="sm">
-                                            <TouchableOpacity onPress={() => handleEditLink(link)} style={{ padding: 4 }}>
-                                                <Edit2 size={18} color={colors.action} />
-                                            </TouchableOpacity>
-                                            <TouchableOpacity onPress={() => handleDeleteLink(link.id)} style={{ padding: 4 }}>
-                                                <Trash2 size={18} color={colors.error} />
-                                            </TouchableOpacity>
+                                        <HStack space="md">
+                                            <Pressable onPress={() => handleEditLink(link)} className="p-2 rounded-lg bg-phase-surface">
+                                                <Edit2 size={18} color="#4A90E2" />
+                                            </Pressable>
+                                            <Pressable onPress={() => handleDeleteLink(link.id)} className="p-2 rounded-lg bg-phase-surface">
+                                                <Trash2 size={18} color="#FF6B6B" />
+                                            </Pressable>
                                         </HStack>
                                     ) : (
-                                        <ExternalLink size={18} color={colors.textTertiary} />
+                                        <ExternalLink size={18} color="#9DA1A3" />
                                     )}
                                 </HStack>
-                            </SanctuaryCard>
+                            </Pressable>
                         </Animated.View>
                     );
                 })}
@@ -377,16 +366,15 @@ export function ContactLinktree({ links, userName, bio, isOwnProfile, userId, ed
                             />
                         )}
                         <Animated.View entering={FadeInDown.springify()}>
-                            <SanctuaryCard
-                                variant="glass"
+                            <Pressable
                                 onPress={handleAddLink}
-                                style={{ borderStyle: 'dashed' }}
+                                className="bg-phase-canvas border-2 border-dashed border-phase-surface rounded-3xl p-5 items-center justify-center"
                             >
-                                <HStack space="md" alignItems="center" sx={{ padding: Theme.spacing.md, justifyContent: 'center' }}>
-                                    <Plus size={20} color={colors.action} />
-                                    <Text bold color={colors.action}>Add Social Link</Text>
+                                <HStack space="sm" className="items-center">
+                                    <Plus size={20} color="#4A90E2" />
+                                    <Text className="font-bold text-phase-interactive text-base">Add Social Link</Text>
                                 </HStack>
-                            </SanctuaryCard>
+                            </Pressable>
                         </Animated.View>
                     </>
                 )}
@@ -402,8 +390,8 @@ export function ContactLinktree({ links, userName, bio, isOwnProfile, userId, ed
             )}
 
             {displayLinks.length === 0 && (
-                <Box sx={{ paddingVertical: Theme.spacing.xl, alignItems: 'center' }}>
-                    <Text color={colors.textTertiary} italic>
+                <Box className="py-12 items-center">
+                    <Text className="text-phase-text-tertiary italic text-sm">
                         {isOwnProfile ? t('community.profile.noContactsYet') || "No public contacts shared yet." : t('community.profile.noPublicContacts') || "No public contacts shared yet."}
                     </Text>
                 </Box>
