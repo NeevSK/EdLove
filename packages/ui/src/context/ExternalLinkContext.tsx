@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
-import { Box, HStack, Text, VStack } from '../gluestack';
+import { StyleSheet } from 'react-native';
+import { Box, HStack, Text, VStack, Pressable as GSPressable } from '../gluestack';
 import { useEnvironment } from './EnvironmentContext';
 import { useSanctuaryToast } from '../providers/ToastProvider';
 import SanctuaryButton from '../components/SanctuaryButton';
@@ -241,13 +241,13 @@ export function ExternalLinkProvider({ children }: { children: React.ReactNode }
               {methods.map((method) => {
                 const isSelected = selectedMethod === method.id;
                 return (
-                  <Pressable
+                  <GSPressable
                     key={method.id}
                     accessibilityRole="button"
                     onPress={() => setSelectedMethod(method.id)}
                     className={`p-4 border rounded-xl flex-row items-center gap-3 ${isSelected ? 'border-phase-accent bg-phase-accent/10' : 'border-white/10 bg-phase-surface'}`}
                   >
-                    <View
+                    <Box
                       className={`w-5 h-5 rounded-full border-[1.5px] items-center justify-center ${isSelected ? 'border-phase-accent bg-phase-accent' : 'border-white/20'}`}
                     >
                       {isSelected ? (
@@ -255,23 +255,23 @@ export function ExternalLinkProvider({ children }: { children: React.ReactNode }
                           <Check size={10} />
                         </Box>
                       ) : null}
-                    </View>
+                    </Box>
                     <VStack className="flex-1">
                       <Text className="text-phase-text-primary font-bold">{method.title}</Text>
                       <Text className="text-phase-text-secondary text-[13px] leading-5">
                         {method.description}
                       </Text>
                     </VStack>
-                  </Pressable>
+                  </GSPressable>
                 );
               })}
             </VStack>
-            <Pressable
+            <GSPressable
               accessibilityRole="button"
               onPress={() => setRememberChoice((current) => !current)}
               className="flex-row items-center gap-3 border border-white/10 rounded-xl p-4"
             >
-              <View
+              <Box
                 className={`w-5 h-5 rounded-md border-[1.5px] items-center justify-center ${rememberChoice ? 'border-phase-accent bg-phase-accent' : 'border-white/20'}`}
               >
                 {rememberChoice ? (
@@ -279,7 +279,7 @@ export function ExternalLinkProvider({ children }: { children: React.ReactNode }
                     <Check size={12} />
                   </Box>
                 ) : null}
-              </View>
+              </Box>
               <VStack className="flex-1">
                 <Text className="text-phase-text-primary font-bold">
                   Remember my choice on this{' '}
@@ -289,7 +289,7 @@ export function ExternalLinkProvider({ children }: { children: React.ReactNode }
                   You can still choose another method whenever you need to.
                 </Text>
               </VStack>
-            </Pressable>
+            </GSPressable>
           </VStack>
         )}
       </SanctuaryModal>
