@@ -37,7 +37,8 @@ export * from './utils/benchmarking';
 // PostHog Universal Helpers
 export { posthogAnalytics } from './engine/PostHogAnalytics';
 
-export const initPostHog = async (apiKey: string, host: string = 'https://eu.i.posthog.com') => {
+export const initPostHog = async (apiKey: string, hostOrOptions?: string | { host?: string }) => {
+  const host = typeof hostOrOptions === 'string' ? hostOrOptions : hostOrOptions?.host;
   await posthogAnalytics.initialize(apiKey, { host });
 };
 

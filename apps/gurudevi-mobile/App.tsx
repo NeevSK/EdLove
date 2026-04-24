@@ -449,6 +449,7 @@ function AppContent({ setCurrentTab, session, onboardingCompleted, isProfileLoad
                     PublicForm: 'f/:slug'}}}}
             >
                 <RootStack.Navigator
+                  id="RootStack"
                   screenOptions={{ headerShown: false }}
                   initialRouteName={onboardingCompleted ? 'Main' : 'Welcome'}
                 >

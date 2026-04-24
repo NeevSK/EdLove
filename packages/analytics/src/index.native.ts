@@ -11,7 +11,8 @@ import { posthogAnalytics } from './engine/PostHogAnalytics';
 /**
  * Native Init Helper
  */
-export const initPostHog = async (apiKey: string, host: string = 'https://eu.i.posthog.com') => {
+export const initPostHog = async (apiKey: string, hostOrOptions?: string | { host?: string }) => {
+  const host = typeof hostOrOptions === 'string' ? hostOrOptions : hostOrOptions?.host;
   await posthogAnalytics.initialize(apiKey, { host });
 };
 
