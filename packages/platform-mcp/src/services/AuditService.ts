@@ -1,6 +1,8 @@
 import { execSync } from "child_process";
 import { ROOT_DIR } from "../utils/constants.js";
 import { normalizeTarget, readReport } from "../utils/pathUtils.js";
+import { executeSovereignTool } from "../utils/execution.js";
+
 
 export class AuditService {
   handleAuditHygiene() {
@@ -87,4 +89,62 @@ export class AuditService {
     const output = execSync("node scripts/check-self-boundaries.mjs", { cwd: ROOT_DIR }).toString();
     return { content: [{ type: "text" as const, text: output }] };
   }
+
+
+
+  handleAuditFeatureFlags() {
+    console.error("Auditing feature flags (stale detection)...");
+    const output = execSync("node scripts/audit-feature-flags.mjs", { cwd: ROOT_DIR }).toString();
+    return { content: [{ type: "text" as const, text: output }] };
+  }
+
+
+  handleReportCognitiveLoad(args: { target?: string }) {
+    const target = args.target || "packages";
+    console.error(`Reporting cognitive load for: ${target}`);
+    const output = execSync(`node scripts/report-cognitive-load.mjs "${target}"`, { cwd: ROOT_DIR }).toString();
+    return { content: [{ type: "text" as const, text: output }] };
+  }
+
+  handleAuditI18n() {
+    console.error("Auditing i18n assets...");
+    const coverage = execSync("node scripts/i18n-key-coverage-check.mjs", { cwd: ROOT_DIR }).toString();
+    const fallbacks = execSync("node scripts/i18n-fallback-policy-check.mjs", { cwd: ROOT_DIR }).toString();
+    return {
+      content: [
+        { type: "text" as const, text: "## Key Coverage" },
+        { type: "text" as const, text: coverage },
+        { type: "text" as const, text: "## Fallback Policy" },
+        { type: "text" as const, text: fallbacks }
+      ]
+    };
+  }
+
+  handleAuditExportIntegrity() {
+    const result = executeSovereignTool(
+      "audit_export_integrity",
+      "node scripts/audit-export-integrity.mjs"
+    );
+    return { content: [{ type: "text" as const, text: result.output }] };
+  }
+
+  handleAuditBundleLeak() {
+    const result = executeSovereignTool(
+      "audit_bundle_leak",
+      "node scripts/audit-bundle-leak.mjs"
+    );
+    return { content: [{ type: "text" as const, text: result.output }] };
+  }
+
+  handleAuditFeatureFidelity(args: { includeArchives?: boolean }) {
+    const includeArchives = args.includeArchives ?? true;
+    const result = executeSovereignTool(
+      "audit_feature_fidelity",
+      `node scripts/audit-feature-fidelity.mjs ${includeArchives ? '--includeArchives' : ''}`
+    );
+    return { content: [{ type: "text" as const, text: result.output }] };
+  }
 }
+
+
+

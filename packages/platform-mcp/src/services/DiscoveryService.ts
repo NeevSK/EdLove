@@ -3,6 +3,8 @@ import fs from "fs";
 import path from "path";
 import { ROOT_DIR } from "../utils/constants.js";
 import { normalizeTarget } from "../utils/pathUtils.js";
+import { executeSovereignTool } from "../utils/execution.js";
+
 
 export class DiscoveryService {
   handleGrepCode(args: {
@@ -108,8 +110,50 @@ export class DiscoveryService {
   }
 
   handleAuditImports() {
-    console.error("Auditing external imports for native leaks...");
+    console.error("Auditing imports...");
     const output = execSync("node scripts/audit-imports.mjs", { cwd: ROOT_DIR }).toString();
     return { content: [{ type: "text" as const, text: output }] };
   }
+
+
+
+
+  handleAuditUIComponents() {
+    console.error("Auditing all UI component APIs...");
+    const output = execSync("node scripts/audit-ui-api.mjs", { cwd: ROOT_DIR }).toString();
+    return { content: [{ type: "text" as const, text: output }] };
+  }
+
+  handleFindNativeLeaks() {
+    console.error("Finding native leaks...");
+    const output = execSync("node scripts/find-native-leaks.mjs", { cwd: ROOT_DIR }).toString();
+    return { content: [{ type: "text" as const, text: output }] };
+  }
+
+  handleDebugMetro() {
+    console.error("Debugging Metro resolution...");
+    const output = execSync("node scripts/debug-metro-id.mjs", { cwd: ROOT_DIR }).toString();
+    return { content: [{ type: "text" as const, text: output }] };
+  }
+
+  handleScaffoldFeatureContext(args: { keyword: string }) {
+    const result = executeSovereignTool(
+      "scaffold_feature_context",
+      `node scripts/scaffold-feature-context.mjs "${args.keyword}"`,
+      { keyword: args.keyword }
+    );
+    return { content: [{ type: "text" as const, text: result.output }] };
+  }
+
+  handleTraceDeletionImpact(args: { symbol: string }) {
+    const result = executeSovereignTool(
+      "trace_deletion_impact",
+      `node scripts/trace-deletion-impact.mjs "${args.symbol}"`,
+      { symbol: args.symbol }
+    );
+    return { content: [{ type: "text" as const, text: result.output }] };
+  }
 }
+
+
+

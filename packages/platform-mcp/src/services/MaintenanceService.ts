@@ -3,6 +3,8 @@ import fs from "fs";
 import path from "path";
 import { ROOT_DIR } from "../utils/constants.js";
 import { findSurgicalReport, readReport } from "../utils/pathUtils.js";
+import { executeSovereignTool } from "../utils/execution.js";
+
 
 export class MaintenanceService {
   handleCreateCheckpoint(args: { message: string, stage_all?: boolean }) {
@@ -98,8 +100,54 @@ export class MaintenanceService {
   }
 
   handleTestSleekness() {
-    console.error("Testing core sleekness (import purity)...");
-    const output = execSync("npx ts-node --esm scripts/test-sleekness.ts", { cwd: ROOT_DIR }).toString();
+    console.error("Testing sleekness...");
+    const output = execSync("npx tsx scripts/test-sleekness.ts", { cwd: ROOT_DIR }).toString();
+    return { content: [{ type: "text" as const, text: output }] };
+  }
+
+
+
+  handleGenerateReadmeUsage(args: { package_path: string }) {
+    console.error(`Generating README usage for: ${args.package_path}`);
+    const output = execSync(`node scripts/generate-readme-usage.mjs "${args.package_path}"`, { cwd: ROOT_DIR }).toString();
+    return { content: [{ type: "text" as const, text: output }] };
+  }
+
+
+  handleScaffoldMocks(args: { file_path: string }) {
+    console.error(`Scaffolding mocks for: ${args.file_path}`);
+    const output = execSync(`node scripts/scaffold-mocks.mjs "${args.file_path}"`, { cwd: ROOT_DIR }).toString();
+    return { content: [{ type: "text" as const, text: output }] };
+  }
+
+  handleShieldUnicode(args: { target?: string }) {
+    const target = args.target || ".";
+    console.error(`Shielding unicode for: ${target}`);
+    const output = execSync(`node scripts/unicode-shield.mjs "${target}"`, { cwd: ROOT_DIR }).toString();
+    return { content: [{ type: "text" as const, text: output }] };
+  }
+
+  handleAuditDependencyDuplication() {
+    console.error("Auditing dependency duplication...");
+    const output = execSync("node scripts/audit-deps.js", { cwd: ROOT_DIR }).toString();
+    return { content: [{ type: "text" as const, text: output }] };
+  }
+
+  handleCheckSchemaDrift() {
+    const result = executeSovereignTool(
+      "check_schema_drift",
+      "node scripts/check-schema-drift.mjs"
+    );
+    return { content: [{ type: "text" as const, text: result.output }] };
+  }
+
+  handlePurgeStaleArtifacts(args: { ageDays?: number, dryRun?: boolean }) {
+    const age = args.ageDays || 7;
+    const dryRun = args.dryRun ? "--dry-run" : "";
+    const output = execSync(`node scripts/purge-stale-artifacts.mjs --age=${age} ${dryRun}`, { cwd: ROOT_DIR }).toString();
     return { content: [{ type: "text" as const, text: output }] };
   }
 }
+
+
+

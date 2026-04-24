@@ -255,8 +255,129 @@ class PolymathPlatformServer {
           description: "Self boundary enforcement.",
           inputSchema: { type: "object", properties: {} },
         },
+        {
+          name: "generate_readme_usage",
+          description: "Generates Usage sections in package READMEs from JSDocs.",
+          inputSchema: {
+            type: "object",
+            properties: { package_path: { type: "string" } },
+            required: ["package_path"]
+          },
+        },
+        {
+          name: "detect_stale_feature_flags",
+          description: "Identifies feature flags that are statically true and can be removed.",
+          inputSchema: { type: "object", properties: {} },
+        },
+        {
+          name: "scaffold_mocks",
+          description: "Generates a Vitest mock scaffold based on file imports.",
+          inputSchema: {
+            type: "object",
+            properties: { file_path: { type: "string" } },
+            required: ["file_path"]
+          },
+        },
+        {
+          name: "report_cognitive_load",
+          description: "Reports high cognitive load 'God Files' in the codebase.",
+          inputSchema: {
+            type: "object",
+            properties: { target: { type: "string" } }
+          },
+        },
+        {
+          name: "audit_ui_components",
+          description: "Full component API documentation generation for @repo/ui.",
+          inputSchema: { type: "object", properties: {} },
+        },
+        {
+          name: "audit_i18n",
+          description: "Audits i18n key coverage and fallback policy compliance.",
+          inputSchema: { type: "object", properties: {} },
+        },
+        {
+          name: "find_native_leaks",
+          description: "Detects leak of React Native primitives into web-only shells.",
+          inputSchema: { type: "object", properties: {} },
+        },
+        {
+          name: "shield_unicode",
+          description: "Protects against encoding corruption by escaping non-ASCII characters.",
+          inputSchema: {
+            type: "object",
+            properties: { target: { type: "string" } }
+          },
+        },
+        {
+          name: "audit_dependency_duplication",
+          description: "Detects version mismatches and high-frequency duplicates across the monorepo.",
+          inputSchema: { type: "object", properties: {} },
+        },
+        {
+          name: "debug_metro",
+          description: "Debugs Metro bundler ID resolution for native platforms.",
+          inputSchema: { type: "object", properties: {} },
+        },
+        {
+          name: "scaffold_feature_context",
+          description: "Scouts existing schemas, components, and events related to a feature keyword.",
+          inputSchema: {
+            type: "object",
+            properties: { keyword: { type: "string" } },
+            required: ["keyword"]
+          },
+        },
+        {
+          name: "audit_export_integrity",
+          description: "Analyzes package barrel exports and flags deep-import violations.",
+          inputSchema: { type: "object", properties: {} },
+        },
+        {
+          name: "trace_deletion_impact",
+          description: "Traces the recursive impact of deleting a symbol across the monorepo.",
+          inputSchema: {
+            type: "object",
+            properties: { symbol: { type: "string" } },
+            required: ["symbol"]
+          },
+        },
+        {
+          name: "check_schema_drift",
+          description: "Detects alignment drift between Database ZModel and Core Logic models.",
+          inputSchema: { type: "object", properties: {} },
+        },
+        {
+          name: "audit_bundle_leak",
+          description: "Detects heavy library leakage into sleek logic packages.",
+          inputSchema: { type: "object", properties: {} },
+        },
+        {
+          name: "audit_feature_fidelity",
+          description: "Audits the gap between documentation promises and actual implementation/feature-flags.",
+          inputSchema: {
+            type: "object",
+            properties: {
+              includeArchives: { type: "boolean", description: "Whether to include archived docs in the ancestry (default: true)" }
+            }
+          },
+        },
+        {
+          name: "purge_stale_artifacts",
+          description: "Removes old reports, logs, and temporary files based on age and extension.",
+          inputSchema: {
+            type: "object",
+            properties: {
+              ageDays: { type: "number", description: "Max age of files in days (default: 7)" },
+              dryRun: { type: "boolean", description: "Whether to perform a dry run (default: false)" }
+            }
+          },
+        },
       ],
     }));
+
+
+
 
     this.server.setRequestHandler(CallToolRequestSchema, async (request) => {
       const { name, arguments: args } = request.params;
@@ -291,8 +412,30 @@ class PolymathPlatformServer {
           case "generate_growth_signals": return this.maintenance.handleGenerateGrowthSignals();
           case "bridge_schema_zod": return this.maintenance.handleBridgeSchemaZod(args as any);
           case "test_sleekness": return this.maintenance.handleTestSleekness();
+          case "generate_readme_usage": return this.maintenance.handleGenerateReadmeUsage(args as any);
+          case "scaffold_mocks": return this.maintenance.handleScaffoldMocks(args as any);
+
+          // Additional Audit / Discovery
+          case "detect_stale_feature_flags": return this.audit.handleAuditFeatureFlags();
+          case "report_cognitive_load": return this.audit.handleReportCognitiveLoad(args as any);
+          case "audit_ui_components": return this.discovery.handleAuditUIComponents();
+          case "audit_i18n": return this.audit.handleAuditI18n();
+          case "find_native_leaks": return this.discovery.handleFindNativeLeaks();
+          case "shield_unicode": return this.maintenance.handleShieldUnicode(args as any);
+          case "audit_dependency_duplication": return this.maintenance.handleAuditDependencyDuplication();
+          case "debug_metro": return this.discovery.handleDebugMetro();
+          case "scaffold_feature_context": return this.discovery.handleScaffoldFeatureContext(args as any);
+          case "audit_export_integrity": return this.audit.handleAuditExportIntegrity();
+          case "trace_deletion_impact": return this.discovery.handleTraceDeletionImpact(args as any);
+          case "check_schema_drift": return this.maintenance.handleCheckSchemaDrift();
+          case "audit_bundle_leak": return this.audit.handleAuditBundleLeak();
+          case "audit_feature_fidelity": return this.audit.handleAuditFeatureFidelity(args as any);
+          case "purge_stale_artifacts": return this.maintenance.handlePurgeStaleArtifacts(args as any);
 
           default: throw new Error(`Unknown tool: ${name}`);
+
+
+
         }
       } catch (error: any) {
         return { content: [{ type: "text", text: `Error: ${error.message}` }], isError: true };
