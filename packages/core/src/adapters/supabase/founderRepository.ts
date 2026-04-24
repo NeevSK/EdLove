@@ -16,9 +16,7 @@ import {
 import { SchoolSchema, type SchoolZod } from '../../logic/schemas/school.schema';
 import { APIError } from '../../types/API';
 
-export const createSupabaseFounderRepository = (
-  supabase: SupabaseClient,
-): FounderRepository => ({
+export const createSupabaseFounderRepository = (supabase: SupabaseClient): FounderRepository => ({
   async getEcosystemStats() {
     const { data, error } = await supabase.rpc('get_ecosystem_stats');
     if (error) throw new APIError('Failed to fetch ecosystem stats', error.code, error);

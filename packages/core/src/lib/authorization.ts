@@ -1,6 +1,6 @@
-﻿import { identityAPI } from '../native/identity';
+﻿import { composeUserAbilities } from '../logic/permissions/composer';
+import { identityAPI } from '../native/identity';
 import { supabase } from '../native/supabase';
-import { composeUserAbilities } from '../logic/permissions/composer';
 import { APIError } from '../types/API';
 
 /**
@@ -59,4 +59,3 @@ export async function requireTeacherAccess(schoolId?: string) {
 
   return userId;
 }
-

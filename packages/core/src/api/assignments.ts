@@ -67,9 +67,16 @@ export const assignmentsAPI = {
       .limit(limit);
 
     if (error) throw error;
-    return ((data as RecentGradeOverviewRow[] | null) ?? []).filter(
-      (row) => typeof row.grade === 'number',
-    );
+
+    // Supabase returns joined relations as arrays in some configurations.
+    // We map them to the single object shape expected by the UI.
+    return ((data as any[] | null) ?? [])
+      .filter((row) => typeof row.grade === 'number')
+      .map((row) => ({
+        ...row,
+        assignments: Array.isArray(row.assignments) ? row.assignments[0] : row.assignments || null,
+        classrooms: Array.isArray(row.classrooms) ? row.classrooms[0] : row.classrooms || null,
+      })) as RecentGradeOverviewRow[];
   },
 
   /**

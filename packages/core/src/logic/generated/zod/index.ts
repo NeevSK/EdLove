@@ -11,4 +11,3 @@ export const makeTypeSchema = zodSchemaFactory.makeTypeSchema.bind(zodSchemaFact
 export const makeEnumSchema = zodSchemaFactory.makeEnumSchema.bind(zodSchemaFactory);
 
 export { createSchemaFactory };
-

@@ -85,4 +85,3 @@ export function useAuthorityFeatures(): AuthorityFeatures {
 
   return features;
 }
-

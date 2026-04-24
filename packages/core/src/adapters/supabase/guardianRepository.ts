@@ -1,5 +1,5 @@
-import { selectLatestPublishedSnapshots } from '../../lib/gradePublication';
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { selectLatestPublishedSnapshots } from '../../lib/gradePublication';
 import { selectGuardianVisibleGrades } from '../../logic/domains/guardian/gradeVisibility';
 import type { GuardianRepository } from '../../logic/domains/guardian/ports';
 import {
@@ -47,9 +47,7 @@ function mapGuardianRelationship(row: any): StudentGuardianRelationship {
   });
 }
 
-export const createSupabaseGuardianRepository = (
-  supabase: SupabaseClient,
-): GuardianRepository => {
+export const createSupabaseGuardianRepository = (supabase: SupabaseClient): GuardianRepository => {
   async function getGuardianPublishedGrades(studentId: string) {
     const { data: gradeRows, error: gradesError } = await supabase
       .from('grades')
@@ -290,7 +288,9 @@ export const createSupabaseGuardianRepository = (
           const attendance = attendanceRes.data || [];
           const grades = publishedGrades;
           const assignments = assignmentsRes.data || [];
-          const presentCount = attendance.filter((record: any) => record.status === 'present').length;
+          const presentCount = attendance.filter(
+            (record: any) => record.status === 'present',
+          ).length;
 
           return {
             studentId: student.id,
@@ -355,7 +355,11 @@ export const createSupabaseGuardianRepository = (
           notificationsRes.error,
         );
       if (eventsRes.error)
-        throw new APIError('Failed to fetch guardian events', eventsRes.error.code, eventsRes.error);
+        throw new APIError(
+          'Failed to fetch guardian events',
+          eventsRes.error.code,
+          eventsRes.error,
+        );
 
       // Note: GuardianDashboardSchema needs to be available or imported
       // We assume it's correctly handled in the original file

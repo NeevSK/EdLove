@@ -20,4 +20,3 @@ export const defineGradeHeadAbilities = (
     can('manage', 'Attendance', { gradeId: user.gradeId } as any);
   }
 };
-

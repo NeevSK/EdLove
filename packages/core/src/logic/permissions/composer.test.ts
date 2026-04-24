@@ -133,5 +133,3 @@ describe('POA Exhaustive Verification: Every Role, Every Power', () => {
     expect(ability.can('read', 'DirectMessages')).toBe(false);
   });
 });
-
-

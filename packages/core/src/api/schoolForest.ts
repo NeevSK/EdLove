@@ -22,9 +22,9 @@
  *   await schoolForestAPI.sendGratitudeGift(principalId, teacherId, 'lantern', message);
  */
 
+import { composeUserAbilities } from '../logic/permissions/composer';
 import { identityAPI } from '../native/identity';
 import { supabase } from '../native/supabase';
-import { composeUserAbilities } from '../logic/permissions/composer';
 import { APIError } from '../types';
 import { impactRipplesAPI } from './impactRipples';
 
@@ -554,4 +554,3 @@ export const schoolForestAPI = {
     }
   },
 };
-

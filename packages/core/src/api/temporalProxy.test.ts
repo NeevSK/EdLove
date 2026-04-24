@@ -48,4 +48,3 @@ describe('createTemporalProxy', () => {
     expect(getItemSpy).toHaveBeenCalledWith('offline-demo-getThing-2026-03-27-month');
   });
 });
-

@@ -4,6 +4,4 @@ import { supabase } from '../supabase';
 
 const classroomNotesRepository = createSupabaseClassroomNotesRepository(supabase);
 
-export const classroomNotesServices = createClassroomNotesServices(
-  classroomNotesRepository,
-);
+export const classroomNotesServices = createClassroomNotesServices(classroomNotesRepository);

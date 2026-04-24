@@ -23,4 +23,3 @@ export const defineStudentAbilities = (user: UserContext, { can }: AbilityBuilde
   can('read', 'LibrarySearch');
   can('manage', 'Library');
 };
-

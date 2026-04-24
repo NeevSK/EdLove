@@ -1,3 +1,4 @@
+import type { SupabaseClient } from '@supabase/supabase-js';
 import { z } from 'zod';
 import type {
   EducationalRepository,
@@ -28,7 +29,6 @@ import {
   ClassroomGradingSettingsSchema,
   StudentGradeSchema,
 } from '../../logic/schemas/grading.schema';
-import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Lesson } from '../../logic/schemas/lesson.schema';
 import { LessonSchema } from '../../logic/schemas/lesson.schema';
 import type { Material as LessonMaterial } from '../../logic/schemas/material.schema';

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { type DeviceAccountRecord, deviceAccounts } from '../accounts/deviceAccounts';
+
 export type { DeviceAccountRecord };
 
 export function useDeviceAccounts() {

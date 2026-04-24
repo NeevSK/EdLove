@@ -42,4 +42,3 @@ export const defineTeacherAbilities = (user: UserContext, builder: AbilityBuilde
   // Wellbeing
   can('manage', 'Wellbeing');
 };
-

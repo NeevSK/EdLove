@@ -1,11 +1,11 @@
 import { useMemo } from 'react';
-import { supabase } from '../native/supabase';
 import { createDomainServices } from '../logic/domains/factory';
+import { supabase } from '../native/supabase';
 import { useStore } from '../store/useStore';
 
 /**
  * useDomainServices Hook
- * 
+ *
  * Provides initialized domain services using the standard Supabase client.
  * This ensures that all mobile-side operations respect Row Level Security (RLS).
  */

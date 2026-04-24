@@ -1,10 +1,10 @@
 import { z } from 'zod';
-import { 
-  UserSchema,
-  ClassroomSchema,
+import {
   AttendanceSchema,
+  ClassroomSchema,
   StudentGradeSchema,
-  StudentSchema
+  StudentSchema,
+  UserSchema,
 } from '../schemas';
 
 /**

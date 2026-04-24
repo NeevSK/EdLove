@@ -18,10 +18,10 @@
  *   - Show only the living lotus visual \u2014 the stage name lives in the database, the lotus speaks for itself.
  */
 
+import { composeUserAbilities } from '../logic/permissions/composer';
 import { getTemporalRange } from '../logic/utils/temporalUtils';
 import { identityAPI } from '../native/identity';
 import { supabase } from '../native/supabase';
-import { composeUserAbilities } from '../logic/permissions/composer';
 import { APIError } from '../types';
 import type { BanyanStage, CrystalTier, RiverStage } from './naturePaths';
 
@@ -336,4 +336,3 @@ export const userGrowthStateAPI = {
     }));
   },
 };
-

@@ -22,4 +22,3 @@ export function useTenantContext(): TenantContext {
     [hasSchoolContext, schoolId, sectionId, gradeId, classroomId, tenantKind],
   );
 }
-

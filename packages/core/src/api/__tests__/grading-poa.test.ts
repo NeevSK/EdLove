@@ -92,4 +92,3 @@ describe('grading POA coverage', () => {
     });
   });
 });
-

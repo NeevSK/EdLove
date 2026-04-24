@@ -49,4 +49,3 @@ export const createFeatureSlice: StateCreator<FeatureSlice> = (set, get) => ({
     set({ flags: newFlags });
   },
 });
-

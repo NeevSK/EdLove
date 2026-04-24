@@ -1,5 +1,5 @@
-import { selectLatestPublishedSnapshots } from '../../lib/gradePublication';
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { selectLatestPublishedSnapshots } from '../../lib/gradePublication';
 import type { GradingProjectionRepository } from '../../logic/domains/gradingProjection/ports';
 import {
   type PublishedSchoolGradingCompletion,

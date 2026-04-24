@@ -1,7 +1,7 @@
 import { initContract } from '@ts-rest/core';
 import { z } from 'zod';
 import { POAMetadataSchema } from './contract';
-import { IdentitySchema, FacetedProfileSchema } from './identity.generated';
+import { FacetedProfileSchema, IdentitySchema } from './identity.generated';
 
 const c = initContract();
 

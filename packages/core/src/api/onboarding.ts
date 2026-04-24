@@ -1,6 +1,6 @@
-﻿import type { Role } from '../logic/schemas/role.schema';
+﻿import { composeUserAbilities } from '../logic/permissions/composer';
+import type { Role } from '../logic/schemas/role.schema';
 import { supabase } from '../native/supabase';
-import { composeUserAbilities } from '../logic/permissions/composer';
 import type { ClassroomJoinRequest, RequestStatus, SchoolJoinRequest } from '../types/Onboarding';
 
 /**
@@ -302,4 +302,3 @@ export const onboardingAPI = {
     if (error) throw error;
   },
 };
-

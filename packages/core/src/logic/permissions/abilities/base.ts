@@ -115,5 +115,3 @@ export type AppAbilities = [Actions, SubjectType];
 export type AppAbility = MongoAbility<AppAbilities>;
 
 export const AppAbility = createMongoAbility as unknown as AbilityClass<AppAbility>;
-
-

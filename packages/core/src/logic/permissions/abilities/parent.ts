@@ -22,4 +22,3 @@ export const defineParentAbilities = (user: UserContext, builder: AbilityBuilder
   can('read', 'Report', { schoolId: user.schoolId } as any);
   can('create', 'Communication', { type: 'to_teacher' });
 };
-

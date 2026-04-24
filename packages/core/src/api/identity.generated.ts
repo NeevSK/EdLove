@@ -27,4 +27,3 @@ export const FacetedProfileSchema = z.object({
 });
 
 export type FacetedProfile = z.infer<typeof FacetedProfileSchema>;
-

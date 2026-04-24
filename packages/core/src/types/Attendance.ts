@@ -1,10 +1,10 @@
-import { z } from 'zod';
-import { 
-  AttendanceSchema, 
-  StudentAttendanceSchema, 
+import type { z } from 'zod';
+import type {
+  AttendanceReportSchema,
+  AttendanceSchema,
   AttendanceStatusSchema,
   AttendanceTrendPointSchema,
-  AttendanceReportSchema
+  StudentAttendanceSchema,
 } from '../logic/schemas/attendance.schema';
 
 /**
