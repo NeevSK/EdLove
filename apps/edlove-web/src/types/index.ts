@@ -67,7 +67,7 @@ export interface Paradigm extends BaseContent {
 // Domain VI: Thinkers
 export interface Thinker extends BaseContent {
     domain: 'thinker';
-    era: string;              // "19212007" or "Contemporary"
+    era: string;              // "1921–2007" or "Contemporary"
     region: string;           // Geographic origin
     key_work: string;         // Most important book/work
     biography: string;        // Full markdown content
