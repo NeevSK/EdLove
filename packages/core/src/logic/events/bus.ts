@@ -1,60 +1,28 @@
-import { Inngest } from 'inngest';
+import { schemas } from './schemas';
 
 /**
- * Gurudevi Platform Event Bus
- * Powered by Inngest.
+ * Gurudevi Platform Event Logic
  * 
- * 🧱 ARCHITECTURAL BOUNDARY:
- * This is the central orchestration point for non-blocking side effects.
- * Every cross-module action (e.g. Attendance -> Wellbeing) should flow through here.
+ * 🧱 ARCHITECTURAL BOUNDARY (Sovereign Core):
+ * This file no longer instantiates the Inngest client.
+ * Client instantiation is now the responsibility of the "Imperative Shell" (apps).
+ * 
+ * We export only the schemas and logic-level helpers.
  */
-export const inngest = new Inngest({ 
-  id: 'gurudevi-platform',
-  // In a multi-tenant world, we want to ensure events carry tenant context
-  eventKey: process.env.INNGEST_EVENT_KEY,
-});
+
+export * from './schemas';
 
 /**
- * Common Event Schemas
- * Defined here to ensure strong typing across the monorepo.
+ * Legacy support for PlatformEvents type. 
+ * Newer code should use the inferred types from schemas.ts
  */
 export type PlatformEvents = {
-  'attendance/taken': {
-    data: {
-      schoolId: string;
-      classId: string;
-      studentIds: string[];
-      occurredAt: string;
-      recordedById: string;
-    }
+  [K in keyof typeof schemas]: {
+    data: (typeof schemas)[K]['data'];
   };
-  'wellbeing/mood-logged': {
-    data: {
-      schoolId: string;
-      studentId: string;
-      moodScore: number;
-      occurredAt: string;
-    }
-  };
-  'system/audit-log-created': {
-    data: {
-      action: string;
-      userId: string;
-      schoolId?: string;
-      targetId?: string;
-      metadata?: Record<string, any>;
-    }
-  };
-}
-
-export const emitEvent = async <K extends keyof PlatformEvents>(
-  name: K,
-  data: PlatformEvents[K]['data']
-) => {
-  return inngest.send({
-    name,
-    data,
-  });
 };
 
-export default inngest;
+/**
+ * Note: emitEvent should be used from the shell-specific client.
+ * This core package remains platform-agnostic and free of environment leaks.
+ */

@@ -1,4 +1,4 @@
-import type { FormConfig } from '@repo/core/types/Form';
+import type { FormConfig } from '@repo/core/types';
 
 export interface ClimateSensingData {
     // Section: Material

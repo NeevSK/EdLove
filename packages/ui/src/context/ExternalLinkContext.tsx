@@ -148,7 +148,11 @@ export function ExternalLinkProvider({ children }: { children: React.ReactNode }
         onClose={() => closeRequest(null)}
         title={pendingRequest?.options.title ?? 'Open external link'}
         subtitle={modalSubtitle}
-        icon={<ExternalLink size={18} className="text-phase-accent" />}
+        icon={
+          <Box className="text-phase-accent">
+            <ExternalLink size={18} />
+          </Box>
+        }
         size="md"
         footer={
           pendingRequest ? (
@@ -205,14 +209,15 @@ export function ExternalLinkProvider({ children }: { children: React.ReactNode }
           <VStack className="gap-4">
             <Box className="bg-phase-surface border border-white/10 rounded-xl p-4">
               <HStack className="gap-2 items-center mb-1">
-                <TrustIcon
-                  size={16}
+                <Box
                   className={
                     trustCopy.label === 'Broken or unverified'
                       ? 'text-phase-danger'
                       : 'text-phase-accent'
                   }
-                />
+                >
+                  <TrustIcon size={16} />
+                </Box>
                 <Text className="text-phase-text-primary font-bold">{trustCopy.label}</Text>
               </HStack>
               <Text className="text-phase-text-secondary text-[13px] leading-5">
@@ -245,7 +250,11 @@ export function ExternalLinkProvider({ children }: { children: React.ReactNode }
                     <View
                       className={`w-5 h-5 rounded-full border-[1.5px] items-center justify-center ${isSelected ? 'border-phase-accent bg-phase-accent' : 'border-white/20'}`}
                     >
-                      {isSelected ? <Check size={10} className="text-white" /> : null}
+                      {isSelected ? (
+                        <Box className="text-white">
+                          <Check size={10} />
+                        </Box>
+                      ) : null}
                     </View>
                     <VStack className="flex-1">
                       <Text className="text-phase-text-primary font-bold">{method.title}</Text>
@@ -265,7 +274,11 @@ export function ExternalLinkProvider({ children }: { children: React.ReactNode }
               <View
                 className={`w-5 h-5 rounded-md border-[1.5px] items-center justify-center ${rememberChoice ? 'border-phase-accent bg-phase-accent' : 'border-white/20'}`}
               >
-                {rememberChoice ? <Check size={12} className="text-white" /> : null}
+                {rememberChoice ? (
+                  <Box className="text-white">
+                    <Check size={12} />
+                  </Box>
+                ) : null}
               </View>
               <VStack className="flex-1">
                 <Text className="text-phase-text-primary font-bold">

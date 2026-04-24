@@ -1,8 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
-const supabaseServiceRoleKey = import.meta.env.SUPABASE_SERVICE_ROLE_KEY;
+const supabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_PUBLISHABLE_KEY || import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
+const supabaseServiceRoleKey = import.meta.env.SUPABASE_SECRET_KEY || import.meta.env.SUPABASE_SERVICE_ROLE_KEY;
 
 /**
  * Standard Supabase client (respects RLS).

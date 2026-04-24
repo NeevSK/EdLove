@@ -75,7 +75,9 @@ function SettingsOption({
         </VStack>
         <HStack className="gap-2 items-center">
           {value && <Text className="text-sm text-phase-secondary mr-1">{value}</Text>}
-          <ChevronRight size={20} className="text-phase-muted" />
+          <Box className="text-phase-muted">
+            <ChevronRight size={20} />
+          </Box>
         </HStack>
       </HStack>
     </Pressable>
@@ -195,7 +197,11 @@ export default function AppSettingsScreen({ navigation }: any) {
         />
 
         <SettingsOption
-          icon={<Sparkles size={24} className="text-phase-secondary" />}
+          icon={
+            <Box className="text-phase-secondary">
+              <Sparkles size={24} />
+            </Box>
+          }
           title={t('settings.fidelity.title')}
           description={
             fidelityLevel === 'auto'
@@ -219,11 +225,12 @@ export default function AppSettingsScreen({ navigation }: any) {
               <Box
                 className={`w-10 h-10 rounded-[12px] items-center justify-center ${enableLivingTheme ? 'bg-phase-primary' : 'bg-phase-surface'}`}
               >
-                <Sparkles
-                  size={24}
-                  className={enableLivingTheme ? 'text-phase-world' : 'text-phase-muted'}
-                  fill={enableLivingTheme ? 'currentColor' : 'transparent'}
-                />
+                <Box className={enableLivingTheme ? 'text-phase-world' : 'text-phase-muted'}>
+                  <Sparkles
+                    size={24}
+                    fill={enableLivingTheme ? 'currentColor' : 'transparent'}
+                  />
+                </Box>
               </Box>
               <VStack className="flex-1 gap-1">
                 <Text className="text-base font-semibold text-phase-primary">
@@ -258,7 +265,11 @@ export default function AppSettingsScreen({ navigation }: any) {
           description={t('settings.language.description')}
         />
         <SettingsOption
-          icon={<Globe size={24} className="text-phase-secondary" />}
+          icon={
+            <Box className="text-phase-secondary">
+              <Globe size={24} />
+            </Box>
+          }
           title={t('settings.language.current')}
           description={t('settings.language.change_desc')}
           value={getLanguageLabel()}
@@ -276,7 +287,9 @@ export default function AppSettingsScreen({ navigation }: any) {
           <HStack className="gap-4 items-center justify-between">
             <HStack className="gap-4 items-center flex-1">
               <Box className="w-10 h-10 rounded-[12px] bg-phase-surface items-center justify-center border border-phase-border">
-                <Shield size={24} className="text-phase-secondary" />
+                <Box className="text-phase-secondary">
+                  <Shield size={24} />
+                </Box>
               </Box>
               <VStack className="flex-1 gap-1">
                 <Text className="text-base font-semibold text-phase-primary">
@@ -304,7 +317,11 @@ export default function AppSettingsScreen({ navigation }: any) {
           </HStack>
         </Box>
         <SettingsOption
-          icon={<Eye size={24} className="text-phase-secondary" />}
+          icon={
+            <Box className="text-phase-secondary">
+              <Eye size={24} />
+            </Box>
+          }
           title={t('profile.privacy.previewProfile', 'See how others see you')}
           description={t('profile.privacy.preview_desc', 'View your own public profile card')}
           onPress={() => {
@@ -355,7 +372,9 @@ export default function AppSettingsScreen({ navigation }: any) {
             </HStack>
             {reality.isDataSaverMode && (
               <Box className="bg-phase-world p-3 rounded-xl border border-phase-border flex-row items-center gap-2">
-                <Info size={16} className="text-phase-primary" />
+                <Box className="text-phase-primary">
+                  <Info size={16} />
+                </Box>
                 <Text className="text-sm text-phase-primary">
                   {t('settings.device.data_saver')}
                 </Text>
@@ -370,7 +389,11 @@ export default function AppSettingsScreen({ navigation }: any) {
           description={t('settings.support.description', 'Help us improve Gurudevi')}
         />
         <SettingsOption
-          icon={<Zap size={24} className="text-phase-secondary" />}
+          icon={
+            <Box className="text-phase-secondary">
+              <Zap size={24} />
+            </Box>
+          }
           title="Trube Lab"
           description="Tune living surfaces as solo, duet, or orchestra compositions."
           onPress={() => navigation.navigate('TrubeLab')}
@@ -381,7 +404,9 @@ export default function AppSettingsScreen({ navigation }: any) {
         {/* Gentle guidance footer */}
         <Box className="p-5 bg-phase-surface/50 border border-phase-border rounded-[24px] mt-6 mb-12">
           <HStack className="gap-4 items-start">
-            <Info size={20} className="text-phase-primary" />
+            <Box className="text-phase-primary">
+              <Info size={20} />
+            </Box>
             <VStack className="flex-1 gap-1">
               <Text className="text-sm font-bold text-phase-primary">
                 {t('settings.tip.title')}
@@ -403,21 +428,33 @@ export default function AppSettingsScreen({ navigation }: any) {
               id: 'auto',
               label: t('settings.fidelity.auto'),
               description: t('settings.fidelity.auto_full'),
-              icon: <Sparkles size={24} className="text-phase-primary" />,
+              icon: (
+                <Box className="text-phase-primary">
+                  <Sparkles size={24} />
+                </Box>
+              ),
               isSelected: fidelityLevel === 'auto',
             },
             {
               id: 'low',
               label: t('settings.fidelity.low'),
               description: t('settings.fidelity.low_full'),
-              icon: <Smartphone size={24} className="text-phase-secondary" />,
+              icon: (
+                <Box className="text-phase-secondary">
+                  <Smartphone size={24} />
+                </Box>
+              ),
               isSelected: fidelityLevel === 'low',
             },
             {
               id: 'high',
               label: t('settings.fidelity.high'),
               description: t('settings.fidelity.high_full'),
-              icon: <Sparkles size={24} className="text-phase-secondary" />,
+              icon: (
+                <Box className="text-phase-secondary">
+                  <Sparkles size={24} />
+                </Box>
+              ),
               isSelected: fidelityLevel === 'high',
             },
           ]}
@@ -435,21 +472,21 @@ export default function AppSettingsScreen({ navigation }: any) {
               id: 'en',
               label: 'English',
               description: 'Change the app language to English',
-              icon: <Globe size={24} className="text-blue-500" />,
+              icon: <Box className="text-blue-500"><Globe size={24} /></Box>,
               isSelected: language === 'en',
             },
             {
               id: 'si',
               label: 'සිංහල',
               description: 'යෙදුමේ භාෂාව සිංහලට වෙනස් කරන්න',
-              icon: <Globe size={24} className="text-amber-500" />,
+              icon: <Box className="text-amber-500"><Globe size={24} /></Box>,
               isSelected: language === 'si',
             },
             {
               id: 'ta',
               label: 'தமிழ்',
-              description: 'பயன்பாட்டின் மொழியை தமிழுக்கு மாற்றவும்',
-              icon: <Globe size={24} className="text-orange-500" />,
+              description: 'පයன்பාට්‍ටින් මොළියෛ තමිළුක්කු මාට්‍රවුම්',
+              icon: <Box className="text-orange-500"><Globe size={24} /></Box>,
               isSelected: language === 'ta',
             },
           ]}
@@ -508,7 +545,11 @@ function SelectionModal({ title, options, onSelect, onClose }: SelectionModalPro
                   {option.description}
                 </Text>
               </VStack>
-              {option.isSelected && <Check size={24} className="text-phase-primary" />}
+              {option.isSelected && (
+                <Box className="text-phase-primary">
+                  <Check size={24} />
+                </Box>
+              )}
             </Pressable>
           ))}
         </VStack>

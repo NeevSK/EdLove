@@ -1,17 +1,18 @@
 import { Inngest } from "inngest";
-import { type PlatformEvents } from "@repo/core";
+import { schemas } from "@repo/core";
 
 /**
- * Gurudevi Inngest Client
+ * Gurudevi Inngest Client (Marketing Shell)
  * 
- * shell-level initialization of the Inngest bus.
- * Pulls event definitions directly from @repo/core to ensure
- * consistency across mobile and web shells.
+ * 🐚 IMPERATIVE SHELL:
+ * This is where the actual Inngest instance lives for the marketing site.
+ * It uses the 'Sovereign Brain' (schemas from @repo/core) for type safety.
  */
 export const inngest = new Inngest({ 
-  id: "Gurudevi-OS",
-  // Modernized for v4: Pure typing approach
-  schemas: {} as PlatformEvents,
+  id: "gurudevi-marketing-web",
+  schemas: schemas,
+  // Astro uses import.meta.env
+  eventKey: import.meta.env.INNGEST_EVENT_KEY,
 });
 
 export default inngest;

@@ -17,7 +17,7 @@ import { initPostHog, trackEvent } from "@repo/analytics";
  */
 export const wellbeingMoodLogged = (inngest as any).createFunction(
   { id: "wellbeing-mood-logged-handler", name: "Process Student Mood Log" },
-  { event: "wellbeing/mood-logged" },
+  { event: "wellbeing/mood.logged" },
   async ({ event, step }: { event: any; step: any }) => {
     const { studentId, moodScore, schoolId } = event.data;
 
@@ -69,8 +69,8 @@ export const wellbeingMoodLogged = (inngest as any).createFunction(
 
     // 5. Unified Analytics (God Mode Visibility)
     await step.run("track-posthog-event", async () => {
-      await initPostHog(process.env.POSTHOG_API_KEY!, { 
-        host: 'https://eu.i.posthog.com' 
+      await initPostHog(import.meta.env.POSTHOG_API_KEY!, { 
+        host: import.meta.env.POSTHOG_HOST || 'https://eu.i.posthog.com' 
       });
       
       trackEvent('wellbeing_mood_processed', {

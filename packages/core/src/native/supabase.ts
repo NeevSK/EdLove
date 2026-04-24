@@ -5,13 +5,13 @@ import { Platform } from 'react-native';
 
 // Configuration from environment variables
 const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
+const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY || process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
 
 // Validate environment variables
 if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error(
     'Missing Supabase credentials. Please check your .env file.\n' +
-      'Required: EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY',
+      'Required: EXPO_PUBLIC_SUPABASE_URL and (EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY or EXPO_PUBLIC_SUPABASE_ANON_KEY)',
   );
 }
 
