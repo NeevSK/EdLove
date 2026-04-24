@@ -28,6 +28,13 @@ import SchoolForestScreenWeb from './SchoolForestScreen.web';
 import SchoolProfileScreenWeb from './SchoolProfileScreen.web';
 
 import FounderVisionScreen from './FounderVisionScreen';
+import GuardianDashboard from './GuardianDashboard';
+import { GuardianDashboardScreen } from './GuardianDashboardScreen';
+import GuardianStudentsScreen from './guardian/GuardianStudentsScreen';
+import GuardianStudentDetailScreen from './guardian/GuardianStudentDetailScreen';
+import GuardianNotificationsScreen from './guardian/GuardianNotificationsScreen';
+import GuardianEventsScreen from './guardian/GuardianEventsScreen';
+import GuardianCommunicationBridgeScreen from './guardian/GuardianCommunicationBridgeScreen';
 
 export * from './principal/CommandCenter';
 export * from './principal/CyclesDashboard';
@@ -69,4 +76,12 @@ export {
     SchoolForestScreenWeb,
     SchoolProfileScreenWeb,
     SectionHeadDashboard,
-    FounderVisionScreen};
+    FounderVisionScreen,
+    GuardianDashboard,
+    GuardianDashboardScreen,
+    GuardianStudentsScreen,
+    GuardianStudentDetailScreen,
+    GuardianNotificationsScreen,
+    GuardianEventsScreen,
+    GuardianCommunicationBridgeScreen
+};

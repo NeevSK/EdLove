@@ -21,6 +21,14 @@
       "types": "./src/native/index.ts",
       "import": "./src/native/index.ts"
     },
+    "./hooks": {
+      "types": "./src/hooks/index.ts",
+      "import": "./src/hooks/index.ts"
+    },
+    "./store": {
+      "types": "./src/store/index.ts",
+      "import": "./src/store/index.ts"
+    },
     "./types": {
       "types": "./src/types/index.ts",
       "import": "./src/types/index.ts"

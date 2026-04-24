@@ -5,6 +5,33 @@ import { ROOT_DIR } from "../utils/constants.js";
 import { findSurgicalReport, readReport } from "../utils/pathUtils.js";
 import { executeSovereignTool } from "../utils/execution.js";
 
+function execUtf8(command: string) {
+  try {
+    const stdout = execSync(command, { cwd: ROOT_DIR, encoding: "utf8", shell: true } as any);
+    return { ok: true as const, stdout };
+  } catch (error: any) {
+    const stdout =
+      typeof error?.stdout === "string"
+        ? error.stdout
+        : Buffer.isBuffer(error?.stdout)
+          ? error.stdout.toString("utf8")
+          : "";
+    const stderr =
+      typeof error?.stderr === "string"
+        ? error.stderr
+        : Buffer.isBuffer(error?.stderr)
+          ? error.stderr.toString("utf8")
+          : "";
+
+    const message = typeof error?.message === "string" ? error.message : String(error);
+    const combined = [message, stderr, stdout].filter(Boolean).join("\n");
+    return { ok: false as const, stdout: combined || message };
+  }
+}
+
+function toMcpText(stdout: string, isError?: boolean) {
+  return { content: [{ type: "text" as const, text: stdout }], isError: Boolean(isError) };
+}
 
 export class MaintenanceService {
   handleCreateCheckpoint(args: { message: string, stage_all?: boolean }) {
@@ -13,51 +40,59 @@ export class MaintenanceService {
     const tempMsgPath = path.join(ROOT_DIR, ".checkpoint_msg.txt");
 
     try {
-      if (stageAll) execSync("git add .", { cwd: ROOT_DIR });
-      const staged = execSync("git diff --cached --name-only", { cwd: ROOT_DIR }).toString().trim();
-      if (!staged) return { content: [{ type: "text" as const, text: "Nothing to commit." }] };
+      if (stageAll) execUtf8("git add .");
+      
+      const staged = execSync("git diff --cached --name-only", { cwd: ROOT_DIR, shell: true, encoding: "utf8" } as any)
+        .trim();
+        
+      if (!staged) return toMcpText("Nothing to commit.");
 
-      try {
-        execSync(`node scripts/smart-changeset.mjs --staged "${args.message.replace(/"/g, '\\"')}"`, { cwd: ROOT_DIR });
-        execSync("git add .changeset/*.md", { cwd: ROOT_DIR });
-      } catch (e) {}
+      // Try tools, ignore errors as they are non-critical optimizations
+      execUtf8(`node scripts/smart-changeset.mjs --staged "${args.message.replace(/"/g, '\\"')}"`);
+      execUtf8("git add .changeset/*.md");
 
       fs.writeFileSync(tempMsgPath, args.message, "utf-8");
-      try {
-        execSync(`powershell -ExecutionPolicy Bypass -File scripts/commit-ledger.ps1 -CommitMsgFile "${tempMsgPath}"`, { cwd: ROOT_DIR });
-      } catch (e) {}
+      
+      execUtf8(`powershell -ExecutionPolicy Bypass -File scripts/commit-ledger.ps1 -CommitMsgFile "${tempMsgPath}"`);
 
-      const output = execSync(`git commit -F "${tempMsgPath}" --no-verify`, { cwd: ROOT_DIR }).toString();
+      const commitResult = execUtf8(`git commit -F "${tempMsgPath}" --no-verify`);
+      
       if (fs.existsSync(tempMsgPath)) fs.unlinkSync(tempMsgPath);
 
-      return { content: [{ type: "text" as const, text: output }] };
+      return toMcpText(commitResult.stdout, !commitResult.ok);
     } catch (error: any) {
       if (fs.existsSync(tempMsgPath)) fs.unlinkSync(tempMsgPath);
-      return { content: [{ type: "text" as const, text: error.message }], isError: true };
+      return toMcpText(error?.message ?? String(error), true);
     }
   }
 
   handleHealCodebase(args: { files: string[] }) {
     console.error(`Healing files: ${args.files.join(", ")}`);
     const fileList = args.files.map(f => `"${f}"`).join(" ");
-    const output = execSync(`powershell -ExecutionPolicy Bypass -File scripts/heal-codebase.ps1 ${fileList}`, { cwd: ROOT_DIR }).toString();
-    return { content: [{ type: "text" as const, text: output }] };
+    const result = execUtf8(
+      `powershell -ExecutionPolicy Bypass -File scripts/heal-codebase.ps1 ${fileList}`
+    );
+    return toMcpText(result.stdout, !result.ok);
   }
 
   handleNormalizeImports(args: { target?: string }) {
     const target = args.target || ".";
-    const output = execSync(`powershell -ExecutionPolicy Bypass -File scripts/normalize-imports.ps1 -Target "${target}"`, { cwd: ROOT_DIR }).toString();
-    return { content: [{ type: "text" as const, text: output }] };
+    const result = execUtf8(
+      `powershell -ExecutionPolicy Bypass -File scripts/normalize-imports.ps1 -Target "${target}"`
+    );
+    return toMcpText(result.stdout, !result.ok);
   }
 
   handleSyncIdentity() {
-    const output = execSync("node scripts/check-identity-alignment.mjs", { cwd: ROOT_DIR }).toString();
-    return { content: [{ type: "text" as const, text: output }] };
+    const result = execUtf8("node scripts/check-identity-alignment.mjs");
+    return toMcpText(result.stdout, !result.ok);
   }
 
   handleAuditDependencyHealth() {
-    const output = execSync("powershell -ExecutionPolicy Bypass -File scripts/audit-dependency-health.ps1", { cwd: ROOT_DIR }).toString();
-    return { content: [{ type: "text" as const, text: output }] };
+    const result = execUtf8(
+      "powershell -ExecutionPolicy Bypass -File scripts/audit-dependency-health.ps1"
+    );
+    return toMcpText(result.stdout, !result.ok);
   }
 
   handleCheckTypes(args: { package?: string }) {
@@ -89,48 +124,50 @@ export class MaintenanceService {
   }
 
   handleGenerateGrowthSignals() {
-    const output = execSync("node scripts/generate-growth-signals.mjs", { cwd: ROOT_DIR }).toString();
-    return { content: [{ type: "text" as const, text: output }] };
+    const result = execUtf8("node scripts/generate-growth-signals.mjs");
+    return toMcpText(result.stdout, !result.ok);
   }
 
   handleBridgeSchemaZod(args: { input: string, output: string }) {
     console.error(`Bridging Schema: ${args.input} to ${args.output}`);
-    const output = execSync(`node scripts/bridge-schema-zod.mjs "${args.input}" "${args.output}"`, { cwd: ROOT_DIR }).toString();
-    return { content: [{ type: "text" as const, text: output }] };
+    const result = execUtf8(
+      `node scripts/bridge-schema-zod.mjs "${args.input}" "${args.output}"`
+    );
+    return toMcpText(result.stdout, !result.ok);
   }
 
   handleTestSleekness() {
     console.error("Testing sleekness...");
-    const output = execSync("npx tsx scripts/test-sleekness.ts", { cwd: ROOT_DIR }).toString();
-    return { content: [{ type: "text" as const, text: output }] };
+    const result = execUtf8("npx tsx scripts/test-sleekness.ts");
+    return toMcpText(result.stdout, !result.ok);
   }
 
 
 
   handleGenerateReadmeUsage(args: { package_path: string }) {
     console.error(`Generating README usage for: ${args.package_path}`);
-    const output = execSync(`node scripts/generate-readme-usage.mjs "${args.package_path}"`, { cwd: ROOT_DIR }).toString();
-    return { content: [{ type: "text" as const, text: output }] };
+    const result = execUtf8(`node scripts/generate-readme-usage.mjs "${args.package_path}"`);
+    return toMcpText(result.stdout, !result.ok);
   }
 
 
   handleScaffoldMocks(args: { file_path: string }) {
     console.error(`Scaffolding mocks for: ${args.file_path}`);
-    const output = execSync(`node scripts/scaffold-mocks.mjs "${args.file_path}"`, { cwd: ROOT_DIR }).toString();
-    return { content: [{ type: "text" as const, text: output }] };
+    const result = execUtf8(`node scripts/scaffold-mocks.mjs "${args.file_path}"`);
+    return toMcpText(result.stdout, !result.ok);
   }
 
   handleShieldUnicode(args: { target?: string }) {
     const target = args.target || ".";
     console.error(`Shielding unicode for: ${target}`);
-    const output = execSync(`node scripts/unicode-shield.mjs "${target}"`, { cwd: ROOT_DIR }).toString();
-    return { content: [{ type: "text" as const, text: output }] };
+    const result = execUtf8(`node scripts/unicode-shield.mjs "${target}"`);
+    return toMcpText(result.stdout, !result.ok);
   }
 
   handleAuditDependencyDuplication() {
     console.error("Auditing dependency duplication...");
-    const output = execSync("node scripts/audit-deps.js", { cwd: ROOT_DIR }).toString();
-    return { content: [{ type: "text" as const, text: output }] };
+    const result = execUtf8("node scripts/audit-deps.js");
+    return toMcpText(result.stdout, !result.ok);
   }
 
   handleCheckSchemaDrift() {
@@ -138,16 +175,15 @@ export class MaintenanceService {
       "check_schema_drift",
       "node scripts/check-schema-drift.mjs"
     );
-    return { content: [{ type: "text" as const, text: result.output }] };
+    return toMcpText(result.output, result.status !== "success");
   }
 
   handlePurgeStaleArtifacts(args: { ageDays?: number, dryRun?: boolean }) {
     const age = args.ageDays || 7;
     const dryRun = args.dryRun ? "--dry-run" : "";
-    const output = execSync(`node scripts/purge-stale-artifacts.mjs --age=${age} ${dryRun}`, { cwd: ROOT_DIR }).toString();
-    return { content: [{ type: "text" as const, text: output }] };
+    const result = execUtf8(`node scripts/purge-stale-artifacts.mjs --age=${age} ${dryRun}`);
+    return toMcpText(result.stdout, !result.ok);
   }
 }
-
 
 

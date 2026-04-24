@@ -1,7 +1,5 @@
-﻿import { classroomsAPI } from '../../../../../packages/core/src/api';
-import { supabase } from '../../../../../packages/core/src/lib/supabase';
-import { useStore } from '../../../../../packages/core/src/store/useStore';
-import { selfAPI } from '../../../../../packages/self/src/api/self';
+import { classroomsAPI, supabase, useStore } from '@repo/core';
+import { selfAPI } from '@repo/self';
 
 const TEACHER_ID = '11111111-1111-4111-8111-111111111111';
 const SCHOOL_ID = '22222222-2222-4222-8222-222222222222';

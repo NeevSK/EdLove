@@ -3,7 +3,6 @@ import { Icon, VStack,
     Text,
     HStack,
     Pressable,
-    useThemedColors,
     
     Box,
     Heading } from '@repo/ui';
@@ -25,7 +24,6 @@ const COMMON_LEVELS: { id: string; labelKey: string }[] = [
     { id: 'Advanced Level (12-13)', labelKey: 'schoolSetup.levels.advancedLevel' }];
 
 export default function StepHierarchy({ data, onUpdate }: StepHierarchyProps) {
-    const { scene: colors } = useThemedColors();
     const { t } = useTranslation();
 
     const toggleLevel = (level: string) => {

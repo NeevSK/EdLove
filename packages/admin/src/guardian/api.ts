@@ -2,7 +2,7 @@ import {
   GuardianIdentity, 
   StudentGuardianRelationship, 
   GuardianPermissionConfig,
-  GuardianDashboard,
+  GuardianDashboardData,
   VerificationDocument,
   RelationshipType} from './types';
 import { api } from '@repo/core';
@@ -24,7 +24,7 @@ export interface GuardianAPI {
   getStudentGuardians(studentId: string): Promise<GuardianIdentity[]>;
   
   // Dashboard and data
-  getGuardianDashboard(guardianId: string): Promise<GuardianDashboard>;
+  getGuardianDashboard(guardianId: string): Promise<GuardianDashboardData>;
   updateNotificationSettings(guardianId: string, settings: any): Promise<void>;
 }
 
@@ -73,8 +73,8 @@ export const guardianAPI: GuardianAPI  = {
   },
 
   // Dashboard and data
-  async getGuardianDashboard(guardianId: string): Promise<GuardianDashboard> {
-    return api.guardian.getDashboard(guardianId) as unknown as Promise<GuardianDashboard>;
+  async getGuardianDashboard(guardianId: string): Promise<GuardianDashboardData> {
+    return api.guardian.getDashboard(guardianId) as unknown as Promise<GuardianDashboardData>;
   },
 
   async updateNotificationSettings(guardianId: string, settings: any): Promise<void> {

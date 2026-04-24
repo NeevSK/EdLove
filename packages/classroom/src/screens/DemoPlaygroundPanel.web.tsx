@@ -106,7 +106,7 @@ export default function DemoPlaygroundPanel({ role, onClose }: DemoPlaygroundPan
                 {role === 'teacher' && <TeacherDashboard />}
                 {role === 'principal' && (
                     <div style={{ padding: '40px', textAlign: 'center', opacity: 0.5 }}>
-                        Principal Dashboard preview moved to @repo/admin
+                        Principal dashboard preview lives in the admin package
                     </div>
                 )}
                 {role === 'student' && <StudentDashboard />}

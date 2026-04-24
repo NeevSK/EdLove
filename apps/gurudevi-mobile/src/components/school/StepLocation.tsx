@@ -14,8 +14,7 @@ import {
     SelectItem,
     FormControl,
     FormControlLabel,
-    FormControlLabelText,
-    useThemedColors} from '@repo/ui';
+    FormControlLabelText} from '@repo/ui';
 import { MapPin, ChevronDown, Flag } from 'lucide-react-native';
 import { SRI_LANKAN_PROVINCES, SRI_LANKAN_DISTRICTS } from '@repo/core';
 import { useTranslation } from 'react-i18next';
@@ -31,7 +30,6 @@ interface StepLocationProps {
 }
 
 export default function StepLocation({ data, onUpdate }: StepLocationProps) {
-    const { scene: colors } = useThemedColors();
     const { t, i18n } = useTranslation();
     const lang = (i18n.resolvedLanguage ?? 'en') as 'en' | 'si' | 'ta';
 

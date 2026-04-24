@@ -1,11 +1,23 @@
-﻿import React from "react";
-import { Icon, View, Platform } from "react-native";
+import React from "react";
+import { View, Platform } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
-import { ErrorBoundary, AchievementUnlockOverlay, useTheme, UniversalModal, Box, VStack, HStack, Text, hapticLight} from '@repo/ui';
+import { ErrorBoundary, AchievementUnlockOverlay, UniversalModal } from '@repo/ui';
+import { 
+  Icon, 
+  useTheme, 
+  Box, 
+  VStack, 
+  HStack, 
+  Text, 
+  hapticLight 
+} from '@repo/ui/primitives';
 import { BreathGuide } from "@repo/self";
-import { usePermissions, useRewards, useNotifications, useStore } from "@repo/core";
+import { useRewards } from "@repo/core/hooks";
+import { useStore } from "@repo/core/store";
+import { usePermissions } from "@repo/core/logic";
+import { useNotifications } from "@repo/core/hooks";
 import {
   User,
   School,
@@ -138,7 +150,17 @@ export default function TabNavigator({
   const [showCelebration, setShowCelebration] = React.useState(false);
   const [currentAchievement, setCurrentAchievement] = React.useState("");
   const store = useStore() as any;
+  const [prevAchievements, setPrevAchievements] = React.useState<string[]>([]);
   const { isBreathingOpen, setBreathingOpen } = store;
+
+  // Synchronize achievement state during render to avoid cascading renders in useEffect
+  if (newAchievements !== prevAchievements) {
+    setPrevAchievements(newAchievements);
+    if (newAchievements.length > 0 && !showCelebration) {
+      setCurrentAchievement(newAchievements[0]);
+      setShowCelebration(true);
+    }
+  }
 
   // Ref to the sidebar element — used for focus trap
   const sidebarRef = React.useRef<HTMLElement>(null);
@@ -159,13 +181,6 @@ export default function TabNavigator({
     window.addEventListener("resize", checkScreenSize);
     return () => window.removeEventListener("resize", checkScreenSize);
   }, []);
-
-  React.useEffect(() => {
-    if (newAchievements.length > 0) {
-      setCurrentAchievement(newAchievements[0]);
-      setShowCelebration(true);
-    }
-  }, [newAchievements]);
 
   // ── FOCUS TRAP: mobile sidebar ──────────────────────────────────────────
   // When the overlay sidebar opens, move keyboard focus inside and prevent

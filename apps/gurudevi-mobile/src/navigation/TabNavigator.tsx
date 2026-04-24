@@ -1,20 +1,22 @@
 import React from 'react';
-import { StyleSheet, Modal, TouchableOpacity, Platform } from 'react-native';
+import { StyleSheet, Modal, TouchableOpacity, Platform, View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { 
   SanctuaryBackground, 
+  ErrorBoundary, 
+  AchievementUnlockOverlay,
+} from '@repo/ui';
+import { 
   Box, 
   VStack, 
   HStack, 
   Text, 
   hapticLight, 
   Icon, 
-  ErrorBoundary, 
-  AchievementUnlockOverlay,
   useTheme
-} from '@repo/ui';
+} from '@repo/ui/primitives';
 import { 
   X, 
   User, 
@@ -30,15 +32,16 @@ import ProfileStackNavigator from './ProfileStackNavigator';
 import CommunityStackNavigator from './CommunityStackNavigator';
 import LibraryStackNavigator from './LibraryStackNavigator';
 import { BreathGuide } from '@repo/self';
-import { useThemedColors } from '@repo/ui';
-import { usePermissions, useRewards, useTracking, useStore } from '@repo/core';
+import { useRewards, useTracking } from '@repo/core/hooks';
+import { useStore } from '@repo/core/store';
+import { usePermissions } from '@repo/core/logic';
 import { WorkforceShell } from '@repo/workforce';
 
 // Screens
 import {
+  ClassroomScreen,
   SelfScreen
 } from '../screens';
-// Assuming this is a local component, not a screen
 
 
 const Tab = createBottomTabNavigator();
@@ -59,13 +62,16 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
   const { isBreathingOpen, setBreathingOpen } = useStore();
   const [showCelebration, setShowCelebration] = React.useState(false);
   const [currentAchievement, setCurrentAchievement] = React.useState('');
+  const [prevAchievements, setPrevAchievements] = React.useState<string[]>([]);
 
-  React.useEffect(() => {
-    if (newAchievements.length > 0) {
+  // Synchronize achievement state during render to avoid cascading renders in useEffect
+  if (newAchievements !== prevAchievements) {
+    setPrevAchievements(newAchievements);
+    if (newAchievements.length > 0 && !showCelebration) {
       setCurrentAchievement(newAchievements[0]);
       setShowCelebration(true);
     }
-  }, [newAchievements]);
+  }
 
   // Dynamic Label Logic
   const getClassroomLabel = () => {

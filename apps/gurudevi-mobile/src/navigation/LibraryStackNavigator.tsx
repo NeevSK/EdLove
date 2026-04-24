@@ -1,18 +1,18 @@
-﻿import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { LibraryScreen, PDFViewerScreen, VideoPlayerScreen, MapScreen, CuratorReviewScreen } from '@repo/library';
-import { useThemedColors} from '@repo/ui';
+import { useTheme } from '@repo/ui';
 
 const Stack = createNativeStackNavigator();
 
 export default function LibraryStackNavigator() {
-    const colors = useTheme().scene;
+    const { scene } = useTheme();
 
     return (
         <Stack.Navigator
             id="LibraryStack"
             screenOptions={{
                 headerShown: false,
-                contentStyle: { backgroundColor: colors.primary },
+                contentStyle: { backgroundColor: scene.canvas.bg },
                 gestureEnabled: true}}>
             <Stack.Screen name="LibraryHome" component={LibraryScreen} />
             <Stack.Screen name="LibraryMap" component={MapScreen} />

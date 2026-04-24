@@ -14,6 +14,7 @@ import {
 } from '@repo/ui';
 import { 
   useAuth,
+  usePermissions,
   SyncManager
 } from '@repo/core';
 import { AnalyticsProvider } from '@repo/analytics/ui';

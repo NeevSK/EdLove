@@ -19,7 +19,7 @@ import {
     CreateClassroomModal,
     ClaimInviteModal,
 } from '../components';
-import { CreateSchoolModal } from '@repo/admin';
+import CreateSchoolModal from '../components/CreateSchoolModal';
 import { useClassroomRoleData } from '../hooks';
 import { useTranslation } from 'react-i18next';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';

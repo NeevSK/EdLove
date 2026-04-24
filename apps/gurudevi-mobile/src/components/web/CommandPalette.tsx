@@ -31,8 +31,8 @@ import Animated, {
     useAnimatedStyle,
     withSpring,
     withTiming} from 'react-native-reanimated';
-import {  } from '@repo/ui';
-import { useTheme } from '@repo/ui';
+import { useTheme, colors } from '@repo/ui';
+const { shroud, sanctuarySaffron, mistGray, willow } = colors;
 import { navigationRef } from '../../navigation/navigationRef';
 
 // Helper: type-safe reference to the browser window (this file is web-only at runtime)

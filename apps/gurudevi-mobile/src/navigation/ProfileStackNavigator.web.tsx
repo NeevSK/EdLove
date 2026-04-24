@@ -1,6 +1,6 @@
-﻿import React from 'react';
+import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { useThemedColors } from '@repo/ui';
+import { useTheme } from '@repo/ui';
 import { ProfileStackParamList } from '@repo/core';
 
 // Static imports instead of React.lazy for stability on web
@@ -20,7 +20,7 @@ export default function ProfileStackNavigatorWeb() {
             id="ProfileStack"
             screenOptions={{
                 headerShown: false,
-                contentStyle: { backgroundColor: colors.primary },
+                contentStyle: { backgroundColor: colors.primary.main },
                 animation: 'slide_from_right'}}>
             <Stack.Screen name="ProfileMain" component={ProfileScreenWeb} />
             <Stack.Screen name="FullProfile" component={FullProfileScreen} />

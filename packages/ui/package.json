@@ -13,6 +13,7 @@
     "./components/SanctuaryButton": "./src/components/SanctuaryButton.tsx",
     "./components/SanctuaryInput": "./src/components/SanctuaryInput.tsx",
     "./components/QRCodeGenerator": "./src/components/QRCodeGenerator.tsx",
+    "./primitives": "./src/primitives.ts",
     "./screens": "./src/screens/index.ts",
     "./screens/AppSettingsScreen": "./src/screens/AppSettingsScreen.tsx",
     "./screens/AppSettingsScreen.web": "./src/screens/AppSettingsScreen.web.tsx",

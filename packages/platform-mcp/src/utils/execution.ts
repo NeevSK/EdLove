@@ -27,10 +27,18 @@ export function executeSovereignTool(
 
   try {
     console.error(`[Sovereign] Executing ${toolName}...`);
-    output = execSync(command, { cwd: ROOT_DIR }).toString();
+    output = execSync(command, { 
+      cwd: ROOT_DIR, 
+      shell: true, 
+      encoding: "utf8",
+      maxBuffer: 10 * 1024 * 1024 
+    } as any) as unknown as string;
   } catch (e: any) {
     status = "failure";
-    output = e.message;
+    // Capture the detailed output from the subprocess if available
+    const stdout = e.stdout?.toString() || "";
+    const stderr = e.stderr?.toString() || "";
+    output = `${e.message}\n${stdout}\n${stderr}`.trim();
   }
 
   const durationMs = Date.now() - startTime;

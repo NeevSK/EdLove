@@ -1,7 +1,7 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { FounderStackParamList } from '@repo/core';
-import { use } from '@repo/ui';
+import { useTheme } from '@repo/ui';
 import {
     FounderDashboard,
     FounderSchoolDashboard,

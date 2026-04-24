@@ -4,8 +4,18 @@ import type {
   StudentSubmissionSummary,
 } from '../logic/schemas/classroom.schema';
 import { educationalServices } from '../native/runtimes/educational.runtime';
+import { supabase } from '../native/supabase';
 import type { Assignment } from '../types';
 import { educationalContract } from './educational.contract';
+
+type RecentGradeOverviewRow = {
+  id: string;
+  grade: number;
+  feedback: string | null;
+  submitted_at: string;
+  assignments: { title: string } | null;
+  classrooms: { name: string } | null;
+};
 
 export const assignmentsAPI = {
   /**
@@ -37,6 +47,29 @@ export const assignmentsAPI = {
     classroomId?: string,
   ): Promise<StudentSubmissionSummary[]> {
     return educationalServices.assignments.getSubmissionHistory(studentId, classroomId);
+  },
+
+  /**
+   * Convenience query used by UI surfaces (keeps Supabase usage out of feature packages).
+   *
+   * @authority read AssignmentSubmission
+   */
+  async getRecentGradesOverviewForStudent(
+    studentId: string,
+    limit = 4,
+  ): Promise<RecentGradeOverviewRow[]> {
+    const { data, error } = await supabase
+      .from('submissions')
+      .select('id, grade, feedback, submitted_at, assignments(title), classrooms(name)')
+      .eq('student_id', studentId)
+      .not('grade', 'is', null)
+      .order('submitted_at', { ascending: false })
+      .limit(limit);
+
+    if (error) throw error;
+    return ((data as RecentGradeOverviewRow[] | null) ?? []).filter(
+      (row) => typeof row.grade === 'number',
+    );
   },
 
   /**

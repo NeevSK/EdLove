@@ -1,7 +1,7 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { GuardianStackParamList } from '@repo/core';
-import { use } from '@repo/ui';
+import { useTheme } from '@repo/ui';
 import { StackFallback } from '../components/web/WebScreenShimmer';
 
 const FounderDashboard = React.lazy(() => import('@repo/admin/screens/FounderDashboard.web'));

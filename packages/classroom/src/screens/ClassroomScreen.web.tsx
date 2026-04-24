@@ -1,7 +1,7 @@
 import React from 'react';
 import { usePermissions, useStore } from '@repo/core';
 import {
-    Box, ScreenWrapper, WebScreenHeader, Text, Heading, Icon
+    Box, ScreenWrapper, WebScreenHeader, Text, Heading, Icon, Pressable
 } from '@repo/ui';
 import { useNavigation } from '@react-navigation/native';
 import { ArrowRight, LogIn, School as SchoolIcon } from 'lucide-react-native';
@@ -9,7 +9,7 @@ import { ArrowRight, LogIn, School as SchoolIcon } from 'lucide-react-native';
 // Direct imports for sub-views
 import StudentDashboardWeb from './StudentDashboard.web';
 import TeacherDashboardWeb from './TeacherDashboard.web';
-import { PrincipalDashboardWeb, DashboardContent, CreateSchoolModal } from '@repo/admin';
+import PrincipalDashboardWebSurface from './PrincipalDashboard.web';
 import PrincipalOnboardingView from '../components/onboarding/PrincipalOnboardingView.web';
 import CreateClassroomModal from '../components/CreateClassroomModal';
 
@@ -82,10 +82,8 @@ export default function ClassroomScreenWeb() {
                     {isCitizenReady && (
                         <>
                             {isPrincipalLike && (
-                                <PrincipalDashboardWeb 
-                                    DashboardContentComponent={DashboardContent}
+                                <PrincipalDashboardWebSurface
                                     PrincipalOnboardingViewComponent={PrincipalOnboardingView}
-                                    CreateSchoolModalComponent={CreateSchoolModal as any}
                                     CreateClassroomModalComponent={CreateClassroomModal as any}
                                 />
                             )}

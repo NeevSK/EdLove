@@ -4,7 +4,6 @@ import {
     Text,
     HStack,
     Pressable,
-    useThemedColors,
     
     FormControl,
     FormControlLabel,
@@ -25,7 +24,6 @@ interface StepDemographicsProps {
 }
 
 export default function StepDemographics({ data, onUpdate }: StepDemographicsProps) {
-    const { scene: colors } = useThemedColors();
     const { t, i18n } = useTranslation();
     const lang = (i18n.resolvedLanguage ?? 'en') as 'en' | 'si' | 'ta';
 

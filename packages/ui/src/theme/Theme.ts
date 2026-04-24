@@ -157,6 +157,7 @@ export const {
   starlightGray,
   mistGray,
   dimGray,
+  lotusDeepPink,
 } = colors;
 
 // ============================================================================

@@ -221,22 +221,4 @@ export function validateWithRules(
     return { isValid: true };
 }
 
-/**
- * Validates a single field with multiple validators
- * Returns the first validation error encountered
- * 
- * @param value - Value to validate
- * @param validators - Array of validation functions
- * @returns ValidationResult from the first failed validator, or success
- */
-export function validateWithRules(
-    value: any,
-    validators: Array<(value: any) => ValidationResult>): ValidationResult {
-    for (const validator of validators) {
-        const result = validator(value);
-        if (!result.isValid) {
-            return result;
-        }
-    }
-    return { isValid: true };
-}
+

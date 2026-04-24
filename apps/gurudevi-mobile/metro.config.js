@@ -210,4 +210,7 @@ config.resolver.sourceExts = [
 // 10. Main Field Priority
 config.resolver.resolverMainFields = ['react-native', 'browser', 'main'];
 
-module.exports = withNativeWind(config, { input: "../../packages/ui/src/global.css" });
+module.exports = withNativeWind(config, { 
+    input: "../../packages/ui/src/global.css",
+    configPath: path.resolve(__dirname, "tailwind.config.js")
+});

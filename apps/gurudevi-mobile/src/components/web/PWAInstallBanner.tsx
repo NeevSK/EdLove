@@ -21,7 +21,7 @@ import { Download, X, Share } from 'lucide-react-native';
 export function PWAInstallBanner() {
     const { canInstall, promptInstall, isDismissed, dismiss, isIOS, isInstalled } = usePWAInstallPrompt();
     // All hooks must be called unconditionally — early returns come AFTER all hook calls
-    const { scene: colors } = useThemedColors();
+    const { scene, text } = useTheme();
 
     // Never render on native, when already installed, or after user dismissed
     if (Platform.OS !== 'web') return null;
@@ -33,7 +33,7 @@ export function PWAInstallBanner() {
         <Animated.View
             entering={SlideInDown.springify().damping(18)}
             exiting={SlideOutDown.duration(220)}
-            style={[styles.banner, { backgroundColor: colors.secondary, borderTopColor: colors.border }]}>
+            style={[styles.banner, { backgroundColor: scene.surface.bg, borderTopColor: scene.surface.border }]}>
             <View style={styles.left}>
                 {isIOS ? (
                     <Icon as={Share} size={20} color={sanctuarySaffron} />
@@ -41,10 +41,10 @@ export function PWAInstallBanner() {
                     <Icon as={Download} size={20} color={sanctuarySaffron} />
                 )}
                 <View style={styles.textBlock}>
-                    <Text style={[styles.title, { color: colors.text }]}>
+                    <Text style={[styles.title, { color: text.primary }]}>
                         {isIOS ? 'Add to Home Screen' : 'Install Gurudevi'}
                     </Text>
-                    <Text style={[styles.sub, { color: colors.textSecondary }]}>
+                    <Text style={[styles.sub, { color: text.secondary }]}>
                         {isIOS
                             ? 'Tap the Share icon, then "Add to Home Screen"'
                             : 'Your Sanctuary, one tap away'}
@@ -72,7 +72,7 @@ export function PWAInstallBanner() {
                     onPress={dismiss}
                     style={styles.dismissBtn}
                     accessibilityLabel="Dismiss install prompt">
-                    <Icon as={X} size={18} color={colors.textSecondary} />
+                    <Icon as={X} size={18} color={text.secondary} />
                 </TouchableOpacity>
             </View>
         </Animated.View>

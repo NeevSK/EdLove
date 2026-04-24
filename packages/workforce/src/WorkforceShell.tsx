@@ -1,7 +1,7 @@
 import React from 'react';
-import { Box, Text, Heading, VStack, Icon, Theme } from '@repo/ui';
+import { Box, Text, Heading, VStack, Icon, Theme } from '@repo/ui/primitives';
 import { Users2, Hammer } from 'lucide-react-native';
-import { FeatureGuard } from '@repo/core/src/permissions/guards/FeatureGuard';
+import { FeatureGuard } from '@repo/core/logic';
 
 export default function WorkforceShell() {
   return (

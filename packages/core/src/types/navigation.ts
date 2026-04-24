@@ -38,6 +38,14 @@ export type FounderStackParamList = {
   };
   SchoolCreation: undefined;
   SchoolForest: undefined;
+  AdminDashboard: undefined;
+  AdminIncidentQueue: undefined;
+  AdminTenantDetail: { tenantId: string };
+  AdminAuthorityRepair: undefined;
+  AdminJobControl: undefined;
+  AdminAuditLog: undefined;
+  AdminReleaseControl: undefined;
+  GuardianDashboard: undefined;
 };
 
 /** Minimal profile shape passed to FullProfile screen.  Use proper fields instead of `any`. */

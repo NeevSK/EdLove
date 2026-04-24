@@ -117,7 +117,7 @@ export interface VerificationDocument {
   rejectionReason?: string;
 }
 
-export interface GuardianDashboard {
+export interface GuardianDashboardData {
   guardianId: string;
   students: StudentOverview[];
   notifications: GuardianNotification[];

@@ -1,11 +1,13 @@
 param(
-    [string]$Target = "."
+    [string]$Target = ".",
+    [switch]$VerboseOutput
 )
 
 Write-Host ">>> Normalizing Monorepo Imports <<<" -ForegroundColor Cyan
+$startTime = Get-Date
 
 # Define mapping of relative paths to workspace aliases
-# This is a basic implementation that can be expanded
+# Expanded to catch more deep nesting
 $mappings = @{
     "../../../packages/core" = "@repo/core";
     "../../packages/core" = "@repo/core";
@@ -13,31 +15,57 @@ $mappings = @{
     "../../../packages/ui" = "@repo/ui";
     "../../packages/ui" = "@repo/ui";
     "../packages/ui" = "@repo/ui";
+    "../../../packages/classroom" = "@repo/classroom";
+    "../../packages/classroom" = "@repo/classroom";
+    "../packages/classroom" = "@repo/classroom";
 }
 
-$files = Get-ChildItem -Path $Target -Include *.ts,*.tsx -Recurse | Where-Object { $_.FullName -notmatch "node_modules" }
+try {
+    $files = Get-ChildItem -Path $Target -Include *.ts,*.tsx -Recurse -ErrorAction Stop | Where-Object { $_.FullName -notmatch "node_modules" }
+    $totalFiles = $files.Count
+    $processedCount = 0
+    $changedCount = 0
 
-foreach ($file in $files) {
-    $content = Get-Content -Path $file.FullName -Raw
-    $originalContent = $content
-    $changed = $false
+    Write-Host "Found $totalFiles files to scan in $Target." -ForegroundColor Gray
 
-    foreach ($rel in $mappings.Keys) {
-        $alias = $mappings[$rel]
-        # Match from 'path' or from "path"
-        $pattern = "from\s+['""]" + [regex]::Escape($rel) + "(/[^'""\s]*)?['""]"
-        $replacement = "from '$alias$1'"
-        
-        if ($content -match $pattern) {
-            $content = $content -replace $pattern, $replacement
-            $changed = $true
+    foreach ($file in $files) {
+        $processedCount++
+        if ($processedCount % 50 -eq 0) {
+            Write-Host "Progress: $processedCount/$totalFiles files..." -ForegroundColor Gray
+        }
+
+        try {
+            $content = Get-Content -Path $file.FullName -Raw -ErrorAction Stop
+            $changed = $false
+
+            foreach ($rel in $mappings.Keys) {
+                $alias = $mappings[$rel]
+                # Match from 'path' or from "path"
+                $pattern = "from\s+['""]" + [regex]::Escape($rel) + "(/[^'""\s]*)?['""]"
+                $replacement = "from '$alias$1'"
+                
+                if ($content -match $pattern) {
+                    $content = [Regex]::Replace($content, $pattern, $replacement)
+                    $changed = $true
+                }
+            }
+
+            if ($changed) {
+                Set-Content -Path $file.FullName -Value $content -NoNewline -ErrorAction Stop
+                $changedCount++
+                if ($VerboseOutput) {
+                    Write-Host "Normalized: $($file.FullName)" -ForegroundColor Green
+                }
+            }
+        } catch {
+            Write-Error "Failed to process file: $($file.FullName). Error: $($_.Exception.Message)"
         }
     }
 
-    if ($changed) {
-        Set-Content -Path $file.FullName -Value $content -NoNewline
-        Write-Host "Normalized: $($file.FullName)" -ForegroundColor Green
-    }
+    $duration = (Get-Date) - $startTime
+    Write-Host "`n✅ Import normalization complete." -ForegroundColor Green
+    Write-Host "Scanned: $totalFiles | Changed: $changedCount | Duration: $($duration.TotalSeconds)s" -ForegroundColor Cyan
+} catch {
+    Write-Error "Fatal error during normalization: $($_.Exception.Message)"
+    exit 1
 }
-
-Write-Host "`n✅ Import normalization complete." -ForegroundColor Green

@@ -1,22 +1,21 @@
-﻿import React from 'react';
+import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
 import { ProfileScreen, FullProfileScreen } from '../screens';
 import { PrivacyLedgerScreen } from '@repo/self';
-import { useThemedColors } from '@repo/ui';
+import { useTheme } from '@repo/ui';
 
 const Stack = createNativeStackNavigator();
 
 export default function ProfileStackNavigator() {
-    const { t } = useTranslation();
-    const colors = useTheme().scene;
+    const { scene } = useTheme();
 
     return (
         <Stack.Navigator
             id="ProfileStack"
             screenOptions={{
                 headerShown: false,
-                contentStyle: { backgroundColor: colors.secondary }, // contentStyle for native-stack
+                contentStyle: { backgroundColor: scene.surface.bg }, // contentStyle for native-stack
             }}>
             <Stack.Screen name="ProfileMain" component={ProfileScreen} />
             <Stack.Screen
