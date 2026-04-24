@@ -4,365 +4,306 @@ import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
-import { z } from "zod";
 import * as dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
-import { execSync } from "child_process";
-import fs from "fs";
 
-// --- Alchemist's Setup: Environment Sovereignty ---
+// --- Service Imports: The Modular Sovereignty ---
+import { AuditService } from "./services/AuditService.js";
+import { DiscoveryService } from "./services/DiscoveryService.js";
+import { MaintenanceService } from "./services/MaintenanceService.js";
+import { ROOT_DIR } from "./utils/constants.js";
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const ROOT_DIR = path.join(__dirname, "..", "..", "..");
-
 dotenv.config({ path: path.join(__dirname, "..", ".env") });
 
 /**
- * The Polymath Platform MCP Server - MASTER VERSION
+ * The Polymath Platform MCP Server - MODULAR VERSION
  * The Sovereign Engineering Control Plane
  */
 class PolymathPlatformServer {
   private server: Server;
+  private audit: AuditService;
+  private discovery: DiscoveryService;
+  private maintenance: MaintenanceService;
 
   constructor() {
     this.server = new Server(
-      {
-        name: "polymath-platform-mcp",
-        version: "1.0.0",
-      },
-      {
-        capabilities: {
-          tools: {},
-        },
-      }
+      { name: "polymath-platform-mcp", version: "1.1.0" },
+      { capabilities: { tools: {} } }
     );
+
+    this.audit = new AuditService();
+    this.discovery = new DiscoveryService();
+    this.maintenance = new MaintenanceService();
 
     this.setupHandlers();
     this.server.onerror = (error) => console.error("[MCP Error]", error);
   }
 
   private setupHandlers() {
-    // 1. Tool Listing: The Sovereign Capabilities
     this.server.setRequestHandler(ListToolsRequestSchema, async () => ({
       tools: [
         {
           name: "audit_monorepo_hygiene",
-          description: "Runs the unified hygiene check (circular imports, unused code, boundary violations).",
+          description: "Runs corporate-scale hygiene checks (circular deps, unused code, boundary violations).",
           inputSchema: { type: "object", properties: {} },
         },
         {
           name: "heal_codebase",
-          description: "Performs surgical repair on corrupted JSX or TypeScript types.",
+          description: "Surgically repairs JSX/TS syntax corruption.",
           inputSchema: {
             type: "object",
             properties: {
-              files: {
-                type: "array",
-                items: { type: "string" },
-                description: "Array of absolute or relative file paths to heal."
-              }
+              files: { type: "array", items: { type: "string" }, description: "File paths to heal." }
             },
             required: ["files"]
           },
         },
         {
           name: "sync_identity_schema",
-          description: "Verifies the alignment between Database faceted profiles and identity schemas.",
+          description: "Aligns DB faceted profiles with identity schemas.",
           inputSchema: { type: "object", properties: {} },
         },
         {
           name: "check_package_types",
-          description: "Runs TypeScript type checks for specific packages or the entire monorepo.",
+          description: "Runs tsc audits for specific packages or monorepo root.",
           inputSchema: {
             type: "object",
             properties: {
-              package: {
-                type: "string",
-                description: "The package name (filter) to check (e.g., '@repo/ui'). If omitted, checks all packages."
-              }
+              package: { type: "string", description: "Package name (e.g., '@repo/ui')." }
             }
           }
         },
         {
+          name: 'grep_code',
+          description: 'Global structural code search with smart filtering.',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              query: { type: 'string', description: 'Search term.' },
+              isRegex: { type: 'boolean' },
+              include: { type: 'string' },
+              target: { type: 'string' },
+              includeNodeModules: { type: 'boolean' },
+              summaryOnly: { type: 'boolean' },
+            },
+            required: ['query'],
+          },
+        },
+        {
+          name: 'search_docs',
+          description: 'Targeted documentation and architectural guide discovery.',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              query: { type: 'string' },
+              target: { type: 'string' },
+              includeNodeModules: { type: 'boolean' },
+              summaryOnly: { type: 'boolean' },
+              hybrid: { type: 'boolean' },
+            },
+            required: ['query'],
+          },
+        },
+        {
           name: "create_checkpoint",
-          description: "Stages changes and creates a git commit with a categorized ledger, bypassing pre-commit hooks (--no-verify).",
+          description: "Atomically stages and commits changes with a smart ledger.",
           inputSchema: {
             type: "object",
             properties: {
-              message: {
-                type: "string",
-                description: "The commit message summarising the checkpoint."
-              },
-              stage_all: {
-                type: "boolean",
-                description: "Whether to stage all changes (git add .). Defaults to true."
-              }
+              message: { type: "string" },
+              stage_all: { type: "boolean" }
             },
             required: ["message"]
           },
         },
         {
           name: "normalize_imports",
-          description: "Normalizes relative imports to workspace aliases (@repo/*).",
+          description: "Converts relative imports to workspace aliases.",
           inputSchema: {
             type: "object",
             properties: {
-              target: {
-                type: "string",
-                description: "Target directory or file to normalize. Defaults to root."
-              }
+              target: { type: "string" }
             }
           }
         },
         {
           name: "audit_dependency_health",
-          description: "Runs a combined report of pnpm outdated vs. Expo SDK compatibility.",
+          description: "Combined report of dependency health and SDK compatibility.",
           inputSchema: { type: "object", properties: {} },
-        }
+        },
+        {
+          name: 'audit_accessibility',
+          description: 'Targeted a11y linting and ARIA violation checks.',
+          inputSchema: {
+            type: 'object',
+            properties: { target: { type: 'string' } },
+          },
+        },
+        {
+          name: 'check_contrast',
+          description: 'WCAG/APCA contrast ratio calculation.',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              fg: { type: 'string' },
+              bg: { type: 'string' },
+            },
+            required: ['fg', 'bg'],
+          },
+        },
+        {
+          name: 'lint_package',
+          description: 'High-speed Biome linting for packages.',
+          inputSchema: {
+            type: 'object',
+            properties: { target: { type: 'string' } },
+          },
+        },
+        {
+          name: 'get_component_api',
+          description: 'Extracts props/API docs for a React component.',
+          inputSchema: {
+            type: 'object',
+            properties: { name: { type: 'string' } },
+            required: ['name'],
+          },
+        },
+        {
+          name: 'audit_legacy_ui',
+          description: 'Detects deprecated Gluestack/RN patterns.',
+          inputSchema: {
+            type: 'object',
+            properties: { target: { type: 'string' } },
+          },
+        },
+        {
+          name: 'audit_package_architecture',
+          description: 'Ensures platform agnosticism and boundary integrity.',
+          inputSchema: {
+            type: 'object',
+            properties: { target: { type: 'string' } },
+            required: ['target'],
+          },
+        },
+        {
+          name: 'get_inventory',
+          description: 'Monorepo file/package inventory discovery.',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              target: { type: 'string' },
+              depth: { type: 'number' },
+              format: { type: 'string', enum: ['text', 'markdown'] },
+              verbose: { type: 'boolean' },
+            },
+          },
+        },
+        {
+          name: 'structural_search',
+          description: "GritQL semantic pattern matching.",
+          inputSchema: {
+            type: 'object',
+            properties: {
+              query: { type: 'string' },
+              target: { type: 'string' },
+            },
+            required: ['query'],
+          },
+        },
+        {
+          name: "audit_colors",
+          description: "Contrast audit across design phases.",
+          inputSchema: { type: "object", properties: {} },
+        },
+        {
+          name: "test_sleekness",
+          description: "Smoke test for native leakage in core logic.",
+          inputSchema: { type: "object", properties: {} },
+        },
+        {
+          name: "generate_growth_signals",
+          description: "Growth signal schema synchronization.",
+          inputSchema: { type: "object", properties: {} },
+        },
+        {
+          name: "bridge_schema_zod",
+          description: "Generates Zod validation schemas from any Sovereign JSON Schema.",
+          inputSchema: {
+            type: "object",
+            properties: {
+              input: { type: "string", description: "Path to input .json schema" },
+              output: { type: "string", description: "Path to output .ts Zod file" }
+            },
+            required: ["input", "output"]
+          },
+        },
+        {
+          name: "audit_imports",
+          description: "Dependency leak detection.",
+          inputSchema: { type: "object", properties: {} },
+        },
+        {
+          name: "check_classroom_boundaries",
+          description: "Classroom boundary enforcement.",
+          inputSchema: { type: "object", properties: {} },
+        },
+        {
+          name: "check_self_boundaries",
+          description: "Self boundary enforcement.",
+          inputSchema: { type: "object", properties: {} },
+        },
       ],
     }));
 
-    // 2. Tool Invocation: The Execution Engine
     this.server.setRequestHandler(CallToolRequestSchema, async (request) => {
       const { name, arguments: args } = request.params;
-
       try {
         switch (name) {
-          case "audit_monorepo_hygiene":
-            return this.handleAuditHygiene();
-          case "heal_codebase":
-            return this.handleHealCodebase(args as { files: string[] });
-          case "sync_identity_schema":
-            return this.handleSyncIdentity();
-          case "check_package_types":
-            return this.handleCheckTypes(args as { package?: string });
-          case "create_checkpoint":
-            return this.handleCreateCheckpoint(args as { message: string, stage_all?: boolean });
-          case "normalize_imports":
-            return this.handleNormalizeImports(args as { target?: string });
-          case "audit_dependency_health":
-            return this.handleAuditDependencyHealth();
-          default:
-            throw new Error(`Unknown tool: ${name}`);
+          // Audit Domain
+          case "audit_monorepo_hygiene": return this.audit.handleAuditHygiene();
+          case 'audit_accessibility': return this.audit.handleAuditA11y(args as any);
+          case 'check_contrast': return this.audit.handleCheckContrast(args as any);
+          case 'lint_package': return this.audit.handleLintPackage(args as any);
+          case 'audit_legacy_ui': return this.audit.handleAuditLegacyUI(args as any);
+          case 'audit_package_architecture': return this.audit.handleAuditPackageArchitecture(args as any);
+          case "audit_colors": return this.audit.handleAuditColors();
+          case "check_classroom_boundaries": return this.audit.handleCheckClassroomBoundaries();
+          case "check_self_boundaries": return this.audit.handleCheckSelfBoundaries();
+
+          // Discovery Domain
+          case 'grep_code': return this.discovery.handleGrepCode(args as any);
+          case 'search_docs': return this.discovery.handleSearchDocs(args as any);
+          case 'get_component_api': return this.discovery.handleGetComponentApi(args as any);
+          case 'get_inventory': return this.discovery.handleGetInventory(args as any);
+          case 'structural_search': return this.discovery.handleStructuralSearch(args as any);
+          case "audit_imports": return this.discovery.handleAuditImports();
+
+          // Maintenance Domain
+          case "heal_codebase": return this.maintenance.handleHealCodebase(args as any);
+          case "sync_identity_schema": return this.maintenance.handleSyncIdentity();
+          case "check_package_types": return this.maintenance.handleCheckTypes(args as any);
+          case "create_checkpoint": return this.maintenance.handleCreateCheckpoint(args as any);
+          case "normalize_imports": return this.maintenance.handleNormalizeImports(args as any);
+          case "audit_dependency_health": return this.maintenance.handleAuditDependencyHealth();
+          case "generate_growth_signals": return this.maintenance.handleGenerateGrowthSignals();
+          case "bridge_schema_zod": return this.maintenance.handleBridgeSchemaZod(args as any);
+          case "test_sleekness": return this.maintenance.handleTestSleekness();
+
+          default: throw new Error(`Unknown tool: ${name}`);
         }
       } catch (error: any) {
-        return {
-          content: [{ type: "text", text: `Error: ${error.message}` }],
-          isError: true,
-        };
+        return { content: [{ type: "text", text: `Error: ${error.message}` }], isError: true };
       }
     });
-  }
-
-  private handleCreateCheckpoint(args: { message: string, stage_all?: boolean }) {
-    console.error(`Creating checkpoint: ${args.message}`);
-    const stageAll = args.stage_all !== false;
-    const tempMsgPath = path.join(ROOT_DIR, ".checkpoint_msg.txt");
-
-    try {
-      // 1. Stage changes
-      if (stageAll) {
-        execSync("git add .", { cwd: ROOT_DIR });
-      }
-
-      // 2. Verify we have something to commit
-      const staged = execSync("git diff --cached --name-only", { cwd: ROOT_DIR }).toString().trim();
-      if (!staged) {
-        return { content: [{ type: "text", text: "Nothing to commit. Checkpoint aborted." }] };
-      }
-
-      // 3. New: Generate Smart Changeset for internal package versioning
-      try {
-        console.error("Generating Smart Changeset...");
-        execSync(`node scripts/smart-changeset.mjs --staged "${args.message.replace(/"/g, '\\"')}"`, { cwd: ROOT_DIR });
-        // Re-stage the new changeset file
-        execSync("git add .changeset/*.md", { cwd: ROOT_DIR });
-      } catch (changesetError) {
-        console.error("Smart Changeset failed (likely no package changes), continuing...");
-      }
-
-      // 4. Prepare message with Ledger
-      fs.writeFileSync(tempMsgPath, args.message, "utf-8");
-      
-      try {
-        // Run the ledger script (Silent Fail-Safe)
-        execSync(`powershell -ExecutionPolicy Bypass -File scripts/commit-ledger.ps1 -CommitMsgFile "${tempMsgPath}"`, { cwd: ROOT_DIR });
-      } catch (ledgerError) {
-        console.error("Ledger script failed, continuing with raw message.");
-      }
-
-      // 4. Commit with no-verify
-      const output = execSync(`git commit -F "${tempMsgPath}" --no-verify`, { cwd: ROOT_DIR }).toString();
-      
-      // Cleanup
-      if (fs.existsSync(tempMsgPath)) fs.unlinkSync(tempMsgPath);
-
-      return {
-        content: [{ type: "text", text: `Checkpoint created successfully!\n\n${output}` }]
-      };
-    } catch (error: any) {
-      if (fs.existsSync(tempMsgPath)) fs.unlinkSync(tempMsgPath);
-      return {
-        content: [{ type: "text", text: `Failed to create checkpoint: ${error.message}` }],
-        isError: true
-      };
-    }
-  }
-
-  private handleAuditHygiene() {
-    console.error("Running Hygiene Audit...");
-    try {
-      execSync("powershell -ExecutionPolicy Bypass -File scripts/check-hygiene.ps1", { cwd: ROOT_DIR });
-    } catch (e) {
-      console.error("Hygiene script reported errors (expected result).");
-    }
-    
-    // Read reports
-    const circular = this.readReport("circular_deps.txt");
-    const unused = this.readReport("unused_code.txt");
-    const architecture = this.readReport("architecture.txt");
-
-    return {
-      content: [{
-        type: "text",
-        text: JSON.stringify({ circular, unused, architecture }, null, 2)
-      }]
-    };
-  }
-
-  private handleNormalizeImports(args: { target?: string }) {
-    const target = args.target || ".";
-    console.error(`Normalizing imports in: ${target}`);
-    const output = execSync(`powershell -ExecutionPolicy Bypass -File scripts/normalize-imports.ps1 -Target "${target}"`, { cwd: ROOT_DIR }).toString();
-    return {
-      content: [{ type: "text", text: output }]
-    };
-  }
-
-  private handleAuditDependencyHealth() {
-    console.error("Running Dependency Health Audit...");
-    const output = execSync("powershell -ExecutionPolicy Bypass -File scripts/audit-dependency-health.ps1", { cwd: ROOT_DIR }).toString();
-    return {
-      content: [{ type: "text", text: output }]
-    };
-  }
-
-  private handleHealCodebase(args: { files: string[] }) {
-    console.error(`Healing files: ${args.files.join(", ")}`);
-    const fileList = args.files.map(f => `"${f}"`).join(" ");
-    const output = execSync(`powershell -ExecutionPolicy Bypass -File scripts/heal-codebase.ps1 ${fileList}`, { cwd: ROOT_DIR }).toString();
-    
-    return {
-      content: [{ type: "text", text: output }]
-    };
-  }
-
-  private handleSyncIdentity() {
-    console.error("Syncing Identity Schema...");
-    const output = execSync("node scripts/check-identity-alignment.mjs", { cwd: ROOT_DIR }).toString();
-    return {
-      content: [{ type: "text", text: output }]
-    };
-  }
-
-  private handleCommitLedger() {
-    console.error("Generating Commit Ledger...");
-    const output = execSync("powershell -ExecutionPolicy Bypass -File scripts/commit-ledger.ps1", { cwd: ROOT_DIR }).toString();
-    return {
-      content: [{ type: "text", text: output }]
-    };
-  }
-
-  private handleCheckTypes(args: { package?: string }) {
-    // 1. ARGUMENT NORMALIZATION (AI-Proofing)
-    const rawTarget = args.package || "";
-    const cleanTarget = rawTarget.replace(/^@repo\/|^@app\/|^\/|^\.\\|^.\//, "");
-    
-    console.error(`Checking types for: ${cleanTarget || "all packages"}...`);
-    
-    if (cleanTarget) {
-      // 2. ROOT CLEANUP (Enforcing Order)
-      // Delete any "Agent Slip-up" reports in the root to ensure we don't serve stale data.
-      const rootSummary = path.join(ROOT_DIR, `audit-${cleanTarget}-summary.txt`);
-      if (fs.existsSync(rootSummary)) fs.unlinkSync(rootSummary);
-
-      const psCmd = `powershell -ExecutionPolicy Bypass -File scripts/audit-errors.ps1 -Target "${cleanTarget}" -LocalOnly`;
-      
-      try {
-        const output = execSync(psCmd, { cwd: ROOT_DIR }).toString();
-        const summaryName = `audit-${cleanTarget}-summary.txt`;
-        const summary = this.findSurgicalReport(summaryName, cleanTarget);
-        
-        return {
-          content: [
-            { type: "text", text: output },
-            { type: "text", text: `--- Surgical Analysis Summary ---\n${summary}` }
-          ]
-        };
-      } catch (e: any) {
-        const summaryName = `audit-${cleanTarget}-summary.txt`;
-        const summary = this.findSurgicalReport(summaryName, cleanTarget);
-
-        return {
-          content: [
-            { type: "text", text: `Type check command reported errors (expected).\n${e.message}` },
-            { type: "text", text: `--- Partial Analysis Summary (If found) ---\n${summary}` }
-          ],
-          isError: true
-        };
-      }
-    } else {
-      // General monorepo check
-      const psCmd = `powershell -ExecutionPolicy Bypass -File scripts/audit-wrapper.ps1 -Cmd "pnpm turbo run check-types" -Log "reports/check-types.txt"`;
-      
-      try {
-        const output = execSync(psCmd, { cwd: ROOT_DIR }).toString();
-        const report = this.readReport("check-types.txt");
-        return { content: [{ type: "text", text: output }, { type: "text", text: report }] };
-      } catch (e: any) {
-        const report = this.readReport("check-types.txt");
-        return { content: [{ type: "text", text: e.message }, { type: "text", text: report }], isError: true };
-      }
-    }
-  }
-
-  /**
-   * The "Hunter" Logic: Scouts for the report in ordered and unordered locations.
-   */
-  private findSurgicalReport(filename: string, packageShortName: string): string {
-    const candidates = [
-      path.join(ROOT_DIR, "reports", filename),          // 1. Global reports (ORDERED - PRIMARY)
-      path.join(ROOT_DIR, "packages", packageShortName, filename), // 2. Package root
-      path.join(ROOT_DIR, filename),                     // 3. Root (LURKING/STALE - FALLBACK)
-      path.join(ROOT_DIR, "packages", packageShortName, "reports", filename), // Package reports
-      path.join(ROOT_DIR, "apps", packageShortName, filename),     // App root
-      path.join(ROOT_DIR, "apps", packageShortName, "reports", filename), // App reports
-    ];
-
-    for (const p of candidates) {
-      if (fs.existsSync(p)) {
-        console.error(`>>> Discovery: Found report at ${p}`);
-        return fs.readFileSync(p, "utf-8");
-      }
-    }
-
-    return "Discovery failed: Surgical report could not be found in any candidate location.";
-  }
-
-  private readReport(filename: string): string {
-    const p = path.join(ROOT_DIR, "reports", filename);
-    if (fs.existsSync(p)) return fs.readFileSync(p, "utf-8");
-    
-    // Fallback search for general reports
-    const fallback = path.join(ROOT_DIR, filename);
-    return fs.existsSync(fallback) ? fs.readFileSync(fallback, "utf-8") : "Report not found.";
   }
 
   async run() {
     const transport = new StdioServerTransport();
     await this.server.connect(transport);
-    console.error("Polymath Master MCP Server running on stdio");
+    console.error("Polymath Master MCP Server (Modular) running on stdio");
   }
 }
 

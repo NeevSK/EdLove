@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "GuruDevi Identity Schema",
+  "description": "Canonical definitions for identities and faceted profiles in the GuruDevi environment.",
+  "definitions": {
+    "Identity": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "format": "uuid" },
+        "email": { "type": "string", "format": "email" },
+        "role": { "type": "string" },
+        "name": { "type": "string" }
+      },
+      "required": ["id", "email", "role"]
+    },
+    "FacetedProfile": {
+      "type": "object",
+      "properties": {
+        "school_id": { "type": ["string", "null"] },
+        "profile_completed": { "type": "boolean" },
+        "role": { "type": "string" },
+        "full_name": { "type": "string" },
+        "email": { "type": "string" },
+        "platform_roles": { "type": "array", "items": { "type": "string" } },
+        "school_role": { "type": "string" },
+        "work_roles": { "type": "array", "items": { "type": "string" } },
+        "tenant_kind": { "type": "string" }
+      }
+    }
+  }
+}

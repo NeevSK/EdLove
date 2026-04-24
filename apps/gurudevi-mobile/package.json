@@ -128,6 +128,7 @@
     "eslint": "^9.38.0",
     "eslint-plugin-react-compiler": "19.1.0-rc.2",
     "eslint-plugin-react-native-a11y": "^3.5.1",
+    "globals": "^16.5.0",
     "jest-cucumber": "^4.5.0",
     "jest-expo": "~55.0.16",
     "react-native-web": "^0.21.2",

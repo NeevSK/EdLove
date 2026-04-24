@@ -14,8 +14,31 @@ This inventory catalogs the sovereign capabilities enabled by the Model Context 
 | `audit_monorepo_hygiene` | **Structural Health** | Detects circular imports and architectural boundary violations. |
 | `create_checkpoint` | **Verified Commit** | Bypasses pre-commit hooks to save progress during deep migrations. |
 | `sync_identity_schema` | **Identity Alignment** | Verifies database profiles against identity schemas. |
+| `audit_colors` | **Design Audit** | Checks WCAG contrast violations across design phases. |
+| `test_sleekness` | **Native Guard** | Validates core logic purity and prevents native leakage. |
+| `generate_growth_signals`| **Schema Sync** | Regenerates growth signal mappings from definitions. |
+| `audit_imports` | **Exposed Dependency** | Scans for platform-specific library leaks (e.g. native in web). |
+| `check_classroom_boundaries` | **Boundary Enforcement** | Validates classroom package architectural constraints. |
+| `check_self_boundaries` | Maintenance | Self boundary enforcement. |
+| `audit_imports` | Maintenance | Dependency leak detection. |
 
 ---
+
+## 🏗️ Architectural Sovereignty
+
+The `platform-mcp` server has been modularized for maximum developer experience and scalability:
+
+- **Entrypoint**: `src/index.ts` (Routing & Registration)
+- **Services**:
+  - `AuditService`: Design hygiene, a11y, and package boundaries.
+  - `DiscoveryService`: Intelligence gathering, grep, and inventory.
+  - `MaintenanceService`: Checkpoints, normalization, and code healing.
+- **Utilities**: `src/utils/pathUtils.ts` (Path normalization & report discovery).
+
+> [!NOTE]
+> All core logic now resides in services. When adding new capabilities, extend the relevant service class and register the tool in `index.ts`.
+
+**Last Audited**: 2026-04-24 18:41 (Modularization Completed)
 
 ## 🐙 2. GitKraken (Version Control)
 *Deep integration with Git for advanced history and collaboration management.*
@@ -59,3 +82,7 @@ This inventory catalogs the sovereign capabilities enabled by the Model Context 
 
 > [!TIP]
 > **Pro-Tip**: You can call any of these tools by their name (e.g., "Run a type check on the self package"). I will automatically handle the underlying scripts, arguments, and reporting paths.
+
+---
+
+**Last Audited**: 2026-04-24T18:38:00+05:30
