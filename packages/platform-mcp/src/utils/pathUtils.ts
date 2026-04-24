@@ -8,12 +8,20 @@ import { ROOT_DIR } from "./constants.js";
  */
 export function normalizeTarget(target: string): string {
   const clean = target.replace(/^['"]|['"]$/g, ""); // Remove accidental quotes
+  
+  // 1. Full Aliases (@repo/ui -> packages/ui/src)
   if (clean.startsWith("@repo/")) {
-    return path.join(ROOT_DIR, "packages", clean.replace("@repo/", ""));
+    const pkg = clean.replace("@repo/", "");
+    return path.join(ROOT_DIR, "packages", pkg, "src");
   }
+  
+  // 2. App Aliases (@app/web -> apps/web/src)
   if (clean.startsWith("@app/")) {
-    return path.join(ROOT_DIR, "apps", clean.replace("@app/", ""));
+    const app = clean.replace("@app/", "");
+    return path.join(ROOT_DIR, "apps", app, "src");
   }
+
+  // 3. Absolute or relative fallbacks
   return path.isAbsolute(clean) ? clean : path.join(ROOT_DIR, clean);
 }
 

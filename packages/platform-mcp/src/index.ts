@@ -130,6 +130,17 @@ class PolymathPlatformServer {
           }
         },
         {
+          name: "normalize_inputs",
+          description: "Plumbing: Resolves package aliases to absolute filesystem paths.",
+          inputSchema: {
+            type: "object",
+            properties: {
+              target: { type: "string" }
+            },
+            required: ["target"]
+          }
+        },
+        {
           name: "audit_dependency_health",
           description: "Combined report of dependency health and SDK compatibility.",
           inputSchema: { type: "object", properties: {} },
@@ -408,6 +419,7 @@ class PolymathPlatformServer {
           case "check_package_types": return this.maintenance.handleCheckTypes(args as any);
           case "create_checkpoint": return this.maintenance.handleCreateCheckpoint(args as any);
           case "normalize_imports": return this.maintenance.handleNormalizeImports(args as any);
+          case "normalize_inputs": return this.maintenance.handleNormalizeInputs(args as any);
           case "audit_dependency_health": return this.maintenance.handleAuditDependencyHealth();
           case "generate_growth_signals": return this.maintenance.handleGenerateGrowthSignals();
           case "bridge_schema_zod": return this.maintenance.handleBridgeSchemaZod(args as any);

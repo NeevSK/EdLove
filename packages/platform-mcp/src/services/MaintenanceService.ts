@@ -2,7 +2,7 @@ import { execSync } from "child_process";
 import fs from "fs";
 import path from "path";
 import { ROOT_DIR } from "../utils/constants.js";
-import { findSurgicalReport, readReport } from "../utils/pathUtils.js";
+import { findSurgicalReport, readReport, normalizeTarget } from "../utils/pathUtils.js";
 import { executeSovereignTool } from "../utils/execution.js";
 
 function execUtf8(command: string) {
@@ -76,11 +76,16 @@ export class MaintenanceService {
   }
 
   handleNormalizeImports(args: { target?: string }) {
-    const target = args.target || ".";
+    const target = normalizeTarget(args.target || ".");
     const result = execUtf8(
-      `powershell -ExecutionPolicy Bypass -File scripts/normalize-imports.ps1 -Target "${target}"`
+      `node scripts/normalize-imports.mjs "${target}"`
     );
     return toMcpText(result.stdout, !result.ok);
+  }
+
+  handleNormalizeInputs(args: { target: string }) {
+    const normalized = normalizeTarget(args.target);
+    return toMcpText(normalized);
   }
 
   handleSyncIdentity() {

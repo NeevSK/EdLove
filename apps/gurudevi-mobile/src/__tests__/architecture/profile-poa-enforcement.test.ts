@@ -1,7 +1,7 @@
-﻿import { useStore } from '../../../../../packages/core/src/store/useStore';
-import { profileAPI } from '../../../../../packages/profile/src/api/profile';
-import { socialAPI } from '../../../../../packages/profile/src/api/social';
-import { profileServices } from '../../../../../packages/profile/src/domains/profile/runtime';
+﻿import { useStore } from '@repo/core/src/store/useStore';
+import { profileAPI } from '@repo/profile/src/api/profile';
+import { socialAPI } from '@repo/profile/src/api/social';
+import { profileServices } from '@repo/profile/src/domains/profile/runtime';
 
 const USER_ID = '11111111-1111-4111-8111-111111111111';
 const SCHOOL_ID = '22222222-2222-4222-8222-222222222222';
