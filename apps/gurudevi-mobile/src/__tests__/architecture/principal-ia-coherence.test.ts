@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { PRINCIPAL_FEATURE_REGISTRY } from '@repo/admin/src/screens/principal/PrincipalFeatureRegistry';
-import { PRINCIPAL_FEATURE_SCOPE_MAP } from '@repo/admin/src/screens/principal/PrincipalIAScope';
+import { PRINCIPAL_FEATURE_REGISTRY } from '@repo/admin/screens/principal/PrincipalFeatureRegistry';
+import { PRINCIPAL_FEATURE_SCOPE_MAP } from '@repo/admin/screens/principal/PrincipalIAScope';
 
 const APP_ROOT = path.resolve(__dirname, '../../..');
 const WORKSPACE_ROOT = path.resolve(APP_ROOT, '..', '..');

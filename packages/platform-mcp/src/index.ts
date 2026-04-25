@@ -78,11 +78,11 @@ class PolymathPlatformServer {
         },
         {
           name: 'grep_code',
-          description: 'Global structural code search with smart filtering.',
+          description: 'Global structural code search with smart filtering. Powered by ripgrep (rg) for extreme speed.',
           inputSchema: {
             type: 'object',
             properties: {
-              query: { type: 'string', description: 'Search term.' },
+              query: { type: 'string', description: 'Search term or pattern.' },
               isRegex: { type: 'boolean' },
               include: { type: 'string' },
               target: { type: 'string' },
@@ -201,7 +201,7 @@ class PolymathPlatformServer {
         },
         {
           name: 'get_inventory',
-          description: 'Monorepo file/package inventory discovery.',
+          description: 'Monorepo file/package inventory discovery. Powered by eza for high-fidelity tree views.',
           inputSchema: {
             type: 'object',
             properties: {
@@ -210,6 +210,30 @@ class PolymathPlatformServer {
               format: { type: 'string', enum: ['text', 'markdown'] },
               verbose: { type: 'boolean' },
             },
+          },
+        },
+        {
+          name: 'shiny_view',
+          description: 'Enhanced file viewer with syntax highlighting and Git integration. Powered by bat.',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              path: { type: 'string', description: 'Path to the file.' },
+              range: { type: 'string', description: 'Line range (e.g. "10:40").' }
+            },
+            required: ['path']
+          },
+        },
+        {
+          name: 'shiny_find',
+          description: 'Ultra-fast filename search. Powered by fd.',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              query: { type: 'string', description: 'Search pattern.' },
+              target: { type: 'string', description: 'Target directory.' }
+            },
+            required: ['query']
           },
         },
         {
@@ -384,6 +408,56 @@ class PolymathPlatformServer {
             }
           },
         },
+        {
+          name: "shiny_stats",
+          description: "Code statistics (LOC, blanks, comments) by language. Powered by tokei.",
+          inputSchema: {
+            type: "object",
+            properties: { target: { type: "string" } }
+          },
+        },
+        {
+          name: "shiny_spellcheck",
+          description: "Ultra-fast source code spell checker. Powered by typos.",
+          inputSchema: {
+            type: "object",
+            properties: { target: { type: "string" } }
+          },
+        },
+        {
+          name: "shiny_disk_usage",
+          description: "Visualizes directory size and disk usage. Powered by dust.",
+          inputSchema: {
+            type: "object",
+            properties: {
+              target: { type: "string" },
+              depth: { type: "number" }
+            }
+          },
+        },
+        {
+          name: "shiny_refactor",
+          description: "Intuitive and fast project-wide find and replace. Powered by sd.",
+          inputSchema: {
+            type: "object",
+            properties: {
+              find: { type: "string" },
+              replace: { type: "string" },
+              target: { type: "string" }
+            },
+            required: ["find", "replace"]
+          },
+        },
+        {
+          name: "map_architecture",
+          description: "Performs full architecture analysis, identifies misalignments with 'Zero-Legacy' goals, and provides remediation steps.",
+          inputSchema: {
+            type: "object",
+            properties: {
+              target: { type: "string" }
+            }
+          },
+        },
       ],
     }));
 
@@ -410,6 +484,8 @@ class PolymathPlatformServer {
           case 'search_docs': return this.discovery.handleSearchDocs(args as any);
           case 'get_component_api': return this.discovery.handleGetComponentApi(args as any);
           case 'get_inventory': return this.discovery.handleGetInventory(args as any);
+          case 'shiny_view': return this.discovery.handleShinyView(args as any);
+          case 'shiny_find': return this.discovery.handleShinyFind(args as any);
           case 'structural_search': return this.discovery.handleStructuralSearch(args as any);
           case "audit_imports": return this.discovery.handleAuditImports();
 
@@ -443,6 +519,11 @@ class PolymathPlatformServer {
           case "audit_bundle_leak": return this.audit.handleAuditBundleLeak();
           case "audit_feature_fidelity": return this.audit.handleAuditFeatureFidelity(args as any);
           case "purge_stale_artifacts": return this.maintenance.handlePurgeStaleArtifacts(args as any);
+          case "shiny_stats": return this.discovery.handleGetCodeStats(args as any);
+          case "shiny_spellcheck": return this.discovery.handleCheckSpelling(args as any);
+          case "shiny_disk_usage": return this.discovery.handleDiskUsage(args as any);
+          case "shiny_refactor": return this.maintenance.handleRefactorReplace(args as any);
+          case "map_architecture": return this.discovery.handleMapArchitecture(args as any);
 
           default: throw new Error(`Unknown tool: ${name}`);
 

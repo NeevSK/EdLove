@@ -14,6 +14,10 @@ Welcome to your new, high-performance terminal experience. These tools are writt
 | **bat** | `bat` | Enhanced **file viewer** | Syntax highlighting and Git integration. |
 | **zoxide** | `z` | Smarter **directory jumping** | Learns where you go; no more long `cd` paths. |
 | **eza** | `eza` | Modern **file listing** | Colors, icons, and tree views. |
+| **tokei** | `tokei` | **Code statistics** | Count LOC across languages instantly. |
+| **sd** | `sd` | **Find & Replace** | Simple, fast replacement (sed slayer). |
+| **dust** | `dust` | **Disk Usage** | Visualizes where your bytes are going. |
+| **typos** | `typos` | **Spell Checker** | Source code spell checker with ultra-low false positives. |
 
 ---
 
@@ -57,6 +61,31 @@ Welcome to your new, high-performance terminal experience. These tools are writt
 - **Standard listing:** `eza -la --icons`
 - **Tree view:** `eza --tree --level=2`
 - **Grid view:** `eza --grid`
+
+---
+
+## 📊 tokei (`tokei`)
+*See your code from 30,000 feet.*
+
+- **Summary of repo:** `tokei .`
+- **Group by file:** `tokei --files .`
+
+## ✍️ sd (`sd`)
+*Intuitive find and replace.*
+
+- **Project-wide replace:** `fd -t f | xargs sd "OldName" "NewName"`
+- **Regex replace:** `sd "v(\d+)\.(\d+)" "version-$1-$2" file.txt`
+
+## 🧹 typos (`typos`)
+*Professional codebase hygiene.*
+
+- **Check everything:** `typos`
+- **Detailed report:** `typos --format json`
+
+## 📦 dust (`dust`)
+*Visualizing disk usage.*
+
+- **Monorepo sizes:** `dust -d 1`
 
 ---
 

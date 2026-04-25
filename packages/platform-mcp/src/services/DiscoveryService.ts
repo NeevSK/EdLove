@@ -16,17 +16,25 @@ export class DiscoveryService {
     summaryOnly?: boolean;
   }) {
     const target = normalizeTarget(args.target || '.');
-    console.error(`Grepping codebase for: ${args.query} in ${target}`);
-    const isRegex = args.isRegex ? '-IsRegex' : '';
-    const include = args.include ? `-Include "${args.include}"` : '';
-    const includeNodeModules = args.includeNodeModules ? '-IncludeNodeModules' : '';
-    const summaryOnly = args.summaryOnly ? '-SummaryOnly' : '';
-
-    const output = execSync(
-      `powershell -ExecutionPolicy Bypass -File scripts/grep-code.ps1 -Query "${args.query}" -Target "${target}" ${isRegex} ${include} ${includeNodeModules} ${summaryOnly}`,
-      { cwd: ROOT_DIR },
-    ).toString();
-    return { content: [{ type: 'text' as const, text: output }] };
+    console.error(`Shiny Grepping: ${args.query} in ${target}`);
+    
+    const regexFlag = args.isRegex ? '' : '--fixed-strings';
+    const globFlag = args.include ? `-g "${args.include}"` : '';
+    const nodeModulesFlag = args.includeNodeModules ? '' : '--exclude-node-modules'; // rg excludes by default usually, but we want to be explicit if needed
+    // rg doesn't have a direct "summary only" that matches the old script exactly, 
+    // but --count can give counts, or we just let itrip.
+    
+    const command = `rg --line-number --column --smart-case --heading --color=never ${regexFlag} ${globFlag} "${args.query}" "${target}"`;
+    
+    try {
+      const output = execSync(command, { cwd: ROOT_DIR, encoding: 'utf-8' });
+      return { content: [{ type: 'text' as const, text: output }] };
+    } catch (e: any) {
+      if (e.status === 1) {
+        return { content: [{ type: 'text' as const, text: 'No matches found.' }] };
+      }
+      return { content: [{ type: 'text' as const, text: `ripgrep failed: ${e.message}` }], isError: true };
+    }
   }
 
   handleSearchDocs(args: {
@@ -50,10 +58,11 @@ export class DiscoveryService {
   }
 
   handleGetComponentApi(args: { name: string }) {
-    console.error(`Fetching API for component: ${args.name}`);
+    console.error(`Fetching API for component: ${args.name} (using fd)`);
     try {
-      const findCmd = `powershell -Command "Get-ChildItem -Path packages/ui/src,apps/*/src -Recurse -Filter '${args.name}.tsx' -File | Select-Object -First 1 -ExpandProperty FullName"`;
-      const filePath = execSync(findCmd, { cwd: ROOT_DIR }).toString().trim();
+      // Use fd for lightning fast file location
+      const findCmd = `fd -t f -g "${args.name}.tsx" --max-results 1 "${ROOT_DIR}"`;
+      const filePath = execSync(findCmd, { cwd: ROOT_DIR, encoding: 'utf-8' }).trim();
 
       if (!filePath) {
         return { content: [{ type: 'text' as const, text: `Component ${args.name} not found.` }] };
@@ -83,7 +92,25 @@ export class DiscoveryService {
     const format = args.format || 'text';
     const verbose = args.verbose !== false;
     
-    console.error(`Generating inventory for: ${target} (depth: ${depth}, format: ${format}, verbose: ${verbose})`);
+    console.error(`Generating shiny inventory for: ${target} (depth: ${depth})`);
+    
+    if (format === 'markdown' || format === 'text') {
+      try {
+        // Use eza for a beautiful tree view if requested or as default improvement
+        const ezaCmd = `eza --tree --level=${depth} --icons=always --color=always "${target}"`;
+        const output = execSync(ezaCmd, { cwd: ROOT_DIR, encoding: 'utf-8' });
+        return {
+          content: [{ type: 'text' as const, text: output }],
+        };
+      } catch (e) {
+        // Fallback to legacy script if eza fails for some reason
+        const output = execSync(`node scripts/generate-inventory.mjs "${target}" ${depth} ${format} ${verbose}`, {
+          cwd: ROOT_DIR,
+        }).toString();
+        return { content: [{ type: 'text' as const, text: output }] };
+      }
+    }
+    
     const output = execSync(`node scripts/generate-inventory.mjs "${target}" ${depth} ${format} ${verbose}`, {
       cwd: ROOT_DIR,
     }).toString();
@@ -91,6 +118,34 @@ export class DiscoveryService {
     return {
       content: [{ type: 'text' as const, text: output }],
     };
+  }
+
+  handleShinyView(args: { path: string; range?: string }) {
+    console.error(`Shiny View: ${args.path}`);
+    const range = args.range ? `--line-range ${args.range}` : '';
+    try {
+      const output = execSync(`bat --color=always --style=full ${range} "${args.path}"`, {
+        cwd: ROOT_DIR,
+        encoding: 'utf-8'
+      });
+      return { content: [{ type: 'text' as const, text: output }] };
+    } catch (e: any) {
+      return { content: [{ type: 'text' as const, text: `bat failed: ${e.message}` }], isError: true };
+    }
+  }
+
+  handleShinyFind(args: { query: string; target?: string }) {
+    const target = normalizeTarget(args.target || '.');
+    console.error(`Shiny Find: ${args.query} in ${target}`);
+    try {
+      const output = execSync(`fd --type f --hidden --exclude .git "${args.query}" "${target}"`, {
+        cwd: ROOT_DIR,
+        encoding: 'utf-8'
+      });
+      return { content: [{ type: 'text' as const, text: output }] };
+    } catch (e: any) {
+      return { content: [{ type: 'text' as const, text: `fd failed: ${e.message}` }], isError: true };
+    }
   }
 
   handleStructuralSearch(args: { query: string, target?: string }) {
@@ -143,6 +198,52 @@ export class DiscoveryService {
       { keyword: args.keyword }
     );
     return { content: [{ type: "text" as const, text: result.output }] };
+  }
+
+  handleGetCodeStats(args: { target?: string }) {
+    const target = normalizeTarget(args.target || '.');
+    console.error(`Shiny Stats: ${target}`);
+    try {
+      const output = execSync(`tokei "${target}"`, { cwd: ROOT_DIR, encoding: 'utf-8' });
+      return { content: [{ type: 'text' as const, text: output }] };
+    } catch (e: any) {
+      return { content: [{ type: 'text' as const, text: `tokei failed: ${e.message}` }], isError: true };
+    }
+  }
+
+  handleCheckSpelling(args: { target?: string }) {
+    const target = normalizeTarget(args.target || '.');
+    console.error(`Shiny Spellcheck: ${target}`);
+    try {
+      const output = execSync(`typos "${target}"`, { cwd: ROOT_DIR, encoding: 'utf-8' });
+      return { content: [{ type: 'text' as const, text: output || 'No typos found.' }] };
+    } catch (e: any) {
+      // typos returns exit code 1 if it finds typos
+      return { content: [{ type: 'text' as const, text: e.stdout || e.message }] };
+    }
+  }
+
+  handleDiskUsage(args: { target?: string; depth?: number }) {
+    const target = normalizeTarget(args.target || '.');
+    const depth = args.depth || 1;
+    console.error(`Shiny Disk Usage: ${target} (depth: ${depth})`);
+    try {
+      const output = execSync(`dust -d ${depth} "${target}"`, { cwd: ROOT_DIR, encoding: 'utf-8' });
+      return { content: [{ type: 'text' as const, text: output }] };
+    } catch (e: any) {
+      return { content: [{ type: 'text' as const, text: `dust failed: ${e.message}` }], isError: true };
+    }
+  }
+
+  handleMapArchitecture(args: { target?: string }) {
+    const target = normalizeTarget(args.target || '.');
+    console.error(`Mapping Architecture: ${target}`);
+    try {
+      const output = execSync(`node scripts/architect-mapper.mjs "${target}"`, { cwd: ROOT_DIR, encoding: 'utf-8' });
+      return { content: [{ type: 'text' as const, text: output }] };
+    } catch (e: any) {
+      return { content: [{ type: 'text' as const, text: `Mapper failed: ${e.message}` }], isError: true };
+    }
   }
 
   handleTraceDeletionImpact(args: { symbol: string }) {

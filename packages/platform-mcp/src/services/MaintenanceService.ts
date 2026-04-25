@@ -189,6 +189,15 @@ export class MaintenanceService {
     const result = execUtf8(`node scripts/purge-stale-artifacts.mjs --age=${age} ${dryRun}`);
     return toMcpText(result.stdout, !result.ok);
   }
+
+  handleRefactorReplace(args: { find: string; replace: string; target?: string }) {
+    const target = normalizeTarget(args.target || ".");
+    console.error(`Shiny Refactor: ${args.find} -> ${args.replace} in ${target}`);
+    // sd is much safer and faster than sed
+    const command = `fd -t f "${target}" | xargs sd "${args.find}" "${args.replace}"`;
+    const result = execUtf8(command);
+    return toMcpText(result.stdout || "Replacement completed successfully.", !result.ok);
+  }
 }
 
 
