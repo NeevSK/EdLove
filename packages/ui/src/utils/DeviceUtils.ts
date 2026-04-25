@@ -24,7 +24,7 @@ export const getDeviceTier = (): PerformanceTier => {
       // iPhone 11 (iPhone12,1) or newer is High
       if (modelName && modelName.startsWith('iPhone')) {
         const versionMatch = modelName.match(/iPhone(\d+)/);
-        if (versionMatch) {
+        if (versionMatch && versionMatch[1]) {
           const version = parseInt(versionMatch[1], 10);
           if (version >= 12) return PerformanceTier.HIGH; // iPhone 11+
           if (version >= 10) return PerformanceTier.MID; // iPhone 8/X/XS

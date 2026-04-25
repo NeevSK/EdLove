@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { execSync } from 'child_process';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -21,7 +22,7 @@ if (!fs.existsSync(pkgJsonPath)) {
     process.exit(1);
 }
 
-console.log(`\x1b[36m>>> Auditing Package Architecture: ${targetPackage}\x1b[0m`);
+console.log(`\x1b[36m>>> Shiny Auditing Package Architecture: ${targetPackage}\x1b[0m`);
 
 const pkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, 'utf-8'));
 
@@ -35,51 +36,35 @@ if (pkgJson.exports) {
     console.log('❌ No "exports" map found in package.json. Tree-shaking may be suboptimal.');
 }
 
-// 2. Logic Separation & Platform Agnosticism
+// 2. Logic Separation & Platform Agnosticism using ripgrep
 console.log('\n--- Boundary Violation Check (Logic vs UI) ---');
 
-function scanDirectory(dir) {
-    const results = {
-        logicFiles: [],
-        uiFiles: [],
-        violations: []
-    };
+const srcDir = path.join(pkgBase, 'src');
+if (fs.existsSync(srcDir)) {
+    // Check Logic files for UI leaks - using shell-safe patterns
+    try {
+        const logicPattern = '{logic,services,utils}';
+        // Simplified pattern for shell safety
+        const uiImportMatch = 'from.*(components|screens|ui)';
+        const cmd = `rg "${uiImportMatch}" "${srcDir}" -g "**/$logicPattern/**" -g "**.ts" -g "**.tsx" --with-filename`;
+        const output = execSync(cmd, { encoding: 'utf-8' });
+        output.split('\n').filter(l => l.trim()).forEach(line => {
+            console.log(`❌ [LOGIC -> UI] ${line}`);
+        });
+    } catch (e) { /* No matches */ }
 
-    if (!fs.existsSync(dir)) return results;
-
-    const files = fs.readdirSync(dir, { recursive: true });
-    
-    for (const file of files) {
-        const fullPath = path.join(dir, file.toString());
-        if (!fs.statSync(fullPath).isFile()) continue;
-        if (!file.toString().match(/\.(ts|tsx)$/)) continue;
-
-        const content = fs.readFileSync(fullPath, 'utf-8');
-        const relativeFile = path.relative(pkgBase, fullPath);
-
-        const isLogic = relativeFile.includes('logic/') || relativeFile.includes('services/') || relativeFile.includes('utils/');
-        const isUI = relativeFile.includes('components/') || relativeFile.includes('screens/') || relativeFile.includes('ui/');
-
-        if (isLogic) {
-            // Check if logic imports UI
-            if (content.match(/from\s+['"].*?(components|screens|ui).*?['"]/)) {
-                results.violations.push(`[LOGIC -> UI] ${relativeFile}: Logic file imports UI component.`);
-            }
-            // Check if logic imports native-only
-            if (content.match(/from\s+['"](react-native|expo-.*?)['"]/)) {
-                results.violations.push(`[NATIVE POLLUTION] ${relativeFile}: Pure logic file imports native-only module.`);
-            }
-        }
-    }
-    return results;
-}
-
-const auditResults = scanDirectory(path.join(pkgBase, 'src'));
-
-if (auditResults.violations.length > 0) {
-    auditResults.violations.forEach(v => console.log(`❌ ${v}`));
+    // Check Logic files for Native pollution
+    try {
+        const logicPattern = '{logic,services,utils}';
+        const nativeImportMatch = 'from.*(react-native|expo-)';
+        const cmd = `rg "${nativeImportMatch}" "${srcDir}" -g "**/$logicPattern/**" -g "**.ts" -g "**.tsx" --with-filename`;
+        const output = execSync(cmd, { encoding: 'utf-8' });
+        output.split('\n').filter(l => l.trim()).forEach(line => {
+             console.log(`❌ [NATIVE POLLUTION] ${line}`);
+        });
+    } catch (e) { /* No matches */ }
 } else {
-    console.log('✅ No obvious boundary violations found in src/ folder.');
+    console.log('⚠️  src/ folder not found.');
 }
 
 console.log('\n--- Tree-Shaking Hygiene ---');

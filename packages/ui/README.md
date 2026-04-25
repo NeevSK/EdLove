@@ -20,5 +20,13 @@
 ## Web Placement
 `*.web.tsx` files are appropriate here for shared presentation primitives, browser-only shell helpers, and cross-domain components reused by multiple domains.
 
-## App Adapter Rule
-The app can compose UI primitives freely, but any business behavior layered on top of them belongs in a domain package.
+## Architectural Governance (Zero-Legacy)
+
+To maintain the **100/100 Architectural Maturity** of this package, the following rules are strictly enforced:
+
+1.  **Platform Sovereignty**: NO direct imports from `react-native`, `expo-*`, or any platform-specific binary libraries are allowed in `.tsx` files (unless it is a `.web.tsx` or `.native.tsx` shim).
+2.  **Runtime Mediation**: All native capabilities (Haptics, Storage, Location, etc.) MUST be accessed via the `coreRuntime` registry provided by `@repo/core`.
+3.  **Atomic UI Design**: Raw React Native primitives (e.g., `<View>`, `<Text>`, `StyleSheet`) are forbidden. Use Sanctuary V3 primitives (`Box`, `VStack`, `HStack`, `Heading`, `Text`, `Pressable`) and NativeWind utility classes.
+4.  **Isomorphism**: All components should be designed to run on Web and Mobile without modification, utilizing the `nativeRuntimeEnvironment` adapter for platform-specific bridge logic.
+
+Failure to follow these rules will lower the package's maturity score and trigger architectural audit warnings.

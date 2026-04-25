@@ -197,7 +197,7 @@ function buildRoleSurfaces(role: DemoRole): Array<DemoSurface & DemoSurfaceMeta>
 export default function WorkspaceCanvasDemo() {
   const [role, setRole] = useState<DemoRole>('principal');
   const [notice, setNotice] = useState('Select a surface to inspect how the shared card behaves.');
-  const { text, background, border } = useTheme();
+  const { text, scene } = useTheme();
 
   const surfaces = useMemo(() => buildRoleSurfaces(role), [role]);
   const [layoutByRole, setLayoutByRole] = useState<
@@ -236,8 +236,8 @@ export default function WorkspaceCanvasDemo() {
       key={label}
       className="rounded-full border px-3 py-1.5"
       style={{
-        backgroundColor: tone === 'primary' ? '#D4AF37' : background.secondary,
-        borderColor: tone === 'primary' ? '#D4AF37' : border.primary,
+        backgroundColor: tone === 'primary' ? '#D4AF37' : scene.surface.bg,
+        borderColor: tone === 'primary' ? '#D4AF37' : scene.border.base,
       }}
     >
       <Text size="xs" className="font-bold" style={{ color: tone === 'primary' ? text.primary : text.secondary }}>
@@ -269,14 +269,14 @@ export default function WorkspaceCanvasDemo() {
                 }}
                 className="rounded-full border px-4 py-2"
                 style={{
-                  backgroundColor: role === candidate ? text.primary : background.secondary,
-                  borderColor: role === candidate ? text.primary : border.primary,
+                  backgroundColor: role === candidate ? text.primary : scene.surface.bg,
+                  borderColor: role === candidate ? text.primary : scene.border.base,
                 }}
               >
                 <Text
-                  size="sm"
-                  className="font-semibold"
-                  style={{ color: role === candidate ? background.primary : text.primary }}
+                  size="xs"
+                  className="font-medium"
+                  style={{ color: role === candidate ? scene.surface.bg : text.primary }}
                 >
                   {ROLE_LABELS[candidate]}
                 </Text>
@@ -284,7 +284,7 @@ export default function WorkspaceCanvasDemo() {
             ))}
           </HStack>
 
-          <VStack className="rounded-xl border p-4 gap-1" style={{ backgroundColor: background.secondary, borderColor: border.primary }}>
+          <VStack className="rounded-xl border p-4 gap-1" style={{ backgroundColor: scene.surface.bg, borderColor: scene.border.base }}>
             <Text size="xs" className="font-bold tracking-widest text-[#SaffronMuted] uppercase">Demo note</Text>
             <Text size="md">{notice}</Text>
           </VStack>

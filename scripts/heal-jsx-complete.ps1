@@ -2,11 +2,15 @@ param (
     [string]$Path = "packages/library/src"
 )
 
-$files = Get-ChildItem -Path $Path -Filter *.tsx -Recurse
+# Use fd for lightning-fast file location
+$fileNames = & fd -t f -e tsx . $Path
 
-foreach ($file in $files) {
-    Write-Host "Healing JSX Tags: $($file.FullName)"
-    $content = Get-Content -Raw -Path $file.FullName -Encoding UTF8
+foreach ($fileName in $fileNames) {
+    Write-Host "Healing JSX Tags: $fileName"
+    $fullPath = Join-Path (Get-Location).Path $fileName
+    if (-not (Test-Path $fullPath)) { continue }
+    
+    $content = Get-Content -Raw -Path $fullPath -Encoding UTF8
 
     # 1. Closing tag truncation: </Tag -> </Tag>
     $content = $content -replace '(</[a-zA-Z0-9.]+)(?![a-zA-Z0-9.>])', '$1>'
@@ -34,5 +38,5 @@ foreach ($file in $files) {
     # 8. Specific fix for <Image/ truncated next to /<Box
     $content = $content -replace '(<Image/[^>]*?)(?=\s*/<Box)', '$1>'
 
-    Set-Content -Path $file.FullName -Value $content -Encoding UTF8
+    Set-Content -Path $fullPath -Value $content -Encoding UTF8
 }

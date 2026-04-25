@@ -34,20 +34,20 @@ const sourceFiles = getSourceFiles();
 const allExternalImports = new Set();
 const importMap = {}; // pkg -> [files]
 
-console.log(`>>> Auditing imports in ${sourceFiles.length} web-capable source files...`);
+console.log(`>>> Shiny Auditing imports in ${sourceFiles.length} web-capable source files...`);
 
-// Use ripgrep to find all imports in bulk - much faster than iterating in Node!
+// Use a simpler search first to find candidate files, then process in Node if needed, 
+// or use a robust shell-safe rg call.
+// We'll use a slightly safer regex for the shell.
+const importRegex = /from\s+['"]([^./][^'"]+)['"]|require\(['"]([^./][^'"]+)['"]\)/g;
+
 sourceFiles.forEach(file => {
     try {
-        // Find lines matching import/require patterns
-        const cmd = `rg "from\\s+['\\"]([^./][^'\\"]+)['\\"]|require\\(['\\"]([^./][^'\\"]+)['\\"]\\)" --only-matching --no-line-number "${file}"`;
-        const output = execSync(cmd, { encoding: 'utf-8' });
-        const matches = output.split('\n').filter(m => m.trim());
-        
-        matches.forEach(match => {
-            // Extract the package name from the match (e.g., "from 'pkg'" -> "pkg")
-            let pkg = match.replace(/from\s+['"]|require\(['"]|['"]\)/g, '').trim();
-            if (!pkg) return;
+        const content = fs.readFileSync(file, 'utf8');
+        let match;
+        while ((match = importRegex.exec(content)) !== null) {
+            const pkg = match[1] || match[2];
+            if (!pkg) continue;
 
             let basePkg = pkg;
             if (pkg.startsWith('@')) {
@@ -61,9 +61,9 @@ sourceFiles.forEach(file => {
             const relPath = path.relative(workspaceRoot, file);
             if (!importMap[basePkg]) importMap[basePkg] = new Set();
             importMap[basePkg].add(relPath);
-        });
+        }
     } catch (e) {
-        // rg returns exit code 1 if no matches found, which execSync treats as error
+        console.error(`Error reading ${file}: ${e.message}`);
     }
 });
 

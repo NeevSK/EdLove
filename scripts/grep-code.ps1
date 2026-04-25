@@ -67,7 +67,7 @@ try {
             $path = $parts[0]
             $dir = [System.IO.Path]::GetDirectoryName($path)
             if ([string]::IsNullOrEmpty($dir)) { $dir = "." }
-            $stats[$dir] = ($stats[$dir] || 0) + 1
+            $stats[$dir]++
         }
     }
 

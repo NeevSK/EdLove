@@ -20,7 +20,7 @@ if ($Hybrid -or ($Query -match "[\(\)\{\}\.]")) {
 }
 
 # 2. Sequential Discovery Strategy using ripgrep
-function Run-ShinyDiscovery($paths, $query, $currentExclude) {
+function Invoke-ShinyDiscovery($paths, $query, $currentExclude) {
     if ($paths.Count -eq 0) { return $null }
     
     $RgArgs = @("--line-number", "--column", "--smart-case", "--color=never")
@@ -51,20 +51,20 @@ if ($IncludeNodeModules) { $excludeList = "dist,.git,.turbo" }
 
 # Phase A: Search Docs
 $DocGlobs = @("**/docs/**", "**/README.md")
-$results = Run-ShinyDiscovery $DocGlobs $Query $excludeList
+$results = Invoke-ShinyDiscovery $DocGlobs $Query $excludeList
 
 # Phase B: Escalation to Configs
 if ($null -eq $results -or $results.Count -eq 0) {
     Write-Host "No direct matches in documentation. Escalating to configuration files..." -ForegroundColor Gray
     $ConfigGlobs = @("package.json", "**/package.json", "app.json", "**/app.json", "tsconfig.json", "**.yaml", "**.yml")
-    $results = Run-ShinyDiscovery $ConfigGlobs $Query $excludeList
+    $results = Invoke-ShinyDiscovery $ConfigGlobs $Query $excludeList
 }
 
 # Phase C: Deep Search (Codebase)
 if ($null -eq $results -or $results.Count -eq 0) {
     Write-Host "No matches in configs. Performing deep codebase search..." -ForegroundColor Gray
     $CodeGlobs = @("**.ts", "**.tsx", "**.js", "**.jsx", "**.md", "**.json", "**.yaml", "**.yml")
-    $results = Run-ShinyDiscovery $CodeGlobs $Query $excludeList
+    $results = Invoke-ShinyDiscovery $CodeGlobs $Query $excludeList
 }
 
 if ($null -eq $results -or $results.Count -eq 0) {
@@ -88,7 +88,7 @@ foreach ($line in $results) {
         $path = $parts[0]
         $dir = [System.IO.Path]::GetDirectoryName($path)
         if ([string]::IsNullOrEmpty($dir)) { $dir = "." }
-        $stats[$dir] = ($stats[$dir] || 0) + 1
+        $stats[$dir]++
     }
 }
 

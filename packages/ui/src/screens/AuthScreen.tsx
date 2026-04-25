@@ -29,6 +29,7 @@ import { Theme } from '../theme/Theme';
 import { BreathAnimation } from '../components/BreathAnimation';
 import { LivingGlow } from '../components/LivingGlow';
 import { SanctuaryBackground } from '../components/SanctuaryBackground';
+import { Mail } from 'lucide-react-native';
 import * as WebBrowser from 'expo-web-browser';
 import * as AuthSession from 'expo-auth-session';
 

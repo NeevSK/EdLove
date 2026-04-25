@@ -244,7 +244,7 @@ export default function AppSettingsScreen({ navigation }: any) {
             </HStack>
             <Switch
               value={enableLivingTheme}
-              onValueChange={async (val) => {
+              onValueChange={async (val: boolean) => {
                 await setEnableLivingTheme(val);
                 hapticLight();
               }}
@@ -303,7 +303,7 @@ export default function AppSettingsScreen({ navigation }: any) {
             </HStack>
             <Switch
               value={user?.public_profile !== false}
-              onValueChange={async (val) => {
+              onValueChange={async (val: boolean) => {
                 hapticLight();
                 showToast({
                   message: t('settings.profile_visibility_updated', 'Profile visibility updated'),
