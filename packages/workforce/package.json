@@ -12,11 +12,14 @@
     "check-types": "powershell -File ../../scripts/audit-wrapper.ps1 -Cmd \"pnpm exec tsc --noEmit\" -Log \"reports/check-types.txt\""
   },
   "dependencies": {
-    "@repo/core": "workspace:*"
+    "@repo/core": "workspace:*",
+    "@repo/ui": "workspace:*",
+    "lucide-react-native": "^0.563.0"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "typescript": "~5.9.2",
-    "eslint": "^9.38.0"
+    "eslint": "^9.38.0",
+    "react": "19.2.0"
   }
 }

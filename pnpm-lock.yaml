@@ -1939,6 +1939,12 @@ importers:
       '@repo/core':
         specifier: workspace:*
         version: link:../core
+      '@repo/ui':
+        specifier: workspace:*
+        version: link:../ui
+      lucide-react-native:
+        specifier: ^0.563.0
+        version: 0.563.0(react-native-svg@15.15.3(react-native@0.83.6(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0))(react-native@0.83.6(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.0))(react@19.2.0)
     devDependencies:
       '@repo/eslint-config':
         specifier: workspace:*
@@ -1946,6 +1952,9 @@ importers:
       eslint:
         specifier: ^9.38.0
         version: 9.39.4(jiti@2.6.1)
+      react:
+        specifier: 19.2.0
+        version: 19.2.0
       typescript:
         specifier: ~5.9.2
         version: 5.9.3

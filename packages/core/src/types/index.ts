@@ -31,4 +31,5 @@ export * from './Tenancy';
 export * from './topology';
 export * from './User';
 export * from './Workspace';
+export * from './runtime';
 // Removed legacy UserRole export

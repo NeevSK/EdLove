@@ -40,3 +40,4 @@ export * from './schemas';
 export * from './store-slices';
 export * from './utils';
 export * from './workspace/index';
+export * from './runtimeRegistry';

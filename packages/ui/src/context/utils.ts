@@ -1,11 +1,5 @@
-/**
- * Environment Utilities
- * Helper functions for the Environment Engine
- */
-
 import { TemporalPhase, DeviceTier, NetworkQuality } from './types';
-import * as Device from 'expo-device';
-import NetInfo from '@react-native-community/netinfo';
+import { coreRuntime } from '@repo/core/logic';
 
 /**
  * Determines the temporal phase based on current time
@@ -31,7 +25,7 @@ export function getTemporalPhase(): TemporalPhase {
  */
 export function shouldUseDarkTheme(phase: TemporalPhase): boolean {
   return phase === 'predawn' || phase === 'dusk' || phase === 'night';
-  // dawn, morning, afternoon \u2192 light world
+  // dawn, morning, afternoon → light world
 }
 
 /**
@@ -43,7 +37,7 @@ export function shouldUseDarkTheme(phase: TemporalPhase): boolean {
 export async function detectDeviceTier(): Promise<{ tier: DeviceTier; memoryGB: number }> {
   try {
     // Get total memory if available
-    const totalMemory = Device.totalMemory;
+    const totalMemory = coreRuntime.device.getTotalMemory?.();
 
     if (!totalMemory) {
       // If we can't detect, assume medium tier to be safe
@@ -73,7 +67,7 @@ export async function detectDeviceTier(): Promise<{ tier: DeviceTier; memoryGB: 
  */
 export async function detectNetworkQuality(): Promise<NetworkQuality> {
   try {
-    const netInfo = await NetInfo.fetch();
+    const netInfo = await coreRuntime.network.fetch();
 
     if (!netInfo.isConnected) {
       return 'offline';

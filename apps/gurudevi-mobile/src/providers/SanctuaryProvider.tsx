@@ -1,6 +1,7 @@
 import { AnalyticsProvider } from '@repo/analytics/ui';
 import { SyncManager, useAuth, usePermissions } from '@repo/core';
 import {
+  Box,
   Center,
   EnvironmentProvider,
   ExternalLinkProvider,
@@ -12,7 +13,6 @@ import {
 } from '@repo/ui';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import type React from 'react';
-import { View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { config } from '../../gluestack-ui.config';
 import { useAssets } from './AssetProvider';
@@ -65,7 +65,7 @@ export function SanctuaryProvider({ children }: SanctuaryProviderProps) {
                         host: process.env.EXPO_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com',
                       }}
                     >
-                      <View style={{ flex: 1 }}>{children}</View>
+                      <Box className="flex-1">{children}</Box>
                       <SyncManager />
                     </AnalyticsProvider>
                   </ExternalLinkProvider>

@@ -9,56 +9,78 @@ param(
     [switch]$SummaryOnly
 )
 
-# 1. Scope Normalization
-if ($IncludeNodeModules) {
-    $Exclude = $Exclude.Replace("node_modules,", "").Replace(",node_modules", "").Replace("node_modules", "")
+# 1. Parameter Normalization for rg
+$RgArgs = @("--line-number", "--column", "--smart-case", "--color=never")
+
+if (-not $IsRegex) {
+    $RgArgs += "--fixed-strings"
 }
 
-$ExcludePatterns = $Exclude.Split(",").Trim() | Where-Object { $_ -ne "" }
-$IncludePatterns = $Include.Split(",").Trim()
+if ($IncludeNodeModules) {
+    # rg excludes node_modules by default, so we don't need to do much unless we want to FORCE it
+} else {
+    $RgArgs += "--exclude-node-modules" # Custom alias or just default behavior
+}
 
-Write-Host ">>> Searching for: $Query in $Target" -ForegroundColor Cyan
+# Process Exclusions
+$ExcludePatterns = $Exclude.Split(",").Trim() | Where-Object { $_ -ne "" }
+foreach ($pattern in $ExcludePatterns) {
+    $RgArgs += "-g"
+    $RgArgs += "!$pattern"
+}
+
+# Process Inclusions
+if ($Include -ne "*") {
+    $IncludePatterns = $Include.Split(",").Trim()
+    foreach ($pattern in $IncludePatterns) {
+        $RgArgs += "-g"
+        $RgArgs += "$pattern"
+    }
+}
+
+Write-Host ">>> Shiny Searching for: $Query in $Target" -ForegroundColor Cyan
 
 try {
-    # 2. Faster Enumeration and Filtering
-    $excludeRegex = ($ExcludePatterns | ForEach-Object { [regex]::Escape($_) }) -join '|'
-    
-    $results = Get-ChildItem -Path $Target -Recurse -File -ErrorAction SilentlyContinue | Where-Object {
-        $_.FullName -notmatch $excludeRegex
-    } | Where-Object {
-        if ($Include -eq "*") { return $true }
-        foreach ($inc in $IncludePatterns) {
-            if ($_.FullName -like "*$inc") { return $true }
-        }
-        return $false
-    } | Select-String -Pattern $Query -CaseSensitive:$false
+    # 2. Execute ripgrep
+    $results = & rg $RgArgs "$Query" "$Target" 2>$null
 
-    # 3. Output Processing
-    if ($null -eq $results) {
+    if ([string]::IsNullOrEmpty($results)) {
         Write-Host "No matches found."
         exit 0
     }
 
-    $uniqueFiles = $results | Select-Object -ExpandProperty Path -Unique
-    $matchCount = ($results | Measure-Object).Count
-    $fileCount = ($uniqueFiles | Measure-Object).Count
-
+    # 3. Output Processing
     if (-not $SummaryOnly) {
-        $results | ForEach-Object {
-            $relPath = $_.Path.Replace((Get-Location).Path + "\", "")
-            Write-Host "$relPath`:$($_.LineNumber)`:$($_.Line.Trim())"
+        foreach ($line in $results) {
+            Write-Host $line
         }
     }
 
     # 4. Summary Heatmap
+    # rg output format: path:line:col:text
     Write-Host "`n>>> Summary: Grouped by location" -ForegroundColor Gray
-    $results | Group-Object -Property { 
-        $rel = $_.Path.Replace((Get-Location).Path + "\", "")
-        $dir = [System.IO.Path]::GetDirectoryName($rel)
-        if ([string]::IsNullOrEmpty($dir)) { "." } else { $dir }
-    } | Select-Object Name, Count | Sort-Object Count -Descending | Format-Table -AutoSize
+    
+    $stats = @{}
+    foreach ($line in $results) {
+        $parts = $line.Split(":")
+        if ($parts.Count -ge 1) {
+            $path = $parts[0]
+            $dir = [System.IO.Path]::GetDirectoryName($path)
+            if ([string]::IsNullOrEmpty($dir)) { $dir = "." }
+            $stats[$dir] = ($stats[$dir] || 0) + 1
+        }
+    }
 
-    Write-Host "Found $matchCount matches across $fileCount files." -ForegroundColor Green
+    $stats.GetEnumerator() | Sort-Object Value -Descending | ForEach-Object {
+        [PSCustomObject]@{
+            Name  = $_.Key
+            Count = $_.Value
+        }
+    } | Format-Table -AutoSize
+
+    $totalMatches = ($results | Measure-Object).Count
+    Write-Host "Found $totalMatches matches." -ForegroundColor Green
 } catch {
-    Write-Host "Error: $($_.Exception.Message)" -ForegroundColor Red
+    Write-Host "Error executing rg: $($_.Exception.Message)" -ForegroundColor Red
 }
+

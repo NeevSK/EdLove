@@ -1,39 +1,25 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { Center, VStack, Heading, Text } from '../gluestack';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../hooks/useTheme';
+import ScreenWrapper from '../components/ScreenWrapper';
 
 export default function NotificationsScreen() {
   const { t } = useTranslation();
-  const { phase } = useTheme();
-  const isDark = phase === 'night';
+  const { text } = useTheme();
 
   return (
-    <View style={[styles.container, { backgroundColor: isDark ? '#121212' : '#FFFFFF' }]}>
-      <Text style={[styles.text, { color: isDark ? '#FFFFFF' : '#000000' }]}>
-        {t('notifications.title') || 'Notifications'}
-      </Text>
-      <Text style={[styles.subtext, { color: isDark ? '#AAAAAA' : '#666666' }]}>
-        {t('notifications.empty') || 'No new notifications'}
-      </Text>
-    </View>
+    <ScreenWrapper>
+      <Center className="flex-1 p-5">
+        <VStack className="items-center gap-2">
+          <Heading size="md" style={{ color: text.primary }}>
+            {t('notifications.title') || 'Notifications'}
+          </Heading>
+          <Text size="sm" className="text-center" style={{ color: text.secondary }}>
+            {t('notifications.empty') || 'No new notifications'}
+          </Text>
+        </VStack>
+      </Center>
+    </ScreenWrapper>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-  },
-  text: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 8,
-  },
-  subtext: {
-    fontSize: 14,
-    textAlign: 'center',
-  },
-});

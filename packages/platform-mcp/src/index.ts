@@ -184,10 +184,10 @@ class PolymathPlatformServer {
         },
         {
           name: 'audit_legacy_ui',
-          description: 'Detects deprecated Gluestack/RN patterns.',
+          description: 'High-speed audit for legacy Gluestack/RN components (Zero-Legacy). Powered by ripgrep.',
           inputSchema: {
             type: 'object',
-            properties: { target: { type: 'string' } },
+            properties: { target: { type: 'string', description: 'Directory to audit (defaults to packages).' } },
           },
         },
         {

@@ -3,14 +3,14 @@ import { useQRDeepLink } from '@repo/scanner-kit';
 import * as Linking from 'expo-linking';
 import type React from 'react';
 import { type ReactNode, useEffect } from 'react';
-import { Platform } from 'react-native';
 import { navigationRef } from '../navigation/navigationRef';
 
 export const DeepLinkProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { session } = useAuth();
 
   useEffect(() => {
-    if (Platform.OS === 'web') return;
+    // Sovereign Web Guard: Early return using web-native check
+    if (typeof window !== 'undefined') return;
 
     const handleDeepLink = async (url: string) => {
       if (url.includes('auth/callback')) {

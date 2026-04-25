@@ -3,13 +3,18 @@ import { useRewards } from '@repo/core/hooks';
 import { usePermissions } from '@repo/core/logic';
 import { useStore } from '@repo/core/store';
 import { BreathGuide } from '@repo/self';
-import { AchievementUnlockOverlay, ErrorBoundary, SanctuaryBackground } from '@repo/ui';
-import { Box, HStack, hapticLight, Icon, Text, useTheme, VStack } from '@repo/ui/primitives';
+import {
+  AchievementUnlockOverlay,
+  ErrorBoundary,
+  SanctuaryBackground,
+  Modal,
+  ModalContent,
+} from '@repo/ui';
+import { Box, HStack, hapticLight, Icon, Pressable, Text, useTheme, VStack } from '@repo/ui/primitives';
 import { WorkforceShell } from '@repo/workforce';
 import { Hammer, Heart, Library, School, User, Users, X } from 'lucide-react-native';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Modal, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 // Screens
 import { SelfScreen } from '../screens';
@@ -113,7 +118,7 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
             fontFamily: 'Inter_500Medium',
             marginBottom: insets.bottom > 0 ? 0 : 4,
           },
-          tabBarBackground: () => <View style={StyleSheet.absoluteFill} />,
+          tabBarBackground: () => <Box className="absolute inset-0" />,
         }}
       >
         {/* 1. Profile Tab */}
@@ -259,14 +264,9 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
         onHide={() => setShowCelebration(false)}
       />
 
-      <Modal
-        visible={isBreathingOpen}
-        animationType="slide"
-        presentationStyle="pageSheet"
-        onRequestClose={() => setBreathingOpen(false)}
-      >
-        <Box className="flex-1 bg-phase-canvas">
-          <Box className="pt-[50px] pb-md px-md border-b border-phase-surface/10">
+      <Modal isOpen={isBreathingOpen} onClose={() => setBreathingOpen(false)}>
+        <ModalContent className="bg-phase-canvas">
+          <Box className="pt-xl pb-md px-md border-b border-phase-surface/10">
             <HStack className="justify-between items-center">
               <VStack>
                 <Text className="text-phaseText-primary text-lg font-bold">
@@ -274,32 +274,26 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
                 </Text>
                 <Text className="text-phaseText-secondary text-xs">1 minute of peace</Text>
               </VStack>
-              <TouchableOpacity
+              <Pressable
                 accessibilityRole="button"
                 onPress={() => {
                   hapticLight();
                   setBreathingOpen(false);
                 }}
-                style={{
-                  padding: 8,
-                  borderRadius: 9999,
-                  backgroundColor: colors.primary.muted,
-                  borderColor: colors.border.base,
-                  borderWidth: 1,
-                }}
+                className="p-2 rounded-full border border-border bg-phase-surface"
               >
                 <Icon as={X} size={24} color={colors.text.primary} />
-              </TouchableOpacity>
+              </Pressable>
             </HStack>
           </Box>
-          <Box className="flex-1 justify-center">
+          <Box className="h-[400px] justify-center p-md">
             <BreathGuide
               onComplete={() => {
                 setBreathingOpen(false);
               }}
             />
           </Box>
-        </Box>
+        </ModalContent>
       </Modal>
     </Box>
   );

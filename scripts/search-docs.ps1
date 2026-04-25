@@ -7,7 +7,7 @@ param(
     [switch]$Hybrid
 )
 
-Write-Host ">>> Discovering Documentation and Configs for: $Query" -ForegroundColor Green
+Write-Host ">>> Shiny Discovering documentation and Configs for: $Query" -ForegroundColor Green
 
 # 1. Hybrid Check: If it looks like a code pattern and hybrid is on, use Biome
 if ($Hybrid -or ($Query -match "[\(\)\{\}\.]")) {
@@ -19,97 +19,85 @@ if ($Hybrid -or ($Query -match "[\(\)\{\}\.]")) {
     }
 }
 
-# 2. Sequential Discovery Strategy
-$DocPaths = @(
-    "docs",
-    "packages/*/docs",
-    "apps/*/docs",
-    "README.md",
-    "packages/*/README.md",
-    "apps/*/README.md"
-)
+# 2. Sequential Discovery Strategy using ripgrep
+function Run-ShinyDiscovery($paths, $query, $currentExclude) {
+    if ($paths.Count -eq 0) { return $null }
+    
+    $RgArgs = @("--line-number", "--column", "--smart-case", "--color=never")
+    
+    # Add path globs
+    foreach ($p in $paths) {
+        $RgArgs += "-g"
+        $RgArgs += "$p"
+    }
 
-$ConfigPaths = @(
-    "package.json",
-    "packages/*/package.json",
-    "apps/*/package.json",
-    "app.json",
-    "apps/*/app.json",
-    "tsconfig.json",
-    "*.yaml",
-    "*.yml"
-)
+    # Add exclusions
+    $ExcludePatterns = $currentExclude.Split(",").Trim() | Where-Object { $_ -ne "" }
+    foreach ($pattern in $ExcludePatterns) {
+        $RgArgs += "-g"
+        $RgArgs += "!$pattern"
+    }
+
+    try {
+        $results = & rg $RgArgs "$query" "$Target" 2>$null
+        return $results
+    } catch {
+        return $null
+    }
+}
 
 $excludeList = "dist,node_modules,.git,.turbo"
 if ($IncludeNodeModules) { $excludeList = "dist,.git,.turbo" }
-$exRegex = ($excludeList.Split(",") | ForEach-Object { [regex]::Escape($_) }) -join '|'
-
-function Run-Discovery($paths, $query) {
-    if ($paths.Count -eq 0) { return @() }
-    
-    $allFiles = @()
-    foreach ($p in $paths) {
-        # Handle wildcards manually if needed, but Get-ChildItem handles them in -Path
-        $fullPath = Join-Path $Target $p
-        Get-ChildItem -Path $fullPath -File -ErrorAction SilentlyContinue | ForEach-Object {
-            if ($_.FullName -notmatch $exRegex) { $allFiles += $_ }
-        }
-        # If it's a directory, we might want to recurse (common for 'docs/' folders)
-        if (Test-Path $fullPath) {
-            if ((Get-Item $fullPath).PSIsContainer) {
-                Get-ChildItem -Path $fullPath -Recurse -File -ErrorAction SilentlyContinue | ForEach-Object {
-                    if ($_.FullName -notmatch $exRegex) { $allFiles += $_ }
-                }
-            }
-        }
-    }
-
-    if ($allFiles.Count -eq 0) { return $null }
-    return $allFiles | Select-String -Pattern $query -CaseSensitive:$false
-}
 
 # Phase A: Search Docs
-$results = Run-Discovery $DocPaths $Query
+$DocGlobs = @("**/docs/**", "**/README.md")
+$results = Run-ShinyDiscovery $DocGlobs $Query $excludeList
 
-# Phase B: Auto-Escalation to Configs
-if ($null -eq $results) {
+# Phase B: Escalation to Configs
+if ($null -eq $results -or $results.Count -eq 0) {
     Write-Host "No direct matches in documentation. Escalating to configuration files..." -ForegroundColor Gray
-    $results = Run-Discovery $ConfigPaths $Query
+    $ConfigGlobs = @("package.json", "**/package.json", "app.json", "**/app.json", "tsconfig.json", "**.yaml", "**.yml")
+    $results = Run-ShinyDiscovery $ConfigGlobs $Query $excludeList
 }
 
-# Phase C: Deep Search (If still nothing)
-if ($null -eq $results) {
+# Phase C: Deep Search (Codebase)
+if ($null -eq $results -or $results.Count -eq 0) {
     Write-Host "No matches in configs. Performing deep codebase search..." -ForegroundColor Gray
-    $excludePatterns = $excludeList.Split(",")
-    $excludeDeepRegex = ($excludePatterns | ForEach-Object { [regex]::Escape($_) }) -join '|'
-    
-    $results = Get-ChildItem -Path $Target -Recurse -File -ErrorAction SilentlyContinue | 
-               Where-Object { $_.FullName -notmatch $excludeDeepRegex -and ($_.Extension -match "\.(ts|tsx|js|jsx|md|json|yaml|yml)$") } | 
-               Select-String -Pattern $Query -CaseSensitive:$false
+    $CodeGlobs = @("**.ts", "**.tsx", "**.js", "**.jsx", "**.md", "**.json", "**.yaml", "**.yml")
+    $results = Run-ShinyDiscovery $CodeGlobs $Query $excludeList
 }
 
-if ($null -eq $results) {
+if ($null -eq $results -or $results.Count -eq 0) {
     Write-Host "No matches found across any documentation or source files."
     exit 0
 }
 
 # 3. Output and Summary
-$uniqueFiles = $results | Select-Object -ExpandProperty Path -Unique
-$matchCount = ($results | Measure-Object).Count
-$fileCount = ($uniqueFiles | Measure-Object).Count
-
+# rg output: path:line:col:text
 if (-not $SummaryOnly) {
-    $results | ForEach-Object {
-        $path = $_.Path.Replace((Get-Location).Path + "\", "")
-        Write-Host "[MATCH] $path`:$($_.LineNumber) -> $($_.Line.Trim())"
+    foreach ($line in $results) {
+        Write-Host "[MATCH] $line"
     }
 }
 
-Write-Host "`n>>> Summary" -ForegroundColor Gray
-$results | Group-Object -Property { 
-    $rel = $_.Path.Replace((Get-Location).Path + "\", "")
-    $dir = [System.IO.Path]::GetDirectoryName($rel)
-    if ([string]::IsNullOrEmpty($dir)) { "." } else { $dir }
-} | Select-Object Name, Count | Sort-Object Count -Descending | Format-Table -AutoSize
+Write-Host "`n>>> Summary: Grouped by location" -ForegroundColor Gray
+$stats = @{}
+foreach ($line in $results) {
+    $parts = $line.Split(":")
+    if ($parts.Count -ge 1) {
+        $path = $parts[0]
+        $dir = [System.IO.Path]::GetDirectoryName($path)
+        if ([string]::IsNullOrEmpty($dir)) { $dir = "." }
+        $stats[$dir] = ($stats[$dir] || 0) + 1
+    }
+}
 
-Write-Host "Found $matchCount matches across $fileCount files." -ForegroundColor Green
+$stats.GetEnumerator() | Sort-Object Value -Descending | ForEach-Object {
+    [PSCustomObject]@{
+        Name  = $_.Key
+        Count = $_.Value
+    }
+} | Format-Table -AutoSize
+
+$totalMatches = ($results | Measure-Object).Count
+Write-Host "Found $totalMatches matches." -ForegroundColor Green

@@ -31,6 +31,8 @@ import {
   supabase,
   useStore,
 } from '@repo/core';
+import { coreRuntime } from '@repo/core/logic';
+import { nativeRuntimeEnvironment } from '@repo/core/native';
 import { useQRDeepLink } from '@repo/scanner-kit';
 import {
   Box,
@@ -186,6 +188,9 @@ function App() {
   useEffect(() => {
     // Inject the native tracker into the Core bridge to maintain "Core Purity"
     injectPostHog(initTracker);
+
+    // Inject Platform-Specific Runtime Adapters (Sovereign Core Purity)
+    coreRuntime.register(nativeRuntimeEnvironment);
 
     initSentry();
     initPostHog(process.env.EXPO_PUBLIC_POSTHOG_API_KEY!, {

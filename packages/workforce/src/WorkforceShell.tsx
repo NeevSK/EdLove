@@ -7,55 +7,34 @@ export default function WorkforceShell() {
   return (
     <FeatureGuard feature="isDevelopingWorkforce">
       <VStack
-        sx={{
-          flex: 1,
-          justifyContent: 'center',
-          alignItems: 'center',
-          padding: 40,
-          backgroundColor: '$backgroundLight',
-        }}
+        className="flex-1 justify-center items-center p-10 bg-phase-canvas"
         space="xl"
       >
         <Box
-          sx={{
-            width: 100,
-            height: 100,
-            borderRadius: 50,
-            backgroundColor: 'rgba(255, 165, 0, 0.1)',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
+          className="w-[100px] h-[100px] rounded-full justify-center items-center bg-sanctuarySaffron/10"
         >
           <Icon as={Users2} size={48} color={Theme.colors.sanctuarySaffron} />
         </Box>
         
-        <VStack space="sm" alignItems="center">
-          <Heading size="xl" textAlign="center">
+        <VStack space="sm" className="items-center">
+          <Heading size="xl" className="text-center">
             Workforce Management
           </Heading>
           <Text
-            sx={{
-              color: '$textSecondary',
-              textAlign: 'center',
-              maxWidth: 320,
-            }}
+            className="text-phaseText-secondary text-center max-w-[320px]"
           >
             Streamline institutional human capital with digital dignity.
           </Text>
         </VStack>
 
         <Box
-          sx={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: 8,
-            padding: 12,
-            backgroundColor: 'rgba(0, 0, 0, 0.05)',
-            borderRadius: 16,
-          }}
+          className="flex-row items-center gap-2 p-3 bg-black/5 rounded-2xl"
         >
           <Icon as={Hammer} size={16} color={Theme.colors.sanctuarySaffron} />
-          <Text bold size="xs" sx={{ color: Theme.colors.sanctuarySaffron }}>
+          <Text 
+            size="xs" 
+            className="font-bold text-sanctuarySaffron"
+          >
             UNDER ACTIVE CONSTRUCTION
           </Text>
         </Box>

@@ -2,7 +2,6 @@ import { identityAPI } from '@repo/core';
 import { Box, Button, ButtonText, hapticLight, Text, VStack } from '@repo/ui';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Linking, Platform } from 'react-native';
 
 /**
  * RedirectToApp component
@@ -14,14 +13,17 @@ export const RedirectToApp = () => {
   const [session, setSession] = useState<{ user: { id: string } } | null>(null);
 
   useEffect(() => {
-    if (Platform.OS === 'web') {
+    // Only run on web to check session existence
+    if (typeof window !== 'undefined') {
       identityAPI.getMyInternalId().then((id) => {
         setSession(id ? { user: { id } } : null);
       });
     }
   }, []);
 
-  if (Platform.OS !== 'web') return null;
+  // Standard web check
+  const isWeb = typeof window !== 'undefined';
+  if (!isWeb) return null;
 
   // Very basic check for mobile browser
   const isMobileWeb = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
@@ -43,9 +45,15 @@ export const RedirectToApp = () => {
 
     console.log('= Harmonizer: Opening native app...', { hasSession: !!session });
 
-    Linking.openURL(url).catch(() => {
-      alert('Ensure the Gurudevi app is installed on your device.');
-    });
+    // Using direct window.location for deep linking on web
+    window.location.href = url;
+    
+    // Fallback if app not installed (basic version)
+    setTimeout(() => {
+      if (typeof document !== 'undefined' && !document.hidden) {
+        alert('Ensure the Gurudevi app is installed on your device.');
+      }
+    }, 2500);
   };
 
   return (

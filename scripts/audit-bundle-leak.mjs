@@ -1,50 +1,47 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
 import path from 'node:path';
+import { execSync } from 'node:child_process';
 
 const ROOT = process.cwd();
 const heavyLibs = [
-    'lucide-react', // Often causes bloat if not tree-shaken
+    'lucide-react',
     'recharts',
-    'lodash',       // If not using lodash-es
+    'lodash',
     'moment',
     'framer-motion',
-    'react-native-svg' // Leaky to web if not careful
+    'react-native-svg'
 ];
 
 const sleekPackages = ['@repo/core', '@repo/form-builder', '@repo/mcp-client'];
 
-console.log('📦 Auditing Bundle Leakage (Transitive Bloat)...');
+console.log('📦 Shiny Auditing Bundle Leakage (Transitive Bloat)...');
 
 const results = [];
 
-function checkDir(dir, pkgName) {
-    const list = fs.readdirSync(dir, { withFileTypes: true });
-    for (const entry of list) {
-        const fullPath = path.join(dir, entry.name);
-        if (entry.isDirectory()) {
-            if (['node_modules', 'dist'].includes(entry.name)) continue;
-            checkDir(fullPath, pkgName);
-        } else if (entry.isFile() && /\.(ts|tsx|js)$/.test(entry.name)) {
-            const content = fs.readFileSync(fullPath, 'utf8');
-            heavyLibs.forEach(lib => {
-                if (content.includes(`from '${lib}'`) || content.includes(`from "${lib}"`)) {
-                    results.push({
-                        package: pkgName,
-                        file: path.relative(ROOT, fullPath),
-                        leak: lib
-                    });
-                }
-            });
-        }
-    }
-}
-
 sleekPackages.forEach(pkg => {
-    const pkgPath = path.join(ROOT, 'packages', pkg.replace('@repo/', ''));
-    if (fs.existsSync(pkgPath)) {
-        checkDir(pkgPath, pkg);
-    }
+    const pkgName = pkg.replace('@repo/', '');
+    const pkgPath = path.join(ROOT, 'packages', pkgName);
+    if (!fs.existsSync(pkgPath)) return;
+
+    heavyLibs.forEach(lib => {
+        try {
+            // Use rg to find imports of heavy libs
+            const pattern = `from ['"]${lib}['"]`;
+            const cmd = `rg "${pattern}" "${pkgPath}" -g "**.ts" -g "**.tsx" -g "**.js" --only-matching --with-filename`;
+            const output = execSync(cmd, { encoding: 'utf-8' });
+            output.split('\n').filter(l => l.trim()).forEach(line => {
+                const [file] = line.split(':');
+                results.push({
+                    package: pkg,
+                    file: path.relative(ROOT, file),
+                    leak: lib
+                });
+            });
+        } catch (e) {
+            // No matches for this lib
+        }
+    });
 });
 
 if (results.length === 0) {

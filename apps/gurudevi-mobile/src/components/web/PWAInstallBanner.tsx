@@ -5,135 +5,79 @@
  * the browser's PWA install criteria are met.  Tapping "Install" triggers the
  * native browser install dialog; tapping "Maybe later" dismisses for 30 days.
  *
- * On iOS/iPadOS (where the beforeinstallprompt event is never fired) a short
- * manual instruction ("Tap Share → Add to Home Screen") is shown instead.
- *
- * Only renders on web (Platform.OS guard + hook internals).
+ * Only renders on web (Sovereign Web guard + hook internals).
  */
 
-import { Icon, sanctuarySaffron, useTheme } from '@repo/ui';
+import { AnimatedView, Box, HStack, Icon, Pressable, Text, useTheme, VStack } from '@repo/ui';
 import { Download, Share, X } from 'lucide-react-native';
-import { Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import Animated, { SlideInDown, SlideOutDown } from 'react-native-reanimated';
+import { SlideInDown, SlideOutDown } from 'react-native-reanimated';
 import { usePWAInstallPrompt } from '@/utils/usePWAInstallPrompt';
 
 export function PWAInstallBanner() {
   const { canInstall, promptInstall, isDismissed, dismiss, isIOS, isInstalled } =
     usePWAInstallPrompt();
-  // All hooks must be called unconditionally — early returns come AFTER all hook calls
-  const { scene, text } = useTheme();
+  const theme = useTheme();
 
-  // Never render on native, when already installed, or after user dismissed
-  if (Platform.OS !== 'web') return null;
+  // Sovereign Web Guard: Never render on native or when unnecessary
+  if (typeof window === 'undefined') return null;
   if (isInstalled) return null;
   if (isDismissed) return null;
   if (!canInstall && !isIOS) return null;
 
   return (
-    <Animated.View
+    <AnimatedView
       entering={SlideInDown.springify().damping(18)}
       exiting={SlideOutDown.duration(220)}
-      style={[
-        styles.banner,
-        { backgroundColor: scene.surface.bg, borderTopColor: scene.surface.border },
-      ]}
+      className="absolute bottom-0 left-0 right-0 p-lg border-t z-[999] flex-row items-center justify-between"
+      style={{
+        backgroundColor: theme.scene.surface.bg,
+        borderTopColor: theme.scene.surface.border,
+      }}
     >
-      <View style={styles.left}>
-        {isIOS ? (
-          <Icon as={Share} size={20} color={sanctuarySaffron} />
-        ) : (
-          <Icon as={Download} size={20} color={sanctuarySaffron} />
-        )}
-        <View style={styles.textBlock}>
-          <Text style={[styles.title, { color: text.primary }]}>
+      <HStack className="items-center flex-1 gap-3">
+        <Box>
+          <Icon
+            as={isIOS ? Share : Download}
+            size={20}
+            className="text-sanctuarySaffron"
+          />
+        </Box>
+        <VStack className="flex-1">
+          <Text className="text-sm font-bold text-phaseText-primary">
             {isIOS ? 'Add to Home Screen' : 'Install Gurudevi'}
           </Text>
-          <Text style={[styles.sub, { color: text.secondary }]}>
+          <Text className="text-xs text-phaseText-secondary mt-0.5">
             {isIOS
               ? 'Tap the Share icon, then "Add to Home Screen"'
               : 'Your Sanctuary, one tap away'}
           </Text>
-        </View>
-      </View>
+        </VStack>
+      </HStack>
 
-      <View style={styles.actions}>
+      <HStack className="items-center gap-3">
         {!isIOS && (
-          <TouchableOpacity
+          <Pressable
             onPress={async () => {
               try {
                 await promptInstall();
               } catch {
-                // User cancelled or browser rejected — dismiss the banner quietly
                 dismiss();
               }
             }}
-            style={[styles.installBtn, { backgroundColor: sanctuarySaffron }]}
+            className="px-4 py-2 rounded-xl bg-sanctuarySaffron"
             accessibilityLabel="Install Gurudevi as an app"
           >
-            <Text style={styles.installBtnText}>Install</Text>
-          </TouchableOpacity>
+            <Text className="text-ink text-[13px] font-bold">Install</Text>
+          </Pressable>
         )}
-        <TouchableOpacity
+        <Pressable
           onPress={dismiss}
-          style={styles.dismissBtn}
+          className="p-1.5"
           accessibilityLabel="Dismiss install prompt"
         >
-          <Icon as={X} size={18} color={text.secondary} />
-        </TouchableOpacity>
-      </View>
-    </Animated.View>
+          <Icon as={X} size={18} className="text-phaseText-secondary" />
+        </Pressable>
+      </HStack>
+    </AnimatedView>
   );
 }
-
-const styles = StyleSheet.create({
-  banner: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderTopWidth: 1,
-    // boxShadow: `0 -4px 12px ${shadowViolet}1F`,
-    zIndex: 999,
-  },
-  left: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-    gap: 12,
-  },
-  textBlock: {
-    flexDirection: 'column',
-    flex: 1,
-  },
-  title: {
-    fontSize: 14,
-    fontWeight: '700',
-  },
-  sub: {
-    fontSize: 12,
-    marginTop: 2,
-  },
-  actions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  installBtn: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 12,
-  },
-  installBtnText: {
-    color: '#2A2318',
-    fontSize: 13,
-    fontWeight: '700',
-  },
-  dismissBtn: {
-    padding: 6,
-  },
-});
