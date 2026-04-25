@@ -10,6 +10,7 @@
 
 import { AnimatedView, Box, HStack, Icon, Pressable, Text, useTheme, VStack } from '@repo/ui';
 import { Download, Share, X } from 'lucide-react-native';
+import { Platform } from 'react-native';
 import { SlideInDown, SlideOutDown } from 'react-native-reanimated';
 import { usePWAInstallPrompt } from '@/utils/usePWAInstallPrompt';
 
@@ -19,7 +20,7 @@ export function PWAInstallBanner() {
   const theme = useTheme();
 
   // Sovereign Web Guard: Never render on native or when unnecessary
-  if (typeof window === 'undefined') return null;
+  if (Platform.OS !== 'web') return null;
   if (isInstalled) return null;
   if (isDismissed) return null;
   if (!canInstall && !isIOS) return null;

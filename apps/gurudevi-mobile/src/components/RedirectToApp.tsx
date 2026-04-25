@@ -2,6 +2,7 @@ import { identityAPI } from '@repo/core';
 import { Box, Button, ButtonText, hapticLight, Text, VStack } from '@repo/ui';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Platform } from 'react-native';
 
 /**
  * RedirectToApp component
@@ -14,16 +15,14 @@ export const RedirectToApp = () => {
 
   useEffect(() => {
     // Only run on web to check session existence
-    if (typeof window !== 'undefined') {
+    if (Platform.OS === 'web') {
       identityAPI.getMyInternalId().then((id) => {
         setSession(id ? { user: { id } } : null);
       });
     }
   }, []);
 
-  // Standard web check
-  const isWeb = typeof window !== 'undefined';
-  if (!isWeb) return null;
+  if (Platform.OS !== 'web') return null;
 
   // Very basic check for mobile browser
   const isMobileWeb = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
