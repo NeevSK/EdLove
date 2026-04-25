@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { Box, ScreenWrapper, Text, VStack } from '@repo/ui';
 import { usePermissions, useStore } from '@repo/core';
-import { useAdminWorkspaceSnapshot } from '../admin/adminRepository';
+import { useAdminWorkspaceData } from '../admin/useAdminWorkspaceData';
 import {
   AdminWorkspaceCanvas,
   useAdminWorkspaceCanvasSurfaces,
@@ -19,22 +19,7 @@ export default function AdminDashboard({ userId }: AdminDashboardProps) {
   const { context, flags } = usePermissions();
   const currentUserId = useStore((state) => state.user?.id ?? null);
   const resolvedUserId = userId ?? currentUserId;
-  const { snapshot, isLoading, error } = useAdminWorkspaceSnapshot();
-  const data = snapshot ?? {
-    schoolCount: 0,
-    userCount: 0,
-    incidentCount: 0,
-    pendingApprovalCount: 0,
-    inviteCount: 0,
-    inventoryRequestCount: 0,
-    recentIncidentSignals: [],
-    recentApprovals: [],
-    recentInventoryRequests: [],
-    recentSchools: [],
-    recentUsers: [],
-    recentInvites: [],
-    recentObservations: [],
-  };
+  const data = useAdminWorkspaceData();
 
   const surfaces = useAdminWorkspaceCanvasSurfaces({
     data,
@@ -78,12 +63,14 @@ export default function AdminDashboard({ userId }: AdminDashboardProps) {
         <Box className="border-b border-phase-canvas px-4 py-3">
           <VStack className="gap-1">
             <Text className="text-sm font-bold text-phaseText-primary">
-              {isLoading
+              {data.isLoading
                 ? 'Loading platform signal...'
                 : `${data.schoolCount} schools, ${data.userCount} users, ${data.pendingApprovalCount} approvals, ${data.incidentCount} incident signals`}
             </Text>
             <Text className="text-xs text-phaseText-secondary">
-              {error ? error : 'Global operator view for live platform stewardship, dogfood maintenance, and cross-tenant repair.'}
+              {data.error
+                ? data.error
+                : 'Global operator view for live platform stewardship, dogfood maintenance, and cross-tenant repair.'}
             </Text>
           </VStack>
         </Box>

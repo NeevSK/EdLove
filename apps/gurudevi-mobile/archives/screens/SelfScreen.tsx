@@ -1,10 +1,10 @@
-import { useTracking, usePermissions } from '@repo/core';
-import { 
-    StudentSelfView, 
-    TeacherSelfView, 
-    PrincipalSelfView, 
-    FounderSelfView, 
-    AdminSelfView 
+import { usePermissions, useTracking } from '@repo/core';
+import {
+  AdminSelfView,
+  FounderSelfView,
+  PrincipalSelfView,
+  StudentSelfView,
+  TeacherSelfView,
 } from './self';
 
 /**
@@ -12,33 +12,33 @@ import {
  * Now capability-driven (POA) instead of registry-intent based.
  */
 export default function SelfScreen() {
-    const { discoverFeature } = useTracking();
-    const { can } = usePermissions();
+  const { discoverFeature } = useTracking();
+  const { can } = usePermissions();
 
-    React.useEffect(() => {
-        discoverFeature('section_self');
-    }, [discoverFeature]);
+  React.useEffect(() => {
+    discoverFeature('section_self');
+  }, [discoverFeature]);
 
-    if (can('manage', 'FounderDashboard')) {
-        return <FounderSelfView />;
-    }
+  if (can('manage', 'FounderDashboard')) {
+    return <FounderSelfView />;
+  }
 
-    if (can('manage', 'AdminDashboard')) {
-        return <AdminSelfView />;
-    }
+  if (can('manage', 'AdminDashboard')) {
+    return <AdminSelfView />;
+  }
 
-    if (can('manage', 'PrincipalDashboard')) {
-        return <PrincipalSelfView />;
-    }
+  if (can('manage', 'PrincipalDashboard')) {
+    return <PrincipalSelfView />;
+  }
 
-    if (can('manage', 'TeacherDashboard')) {
-        return <TeacherSelfView />;
-    }
+  if (can('manage', 'TeacherDashboard')) {
+    return <TeacherSelfView />;
+  }
 
-    if (can('manage', 'StudentDashboard')) {
-        return <StudentSelfView />;
-    }
-
-    // Default or Fallback
+  if (can('manage', 'StudentDashboard')) {
     return <StudentSelfView />;
+  }
+
+  // Default or Fallback
+  return <StudentSelfView />;
 }

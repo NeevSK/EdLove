@@ -8,17 +8,17 @@
  *   QRBuilder.thuthimal(token, gifterName)    → 'gurudevi://qr?v=1&action=thuthimal_gift&...'
  */
 
-import type { QRPayload } from './QRPayload'
+import type { QRPayload } from './QRPayload';
 
-const SCHEME = 'https://platform.gurudevi.edlove.org/qr'
+const SCHEME = 'https://platform.gurudevi.edlove.org/qr';
 
 /** Serialize any QRPayload to a canonical gurudevi://qr URL string */
 export function buildQRString(payload: QRPayload): string {
-  const params = new URLSearchParams()
+  const params = new URLSearchParams();
   for (const [key, value] of Object.entries(payload)) {
-    params.set(key, String(value))
+    params.set(key, String(value));
   }
-  return `${SCHEME}?${params.toString()}`
+  return `${SCHEME}?${params.toString()}`;
 }
 
 /** Factory methods for building canonical QR payload strings */
@@ -65,4 +65,4 @@ export const QRBuilder = {
    */
   thuthimal: (gift_token: string, gifter_name: string): string =>
     buildQRString({ v: 1, action: 'thuthimal_gift', gift_token, gifter_name }),
-} as const
+} as const;

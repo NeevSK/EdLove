@@ -117,3 +117,4 @@ export {
 } from 'react-native-reanimated';
 
 export { useSanctuaryToast, useSanctuaryToast as useLotusToast } from './providers/ToastProvider';
+export { useSanctuaryToast as useToast } from './providers/ToastProvider';

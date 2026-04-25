@@ -1,16 +1,16 @@
-﻿/**
+/**
  * DemoPlaygroundPanel.web.tsx
  *
  * Thin wrapper for the Classroom Demo UI.
  */
 
-import React from 'react';
-import { ErrorBoundary } from '@repo/ui';
 import { DemoPlaygroundPanel as PackageDemoPlaygroundPanel } from '@repo/classroom';
+import { ErrorBoundary } from '@repo/ui';
 
-const DemoPlaygroundPanel = (props: any) => (
-  <ErrorBoundary name="Demo Playground">
-    <PackageDemoPlaygroundPanel {...props} />
+const DemoPlaygroundPanel = (props: Record<string, unknown>) => (
+  <ErrorBoundary name="Playground Panel">
+    {/* biome-ignore lint/suspicious/noExplicitAny: props are passed through to package component */}
+    <PackageDemoPlaygroundPanel {...(props as any)} />
   </ErrorBoundary>
 );
 

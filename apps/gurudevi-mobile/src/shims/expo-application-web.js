@@ -7,13 +7,13 @@ export const applicationName = 'Gurudevi';
 export const applicationId = 'com.neevsk.gurudevi';
 
 export async function getInstallationTimeAsync() {
-    return Date.now();
+  return Date.now();
 }
 
 export default {
-    nativeApplicationVersion,
-    nativeBuildVersion,
-    applicationName,
-    applicationId,
-    getInstallationTimeAsync,
+  nativeApplicationVersion,
+  nativeBuildVersion,
+  applicationName,
+  applicationId,
+  getInstallationTimeAsync,
 };

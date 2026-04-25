@@ -116,7 +116,7 @@ export default function BreathGuide({ onComplete }: BreathGuideProps) {
     }, [onComplete]);
 
     useEffect(() => {
-        let timeout: NodeJS.Timeout;
+        let timeout: ReturnType<typeof setTimeout> | undefined;
         if (isActive && currentCycle < TOTAL_CYCLES) {
             const currentStep = BREATH_CYCLE[phaseIndex];
             if (currentStep) {
@@ -134,7 +134,9 @@ export default function BreathGuide({ onComplete }: BreathGuideProps) {
         } else if (currentCycle >= TOTAL_CYCLES) {
             completeSession();
         }
-        return () => clearTimeout(timeout);
+        return () => {
+            if (timeout) clearTimeout(timeout);
+        };
     }, [isActive, currentCycle, phaseIndex, BREATH_CYCLE, animatePetal, completeSession]);
 
     const startSession = () => {

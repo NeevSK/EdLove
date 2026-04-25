@@ -12,7 +12,7 @@ const ROOT = process.cwd();
 const searchPaths = [
     { name: 'Schemas (@repo/core)', path: 'packages/core/src/logic' },
     { name: 'Components (@repo/ui)', path: 'packages/ui/src' },
-    { name: 'Migrations', path: 'packages/database/protocol' },
+    { name: 'ZenStack Model (SSOT)', path: 'packages/database/zenstack' },
     { name: 'Services/Apps', path: 'apps' }
 ];
 

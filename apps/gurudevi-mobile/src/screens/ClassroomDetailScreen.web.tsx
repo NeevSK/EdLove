@@ -1,11 +1,10 @@
-﻿/**
+/**
  * ClassroomDetailScreen.web.tsx
  */
-import React from 'react';
-import { ErrorBoundary } from '@repo/ui';
 import { ClassroomDetailScreenWeb } from '@repo/classroom';
+import { ErrorBoundary } from '@repo/ui';
 
-const ClassroomDetailScreen = (props: any) => (
+const ClassroomDetailScreen = (props: Record<string, unknown>) => (
   <ErrorBoundary name="Classroom Details">
     <ClassroomDetailScreenWeb {...props} />
   </ErrorBoundary>

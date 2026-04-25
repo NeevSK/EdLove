@@ -88,7 +88,7 @@ export default function ResourcesView({ classroomId, isTeacher }: ResourcesViewP
                 setResources(prev => prev.map(r => r.id === id ? { ...r, is_pinned: isPinned } : r));
                 hapticLight();
             },
-            onError: (error: Error) => {
+            onError: (_error: unknown) => {
                 showToast('Failed to update pin', 'error');
             }
         }

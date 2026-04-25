@@ -23,7 +23,7 @@ To maintain platform-agnosticism and prevent environment leaks (e.g., exposing w
 Event payloads are strictly typed using **ZenStack v3 Zod models**. This ensures that data emitted by the client matches the database schema exactly.
 
 ### Workflow:
-1. Update `schema.zmodel` in `packages/database`.
+1. Update `schema.zmodel` in `packages/database/zenstack/schema.zmodel`.
 2. Run `pnpm generate` to sync Zod models.
 3. Reference the updated Zod schemas in `@repo/core/src/logic/events/schemas.ts`.
 

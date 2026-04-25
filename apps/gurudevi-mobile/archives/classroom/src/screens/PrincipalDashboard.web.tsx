@@ -1,10 +1,11 @@
-﻿import React from 'react';
-import { PrincipalDashboardWeb as AdminPrincipalDashboardWeb } from '@repo/admin';
-import { CreateSchoolModal } from '@repo/admin';
+﻿import {
+  PrincipalDashboardWeb as AdminPrincipalDashboardWeb,
+  CreateSchoolModal,
+} from '@repo/admin';
 import { CreateClassroomModal, PrincipalOnboardingView } from '../components';
 import { DashboardContent } from './principal/DashboardContent';
 
-function CreateSchoolModalAdapter(props: {
+function _CreateSchoolModalAdapter(props: {
   isOpen: boolean;
   onClose: () => void;
   onSuccess?: () => void;
@@ -44,7 +45,7 @@ export default function PrincipalDashboardWeb(props: {
       onRefresh={props.onRefresh}
       DashboardContentComponent={DashboardContent}
       PrincipalOnboardingViewComponent={PrincipalOnboardingView}
-      CreateSchoolModalComponent={CreateSchoolModalAdapter}
+      CreateSchoolModalComponent={_CreateSchoolModalAdapter}
       CreateClassroomModalComponent={CreateClassroomModalAdapter}
     /  );
 }

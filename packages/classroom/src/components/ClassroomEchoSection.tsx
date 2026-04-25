@@ -286,7 +286,7 @@ export default function ClassroomEchoSection({ classroomId, isTeacher }: Props) 
                                     ) : (
                                         <VStack className="gap-sm mt-2">
                                             <Box className="bg-phase-surface rounded-comfortable p-2">
-                                                <Input variant="underlined" className="border-b-0">
+                                                <Input className="border-b-0">
                                                     <InputField 
                                                         placeholder="Write your response..."
                                                         value={replyText}

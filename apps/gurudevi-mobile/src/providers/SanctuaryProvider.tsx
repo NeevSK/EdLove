@@ -1,27 +1,22 @@
-import React from 'react';
-import { View } from 'react-native';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { 
-  GluestackUIProvider, 
-  SanctuaryGlobalStyles, 
-  FABProvider, 
-  ExternalLinkProvider, 
-  ToastProvider, 
-  EnvironmentProvider,
-  
-  Center,
-  Spinner
-} from '@repo/ui';
-import { 
-  useAuth,
-  usePermissions,
-  SyncManager
-} from '@repo/core';
 import { AnalyticsProvider } from '@repo/analytics/ui';
-import { config } from "../../gluestack-ui.config";
+import { SyncManager, useAuth, usePermissions } from '@repo/core';
+import {
+  Center,
+  EnvironmentProvider,
+  ExternalLinkProvider,
+  FABProvider,
+  GluestackUIProvider,
+  SanctuaryGlobalStyles,
+  Spinner,
+  ToastProvider,
+} from '@repo/ui';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import type React from 'react';
+import { View } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { config } from '../../gluestack-ui.config';
 import { useAssets } from './AssetProvider';
 import { DeepLinkProvider } from './DeepLinkProvider';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 const queryClient = new QueryClient();
 
@@ -32,7 +27,7 @@ const queryClient = new QueryClient();
 function AssetLoaderWatcher({ children }: { children: React.ReactNode }) {
   const { fontsLoaded } = useAssets();
   const { loading } = useAuth();
-  
+
   if (!fontsLoaded || loading) {
     return (
       <SafeAreaProvider>
@@ -42,7 +37,7 @@ function AssetLoaderWatcher({ children }: { children: React.ReactNode }) {
       </SafeAreaProvider>
     );
   }
-  
+
   return <>{children}</>;
 }
 
@@ -67,7 +62,9 @@ export function SanctuaryProvider({ children }: SanctuaryProviderProps) {
                       apiKey={process.env.EXPO_PUBLIC_POSTHOG_API_KEY}
                       enabled={flags?.isAnalyticsEnabled}
                       options={{
-                        host: process.env.EXPO_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com'}}>
+                        host: process.env.EXPO_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com',
+                      }}
+                    >
                       <View style={{ flex: 1 }}>{children}</View>
                       <SyncManager />
                     </AnalyticsProvider>

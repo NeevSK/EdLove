@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const ROOT = process.cwd();
-const zmodelPath = path.join(ROOT, 'packages', 'database', 'protocol', 'schema.zmodel');
+const zmodelPath = path.join(ROOT, 'packages', 'database', 'zenstack', 'schema.zmodel');
 const generatedPath = path.join(ROOT, 'packages', 'core', 'src', 'logic', 'generated', 'models.ts');
 
 console.log('⚖️ Checking Schema Alignment (Database vs Core Logic)...');
@@ -24,7 +24,7 @@ const isDrifted = zmodelStat.mtime > generatedStat.mtime;
 
 // Heuristic 2: Model Counts
 const zmodelModels = (zmodelContent.match(/model\s+(\w+)/g) || []).map(m => m.split(/\s+/)[1]);
-const tsModels = (generatedContent.match(/export\s+interface\s+(\w+)/g) || []).map(m => m.split(/\s+/)[2]);
+const tsModels = (generatedContent.match(/export\s+type\s+(\w+)\s*=/g) || []).map(m => m.split(/\s+/)[2]);
 
 const missingInTs = zmodelModels.filter(m => !tsModels.includes(m));
 

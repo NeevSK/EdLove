@@ -1,11 +1,10 @@
-﻿/**
+/**
  * QRHandlerScreen.tsx
  */
-import React from 'react';
-import { ErrorBoundary } from '@repo/ui';
 import { QRHandlerScreen as PackageQRHandler } from '@repo/scanner-kit';
+import { ErrorBoundary } from '@repo/ui';
 
-const QRHandlerWrapper = (props: any) => (
+const QRHandlerWrapper = (props: Record<string, unknown>) => (
   <ErrorBoundary name="QR Scanner">
     <PackageQRHandler {...props} />
   </ErrorBoundary>

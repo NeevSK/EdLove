@@ -4,18 +4,8 @@ const path = require('node:path');
 const APP_ROOT = path.resolve(__dirname, '../../..');
 const WORKSPACE_ROOT = path.resolve(APP_ROOT, '..', '..');
 
-const PROFILE_STACK_NATIVE = path.join(
-  APP_ROOT,
-  'src',
-  'navigation',
-  'ProfileStackNavigator.tsx',
-);
-const PROFILE_STACK_WEB = path.join(
-  APP_ROOT,
-  'src',
-  'navigation',
-  'ProfileStackNavigator.web.tsx',
-);
+const PROFILE_STACK_NATIVE = path.join(APP_ROOT, 'src', 'navigation', 'ProfileStackNavigator.tsx');
+const PROFILE_STACK_WEB = path.join(APP_ROOT, 'src', 'navigation', 'ProfileStackNavigator.web.tsx');
 const PROFILE_SCREEN_NATIVE = path.join(
   WORKSPACE_ROOT,
   'packages',
@@ -71,7 +61,15 @@ describe('Profile route capabilities', () => {
     const nativeSource = fs.readFileSync(PROFILE_STACK_NATIVE, 'utf8');
     const webSource = fs.readFileSync(PROFILE_STACK_WEB, 'utf8');
 
-    for (const route of ['ProfileMain', 'FullProfile', 'AppSettings', 'PrivacyLedger', 'PublicProfile', 'MuteHub', 'TrubeLab']) {
+    for (const route of [
+      'ProfileMain',
+      'FullProfile',
+      'AppSettings',
+      'PrivacyLedger',
+      'PublicProfile',
+      'MuteHub',
+      'TrubeLab',
+    ]) {
       expect(nativeSource.includes(`name="${route}"`)).toBe(true);
       expect(webSource.includes(`name="${route}"`)).toBe(true);
     }

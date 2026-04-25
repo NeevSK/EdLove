@@ -32,6 +32,8 @@ export default function ClassroomScreen() {
     const { t } = useTranslation();
     const navigation = useNavigation<any>();
     const { can } = usePermissions();
+    const canForWorkspace = (action: string, subject: string, field?: string) =>
+        can(action as any, subject as any, field);
     const { isGuest } = useFeatureAccess();
     const { schoolId: storeSchoolId, userId: storeUserId } = useStore(state => ({
         schoolId: state.user?.school_id,
@@ -61,7 +63,7 @@ export default function ClassroomScreen() {
     );
 
     const workspaceSurfaces = useClassroomWorkspaceSurfaces({
-        can,
+        can: canForWorkspace,
         t,
         isGuest,
         classroomData,

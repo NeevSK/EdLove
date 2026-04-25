@@ -1,11 +1,10 @@
-﻿/**
+/**
  * GradebookScreen.web.tsx
  */
-import React from 'react';
-import { ErrorBoundary } from '@repo/ui';
 import { GradebookScreenWeb } from '@repo/classroom';
+import { ErrorBoundary } from '@repo/ui';
 
-const GradebookScreen = (props: any) => (
+const GradebookScreen = (props: Record<string, unknown>) => (
   <ErrorBoundary name="Classroom Gradebook">
     <GradebookScreenWeb {...props} />
   </ErrorBoundary>

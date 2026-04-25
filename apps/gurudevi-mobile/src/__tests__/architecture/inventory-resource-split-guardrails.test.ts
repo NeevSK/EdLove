@@ -9,9 +9,10 @@ describe('Inventory/Resource split boundary guardrails', () => {
   it('ensures classroom components use proper resource scope', () => {
     const classroomFiles = [
       path.join(PACKAGES_ROOT, 'classroom/src/components/ResourcesView.tsx'),
-      path.join(PACKAGES_ROOT, 'classroom/src/components/InventoryView.tsx')];
+      path.join(PACKAGES_ROOT, 'classroom/src/components/InventoryView.tsx'),
+    ];
 
-    classroomFiles.forEach(file => {
+    classroomFiles.forEach((file) => {
       if (fs.existsSync(file)) {
         const source = fs.readFileSync(file, 'utf8');
         // Should use CLASSROOM_RESOURCE_SCOPE for classroom operations
@@ -26,9 +27,10 @@ describe('Inventory/Resource split boundary guardrails', () => {
   it('ensures admin components use institutional resource scope', () => {
     const adminFiles = [
       path.join(PACKAGES_ROOT, 'admin/src/screens/SchoolForestScreen.web.tsx'),
-      path.join(PACKAGES_ROOT, 'admin/src/components/InventoryManagement.tsx')];
+      path.join(PACKAGES_ROOT, 'admin/src/components/InventoryManagement.tsx'),
+    ];
 
-    adminFiles.forEach(file => {
+    adminFiles.forEach((file) => {
       if (fs.existsSync(file)) {
         const source = fs.readFileSync(file, 'utf8');
         // Should use institutional scope for school-wide operations
@@ -42,13 +44,16 @@ describe('Inventory/Resource split boundary guardrails', () => {
     const resourceFiles = [
       path.join(PACKAGES_ROOT, 'classroom/src/components/ResourcesView.tsx'),
       path.join(PACKAGES_ROOT, 'classroom/src/components/InventoryView.tsx'),
-      path.join(PACKAGES_ROOT, 'admin/src/screens/SchoolForestScreen.web.tsx')];
+      path.join(PACKAGES_ROOT, 'admin/src/screens/SchoolForestScreen.web.tsx'),
+    ];
 
-    resourceFiles.forEach(file => {
+    resourceFiles.forEach((file) => {
       if (fs.existsSync(file)) {
         const source = fs.readFileSync(file, 'utf8');
         // Should import resource scope helpers from @repo/core
-        expect(source).toMatch(/CLASSROOM_RESOURCE_SCOPE|INSTITUTIONAL_RESOURCE_SCOPE|resolveResourceOwnerContext/);
+        expect(source).toMatch(
+          /CLASSROOM_RESOURCE_SCOPE|INSTITUTIONAL_RESOURCE_SCOPE|resolveResourceOwnerContext/,
+        );
       }
     });
   });
@@ -57,9 +62,10 @@ describe('Inventory/Resource split boundary guardrails', () => {
   it('prevents classroom resources in institutional inventory APIs', () => {
     const classroomFiles = [
       path.join(PACKAGES_ROOT, 'classroom/src/components/ResourcesView.tsx'),
-      path.join(PACKAGES_ROOT, 'classroom/src/components/InventoryView.tsx')];
+      path.join(PACKAGES_ROOT, 'classroom/src/components/InventoryView.tsx'),
+    ];
 
-    classroomFiles.forEach(file => {
+    classroomFiles.forEach((file) => {
       if (fs.existsSync(file)) {
         const source = fs.readFileSync(file, 'utf8');
         // Should not call institutional inventory APIs directly
@@ -72,10 +78,9 @@ describe('Inventory/Resource split boundary guardrails', () => {
 
   // Test 5: Institutional assets should not route to classroom resource APIs
   it('prevents institutional assets from using classroom resource APIs', () => {
-    const adminFiles = [
-      path.join(PACKAGES_ROOT, 'admin/src/screens/SchoolForestScreen.web.tsx')];
+    const adminFiles = [path.join(PACKAGES_ROOT, 'admin/src/screens/SchoolForestScreen.web.tsx')];
 
-    adminFiles.forEach(file => {
+    adminFiles.forEach((file) => {
       if (fs.existsSync(file)) {
         const source = fs.readFileSync(file, 'utf8');
         // Should not use classroom resource APIs for institutional assets

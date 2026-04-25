@@ -1,14 +1,13 @@
-﻿/**
+/**
  * FullProfileScreen.tsx
  *
  * Thin wrapper for the detailed Profile View.
  */
 
-import React from 'react';
-import { ErrorBoundary } from '@repo/ui';
 import { FullProfileScreen as PackageFullProfileScreen } from '@repo/profile';
+import { ErrorBoundary } from '@repo/ui';
 
-const FullProfileWrapper = (props: any) => (
+const FullProfileWrapper = (props: Record<string, unknown>) => (
   <ErrorBoundary name="Detailed Profile">
     <PackageFullProfileScreen {...props} />
   </ErrorBoundary>

@@ -1,9 +1,9 @@
 ﻿import {
-  supabase,
-  staffManagementAPI,
   type StaffLeaveDTO,
   type StaffPresenceSummary,
   type StudentAttendancePulse,
+  staffManagementAPI,
+  supabase,
   type TeacherCarouselItem,
 } from '@repo/core';
 
@@ -66,7 +66,10 @@ async function getPendingEnrollments(schoolId: string, classroomId?: string): Pr
 
 export const staffOperationsAPI = {
   ...staffManagementAPI,
-  async getStudentPrincipalPulse(schoolId: string, classroomId?: string): Promise<StudentPrincipalPulse> {
+  async getStudentPrincipalPulse(
+    schoolId: string,
+    classroomId?: string,
+  ): Promise<StudentPrincipalPulse> {
     const [attendancePulse, submissionRate, pendingEnrollments] = await Promise.all([
       staffManagementAPI.getStudentAttendancePulse(schoolId, classroomId),
       getSubmissionRate(schoolId, classroomId),

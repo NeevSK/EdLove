@@ -1,4 +1,4 @@
-import React from 'react';
+import type React from 'react';
 
 interface WebSkeletonProps {
   width?: string | number;
@@ -19,15 +19,15 @@ export const WebSkeleton: React.FC<WebSkeletonProps> = ({
   borderRadius = '12px',
   variant = 'rect',
   className = '',
-  style
+  style,
 }) => {
   const isCircle = variant === 'circle';
-  
+
   const baseStyle: React.CSSProperties = {
     width,
     height: isCircle ? width : height,
     borderRadius: isCircle ? '50%' : borderRadius,
-    ...style
+    ...style,
   };
 
   return (
@@ -62,11 +62,7 @@ export const WebSkeleton: React.FC<WebSkeletonProps> = ({
           border: 1px solid rgba(252, 249, 242, 0.05);
         }
       `}</style>
-      <div
-        className={`sanctuary-skeleton ${className}`}
-        style={baseStyle}
-        aria-hidden="true"
-      />
+      <div className={`sanctuary-skeleton ${className}`} style={baseStyle} aria-hidden="true" />
     </>
   );
 };

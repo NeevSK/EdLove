@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTracking, usePermissions } from '@repo/core';
-import { FeatureGuard } from '@repo/core/src/permissions/guards/FeatureGuard';
+import { FeatureGuard } from '@repo/core';
 import {
     StudentSelfView,
     TeacherSelfView,

@@ -1,18 +1,19 @@
 const bridge = require('./universal-bridge');
 
 const ImageManipulator = {
-  manipulate: (source) => bridge('ImageManipulator.context', {
-    resize: () => ImageManipulator.manipulate(source),
-    rotate: () => ImageManipulator.manipulate(source),
-    flip: () => ImageManipulator.manipulate(source),
-    crop: () => ImageManipulator.manipulate(source),
-    extent: () => ImageManipulator.manipulate(source),
-    renderAsync: async () => ({
-      saveAsync: async () => ({ uri: source, width: 0, height: 0 }),
+  manipulate: (source) =>
+    bridge('ImageManipulator.context', {
+      resize: () => ImageManipulator.manipulate(source),
+      rotate: () => ImageManipulator.manipulate(source),
+      flip: () => ImageManipulator.manipulate(source),
+      crop: () => ImageManipulator.manipulate(source),
+      extent: () => ImageManipulator.manipulate(source),
+      renderAsync: async () => ({
+        saveAsync: async () => ({ uri: source, width: 0, height: 0 }),
+        release: () => {},
+      }),
       release: () => {},
     }),
-    release: () => {},
-  }),
 };
 
 module.exports = bridge('expo-image-manipulator', {

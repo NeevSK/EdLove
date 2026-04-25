@@ -1,13 +1,13 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  presets: [require("nativewind/preset")],
+  presets: [require('nativewind/preset')],
   content: [
-    "./App.{js,jsx,ts,tsx}",
-    "./src/**/*.{js,jsx,ts,tsx}",
-    "../../packages/ui/src/**/*.{js,jsx,ts,tsx}",
-    "../../packages/profile/src/**/*.{js,jsx,ts,tsx}",
-    "../../packages/community/src/**/*.{js,jsx,ts,tsx}",
-    "../../packages/admin/src/**/*.{js,jsx,ts,tsx}",
+    './App.{js,jsx,ts,tsx}',
+    './src/**/*.{js,jsx,ts,tsx}',
+    '../../packages/ui/src/**/*.{js,jsx,ts,tsx}',
+    '../../packages/profile/src/**/*.{js,jsx,ts,tsx}',
+    '../../packages/community/src/**/*.{js,jsx,ts,tsx}',
+    '../../packages/admin/src/**/*.{js,jsx,ts,tsx}',
   ],
   theme: {
     extend: {
@@ -60,16 +60,16 @@ module.exports = {
         twilightBlue: '#6A5ACD',
       },
       borderRadius: {
-        'tight': '8px',
-        'comfortable': '16px',
-        'generous': '24px',
+        tight: '8px',
+        comfortable: '16px',
+        generous: '24px',
       },
       spacing: {
-        'xs': '4px',
-        'sm': '8px',
-        'md': '9px',
-        'lg': '24px',
-        'xl': '32px',
+        xs: '4px',
+        sm: '8px',
+        md: '9px',
+        lg: '24px',
+        xl: '32px',
         '2xl': '48px',
         '3xl': '64px',
       },

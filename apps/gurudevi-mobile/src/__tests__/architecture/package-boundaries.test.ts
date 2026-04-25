@@ -95,10 +95,11 @@ function getImportStatements(source) {
 
 describe('Package architecture boundaries', () => {
   it('admin orchestration files do not import @repo/classroom', () => {
-    const adminFiles = collectFiles(ADMIN_SRC).filter((filePath) =>
-      filePath.includes(`${path.sep}screens${path.sep}`) ||
-      filePath.includes(`${path.sep}components${path.sep}principal${path.sep}`) ||
-      filePath.includes(`${path.sep}principal${path.sep}`),
+    const adminFiles = collectFiles(ADMIN_SRC).filter(
+      (filePath) =>
+        filePath.includes(`${path.sep}screens${path.sep}`) ||
+        filePath.includes(`${path.sep}components${path.sep}principal${path.sep}`) ||
+        filePath.includes(`${path.sep}principal${path.sep}`),
     );
 
     expect(adminFiles.length).toBeGreaterThan(0);
@@ -114,7 +115,9 @@ describe('Package architecture boundaries', () => {
   it('principal web screen does not import governance widgets from @repo/classroom root', () => {
     const source = fs.readFileSync(PRINCIPAL_WEB_SCREEN, 'utf8');
     const imports = getImportStatements(source);
-    const classroomRootImport = imports.find((line) => /from\s+['"]@repo\/classroom['"]/.test(line));
+    const classroomRootImport = imports.find((line) =>
+      /from\s+['"]@repo\/classroom['"]/.test(line),
+    );
 
     if (!classroomRootImport) {
       expect(classroomRootImport).toBeUndefined();
@@ -131,7 +134,8 @@ describe('Package architecture boundaries', () => {
       'LeaveApprovalSection',
       'InstitutionalCalendarSection',
       'ManagementStation',
-      'AddStudentModal'];
+      'AddStudentModal',
+    ];
 
     for (const symbol of forbiddenWidgets) {
       expect(classroomRootImport.includes(symbol)).toBe(false);
@@ -155,7 +159,8 @@ describe('Package architecture boundaries', () => {
       'LeaveApprovalSection',
       'InstitutionalCalendarSection',
       'ManagementStation',
-      'PrincipalObservationsSection'];
+      'PrincipalObservationsSection',
+    ];
 
     for (const symbol of forbiddenExports) {
       expect(source.includes(`as ${symbol}`)).toBe(false);
@@ -181,9 +186,9 @@ describe('Package architecture boundaries', () => {
     const teacherDashboardSource = fs.readFileSync(CLASSROOM_TEACHER_DASHBOARD, 'utf8');
     const principalScreenSource = fs.readFileSync(CLASSROOM_PRINCIPAL_SCREEN, 'utf8');
 
-    expect(teacherDashboardSource.includes('from \'@repo/people\'')).toBe(true);
-    expect(principalScreenSource.includes('from \'@repo/admin\'')).toBe(true);
-    expect(principalScreenSource.includes('from \'@repo/people\'')).toBe(false);
+    expect(teacherDashboardSource.includes("from '@repo/people'")).toBe(true);
+    expect(principalScreenSource.includes("from '@repo/admin'")).toBe(true);
+    expect(principalScreenSource.includes("from '@repo/people'")).toBe(false);
     expect(teacherDashboardSource.includes('./TeacherAdminWidget')).toBe(false);
     expect(teacherDashboardSource.includes('./teacher/TeacherFeedbackModal')).toBe(false);
     expect(teacherDashboardSource.includes('TeacherEchoHistoryModal')).toBe(true);

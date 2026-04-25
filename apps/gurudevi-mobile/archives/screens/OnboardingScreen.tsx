@@ -1,21 +1,36 @@
-import React, { useState, useMemo } from 'react';
-import { Box, Pressable, VStack, HStack, Input, InputField, Button, ButtonText, Text, Heading, useToast, Toast, ToastTitle, Center } from '../';
-import { useNavigation } from '@react-navigation/native';
-import { ChevronLeft, ChevronRight } from 'lucide-react-native';
-import { useTranslation } from 'react-i18next';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Theme } from '../';
-import { Role, supabase, identityAPI, authAPI } from '@repo/core';
-import { hapticLight, hapticSuccess, hapticError } from '../';
-import { ScreenWrapper } from '../';
-import { useThemedColors } from '../';
-import { ProgressIndicator } from '../';
+import { useNavigation } from '@react-navigation/native';
+import { authAPI, identityAPI, type Role, supabase } from '@repo/core';
+import React, { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import {
+  Box,
+  Button,
+  ButtonText,
+  Heading,
+  HStack,
+  hapticError,
+  hapticLight,
+  hapticSuccess,
+  Input,
+  InputField,
+  Pressable,
+  ProgressIndicator,
+  ScreenWrapper,
+  Text,
+  Theme,
+  Toast,
+  ToastTitle,
+  useThemedColors,
+  useToast,
+  VStack,
+} from '../';
 
 const JOURNEY_PILLARS = ['Self', 'Classroom', 'Community', 'Library'];
 
 interface OnboardingScreenProps {
-    onComplete: (name: string, role: Role, wantsAccount?: boolean) => void;
-    isAnonymous?: boolean;
+  onComplete: (name: string, role: Role, wantsAccount?: boolean) => void;
+  isAnonymous?: boolean;
 }
 
 export default function OnboardingScreen({ onComplete, isAnonymous = false }: OnboardingScreenProps) {
@@ -25,7 +40,7 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
     const [currentStep, setCurrentStep] = useState(0); // 0: Name, 1: Role, 2-6: Tour
     const [name, setName] = useState('');
     const [role, setRole] = useState<Role>('teacher');
-    const [isCompleting, setIsCompleting] = useState(false);
+    const [_isCompleting, setIsCompleting] = useState(false);
     const toast = useToast();
 
     const StepShell = ({
@@ -138,7 +153,7 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
             }
         };
         initOnboarding();
-    }, []);
+    }, [onComplete]);
 
     const tourScreens = useMemo(() => [
         {
@@ -279,7 +294,7 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
 
     // --- Renderers ---
 
-    const renderNameStep = () => (
+    const _renderNameStep = () => (
         <StepShell
             step="STEP 1 \u00B7 ARRIVAL"
             title={t('onboarding.nameTitle') || 'Welcome! What should we call you?'}
@@ -312,7 +327,7 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
         { value: 'principal', emoji: '\uD83C\uDFEB', descKey: 'onboarding.roleDesc.principal' },
     ];
 
-    const renderRoleStep = () => (
+    const _renderRoleStep = () => (
         <VStack space="xl" mt="$8" px="$6"            <ProgressIndicator currentStep={1} totalSteps={7} /            <Heading size="2xl" color={colors.action} textAlign="center"                {t('onboarding.roleTitle')}
             </Heading            <Text size="md" color={colors.textSecondary} textAlign="center"                {t('onboarding.roleSubtitle')}
             </Text            <VStack space="md"                {ROLE_OPTIONS.map((r) => {
@@ -327,7 +342,7 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
                                 borderWidth: 2,
                                 borderColor: selected ? colors.action : colors.border,
                                 borderRadius: Theme.corners.comfortable,
-                                backgroundColor: selected ? colors.action + '12' : colors.secondary,
+                                backgroundColor: selected ? `${colors.action}12` : colors.secondary,
                                 padding: 16,
                                 flexDirection: 'row',
                                 alignItems: 'center',
@@ -353,7 +368,7 @@ export default function OnboardingScreen({ onComplete, isAnonymous = false }: On
                 })}
             </VStack            <HStack space="md" mt="$6"                <Button variant="outline" onPress={handleBack} sx={{ flex: 1 }}                    <ButtonText color={colors.text}>{t('onboarding.back')}</ButtonText                </Button                <Button onPress={handleNext} sx={{ backgroundColor: colors.action, flex: 2 }}                    <ButtonText color={Theme.colors.sacredWhite}>{t('onboarding.continue')}</ButtonText                </Button            </HStack        </VStack    );
 
-    const renderTourStep = (index: number) => {
+    const _renderTourStep = (index: number) => {
         const tourIdx = index - 2; // steps 2-6 map to tour screens 0-4
         const screen = tourScreens[tourIdx];
         if (!screen) return null;

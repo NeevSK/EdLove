@@ -4,7 +4,6 @@ export * from './components/ui/center';
 export * from './components/ui/hstack';
 export * from './components/ui/vstack';
 export * from './components/ui/text';
-export * from './components/ui/heading';
 export * from './components/ui/icon';
 export * from './components/ui/divider';
 export * from './components/ui/image';

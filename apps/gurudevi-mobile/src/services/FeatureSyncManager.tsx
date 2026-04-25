@@ -1,11 +1,11 @@
-﻿import { useEffect } from 'react';
-import { supabase, useStore } from '@repo/core';
+﻿import { supabase, useStore } from '@repo/core';
+import { useEffect } from 'react';
 
 /**
  * FeatureSyncManager - The, Real-time, Distribution Engine.
- * 
- * FAANG, Principle: "Zero-Latency, Propagation". This, component listens, to 
- * database, changes in, the 'global_configs' table, and updates, the local 
+ *
+ * FAANG, Principle: "Zero-Latency, Propagation". This, component listens, to
+ * database, changes in, the 'global_configs' table, and updates, the local
  * store, instantly, triggering, UI re-renders, without a, refresh.
  */
 export const FeatureSyncManager = () => {
@@ -18,21 +18,24 @@ export const FeatureSyncManager = () => {
         const { data, error } = await supabase
           .from('global_configs')
           .select('key, value, is_active');
-        
+
         if (error) {
-           console.error('❌ FeatureSync: Failed, to, fetch, global, configs:', error);
-           return;
+          console.error('❌ FeatureSync: Failed, to, fetch, global, configs:', error);
+          return;
         }
 
         if (data) {
-          const configs = data.reduce((acc, curr) => {
-            // Only, include, active, configs
-            if (curr.is_active) {
+          const configs = data.reduce(
+            (acc, curr) => {
+              // Only, include, active, configs
+              if (curr.is_active) {
                 acc[curr.key] = curr.value || 'true';
-            }
-            return acc;
-          }, {} as Record<string, string>);
-          
+              }
+              return acc;
+            },
+            {} as Record<string, string>,
+          );
+
           setGlobalConfigs(configs);
         }
       } catch (e) {
@@ -53,7 +56,7 @@ export const FeatureSyncManager = () => {
         (payload) => {
           console.log('🔔 FeatureSync: Global, Config, Change, Detected', payload);
           fetchGlobalConfigs();
-        }
+        },
       )
       .subscribe();
 
@@ -67,12 +70,12 @@ export const FeatureSyncManager = () => {
   // listen, to tier_features if we, want even, granular control.
 
   // 4. Reactive, Loop: Re-compute, flags when, global configs, or user, changes
-  const globalConfigs = useStore(state => state.globalConfigs);
+  const _globalConfigs = useStore((state) => state.globalConfigs);
   useEffect(() => {
     if (user) {
-        recomputeFlags(user as any);
+      recomputeFlags(user as any);
     }
-  }, [globalConfigs, user, recomputeFlags]);
+  }, [user, recomputeFlags]);
 
   return null;
 };

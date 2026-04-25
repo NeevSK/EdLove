@@ -24,7 +24,7 @@
 import { serve } from 'https://deno.land/std@0.177.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
-//  Types (mirrors packages/scanner-kit/src/ocr/types.ts) 
+//  Types (mirrors packages/scanner-kit/src/ocr/types.ts)
 
 interface OCRBoundingBox {
   x: number;
@@ -46,11 +46,12 @@ interface OCRRawResult {
   confidence?: number;
 }
 
-//  Server 
+//  Server
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type'};
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
 
 serve(async (req: Request) => {
   // CORS preflight
@@ -59,7 +60,7 @@ serve(async (req: Request) => {
   }
 
   try {
-    //  Auth: verify JWT 
+    //  Auth: verify JWT
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
       return json({ error: 'Unauthorized' }, 401);
@@ -70,15 +71,16 @@ serve(async (req: Request) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
     );
 
-    const { data: { user }, error: authError } = await supabase.auth.getUser(
-      authHeader.replace('Bearer ', ''),
-    );
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser(authHeader.replace('Bearer ', ''));
 
     if (authError || !user) {
       return json({ error: 'Unauthorized' }, 401);
     }
 
-    //  Pro gate 
+    //  Pro gate
     const { data: profile } = await supabase
       .from('users')
       .select('is_pro')
@@ -89,7 +91,7 @@ serve(async (req: Request) => {
       return json({ error: 'Pro subscription required for cloud OCR' }, 403);
     }
 
-    //  Request parsing 
+    //  Request parsing
     const body = await req.json();
     const { provider, imageBase64 } = body as {
       provider: 'google_vision' | 'openai_vision';
@@ -112,7 +114,7 @@ serve(async (req: Request) => {
       return json({ error: `Unknown provider: ${provider}` }, 400);
     }
 
-    //  Route to provider 
+    //  Route to provider
     let result: OCRRawResult;
 
     if (provider === 'google_vision') {
@@ -128,24 +130,24 @@ serve(async (req: Request) => {
   }
 });
 
-//  Google Cloud Vision 
+//  Google Cloud Vision
 
 async function callGoogleVision(imageBase64: string): Promise<OCRRawResult> {
   const apiKey = Deno.env.get('GOOGLE_VISION_API_KEY');
   if (!apiKey) throw new Error('GOOGLE_VISION_API_KEY not configured');
 
-  const response = await fetch(
-    `https://vision.googleapis.com/v1/images:annotate?key=${apiKey}`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        requests: [
-          {
-            image: { content: imageBase64 },
-            features: [{ type: 'DOCUMENT_TEXT_DETECTION' }]},
-        ]})},
-  );
+  const response = await fetch(`https://vision.googleapis.com/v1/images:annotate?key=${apiKey}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      requests: [
+        {
+          image: { content: imageBase64 },
+          features: [{ type: 'DOCUMENT_TEXT_DETECTION' }],
+        },
+      ],
+    }),
+  });
 
   const data = await response.json();
   const annotation = data?.responses?.[0]?.fullTextAnnotation;
@@ -158,9 +160,9 @@ async function callGoogleVision(imageBase64: string): Promise<OCRRawResult> {
   for (const page of annotation.pages ?? []) {
     for (const block of page.blocks ?? []) {
       for (const paragraph of block.paragraphs ?? []) {
-        const text = paragraph.words
-          ?.map((w: any) => w.symbols?.map((s: any) => s.text).join(''))
-          .join(' ') ?? '';
+        const text =
+          paragraph.words?.map((w: any) => w.symbols?.map((s: any) => s.text).join('')).join(' ') ??
+          '';
 
         const verts = paragraph.boundingBox?.vertices ?? [];
         const x = verts[0]?.x ?? 0;
@@ -172,7 +174,8 @@ async function callGoogleVision(imageBase64: string): Promise<OCRRawResult> {
           text,
           confidence: paragraph.confidence,
           boundingBox: { x, y, width: Math.abs(width), height: Math.abs(height) },
-          language: paragraph.property?.detectedLanguages?.[0]?.languageCode});
+          language: paragraph.property?.detectedLanguages?.[0]?.languageCode,
+        });
       }
     }
   }
@@ -180,10 +183,11 @@ async function callGoogleVision(imageBase64: string): Promise<OCRRawResult> {
   return {
     text: annotation.text ?? '',
     blocks,
-    confidence: annotation.pages?.[0]?.confidence};
+    confidence: annotation.pages?.[0]?.confidence,
+  };
 }
 
-//  OpenAI GPT-4o Vision 
+//  OpenAI GPT-4o Vision
 
 async function callOpenAIVision(imageBase64: string): Promise<OCRRawResult> {
   const apiKey = Deno.env.get('OPENAI_API_KEY');
@@ -205,8 +209,9 @@ Return ONLY the JSON object, no markdown, no explanation.`;
   const response = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json'},
+      Authorization: `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+    },
     body: JSON.stringify({
       model: 'gpt-4o',
       max_tokens: 4096,
@@ -217,9 +222,13 @@ Return ONLY the JSON object, no markdown, no explanation.`;
             { type: 'text', text: systemPrompt },
             {
               type: 'image_url',
-              image_url: { url: `data:image/jpeg;base64,${imageBase64}` }},
-          ]},
-      ]})});
+              image_url: { url: `data:image/jpeg;base64,${imageBase64}` },
+            },
+          ],
+        },
+      ],
+    }),
+  });
 
   const data = await response.json();
   const content = data?.choices?.[0]?.message?.content ?? '';
@@ -228,19 +237,22 @@ Return ONLY the JSON object, no markdown, no explanation.`;
     const parsed = JSON.parse(content) as OCRRawResult;
     return {
       text: parsed.text ?? '',
-      blocks: parsed.blocks ?? []};
+      blocks: parsed.blocks ?? [],
+    };
   } catch {
     // If model didn't return valid JSON, return raw text as single block
     return {
       text: content,
-      blocks: [{ text: content, confidence: 0.8 }]};
+      blocks: [{ text: content, confidence: 0.8 }],
+    };
   }
 }
 
-//  Helpers 
+//  Helpers
 
 function json(body: unknown, status: number): Response {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' }});
+    headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+  });
 }

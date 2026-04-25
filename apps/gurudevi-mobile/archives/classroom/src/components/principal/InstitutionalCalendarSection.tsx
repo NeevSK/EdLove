@@ -6,11 +6,19 @@
  *  - Inline add-event form
  */
 
-import React, { useEffect, useState } from 'react';
-import { TouchableOpacity, TextInput, ScrollView as RNScrollView } from 'react-native';
-import { Box, HStack, VStack, Text, SkeletonCard, useThemedColors, formatShortDate } from '@repo/ui';
-import { Theme } from '@repo/ui';
-import { staffManagementAPI, CalendarEvent } from '@repo/core';
+import { type CalendarEvent, staffManagementAPI } from '@repo/core';
+import {
+  Box,
+  formatShortDate,
+  HStack,
+  SkeletonCard,
+  Text,
+  Theme,
+  useThemedColors,
+  VStack,
+} from '@repo/ui';
+import { useEffect, useState } from 'react';
+import { ScrollView as RNScrollView, TextInput, TouchableOpacity } from 'react-native';
 
 interface InstitutionalCalendarSectionProps {
   schoolId: string;
@@ -66,7 +74,7 @@ export default function InstitutionalCalendarSection({
   useEffect(() => {
     setLoading(true);
     fetchEvents();
-  }, [schoolId]);
+  }, [fetchEvents]);
 
   async function handleSave() {
     if (!title.trim() || !startDate.trim()) return;
@@ -110,10 +118,14 @@ export default function InstitutionalCalendarSection({
       }}
     >
       {/* Header */}
-      <HStack sx={{ justifyContent: 'space-between', alignItems: 'center', marginBottom: Theme.spacing.sm }}>
-        <Text sx={{ fontSize: 15, fontWeight: '700', color: colors.text }}>
-          📅 School Calendar
-        </Text>
+      <HStack
+        sx={{
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: Theme.spacing.sm,
+        }}
+      >
+        <Text sx={{ fontSize: 15, fontWeight: '700', color: colors.text }}>📅 School Calendar</Text>
         <TouchableOpacity
           onPress={() => {
             setShowForm(!showForm);
@@ -139,34 +151,50 @@ export default function InstitutionalCalendarSection({
 
       {/* Event list */}
       {!loading && events.length === 0 && (
-        <Text sx={{ fontSize: 13, color: colors.textSecondary, textAlign: 'center', paddingVertical: Theme.spacing.md }}>
+        <Text
+          sx={{
+            fontSize: 13,
+            color: colors.textSecondary,
+            textAlign: 'center',
+            paddingVertical: Theme.spacing.md,
+          }}
+        >
           No upcoming events
         </Text>
       )}
 
-      {!loading && events.map((ev) => (
-        <HStack
-          key={ev.id}
-          sx={{ alignItems: 'center', gap: Theme.spacing.sm, paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: colors.border }}
-        >
-          <Box
+      {!loading &&
+        events.map((ev) => (
+          <HStack
+            key={ev.id}
             sx={{
-              backgroundColor: typeBadgeColor(ev.type),
-              borderRadius: 8,
-              paddingHorizontal: 7,
-              paddingVertical: 2,
+              alignItems: 'center',
+              gap: Theme.spacing.sm,
+              paddingVertical: 6,
+              borderBottomWidth: 1,
+              borderBottomColor: colors.border,
             }}
           >
-            <Text sx={{ fontSize: 10, fontWeight: '700', color: '#fff' }}>
-              {TYPE_LABELS[ev.type] ?? ev.type}
+            <Box
+              sx={{
+                backgroundColor: typeBadgeColor(ev.type),
+                borderRadius: 8,
+                paddingHorizontal: 7,
+                paddingVertical: 2,
+              }}
+            >
+              <Text sx={{ fontSize: 10, fontWeight: '700', color: '#fff' }}>
+                {TYPE_LABELS[ev.type] ?? ev.type}
+              </Text>
+            </Box>
+            <Text sx={{ flex: 1, fontSize: 13, color: colors.text }} numberOfLines={1}>
+              {ev.title}
             </Text>
-          </Box>
-          <Text sx={{ flex: 1, fontSize: 13, color: colors.text }} numberOfLines={1}>
-            {ev.title}
-          </Text>
-          <Text sx={{ fontSize: 11, color: colors.textSecondary }}>{formatShortDate(ev.start_date)}</Text>
-        </HStack>
-      ))}
+            <Text sx={{ fontSize: 11, color: colors.textSecondary }}>
+              {formatShortDate(ev.start_date)}
+            </Text>
+          </HStack>
+        ))}
 
       {/* Inline add form */}
       {showForm && (
@@ -180,7 +208,11 @@ export default function InstitutionalCalendarSection({
           />
 
           {/* Type chips */}
-          <RNScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: Theme.spacing.sm }}>
+          <RNScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={{ marginBottom: Theme.spacing.sm }}
+          >
             <HStack sx={{ gap: Theme.spacing.xs }}>
               {TYPE_OPTIONS.map((t) => (
                 <TouchableOpacity key={t} onPress={() => setSelectedType(t)} activeOpacity={0.8}>
@@ -189,10 +221,7 @@ export default function InstitutionalCalendarSection({
                       borderRadius: 14,
                       paddingHorizontal: 10,
                       paddingVertical: 4,
-                      backgroundColor:
-                        selectedType === t
-                          ? (typeBadgeColor(t))
-                          : (colors.border),
+                      backgroundColor: selectedType === t ? typeBadgeColor(t) : colors.border,
                     }}
                   >
                     <Text

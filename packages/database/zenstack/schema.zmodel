@@ -3,13 +3,17 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+plugin orm {
+  provider = "@zenstackhq/orm"
+}
+
 plugin policy {
   provider = "@zenstackhq/plugin-policy"
 }
 
 plugin zod {
   provider = "@zenstackhq/zod"
-  output   = "./generated/zod"
+  output   = "./zod"
 }
 
 /*

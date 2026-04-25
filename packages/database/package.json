@@ -11,12 +11,13 @@
   "scripts": {
     "lint": "powershell -File ../../scripts/audit-wrapper.ps1 -Cmd \"pnpm exec eslint .\" -Log \"reports/lint.txt\"",
     "check-types": "powershell -File ../../scripts/audit-wrapper.ps1 -Cmd \"pnpm exec tsc --noEmit\" -Log \"reports/check-types.txt\"",
-    "generate": "pnpm exec zen generate --schema protocol/schema.zmodel",
-    "db:push": "pnpm exec zen db push --schema protocol/schema.zmodel",
-    "db:studio": "pnpm exec zen studio --schema protocol/schema.zmodel",
-    "db:migrate": "pnpm exec zen migrate dev --schema protocol/schema.zmodel"
+    "generate": "pnpm exec zen generate --schema zenstack/schema.zmodel --output ../core/src/logic/generated",
+    "db:push": "pnpm exec zen db push --schema zenstack/schema.zmodel",
+    "db:studio": "pnpm exec zen studio --schema zenstack/schema.zmodel",
+    "db:migrate": "pnpm exec zen migrate dev --schema zenstack/schema.zmodel"
   },
   "dependencies": {
+    "@repo/core": "workspace:*",
     "@zenstackhq/orm": "3.5.5",
     "kysely": "~0.28.8",
     "pg": "^8.13.3",

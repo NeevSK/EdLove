@@ -4,7 +4,7 @@ const featureFlags = {
   experiment: {
     iosPreventReattachmentOfDismissedScreens: false,
     // add any future flags here as false
-  }
+  },
 };
 
 module.exports = bridge('react-native-screens', {

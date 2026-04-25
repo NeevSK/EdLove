@@ -227,7 +227,7 @@ export default function TeacherClassroomDashboardWeb() {
                                     >
                                         <HStack className="items-center gap-1.5">
                                             <Layers3 size={16} color={colors.text} />
-                                            <ButtonText color={colors.text}>Groups</ButtonText>
+                                            <ButtonText style={{ color: colors.text }}>Groups</ButtonText>
                                         </HStack>
                                     </Button>
                                 </HStack>
@@ -341,7 +341,7 @@ export default function TeacherClassroomDashboardWeb() {
                                             className="rounded-full"
                                             style={{ backgroundColor: Theme.colors.sanctuarySaffron }}
                                         >
-                                            <ButtonText color={Theme.colors.sacredWhite}>New Module</ButtonText>
+                                            <ButtonText style={{ color: Theme.colors.sacredWhite }}>New Module</ButtonText>
                                         </Button>
                                     )}
                                     <StatPill label="Students" value={String(students.length)} colors={colors} />
@@ -392,10 +392,10 @@ export default function TeacherClassroomDashboardWeb() {
                                     </VStack>
                                     <HStack className="gap-sm">
                                         <Button size="sm" variant="outline" action="secondary" onPress={() => setActiveFeature('students')}>
-                                            <ButtonText color={colors.text}>Roster</ButtonText>
+                                            <ButtonText style={{ color: colors.text }}>Roster</ButtonText>
                                         </Button>
                                         <Button size="sm" action="primary" onPress={() => setActiveFeature('attendance')} style={{ backgroundColor: Theme.colors.sanctuarySaffron }}>
-                                            <ButtonText color={Theme.colors.sacredWhite}>Attendance</ButtonText>
+                                            <ButtonText style={{ color: Theme.colors.sacredWhite }}>Attendance</ButtonText>
                                         </Button>
                                     </HStack>
                                 </HStack>
@@ -533,7 +533,7 @@ export default function TeacherClassroomDashboardWeb() {
                     <ModalFooter>
                         <HStack className="gap-sm">
                             <Button variant="outline" action="secondary" onPress={() => setShowAddMonthModal(false)}>
-                                <ButtonText color={colors.textSecondary}>Cancel</ButtonText>
+                                <ButtonText style={{ color: colors.textSecondary }}>Cancel</ButtonText>
                             </Button>
                             <Button
                                 action="primary"
@@ -541,7 +541,7 @@ export default function TeacherClassroomDashboardWeb() {
                                 isDisabled={!newMonthTitle.trim() || isSubmitting}
                                 style={{ backgroundColor: Theme.colors.sanctuarySaffron }}
                             >
-                                <ButtonText color={Theme.colors.sacredWhite}>Save</ButtonText>
+                                <ButtonText style={{ color: Theme.colors.sacredWhite }}>Save</ButtonText>
                             </Button>
                         </HStack>
                     </ModalFooter>
@@ -609,7 +609,7 @@ export default function TeacherClassroomDashboardWeb() {
                     <ModalFooter>
                         <HStack className="gap-sm">
                             <Button variant="outline" action="secondary" onPress={() => { setShowAddContentModal(false); resetForm(); }}>
-                                <ButtonText color={colors.textSecondary}>Cancel</ButtonText>
+                                <ButtonText style={{ color: colors.textSecondary }}>Cancel</ButtonText>
                             </Button>
                             <Button
                                 action="primary"
@@ -617,7 +617,7 @@ export default function TeacherClassroomDashboardWeb() {
                                 isDisabled={!formTitle.trim() || isSubmitting}
                                 style={{ backgroundColor: Theme.colors.sanctuarySaffron }}
                             >
-                                <ButtonText color={Theme.colors.sacredWhite}>Save</ButtonText>
+                                <ButtonText style={{ color: Theme.colors.sacredWhite }}>Save</ButtonText>
                             </Button>
                         </HStack>
                     </ModalFooter>

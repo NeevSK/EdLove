@@ -45,6 +45,7 @@ export const colors = {
 
   // Backgrounds - The Dark World (Bioluminescence)
   ink: '#2A2318', // Midnight Ink (Deep Base)
+  sanctuaryInk: '#2A2318', // Alias for older call sites (same as `ink`)
   obsidian: '#1A1610', // The Void (Deeper Shadow)
   shroud: '#3D3528', // Elevated Surfaces (Darker Navy equivalent)
 

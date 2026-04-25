@@ -55,7 +55,7 @@ import { useTranslation } from 'react-i18next';
 import { libraryAPI } from '@repo/library';
 import { useRoute, RouteProp } from '@react-navigation/native';
 import { useResources } from '../hooks';
-import { useToast, SanctuaryToast } from '@repo/ui';
+import { useToast } from '@repo/ui';
 
 export default function ContentLibrary() {
     const route = useRoute<RouteProp<ClassroomStackParamList, 'ContentLibrary'>>();
@@ -65,21 +65,7 @@ export default function ContentLibrary() {
     const user = useStore(state => state.user);
     const addToDesk = useStore(state => state.addToDesk); 
     const deskItems = useStore(state => state.deskItems || []);
-    const toast = useToast();
-
-    const showToast = (message: string, type: 'success' | 'error' | 'info' = 'info') => {
-        toast.show({
-            placement: 'top',
-            render: ({ id }: { id: string }) => (
-                <SanctuaryToast
-                    message={message}
-                    type={type}
-                    visible={true}
-                    onHide={() => toast.close(id)}
-                />
-            )
-        });
-    };
+    const { showToast } = useToast();
 
     // Resilient Data Hook
     const { resources, isLoading, setResources } = useResources(classroomId);
@@ -156,7 +142,7 @@ export default function ContentLibrary() {
             },
             onSuccess: () => {
                 hapticSuccess();
-                showToast('Resource deleted', 'success');
+                showToast({ message: 'Resource deleted', type: 'success' });
             }
         }
     );
@@ -169,7 +155,7 @@ export default function ContentLibrary() {
                 if (newResource) {
                     setResources((prev: ClassroomResource[]) => [newResource, ...prev]);
                 }
-                showToast('Resource added', 'success');
+                showToast({ message: 'Resource added', type: 'success' });
                 setShowAddModal(false);
                 // Reset form
                 setNewResourceTitle('');
@@ -184,7 +170,7 @@ export default function ContentLibrary() {
     const publishMutation = useSafeMutation(
         (resource: ClassroomResource) => {
             if (!user?.id) {
-                showToast('Please sign in to publish resources', 'error');
+                showToast({ message: 'Please sign in to publish resources', type: 'error' });
                 return Promise.reject(new Error('Not authenticated'));
             }
             const typeMapping: Record<string, any> = {
@@ -219,7 +205,7 @@ export default function ContentLibrary() {
         {
             onSuccess: () => {
                 hapticSuccess();
-                showToast('Published to Global Library', 'success');
+                showToast({ message: 'Published to Global Library', type: 'success' });
             }
         }
     );
@@ -238,7 +224,7 @@ export default function ContentLibrary() {
     const addResource = () => {
         if (!newResourceTitle.trim()) return;
         if (!user?.id) {
-            showToast('Please sign in to add resources', 'error');
+            showToast({ message: 'Please sign in to add resources', type: 'error' });
             return;
         }
 
@@ -332,7 +318,7 @@ export default function ContentLibrary() {
                                     thumbnailUrl: undefined,
                                     addedAt: new Date().toISOString()
                                 });
-                                showToast('Saved to Personal Desk', 'success');
+                                showToast({ message: 'Saved to Personal Desk', type: 'success' });
                                 hapticSuccess();
                             }
                         }}>
@@ -416,7 +402,7 @@ export default function ContentLibrary() {
                                     onPress={() => {
                                         const doImport = () => {
                                             if (!user?.id) {
-                                                showToast('Please sign in to import resources', 'error');
+                                                showToast({ message: 'Please sign in to import resources', type: 'error' });
                                                 return;
                                             }
                                             addMutation.mutate({

@@ -1,16 +1,16 @@
-﻿/**
+/**
  * InviteCodeEntry.tsx
  *
  * Thin wrapper for the Invite Code entry UI.
  */
 
-import React from 'react';
-import { ErrorBoundary } from '@repo/ui';
 import { InviteCodeEntry as PackageInviteCodeEntry } from '@repo/community';
+import { ErrorBoundary } from '@repo/ui';
 
-const InviteCodeWrapper = (props: any) => (
+const InviteCodeWrapper = (props: Record<string, unknown>) => (
   <ErrorBoundary name="Enter Invitation Code">
-    <PackageInviteCodeEntry {...props} />
+    {/* biome-ignore lint/suspicious/noExplicitAny: props are passed through to package component */}
+    <PackageInviteCodeEntry {...(props as any)} />
   </ErrorBoundary>
 );
 

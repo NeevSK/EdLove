@@ -4,10 +4,7 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "noEmit": true,
-    "lib": [
-      "es2020",
-      "dom"
-    ],
+    "lib": ["es2020", "dom"],
     "target": "es2020",
     "jsx": "react-jsx",
     "module": "esnext",
@@ -19,118 +16,41 @@
     "noImplicitThis": false,
     "strictNullChecks": false,
     "paths": {
-      "@/*": [
-        "./src/*"
-      ],
-      "@repo/admin": [
-        "../../packages/admin/src"
-      ],
-      "@repo/admin/*": [
-        "../../packages/admin/src/*"
-      ],
-      "@repo/ai": [
-        "../../packages/ai/src"
-      ],
-      "@repo/ai/*": [
-        "../../packages/ai/src/*"
-      ],
-      "@repo/analytics": [
-        "../../packages/analytics/src"
-      ],
-      "@repo/analytics/*": [
-        "../../packages/analytics/src/*"
-      ],
-      "@repo/classroom": [
-        "../../packages/classroom/src"
-      ],
-      "@repo/classroom/*": [
-        "../../packages/classroom/src/*"
-      ],
-      "@repo/community": [
-        "../../packages/community/src"
-      ],
-      "@repo/community/*": [
-        "../../packages/community/src/*"
-      ],
-      "@repo/core": [
-        "../../packages/core/src"
-      ],
-      "@repo/core/*": [
-        "../../packages/core/src/*"
-      ],
-      "@repo/database": [
-        "../../packages/database/src"
-      ],
-      "@repo/database/*": [
-        "../../packages/database/src/*"
-      ],
-      "@repo/form-builder": [
-        "../../packages/form-builder/src"
-      ],
-      "@repo/form-builder/*": [
-        "../../packages/form-builder/src/*"
-      ],
-      "@repo/graphics": [
-        "../../packages/graphics/src"
-      ],
-      "@repo/graphics/*": [
-        "../../packages/graphics/src/*"
-      ],
-      "@repo/library": [
-        "../../packages/library/src"
-      ],
-      "@repo/library/*": [
-        "../../packages/library/src/*"
-      ],
-      "@repo/people": [
-        "../../packages/people/src"
-      ],
-      "@repo/people/*": [
-        "../../packages/people/src/*"
-      ],
-      "@repo/profile": [
-        "../../packages/profile/src"
-      ],
-      "@repo/profile/*": [
-        "../../packages/profile/src/*"
-      ],
-      "@repo/scanner-kit": [
-        "../../packages/scanner-kit/src"
-      ],
-      "@repo/scanner-kit/*": [
-        "../../packages/scanner-kit/src/*"
-      ],
-      "@repo/self": [
-        "../../packages/self/src"
-      ],
-      "@repo/self/*": [
-        "../../packages/self/src/*"
-      ],
-      "@repo/ui": [
-        "../../packages/ui/src"
-      ],
-      "@repo/ui/*": [
-        "../../packages/ui/src/*"
-      ]
+      "@/*": ["./src/*"],
+      "@repo/admin": ["../../packages/admin/src"],
+      "@repo/admin/*": ["../../packages/admin/src/*"],
+      "@repo/ai": ["../../packages/ai/src"],
+      "@repo/ai/*": ["../../packages/ai/src/*"],
+      "@repo/analytics": ["../../packages/analytics/src"],
+      "@repo/analytics/*": ["../../packages/analytics/src/*"],
+      "@repo/classroom": ["../../packages/classroom/src"],
+      "@repo/classroom/*": ["../../packages/classroom/src/*"],
+      "@repo/community": ["../../packages/community/src"],
+      "@repo/community/*": ["../../packages/community/src/*"],
+      "@repo/core": ["../../packages/core/src"],
+      "@repo/core/*": ["../../packages/core/src/*"],
+      "@repo/database": ["../../packages/database/src"],
+      "@repo/database/*": ["../../packages/database/src/*"],
+      "@repo/form-builder": ["../../packages/form-builder/src"],
+      "@repo/form-builder/*": ["../../packages/form-builder/src/*"],
+      "@repo/graphics": ["../../packages/graphics/src"],
+      "@repo/graphics/*": ["../../packages/graphics/src/*"],
+      "@repo/library": ["../../packages/library/src"],
+      "@repo/library/*": ["../../packages/library/src/*"],
+      "@repo/people": ["../../packages/people/src"],
+      "@repo/people/*": ["../../packages/people/src/*"],
+      "@repo/profile": ["../../packages/profile/src"],
+      "@repo/profile/*": ["../../packages/profile/src/*"],
+      "@repo/scanner-kit": ["../../packages/scanner-kit/src"],
+      "@repo/scanner-kit/*": ["../../packages/scanner-kit/src/*"],
+      "@repo/self": ["../../packages/self/src"],
+      "@repo/self/*": ["../../packages/self/src/*"],
+      "@repo/ui": ["../../packages/ui/src"],
+      "@repo/ui/*": ["../../packages/ui/src/*"]
     },
-    "types": [
-      "react",
-      "react-native",
-      "jest",
-      "@tanstack/react-query",
-      "@repo/types-shim"
-    ]
+    "types": ["react", "react-native", "jest", "@tanstack/react-query", "@repo/types-shim"]
   },
-  "include": [
-    "src/**/*",
-    "App.tsx",
-    "gluestack-ui.config.ts",
-    "nativewind-env.d.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    ".expo",
-    "dist"
-  ],
+  "include": ["src/**/*", "App.tsx", "gluestack-ui.config.ts", "nativewind-env.d.ts"],
+  "exclude": ["node_modules", ".expo", "dist"],
   "extends": "expo/tsconfig.base"
 }

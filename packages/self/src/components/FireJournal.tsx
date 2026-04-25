@@ -55,8 +55,8 @@ export default function FireJournal({ userId, onBurned, disabled: componentDisab
     const { t } = useTranslation();
 
     // Refs for timeout cleanup
-    const burnTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-    const successTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const burnTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const successTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     // Animation values
     const opacity = useSharedValue(1);

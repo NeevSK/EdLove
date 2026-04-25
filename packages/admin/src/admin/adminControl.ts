@@ -1,4 +1,4 @@
-import { useFeatureStore, useMutationAuditLog } from '@repo/core';
+import { type MutationOutcome, useFeatureStore, useMutationAuditLog } from '@repo/core';
 
 export interface AdminFeatureGateChange {
   key: string;
@@ -27,7 +27,7 @@ export interface AdminAuditEntry {
   id: string;
   name: string;
   scope: string;
-  status: 'queued' | 'success' | 'failed' | 'retrying';
+  status: MutationOutcome;
   summary: string;
   createdAt: string;
   updatedAt: string;
@@ -38,7 +38,13 @@ function makeId(prefix: string) {
   return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
-function logAdminMutation(name: string, scope: string, status: 'queued' | 'success' | 'failed' | 'retrying', summary: string, lastError?: string) {
+function logAdminMutation(
+  name: string,
+  scope: string,
+  status: MutationOutcome,
+  summary: string,
+  lastError?: string,
+) {
   const id = makeId('admin-mutation');
   useMutationAuditLog.getState().logEntry({
     id,

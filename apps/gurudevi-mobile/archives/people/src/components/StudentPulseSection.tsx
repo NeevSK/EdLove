@@ -1,8 +1,8 @@
-﻿import React, { useEffect, useState } from 'react';
-import { TouchableOpacity } from 'react-native';
-import { Box, HStack, VStack, Text, SkeletonCard, useThemedColors, Theme } from '@repo/ui';
+﻿import { Box, HStack, SkeletonCard, Text, Theme, useThemedColors, VStack } from '@repo/ui';
 import { ChevronRight, TrendingUp } from 'lucide-react-native';
-import { staffOperationsAPI, type StudentPrincipalPulse } from '../staff';
+import { useEffect, useState } from 'react';
+import { TouchableOpacity } from 'react-native';
+import { type StudentPrincipalPulse, staffOperationsAPI } from '../staff';
 
 interface StudentPulseSectionProps {
   schoolId: string;
@@ -59,7 +59,12 @@ export default function StudentPulseSection({
   }
 
   const delta = pulse ? pulse.todayRate - pulse.yesterdayRate : 0;
-  const deltaLabel = delta > 0 ? `+${delta}% vs yesterday` : delta < 0 ? `${delta}% vs yesterday` : 'same as yesterday';
+  const deltaLabel =
+    delta > 0
+      ? `+${delta}% vs yesterday`
+      : delta < 0
+        ? `${delta}% vs yesterday`
+        : 'same as yesterday';
   const deltaColor = delta >= 0 ? colors?.success || '#4caf50' : colors?.error || '#f44336';
 
   return (
@@ -83,14 +88,12 @@ export default function StudentPulseSection({
             sx={{
               fontSize: 28,
               fontWeight: '700',
-              color: pulse ? attendanceColor(pulse.todayRate) : (colors?.text || '#fff'),
+              color: pulse ? attendanceColor(pulse.todayRate) : colors?.text || '#fff',
             }}
           >
             {pulse ? `${pulse.todayRate}%` : '-'}
           </Text>
-          <Text sx={{ fontSize: 11, color: deltaColor }}>
-            {pulse ? deltaLabel : ''}
-          </Text>
+          <Text sx={{ fontSize: 11, color: deltaColor }}>{pulse ? deltaLabel : ''}</Text>
         </Box>
 
         <Box
@@ -107,19 +110,19 @@ export default function StudentPulseSection({
             Submissions This Week
           </Text>
           <Text sx={{ fontSize: 28, fontWeight: '700', color: colors?.text || '#fff' }}>
-            {pulse?.submissionRate !== null && pulse?.submissionRate !== undefined ? `${pulse.submissionRate}%` : '-'}
+            {pulse?.submissionRate !== null && pulse?.submissionRate !== undefined
+              ? `${pulse.submissionRate}%`
+              : '-'}
           </Text>
-          <Text sx={{ fontSize: 11, color: colors?.textSecondary || '#aaa' }}>
-            of assignments
-          </Text>
+          <Text sx={{ fontSize: 11, color: colors?.textSecondary || '#aaa' }}>of assignments</Text>
         </Box>
       </HStack>
 
       {/* At-Risk and Pending Enrollments Row */}
       <HStack sx={{ gap: Theme.spacing.sm }}>
-        <TouchableOpacity 
-          onPress={onViewAtRisk} 
-          activeOpacity={0.8} 
+        <TouchableOpacity
+          onPress={onViewAtRisk}
+          activeOpacity={0.8}
           style={{ flex: 1 }}
           disabled={!onViewAtRisk}
         >
@@ -130,7 +133,10 @@ export default function StudentPulseSection({
               borderRadius: Theme.corners.comfortable,
               padding: Theme.spacing.md,
               borderWidth: 1,
-              borderColor: (pulse?.atRiskCount ?? 0) > 0 ? (colors?.error || '#f44336') : (colors?.border || 'rgba(255,255,255,0.1)'),
+              borderColor:
+                (pulse?.atRiskCount ?? 0) > 0
+                  ? colors?.error || '#f44336'
+                  : colors?.border || 'rgba(255,255,255,0.1)',
             }}
           >
             <HStack sx={{ alignItems: 'center', gap: Theme.spacing.xs }}>
@@ -160,9 +166,9 @@ export default function StudentPulseSection({
         </TouchableOpacity>
 
         {!classroomId && (
-          <TouchableOpacity 
-            onPress={onViewEnrollments} 
-            activeOpacity={0.8} 
+          <TouchableOpacity
+            onPress={onViewEnrollments}
+            activeOpacity={0.8}
             style={{ flex: 1 }}
             disabled={!onViewEnrollments}
           >
@@ -173,7 +179,10 @@ export default function StudentPulseSection({
                 borderRadius: Theme.corners.comfortable,
                 padding: Theme.spacing.md,
                 borderWidth: 1,
-                borderColor: (pulse?.pendingEnrollments ?? 0) > 0 ? (colors?.warning || '#ff9800') : (colors?.border || 'rgba(255,255,255,0.1)'),
+                borderColor:
+                  (pulse?.pendingEnrollments ?? 0) > 0
+                    ? colors?.warning || '#ff9800'
+                    : colors?.border || 'rgba(255,255,255,0.1)',
               }}
             >
               <HStack sx={{ alignItems: 'center', gap: Theme.spacing.xs }}>
@@ -206,10 +215,7 @@ export default function StudentPulseSection({
 
       {/* Footer Full Analytics */}
       {onViewFullReport && (
-        <TouchableOpacity 
-          onPress={onViewFullReport} 
-          activeOpacity={0.7}
-        >
+        <TouchableOpacity onPress={onViewFullReport} activeOpacity={0.7}>
           <HStack
             sx={{
               marginTop: Theme.spacing.sm,
