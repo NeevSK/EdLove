@@ -15,4 +15,3 @@ export const defineAssistantPrincipalAbilities = (
   can('manage', 'AssistantPrincipalDashboard');
   // Add any specific assistant principal overrides here if needed
 };
-

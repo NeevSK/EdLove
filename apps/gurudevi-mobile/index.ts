@@ -2,7 +2,7 @@ import './src/shims/node-globals-shim';
 import 'react-native-reanimated';
 import 'react-native-worklets';
 import 'react-native-get-random-values';
-import "../../packages/ui/src/global.css";
+import '../../packages/ui/src/global.css';
 import { registerRootComponent } from 'expo';
 
 import App from './App';

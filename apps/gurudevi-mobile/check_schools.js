@@ -1,21 +1,37 @@
+// Try to load .env file if dotenv is available
+try {
+  require('dotenv').config();
+} catch {
+  // dotenv not available; rely on environment variables being set externally
+}
+
 const { createClient } = require('@supabase/supabase-js');
 
-const supabaseUrl = 'https://qzoawolfkuwiuyaoiybz.supabase.co';
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF6b2F3b2xma3V3aXV5YW9peWJ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAxMTU3ODAsImV4cCI6MjA4NTY5MTc4MH0.4j4R6ELxvvSQD73EDHE1o8UraehRX8dVIOC2pear9to';
+const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
+// Supabase anon keys are sunset in 2026 — use the new publishable API key instead
+const supabasePublishableKey =
+  process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY || process.env.SUPABASE_PUBLISHABLE_KEY;
 
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
+if (!supabaseUrl || !supabasePublishableKey) {
+  console.error(
+    'Missing required environment variables.\n' +
+      'Set EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY in your .env file.\n' +
+      'See .env.example for reference.',
+  );
+  process.exit(1);
+}
+
+const supabase = createClient(supabaseUrl, supabasePublishableKey);
 
 async function checkSchools() {
-    console.log('Querying schools...');
-    const { data, error } = await supabase
-        .from('schools')
-        .select('id, name, type');
+  console.log('Querying schools...');
+  const { data, error } = await supabase.from('schools').select('id, name, type');
 
-    if (error) {
-        console.error('Error fetching schools:', error);
-    } else {
-        console.log('Found schools:', data);
-    }
+  if (error) {
+    console.error('Error fetching schools:', error);
+  } else {
+    console.log('Found schools:', data);
+  }
 }
 
 checkSchools();

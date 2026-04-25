@@ -1,0 +1,98 @@
+{
+  "tool": "purge_stale_artifacts",
+  "timestamp": "2026-04-24T16:02:32.634Z",
+  "durationMs": 10,
+  "status": "success",
+  "output": "Success",
+  "metadata": {
+    "deleted": [
+      {
+        "file": "reports\\audit-admin.log",
+        "size": 945677
+      },
+      {
+        "file": "reports\\audit-classroom.log",
+        "size": 86
+      },
+      {
+        "file": "reports\\audit-community.log",
+        "size": 2286
+      },
+      {
+        "file": "reports\\audit-core.log",
+        "size": 0
+      },
+      {
+        "file": "reports\\audit-gurudevi-mobile.log",
+        "size": 977336
+      },
+      {
+        "file": "reports\\audit-library.log",
+        "size": 43188
+      },
+      {
+        "file": "reports\\audit-profile.log",
+        "size": 38339
+      },
+      {
+        "file": "reports\\audit-self.log",
+        "size": 927837
+      },
+      {
+        "file": "reports\\audit-ui.log",
+        "size": 1350
+      },
+      {
+        "file": "reports\\eslint_error.log",
+        "size": 5004
+      },
+      {
+        "file": "scripts\\reports\\audit_feature_fidelity_2026-04-24T15-37-54-858Z.json",
+        "size": 353416
+      },
+      {
+        "file": "scripts\\reports\\audit_feature_fidelity_2026-04-24T15-43-29-863Z.json",
+        "size": 677
+      },
+      {
+        "file": "scripts\\reports\\audit_feature_fidelity_2026-04-24T15-43-52-245Z.json",
+        "size": 372
+      },
+      {
+        "file": "scripts\\reports\\audit_feature_fidelity_2026-04-24T15-45-06-216Z.json",
+        "size": 1186
+      },
+      {
+        "file": "scripts\\reports\\audit_feature_fidelity_2026-04-24T15-49-30-781Z.json",
+        "size": 2775
+      },
+      {
+        "file": "scripts\\reports\\audit_feature_fidelity_2026-04-24T15-51-06-496Z.json",
+        "size": 680
+      },
+      {
+        "file": "scripts\\reports\\audit_feature_fidelity_2026-04-24T15-52-27-873Z.json",
+        "size": 2833
+      },
+      {
+        "file": "scripts\\reports\\audit_feature_fidelity_2026-04-24T15-52-33-412Z.json",
+        "size": 281840
+      },
+      {
+        "file": "scripts\\reports\\purge_stale_artifacts_2026-04-24T15-56-06-131Z.json",
+        "size": 5990
+      },
+      {
+        "file": "scripts\\reports\\purge_stale_artifacts_2026-04-24T15-57-55-247Z.json",
+        "size": 5989
+      },
+      {
+        "file": "scripts\\reports\\purge_stale_artifacts_2026-04-24T15-57-59-356Z.json",
+        "size": 4599
+      }
+    ],
+    "savedSize": 3601460,
+    "errors": [],
+    "dryRun": false
+  }
+}

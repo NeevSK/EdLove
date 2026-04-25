@@ -54,6 +54,7 @@ function CommentRow({
     onUpvote: (id: string) => void;
     onMarkOfficial: (id: string, flag: boolean) => void;
 }) {
+    const { can, flags } = usePermissions();
     const isOwn = comment.author_id === currentUserId;
     const initials = getInitialsFromName(comment.author_name);
 

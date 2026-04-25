@@ -15,6 +15,7 @@ import {
     VStack,
     hapticLight,
     SanctuaryModal,
+    Theme,
 } from '@repo/ui';
 import { api, Student } from '@repo/core';
 import { MessageCircle, Plus, Sparkles, Trash2, TriangleAlert } from 'lucide-react-native';

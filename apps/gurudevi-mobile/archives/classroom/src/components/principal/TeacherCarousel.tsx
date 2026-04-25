@@ -8,11 +8,19 @@
  *  - Class count
  */
 
-import React, { useEffect, useState } from 'react';
+import { staffManagementAPI, type TeacherCarouselItem } from '@repo/core';
+import {
+  Box,
+  getInitialsFromName,
+  HStack,
+  ScrollView,
+  SkeletonCard,
+  Text,
+  Theme,
+  useThemedColors,
+} from '@repo/ui';
+import { useEffect, useState } from 'react';
 import { TouchableOpacity } from 'react-native';
-import { Box, HStack, VStack, Text, ScrollView, SkeletonCard, useThemedColors, getInitialsFromName } from '@repo/ui';
-import { Theme } from '@repo/ui';
-import { staffManagementAPI, TeacherCarouselItem } from '@repo/core';
 
 interface TeacherCarouselProps {
   schoolId: string;
@@ -36,9 +44,7 @@ const STATUS_LABELS: Record<string, string> = {
 };
 
 function formatRole(role: string): string {
-  return role
-    .replace(/_/g, ' ')
-    .replace(/\b\w/g, (c) => c.toUpperCase());
+  return role.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
 /** 20% opacity suffix for avatar background */
@@ -53,8 +59,12 @@ function TeacherCard({
   onTap?: () => void;
   colors: ReturnType<typeof useThemedColors>;
 }) {
-  const statusColor = item.todayStatus ? (STATUS_COLORS[item.todayStatus] ?? colors.textSecondary) : colors.textSecondary;
-  const statusLabel = item.todayStatus ? (STATUS_LABELS[item.todayStatus] ?? item.todayStatus) : 'No data';
+  const statusColor = item.todayStatus
+    ? (STATUS_COLORS[item.todayStatus] ?? colors.textSecondary)
+    : colors.textSecondary;
+  const statusLabel = item.todayStatus
+    ? (STATUS_LABELS[item.todayStatus] ?? item.todayStatus)
+    : 'No data';
 
   return (
     <TouchableOpacity onPress={onTap} activeOpacity={0.8}>
@@ -84,7 +94,9 @@ function TeacherCard({
             marginBottom: 4,
           }}
         >
-          <Text sx={{ fontSize: 20, fontWeight: '700', color: Theme.colors.amberGlow ?? colors.text }}>
+          <Text
+            sx={{ fontSize: 20, fontWeight: '700', color: Theme.colors.amberGlow ?? colors.text }}
+          >
             {getInitialsFromName(item.fullName)}
           </Text>
         </Box>
@@ -92,7 +104,13 @@ function TeacherCard({
         {/* Name */}
         <Text
           numberOfLines={1}
-          sx={{ fontSize: 13, fontWeight: '700', color: colors.text, textAlign: 'center', maxWidth: 136 }}
+          sx={{
+            fontSize: 13,
+            fontWeight: '700',
+            color: colors.text,
+            textAlign: 'center',
+            maxWidth: 136,
+          }}
         >
           {item.fullName}
         </Text>
@@ -106,9 +124,7 @@ function TeacherCard({
             paddingVertical: 2,
           }}
         >
-          <Text sx={{ fontSize: 10, color: colors.textSecondary }}>
-            {formatRole(item.role)}
-          </Text>
+          <Text sx={{ fontSize: 10, color: colors.textSecondary }}>{formatRole(item.role)}</Text>
         </Box>
 
         {/* Status */}
@@ -126,7 +142,9 @@ function TeacherCard({
 
         {/* Classroom count */}
         <Text sx={{ fontSize: 11, color: colors.textSecondary }}>
-          {item.classroomCount === 1 ? '1 assigned class' : `${item.classroomCount} assigned classes`}
+          {item.classroomCount === 1
+            ? '1 assigned class'
+            : `${item.classroomCount} assigned classes`}
         </Text>
       </Box>
     </TouchableOpacity>
@@ -148,7 +166,9 @@ export default function TeacherCarousel({ schoolId, onTapTeacher }: TeacherCarou
       setLoading(false);
     }
     load();
-    return () => { mounted = false; };
+    return () => {
+      mounted = false;
+    };
   }, [schoolId]);
 
   if (loading) {

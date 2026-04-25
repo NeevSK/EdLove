@@ -1,15 +1,14 @@
-﻿import React from 'react';
-import {
-  VStack,
-  HStack,
+﻿import {
   Box,
-  Text,
+  HStack,
+  hapticLight,
   Pressable,
+  Text,
   Theme,
   useThemedColors,
-  hapticLight,
+  VStack,
 } from '@repo/ui';
-import { Banknote, CalendarDays, UserCheck, TrendingUp } from 'lucide-react-native';
+import { Banknote, CalendarDays, TrendingUp, UserCheck } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
 interface PrincipalAdminWidgetProps {
@@ -42,7 +41,7 @@ export default function PrincipalAdminWidget({ onAction }: PrincipalAdminWidgetP
             sx={{
               padding: Theme.spacing.sm,
               borderRadius: Theme.corners.medium,
-              backgroundColor: (color || Theme.colors.sanctuarySaffron) + '22',
+              backgroundColor: `${color || Theme.colors.sanctuarySaffron}22`,
             }}
           >
             <LucideIcon size={24} color={color || Theme.colors.sanctuarySaffron} />
@@ -53,9 +52,7 @@ export default function PrincipalAdminWidget({ onAction }: PrincipalAdminWidgetP
           <Text sx={{ color: colors?.text || '#fff', fontSize: 14, fontWeight: '700' }}>
             {label}
           </Text>
-          <Text sx={{ color: colors?.textSecondary || '#aaa', fontSize: 11 }}>
-            {description}
-          </Text>
+          <Text sx={{ color: colors?.textSecondary || '#aaa', fontSize: 11 }}>{description}</Text>
         </VStack>
       </VStack>
     </Pressable>
@@ -64,17 +61,17 @@ export default function PrincipalAdminWidget({ onAction }: PrincipalAdminWidgetP
   return (
     <VStack sx={{ gap: Theme.spacing.md }}>
       <Text
-        sx={{ 
-          color: colors?.textSecondary || '#aaa', 
-          fontSize: 13, 
-          fontWeight: '700', 
-          textTransform: 'uppercase', 
-          letterSpacing: 1 
+        sx={{
+          color: colors?.textSecondary || '#aaa',
+          fontSize: 13,
+          fontWeight: '700',
+          textTransform: 'uppercase',
+          letterSpacing: 1,
         }}
       >
-        {t('principal.admin.title') || 'Governance Dashboard'} 
+        {t('principal.admin.title') || 'Governance Dashboard'}
       </Text>
-      
+
       <VStack sx={{ gap: Theme.spacing.md }}>
         <HStack sx={{ gap: Theme.spacing.md }}>
           <ActionCard
@@ -107,7 +104,7 @@ export default function PrincipalAdminWidget({ onAction }: PrincipalAdminWidgetP
                 sx={{
                   padding: Theme.spacing.sm,
                   borderRadius: Theme.corners.medium,
-                  backgroundColor: (colors?.action || '#2196f3') + '22',
+                  backgroundColor: `${colors?.action || '#2196f3'}22`,
                 }}
               >
                 <UserCheck size={24} color={colors?.action || '#2196f3'} />
@@ -121,7 +118,7 @@ export default function PrincipalAdminWidget({ onAction }: PrincipalAdminWidgetP
                 </Text>
               </VStack>
             </HStack>
-            
+
             <Pressable
               onPress={() => {
                 hapticLight();

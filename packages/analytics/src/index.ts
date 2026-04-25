@@ -10,6 +10,7 @@ export type { DatabaseClient as PredictorDatabaseClient } from './ml/Predictor';
 // Factory functions to create instances with database client
 import { PerformanceAnalyzer, DatabaseClient } from './engine/PerformanceAnalyzer';
 import { Predictor as ML_Predictor } from './ml/Predictor';
+import { posthogAnalytics } from './engine/PostHogAnalytics';
 
 export const createPerformanceAnalyzer = (db: DatabaseClient) => new PerformanceAnalyzer(db);
 export const createPredictor = (db: DatabaseClient) => new ML_Predictor(db);
@@ -35,7 +36,7 @@ export * from './utils/analyticsHelpers';
 export * from './utils/benchmarking';
 
 // PostHog Universal Helpers
-export { posthogAnalytics } from './engine/PostHogAnalytics';
+export { posthogAnalytics };
 
 export const initPostHog = async (apiKey: string, hostOrOptions?: string | { host?: string }) => {
   const host = typeof hostOrOptions === 'string' ? hostOrOptions : hostOrOptions?.host;

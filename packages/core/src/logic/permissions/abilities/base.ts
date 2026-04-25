@@ -42,6 +42,7 @@ export type Subjects =
   | 'CommunityGroup'
   | 'DirectMessages'
   | 'DirectMessage'
+  | 'DirectConversation'
   | 'Thuthimal'
   | 'Ecosystem'
   | 'LibraryCuratorDashboard'
@@ -65,6 +66,8 @@ export type Subjects =
   | 'Material'
   | 'Group'
   | 'Post'
+  | 'Comment'
+  | 'GroupMessage'
   | 'User'
   | 'StudentPulse'
   | 'TeacherPulse'
@@ -115,5 +118,3 @@ export type AppAbilities = [Actions, SubjectType];
 export type AppAbility = MongoAbility<AppAbilities>;
 
 export const AppAbility = createMongoAbility as unknown as AbilityClass<AppAbility>;
-
-

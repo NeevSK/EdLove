@@ -1,11 +1,10 @@
-﻿/**
+/**
  * NoSchoolView.web.tsx
  */
-import React from 'react';
-import { ErrorBoundary } from '@repo/ui';
 import { NoSchoolView as PackageNoSchoolView } from '@repo/classroom';
+import { ErrorBoundary } from '@repo/ui';
 
-const NoSchoolView = (props: any) => (
+const NoSchoolView = (props: Record<string, unknown>) => (
   <ErrorBoundary name="Onboarding Wizard">
     <PackageNoSchoolView {...props} />
   </ErrorBoundary>

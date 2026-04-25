@@ -70,5 +70,3 @@ export function useNavigationAuthGuard(
     }
   }, [session, onboardingCompleted, isProfileLoading, navigationRef]);
 }
-
-

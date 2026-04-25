@@ -8,33 +8,33 @@
  * Philosophy: Non-transactional, dignified, honors teaching as sacred work.
  */
 
-import React, { useEffect, useState } from 'react';
-import { StyleSheet } from 'react-native';
+import { type RouteProp, useNavigation, useRoute } from '@react-navigation/native';
+import { identityAPI, thuthimalAPI } from '@repo/core';
 import {
   Box,
-  VStack,
-  HStack,
-  Text,
   Heading,
-  Spinner,
+  HStack,
+  hapticError,
+  hapticSuccess,
   ScreenWrapper,
+  Spinner,
+  Text,
   Theme,
+  useThemedColors,
+  VStack,
 } from '@repo/ui';
-import { useThemedColors } from '@repo/ui';
-import { hapticSuccess, hapticError } from '@repo/ui';
-import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
-import { supabase, thuthimalAPI, identityAPI } from '@repo/core';
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { StyleSheet, TouchableOpacity } from 'react-native';
 import Animated, {
-  useSharedValue,
+  FadeInDown,
   useAnimatedStyle,
-  withSpring,
+  useSharedValue,
   withDelay,
   withSequence,
+  withSpring,
   withTiming,
-  FadeInDown,
 } from 'react-native-reanimated';
-import { TouchableOpacity } from 'react-native';
-import { useTranslation } from 'react-i18next';
 
 type ClaimRouteParams = {
   ThuthimalClaim: {
@@ -48,7 +48,7 @@ type ClaimState = 'loading' | 'success' | 'already_claimed' | 'error';
 export default function ThuthimalClaimScreen() {
   const navigation = useNavigation<any>();
   const route = useRoute<RouteProp<ClaimRouteParams, 'ThuthimalClaim'>>();
-  const colors = useThemedColors();
+  const _colors = useThemedColors();
   const { t } = useTranslation();
   const [claimState, setClaimState] = useState<ClaimState>('loading');
   const [gifterName, setGifterName] = useState(route.params?.gifter_name ?? 'Someone special');
@@ -64,7 +64,7 @@ export default function ThuthimalClaimScreen() {
 
   useEffect(() => {
     claimGift();
-  }, []);
+  }, [claimGift]);
 
   const claimGift = async () => {
     const { gift_token } = route.params;
@@ -126,7 +126,14 @@ export default function ThuthimalClaimScreen() {
   if (claimState === 'already_claimed') {
     return (
       <ScreenWrapper>
-        <Box sx={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: Theme.spacing.xl }}>
+        <Box
+          sx={{
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: Theme.spacing.xl,
+          }}
+        >
           <Animated.View entering={FadeInDown.duration(500)}>
             <VStack sx={{ alignItems: 'center', gap: Theme.spacing.lg }}>
               <Text sx={{ fontSize: 56, textAlign: 'center' }}>🌸</Text>
@@ -139,11 +146,14 @@ export default function ThuthimalClaimScreen() {
               <Text sx={{ color: Theme.colors.mistGray, textAlign: 'center', lineHeight: 22 }}>
                 {t('thuthimalClaim.alreadyBloomedDesc')}
               </Text>
-              <TouchableOpacity accessibilityRole="button"
+              <TouchableOpacity
+                accessibilityRole="button"
                 onPress={() => navigation.goBack()}
                 style={[styles.button, { backgroundColor: Theme.colors.ink }]}
               >
-                <Text sx={{ color: Theme.colors.sacredWhite, fontWeight: '600' }}>{t('thuthimalClaim.goBack')}</Text>
+                <Text sx={{ color: Theme.colors.sacredWhite, fontWeight: '600' }}>
+                  {t('thuthimalClaim.goBack')}
+                </Text>
               </TouchableOpacity>
             </VStack>
           </Animated.View>
@@ -155,23 +165,30 @@ export default function ThuthimalClaimScreen() {
   if (claimState === 'error') {
     return (
       <ScreenWrapper>
-        <Box sx={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: Theme.spacing.xl }}>
+        <Box
+          sx={{
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: Theme.spacing.xl,
+          }}
+        >
           <VStack sx={{ alignItems: 'center', gap: Theme.spacing.lg }}>
             <Text sx={{ fontSize: 48 }}>⚠️</Text>
-            <Heading
-              sx={{ textAlign: 'center' }}
-              color={Theme.colors.emberRed as any}
-            >
+            <Heading sx={{ textAlign: 'center' }} color={Theme.colors.emberRed as any}>
               {t('thuthimalClaim.errorTitle')}
             </Heading>
             <Text sx={{ color: Theme.colors.starlightGray, textAlign: 'center' }}>
               {t('thuthimalClaim.errorDesc')}
             </Text>
-            <TouchableOpacity accessibilityRole="button"
+            <TouchableOpacity
+              accessibilityRole="button"
               onPress={() => navigation.goBack()}
               style={[styles.button, { backgroundColor: Theme.colors.ink }]}
             >
-              <Text sx={{ color: Theme.colors.sacredWhite, fontWeight: '600' }}>{t('thuthimalClaim.goBack')}</Text>
+              <Text sx={{ color: Theme.colors.sacredWhite, fontWeight: '600' }}>
+                {t('thuthimalClaim.goBack')}
+              </Text>
             </TouchableOpacity>
           </VStack>
         </Box>
@@ -199,7 +216,14 @@ export default function ThuthimalClaimScreen() {
         <Animated.View entering={FadeInDown.delay(400).duration(600)}>
           <VStack sx={{ alignItems: 'center', gap: Theme.spacing.lg, marginTop: Theme.spacing.xl }}>
             {/* Sinhala title */}
-            <Text sx={{ color: Theme.colors.sanctuarySaffron, fontSize: 28, letterSpacing: 2, textAlign: 'center' }}>
+            <Text
+              sx={{
+                color: Theme.colors.sanctuarySaffron,
+                fontSize: 28,
+                letterSpacing: 2,
+                textAlign: 'center',
+              }}
+            >
               {t('thuthimalClaim.flowerTitle')}
             </Text>
 
@@ -278,7 +302,8 @@ export default function ThuthimalClaimScreen() {
             </HStack>
 
             {/* Continue button */}
-            <TouchableOpacity accessibilityRole="button"
+            <TouchableOpacity
+              accessibilityRole="button"
               onPress={handleContinue}
               style={[
                 styles.button,
@@ -289,7 +314,14 @@ export default function ThuthimalClaimScreen() {
                 },
               ]}
             >
-              <Text sx={{ color: Theme.colors.obsidian, fontWeight: '700', fontSize: 16, textAlign: 'center' }}>
+              <Text
+                sx={{
+                  color: Theme.colors.obsidian,
+                  fontWeight: '700',
+                  fontSize: 16,
+                  textAlign: 'center',
+                }}
+              >
                 {t('thuthimalClaim.enterSanctuary')}
               </Text>
             </TouchableOpacity>

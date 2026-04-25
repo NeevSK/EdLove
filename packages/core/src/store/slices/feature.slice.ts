@@ -1,6 +1,6 @@
 ﻿import type { StateCreator } from 'zustand';
-import type { UserContext } from '../../logic/schemas/user.schema';
 import { type FeatureFlags, resolveFeatureFlags } from '../../logic/permissions/feature-engine';
+import type { UserContext } from '../../logic/schemas/user.schema';
 
 /**
  * FeatureSlice - FAANG-level state management for feature flags.
@@ -49,4 +49,3 @@ export const createFeatureSlice: StateCreator<FeatureSlice> = (set, get) => ({
     set({ flags: newFlags });
   },
 });
-

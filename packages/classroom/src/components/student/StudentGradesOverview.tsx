@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Award, BookMarked } from 'lucide-react-native';
 import { Box, HStack, SkeletonCard, Text, VStack, Icon } from '@repo/ui';
-import { supabase } from '@repo/core';
+import { assignmentsAPI } from '@repo/core';
 
 interface GradeRow {
   id: string;
@@ -71,13 +71,7 @@ export function StudentGradesOverview({ userId, isDemo = false }: StudentGradesO
       setIsLoading(true);
 
       try {
-        const { data } = await supabase
-          .from('submissions')
-          .select('id, grade, feedback, submitted_at, assignments(title), classrooms(name)')
-          .eq('student_id', userId)
-          .not('grade', 'is', null)
-          .order('submitted_at', { ascending: false })
-          .limit(4);
+        const data = await assignmentsAPI.getRecentGradesOverviewForStudent(userId, 4);
 
         if (!isActive) return;
 
@@ -178,4 +172,3 @@ export function StudentGradesOverview({ userId, isDemo = false }: StudentGradesO
     </VStack>
   );
 }
-

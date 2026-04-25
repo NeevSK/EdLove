@@ -38,4 +38,3 @@ describe('longitudinal POA coverage', () => {
     });
   });
 });
-

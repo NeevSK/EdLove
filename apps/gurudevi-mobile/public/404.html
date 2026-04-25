@@ -25,11 +25,11 @@
             var path = decodeURIComponent(match[1]);
             // Validate: must start with '/' and must not contain protocol specifiers
             if (path && path.charAt(0) === '/' && !/[a-z][a-z0-9+\-.]*:/i.test(path)) {
-              l.replace(l.protocol + '//' + l.host + '/?p=' + encodeURIComponent(path));
+              l.replace(`${l.protocol}//${l.host}/?p=${encodeURIComponent(path)}`);
             } else {
               l.replace('/');
             }
-          } catch (e) {
+          } catch (_e) {
             l.replace('/');
           }
         }

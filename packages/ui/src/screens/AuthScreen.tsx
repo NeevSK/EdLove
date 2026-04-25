@@ -22,21 +22,18 @@ import { useSanctuaryToast } from '../providers/ToastProvider';
 import { hapticLight, hapticSuccess, hapticError } from '../utils/haptics';
 import ScreenWrapper from '../components/ScreenWrapper';
 import { default as GuestDataSyncModal } from '../components/GuestDataSyncModal';
-import { Mail, Eye, EyeOff, Chrome } from 'lucide-react-native';
-import { Platform, type TextInput } from 'react-native';
+import { coreRuntime, Role, handleAPIError, validators, validateForm } from '@repo/core/logic';
+import { supabase, GuestDataSync, identityAPI, authAPI, FlowResolver } from '@repo/core/native';
 import { useTranslation } from 'react-i18next';
 import { Theme } from '../theme/Theme';
 import { BreathAnimation } from '../components/BreathAnimation';
 import { LivingGlow } from '../components/LivingGlow';
 import { SanctuaryBackground } from '../components/SanctuaryBackground';
-import { Role, handleAPIError, validators, validateForm } from '@repo/core/logic';
-import { supabase, GuestDataSync, identityAPI, authAPI, FlowResolver } from '@repo/core/native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Mail } from 'lucide-react-native';
 import * as WebBrowser from 'expo-web-browser';
 import * as AuthSession from 'expo-auth-session';
 
 // Required for expo-auth-session to complete the auth session on Android
-// (handles the Chrome Custom Tab callback redirect)
 WebBrowser.maybeCompleteAuthSession();
 
 // Google 'G' icon rendered with plain RN — no react-native-svg needed
@@ -95,7 +92,7 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
   const [showSyncModal, setShowSyncModal] = useState(false);
   const [newUserId, setNewUserId] = useState<string>('');
   const syncCheckDoneRef = useRef(false);
-  const passwordRef = useRef<TextInput>(null);
+  const passwordRef = useRef<any>(null);
 
   // Load current user from public.users via the internal identity (new architecture pattern).
   // This gives us email + is_anonymous from our own DB, not raw Supabase auth.
@@ -119,7 +116,7 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
   // which signifies a successful OAuth return.
   useEffect(() => {
     // Only run on web to avoid conflicts with deep linking handlers in Expo go
-    if (Platform.OS !== 'web') return;
+    if (coreRuntime.device.getMetadata().platform !== 'web') return;
 
     const hashParams = new URL(window.location.href.replace('#', '?')).searchParams;
     const getUrlParam = (name: string) => {
@@ -174,7 +171,7 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
 
   // ─── Native redirect URI (used by expo-auth-session) ───────────────────────
   const getRedirectUrl = () => {
-    if (Platform.OS === 'web') {
+    if (coreRuntime.device.getMetadata().platform === 'web') {
       return window.location.origin;
     }
     return AuthSession.makeRedirectUri({
@@ -192,7 +189,7 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
     const isAnon = session?.user?.is_anonymous || !session?.user?.email;
 
     // ── Web platform: classic browser-redirect flow ───────────
-    if (Platform.OS === 'web') {
+    if (coreRuntime.device.getMetadata().platform === 'web') {
       if (isAnon && session?.user) {
         const { error } = await supabase.auth.linkIdentity({
           provider,
@@ -298,7 +295,7 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
         const userId = await identityAPI.getMyInternalId();
         if (userId) {
           const internalId = userId;
-          const pendingInvite = await AsyncStorage.getItem('pending_invite');
+          const pendingInvite = await coreRuntime.storage.getItem('pending_invite');
           if (pendingInvite && internalId) {
             try {
               const invite = JSON.parse(pendingInvite);
@@ -307,7 +304,7 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
                   .from('users')
                   .update({ school_id: invite.school_id, role: (invite.role as Role) || 'teacher' })
                   .eq('id', internalId);
-                await AsyncStorage.removeItem('pending_invite');
+                await coreRuntime.storage.removeItem('pending_invite');
                 showToast({
                   message: 'Welcome to your new school sanctuary!',
                   type: 'success',
@@ -401,7 +398,7 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
         hapticSuccess();
         const internalId = await identityAPI.getMyInternalId();
         if (internalId) {
-          const pendingInvite = await AsyncStorage.getItem('pending_invite');
+          const pendingInvite = await coreRuntime.storage.getItem('pending_invite');
           if (pendingInvite) {
             try {
               const invite = JSON.parse(pendingInvite);
@@ -410,7 +407,7 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
                   .from('users')
                   .update({ school_id: invite.school_id, role: (invite.role as Role) || 'teacher' })
                   .eq('id', internalId);
-                await AsyncStorage.removeItem('pending_invite');
+                await coreRuntime.storage.removeItem('pending_invite');
                 showToast({ message: 'Reconnected to your school sanctuary!', type: 'success' });
               }
             } catch (e) {

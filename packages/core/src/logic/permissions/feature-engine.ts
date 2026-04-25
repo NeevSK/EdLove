@@ -268,5 +268,3 @@ export const resolveFeatureFlags = (
 
   return flags;
 };
-
-

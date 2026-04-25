@@ -54,4 +54,3 @@ export class AuthorityInterceptor {
     return true;
   }
 }
-

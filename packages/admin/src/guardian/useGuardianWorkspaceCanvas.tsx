@@ -19,7 +19,7 @@ import {
   MessageCircleHeart,
   ShieldCheck} from 'lucide-react-native';
 import type {
-  GuardianDashboard,
+  GuardianDashboardData,
   GuardianNotification,
   SchoolEvent,
   StudentOverview} from './types';
@@ -50,7 +50,7 @@ export type GuardianWorkspaceSurface = WorkspaceSurfaceDefinition<
 
 type GuardianWorkspaceCanvasArgs = { 
   schoolName?: string | null;
-  dashboard: GuardianDashboard;
+  dashboard: GuardianDashboardData;
   workspaceTargets?: WorkspaceSwitcherTarget[];
   onSelectWorkspaceTarget?: (target: WorkspaceSwitcherTarget) => void;
   onOpenStudent: (student: StudentOverview) => void;

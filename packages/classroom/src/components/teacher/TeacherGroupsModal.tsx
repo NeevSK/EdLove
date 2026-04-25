@@ -162,7 +162,7 @@ export default function TeacherGroupsModal({
 
     return (
         <SanctuaryModal
-            visible={isOpen}
+            isOpen={isOpen}
             onClose={onClose}
             title="Classroom Groups"
             footer={footer}

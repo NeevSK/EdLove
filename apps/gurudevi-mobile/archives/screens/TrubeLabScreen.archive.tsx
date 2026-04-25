@@ -1,32 +1,3 @@
-import React from 'react';
-import { ScrollView } from 'react-native';
-import {
-  Box,
-  Button,
-  ButtonText,
-  HStack,
-  Pressable,
-  ScreenWrapper,
-  Text,
-  VStack,
-} from '@repo/ui';
-import { useTheme } from '@repo/ui';
-import type { TemporalPhase } from '@repo/ui';
-import {
-  getCollectionScores,
-  getCanonicalScores,
-  getExperienceGuidance,
-  getProductionReadyScores,
-  getScoreExtras,
-  getScorePreset,
-  getScoreCollections,
-  getScoresByReviewState,
-  getScoresForExperience,
-  motif,
-  ornament,
-  stage,
-  surface,
-} from '@repo/trube-art';
 import type {
   TrubeExperienceMode,
   TrubeLightingMode,
@@ -36,18 +7,49 @@ import type {
   TrubeStageSpec,
   TrubeSurfaceName,
 } from '@repo/trube-art';
+import {
+  getCanonicalScores,
+  getCollectionScores,
+  getExperienceGuidance,
+  getProductionReadyScores,
+  getScoreCollections,
+  getScoreExtras,
+  getScorePreset,
+  getScoresByReviewState,
+  getScoresForExperience,
+  motif,
+  ornament,
+  stage,
+  surface,
+} from '@repo/trube-art';
 import { TrubeMotif, TrubeOrnament, TrubeStage } from '@repo/trube-art/native';
+import type { TemporalPhase } from '@repo/ui';
+import { Box, HStack, Pressable, ScreenWrapper, Text, useTheme, VStack } from '@repo/ui';
+import React from 'react';
+import type { ScrollView } from 'react-native';
 
-const SURFACES: TrubeSurfaceName[] = ['aurora', 'mist', 'young-leaf'];
-const LIGHTS: TrubeLightingMode[] = ['predawn', 'morning', 'midday', 'golden-hour', 'dusk', 'night'];
+const _SURFACES: TrubeSurfaceName[] = ['aurora', 'mist', 'young-leaf'];
+const _LIGHTS: TrubeLightingMode[] = [
+  'predawn',
+  'morning',
+  'midday',
+  'golden-hour',
+  'dusk',
+  'night',
+];
 const ARRANGEMENTS = ['solo', 'duet', 'orchestra'] as const;
-const ORNAMENTS: Array<TrubeOrnamentName | 'none'> = ['none', 'filigree', 'constellation', 'vein'];
-const MOTIFS: Array<TrubeMotifName | 'none'> = ['none', 'lotus-sketch', 'branch-flow', 'tide-lines'];
-const EXPERIENCE_MODES: TrubeExperienceMode[] = ['quiet', 'ambient', 'ceremonial'];
+const _ORNAMENTS: Array<TrubeOrnamentName | 'none'> = ['none', 'filigree', 'constellation', 'vein'];
+const _MOTIFS: Array<TrubeMotifName | 'none'> = [
+  'none',
+  'lotus-sketch',
+  'branch-flow',
+  'tide-lines',
+];
+const _EXPERIENCE_MODES: TrubeExperienceMode[] = ['quiet', 'ambient', 'ceremonial'];
 const LAB_MODES = ['masterpiece', 'study'] as const;
 
-type Arrangement = typeof ARRANGEMENTS[number];
-type LabMode = typeof LAB_MODES[number];
+type Arrangement = (typeof ARRANGEMENTS)[number];
+type LabMode = (typeof LAB_MODES)[number];
 
 function mapPhaseToLight(phase: TemporalPhase): TrubeLightingMode {
   switch (phase) {
@@ -61,7 +63,6 @@ function mapPhaseToLight(phase: TemporalPhase): TrubeLightingMode {
       return 'golden-hour';
     case 'dusk':
       return 'dusk';
-    case 'night':
     default:
       return 'night';
   }
@@ -97,7 +98,8 @@ function buildStage(
   }
 
   if (arrangement === 'duet') {
-    const partner = surfaceName === 'aurora' ? 'mist' : surfaceName === 'mist' ? 'young-leaf' : 'aurora';
+    const partner =
+      surfaceName === 'aurora' ? 'mist' : surfaceName === 'mist' ? 'young-leaf' : 'aurora';
 
     return stage(
       [
@@ -206,25 +208,33 @@ function SegmentedOption({
 
 export default function TrubeLabScreen() {
   const { scene, text, accent, phase, animationsEnabled, isDark } = useTheme();
-  const [labMode, setLabMode] = React.useState<LabMode>('masterpiece');
-  const [experienceMode, setExperienceMode] = React.useState<TrubeExperienceMode>('ambient');
+  const [labMode, _setLabMode] = React.useState<LabMode>('masterpiece');
+  const [experienceMode, _setExperienceMode] = React.useState<TrubeExperienceMode>('ambient');
   const [scoreName, setScoreName] = React.useState<TrubeScoreName>('goethe-night-study');
-  const [surfaceName, setSurfaceName] = React.useState<TrubeSurfaceName>('aurora');
-  const [light, setLight] = React.useState<TrubeLightingMode>(mapPhaseToLight(phase));
-  const [arrangement, setArrangement] = React.useState<Arrangement>('solo');
-  const [ornamentName, setOrnamentName] = React.useState<TrubeOrnamentName | 'none'>('none');
-  const [motifName, setMotifName] = React.useState<TrubeMotifName | 'none'>('none');
+  const [surfaceName, _setSurfaceName] = React.useState<TrubeSurfaceName>('aurora');
+  const [light, _setLight] = React.useState<TrubeLightingMode>(mapPhaseToLight(phase));
+  const [arrangement, _setArrangement] = React.useState<Arrangement>('solo');
+  const [ornamentName, _setOrnamentName] = React.useState<TrubeOrnamentName | 'none'>('none');
+  const [motifName, _setMotifName] = React.useState<TrubeMotifName | 'none'>('none');
 
-  const availableScores = React.useMemo(() => getScoresForExperience(experienceMode), [experienceMode]);
-  const scoreCollections = React.useMemo(() => getScoreCollections(), []);
-  const approvedScores = React.useMemo(() => getProductionReadyScores(), []);
-  const reviewScores = React.useMemo(() => getScoresByReviewState('in-review'), []);
-  const experimentalScores = React.useMemo(() => getScoresByReviewState('experimental'), []);
-  const canonicalScores = React.useMemo(
-    () => getCanonicalScores().map((item) => ({ ...item, preset: getScorePreset(item.name), extras: getScoreExtras(item.name) })),
+  const availableScores = React.useMemo(
+    () => getScoresForExperience(experienceMode),
+    [experienceMode],
+  );
+  const _scoreCollections = React.useMemo(() => getScoreCollections(), []);
+  const _approvedScores = React.useMemo(() => getProductionReadyScores(), []);
+  const _reviewScores = React.useMemo(() => getScoresByReviewState('in-review'), []);
+  const _experimentalScores = React.useMemo(() => getScoresByReviewState('experimental'), []);
+  const _canonicalScores = React.useMemo(
+    () =>
+      getCanonicalScores().map((item) => ({
+        ...item,
+        preset: getScorePreset(item.name),
+        extras: getScoreExtras(item.name),
+      })),
     [],
   );
-  const guidance = React.useMemo(() => getExperienceGuidance(experienceMode), [experienceMode]);
+  const _guidance = React.useMemo(() => getExperienceGuidance(experienceMode), [experienceMode]);
 
   React.useEffect(() => {
     if (!availableScores.some((score) => score.name === scoreName)) {
@@ -239,8 +249,8 @@ export default function TrubeLabScreen() {
   const score = React.useMemo(() => getScorePreset(scoreName), [scoreName]);
   const scoreExtras = React.useMemo(() => getScoreExtras(scoreName), [scoreName]);
 
-  const composition = labMode === 'masterpiece' ? score.stage : studyStage;
-  const resolvedOrnament =
+  const _composition = labMode === 'masterpiece' ? score.stage : studyStage;
+  const _resolvedOrnament =
     labMode === 'masterpiece'
       ? scoreExtras.ornament
       : ornamentName !== 'none'
@@ -250,7 +260,7 @@ export default function TrubeLabScreen() {
             seed: surfaceName === 'aurora' ? 11 : surfaceName === 'mist' ? 17 : 23,
           })
         : null;
-  const resolvedMotif =
+  const _resolvedMotif =
     labMode === 'masterpiece'
       ? scoreExtras.motif
       : motifName !== 'none'
@@ -261,60 +271,103 @@ export default function TrubeLabScreen() {
             seed: light === 'night' ? 31 : light === 'golden-hour' ? 37 : 29,
           })
         : null;
-  const previewTitle = labMode === 'masterpiece' ? score.label : `${surfaceName} / ${arrangement}`;
-  const previewMeta =
+  const _previewTitle = labMode === 'masterpiece' ? score.label : `${surfaceName} / ${arrangement}`;
+  const _previewMeta =
     labMode === 'masterpiece'
       ? `${score.experience} / ${score.emphasis}`
       : `Light: ${light} / Motion: ${animationsEnabled ? 'living' : 'still'}`;
 
   return (
     <ScreenWrapper      <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 48 }} showsVerticalScrollIndicator={false}        <VStack space="lg"          <VStack space="xs"            <Text color={text.primary} sx={{ fontSize: '$2xl' as any, fontWeight: '700' }}              Trube Lab
-            </Text            <Text color={text.secondary} sx={{ fontSize: '$sm' as any, lineHeight: 20 }}              Compose like a visual instrument: first as authored masterpieces, then as studies of body, air,
-              shimmer, and line.
-            </Text          </VStack
-          <VStack space="sm"            <Text color={text.primary} sx={{ fontSize: '$md' as any, fontWeight: '600' }}              Mode
-            </Text            <HStack space="sm" flexWrap="wrap"              {LAB_MODES.map((item) => (
-                <SegmentedOption
-                  key={item}
-                  active={labMode === item}
-                  label={item}
-                  onPress={() => setLabMode(item)}
-                /              ))}
-            </HStack          </VStack
-          {labMode === 'masterpiece' ? (
+            </_Text            <_Text color={text.secondary} sx={{ fontSize: '$sm' as any, _lineHeight: 20 }}              _Compose _like _a _visual _instrument: _first _as _authored _masterpieces, _then _as _studies _of _body, _air,
+              _shimmer, _and _line.
+            </_Text          </VStack
+          <VStack _space="sm"            <_Text color={text.primary} sx={{ fontSize: '$md' as any, fontWeight: '600' }}              _Mode
+            </Text            <_HStack space="sm" _flexWrap="wrap"              {_LAB_MODES._map((_item) => (
+                <_SegmentedOption
+                  _key={item}
+                  _active={labMode === item}
+                  _label={item}
+                  _onPress={() => setLabMode(item)}
+                /              )
+  )
+}
+</HStack          </VStack
+{
+  labMode === 'masterpiece' ? (
             <React.Fragment              <VStack space="sm"                <Text color={text.primary} sx={{ fontSize: '$md' as any, fontWeight: '600' }}                  Experience
-                </Text                <HStack space="sm" flexWrap="wrap"                  {EXPERIENCE_MODES.map((item) => (
-                    <SegmentedOption
-                      key={item}
-                      active={experienceMode === item}
-                      label={item}
-                      onPress={() => setExperienceMode(item)}
-                    /                  ))}
-                </HStack              </VStack
+                </Text                <_HStack space="sm" _flexWrap="wrap"                  {_EXPERIENCE_MODES._map((_item) => (
+                    <_SegmentedOption
+                      _key={item}
+                      _active={experienceMode === item}
+                      _label={item}
+                      _onPress={() => setExperienceMode(item)}
+                    /                  )
+  )
+}
+</HStack              </VStack
               <Box
-                sx={{
-                  padding: 16,
-                  borderRadius: 20,
+                sx=
+{
+  padding: 16, borderRadius;
+  : 20,
                   backgroundColor: scene.surface.bg,
                   borderWidth: 1,
                   borderColor: scene.surface.border,
-                }}
-                              <VStack space="xs"                  <Text color={text.onSurface} sx={{ fontSize: '$md' as any, fontWeight: '700' }}                    {guidance.label} guidance
+}
+<VStack space="xs"                  <Text color={text.onSurface} sx={{ fontSize: '$md' as any, fontWeight: '700' }}                    {guidance.label} guidance
                   </Text                  <Text color={text.secondary} sx={{ fontSize: '$sm' as any, lineHeight: 20 }}                    {guidance.description}
                   </Text                  <Text color={text.secondary} sx={{ fontSize: '$sm' as any, lineHeight: 20 }}                    {guidance.usage}
-                  </Text                </VStack              </Box
-              <VStack space="sm"                <Text color={text.primary} sx={{ fontSize: '$md' as any, fontWeight: '600' }}                  Score
-                </Text                <HStack space="sm" flexWrap="wrap"                  {availableScores.map((item) => (
+                  </Text                </VStack
+</Box
+<VStack space="sm"                <Text color=
+{
+  text.primary;
+}
+sx={{ fontSize: '$md' as any, fontWeight: '600' }
+}                  Score
+                </Text                <HStack space="sm" flexWrap="wrap"
+{
+  availableScores.map((item) => (
                     <SegmentedOption
                       key={item.name}
                       active={scoreName === item.name}
                       label={item.label}
                       onPress={() => setScoreName(item.name)}
-                    /                  ))}
-                </HStack              </VStack
-              <VStack space="sm"                <Text color={text.primary} sx={{ fontSize: '$md' as any, fontWeight: '600' }}                  Canonical Gurudevi Standard
-                </Text                <Text color={text.secondary} sx={{ fontSize: '$sm' as any, lineHeight: 20 }}                  Live thumbnails let us compare the first three approved scenes side by side and keep art direction consistent.
-                </Text                <ScrollView horizontal showsHorizontalScrollIndicator={false}                  <HStack space="md"                    {canonicalScores.map((item) => (
+                    /                  ))
+}
+</HStack              </VStack
+              <VStack
+space = 'sm' < Text
+color={text.primary}
+sx={{ fontSize: '$md' as any, fontWeight: '600' }
+}                  Canonical Gurudevi Standard
+                </Text                <Text color=
+{
+  text.secondary;
+}
+sx={{ fontSize: '$sm' as any, lineHeight: 20 }
+}                  Live thumbnails
+let _us;
+compare;
+the;
+first;
+three;
+approved;
+scenes;
+side;
+by;
+side;
+and;
+keep;
+art;
+direction;
+consistent.
+</Text                <ScrollView horizontal showsHorizontalScrollIndicator=
+{
+  false;
+}
+<HStack space="md"                    {canonicalScores.map((item) => (
                       <Pressable
                         key={item.name}
                         onPress={() => {
@@ -364,13 +417,26 @@ export default function TrubeLabScreen() {
                             </Text                            <Text color={text.secondary} sx={{ fontSize: '$xs' as any, lineHeight: 18 }}                              {item.role}
                             </Text                            <Text color={text.secondary} sx={{ fontSize: '$xs' as any, lineHeight: 18 }}                              {item.rationale}
                             </Text                          </VStack                        </VStack                      </Pressable                    ))}
-                  </HStack                </ScrollView              </VStack
-              <VStack space="sm"                <Text color={text.primary} sx={{ fontSize: '$md' as any, fontWeight: '600' }}                  Curated Offerings
-                </Text                <Text color={text.secondary} sx={{ fontSize: '$sm' as any, lineHeight: 20 }}                  Browse the library as families of scenes, not as a flat list. This keeps the offering broad without losing taste.
-                </Text                <VStack space="sm"                  {scoreCollections.map((collection) => {
-                    const collectionScores = getCollectionScores(collection.id);
+                  </HStack
+</ScrollView              </VStack
+<VStack space="sm"                <Text color=
+{
+  text.primary;
+}
+sx={{ fontSize: '$md' as any, fontWeight: '600' }
+}                  Curated Offerings
+                </Text                <Text color=
+{
+  text.secondary;
+}
+sx={{ fontSize: '$sm' as any, lineHeight: 20 }
+}                  Browse the library as families of scenes, not as a flat list. This keeps the offering broad without losing taste.
+                </Text                <VStack space="sm"
+{
+  scoreCollections.map((collection) => {
+    const collectionScores = getCollectionScores(collection.id);
 
-                    return (
+    return (
                       <Box
                         key={collection.id}
                         sx={{
@@ -393,21 +459,36 @@ export default function TrubeLabScreen() {
                                 }}
                               /                            ))}
                           </HStack                        </VStack                      </Box                    );
-                  })}
-                </VStack              </VStack
-              <Box
-                sx={{
+  });
+}
+</VStack              </VStack < Box
+sx={{
                   padding: 16,
                   borderRadius: 20,
                   backgroundColor: scene.surface.bg,
                   borderWidth: 1,
                   borderColor: scene.surface.border,
-                }}
-                              <VStack space="sm"                  <Text color={text.onSurface} sx={{ fontSize: '$md' as any, fontWeight: '700' }}                    Production Board
-                  </Text                  <Text color={text.secondary} sx={{ fontSize: '$sm' as any, lineHeight: 20 }}                    Lineage approval is now explicit. Approved scores are safe defaults. In-review scores are promising but still need context checks.
+                }
+}
+                              <VStack space="sm"                  <Text color=
+{
+  text.onSurface;
+}
+sx={{ fontSize: '$md' as any, fontWeight: '700' }
+}                    Production Board
+                  </Text                  <Text color=
+{
+  text.secondary;
+}
+sx={{ fontSize: '$sm' as any, lineHeight: 20 }
+}                    Lineage approval is now explicit. Approved scores are safe defaults. In-review scores are promising but still need context checks.
                   </Text                  <HStack space="sm" flexWrap="wrap"                    <SegmentedOption
-                      active={score.review.state === 'approved'}
-                      label={`approved ${approvedScores.length}`}
+                      active=
+{
+  score.review.state === 'approved';
+}
+label =
+  { `approved ${approvedScores.length }`}
                       onPress={() => {
                         const next = approvedScores[0];
                         if (next) {
@@ -417,7 +498,12 @@ export default function TrubeLabScreen() {
                       }}
                     /                    <SegmentedOption
                       active={score.review.state === 'in-review'}
-                      label={`in review ${reviewScores.length}`}
+                      label={` in review;
+$;
+{
+  reviewScores.length;
+}
+`}
                       onPress={() => {
                         const next = reviewScores[0];
                         if (next) {
@@ -427,7 +513,13 @@ export default function TrubeLabScreen() {
                       }}
                     /                    <SegmentedOption
                       active={score.review.state === 'experimental'}
-                      label={`experimental ${experimentalScores.length}`}
+                      label={`;
+experimental;
+$;
+{
+  experimentalScores.length;
+}
+`}
                       onPress={() => {
                         const next = experimentalScores[0];
                         if (next) {

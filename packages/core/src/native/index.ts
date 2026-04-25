@@ -12,3 +12,4 @@ export * from './supabase';
 export * from './supabaseAuthStorage';
 export * from './useAuthorityLifecycle';
 export * from './useWorkspaceLayoutSync';
+export * from './runtimeAdapter';

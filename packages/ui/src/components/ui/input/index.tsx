@@ -21,7 +21,6 @@ const Input = React.forwardRef<View, IInputProps>(
       ref={ref}
       accessibilityState={{
         disabled: !!isDisabled,
-        invalid: !!isInvalid,
       }}
       className={`flex-row items-center border rounded-xl px-3 min-h-[48px] bg-phase-canvas
         ${isInvalid ? 'border-phase-danger' : 'border-phase-interactive/20'} 

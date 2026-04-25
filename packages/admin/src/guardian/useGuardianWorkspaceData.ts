@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
 import { api } from '@repo/core';
-import type { GuardianDashboard } from './types';
+import type { GuardianDashboardData } from './types';
 
 export function useGuardianWorkspaceData(guardianId: string) {
-  const [dashboard, setDashboard] = useState<GuardianDashboard | null>(null);
+  const [dashboard, setDashboard] = useState<GuardianDashboardData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -14,7 +14,7 @@ export function useGuardianWorkspaceData(guardianId: string) {
             setDashboard({
                 ...dashboardData,
                 guardianId: dashboardData.guardianId || guardianId
-            } as GuardianDashboard);
+            } as GuardianDashboardData);
             setError(null);
     } catch (caughtError: any) {
       console.error('Failed to load guardian workspace data', caughtError);

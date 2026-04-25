@@ -1,12 +1,15 @@
-# Discovery Script: List all Monorepo Targets
-$packages = Get-ChildItem -Path "packages/*", "apps/*" -Directory 
+# Discovery Script: List all Monorepo Targets (SHINY VERSION)
+# Use fd for lightning-fast directory discovery
+$apps = & fd -t d -d 1 . apps
+$packages = & fd -t d -d 1 . packages
 
-$results = foreach ($pkg in $packages) {
+$results = foreach ($pkgPath in ($apps + $packages)) {
+    $info = Get-Item $pkgPath
     [PSCustomObject]@{
-        FullID    = if ($pkg.Parent.Name -eq "packages") { "@repo/$($pkg.Name)" } else { "@app/$($pkg.Name)" }
-        ShortID   = $pkg.Name
-        Path      = $pkg.FullName
-        Directory = $pkg.Parent.Name
+        FullID    = if ($info.Parent.Name -eq "packages") { "@repo/$($info.Name)" } else { "@app/$($info.Name)" }
+        ShortID   = $info.Name
+        Path      = $info.FullName
+        Directory = $info.Parent.Name
     }
 }
 

@@ -70,4 +70,3 @@ describe('attendance POA coverage', () => {
     });
   });
 });
-

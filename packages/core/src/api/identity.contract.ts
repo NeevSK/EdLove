@@ -1,32 +1,16 @@
 import { initContract } from '@ts-rest/core';
 import { z } from 'zod';
 import { POAMetadataSchema } from './contract';
+import { FacetedProfileSchema, IdentitySchema } from './identity.generated';
 
 const c = initContract();
-
-export const IdentitySchema = z.object({
-  id: z.string().uuid(),
-  email: z.string().email(),
-  role: z.string(),
-  name: z.string().optional(),
-});
 
 export const ClassroomRoleSummarySchema = z.object({
   userId: z.string(),
   schoolId: z.string().nullable(),
   profileCompleted: z.boolean(),
   realClassCount: z.number().int().nonnegative(),
-  profile: z.object({
-    school_id: z.string().nullable().optional(),
-    profile_completed: z.boolean().nullable().optional(),
-    role: z.string().nullable().optional(),
-    full_name: z.string().nullable().optional(),
-    email: z.string().nullable().optional(),
-    platform_roles: z.array(z.string()).nullable().optional(),
-    school_role: z.string().nullable().optional(),
-    work_roles: z.array(z.string()).nullable().optional(),
-    tenant_kind: z.string().nullable().optional(),
-  }),
+  profile: FacetedProfileSchema,
 });
 
 export const identityContract = c.router({

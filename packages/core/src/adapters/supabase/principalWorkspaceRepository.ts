@@ -1,5 +1,5 @@
-import { selectLatestTemporalRecordsAsOf } from '../../lib/temporalEvents';
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { selectLatestTemporalRecordsAsOf } from '../../lib/temporalEvents';
 import type { PrincipalWorkspaceRepository } from '../../logic/domains/principalWorkspace/ports';
 import {
   InviteCodeSchema,

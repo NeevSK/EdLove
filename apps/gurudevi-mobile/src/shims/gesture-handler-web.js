@@ -17,34 +17,27 @@ const RectButton = 'button';
 const Gesture = bridge('Gesture', {});
 
 const gestureHandlerShim = bridge('react-native-gesture-handler', {
-    GestureHandlerRootView,
-    PanGestureHandler,
-    TapGestureHandler,
-    LongPressGestureHandler,
-    PinchGestureHandler,
-    RotationGestureHandler,
-    FlingGestureHandler,
-    RawButton,
-    BaseButton,
-    RectButton,
-    Gesture,
-    State: {
-        UNDETERMINED: 0,
-        FAILED: 1,
-        BEGAN: 2,
-        CANCELLED: 3,
-        ACTIVE: 4,
-        END: 5,
-    },
+  GestureHandlerRootView,
+  PanGestureHandler,
+  TapGestureHandler,
+  LongPressGestureHandler,
+  PinchGestureHandler,
+  RotationGestureHandler,
+  FlingGestureHandler,
+  RawButton,
+  BaseButton,
+  RectButton,
+  Gesture,
+  State: {
+    UNDETERMINED: 0,
+    FAILED: 1,
+    BEGAN: 2,
+    CANCELLED: 3,
+    ACTIVE: 4,
+    END: 5,
+  },
 });
 
-export { 
-    GestureHandlerRootView, 
-    PanGestureHandler, 
-    Gesture, 
-    RawButton, 
-    BaseButton, 
-    RectButton 
-};
+export { BaseButton, Gesture, GestureHandlerRootView, PanGestureHandler, RawButton, RectButton };
 
 export default gestureHandlerShim;

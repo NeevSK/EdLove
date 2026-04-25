@@ -34,7 +34,7 @@ export const Modal = ({
           entering={ZoomIn.duration(300).springify()}
           exiting={ZoomOut.duration(200)}
           className="w-full max-w-[500px]"
-          accessibilityRole="dialog"
+          accessibilityRole={'dialog' as any}
           accessibilityViewIsModal={true}
         >
           <Box className="bg-silk rounded-2xl overflow-hidden shadow-2xl border border-linen">

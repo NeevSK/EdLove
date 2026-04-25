@@ -23,4 +23,3 @@ export const defineAdminAbilities = (user: UserContext, builder: AbilityBuilder<
     can('read', 'LibrarySearch');
   }
 };
-

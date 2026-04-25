@@ -21,7 +21,12 @@ import { CreateClassroomModal } from '../components';
 import { TeacherWorkspaceShell } from '../components/teacher/TeacherWorkspaceShell';
 import { ScannerModal } from '@repo/scanner-kit';
 import { useTeacherWorkspaceShell } from '../workspace/useTeacherWorkspaceShell';
-import { useTeacherDashboardSurfaces } from '../workspace/useTeacherDashboardSurfaces';
+import {
+    type TeacherDashboardCapabilityKey,
+    type TeacherDashboardSurface,
+    type TeacherDashboardSurfaceId,
+    useTeacherDashboardSurfaces,
+} from '../workspace/useTeacherDashboardSurfaces';
 
 interface TeacherDashboardProps {
     onRefresh?: () => void;
@@ -90,7 +95,11 @@ export default function TeacherDashboardWeb({ onRefresh, schoolId, userId }: Tea
         },
     });
 
-    const { layout } = useWorkspaceLayoutSync({
+    const { layout } = useWorkspaceLayoutSync<
+        TeacherDashboardSurfaceId,
+        TeacherDashboardCapabilityKey,
+        TeacherDashboardSurface
+    >({
         workspaceId: 'teacher-dashboard',
         userId: userId || 'teacher-dashboard-web-guest',
         surfaces: dashboardSurfaces,

@@ -1,5 +1,5 @@
 import { ZenStackClient } from '@zenstackhq/orm'
-import { schema } from '../protocol/schema'
+import { schema } from '@repo/core/zen'
 import { PostgresDialect } from 'kysely'
 import { Pool } from 'pg'
 

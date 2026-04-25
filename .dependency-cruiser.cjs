@@ -28,8 +28,19 @@ module.exports = {
     {
       name: 'no-orphans',
       severity: 'warn',
-      comment: 'Files without any dependencies to or from them.',
-      from: { orphan: true },
+      comment: 'Files without any dependencies to or from them. Ignored for config and type files.',
+      from: { 
+        orphan: true,
+        pathNot: [
+          '\\.config\\.(js|cjs|mjs|ts)$',
+          '\\.d\\.ts$',
+          'archives/',
+          'shims/',
+          'jest-native-setup\\.js$',
+          'bundle_root\\.js$',
+          'public/sw\\.js$'
+        ]
+      },
       to: {}
     },
     {
@@ -112,8 +123,17 @@ module.exports = {
     }
   ],
   options: {
+    exclude: {
+      path: [
+        '\\.vercel',
+        'node_modules',
+        'dist',
+        '\\.turbo',
+        'archives/'
+      ]
+    },
     doNotFollow: {
-      path: ['node_modules', 'dist', '.turbo']
+      path: ['node_modules', 'dist', '.turbo', '\\.vercel']
     },
     moduleSystems: ['es6', 'cjs'],
     tsPreCompilationDeps: true,

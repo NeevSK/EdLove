@@ -126,5 +126,3 @@ export const composeUserAbilities = (rawContext: Partial<UserContext>): AppAbili
 
   return builder.build();
 };
-
-

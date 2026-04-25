@@ -13,23 +13,23 @@
  *   thuthimal_gift \u2192 navigated from here to ThuthimalClaimScreen
  */
 
-import React, { useEffect, useState } from 'react';
-import {
-  Box,
-  VStack,
-  Text,
-  Heading,
-  Spinner,
-  ScreenWrapper,
-  Theme,
-} from '@repo/ui';
-import { useThemedColors } from '@repo/ui';
-import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
-import { supabase, api, FlowResolver, identityAPI } from '@repo/core';
-import type { QRPayload } from '../types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { hapticSuccess, hapticError } from '@repo/ui';
+import { type RouteProp, useNavigation, useRoute } from '@react-navigation/native';
+import { FlowResolver, identityAPI } from '@repo/core';
+import {
+  type Box,
+  Heading,
+  hapticError,
+  hapticSuccess,
+  ScreenWrapper,
+  Text,
+  Theme,
+  useThemedColors,
+  VStack,
+} from '@repo/ui';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { QRPayload } from '../types';
 
 type QRHandlerRouteParams = {
   QRHandler: { payload: QRPayload };
@@ -51,7 +51,7 @@ export default function QRHandlerScreen() {
       return;
     }
     executeAction(payload);
-  }, []);
+  }, [payload, navigation.goBack, executeAction]);
 
   const executeAction = async (p: QRPayload) => {
     try {
@@ -73,10 +73,10 @@ export default function QRHandlerScreen() {
         if (result.intent) {
           // Map Abstract Core Intent -> Mobile Specific Navigation
           const intentMap: Record<string, () => void> = {
-            'GOTO_CLASSROOM': () => navigation.navigate('Main', { screen: 'Classroom' }),
-            'GOTO_COMMUNITY': () => navigation.navigate('Main', { screen: 'Community' }),
-            'GOTO_SELF': () => navigation.navigate('Main', { screen: 'Self' }),
-            'GOTO_THUTHIMAL_CLAIM': () => navigation.replace('ThuthimalClaim', result.params)
+            GOTO_CLASSROOM: () => navigation.navigate('Main', { screen: 'Classroom' }),
+            GOTO_COMMUNITY: () => navigation.navigate('Main', { screen: 'Community' }),
+            GOTO_SELF: () => navigation.navigate('Main', { screen: 'Self' }),
+            GOTO_THUTHIMAL_CLAIM: () => navigation.replace('ThuthimalClaim', result.params),
           };
 
           const action = intentMap[result.intent];
@@ -112,9 +112,9 @@ export default function QRHandlerScreen() {
   return (
     <ScreenWrapper
       <Box sx={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: Theme.spacing.xl }}
-        <VStack sx={{ alignItems: 'center', gap: Theme.spacing.lg }}
+        <_VStack sx={{ alignItems: 'center', _gap: _Theme._spacing._lg }}
           {status === 'processing' && (
-            <Spinner size="large" color={Theme.colors.sanctuarySaffron} /
+            <_Spinner _size="large" _color={Theme.colors.sanctuarySaffron} /
           )}
           {status === 'success' && (
             <Text sx={{ fontSize: 56 }}>\u2705</Text
@@ -134,7 +134,7 @@ export default function QRHandlerScreen() {
             {status === 'processing' ? t('qrHandler.processingMessage') : message}
           </Text
         </VStack
-      </Box
+  </Box
     </ScreenWrapper
-  );
+  )
 }

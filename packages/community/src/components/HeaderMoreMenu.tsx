@@ -4,7 +4,8 @@ import {
     VStack,
     HStack,
     Text,
-    Pressable
+    Pressable,
+    Icon,
 } from '@repo/ui';
 import { MoreVertical, BellOff, Bell, UserX, ShieldAlert } from 'lucide-react-native';
 import { useSocialShield } from '../hooks/useSocialShield';

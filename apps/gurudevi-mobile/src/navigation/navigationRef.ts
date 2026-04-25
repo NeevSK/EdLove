@@ -1,4 +1,4 @@
-﻿/**
+/**
  * navigationRef.ts
  *
  * Shared imperative navigation reference  used by components that need to
@@ -7,4 +7,5 @@
  */
 import { createNavigationContainerRef } from '@react-navigation/native';
 
+// biome-ignore lint/suspicious/noExplicitAny: generic navigation ref
 export const navigationRef = createNavigationContainerRef<any>();

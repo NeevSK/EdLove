@@ -6,11 +6,19 @@
  *  - Inline new-observation form
  */
 
-import React, { useEffect, useState } from 'react';
-import { TouchableOpacity, TextInput } from 'react-native';
-import { Box, HStack, VStack, Text, SkeletonCard, useThemedColors, formatShortDate } from '@repo/ui';
-import { Theme } from '@repo/ui';
 import { supabase } from '@repo/core';
+import {
+  Box,
+  formatShortDate,
+  HStack,
+  SkeletonCard,
+  Text,
+  Theme,
+  useThemedColors,
+  VStack,
+} from '@repo/ui';
+import { useEffect, useState } from 'react';
+import { TextInput, TouchableOpacity } from 'react-native';
 
 interface Observation {
   id: string;
@@ -65,7 +73,7 @@ export default function PrincipalObservationsSection({
   useEffect(() => {
     setLoading(true);
     fetchObservations();
-  }, [principalId]);
+  }, [fetchObservations]);
 
   async function handleSave() {
     if (!content.trim()) return;
@@ -109,7 +117,13 @@ export default function PrincipalObservationsSection({
       }}
     >
       {/* Header */}
-      <HStack sx={{ justifyContent: 'space-between', alignItems: 'center', marginBottom: Theme.spacing.sm }}>
+      <HStack
+        sx={{
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: Theme.spacing.sm,
+        }}
+      >
         <Text sx={{ fontSize: 15, fontWeight: '700', color: colors.text }}>
           📝 Observation Notes
         </Text>
@@ -132,39 +146,59 @@ export default function PrincipalObservationsSection({
 
       {/* Empty state */}
       {!loading && observations.length === 0 && (
-        <Text sx={{ fontSize: 13, color: colors.textSecondary, textAlign: 'center', paddingVertical: Theme.spacing.md }}>
+        <Text
+          sx={{
+            fontSize: 13,
+            color: colors.textSecondary,
+            textAlign: 'center',
+            paddingVertical: Theme.spacing.md,
+          }}
+        >
           No observations yet. Start your first classroom walkthrough note.
         </Text>
       )}
 
       {/* Observation rows */}
-      {!loading && observations.map((obs) => (
-        <VStack
-          key={obs.id}
-          sx={{ paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: colors.border, gap: 4 }}
-        >
-          <HStack sx={{ alignItems: 'center', gap: Theme.spacing.sm }}>
-            <Box
-              sx={{
-                backgroundColor: obsBadgeColor(obs.type),
-                borderRadius: 8,
-                paddingHorizontal: 7,
-                paddingVertical: 2,
-              }}
-            >
-              <Text sx={{ fontSize: 10, fontWeight: '700', color: '#fff', textTransform: 'capitalize' }}>
-                {obs.type}
+      {!loading &&
+        observations.map((obs) => (
+          <VStack
+            key={obs.id}
+            sx={{
+              paddingVertical: 8,
+              borderBottomWidth: 1,
+              borderBottomColor: colors.border,
+              gap: 4,
+            }}
+          >
+            <HStack sx={{ alignItems: 'center', gap: Theme.spacing.sm }}>
+              <Box
+                sx={{
+                  backgroundColor: obsBadgeColor(obs.type),
+                  borderRadius: 8,
+                  paddingHorizontal: 7,
+                  paddingVertical: 2,
+                }}
+              >
+                <Text
+                  sx={{
+                    fontSize: 10,
+                    fontWeight: '700',
+                    color: '#fff',
+                    textTransform: 'capitalize',
+                  }}
+                >
+                  {obs.type}
+                </Text>
+              </Box>
+              <Text sx={{ fontSize: 11, color: colors.textSecondary, marginLeft: 'auto' }}>
+                {formatShortDate(obs.created_at)}
               </Text>
-            </Box>
-            <Text sx={{ fontSize: 11, color: colors.textSecondary, marginLeft: 'auto' }}>
-              {formatShortDate(obs.created_at)}
+            </HStack>
+            <Text sx={{ fontSize: 13, color: colors.text }} numberOfLines={2}>
+              {obs.content}
             </Text>
-          </HStack>
-          <Text sx={{ fontSize: 13, color: colors.text }} numberOfLines={2}>
-            {obs.content}
-          </Text>
-        </VStack>
-      ))}
+          </VStack>
+        ))}
 
       {/* Inline new observation form */}
       {showForm && (

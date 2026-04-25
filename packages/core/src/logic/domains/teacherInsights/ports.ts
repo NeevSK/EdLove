@@ -17,7 +17,10 @@ export interface TeacherInsightsRepository {
     teacherId: string,
     type?: TeacherPrivateNoteZod['type'],
   ): Promise<TeacherPrivateNoteZod[]>;
-  createPrivateNote(input: TeacherPrivateNoteCreate, idempotencyKey?: string): Promise<TeacherPrivateNoteZod>;
+  createPrivateNote(
+    input: TeacherPrivateNoteCreate,
+    idempotencyKey?: string,
+  ): Promise<TeacherPrivateNoteZod>;
   deletePrivateNote(id: string): Promise<void>;
   listStudentObservations(classroomId: string): Promise<TeacherStudentObservationZod[]>;
   listStudentObservationsForEnrollment(

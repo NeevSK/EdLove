@@ -1,27 +1,29 @@
 // 1. Foundation (No relative dependencies)
 import { v7 } from 'uuid';
-export { v7, v7 as uuidv7 };
 
 export * from './accounts/deviceAccounts';
 // 4. API & Business Logic
 export * from './api';
 export { isDemo } from './api/demo';
 export * from './constants/SriLankanSchools';
-export * from './logic/experience/ActivityPulseContext';
 export * from './hooks';
 export * from './lib/accountPin';
 export * from './lib/cloudinary';
 export * from './lib/inventoryScope';
 export * from './lib/mediaUtils';
-export * from './lib/monitoring/sentry';
 export * from './lib/monitoring/posthog';
+export * from './lib/monitoring/sentry';
 export * from './lib/pendingGateAction';
-export * from './logic/permissions/index';
+export * from './lib/permissions';
 export { Runtime } from './lib/runtime';
 export { storage } from './lib/storage';
 export { SafeZustandStorage } from './lib/storageWrapper';
 export * from './logic/apiInterceptor';
+export * from './logic/domains/factory';
+export * from './logic/events/bus';
+export * from './logic/experience/ActivityPulseContext';
 export { default as i18n } from './logic/i18n/config';
+export * from './logic/permissions/index';
 export { LanguageUtils } from './logic/utils/LanguageUtils';
 export { buildQRString, QRBuilder } from './logic/utils/QRBuilder';
 export type { QRResolveResult } from './logic/utils/QRResolver';
@@ -46,8 +48,7 @@ export * from './store/useTemporalStore';
 export { useTenantStore } from './store/useTenantStore';
 export { useUIStore } from './store/useUIStore';
 export * from './types';
-export * from './logic/events/bus';
-export * from './logic/domains/factory';
+export { v7, v7 as uuidv7 };
 
 import { z } from 'zod';
 
@@ -55,8 +56,11 @@ export * from './api/hooks/classroom.hooks';
 export * from './api/hooks/founder.hooks';
 export * from './hooks/useEntity';
 export * from './lib/inviteCodes';
+export { generateIdempotencyKey } from './lib/sync/idempotency';
 export { default as SyncManager } from './lib/sync/sync/SyncManager';
+export { useMutationAuditLog } from './lib/sync/MutationAuditLog';
 export { useMutationQueue } from './lib/sync/useMutationQueue';
+export type { MutationOutcome } from './lib/sync/types';
 export * from './logic/entities/entity-protocol';
 export * from './logic/forms/analytics';
 export * from './logic/forms/dynamic-loader';
@@ -116,13 +120,12 @@ export type {
   PrincipalInviteRole,
 } from './logic/schemas/principal-workspace.schema';
 export * from './logic/schemas/role.schema';
+export * from './logic/schemas/staff.schema';
+export * from './logic/schemas/temporal.schema';
 export type { User } from './logic/schemas/user.schema';
 export * from './logic/schemas/user.schema';
 export { UserSchema } from './logic/schemas/user.schema';
-export * from './logic/schemas/staff.schema';
-export * from './logic/schemas/temporal.schema';
 export * from './logic/utils/validators';
-export { generateIdempotencyKey } from './lib/sync/idempotency';
 export * from './logic/workspace/canvas';
 export * from './logic/workspace/workspaceSwitcher';
 export * from './native/useWorkspaceLayoutSync';

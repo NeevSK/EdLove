@@ -113,4 +113,3 @@ describe('founder and guardian POA coverage', () => {
     });
   });
 });
-

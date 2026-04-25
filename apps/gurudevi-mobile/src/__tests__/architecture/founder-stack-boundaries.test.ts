@@ -6,8 +6,18 @@ const WORKSPACE_ROOT = path.resolve(APP_ROOT, '..', '..');
 
 const FOUNDER_NATIVE_STACK = path.join(APP_ROOT, 'src', 'navigation', 'FounderStackNavigator.tsx');
 const FOUNDER_WEB_STACK = path.join(APP_ROOT, 'src', 'navigation', 'FounderStackNavigator.web.tsx');
-const CLASSROOM_NATIVE_STACK = path.join(APP_ROOT, 'src', 'navigation', 'ClassroomStackNavigator.tsx');
-const CLASSROOM_WEB_STACK = path.join(APP_ROOT, 'src', 'navigation', 'ClassroomStackNavigator.web.tsx');
+const CLASSROOM_NATIVE_STACK = path.join(
+  APP_ROOT,
+  'src',
+  'navigation',
+  'ClassroomStackNavigator.tsx',
+);
+const CLASSROOM_WEB_STACK = path.join(
+  APP_ROOT,
+  'src',
+  'navigation',
+  'ClassroomStackNavigator.web.tsx',
+);
 const ADMIN_PACKAGE_JSON = path.join(WORKSPACE_ROOT, 'packages', 'admin', 'package.json');
 
 describe('Founder stack boundaries', () => {
@@ -16,7 +26,9 @@ describe('Founder stack boundaries', () => {
 
     expect(pkg.exports['./founder']).toBe('./src/entrypoints/founder.ts');
     expect(pkg.exports['./screens/FounderDashboard']).toBe('./src/screens/FounderDashboard.tsx');
-    expect(pkg.exports['./screens/FounderSchoolDashboard']).toBe('./src/screens/FounderSchoolDashboard.tsx');
+    expect(pkg.exports['./screens/FounderSchoolDashboard']).toBe(
+      './src/screens/FounderSchoolDashboard.tsx',
+    );
   });
 
   it('keeps founder routes out of classroom stacks', () => {

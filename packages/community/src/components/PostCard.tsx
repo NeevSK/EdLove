@@ -5,6 +5,7 @@ import {
     HStack, 
     VStack, 
     Text, 
+    Icon,
     Avatar, 
     AvatarFallbackText, 
     AvatarImage, 

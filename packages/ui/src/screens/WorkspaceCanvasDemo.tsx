@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Box, VStack, HStack, Heading, Text, Pressable, ScrollView } from '../gluestack';
 import { createDefaultWorkspaceLayout, setWorkspaceSurfaceHidden } from '@repo/core/logic';
 import type {
   ResolvedWorkspaceSurface,
@@ -7,9 +7,11 @@ import type {
   WorkspaceSurfaceDefinition,
 } from '@repo/core/types';
 import { WorkspaceCanvas } from '../components/workspace';
-import { Theme } from '../theme/Theme';
+import { useTheme } from '../hooks/useTheme';
+import ScreenWrapper from '../components/ScreenWrapper';
 
 type DemoRole = 'teacher' | 'principal' | 'founder';
+/* ... types truncated ... */
 type DemoSurfaceId =
   | 'lesson-flow'
   | 'student-signals'
@@ -195,6 +197,7 @@ function buildRoleSurfaces(role: DemoRole): Array<DemoSurface & DemoSurfaceMeta>
 export default function WorkspaceCanvasDemo() {
   const [role, setRole] = useState<DemoRole>('principal');
   const [notice, setNotice] = useState('Select a surface to inspect how the shared card behaves.');
+  const { text, scene } = useTheme();
 
   const surfaces = useMemo(() => buildRoleSurfaces(role), [role]);
   const [layoutByRole, setLayoutByRole] = useState<
@@ -229,220 +232,120 @@ export default function WorkspaceCanvasDemo() {
   };
 
   const renderActionButton = (label: string, tone: 'primary' | 'secondary' = 'secondary') => (
-    <View
+    <Box
       key={label}
-      style={[styles.actionChip, tone === 'primary' ? styles.actionChipPrimary : null]}
+      className="rounded-full border px-3 py-1.5"
+      style={{
+        backgroundColor: tone === 'primary' ? '#D4AF37' : scene.surface.bg,
+        borderColor: tone === 'primary' ? '#D4AF37' : scene.border.base,
+      }}
     >
-      <Text style={tone === 'primary' ? styles.actionChipTextPrimary : styles.actionChipText}>
+      <Text size="xs" className="font-bold" style={{ color: tone === 'primary' ? text.primary : text.secondary }}>
         {label}
       </Text>
-    </View>
+    </Box>
   );
 
   return (
-    <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
-      <View style={styles.header}>
-        <Text style={styles.kicker}>SHARED CANVAS DEMO</Text>
-        <Text style={styles.title}>Capability-first workspace canvas</Text>
-        <Text style={styles.subtitle}>
-          One responsive entry point now selects mobile, tablet, or web renderers while still
-          consuming the same shared surfaces and layout state.
-        </Text>
-      </View>
-      <View style={styles.roleRow}>
-        {(['teacher', 'principal', 'founder'] as DemoRole[]).map((candidate) => (
-          <Pressable
-            key={candidate}
-            accessibilityRole="button"
-            onPress={() => {
-              setRole(candidate);
-              setNotice(`Switched to the ${ROLE_LABELS[candidate]} capability mix.`);
-            }}
-            style={[styles.roleChip, role === candidate ? styles.roleChipActive : null]}
-          >
-            <Text style={role === candidate ? styles.roleChipTextActive : styles.roleChipText}>
-              {ROLE_LABELS[candidate]}
+    <ScreenWrapper>
+      <ScrollView className="flex-1">
+        <VStack className="p-6 gap-6">
+          <VStack className="gap-2">
+            <Text size="xs" className="font-bold tracking-widest text-[#SaffronMuted] uppercase">SHARED CANVAS DEMO</Text>
+            <Heading size="xl">Capability-first workspace canvas</Heading>
+            <Text size="md" style={{ color: text.secondary }} className="max-w-[760px]">
+              One responsive entry point now selects mobile, tablet, or web renderers while still
+              consuming the same shared surfaces and layout state.
             </Text>
-          </Pressable>
-        ))}
-      </View>
-      <View style={styles.noticePanel}>
-        <Text style={styles.noticeLabel}>Demo note</Text>
-        <Text style={styles.noticeText}>{notice}</Text>
-      </View>
-      <WorkspaceCanvas
-        title={`${ROLE_LABELS[role]} Workspace Canvas`}
-        subtitle="Responsive renderer demo with snapshot, temporal state, metadata, info, and action slots."
-        surfaces={surfaces}
-        layout={layout}
-        getSurfaceSubtitle={(surface) =>
-          SURFACE_LIBRARY[surface.surfaceId as DemoSurfaceId].subtitle
-        }
-        getSurfaceSummary={(surface) => SURFACE_LIBRARY[surface.surfaceId as DemoSurfaceId].summary}
-        getSurfaceSnapshot={(surface) =>
-          SURFACE_LIBRARY[surface.surfaceId as DemoSurfaceId].snapshot
-        }
-        getSurfaceTemporalLabel={(surface) =>
-          SURFACE_LIBRARY[surface.surfaceId as DemoSurfaceId].temporalLabel
-        }
-        getSurfaceTemporalTone={(surface) =>
-          SURFACE_LIBRARY[surface.surfaceId as DemoSurfaceId].temporalTone
-        }
-        getSurfaceMetadata={(surface) =>
-          SURFACE_LIBRARY[surface.surfaceId as DemoSurfaceId].metadata
-        }
-        renderSurfaceActions={(surface) => (
-          <View style={styles.inlineActions}>
-            {SURFACE_LIBRARY[surface.surfaceId as DemoSurfaceId].actions.map(
-              (action: string, index: number) =>
-                renderActionButton(action, index === 0 ? 'primary' : 'secondary'),
+          </VStack>
+
+          <HStack className="flex-wrap gap-2">
+            {(['teacher', 'principal', 'founder'] as DemoRole[]).map((candidate) => (
+              <Pressable
+                key={candidate}
+                onPress={() => {
+                  setRole(candidate);
+                  setNotice(`Switched to the ${ROLE_LABELS[candidate]} capability mix.`);
+                }}
+                className="rounded-full border px-4 py-2"
+                style={{
+                  backgroundColor: role === candidate ? text.primary : scene.surface.bg,
+                  borderColor: role === candidate ? text.primary : scene.border.base,
+                }}
+              >
+                <Text
+                  size="xs"
+                  className="font-medium"
+                  style={{ color: role === candidate ? scene.surface.bg : text.primary }}
+                >
+                  {ROLE_LABELS[candidate]}
+                </Text>
+              </Pressable>
+            ))}
+          </HStack>
+
+          <VStack className="rounded-xl border p-4 gap-1" style={{ backgroundColor: scene.surface.bg, borderColor: scene.border.base }}>
+            <Text size="xs" className="font-bold tracking-widest text-[#SaffronMuted] uppercase">Demo note</Text>
+            <Text size="md">{notice}</Text>
+          </VStack>
+
+          <WorkspaceCanvas
+            title={`${ROLE_LABELS[role]} Workspace Canvas`}
+            subtitle="Responsive renderer demo with snapshot, temporal state, metadata, info, and action slots."
+            surfaces={surfaces}
+            layout={layout}
+            getSurfaceSubtitle={(surface) =>
+              SURFACE_LIBRARY[surface.surfaceId as DemoSurfaceId].subtitle
+            }
+            getSurfaceSummary={(surface) => SURFACE_LIBRARY[surface.surfaceId as DemoSurfaceId].summary}
+            getSurfaceSnapshot={(surface) =>
+              SURFACE_LIBRARY[surface.surfaceId as DemoSurfaceId].snapshot
+            }
+            getSurfaceTemporalLabel={(surface) =>
+              SURFACE_LIBRARY[surface.surfaceId as DemoSurfaceId].temporalLabel
+            }
+            getSurfaceTemporalTone={(surface) =>
+              SURFACE_LIBRARY[surface.surfaceId as DemoSurfaceId].temporalTone
+            }
+            getSurfaceMetadata={(surface) =>
+              SURFACE_LIBRARY[surface.surfaceId as DemoSurfaceId].metadata
+            }
+            renderSurfaceActions={(surface) => (
+              <HStack className="flex-wrap gap-2">
+                {SURFACE_LIBRARY[surface.surfaceId as DemoSurfaceId].actions.map(
+                  (action: string, index: number) =>
+                    renderActionButton(action, index === 0 ? 'primary' : 'secondary'),
+                )}
+              </HStack>
             )}
-          </View>
-        )}
-        renderSurfaceContent={(surface) => (
-          <View style={styles.surfaceBody}>
-            <Text style={styles.surfaceBodyTitle}>Surface contract</Text>
-            <Text style={styles.surfaceBodyText}>Capability: {surface.capabilityKey}</Text>
-            <Text style={styles.surfaceBodyText}>Package owner: {surface.ownerPackage}</Text>
-            <Text style={styles.surfaceBodyText}>
-              Mobile/Web: {surface.mobileSupport ? 'mobile ' : ''}
-              {surface.webSupport ? 'web' : ''}
-            </Text>
-          </View>
-        )}
-        onSurfacePress={(surface) => {
-          setNotice(`${String(surface.surfaceId)} selected in the ${ROLE_LABELS[role]} canvas.`);
-        }}
-        onPressSurfaceInfo={(surface) => {
-          setNotice(SURFACE_LIBRARY[surface.surfaceId as DemoSurfaceId].info);
-        }}
-        onToggleHidden={(surface) => {
-          updateRoleLayout((current) =>
-            setWorkspaceSurfaceHidden(current, surface.surfaceId, !surface.hidden),
-          );
-          setNotice(
-            `${surface.hidden ? 'Restored' : 'Hidden'} ${String(surface.surfaceId)} in the ${ROLE_LABELS[role]} demo.`,
-          );
-        }}
-      />
-    </ScrollView>
+            renderSurfaceContent={(surface) => (
+              <VStack className="gap-1">
+                <Text size="sm" className="font-bold">Surface contract</Text>
+                <Text size="sm" style={{ color: text.secondary }}>Capability: {surface.capabilityKey}</Text>
+                <Text size="sm" style={{ color: text.secondary }}>Package owner: {surface.ownerPackage}</Text>
+                <Text size="sm" style={{ color: text.secondary }}>
+                  Mobile/Web: {surface.mobileSupport ? 'mobile ' : ''}
+                  {surface.webSupport ? 'web' : ''}
+                </Text>
+              </VStack>
+            )}
+            onSurfacePress={(surface) => {
+              setNotice(`${String(surface.surfaceId)} selected in the ${ROLE_LABELS[role]} canvas.`);
+            }}
+            onPressSurfaceInfo={(surface) => {
+              setNotice(SURFACE_LIBRARY[surface.surfaceId as DemoSurfaceId].info);
+            }}
+            onToggleHidden={(surface) => {
+              updateRoleLayout((current) =>
+                setWorkspaceSurfaceHidden(current, surface.surfaceId, !surface.hidden),
+              );
+              setNotice(
+                `${surface.hidden ? 'Restored' : 'Hidden'} ${String(surface.surfaceId)} in the ${ROLE_LABELS[role]} demo.`,
+              );
+            }}
+          />
+        </VStack>
+      </ScrollView>
+    </ScreenWrapper>
   );
 }
-
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: Theme.colors.vellum,
-  },
-  content: {
-    padding: Theme.spacing.lg,
-    gap: Theme.spacing.lg,
-  },
-  header: {
-    gap: 8,
-  },
-  kicker: {
-    fontSize: Theme.typography.fontSize.xs,
-    fontWeight: '700',
-    letterSpacing: 1.4,
-    color: Theme.colors.saffronMuted,
-  },
-  title: {
-    fontSize: Theme.typography.fontSize['2xl'],
-    fontWeight: '700',
-    color: Theme.colors.inkTruth,
-  },
-  subtitle: {
-    maxWidth: 760,
-    fontSize: Theme.typography.fontSize.md,
-    lineHeight: 24,
-    color: Theme.colors.bark,
-  },
-  roleRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: Theme.spacing.sm,
-  },
-  roleChip: {
-    borderRadius: Theme.corners.full,
-    borderWidth: 1,
-    borderColor: Theme.colors.saffronMuted,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    backgroundColor: Theme.colors.silk,
-  },
-  roleChipActive: {
-    backgroundColor: Theme.colors.inkTruth,
-    borderColor: Theme.colors.inkTruth,
-  },
-  roleChipText: {
-    fontSize: Theme.typography.fontSize.sm,
-    fontWeight: '600',
-    color: Theme.colors.inkTruth,
-  },
-  roleChipTextActive: {
-    fontSize: Theme.typography.fontSize.sm,
-    fontWeight: '700',
-    color: Theme.colors.sacredWhite,
-  },
-  noticePanel: {
-    borderRadius: Theme.corners.generous,
-    borderWidth: 1,
-    borderColor: Theme.colors.saffronWhisper,
-    padding: Theme.spacing.md,
-    backgroundColor: Theme.colors.silk,
-    gap: 4,
-  },
-  noticeLabel: {
-    fontSize: Theme.typography.fontSize.xs,
-    fontWeight: '700',
-    letterSpacing: 1,
-    textTransform: 'uppercase',
-    color: Theme.colors.saffronMuted,
-  },
-  noticeText: {
-    fontSize: Theme.typography.fontSize.md,
-    lineHeight: 22,
-    color: Theme.colors.inkTruth,
-  },
-  inlineActions: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: Theme.spacing.xs,
-  },
-  actionChip: {
-    borderRadius: Theme.corners.full,
-    borderWidth: 1,
-    borderColor: Theme.colors.border,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    backgroundColor: Theme.colors.silk,
-  },
-  actionChipPrimary: {
-    backgroundColor: Theme.colors.templeGold,
-    borderColor: Theme.colors.templeGold,
-  },
-  actionChipText: {
-    fontSize: Theme.typography.fontSize.xs,
-    fontWeight: '600',
-    color: Theme.colors.inkTruth,
-  },
-  actionChipTextPrimary: {
-    fontSize: Theme.typography.fontSize.xs,
-    fontWeight: '700',
-    color: Theme.colors.inkTruth,
-  },
-  surfaceBody: {
-    gap: 4,
-  },
-  surfaceBodyTitle: {
-    fontSize: Theme.typography.fontSize.sm,
-    fontWeight: '700',
-    color: Theme.colors.inkTruth,
-  },
-  surfaceBodyText: {
-    fontSize: Theme.typography.fontSize.sm,
-    lineHeight: 20,
-    color: Theme.colors.bark,
-  },
-});

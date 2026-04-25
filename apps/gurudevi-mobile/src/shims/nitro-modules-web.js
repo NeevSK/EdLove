@@ -4,11 +4,12 @@
 import bridge from './universal-bridge';
 
 const NitroModules = bridge('react-native-nitro-modules', {
-    NitroModules: bridge('NitroModules', {}),
-    Symbol: {
-        iterator: Symbol.iterator,
-        asyncIterator: typeof Symbol.asyncIterator !== 'undefined' ? Symbol.asyncIterator : 'asyncIterator',
-    },
+  NitroModules: bridge('NitroModules', {}),
+  Symbol: {
+    iterator: Symbol.iterator,
+    asyncIterator:
+      typeof Symbol.asyncIterator !== 'undefined' ? Symbol.asyncIterator : 'asyncIterator',
+  },
 });
 
 export const { NitroModules: NitroRegistry, Symbol: NitroSymbol } = NitroModules;

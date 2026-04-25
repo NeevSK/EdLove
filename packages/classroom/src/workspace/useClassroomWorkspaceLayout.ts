@@ -3,13 +3,21 @@ import {
     useWorkspaceLayoutSync,
     type ResolvedWorkspaceSurface,
 } from '@repo/core';
-import type { ClassroomWorkspaceSurface, ClassroomWorkspaceSurfaceId } from './useClassroomWorkspaceSurfaces';
+import type {
+    ClassroomWorkspaceCapabilityKey,
+    ClassroomWorkspaceSurface,
+    ClassroomWorkspaceSurfaceId,
+} from '../types/workspace';
 
 export function useClassroomWorkspaceLayout(
     userId: string | null | undefined,
     surfaces: ClassroomWorkspaceSurface[]
 ) {
-    const workspace = useWorkspaceLayoutSync({
+    const workspace = useWorkspaceLayoutSync<
+        ClassroomWorkspaceSurfaceId,
+        ClassroomWorkspaceCapabilityKey,
+        ClassroomWorkspaceSurface
+    >({
         workspaceId: 'classroom',
         userId,
         surfaces,

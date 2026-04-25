@@ -1,61 +1,87 @@
 import 'react-native-url-polyfill/auto';
 import './src/i18n/config'; // Initialize i18n
-import React, { useState, useEffect, Suspense } from 'react';
-import { useTranslation } from 'react-i18next';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationContainer } from '@react-navigation/native';
-import { navigationRef } from './src/navigation/navigationRef';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { GluestackUIProvider, Spinner, Center, VStack, Text, SanctuaryGlobalStyles, FABProvider, LotusPetalFAB, ExternalLinkProvider, SanctuaryToast, ToastProvider, ErrorBoundary, NetworkStatusBanner,  EnvironmentProvider, useTheme } from '@repo/ui';
-// gluestack-ui.config removed in favor of @repo/ui Zero-Legacy architecture
-import { Home, School, Library, Sparkles } from 'lucide-react-native';
-import { Session } from '@supabase/supabase-js';
-import * as Font from 'expo-font';
-import { initPostHog, trackEvent, identifyUser, posthogAnalytics as initTracker } from '@repo/analytics';
-import { Platform, StyleSheet } from 'react-native';
-import { Box } from '@repo/ui';
-import * as Linking from 'expo-linking';
-
-import { fontAssets } from './src/constants/Fonts';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { SyncManager, useStore, supabase, AuthorityTier, SchoolType, APIError, initSentry, setSentryUser, clearSentryUser, authAPI, identityAPI, injectPostHog } from '@repo/core';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-
-// Import screens and navigation from the local authoritative index
-import { 
-  WelcomeScreen, 
-  OnboardingScreen, 
-  AuthScreen, 
-  AppSettingsScreen, 
-  NotificationsScreen,
-  AIAssistantScreen,
-  QRHandlerScreen,
-  ThuthimalClaimScreen,
-  InvitationWelcomeScreen
-} from './src/screens';
-
-// Import screens and navigation
-import TabNavigator from './src/navigation/TabNavigator';
 import {
+  AdminAuditLog,
+  AdminAuthorityRepair,
   AdminDashboard,
   AdminIncidentQueue,
-  AdminTenantDetail,
-  AdminAuthorityRepair,
   AdminJobControl,
-  AdminAuditLog,
   AdminReleaseControl,
+  AdminTenantDetail,
 } from '@repo/admin';
+import {
+  identifyUser,
+  initPostHog,
+  posthogAnalytics as initTracker,
+  trackEvent,
+} from '@repo/analytics';
+import {
+  APIError,
+  type AuthorityTier,
+  authAPI,
+  clearSentryUser,
+  identityAPI,
+  initSentry,
+  injectPostHog,
+  type SchoolType,
+  SyncManager,
+  setSentryUser,
+  supabase,
+  useStore,
+} from '@repo/core';
+import { coreRuntime } from '@repo/core/logic';
+import { nativeRuntimeEnvironment } from '@repo/core/native';
 import { useQRDeepLink } from '@repo/scanner-kit';
-import { LanguageUtils } from './src/utils/LanguageUtils';
+import {
+  Box,
+  Center,
+  EnvironmentProvider,
+  ErrorBoundary,
+  ExternalLinkProvider,
+  FABProvider,
+  GluestackUIProvider,
+  NetworkStatusBanner,
+  SanctuaryGlobalStyles,
+  SanctuaryToast,
+  Spinner,
+  ToastProvider,
+} from '@repo/ui';
+import type { Session } from '@supabase/supabase-js';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import * as Font from 'expo-font';
+import * as Linking from 'expo-linking';
+import React, { Suspense, useEffect, useState } from 'react';
+import { Platform } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import CommandPalette from './src/components/web/CommandPalette';
-import { updateWebPageTitle } from './src/utils/useWebPageTitle';
 import { PWAInstallBanner } from './src/components/web/PWAInstallBanner';
+import { fontAssets } from './src/constants/Fonts';
+import { navigationRef } from './src/navigation/navigationRef';
+// Import screens and navigation
+import TabNavigator from './src/navigation/TabNavigator';
+// Import screens and navigation from the local authoritative index
+import {
+  AIAssistantScreen,
+  AppSettingsScreen,
+  AuthScreen,
+  InvitationWelcomeScreen,
+  NotificationsScreen,
+  OnboardingScreen,
+  QRHandlerScreen,
+  ThuthimalClaimScreen,
+  WelcomeScreen,
+} from './src/screens';
+import { LanguageUtils } from './src/utils/LanguageUtils';
+import { updateWebPageTitle } from './src/utils/useWebPageTitle';
 
 // Lazy load PublicFormScreen as it's web-only and large
-const PublicFormScreen = React.lazy(() => import('@repo/form-builder').then(module => ({ default: module.PublicFormScreenWeb })));
+const PublicFormScreen = React.lazy(() =>
+  import('@repo/form-builder').then((module) => ({ default: module.PublicFormScreenWeb })),
+);
 
-import { obsidian, sanctuarySaffron } from '@repo/ui';
+import { sanctuarySaffron } from '@repo/ui';
 
 // Create a client
 const queryClient = new QueryClient();
@@ -83,7 +109,9 @@ const fetchAndSetUserProfile = async (internalUserId: string, onComplete?: () =>
   try {
     const { data, error } = await supabase
       .from('users')
-      .select('id, role, school_id, onboarding_completed, full_name, email, avatar_url, is_anonymous, profile_completed')
+      .select(
+        'id, role, school_id, onboarding_completed, full_name, email, avatar_url, is_anonymous, profile_completed',
+      )
       .eq('id', internalUserId)
       .maybeSingle();
 
@@ -97,7 +125,9 @@ const fetchAndSetUserProfile = async (internalUserId: string, onComplete?: () =>
 
     if (userProfile) {
       const store = useStore.getState();
-      const normalizedRole = (userProfile.role === 'guest' ? null : userProfile.role) as AuthorityTier | null;
+      const normalizedRole = (
+        userProfile.role === 'guest' ? null : userProfile.role
+      ) as AuthorityTier | null;
 
       if (normalizedRole || !store.onboardingCompleted) {
         store.setUser({ ...userProfile, role: normalizedRole } as any);
@@ -146,7 +176,9 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [isProfileLoading, setIsProfileLoading] = useState(false);
   const [fontsLoaded, setFontsLoaded] = useState(false);
-  const [currentTab, setCurrentTab] = useState<'self' | 'classroom' | 'community' | 'library' | 'profile'>('self');
+  const [currentTab, setCurrentTab] = useState<
+    'self' | 'classroom' | 'community' | 'library' | 'profile'
+  >('self');
   const onboardingCompleted = useStore((state) => state.onboardingCompleted);
   const currentUser = useStore((state) => state.user);
   const [showWelcome, setShowWelcome] = useState(true);
@@ -157,13 +189,13 @@ function App() {
     // Inject the native tracker into the Core bridge to maintain "Core Purity"
     injectPostHog(initTracker);
 
+    // Inject Platform-Specific Runtime Adapters (Sovereign Core Purity)
+    coreRuntime.register(nativeRuntimeEnvironment);
+
     initSentry();
-    initPostHog(
-      process.env.EXPO_PUBLIC_POSTHOG_API_KEY!,
-      {
-        host: process.env.EXPO_PUBLIC_POSTHOG_HOST || 'https://eu.i.posthog.com'
-      }
-    ).then(() => {
+    initPostHog(process.env.EXPO_PUBLIC_POSTHOG_API_KEY!, {
+      host: process.env.EXPO_PUBLIC_POSTHOG_HOST || 'https://eu.i.posthog.com',
+    }).then(() => {
       trackEvent('app_initialized', { platform: Platform.OS });
     });
   }, []);
@@ -181,21 +213,29 @@ function App() {
     setSentryUser({
       id: currentUser.id,
       email: currentUser.email ?? undefined,
-      username: currentUser.full_name ?? undefined});
+      username: currentUser.full_name ?? undefined,
+    });
 
     identifyUser(currentUser.id, {
       email: currentUser.email ?? undefined,
       full_name: currentUser.full_name ?? undefined,
       role: currentUser.authority ?? undefined,
-      school_id: currentUser.school_id ?? undefined});
-  }, [currentUser?.id, currentUser?.email, currentUser?.full_name, currentUser?.authority, currentUser?.school_id]);
+      school_id: currentUser.school_id ?? undefined,
+    });
+  }, [
+    currentUser?.id,
+    currentUser?.email,
+    currentUser?.full_name,
+    currentUser?.authority,
+    currentUser?.school_id,
+  ]);
 
   useEffect(() => {
     async function loadFonts() {
       try {
         await Font.loadAsync(fontAssets);
         setFontsLoaded(true);
-      } catch (error) {
+      } catch (_error) {
         setFontsLoaded(true);
       }
     }
@@ -212,7 +252,8 @@ function App() {
           setShowWelcome(false);
           if (session.user) {
             setIsProfileLoading(true);
-            identityAPI.getMyInternalId()
+            identityAPI
+              .getMyInternalId()
               .then((internalId) => {
                 if (internalId) {
                   fetchAndSetUserProfile(internalId, () => setIsProfileLoading(false));
@@ -241,14 +282,17 @@ function App() {
 
     checkSession();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
       setSession(session);
       useStore.getState().setAuthSession(session);
       useStore.getState().setAuthSessionResolved(true);
 
       if (session?.user) {
         setIsProfileLoading(true);
-        identityAPI.getMyInternalId()
+        identityAPI
+          .getMyInternalId()
           .then((internalId) => {
             if (internalId) {
               fetchAndSetUserProfile(internalId, () => setIsProfileLoading(false));
@@ -289,8 +333,12 @@ function App() {
         if (access_token && refresh_token) {
           const { error } = await supabase.auth.setSession({
             access_token,
-            refresh_token});
-          if (error && (error.message?.includes('Refresh Token') || (error as any).status === 400)) {
+            refresh_token,
+          });
+          if (
+            error &&
+            (error.message?.includes('Refresh Token') || (error as any).status === 400)
+          ) {
             await supabase.auth.signOut({ scope: 'local' });
           }
         }
@@ -298,11 +346,13 @@ function App() {
     };
 
     const subscription = Linking.addEventListener('url', (event) => handleDeepLink(event.url));
-    Linking.getInitialURL().then((url) => { if (url) handleDeepLink(url); });
+    Linking.getInitialURL().then((url) => {
+      if (url) handleDeepLink(url);
+    });
     return () => subscription.remove();
   }, []);
 
-  useQRDeepLink((payload: any) => {
+  useQRDeepLink((payload: unknown) => {
     if (navigationRef.isReady() && session) {
       navigationRef.navigate('QRHandler', { payload });
     }
@@ -352,7 +402,7 @@ function App() {
   );
 }
 
-function OnboardingWrapper({ session }: { session: any }) {
+function OnboardingWrapper({ session }: { session: Session | null }) {
   const storeUser = useStore((state) => state.user);
   return (
     <OnboardingScreen
@@ -361,34 +411,68 @@ function OnboardingWrapper({ session }: { session: any }) {
         session?.user?.is_anonymous === true ||
         !session?.user?.email
       }
-      onComplete={(name: string, role: any) => {
+      onComplete={(name: string, role: AuthorityTier | null) => {
         const store = useStore.getState();
         if (name) store.setTeacherName(name);
         if (role) store.setUserRole(role);
         store.setOnboardingCompleted(true);
-        identityAPI.getMyInternalId()
-          .then((internalId) => { if (internalId) fetchAndSetUserProfile(internalId); });
+        identityAPI.getMyInternalId().then((internalId) => {
+          if (internalId) fetchAndSetUserProfile(internalId);
+        });
       }}
     />
   );
 }
 
-function AppContent({ setCurrentTab, session, onboardingCompleted, isProfileLoading, toast, hideToast }: any) {
-  const handleTabChange = React.useCallback((tab: string) => {
-    setCurrentTab(tab as any);
-  }, [setCurrentTab]);
+function AppContent({
+  currentTab,
+  setCurrentTab,
+  session,
+  needsWelcome,
+  onboardingCompleted,
+  isProfileLoading,
+  showWelcome,
+  setShowWelcome,
+  toast,
+  hideToast,
+}: {
+  currentTab: string;
+  setCurrentTab: (tab: any) => void;
+  session: Session | null;
+  needsWelcome: boolean;
+  onboardingCompleted: boolean;
+  isProfileLoading: boolean;
+  showWelcome: boolean;
+  setShowWelcome: (show: boolean) => void;
+  toast: { message: string; type: 'success' | 'error' | 'info'; duration?: number } | null;
+  hideToast: () => void;
+}) {
+  const handleTabChange = React.useCallback(
+    (tab: string) => {
+      setCurrentTab(tab as any);
+    },
+    [setCurrentTab],
+  );
 
   useEffect(() => {
     if (Platform.OS === 'web' && navigationRef.isReady()) {
       const state = navigationRef.current?.getRootState();
       const currentRoute = state?.routes?.[state?.index ?? -1]?.name;
-      const allowedRoutes = ['Welcome', 'Onboarding', 'Auth', 'QRHandler', 'InvitationWelcome', 'PublicForm'];
+      const allowedRoutes = [
+        'Welcome',
+        'Onboarding',
+        'Auth',
+        'QRHandler',
+        'InvitationWelcome',
+        'PublicForm',
+      ];
       const hasValidSession = !!session;
 
       if (!hasValidSession && !onboardingCompleted && !allowedRoutes.includes(currentRoute || '')) {
         navigationRef.current?.reset({
           index: 0,
-          routes: [{ name: 'Welcome' }]});
+          routes: [{ name: 'Welcome' }],
+        });
       }
     }
   }, [onboardingCompleted, session]);
@@ -419,7 +503,11 @@ function AppContent({ setCurrentTab, session, onboardingCompleted, isProfileLoad
                 updateWebPageTitle(state);
               }}
               linking={{
-                prefixes: ['gurudevi://', 'https://platform.gurudevi.edlove.org', 'http://localhost:4000'],
+                prefixes: [
+                  'gurudevi://',
+                  'https://platform.gurudevi.edlove.org',
+                  'http://localhost:4000',
+                ],
                 config: {
                   screens: {
                     Welcome: '',
@@ -445,96 +533,154 @@ function AppContent({ setCurrentTab, session, onboardingCompleted, isProfileLoad
                         Community: 'community',
                         Library: 'library',
                         NotificationsPanel: 'notifications',
-                        SettingsPanel: 'settings'}},
-                    PublicForm: 'f/:slug'}}}}
+                        SettingsPanel: 'settings',
+                      },
+                    },
+                    PublicForm: 'f/:slug',
+                  },
+                },
+              }}
             >
-                <RootStack.Navigator
-                  id="RootStack"
-                  screenOptions={{ headerShown: false }}
-                  initialRouteName={onboardingCompleted ? 'Main' : 'Welcome'}
-                >
-                  {!onboardingCompleted ? (
-                    <>
-                      <RootStack.Screen name="Welcome">
-                        {() => (
-                          <ErrorBoundary name="Welcome Screen">
-                            <WelcomeScreen
-                              onLogin={() => navigationRef.isReady() && navigationRef.navigate('Auth' as never)}
-                              onGuest={() => navigationRef.isReady() && navigationRef.navigate('Onboarding' as never)}
-                            />
-                          </ErrorBoundary>
-                        )}
-                      </RootStack.Screen>
-                      <RootStack.Screen name="Auth" options={{ presentation: 'card' }}>
-                        {(props: any) => (
-                          <AuthScreen
-                            onSuccess={() => {
-                              identityAPI.getMyInternalId().then((id) => { if (id) fetchAndSetUserProfile(id); });
-                              if (navigationRef.isReady()) navigationRef.navigate('Onboarding' as never);
-                            }}
-                            onBack={() => props.navigation.goBack()}
+              <RootStack.Navigator
+                id="RootStack"
+                screenOptions={{ headerShown: false }}
+                initialRouteName={onboardingCompleted ? 'Main' : 'Welcome'}
+              >
+                {!onboardingCompleted ? (
+                  <>
+                    <RootStack.Screen name="Welcome">
+                      {() => (
+                        <ErrorBoundary name="Welcome Screen">
+                          <WelcomeScreen
+                            onLogin={() =>
+                              navigationRef.isReady() && navigationRef.navigate('Auth' as never)
+                            }
+                            onGuest={() =>
+                              navigationRef.isReady() &&
+                              navigationRef.navigate('Onboarding' as never)
+                            }
                           />
-                        )}
-                      </RootStack.Screen>
-                      <RootStack.Screen name="Onboarding">
-                        {() => (
-                          <ErrorBoundary name="Onboarding Screen">
-                            <OnboardingWrapper session={session} />
-                          </ErrorBoundary>
-                        )}
-                      </RootStack.Screen>
-                      <RootStack.Screen name="InvitationWelcome" component={InvitationWelcomeScreen} options={{ presentation: 'modal' }} />
-                      <RootStack.Screen name="PublicForm" options={{ headerShown: false }}>
-                        {() => (
-                          <Suspense fallback={<Center className="flex-1"><Spinner/></Center>}>
-                            <PublicFormScreen />
-                          </Suspense>
-                        )}
-                      </RootStack.Screen>
-                    </>
-                  ) : (
-                    <>
-                      <RootStack.Screen name="Main">
-                        {() => (
-                          <ErrorBoundary name="Main Tabs">
-                            <TabNavigator onTabChange={handleTabChange} />
-                          </ErrorBoundary>
-                        )}
-                      </RootStack.Screen>
-                      <RootStack.Screen name="AdminDashboard" component={AdminDashboard} />
-                      <RootStack.Screen name="AdminIncidentQueue" component={AdminIncidentQueue} />
-                      <RootStack.Screen name="AdminTenantDetail" component={AdminTenantDetail} />
-                      <RootStack.Screen name="AdminAuthorityRepair" component={AdminAuthorityRepair} />
-                      <RootStack.Screen name="AdminJobControl" component={AdminJobControl} />
-                      <RootStack.Screen name="AdminAuditLog" component={AdminAuditLog} />
-                      <RootStack.Screen name="AdminReleaseControl" component={AdminReleaseControl} />
-                      <RootStack.Screen name="AIAssistant" component={AIAssistantScreen} options={{ presentation: 'modal' }} />
-                      <RootStack.Screen name="Auth" options={{ presentation: 'modal' }}>
-                        {(props: any) => (
-                          <AuthScreen
-                            onSuccess={() => {
-                              identityAPI.getMyInternalId().then((id) => { if (id) fetchAndSetUserProfile(id); });
-                              props.navigation.goBack();
-                            }}
-                            onBack={() => props.navigation.goBack()}
-                          />
-                        )}
-                      </RootStack.Screen>
-                      <RootStack.Screen name="QRHandler" component={QRHandlerScreen} options={{ presentation: 'modal' }} />
-                      <RootStack.Screen name="AppSettings" component={AppSettingsScreen} options={{ presentation: 'modal' }} />
-                      <RootStack.Screen name="Notifications" component={NotificationsScreen} options={{ presentation: 'modal' }} />
-                      <RootStack.Screen name="ThuthimalClaim" component={ThuthimalClaimScreen} options={{ presentation: 'modal' }} />
-                      <RootStack.Screen name="InvitationWelcome" component={InvitationWelcomeScreen} options={{ presentation: 'modal' }} />
-                      <RootStack.Screen name="PublicForm" options={{ headerShown: false }}>
-                        {() => (
-                          <Suspense fallback={<Center className="flex-1"><Spinner/></Center>}>
-                            <PublicFormScreen />
-                          </Suspense>
-                        )}
-                      </RootStack.Screen>
-                    </>
-                  )}
-                </RootStack.Navigator>
+                        </ErrorBoundary>
+                      )}
+                    </RootStack.Screen>
+                    <RootStack.Screen name="Auth" options={{ presentation: 'card' }}>
+                      {(props: any) => (
+                        <AuthScreen
+                          onSuccess={() => {
+                            identityAPI.getMyInternalId().then((id) => {
+                              if (id) fetchAndSetUserProfile(id);
+                            });
+                            if (navigationRef.isReady())
+                              navigationRef.navigate('Onboarding' as never);
+                          }}
+                          onBack={() => props.navigation.goBack()}
+                        />
+                      )}
+                    </RootStack.Screen>
+                    <RootStack.Screen name="Onboarding">
+                      {() => (
+                        <ErrorBoundary name="Onboarding Screen">
+                          <OnboardingWrapper session={session} />
+                        </ErrorBoundary>
+                      )}
+                    </RootStack.Screen>
+                    <RootStack.Screen
+                      name="InvitationWelcome"
+                      component={InvitationWelcomeScreen}
+                      options={{ presentation: 'modal' }}
+                    />
+                    <RootStack.Screen name="PublicForm" options={{ headerShown: false }}>
+                      {() => (
+                        <Suspense
+                          fallback={
+                            <Center className="flex-1">
+                              <Spinner />
+                            </Center>
+                          }
+                        >
+                          <PublicFormScreen />
+                        </Suspense>
+                      )}
+                    </RootStack.Screen>
+                  </>
+                ) : (
+                  <>
+                    <RootStack.Screen name="Main">
+                      {() => (
+                        <ErrorBoundary name="Main Tabs">
+                          <TabNavigator onTabChange={handleTabChange} />
+                        </ErrorBoundary>
+                      )}
+                    </RootStack.Screen>
+                    <RootStack.Screen name="AdminDashboard" component={AdminDashboard} />
+                    <RootStack.Screen name="AdminIncidentQueue" component={AdminIncidentQueue} />
+                    <RootStack.Screen name="AdminTenantDetail" component={AdminTenantDetail} />
+                    <RootStack.Screen
+                      name="AdminAuthorityRepair"
+                      component={AdminAuthorityRepair}
+                    />
+                    <RootStack.Screen name="AdminJobControl" component={AdminJobControl} />
+                    <RootStack.Screen name="AdminAuditLog" component={AdminAuditLog} />
+                    <RootStack.Screen name="AdminReleaseControl" component={AdminReleaseControl} />
+                    <RootStack.Screen
+                      name="AIAssistant"
+                      component={AIAssistantScreen}
+                      options={{ presentation: 'modal' }}
+                    />
+                    <RootStack.Screen name="Auth" options={{ presentation: 'modal' }}>
+                      {(props: any) => (
+                        <AuthScreen
+                          onSuccess={() => {
+                            identityAPI.getMyInternalId().then((id) => {
+                              if (id) fetchAndSetUserProfile(id);
+                            });
+                            props.navigation.goBack();
+                          }}
+                          onBack={() => props.navigation.goBack()}
+                        />
+                      )}
+                    </RootStack.Screen>
+                    <RootStack.Screen
+                      name="QRHandler"
+                      component={QRHandlerScreen}
+                      options={{ presentation: 'modal' }}
+                    />
+                    <RootStack.Screen
+                      name="AppSettings"
+                      component={AppSettingsScreen}
+                      options={{ presentation: 'modal' }}
+                    />
+                    <RootStack.Screen
+                      name="Notifications"
+                      component={NotificationsScreen}
+                      options={{ presentation: 'modal' }}
+                    />
+                    <RootStack.Screen
+                      name="ThuthimalClaim"
+                      component={ThuthimalClaimScreen}
+                      options={{ presentation: 'modal' }}
+                    />
+                    <RootStack.Screen
+                      name="InvitationWelcome"
+                      component={InvitationWelcomeScreen}
+                      options={{ presentation: 'modal' }}
+                    />
+                    <RootStack.Screen name="PublicForm" options={{ headerShown: false }}>
+                      {() => (
+                        <Suspense
+                          fallback={
+                            <Center className="flex-1">
+                              <Spinner />
+                            </Center>
+                          }
+                        >
+                          <PublicFormScreen />
+                        </Suspense>
+                      )}
+                    </RootStack.Screen>
+                  </>
+                )}
+              </RootStack.Navigator>
             </NavigationContainer>
             <SyncManager />
             <NetworkStatusBanner />

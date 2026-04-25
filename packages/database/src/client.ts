@@ -1,7 +1,7 @@
 import { ZenStackClient } from '@zenstackhq/orm';
 import { PostgresDialect } from 'kysely';
 import { Pool } from 'pg';
-import { schema } from '../protocol/schema';
+import { schema } from '@repo/core/zen';
 
 type AuthUser = {
   id: string;

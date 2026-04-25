@@ -11,17 +11,17 @@ export const deviceType = 1; // 1 = PHONE in Expo DeviceType enum
 export const isDevice = true;
 
 export async function getDeviceTypeAsync() {
-    return 1;
+  return 1;
 }
 
 export default {
-    brand,
-    manufacturer,
-    modelName,
-    osName,
-    osVersion,
-    deviceName,
-    deviceType,
-    isDevice,
-    getDeviceTypeAsync,
+  brand,
+  manufacturer,
+  modelName,
+  osName,
+  osVersion,
+  deviceName,
+  deviceType,
+  isDevice,
+  getDeviceTypeAsync,
 };

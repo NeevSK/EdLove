@@ -94,7 +94,11 @@ export default function AttendanceScreenWeb() {
         },
       );
       if (user?.id) {
-        growthSignalsAPI.emitSilent(user.id, 'attendance_marked', { classroom_id: classroomId });
+      growthSignalsAPI.emitSilent({
+        user_id: user.id,
+        event_type: 'attendance_marked',
+        event_metadata: { classroom_id: classroomId },
+      });
       }
       setSaved(true);
     } catch (caughtError: any) {

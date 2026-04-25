@@ -15,35 +15,38 @@ const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const FONT_CACHE = `${CACHE_VERSION}-fonts`;
 const IMAGE_CACHE = `${CACHE_VERSION}-images`;
 
-const SHELL_ASSETS = [
-  '/',
-  '/index.html',
-  '/favicon.ico',
-];
+const SHELL_ASSETS = ['/', '/index.html', '/favicon.ico'];
 
-//  INSTALL 
+//  INSTALL
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(SHELL_CACHE).then(cache => cache.addAll(SHELL_ASSETS))
-  );
+  event.waitUntil(caches.open(SHELL_CACHE).then((cache) => cache.addAll(SHELL_ASSETS)));
   // Activate immediately  don't wait for old SW to die
   self.skipWaiting();
 });
 
-//  ACTIVATE 
+//  ACTIVATE
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(
-        keys.filter(k => k.startsWith('gurudevi-') && k !== SHELL_CACHE && k !== FONT_CACHE && k !== IMAGE_CACHE)
-          .map(k => caches.delete(k))
-      )
-    )
+    caches
+      .keys()
+      .then((keys) =>
+        Promise.all(
+          keys
+            .filter(
+              (k) =>
+                k.startsWith('gurudevi-') &&
+                k !== SHELL_CACHE &&
+                k !== FONT_CACHE &&
+                k !== IMAGE_CACHE,
+            )
+            .map((k) => caches.delete(k)),
+        ),
+      ),
   );
   self.clients.claim();
 });
 
-//  FETCH 
+//  FETCH
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
@@ -67,20 +70,22 @@ self.addEventListener('fetch', (event) => {
 
   // Navigation (HTML pages): network-first, fall back to shell
   if (request.mode === 'navigate') {
-    event.respondWith(
-      fetch(request).catch(() => caches.match('/index.html'))
-    );
+    event.respondWith(fetch(request).catch(() => caches.match('/index.html')));
     return;
   }
 
   // JS/CSS bundles: cache-first with background revalidation (stale-while-revalidate)
-  if (url.pathname.startsWith('/_expo/') || request.destination === 'script' || request.destination === 'style') {
+  if (
+    url.pathname.startsWith('/_expo/') ||
+    request.destination === 'script' ||
+    request.destination === 'style'
+  ) {
     event.respondWith(staleWhileRevalidate(SHELL_CACHE, request));
     return;
   }
 });
 
-//  STRATEGIES 
+//  STRATEGIES
 
 async function cacheFirst(cacheName, request) {
   const cached = await caches.match(request);
@@ -100,14 +105,14 @@ async function staleWhileRevalidate(cacheName, request) {
   const cache = await caches.open(cacheName);
   const cached = await cache.match(request);
   const networkFetch = fetch(request)
-    .then(response => {
+    .then((response) => {
       const url = new URL(request.url);
       if (response.ok && (url.protocol === 'http:' || url.protocol === 'https:')) {
         cache.put(request, response.clone());
       }
       return response;
     })
-    .catch(error => {
+    .catch((error) => {
       // On network error, log and return a fallback Response so we never resolve to null
       console.warn('[SW] Network fetch failed, using cache or fallback:', request.url, error);
       return Response.error();

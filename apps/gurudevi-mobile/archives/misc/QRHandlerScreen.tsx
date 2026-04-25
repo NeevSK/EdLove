@@ -13,23 +13,23 @@
  *   thuthimal_gift → navigated from here to ThuthimalClaimScreen
  */
 
-import React, { useEffect, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { type RouteProp, useNavigation, useRoute } from '@react-navigation/native';
+import { FlowResolver, identityAPI } from '@repo/core';
+import type { QRPayload } from '@repo/scanner-kit';
 import {
   Box,
-  VStack,
-  Text,
   Heading,
-  Spinner,
+  hapticError,
+  hapticSuccess,
   ScreenWrapper,
+  Spinner,
+  Text,
   Theme,
+  useThemedColors,
+  VStack,
 } from '@repo/ui';
-import { useThemedColors } from '@repo/ui';
-import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
-import { supabase, api, FlowResolver, identityAPI } from '@repo/core';
-import { communityAPI } from '@repo/community';
-import type { QRPayload } from '@repo/scanner-kit';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { hapticSuccess, hapticError } from '@repo/ui';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 type QRHandlerRouteParams = {
@@ -52,7 +52,7 @@ export default function QRHandlerScreen() {
       return;
     }
     executeAction(payload);
-  }, []);
+  }, [payload, navigation.goBack, executeAction]);
 
   const executeAction = async (p: QRPayload) => {
     try {
@@ -74,10 +74,10 @@ export default function QRHandlerScreen() {
         if (result.intent) {
           // Map Abstract Core Intent -> Mobile Specific Navigation
           const intentMap: Record<string, () => void> = {
-            'GOTO_CLASSROOM': () => navigation.navigate('Main', { screen: 'Classroom' }),
-            'GOTO_COMMUNITY': () => navigation.navigate('Main', { screen: 'Community' }),
-            'GOTO_SELF': () => navigation.navigate('Main', { screen: 'Self' }),
-            'GOTO_THUTHIMAL_CLAIM': () => navigation.replace('ThuthimalClaim', result.params)
+            GOTO_CLASSROOM: () => navigation.navigate('Main', { screen: 'Classroom' }),
+            GOTO_COMMUNITY: () => navigation.navigate('Main', { screen: 'Community' }),
+            GOTO_SELF: () => navigation.navigate('Main', { screen: 'Self' }),
+            GOTO_THUTHIMAL_CLAIM: () => navigation.replace('ThuthimalClaim', result.params),
           };
 
           const action = intentMap[result.intent];
@@ -112,26 +112,26 @@ export default function QRHandlerScreen() {
 
   return (
     <ScreenWrapper>
-      <Box sx={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: Theme.spacing.xl }}>
+      <Box
+        sx={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: Theme.spacing.xl }}
+      >
         <VStack sx={{ alignItems: 'center', gap: Theme.spacing.lg }}>
           {status === 'processing' && (
             <Spinner size="large" color={Theme.colors.sanctuarySaffron} />
           )}
-          {status === 'success' && (
-            <Text sx={{ fontSize: 56 }}>✅</Text>
-          )}
-          {status === 'error' && (
-            <Text sx={{ fontSize: 56 }}>⚠️</Text>
-          )}
+          {status === 'success' && <Text sx={{ fontSize: 56 }}>✅</Text>}
+          {status === 'error' && <Text sx={{ fontSize: 56 }}>⚠️</Text>}
           <Heading
             sx={{ textAlign: 'center', fontSize: Theme.typography.fontSize.xl }}
             color={statusColor as any}
           >
-            {status === 'processing' ? t('qrHandler.processing') : status === 'success' ? t('qrHandler.done') : t('qrHandler.error')}
+            {status === 'processing'
+              ? t('qrHandler.processing')
+              : status === 'success'
+                ? t('qrHandler.done')
+                : t('qrHandler.error')}
           </Heading>
-          <Text
-            sx={{ textAlign: 'center', color: colors.textSecondary }}
-          >
+          <Text sx={{ textAlign: 'center', color: colors.textSecondary }}>
             {status === 'processing' ? t('qrHandler.processingMessage') : message}
           </Text>
         </VStack>

@@ -1,19 +1,19 @@
-import { schemas } from './schemas';
+import type { schemas } from './schemas';
 
 /**
  * Gurudevi Platform Event Logic
- * 
+ *
  * 🧱 ARCHITECTURAL BOUNDARY (Sovereign Core):
  * This file no longer instantiates the Inngest client.
  * Client instantiation is now the responsibility of the "Imperative Shell" (apps).
- * 
+ *
  * We export only the schemas and logic-level helpers.
  */
 
 export * from './schemas';
 
 /**
- * Legacy support for PlatformEvents type. 
+ * Legacy support for PlatformEvents type.
  * Newer code should use the inferred types from schemas.ts
  */
 export type PlatformEvents = {

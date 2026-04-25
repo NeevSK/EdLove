@@ -9,8 +9,8 @@
     "skipLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "protocol/*": ["./protocol/*"]
+      "zenstack/*": ["./zenstack/*"]
     }
   },
-  "include": ["src/**/*", "protocol/**/*"]
+  "include": ["src/**/*", "zenstack/**/*"]
 }

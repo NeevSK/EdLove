@@ -80,4 +80,3 @@ if (import.meta.vitest) {
     expect(() => UserSchema.parse(invalidUser)).toThrow();
   });
 }
-

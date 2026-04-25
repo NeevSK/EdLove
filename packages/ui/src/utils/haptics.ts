@@ -3,14 +3,18 @@
  * Consistent haptic patterns across the app
  */
 
-import * as Haptics from 'expo-haptics';
+import { coreRuntime } from '@repo/core/logic';
 
 /**
  * Light haptic feedback
  * Use for: Button presses, taps, toggles
  */
 export function hapticLight() {
-  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  try {
+    coreRuntime.haptics.impactLight();
+  } catch {
+    // Fail silently if runtime not registered
+  }
 }
 
 /**
@@ -18,7 +22,11 @@ export function hapticLight() {
  * Use for: Important actions, confirmations, selection changes
  */
 export function hapticMedium() {
-  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+  try {
+    coreRuntime.haptics.impactMedium();
+  } catch {
+    // Fail silently
+  }
 }
 
 /**
@@ -26,7 +34,11 @@ export function hapticMedium() {
  * Use for: Destructive actions, warnings, errors
  */
 export function hapticHeavy() {
-  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+  try {
+    coreRuntime.haptics.impactHeavy();
+  } catch {
+    // Fail silently
+  }
 }
 
 /**
@@ -34,7 +46,11 @@ export function hapticHeavy() {
  * Use for: Successful operations, achievements, completion
  */
 export function hapticSuccess() {
-  Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+  try {
+    coreRuntime.haptics.notificationSuccess();
+  } catch {
+    // Fail silently
+  }
 }
 
 /**
@@ -42,7 +58,11 @@ export function hapticSuccess() {
  * Use for: Warnings, attention needed
  */
 export function hapticWarning() {
-  Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+  try {
+    coreRuntime.haptics.notificationWarning();
+  } catch {
+    // Fail silently
+  }
 }
 
 /**
@@ -50,7 +70,11 @@ export function hapticWarning() {
  * Use for: Errors, validation failures
  */
 export function hapticError() {
-  Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+  try {
+    coreRuntime.haptics.notificationError();
+  } catch {
+    // Fail silently
+  }
 }
 
 /**
@@ -58,7 +82,11 @@ export function hapticError() {
  * Use for: Scrolling through lists, picker changes
  */
 export function hapticSelection() {
-  Haptics.selectionAsync();
+  try {
+    coreRuntime.haptics.selection();
+  } catch {
+    // Fail silently
+  }
 }
 
 /**
@@ -66,7 +94,11 @@ export function hapticSelection() {
  * Creates a gentle pulse pattern
  */
 export async function hapticBreathing() {
-  await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-  await new Promise((resolve) => setTimeout(resolve, 200));
-  await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  try {
+    coreRuntime.haptics.impactLight();
+    await new Promise((resolve) => setTimeout(resolve, 200));
+    coreRuntime.haptics.impactLight();
+  } catch {
+    // Fail silently
+  }
 }

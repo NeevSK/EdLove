@@ -1,17 +1,43 @@
-﻿import fs from 'node:fs';
+import fs from 'node:fs';
 import path from 'node:path';
-import { PRINCIPAL_FEATURE_REGISTRY } from '../../../../../packages/admin/src/screens/principal/PrincipalFeatureRegistry';
-import { PRINCIPAL_FEATURE_SCOPE_MAP } from '../../../../../packages/admin/src/screens/principal/PrincipalIAScope';
+import { PRINCIPAL_FEATURE_REGISTRY } from '@repo/admin/screens/principal/PrincipalFeatureRegistry';
+import { PRINCIPAL_FEATURE_SCOPE_MAP } from '@repo/admin/screens/principal/PrincipalIAScope';
 
 const APP_ROOT = path.resolve(__dirname, '../../..');
 const WORKSPACE_ROOT = path.resolve(APP_ROOT, '..', '..');
-const INSTITUTIONAL_ARC_CARD = path.join(WORKSPACE_ROOT, 'packages', 'admin', 'src', 'screens', 'principal', 'InstitutionalArcCard.tsx');
-const COMMAND_CENTER = path.join(WORKSPACE_ROOT, 'packages', 'admin', 'src', 'screens', 'principal', 'CommandCenter.tsx');
-const DASHBOARD_CONTENT = path.join(WORKSPACE_ROOT, 'packages', 'admin', 'src', 'screens', 'principal', 'DashboardContent.tsx');
+const INSTITUTIONAL_ARC_CARD = path.join(
+  WORKSPACE_ROOT,
+  'packages',
+  'admin',
+  'src',
+  'screens',
+  'principal',
+  'InstitutionalArcCard.tsx',
+);
+const COMMAND_CENTER = path.join(
+  WORKSPACE_ROOT,
+  'packages',
+  'admin',
+  'src',
+  'screens',
+  'principal',
+  'CommandCenter.tsx',
+);
+const DASHBOARD_CONTENT = path.join(
+  WORKSPACE_ROOT,
+  'packages',
+  'admin',
+  'src',
+  'screens',
+  'principal',
+  'DashboardContent.tsx',
+);
 const EN_LOCALE = path.join(APP_ROOT, 'src', 'i18n', 'locales', 'en.json');
 
-function get(obj: any, keyPath: string): any {
-  return keyPath.split('.').reduce((acc, key) => acc?.[key], obj);
+function get(obj: Record<string, unknown>, keyPath: string): unknown {
+  return keyPath
+    .split('.')
+    .reduce((acc: unknown, key: string) => (acc as Record<string, unknown>)?.[key], obj);
 }
 
 describe('Principal IA coherence', () => {
@@ -20,8 +46,12 @@ describe('Principal IA coherence', () => {
     for (const featureId of featureIds) {
       expect(PRINCIPAL_FEATURE_SCOPE_MAP[featureId]).toBeDefined();
       expect(PRINCIPAL_FEATURE_REGISTRY[featureId]?.scope).toBeDefined();
-      expect(PRINCIPAL_FEATURE_REGISTRY[featureId]?.scopeBadgeLabelKey).toMatch(/^principal\.ia\.scope\./);
-      expect(PRINCIPAL_FEATURE_REGISTRY[featureId]?.scopeHelpTextKey).toMatch(/^principal\.ia\.help\./);
+      expect(PRINCIPAL_FEATURE_REGISTRY[featureId]?.scopeBadgeLabelKey).toMatch(
+        /^principal\.ia\.scope\./,
+      );
+      expect(PRINCIPAL_FEATURE_REGISTRY[featureId]?.scopeHelpTextKey).toMatch(
+        /^principal\.ia\.help\./,
+      );
     }
   });
 
@@ -62,7 +92,8 @@ describe('Principal IA coherence', () => {
       'principal.ia.scope.crossEcosystem',
       'principal.ia.help.institutional',
       'principal.ia.help.classroom',
-      'principal.ia.help.crossEcosystem'];
+      'principal.ia.help.crossEcosystem',
+    ];
 
     for (const keyPath of requiredKeys) {
       expect(get(en, keyPath)).toBeTruthy();

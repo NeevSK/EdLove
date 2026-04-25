@@ -1,9 +1,8 @@
-﻿import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Platform } from 'react-native';
 import { v4 as uuidv4 } from 'uuid';
 import { identityAPI } from '../native/identity';
 import { supabase } from '../native/supabase';
 import { APIError } from '../types';
+import { coreRuntime } from '../logic/runtimeRegistry';
 
 const DEVICE_INSTALL_ID_KEY = 'gurudevi-device-install-id';
 const SERVER_DEVICE_ID_KEY = 'gurudevi-server-device-id';
@@ -53,34 +52,26 @@ function normalizeDeviceTrustRow(
 }
 
 function getDeviceMetadata() {
-  const constants = (Platform.constants ?? {}) as Record<string, unknown>;
-  const brand = typeof constants.Brand === 'string' ? constants.Brand.trim() : '';
-  const model = typeof constants.Model === 'string' ? constants.Model.trim() : '';
-  const parts = [brand, model].filter(Boolean);
-
-  return {
-    modelName: parts.length > 0 ? parts.join(' ') : Platform.OS,
-    osVersion: Platform.Version == null ? null : String(Platform.Version),
-    platform: Platform.OS,
-  };
+  return coreRuntime.device.getMetadata();
 }
 
 async function getOrCreateInstallId() {
-  const existing = await AsyncStorage.getItem(DEVICE_INSTALL_ID_KEY);
+  const existing = await coreRuntime.storage.getItem(DEVICE_INSTALL_ID_KEY);
   if (existing) return existing;
 
   const next = uuidv4();
-  await AsyncStorage.setItem(DEVICE_INSTALL_ID_KEY, next);
+  await coreRuntime.storage.setItem(DEVICE_INSTALL_ID_KEY, next);
   return next;
 }
 
 async function getStoredServerDeviceId() {
-  return AsyncStorage.getItem(SERVER_DEVICE_ID_KEY);
+  return coreRuntime.storage.getItem(SERVER_DEVICE_ID_KEY);
 }
 
 async function setStoredServerDeviceId(deviceId: string) {
-  await AsyncStorage.setItem(SERVER_DEVICE_ID_KEY, deviceId);
+  await coreRuntime.storage.setItem(SERVER_DEVICE_ID_KEY, deviceId);
 }
+
 
 function unwrapRpcRow<T>(data: T[] | T | null): T | null {
   if (Array.isArray(data)) {

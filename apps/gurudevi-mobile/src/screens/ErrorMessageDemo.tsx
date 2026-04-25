@@ -1,107 +1,112 @@
-﻿/**
- * ERRORMESSAGE DEMO - Visual Test
- * 
+/**
+ * ERRORMESSAGE DEMO - Visual Test (Zero-Legacy Ready)
+ *
  * This file demonstrates all three types of ErrorMessage component
  * to ensure they render correctly with proper styling and dismiss functionality.
  */
 
-import React, { useState } from 'react';
-import { View, ScrollView, StyleSheet, Text, TextStyle } from 'react-native';
-import { ErrorMessage } from '@repo/ui';
-import {  } from '@repo/ui';
+import {
+  Box,
+  ErrorMessage,
+  ScrollView,
+  Text,
+  VStack,
+} from '@repo/ui';
+import { useState } from 'react';
 
 export default function ErrorMessageDemo() {
-    const [showGentle, setShowGentle] = useState(true);
-    const [showWarning, setShowWarning] = useState(true);
-    const [showSevere, setShowSevere] = useState(true);
+  const [showGentle, setShowGentle] = useState(true);
+  const [showWarning, setShowWarning] = useState(true);
+  const [showSevere, setShowSevere] = useState(true);
 
-    return (
-        <ScrollView style={styles.container}>
-            <View style={styles.section}>
-                <Text style={styles.title}>ErrorMessage Component Demo</Text>
+  return (
+    <ScrollView className="flex-1 bg-obsidian">
+      <Box className="p-lg">
+        <VStack space="xl">
+          <Text className="text-3xl font-bold text-sacredWhite">
+            ErrorMessage Component Demo
+          </Text>
 
-                {/* Gentle Type */}
-                <Text style={styles.sectionTitle}>Gentle (Info)</Text>
-                {showGentle && (
-                    <ErrorMessage
-                        message="Your progress has been saved successfully."
-                        type="gentle"
-                        onDismiss={() => setShowGentle(false)}
-                    />
-                )}
-                {!showGentle && (
-                    <Text style={styles.dismissedText}>
-                        Gentle message dismissed. Refresh to see again.
-                    </Text>
-                )}
+          {/* Gentle Type */}
+          <Box>
+            <Text className="text-xl font-bold text-starlightGray mb-sm">
+              Gentle (Info)
+            </Text>
+            {showGentle && (
+              <ErrorMessage
+                message="Your progress has been saved successfully."
+                type="gentle"
+                onDismiss={() => setShowGentle(false)}
+              />
+            )}
+            {!showGentle && (
+              <Text className="text-sm italic text-mistGray mt-sm">
+                Gentle message dismissed. Refresh to see again.
+              </Text>
+            )}
+          </Box>
 
-                {/* Warning Type */}
-                <Text style={styles.sectionTitle}>Warning</Text>
-                {showWarning && (
-                    <ErrorMessage
-                        message="Please review your entries before submitting the form."
-                        type="warning"
-                        onDismiss={() => setShowWarning(false)}
-                    />
-                )}
-                {!showWarning && (
-                    <Text style={styles.dismissedText}>
-                        Warning message dismissed. Refresh to see again.
-                    </Text>
-                )}
+          {/* Warning Type */}
+          <Box>
+            <Text className="text-xl font-bold text-starlightGray mb-sm">
+              Warning
+            </Text>
+            {showWarning && (
+              <ErrorMessage
+                message="Please review your entries before submitting the form."
+                type="warning"
+                onDismiss={() => setShowWarning(false)}
+              />
+            )}
+            {!showWarning && (
+              <Text className="text-sm italic text-mistGray mt-sm">
+                Warning message dismissed. Refresh to see again.
+              </Text>
+            )}
+          </Box>
 
-                {/* Severe Type */}
-                <Text style={styles.sectionTitle}>Severe (Error)</Text>
-                {showSevere && (
-                    <ErrorMessage
-                        message="Connection failed. Please check your internet and try again."
-                        type="severe"
-                        onDismiss={() => setShowSevere(false)}
-                    />
-                )}
-                {!showSevere && (
-                    <Text style={styles.dismissedText}>
-                        Severe message dismissed. Refresh to see again.
-                    </Text>
-                )}
+          {/* Severe Type */}
+          <Box>
+            <Text className="text-xl font-bold text-starlightGray mb-sm">
+              Severe (Error)
+            </Text>
+            {showSevere && (
+              <ErrorMessage
+                message="Connection failed. Please check your internet and try again."
+                type="severe"
+                onDismiss={() => setShowSevere(false)}
+              />
+            )}
+            {!showSevere && (
+              <Text className="text-sm italic text-mistGray mt-sm">
+                Severe message dismissed. Refresh to see again.
+              </Text>
+            )}
+          </Box>
 
-                {/* Without Dismiss Button */}
-                <Text style={styles.sectionTitle}>Without Dismiss (Warning)</Text>
-                <ErrorMessage
-                    message="This is a persistent warning message without a dismiss button."
-                    type="warning"
-                />
+          {/* Without Dismiss Button */}
+          <Box>
+            <Text className="text-xl font-bold text-starlightGray mb-sm">
+              Without Dismiss (Warning)
+            </Text>
+            <ErrorMessage
+              message="This is a persistent warning message without a dismiss button."
+              type="warning"
+            />
+          </Box>
 
-                {/* Long Message Test */}
-                <Text style={styles.sectionTitle}>Long Message Test</Text>
-                <ErrorMessage
-                    message="This is a very long error message to test how the component handles text wrapping and layout when the message content is quite extensive and spans multiple lines."
-                    type="severe"
-                />
-            </View>
-        </ScrollView>
-    );
+          {/* Long Message Test */}
+          <Box>
+            <Text className="text-xl font-bold text-starlightGray mb-sm">
+              Long Message Test
+            </Text>
+            <ErrorMessage
+              message="This is a very long error message to test how the component handles text wrapping and layout when the message content is quite extensive and spans multiple lines."
+              type="severe"
+            />
+          </Box>
+        </VStack>
+      </Box>
+    </ScrollView>
+  );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: obsidian},
-    section: {
-        padding: Theme.spacing.lg},
-    title: {
-        fontSize: Theme.typography.h1.fontSize,
-        fontWeight: Theme.typography.h1.fontWeight as TextStyle['fontWeight'],
-        color: sacredWhite,
-        marginBottom: Theme.spacing.xl},
-    sectionTitle: {
-        fontSize: Theme.typography.h3.fontSize,
-        fontWeight: Theme.typography.h3.fontWeight as TextStyle['fontWeight'],
-        color: starlightGray,
-        marginTop: Theme.spacing.lg,
-        marginBottom: Theme.spacing.sm},
-    dismissedText: {
-        color: mistGray,
-        fontSize: Theme.typography.fontSize.sm,
-        fontStyle: 'italic',
-        marginBottom: Theme.spacing.md}});

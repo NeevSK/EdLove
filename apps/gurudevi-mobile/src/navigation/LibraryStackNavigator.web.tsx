@@ -1,8 +1,8 @@
-﻿import React from 'react';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import {  useTheme } from '@repo/ui';
+﻿import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import type { LibraryStackParamList } from '@repo/core';
+import { useTheme } from '@repo/ui';
+import React from 'react';
 import { StackFallback } from '../components/web/WebScreenShimmer';
-import { LibraryStackParamList } from '@repo/core';
 
 // Web-specific screens — lazy loaded for code splitting
 // Web-specific screens — lazy loaded for code splitting
@@ -17,25 +17,27 @@ const CuratorReviewScreen = React.lazy(() => import('@repo/library/screens/Curat
 const Stack = createNativeStackNavigator<LibraryStackParamList>();
 
 function ScreenFallback() {
-    return <StackFallback variant="cards" />;
+  return <StackFallback variant="cards" />;
 }
 
 export default function LibraryStackNavigatorWeb() {
-    const { gradientNodes } = useTheme();
+  const { gradientNodes } = useTheme();
 
-    return (
-        <React.Suspense fallback={<ScreenFallback />}>
-        <Stack.Navigator
-            id="LibraryStack"
-            screenOptions={{
-                headerShown: false,
-                contentStyle: { backgroundColor: gradientNodes[0] }}}>
-            <Stack.Screen name="LibraryHome" component={LibraryScreenWeb} />
-            <Stack.Screen name="PDFViewer" component={PDFViewerScreen} />
-            <Stack.Screen name="VideoPlayer" component={VideoPlayerScreen} />
-            <Stack.Screen name="LibraryMap" component={MapScreen} />
-            <Stack.Screen name="CuratorReview" component={CuratorReviewScreen} />
-        </Stack.Navigator>
-        </React.Suspense>
-    );
+  return (
+    <React.Suspense fallback={<ScreenFallback />}>
+      <Stack.Navigator
+        id="LibraryStack"
+        screenOptions={{
+          headerShown: false,
+          contentStyle: { backgroundColor: gradientNodes[0] },
+        }}
+      >
+        <Stack.Screen name="LibraryHome" component={LibraryScreenWeb} />
+        <Stack.Screen name="PDFViewer" component={PDFViewerScreen} />
+        <Stack.Screen name="VideoPlayer" component={VideoPlayerScreen} />
+        <Stack.Screen name="LibraryMap" component={MapScreen} />
+        <Stack.Screen name="CuratorReview" component={CuratorReviewScreen} />
+      </Stack.Navigator>
+    </React.Suspense>
+  );
 }

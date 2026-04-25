@@ -1,45 +1,21 @@
 import React, { useMemo } from 'react';
 import { Box, GlobalHeader, SandboxBanner, ScreenWrapper, SanctuaryNudge } from '@repo/ui';
 import { FeatureGuard } from '@repo/core';
-import type { WorkspaceSurfaceDefinition } from '@repo/core';
 import { Wind } from 'lucide-react-native';
-import { PrincipalDashboard, SectionHeadDashboard, GradeHeadDashboard } from '@repo/admin';
 import TeacherDashboard from '../screens/TeacherDashboard';
 import StudentDashboard from '../screens/StudentDashboard';
 import {
     TeacherOnboardingView,
     StudentOnboardingView,
-    PrincipalOnboardingView,
 } from '../components';
-
-export type ClassroomWorkspaceSurfaceId =
-    | 'principal'
-    | 'section-head'
-    | 'grade-head'
-    | 'teacher'
-    | 'student';
-
-export type ClassroomWorkspaceCapabilityKey =
-    | 'PrincipalDashboard'
-    | 'SectionHeadDashboard'
-    | 'GradeHeadDashboard'
-    | 'TeacherDashboard'
-    | 'StudentDashboard';
-
-export type ClassroomWorkspaceSurface = WorkspaceSurfaceDefinition<
-    ClassroomWorkspaceSurfaceId,
-    ClassroomWorkspaceCapabilityKey
-> & {
-    content: React.ReactNode;
-    title: string;
-    subtitle?: string;
-    summary?: string;
-    temporalLabel?: string;
-    metadata?: string[];
-};
+import { appendPrincipalWorkspaceSurfaces } from './usePrincipalWorkspaceSurfaces';
+import { 
+    ClassroomWorkspaceSurfaceId, 
+    ClassroomWorkspaceSurface 
+} from '../types/workspace';
 
 type UseClassroomWorkspaceSurfacesArgs = {
-    can: (action: any, subject: any, field?: string) => boolean;
+    can: (action: string, subject: string, field?: string) => boolean;
     t: (key: string) => string;
     isGuest: boolean;
     classroomData: {
@@ -56,7 +32,7 @@ type UseClassroomWorkspaceSurfacesArgs = {
     setIsClaimInviteOpen: (value: boolean) => void;
     setBreathingOpen: (value: boolean) => void;
     fetchRoleData: () => void | Promise<void>;
-    navigation: any;
+    navigation: { navigate: (screen: string, params?: any) => void };
     surfaceInsights?: Partial<Record<ClassroomWorkspaceSurfaceId, {
         summary?: string;
         temporalLabel?: string;
@@ -140,78 +116,18 @@ export function useClassroomWorkspaceSurfaces({
 
         const surfaces: ClassroomWorkspaceSurface[] = [];
 
-        if (can('manage', 'PrincipalDashboard')) {
-            const principalContent =
-                !schoolIdToUse && !isDemoModeTriggered ? (
-                    <PrincipalOnboardingView
-                        isGuest={isGuest}
-                        onTryDemo={() => setIsDemoModeTriggered(true)}
-                        onCreateSchool={() => setIsCreateSchoolOpen(true)}
-                        onJoinSchool={() => navigation.navigate('Search' as any)}
-                    />
-                ) : (
-                    <PrincipalDashboard
-                        schoolId={schoolIdToUse || 'demo-school'}
-                        userId={classroomData.userId}
-                        onRefresh={fetchRoleData}
-                    />
-                );
-
-            surfaces.push({
-                surfaceId: 'principal',
-                workspaceId: 'classroom',
-                capabilityKey: 'PrincipalDashboard',
-                ownerPackage: 'admin',
-                defaultZone: 'institution',
-                defaultOrder: 10,
-                mobileSupport: true,
-                webSupport: true,
-                title: 'Principal Shell',
-                subtitle: 'Official school governance workspace',
-                summary: surfaceInsights?.principal?.summary ?? 'Institutional pulse, observations, approvals, and published academic oversight.',
-                temporalLabel: surfaceInsights?.principal?.temporalLabel ?? 'Official',
-                metadata: surfaceInsights?.principal?.metadata ?? ['Admin-owned', 'Governance'],
-                content: principalContent,
-            });
-        }
-
-        if (can('manage', 'SectionHeadDashboard')) {
-            surfaces.push({
-                surfaceId: 'section-head',
-                workspaceId: 'classroom',
-                capabilityKey: 'SectionHeadDashboard',
-                ownerPackage: 'classroom',
-                defaultZone: 'work',
-                defaultOrder: 20,
-                mobileSupport: true,
-                webSupport: true,
-                title: 'Section Head Desk',
-                subtitle: 'Section-level academic coordination',
-                summary: 'Mixed teaching and coordination capability within the classroom holon.',
-                temporalLabel: 'Work',
-                metadata: ['Academic', 'Mixed-role'],
-                content: <SectionHeadDashboard schoolId={schoolIdToUse || undefined} userId={classroomData.userId} />,
-            });
-        }
-
-        if (can('manage', 'GradeHeadDashboard')) {
-            surfaces.push({
-                surfaceId: 'grade-head',
-                workspaceId: 'classroom',
-                capabilityKey: 'GradeHeadDashboard',
-                ownerPackage: 'classroom',
-                defaultZone: 'work',
-                defaultOrder: 30,
-                mobileSupport: true,
-                webSupport: true,
-                title: 'Grade Head Deck',
-                subtitle: 'Grade-level academic stewardship',
-                summary: 'Cross-class coordination for grade-wide rhythms, issues, and academic flow.',
-                temporalLabel: 'Work',
-                metadata: ['Academic', 'Mixed-role'],
-                content: <GradeHeadDashboard schoolId={schoolIdToUse || undefined} userId={classroomData.userId} />,
-            });
-        }
+        appendPrincipalWorkspaceSurfaces(surfaces, {
+            can,
+            isGuest,
+            isDemoModeTriggered,
+            classroomData,
+            schoolIdToUse,
+            fetchRoleData,
+            navigation,
+            surfaceInsights,
+            onTryDemo: () => setIsDemoModeTriggered(true),
+            onCreateSchool: () => setIsCreateSchoolOpen(true),
+        });
 
         if (can('manage', 'TeacherDashboard')) {
             const teacherContent =
@@ -220,11 +136,11 @@ export function useClassroomWorkspaceSurfaces({
                         isGuest={isGuest}
                         onTryDemo={() => setIsDemoModeTriggered(true)}
                         onCreateClassroom={() => setIsCreateClassroomOpen(true)}
-                        onJoinSchool={() => navigation.navigate('Search' as any)}
+                        onJoinSchool={() => navigation.navigate('Search')}
                     />
                 ) : (
                     <ScreenWrapper scroll={false} noTopInset={true}>
-                        <Box sx={{ flex: 1 }}>
+                        <Box className="flex-1">
                             <GlobalHeader title="Classroom" subtitle={undefined} />
                             {renderNudge()}
                             {isDemoModeTriggered && <SandboxBanner />}
@@ -262,11 +178,11 @@ export function useClassroomWorkspaceSurfaces({
                         isGuest={isGuest}
                         onTryDemo={() => setIsDemoModeTriggered(true)}
                         onJoinClass={() => setIsClaimInviteOpen(true)}
-                        onFindSchool={() => navigation.navigate('Search' as any)}
+                        onFindSchool={() => navigation.navigate('Search')}
                     />
                 ) : (
                     <ScreenWrapper scroll={false} noTopInset={true}>
-                        <Box sx={{ flex: 1 }}>
+                        <Box className="flex-1">
                             <GlobalHeader title={t('classroom.mySanctuaries') || 'My Sanctuaries'} subtitle={undefined} />
                             {renderNudge()}
                             {isDemoModeTriggered && <SandboxBanner />}
@@ -300,18 +216,19 @@ export function useClassroomWorkspaceSurfaces({
         return surfaces;
     }, [
         can,
+        t,
+        isGuest,
         classroomData,
         schoolIdToUse,
         isDemoModeTriggered,
-        isGuest,
-        t,
-        navigation,
-        fetchRoleData,
-        setBreathingOpen,
-        setIsClaimInviteOpen,
-        setIsCreateClassroomOpen,
-        setIsCreateSchoolOpen,
         setIsDemoModeTriggered,
+        setIsCreateSchoolOpen,
+        setIsCreateClassroomOpen,
+        setIsClaimInviteOpen,
+        setBreathingOpen,
+        fetchRoleData,
+        navigation,
+        renderNudge,
         surfaceInsights,
     ]);
 }

@@ -1,6 +1,6 @@
-﻿declare module 'react-native-gifted-charts' {
+declare module 'react-native-gifted-charts' {
   import * as React from 'react';
 
-  export const BarChart: React.ComponentType<any>;
-  export const PieChart: React.ComponentType<any>;
+  export const BarChart: React.ComponentType<unknown>;
+  export const PieChart: React.ComponentType<unknown>;
 }

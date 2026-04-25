@@ -1,20 +1,18 @@
-﻿import React from 'react';
-import { Theme, VStack } from '@repo/ui';
-import {
+﻿import {
   DashboardEcho,
   InstitutionalCalendarSection,
   LeaveApprovalSection,
   MorningSituationalBrief,
   PrincipalObservationsSection,
+  type PrincipalWorkspaceView,
+  type PrincipalZoneId,
   PulseDashboard,
   ResourceNeedsDashboard,
   TeacherCarousel,
-} from '@repo/admin';
-import {
   usePrincipalWorkspaceShell,
-  type PrincipalWorkspaceView,
-  type PrincipalZoneId,
 } from '@repo/admin';
+import { Theme, VStack } from '@repo/ui';
+import type React from 'react';
 
 type ZoneSurfaceArgs = {
   schoolId: string;

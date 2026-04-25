@@ -37,4 +37,3 @@ export const definePrincipalAbilities = (
   can('manage', 'Library');
   can('manage', 'LibraryReview');
 };
-

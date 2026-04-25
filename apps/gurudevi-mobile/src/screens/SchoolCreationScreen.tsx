@@ -1,14 +1,13 @@
-﻿/**
+/**
  * SchoolCreationScreen.tsx
  *
  * Thin wrapper for the Admin School Creation UI.
  */
 
-import React from 'react';
-import { ErrorBoundary } from '@repo/ui';
 import { SchoolCreationScreen } from '@repo/admin';
+import { ErrorBoundary } from '@repo/ui';
 
-const SchoolCreationWrapper = (props: any) => (
+const SchoolCreationWrapper = (props: Record<string, unknown>) => (
   <ErrorBoundary name="School Creation">
     <SchoolCreationScreen {...props} />
   </ErrorBoundary>

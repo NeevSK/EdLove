@@ -2,9 +2,9 @@
 import { getActiveAccountId, setActiveAccountId } from '../lib/accountScope';
 import { DeviceTrustEngine } from '../lib/security/deviceTrust';
 import { useMutationQueue } from '../lib/sync/useMutationQueue';
+import { resolveFeatureFlags } from '../logic/permissions/feature-engine';
 import { identityAPI } from '../native/identity';
 import { supabase } from '../native/supabase';
-import { resolveFeatureFlags } from '../logic/permissions/feature-engine';
 import type { UISlice } from './slices/ui.slice';
 import { useAuthStore } from './useAuthStore';
 import { useFeatureStore } from './useFeatureStore';
@@ -132,4 +132,3 @@ export const rehydrateScopedStores = async () => {
     useMutationQueue.persist?.rehydrate?.(),
   ]);
 };
-

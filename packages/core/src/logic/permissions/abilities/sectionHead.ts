@@ -20,4 +20,3 @@ export const defineSectionHeadAbilities = (
     can('manage', 'Staff', { section_id: user.sectionId } as any);
   }
 };
-

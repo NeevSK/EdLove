@@ -4,12 +4,7 @@ const path = require('node:path');
 const APP_ROOT = path.resolve(__dirname, '../../..');
 const WORKSPACE_ROOT = path.resolve(APP_ROOT, '..', '..');
 
-const CLASSROOM_PACKAGE_JSON = path.join(
-  WORKSPACE_ROOT,
-  'packages',
-  'classroom',
-  'package.json',
-);
+const CLASSROOM_PACKAGE_JSON = path.join(WORKSPACE_ROOT, 'packages', 'classroom', 'package.json');
 const CLASSROOM_NATIVE_STACK = path.join(
   APP_ROOT,
   'src',

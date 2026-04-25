@@ -10,33 +10,33 @@
 function noop() {}
 
 const Sentry = {
-    init: noop,
-    wrap: function (component) { return component; },
-    captureException: noop,
-    captureMessage: noop,
-    addBreadcrumb: noop,
-    withScope: function (callback) {
-        // Invoke the callback immediately with a no-op scope so that
-        // Sentry.withScope(scope => { scope.setTag(...); Sentry.captureException(...); })
-        // patterns continue to work without errors on web.
-        if (typeof callback === 'function') {
-            callback({
-                setTag: noop,
-                setExtra: noop,
-                setUser: noop,
-                setLevel: noop,
-                setContext: noop,
-                setFingerprint: noop,
-                clear: noop,
-            });
-        }
-    },
-    setUser: noop,
-    setTag: noop,
-    setExtra: noop,
-    setContext: noop,
-    configureScope: noop,
-    getCurrentHub: function () { return { setUser: noop, setTag: noop, setExtra: noop, configureScope: noop }; },
+  init: noop,
+  wrap: (component) => component,
+  captureException: noop,
+  captureMessage: noop,
+  addBreadcrumb: noop,
+  withScope: (callback) => {
+    // Invoke the callback immediately with a no-op scope so that
+    // Sentry.withScope(scope => { scope.setTag(...); Sentry.captureException(...); })
+    // patterns continue to work without errors on web.
+    if (typeof callback === 'function') {
+      callback({
+        setTag: noop,
+        setExtra: noop,
+        setUser: noop,
+        setLevel: noop,
+        setContext: noop,
+        setFingerprint: noop,
+        clear: noop,
+      });
+    }
+  },
+  setUser: noop,
+  setTag: noop,
+  setExtra: noop,
+  setContext: noop,
+  configureScope: noop,
+  getCurrentHub: () => ({ setUser: noop, setTag: noop, setExtra: noop, configureScope: noop }),
 };
 
 // Export as a plain CJS module.

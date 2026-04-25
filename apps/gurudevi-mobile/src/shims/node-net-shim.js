@@ -7,14 +7,17 @@
 const noop = () => {};
 
 // Self-healing proxy that returns itself/no-ops for any property access
-const proxyBase = new Proxy(() => {
+const proxyBase = new Proxy(
+  () => {
     return proxyBase;
-}, {
-    get: (target, prop) => {
-        if (prop === 'default' || prop === '__esModule') return true;
-        return proxyBase;
-    }
-});
+  },
+  {
+    get: (_target, prop) => {
+      if (prop === 'default' || prop === '__esModule') return true;
+      return proxyBase;
+    },
+  },
+);
 
 const nodeNetShim = {
   connect: () => proxyBase,

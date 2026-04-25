@@ -1,4 +1,5 @@
 import fs from 'fs';
+import { execSync } from 'child_process';
 import path from 'path';
 
 // Known native-only packages across our monorepo that require shims for web
@@ -55,31 +56,31 @@ console.log(`\x1b[36mFound ${shimmedPackages.length} shimmed packages in metro.c
 // Read package.json files to see what dependencies exist that might be native
 const packagesWithNativeDeps = new Set(KNOWN_NATIVE_PACKAGES);
 
-// Recursively find .ts, .tsx files
-function walkFiles(dir, fileList = []) {
-    const files = fs.readdirSync(dir);
-    for (const file of files) {
-        const filePath = path.join(dir, file);
-        if (fs.statSync(filePath).isDirectory()) {
-            if (!filePath.includes('node_modules') && !filePath.includes('.git') && !filePath.includes('dist')) {
-                walkFiles(filePath, fileList);
-            }
-        } else if (filePath.endsWith('.ts') || filePath.endsWith('.tsx') || filePath.endsWith('.js') || filePath.endsWith('.jsx')) {
-            fileList.push(filePath);
+// Use fd for lightning-fast file location
+function getSourceFiles(dirs) {
+    let allFiles = [];
+    dirs.forEach(dir => {
+        if (!fs.existsSync(dir)) return;
+        try {
+            const output = execSync(`fd -t f -e ts -e tsx -e js -e jsx . "${dir}"`, { encoding: 'utf-8' });
+            allFiles = allFiles.concat(output.split('\n').filter(f => f.trim()));
+        } catch (e) {
+            console.error(`Error searching in ${dir}: ${e.message}`);
         }
-    }
-    return fileList;
+    });
+    return allFiles;
 }
 
-const sourceFiles = [
-    ...walkFiles(path.join(workspaceRoot, 'apps/gurudevi-mobile/src')),
-    ...walkFiles(path.join(workspaceRoot, 'packages/core/src')),
-    ...walkFiles(path.join(workspaceRoot, 'packages/ui/src')),
-    ...walkFiles(path.join(workspaceRoot, 'packages/library/src')),
-    ...walkFiles(path.join(workspaceRoot, 'packages/self/src')),
-    ...walkFiles(path.join(workspaceRoot, 'packages/classroom/src')),
-    ...walkFiles(path.join(workspaceRoot, 'packages/community/src')),
-];
+const sourceFiles = getSourceFiles([
+    path.join(workspaceRoot, 'apps/gurudevi-mobile/src'),
+    path.join(workspaceRoot, 'packages/core/src'),
+    path.join(workspaceRoot, 'packages/ui/src'),
+    path.join(workspaceRoot, 'packages/library/src'),
+    path.join(workspaceRoot, 'packages/self/src'),
+    path.join(workspaceRoot, 'packages/classroom/src'),
+    path.join(workspaceRoot, 'packages/community/src'),
+]);
+
 
 let foundLeaks = false;
 

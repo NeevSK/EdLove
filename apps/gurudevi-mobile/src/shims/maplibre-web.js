@@ -1,9 +1,6 @@
-/**
- * Web shim for @maplibre/maplibre-react-native
- */
-import React from 'react';
-
-export const MapView = ({ children }) => <div style={{ backgroundColor: '#111', width: '100%', height: '100%' }}>{children}</div>;
+export const MapView = ({ children }) => (
+  <div style={{ backgroundColor: '#111', width: '100%', height: '100%' }}>{children}</div>
+);
 export const Camera = () => null;
 export const UserLocation = () => null;
 export const PointAnnotation = () => null;
@@ -20,21 +17,21 @@ export const Images = () => null;
 export const Callout = () => null;
 
 const MapLibre = {
-    MapView,
-    Camera,
-    UserLocation,
-    PointAnnotation,
-    ShapeSource,
-    VectorSource,
-    RasterSource,
-    SymbolLayer,
-    LineLayer,
-    FillLayer,
-    CircleLayer,
-    RasterLayer,
-    BackgroundLayer,
-    Images,
-    Callout,
+  MapView,
+  Camera,
+  UserLocation,
+  PointAnnotation,
+  ShapeSource,
+  VectorSource,
+  RasterSource,
+  SymbolLayer,
+  LineLayer,
+  FillLayer,
+  CircleLayer,
+  RasterLayer,
+  BackgroundLayer,
+  Images,
+  Callout,
 };
 
 export default MapLibre;

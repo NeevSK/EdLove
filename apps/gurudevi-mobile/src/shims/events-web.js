@@ -24,18 +24,22 @@ class EventEmitter {
 
   off(event, listener) {
     if (!this._events[event]) return this;
-    this._events[event] = this._events[event].filter(l => l !== listener);
+    this._events[event] = this._events[event].filter((l) => l !== listener);
     return this;
   }
 
   emit(event, ...args) {
     if (!this._events[event]) return false;
-    this._events[event].forEach(l => l.apply(this, args));
+    this._events[event].forEach((l) => l.apply(this, args));
     return true;
   }
 
-  addListener(event, listener) { return this.on(event, listener); }
-  removeListener(event, listener) { return this.off(event, listener); }
+  addListener(event, listener) {
+    return this.on(event, listener);
+  }
+  removeListener(event, listener) {
+    return this.off(event, listener);
+  }
   removeAllListeners(event) {
     if (event) delete this._events[event];
     else this._events = {};

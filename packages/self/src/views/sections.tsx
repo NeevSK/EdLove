@@ -24,8 +24,8 @@ import {
     Icon,
     Heading,
     Spinner
-} from '@repo/ui';
-import { usePermissions } from '@repo/core';
+} from '@repo/ui/primitives';
+import { usePermissions } from '@repo/core/logic';
 
 // --- CROSS-ROLE SECTIONS ---
 

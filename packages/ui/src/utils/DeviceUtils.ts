@@ -1,5 +1,4 @@
-import * as Device from 'expo-device';
-import { Platform } from 'react-native';
+import { coreRuntime } from '@repo/core/logic';
 
 export enum PerformanceTier {
   HIGH = 'HIGH',
@@ -12,41 +11,39 @@ export enum PerformanceTier {
  * This can be refined with specific device model checks
  */
 export const getDeviceTier = (): PerformanceTier => {
-  // 1. Simulators/Emulators are treated as High (for dev)
-  if (!Device.isDevice) return PerformanceTier.HIGH;
+  try {
+    const metadata = coreRuntime.device.getMetadata();
+    const { platform, osVersion, modelName } = metadata;
 
-  // 2. iOS Devices
-  if (Platform.OS === 'ios') {
-    const modelId = Device.modelId;
-    // iPhone 11 (iPhone12,1) or newer is High
-    // Older iPhones are Mid/Low
-    // This is a simplified check
-    if (modelId && modelId.startsWith('iPhone')) {
-      const version = parseInt(modelId.replace('iPhone', '').split(',')[0], 10);
-      if (version >= 12) return PerformanceTier.HIGH; // iPhone 11+
-      if (version >= 10) return PerformanceTier.MID; // iPhone 8/X/XS
-      return PerformanceTier.LOW;
+    // 1. Web is generally treated as HIGH or MID depending on modern browser features
+    // but for simplicity in this isomorphic layer, we default to MID or HIGH.
+    if (platform === 'web') return PerformanceTier.HIGH;
+
+    // 2. iOS Devices
+    if (platform === 'ios') {
+      // iPhone 11 (iPhone12,1) or newer is High
+      if (modelName && modelName.startsWith('iPhone')) {
+        const versionMatch = modelName.match(/iPhone(\d+)/);
+        if (versionMatch && versionMatch[1]) {
+          const version = parseInt(versionMatch[1], 10);
+          if (version >= 12) return PerformanceTier.HIGH; // iPhone 11+
+          if (version >= 10) return PerformanceTier.MID; // iPhone 8/X/XS
+          return PerformanceTier.LOW;
+        }
+      }
+      return PerformanceTier.HIGH; // Default for newer iPads/unknown
     }
-    return PerformanceTier.HIGH; // Default for newer iPads/unknown
+
+    // 3. Android Devices
+    if (platform === 'android') {
+      // On Android, we'd ideally check RAM, but since we've abstracted to Metadata,
+      // we'll use a conservative MID fallback or deeper model check if needed.
+      return PerformanceTier.MID;
+    }
+  } catch {
+    // Fail safe
   }
 
-  // 3. Android Devices
-  if (Platform.OS === 'android') {
-    // Use total memory as a proxy for performance
-    // Device.totalMemory is in bytes
-    const totalMemory = Device.totalMemory;
-
-    // > 6GB RAM -> High
-    if (totalMemory && totalMemory > 6 * 1024 * 1024 * 1024) return PerformanceTier.HIGH;
-
-    // > 4GB RAM -> Mid
-    if (totalMemory && totalMemory > 4 * 1024 * 1024 * 1024) return PerformanceTier.MID;
-
-    // <= 4GB RAM -> Low
-    return PerformanceTier.LOW;
-  }
-
-  // Fallback
   return PerformanceTier.MID;
 };
 

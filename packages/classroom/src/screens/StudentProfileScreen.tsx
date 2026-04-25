@@ -11,12 +11,12 @@ import {
     useThemedColors,
     hapticMedium,
     Icon,
-    ArrowLeftIcon,
     Pressable,
     Card,
     Center,
 } from '@repo/ui';
 import {
+    ArrowLeft,
     Calendar,
     Trophy,
     ShieldCheck,
@@ -315,7 +315,7 @@ export default function StudentProfileScreen() {
             <Box className="p-md pt-xl border-b" style={{ backgroundColor: colors.secondary, borderBottomColor: colors.border }}>
                 <HStack className="items-center gap-md mb-lg">
                     <Pressable onPress={() => navigation.goBack()} onPressIn={() => hapticMedium()}>
-                        <Icon as={ArrowLeftIcon} size="xl" color={colors.text} />
+                        <Icon as={ArrowLeft} size="xl" color={colors.text} />
                     </Pressable>
                     <VStack>
                         <Heading className="text-lg" style={{ color: colors.text }}>{studentName}</Heading>

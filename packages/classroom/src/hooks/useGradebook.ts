@@ -106,7 +106,11 @@ export const useGradebook = (classroomId: string) => {
         if (!gradingId) return;
         await saveDraftGrade(gradingId, marks, feedback);
         if (currentUser?.id) {
-            growthSignalsAPI.emitSilent(currentUser.id, 'assignment_graded', { classroom_id: classroomId });
+            growthSignalsAPI.emitSilent({
+                user_id: currentUser.id,
+                event_type: 'assignment_graded',
+                event_metadata: { classroom_id: classroomId },
+            });
         }
     };
 

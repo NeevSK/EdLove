@@ -46,7 +46,7 @@ import {
     FieldDefinition,
     FormManager
 } from '@repo/core';
-import { FeatureGuard } from '@repo/core/src/permissions/guards/FeatureGuard';
+import { FeatureGuard } from '@repo/core/permissions/guards/FeatureGuard';
 import { QRCodeGenerator } from '@repo/scanner-kit';
 import NativeForm from './NativeForm';
 

@@ -12,10 +12,9 @@ import {
     ModalHeader,
     ModalBody,
     ModalCloseButton,
-    CloseIcon,
 } from '@repo/ui';
 import { useTranslation } from 'react-i18next';
-import { Sparkles, Cloud, Lock } from 'lucide-react-native';
+import { Sparkles, Cloud, Lock, X } from 'lucide-react-native';
 import { Theme, useThemedColors } from '@repo/ui';
 
 export interface GuestConversionPromptProps {
@@ -77,12 +76,12 @@ export default function GuestConversionPrompt({
             <ModalContent className="max-w-[400px] rounded-[24px] bg-phase-canvas">
                 <ModalHeader>
                     <ModalCloseButton>
-                        <CloseIcon color={colors.textSecondary} />
+                        <X size={20} color={colors.textSecondary} />
                     </ModalCloseButton>
                 </ModalHeader>
 
                 <ModalBody className="pb-6">
-                    <VStack space="lg" alignItems="center">
+                    <VStack space="lg" className="items-center">
                         <Box className="h-20 w-20 items-center justify-center rounded-full bg-phase-surface shadow-md">
                             <IconComponent size={40} color={Theme.colors.sanctuarySaffron} />
                         </Box>

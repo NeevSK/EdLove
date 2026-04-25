@@ -1,2 +1,2 @@
 export * from './client';
-export * from '../protocol/models';
+export * as ZenModels from '@repo/core/zen';

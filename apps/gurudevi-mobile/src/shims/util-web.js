@@ -10,12 +10,13 @@ const utilShim = {
     }
   },
   promisify: (fn) => {
-    return (...args) => new Promise((resolve, reject) => {
-      fn(...args, (err, res) => {
-        if (err) return reject(err);
-        resolve(res);
+    return (...args) =>
+      new Promise((resolve, reject) => {
+        fn(...args, (err, res) => {
+          if (err) return reject(err);
+          resolve(res);
+        });
       });
-    });
   },
   inspect: (obj) => JSON.stringify(obj, null, 2),
   deprecate: (fn) => fn,

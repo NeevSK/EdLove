@@ -1,10 +1,10 @@
 /**
  * PostHog Abstract Interface
- * 
- * This file defines the generic interface for analytics. 
- * Shells (Mobile, Web, Server) must inject their platform-specific 
+ *
+ * This file defines the generic interface for analytics.
+ * Shells (Mobile, Web, Server) must inject their platform-specific
  * implementation into this singleton using injectPostHog().
- * 
+ *
  * CORE PURITY: No platform-specific imports (React Native/Browser/Node) here.
  */
 
@@ -32,7 +32,9 @@ export const initPostHog = async () => {
   // Legacy function signature to maintain compatibility with existing hook calls.
   // Initialization should actually be handled by the shell.
   if (!_posthog && typeof __DEV__ !== 'undefined' && __DEV__) {
-    console.warn('[PostHog] initPostHog called but no instance injected. Ensure injectPostHog() is called in shell.');
+    console.warn(
+      '[PostHog] initPostHog called but no instance injected. Ensure injectPostHog() is called in shell.',
+    );
   }
 };
 

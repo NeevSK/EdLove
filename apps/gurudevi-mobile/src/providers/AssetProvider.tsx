@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import * as Font from 'expo-font';
+import type React from 'react';
+import { createContext, type ReactNode, useContext, useEffect, useState } from 'react';
 import { fontAssets } from '../constants/Fonts';
 
 interface AssetContextType {
@@ -24,11 +25,7 @@ export const AssetProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     loadFonts();
   }, []);
 
-  return (
-    <AssetContext.Provider value={{ fontsLoaded }}>
-      {children}
-    </AssetContext.Provider>
-  );
+  return <AssetContext.Provider value={{ fontsLoaded }}>{children}</AssetContext.Provider>;
 };
 
 export const useAssets = () => {

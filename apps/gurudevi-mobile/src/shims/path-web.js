@@ -37,7 +37,7 @@ const resolve = (...args) => {
   for (let i = args.length - 1; i >= -1 && !resolvedAbsolute; i--) {
     const path = i >= 0 ? args[i] : '/';
     if (!path) continue;
-    resolvedPath = path + '/' + resolvedPath;
+    resolvedPath = `${path}/${resolvedPath}`;
     resolvedAbsolute = path.charAt(0) === '/';
   }
 
@@ -53,7 +53,7 @@ const join = (...args) => {
       if (!path) {
         path += segment;
       } else {
-        path += '/' + segment;
+        path += `/${segment}`;
       }
     }
   }

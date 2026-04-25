@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { ScrollView, Switch } from 'react-native';
-import { Box, VStack, HStack, Heading, Text, Button, ButtonText, Pressable } from '../gluestack';
+import { Box, VStack, HStack, Heading, Text, Button, ButtonText, Pressable, Switch, ScrollView } from '../gluestack';
 import ScreenWrapper from '../components/ScreenWrapper';
 import { useEnvironment } from '../context';
 import { useTheme } from '../hooks/useTheme';
@@ -245,7 +244,7 @@ export default function AppSettingsScreen({ navigation }: any) {
             </HStack>
             <Switch
               value={enableLivingTheme}
-              onValueChange={async (val) => {
+              onValueChange={async (val: boolean) => {
                 await setEnableLivingTheme(val);
                 hapticLight();
               }}
@@ -304,7 +303,7 @@ export default function AppSettingsScreen({ navigation }: any) {
             </HStack>
             <Switch
               value={user?.public_profile !== false}
-              onValueChange={async (val) => {
+              onValueChange={async (val: boolean) => {
                 hapticLight();
                 showToast({
                   message: t('settings.profile_visibility_updated', 'Profile visibility updated'),

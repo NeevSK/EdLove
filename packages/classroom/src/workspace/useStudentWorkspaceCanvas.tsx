@@ -17,14 +17,14 @@ type StudentResolvedSurface = StudentDashboardSurface &
     ResolvedWorkspaceSurface<StudentDashboardSurfaceId, StudentDashboardCapabilityKey>;
 
 const LEGACY_STUDENT_SURFACE_ID_MAP: Partial<
-    Record<StudentDashboardSurfaceId | 'demo-assignments' | 'demo-goals', StudentDashboardSurfaceId>
+    Record<'assignment-queue' | 'growth-goals' | StudentDashboardSurfaceId, StudentDashboardSurfaceId>
 > = {
-    'demo-assignments': 'assignment-queue',
-    'demo-goals': 'growth-goals'
+    'assignment-queue': 'demo-assignments',
+    'growth-goals': 'demo-goals',
 };
 
 function migrateStudentSurfaceId(
-    surfaceId: StudentDashboardSurfaceId | 'demo-assignments' | 'demo-goals'
+    surfaceId: StudentDashboardSurfaceId | 'assignment-queue' | 'growth-goals'
 ): StudentDashboardSurfaceId {
     return LEGACY_STUDENT_SURFACE_ID_MAP[surfaceId] ?? (surfaceId as StudentDashboardSurfaceId);
 }
@@ -39,7 +39,7 @@ function migrateStudentWorkspaceLayout(
         pinned: layout.pinned.map((surfaceId) => migrateStudentSurfaceId(surfaceId)),
         zoneBySurface: Object.fromEntries(
             Object.entries(layout.zoneBySurface).map(([surfaceId, zone]) => [
-                migrateStudentSurfaceId(surfaceId as StudentDashboardSurfaceId | 'demo-assignments' | 'demo-goals'),
+                migrateStudentSurfaceId(surfaceId as StudentDashboardSurfaceId | 'assignment-queue' | 'growth-goals'),
                 zone,
             ])
         ) as Partial<Record<StudentDashboardSurfaceId, WorkspaceZoneId>>
@@ -56,13 +56,21 @@ export function useStudentWorkspaceLayout(
     userId: string | null | undefined,
     surfaces: StudentDashboardSurface[]
 ) {
-    const workspace = useWorkspaceLayoutSync({
+    const workspace = useWorkspaceLayoutSync<
+        StudentDashboardSurfaceId,
+        StudentDashboardCapabilityKey,
+        StudentDashboardSurface
+    >({
         workspaceId: 'student-dashboard',
         userId,
         surfaces,
-        migrateLayout: migrateStudentWorkspaceLayout,
         enableRemoteSync: false
     });
+
+    const migratedLayout = useMemo(
+        () => (workspace.layout ? migrateStudentWorkspaceLayout(workspace.layout) : null),
+        [workspace.layout],
+    );
 
     const resolvedSurfaceMap = useMemo(
         () =>
@@ -90,6 +98,7 @@ export function useStudentWorkspaceLayout(
 
     return {
         ...workspace,
+        layout: migratedLayout,
         surfaces: enrichedSurfaces
     };
 }
@@ -167,4 +176,3 @@ export function StudentWorkspaceCanvas({
         />
     );
 }
-

@@ -6,11 +6,19 @@
  *  - Approve / Reject buttons per request
  */
 
-import React, { useEffect, useState } from 'react';
+import { type StaffLeaveDTO, staffManagementAPI } from '@repo/core';
+import {
+  Box,
+  formatShortDate,
+  HStack,
+  SkeletonCard,
+  Text,
+  Theme,
+  useThemedColors,
+  VStack,
+} from '@repo/ui';
+import { useEffect, useState } from 'react';
 import { TouchableOpacity } from 'react-native';
-import { Box, HStack, VStack, Text, SkeletonCard, useThemedColors, formatShortDate } from '@repo/ui';
-import { Theme } from '@repo/ui';
-import { staffManagementAPI, StaffLeaveDTO } from '@repo/core';
 
 interface LeaveApprovalSectionProps {
   schoolId: string;
@@ -34,10 +42,7 @@ function shortId(id: string): string {
   return id.substring(0, 8);
 }
 
-export default function LeaveApprovalSection({
-  schoolId,
-  principalId,
-}: LeaveApprovalSectionProps) {
+export default function LeaveApprovalSection({ schoolId, principalId }: LeaveApprovalSectionProps) {
   const colors = useThemedColors();
   const [loading, setLoading] = useState(true);
   const [leaves, setLeaves] = useState<StaffLeaveDTO[]>([]);
@@ -52,7 +57,7 @@ export default function LeaveApprovalSection({
   useEffect(() => {
     setLoading(true);
     fetchLeaves();
-  }, [schoolId]);
+  }, [fetchLeaves]);
 
   async function handleDecision(leaveId: string, approve: boolean) {
     setProcessingId(leaveId);
@@ -73,9 +78,7 @@ export default function LeaveApprovalSection({
     >
       {/* Header */}
       <HStack sx={{ alignItems: 'center', gap: Theme.spacing.sm, marginBottom: Theme.spacing.sm }}>
-        <Text sx={{ fontSize: 15, fontWeight: '700', color: colors.text }}>
-          Leave Requests
-        </Text>
+        <Text sx={{ fontSize: 15, fontWeight: '700', color: colors.text }}>Leave Requests</Text>
         {leaves.length > 0 && (
           <Box
             sx={{
@@ -85,9 +88,7 @@ export default function LeaveApprovalSection({
               paddingVertical: 2,
             }}
           >
-            <Text sx={{ fontSize: 12, fontWeight: '700', color: '#fff' }}>
-              {leaves.length}
-            </Text>
+            <Text sx={{ fontSize: 12, fontWeight: '700', color: '#fff' }}>{leaves.length}</Text>
           </Box>
         )}
       </HStack>
@@ -97,102 +98,123 @@ export default function LeaveApprovalSection({
 
       {/* Empty state */}
       {!loading && leaves.length === 0 && (
-        <Text sx={{ fontSize: 13, color: colors.textSecondary, textAlign: 'center', paddingVertical: Theme.spacing.md }}>
+        <Text
+          sx={{
+            fontSize: 13,
+            color: colors.textSecondary,
+            textAlign: 'center',
+            paddingVertical: Theme.spacing.md,
+          }}
+        >
           No pending leave requests
         </Text>
       )}
 
       {/* Leave rows */}
-      {!loading && leaves.map((leave) => {
-        const isProcessing = processingId === leave.id;
-        return (
-          <VStack
-            key={leave.id}
-            sx={{
-              paddingVertical: Theme.spacing.sm,
-              borderBottomWidth: 1,
-              borderBottomColor: colors.border,
-              gap: 6,
-            }}
-          >
-            <HStack sx={{ alignItems: 'center', gap: Theme.spacing.sm }}>
-              {/* Leave type badge */}
-              <Box
-                sx={{
-                  backgroundColor: leaveTypeColor(leave.leave_type),
-                  borderRadius: 8,
-                  paddingHorizontal: 7,
-                  paddingVertical: 2,
-                }}
-              >
-                <Text sx={{ fontSize: 10, fontWeight: '700', color: '#fff', textTransform: 'capitalize' }}>
-                  {leave.leave_type}
-                </Text>
-              </Box>
-              {/* Staff identifier */}
-              <Text sx={{ flex: 1, fontSize: 13, color: colors.text, fontWeight: '600' }}>
-                {shortId(leave.user_id)}…
-              </Text>
-              {/* Date range */}
-              <Text sx={{ fontSize: 11, color: colors.textSecondary }}>
-                {formatShortDate(leave.start_date)} – {formatShortDate(leave.end_date)}
-              </Text>
-            </HStack>
-
-            {/* Reason */}
-            {leave.reason ? (
-              <Text sx={{ fontSize: 12, color: colors.textSecondary }} numberOfLines={1}>
-                {leave.reason}
-              </Text>
-            ) : null}
-
-            {/* Action buttons */}
-            <HStack sx={{ gap: Theme.spacing.sm }}>
-              <TouchableOpacity
-                onPress={() => handleDecision(leave.id, true)}
-                activeOpacity={0.8}
-                disabled={isProcessing}
-                style={{ flex: 1 }}
-              >
+      {!loading &&
+        leaves.map((leave) => {
+          const isProcessing = processingId === leave.id;
+          return (
+            <VStack
+              key={leave.id}
+              sx={{
+                paddingVertical: Theme.spacing.sm,
+                borderBottomWidth: 1,
+                borderBottomColor: colors.border,
+                gap: 6,
+              }}
+            >
+              <HStack sx={{ alignItems: 'center', gap: Theme.spacing.sm }}>
+                {/* Leave type badge */}
                 <Box
                   sx={{
-                    backgroundColor: Theme.colors.sageGreen ?? '#4caf50',
-                    borderRadius: Theme.corners.medium ?? 8,
-                    padding: Theme.spacing.xs,
-                    alignItems: 'center',
-                    opacity: isProcessing ? 0.5 : 1,
+                    backgroundColor: leaveTypeColor(leave.leave_type),
+                    borderRadius: 8,
+                    paddingHorizontal: 7,
+                    paddingVertical: 2,
                   }}
                 >
-                  <Text sx={{ fontSize: 13, fontWeight: '700', color: '#fff' }}>Approve</Text>
-                </Box>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                onPress={() => handleDecision(leave.id, false)}
-                activeOpacity={0.8}
-                disabled={isProcessing}
-                style={{ flex: 1 }}
-              >
-                <Box
-                  sx={{
-                    backgroundColor: colors.border,
-                    borderRadius: Theme.corners.medium ?? 8,
-                    padding: Theme.spacing.xs,
-                    alignItems: 'center',
-                    opacity: isProcessing ? 0.5 : 1,
-                    borderWidth: 1,
-                    borderColor: Theme.colors.emberRed ?? '#f44336',
-                  }}
-                >
-                  <Text sx={{ fontSize: 13, fontWeight: '700', color: Theme.colors.emberRed ?? '#f44336' }}>
-                    Reject
+                  <Text
+                    sx={{
+                      fontSize: 10,
+                      fontWeight: '700',
+                      color: '#fff',
+                      textTransform: 'capitalize',
+                    }}
+                  >
+                    {leave.leave_type}
                   </Text>
                 </Box>
-              </TouchableOpacity>
-            </HStack>
-          </VStack>
-        );
-      })}
+                {/* Staff identifier */}
+                <Text sx={{ flex: 1, fontSize: 13, color: colors.text, fontWeight: '600' }}>
+                  {shortId(leave.user_id)}…
+                </Text>
+                {/* Date range */}
+                <Text sx={{ fontSize: 11, color: colors.textSecondary }}>
+                  {formatShortDate(leave.start_date)} – {formatShortDate(leave.end_date)}
+                </Text>
+              </HStack>
+
+              {/* Reason */}
+              {leave.reason ? (
+                <Text sx={{ fontSize: 12, color: colors.textSecondary }} numberOfLines={1}>
+                  {leave.reason}
+                </Text>
+              ) : null}
+
+              {/* Action buttons */}
+              <HStack sx={{ gap: Theme.spacing.sm }}>
+                <TouchableOpacity
+                  onPress={() => handleDecision(leave.id, true)}
+                  activeOpacity={0.8}
+                  disabled={isProcessing}
+                  style={{ flex: 1 }}
+                >
+                  <Box
+                    sx={{
+                      backgroundColor: Theme.colors.sageGreen ?? '#4caf50',
+                      borderRadius: Theme.corners.medium ?? 8,
+                      padding: Theme.spacing.xs,
+                      alignItems: 'center',
+                      opacity: isProcessing ? 0.5 : 1,
+                    }}
+                  >
+                    <Text sx={{ fontSize: 13, fontWeight: '700', color: '#fff' }}>Approve</Text>
+                  </Box>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  onPress={() => handleDecision(leave.id, false)}
+                  activeOpacity={0.8}
+                  disabled={isProcessing}
+                  style={{ flex: 1 }}
+                >
+                  <Box
+                    sx={{
+                      backgroundColor: colors.border,
+                      borderRadius: Theme.corners.medium ?? 8,
+                      padding: Theme.spacing.xs,
+                      alignItems: 'center',
+                      opacity: isProcessing ? 0.5 : 1,
+                      borderWidth: 1,
+                      borderColor: Theme.colors.emberRed ?? '#f44336',
+                    }}
+                  >
+                    <Text
+                      sx={{
+                        fontSize: 13,
+                        fontWeight: '700',
+                        color: Theme.colors.emberRed ?? '#f44336',
+                      }}
+                    >
+                      Reject
+                    </Text>
+                  </Box>
+                </TouchableOpacity>
+              </HStack>
+            </VStack>
+          );
+        })}
     </Box>
   );
 }

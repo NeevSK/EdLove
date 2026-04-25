@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { api } from '@repo/core';
 import { useSchoolStats } from '../hooks/useSchoolStats';
 import { useStudentWorkspaceData } from './useStudentWorkspaceData';
-import type { ClassroomWorkspaceSurfaceId } from './useClassroomWorkspaceSurfaces';
+import type { ClassroomWorkspaceSurfaceId } from '../types/workspace';
 
 type SurfaceInsight = {
     summary?: string;

@@ -19,54 +19,87 @@ if (![string]::IsNullOrWhiteSpace($logDir) -and !(Test-Path -Path $logDir)) {
 Write-Host "`n>>> Starting Audit: $startTime" -ForegroundColor Cyan
 Write-Host ">>> Command: $Cmd" -ForegroundColor Cyan
 
-# Execute command and capture output to log and console
-# We use a script block to ensure we can capture the exit code of the ACTUAL command
-$scriptBlock = {
-    param($c, $l)
-    # We use a subshell and redirect to ensure we can control encoding reliably
-    # The default redirected output in many PS versions is UTF-16LE, we force UTF8
-    Invoke-Expression $c 2>&1 | Out-File -FilePath $l -Encoding utf8 -Force
-    return $LASTEXITCODE
+# Execute command and capture output
+$exitCode = 0
+$rawOutput = ""
+
+try {
+    # Execute in a script block to capture output reliably
+    $rawOutput = Invoke-Expression $Cmd 2>&1 | Out-String
+    $exitCode = $LASTEXITCODE
+} catch {
+    Write-Host "Error executing command: $_" -ForegroundColor Red
+    $exitCode = 1
+    $rawOutput = "ERROR: $_"
 }
 
-$exitCode = & $scriptBlock $Cmd $Log
+# Advanced Categorization Logic
+$lines = $rawOutput -split "`r?`n" | Where-Object { ![string]::IsNullOrWhiteSpace($_) }
+$findings = $lines | Where-Object { $_ -match "warn|error|TS\d+|❌|⚠️" }
+
+$summary = @{}
+$groupedFindings = $findings | ForEach-Object {
+    if ($_ -match "((?:apps|packages)/[^/]+)/(.*)") {
+        $category = $matches[1]
+        $file = $matches[2]
+        [PSCustomObject]@{
+            Category = $category
+            File     = $file
+            Line     = $_
+        }
+    } else {
+        [PSCustomObject]@{
+            Category = "General / Root"
+            File     = "Global"
+            Line     = $_
+        }
+    }
+} 
+
+if ($groupedFindings) {
+    $groups = $groupedFindings | Group-Object Category
+} else {
+    $groups = @()
+}
+
+# Construct Report Header
+$reportHeader = @"
+================================================================================
+MONOREPO HYGIENE AUDIT REPORT
+Generated: $(Get-Date -Format "yyyy-MM-dd HH:mm:ss")
+Command:   $Cmd
+================================================================================
+
+SUMMARY BY CATEGORY:
+--------------------------------------------------------------------------------
+"@
+
+if ($groups.Count -gt 0) {
+    foreach ($group in $groups | Sort-Object Name) {
+        $reportHeader += "`n[$($group.Name)]: $($group.Count) findings"
+    }
+} else {
+    $reportHeader += "`nNo critical findings identified."
+}
+
+$reportHeader += "`n--------------------------------------------------------------------------------`n"
+
+# Final Output Construction
+$finalContent = $reportHeader + "`nDETAILED FINDINGS:`n" + "--------------------------------------------------------------------------------`n" + $rawOutput
+
+# Write to Log
+$finalContent | Out-File -FilePath $Log -Encoding utf8 -Force
 
 # Calculate Duration
 $endTime = Get-Date
 $duration = $endTime - $startTime
 
-# Parse Statistics from Log
-$errors = 0
-$warnings = 0
-if (Test-Path $Log) {
-    # Ensure we use UTF-8 when reading the log
-    $content = Get-Content -Path $Log -Encoding utf8
-    
-    # Filter out the "Found X errors." summary line to avoid double-counting
-    $errorLines = $content | Where-Object { $_ -match "error TS|Error:|(line \d+, col \d+): error|❌" -and $_ -notmatch "Found \d+ errors" }
-    $errors = ($errorLines | Measure-Object).Count
-    
-    $warningLines = $content | Where-Object { $_ -match "warning TS|Warning:|⚠️" -and $_ -notmatch "Found \d+ warnings" }
-    $warnings = ($warningLines | Measure-Object).Count
-}
-
-# Summary Report
+# Console Output (Summary)
 Write-Host "`n----------------------------------------" -ForegroundColor Gray
 Write-Host "AUDIT SUMMARY" -ForegroundColor Yellow
 Write-Host "Duration: $($duration.Minutes)m $($duration.Seconds)s"
-Write-Host "Status:   $(if($exitCode -eq 0 -and $errors -eq 0){'SUCCESS'}else{'FAILED'})" -ForegroundColor $(if($exitCode -eq 0 -and $errors -eq 0){'Green'}else{'Red'})
-
-if ($errors -gt 0) {
-    Write-Host "Errors:   $errors" -ForegroundColor Red
-    Write-Host "Top Errors:" -ForegroundColor Gray
-    $errorLines | Select-Object -First 5 | ForEach-Object { Write-Host "  $($_.Trim())" -ForegroundColor White }
-    if ($errors -gt 5) { Write-Host "  ... and $($errors - 5) more" -ForegroundColor Gray }
-} else {
-    Write-Host "Errors:   0" -ForegroundColor White
-}
-
-Write-Host "Warnings: $warnings" -ForegroundColor $(if($warnings -gt 0){'Yellow'}else{'White'})
-Write-Host "Finished: $endTime"
+Write-Host "Status:   $(if($exitCode -eq 0 -and $findings.Count -eq 0){'SUCCESS'}else{'FAILED'})" -ForegroundColor $(if($exitCode -eq 0 -and $findings.Count -eq 0){'Green'}else{'Red'})
+Write-Host "Findings: $($findings.Count)" -ForegroundColor $(if($findings.Count -gt 0){'Yellow'}else{'White'})
 Write-Host "Log File: $Log"
 Write-Host "----------------------------------------`n" -ForegroundColor Gray
 

@@ -8,11 +8,14 @@
  *  - Pending leave approvals badge
  */
 
-import React, { useEffect, useState } from 'react';
+import {
+  type StaffPresenceSummary,
+  type StudentAttendancePulse,
+  staffManagementAPI,
+} from '@repo/core';
+import { Box, HStack, SkeletonCard, Text, Theme, useThemedColors, VStack } from '@repo/ui';
+import { useEffect, useState } from 'react';
 import { TouchableOpacity } from 'react-native';
-import { Box, HStack, VStack, Text, SkeletonCard, useThemedColors } from '@repo/ui';
-import { Theme } from '@repo/ui';
-import { staffManagementAPI, StaffPresenceSummary, StudentAttendancePulse } from '@repo/core';
 
 interface MorningSituationalBriefProps {
   schoolId: string;
@@ -55,7 +58,9 @@ export default function MorningSituationalBrief({
       setLoading(false);
     }
     load();
-    return () => { mounted = false; };
+    return () => {
+      mounted = false;
+    };
   }, [schoolId]);
 
   if (loading) {
@@ -67,7 +72,9 @@ export default function MorningSituationalBrief({
     );
   }
 
-  const dotColor = presence ? presenceColor(presence.present, presence.total) : colors.textSecondary;
+  const dotColor = presence
+    ? presenceColor(presence.present, presence.total)
+    : colors.textSecondary;
   const attendanceDelta = pulse ? pulse.todayRate - pulse.yesterdayRate : 0;
   const deltaLabel =
     attendanceDelta > 0
@@ -103,9 +110,7 @@ export default function MorningSituationalBrief({
                 ? `${presence.present} of ${presence.total} teachers present today`
                 : 'No attendance data yet'}
             </Text>
-            {onViewStaff && (
-              <Text sx={{ fontSize: 12, color: colors.textSecondary }}>View →</Text>
-            )}
+            {onViewStaff && <Text sx={{ fontSize: 12, color: colors.textSecondary }}>View →</Text>}
           </HStack>
         </Box>
       </TouchableOpacity>
@@ -132,7 +137,10 @@ export default function MorningSituationalBrief({
           <Text
             sx={{
               fontSize: 11,
-              color: attendanceDelta >= 0 ? (Theme.colors.sageGreen ?? '#4caf50') : (Theme.colors.emberRed ?? '#f44336'),
+              color:
+                attendanceDelta >= 0
+                  ? (Theme.colors.sageGreen ?? '#4caf50')
+                  : (Theme.colors.emberRed ?? '#f44336'),
             }}
           >
             {pulse ? deltaLabel : ''}
@@ -158,9 +166,7 @@ export default function MorningSituationalBrief({
               fontSize: 22,
               fontWeight: '700',
               color:
-                (pulse?.atRiskCount ?? 0) > 0
-                  ? (Theme.colors.amberGlow ?? '#ffc107')
-                  : colors.text,
+                (pulse?.atRiskCount ?? 0) > 0 ? (Theme.colors.amberGlow ?? '#ffc107') : colors.text,
             }}
           >
             {pulse?.atRiskCount ?? 0}
@@ -187,10 +193,7 @@ export default function MorningSituationalBrief({
               sx={{
                 fontSize: 22,
                 fontWeight: '700',
-                color:
-                  pendingLeaves > 0
-                    ? (Theme.colors.amberGlow ?? '#ffc107')
-                    : colors.text,
+                color: pendingLeaves > 0 ? (Theme.colors.amberGlow ?? '#ffc107') : colors.text,
               }}
             >
               {pendingLeaves}

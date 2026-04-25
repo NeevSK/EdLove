@@ -1,60 +1,69 @@
 import fs from 'fs';
 import path from 'path';
+import { execSync } from 'child_process';
 
 const workspaceRoot = process.cwd();
 
-// Regex to find external imports (not starting with . or /)
-const importRegex = /from\s+['"]([^./][^'"]+)['"]|require\(['"]([^./][^'"]+)['"]\)/g;
+// Use fd for lightning-fast file discovery
+function getSourceFiles() {
+    const searchDirs = [
+        'apps/gurudevi-mobile/src',
+        'packages/core/src',
+        'packages/ui/src',
+        'packages/library/src',
+        'packages/self/src',
+        'packages/classroom/src',
+        'packages/community/src',
+    ].filter(dir => fs.existsSync(path.join(workspaceRoot, dir)));
 
-function walkFiles(dir, fileList = []) {
-    const files = fs.readdirSync(dir);
-    for (const file of files) {
-        const filePath = path.join(dir, file);
-        if (fs.statSync(filePath).isDirectory()) {
-            if (!filePath.includes('node_modules') && !filePath.includes('.git') && !filePath.includes('dist') && !filePath.includes('.expo')) {
-                walkFiles(filePath, fileList);
-            }
-        } else if (filePath.endsWith('.ts') || filePath.endsWith('.tsx') || filePath.endsWith('.js') || filePath.endsWith('.jsx')) {
-            // Skip platform-specific files that are NOT web-capable
-            if (!filePath.endsWith('.native.tsx') && !filePath.endsWith('.native.ts') && !filePath.endsWith('.ios.tsx') && !filePath.endsWith('.android.tsx')) {
-                fileList.push(filePath);
-            }
+    let allFiles = [];
+    searchDirs.forEach(dir => {
+        try {
+            // Find .ts, .tsx, .js, .jsx files, exclude platform-specific ones (.native, .ios, .android)
+            const cmd = `fd -t f -e ts -e tsx -e js -e jsx -E "*.native.*" -E "*.ios.*" -E "*.android.*" . "${path.join(workspaceRoot, dir)}"`;
+            const output = execSync(cmd, { encoding: 'utf-8' });
+            allFiles = allFiles.concat(output.split('\n').filter(f => f.trim()));
+        } catch (e) {
+            console.error(`Error searching in ${dir}: ${e.message}`);
         }
-    }
-    return fileList;
+    });
+    return allFiles;
 }
 
-const sourceFiles = [
-    path.join(workspaceRoot, 'apps/gurudevi-mobile/src'),
-    path.join(workspaceRoot, 'packages/core/src'),
-    path.join(workspaceRoot, 'packages/ui/src'),
-    path.join(workspaceRoot, 'packages/library/src'),
-    path.join(workspaceRoot, 'packages/self/src'),
-    path.join(workspaceRoot, 'packages/classroom/src'),
-    path.join(workspaceRoot, 'packages/community/src'),
-].filter(dir => fs.existsSync(dir)).flatMap(dir => walkFiles(dir));
-
+const sourceFiles = getSourceFiles();
 const allExternalImports = new Set();
 const importMap = {}; // pkg -> [files]
 
-sourceFiles.forEach(file => {
-    const content = fs.readFileSync(file, 'utf8');
-    let match;
-    while ((match = importRegex.exec(content)) !== null) {
-        const pkg = match[1] || match[2];
-        // Only care about the base package name (e.g., 'expo-location/build/Location' -> 'expo-location')
-        // Special case for scoped packages: '@org/pkg/path' -> '@org/pkg'
-        let basePkg = pkg;
-        if (pkg.startsWith('@')) {
-            const parts = pkg.split('/');
-            basePkg = parts.slice(0, 2).join('/');
-        } else {
-            basePkg = pkg.split('/')[0];
-        }
+console.log(`>>> Shiny Auditing imports in ${sourceFiles.length} web-capable source files...`);
 
-        allExternalImports.add(basePkg);
-        if (!importMap[basePkg]) importMap[basePkg] = new Set();
-        importMap[basePkg].add(path.relative(workspaceRoot, file));
+// Use a simpler search first to find candidate files, then process in Node if needed, 
+// or use a robust shell-safe rg call.
+// We'll use a slightly safer regex for the shell.
+const importRegex = /from\s+['"]([^./][^'"]+)['"]|require\(['"]([^./][^'"]+)['"]\)/g;
+
+sourceFiles.forEach(file => {
+    try {
+        const content = fs.readFileSync(file, 'utf8');
+        let match;
+        while ((match = importRegex.exec(content)) !== null) {
+            const pkg = match[1] || match[2];
+            if (!pkg) continue;
+
+            let basePkg = pkg;
+            if (pkg.startsWith('@')) {
+                const parts = pkg.split('/');
+                basePkg = parts.slice(0, 2).join('/');
+            } else {
+                basePkg = pkg.split('/')[0];
+            }
+
+            allExternalImports.add(basePkg);
+            const relPath = path.relative(workspaceRoot, file);
+            if (!importMap[basePkg]) importMap[basePkg] = new Set();
+            importMap[basePkg].add(relPath);
+        }
+    } catch (e) {
+        console.error(`Error reading ${file}: ${e.message}`);
     }
 });
 
@@ -73,7 +82,6 @@ if (fs.existsSync(metroConfigPath)) {
     }
 }
 
-// Known web-safe packages (incomplete, but helps filter noise)
 const WEB_SAFE_PACKAGES = [
     'react', 'react-dom', 'react-native-web', 'react-i18next', 'i18next',
     'lucide-react-native', '@repo/ui', '@repo/core', '@repo/library', '@repo/self',
@@ -88,18 +96,13 @@ const WEB_SAFE_PACKAGES = [
     '@gluestack-ui/config', 'buffer', 'uuid', 'inline-style-prefixer', 'jsqr', 'qrcode', 'jpeg-js'
 ];
 
-console.log(`\n\x1b[36mAudit Report: ${allExternalImports.size} unique external packages imported in web-capable files\x1b[0m`);
+console.log(`\n\x1b[36mAudit Report: ${allExternalImports.size} unique external packages analyzed\x1b[0m`);
 
 const potentialLeaks = [];
-
 allExternalImports.forEach(pkg => {
     if (shimmedPackages.includes(pkg)) return;
     if (WEB_SAFE_PACKAGES.includes(pkg)) return;
 
-    // Additional heuristics: 
-    // - Starts with expo- and not in WEB_SAFE
-    // - starts with react-native- and not in WEB_SAFE
-    // - contains 'native' in name
     if (pkg.startsWith('expo-') || pkg.startsWith('react-native-') || pkg.includes('native') || pkg.startsWith('@react-native')) {
         potentialLeaks.push(pkg);
     }
@@ -118,5 +121,5 @@ if (potentialLeaks.length > 0) {
         }
     });
 } else {
-    console.log(`\n\x1b[32m✅ No obvious native leaks found! (Checked against web-safe list and current shims)\x1b[0m`);
+    console.log(`\n\x1b[32m✅ No obvious native leaks found!\x1b[0m`);
 }

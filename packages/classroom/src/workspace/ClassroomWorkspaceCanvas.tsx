@@ -10,7 +10,7 @@ import type {
     ClassroomWorkspaceSurface,
     ClassroomWorkspaceSurfaceId,
     ClassroomWorkspaceCapabilityKey,
-} from './useClassroomWorkspaceSurfaces';
+} from '../types/workspace';
 
 type ClassroomResolvedSurface = ClassroomWorkspaceSurface &
     ResolvedWorkspaceSurface<ClassroomWorkspaceSurfaceId, ClassroomWorkspaceCapabilityKey>;
@@ -57,7 +57,7 @@ export function ClassroomWorkspaceCanvas({
             emptyMessage="No workspace surfaces are available for this user yet."
             renderSurfaceContent={(surface) => {
                 const typedSurface = surface as ClassroomResolvedSurface;
-                return <Box sx={{ flex: 1 }}>{typedSurface.content}</Box>;
+                return <Box style={{ flex: 1 }}>{typedSurface.content}</Box>;
             }}
             getSurfaceSubtitle={(surface) => (surface as ClassroomResolvedSurface).subtitle}
             getSurfaceSummary={(surface) => (surface as ClassroomResolvedSurface).summary}

@@ -1,5 +1,5 @@
-import { selectLatestTemporalRecordsAsOf } from '../../lib/temporalEvents';
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { selectLatestTemporalRecordsAsOf } from '../../lib/temporalEvents';
 import type { ClassroomNotesRepository } from '../../logic/domains/classroomNotes/ports';
 import {
   type ClassroomNoteCreate,

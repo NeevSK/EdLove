@@ -10,13 +10,11 @@ import { createSupabaseGuardianRepository } from '../../adapters/supabase/guardi
 import { createSupabasePrincipalWorkspaceRepository } from '../../adapters/supabase/principalWorkspaceRepository';
 import { createSupabaseTeacherInsightsRepository } from '../../adapters/supabase/teacherInsightsRepository';
 import { createSupabaseWorkspaceLayoutRepository } from '../../adapters/supabase/workspaceLayoutRepository';
-
-// Ports
-import type { EducationalSideEffects } from './educational/ports';
-
 // Services
 import { createAttendanceProjectionServices } from './attendanceProjection/services';
 import { createClassroomNotesServices } from './classroomNotes/services';
+// Ports
+import type { EducationalSideEffects } from './educational/ports';
 import { createEducationalServices } from './educational/services';
 import { createFounderServices } from './founder/services';
 import { createGradingProjectionServices } from './gradingProjection/services';

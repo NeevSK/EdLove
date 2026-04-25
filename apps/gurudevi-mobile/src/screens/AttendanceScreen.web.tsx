@@ -1,15 +1,14 @@
-﻿/**
+/**
  * AttendanceScreen.web.tsx
  *
  * Thin wrapper for the Classroom Attendance UI.
  * Orchestration and logic are managed in @repo/classroom.
  */
 
-import React from 'react';
-import { ErrorBoundary } from '@repo/ui';
 import { AttendanceScreenWeb } from '@repo/classroom';
+import { ErrorBoundary } from '@repo/ui';
 
-const AttendanceScreen = (props: any) => {
+const AttendanceScreen = (props: Record<string, unknown>) => {
   return (
     <ErrorBoundary name="Classroom Attendance">
       <AttendanceScreenWeb {...props} />

@@ -1,15 +1,15 @@
 /**
  * No-op shim for the Node.js 'fs' module.
- * This prevents runtime crashes in the browser when libraries attempt to 
+ * This prevents runtime crashes in the browser when libraries attempt to
  * perform file system operations.
  */
 
-const readFileSync = (path, options) => {
+const readFileSync = (path, _options) => {
   console.warn(`[Shim] fs.readFileSync is a no-op matching path: ${path}`);
   return '';
 };
 
-const writeFileSync = (path, data, options) => {
+const writeFileSync = (path, _data, _options) => {
   console.warn(`[Shim] fs.writeFileSync is a no-op matching path: ${path}`);
 };
 
@@ -18,16 +18,16 @@ const existsSync = (path) => {
   return false;
 };
 
-const mkdirSync = (path, options) => {
+const mkdirSync = (path, _options) => {
   console.warn(`[Shim] fs.mkdirSync is a no-op for path: ${path}`);
 };
 
-const readdirSync = (path, options) => {
+const readdirSync = (path, _options) => {
   console.warn(`[Shim] fs.readdirSync always returns [] for path: ${path}`);
   return [];
 };
 
-const statSync = (path, options) => {
+const statSync = (path, _options) => {
   console.warn(`[Shim] fs.statSync is a no-op for path: ${path}`);
   return {
     isDirectory: () => false,
@@ -62,7 +62,16 @@ const fs = {
 fs.default = fs;
 fs.__esModule = true;
 
-export { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync, statSync, lstatSync, promises };
+export {
+  existsSync,
+  lstatSync,
+  mkdirSync,
+  promises,
+  readdirSync,
+  readFileSync,
+  statSync,
+  writeFileSync,
+};
 export default fs;
 
 if (typeof module !== 'undefined') {

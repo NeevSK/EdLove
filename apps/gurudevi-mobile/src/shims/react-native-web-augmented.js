@@ -1,7 +1,7 @@
 /**
  * Final robust augmented shim for react-native-web.
- * 
- * Re-exports everything from react-native-web, injecting missing native 
+ *
+ * Re-exports everything from react-native-web, injecting missing native
  * utilities like codegenNativeComponent.
  */
 
@@ -13,6 +13,6 @@ export { default } from 'react-native-web';
 import { View } from 'react-native-web';
 
 // Add missing native utilities used by various libraries
-export const codegenNativeComponent = (name) => {
+export const codegenNativeComponent = (_name) => {
   return View || 'div';
 };

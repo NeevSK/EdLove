@@ -38,4 +38,3 @@ describe('workspace layout POA coverage', () => {
     });
   });
 });
-

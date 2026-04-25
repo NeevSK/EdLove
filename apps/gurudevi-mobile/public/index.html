@@ -18,13 +18,13 @@
 
     <!-- \u2500\u2500 Zero-Flash Theme Init \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 -->
     <script>
-      (function () {
+      (() => {
         try {
           var raw = localStorage.getItem('gurudevi-storage');
           var theme = 'sanctuary';
           if (raw) {
             var state = JSON.parse(raw);
-            theme = (state && state.state && state.state.themeMode) || 'sanctuary';
+            theme = (state?.state?.themeMode) || 'sanctuary';
           }
           if (theme === 'system') {
             theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'midnight' : 'sanctuary';
@@ -265,19 +265,19 @@
     =========================================================================
     -->
     <script>
-      (function () {
+      (() => {
         try {
           var raw = localStorage.getItem('gurudevi-storage');
           if (raw) {
             var state = JSON.parse(raw);
-            var mode = (state && state.state && state.state.themeMode) || 'system';
+            var mode = (state?.state?.themeMode) || 'system';
             if (mode === 'dark') {
               document.documentElement.setAttribute('data-theme', 'dark');
             } else if (mode === 'light') {
               document.documentElement.setAttribute('data-theme', 'light');
             } else {
               // system \u2014 match prefers-color-scheme
-              if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+              if (window.matchMedia?.('(prefers-color-scheme: dark)').matches) {
                 document.documentElement.setAttribute('data-theme', 'dark');
               }
             }
@@ -294,7 +294,7 @@
     =========================================================================
     -->
     <script>
-      (function () {
+      (() => {
         var h = new Date().getHours();
         var phase =
           h < 4  ? 'night'     :
@@ -305,7 +305,7 @@
           h < 18 ? 'afternoon' :
           h < 20 ? 'evening'   :
           h < 22 ? 'dusk'      : 'night';
-        document.documentElement.classList.add('phase-' + phase);
+        document.documentElement.classList.add(`phase-${phase}`);
       })();
     </script>
 
@@ -320,7 +320,7 @@
     =========================================================================
     -->
     <script>
-      (function () {
+      (() => {
         var search = window.location.search;
         if (search) {
           var match = search.match(/[?&]p=([^&]+)/);
@@ -372,12 +372,12 @@
     <!-- PWA Service Worker Registration -->
     <script>
       if ('serviceWorker' in navigator) {
-        window.addEventListener('load', function () {
+        window.addEventListener('load', () => {
           navigator.serviceWorker.register('/sw.js', { scope: '/' })
-            .then(function (reg) {
+            .then((reg) => {
               console.log('[Gurudevi SW] Registered:', reg.scope);
             })
-            .catch(function (err) {
+            .catch((err) => {
               console.warn('[Gurudevi SW] Registration failed:', err);
             });
         });
@@ -386,12 +386,12 @@
     <script>
       // Capture beforeinstallprompt for an in-app install button
       window.__pwaInstallPrompt = null;
-      window.addEventListener('beforeinstallprompt', function(e) {
+      window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         window.__pwaInstallPrompt = e;
         document.dispatchEvent(new CustomEvent('pwa-installable'));
       });
-      window.addEventListener('appinstalled', function() {
+      window.addEventListener('appinstalled', () => {
         window.__pwaInstallPrompt = null;
         document.dispatchEvent(new CustomEvent('pwa-installed'));
       });

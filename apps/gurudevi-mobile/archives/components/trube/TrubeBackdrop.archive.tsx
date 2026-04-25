@@ -1,10 +1,10 @@
+import type { TrubeScoreName } from '@repo/trube-art';
+import { getScoreExtras, getScorePreset } from '@repo/trube-art';
+import { TrubeMotif, TrubeOrnament, TrubeStage } from '@repo/trube-art/native';
+import type { TemporalPhase } from '@repo/ui';
+import { useTheme } from '@repo/ui';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useTheme } from '@repo/ui';
-import type { TemporalPhase } from '@repo/ui';
-import { getScoreExtras, getScorePreset } from '@repo/trube-art';
-import type { TrubeScoreName } from '@repo/trube-art';
-import { TrubeMotif, TrubeOrnament, TrubeStage } from '@repo/trube-art/native';
 
 function mapPhaseToScore(phase: TemporalPhase): TrubeScoreName {
   switch (phase) {
@@ -18,7 +18,6 @@ function mapPhaseToScore(phase: TemporalPhase): TrubeScoreName {
       return 'shoreline-reverie';
     case 'dusk':
       return 'branch-wind';
-    case 'night':
     default:
       return 'goethe-night-study';
   }
