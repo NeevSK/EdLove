@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Platform } from 'react-native';
 import {
     Box,
     VStack,
@@ -16,7 +15,8 @@ import {
     Pressable,
     SanctuaryModal,
     Icon,
-    Heading as UIHeading
+    Heading as UIHeading,
+    AnimatedView
 } from '@repo/ui';
 import {
     ChevronLeft,
@@ -36,7 +36,6 @@ import GroupMemberManagement from '../components/GroupMemberManagement';
 import { PinnedResourcesShelf } from '../components/PinnedResourcesShelf';
 import { clearPendingGateAction, getPendingGateAction, setPendingGateAction, useStore, supabase, type CommunityStackParamList } from '@repo/core';
 import { usePermissions } from '@repo/core';
-import Animated from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import PostCard from '../components/PostCard';
 import SocialShieldModal from '../components/SocialShieldModal';
@@ -193,7 +192,7 @@ export default function GroupDetailsScreen() {
 
     const renderHeader = () => (
         <VStack className="p-5 gap-6">
-            <Animated.View entering={FadeInDown.duration(600).springify()}>
+            <AnimatedView entering={FadeInDown.duration(600).springify()}>
                 <SanctuaryCard className="bg-phase-surface border border-border rounded-[32px] overflow-hidden p-6 shadow-sm">
                     <VStack className="gap-5">
                         <HStack className="items-center gap-5">
@@ -258,7 +257,7 @@ export default function GroupDetailsScreen() {
                         )}
                     </VStack>
                 </SanctuaryCard>
-            </Animated.View>
+            </AnimatedView>
 
             <PinnedResourcesShelf resources={[]} />
 
@@ -322,7 +321,7 @@ export default function GroupDetailsScreen() {
                     estimatedItemSize={280}
                     ListHeaderComponent={renderHeader}
                     renderItem={({ item, index }) => (
-                        <Animated.View entering={FadeInDown.duration(400).delay(index * 150).springify()}>
+                        <AnimatedView entering={FadeInDown.duration(400).delay(index * 150).springify()}>
                             <Box className="px-5 pb-5">
                                 <PostCard
                                     post={item}
@@ -342,7 +341,7 @@ export default function GroupDetailsScreen() {
                                     } : undefined}
                                 />
                             </Box>
-                        </Animated.View>
+                        </AnimatedView>
                     )}
                     ListEmptyComponent={
                         posts.length === 0 ? (

@@ -11,7 +11,6 @@ import {
     Spinner,
     hapticLight,
 } from '@repo/ui';
-import { TouchableOpacity } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { ClassroomGradingSettings } from '@repo/core';
 import { useGradebook } from '../hooks/useGradebook';
@@ -110,12 +109,13 @@ export default function GradebookView({ classroomId }: GradebookViewProps) {
                             </Text>
 
                             {(['rank', 'marks', 'name'] as const).map((option) => (
-                                <TouchableOpacity
+                                <Pressable
                                     key={option}
                                     onPress={() => {
                                         hapticLight();
                                         setSortBy(option);
                                     }}
+                                    className="active:opacity-80"
                                 >
                                     <Box
                                         className={`py-1.5 px-4 rounded-full border ${
@@ -134,7 +134,7 @@ export default function GradebookView({ classroomId }: GradebookViewProps) {
                                             {t(`grading.gradebook.sort${option.charAt(0).toUpperCase() + option.slice(1)}`) || option.charAt(0).toUpperCase() + option.slice(1)}
                                         </Text>
                                     </Box>
-                                </TouchableOpacity>
+                                </Pressable>
                             ))}
                         </HStack>
                     </VStack>

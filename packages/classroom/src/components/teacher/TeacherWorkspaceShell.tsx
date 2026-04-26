@@ -1,7 +1,6 @@
 import React, { useMemo } from 'react';
-import { useWindowDimensions } from 'react-native';
 import { resolveWorkspaceSurfaceLayout, type WorkspaceLayout } from '@repo/core';
-import { Box, HStack, Text, VStack, Heading } from '@repo/ui';
+import { Box, HStack, Text, VStack, Heading, useResponsive } from '@repo/ui';
 import type {
     TeacherDashboardCapabilityKey,
     TeacherDashboardSurface,
@@ -37,8 +36,7 @@ export function TeacherWorkspaceShell({
     stats,
     isDemoMode,
 }: TeacherWorkspaceShellProps) {
-    const { width } = useWindowDimensions();
-    const isDesktop = width >= 1024;
+    const { isDesktop } = useResponsive();
 
     const resolvedSurfaces = useMemo(
         () => resolveWorkspaceSurfaceLayout<TeacherDashboardSurfaceId, TeacherDashboardCapabilityKey>(surfaces, layout),

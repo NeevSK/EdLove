@@ -51,8 +51,10 @@ export const CircadianProvider = ({ children }: { children: React.ReactNode }) =
     });
   }, [temporalPhase, isDark]);
 
+  const contextValue = useMemo(() => ({ phase: temporalPhase }), [temporalPhase]);
+
   return (
-    <CircadianContext.Provider value={{ phase: temporalPhase }}>
+    <CircadianContext.Provider value={contextValue}>
       <View style={[circadianVars, { flex: 1 }]}>{children}</View>
     </CircadianContext.Provider>
   );

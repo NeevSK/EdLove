@@ -1,15 +1,14 @@
 import React, { useRef, useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
 import { UnifiedMapView } from '../maps/UnifiedMapView';
 import { UnifiedMarker } from '../maps/UnifiedMarker';
-import { Theme, useThemedColors } from '@repo/ui';
+import { Theme, useThemedColors, Box } from '@repo/ui';
 import type { 
     PerspectiveViewProps, 
     GraphNode 
 } from '@repo/graphics';
 
 /**
- * TerraView  The "Geographical" Perspective (Native).
+ * TerraView — The "Geographical" Perspective (Native).
  * 
  * Renders nodes on a real-world map using a unified map component.
  * Features custom dark-mode styling for the "Sanctuary" aesthetic.
@@ -60,16 +59,16 @@ export const TerraView: React.FC<PerspectiveViewProps> = ({
         { "featureType": "poi.park", "elementType": "geometry", "stylers": [{ "color": "#2A2318" }] },
         { "featureType": "road", "elementType": "geometry", "stylers": [{ "color": "#3D3528" }] },
         { "featureType": "road", "elementType": "geometry.stroke", "stylers": [{ "color": "#1A1610" }] },
-        { "featureType": "road", "elementType": "labels.text.fill", "stylers": [{ "color": "#6A6358" }] },
+        { "featureType": "road", "labels.text.fill", "stylers": [{ "color": "#6A6358" }] },
         { "featureType": "water", "elementType": "geometry", "stylers": [{ "color": "#0F172A" }] },
         { "featureType": "water", "elementType": "labels.text.fill", "stylers": [{ "color": "#2563EB" }] }
     ];
 
     return (
-        <View style={styles.container}>
+        <Box className="absolute inset-0 bg-[#1A1610]">
             <UnifiedMapView
                 ref={mapRef}
-                style={styles.map}
+                className="absolute inset-0"
                 region={initialRegion}
                 customMapStyle={mapStyle}
                 rotateEnabled={false}
@@ -89,16 +88,6 @@ export const TerraView: React.FC<PerspectiveViewProps> = ({
                     />
                 ))}
             </UnifiedMapView>
-        </View>
+        </Box>
     );
 };
-
-const styles = StyleSheet.create({
-    container: {
-        ...StyleSheet.absoluteFillObject,
-        backgroundColor: '#1A1610',
-    },
-    map: {
-        ...StyleSheet.absoluteFillObject,
-    },
-});

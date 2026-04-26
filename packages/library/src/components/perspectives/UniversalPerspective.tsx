@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { 
     Theme, 
     useThemedColors, 
@@ -7,7 +6,8 @@ import {
     HStack, 
     VStack, 
     Box,
-    GlassCard
+    GlassCard,
+    Pressable
 } from '@repo/ui';
 import { 
     PerspectiveId, 
@@ -117,26 +117,26 @@ export const UniversalPerspective: React.FC<UniversalPerspectiveProps> = ({
     if (!layout) return null;
 
     return (
-        <View style={styles.container}>
-            <View style={styles.header}>
-                {title && <Text style={styles.title}>{title}</Text>}
+        <Box className="flex-1">
+            <Box className="absolute top-0 left-0 right-0 z-10 p-4 flex-row justify-between items-center">
+                {title && <Text className="text-lg font-bold text-white tracking-widest">{title}</Text>}
                 {topologyId && (
-                    <TouchableOpacity 
+                    <Pressable 
                         onPress={handleShare} 
-                        style={[styles.shareBtn, isSharing && { opacity: 0.5 }]}
+                        className={`w-9 h-9 rounded-full bg-white/10 items-center justify-center ${isSharing ? 'opacity-50' : ''}`}
                         disabled={isSharing}
                     >
                         <Share2 size={18} color="white" />
-                    </TouchableOpacity>
+                    </Pressable>
                 )}
-            </View>
+            </Box>
 
-            <View style={styles.viewer}>
+            <Box className="flex-1">
                 {renderPerspective()}
-            </View>
+            </Box>
 
             {showToggle && (
-                <GlassCard style={styles.toggleBar}>
+                <GlassCard className="absolute bottom-6 left-5 right-5 py-3 px-4 rounded-[20px]">
                     <HStack className="justify-center gap-3">
                         <LensButton 
                             active={perspective === 'astro'} 
@@ -171,77 +171,21 @@ export const UniversalPerspective: React.FC<UniversalPerspectiveProps> = ({
                     </HStack>
                 </GlassCard>
             )}
-        </View>
+        </Box>
     );
 };
 
 const LensButton = ({ active, icon: Icon, onPress, label }: any) => {
     const colors = useThemedColors();
     return (
-        <TouchableOpacity 
+        <Pressable 
             onPress={onPress} 
-            style={[styles.lensBtn, active && styles.lensBtnActive]}
+            className={`flex-row items-center px-3 py-2 rounded-xl ${active ? 'bg-[#FFB30026]' : ''}`}
         >
             <Icon size={18} color={active ? Theme.colors.sanctuarySaffron : colors.textSecondary} />
-            {active && <Text style={styles.lensLabel}>{label}</Text>}
-        </TouchableOpacity>
+            {active && <Text className="text-xs font-semibold ml-2" style={{ color: Theme.colors.sanctuarySaffron }}>{label}</Text>}
+        </Pressable>
     );
 };
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
-    header: {
-        padding: 16,
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        zIndex: 10,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-    },
-    shareBtn: {
-        width: 36,
-        height: 36,
-        borderRadius: 18,
-        backgroundColor: 'rgba(255, 255, 255, 0.1)',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    title: {
-        fontSize: 18,
-        fontWeight: '700',
-        color: 'white',
-        letterSpacing: 0.5,
-    },
-    viewer: {
-        flex: 1,
-    },
-    toggleBar: {
-        position: 'absolute',
-        bottom: 24,
-        left: 20,
-        right: 20,
-        paddingVertical: 12,
-        borderRadius: 20,
-    },
-    lensBtn: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: 12,
-        paddingVertical: 8,
-        borderRadius: 12,
-    },
-    lensBtnActive: {
-        backgroundColor: 'rgba(255, 179, 0, 0.15)',
-    },
-    lensLabel: {
-        fontSize: 12,
-        fontWeight: '600',
-        color: Theme.colors.sanctuarySaffron,
-        marginLeft: 8,
-    }
-});
+

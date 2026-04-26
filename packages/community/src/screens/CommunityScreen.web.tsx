@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { PositiveInvitation, WebScreenHeader, Box, VStack, Heading, Text, Icon } from '@repo/ui';
+import { PositiveInvitation, WebScreenHeader, Box, VStack, Heading, Text, Icon, Spinner } from '@repo/ui';
 import {
     communityAPI,
     setPendingGateAction,
@@ -189,7 +188,7 @@ export default function CommunityScreenWeb() {
         if (isLoadingPosts) {
             return (
                 <div className="community-empty-card" style={{ textAlign: 'center', padding: '48px 24px' }}>
-                    <ActivityIndicator color="var(--action)" />
+                    <Spinner />
                 </div>
             );
         }
@@ -285,7 +284,7 @@ export default function CommunityScreenWeb() {
         if (loadingMessages) {
             return (
                 <div className="community-empty-card" style={{ textAlign: 'center', padding: '48px 24px' }}>
-                    <ActivityIndicator color="var(--action)" />
+                    <Spinner />
                 </div>
             );
         }

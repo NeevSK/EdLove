@@ -1,8 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
-    Modal,
-    FlatList,
-    KeyboardAvoidingView,
     Platform,
     Alert,
 } from 'react-native';
@@ -12,13 +9,14 @@ import {
     HStack, 
     VStack, 
     Pressable, 
-    View,
     Icon,
     InputField,
     Spinner,
     getInitialsFromName,
     formatTimestamp,
-    Actionsheet
+    Actionsheet,
+    FlatList,
+    KeyboardAvoidingView,
 } from '@repo/ui';
 import { ChevronDown, Send, ThumbsUp, Trash2, Shield, Lock, EyeOff } from 'lucide-react-native';
 import { useComments } from '../hooks/useComments';
@@ -70,11 +68,11 @@ function CommentRow({
     };
 
     return (
-        <View 
+        <Box 
             className={`flex-row mb-5 pl-1 ${comment.is_official_answer ? 'border-l-4 border-l-phase-reward' : ''}`}
         >
             {/* Avatar */}
-            <View 
+            <Box 
                 className={`w-9 h-9 rounded-full items-center justify-center mr-3 mt-1 shrink-0 ${comment.is_anonymous ? 'bg-phase-surface border border-border' : 'bg-phase-interactive/10'}`}
             >
                 {comment.is_anonymous ? (
@@ -82,9 +80,9 @@ function CommentRow({
                 ) : (
                     <Text className="text-[12px] font-bold text-phase-interactive">{initials}</Text>
                 )}
-            </View>
+            </Box>
 
-            <View className="flex-1">
+            <Box className="flex-1">
                 <HStack className="justify-between items-center h-5">
                     <HStack className="items-center gap-1.5">
                         <Text className="text-xs font-bold text-ink">
@@ -149,8 +147,8 @@ function CommentRow({
                         </Pressable>
                     )}
                 </HStack>
-            </View>
-        </View>
+            </Box>
+        </Box>
     );
 }
 
@@ -242,7 +240,6 @@ export function CommentSheet({
                     data={comments}
                     keyExtractor={item => item.id}
                     contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 10, paddingBottom: 24 }}
-                    showsVerticalScrollIndicator={false}
                     renderItem={({ item }) => (
                         <CommentRow
                             comment={item}

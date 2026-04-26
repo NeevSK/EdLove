@@ -1,7 +1,5 @@
 import React from 'react';
-import { Box, SandboxBanner, Text, Theme, WorkspaceCanvas, hapticLight, useRegisterFAB, useThemedColors, Pressable, HStack } from '@repo/ui';
-import Animated, { FadeInDown } from 'react-native-reanimated';
-import { ScrollView } from 'react-native';
+import { Box, SandboxBanner, Text, WorkspaceCanvas, hapticLight, useRegisterFAB, useThemedColors, Pressable, HStack, ScrollView, AnimatedView, FadeInDown } from '@repo/ui';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
@@ -83,9 +81,9 @@ export default function StudentDashboard({ forceDemo, userId }: StudentDashboard
       {isDemoExperience ? <SandboxBanner /> : null}
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ padding: Theme.spacing.lg }}
+        contentContainerStyle={{ padding: 16 }}
       >
-        <Animated.View entering={FadeInDown.duration(400)}>
+        <AnimatedView entering={FadeInDown.duration(400)}>
           <WorkspaceCanvas
             surfaces={dashboardSurfaces}
             layout={layout}
@@ -138,7 +136,7 @@ export default function StudentDashboard({ forceDemo, userId }: StudentDashboard
               );
             }}
           />
-        </Animated.View>
+        </AnimatedView>
       </ScrollView>
     </Box>
   );

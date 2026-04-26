@@ -14,21 +14,70 @@ export class DiscoveryService {
     target?: string;
     includeNodeModules?: boolean;
     summaryOnly?: boolean;
+    context?: number;
+    fileType?: string;
+    richText?: boolean;
   }) {
     const target = normalizeTarget(args.target || '.');
-    console.error(`Shiny Grepping: ${args.query} in ${target}`);
+    const context = args.context ?? 0;
+    console.error(`Sovereign Grepping: ${args.query} in ${target} (Context: ${context})`);
     
     const regexFlag = args.isRegex ? '' : '--fixed-strings';
     const globFlag = args.include ? `-g "${args.include}"` : '';
-    const nodeModulesFlag = args.includeNodeModules ? '' : '--exclude-node-modules'; // rg excludes by default usually, but we want to be explicit if needed
-    // rg doesn't have a direct "summary only" that matches the old script exactly, 
-    // but --count can give counts, or we just let itrip.
+    const typeFlag = args.fileType ? `-t ${args.fileType}` : '';
+    const contextFlag = context > 0 ? `-C ${context}` : '';
     
-    const command = `rg --line-number --column --smart-case --heading --color=never ${regexFlag} ${globFlag} "${args.query}" "${target}"`;
+    // Proper exclusions for a shiny monorepo
+    const exclusions = args.includeNodeModules 
+      ? '' 
+      : "-g '!**/node_modules/*' -g '!**/dist/*' -g '!**/.turbo/*' -g '!**/.git/*' -g '!**/build/*' -g '!**/.expo/*'";
+
+    const command = `rg --line-number --column --smart-case --heading --color=never ${regexFlag} ${globFlag} ${typeFlag} ${contextFlag} ${exclusions} "${args.query}" "${target}"`;
     
     try {
-      const output = execSync(command, { cwd: ROOT_DIR, encoding: 'utf-8' });
-      return { content: [{ type: 'text' as const, text: output }] };
+      let output = execSync(command, { cwd: ROOT_DIR, encoding: 'utf-8' });
+      
+      if (args.summaryOnly) {
+        // Run count command for summary only
+        const countCmd = `rg --count --smart-case ${regexFlag} ${globFlag} ${typeFlag} ${exclusions} "${args.query}" "${target}"`;
+        try {
+          const counts = execSync(countCmd, { cwd: ROOT_DIR, encoding: 'utf-8' });
+          return { content: [{ type: 'text' as const, text: `Summary Counts:\n${counts}` }] };
+        } catch (e) {
+          return { content: [{ type: 'text' as const, text: 'No matches found for summary.' }] };
+        }
+      }
+
+      if (args.richText) {
+        // Use bat to format the output string into a "rich" textual representation
+        try {
+          // We write to a temp file and read it back with bat styling
+          const tempFile = path.join(ROOT_DIR, '.grep_result_temp.txt');
+          fs.writeFileSync(tempFile, output);
+          output = execSync(`bat --style=full --color=never "${tempFile}"`, { encoding: 'utf-8' });
+          fs.unlinkSync(tempFile);
+        } catch (batError) {
+          console.error("Bat formatting failed, falling back to raw.");
+        }
+      }
+
+      // Add a small heatmap summary to the end of the results
+      const lines = output.split('\n');
+      const filesAffected = new Set<string>();
+      lines.forEach(l => {
+        // Simple heuristic to find file paths in multi-file rg output (contains slashes, doesn't start with space/digit)
+        if (l && !l.startsWith(' ') && !l.match(/^\d+[:-]/) && (l.includes('\\') || l.includes('/'))) {
+          filesAffected.add(l.trim());
+        }
+      });
+
+      const summaryText = `\n--- 📊 Sovereign Search Summary ---\nFound matches in ${filesAffected.size} files.\n`;
+      
+      return { 
+        content: [
+          { type: 'text' as const, text: output + summaryText }
+        ] 
+      };
     } catch (e: any) {
       if (e.status === 1) {
         return { content: [{ type: 'text' as const, text: 'No matches found.' }] };
@@ -148,17 +197,19 @@ export class DiscoveryService {
     }
   }
 
-  handleStructuralSearch(args: { query: string, target?: string }) {
+  handleStructuralSearch(args: { query: string, target?: string, include?: string }) {
     const target = normalizeTarget(args.target || '.');
-    console.error(`Structural search for: ${args.query} in ${target}`);
+    const glob = args.include ? `--include "${args.include}"` : '';
+    console.error(`Sovereign Structural search (Biome): ${args.query} in ${target}`);
     try {
-      const output = execSync(`npx biome search "${args.query.replace(/"/g, '\\"')}" "${target}"`, {
+      // Biome search is great for finding code patterns (e.g. "import { $X } from '$Y'")
+      const output = execSync(`npx biome search "${args.query.replace(/"/g, '\\"')}" "${target}" ${glob}`, {
         cwd: ROOT_DIR,
       }).toString();
       return { content: [{ type: 'text' as const, text: output }] };
     } catch (e: any) {
       return { 
-        content: [{ type: 'text' as const, text: `Biome search failed: ${e.message}` }], 
+        content: [{ type: 'text' as const, text: `Biome search failed: ${e.message}\nTry simpler grep if structural patterns fail.` }], 
         isError: true 
       };
     }

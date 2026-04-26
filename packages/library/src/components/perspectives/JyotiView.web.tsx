@@ -1,5 +1,5 @@
+
 import React from 'react';
-import { StyleSheet } from 'react-native';
 import { 
     useTheme, 
     Box, 
@@ -32,7 +32,7 @@ export const JyotiView: React.FC<PerspectiveViewProps> = ({
     }));
 
     return (
-        <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+        <ScrollView className="flex-1 bg-[#0F172A]" contentContainerStyle={{ padding: 40, paddingTop: 120 }}>
             <VStack className="gap-8">
                 {/* Stats Cards */}
                 <SanctuaryStatsCard 
@@ -80,13 +80,4 @@ export const JyotiView: React.FC<PerspectiveViewProps> = ({
     );
 };
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#0F172A', // Obsidian/Ink
-    },
-    content: {
-        padding: 40,
-        paddingTop: 120,
-    }
-});
+

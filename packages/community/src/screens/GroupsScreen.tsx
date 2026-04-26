@@ -1,5 +1,4 @@
 import React, { useState, useCallback, useMemo } from 'react';
-import { Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { 
     Box, 
@@ -14,9 +13,9 @@ import {
     Heading, 
     Icon,
     InputField,
-    Spinner
+    Spinner,
+    AnimatedView
 } from '@repo/ui';
-import Animated from 'react-native-reanimated';
 import GroupCard from '../components/GroupCard';
 import { useCommunityGroups } from '../hooks/useCommunityGroups';
 // @ts-ignore - Temporary until we decide on demo logic location
@@ -67,7 +66,7 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
     }, []);
 
     const renderSearchBar = () => (
-        <Animated.View entering={FadeInDown.delay(100).springify()}>
+        <AnimatedView entering={FadeInDown.delay(100).springify()}>
             <Box className="px-5 mb-4">
                 <HStack
                     className="items-center bg-phase-surface border border-border h-14 px-4 rounded-[20px] shadow-sm"
@@ -88,11 +87,11 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
                     ) : null}
                 </HStack>
             </Box>
-        </Animated.View>
+        </AnimatedView>
     );
 
     const renderSubTabs = () => (
-        <Animated.View entering={FadeInDown.delay(150).springify()}>
+        <AnimatedView entering={FadeInDown.delay(150).springify()}>
             <HStack className="gap-2 mx-5 mb-4 mt-2 bg-phase-surface p-1 rounded-2xl border border-border">
                 <Pressable
                     onPress={() => setActiveSubTab('sanctuary')}
@@ -117,7 +116,7 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
                     </Text>
                 </Pressable>
             </HStack>
-        </Animated.View>
+        </AnimatedView>
     );
 
     const renderGalaxyActions = () => {
@@ -125,7 +124,7 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
         if (!flags.isCommunityEnabled || !can('create', 'Group')) return null;
 
         return (
-            <Animated.View entering={FadeInDown.duration(600).delay(300).springify()}>
+            <AnimatedView entering={FadeInDown.duration(600).delay(300).springify()}>
                 <Box className="mx-5 mb-5">
                     <SanctuaryButton
                         onPress={() => onCreateGroup?.()}
@@ -138,7 +137,7 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
                         </HStack>
                     </SanctuaryButton>
                 </Box>
-            </Animated.View>
+            </AnimatedView>
         );
     };
 
@@ -206,7 +205,7 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
     const renderItem = useCallback(({ item, index }: { item: Group, index: number }) => {
         const animationDelay = Math.min(index * 150, 1500);
         return (
-            <Animated.View entering={FadeInDown.duration(400).delay(animationDelay).springify()}>
+            <AnimatedView entering={FadeInDown.duration(400).delay(animationDelay).springify()}>
                 <Box className="mb-4">
                     <GroupCard
                         id={item.id}
@@ -217,7 +216,7 @@ export default function GroupsScreen({ userId, schoolId, onCreatePost, onCreateG
                         onPress={() => onNavigateToGroup(item.id)}
                     />
                 </Box>
-            </Animated.View>
+            </AnimatedView>
         );
     }, [onNavigateToGroup]);
 

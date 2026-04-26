@@ -12,7 +12,6 @@
  * No expo-file-system or expo-sharing imports here.
  */
 import React, { useState } from 'react';
-import { View, StyleSheet, Platform } from 'react-native';
 import {
     Box,
     VStack,
@@ -76,16 +75,21 @@ export default function PDFViewerScreen({ route }: PDFViewerScreenProps) {
             />
 
             {/* Inline iframe viewer */}
-            <View style={styles.iframeContainer}>
+            <Box className="flex-1 overflow-hidden">
                 {/* @ts-ignore - 'iframe' is valid in react-native-web */}
                 <iframe
                     key={iframeKey}
                     src={url}
                     title={title}
-                    style={styles.iframe as any}
+                    style={{
+                        width: '100%',
+                        height: '100%',
+                        border: 'none',
+                        display: 'block',
+                    } as any}
                     allowFullScreen
                 />
-            </View>
+            </Box>
 
             {/* Action bar below the iframe */}
             <HStack
@@ -113,15 +117,4 @@ export default function PDFViewerScreen({ route }: PDFViewerScreenProps) {
     );
 }
 
-const styles = StyleSheet.create({
-    iframeContainer: {
-        flex: 1,
-        overflow: 'hidden',
-    } as any,
-    iframe: {
-        width: '100%',
-        height: '100%',
-        border: 'none',
-        display: 'block',
-    } as any,
-});
+

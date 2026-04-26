@@ -1,6 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Text } from 'react-native';
-import { useThemedColors, Theme } from '@repo/ui';
+import { useThemedColors, Theme, Box, Text } from '@repo/ui';
 import { Globe } from 'lucide-react-native';
 import type { 
     PerspectiveViewProps 
@@ -19,63 +18,27 @@ export const TerraView: React.FC<PerspectiveViewProps> = ({
     const colors = useThemedColors();
 
     return (
-        <View style={styles.container}>
-            <View style={styles.placeholder}>
+        <Box className="flex-1 bg-[#1A1610] items-center justify-center">
+            <Box className="items-center p-10 max-w-[500px]">
                 <Globe size={64} color={colors.action} opacity={0.5} />
-                <Text style={[styles.text, { color: colors.textSecondary }]}>
+                <Text className="text-2xl font-extrabold mt-5 text-center" style={{ color: colors.textSecondary }}>
                     Strategic Geographical Mapping
                 </Text>
-                <Text style={[styles.subtext, { color: colors.textTertiary }]}>
+                <Text className="text-sm mt-2 text-center" style={{ color: colors.textTertiary }}>
                     Web version is currently being ritualized with Leaflet integration.
                 </Text>
                 
                 {/* Simulated Region List */}
-                <View style={styles.regionList}>
+                <Box className="flex-row flex-wrap justify-center gap-2 mt-8">
                     {data.nodes.filter(n => n.geo).map(node => (
-                        <View key={node.id} style={[styles.pill, { backgroundColor: colors.secondary, borderColor: colors.action }]}>
-                            <Text style={{ color: colors.text, fontSize: 12 }}>{node.label} ({node.geo?.lat.toFixed(2)}, {node.geo?.lng.toFixed(2)})</Text>
-                        </View>
+                        <Box key={node.id} className="px-3 py-1.5 rounded-full border" style={{ backgroundColor: colors.secondary, borderColor: colors.action }}>
+                            <Text className="text-xs" style={{ color: colors.text }}>{node.label} ({node.geo?.lat.toFixed(2)}, {node.geo?.lng.toFixed(2)})</Text>
+                        </Box>
                     ))}
-                </View>
-            </View>
-        </View>
+                </Box>
+            </Box>
+        </Box>
     );
 };
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#1A1610',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    placeholder: {
-        alignItems: 'center',
-        padding: 40,
-        maxWidth: 500,
-    },
-    text: {
-        fontSize: 24,
-        fontWeight: '800',
-        marginTop: 20,
-        textAlign: 'center',
-    },
-    subtext: {
-        fontSize: 14,
-        marginTop: 10,
-        textAlign: 'center',
-    },
-    regionList: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        justifyContent: 'center',
-        gap: 8,
-        marginTop: 32,
-    },
-    pill: {
-        paddingHorizontal: 12,
-        paddingVertical: 6,
-        borderRadius: 20,
-        borderWidth: 1,
-    }
-});
+

@@ -1,6 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, useWindowDimensions } from 'react-native';
-import { useThemedColors, Theme } from '@repo/ui';
+import { useThemedColors, Theme, Box, useResponsive } from '@repo/ui';
 import { radarLayout } from '@repo/graphics';
 import type { PerspectiveViewProps } from '@repo/graphics';
 
@@ -13,7 +12,7 @@ export const VatyaView: React.FC<PerspectiveViewProps> = ({
     selectedNode,
 }) => {
     const colors = useThemedColors();
-    const { width, height } = useWindowDimensions();
+    const { width, height } = useResponsive();
 
     const activeNode = selectedNode || {
         id: 'demo',
@@ -33,7 +32,7 @@ export const VatyaView: React.FC<PerspectiveViewProps> = ({
     const polygonPoints = layout.points.map(p => `${p.x},${p.y}`).join(' ');
 
     return (
-        <View style={styles.container}>
+        <Box className="flex-1 w-full h-full items-center justify-center">
             <svg width="100%" height="70%" viewBox={`0 0 ${width} ${height * 0.7}`}>
                 <g>
                     {/* Scale Circles */}
@@ -102,12 +101,4 @@ export const VatyaView: React.FC<PerspectiveViewProps> = ({
     );
 };
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        width: '100%',
-        height: '100%',
-        alignItems: 'center',
-        justifyContent: 'center',
-    }
-});
+

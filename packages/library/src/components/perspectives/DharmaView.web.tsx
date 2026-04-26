@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
-import { StyleSheet, View, useWindowDimensions, TouchableOpacity } from 'react-native';
-import { Theme, useThemedColors, Text, Box } from '@repo/ui';
+import { Theme, useThemedColors, Text, Box, useResponsive, Pressable } from '@repo/ui';
 import { CheckCircle2, Circle } from 'lucide-react-native';
 import type { 
     PerspectiveViewProps, 
@@ -18,7 +17,7 @@ export const DharmaView: React.FC<PerspectiveViewProps> = ({
     onNodePress,
 }) => {
     const colors = useThemedColors();
-    const { width: windowWidth } = useWindowDimensions();
+    const { width: windowWidth } = useResponsive();
 
     const orderedNodes = useMemo(() => {
         return [...data.nodes]
@@ -27,7 +26,7 @@ export const DharmaView: React.FC<PerspectiveViewProps> = ({
     }, [data.nodes]);
 
     return (
-        <View style={styles.container}>
+        <Box className="flex-1 w-full h-full">
             <div style={{ 
                 height: '100%', 
                 overflowY: 'auto', 
@@ -65,22 +64,20 @@ export const DharmaView: React.FC<PerspectiveViewProps> = ({
 
                             {/* Node Button */}
                             <div style={{ transform: `translateX(${xOffset}px)` }}>
-                                <TouchableOpacity 
+                                <Pressable 
                                     onPress={() => onNodePress?.(item)}
-                                    style={[
-                                        styles.nodeCircle, 
-                                        { 
-                                            backgroundColor: colors.secondary,
-                                            borderColor: colors.action,
-                                        }
-                                    ]}
+                                    className="w-20 h-20 rounded-full border-[3px] items-center justify-center"
+                                    style={{ 
+                                        backgroundColor: colors.secondary,
+                                        borderColor: colors.action,
+                                    }}
                                 >
                                     {item.type === 'topic' ? (
                                         <CheckCircle2 size={32} color={colors.action} />
                                     ) : (
                                         <Circle size={32} color={colors.textSecondary} />
                                     )}
-                                </TouchableOpacity>
+                                </Pressable>
                                 
                                 <div style={{ 
                                     position: 'absolute', 
@@ -101,22 +98,8 @@ export const DharmaView: React.FC<PerspectiveViewProps> = ({
                     );
                 })}
             </div>
-        </View>
+        </Box>
     );
 };
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        width: '100%',
-        height: '100%',
-    },
-    nodeCircle: {
-        width: 80,
-        height: 80,
-        borderRadius: 40,
-        borderWidth: 3,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-});
+

@@ -1,6 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, useWindowDimensions } from 'react-native';
-import { useThemedColors, Theme } from '@repo/ui';
+import { useThemedColors, Theme, Box, useResponsive } from '@repo/ui';
 import type { 
     PerspectiveViewProps 
 } from '@repo/graphics';
@@ -16,10 +15,10 @@ export const VastuView: React.FC<PerspectiveViewProps> = ({
     onNodePress,
 }) => {
     const colors = useThemedColors();
-    const { width, height } = useWindowDimensions();
+    const { width, height } = useResponsive();
 
     return (
-        <View style={styles.container}>
+        <Box className="flex-1 w-full h-full">
             <svg 
                 width="100%" 
                 height="100%" 
@@ -83,10 +82,4 @@ export const VastuView: React.FC<PerspectiveViewProps> = ({
     );
 };
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        width: '100%',
-        height: '100%',
-    },
-});
+

@@ -1,12 +1,12 @@
 import React from 'react';
-import { useWindowDimensions } from 'react-native';
+
 import Svg, { Path, G, Circle, Text as SvgText } from 'react-native-svg';
 import Animated, { 
     useSharedValue, 
     useAnimatedStyle, 
 } from 'react-native-reanimated';
 import { Gesture, GestureDetector, GestureUpdateEvent, PinchGestureHandlerEventPayload, PanGestureHandlerEventPayload } from 'react-native-gesture-handler';
-import { Theme, useThemedColors } from '@repo/ui';
+import { Theme, useThemedColors, useResponsive } from '@repo/ui';
 import { 
     PerspectiveViewProps, 
     GraphNode, 
@@ -27,7 +27,7 @@ export const VastuView: React.FC<PerspectiveViewProps> = ({
     height: containerHeight,
 }) => {
     const colors = useThemedColors();
-    const { width: windowWidth, height: windowHeight } = useWindowDimensions();
+    const { width: windowWidth, height: windowHeight } = useResponsive();
 
     const scale = useSharedValue(1);
     const savedScale = useSharedValue(1);

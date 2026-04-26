@@ -8,7 +8,8 @@ import {
     Heading,
     Card,
     Icon,
-    Center
+    Center,
+    Spinner as ActivityIndicator
 } from '@repo/ui';
 import {
     TrendingUp,
@@ -17,7 +18,6 @@ import {
     ChevronRight,
 } from 'lucide-react-native';
 import { api, StudentObservation, AttendanceRecord, StudentGrade } from '@repo/core';
-import { ActivityIndicator } from 'react-native';
 
 interface ClassroomHolisticInsightsProps {
     classroomId: string;

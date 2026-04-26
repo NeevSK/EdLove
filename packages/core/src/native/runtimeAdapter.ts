@@ -4,10 +4,10 @@ import NetInfo from '@react-native-community/netinfo';
 // @ts-ignore
 import * as Location from 'expo-location';
 import { storage } from './storage';
-import { Platform, Linking } from 'react-native';
+import { Platform, Linking, Share, StatusBar } from 'react-native';
 // @ts-ignore
 import * as Haptics from 'expo-haptics';
-import { CoreRuntimeEnvironment, DeviceMetadata, HapticsProvider, LinkingProvider, LocationProvider, NetworkProvider } from '../types/runtime';
+import { CoreRuntimeEnvironment, DeviceMetadata, HapticsProvider, LinkingProvider, LocationProvider, NetworkProvider, ShareProvider, ShareOptions, UIProvider } from '../types/runtime';
 
 export const nativeStorageProvider = {
   async getItem(key: string) {
@@ -62,6 +62,21 @@ export const nativeNetworkProvider: NetworkProvider = {
   fetch: () => NetInfo.fetch(),
 };
 
+export const nativeShareProvider: ShareProvider = {
+  share: async (options: ShareOptions) => {
+    // React Native's Share.share expects ShareContent where message is mandatory for some platforms
+    await Share.share({
+      title: options.title,
+      message: options.message ?? '',
+      url: options.url,
+    });
+  },
+};
+
+export const nativeUIProvider: UIProvider = {
+  setStatusBarHidden: (hidden: boolean, animation?: 'none' | 'fade' | 'slide') => StatusBar.setHidden(hidden, animation),
+};
+
 export const nativeRuntimeEnvironment: CoreRuntimeEnvironment = {
   storage: nativeStorageProvider as any, // Cast to any to avoid strict string|null vs string|undefined mismatch
   device: nativeDeviceProvider,
@@ -69,4 +84,6 @@ export const nativeRuntimeEnvironment: CoreRuntimeEnvironment = {
   linking: nativeLinkingProvider,
   location: nativeLocationProvider,
   network: nativeNetworkProvider,
+  share: nativeShareProvider,
+  ui: nativeUIProvider,
 };

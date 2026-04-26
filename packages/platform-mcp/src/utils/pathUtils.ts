@@ -9,19 +9,32 @@ import { ROOT_DIR } from "./constants.js";
 export function normalizeTarget(target: string): string {
   const clean = target.replace(/^['"]|['"]$/g, ""); // Remove accidental quotes
   
-  // 1. Full Aliases (@repo/ui -> packages/ui/src)
   if (clean.startsWith("@repo/")) {
-    const pkg = clean.replace("@repo/", "");
-    return path.join(ROOT_DIR, "packages", pkg, "src");
+    const pkgPath = clean.replace("@repo/", "");
+    const parts = pkgPath.split(/[/\\]/).filter(p => p);
+    const pkgName = parts[0];
+    const rest = parts.slice(1);
+    const base = path.join(ROOT_DIR, "packages", pkgName);
+    
+    if (rest.length > 0) {
+      return path.join(base, ...rest);
+    }
+    return path.join(base, "src");
   }
   
-  // 2. App Aliases (@app/web -> apps/web/src)
   if (clean.startsWith("@app/")) {
-    const app = clean.replace("@app/", "");
-    return path.join(ROOT_DIR, "apps", app, "src");
+    const appPath = clean.replace("@app/", "");
+    const parts = appPath.split(/[/\\]/).filter(p => p);
+    const appName = parts[0];
+    const rest = parts.slice(1);
+    const base = path.join(ROOT_DIR, "apps", appName);
+
+    if (rest.length > 0) {
+      return path.join(base, ...rest);
+    }
+    return path.join(base, "src");
   }
 
-  // 3. Absolute or relative fallbacks
   return path.isAbsolute(clean) ? clean : path.join(ROOT_DIR, clean);
 }
 

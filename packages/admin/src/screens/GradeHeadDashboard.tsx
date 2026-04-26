@@ -1,5 +1,4 @@
 import React from 'react';
-import { ScrollView } from 'react-native';
 import {
     Box,
     Text,
@@ -9,7 +8,8 @@ import {
     useRegisterFAB,
     ScreenWrapper,
     Pressable,
-    Icon
+    Icon,
+    ScrollView
 } from '@repo/ui';
 import { useStore } from '@repo/core';
 import { useAIAgent } from '@repo/ai';
@@ -28,7 +28,7 @@ export default function GradeHeadDashboard({ schoolId, userId }: { schoolId?: st
 
     return (
         <ScreenWrapper>
-            <ScrollView contentContainerStyle={{ padding: 24, paddingBottom: 100 }}>
+            <ScrollView className="flex-1" contentContainerStyle={{ padding: 24, paddingBottom: 100 }}>
                 <VStack className="gap-4">
                     {/* Header */}
                     <Box className="py-8">

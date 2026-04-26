@@ -1,13 +1,19 @@
 import React from 'react';
-import { Modal as RNModal, TouchableOpacity } from 'react-native';
 import { 
     Box, 
     Heading, 
     HStack,
     SandboxBanner, 
     ScrollView, 
-    Theme, 
-    useThemedColors
+    useThemedColors,
+    Icon,
+    Pressable,
+    Modal,
+    ModalBackdrop,
+    ModalContent,
+    ModalHeader,
+    ModalCloseButton,
+    ModalBody
 } from '@repo/ui';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { X } from 'lucide-react-native';
@@ -48,6 +54,7 @@ export default function TeacherDashboardWeb({ onRefresh, schoolId, userId }: Tea
         isAdminModalOpen,
         isBreathingOpen,
         showEchoHistory,
+        isPastView,
         isScannerOpen,
         openCreateFlow,
         setIsCreateModalOpen,
@@ -63,7 +70,6 @@ export default function TeacherDashboardWeb({ onRefresh, schoolId, userId }: Tea
         bumpRefresh,
         hapticLight,
         isGuest,
-        isPastView,
     } = useTeacherWorkspaceShell(navigation as any, onRefresh);
 
     const dashboardSurfaces = useTeacherDashboardSurfaces({
@@ -107,18 +113,18 @@ export default function TeacherDashboardWeb({ onRefresh, schoolId, userId }: Tea
     });
 
     if (!layout) {
-        return <Box style={{ flex: 1, backgroundColor: colors.primary }} />;
+        return <Box className="flex-1 bg-phase-canvas" />;
     }
 
     return (
-        <Box style={{ flex: 1, backgroundColor: colors.primary }}>
+        <Box className="flex-1 bg-phase-canvas">
             {isDemoMode ? <SandboxBanner /> : null}
             <ScrollView
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={{
-                    padding: Theme.spacing.lg,
-                    gap: Theme.spacing.lg,
-                    paddingBottom: Theme.spacing.xl * 2,
+                    padding: 24,
+                    gap: 24,
+                    paddingBottom: 80,
                 }}
             >
                 <Animated.View entering={FadeInDown.delay(50)}>
@@ -145,7 +151,7 @@ export default function TeacherDashboardWeb({ onRefresh, schoolId, userId }: Tea
                 onClose={() => setIsScannerOpen(false)}
                 onScan={handleScan}
                 title="Join Classroom"
-                accentColor={Theme.colors.sanctuarySaffron}
+                accentColor="#F59E0B"
             />
 
             <TeacherFeedbackModal
@@ -168,46 +174,36 @@ export default function TeacherDashboardWeb({ onRefresh, schoolId, userId }: Tea
                 onAction={handleAdminAction}
             />
 
-            <RNModal
-                visible={isBreathingOpen}
-                animationType="slide"
-                presentationStyle="pageSheet"
-                onRequestClose={() => setIsBreathingOpen(false)}
+            <Modal
+                isOpen={isBreathingOpen}
+                onClose={() => setIsBreathingOpen(false)}
+                size="full"
             >
-                <Box style={{ flex: 1, backgroundColor: colors.primary }}>
-                    <Box style={{
-                        paddingTop: 50,
-                        paddingBottom: Theme.spacing.md,
-                        paddingHorizontal: Theme.spacing.md,
-                        borderBottomWidth: 1,
-                        borderBottomColor: colors.border,
-                    }}>
-                        <HStack style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                            <Heading style={{ fontSize: Theme.typography.fontSize.lg, color: colors.text }}>
+                <ModalBackdrop />
+                <ModalContent className="flex-1 bg-phase-canvas">
+                    <ModalHeader className="pt-12 pb-4 px-6 border-b border-phase-border">
+                        <HStack className="justify-between items-center w-full">
+                            <Heading size="md" className="text-phaseText-primary">
                                 {t('self.breathingReset') || 'Breathing Reset'}
                             </Heading>
-                            <TouchableOpacity
+                            <Pressable
                                 onPress={() => {
                                     hapticLight();
                                     setIsBreathingOpen(false);
                                 }}
-                                style={{
-                                    padding: 8,
-                                    borderRadius: Theme.corners.full,
-                                    backgroundColor: colors.surface,
-                                    borderColor: colors.border,
-                                    borderWidth: 1,
-                                }}
+                                className="p-2 rounded-full bg-phase-surface border border-phase-border"
                             >
-                                <X size={24} color={colors.text} />
-                            </TouchableOpacity>
+                                <Icon as={X} size="sm" className="text-phaseText-primary" />
+                            </Pressable>
                         </HStack>
-                    </Box>
-                    <ScrollView contentContainerStyle={{ flex: 1, justifyContent: 'center' }}>
-                        <BreathGuide onComplete={completeBreathingReset} />
-                    </ScrollView>
-                </Box>
-            </RNModal>
+                    </ModalHeader>
+                    <ModalBody>
+                        <ScrollView contentContainerStyle={{ flex: 1, justifyContent: 'center' }}>
+                            <BreathGuide onComplete={completeBreathingReset} />
+                        </ScrollView>
+                    </ModalBody>
+                </ModalContent>
+            </Modal>
         </Box>
     );
 }

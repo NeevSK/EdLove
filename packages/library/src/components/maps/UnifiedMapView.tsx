@@ -1,13 +1,15 @@
 import React from 'react';
-import { StyleSheet, View, ViewProps } from 'react-native';
+
 import MapViewRN, { PROVIDER_GOOGLE, PROVIDER_DEFAULT } from 'react-native-maps';
 import * as MapLibreGL from '@maplibre/maplibre-react-native';
 import { useMap } from './MapProvider';
+import { Box } from '@repo/ui';
 
 // Initialize MapLibre
 MapLibreGL.setAccessToken(null); // MapLibre doesn't require a token for standard use, but can be set if using a provider
 
-interface UnifiedMapViewProps extends ViewProps {
+interface UnifiedMapViewProps {
+  style?: any;
   region?: {
     latitude: number;
     longitude: number;
@@ -36,7 +38,7 @@ export const UnifiedMapView = React.forwardRef<any, UnifiedMapViewProps>(({
     return (
       <MLMapView 
         ref={ref}
-        style={[styles.map, style as any]} 
+        style={[{ flex: 1 }, style as any]} 
         styleURL={styleURL || (MapLibreGL as any).StyleURL?.Default}
         logoEnabled={false}
         attributionEnabled={false}
@@ -54,17 +56,11 @@ export const UnifiedMapView = React.forwardRef<any, UnifiedMapViewProps>(({
     <MapViewRN
       ref={ref}
       provider={provider === 'google' ? PROVIDER_GOOGLE : PROVIDER_DEFAULT}
-      style={[styles.map, style]}
+      style={[{ flex: 1 }, style]}
       initialRegion={region}
       {...props}
     >
       {children}
     </MapViewRN>
   );
-});
-
-const styles = StyleSheet.create({
-  map: {
-    ...StyleSheet.absoluteFillObject,
-  },
 });

@@ -1,8 +1,6 @@
 import React from 'react';
-import { Modal, TouchableOpacity } from 'react-native';
-import { Box, Heading, HStack, SandboxBanner, ScrollView, Theme, useThemedColors } from '@repo/ui';
-import Animated, { FadeInDown } from 'react-native-reanimated';
-import { Wind, X } from 'lucide-react-native';
+import { Box, Heading, HStack, SandboxBanner, ScrollView, Theme, useThemedColors, Modal, Pressable, Icon, AnimatedView, FadeInDown } from '@repo/ui';
+import { X } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ClassroomStackParamList, useWorkspaceLayoutSync } from '@repo/core';
@@ -100,25 +98,20 @@ export default function TeacherDashboard({ onRefresh, schoolId, userId }: Teache
     });
 
     if (!layout) {
-        return <Box style={{ flex: 1, backgroundColor: colors.primary }} />;
-    }
-
-    if (isDemoMode) {
-        // demo check logic shifted to WorkspaceCanvas if needed
+        return <Box className="flex-1 bg-phase-surface" />;
     }
 
     return (
-        <Box style={{ flex: 1, backgroundColor: colors.primary }}>
+        <Box className="flex-1 bg-phase-surface">
             {isDemoMode ? <SandboxBanner /> : null}
             <ScrollView
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={{
-                    padding: Theme.spacing.lg,
-                    gap: Theme.spacing.lg,
-                    paddingBottom: Theme.spacing.xl * 2,
+                    padding: 16,
+                    paddingBottom: 80,
                 }}
             >
-                <Animated.View entering={FadeInDown.delay(50)}>
+                <AnimatedView entering={FadeInDown.delay(50)}>
                     <TeacherWorkspaceShell
                         surfaces={dashboardSurfaces as any}
                         layout={layout}
@@ -127,7 +120,7 @@ export default function TeacherDashboard({ onRefresh, schoolId, userId }: Teache
                         stats={stats}
                         isDemoMode={isDemoMode}
                     />
-                </Animated.View>
+                </AnimatedView>
             </ScrollView>
             <CreateClassroomModal
                 isOpen={isCreateModalOpen}
@@ -160,43 +153,27 @@ export default function TeacherDashboard({ onRefresh, schoolId, userId }: Teache
                 onAction={handleAdminAction}
             />
             <Modal
-                visible={isBreathingOpen}
-                animationType="slide"
-                presentationStyle="pageSheet"
-                onRequestClose={() => setIsBreathingOpen(false)}
+                isOpen={isBreathingOpen}
+                onClose={() => setIsBreathingOpen(false)}
             >
-                <Box style={{ flex: 1, backgroundColor: colors.primary }}>
-                    <Box
-                        style={{
-                            paddingTop: 50,
-                            paddingBottom: Theme.spacing.md,
-                            paddingHorizontal: Theme.spacing.md,
-                            borderBottomWidth: 1,
-                            borderBottomColor: colors.border,
-                        }}
-                    >
-                        <HStack style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                            <Heading size="lg" style={{ color: colors.text }}>
+                <Box className="flex-1 bg-phase-surface">
+                    <Box className="pt-[50px] pb-md px-md border-b border-phase-border">
+                        <HStack className="justify-between items-center">
+                            <Heading size="lg" className="text-phaseText-primary">
                                 {t('self.breathingReset') || 'Breathing Reset'}
                             </Heading>
-                            <TouchableOpacity
+                            <Pressable
                                 onPress={() => {
                                     hapticLight();
                                     setIsBreathingOpen(false);
                                 }}
-                                style={{
-                                    padding: 8,
-                                    borderRadius: Theme.corners.full,
-                                    backgroundColor: colors.tertiary,
-                                    borderColor: colors.border,
-                                    borderWidth: 1,
-                                }}
+                                className="p-2 rounded-full bg-phase-interactive/10 border border-phase-border"
                             >
-                                <X size={24} color={colors.text} />
-                            </TouchableOpacity>
+                                <Icon as={X} size={24} color={colors.text} />
+                            </Pressable>
                         </HStack>
                     </Box>
-                    <ScrollView contentContainerStyle={{ flex: 1, justifyContent: 'center' }}>
+                    <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}>
                         <BreathGuide onComplete={completeBreathingReset} />
                     </ScrollView>
                 </Box>

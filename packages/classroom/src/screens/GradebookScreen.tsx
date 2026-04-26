@@ -13,8 +13,8 @@ import {
     Button,
     ButtonText,
     Spinner,
+    Pressable,
 } from '@repo/ui';
-import { TouchableOpacity } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useGradebook } from '../hooks/useGradebook';
 import GradebookTable from '../components/grading/GradebookTable';
@@ -144,7 +144,7 @@ export default function GradebookScreen({
                         </Text>
 
                         {(['rank', 'marks', 'name'] as const).map(option => (
-                            <TouchableOpacity key={option} onPress={() => setSortBy(option)}>
+                            <Pressable key={option} onPress={() => setSortBy(option)}>
                                 <Box
                                     className={`p-sm px-md rounded-tight ${sortBy === option ? 'bg-templeGold' : 'bg-phase-surface'}`}
                                 >
@@ -152,7 +152,7 @@ export default function GradebookScreen({
                                         {t(`grading.gradebook.sort${option.charAt(0).toUpperCase() + option.slice(1)}`) || option.charAt(0).toUpperCase() + option.slice(1)}
                                     </Text>
                                 </Box>
-                            </TouchableOpacity>
+                            </Pressable>
                         ))}
                     </HStack>
 
@@ -190,7 +190,7 @@ export default function GradebookScreen({
                             {/* Per-student grade list for mobile-friendly editing */}
                             <VStack className="gap-2 mt-2">
                                 {sortedGrades.map((g: any) => (
-                                    <TouchableOpacity 
+                                    <Pressable 
                                         key={g.student_id}
                                         onPress={() => setGradingStudentId(g.student_id)}
                                     >
@@ -230,7 +230,7 @@ export default function GradebookScreen({
                                                 </Button>
                                             </HStack>
                                         </HStack>
-                                    </TouchableOpacity>
+                                    </Pressable>
                                 ))}
                             </VStack>
                         </VStack>

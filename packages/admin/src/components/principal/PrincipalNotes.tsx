@@ -1,7 +1,4 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { 
-    Platform,
-} from 'react-native';
 import {
     Text,
     useToast,
@@ -24,7 +21,6 @@ import {
 import {
     NotebookPen,
     CheckSquare,
-    Square,
     Pin,
     Lightbulb,
     Eye,
@@ -33,7 +29,7 @@ import {
     X,
     ChevronDown
 } from 'lucide-react-native';
-import { api } from '@repo/core';
+import { api, coreRuntime } from '@repo/core';
 import type { PrincipalNote } from '@repo/core';
 
 // -- Types ----------------------------------------------------
@@ -44,6 +40,50 @@ interface PrincipalNotesProps {
 }
 
 type NoteGroup = { label: string; data: PrincipalNote[] };
+
+type NoteRow = 
+    | { type: 'HEADER'; label: string; id: string }
+    | { type: 'NOTE'; note: PrincipalNote; id: string };
+
+// -- Note type metadata ----------------------------------------
+
+const NOTE_TYPE_META: Record<PrincipalNote['note_type'], { label: string; icon: any; color: string; bg: string; placeholder: string }> = {
+    todo: {
+        label: 'To-Do',
+        icon: CheckSquare,
+        color: 'text-phase-interactive',
+        bg: 'bg-phase-interactive/10',
+        placeholder: 'What needs to happen?…'
+    },
+    observation: {
+        label: 'Observation',
+        icon: Eye,
+        color: 'text-phase-success',
+        bg: 'bg-phase-success/10',
+        placeholder: 'What did you notice in class?…'
+    },
+    decision: {
+        label: 'Decision',
+        icon: Lightbulb,
+        color: 'text-phase-warning',
+        bg: 'bg-phase-warning/10',
+        placeholder: 'What did you decide?…'
+    },
+    reminder: {
+        label: 'Reminder',
+        icon: Bell,
+        color: 'text-phase-interactive',
+        bg: 'bg-phase-interactive/10',
+        placeholder: 'What must you not forget?…'
+    },
+    note: {
+        label: 'Note',
+        icon: StickyNote,
+        color: 'text-phaseText-secondary',
+        bg: 'bg-phase-canvas',
+        placeholder: 'Write anything on your mind…'
+    }
+};
 
 // -- Helpers --------------------------------------------------
 
@@ -98,45 +138,84 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
     const [draftType, setDraftType] = useState<PrincipalNote['note_type']>('todo');
     const [saving, setSaving] = useState(false);
 
-    // -- Note type metadata ----------------------------------------
+    const isIos = coreRuntime.device.getMetadata().platform === 'ios';
 
-    const NOTE_TYPE_META: Record<PrincipalNote['note_type'], { label: string; icon: any; color: string; bg: string; placeholder: string }> = {
-        todo: {
-            label: 'To-Do',
-            icon: CheckSquare,
-            color: 'text-phase-interactive',
-            bg: 'bg-phase-interactive/10',
-            placeholder: 'What needs to happen?…'
-        },
-        observation: {
-            label: 'Observation',
-            icon: Eye,
-            color: 'text-phase-success',
-            bg: 'bg-phase-success/10',
-            placeholder: 'What did you notice in class?…'
-        },
-        decision: {
-            label: 'Decision',
-            icon: Lightbulb,
-            color: 'text-phase-warning',
-            bg: 'bg-phase-warning/10',
-            placeholder: 'What did you decide?…'
-        },
-        reminder: {
-            label: 'Reminder',
-            icon: Bell,
-            color: 'text-phase-interactive',
-            bg: 'bg-phase-interactive/10',
-            placeholder: 'What must you not forget?…'
-        },
-        note: {
-            label: 'Note',
-            icon: StickyNote,
-            color: 'text-phaseText-secondary',
-            bg: 'bg-phase-canvas',
-            placeholder: 'Write anything on your mind…'
-        }
-    };
+// -- Sub-Components -------------------------------------------
+
+const NoteCard = React.memo(({ 
+    note, 
+    onToggleDone, 
+    onTogglePin, 
+    onDelete 
+}: { 
+    note: PrincipalNote;
+    onToggleDone: (note: PrincipalNote) => void;
+    onTogglePin: (note: PrincipalNote) => void;
+    onDelete: (id: string) => void;
+}) => {
+    const meta = NOTE_TYPE_META[note.note_type];
+    const NoteIcon = meta.icon;
+    const isTodo = note.note_type === 'todo';
+    const createdAt = note.created_at || new Date().toISOString();
+    const time = new Date(createdAt).toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+
+    return (
+        <Box
+            className={`p-6 mb-4 rounded-[24px] border-l-4 shadow-sm ${
+                note.is_done ? 'bg-phase-surface/60 opacity-60 border-phase-border' : `bg-phase-surface border-phase-interactive`
+            }`}
+        >
+            <HStack className="justify-between items-start gap-4">
+                <HStack className="items-center flex-1 gap-4">
+                    {isTodo ? (
+                        <Pressable
+                            onPress={() => onToggleDone(note)}
+                            className={`w-7 h-7 rounded-lg border-2 items-center justify-center ${note.is_done ? 'bg-phase-interactive border-phase-interactive' : 'border-phase-interactive/40'}`}
+                            hitSlop={12}>
+                            {note.is_done && <Icon as={CheckSquare} size="xs" className="text-white" />}
+                        </Pressable>
+                    ) : (
+                        <Box className={`w-7 h-7 rounded-lg items-center justify-center ${meta.bg}`}>
+                            <Icon as={NoteIcon} size="xs" className={meta.color} />
+                        </Box>
+                    )}
+                    <Text
+                        className={`flex-1 text-[16px] font-bold text-phaseText-primary tracking-tight leading-[22px] ${
+                            note.is_done ? 'line-through opacity-50' : ''
+                        }`}>
+                        {note.content}
+                    </Text>
+                </HStack>
+                
+                <HStack className="gap-5 items-center">
+                    {!note.is_done && (
+                        <Pressable onPress={() => onTogglePin(note)}>
+                            <Icon 
+                                as={Pin}
+                                size="xs" 
+                                className={note.is_pinned ? 'text-phase-interactive' : 'text-phaseText-muted/30'} 
+                                fill={note.is_pinned ? 'currentColor' : 'transparent'} 
+                            />
+                        </Pressable>
+                    )}
+                    <Pressable onPress={() => onDelete(note.id)}>
+                        <Icon as={X} size="xs" className="text-phaseText-muted/40" />
+                    </Pressable>
+                </HStack>
+            </HStack>
+            
+            <HStack className="mt-3 justify-end items-center gap-1.5">
+                <Box className="w-1.5 h-1.5 rounded-full bg-phaseText-muted/20" />
+                <Text className="text-[10px] font-black text-phaseText-muted uppercase tracking-widest opacity-60">
+                    {time}
+                </Text>
+            </HStack>
+        </Box>
+    );
+});
 
     const fetchNotes = useCallback(async () => {
         try {
@@ -151,7 +230,17 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
 
     useEffect(() => { fetchNotes(); }, [fetchNotes]);
 
-    const grouped = useMemo(() => groupNotes(notes), [notes]);
+    const rows = useMemo(() => {
+        const groups = groupNotes(notes);
+        const result: NoteRow[] = [];
+        for (const g of groups) {
+            result.push({ type: 'HEADER', label: g.label, id: `header-${g.label}` });
+            for (const n of g.data) {
+                result.push({ type: 'NOTE', note: n, id: n.id });
+            }
+        }
+        return result;
+    }, [notes]);
 
     const handleSave = async () => {
         if (!draft.trim()) return;
@@ -206,83 +295,28 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
         }
     };
 
-    const renderNoteCard = ({ item: note }: { item: PrincipalNote }) => {
-        const meta = NOTE_TYPE_META[note.note_type];
-        const NoteIcon = meta.icon;
-        const isTodo = note.note_type === 'todo';
-        const createdAt = note.created_at || new Date().toISOString();
-        const time = new Date(createdAt).toLocaleTimeString([], {
-            hour: '2-digit',
-            minute: '2-digit'
-        });
+    const renderRow = useCallback(({ item }: { item: NoteRow }) => {
+        if (item.type === 'HEADER') {
+            return (
+                <VStack className="mb-4 mt-4">
+                    <Text className="text-[11px] font-black text-phaseText-muted uppercase tracking-[3px] px-8">
+                        {item.label}
+                    </Text>
+                </VStack>
+            );
+        }
 
         return (
-            <Box
-                key={note.id}
-                className={`p-6 mb-4 rounded-[24px] border-l-4 shadow-sm ${
-                    note.is_done ? 'bg-phase-surface/60 opacity-60 border-phase-border' : `bg-phase-surface border-phase-interactive`
-                }`}
-            >
-                <HStack className="justify-between items-start gap-4">
-                    <HStack className="items-center flex-1 gap-4">
-                        {isTodo ? (
-                            <Pressable
-                                onPress={() => handleToggleDone(note)}
-                                className={`w-7 h-7 rounded-lg border-2 items-center justify-center ${note.is_done ? 'bg-phase-interactive border-phase-interactive' : 'border-phase-interactive/40'}`}
-                                hitSlop={12}>
-                                {note.is_done && <Icon as={CheckSquare} size="xs" className="text-white" />}
-                            </Pressable>
-                        ) : (
-                            <Box className={`w-7 h-7 rounded-lg items-center justify-center ${meta.bg}`}>
-                                <Icon as={NoteIcon} size="xs" className={meta.color} />
-                            </Box>
-                        )}
-                        <Text
-                            className={`flex-1 text-[16px] font-bold text-phaseText-primary tracking-tight leading-[22px] ${
-                                note.is_done ? 'line-through opacity-50' : ''
-                            }`}>
-                            {note.content}
-                        </Text>
-                    </HStack>
-                    
-                    <HStack className="gap-5 items-center">
-                        {!note.is_done && (
-                            <Pressable onPress={() => handleTogglePin(note)}>
-                                <Icon 
-                                    as={Pin}
-                                    size="xs" 
-                                    className={note.is_pinned ? 'text-phase-interactive' : 'text-phaseText-muted/30'} 
-                                    fill={note.is_pinned ? 'currentColor' : 'transparent'} 
-                                />
-                            </Pressable>
-                        )}
-                        <Pressable onPress={() => handleDelete(note.id)}>
-                            <Icon as={X} size="xs" className="text-phaseText-muted/40" />
-                        </Pressable>
-                    </HStack>
-                </HStack>
-                
-                <HStack className="mt-3 justify-end items-center gap-1.5">
-                    <Box className="w-1.5 h-1.5 rounded-full bg-phaseText-muted/20" />
-                    <Text className="text-[10px] font-black text-phaseText-muted uppercase tracking-widest opacity-60">
-                        {time}
-                    </Text>
-                </HStack>
+            <Box className="px-5">
+                <NoteCard 
+                    note={item.note} 
+                    onToggleDone={handleToggleDone} 
+                    onTogglePin={handleTogglePin} 
+                    onDelete={handleDelete} 
+                />
             </Box>
         );
-    };
-
-    const renderGroup = ({ item: group }: { item: NoteGroup }) => (
-        <VStack className="mb-8">
-            <Text
-                className="text-[11px] font-black text-phaseText-muted uppercase tracking-[3px] mb-4 px-8">
-                {group.label}
-            </Text>
-            <VStack className="px-5">
-                {group.data.map((note) => renderNoteCard({ item: note }))}
-            </VStack>
-        </VStack>
-    );
+    }, [handleToggleDone, handleTogglePin, handleDelete]);
 
     return (
         <ScreenWrapper className="flex-1 bg-phase-canvas" scroll={false}>
@@ -295,14 +329,14 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
 
             <KeyboardAvoidingView
                 className="flex-1"
-                behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+                behavior={isIos ? 'padding' : undefined}
                 keyboardVerticalOffset={100}>
                 <VStack className="flex-1">
                     {loading ? (
                         <Box className="flex-1 items-center justify-center">
                             <ActivityIndicator className="text-phase-interactive" size="large" />
                         </Box>
-                    ) : grouped.length === 0 ? (
+                    ) : rows.length === 0 ? (
                         <Box className="px-8 pt-12">
                             <PositiveInvitation
                                 title="Institutional Memory Clear"
@@ -311,9 +345,9 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
                         </Box>
                     ) : (
                         <FlatList
-                            data={grouped}
-                            keyExtractor={(g) => g.label}
-                            renderItem={renderGroup}
+                            data={rows}
+                            keyExtractor={(r) => r.id}
+                            renderItem={renderRow}
                             contentContainerStyle={{
                                 paddingTop: 24,
                                 paddingBottom: composing ? 0 : 140

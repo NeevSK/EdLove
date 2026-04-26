@@ -10,8 +10,8 @@ import {
     HStack,
     Text,
     Box,
+    FlatList,
 } from '@repo/ui';
-import { FlatList, ListRenderItemInfo } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { StudentGrade, ClassroomGradingSettings, marksToGPA, calculateRanks } from '@repo/analytics';
 
@@ -90,7 +90,7 @@ export default function GradebookTable({
     }, [grading_mode, t]);
 
     // Memoized row renderer
-    const renderGradeRow = useCallback(({ item: grade, index }: ListRenderItemInfo<StudentGrade>) => (
+    const renderGradeRow = useCallback(({ item: grade, index }: { item: StudentGrade; index: number }) => (
         <GradeRow
             grade={grade}
             index={index}

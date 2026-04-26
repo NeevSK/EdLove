@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { StyleSheet, View } from 'react-native';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import {
@@ -8,7 +7,6 @@ import {
     HStack,
     Text,
     useTheme,
-    Theme,
     ScreenWrapper,
     GlobalHeader,
     SanctuaryButton,
@@ -31,7 +29,7 @@ interface PDFViewerScreenProps {
 type DownloadState = 'idle' | 'downloading' | 'ready' | 'error';
 
 /**
- * PDFViewerScreen  Handles local caching and native handoff for PDF resources.
+ * PDFViewerScreen - Handles local caching and native handoff for PDF resources.
  * 
  * Sanctuary V3: Migrated to className utilities and phase tokens.
  * Minimalist design focusing on the action of opening the document.
@@ -58,7 +56,7 @@ export default function PDFViewerScreen({ route }: PDFViewerScreenProps) {
                 setDownloadState('ready');
             }
         } catch {
-            // not cached  that's fine
+            // not cached - that's fine
         }
     }, [localPath]);
 
@@ -149,17 +147,12 @@ export default function PDFViewerScreen({ route }: PDFViewerScreenProps) {
                 {/* Progress bar - shown while downloading */}
                 {downloadState === 'downloading' && (
                     <Box className="w-full mb-8">
-                        <View style={styles.progressTrack}>
-                            <View 
-                                style={[
-                                    styles.progressFill, 
-                                    { 
-                                        width: `${Math.round(progress * 100)}%`, 
-                                        backgroundColor: theme.accent.action 
-                                    }
-                                ]} 
+                        <Box className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
+                            <Box 
+                                className="h-full rounded-full bg-phase-accent" 
+                                style={{ width: `${Math.round(progress * 100)}%` }} 
                             />
-                        </View>
+                        </Box>
                         <Text className="text-xs text-phaseText-tertiary text-center mt-2 font-mono">
                             {Math.round(progress * 100)}%
                         </Text>
@@ -211,16 +204,3 @@ export default function PDFViewerScreen({ route }: PDFViewerScreenProps) {
     );
 }
 
-const styles = StyleSheet.create({
-    progressTrack: {
-        height: 6,
-        borderRadius: 3,
-        backgroundColor: 'rgba(255,255,255,0.1)',
-        overflow: 'hidden',
-        width: '100%',
-    },
-    progressFill: {
-        height: 6,
-        borderRadius: 3,
-    },
-});

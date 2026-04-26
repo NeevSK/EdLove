@@ -1,9 +1,22 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { ActivityIndicator, ScrollView, Share, StyleSheet, TouchableOpacity } from 'react-native';
+import { coreRuntime } from '@repo/core';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useQuery } from '@tanstack/react-query';
 import { ArrowLeft, ExternalLink, Globe, PlayCircle, QrCode, Share2, Sparkles } from 'lucide-react-native';
-import { Text, Box, ScreenWrapper, Theme, openExternalURL, useThemedColors } from '@repo/ui';
+import { 
+    Text, 
+    Box, 
+    ScreenWrapper, 
+    Theme, 
+    openExternalURL, 
+    useThemedColors, 
+    VStack, 
+    HStack, 
+    Pressable, 
+    Spinner,
+    Icon as SanctuaryIcon,
+    ScrollView
+} from '@repo/ui';
 import { useStore } from '@repo/core';
 import { libraryAPI } from '../api/library';
 import type { LibraryResource } from '../types';
@@ -25,12 +38,24 @@ function ActionButton({
     textColor?: string;
 }) {
     return (
-        <TouchableOpacity onPress={onPress} style={[ styles.actionButton, accent ? styles.actionButtonAccent : styles.actionButtonMuted, ]}>
+        <Pressable 
+            onPress={onPress} 
+            className={`min-h-[44px] rounded-2xl border px-3.5 py-2.5 flex-row items-center justify-center gap-2 ${
+                accent 
+                    ? 'bg-phase-accent border-phase-accent' 
+                    : 'bg-phase-surface/80 border-phase-border'
+            }`}
+        >
             {icon}
-            <Text style={[styles.actionButtonText, textColor ? { color: textColor } : undefined]}>
-                {label}
-            </Text>
-        </TouchableOpacity>
+            {label ? (
+                <Text 
+                    className="text-[13px] font-bold" 
+                    style={textColor ? { color: textColor } : { color: accent ? 'white' : undefined }}
+                >
+                    {label}
+                </Text>
+            ) : null}
+        </Pressable>
     );
 }
 
@@ -46,15 +71,18 @@ function CompanionLinkCard({
     secondaryTextColor: string;
 }) {
     return (
-        <TouchableOpacity onPress={() => onPress(link)} style={styles.card}>
-            <Box style={styles.cardRow}>
-                <Box style={styles.cardContent}>
-                    <Text style={[styles.cardTitle, { color: textColor }]}>{link.label}</Text>
-                    <Text style={[styles.cardDescription, { color: secondaryTextColor }]}>{link.description}</Text>
-                </Box>
-                <ExternalLink size={18} color={secondaryTextColor} />
-            </Box>
-        </TouchableOpacity>
+        <Pressable 
+            onPress={() => onPress(link)} 
+            className="rounded-[22px] border border-phase-border bg-white dark:bg-phase-surface p-4 active:opacity-80"
+        >
+            <HStack className="items-center justify-between gap-3">
+                <VStack className="flex-1 gap-1">
+                    <Text className="text-[15px] font-bold" style={{ color: textColor }}>{link.label}</Text>
+                    <Text className="text-[13px] leading-5" style={{ color: secondaryTextColor }}>{link.description}</Text>
+                </VStack>
+                <SanctuaryIcon as={ExternalLink} size={18} color={secondaryTextColor} />
+            </HStack>
+        </Pressable>
     );
 }
 
@@ -179,7 +207,7 @@ export default function ResourceHubScreen() {
 
     const handleShare = useCallback(async (item: LibraryResource) => {
         const shareUrl = buildLibraryResourceShareUrl(item.id);
-        await Share.share({
+        await coreRuntime.share.share({
             message: `Explore "${item.title}" on Gurudevi\n${shareUrl}`,
             url: shareUrl,
             title: item.title,
@@ -189,17 +217,18 @@ export default function ResourceHubScreen() {
     if (!resourceId) {
         return (
             <ScreenWrapper>
-                <Box style={styles.centered}>
-                    <Text style={[styles.errorTitle, { color: colors.textPrimary }]}>Resource not found</Text>
-                    <Text style={[styles.errorMessage, { color: colors.textSecondary }]}>
+                <VStack className="flex-1 items-center justify-center gap-3.5 px-6">
+                    <Text className="text-xl font-extrabold text-phaseText-primary">Resource not found</Text>
+                    <Text className="text-center text-phaseText-secondary">
                         This link does not include a valid Gurudevi resource id.
                     </Text>
-                    <ActionButton label="Back to Library" icon={<ArrowLeft size={16} color={Theme.colors.sacredWhite} />}
+                    <ActionButton 
+                        label="Back to Library" 
+                        icon={<SanctuaryIcon as={ArrowLeft} size={16} color="white" />}
                         onPress={handleBack}
                         accent
-                        textColor={Theme.colors.sacredWhite}
                     />
-                </Box>
+                </VStack>
             </ScreenWrapper>
         );
     }
@@ -207,10 +236,10 @@ export default function ResourceHubScreen() {
     if (isLoading) {
         return (
             <ScreenWrapper>
-                <Box style={styles.centered}>
-                    <ActivityIndicator size="large" color={Theme.colors.sanctuarySaffron} />
-                    <Text style={[styles.metaText, { color: colors.textSecondary }]}>Loading resource hub...</Text>
-                </Box>
+                <VStack className="flex-1 items-center justify-center gap-3.5">
+                    <Spinner size="large" color={Theme.colors.sanctuarySaffron} />
+                    <Text className="text-[13px] text-phaseText-secondary">Loading resource hub...</Text>
+                </VStack>
             </ScreenWrapper>
         );
     }
@@ -218,142 +247,159 @@ export default function ResourceHubScreen() {
     if (error || !resource) {
         return (
             <ScreenWrapper>
-                <Box style={styles.centered}>
-                    <Text style={[styles.errorTitle, { color: colors.textPrimary }]}>We couldn't load this resource</Text>
-                    <Text style={[styles.errorMessage, { color: colors.textSecondary }]}>
+                <VStack className="flex-1 items-center justify-center gap-3.5 px-6">
+                    <Text className="text-xl font-extrabold text-phaseText-primary">We couldn't load this resource</Text>
+                    <Text className="text-center text-phaseText-secondary">
                         {String((error as Error)?.message || 'The resource may have moved or been removed.')}
                     </Text>
-                    <Box style={styles.buttonRow}>
-                        <ActionButton label="Back" icon={<ArrowLeft size={16} color={colors.textPrimary} />}
+                    <HStack className="gap-2.5">
+                        <ActionButton 
+                            label="Back" 
+                            icon={<SanctuaryIcon as={ArrowLeft} size={16} color={colors.textPrimary} />}
                             onPress={handleBack}
-                            textColor={colors.textPrimary}
                         />
-                        <ActionButton label="Retry" icon={<Sparkles size={16} color={Theme.colors.sacredWhite} />}
+                        <ActionButton 
+                            label="Retry" 
+                            icon={<SanctuaryIcon as={Sparkles} size={16} color="white" />}
                             onPress={() => refetch()}
                             accent
-                            textColor={Theme.colors.sacredWhite}
                         />
-                    </Box>
-                </Box>
+                    </HStack>
+                </VStack>
             </ScreenWrapper>
         );
     }
 
     return (
         <ScreenWrapper scroll={false}>
-            <ScrollView contentContainerStyle={styles.scrollContent}>
-                <Box style={styles.pagePadding}>
-                    <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-                        <ArrowLeft size={16} color={colors.textPrimary} />
-                        <Text style={[styles.backButtonText, { color: colors.textPrimary }]}>Back to Library</Text>
-                    </TouchableOpacity>
+            <ScrollView contentContainerStyle={{ paddingBottom: 80 }}>
+                <Box className="px-4 pt-4">
+                    <Pressable 
+                        onPress={handleBack} 
+                        className="min-h-[42px] self-start rounded-2xl border border-phase-border bg-phase-surface/50 px-3.5 py-2.5 flex-row items-center gap-2"
+                    >
+                        <SanctuaryIcon as={ArrowLeft} size={16} color={colors.textPrimary} />
+                        <Text className="text-[13px] font-bold text-phaseText-primary">Back to Library</Text>
+                    </Pressable>
                 </Box>
 
-                <Box style={styles.pagePadding}>
-                    <Box style={styles.heroCard}>
-                        <Box style={styles.badgeRow}>
-                            <Box style={styles.hubBadge}>
-                                <Text style={styles.hubBadgeText}>Resource hub</Text>
+                <Box className="px-4 pt-4">
+                    <Box className="rounded-[28px] bg-white dark:bg-phase-surface border border-phase-border p-5 mb-6 shadow-sm">
+                        <HStack className="items-center justify-between gap-3 mb-3">
+                            <Box className="px-2.5 py-1 rounded-full bg-amber-500/10">
+                                <Text className="text-[11px] font-extrabold text-amber-500 uppercase tracking-widest">Resource hub</Text>
                             </Box>
                             {resource.verified ? (
-                                <Box style={styles.verifiedBadge}>
-                                    <Text style={styles.verifiedBadgeText}>Verified</Text>
+                                <Box className="px-2.5 py-1 rounded-full bg-emerald-500/10">
+                                    <Text className="text-[11px] font-extrabold text-emerald-500 uppercase">Verified</Text>
                                 </Box>
                             ) : null}
-                        </Box>
+                        </HStack>
 
-                        <Text style={[styles.heroTitle, { color: colors.textPrimary }]}>{resource.title}</Text>
+                        <Text className="text-[28px] font-extrabold leading-8 mb-2.5 text-phaseText-primary">{resource.title}</Text>
                         {resource.description ? (
-                            <Text style={[styles.heroDescription, { color: colors.textSecondary }]}>
+                            <Text className="text-[14px] leading-5 mb-3.5 text-phaseText-secondary">
                                 {resource.description}
                             </Text>
                         ) : null}
 
-                        <Box style={styles.chipRow}>
+                        <HStack className="flex-wrap gap-2 mb-4">
                             {resource.subjects?.slice(0, 3).map((subject) => (
-                                <Box key={subject} style={styles.chip}>
-                                    <Text style={[styles.chipText, { color: colors.textSecondary }]}>{subject}</Text>
+                                <Box key={subject} className="px-2.5 py-1.5 rounded-full bg-phase-surface border border-phase-border">
+                                    <Text className="text-[12px] text-phaseText-secondary">{subject}</Text>
                                 </Box>
                             ))}
                             {resource.topics?.slice(0, 2).map((topic) => (
-                                <Box key={topic} style={styles.chip}>
-                                    <Text style={[styles.chipText, { color: colors.textSecondary }]}>{topic}</Text>
+                                <Box key={topic} className="px-2.5 py-1.5 rounded-full bg-phase-surface border border-phase-border">
+                                    <Text className="text-[12px] text-phaseText-secondary">{topic}</Text>
                                 </Box>
                             ))}
-                        </Box>
+                        </HStack>
 
-                        <Box style={styles.actionRow}>
-                            <ActionButton label={resource.type === 'movie_trailer' || resource.type === 'video' ? 'Open player' : 'Open source'} icon={ resource.type === 'movie_trailer' || resource.type === 'video' ? <PlayCircle size={16} color={Theme.colors.sacredWhite} />
-                                        : <ExternalLink size={16} color={Theme.colors.sacredWhite} />
+                        <HStack className="flex-wrap gap-2.5 mt-4">
+                            <ActionButton 
+                                label={resource.type === 'movie_trailer' || resource.type === 'video' ? 'Open player' : 'Open source'} 
+                                icon={resource.type === 'movie_trailer' || resource.type === 'video' 
+                                    ? <SanctuaryIcon as={PlayCircle} size={16} color="white" />
+                                    : <SanctuaryIcon as={ExternalLink} size={16} color="white" />
                                 }
                                 onPress={() => handlePrimaryAction(resource)}
                                 accent
-                                textColor={Theme.colors.sacredWhite}
                             />
-                            <ActionButton label="Share link" icon={<Share2 size={16} color={colors.textPrimary} />}
+                            <ActionButton 
+                                label="Share link" 
+                                icon={<SanctuaryIcon as={Share2} size={16} color={colors.textPrimary} />}
                                 onPress={() => handleShare(resource)}
-                                textColor={colors.textPrimary}
                             />
-                            <ActionButton label="Show QR" icon={<QrCode size={16} color={colors.textPrimary} />}
+                            <ActionButton 
+                                label="" 
+                                icon={<SanctuaryIcon as={QrCode} size={16} color={colors.textPrimary} />}
                                 onPress={() => setQrVisible(true)}
-                                textColor={colors.textPrimary}
                             />
-                        </Box>
+                        </HStack>
                     </Box>
 
                     {companionLinks.length > 0 ? (
-                        <Box style={styles.section}>
-                            <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Entry points around this resource</Text>
-                            <Box style={styles.stack}>
+                        <VStack className="mb-6 gap-3">
+                            <Text className="text-[19px] font-extrabold text-phaseText-primary mb-1">Entry points around this resource</Text>
+                            <VStack className="gap-3">
                                 {companionLinks.map((link) => (
-                                    <CompanionLinkCard key={link.id} link={link} onPress={handleCompanionOpen} textColor={colors.textPrimary} secondaryTextColor={colors.textSecondary} />
+                                    <CompanionLinkCard 
+                                        key={link.id} 
+                                        link={link} 
+                                        onPress={handleCompanionOpen} 
+                                        textColor={colors.textPrimary} 
+                                        secondaryTextColor={colors.textSecondary} 
+                                    />
                                 ))}
-                            </Box>
-                        </Box>
+                            </VStack>
+                        </VStack>
                     ) : null}
 
                     {resource.copyright_notice ? (
-                        <Box style={styles.noticeCard}>
-                            <Box style={styles.noticeRow}>
-                                <Globe size={18} color={Theme.colors.sanctuarySaffron} />
-                                <Box style={styles.noticeCopy}>
-                                    <Text style={[styles.noticeTitle, { color: colors.textPrimary }]}>Usage notice</Text>
-                                    <Text style={[styles.noticeText, { color: colors.textSecondary }]}>
+                        <Box className="mb-6 p-4 rounded-[22px] bg-white dark:bg-phase-surface border border-phase-border shadow-sm">
+                            <HStack className="items-start gap-2.5">
+                                <SanctuaryIcon as={Globe} size={18} color={Theme.colors.sanctuarySaffron} />
+                                <VStack className="flex-1 gap-1">
+                                    <Text className="text-[14px] font-extrabold text-phaseText-primary">Usage notice</Text>
+                                    <Text className="text-[13px] leading-5 text-phaseText-secondary">
                                         {resource.copyright_notice}
                                     </Text>
-                                </Box>
-                            </Box>
+                                </VStack>
+                            </HStack>
                         </Box>
                     ) : null}
 
-                    <Box style={styles.section}>
-                        <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Related inside Gurudevi</Text>
+                    <VStack className="mb-6 gap-3">
+                        <Text className="text-[19px] font-extrabold text-phaseText-primary mb-1">Related inside Gurudevi</Text>
                         {relatedResources && relatedResources.length > 0 ? (
-                            <Box style={styles.stack}>
+                            <VStack className="gap-3">
                                 {relatedResources.map((item) => (
-                                    <TouchableOpacity key={item.id} onPress={() => navigateIntoLibrary('ResourceHub', { resourceId: item.id })}
-                                        style={styles.card}
+                                    <Pressable 
+                                        key={item.id} 
+                                        onPress={() => navigateIntoLibrary('ResourceHub', { resourceId: item.id })}
+                                        className="rounded-[22px] border border-phase-border bg-white dark:bg-phase-surface p-4 active:opacity-80"
                                     >
-                                        <Box style={styles.cardRow}>
-                                            <Box style={styles.cardContent}>
-                                                <Text style={[styles.cardTitle, { color: colors.textPrimary }]}>{item.title}</Text>
-                                                <Text style={[styles.cardDescription, { color: colors.textSecondary }]}>
+                                        <HStack className="items-center justify-between gap-3">
+                                            <VStack className="flex-1 gap-1">
+                                                <Text className="text-[15px] font-bold text-phaseText-primary">{item.title}</Text>
+                                                <Text className="text-[13px] leading-5 text-phaseText-secondary">
                                                     {(item.topics?.[0] || item.subjects?.[0] || 'Related resource')}
                                                 </Text>
-                                            </Box>
-                                            <Sparkles size={18} color={Theme.colors.sanctuarySaffron} />
-                                        </Box>
-                                    </TouchableOpacity>
+                                            </VStack>
+                                            <SanctuaryIcon as={Sparkles} size={18} color={Theme.colors.sanctuarySaffron} />
+                                        </HStack>
+                                    </Pressable>
                                 ))}
-                            </Box>
+                            </VStack>
                         ) : (
-                            <Box style={styles.emptyCard}>
-                                <Text style={[styles.cardDescription, { color: colors.textSecondary }]}>
+                            <Box className="p-4 rounded-[22px] bg-white dark:bg-phase-surface border border-phase-border">
+                                <Text className="text-[13px] leading-5 text-phaseText-secondary">
                                     We don't have companion Gurudevi resources clustered around this one yet. As the library grows, this hub will deepen.
                                 </Text>
                             </Box>
                         )}
-                    </Box>
+                    </VStack>
                 </Box>
             </ScrollView>
 
@@ -368,215 +414,3 @@ export default function ResourceHubScreen() {
         </ScreenWrapper>
     );
 }
-
-const styles = StyleSheet.create({
-    scrollContent: {
-        paddingBottom: Theme.spacing.xl * 2,
-    },
-    pagePadding: {
-        paddingHorizontal: Theme.spacing.md,
-        paddingTop: Theme.spacing.md,
-    },
-    centered: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: 14,
-        paddingHorizontal: Theme.spacing.lg,
-    },
-    errorTitle: {
-        fontSize: 20,
-        fontWeight: '800',
-    },
-    errorMessage: {
-        textAlign: 'center',
-    },
-    buttonRow: {
-        flexDirection: 'row',
-        gap: 10,
-    },
-    metaText: {
-        fontSize: 13,
-    },
-    backButton: {
-        minHeight: 42,
-        alignSelf: 'flex-start',
-        borderRadius: 14,
-        borderWidth: 1,
-        borderColor: '#E5E7EB',
-        backgroundColor: '#F9FAFB',
-        paddingHorizontal: 14,
-        paddingVertical: 10,
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 8,
-    },
-    backButtonText: {
-        fontSize: 13,
-        fontWeight: '700',
-    },
-    heroCard: {
-        borderRadius: 28,
-        backgroundColor: '#FFFFFF',
-        borderWidth: 1,
-        borderColor: '#E5E7EB',
-        overflow: 'hidden',
-        marginBottom: Theme.spacing.lg,
-        paddingHorizontal: Theme.spacing.lg,
-        paddingTop: Theme.spacing.lg,
-        paddingBottom: Theme.spacing.lg,
-    },
-    badgeRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        gap: 12,
-        marginBottom: 12,
-    },
-    hubBadge: {
-        paddingHorizontal: 10,
-        paddingVertical: 5,
-        borderRadius: 999,
-        backgroundColor: Theme.colors.sanctuarySaffron + '22',
-    },
-    hubBadgeText: {
-        fontSize: 11,
-        fontWeight: '800',
-        color: Theme.colors.sanctuarySaffron,
-        textTransform: 'uppercase',
-        letterSpacing: 1,
-    },
-    verifiedBadge: {
-        paddingHorizontal: 10,
-        paddingVertical: 5,
-        borderRadius: 999,
-        backgroundColor: Theme.colors.sageGreen + '22',
-    },
-    verifiedBadgeText: {
-        fontSize: 11,
-        fontWeight: '800',
-        color: Theme.colors.sageGreen,
-    },
-    heroTitle: {
-        fontSize: 28,
-        fontWeight: '800',
-        lineHeight: 34,
-        marginBottom: 10,
-    },
-    heroDescription: {
-        fontSize: 14,
-        lineHeight: 22,
-        marginBottom: 14,
-    },
-    chipRow: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        gap: 8,
-    },
-    chip: {
-        paddingHorizontal: 10,
-        paddingVertical: 6,
-        borderRadius: 999,
-        backgroundColor: '#F9FAFB',
-    },
-    chipText: {
-        fontSize: 12,
-    },
-    actionRow: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        gap: 10,
-        marginTop: 16,
-    },
-    actionButton: {
-        minHeight: 44,
-        borderRadius: 16,
-        borderWidth: 1,
-        paddingHorizontal: 14,
-        paddingVertical: 10,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: 8,
-    },
-    actionButtonAccent: {
-        backgroundColor: Theme.colors.sanctuarySaffron,
-        borderColor: Theme.colors.sanctuarySaffron,
-    },
-    actionButtonMuted: {
-        backgroundColor: '#F9FAFB',
-        borderColor: '#E5E7EB',
-    },
-    actionButtonText: {
-        fontSize: 13,
-        fontWeight: '800',
-    },
-    section: {
-        marginBottom: Theme.spacing.lg,
-    },
-    sectionTitle: {
-        fontSize: 19,
-        fontWeight: '800',
-        marginBottom: 12,
-    },
-    stack: {
-        gap: 12,
-    },
-    card: {
-        borderRadius: 22,
-        borderWidth: 1,
-        borderColor: '#E5E7EB',
-        backgroundColor: '#FFFFFF',
-        padding: 16,
-    },
-    cardRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        gap: 12,
-    },
-    cardContent: {
-        flex: 1,
-        gap: 4,
-    },
-    cardTitle: {
-        fontSize: 15,
-        fontWeight: '800',
-    },
-    cardDescription: {
-        fontSize: 13,
-        lineHeight: 20,
-    },
-    noticeCard: {
-        marginBottom: Theme.spacing.lg,
-        padding: Theme.spacing.md,
-        borderRadius: 22,
-        backgroundColor: '#FFFFFF',
-        borderWidth: 1,
-        borderColor: '#E5E7EB',
-    },
-    noticeRow: {
-        flexDirection: 'row',
-        alignItems: 'flex-start',
-        gap: 10,
-    },
-    noticeCopy: {
-        flex: 1,
-        gap: 4,
-    },
-    noticeTitle: {
-        fontSize: 14,
-        fontWeight: '800',
-    },
-    noticeText: {
-        fontSize: 13,
-        lineHeight: 20,
-    },
-    emptyCard: {
-        padding: Theme.spacing.md,
-        borderRadius: 22,
-        backgroundColor: '#FFFFFF',
-        borderWidth: 1,
-        borderColor: '#E5E7EB',
-    },
-});

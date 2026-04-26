@@ -1,5 +1,4 @@
 import React, { useCallback } from 'react';
-import { Share } from 'react-native';
 import { 
     QRCodeGenerator, 
     Box, 
@@ -9,7 +8,7 @@ import {
     SanctuaryModal,
     SanctuaryButton,
 } from '@repo/ui';
-import { QRBuilder } from '@repo/core';
+import { QRBuilder, coreRuntime } from '@repo/core';
 import { Share2 } from 'lucide-react-native';
 import { buildLibraryResourceShareUrl } from '../utils/resourceLinks';
 
@@ -34,7 +33,7 @@ export function ResourceShareQRModal({
     const qrValue = QRBuilder.resource(resourceId, resourceType, resourceTitle, resourceThumbnailUrl);
 
     const handleShareLink = useCallback(async () => {
-        await Share.share({
+        await coreRuntime.share.share({
             message: `Explore "${resourceTitle}" on Gurudevi\n${shareUrl}`,
             url: shareUrl,
             title: resourceTitle,

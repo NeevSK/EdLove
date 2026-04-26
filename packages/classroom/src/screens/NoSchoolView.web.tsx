@@ -1,6 +1,5 @@
 import React, { useState, useCallback } from 'react';
 import { useNavigation } from '@react-navigation/native';
-import { ScrollView } from 'react-native';
 import {
     schoolAPI, onboardingAPI, validateInviteCode, incrementInviteCodeUsage,
     communityAPI, api, useStore, usePermissions,
@@ -9,47 +8,28 @@ import {
     Building2, BookOpen, Users, Search, Key, CheckCircle2,
     ArrowRight, ChevronRight,
 } from 'lucide-react-native';
+import {
+    Box,
+    Text,
+    Input,
+    InputField,
+    SanctuaryButton,
+    HStack,
+    VStack,
+    Icon,
+    Spinner,
+    Pressable,
+    Center,
+    ScrollView
+} from '@repo/ui';
 
-function Spin({ size = 16 }: { size?: number }) {
-    return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"
-            style={{ animation: 'spin 0.7s linear infinite', display: 'block' } as any}>
-            <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-        </svg>
-    );
-}
+// -- Helpers --------------------------------------------------
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
     return (
-        <p style={{
-            margin: '0 0 8px', fontSize: '11px', fontWeight: '800',
-            textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--ink-ghost)'
-        }}>
+        <Text className="text-[11px] font-black text-phaseText-muted uppercase tracking-[1px] mb-2">
             {children}
-        </p>
-    );
-}
-
-function FieldInput(props: React.InputHTMLAttributes<HTMLInputElement> & { label?: string; error?: string }) {
-    const { label, error, ...rest } = props;
-    return (
-        <div style={{ width: '100%' }}>
-            {label && <SectionLabel>{label}</SectionLabel>}
-            <input
-                {...rest}
-                style={{
-                    width: '100%', boxSizing: 'border-box' as const,
-                    padding: '11px 14px', borderRadius: '10px',
-                    border: `1.5px solid ${error ? 'var(--ember)' : 'var(--border)'}`,
-                    background: 'var(--background-alt)', color: 'var(--ink)',
-                    fontFamily: 'var(--font-body)', fontSize: '14px',
-                    outline: 'none',
-                    ...rest.style,
-                } as any}
-            />
-            {error && <p style={{ margin: '4px 0 0', fontSize: '11px', color: 'var(--ember)' }}>{error}</p>}
-        </div>
+        </Text>
     );
 }
 
@@ -57,24 +37,26 @@ function SuccessCard({ emoji, title, body, cta, onCta }: {
     emoji: string; title: string; body: string; cta: string; onCta: () => void;
 }) {
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', padding: '24px 16px', textAlign: 'center' }}>
-            <div style={{
-                width: '64px', height: '64px', borderRadius: '50%',
-                background: 'rgba(34,197,94,0.10)', display: 'flex', alignItems: 'center', justifyContent: 'center'
-            }}>
-                <CheckCircle2 size={32} color="var(--moss)" />
-            </div>
-            <div style={{ fontSize: '28px' }}>{emoji}</div>
-            <div>
-                <h3 style={{ margin: '0 0 6px', fontSize: '20px', fontWeight: '800' }}>{title}</h3>
-                <p style={{ margin: 0, color: 'var(--ink-ghost)', fontSize: '13px', maxWidth: '380px' }}>{body}</p>
-            </div>
-            <button className="premium-button"
-                style={{ background: 'var(--sanctuary-saffron)', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}
-                onClick={onCta}>
-                {cta} <ArrowRight size={14} />
-            </button>
-        </div>
+        <VStack className="items-center gap-4 py-6 px-4 text-center">
+            <Center className="w-16 h-16 rounded-full bg-phase-success/10">
+                <Icon as={CheckCircle2} size="xl" className="text-phase-success" />
+            </Center>
+            <Text className="text-[28px]">{emoji}</Text>
+            <VStack className="items-center">
+                <h3 className="m-0 text-xl font-black text-phaseText-primary">{title}</h3>
+                <Text className="m-0 text-phaseText-muted text-[13px] max-w-[380px]">{body}</Text>
+            </VStack>
+            <SanctuaryButton
+                variant="primary"
+                onPress={onCta}
+                className="bg-phase-interactive"
+            >
+                <HStack className="items-center gap-2">
+                    <Text className="text-white font-bold">{cta}</Text>
+                    <Icon as={ArrowRight} size="xs" className="text-white" />
+                </HStack>
+            </SanctuaryButton>
+        </VStack>
     );
 }
 
@@ -83,6 +65,8 @@ const SCHOOL_TYPES = [
     { value: 'secondary', label: 'Secondary School', emoji: '🎓', desc: 'Grades 6–13' },
     { value: 'mixed', label: 'Mixed / All Grades', emoji: '🌿', desc: 'All grade levels' },
 ] as const;
+
+// -- subcomponents -------------------------------------------
 
 function PrincipalCreateSchool({ onSuccess }: { onSuccess: () => void }) {
     const { user } = useStore();
@@ -134,50 +118,74 @@ function PrincipalCreateSchool({ onSuccess }: { onSuccess: () => void }) {
     );
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <VStack className="gap-5">
             {step === 'details' && (
                 <>
-                    <FieldInput label="School Name *" value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Gurudevi Life School" />
-                    <button className="premium-button"
-                        style={{ background: 'var(--sanctuary-saffron)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', cursor: 'pointer' }}
-                        onClick={() => setStep('type')} disabled={!name.trim()}>
-                        Next — Choose school type <ChevronRight size={14} />
-                    </button>
+                    <VStack>
+                        <SectionLabel>School Name *</SectionLabel>
+                        <Input className="bg-phase-surface-secondary border-phase-border rounded-xl px-4 h-12">
+                            <InputField
+                                value={name}
+                                onChangeText={setName}
+                                placeholder="e.g. Gurudevi Life School"
+                                className="text-sm font-bold text-phaseText-primary"
+                            />
+                        </Input>
+                    </VStack>
+                    <SanctuaryButton
+                        onPress={() => setStep('type')}
+                        disabled={!name.trim()}
+                        className="bg-phase-interactive"
+                    >
+                        <HStack className="items-center justify-center gap-2">
+                             <Text className="text-white font-bold text-sm">Next — Choose school type</Text>
+                             <Icon as={ChevronRight} size="xs" className="text-white" />
+                        </HStack>
+                    </SanctuaryButton>
                 </>
             )}
 
             {step === 'type' && (
                 <>
-                    <p style={{ margin: 0, color: 'var(--ink-ghost)', fontSize: '13px' }}>
-                        What kind of school is <strong style={{ color: 'var(--ink)' }}>{name}</strong>?
-                    </p>
+                    <Text className="m-0 text-phaseText-muted text-[13px]">
+                        What kind of school is <Text className="font-bold text-phaseText-primary">{name}</Text>?
+                    </Text>
                     {SCHOOL_TYPES.map(t => (
-                        <button key={t.value} onClick={() => setType(t.value)} style={{
-                            display: 'flex', alignItems: 'center', gap: '14px', padding: '14px 18px',
-                            borderRadius: '12px', border: `2px solid ${type === t.value ? 'var(--sanctuary-saffron)' : 'var(--border)'}`,
-                            background: type === t.value ? 'rgba(212,132,58,0.06)' : 'var(--background-alt)',
-                            cursor: 'pointer', fontFamily: 'var(--font-body)', textAlign: 'left' as const,
-                        }}>
-                            <span style={{ fontSize: '22px' }}>{t.emoji}</span>
-                            <div style={{ flex: 1 }}>
-                                <div style={{ fontSize: '14px', fontWeight: '700', color: 'var(--ink)' }}>{t.label}</div>
-                                <div style={{ fontSize: '12px', color: 'var(--ink-ghost)' }}>{t.desc}</div>
-                            </div>
-                            {type === t.value && <CheckCircle2 size={16} color="var(--sanctuary-saffron)" />}
-                        </button>
+                        <Pressable 
+                            key={t.value} 
+                            onPress={() => setType(t.value)}
+                            className={`flex-row items-center gap-4 p-4 rounded-xl border-2 ${type === t.value ? 'bg-phase-interactive/5 border-phase-interactive' : 'bg-phase-surface-secondary border-phase-border'}`}
+                        >
+                            <Text className="text-[22px]">{t.emoji}</Text>
+                            <VStack className="flex-1">
+                                <Text className="text-sm font-bold text-phaseText-primary">{t.label}</Text>
+                                <Text className="text-xs text-phaseText-muted">{t.desc}</Text>
+                            </VStack>
+                            {type === t.value && <Icon as={CheckCircle2} size="xs" className="text-phase-interactive" />}
+                        </Pressable>
                     ))}
-                    {error && <p style={{ margin: 0, fontSize: '12px', color: 'var(--ember)' }}>{error}</p>}
-                    <div style={{ display: 'flex', gap: '10px' }}>
-                        <button className="secondary-button" onClick={() => setStep('details')} style={{ flex: 1, cursor: 'pointer' }}>← Back</button>
-                        <button className="premium-button"
-                            style={{ flex: 2, background: 'var(--sanctuary-saffron)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', cursor: 'pointer' }}
-                            onClick={handleCreate} disabled={loading}>
-                            {loading ? <><Spin /> Creating…</> : <><Building2 size={14} /> Create School</>}
-                        </button>
-                    </div>
+                    {error && <Text className="m-0 text-xs text-phase-error">{error}</Text>}
+                    <HStack className="gap-3">
+                        <SanctuaryButton
+                            onPress={() => setStep('details')}
+                            className="flex-1 border-phase-border"
+                        >
+                            <Text className="font-bold text-phaseText-secondary text-sm">← Back</Text>
+                        </SanctuaryButton>
+                        <SanctuaryButton
+                            onPress={handleCreate}
+                            disabled={loading}
+                            className="flex-[2] bg-phase-interactive"
+                        >
+                            <HStack className="items-center justify-center gap-2">
+                                {loading ? <Spinner size="small" color="#FFFFFF" /> : <Icon as={Building2} size="xs" className="text-white" />}
+                                <Text className="text-white font-bold text-sm">{loading ? 'Creating…' : 'Create School'}</Text>
+                            </HStack>
+                        </SanctuaryButton>
+                    </HStack>
                 </>
             )}
-        </div>
+        </VStack>
     );
 }
 
@@ -253,70 +261,102 @@ function TeacherJoinSchool({ onJoined }: { onJoined: (schoolId: string) => void 
     );
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <div style={{ display: 'flex', gap: '6px', padding: '3px', background: 'var(--background-alt)', borderRadius: '10px' }}>
-                {([{ id: 'code', label: '🔑 Invite Code' }, { id: 'search', label: '🔍 Search School' }] as const).map(m => (
-                    <button key={m.id} onClick={() => setMethod(m.id)} style={{
-                        flex: 1, padding: '8px 12px', borderRadius: '8px', border: 'none',
-                        fontFamily: 'var(--font-body)', fontSize: '12px', fontWeight: '700', cursor: 'pointer',
-                        background: method === m.id ? 'var(--background)' : 'transparent',
-                        color: method === m.id ? 'var(--ink)' : 'var(--ink-ghost)',
-                        boxShadow: method === m.id ? '0 1px 4px rgba(0,0,0,0.08)' : 'none',
-                    }}>{m.label}</button>
-                ))}
-            </div>
+        <VStack className="gap-4">
+            <HStack className="gap-1.5 p-1 bg-phase-surface/40 rounded-[12px] border border-phase-border/20">
+                {([{ id: 'code', label: '🔑 Invite Code' }, { id: 'search', label: '🔍 Search School' }] as const).map(m => {
+                    const isActive = method === m.id;
+                    return (
+                        <Pressable 
+                            key={m.id} 
+                            onPress={() => setMethod(m.id)}
+                            className={`flex-1 py-2 rounded-lg items-center ${isActive ? 'bg-phase-surface shadow-sm' : ''}`}
+                        >
+                            <Text className={`text-[12px] font-bold ${isActive ? 'text-phaseText-primary' : 'text-phaseText-muted'}`}>
+                                {m.label}
+                            </Text>
+                        </Pressable>
+                    );
+                })}
+            </HStack>
 
             {method === 'code' && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                    <FieldInput
-                        label="Invite Code from Principal"
-                        value={code} onChange={e => setCode(fmtCode(e.target.value))}
-                        placeholder="GURU-ABC123-TEACH"
-                        error={codeErr}
-                        style={{ fontFamily: 'var(--font-mono, monospace)', letterSpacing: '2px', textTransform: 'uppercase' as const, fontWeight: '700' }}
-                        onKeyDown={(e: any) => e.key === 'Enter' && code.length >= 15 && handleCode()}
-                    />
-                    <button className="premium-button"
-                        style={{ background: 'var(--sanctuary-saffron)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', cursor: 'pointer' }}
-                        onClick={handleCode} disabled={code.length < 15 || codeLoading}>
-                        {codeLoading ? <Spin /> : <Key size={14} />}
-                        {codeLoading ? 'Joining…' : 'Join with Code'}
-                    </button>
-                </div>
+                <VStack className="gap-3">
+                    <VStack>
+                        <SectionLabel>Invite Code from Principal</SectionLabel>
+                        <Input className={`bg-phase-surface-secondary border-phase-border rounded-xl px-4 h-12 ${codeErr ? 'border-phase-error' : ''}`}>
+                            <InputField
+                                value={code}
+                                onChangeText={v => setCode(fmtCode(v))}
+                                placeholder="GURU-ABC123-TEACH"
+                                className="text-sm font-bold text-phaseText-primary tracking-[2px] uppercase"
+                            />
+                        </Input>
+                        {codeErr && <Text className="mt-1 text-[11px] text-phase-error">{codeErr}</Text>}
+                    </VStack>
+                    <SanctuaryButton
+                        onPress={handleCode}
+                        disabled={code.length < 15 || codeLoading}
+                        className="bg-phase-interactive"
+                    >
+                        <HStack className="items-center justify-center gap-2">
+                            {codeLoading ? <Spinner size="small" color="#FFFFFF" /> : <Icon as={Key} size="xs" className="text-white" />}
+                            <Text className="text-white font-bold text-sm">{codeLoading ? 'Joining…' : 'Join with Code'}</Text>
+                        </HStack>
+                    </SanctuaryButton>
+                </VStack>
             )}
 
             {method === 'search' && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    <div style={{ display: 'flex', gap: '8px' }}>
-                        <input value={query} onChange={e => setQuery(e.target.value)}
-                            onKeyDown={(e: any) => e.key === 'Enter' && handleSearch()}
-                            placeholder="Type school name…"
-                            style={{ flex: 1, padding: '10px 14px', borderRadius: '10px', border: '1.5px solid var(--border)', background: 'var(--background-alt)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '13px', outline: 'none' }} />
-                        <button className="secondary-button" onClick={handleSearch} disabled={query.length < 3 || searching}
-                            style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
-                            {searching ? <Spin size={13} /> : <Search size={13} />} Search
-                        </button>
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '220px', overflowY: 'auto' }}>
-                        {results.map(s => (
-                            <div key={s.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', borderRadius: '10px', background: 'var(--background-alt)', border: '1px solid var(--border-light)' }}>
-                                <div>
-                                    <div style={{ fontSize: '14px', fontWeight: '700' }}>{s.name}</div>
-                                    <div style={{ fontSize: '11px', color: 'var(--ink-ghost)', textTransform: 'uppercase' }}>{s.type}</div>
-                                </div>
-                                <button className="secondary-button" style={{ fontSize: '12px', padding: '6px 12px', cursor: 'pointer' }}
-                                    onClick={() => handleRequest(s.id)} disabled={requesting === s.id}>
-                                    {requesting === s.id ? <Spin size={12} /> : 'Request Join'}
-                                </button>
-                            </div>
-                        ))}
+                <VStack className="gap-3">
+                    <HStack className="gap-2">
+                        <Input className="flex-1 bg-phase-surface-secondary border-phase-border rounded-xl px-4 h-11">
+                            <InputField
+                                value={query}
+                                onChangeText={setQuery}
+                                placeholder="Type school name…"
+                                className="text-sm font-bold text-phaseText-primary"
+                            />
+                        </Input>
+                        <SanctuaryButton 
+                            variant="secondary"
+                            onPress={handleSearch} 
+                            disabled={query.length < 3 || searching}
+                            className="px-4 h-11"
+                        >
+                            <HStack className="items-center gap-2">
+                                {searching ? <Spinner size="small" /> : <Icon as={Search} size="xs" />}
+                                <Text className="text-xs font-bold text-phaseText-primary">Search</Text>
+                            </HStack>
+                        </SanctuaryButton>
+                    </HStack>
+                    <VStack className="gap-2 max-h-[220px]">
+                        <ScrollView showsVerticalScrollIndicator={false}>
+                            {results.map(s => (
+                                <Box key={s.id} className="flex-row items-center justify-between p-3.5 mb-2 rounded-xl bg-phase-surface-secondary border border-phase-border/40">
+                                    <VStack>
+                                        <Text className="text-sm font-bold text-phaseText-primary">{s.name}</Text>
+                                        <Text className="text-[11px] text-phaseText-muted uppercase">{s.type}</Text>
+                                    </VStack>
+                                    <SanctuaryButton 
+                                        variant="secondary"
+                                        onPress={() => handleRequest(s.id)} 
+                                        disabled={requesting === s.id}
+                                        className="h-8 px-3"
+                                    >
+                                        <Text className="text-[11px] font-bold text-phaseText-primary">
+                                            {requesting === s.id ? '...' : 'Request Join'}
+                                        </Text>
+                                    </SanctuaryButton>
+                                </Box>
+                            ))}
+                        </ScrollView>
                         {!searching && query.length >= 3 && results.length === 0 && (
-                            <p style={{ fontSize: '12px', color: 'var(--ink-ghost)', textAlign: 'center', margin: 0 }}>No schools found. Try a different name or get an invite code.</p>
+                            <Text className="text-xs text-phaseText-muted text-center italic">No schools found.</Text>
                         )}
-                    </div>
-                </div>
+                    </VStack>
+                </VStack>
             )}
-        </div>
+        </VStack>
     );
 }
 
@@ -359,51 +399,77 @@ function TeacherCreateStandaloneClassroom({ onSuccess }: { onSuccess: () => void
     );
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <div style={{ padding: '12px 16px', background: 'rgba(212,132,58,0.06)', borderRadius: '10px', border: '1px solid rgba(212,132,58,0.15)', fontSize: '12px', color: 'var(--ink-ghost)', lineHeight: '1.6' }}>
-                💡 A <strong style={{ color: 'var(--ink)' }}>standalone classroom</strong> is personal &mdash; it&apos;s not linked to any school.
-                You can join a school later and move classrooms under it.
-            </div>
-            <FieldInput label="Classroom Name *" value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Grade 10B Science" />
-            <FieldInput label="Subject" value={subject} onChange={e => setSubject(e.target.value)} placeholder="e.g. Biology" />
-            {error && <p style={{ margin: 0, fontSize: '12px', color: 'var(--ember)' }}>{error}</p>}
-            <button className="premium-button"
-                style={{ background: 'var(--water)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', cursor: 'pointer' }}
-                onClick={handleCreate} disabled={!name.trim() || loading}>
-                {loading ? <><Spin /> Creating…</> : <><BookOpen size={14} /> Create Classroom</>}
-            </button>
-        </div>
+        <VStack className="gap-4">
+            <Box className="p-4 bg-phase-interactive/5 rounded-xl border border-phase-interactive/10">
+                <Text className="text-[12px] text-phaseText-muted leading-[1.6]">
+                    💡 A <Text className="font-bold text-phaseText-primary">standalone classroom</Text> is personal &mdash; it's not linked to any school.
+                </Text>
+            </Box>
+            <VStack>
+                <SectionLabel>Classroom Name *</SectionLabel>
+                <Input className="bg-phase-surface-secondary border-phase-border rounded-xl px-4 h-12">
+                    <InputField
+                        value={name}
+                        onChangeText={setName}
+                        placeholder="e.g. Grade 10B Science"
+                        className="text-sm font-bold text-phaseText-primary"
+                    />
+                </Input>
+            </VStack>
+            <VStack>
+                <SectionLabel>Subject</SectionLabel>
+                <Input className="bg-phase-surface-secondary border-phase-border rounded-xl px-4 h-12">
+                    <InputField
+                        value={subject}
+                        onChangeText={setSubject}
+                        placeholder="e.g. Biology"
+                        className="text-sm font-bold text-phaseText-primary"
+                    />
+                </Input>
+            </VStack>
+            {error && <Text className="text-xs text-phase-error">{error}</Text>}
+            <SanctuaryButton
+                onPress={handleCreate}
+                disabled={!name.trim() || loading}
+                className="bg-phase-interactive"
+            >
+                <HStack className="items-center justify-center gap-2">
+                    {loading ? <Spinner size="small" color="#FFFFFF" /> : <Icon as={BookOpen} size="xs" className="text-white" />}
+                    <Text className="text-white font-bold text-sm">Create Classroom</Text>
+                </HStack>
+            </SanctuaryButton>
+        </VStack>
     );
 }
 
-type TeacherTab = 'join_school' | 'standalone';
-
 function TeacherFlow({ onSuccess }: { onSuccess: () => void }) {
-    const [tab, setTab] = useState<TeacherTab>('join_school');
+    const [tab, setTab] = useState<'join_school' | 'standalone'>('join_school');
     const [joinedSchoolId, setJoinedSchoolId] = useState<string | null>(null);
 
-    const TABS: { id: TeacherTab; label: string; icon: React.ReactNode }[] = [
-        { id: 'join_school', label: 'Join a School', icon: <Building2 size={14} /> },
-        { id: 'standalone', label: 'Personal Classroom', icon: <BookOpen size={14} /> },
-    ];
+    const TABS = [
+        { id: 'join_school', label: 'Join a School', icon: Building2 },
+        { id: 'standalone', label: 'Personal Classroom', icon: BookOpen },
+    ] as const;
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            <div style={{ display: 'flex', gap: '6px', padding: '3px', background: 'var(--background-alt)', borderRadius: '12px' }}>
-                {TABS.map(t => (
-                    <button key={t.id} onClick={() => setTab(t.id)} style={{
-                        flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
-                        padding: '10px 8px', borderRadius: '10px', border: 'none',
-                        fontFamily: 'var(--font-body)', fontSize: '12px', fontWeight: '700', cursor: 'pointer',
-                        background: tab === t.id ? 'var(--background)' : 'transparent',
-                        color: tab === t.id ? 'var(--sanctuary-saffron)' : 'var(--ink-ghost)',
-                        boxShadow: tab === t.id ? '0 1px 4px rgba(0,0,0,0.1)' : 'none',
-                        transition: 'all 0.15s',
-                    }}>
-                        {t.icon} {t.label}
-                    </button>
-                ))}
-            </div>
+        <VStack className="gap-6">
+            <HStack className="gap-1.5 p-1 bg-phase-surface/40 rounded-[12px] border border-phase-border/20">
+                {TABS.map(t => {
+                    const isActive = tab === t.id;
+                    return (
+                        <Pressable 
+                            key={t.id} 
+                            onPress={() => setTab(t.id)}
+                            className={`flex-1 py-2.5 rounded-xl flex-row items-center justify-center gap-2 ${isActive ? 'bg-phase-surface shadow-sm' : ''}`}
+                        >
+                            <Icon as={t.icon} size="xs" className={isActive ? 'text-phase-interactive' : 'text-phaseText-muted'} />
+                            <Text className={`text-[12px] font-bold ${isActive ? 'text-phase-interactive' : 'text-phaseText-muted'}`}>
+                                {t.label}
+                            </Text>
+                        </Pressable>
+                    );
+                })}
+            </HStack>
 
             {tab === 'join_school' && (
                 joinedSchoolId
@@ -420,7 +486,7 @@ function TeacherFlow({ onSuccess }: { onSuccess: () => void }) {
             {tab === 'standalone' && (
                 <TeacherCreateStandaloneClassroom onSuccess={onSuccess} />
             )}
-        </div>
+        </VStack>
     );
 }
 
@@ -454,41 +520,45 @@ function StudentJoinClassroom({ onSuccess }: { onSuccess: () => void }) {
     );
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <div style={{ padding: '12px 16px', background: 'rgba(59,130,246,0.06)', borderRadius: '10px', border: '1px solid rgba(59,130,246,0.15)', fontSize: '12px', color: 'var(--ink-ghost)', lineHeight: '1.6' }}>
-                <Users size={13} color="var(--water)" style={{ marginRight: 6, display: 'inline-block' } as any} />
-                Ask your teacher for your classroom invite code.
-                It&apos;s typically 8 characters, like <code style={{ fontWeight: '800', letterSpacing: '1px' }}>a1b2c3d4</code>.
-            </div>
+        <VStack className="gap-5">
+            <Box className="p-4 bg-phase-interactive/5 rounded-xl border border-phase-interactive/10">
+                <HStack className="items-center gap-3">
+                    <Icon as={Users} size="xs" className="text-phase-interactive" />
+                    <Text className="text-[12px] text-phaseText-muted leading-[1.6] flex-1">
+                        Ask your teacher for your classroom invite code (typically 8 characters).
+                    </Text>
+                </HStack>
+            </Box>
 
-            <div>
+            <VStack>
                 <SectionLabel>Your Classroom Code</SectionLabel>
-                <input
-                    value={code}
-                    onChange={e => setCode(e.target.value.toLowerCase().slice(0, 12))}
-                    onKeyDown={(e: any) => e.key === 'Enter' && code.length >= 6 && handleClaim()}
-                    placeholder="a1b2c3d4"
-                    style={{
-                        width: '100%', boxSizing: 'border-box' as const,
-                        padding: '14px 20px', borderRadius: '12px',
-                        border: `2px solid ${error ? 'var(--ember)' : 'var(--border)'}`,
-                        background: 'var(--background-alt)', color: 'var(--ink)',
-                        fontFamily: 'var(--font-mono, monospace)', fontSize: '24px',
-                        fontWeight: '800', letterSpacing: '4px', textAlign: 'center' as const,
-                        outline: 'none',
-                    }}
-                />
-                {error && <p style={{ margin: '6px 0 0', fontSize: '12px', color: 'var(--ember)' }}>{error}</p>}
-            </div>
+                <Input className={`bg-phase-surface-secondary border-phase-border rounded-2xl px-6 h-20 items-center justify-center ${error ? 'border-phase-error' : ''}`}>
+                    <InputField
+                        value={code}
+                        onChangeText={v => setCode(v.toLowerCase().slice(0, 12))}
+                        placeholder="a1b2c3d4"
+                        className="text-[28px] font-black text-phaseText-primary tracking-[6px] text-center uppercase"
+                        style={{ outline: 'none' } as any}
+                    />
+                </Input>
+                {error && <Text className="mt-2 text-xs text-phase-error text-center">{error}</Text>}
+            </VStack>
 
-            <button className="premium-button"
-                style={{ background: 'var(--water)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', cursor: 'pointer' }}
-                onClick={handleClaim} disabled={code.length < 6 || loading}>
-                {loading ? <><Spin /> Joining…</> : <><BookOpen size={14} /> Join Classroom</>}
-            </button>
-        </div>
+            <SanctuaryButton
+                onPress={handleClaim}
+                disabled={code.length < 6 || loading}
+                className="bg-phase-interactive h-14"
+            >
+                <HStack className="items-center justify-center gap-2">
+                    {loading ? <Spinner size="small" color="#FFFFFF" /> : <Icon as={BookOpen} size="xs" className="text-white" />}
+                    <Text className="text-white font-bold text-sm">Join Classroom</Text>
+                </HStack>
+            </SanctuaryButton>
+        </VStack>
     );
 }
+
+// -- Main Component -------------------------------------------
 
 export default function NoSchoolView() {
     const { can } = usePermissions();
@@ -509,20 +579,22 @@ export default function NoSchoolView() {
             : { emoji: '🌱', heading: 'Join your classroom', sub: 'Enter the invite code your teacher gave you to link your account.' };
 
     return (
-        <div style={{ maxWidth: '520px', margin: '0 auto', padding: '8px 0 48px' }}>
-            <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-                <div style={{ fontSize: '48px', marginBottom: '10px' }}>{META.emoji}</div>
-                <h1 style={{ margin: '0 0 8px', fontSize: '26px', fontWeight: '800' }}>{META.heading}</h1>
-                <p style={{ margin: '0 auto', color: 'var(--ink-ghost)', fontSize: '14px', lineHeight: '1.6', maxWidth: '380px' }}>
-                    {META.sub}
-                </p>
-            </div>
+        <ScrollView className="bg-phase-canvas">
+            <VStack className="max-w-[520px] mx-auto py-12 px-6 w-full">
+                <VStack className="items-center text-center mb-10">
+                    <Text className="text-5xl mb-3">{META.emoji}</Text>
+                    <h1 className="text-[28px] font-black text-phaseText-primary mb-2">{META.heading}</h1>
+                    <Text className="text-center text-phaseText-muted text-sm leading-[1.6] max-w-[380px]">
+                        {META.sub}
+                    </Text>
+                </VStack>
 
-            <div className="sanctuary-card" style={{ padding: '28px 32px' }}>
-                {canCreateSchool && <PrincipalCreateSchool onSuccess={handleSuccess} />}
-                {canCreateClassroom && <TeacherFlow onSuccess={handleSuccess} />}
-                {canJoinClassroom && !canCreateClassroom && <StudentJoinClassroom onSuccess={handleSuccess} />}
-            </div>
-        </div>
+                <Box className="bg-phase-surface p-8 rounded-[32px] border border-phase-border shadow-2xl">
+                    {canCreateSchool && <PrincipalCreateSchool onSuccess={handleSuccess} />}
+                    {canCreateClassroom && <TeacherFlow onSuccess={handleSuccess} />}
+                    {canJoinClassroom && !canCreateClassroom && <StudentJoinClassroom onSuccess={handleSuccess} />}
+                </Box>
+            </VStack>
+        </ScrollView>
     );
 }

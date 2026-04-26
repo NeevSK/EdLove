@@ -8,6 +8,7 @@ import {
     type LayoutResult, 
     type PerspectiveId 
 } from '@repo/graphics';
+import { useReality } from '@repo/ui';
 
 interface LayoutOptions {
     width: number;
@@ -16,23 +17,28 @@ interface LayoutOptions {
 }
 
 /**
- * usePerspectiveLayout  React hook for @repo/graphics.
+ * usePerspectiveLayout React hook for @repo/graphics.
  * 
  * Computes the optimal layout for a given topology and perspective.
- * Memoized to avoid re-running expensive D3 math on every render.
+ * Memoized and Reality-Aware: Adapts complexity to device capabilities.
  */
 export function usePerspectiveLayout(
     topology: KnowledgeTopology | null,
     options: LayoutOptions
 ): LayoutResult | null {
     const { width, height, perspective } = options;
+    const { reality } = useReality();
 
     return useMemo(() => {
         if (!topology) return null;
 
+        // Dynamic complexity adjustment based on device tier
+        const isLowTier = reality.deviceTier === 'low';
+        const forceTicks = isLowTier ? 80 : 300;
+
         switch (perspective) {
             case 'astro':
-                return forceLayout(topology, { width, height, ticks: 300 });
+                return forceLayout(topology, { width, height, ticks: forceTicks });
             case 'vastu':
                 return treeLayout(topology, undefined, { width, height });
             case 'dharma':
@@ -40,13 +46,12 @@ export function usePerspectiveLayout(
             case 'terra':
                 return geoLayout(topology, width, height);
             case 'jyoti':
-                // Jyoti (charts) layout is handled by the charted lib or simple bar math
                 return { 
                     positions: new Map(), 
                     bounds: { width, height, minX: 0, minY: 0 } 
                 };
             default:
-                return forceLayout(topology, { width, height, ticks: 100 });
+                return forceLayout(topology, { width, height, ticks: isLowTier ? 50 : 100 });
         }
-    }, [topology, perspective, width, height]);
+    }, [topology, perspective, width, height, reality.deviceTier]);
 }

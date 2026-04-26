@@ -1,10 +1,54 @@
 import React, { useState } from 'react';
-import { ScrollView } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { useGradebook } from '../hooks/useGradebook';
 import type { SortOption } from '../hooks/useGradebook';
 import { ClassroomGradingSettings, growthSignalsAPI, useStore } from '@repo/core';
-import { ChevronLeft, Settings2, TrendingUp, Users, Award, Edit3, Check, X } from 'lucide-react-native';
+import {
+    ChevronLeft,
+    Settings2,
+    TrendingUp,
+    Users,
+    Award,
+    Edit3,
+    Check,
+    X
+} from 'lucide-react-native';
+import {
+    Box,
+    Text,
+    HStack,
+    VStack,
+    Pressable,
+    Icon,
+    Spinner,
+    SanctuaryButton,
+    Input,
+    InputField,
+    Textarea,
+    TextareaInput,
+    Modal,
+    ModalBackdrop,
+    ModalContent,
+    ModalHeader,
+    ModalCloseButton,
+    ModalBody,
+    ModalFooter,
+    ScrollView,
+    Center,
+    Heading
+} from '@repo/ui';
+
+// -- Helpers --------------------------------------------------
+
+function SectionLabel({ children }: { children: React.ReactNode }) {
+    return (
+        <Text className="text-[11px] font-black text-phaseText-muted uppercase tracking-[1px] mb-2">
+            {children}
+        </Text>
+    );
+}
+
+// -- Windows / Modals -----------------------------------------
 
 function GradeModal({
   studentName,
@@ -42,136 +86,66 @@ function GradeModal({
   };
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 9999,
-        background: 'rgba(0,0,0,0.5)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
-      onClick={(event) => event.target === event.currentTarget && onClose()}
-    >
-      <div
-        style={{
-          background: 'var(--background)',
-          borderRadius: '16px',
-          padding: '28px',
-          width: '100%',
-          maxWidth: '400px',
-          margin: '16px',
-          boxShadow: '0 20px 60px rgba(0,0,0,0.25)',
-        }}
-      >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-          <div>
-            <h3 style={{ margin: '0 0 2px', fontSize: '17px', fontWeight: '800' }}>Grade Entry</h3>
-            <p style={{ margin: 0, fontSize: '12px', color: 'var(--ink-ghost)' }}>{studentName}</p>
-          </div>
-          <button
-            onClick={onClose}
-            style={{ padding: '6px', background: 'none', border: 'none', cursor: 'pointer' }}
-          >
-            <X size={18} color="var(--ink-ghost)" />
-          </button>
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-          <div>
-            <label
-              style={{
-                fontSize: '11px',
-                fontWeight: '800',
-                textTransform: 'uppercase',
-                letterSpacing: '1px',
-                color: 'var(--ink-ghost)',
-                display: 'block',
-                marginBottom: '6px',
-              }}
+    <Modal isOpen={true} onClose={onClose}>
+      <ModalBackdrop />
+      <ModalContent className="max-w-[400px]">
+        <ModalHeader className="justify-between items-start">
+          <VStack>
+            <Heading size="sm" className="font-black text-phaseText-primary">Grade Entry</Heading>
+            <Text className="text-xs text-phaseText-muted">{studentName}</Text>
+          </VStack>
+          <ModalCloseButton />
+        </ModalHeader>
+        <ModalBody className="gap-5">
+            <VStack>
+                <SectionLabel>Marks (0-{maxMarks})</SectionLabel>
+                <Input className={`bg-phase-surface-secondary border-phase-border rounded-xl px-4 h-12 ${error ? 'border-phase-error' : ''}`}>
+                    <InputField
+                        type="text"
+                        value={marks}
+                        onChangeText={(v) => {
+                            setMarks(v);
+                            setError('');
+                        }}
+                        keyboardType="numeric"
+                        className="text-lg font-bold text-phaseText-primary"
+                    />
+                </Input>
+                {error && <Text className="mt-1 text-[11px] text-phase-error">{error}</Text>}
+            </VStack>
+            <VStack>
+                <SectionLabel>Feedback (optional)</SectionLabel>
+                <Textarea className="bg-phase-surface-secondary border-phase-border rounded-xl p-4">
+                    <TextareaInput
+                        value={feedback}
+                        onChangeText={setFeedback}
+                        placeholder="e.g. Excellent work on the last question..."
+                        className="text-sm text-phaseText-primary"
+                    />
+                </Textarea>
+            </VStack>
+        </ModalBody>
+        <ModalFooter className="gap-3">
+             <SanctuaryButton
+                variant="secondary"
+                onPress={onClose}
+                className="flex-1"
             >
-              Marks (0-{maxMarks})
-            </label>
-            <input
-              type="number"
-              value={marks}
-              onChange={(event) => {
-                setMarks(event.target.value);
-                setError('');
-              }}
-              min={0}
-              max={maxMarks}
-              style={{
-                width: '100%',
-                boxSizing: 'border-box',
-                padding: '10px 14px',
-                borderRadius: '10px',
-                border: `1.5px solid ${error ? 'var(--ember)' : 'var(--border)'}`,
-                background: 'var(--background-alt)',
-                color: 'var(--ink)',
-                fontFamily: 'var(--font-body)',
-                fontSize: '18px',
-                fontWeight: '700',
-              }}
-            />
-            {error ? <p style={{ margin: '4px 0 0', fontSize: '11px', color: 'var(--ember)' }}>{error}</p> : null}
-          </div>
-          <div>
-            <label
-              style={{
-                fontSize: '11px',
-                fontWeight: '800',
-                textTransform: 'uppercase',
-                letterSpacing: '1px',
-                color: 'var(--ink-ghost)',
-                display: 'block',
-                marginBottom: '6px',
-              }}
+                <Text className="font-bold text-phaseText-secondary">Cancel</Text>
+            </SanctuaryButton>
+            <SanctuaryButton
+                onPress={handleSave}
+                disabled={saving}
+                className="flex-[2] bg-phase-interactive"
             >
-              Feedback (optional)
-            </label>
-            <textarea
-              value={feedback}
-              onChange={(event) => setFeedback(event.target.value)}
-              placeholder="e.g. Excellent work on the last question..."
-              rows={3}
-              style={{
-                width: '100%',
-                boxSizing: 'border-box',
-                padding: '10px 14px',
-                borderRadius: '10px',
-                border: '1.5px solid var(--border)',
-                background: 'var(--background-alt)',
-                color: 'var(--ink)',
-                fontFamily: 'var(--font-body)',
-                fontSize: '13px',
-                resize: 'vertical',
-              }}
-            />
-          </div>
-          <div style={{ display: 'flex', gap: '10px' }}>
-            <button onClick={onClose} className="secondary-button" style={{ flex: 1 }}>
-              Cancel
-            </button>
-            <button
-              onClick={handleSave}
-              className="premium-button"
-              style={{
-                flex: 2,
-                background: 'var(--sanctuary-saffron)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px',
-              }}
-              disabled={saving}
-            >
-              {saving ? '...' : <Check size={14} />} Save Draft
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+                <HStack className="items-center justify-center gap-2">
+                    {saving ? <Spinner size="small" color="#FFFFFF" /> : <Icon as={Check} size="xs" className="text-white" />}
+                    <Text className="text-white font-bold">Save Draft</Text>
+                </HStack>
+            </SanctuaryButton>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
   );
 }
 
@@ -199,87 +173,68 @@ function SettingsModal({
   };
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 9999,
-        background: 'rgba(0,0,0,0.5)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
-      onClick={(event) => event.target === event.currentTarget && onClose()}
-    >
-      <div style={{ background: 'var(--background)', borderRadius: '16px', padding: '28px', width: '100%', maxWidth: '360px', margin: '16px' }}>
-        <h3 style={{ margin: '0 0 20px', fontSize: '17px', fontWeight: '800' }}>Grading Settings</h3>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-          <div>
-            <label
-              style={{
-                fontSize: '11px',
-                fontWeight: '800',
-                textTransform: 'uppercase',
-                letterSpacing: '1px',
-                color: 'var(--ink-ghost)',
-                display: 'block',
-                marginBottom: '6px',
-              }}
+    <Modal isOpen={true} onClose={onClose}>
+      <ModalBackdrop />
+      <ModalContent className="max-w-[360px]">
+        <ModalHeader>
+          <Heading size="sm" className="font-black text-phaseText-primary">Grading Settings</Heading>
+          <ModalCloseButton />
+        </ModalHeader>
+        <ModalBody className="gap-6">
+            <VStack>
+                <SectionLabel>Grading Mode</SectionLabel>
+                <HStack className="gap-2">
+                    {(['marks', 'grade', 'both'] as const).map((mode) => {
+                        const isActive = gradingMode === mode;
+                        return (
+                            <Pressable
+                                key={mode}
+                                onPress={() => setGradingMode(mode)}
+                                className={`flex-1 py-3 items-center rounded-xl border-2 ${isActive ? 'bg-phase-interactive/5 border-phase-interactive' : 'bg-phase-surface-secondary border-phase-border'}`}
+                            >
+                                <Text className={`text-xs font-bold ${isActive ? 'text-phase-interactive' : 'text-phaseText-primary'}`}>
+                                    {mode === 'marks' ? 'Marks' : mode === 'grade' ? 'GPA' : 'Both'}
+                                </Text>
+                            </Pressable>
+                        );
+                    })}
+                </HStack>
+            </VStack>
+            <Pressable 
+                onPress={() => setShowRanks(!showRanks)}
+                className="flex-row items-center gap-3"
             >
-              Grading Mode
-            </label>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '8px' }}>
-              {(['marks', 'grade', 'both'] as const).map((mode) => (
-                <button
-                  key={mode}
-                  type="button"
-                  onClick={() => setGradingMode(mode)}
-                  style={{
-                    padding: '10px 12px',
-                    borderRadius: '10px',
-                    border: `1.5px solid ${gradingMode === mode ? 'var(--sanctuary-saffron)' : 'var(--border)'}`,
-                    background: gradingMode === mode ? 'rgba(245,158,11,0.12)' : 'var(--background-alt)',
-                    color: 'var(--ink)',
-                    fontWeight: 700,
-                    cursor: 'pointer',
-                  }}
-                >
-                  {mode === 'marks' ? 'Marks' : mode === 'grade' ? 'GPA' : 'Both'}
-                </button>
-              ))}
-            </div>
-          </div>
-          <label
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '10px',
-              fontSize: '13px',
-              fontWeight: '600',
-              color: 'var(--ink)',
-            }}
-          >
-            <input type="checkbox" checked={showRanks} onChange={(event) => setShowRanks(event.target.checked)} />
-            Show student ranks
-          </label>
-        </div>
-        <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
-          <button onClick={onClose} className="secondary-button" style={{ flex: 1 }}>
-            Cancel
-          </button>
-          <button
-            onClick={handleSave}
-            className="premium-button"
-            style={{ flex: 2, background: 'var(--sanctuary-saffron)' }}
-            disabled={saving}
-          >
-            {saving ? '...' : 'Save Settings'}
-          </button>
-        </div>
-      </div>
-    </div>
+                <Box className={`w-5 h-5 rounded border-2 items-center justify-center ${showRanks ? 'bg-phase-interactive border-phase-interactive' : 'border-phase-border'}`}>
+                    {showRanks && <Icon as={Check} size="xs" className="text-white" />}
+                </Box>
+                <Text className="text-sm font-bold text-phaseText-primary">Show student ranks</Text>
+            </Pressable>
+        </ModalBody>
+        <ModalFooter className="gap-3">
+            <SanctuaryButton
+                variant="secondary"
+                onPress={onClose}
+                className="flex-1"
+            >
+                <Text className="font-bold text-phaseText-secondary">Cancel</Text>
+            </SanctuaryButton>
+            <SanctuaryButton
+                onPress={handleSave}
+                disabled={saving}
+                className="flex-[2] bg-phase-interactive"
+            >
+                <HStack className="items-center justify-center gap-2">
+                    {saving && <Spinner size="small" color="#FFFFFF" />}
+                    <Text className="text-white font-bold">{saving ? 'Saving...' : 'Save Settings'}</Text>
+                </HStack>
+            </SanctuaryButton>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
   );
 }
+
+// -- Main Component -------------------------------------------
 
 export default function GradebookScreenWeb() {
   const route = useRoute<any>();
@@ -333,248 +288,168 @@ export default function GradebookScreenWeb() {
   };
 
   return (
-    <div className="sanctuary-screen">
-      <div className="sanctuary-container" style={{ maxWidth: '780px' }}>
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '12px',
-            marginBottom: '28px',
-            flexWrap: 'wrap',
-          }}
-        >
-          <button
-            onClick={() => navigation.goBack()}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '4px',
-              padding: '6px 10px',
-              borderRadius: '8px',
-              border: '1px solid var(--border)',
-              background: 'var(--glass-surface)',
-              cursor: 'pointer',
-              fontFamily: 'var(--font-body)',
-              fontSize: '13px',
-              color: 'var(--ink-ghost)',
-            }}
+    <ScrollView className="bg-phase-canvas">
+      <VStack className="max-w-[780px] mx-auto py-12 px-6 w-full">
+        <HStack className="items-center justify-between mb-8 gap-4 flex-wrap">
+          <SanctuaryButton
+            variant="secondary"
+            onPress={() => navigation.goBack()}
+            className="px-4 py-2 bg-phase-surface/40 border-phase-border/20"
           >
-            <ChevronLeft size={14} /> Back
-          </button>
-          <div style={{ flex: 1 }}>
-            <h2 style={{ margin: 0, fontSize: '20px', fontWeight: '800' }}>Gradebook - {classroomName}</h2>
-          </div>
-          <button
-            onClick={() => setShowSettings(true)}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              padding: '7px 14px',
-              borderRadius: '8px',
-              border: '1px solid var(--border)',
-              background: 'var(--glass-surface)',
-              cursor: 'pointer',
-              fontFamily: 'var(--font-body)',
-              fontSize: '12px',
-              color: 'var(--ink-ghost)',
-              fontWeight: '700',
-            }}
+            <HStack className="items-center gap-1.5">
+                <Icon as={ChevronLeft} size="xs" className="text-phaseText-muted" />
+                <Text className="text-xs font-bold text-phaseText-muted">Back</Text>
+            </HStack>
+          </SanctuaryButton>
+          <Box className="flex-1">
+            <Heading size="md" className="font-black text-phaseText-primary">Gradebook - {classroomName}</Heading>
+          </Box>
+          <SanctuaryButton
+            variant="secondary"
+            onPress={() => setShowSettings(true)}
+            className="px-4 py-2 bg-phase-surface/40 border-phase-border/20"
           >
-            <Settings2 size={14} /> Settings
-          </button>
-        </div>
+            <HStack className="items-center gap-2">
+                <Icon as={Settings2} size="xs" className="text-phaseText-muted" />
+                <Text className="text-xs font-black uppercase tracking-widest text-phaseText-muted">Settings</Text>
+            </HStack>
+          </SanctuaryButton>
+        </HStack>
 
         {isLoading ? (
-          <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--ink-ghost)' }}>
-            Loading gradebook...
-          </div>
+          <Center className="py-20">
+            <Spinner size="large" className="text-phase-interactive" />
+            <Text className="mt-4 text-phaseText-muted font-bold">Loading gradebook...</Text>
+          </Center>
         ) : error ? (
-          <div
-            style={{
-              padding: '16px',
-              background: 'rgba(239,68,68,0.08)',
-              borderRadius: '10px',
-              color: 'var(--ember)',
-              fontSize: '13px',
-            }}
-          >
-            {error}
-          </div>
+          <Box className="p-4 bg-phase-error/10 border border-phase-error/20 rounded-xl">
+            <Text className="text-phase-error font-bold text-sm text-center">{error}</Text>
+          </Box>
         ) : (
-          <>
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(4, minmax(0, 1fr))',
-                gap: '12px',
-                marginBottom: '20px',
-              }}
-            >
-              <div className="sanctuary-card" style={{ padding: '18px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--water)' }}>
-                  <Users size={14} />{' '}
-                  <span style={{ fontSize: '11px', fontWeight: '800', textTransform: 'uppercase' }}>Students</span>
-                </div>
-                <div style={{ marginTop: '10px', fontSize: '24px', fontWeight: '800' }}>{stats.totalStudents}</div>
-              </div>
-              <div className="sanctuary-card" style={{ padding: '18px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--lotus)' }}>
-                  <TrendingUp size={14} />{' '}
-                  <span style={{ fontSize: '11px', fontWeight: '800', textTransform: 'uppercase' }}>Average</span>
-                </div>
-                <div style={{ marginTop: '10px', fontSize: '24px', fontWeight: '800' }}>{stats.averageMarks}</div>
-              </div>
-              <div className="sanctuary-card" style={{ padding: '18px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--moss)' }}>
-                  <Award size={14} />{' '}
-                  <span style={{ fontSize: '11px', fontWeight: '800', textTransform: 'uppercase' }}>Pass Rate</span>
-                </div>
-                <div style={{ marginTop: '10px', fontSize: '24px', fontWeight: '800' }}>{passRate}%</div>
-              </div>
-              <div className="sanctuary-card" style={{ padding: '18px' }}>
-                <div
-                  style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--sanctuary-saffron)' }}
-                >
-                  <Edit3 size={14} />{' '}
-                  <span style={{ fontSize: '11px', fontWeight: '800', textTransform: 'uppercase' }}>Mode</span>
-                </div>
-                <div style={{ marginTop: '10px', fontSize: '16px', fontWeight: '800', textTransform: 'capitalize' }}>
+          <VStack className="gap-6">
+            {/* Stats Grid */}
+            <Box className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <Box className="bg-phase-surface p-5 rounded-[24px] border border-phase-border/40 shadow-sm">
+                <HStack className="items-center gap-2 mb-3">
+                  <Icon as={Users} size="xs" className="text-phase-interactive" />
+                  <SectionLabel>Students</SectionLabel>
+                </HStack>
+                <Text className="text-3xl font-black text-phaseText-primary leading-none">{stats.totalStudents}</Text>
+              </Box>
+              <Box className="bg-phase-surface p-5 rounded-[24px] border border-phase-border/40 shadow-sm">
+                <HStack className="items-center gap-2 mb-3">
+                  <Icon as={TrendingUp} size="xs" className="text-phase-success" />
+                  <SectionLabel>Average</SectionLabel>
+                </HStack>
+                <Text className="text-3xl font-black text-phaseText-primary leading-none">{stats.averageMarks}</Text>
+              </Box>
+              <Box className="bg-phase-surface p-5 rounded-[24px] border border-phase-border/40 shadow-sm">
+                <HStack className="items-center gap-2 mb-3">
+                  <Icon as={Award} size="xs" className="text-phase-warning" />
+                  <SectionLabel>Pass Rate</SectionLabel>
+                </HStack>
+                <Text className="text-3xl font-black text-phaseText-primary leading-none">{passRate}%</Text>
+              </Box>
+              <Box className="bg-phase-surface p-5 rounded-[24px] border border-phase-border/40 shadow-sm">
+                <HStack className="items-center gap-2 mb-3">
+                  <Icon as={Edit3} size="xs" className="text-phase-interactive" />
+                  <SectionLabel>Mode</SectionLabel>
+                </HStack>
+                <Text className="text-xl font-black text-phaseText-primary leading-none capitalize">
                   {gradingSettings?.grading_mode ?? 'marks'}
-                </div>
-              </div>
-            </div>
+                </Text>
+              </Box>
+            </Box>
 
-            <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', flexWrap: 'wrap' }}>
-              {sorts.map((sort) => (
-                <button
-                  key={sort.id}
-                  onClick={() => setSortBy(sort.id)}
-                  style={{
-                    padding: '7px 12px',
-                    borderRadius: '8px',
-                    border: `1px solid ${sortBy === sort.id ? 'var(--sanctuary-saffron)' : 'var(--border)'}`,
-                    background: sortBy === sort.id ? 'rgba(245,158,11,0.12)' : 'var(--glass-surface)',
-                    cursor: 'pointer',
-                    fontSize: '12px',
-                    fontWeight: '700',
-                    color: sortBy === sort.id ? 'var(--sanctuary-saffron)' : 'var(--ink-ghost)',
-                    fontFamily: 'var(--font-body)',
-                  }}
-                >
-                  {sort.label}
-                </button>
-              ))}
-            </div>
-
-            <div className="sanctuary-card" style={{ padding: 0, overflow: 'hidden' }}>
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '60px 1.2fr 110px 110px 180px',
-                  gap: '12px',
-                  padding: '14px 20px',
-                  borderBottom: '1px solid var(--border-light)',
-                  fontSize: '11px',
-                  fontWeight: '800',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.8px',
-                  color: 'var(--ink-ghost)',
-                }}
-              >
-                <span>Rank</span>
-                <span>Student</span>
-                <span>Marks</span>
-                <span>Status</span>
-                <span>Action</span>
-              </div>
-
-              {sortedGrades.map((grade) => {
-                const marks = grade.marks ?? 0;
-                const statusColor = marks >= passingMarks ? 'var(--moss)' : 'var(--ember)';
+            {/* Sorting */}
+            <HStack className="gap-2 flex-wrap">
+              {sorts.map((sort) => {
+                const isActive = sortBy === sort.id;
                 return (
-                  <div
-                    key={grade.student_id}
-                    style={{
-                      display: 'grid',
-                      gridTemplateColumns: '60px 1.2fr 110px 110px 180px',
-                      gap: '12px',
-                      padding: '16px 20px',
-                      borderBottom: '1px solid var(--border-light)',
-                      alignItems: 'center',
-                    }}
-                  >
-                    <span style={{ fontSize: '13px', fontWeight: '800', color: 'var(--ink)' }}>
-                      #{grade.rank ?? '-'}
-                    </span>
-                    <div>
-                      <div style={{ fontSize: '14px', fontWeight: '700' }}>
-                        {studentNames[grade.student_id] ?? 'Student'}
-                      </div>
-                      {grade.feedback ? (
-                        <div style={{ fontSize: '12px', color: 'var(--ink-ghost)', marginTop: '2px' }}>
-                          {grade.feedback}
-                        </div>
-                      ) : null}
-                    </div>
-                    <span style={{ fontSize: '14px', fontWeight: '800', color: 'var(--ink)' }}>
-                      {marks}/{maxMarks}
-                    </span>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                      <span style={{ fontSize: '12px', fontWeight: '800', color: statusColor }}>
-                        {marks >= passingMarks ? 'Passing' : 'Needs support'}
-                      </span>
-                      <span
-                        style={{
-                          fontSize: '11px',
-                          fontWeight: '700',
-                          color: grade.publication_state === 'published' ? 'var(--moss)' : 'var(--ink-ghost)',
-                        }}
-                      >
-                        {grade.publication_state === 'published' ? 'Published' : 'Draft'}
-                      </span>
-                    </div>
-                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                      <button
-                        onClick={() => setGradingId(grade.student_id)}
-                        style={{
-                          padding: '8px 12px',
-                          borderRadius: '8px',
-                          border: '1px solid var(--border)',
-                          background: 'var(--glass-surface)',
-                          cursor: 'pointer',
-                          fontSize: '12px',
-                          fontWeight: '700',
-                          color: 'var(--ink)',
-                        }}
-                      >
-                        {grade.marks === null || grade.marks === undefined ? 'Grade' : 'Edit Draft'}
-                      </button>
-                      {grade.id ? (
-                        <button
-                          onClick={() => publishGrade(grade.id)}
-                          style={{
-                            padding: '8px 12px',
-                            borderRadius: '8px',
-                            border: '1px solid var(--moss)',
-                            background: 'rgba(34,197,94,0.08)',
-                            cursor: 'pointer',
-                            fontSize: '12px',
-                            fontWeight: '700',
-                            color: 'var(--moss)',
-                          }}
-                        >
-                          {grade.publication_state === 'published' ? 'Republish' : 'Publish'}
-                        </button>
-                      ) : null}
-                    </div>
-                  </div>
+                    <SanctuaryButton
+                        key={sort.id}
+                        variant={isActive ? 'primary' : 'secondary'}
+                        onPress={() => setSortBy(sort.id)}
+                        className={`px-4 py-2 h-auto ${isActive ? 'bg-phase-interactive border-transparent' : 'bg-phase-surface/40 border-phase-border/20'}`}
+                    >
+                        <Text className={`text-[11px] font-black uppercase tracking-widest ${isActive ? 'text-white' : 'text-phaseText-muted'}`}>
+                            {sort.label}
+                        </Text>
+                    </SanctuaryButton>
                 );
               })}
-            </div>
+            </HStack>
 
-            {gradingStudent ? (
+            {/* Grade Table */}
+            <Box className="bg-phase-surface rounded-[32px] border border-phase-border/40 shadow-xl overflow-hidden">
+                <Box className="grid grid-cols-5 gap-4 p-5 border-bottom border-phase-border/20 bg-phase-surface-secondary/30">
+                    <Text className="text-[10px] font-black text-phaseText-muted uppercase tracking-[1px]">Rank</Text>
+                    <Text className="text-[10px] font-black text-phaseText-muted uppercase tracking-[1px] col-span-1">Student</Text>
+                    <Text className="text-[10px] font-black text-phaseText-muted uppercase tracking-[1px]">Marks</Text>
+                    <Text className="text-[10px] font-black text-phaseText-muted uppercase tracking-[1px]">Status</Text>
+                    <Text className="text-[10px] font-black text-phaseText-muted uppercase tracking-[1px]">Action</Text>
+                </Box>
+
+                <VStack>
+                    {sortedGrades.map((grade) => {
+                        const marks = grade.marks ?? 0;
+                        const isPassing = marks >= passingMarks;
+                        return (
+                        <Box
+                            key={grade.student_id}
+                            className="grid grid-cols-5 gap-4 p-6 border-bottom border-phase-border/10 items-center hover:bg-phase-interactive/5 transition-all"
+                        >
+                            <Text className="text-sm font-black text-phaseText-primary">#{grade.rank ?? '-'}</Text>
+                            <VStack className="col-span-1">
+                                <Text className="text-sm font-bold text-phaseText-primary">
+                                    {studentNames[grade.student_id] ?? 'Student'}
+                                </Text>
+                                {grade.feedback && (
+                                    <Text className="text-[11px] text-phaseText-muted mt-1 italic">
+                                        "{grade.feedback}"
+                                    </Text>
+                                )}
+                            </VStack>
+                            <Text className="text-sm font-black text-phaseText-primary">
+                                {marks}/{maxMarks}
+                            </Text>
+                            <VStack className="gap-1">
+                                <Text className={`text-[11px] font-black uppercase tracking-widest ${isPassing ? 'text-phase-success' : 'text-phase-error'}`}>
+                                    {isPassing ? 'Passing' : 'Failed'}
+                                </Text>
+                                <Text className={`text-[10px] font-bold ${grade.publication_state === 'published' ? 'text-phase-success' : 'text-phaseText-muted/50'}`}>
+                                    {grade.publication_state === 'published' ? 'Published' : 'Draft'}
+                                </Text>
+                            </VStack>
+                            <HStack className="gap-2">
+                                <SanctuaryButton
+                                    variant="secondary"
+                                    onPress={() => setGradingId(grade.student_id)}
+                                    className="h-9 px-3 flex-1 bg-phase-surface/40 border-phase-border/30"
+                                >
+                                    <Text className="text-[10px] font-black uppercase tracking-widest text-phaseText-primary text-center">
+                                        {grade.marks === null || grade.marks === undefined ? 'Grade' : 'Edit'}
+                                    </Text>
+                                </SanctuaryButton>
+                                {grade.id && (
+                                    <SanctuaryButton
+                                        variant="secondary"
+                                        onPress={() => publishGrade(grade.id)}
+                                        className={`h-9 px-3 flex-1 border-2 ${grade.publication_state === 'published' ? 'border-phase-success/40 bg-phase-success/5' : 'border-phase-interactive/40 bg-phase-interactive/5'}`}
+                                    >
+                                        <Text className={`text-[10px] font-black uppercase tracking-widest text-center ${grade.publication_state === 'published' ? 'text-phase-success' : 'text-phase-interactive'}`}>
+                                            {grade.publication_state === 'published' ? 'Republish' : 'Publish'}
+                                        </Text>
+                                    </SanctuaryButton>
+                                )}
+                            </HStack>
+                        </Box>
+                        );
+                    })}
+                </VStack>
+            </Box>
+
+            {gradingStudent && (
               <GradeModal
                 studentName={studentNames[gradingStudent.student_id] ?? 'Student'}
                 current={
@@ -586,18 +461,18 @@ export default function GradebookScreenWeb() {
                 onSave={handleSave}
                 onClose={() => setGradingId(null)}
               />
-            ) : null}
+            )}
 
-            {showSettings && gradingSettings ? (
+            {showSettings && gradingSettings && (
               <SettingsModal
                 current={gradingSettings}
                 onSave={updateSettings}
                 onClose={() => setShowSettings(false)}
               />
-            ) : null}
-          </>
+            )}
+          </VStack>
         )}
-      </div>
-    </div>
+      </VStack>
+    </ScrollView>
   );
 }

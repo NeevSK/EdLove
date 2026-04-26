@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
-    FlatList, 
     useWindowDimensions, 
     Platform
 } from 'react-native';
@@ -12,8 +11,8 @@ import {
     GlassCard,
     Heading,
     Pressable,
-    View,
-    Icon
+    Icon,
+    FlatList
 } from '@repo/ui';
 import { Sparkles, Megaphone, Users, Heart } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
@@ -103,7 +102,7 @@ export default function CommunityHearth({
     );
 
     return (
-        <View className="py-6">
+        <Box className="py-6">
             <VStack className="gap-6">
                 <HStack className="justify-between items-center px-6">
                     <VStack className="gap-0.5">
@@ -147,7 +146,7 @@ export default function CommunityHearth({
                                     <VStack className="flex-1 gap-0.5">
                                         <Text className="text-[10px] font-bold text-phase-interactive uppercase tracking-[2px]">
                                             {t('community.spotlight') || 'SPOTLIGHT'}
-                                        </Text>
+                                         </Text>
                                         <Text className="text-sm font-semibold text-ink leading-tight" numberOfLines={2}>
                                             {spotlightPost.content}
                                         </Text>
@@ -158,6 +157,6 @@ export default function CommunityHearth({
                     </Box>
                 )}
             </VStack>
-        </View>
+        </Box>
     );
 }

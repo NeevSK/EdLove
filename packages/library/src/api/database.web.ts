@@ -1,4 +1,4 @@
-import { Platform } from 'react-native';
+// Knowledge Database Manager (Web — IndexedDB)
 
 const DB_NAME = 'gurudevi_library';
 const STORE_NAME = 'knowledge_index';
@@ -30,7 +30,6 @@ export const knowledgeDB = {
     db: null as IDBDatabase | null,
 
     async init() {
-        if (Platform.OS !== 'web') return;
 
         return new Promise<void>((resolve, reject) => {
             const request = indexedDB.open(DB_NAME, DB_VERSION);

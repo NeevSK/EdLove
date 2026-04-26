@@ -43,8 +43,15 @@ export const FABProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setState((prev) => ({ ...prev, visible }));
   }, []);
 
+  const value = useMemo(() => ({ state, registerFAB, unregisterFAB, setVisibility }), [
+    state,
+    registerFAB,
+    unregisterFAB,
+    setVisibility,
+  ]);
+
   return (
-    <FABContext.Provider value={{ state, registerFAB, unregisterFAB, setVisibility }}>
+    <FABContext.Provider value={value}>
       {children}
     </FABContext.Provider>
   );

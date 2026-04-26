@@ -81,16 +81,74 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
   const { t } = useTranslation();
   const { accent, text, glow } = useTheme();
   const { showToast } = useSanctuaryToast();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [showEmailAuth, setShowEmailAuth] = useState(initialMode === 'login');
-  const [isSignUp, setIsSignUp] = useState(initialMode !== 'login');
-  const [showScanner, setShowScanner] = useState(false);
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [currentUser, setCurrentUser] = useState<any>(null);
-  const [showSyncModal, setShowSyncModal] = useState(false);
-  const [newUserId, setNewUserId] = useState<string>('');
+  // --- 1. STATE MACHINE (Mechanism) ---
+  interface AuthState {
+    email: string;
+    password: string;
+    loading: boolean;
+    showEmailAuth: boolean;
+    isSignUp: boolean;
+    showScanner: boolean;
+    errors: Record<string, string>;
+    currentUser: any;
+    showSyncModal: boolean;
+    newUserId: string;
+  }
+
+  const initialState: AuthState = {
+    email: '',
+    password: '',
+    loading: false,
+    showEmailAuth: initialMode === 'login',
+    isSignUp: initialMode !== 'login',
+    showScanner: false,
+    errors: {},
+    currentUser: null,
+    showSyncModal: false,
+    newUserId: '',
+  };
+
+  type AuthAction =
+    | { type: 'SET_FIELD', field: 'email' | 'password' | 'newUserId', value: string }
+    | { type: 'SET_LOADING', loading: boolean }
+    | { type: 'SET_MODE', isSignUp: boolean, showEmailAuth?: boolean }
+    | { type: 'SET_SCANNER', visible: boolean }
+    | { type: 'SET_ERRORS', errors: Record<string, string> }
+    | { type: 'SET_USER', user: any }
+    | { type: 'SET_SYNC_MODAL', isOpen: boolean }
+    | { type: 'RESET_ERRORS' };
+
+  function authReducer(state: AuthState, action: AuthAction): AuthState {
+    switch (action.type) {
+      case 'SET_FIELD': return { ...state, [action.field]: action.value };
+      case 'SET_LOADING': return { ...state, loading: action.loading };
+      case 'SET_MODE': return { 
+        ...state, 
+        isSignUp: action.isSignUp, 
+        showEmailAuth: action.showEmailAuth ?? state.showEmailAuth,
+        errors: {} 
+      };
+      case 'SET_SCANNER': return { ...state, showScanner: action.visible };
+      case 'SET_ERRORS': return { ...state, errors: action.errors };
+      case 'SET_USER': return { ...state, currentUser: action.user };
+      case 'SET_SYNC_MODAL': return { ...state, showSyncModal: action.isOpen };
+      case 'RESET_ERRORS': return { ...state, errors: {} };
+      default: return state;
+    }
+  }
+
+  const [{
+    email,
+    password,
+    loading,
+    showEmailAuth,
+    isSignUp,
+    showScanner,
+    errors,
+    currentUser,
+    showSyncModal,
+    newUserId
+  }, dispatch] = useReducer(authReducer, initialState);
   const syncCheckDoneRef = useRef(false);
   const passwordRef = useRef<any>(null);
 
@@ -99,7 +157,7 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
   useEffect(() => {
     identityAPI.getMyInternalId().then(async (internalId) => {
       if (!internalId) {
-        setCurrentUser(null);
+        dispatch({ type: 'SET_USER', user: null });
         return;
       }
       const { data } = await supabase
@@ -107,7 +165,7 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
         .select('id, email, is_anonymous, full_name')
         .eq('id', internalId)
         .maybeSingle();
-      if (data) setCurrentUser(data);
+      if (data) dispatch({ type: 'SET_USER', user: data });
     });
   }, []);
 
@@ -130,9 +188,7 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
     if (!errorCode) return;
 
     if (errorCode === 'identity_already_exists') {
-      // Switch to login tab and show a helpful message
-      setIsSignUp(false);
-      setShowEmailAuth(true);
+      dispatch({ type: 'SET_MODE', isSignUp: false, showEmailAuth: true });
       // Decode and surface the message after a short delay so AuthScreen has mounted
       setTimeout(() => {
         showToast({
@@ -180,8 +236,8 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
     });
   };
 
-  async function handleOAuthSignIn(provider: 'google') {
-    setLoading(true);
+  const handleOAuthSignIn = useCallback(async (provider: 'google') => {
+    dispatch({ type: 'SET_LOADING', loading: true });
     hapticLight();
 
     const redirectUrl = getRedirectUrl();
@@ -195,7 +251,6 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
           provider,
           options: { redirectTo: redirectUrl },
         });
-        if (error) {
           if (error.message.includes('already linked')) {
             showToast({
               message:
@@ -206,7 +261,7 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
           } else {
             handleAPIError(error);
           }
-          setLoading(false);
+          dispatch({ type: 'SET_LOADING', loading: false });
         }
         return;
       }
@@ -219,7 +274,7 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
       });
       if (error) {
         handleAPIError(error);
-        setLoading(false);
+        dispatch({ type: 'SET_LOADING', loading: false });
       }
       return;
     }
@@ -258,7 +313,7 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
       } else {
         handleAPIError(oauthError);
       }
-      setLoading(false);
+      dispatch({ type: 'SET_LOADING', loading: false });
       return;
     }
 
@@ -267,7 +322,7 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
         message: 'Could not reach Google sign-in. Please try again.',
         type: 'error',
       });
-      setLoading(false);
+      dispatch({ type: 'SET_LOADING', loading: false });
       return;
     }
 
@@ -279,7 +334,7 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
       const access_token = params.access_token || url.hash.match(/access_token=([^&]+)/)?.[1];
       const refresh_token = params.refresh_token || url.hash.match(/refresh_token=([^&]+)/)?.[1];
       if (!access_token || !refresh_token) {
-        setLoading(false);
+        dispatch({ type: 'SET_LOADING', loading: false });
         return;
       }
 
@@ -317,15 +372,15 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
         }
         const hasGuestData = await GuestDataSync.hasGuestData();
         if (isAnon && hasGuestData && userId) {
-          setNewUserId(userId);
-          setShowSyncModal(true);
+          dispatch({ type: 'SET_FIELD', field: 'newUserId', value: userId });
+          dispatch({ type: 'SET_SYNC_MODAL', isOpen: true });
         } else {
           if (onSuccess) onSuccess();
         }
       }
     }
-    setLoading(false);
-  }
+    dispatch({ type: 'SET_LOADING', loading: false });
+  }, [onSuccess, showToast, t]);
 
   async function handleAuth() {
     const { isValid, errors: valErrors } = validateForm(
@@ -337,11 +392,11 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
     );
 
     if (!isValid) {
-      setErrors(valErrors);
+      dispatch({ type: 'SET_ERRORS', errors: valErrors });
       return;
     }
 
-    setLoading(true);
+    dispatch({ type: 'SET_LOADING', loading: true });
     try {
       if (isSignUp) {
         const currentSession = await authAPI.getSession().catch(() => null);
@@ -360,8 +415,8 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
           // Check for guest data to sync
           const hasGuestData = await GuestDataSync.hasGuestData();
           if (hasGuestData && internalId) {
-            setNewUserId(internalId);
-            setShowSyncModal(true);
+            dispatch({ type: 'SET_FIELD', field: 'newUserId', value: internalId });
+            dispatch({ type: 'SET_SYNC_MODAL', isOpen: true });
           } else {
             if (onSuccess) onSuccess();
           }
@@ -382,8 +437,8 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
                   'You already have a sanctuary soul! Switching to login...',
                 type: 'success',
               });
-              setIsSignUp(false);
-              setLoading(false);
+              dispatch({ type: 'SET_MODE', isSignUp: false });
+              dispatch({ type: 'SET_LOADING', loading: false });
               return;
             }
             throw error;
@@ -428,9 +483,14 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
         type: 'error',
       });
     } finally {
-      setLoading(false);
+      dispatch({ type: 'SET_LOADING', loading: false });
     }
   }
+
+  const handleModeChange = useCallback((signUp: boolean) => {
+    hapticLight();
+    dispatch({ type: 'SET_MODE', isSignUp: signUp, showEmailAuth: false });
+  }, []);
 
   return (
     <ScreenWrapper scroll>
@@ -529,12 +589,7 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
                     style={{
                       backgroundColor: isSignUp ? accent.action : 'transparent',
                     }}
-                    onPress={() => {
-                      hapticLight();
-                      setIsSignUp(true);
-                      setShowEmailAuth(false);
-                      setErrors({});
-                    }}
+                    onPress={() => handleModeChange(true)}
                   >
                     <ButtonText
                       className="text-sm font-bold"
@@ -549,12 +604,7 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
                     style={{
                       backgroundColor: !isSignUp ? accent.action : 'transparent',
                     }}
-                    onPress={() => {
-                      hapticLight();
-                      setIsSignUp(false);
-                      setShowEmailAuth(false);
-                      setErrors({});
-                    }}
+                    onPress={() => handleModeChange(false)}
                   >
                     <ButtonText
                       className="text-sm font-bold"
@@ -598,7 +648,7 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
                       variant="outline"
                       onPress={() => {
                         hapticLight();
-                        setShowEmailAuth(true);
+                        dispatch({ type: 'SET_MODE', isSignUp, showEmailAuth: true });
                       }}
                       isDisabled={loading}
                       className="h-[54px] rounded-2xl border-phase-border bg-transparent"
@@ -634,7 +684,7 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
                           <InputField
                             placeholder={t('auth.email')}
                             value={email}
-                            onChangeText={setEmail}
+                            onChangeText={(text) => dispatch({ type: 'SET_FIELD', field: 'email', value: text })}
                             keyboardType="email-address"
                             autoComplete="email"
                             className="text-phase-primary"
@@ -649,7 +699,7 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
                             ref={passwordRef}
                             placeholder={t('auth.password')}
                             value={password}
-                            onChangeText={setPassword}
+                            onChangeText={(text) => dispatch({ type: 'SET_FIELD', field: 'password', value: text })}
                             secureTextEntry
                             autoComplete={isSignUp ? 'new-password' : 'current-password'}
                             className="text-phase-primary"
@@ -678,8 +728,7 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
                         <Button
                           variant="ghost"
                           onPress={() => {
-                            setShowEmailAuth(false);
-                            setErrors({});
+                            dispatch({ type: 'SET_MODE', isSignUp, showEmailAuth: false });
                           }}
                           className="self-center"
                         >
@@ -737,10 +786,10 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
       {Scanner && (
         <Scanner
           visible={showScanner}
-          onClose={() => setShowScanner(false)}
+          onClose={() => dispatch({ type: 'SET_SCANNER', visible: false })}
           onScan={async (data) => {
             hapticSuccess();
-            setShowScanner(false);
+            dispatch({ type: 'SET_SCANNER', visible: false });
             const userId = await identityAPI.getMyInternalId();
             if (!userId) {
               showToast({ message: 'Please sign in first to use QR codes', type: 'error' });
@@ -760,11 +809,11 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
         isOpen={showSyncModal}
         userId={newUserId}
         onSyncComplete={() => {
-          setShowSyncModal(false);
+          dispatch({ type: 'SET_SYNC_MODAL', isOpen: false });
           if (onSuccess) onSuccess();
         }}
         onClose={() => {
-          setShowSyncModal(false);
+          dispatch({ type: 'SET_SYNC_MODAL', isOpen: false });
         }}
       />
     </ScreenWrapper>

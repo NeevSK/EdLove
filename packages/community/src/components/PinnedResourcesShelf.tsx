@@ -1,6 +1,5 @@
 import React from 'react';
-import { ScrollView } from 'react-native';
-import { Box, HStack, VStack, Text, Icon, Pressable } from '@repo/ui';
+import { Box, HStack, VStack, Text, Icon, Pressable, ScrollView } from '@repo/ui';
 import { BookOpen, FileText, Link as LinkIcon, Film, Bookmark } from 'lucide-react-native';
 
 export interface PinnedResourcesShelfProps {

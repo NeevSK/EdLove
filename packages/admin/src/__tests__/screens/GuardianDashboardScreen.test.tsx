@@ -1,6 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react-native';
-import { Alert } from 'react-native';
 import { GuardianDashboardScreen } from '../../screens/GuardianDashboardScreen';
 import { guardianAPI } from '../../guardian/api';
 import type { GuardianDashboard, StudentOverview } from '../../guardian/types';
@@ -277,12 +276,11 @@ describe('GuardianDashboardScreen', () => {
   describe('Error Handling', () => {
     it('should show error message when API fails', async () => {
       mockedGuardianAPI.getGuardianDashboard.mockRejectedValue(new Error('API Error'));
-      const alertSpy = jest.spyOn(Alert, 'alert');
       
       render(<GuardianDashboardScreen {...mockProps} />);
       
       await waitFor(() => {
-        expect(alertSpy).toHaveBeenCalledWith('Error', 'Failed to load dashboard');
+        expect(screen.getByText('API Error')).toBeTruthy();
       });
     });
 

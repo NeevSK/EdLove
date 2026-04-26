@@ -1,7 +1,6 @@
 import { supabase } from '@repo/core';
 import { knowledgeDB, KnowledgeNodeIndex } from './database';
 import { LibraryResource } from '../types';
-import { Platform } from 'react-native';
 
 const SYNC_KEY = 'library_index_sync';
 

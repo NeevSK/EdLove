@@ -117,7 +117,9 @@ export default function AppSettingsScreen({ navigation }: any) {
     enableLivingTheme,
     setEnableLivingTheme,
   } = useEnvironment();
-  const { isDemoMode, setDemoMode, user } = useStore();
+  const isDemoMode = useStore(state => state.isDemoMode);
+  const setDemoMode = useStore(state => state.setDemoMode);
+  const user = useStore(state => state.user);
   const { showToast } = useSanctuaryToast();
 
   const [showThemeModal, setShowThemeModal] = useState(false);

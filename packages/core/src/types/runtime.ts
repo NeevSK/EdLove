@@ -40,6 +40,20 @@ export interface NetworkProvider {
   fetch(): Promise<{ isConnected: boolean | null; type: string; details?: any }>;
 }
 
+export interface ShareOptions {
+  title?: string;
+  message?: string;
+  url?: string;
+}
+
+export interface ShareProvider {
+  share(options: ShareOptions): Promise<void>;
+}
+
+export interface UIProvider {
+  setStatusBarHidden(hidden: boolean, animation?: 'none' | 'fade' | 'slide'): void;
+}
+
 export interface CoreRuntimeEnvironment {
   storage: StorageProvider;
   device: DeviceProvider;
@@ -47,4 +61,6 @@ export interface CoreRuntimeEnvironment {
   linking: LinkingProvider;
   location: LocationProvider;
   network: NetworkProvider;
+  share: ShareProvider;
+  ui: UIProvider;
 }

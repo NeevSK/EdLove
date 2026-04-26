@@ -114,8 +114,8 @@ export default function SanctuaryInput({
           numberOfLines={numberOfLines}
           accessibilityLabel={accessibilityLabel || label}
           accessibilityHint={accessibilityHint}
-          accessibilityLabelledBy={id ? `${id}-label` : undefined}
-          accessibilityDescribedBy={hasError && id ? `${id}-error` : undefined}
+          aria-labelledby={id ? `${id}-label` : undefined}
+          aria-describedby={hasError && id ? `${id}-error` : undefined}
         />
 
         {rightIcon && (

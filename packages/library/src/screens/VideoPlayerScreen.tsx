@@ -1,5 +1,5 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
-import { StyleSheet, StatusBar, View, LayoutChangeEvent, GestureResponderEvent } from 'react-native';
+import { coreRuntime } from '@repo/core';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import {
     Box,
@@ -11,10 +11,11 @@ import {
     SanctuaryButton,
     Pressable,
     formatTimeMs,
+    AnimatedView,
+    FadeIn
 } from '@repo/ui';
 import { useNavigation } from '@react-navigation/native';
 import { Play, Pause, RotateCcw, RotateCw, X } from 'lucide-react-native';
-import Animated, { FadeIn } from 'react-native-reanimated';
 
 interface VideoPlayerScreenProps {
     route: {
@@ -39,6 +40,15 @@ export default function VideoPlayerScreen({ route }: VideoPlayerScreenProps) {
     const [durationMillis, setDurationMillis] = useState(0);
     const [showControls, setShowControls] = useState(true);
     const [hasError, setHasError] = useState(false);
+
+    // Sync status bar visibility
+    useEffect(() => {
+        coreRuntime.ui.setStatusBarHidden(!showControls, 'fade');
+        return () => {
+             // Reset status bar when leaving
+             coreRuntime.ui.setStatusBarHidden(false, 'fade');
+        };
+    }, [showControls]);
 
     // Initialise expo-video player
     const player = useVideoPlayer(url, (player) => {
@@ -79,7 +89,7 @@ export default function VideoPlayerScreen({ route }: VideoPlayerScreenProps) {
         player.currentTime = (ratio * durationMillis) / 1000;
     }, [player, durationMillis]);
 
-    const progressWidth = durationMillis > 0 ? `${(positionMillis / durationMillis) * 100}%` : '0%';
+    const progressPercentage = durationMillis > 0 ? (positionMillis / durationMillis) * 100 : 0;
 
     if (hasError || !url) {
         return (
@@ -96,7 +106,6 @@ export default function VideoPlayerScreen({ route }: VideoPlayerScreenProps) {
 
     return (
         <Box className="flex-1 bg-black">
-            <StatusBar hidden={!showControls} />
 
             <Pressable
                 onPress={() => setShowControls(c => !c)}
@@ -105,14 +114,14 @@ export default function VideoPlayerScreen({ route }: VideoPlayerScreenProps) {
             >
                 <VideoView
                     player={player}
-                    style={StyleSheet.absoluteFill}
+                    className="absolute inset-0"
                     contentFit="contain"
                     nativeControls={false}
                 />
             </Pressable>
 
             {showControls && (
-                <Animated.View entering={FadeIn} style={StyleSheet.absoluteFill} pointerEvents="box-none">
+                <AnimatedView entering={FadeIn} className="absolute inset-0" pointerEvents="box-none">
                     <Box className="flex-1 bg-black/40 p-4">
                         {/* Header */}
                         <HStack className="justify-between items-center">
@@ -173,18 +182,21 @@ export default function VideoPlayerScreen({ route }: VideoPlayerScreenProps) {
                         {/* Footer: progress + time */}
                         <VStack className="gap-2">
                             <Pressable
-                                onPress={(e: GestureResponderEvent) => {
-                                    const { locationX } = (e as any).nativeEvent;
+                                onPress={(e: any) => {
+                                    const { locationX } = e.nativeEvent;
                                     handleProgressTap(locationX, progressBarWidth.current);
                                 }}
-                                onLayout={(e: LayoutChangeEvent) => {
+                                onLayout={(e: any) => {
                                     progressBarWidth.current = e.nativeEvent.layout.width;
                                 }}
                                 accessibilityLabel="Seek in video"
                             >
-                                <View style={styles.progressTrack}>
-                                    <View style={[styles.progressFill, { width: progressWidth as any }]} />
-                                </View>
+                                <Box className="h-1 w-full bg-white/20 rounded-sm overflow-hidden">
+                                    <Box 
+                                        className="h-1 bg-phase-accent rounded-sm" 
+                                        style={{ width: `${progressPercentage}%` }} 
+                                    />
+                                </Box>
                             </Pressable>
 
                             <HStack className="justify-between items-center">
@@ -194,23 +206,8 @@ export default function VideoPlayerScreen({ route }: VideoPlayerScreenProps) {
                             </HStack>
                         </VStack>
                     </Box>
-                </Animated.View>
+                </AnimatedView>
             )}
         </Box>
     );
 }
-
-const styles = StyleSheet.create({
-    progressTrack: {
-        height: 4,
-        width: '100%',
-        backgroundColor: 'rgba(255,255,255,0.2)',
-        borderRadius: 2,
-        overflow: 'hidden',
-    },
-    progressFill: {
-        height: 4,
-        backgroundColor: Theme.colors.sanctuarySaffron,
-        borderRadius: 2,
-    },
-});

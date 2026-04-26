@@ -14,6 +14,8 @@ import {
     Pressable,
     Card,
     Center,
+    Spinner,
+    RefreshControl
 } from '@repo/ui';
 import {
     ArrowLeft,
@@ -24,7 +26,6 @@ import {
     Clock3
 } from 'lucide-react-native';
 import { api, StudentObservation, AttendanceRecord, StudentGrade, StudentLongitudinalEvent, useTemporalStore } from '@repo/core';
-import { ActivityIndicator, RefreshControl } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 
 export default function StudentProfileScreen() {
@@ -135,72 +136,71 @@ export default function StudentProfileScreen() {
     const renderOverview = () => (
         <VStack className="gap-lg p-md">
             <HStack className="gap-md">
-                <Card className="flex-1 p-md" style={{ backgroundColor: colors.secondary }}>
+                <Card className="flex-1 p-md bg-phase-surface-secondary">
                     <VStack className="items-center gap-xs">
                         <Calendar size={20} color={Theme.colors.sanctuarySaffron} />
-                        <Heading className="text-xl" style={{ color: colors.text }}>
+                        <Heading className="text-xl text-phase-text-primary">
                             {attendanceRate}%
                         </Heading>
-                        <Text className="text-[10px]" style={{ color: colors.textSecondary }}>{t('student.attendance') || 'Attendance'}</Text>
+                        <Text className="text-[10px] text-phase-text-secondary">{t('student.attendance') || 'Attendance'}</Text>
                     </VStack>
                 </Card>
-                <Card className="flex-1 p-md" style={{ backgroundColor: colors.secondary }}>
+                <Card className="flex-1 p-md bg-phase-surface-secondary">
                     <VStack className="items-center gap-xs">
                         <Trophy size={20} color={Theme.colors.amberGlow} />
-                        <Heading className="text-xl" style={{ color: colors.text }}>
+                        <Heading className="text-xl text-phase-text-primary">
                             {latestGrade?.grade ? latestGrade.grade : 'N/A'}
                         </Heading>
-                        <Text className="text-[10px]" style={{ color: colors.textSecondary }}>{t('student.currentGrade') || 'Current Grade'}</Text>
+                        <Text className="text-[10px] text-phase-text-secondary">{t('student.currentGrade') || 'Current Grade'}</Text>
                     </VStack>
                 </Card>
             </HStack>
             <HStack className="gap-md">
-                <Card className="flex-1 p-md" style={{ backgroundColor: colors.secondary }}>
+                <Card className="flex-1 p-md bg-phase-surface-secondary">
                     <VStack className="items-center gap-xs">
                         <Clock3 size={20} color={Theme.colors.gurudeviBlue} />
-                        <Heading className="text-xl" style={{ color: colors.text }}>
+                        <Heading className="text-xl text-phase-text-primary">
                             {snapshotRecords.length}
                         </Heading>
-                        <Text className="text-[10px]" style={{ color: colors.textSecondary }}>
+                        <Text className="text-[10px] text-phase-text-secondary">
                             {t('student.snapshotRecords') || 'As-of Records'}
                         </Text>
                     </VStack>
                 </Card>
-                <Card className="flex-1 p-md" style={{ backgroundColor: colors.secondary }}>
+                <Card className="flex-1 p-md bg-phase-surface-secondary">
                     <VStack className="items-center gap-xs">
                         <ShieldCheck size={20} color={Theme.colors.sageGreen} />
-                        <Heading className="text-xl" style={{ color: colors.text }}>
+                        <Heading className="text-xl text-phase-text-primary">
                             {timeline.length}
                         </Heading>
-                        <Text className="text-[10px]" style={{ color: colors.textSecondary }}>
+                        <Text className="text-[10px] text-phase-text-secondary">
                             {t('student.timelineEvents') || 'Timeline Events'}
                         </Text>
                     </VStack>
                 </Card>
             </HStack>
             <VStack className="gap-sm">
-                <Heading className="text-md" style={{ color: colors.text }}>
+                <Heading size="sm" className="text-phase-text-primary">
                     {t('student.recentActivity') || 'Recent Activity'}
                 </Heading>
                 {latestTimelineEvents.map((event) => (
                     <Box
                         key={event.id}
-                        className="p-md rounded-comfortable border-l-[4px]"
+                        className="p-md rounded-comfortable border-l-[4px] bg-phase-surface-secondary"
                         style={{
-                            backgroundColor: colors.secondary,
-                            borderLeftColor: event.entity_type === 'grade' ? Theme.colors.amberGlow : Theme.colors.border,
+                            borderLeftColor: event.entity_type === 'grade' ? Theme.colors.amberGlow : colors.border,
                         }}
                     >
-                        <Text className="text-sm" style={{ color: colors.text }}>
+                        <Text className="text-sm text-phase-text-primary">
                             {formatTimelineTitle(event)}
                         </Text>
-                        <Text className="text-[10px] mt-1" style={{ color: colors.textTertiary }}>
+                        <Text className="text-[10px] mt-1 text-phase-text-tertiary">
                             {new Date(formatTimelineMeta(event)).toLocaleDateString()}
                         </Text>
                     </Box>
                 ))}
                 {latestTimelineEvents.length === 0 && (
-                    <Text className="italic text-center p-5" style={{ color: colors.textTertiary }}>
+                    <Text className="italic text-center p-5 text-phase-text-tertiary">
                         {t('student.noTimelineEvents') || 'No longitudinal events recorded yet.'}
                     </Text>
                 )}
@@ -211,46 +211,46 @@ export default function StudentProfileScreen() {
     const renderTimeline = () => (
         <VStack className="gap-md p-md">
             <HStack className="gap-md">
-                <Card className="flex-1 p-md" style={{ backgroundColor: colors.secondary }}>
-                    <Text className="text-[11px]" style={{ color: colors.textSecondary }}>{'Attendance'}</Text>
-                    <Heading className="text-lg" style={{ color: colors.text }}>{timelineSummary.attendanceEvents}</Heading>
+                <Card className="flex-1 p-md bg-phase-surface-secondary">
+                    <Text className="text-[11px] text-phase-text-secondary">{'Attendance'}</Text>
+                    <Heading size="md" className="text-phase-text-primary">{timelineSummary.attendanceEvents}</Heading>
                 </Card>
-                <Card className="flex-1 p-md" style={{ backgroundColor: colors.secondary }}>
-                    <Text className="text-[11px]" style={{ color: colors.textSecondary }}>{'Grades'}</Text>
-                    <Heading className="text-lg" style={{ color: colors.text }}>{timelineSummary.gradeEvents}</Heading>
+                <Card className="flex-1 p-md bg-phase-surface-secondary">
+                    <Text className="text-[11px] text-phase-text-secondary">{'Grades'}</Text>
+                    <Heading size="md" className="text-phase-text-primary">{timelineSummary.gradeEvents}</Heading>
                 </Card>
-                <Card className="flex-1 p-md" style={{ backgroundColor: colors.secondary }}>
-                    <Text className="text-[11px]" style={{ color: colors.textSecondary }}>{'Observations'}</Text>
-                    <Heading className="text-lg" style={{ color: colors.text }}>{timelineSummary.observationEvents}</Heading>
+                <Card className="flex-1 p-md bg-phase-surface-secondary">
+                    <Text className="text-[11px] text-phase-text-secondary">{'Observations'}</Text>
+                    <Heading size="md" className="text-phase-text-primary">{timelineSummary.observationEvents}</Heading>
                 </Card>
             </HStack>
             <HStack className="gap-md">
-                <Card className="flex-1 p-md" style={{ backgroundColor: colors.secondary }}>
-                    <Text className="text-[11px]" style={{ color: colors.textSecondary }}>{'Submissions'}</Text>
-                    <Heading className="text-lg" style={{ color: colors.text }}>{timelineSummary.submissionEvents}</Heading>
+                <Card className="flex-1 p-md bg-phase-surface-secondary">
+                    <Text className="text-[11px] text-phase-text-secondary">{'Submissions'}</Text>
+                    <Heading size="md" className="text-phase-text-primary">{timelineSummary.submissionEvents}</Heading>
                 </Card>
-                <Card className="flex-1 p-md" style={{ backgroundColor: colors.secondary }}>
-                    <Text className="text-[11px]" style={{ color: colors.textSecondary }}>{'Notes'}</Text>
-                    <Heading className="text-lg" style={{ color: colors.text }}>{timelineSummary.studyNoteEvents}</Heading>
+                <Card className="flex-1 p-md bg-phase-surface-secondary">
+                    <Text className="text-[11px] text-phase-text-secondary">{'Notes'}</Text>
+                    <Heading size="md" className="text-phase-text-primary">{timelineSummary.studyNoteEvents}</Heading>
                 </Card>
             </HStack>
             {timeline.length === 0 ? (
-                <Text className="italic text-center p-10" style={{ color: colors.textTertiary }}>
+                <Text className="italic text-center p-10 text-phase-text-tertiary">
                     {t('student.noTimeline') || 'No timeline data available for this student yet.'}
                 </Text>
             ) : (
                 timeline.map((event) => (
-                    <Box key={event.id} className="p-md rounded-comfortable" style={{ backgroundColor: colors.secondary }}>
+                    <Box key={event.id} className="p-md rounded-comfortable bg-phase-surface-secondary">
                         <HStack className="justify-between items-center mb-1.5">
-                            <Text className="font-bold capitalize" style={{ color: colors.text }}>
+                            <Text className="font-bold capitalize text-phase-text-primary">
                                 {formatTimelineTitle(event)}
                             </Text>
-                            <Text className="text-[10px]" style={{ color: colors.textTertiary }}>
+                            <Text className="text-[10px] text-phase-text-tertiary">
                                 {new Date(event.recorded_at).toLocaleDateString()}
                             </Text>
                         </HStack>
-                        <Text className="text-xs" style={{ color: colors.textSecondary }}>
-                            {event.snapshot ? JSON.stringify(event.snapshot).slice(0, 100) + '...' : 'Details noted in history'}
+                        <Text className="text-xs text-phase-text-secondary">
+                            {event.snapshot ? JSON.stringify(event.snapshot).slice(0, 100) + '...' : t('student.detailsInHistory') || 'Details noted in history'}
                         </Text>
                     </Box>
                 ))
@@ -261,18 +261,18 @@ export default function StudentProfileScreen() {
     const renderAcademics = () => (
         <VStack className="gap-md p-md">
             {grades.length === 0 && (
-                <Text className="italic text-center p-10" style={{ color: colors.textTertiary }}>
+                <Text className="italic text-center p-10 text-phase-text-tertiary">
                     {t('student.noGrades') || 'No academic records found.'}
                 </Text>
             )}
             {grades.map((grade) => (
-                <HStack key={grade.id} className="justify-between items-center p-md rounded-comfortable" style={{ backgroundColor: colors.secondary }}>
+                <HStack key={grade.id} className="justify-between items-center p-md rounded-comfortable bg-phase-surface-secondary">
                     <VStack>
-                        <Text className="font-bold" style={{ color: colors.text }}>{t('common.assignment') || 'Assignment'} {grade.assignment_id?.slice(0, 4)}</Text>
-                        <Text className="text-xs" style={{ color: colors.textSecondary }}>{grade.created_at ? new Date(grade.created_at).toLocaleDateString() : 'N/A'}</Text>
+                        <Text className="font-bold text-phase-text-primary">{t('common.assignment') || 'Assignment'} {grade.assignment_id?.slice(0, 4)}</Text>
+                        <Text className="text-xs text-phase-text-secondary">{grade.created_at ? new Date(grade.created_at).toLocaleDateString() : 'N/A'}</Text>
                     </VStack>
-                    <Box className="px-3 py-1 rounded-tight" style={{ backgroundColor: colors.tertiary }}>
-                        <Text className="font-bold" style={{ color: Theme.colors.amberGlow }}>{grade.marks}%</Text>
+                    <Box className="px-3 py-1 rounded-tight bg-phase-surface">
+                        <Text className="font-bold text-sanctuarySaffron">{grade.marks}%</Text>
                     </Box>
                 </HStack>
             ))}
@@ -282,18 +282,18 @@ export default function StudentProfileScreen() {
     const renderObservations = () => (
         <VStack className="gap-md p-md">
             <HStack className="justify-between items-center">
-                <Heading className="text-md" style={{ color: colors.text }}>
+                <Heading size="sm" className="text-phase-text-primary">
                     {t('student.governanceNotes') || 'Professional Governance'}
                 </Heading>
                 <Lock size={16} color={colors.textTertiary} />
             </HStack>
             {observations.length === 0 && (
-                <Text className="italic text-center p-10" style={{ color: colors.textTertiary }}>
+                <Text className="italic text-center p-10 text-phase-text-tertiary">
                     {t('student.noNotes') || 'No professional notes recorded.'}
                 </Text>
             )}
             {observations.map((obs) => (
-                <Box key={obs.id} className="p-md rounded-comfortable" style={{ backgroundColor: colors.secondary }}>
+                <Box key={obs.id} className="p-md rounded-comfortable bg-phase-surface-secondary">
                     <HStack className="justify-between mb-2">
                         <Box className="px-2 py-0.5 rounded" style={{ backgroundColor: obs.observation_type === 'positive' ? 'rgba(255,184,0,0.1)' : colors.tertiary }}>
                             <Text className="text-[10px] font-bold uppercase" style={{ color: obs.observation_type === 'positive' ? Theme.colors.sanctuarySaffron : colors.textSecondary }}>
@@ -301,9 +301,9 @@ export default function StudentProfileScreen() {
                             </Text>
                         </Box>
                     </HStack>
-                    <Text style={{ color: colors.text }}>{obs.content}</Text>
+                    <Text className="text-phase-text-primary">{obs.content}</Text>
                     <HStack className="gap-2 mt-2 items-center">
-                        <Text className="text-[10px]" style={{ color: colors.textTertiary }}>{obs.created_at ? new Date(obs.created_at).toLocaleDateString() : 'N/A'}</Text>
+                        <Text className="text-[10px] text-phase-text-tertiary">{obs.created_at ? new Date(obs.created_at).toLocaleDateString() : 'N/A'}</Text>
                     </HStack>
                 </Box>
             ))}
@@ -311,15 +311,15 @@ export default function StudentProfileScreen() {
     );
 
     return (
-        <VStack className="flex-1" style={{ backgroundColor: colors.primary }}>
-            <Box className="p-md pt-xl border-b" style={{ backgroundColor: colors.secondary, borderBottomColor: colors.border }}>
+        <VStack className="flex-1 bg-phase-canvas">
+            <Box className="p-md pt-xl border-b border-phase-border bg-phase-surface">
                 <HStack className="items-center gap-md mb-lg">
                     <Pressable onPress={() => navigation.goBack()} onPressIn={() => hapticMedium()}>
-                        <Icon as={ArrowLeft} size="xl" color={colors.text} />
+                        <Icon as={ArrowLeft} size="xl" className="text-phase-text-primary" />
                     </Pressable>
                     <VStack>
-                        <Heading className="text-lg" style={{ color: colors.text }}>{studentName}</Heading>
-                        <Text className="text-xs" style={{ color: colors.textSecondary }}>Classroom ID: {classroomId?.slice(0, 8)}</Text>
+                        <Heading size="md" className="text-phase-text-primary">{studentName}</Heading>
+                        <Text className="text-xs text-phase-text-secondary">Classroom ID: {classroomId?.slice(0, 8)}</Text>
                     </VStack>
                 </HStack>
 
@@ -338,11 +338,7 @@ export default function StudentProfileScreen() {
                             }}
                         >
                             <Text 
-                                className="text-sm capitalize"
-                                style={{
-                                    color: activeTab === tab ? colors.text : colors.textSecondary,
-                                    fontWeight: activeTab === tab ? 'bold' : 'normal',
-                                }}
+                                className={`text-sm capitalize ${activeTab === tab ? 'text-phase-text-primary font-bold' : 'text-phase-text-secondary font-normal'}`}
                             >
                                 {t(`common.${tab}`) || tab}
                             </Text>
@@ -357,7 +353,7 @@ export default function StudentProfileScreen() {
             >
                 {isLoading ? (
                     <Center className="p-10">
-                        <ActivityIndicator color={Theme.colors.sanctuarySaffron} />
+                        <Spinner size="large" color={Theme.colors.sanctuarySaffron} />
                     </Center>
                 ) : (
                     <>

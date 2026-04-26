@@ -6,9 +6,6 @@
 
 import React from 'react';
 import {
-    Platform,
-} from 'react-native';
-import {
     BookOpen,
     Video,
     File,
@@ -25,6 +22,9 @@ import {
     Bookmark,
 } from 'lucide-react-native';
 import { Theme, useTheme, Box, VStack, HStack, Text, Pressable, ImageBackground } from '@repo/ui';
+import { coreRuntime } from '@repo/core';
+
+import type { LibraryResource } from '../types';
 
 type ThumbnailType =
     | 'lesson' | 'worksheet' | 'guide' | 'reading' | 'pedagogy'
@@ -51,14 +51,21 @@ const TYPE_CONFIG: Record<ThumbnailType, { icon: React.ComponentType<{ size?: nu
     other: { icon: BookOpen, color: Theme.colors.starlightGray, label: 'File' },
 };
 
-function resolveType(type: string): ThumbnailType {
-    const value = type?.toLowerCase();
+function resolveType(type: string | undefined): ThumbnailType {
+    const value = type?.toLowerCase() || '';
     return value in TYPE_CONFIG ? (value as ThumbnailType) : 'other';
 }
 
+const getYoutubeThumbnail = (url?: string) => {
+    if (!url) return undefined;
+    const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&?]{11})/);
+    return match ? `https://img.youtube.com/vi/${match[1]}/mqdefault.jpg` : undefined;
+};
+
 export interface LibraryThumbnailCardProps {
-    title: string;
-    type: string;
+    resource?: LibraryResource;
+    title?: string;
+    type?: string;
     subject?: string;
     thumbnailUrl?: string;
     endorsements?: number;
@@ -66,37 +73,66 @@ export interface LibraryThumbnailCardProps {
     isLocked?: boolean;
     has_bookmarked?: boolean;
     copyrightNotice?: string;
-    onPress: () => void;
-    onLongPress?: () => void;
-    onBookmarkToggle?: () => void | Promise<void>;
+    onPress: (resource: LibraryResource) => void;
+    onLongPress?: (resource: LibraryResource) => void;
+    onBookmarkToggle?: (resource: LibraryResource) => void | Promise<void>;
     href?: string;
     target?: '_blank' | '_self';
 }
 
-export function LibraryThumbnailCard({
-    title,
-    type,
-    subject,
-    thumbnailUrl,
-    endorsements = 0,
-    verified = false,
-    copyrightNotice,
-    has_bookmarked = false,
+export const LibraryThumbnailCard = React.memo(({
+    resource,
+    title: manualTitle,
+    type: manualType,
+    subject: manualSubject,
+    thumbnailUrl: manualThumbnail,
+    endorsements: manualEndorsements = 0,
+    verified: manualVerified = false,
+    copyrightNotice: manualCopyright,
+    has_bookmarked: manualHasBookmarked = false,
     onBookmarkToggle,
     onPress,
     onLongPress,
     href,
     target = '_self',
-}: LibraryThumbnailCardProps) {
+}: LibraryThumbnailCardProps) => {
     const theme = useTheme();
+
+    // Derivation Logic
+    const title = resource?.title ?? manualTitle ?? '';
+    const type = resource?.type ?? manualType ?? 'other';
+    const subject = resource?.subjects?.[0] ?? manualSubject;
+    const verified = resource?.verified ?? manualVerified;
+    const endorsements = resource?.endorsements ?? manualEndorsements;
+    const has_bookmarked = resource?.has_bookmarked ?? manualHasBookmarked;
+    const copyrightNotice = resource?.copyright_notice ?? manualCopyright;
+    
+    const thumbnailUrl = resource 
+        ? (resource.media?.url || (resource as any).thumbnail_url || (resource.type === 'video' || resource.type === 'movie_trailer' ? getYoutubeThumbnail(resource.url) : undefined))
+        : manualThumbnail;
+
     const cfg = TYPE_CONFIG[resolveType(type)];
     const Icon = cfg.icon;
+
+    // Stable Handlers
+    const handlePress = React.useCallback(() => {
+        if (resource) onPress(resource);
+    }, [resource, onPress]);
+
+    const handleLongPress = React.useCallback(() => {
+        if (resource && onLongPress) onLongPress(resource);
+    }, [resource, onLongPress]);
+
+    const handleBookmarkToggle = React.useCallback((event: any) => {
+        if (coreRuntime.device.getMetadata().platform === 'web') event.stopPropagation();
+        if (resource && onBookmarkToggle) void onBookmarkToggle(resource);
+    }, [resource, onBookmarkToggle]);
 
     return (
         <Box className="w-[148px] mr-4 mb-4">
             <Pressable
-                onPress={onPress}
-                onLongPress={onLongPress}
+                onPress={handlePress}
+                onLongPress={handleLongPress}
                 className="w-[148px] h-[192px] rounded-3xl overflow-hidden bg-phase-surface border border-phase-border shadow-sm active:opacity-90 active:scale-[0.98]"
                 accessibilityRole={href ? 'link' : 'button'}
                 // @ts-ignore
@@ -142,10 +178,7 @@ export function LibraryThumbnailCard({
                             <HStack className="gap-1 items-center">
                                 {onBookmarkToggle && (
                                     <Pressable
-                                        onPress={(event) => {
-                                            if (Platform.OS === 'web') (event as any).stopPropagation();
-                                            void onBookmarkToggle();
-                                        }}
+                                        onPress={handleBookmarkToggle}
                                         className="p-1 rounded-full bg-white/90 shadow-sm"
                                         accessibilityRole="button"
                                     >
@@ -202,6 +235,6 @@ export function LibraryThumbnailCard({
             </Pressable>
         </Box>
     );
-}
+});
 
 export default LibraryThumbnailCard;

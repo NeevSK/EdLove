@@ -9,9 +9,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-    FlatList,
-} from 'react-native';
-import {
     Box,
     VStack,
     HStack,
@@ -23,11 +20,12 @@ import {
     InputField,
     Spinner,
     Icon,
-    FadeInDown
+    FadeInDown,
+    FlatList,
+    AnimatedView
 } from '@repo/ui';
 import { Send, MessageSquare } from 'lucide-react-native';
 import { supabase, useStore } from '@repo/core';
-import Animated from 'react-native-reanimated';
 
 export interface ChatMessage {
     id: string;
@@ -225,7 +223,7 @@ export default function BaseChatScreen({
                         contentContainerStyle={{ paddingVertical: 20, flexGrow: 1, justifyContent: messages.length === 0 ? 'center' : 'flex-start' }}
                         showsVerticalScrollIndicator={false}
                         ListEmptyComponent={
-                            <Animated.View entering={FadeInDown.duration(800).springify()}>
+                            <AnimatedView entering={FadeInDown.duration(800).springify()}>
                                 <Box className="items-center px-10">
                                     <Box className="w-16 h-16 rounded-full bg-ink/5 items-center justify-center mb-4">
                                         <Icon as={MessageSquare} size="lg" className="text-ink/20" />
@@ -234,7 +232,7 @@ export default function BaseChatScreen({
                                         {t('chat.empty', 'A quiet resonance awaits. Be the first to speak in this sanctuary.')}
                                     </Text>
                                 </Box>
-                            </Animated.View>
+                            </AnimatedView>
                         }
                     />
                 )}

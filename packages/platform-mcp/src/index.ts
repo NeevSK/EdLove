@@ -12,6 +12,7 @@ import { fileURLToPath } from "url";
 import { AuditService } from "./services/AuditService.js";
 import { DiscoveryService } from "./services/DiscoveryService.js";
 import { MaintenanceService } from "./services/MaintenanceService.js";
+import { ScoutService } from "./services/ScoutService.js";
 import { ROOT_DIR } from "./utils/constants.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -27,6 +28,7 @@ class PolymathPlatformServer {
   private audit: AuditService;
   private discovery: DiscoveryService;
   private maintenance: MaintenanceService;
+  private scout: ScoutService;
 
   constructor() {
     this.server = new Server(
@@ -37,14 +39,15 @@ class PolymathPlatformServer {
     this.audit = new AuditService();
     this.discovery = new DiscoveryService();
     this.maintenance = new MaintenanceService();
+    this.scout = new ScoutService();
 
     this.setupHandlers();
     this.server.onerror = (error) => console.error("[MCP Error]", error);
   }
 
   private setupHandlers() {
-    this.server.setRequestHandler(ListToolsRequestSchema, async () => ({
-      tools: [
+    this.server.setRequestHandler(ListToolsRequestSchema, async () => {
+      const allTools = [
         {
           name: "audit_monorepo_hygiene",
           description: "Runs corporate-scale hygiene checks (circular deps, unused code, boundary violations).",
@@ -78,16 +81,31 @@ class PolymathPlatformServer {
         },
         {
           name: 'grep_code',
-          description: 'Global structural code search with smart filtering. Powered by ripgrep (rg) for extreme speed.',
+          description: 'Global structural code search with smart filtering. Powered by ripgrep (rg) for extreme speed. Supports context and smart summaries.',
           inputSchema: {
             type: 'object',
             properties: {
               query: { type: 'string', description: 'Search term or pattern.' },
-              isRegex: { type: 'boolean' },
-              include: { type: 'string' },
-              target: { type: 'string' },
-              includeNodeModules: { type: 'boolean' },
-              summaryOnly: { type: 'boolean' },
+              target: { type: 'string', description: 'Target directory or package alias (e.g. @repo/ui).' },
+              context: { type: 'number', description: 'Number of context lines (before/after) to show. Default 0.' },
+              fileType: { type: 'string', description: 'Filter by file type (e.g. ts, tsx, css, md).' },
+              isRegex: { type: 'boolean', description: 'Treat query as a regular expression.' },
+              include: { type: 'string', description: 'Glob pattern for files to include.' },
+              includeNodeModules: { type: 'boolean', description: 'Search inside node_modules (default false).' },
+              summaryOnly: { type: 'boolean', description: 'Return only file counts instead of full results.' },
+              richText: { type: 'boolean', description: 'Output with enhanced formatting (bat-style) if possible.' },
+            },
+            required: ['query'],
+          },
+        },
+        {
+          name: 'sovereign_scout',
+          description: 'Orchestrated discovery intelligence. Combines file scouts, doc mining, and codebase heatmap into a single "Intelligence Dossier". Best for high-level understanding of any term.',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              query: { type: 'string', description: 'Search term or feature keyword.' },
+              target: { type: 'string', description: 'Target directory or package alias.' },
             },
             required: ['query'],
           },
@@ -238,12 +256,13 @@ class PolymathPlatformServer {
         },
         {
           name: 'structural_search',
-          description: "GritQL semantic pattern matching.",
+          description: "GritQL semantic pattern matching. Best for finding code structures like 'import { $X } from \"$Y\"'.",
           inputSchema: {
             type: 'object',
             properties: {
-              query: { type: 'string' },
-              target: { type: 'string' },
+              query: { type: 'string', description: 'GritQL or structural pattern.' },
+              target: { type: 'string', description: 'Target directory or package alias.' },
+              include: { type: 'string', description: 'Glob pattern for files to include.' },
             },
             required: ['query'],
           },
@@ -439,13 +458,13 @@ class PolymathPlatformServer {
           name: "shiny_refactor",
           description: "Intuitive and fast project-wide find and replace. Powered by sd.",
           inputSchema: {
-            type: "object",
+            type: 'object',
             properties: {
-              find: { type: "string" },
-              replace: { type: "string" },
-              target: { type: "string" }
+              find: { type: 'string' },
+              replace: { type: 'string' },
+              target: { type: 'string' }
             },
-            required: ["find", "replace"]
+            required: ['find', 'replace']
           },
         },
         {
@@ -458,8 +477,34 @@ class PolymathPlatformServer {
             }
           },
         },
-      ],
-    }));
+      ];
+
+      if (process.env.MCP_MODE === "LEAN") {
+        const highValueToolNames = [
+          "grep_code",
+          "sovereign_scout",
+          "structural_search",
+          "shiny_view",
+          "shiny_find",
+          "audit_monorepo_hygiene",
+          "audit_legacy_ui",
+          "check_package_types",
+          "map_architecture",
+          "get_inventory",
+          "lint_package",
+          "create_checkpoint",
+          "audit_package_architecture",
+          "shiny_refactor",
+          "heal_codebase"
+        ];
+        return {
+          tools: allTools.filter(t => highValueToolNames.includes(t.name))
+        };
+      }
+
+      return { tools: allTools };
+    });
+
 
 
 
@@ -481,6 +526,7 @@ class PolymathPlatformServer {
 
           // Discovery Domain
           case 'grep_code': return this.discovery.handleGrepCode(args as any);
+          case 'sovereign_scout': return this.scout.handleSovereignScout(args as any);
           case 'search_docs': return this.discovery.handleSearchDocs(args as any);
           case 'get_component_api': return this.discovery.handleGetComponentApi(args as any);
           case 'get_inventory': return this.discovery.handleGetInventory(args as any);

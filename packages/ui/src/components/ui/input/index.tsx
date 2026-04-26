@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { createContext, useContext, useState, useMemo } from 'react';
 import {
   View,
   TextInput,
@@ -7,6 +7,29 @@ import {
   type TextInputProps,
   type PressableProps,
 } from 'react-native';
+import { cssInterop } from 'nativewind';
+
+cssInterop(View, { className: 'style' });
+cssInterop(TextInput, { className: 'style' });
+cssInterop(Pressable, { className: 'style' });
+
+// --- Context ---
+interface InputContextType {
+  isDisabled?: boolean;
+  isInvalid?: boolean;
+  isFocused: boolean;
+  setIsFocused: (focused: boolean) => void;
+}
+
+const InputContext = createContext<InputContextType | undefined>(undefined);
+
+function useInput() {
+  const context = useContext(InputContext);
+  if (!context) throw new Error('useInput must be used within an Input component');
+  return context;
+}
+
+// --- Components ---
 
 export interface IInputProps extends ViewProps {
   className?: string;
@@ -15,19 +38,37 @@ export interface IInputProps extends ViewProps {
 }
 
 const Input = React.forwardRef<View, IInputProps>(
-  ({ className, isDisabled, isInvalid, ...props }, ref) => (
-    <View
-      {...props}
-      ref={ref}
-      accessibilityState={{
-        disabled: !!isDisabled,
-      }}
-      className={`flex-row items-center border rounded-xl px-3 min-h-[48px] bg-phase-canvas
-        ${isInvalid ? 'border-phase-danger' : 'border-phase-interactive/20'} 
-        ${isDisabled ? 'opacity-40' : ''} 
-        ${className || ''}`}
-    />
-  ),
+  ({ className, isDisabled, isInvalid, children, ...props }, ref) => {
+    const [isFocused, setIsFocused] = useState(false);
+
+    const contextValue = useMemo(
+      () => ({
+        isDisabled,
+        isInvalid,
+        isFocused,
+        setIsFocused,
+      }),
+      [isDisabled, isInvalid, isFocused, setIsFocused],
+    );
+
+    return (
+      <InputContext.Provider value={contextValue}>
+        <View
+          {...props}
+          ref={ref}
+          accessibilityState={{
+            disabled: !!isDisabled,
+          }}
+          className={`flex-row items-center border rounded-xl px-3 min-h-[48px] bg-phase-canvas transition-colors duration-200
+            ${isInvalid ? 'border-phase-danger' : isFocused ? 'border-phase-accent ring-2 ring-phase-accent/20' : 'border-phase-interactive/20'} 
+            ${isDisabled ? 'opacity-40' : ''} 
+            ${className || ''}`}
+        >
+          {children}
+        </View>
+      </InputContext.Provider>
+    );
+  },
 );
 
 Input.displayName = 'Input';
@@ -35,15 +76,28 @@ Input.displayName = 'Input';
 export const InputField = React.forwardRef<
   TextInput,
   TextInputProps & { className?: string; type?: 'text' | 'password' }
->(({ className, type, ...props }, ref) => (
-  <TextInput
-    {...props}
-    ref={ref}
-    secureTextEntry={type === 'password'}
-    placeholderTextColor="var(--phase-text-secondary)"
-    className={`flex-1 text-phaseText-primary text-base py-2 ${className || ''}`}
-  />
-));
+>(({ className, type, onFocus, onBlur, ...props }, ref) => {
+  const { isDisabled, setIsFocused } = useInput();
+
+  return (
+    <TextInput
+      {...props}
+      ref={ref}
+      editable={!isDisabled}
+      secureTextEntry={type === 'password'}
+      placeholderTextColor="#8B8599" // Fallback to theme-safe secondary
+      onFocus={(e) => {
+        setIsFocused(true);
+        onFocus?.(e);
+      }}
+      onBlur={(e) => {
+        setIsFocused(false);
+        onBlur?.(e);
+      }}
+      className={`flex-1 text-phase-text-primary text-base py-2 pl-1 ${className || ''}`}
+    />
+  );
+});
 
 InputField.displayName = 'InputField';
 
@@ -52,14 +106,23 @@ export const InputSlot = ({
   children,
   ...props
 }: PressableProps & { className?: string; children?: React.ReactNode }) => (
-  <Pressable {...props} className={`px-2 py-1 justify-center items-center ${className || ''}`}>
+  <Pressable
+    {...props}
+    className={`px-2 py-1 justify-center items-center active:opacity-60 ${className || ''}`}
+  >
     {children}
   </Pressable>
 );
 
 export const InputIcon = ({ as: Icon, className, color, size, ...props }: any) => {
   if (!Icon) return null;
-  return <Icon {...props} size={size || 20} color={color || '#544A3D'} className={className} />;
+  return (
+    <Icon
+      {...props}
+      size={size || 18}
+      className={`text-phase-text-secondary ${className || ''}`}
+    />
+  );
 };
 
 export { Input };

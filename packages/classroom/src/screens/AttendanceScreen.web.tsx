@@ -1,9 +1,72 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useReducer, useCallback, useMemo } from 'react';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { api, StudentAttendance, AttendanceRecord, growthSignalsAPI, useStore } from '@repo/core';
 import { Check, X, Clock, ChevronLeft, Save } from 'lucide-react-native';
 
 type Status = 'present' | 'absent' | 'late';
+
+interface AttendanceState {
+  students: StudentAttendance[];
+  loading: boolean;
+  saving: boolean;
+  saved: boolean;
+  error: string;
+}
+
+type AttendanceAction =
+  | { type: 'FETCH_START' }
+  | { type: 'FETCH_SUCCESS'; payload: StudentAttendance[] }
+  | { type: 'FETCH_ERROR'; payload: string }
+  | { type: 'TOGGLE_STUDENT'; payload: string }
+  | { type: 'SET_ALL'; payload: Status }
+  | { type: 'SAVE_START' }
+  | { type: 'SAVE_SUCCESS' }
+  | { type: 'SAVE_ERROR'; payload: string };
+
+const initialState: AttendanceState = {
+  students: [],
+  loading: true,
+  saving: false,
+  saved: false,
+  error: '',
+};
+
+function attendanceReducer(state: AttendanceState, action: AttendanceAction): AttendanceState {
+  switch (action.type) {
+    case 'FETCH_START':
+      return { ...state, loading: true, error: '' };
+    case 'FETCH_SUCCESS':
+      return { ...state, loading: false, students: action.payload };
+    case 'FETCH_ERROR':
+      return { ...state, loading: false, error: action.payload };
+    case 'TOGGLE_STUDENT':
+      return {
+        ...state,
+        saved: false,
+        students: state.students.map((s) => {
+          if (s.id !== action.payload) return s;
+          const cycle: Status[] = ['present', 'late', 'absent'];
+          const currentIndex = cycle.indexOf(s.status as Status);
+          const next = cycle[(currentIndex + 1) % cycle.length] ?? 'present';
+          return { ...s, status: next };
+        }),
+      };
+    case 'SET_ALL':
+      return {
+        ...state,
+        saved: false,
+        students: state.students.map((s) => ({ ...s, status: action.payload })),
+      };
+    case 'SAVE_START':
+      return { ...state, saving: true, error: '' };
+    case 'SAVE_SUCCESS':
+      return { ...state, saving: false, saved: true };
+    case 'SAVE_ERROR':
+      return { ...state, saving: false, error: action.payload };
+    default:
+      return state;
+  }
+}
 
 const STATUS_CONFIG: Record<
   Status,
@@ -20,16 +83,12 @@ export default function AttendanceScreenWeb() {
   const { classroomId, classroomName } = route.params ?? {};
   const { user } = useStore();
 
-  const [students, setStudents] = useState<StudentAttendance[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
-  const [error, setError] = useState('');
+  const [state, dispatch] = useReducer(attendanceReducer, initialState);
 
   useEffect(() => {
     if (!classroomId) return;
-    void (async () => {
-      setLoading(true);
+    async function loadData() {
+      dispatch({ type: 'FETCH_START' });
       try {
         const attendanceDate = new Date().toISOString().split('T')[0] || new Date().toISOString();
         const [data, snapshot] = await Promise.all([
@@ -40,48 +99,36 @@ export default function AttendanceScreenWeb() {
         const savedStatus = new Map<string, string>(
           snapshot.records.map((record) => [record.student_id, record.status] as [string, string]),
         );
-        setStudents(
-          data.map((student) => ({
-            id: student.id,
-            student_id: student.student_id || student.id,
-            full_name: student.full_name,
-            roll_number: student.roll_number,
-            status: (savedStatus.get(student.student_id || student.id) ?? 'present') as Status,
-          })),
-        );
-      } catch (caughtError: any) {
-        setError(caughtError?.message || 'Failed to load students');
-      } finally {
-        setLoading(false);
+        const mappedStudents = data.map((student) => ({
+          id: student.id,
+          student_id: student.student_id || student.id,
+          full_name: student.full_name,
+          roll_number: student.roll_number,
+          status: (savedStatus.get(student.student_id || student.id) ?? 'present') as Status,
+        }));
+        dispatch({ type: 'FETCH_SUCCESS', payload: mappedStudents });
+      } catch (err: any) {
+        dispatch({ type: 'FETCH_ERROR', payload: err?.message || 'Failed to load students' });
       }
-    })();
+    }
+    loadData();
   }, [classroomId]);
 
-  const toggle = (id: string) => {
-    setStudents((prev) =>
-      prev.map((student) => {
-        if (student.id !== id) return student;
-        const cycle: Status[] = ['present', 'late', 'absent'];
-        const currentIndex = cycle.indexOf(student.status as Status);
-        const next = cycle[(currentIndex + 1) % cycle.length] ?? 'present';
-        return { ...student, status: next };
-      }),
-    );
-    setSaved(false);
-  };
+  const toggle = useCallback((id: string) => {
+    dispatch({ type: 'TOGGLE_STUDENT', payload: id });
+  }, []);
 
-  const setAll = (status: Status) => {
-    setStudents((prev) => prev.map((student) => ({ ...student, status })));
-    setSaved(false);
-  };
+  const setAll = useCallback((status: Status) => {
+    dispatch({ type: 'SET_ALL', payload: status });
+  }, []);
 
-  const attendanceDate = new Date().toISOString().split('T')[0] || new Date().toISOString();
+  const attendanceDate = useMemo(() => new Date().toISOString().split('T')[0] || new Date().toISOString(), []);
 
   const handleSave = async () => {
-    setSaving(true);
+    dispatch({ type: 'SAVE_START' });
     try {
       await api.attendance.batchRecord(
-        students.map((student) => ({
+        state.students.map((student) => ({
           classroom_id: classroomId,
           student_id: student.student_id,
           status: student.status,
@@ -94,31 +141,31 @@ export default function AttendanceScreenWeb() {
         },
       );
       if (user?.id) {
-      growthSignalsAPI.emitSilent({
-        user_id: user.id,
-        event_type: 'attendance_marked',
-        event_metadata: { classroom_id: classroomId },
-      });
+        growthSignalsAPI.emitSilent({
+          user_id: user.id,
+          event_type: 'attendance_marked',
+          event_metadata: { classroom_id: classroomId },
+        });
       }
-      setSaved(true);
-    } catch (caughtError: any) {
-      setError(caughtError?.message || 'Failed to save attendance');
-    } finally {
-      setSaving(false);
+      dispatch({ type: 'SAVE_SUCCESS' });
+    } catch (err: any) {
+      dispatch({ type: 'SAVE_ERROR', payload: err?.message || 'Failed to save attendance' });
     }
   };
 
-  const counts = students.reduce((acc, student) => {
+  const counts = useMemo(() => state.students.reduce((acc, student) => {
     acc[student.status as Status] = (acc[student.status as Status] ?? 0) + 1;
     return acc;
-  }, {} as Record<Status, number>);
+  }, {} as Record<Status, number>), [state.students]);
 
-  const today = new Date(attendanceDate).toLocaleDateString('en-LK', {
+  const today = useMemo(() => new Date(attendanceDate).toLocaleDateString('en-LK', {
     weekday: 'long',
     year: 'numeric',
     month: 'long',
     day: 'numeric',
-  });
+  }), [attendanceDate]);
+
+  const { students, loading, saving, saved, error } = state;
 
   return (
     <div className="sanctuary-screen">

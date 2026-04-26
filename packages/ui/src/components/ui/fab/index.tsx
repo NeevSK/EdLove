@@ -1,34 +1,81 @@
-import React from 'react';
-import { Pressable } from '../view';
+import React, { createContext, useContext, useMemo } from 'react';
+import { Pressable, type ViewProps } from 'react-native';
 import { Text } from '../text';
+import { cssInterop } from 'nativewind';
 
-export const Fab = ({ children, className, onPress, placement = 'bottom-right' }: any) => {
-  const placementMap: Record<string, string> = {
-    'top-left': 'top-4 left-4',
-    'top-right': 'top-4 right-4',
-    'bottom-left': 'bottom-4 left-4',
-    'bottom-right': 'bottom-4 right-4',
+cssInterop(Pressable, { className: 'style' });
+
+/**
+ * Fab (Floating Action Button)
+ * 
+ * A high-impact interaction primitive.
+ * Enforces architectural boundaries for overlays and semantic labeling.
+ */
+
+type FabPlacement = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
+
+interface FabContextType {
+  size: 'md' | 'lg';
+}
+
+const FabContext = createContext<FabContextType | undefined>(undefined);
+
+function useFab() {
+  const context = useContext(FabContext);
+  if (!context) throw new Error('useFab must be used within a Fab component');
+  return context;
+}
+
+export const Fab = ({ 
+  children, 
+  className, 
+  onPress, 
+  placement = 'bottom-right',
+  size = 'md',
+  ...props 
+}: { 
+  children?: React.ReactNode; 
+  className?: string; 
+  onPress?: () => void; 
+  placement?: FabPlacement;
+  size?: 'md' | 'lg';
+} & ViewProps) => {
+  const placementMap: Record<FabPlacement, string> = {
+    'top-left': 'top-6 left-6',
+    'top-right': 'top-6 right-6',
+    'bottom-left': 'bottom-6 left-6',
+    'bottom-right': 'bottom-6 right-6',
   };
 
+  const sizeStyles = size === 'lg' ? 'p-6' : 'p-4';
+
+  const contextValue = useMemo(() => ({ size }), [size]);
+
   return (
-    <Pressable
-      onPress={onPress}
-      className={`absolute z-30 p-4 rounded-full bg-phase-accent shadow-lg active:opacity-80 items-center justify-center ${placementMap[placement] || placementMap['bottom-right']} ${className || ''}`}
-    >
-      {children}
-    </Pressable>
+    <FabContext.Provider value={contextValue}>
+      <Pressable
+        onPress={onPress}
+        accessibilityRole="button"
+        className={`absolute z-30 rounded-full bg-phase-accent shadow-xl active:opacity-90 active:scale-95 transition-all items-center justify-center ${placementMap[placement] || placementMap['bottom-right']} ${sizeStyles} ${className || ''}`}
+        {...props}
+      >
+        {children}
+      </Pressable>
+    </FabContext.Provider>
   );
 };
 
-export const FabLabel = ({ children, className }: any) => (
-  <Text className={`font-bold text-sacredWhite ${className || ''}`}>{children}</Text>
+export const FabLabel = ({ children, className }: { children: React.ReactNode; className?: string }) => (
+  <Text className={`font-bold text-white ml-2 text-base tracking-tight ${className || ''}`}>{children}</Text>
 );
 
-export const FabIcon = ({ as: Icon, className, ...props }: any) => {
+export const FabIcon = ({ as: Icon, className, size = 20, ...props }: any) => {
   if (!Icon) return null;
-  return <Icon {...props} className={`text-sacredWhite ${className || ''}`} />;
+  return <Icon {...props} size={size} color="white" strokeWidth={2.5} className={`${className || ''}`} />;
 };
 
 Fab.displayName = 'Fab';
 FabLabel.displayName = 'FabLabel';
 FabIcon.displayName = 'FabIcon';
+
+export { Fab as default };

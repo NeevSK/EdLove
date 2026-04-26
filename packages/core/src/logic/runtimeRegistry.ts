@@ -36,6 +36,16 @@ export const coreRuntime = {
     if (!runtime) throw new Error('CoreRuntime: Network provider not registered. Call coreRuntime.register() during app initialization.');
     return runtime.network;
   },
+  
+  get share() {
+    if (!runtime) throw new Error('CoreRuntime: Share provider not registered. Call coreRuntime.register() during app initialization.');
+    return runtime.share;
+  },
+  
+  get ui() {
+    if (!runtime) throw new Error('CoreRuntime: UI provider not registered. Call coreRuntime.register() during app initialization.');
+    return runtime.ui;
+  },
 
   isRegistered() {
     return runtime !== null;

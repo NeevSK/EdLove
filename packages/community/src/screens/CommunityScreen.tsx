@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ScrollView, Platform } from 'react-native';
+import { Platform } from 'react-native';
 import {
     Box,
     GlobalHeader,
@@ -12,6 +12,7 @@ import {
     ScreenWrapper,
     Text,
     VStack,
+    ScrollView,
     useBottomTabPadding,
     useRegisterFAB,
     Spinner,

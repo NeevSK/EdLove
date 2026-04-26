@@ -79,6 +79,7 @@ export * from './hooks/useTheme';
 export * from './hooks/useThemedColors';
 export * from './hooks/useAccessibility';
 export * from './hooks/useDemoBridge';
+export * from './hooks/useResponsive';
 export { useTranslation } from 'react-i18next';
 
 // 4. Components (UI Building Blocks)

@@ -1,5 +1,5 @@
-import React from 'react';
-import { useWindowDimensions } from 'react-native';
+import React, { useMemo } from 'react';
+
 import { 
     Theme, 
     useTheme,
@@ -8,7 +8,8 @@ import {
     HStack, 
     Text, 
     SanctuaryStatsCard,
-    ScrollView
+    ScrollView,
+    useResponsive
 } from '@repo/ui';
 import { Network, Orbit, TrendingUp, Layers } from 'lucide-react-native';
 import type { 
@@ -34,7 +35,7 @@ export const JyotiView: React.FC<PerspectiveViewProps> = ({
     data,
 }) => {
     const theme = useTheme();
-    const { width: windowWidth } = useWindowDimensions();
+    const { width: windowWidth } = useResponsive();
 
     const actionColor = theme.accent.action;
     const textPrimary = theme.text.primary;
@@ -42,36 +43,53 @@ export const JyotiView: React.FC<PerspectiveViewProps> = ({
     const textTertiary = theme.text.muted;
 
     // 1. Calculate Metrics
-    const totalNodes = data.nodes.length;
-    const totalLinks = data.links.length;
-    const avgConnectivity = totalNodes > 0 ? (totalLinks / totalNodes).toFixed(1) : '0';
+    const { totalNodes, totalLinks, avgConnectivity } = useMemo(() => {
+        const nodes = data.nodes.length;
+        const links = data.links.length;
+        return {
+            totalNodes: nodes,
+            totalLinks: links,
+            avgConnectivity: nodes > 0 ? (links / nodes).toFixed(1) : '0'
+        };
+    }, [data.nodes.length, data.links.length]);
     
     // 2. Node Type Distribution (for Bar Chart)
-    const typeCounts = data.nodes.reduce((acc, node) => {
-        acc[node.type] = (acc[node.type] || 0) + 1;
-        return acc;
-    }, {} as Record<string, number>);
+    const barData = useMemo(() => {
+        const counts = data.nodes.reduce((acc, node) => {
+            acc[node.type] = (acc[node.type] || 0) + 1;
+            return acc;
+        }, {} as Record<string, number>);
 
-    const barData = Object.entries(typeCounts).map(([type, count]) => ({
-        value: count,
-        label: type.charAt(0).toUpperCase() + type.slice(1),
-        frontColor: type === 'topic' ? Theme.colors.sanctuarySaffron : actionColor,
-    }));
+        return Object.entries(counts).map(([type, count]) => ({
+            value: count,
+            label: type.charAt(0).toUpperCase() + type.slice(1),
+            frontColor: type === 'topic' ? Theme.colors.sanctuarySaffron : actionColor,
+        }));
+    }, [data.nodes, actionColor]);
 
     // 3. Group Distribution (for Pie Chart)
-    const groupCounts = data.nodes.reduce((acc, node) => {
-        const group = node.group || 'Default';
-        acc[group] = (acc[group] || 0) + 1;
-        return acc;
-    }, {} as Record<string, number>);
+    const pieData = useMemo(() => {
+        const counts = data.nodes.reduce((acc, node) => {
+            const group = node.group || 'Default';
+            acc[group] = (acc[group] || 0) + 1;
+            return acc;
+        }, {} as Record<string, number>);
 
-    const pieData = Object.entries(groupCounts).map(([group, count], index) => {
-        return {
-            value: count,
-            text: group,
-            color: index === 0 ? Theme.colors.sanctuarySaffron : (index === 1 ? actionColor : '#10b981'),
-        };
-    });
+        return Object.entries(counts).map(([group, count], index) => {
+            return {
+                value: count,
+                text: group,
+                color: index === 0 ? Theme.colors.sanctuarySaffron : (index === 1 ? actionColor : '#10b981'),
+            };
+        });
+    }, [data.nodes, actionColor]);
+
+    const centerLabel = useMemo(() => () => (
+        <VStack className="items-center justify-center">
+            <Text className="text-xl font-bold text-phaseText-primary">{totalNodes}</Text>
+            <Text className="text-xs text-phaseText-tertiary">Total</Text>
+        </VStack>
+    ), [totalNodes]);
 
     return (
         <ScrollView 
@@ -140,12 +158,7 @@ export const JyotiView: React.FC<PerspectiveViewProps> = ({
                             donut
                             radius={80}
                             innerRadius={60}
-                            centerLabelComponent={() => (
-                                <VStack className="items-center justify-center">
-                                    <Text className="text-xl font-bold text-phaseText-primary">{totalNodes}</Text>
-                                    <Text className="text-xs text-phaseText-tertiary">Total</Text>
-                                </VStack>
-                            )}
+                            centerLabelComponent={centerLabel}
                         />
                     </Box>
 

@@ -1,10 +1,9 @@
 import React from 'react';
-import { ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
 import Animated, { FadeInDown } from 'react-native-reanimated';
-import { Box, SandboxBanner, Text, Theme, WorkspaceCanvas, hapticLight, useRegisterFAB, useThemedColors, Pressable, HStack } from '@repo/ui';
+import { Box, SandboxBanner, Text, Theme, WorkspaceCanvas, hapticLight, useRegisterFAB, useThemedColors, Pressable, HStack, ScrollView } from '@repo/ui';
 import { ClassroomStackParamList, useFeatureAccess, useStore, useTemporalStore, useWorkspaceLayoutSync } from '@repo/core';
 import { useStudentWorkspaceData } from '../workspace/useStudentWorkspaceData';
 import { useStudentDashboardSurfaces } from '../workspace/useStudentDashboardSurfaces';

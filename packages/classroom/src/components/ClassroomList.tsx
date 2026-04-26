@@ -1,8 +1,4 @@
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
-import {
-    ListRenderItemInfo,
-    GestureResponderEvent,
-} from 'react-native';
 import { Box, Text, Heading, VStack, HStack, Pressable, Spinner, useToast, SanctuaryToast, SkeletonCard, PositiveInvitation, Icon, FlatList } from '@repo/ui';
 import { BookOpen, Users, ChevronRight, ClipboardCheck, Plus, Zap } from 'lucide-react-native';
 import { api, MOCK_CLASSROOMS, identityAPI, useStore, usePermissions, useFeatureAccess } from '@repo/core';
@@ -195,7 +191,7 @@ export default function ClassroomList({
         }
     }, [onClassroomPress]);
 
-    const renderClassroomCard = useCallback(({ item: classroom }: ListRenderItemInfo<WorkspaceClassroom>) => {
+    const renderClassroomCard = useCallback(({ item: classroom }: { item: WorkspaceClassroom }) => {
         const studentCount = (classroom as any).student_count || 0;
 
         return (
@@ -376,7 +372,7 @@ const ClassroomCard = React.memo(({
         onPress(classroom);
     }, [classroom, onPress]);
 
-    const handleAttendancePress = useCallback((e: GestureResponderEvent) => {
+    const handleAttendancePress = useCallback((e: any) => {
         e.stopPropagation();
         hapticLight();
     }, []);

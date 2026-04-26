@@ -1,11 +1,10 @@
 import React from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
 import {
     WORKSPACE_CANVAS_ZONES,
     type WorkspaceZoneId,
     type ResolvedWorkspaceSurface,
 } from '@repo/core';
-import { Box, Theme, Text, WorkspaceCanvas } from '@repo/ui';
+import { Box, Text, WorkspaceCanvas, Pressable, HStack } from '@repo/ui';
 import type {
     ClassroomWorkspaceSurface,
     ClassroomWorkspaceSurfaceId,
@@ -46,8 +45,6 @@ export function ClassroomWorkspaceCanvas({
 }: Props) {
     if (!layout) return null;
 
-    const styles = createStyles();
-
     return (
         <WorkspaceCanvas
             surfaces={surfaces}
@@ -57,7 +54,7 @@ export function ClassroomWorkspaceCanvas({
             emptyMessage="No workspace surfaces are available for this user yet."
             renderSurfaceContent={(surface) => {
                 const typedSurface = surface as ClassroomResolvedSurface;
-                return <Box style={{ flex: 1 }}>{typedSurface.content}</Box>;
+                return <Box className="flex-1">{typedSurface.content}</Box>;
             }}
             getSurfaceSubtitle={(surface) => (surface as ClassroomResolvedSurface).subtitle}
             getSurfaceSummary={(surface) => (surface as ClassroomResolvedSurface).summary}
@@ -68,55 +65,31 @@ export function ClassroomWorkspaceCanvas({
                 const nextZone = getNextZone(typedSurface.zone);
 
                 return (
-                    <View style={styles.actionsRow}>
+                    <HStack className="gap-2 flex-wrap">
                         <Pressable
                             accessibilityRole="button"
                             onPress={() => onTogglePinned(typedSurface.surfaceId, !typedSurface.pinned)}
-                            style={({ pressed }) => [styles.actionButton, pressed ? styles.actionButtonPressed : null]}
+                            className="bg-phase-surface-light border border-phase-border px-4 py-2 rounded-full active:opacity-70"
                         >
-                            <Text style={styles.actionText}>
+                            <Text className="text-xs font-semibold text-phaseText-primary">
                                 {typedSurface.pinned ? 'Unpin' : 'Pin'}
                             </Text>
                         </Pressable>
                         <Pressable
                             accessibilityRole="button"
                             onPress={() => onMoveToNextZone(typedSurface.surfaceId, nextZone)}
-                            style={({ pressed }) => [styles.actionButton, pressed ? styles.actionButtonPressed : null]}
+                            className="bg-phase-surface-light border border-phase-border px-4 py-2 rounded-full active:opacity-70"
                         >
-                            <Text style={styles.actionText}>Move to {nextZone}</Text>
+                            <Text className="text-xs font-semibold text-phaseText-primary">
+                                Move to {nextZone}
+                            </Text>
                         </Pressable>
-                    </View>
+                    </HStack>
                 );
             }}
             onToggleHidden={(surface) => onToggleHidden(surface.surfaceId, !surface.hidden)}
         />
     );
-}
-
-function createStyles() {
-    return StyleSheet.create({
-        actionsRow: {
-            flexDirection: 'row',
-            gap: Theme.spacing.sm,
-            flexWrap: 'wrap',
-        },
-        actionButton: {
-            borderRadius: Theme.corners.full,
-            paddingHorizontal: Theme.spacing.md,
-            paddingVertical: Theme.spacing.sm,
-            backgroundColor: 'rgba(42, 35, 24, 0.06)',
-            borderWidth: 1,
-            borderColor: 'rgba(42, 35, 24, 0.08)',
-        },
-        actionButtonPressed: {
-            opacity: 0.8,
-        },
-        actionText: {
-            fontSize: Theme.typography.fontSize.sm,
-            fontWeight: '600',
-            color: Theme.colors.inkTruth,
-        },
-    });
 }
 
 export default ClassroomWorkspaceCanvas;

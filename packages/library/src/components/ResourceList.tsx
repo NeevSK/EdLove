@@ -5,7 +5,6 @@
  */
 
 import React, { useState, useCallback, useEffect } from 'react';
-import { Alert } from 'react-native';
 import {
     X,
     Play,
@@ -25,9 +24,10 @@ import {
     Theme,
     SanctuaryButton,
     SanctuaryFlashList,
-    useTheme
+    useTheme,
+    Center
 } from '@repo/ui';
-import { formatFileSize, formatDuration } from '@repo/core';
+import { formatFileSize, formatDuration, useStore } from '@repo/core';
 import { libraryAPI } from '../api/library';
 import type { LibraryResource } from '../types';
 import { LibraryThumbnailCard } from './LibraryThumbnailCard';
@@ -63,6 +63,7 @@ export function ResourceList({
     viewMode = 'list',
 }: ResourceListProps) {
     const [flashPlayResource, setFlashPlayResource] = useState<LibraryResource | null>(null);
+    const showToast = useStore(state => state.showToast);
 
     const handleFlashPlay = useCallback((resource: LibraryResource) => {
         setFlashPlayResource(resource);
@@ -75,30 +76,21 @@ export function ResourceList({
     const handleReportBroken = useCallback(async (resourceId: string) => {
         try {
             await libraryAPI.reportBrokenLink(resourceId);
-            Alert.alert('Reported', 'Thank you. Our curators will check this link.');
+            showToast('Thank you. Our curators will check this link.', 'success');
             if (onRefresh) onRefresh();
         } catch (err: any) {
-            Alert.alert('Error', 'Failed to report link.');
+            showToast('Failed to report link.', 'error');
         }
-    }, [onRefresh]);
+    }, [onRefresh, showToast]);
 
     const renderItem = useCallback(({ item }: { item: LibraryResource }) => {
         if (viewMode === 'grid') {
-            const getYoutubeThumbnail = (url?: string) => {
-                if (!url) return undefined;
-                const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&?]{11})/);
-                return match ? `https://img.youtube.com/vi/${match[1]}/mqdefault.jpg` : undefined;
-            };
-
             return (
                 <Box className="m-1.5">
                     <LibraryThumbnailCard
-                        title={item.title}
-                        type={item.type}
-                        subject={item.subjects?.[0] || ''}
-                        thumbnailUrl={item.media?.url || (item as any).thumbnail_url || (item.type === 'video' || item.type === 'movie_trailer' ? getYoutubeThumbnail(item.url) : undefined)}
-                        onPress={() => onOpenResource?.(item)}
-                        onLongPress={item.url ? () => onOpenResourceOptions?.(item) : undefined}
+                        resource={item}
+                        onPress={onOpenResource || (() => {})}
+                        onLongPress={onOpenResourceOptions}
                     />
                 </Box>
             );

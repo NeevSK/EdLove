@@ -14,13 +14,15 @@ import {
     Icon,
     Pressable,
     Image,
-    Spinner
+    Spinner,
+    ScrollView,
+    Switch
 } from '@repo/ui';
 import { useCommunity } from '../hooks/useCommunity';
 import { uploadToCloudinary, usePermissions } from '@repo/core';
-import { ScrollView, Switch, Platform } from 'react-native';
+import { Platform } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import { BarChart3, Clock, Image as ImageIcon, Mic, Plus, Trash2, Users, X } from 'lucide-react-native';
+import { BarChart3, Clock, Image as ImageIcon, Lock, Mic, Plus, Trash2, Users, X } from 'lucide-react-native';
 import type { PollData } from '../types/Community';
 
 interface PostMetadata {

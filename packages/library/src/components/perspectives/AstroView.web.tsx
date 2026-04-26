@@ -1,6 +1,5 @@
-import React, { useMemo } from 'react';
-import { View, StyleSheet, useWindowDimensions } from 'react-native';
-import { useThemedColors } from '@repo/ui';
+import React from 'react';
+import { useThemedColors, Box, useResponsive } from '@repo/ui';
 import type { 
     PerspectiveViewProps, 
     KnowledgeTopology,
@@ -20,10 +19,10 @@ export const AstroView: React.FC<PerspectiveViewProps> = ({
     selectedNode,
 }) => {
     const colors = useThemedColors();
-    const { width, height } = useWindowDimensions();
+    const { width, height } = useResponsive();
 
     return (
-        <View style={styles.container}>
+        <Box className="flex-1 w-full h-full">
             <svg 
                 width="100%" 
                 height="100%" 
@@ -90,10 +89,4 @@ export const AstroView: React.FC<PerspectiveViewProps> = ({
     );
 };
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        width: '100%',
-        height: '100%',
-    },
-});
+

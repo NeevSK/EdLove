@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Image, Platform, Share, Animated, View } from 'react-native';
+import { Platform, Share, Animated } from 'react-native';
 import { 
     Box, 
     HStack, 
@@ -15,7 +15,9 @@ import {
     useTheme, 
     LivingGlow,
     Pressable,
-    Spinner
+    Spinner,
+    Image,
+    AnimatedView
 } from '@repo/ui';
 import { 
     MoreHorizontal, 
@@ -33,7 +35,6 @@ import {
     Lock, 
     Clock, 
     Check, 
-    Trophy, 
     X as XIcon,
     ShieldAlert, 
     UserX 
@@ -44,7 +45,7 @@ import * as Clipboard from 'expo-clipboard';
 import { useSocialShield } from '../hooks/useSocialShield';
 import { communityAPI } from '../api/community';
 import type { CommunityPost } from '../types';
-import type { PostType, FeedbackStatus, PollData, Urgency } from '../types/Community';
+import type { FeedbackStatus, PollData, Urgency } from '../types/Community';
 
 // —————————————————————————————————————————————————————————————————————————————
 // CONSTANTS
@@ -92,9 +93,7 @@ export const PostCard = React.memo(function PostCard({
     onReport,
     onAuthorPress,
     onShare,
-    isSample,
     currentUserId,
-    isSocialShieldEnabled = true
 }: PostCardProps) {
     const {
         author_id,
@@ -122,7 +121,6 @@ export const PostCard = React.memo(function PostCard({
     const isQuestion = post_type === 'question';
     const isResource = post_type === 'resource';
     const isFeedback = post_type === 'feedback';
-    const totalReactions = Object.values(reactions).reduce((a, b) => (Number(a) || 0) + (Number(b) || 0), 0);
 
     const renderMediaContent = () => {
         if (!media_url) return null;
@@ -136,10 +134,10 @@ export const PostCard = React.memo(function PostCard({
                     >
                         <Image
                             source={{ uri: media_url }}
-                            style={StyleSheet.absoluteFill}
+                            className="absolute inset-0"
                             resizeMode="cover"
                         />
-                        <View style={[StyleSheet.absoluteFillObject, { backgroundColor: 'rgba(0,0,0,0.2)' }]} />
+                        <Box className="absolute inset-0 bg-black/20" />
                     </Box>
                 </Box>
             );
@@ -505,7 +503,6 @@ function PollWidget({
     } = pollData;
 
     const theme = useTheme();
-    const { flags } = usePermissions();
     const [counts, setCounts] = React.useState<Record<string, number>>({});
     const [userVotes, setUserVotes] = React.useState<Set<string>>(new Set());
     const [totalVotes, setTotalVotes] = React.useState(0);
@@ -658,17 +655,18 @@ function PollWidget({
                         `}
                     >
                         {showResults && (
-                            <Animated.View
-                                style={[
-                                    styles.pollProgress,
-                                    {
-                                        width: progressAnims.current[opt.id]!.interpolate({
-                                            inputRange: [0, 100],
-                                            outputRange: ['0%', '100%'],
-                                        }),
-                                        backgroundColor: isWinner ? `${Theme.colors.sanctuarySaffron}20` : isSelected ? `${theme.accent.action}15` : `${theme.scene.interactive.bg}40`
-                                    }
-                                ]}
+                            <AnimatedView
+                                style={{
+                                    position: 'absolute',
+                                    left: 0,
+                                    top: 0,
+                                    bottom: 0,
+                                    width: progressAnims.current[opt.id]!.interpolate({
+                                        inputRange: [0, 100],
+                                        outputRange: ['0%', '100%'],
+                                    }),
+                                    backgroundColor: isWinner ? `${Theme.colors.sanctuarySaffron}20` : isSelected ? `${theme.accent.action}15` : `${theme.scene.interactive.bg}40`
+                                }}
                             />
                         )}
                         <HStack className="justify-between px-3 z-1 items-center w-full">
@@ -709,14 +707,5 @@ function PollWidget({
         </VStack>
     );
 }
-
-const styles = StyleSheet.create({
-    pollProgress: {
-        position: 'absolute',
-        left: 0,
-        top: 0,
-        bottom: 0,
-    }
-});
 
 export default PostCard;

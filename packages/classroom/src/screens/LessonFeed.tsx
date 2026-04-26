@@ -11,6 +11,9 @@ import {
     Spinner,
     Icon,
     SkeletonCard,
+    Pressable,
+    AnimatedView,
+    FadeInDown
 } from '@repo/ui';
 import {
     ChevronDown,
@@ -21,8 +24,7 @@ import {
     Trash2,
     Plus,
     CheckCircle2,
-} from 'lucide-react-native';
-import { TouchableOpacity, LayoutAnimation } from 'react-native';
+} from 'lucide-native';
 import { useTranslation } from 'react-i18next';
 import { api, Assignment, LessonMaterial, Lesson } from '@repo/core';
 
@@ -147,7 +149,6 @@ export default function LessonFeed({
     }, [classroomId, refreshTrigger]);
 
     const toggleLesson = (monthTitle: string) => {
-        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
         setExpandedLessons(prev => ({
             ...prev,
             [monthTitle]: !prev[monthTitle],
@@ -160,7 +161,7 @@ export default function LessonFeed({
             className="p-md bg-phase-surface rounded-comfortable mb-sm border-l-4 border-l-phase-accent"
         >
             <HStack className="items-center justify-between gap-4">
-                <TouchableOpacity onPress={() => onOpenMaterial?.(material)} style={{ flex: 1 }}>
+                <Pressable onPress={() => onOpenMaterial?.(material)} className="flex-1">
                     <HStack className="items-center gap-2">
                         {material.type === 'pdf' ? (
                             <Icon as={FileText} size="md" className="text-phase-accent" />
@@ -176,16 +177,16 @@ export default function LessonFeed({
                             </Text>
                         </VStack>
                     </HStack>
-                </TouchableOpacity>
+                </Pressable>
 
                 {isTeacher && (
                     <HStack className="gap-4">
-                        <TouchableOpacity onPress={() => onEditItem?.(material, 'material')}>
+                        <Pressable onPress={() => onEditItem?.(material, 'material')}>
                             <Icon as={Edit2} size="sm" className="text-phaseText-secondary" />
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={() => onDeleteItem?.(material.id, 'material')}>
+                        </Pressable>
+                        <Pressable onPress={() => onDeleteItem?.(material.id, 'material')}>
                             <Icon as={Trash2} size="sm" className="text-phase-danger" />
-                        </TouchableOpacity>
+                        </Pressable>
                     </HStack>
                 )}
             </HStack>
@@ -201,12 +202,12 @@ export default function LessonFeed({
                 className="p-md bg-phase-canvas rounded-comfortable mb-sm border-l-4 border-l-phase-reward"
             >
                 <HStack className="items-center justify-between gap-4">
-                    <TouchableOpacity
+                    <Pressable
                         onPress={() => {
                             onOpenAssignmentRecord?.(assignment);
                             onOpenAssignment?.(assignment.id);
                         }}
-                        style={{ flex: 1 }}
+                        className="flex-1"
                     >
                         <VStack className="gap-1">
                             <HStack className="items-center gap-2">
@@ -233,16 +234,16 @@ export default function LessonFeed({
                                 {assignment.title}
                             </Text>
                         </VStack>
-                    </TouchableOpacity>
+                    </Pressable>
 
                     {isTeacher && (
                         <HStack className="gap-4">
-                            <TouchableOpacity onPress={() => onEditItem?.(assignment, 'assignment')}>
+                            <Pressable onPress={() => onEditItem?.(assignment, 'assignment')}>
                                 <Icon as={Edit2} size="sm" className="text-phaseText-secondary" />
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={() => onDeleteItem?.(assignment.id, 'assignment')}>
+                            </Pressable>
+                            <Pressable onPress={() => onDeleteItem?.(assignment.id, 'assignment')}>
                                 <Icon as={Trash2} size="sm" className="text-phase-danger" />
-                            </TouchableOpacity>
+                            </Pressable>
                         </HStack>
                     )}
 
@@ -286,7 +287,7 @@ export default function LessonFeed({
 
                     {monthlyGroups.map(({ monthTitle, lessonId, materials, assignments }) => (
                         <Box key={monthTitle} className="mb-sm">
-                            <TouchableOpacity onPress={() => toggleLesson(monthTitle)} activeOpacity={0.7}>
+                            <Pressable onPress={() => toggleLesson(monthTitle)}>
                                 <Box
                                     className={`p-md bg-phase-surface rounded-comfortable ${expandedLessons[monthTitle] ? 'rounded-b-none' : ''} ${isCurrentMonth(monthTitle) ? 'border border-phase-accent' : ''}`}
                                 >
@@ -315,10 +316,11 @@ export default function LessonFeed({
                                         )}
                                     </HStack>
                                 </Box>
-                            </TouchableOpacity>
+                            </Pressable>
 
                             {expandedLessons[monthTitle] && (
-                                <Box
+                                <AnimatedView
+                                    entering={FadeInDown}
                                     className="p-md bg-phase-canvas rounded-b-comfortable border-t border-t-phase-world/5"
                                 >
                                     <VStack className="gap-4">
@@ -328,14 +330,14 @@ export default function LessonFeed({
                                                 Academic Materials
                                             </Text>
                                             {isTeacher && (
-                                                <TouchableOpacity onPress={() => onAddMaterial?.(lessonId || monthTitle)}>
+                                                <Pressable onPress={() => onAddMaterial?.(lessonId || monthTitle)}>
                                                     <HStack className="items-center gap-1">
                                                         <Icon as={Plus} size="sm" className="text-phase-accent" />
                                                         <Text className="font-bold text-xs text-phase-accent">
                                                             ADD
                                                         </Text>
                                                     </HStack>
-                                                </TouchableOpacity>
+                                                </Pressable>
                                             )}
                                         </HStack>
 
@@ -353,14 +355,14 @@ export default function LessonFeed({
                                                 Assignments
                                             </Text>
                                             {isTeacher && (
-                                                <TouchableOpacity onPress={() => onAddAssignment?.(lessonId || monthTitle)}>
+                                                <Pressable onPress={() => onAddAssignment?.(lessonId || monthTitle)}>
                                                     <HStack className="items-center gap-1">
                                                         <Icon as={Plus} size="sm" className="text-phase-reward" />
                                                         <Text className="font-bold text-xs text-phase-reward">
                                                             ADD
                                                         </Text>
                                                     </HStack>
-                                                </TouchableOpacity>
+                                                </Pressable>
                                             )}
                                         </HStack>
 
@@ -372,7 +374,7 @@ export default function LessonFeed({
                                             assignments.map(renderAssignmentCard)
                                         )}
                                     </VStack>
-                                </Box>
+                                </AnimatedView>
                             )}
                         </Box>
                     ))}

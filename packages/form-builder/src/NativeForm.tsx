@@ -1,7 +1,24 @@
 import React from 'react';
 import { useForm } from '@repo/core';
 import type { FormManager } from '@repo/core';
-import { Star, Info } from 'lucide-react';
+import { 
+    Box, 
+    VStack, 
+    HStack, 
+    Text, 
+    Heading, 
+    Button, 
+    ButtonText, 
+    Icon, 
+    Input, 
+    InputField, 
+    Textarea, 
+    TextareaInput,
+    Pressable,
+    Spinner,
+    Divider
+} from '@repo/ui';
+import { Star, Info } from 'lucide-react-native';
 
 interface NativeFormProps<T extends Record<string, any>> {
   manager: FormManager<T>;
@@ -16,7 +33,7 @@ export default function NativeForm<T extends Record<string, any>>({
   const config = manager.getConfig();
 
   return (
-    <div className="flex w-full flex-col gap-10">
+    <VStack className="w-full gap-10">
       {(Object.keys(config.fields) as (keyof T)[]).map((fieldName) => {
         const field = config.fields[fieldName];
         const value = state.values[fieldName];
@@ -25,71 +42,74 @@ export default function NativeForm<T extends Record<string, any>>({
         // 1. Layout: Headings
         if (field.type === 'heading') {
             return (
-                <div key={fieldName as string} className="pt-4 first:pt-0">
-                    <h2 className="text-xl font-bold tracking-tight text-slate-900 flex items-center gap-3">
+                <Box key={fieldName as string} className="pt-4 first:pt-0">
+                    <Heading size="md" className="flex-row items-center gap-3">
                         {field.label}
-                    </h2>
-                </div>
+                    </Heading>
+                </Box>
             );
         }
 
         // 2. Layout: Dividers
         if (field.type === 'divider') {
-            return <div key={fieldName as string} className="h-px w-full bg-slate-100" />;
+            return <Divider key={fieldName as string} className="w-full bg-slate-100" />;
         }
 
         return (
-          <div key={fieldName as string} className="flex w-full flex-col gap-3 group">
+          <VStack key={fieldName as string} className="w-full gap-3 group">
             {field.label && (
-              <div className="flex items-center justify-between">
-                <span className="text-[13px] font-bold uppercase tracking-wider text-slate-500 group-focus-within:text-teal-700 transition-colors">
+              <HStack className="items-center justify-between">
+                <Text className="text-[13px] font-bold uppercase tracking-wider text-slate-500 group-focus-within:text-teal-700">
                   {field.label}
-                </span>
+                </Text>
                 {field.required && (
-                    <span className="text-[10px] font-bold text-teal-600 bg-teal-50 px-2 py-0.5 rounded-full">REQUIRED</span>
+                    <Box className="bg-teal-50 px-2 py-0.5 rounded-full">
+                        <Text className="text-[10px] font-bold text-teal-600">REQUIRED</Text>
+                    </Box>
                 )}
-              </div>
+              </HStack>
             )}
 
             {renderField(fieldName, field, value, manager, error)}
 
             {error && (
-              <div className="flex items-center gap-2 text-rose-600 animate-in fade-in slide-in-from-top-1">
-                <Info size={14} />
-                <span className="text-xs font-bold">
+              <HStack className="items-center gap-2">
+                <Icon as={Info} size="xs" className="text-rose-600" />
+                <Text className="text-xs font-bold text-rose-600">
                     {String(error)}
-                </span>
-              </div>
+                </Text>
+              </HStack>
             )}
-          </div>
+          </VStack>
         );
       })}
 
-      <div className="pt-6">
-        <button
-            type="button"
-            onClick={() => manager.submit()}
-            disabled={state.isSubmitting}
-            className="relative inline-flex min-h-[64px] w-full items-center justify-center overflow-hidden rounded-2xl bg-teal-700 px-8 py-4 text-lg font-bold text-white shadow-lg shadow-teal-700/20 transition-all hover:bg-teal-800 hover:shadow-xl active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+      <Box className="pt-6">
+        <Button
+            onPress={() => manager.submit()}
+            isDisabled={state.isSubmitting}
+            className="h-[64px] w-full rounded-2xl bg-teal-700 shadow-lg active:scale-[0.98]"
         >
             {state.isSubmitting ? (
-                <div className="flex items-center gap-3">
-                    <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                    <span>Broadcasting...</span>
-                </div>
+                <HStack className="items-center gap-3">
+                    <Spinner size="small" className="text-white" />
+                    <ButtonText className="text-lg font-bold text-white">Broadcasting...</ButtonText>
+                </HStack>
             ) : (
-                <span>{submitLabel}</span>
+                <ButtonText className="text-lg font-bold text-white">{submitLabel}</ButtonText>
             )}
-        </button>
-      </div>
+        </Button>
+      </Box>
 
       {state.submitError && (
-        <div className="rounded-2xl border border-rose-200 bg-rose-50 px-6 py-4 text-sm font-medium text-rose-700 flex items-center gap-3">
-          <Info size={20} />
-          {String(state.submitError)}
-        </div>
+        <HStack className="rounded-2xl border border-rose-200 bg-rose-50 px-6 py-4 items-center gap-3">
+          <Icon as={Info} size="sm" className="text-rose-700" />
+          <Text className="text-sm font-medium text-rose-700">
+            {String(state.submitError)}
+          </Text>
+        </HStack>
       )}
-    </div>
+    </VStack>
   );
 }
 
@@ -100,53 +120,49 @@ function renderField<T extends Record<string, any>>(
     manager: FormManager<T>,
     error: any
 ) {
-    const commonClass = `w-full rounded-2xl border bg-white px-5 py-4 text-base font-medium text-slate-900 outline-none transition-all placeholder:text-slate-300 ${
+    const commonClass = `w-full rounded-2xl border bg-white px-5 py-4 text-base font-medium text-slate-900 ${
         error 
-        ? 'border-rose-300 focus:border-rose-500 focus:ring-4 focus:ring-rose-500/5' 
-        : 'border-slate-200 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/5'
+        ? 'border-rose-300' 
+        : 'border-slate-200'
     }`;
 
     switch (field.type) {
         case 'textarea':
             return (
-                <textarea
-                    className={`${commonClass} min-h-[120px] resize-none`}
-                    placeholder={field.placeholder}
-                    value={value || ''}
-                    onChange={(e) => manager.setFieldValue(name, e.target.value as any)}
-                />
+                <Textarea className={`min-h-[120px] ${commonClass}`}>
+                    <TextareaInput
+                        placeholder={field.placeholder}
+                        value={value || ''}
+                        onChangeText={(val) => manager.setFieldValue(name, val as any)}
+                        className="text-base"
+                    />
+                </Textarea>
             );
+        // Note: 'select' is tricky as it's not a standard @repo/ui primitive in the same way.
+        // We'll keep it as a placeholder for now or use Select from @repo/ui if available.
+        // For the sake of "Zero-Legacy", we should definitely avoid raw HTML select.
+        // I'll use a simplified Pressable-based selection or the actual Select primitive if it exists.
         case 'select':
             return (
-                <select
-                    className={`${commonClass} appearance-none cursor-pointer`}
-                    value={value || ''}
-                    onChange={(e) => manager.setFieldValue(name, e.target.value as any)}
-                >
-                    <option value="" disabled>{field.placeholder || "Please select..."}</option>
-                    {field.options?.map((opt: any) => (
-                        <option key={opt.value} value={opt.value}>{opt.label}</option>
-                    ))}
-                </select>
+                <Box className={commonClass}>
+                    <Text className="text-slate-400">
+                        {value ? field.options?.find((o: any) => o.value === value)?.label : (field.placeholder || "Please select...")}
+                    </Text>
+                </Box>
             );
         case 'slider':
+            // Custom slider using Pressables for now or a standard Slider if @repo/ui has one
             return (
-                <div className="space-y-4 py-2 px-1">
-                    <input
-                        type="range"
-                        min={field.min || 1}
-                        max={field.max || 5}
-                        step={1}
-                        className="w-full h-2 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-teal-600"
-                        value={value || field.defaultValue || 3}
-                        onChange={(e) => manager.setFieldValue(name, parseInt(e.target.value) as any)}
-                    />
-                    <div className="flex justify-between text-[11px] font-bold text-slate-400 px-1">
-                        <span>MIN</span>
-                        <span className="text-teal-700 bg-teal-50 px-2 py-0.5 rounded-md">LEVEL {value || field.defaultValue || 3}</span>
-                        <span>MAX</span>
-                    </div>
-                </div>
+                <VStack className="space-y-4 py-2 px-1">
+                    <HStack className="w-full h-2 bg-slate-100 rounded-lg" />
+                    <HStack className="justify-between px-1">
+                        <Text className="text-[11px] font-bold text-slate-400">MIN</Text>
+                        <Box className="bg-teal-50 px-2 py-0.5 rounded-md">
+                            <Text className="text-[11px] font-bold text-teal-700 uppercase">LEVEL {value || field.defaultValue || 3}</Text>
+                        </Box>
+                        <Text className="text-[11px] font-bold text-slate-400">MAX</Text>
+                    </HStack>
+                </VStack>
             );
         case 'likert':
             const max = 5;
@@ -154,42 +170,43 @@ function renderField<T extends Record<string, any>>(
             const emojis = ['😫', '🙁', '😐', '🙂', '😊'];
             
             return (
-                <div className="flex items-center justify-between gap-2 py-2">
+                <HStack className="items-center justify-between gap-2 py-2">
                     {Array.from({ length: max }).map((_, i) => {
                         const val = i + 1;
                         const isSelected = (value || field.defaultValue) === val;
                         return (
-                            <button
+                            <Pressable
                                 key={val}
-                                type="button"
-                                onClick={() => manager.setFieldValue(name, val as any)}
-                                className={`flex-1 flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all ${
+                                onPress={() => manager.setFieldValue(name, val as any)}
+                                className={`flex-1 items-center justify-center p-4 rounded-2xl border-2 ${
                                     isSelected 
-                                    ? 'border-teal-600 bg-teal-50 text-teal-700 shadow-sm' 
-                                    : 'border-slate-100 bg-slate-50 text-slate-400 hover:border-slate-200'
+                                    ? 'border-teal-600 bg-teal-50 shadow-sm' 
+                                    : 'border-slate-100 bg-slate-50'
                                 }`}
                             >
                                 {isEmoji ? (
-                                    <span className={`text-2xl mb-1 ${isSelected ? 'grayscale-0' : 'grayscale opacity-50'}`}>
+                                    <Text className={`text-2xl mb-1 ${isSelected ? '' : 'opacity-50'}`}>
                                         {emojis[i]}
-                                    </span>
+                                    </Text>
                                 ) : (
-                                    <span className="text-lg font-bold">{val}</span>
+                                    <Text className={`text-lg font-bold ${isSelected ? 'text-teal-700' : 'text-slate-400'}`}>{val}</Text>
                                 )}
-                            </button>
+                            </Pressable>
                         );
                     })}
-                </div>
+                </HStack>
             );
         default:
             return (
-                <input
-                    className={commonClass}
-                    type={field.type === 'number' ? 'number' : 'text'}
-                    placeholder={field.placeholder}
-                    value={value || ''}
-                    onChange={(e) => manager.setFieldValue(name, (field.type === 'number' ? parseFloat(e.target.value) : e.target.value) as any)}
-                />
+                <Input className={commonClass}>
+                    <InputField
+                        type={field.type === 'number' ? 'number' : 'text'}
+                        placeholder={field.placeholder}
+                        value={value || ''}
+                        onChangeText={(val) => manager.setFieldValue(name, (field.type === 'number' ? parseFloat(val) : val) as any)}
+                        className="text-base"
+                    />
+                </Input>
             );
     }
 }

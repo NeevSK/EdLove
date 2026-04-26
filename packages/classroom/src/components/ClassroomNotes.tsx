@@ -21,9 +21,6 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
-    Platform,
-} from 'react-native';
-import {
     VStack,
     HStack,
     Box,
@@ -51,7 +48,7 @@ import {
     X,
     ChevronDown,
 } from 'lucide-react-native';
-import { api } from '@repo/core';
+import { api, coreRuntime } from '@repo/core';
 import type { ClassroomNote } from '@repo/core';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
@@ -340,7 +337,7 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
     return (
         <KeyboardAvoidingView
             style={{ flex: 1 }}
-            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+            behavior={coreRuntime.device.getMetadata().platform === 'ios' ? 'padding' : undefined}
             keyboardVerticalOffset={120}
         >
             <VStack className="flex-1">

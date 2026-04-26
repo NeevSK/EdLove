@@ -1,13 +1,34 @@
-import React from 'react';
-import { View, Text } from 'react-native';
+import React, { createContext, useContext, useMemo } from 'react';
+import { View, Text, type ViewProps } from 'react-native';
 import { Image } from '../image';
 import { cssInterop } from 'nativewind';
 
 cssInterop(View, { className: 'style' });
 cssInterop(Text, { className: 'style' });
 
-export const Avatar = ({ children, className, size = 'md' }: any) => {
-  const sizeMap: Record<string, string> = {
+/**
+ * Avatar Component
+ * 
+ * A high-impact identity primitive.
+ * Hardened for consistent sizing, fallbacks, and design system fidelity.
+ */
+
+type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
+
+interface AvatarContextType {
+  size: AvatarSize;
+}
+
+const AvatarContext = createContext<AvatarContextType | undefined>(undefined);
+
+function useAvatar() {
+  const context = useContext(AvatarContext);
+  if (!context) throw new Error('useAvatar must be used within an Avatar component');
+  return context;
+}
+
+export const Avatar = ({ children, className, size = 'md', ...props }: { size?: AvatarSize; children?: React.ReactNode; className?: string } & ViewProps) => {
+  const sizeMap: Record<AvatarSize, string> = {
     xs: 'w-6 h-6',
     sm: 'w-8 h-8',
     md: 'w-10 h-10',
@@ -16,27 +37,51 @@ export const Avatar = ({ children, className, size = 'md' }: any) => {
     '2xl': 'w-24 h-24',
   };
 
+  const contextValue = useMemo(() => ({ size }), [size]);
+
   return (
-    <View
-      {...({
-        className: `relative overflow-hidden rounded-full bg-phase-surface border border-phase-surface items-center justify-center ${sizeMap[size] || sizeMap.md} ${className || ''}`,
-      } as any)}
-    >
-      {children}
-    </View>
+    <AvatarContext.Provider value={contextValue}>
+      <View
+        {...props}
+        className={`relative overflow-hidden rounded-full bg-phase-surface border border-phase-interactive/10 items-center justify-center ${sizeMap[size] || sizeMap.md} ${className || ''}`}
+      >
+        {children}
+      </View>
+    </AvatarContext.Provider>
   );
 };
 
-export const AvatarFallbackText = ({ children, className }: any) => (
-  <Text {...({ className: `font-bold text-phase-text-primary ${className || ''}` } as any)}>
-    {children}
-  </Text>
-);
+export const AvatarFallbackText = ({ children, className }: { children: React.ReactNode; className?: string }) => {
+  const { size } = useAvatar();
+  
+  const fontSizeMap: Record<AvatarSize, string> = {
+    xs: 'text-[10px]',
+    sm: 'text-xs',
+    md: 'text-sm',
+    lg: 'text-base',
+    xl: 'text-xl',
+    '2xl': 'text-3xl',
+  };
+
+  return (
+    <Text 
+      className={`font-bold text-phase-text-primary tracking-tighter ${fontSizeMap[size] || fontSizeMap.md} ${className || ''}`}
+    >
+      {children}
+    </Text>
+  );
+};
 
 export const AvatarImage = ({ source, className }: any) => (
-  <Image source={source} className={`w-full h-full ${className || ''}`} resizeMode="cover" />
+  <Image 
+    source={source} 
+    className={`w-full h-full absolute inset-0 ${className || ''}`} 
+    resizeMode="cover" 
+  />
 );
 
 Avatar.displayName = 'Avatar';
 AvatarFallbackText.displayName = 'AvatarFallbackText';
 AvatarImage.displayName = 'AvatarImage';
+
+export { Avatar as default };

@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { StyleSheet, useWindowDimensions, ActivityIndicator } from 'react-native';
 import {
     ScreenWrapper,
     GlobalHeader,
@@ -13,6 +12,8 @@ import {
     ScrollView,
     Icon as SanctuaryIcon,
     View,
+    useResponsive,
+    LotusLoader
 } from '@repo/ui';
 import { useNavigation } from '@react-navigation/native';
 import {
@@ -75,7 +76,7 @@ const getAvailablePerspectives = (topology: any) => {
 export default function MapScreen() {
     const theme = useTheme();
     const navigation = useNavigation();
-    const { width, height } = useWindowDimensions();
+    const { width, height } = useResponsive();
     
     const [activePerspective, setActivePerspective] = useState<PerspectiveId>('astro');
     const [isExporting, setIsExporting] = useState(false);
@@ -151,7 +152,7 @@ export default function MapScreen() {
         if (loading) {
             return (
                 <Box className="flex-1 justify-center items-center">
-                    <ActivityIndicator size="large" color={Theme.colors.sanctuarySaffron} />
+                    <LotusLoader size={60} />
                 </Box>
             );
         }
@@ -229,7 +230,7 @@ export default function MapScreen() {
 
         return (
             <Box className="flex-1 justify-center items-center">
-                <ActivityIndicator color={Theme.colors.sanctuarySaffron} />
+                <LotusLoader size={40} />
             </Box>
         );
     };
@@ -262,7 +263,7 @@ export default function MapScreen() {
             />
 
             <Box className="p-3 bg-phase-surface">
-                <View style={styles.perspectiveSwitcherContainer}>
+                <Box className="rounded-[20px] overflow-hidden border border-white/10">
                     <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ padding: 6 }}>
                         {getAvailablePerspectives(activeData).map((p) => {
                             const isActive = activePerspective === p.id;
@@ -273,29 +274,21 @@ export default function MapScreen() {
                                     key={p.id}
                                     onPress={() => !isDisabled && setActivePerspective(p.id)}
                                     disabled={isDisabled}
-                                    style={({ pressed }) => [
-                                        styles.perspectiveButton,
-                                        isActive && styles.activePerspectiveButton,
-                                        isDisabled && { opacity: 0.3 },
-                                        pressed && { opacity: 0.8 }
-                                    ]}
+                                    className={`px-4 py-2.5 rounded-[14px] flex-row items-center mx-1 gap-2 ${isActive ? 'bg-[#FF990026] border border-[#FF99004D]' : ''} ${isDisabled ? 'opacity-30' : ''}`}
                                 >
                                     <SanctuaryIcon 
                                         as={Icon}
                                         size={18} 
                                         color={isActive ? Theme.colors.sanctuarySaffron : Theme.colors.starlightGray} 
                                     />
-                                    <Text style={[
-                                        styles.perspectiveLabel,
-                                        isActive && styles.activePerspectiveLabel
-                                    ]}>
+                                    <Text className={`text-[13px] ${isActive ? 'font-extrabold' : 'font-semibold'}`} style={{ color: isActive ? Theme.colors.sanctuarySaffron : Theme.colors.starlightGray }}>
                                         {p.label}
                                     </Text>
                                 </Pressable>
                             );
                         })}
                     </ScrollView>
-                </View>
+                </Box>
             </Box>
 
             <Box className="flex-1 bg-phase-surface overflow-hidden relative">
@@ -347,34 +340,4 @@ export default function MapScreen() {
     );
 }
 
-const styles = StyleSheet.create({
-    perspectiveSwitcherContainer: {
-        borderRadius: 20,
-        overflow: 'hidden',
-        borderWidth: 1,
-        borderColor: 'rgba(255, 255, 255, 0.1)',
-    },
-    perspectiveButton: {
-        paddingHorizontal: 16,
-        paddingVertical: 10,
-        borderRadius: 14,
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginHorizontal: 4,
-        gap: 8,
-    },
-    activePerspectiveButton: {
-        backgroundColor: 'rgba(255, 153, 0, 0.15)',
-        borderWidth: 1,
-        borderColor: 'rgba(255, 153, 0, 0.3)',
-    },
-    perspectiveLabel: {
-        fontSize: 13,
-        fontWeight: '600',
-        color: Theme.colors.starlightGray,
-    },
-    activePerspectiveLabel: {
-        fontWeight: '800',
-        color: Theme.colors.sanctuarySaffron,
-    }
-});
+

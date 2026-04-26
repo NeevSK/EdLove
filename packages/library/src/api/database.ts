@@ -1,5 +1,4 @@
 import * as SQLite from 'expo-sqlite';
-import { Platform } from 'react-native';
 
 const DB_NAME = 'gurudevi_library.db';
 
@@ -31,7 +30,6 @@ export const knowledgeDB = {
      * Initialize the database and create tables if they don't exist.
      */
     async init() {
-        if (Platform.OS === 'web') return;
 
         try {
             if (!this.db) {
@@ -125,7 +123,7 @@ export const knowledgeDB = {
      * Search the local knowledge index using FTS5.
      */
     async search(query: string, limit: number = 20): Promise<string[]> {
-        if (Platform.OS === 'web' || !this.db) return [];
+        if (!this.db) return [];
 
         try {
             // Sanitize query for FTS5 (basic)
@@ -148,7 +146,7 @@ export const knowledgeDB = {
      * Bulk upsert nodes into the index.
      */
     async upsertNodes(nodes: KnowledgeNodeIndex[]) {
-        if (Platform.OS === 'web' || !this.db) return;
+        if (!this.db) return;
 
         try {
             // Use a transaction for bulk insert
@@ -191,7 +189,7 @@ export const knowledgeDB = {
      * Get nodes by IDs from the local index.
      */
     async getNodesByIds(ids: string[]): Promise<KnowledgeNodeIndex[]> {
-        if (Platform.OS === 'web' || !this.db || ids.length === 0) return [];
+        if (!this.db || ids.length === 0) return [];
 
         try {
             const placeholders = ids.map(() => '?').join(',');
@@ -210,7 +208,7 @@ export const knowledgeDB = {
      * Bulk upsert layers into the index.
      */
     async upsertLayers(layers: { id: string, name: string, category: string | null, is_geographic: boolean, updated_at: number }[]) {
-        if (Platform.OS === 'web' || !this.db) return;
+        if (!this.db) return;
 
         try {
             await this.db.withTransactionAsync(async () => {

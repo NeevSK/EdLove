@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { useWindowDimensions, ActivityIndicator, Alert, StyleSheet } from 'react-native';
 import {
     ScreenWrapper,
     GlobalHeader,
@@ -12,7 +11,9 @@ import {
     Pressable,
     ScrollView,
     Icon as SanctuaryIcon,
-    View,
+    Spinner,
+    useResponsive,
+    useReality,
 } from '@repo/ui';
 import Animated, {
     useSharedValue,
@@ -36,7 +37,7 @@ import {
     FileCheck
 } from 'lucide-react-native';
 import { libraryAPI } from '../api/library';
-import { usePermissions, FeatureGuard } from '@repo/core';
+import { usePermissions, FeatureGuard, useStore } from '@repo/core';
 import { KnowledgeTopology, KnowledgeNode } from '../types/Library';
 import { AstroView } from '../components/perspectives/AstroView';
 import { VastuView } from '../components/perspectives/VastuView';
@@ -59,6 +60,7 @@ interface Perspective {
     disabled?: boolean;
 }
 
+// --- Perspective Metadata (Stabilized outside component or memoized) ---
 const PERSPECTIVES: Perspective[] = [
     { id: 'astro', label: 'Cosmos', icon: Orbit, description: 'Interconnected topology of wisdom' },
     { id: 'terra', label: 'Geo', icon: Globe, description: 'Geographical maps of knowledge' },
@@ -68,20 +70,15 @@ const PERSPECTIVES: Perspective[] = [
     { id: 'vatya', label: 'Vatya', icon: Wind, description: 'Dynamic flow of knowledge' },
 ];
 
-const getAvailablePerspectives = (topology: any) => {
-    if (!topology) return PERSPECTIVES;
-    const engineIds = getEnginePerspectives(topology);
-    return PERSPECTIVES.map(p => ({
-        ...p,
-        disabled: !engineIds.includes(p.id)
-    }));
-};
 
 export default function MapScreen() {
     const theme = useTheme();
     const { can, flags } = usePermissions();
     const navigation = useNavigation();
-    const { width, height } = useWindowDimensions();
+    const { width, height } = useResponsive();
+    const showToast = useStore(state => state.showToast);
+    const { reality } = useReality();
+
     
     const [activePerspective, setActivePerspective] = useState<PerspectiveId>('astro');
     const [isExporting, setIsExporting] = useState(false);
@@ -110,6 +107,22 @@ export default function MapScreen() {
         fetchData();
     }, []);
 
+    const availablePerspectives = useMemo(() => {
+        if (!data) return PERSPECTIVES;
+        const engineIds = getEnginePerspectives(data);
+        const isDeviceConstrained = reality.deviceTier === 'low' || reality.networkQuality === 'poor' || reality.networkQuality === 'offline';
+
+        return PERSPECTIVES.map(p => {
+            let isDisabled = !engineIds.includes(p.id);
+            // Throttle heavy 'vatya' perspective on constrained devices
+            if (p.id === 'vatya' && isDeviceConstrained) {
+                isDisabled = true;
+            }
+            return { ...p, disabled: isDisabled };
+        });
+    }, [data, reality.deviceTier, reality.networkQuality]);
+
+
     const activeData = useMemo(() => {
         if (activePerspective === 'astro' && !data?.nodes?.length) {
             return KnowledgeParser.fromMermaid(`
@@ -125,32 +138,29 @@ export default function MapScreen() {
         return data;
     }, [data, activePerspective]);
 
+    // --- State Excellence: Memoized Layout ---
     const layout = usePerspectiveLayout(activeData as any, { 
         width: width * 3, 
         height: height * 3, 
         perspective: activePerspective 
     });
 
-    const handleExport = async () => {
+    const handleExport = React.useCallback(async () => {
         setIsExporting(true);
         try {
             const snapshot = CaptureEngine.prepareForCapture(activeData as any);
             console.log('--- NATIVE VISUALIZATION CAPTURED ---');
             console.log('Snapshot Nodes:', snapshot.nodes.length);
             
-            Alert.alert(
-                "Export Successful",
-                "Visualization logic captured for the Student Report.",
-                [{ text: "OK" }]
-            );
+            showToast("Visualization logic captured for the Student Report.", "success");
         } catch (err) {
             console.error('Export failed:', err);
         } finally {
             setIsExporting(false);
         }
-    };
+    }, [activeData, showToast]);
 
-    const handleNodePress = (node: KnowledgeNode) => {
+    const handleNodePress = React.useCallback((node: KnowledgeNode) => {
         setSelectedNode(node);
         const pos = layout?.positions.get(node.id);
         if (pos) {
@@ -158,13 +168,13 @@ export default function MapScreen() {
             translateY.value = withSpring(height / 2.5 - pos.y);
             scale.value = withSpring(2);
         }
-    };
+    }, [layout, width, height, translateX, translateY, scale]);
 
-    const renderTodayZone = () => {
+    const visualizationContent = useMemo(() => {
         if (loading) {
             return (
                 <Box className="flex-1 justify-center items-center">
-                    <ActivityIndicator size="large" color={Theme.colors.sanctuarySaffron} />
+                    <Spinner size="large" color={Theme.colors.sanctuarySaffron} />
                 </Box>
             );
         }
@@ -241,10 +251,10 @@ export default function MapScreen() {
 
         return (
             <Box className="flex-1 justify-center items-center">
-                <ActivityIndicator color={Theme.colors.sanctuarySaffron} />
+                <Spinner color={Theme.colors.sanctuarySaffron} />
             </Box>
         );
-    };
+    }, [loading, activePerspective, data, layout, handleNodePress, selectedNode, width, height]);
 
     const accentColor = theme.accent.action;
 
@@ -276,35 +286,36 @@ export default function MapScreen() {
             />
 
             <Box className="p-3 bg-phase-surface">
-                <View style={styles.perspectiveSwitcherContainer}>
+                <Box className="rounded-[20px] overflow-hidden border border-phase-border">
                     {/* @ts-ignore - className resolved via cssInterop */}
-                    <BlurView intensity={30} tint="dark" className="flex-row">
+                    <BlurView intensity={30} tint="dark" className="flex-row bg-phase-surface/80">
                         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ padding: 6 }}>
-                            {getAvailablePerspectives(data).map((p) => {
+                            {availablePerspectives.map((p) => {
                                 const isActive = activePerspective === p.id;
                                 const isDisabled = p.disabled;
-                                const Icon = p.icon;
+                                const PerspectiveIcon = p.icon;
+
                                 return (
                                     <Pressable 
                                         key={p.id}
                                         onPress={() => !isDisabled && setActivePerspective(p.id)}
                                         disabled={isDisabled}
-                                        style={({ pressed }) => [
-                                            styles.perspectiveButton,
-                                            isActive && styles.activePerspectiveButton,
-                                            isDisabled && { opacity: 0.3 },
-                                            pressed && { opacity: 0.8 }
-                                        ]}
+                                        className={`px-4 py-2.5 rounded-2xl flex-row items-center mx-1 gap-2 border ${
+                                            isActive 
+                                                ? 'bg-amber-500/15 border-amber-500/30' 
+                                                : 'border-transparent'
+                                        } ${isDisabled ? 'opacity-30' : 'active:opacity-80'}`}
                                     >
                                         <SanctuaryIcon 
-                                            as={Icon}
+                                            as={PerspectiveIcon}
                                             size={18} 
                                             color={isActive ? Theme.colors.sanctuarySaffron : Theme.colors.starlightGray} 
                                         />
-                                        <Text style={[
-                                            styles.perspectiveLabel,
-                                            isActive && styles.activePerspectiveLabel
-                                        ]}>
+                                        <Text className={`text-[13px] ${
+                                            isActive 
+                                                ? 'font-extrabold text-amber-500' 
+                                                : 'font-semibold text-phaseText-tertiary'
+                                        }`}>
                                             {p.label}
                                         </Text>
                                     </Pressable>
@@ -312,58 +323,56 @@ export default function MapScreen() {
                             })}
                         </ScrollView>
                     </BlurView>
-                </View>
+                </Box>
             </Box>
 
             <GestureHandlerRootView style={{ flex: 1 }}>
                 <Box className="flex-1 bg-phase-surface overflow-hidden">
-                    {renderTodayZone()}
+                    {visualizationContent}
 
                     {selectedNode && (
-                        <Animated.View 
-                            entering={FadeInDown}
-                            style={styles.nodeSheetContainer}
-                        >
+                        <Box className="absolute bottom-10 left-5 right-5 rounded-[32px] overflow-hidden border border-white/10 shadow-2xl">
                             {/* @ts-ignore - className resolved via cssInterop */}
-                            <BlurView intensity={25} tint="dark" className="p-4 rounded-3xl border border-white/5">
+                            <BlurView intensity={25} tint="dark" className="p-5 bg-black/40">
                                 <VStack className="gap-3">
                                     <HStack className="justify-between items-center">
-                                        <VStack>
-                                            <Text className="text-xl font-black text-white">
+                                        <VStack className="flex-1 mr-4">
+                                            <Text className="text-xl font-black text-white" numberOfLines={1}>
                                                 {selectedNode.label}
                                             </Text>
-                                            <Text className="text-xs font-bold text-phase-accent uppercase">
+                                            <Text className="text-[10px] font-extrabold text-phase-accent uppercase tracking-widest mt-0.5">
                                                 {selectedNode.type} \u00B7 {selectedNode.group}
                                             </Text>
                                         </VStack>
-                                        <Pressable onPress={() => setSelectedNode(null)}>
-                                            <Box className="p-2 rounded-full bg-white/10">
-                                                <SanctuaryIcon as={X} size={20} color={theme.text.primary} />
-                                            </Box>
+                                        <Pressable 
+                                            onPress={() => setSelectedNode(null)}
+                                            className="p-2 rounded-full bg-white/10 active:bg-white/20"
+                                        >
+                                            <SanctuaryIcon as={X} size={20} color="white" />
                                         </Pressable>
                                     </HStack>
 
                                     {selectedNode.metadata?.description && (
-                                        <Text className="text-sm text-phaseText-secondary leading-5">
+                                        <Text className="text-sm text-white/70 leading-5" numberOfLines={3}>
                                             {selectedNode.metadata.description}
                                         </Text>
                                     )}
 
                                     <Pressable 
-                                        className="h-14 rounded-[28px] justify-center items-center mt-2 bg-phase-accent active:opacity-90"
+                                        className="h-14 rounded-[28px] justify-center items-center mt-2 bg-phase-accent active:bg-phase-accent/90 shadow-lg"
                                         onPress={() => {
                                             if (selectedNode.type === 'resource') {
                                                 (navigation as any).navigate('ResourceDetail', { id: selectedNode.id });
                                             }
                                         }}
                                     >
-                                        <Text className="text-phase-surface font-extrabold">
+                                        <Text className="text-white font-black uppercase tracking-widest">
                                             {selectedNode.type === 'topic' ? 'Explore Knowledge' : 'Begin Learning'}
                                         </Text>
                                     </Pressable>
                                 </VStack>
                             </BlurView>
-                        </Animated.View>
+                        </Box>
                     )}
                 </Box>
             </GestureHandlerRootView>
@@ -371,54 +380,12 @@ export default function MapScreen() {
     );
 }
 
-const styles = StyleSheet.create({
-    perspectiveSwitcherContainer: {
-        borderRadius: 20,
-        overflow: 'hidden',
-        borderWidth: 1,
-        borderColor: 'rgba(255, 255, 255, 0.1)',
-    },
-    perspectiveButton: {
-        paddingHorizontal: 16,
-        paddingVertical: 10,
-        borderRadius: 14,
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginHorizontal: 4,
-        gap: 8,
-    },
-    activePerspectiveButton: {
-        backgroundColor: 'rgba(255, 153, 0, 0.15)',
-        borderWidth: 1,
-        borderColor: 'rgba(255, 153, 0, 0.3)',
-    },
-    perspectiveLabel: {
-        fontSize: 13,
-        fontWeight: '600',
-        color: Theme.colors.starlightGray,
-    },
-    activePerspectiveLabel: {
-        fontWeight: '800',
-        color: Theme.colors.sanctuarySaffron,
-    },
-    nodeSheetContainer: {
-        position: 'absolute',
-        bottom: 40,
-        left: 20,
-        right: 20,
-        borderRadius: 32,
-        overflow: 'hidden',
-        borderWidth: 1,
-        borderColor: 'rgba(255, 255, 255, 0.1)',
-    }
-});
-
-function StatCardNative({ label, value, icon: Icon }: { label: string; value: number; icon: any }) {
+function StatCardNative({ label, value, icon: IconComponent }: { label: string; value: number; icon: any }) {
     return (
-        <Box className="flex-1 bg-white/5 p-4 rounded-3xl flex-row items-center gap-3">
-            <SanctuaryIcon as={Icon} size={20} color={Theme.colors.sanctuarySaffron} />
+        <Box className="flex-1 bg-white/5 p-4 rounded-3xl flex-row items-center gap-3 border border-white/5">
+            <SanctuaryIcon as={IconComponent} size={20} color={Theme.colors.sanctuarySaffron} />
             <VStack>
-                <Text className="text-[10px] text-phaseText-tertiary">{label}</Text>
+                <Text className="text-[10px] uppercase font-bold tracking-widest text-phaseText-tertiary">{label}</Text>
                 <Text className="text-lg font-black text-white">{value}</Text>
             </VStack>
         </Box>
