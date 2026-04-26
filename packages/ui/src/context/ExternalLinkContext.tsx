@@ -114,20 +114,16 @@ export function ExternalLinkProvider({ children }: { children: React.ReactNode }
     return () => registerExternalLinkRuntime(null);
   }, [reality.networkQuality, showToast]);
 
-  const methods = useMemo(() => 
-    pendingRequest
-      ? pendingRequest.platform === 'web'
-        ? webMethods
-        : nativeMethods
-      : [],
-    [pendingRequest]
+  const methods = useMemo(
+    () => (pendingRequest ? (pendingRequest.platform === 'web' ? webMethods : nativeMethods) : []),
+    [pendingRequest],
   );
 
-  const trustCopy = useMemo(() => 
-    getTrustCopy(pendingRequest?.options.trustLevel),
-    [pendingRequest]
+  const trustCopy = useMemo(
+    () => getTrustCopy(pendingRequest?.options.trustLevel),
+    [pendingRequest],
   );
-  
+
   const TrustIcon = trustCopy.icon;
 
   const modalSubtitle = useMemo(() => {
@@ -140,13 +136,14 @@ export function ExternalLinkProvider({ children }: { children: React.ReactNode }
     return `Choose how links from ${source} should open on this ${pendingRequest.platform === 'web' ? 'browser' : 'device'}.`;
   }, [pendingRequest]);
 
-  const closeRequest = React.useCallback((
-    result: { method: ExternalOpenMethod; persistPreference: boolean } | null,
-  ) => {
-    if (!pendingRequest) return;
-    pendingRequest.resolve(result);
-    setPendingRequest(null);
-  }, [pendingRequest]);
+  const closeRequest = React.useCallback(
+    (result: { method: ExternalOpenMethod; persistPreference: boolean } | null) => {
+      if (!pendingRequest) return;
+      pendingRequest.resolve(result);
+      setPendingRequest(null);
+    },
+    [pendingRequest],
+  );
 
   return (
     <>

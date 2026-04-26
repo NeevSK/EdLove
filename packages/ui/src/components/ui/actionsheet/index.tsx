@@ -12,7 +12,7 @@ cssInterop(Pressable, { className: 'style' });
 
 /**
  * Actionsheet Component
- * 
+ *
  * A high-impact, hardened bottom-sheet primitive.
  * Optimized for mobile reachability and premium design tokens.
  */
@@ -69,11 +69,11 @@ export const ActionsheetContent = ({ children, className }: any) => (
     className="w-full"
     accessibilityRole="menu"
   >
-    <Box 
+    <Box
       className={`bg-phase-elevated rounded-t-[32px] overflow-hidden shadow-2xl border-t border-phase-interactive/10 pb-8 ${className || ''}`}
     >
       <ActionsheetDragIndicatorWrapper>
-         <ActionsheetDragIndicator />
+        <ActionsheetDragIndicator />
       </ActionsheetDragIndicatorWrapper>
       {children}
     </Box>
@@ -101,7 +101,9 @@ export const ActionsheetItem = ({ children, onPress, isDisabled, className, ...p
 };
 
 export const ActionsheetItemText = ({ children, className }: any) => (
-  <Text className={`text-phase-text-primary text-base font-semibold tracking-tight ${className || ''}`}>
+  <Text
+    className={`text-phase-text-primary text-base font-semibold tracking-tight ${className || ''}`}
+  >
     {children}
   </Text>
 );

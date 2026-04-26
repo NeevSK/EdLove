@@ -14,7 +14,7 @@ if (!targetPackage) {
     process.exit(1);
 }
 
-const pkgBase = path.join(ROOT_DIR, targetPackage);
+const pkgBase = path.isAbsolute(targetPackage) ? targetPackage : path.join(ROOT_DIR, targetPackage);
 const pkgJsonPath = path.join(pkgBase, 'package.json');
 
 if (!fs.existsSync(pkgJsonPath)) {
@@ -41,39 +41,91 @@ console.log('\n--- Boundary Violation Check (Logic vs UI) ---');
 
 const srcDir = path.join(pkgBase, 'src');
 if (fs.existsSync(srcDir)) {
-    // Check Logic files for UI leaks - using shell-safe patterns
-    try {
-        const logicPattern = '{logic,services,utils}';
-        // Simplified pattern for shell safety
-        const uiImportMatch = 'from.*(components|screens|ui)';
-        const cmd = `rg "${uiImportMatch}" "${srcDir}" -g "**/$logicPattern/**" -g "**.ts" -g "**.tsx" --with-filename`;
-        const output = execSync(cmd, { encoding: 'utf-8' });
-        output.split('\n').filter(l => l.trim()).forEach(line => {
-            console.log(`❌ [LOGIC -> UI] ${line}`);
-        });
-    } catch (e) { /* No matches */ }
+    // Helper to normalize paths for consistent reporting
+    const normalize = (line) => line.replace(/\\/g, '/');
 
-    // Check Logic files for Native pollution
+    // Improved Boundary Check Helper
+    const runAuditRg = (pattern, globInclude, globExclude = []) => {
+        try {
+            const excludeFlags = globExclude.map(g => `-g "!${g}"`).join(' ');
+            // Anchor to the start of the relative path from srcDir
+            const includeFlags = `-g "{${globInclude}}/**"`; 
+            const cmd = `rg "${pattern}" "." ${includeFlags} ${excludeFlags} -g "**.ts" -g "**.tsx" --with-filename --no-heading --line-number`;
+            const output = execSync(cmd, { cwd: srcDir, encoding: 'utf-8' });
+            return output.split('\n').filter(l => l.trim());
+        } catch (e) {
+            return [];
+        }
+    };
+
+    const isIgnored = (line) => line.includes('@sovereign-ignore') || line.includes('architecture-ignore');
+
+    let violationCount = 0;
+
+    // 2a. Logic -> UI leaks
+    const uiMatches = runAuditRg('from.*\\b(components|screens|ui)\\b', 'logic,services,utils,lib,api,hooks,store', ['adapters/**']);
+    uiMatches.forEach(line => {
+        // Filter out false positives in JS
+        if (line.includes('.slice') || line.includes('.store') || line.includes('uiStore') || line.includes('ui.slice')) {
+            return;
+        }
+        if (isIgnored(line)) return;
+        
+        violationCount++;
+        console.log(`❌ [LOGIC -> UI] ${normalize(line)}`);
+    });
+
+    // 2b. Native pollution
+    const nativePattern = 'from.*\\b(react-native|expo-\\w+|@react-native-\\w+|@react-native-community\\/\\w+)\\b';
+    const nativeMatches = runAuditRg(nativePattern, 'logic,services,utils,lib,api,hooks', ['adapters/**', 'native/**']);
+    nativeMatches.forEach(line => {
+        // Explicitly filter out legitimate native holders that might have matched the logic pattern
+        // e.g. a hook specifically for native that is in a native subfolder
+        const normalizedLine = normalize(line);
+        if (normalizedLine.includes('/native/') || normalizedLine.includes('/adapters/')) {
+            return;
+        }
+        if (isIgnored(line)) return;
+        
+        violationCount++;
+        console.log(`❌ [NATIVE POLLUTION] ${normalizedLine}`);
+    });
+
+    if (violationCount === 0) {
+        console.log('✅ No boundary violations detected.');
+    }
+
+    // 3. UUID Consistency Check (Utility)
+    console.log('\n--- UUID Version Consistency ---');
     try {
-        const logicPattern = '{logic,services,utils}';
-        const nativeImportMatch = 'from.*(react-native|expo-)';
-        const cmd = `rg "${nativeImportMatch}" "${srcDir}" -g "**/$logicPattern/**" -g "**.ts" -g "**.tsx" --with-filename`;
-        const output = execSync(cmd, { encoding: 'utf-8' });
-        output.split('\n').filter(l => l.trim()).forEach(line => {
-             console.log(`❌ [NATIVE POLLUTION] ${line}`);
-        });
-    } catch (e) { /* No matches */ }
+        const v4Match = execSync(`rg "uuid.*v4" "${srcDir}" -l`, { encoding: 'utf-8' }).split('\n').filter(Boolean).length;
+        const v7Match = execSync(`rg "uuid.*v7" "${srcDir}" -l`, { encoding: 'utf-8' }).split('\n').filter(Boolean).length;
+        if (v4Match > 0 && v7Match > 0) {
+            console.log(`⚠️  Mixed UUID versions detected: v4 (${v4Match} files) and v7 (${v7Match} files). Consider standardizing on v7.`);
+        } else if (v7Match > 0) {
+            console.log('✅ Standardized on UUID v7.');
+        } else if (v4Match > 0) {
+            console.log('⚠️  Using legacy UUID v4. Consider upgrading to v7 for sortability.');
+        }
+    } catch (e) { /* No UUIDs */ }
 } else {
     console.log('⚠️  src/ folder not found.');
 }
 
 console.log('\n--- Tree-Shaking Hygiene ---');
-const srcIndex = path.join(pkgBase, 'src', 'index.ts');
-if (fs.existsSync(srcIndex)) {
-    const content = fs.readFileSync(srcIndex, 'utf-8');
-    if (content.match(/export\s+\*\s+from/)) {
-        console.log('⚠️  Wildcard exports found in src/index.ts. Consider named exports for better tree-shaking.');
-    } else {
-        console.log('✅ Explicit exports found in root barrel file.');
-    }
+try {
+    const indices = execSync(`rg -g "**/index.ts" --files "${srcDir}"`, { encoding: 'utf-8' }).split('\n').filter(Boolean);
+    indices.forEach(idxPath => {
+        const fullPath = path.isAbsolute(idxPath) ? idxPath : path.join(srcDir, idxPath);
+        const content = fs.readFileSync(fullPath, 'utf-8');
+        const wildcardMatch = content.match(/^export\s+\*\s+from/m);
+        const relPath = path.relative(pkgBase, fullPath);
+        if (wildcardMatch) {
+            console.log(`⚠️  Wildcard exports in ${relPath}. Consider named exports.`);
+        } else {
+            console.log(`✅ Named exports in ${relPath}.`);
+        }
+    });
+} catch (e) {
+    console.log('⚠️  Could not check tree-shaking hygiene.');
 }

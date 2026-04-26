@@ -5,7 +5,7 @@ import { useTheme } from '../../../hooks/useTheme';
 
 /**
  * Slider Component
- * 
+ *
  * A high-impact, hardened value picker.
  * Optimized for platform-native interaction with design system color integration.
  */

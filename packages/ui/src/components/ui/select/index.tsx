@@ -95,11 +95,7 @@ export const SelectInput = ({ className, placeholder, value: propValue, ...props
 export const SelectIcon = ({ as: Icon, className, size = 18, ...props }: any) => {
   if (!Icon) return null;
   return (
-    <Icon
-      {...props}
-      size={size}
-      className={`text-phaseText-secondary ml-2 ${className || ''}`}
-    />
+    <Icon {...props} size={size} className={`text-phaseText-secondary ml-2 ${className || ''}`} />
   );
 };
 

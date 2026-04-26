@@ -1,5 +1,4 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Platform } from 'react-native';
+import { storage } from './storage';
 
 export type PendingGateAction =
   | { kind: 'community_open_create_group'; createdAt: number }
@@ -9,24 +8,14 @@ export type PendingGateAction =
 
 const STORAGE_KEY = '__pending_gate_action_v1';
 
-function canUseSessionStorage(): boolean {
-  return Platform.OS === 'web' && typeof window !== 'undefined' && !!window.sessionStorage;
-}
-
 export async function setPendingGateAction(action: PendingGateAction): Promise<void> {
   const payload = JSON.stringify(action);
-  if (canUseSessionStorage()) {
-    window.sessionStorage.setItem(STORAGE_KEY, payload);
-    return;
-  }
-  await AsyncStorage.setItem(STORAGE_KEY, payload);
+  storage.set(STORAGE_KEY, payload);
 }
 
 export async function getPendingGateAction(): Promise<PendingGateAction | null> {
   try {
-    const raw = canUseSessionStorage()
-      ? window.sessionStorage.getItem(STORAGE_KEY)
-      : await AsyncStorage.getItem(STORAGE_KEY);
+    const raw = await storage.getStringAsync(STORAGE_KEY);
     if (!raw) return null;
     return JSON.parse(raw) as PendingGateAction;
   } catch {
@@ -35,9 +24,5 @@ export async function getPendingGateAction(): Promise<PendingGateAction | null> 
 }
 
 export async function clearPendingGateAction(): Promise<void> {
-  if (canUseSessionStorage()) {
-    window.sessionStorage.removeItem(STORAGE_KEY);
-    return;
-  }
-  await AsyncStorage.removeItem(STORAGE_KEY);
+  storage.delete(STORAGE_KEY);
 }

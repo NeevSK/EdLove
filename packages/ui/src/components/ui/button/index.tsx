@@ -148,7 +148,9 @@ export const ButtonText = React.forwardRef<Text, TextProps & { className?: strin
     };
 
     const colorStyle =
-      variant === 'solid' ? textColors.solid : (textColors[variant!] as any)?.[action!] || 'text-phase-text-primary';
+      variant === 'solid'
+        ? textColors.solid
+        : (textColors[variant!] as any)?.[action!] || 'text-phase-text-primary';
 
     return (
       <Text

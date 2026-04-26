@@ -6,7 +6,7 @@ cssInterop(View, { className: 'style' });
 
 /**
  * Progress Component
- * 
+ *
  * A high-impact, hardened feedback primitive.
  * Optimized for smooth visual progression and theme consistency.
  */
@@ -57,21 +57,20 @@ export const Progress = React.forwardRef<View, IProgressProps>(
   },
 );
 
-export const ProgressFilledTrack = React.forwardRef<
-  View,
-  ViewProps & { className?: string }
->(({ className, ...props }, ref) => {
-  const { value } = useProgress();
-  
-  return (
-    <View
-      {...props}
-      ref={ref}
-      style={{ width: `${Math.min(100, Math.max(0, value))}%` }}
-      className={`h-full bg-phase-accent rounded-full transition-all duration-300 ${className || ''}`}
-    />
-  );
-});
+export const ProgressFilledTrack = React.forwardRef<View, ViewProps & { className?: string }>(
+  ({ className, ...props }, ref) => {
+    const { value } = useProgress();
+
+    return (
+      <View
+        {...props}
+        ref={ref}
+        style={{ width: `${Math.min(100, Math.max(0, value))}%` }}
+        className={`h-full bg-phase-accent rounded-full transition-all duration-300 ${className || ''}`}
+      />
+    );
+  },
+);
 
 Progress.displayName = 'Progress';
 ProgressFilledTrack.displayName = 'ProgressFilledTrack';

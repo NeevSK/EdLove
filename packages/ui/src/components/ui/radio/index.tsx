@@ -8,7 +8,7 @@ cssInterop(Text, { className: 'style' });
 
 /**
  * Radio Component
- * 
+ *
  * A high-impact form primitive for single-choice selection.
  * Hardened for type safety and synchronized group behavior.
  */
@@ -38,33 +38,41 @@ function useRadio() {
 
 // --- Sub-components ---
 
-export const RadioIndicator = ({ children, className }: { children?: React.ReactNode; className?: string }) => {
+export const RadioIndicator = ({
+  children,
+  className,
+}: {
+  children?: React.ReactNode;
+  className?: string;
+}) => {
   const { isChecked, isDisabled, isInvalid } = useRadio();
-  
+
   return (
     <View
       className={`
         w-6 h-6 rounded-full border-2 items-center justify-center transition-all duration-200
-        ${isChecked 
-            ? 'border-phase-accent' 
-            : 'border-phase-interactive/30'}
+        ${isChecked ? 'border-phase-accent' : 'border-phase-interactive/30'}
         ${isInvalid ? 'border-phase-danger' : ''}
         ${isDisabled ? 'opacity-40' : ''}
         ${className || ''}
       `}
     >
-      {isChecked && (
-        <View className="w-3 h-3 rounded-full bg-phase-accent" />
-      )}
+      {isChecked && <View className="w-3 h-3 rounded-full bg-phase-accent" />}
       {children}
     </View>
   );
 };
 
-export const RadioLabel = ({ children, className }: { children: React.ReactNode; className?: string }) => {
+export const RadioLabel = ({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) => {
   const { isDisabled } = useRadio();
   return (
-    <Text 
+    <Text
       className={`text-phase-text-primary ml-3 text-base font-medium tracking-tight ${isDisabled ? 'opacity-50' : ''} ${className || ''}`}
     >
       {children}
@@ -91,7 +99,7 @@ export const Radio = ({
   ...props
 }: IRadioProps) => {
   const groupContext = useContext(RadioGroupContext);
-  
+
   const isChecked = groupContext ? groupContext.value === value : false;
   const isDisabled = isDisabledProp || groupContext?.isDisabled || false;
 
@@ -100,11 +108,14 @@ export const Radio = ({
     groupContext?.onValueChange(value);
   };
 
-  const contextValue = useMemo(() => ({
-    isChecked,
-    isDisabled,
-    isInvalid,
-  }), [isChecked, isDisabled, isInvalid]);
+  const contextValue = useMemo(
+    () => ({
+      isChecked,
+      isDisabled,
+      isInvalid,
+    }),
+    [isChecked, isDisabled, isInvalid],
+  );
 
   return (
     <RadioContext.Provider value={contextValue}>
@@ -125,10 +136,10 @@ export const Radio = ({
   );
 };
 
-export const RadioGroup = ({ 
-  children, 
-  value, 
-  onChange, 
+export const RadioGroup = ({
+  children,
+  value,
+  onChange,
   isDisabled,
   className,
   ...props
@@ -139,11 +150,14 @@ export const RadioGroup = ({
   isDisabled?: boolean;
   className?: string;
 } & ViewProps) => {
-  const contextValue = useMemo(() => ({
-    value,
-    onValueChange: (val: string) => onChange?.(val),
-    isDisabled,
-  }), [value, onChange, isDisabled]);
+  const contextValue = useMemo(
+    () => ({
+      value,
+      onValueChange: (val: string) => onChange?.(val),
+      isDisabled,
+    }),
+    [value, onChange, isDisabled],
+  );
 
   return (
     <RadioGroupContext.Provider value={contextValue}>

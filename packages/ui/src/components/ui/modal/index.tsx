@@ -10,7 +10,7 @@ cssInterop(View, { className: 'style' });
 
 /**
  * Modal Component
- * 
+ *
  * A high-impact, hardened dialog primitive.
  * Enforces architectural boundaries and design system consistency.
  */
@@ -87,7 +87,9 @@ export const ModalBody = ({ children, className }: any) => (
 );
 
 export const ModalFooter = ({ children, className }: any) => (
-  <Box className={`px-6 py-5 border-t border-phase-interactive/5 flex-row justify-end gap-4 ${className || ''}`}>
+  <Box
+    className={`px-6 py-5 border-t border-phase-interactive/5 flex-row justify-end gap-4 ${className || ''}`}
+  >
     {children}
   </Box>
 );
@@ -95,8 +97,8 @@ export const ModalFooter = ({ children, className }: any) => (
 export const ModalCloseButton = ({ children, onPress, ...props }: any) => {
   const { onClose } = useModal();
   return (
-    <Box 
-      {...props} 
+    <Box
+      {...props}
       onPress={() => {
         onClose();
         onPress?.();

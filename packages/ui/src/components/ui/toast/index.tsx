@@ -8,7 +8,7 @@ cssInterop(View, { className: 'style' });
 
 /**
  * Toast Component
- * 
+ *
  * A high-impact, hardened primitive for system feedback.
  * Synchronized with Sanctuary V3 action behaviors.
  */
@@ -50,9 +50,7 @@ export const Toast = ({
     attention: 'bg-phase-accent border-amber-500/20',
   };
 
-  const variantStyles = variant === 'outline' 
-    ? 'bg-phase-elevated border-2' 
-    : 'border shadow-2xl';
+  const variantStyles = variant === 'outline' ? 'bg-phase-elevated border-2' : 'border shadow-2xl';
 
   return (
     <ToastContext.Provider value={contextValue}>
@@ -66,21 +64,29 @@ export const Toast = ({
   );
 };
 
-export const ToastTitle = ({ children, className }: { children: React.ReactNode; className?: string }) => {
+export const ToastTitle = ({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) => {
   return (
-    <Text 
-      className={`text-white font-bold text-base tracking-tight ${className || ''}`}
-    >
+    <Text className={`text-white font-bold text-base tracking-tight ${className || ''}`}>
       {children}
     </Text>
   );
 };
 
-export const ToastDescription = ({ children, className }: { children: React.ReactNode; className?: string }) => {
+export const ToastDescription = ({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) => {
   return (
-    <Text 
-      className={`text-white/90 text-sm font-medium leading-tight ${className || ''}`}
-    >
+    <Text className={`text-white/90 text-sm font-medium leading-tight ${className || ''}`}>
       {children}
     </Text>
   );

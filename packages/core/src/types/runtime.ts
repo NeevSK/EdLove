@@ -32,7 +32,10 @@ export interface LinkingProvider {
 
 export interface LocationProvider {
   requestPermissionsAsync: () => Promise<{ status: string }>;
-  watchPositionAsync: (options: any, callback: (location: any) => void) => Promise<{ remove: () => void }>;
+  watchPositionAsync: (
+    options: any,
+    callback: (location: any) => void,
+  ) => Promise<{ remove: () => void }>;
   Accuracy: Record<string, any>;
 }
 

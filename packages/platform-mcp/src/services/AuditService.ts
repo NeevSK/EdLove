@@ -1,6 +1,8 @@
 import { execSync } from "child_process";
+import fs from "fs";
+import path from "path";
 import { ROOT_DIR } from "../utils/constants.js";
-import { normalizeTarget, readReport } from "../utils/pathUtils.js";
+import { normalizeTarget, readReport, findSurgicalReport } from "../utils/pathUtils.js";
 import { executeSovereignTool } from "../utils/execution.js";
 
 
@@ -43,14 +45,23 @@ export class AuditService {
     return { content: [{ type: 'text' as const, text: output }] };
   }
 
-  handleLintPackage(args: { target?: string }) {
+  handleLintPackage(args: { target?: string, fix?: boolean }) {
     const target = normalizeTarget(args.target || '.');
-    console.error(`Biome linting for: ${target}`);
+    const fixFlag = args.fix ? '--fix' : '';
+    console.error(`Biome linting for: ${target} ${fixFlag}`);
     const output = execSync(
-      `powershell -ExecutionPolicy Bypass -File scripts/biome-audit.ps1 -Target "${target}"`,
+      `powershell -ExecutionPolicy Bypass -File scripts/biome-audit.ps1 -Target "${target}" ${fixFlag}`,
       { cwd: ROOT_DIR },
     ).toString();
     return { content: [{ type: 'text' as const, text: output }] };
+  }
+
+  handleBiomeCheck(args: { target?: string, write?: boolean }) {
+    const target = normalizeTarget(args.target || '.');
+    const writeFlag = args.write ? '--write' : '';
+    console.error(`Biome check for: ${target} ${writeFlag}`);
+    const output = execSync(`npx biome check ${writeFlag} "${target}"`, { cwd: ROOT_DIR }).toString();
+    return { content: [{ type: "text" as const, text: output }] };
   }
 
   handleAuditLegacyUI(args: { target?: string }) {
@@ -143,6 +154,40 @@ export class AuditService {
       `node scripts/audit-feature-fidelity.mjs ${includeArchives ? '--includeArchives' : ''}`
     );
     return { content: [{ type: "text" as const, text: result.output }] };
+  }
+
+  handleSyncpackFix() {
+    console.error("Fixing dependency mismatches (syncpack)...");
+    const output = execSync("pnpm exec syncpack fix-mismatches", { cwd: ROOT_DIR }).toString();
+    return { content: [{ type: "text" as const, text: output }] };
+  }
+
+  handleCheckTypes(args: { package?: string }) {
+    const rawTarget = args.package || "";
+    const cleanTarget = rawTarget.replace(/^@repo\/|^@app\/|^\/|^\.\\|^.\//, "");
+    
+    if (cleanTarget) {
+      const rootSummary = path.join(ROOT_DIR, `audit-${cleanTarget}-summary.txt`);
+      if (fs.existsSync(rootSummary)) fs.unlinkSync(rootSummary);
+
+      try {
+        const output = execSync(`powershell -ExecutionPolicy Bypass -File scripts/audit-errors.ps1 -Target "${cleanTarget}" -LocalOnly`, { cwd: ROOT_DIR }).toString();
+        const summary = findSurgicalReport(`audit-${cleanTarget}-summary.txt`, cleanTarget);
+        return { content: [{ type: "text" as const, text: output }, { type: "text" as const, text: summary }] };
+      } catch (e: any) {
+        const summary = findSurgicalReport(`audit-${cleanTarget}-summary.txt`, cleanTarget);
+        return { content: [{ type: "text" as const, text: e.message }, { type: "text" as const, text: summary }], isError: true };
+      }
+    } else {
+      try {
+        const output = execSync(`powershell -ExecutionPolicy Bypass -File scripts/audit-wrapper.ps1 -Cmd "pnpm turbo run check-types" -Log "reports/check-types.txt"`, { cwd: ROOT_DIR }).toString();
+        const report = readReport("check-types.txt");
+        return { content: [{ type: "text" as const, text: output }, { type: "text" as const, text: report }] };
+      } catch (e: any) {
+        const report = readReport("check-types.txt");
+        return { content: [{ type: "text" as const, text: e.message }, { type: "text" as const, text: report }], isError: true };
+      }
+    }
   }
 }
 

@@ -8,7 +8,7 @@ cssInterop(Text, { className: 'style' });
 
 /**
  * Avatar Component
- * 
+ *
  * A high-impact identity primitive.
  * Hardened for consistent sizing, fallbacks, and design system fidelity.
  */
@@ -27,7 +27,12 @@ function useAvatar() {
   return context;
 }
 
-export const Avatar = ({ children, className, size = 'md', ...props }: { size?: AvatarSize; children?: React.ReactNode; className?: string } & ViewProps) => {
+export const Avatar = ({
+  children,
+  className,
+  size = 'md',
+  ...props
+}: { size?: AvatarSize; children?: React.ReactNode; className?: string } & ViewProps) => {
   const sizeMap: Record<AvatarSize, string> = {
     xs: 'w-6 h-6',
     sm: 'w-8 h-8',
@@ -51,9 +56,15 @@ export const Avatar = ({ children, className, size = 'md', ...props }: { size?: 
   );
 };
 
-export const AvatarFallbackText = ({ children, className }: { children: React.ReactNode; className?: string }) => {
+export const AvatarFallbackText = ({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) => {
   const { size } = useAvatar();
-  
+
   const fontSizeMap: Record<AvatarSize, string> = {
     xs: 'text-[10px]',
     sm: 'text-xs',
@@ -64,7 +75,7 @@ export const AvatarFallbackText = ({ children, className }: { children: React.Re
   };
 
   return (
-    <Text 
+    <Text
       className={`font-bold text-phase-text-primary tracking-tighter ${fontSizeMap[size] || fontSizeMap.md} ${className || ''}`}
     >
       {children}
@@ -73,10 +84,10 @@ export const AvatarFallbackText = ({ children, className }: { children: React.Re
 };
 
 export const AvatarImage = ({ source, className }: any) => (
-  <Image 
-    source={source} 
-    className={`w-full h-full absolute inset-0 ${className || ''}`} 
-    resizeMode="cover" 
+  <Image
+    source={source}
+    className={`w-full h-full absolute inset-0 ${className || ''}`}
+    resizeMode="cover"
   />
 );
 

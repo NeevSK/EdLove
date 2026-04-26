@@ -1,8 +1,8 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { Session } from '@supabase/supabase-js';
 import { deviceTrustAPI } from '../api/deviceTrust';
 import { accountPin } from '../lib/accountPin';
 import { getActiveAccountId, setActiveAccountId } from '../lib/accountScope';
+import { storage } from '../lib/storage';
 import {
   clearLegacySupabaseSession,
   getStoredSessionForAccount,
@@ -40,7 +40,7 @@ export interface DeviceAccountProfile {
 }
 
 async function readRegistry() {
-  const raw = await AsyncStorage.getItem(ACCOUNTS_REGISTRY_KEY);
+  const raw = storage.getString(ACCOUNTS_REGISTRY_KEY);
   if (!raw) return [] as DeviceAccountRecord[];
 
   try {
@@ -52,18 +52,18 @@ async function readRegistry() {
 }
 
 async function writeRegistry(accounts: DeviceAccountRecord[]) {
-  await AsyncStorage.setItem(ACCOUNTS_REGISTRY_KEY, JSON.stringify(accounts));
+  storage.set(ACCOUNTS_REGISTRY_KEY, JSON.stringify(accounts));
 }
 
 async function setActiveAccount(accountId: string | null) {
   setActiveAccountId(accountId);
 
   if (accountId) {
-    await AsyncStorage.setItem(ACTIVE_ACCOUNT_KEY, accountId);
+    storage.set(ACTIVE_ACCOUNT_KEY, accountId);
     return;
   }
 
-  await AsyncStorage.removeItem(ACTIVE_ACCOUNT_KEY);
+  storage.delete(ACTIVE_ACCOUNT_KEY);
 }
 
 function toSessionTokens(session: Session) {
@@ -75,8 +75,8 @@ function toSessionTokens(session: Session) {
 
 export const deviceAccounts = {
   async initialize() {
-    const storedActive = await AsyncStorage.getItem(ACTIVE_ACCOUNT_KEY);
-    setActiveAccountId(storedActive);
+    const storedActive = storage.getString(ACTIVE_ACCOUNT_KEY);
+    setActiveAccountId(storedActive || null);
     return storedActive;
   },
 
@@ -275,7 +275,7 @@ export const deviceAccounts = {
       ),
     );
     await writeRegistry([]);
-    await AsyncStorage.removeItem(ACTIVE_ACCOUNT_KEY);
+    storage.delete(ACTIVE_ACCOUNT_KEY);
     identityAPI.clearCache();
     await setActiveAccount(null);
     resetScopedStores();

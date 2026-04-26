@@ -4,7 +4,7 @@ import { SafeZustandStorage } from '../../lib/storageWrapper';
 import { generateIdempotencyKey } from './idempotency';
 import type { MutationQueueState, QueuedMutation } from './types';
 import 'react-native-get-random-values';
-import { v4 as uuidv4 } from 'uuid';
+import { v7 as uuidv7 } from 'uuid';
 
 /**
  * useMutationQueue
@@ -38,7 +38,7 @@ export const useMutationQueue = create<MutationQueueState>()(
 
         const newMutation: QueuedMutation = {
           ...mutation,
-          id: uuidv4(),
+          id: uuidv7(),
           idempotencyKey,
           timestamp: Date.now(),
           retryCount: 0,

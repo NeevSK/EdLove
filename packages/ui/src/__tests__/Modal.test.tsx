@@ -7,7 +7,7 @@ describe('Modal Component (Robustness)', () => {
     const { queryByText } = await render(
       <Modal isOpen={false} onClose={() => {}}>
         <ModalBody>Modal Content</ModalBody>
-      </Modal>
+      </Modal>,
     );
     expect(queryByText('Modal Content')).toBeNull();
   });
@@ -16,7 +16,7 @@ describe('Modal Component (Robustness)', () => {
     const { getByText } = await render(
       <Modal isOpen={true} onClose={() => {}}>
         <ModalBody>Modal Content</ModalBody>
-      </Modal>
+      </Modal>,
     );
     expect(getByText('Modal Content')).toBeTruthy();
   });
@@ -27,7 +27,7 @@ describe('Modal Component (Robustness)', () => {
         <ModalHeader>Title</ModalHeader>
         <ModalBody>Body</ModalBody>
         <ModalFooter>Footer</ModalFooter>
-      </Modal>
+      </Modal>,
     );
     expect(getByText('Title')).toBeTruthy();
     expect(getByText('Body')).toBeTruthy();

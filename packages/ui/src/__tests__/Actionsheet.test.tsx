@@ -14,7 +14,7 @@ describe('Actionsheet Component (Robustness)', () => {
         <ActionsheetContent>
           <ActionsheetItemText>Item 1</ActionsheetItemText>
         </ActionsheetContent>
-      </Actionsheet>
+      </Actionsheet>,
     );
     expect(queryByText('Item 1')).toBeNull();
   });
@@ -25,7 +25,7 @@ describe('Actionsheet Component (Robustness)', () => {
         <ActionsheetContent>
           <ActionsheetItemText>Item 1</ActionsheetItemText>
         </ActionsheetContent>
-      </Actionsheet>
+      </Actionsheet>,
     );
     expect(getByText('Item 1')).toBeTruthy();
   });
@@ -37,9 +37,9 @@ describe('Actionsheet Component (Robustness)', () => {
         <ActionsheetContent>
           <ActionsheetItemText>Item 1</ActionsheetItemText>
         </ActionsheetContent>
-      </Actionsheet>
+      </Actionsheet>,
     );
-    
+
     // The Overlay usually provides the backdrop
     // We expect the implementation to use a pressable backdrop
   });
@@ -53,9 +53,9 @@ describe('Actionsheet Component (Robustness)', () => {
             <ActionsheetItemText>Select Me</ActionsheetItemText>
           </ActionsheetItem>
         </ActionsheetContent>
-      </Actionsheet>
+      </Actionsheet>,
     );
-    
+
     fireEvent.press(getByText('Select Me'));
     expect(onItemPress).toHaveBeenCalled();
   });

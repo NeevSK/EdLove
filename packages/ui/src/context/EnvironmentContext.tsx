@@ -22,9 +22,7 @@ export function EnvironmentProvider({ children }: { children: ReactNode }) {
     <LanguageProvider>
       <RealityProvider>
         <ThemeProvider>
-          <FidelityProvider>
-            {children}
-          </FidelityProvider>
+          <FidelityProvider>{children}</FidelityProvider>
         </ThemeProvider>
       </RealityProvider>
     </LanguageProvider>
@@ -42,57 +40,60 @@ export function useEnvironment(): EnvironmentContextValue {
 
   const { reality, refreshReality } = useReality();
   const { language, setLanguage } = useLanguage();
-  const { 
-    themeMode, 
-    temporalPhase, 
-    isDark, 
-    isVeilActive, 
-    enableLivingTheme, 
-    setThemeMode, 
-    toggleVeil, 
-    setEnableLivingTheme 
+  const {
+    themeMode,
+    temporalPhase,
+    isDark,
+    isVeilActive,
+    enableLivingTheme,
+    setThemeMode,
+    toggleVeil,
+    setEnableLivingTheme,
   } = useThemeContext();
   const { fidelityLevel, effectiveFidelity, setFidelityLevel } = useFidelity();
 
   // Aggregate into a single memoized value to minimize blast radius for legacy consumers
-  return useMemo(() => ({
-    // State
-    authority,
-    themeMode,
-    temporalPhase,
-    isDark,
-    fidelityLevel,
-    effectiveFidelity,
-    language,
-    reality,
-    isVeilActive,
-    enableLivingTheme,
+  return useMemo(
+    () => ({
+      // State
+      authority,
+      themeMode,
+      temporalPhase,
+      isDark,
+      fidelityLevel,
+      effectiveFidelity,
+      language,
+      reality,
+      isVeilActive,
+      enableLivingTheme,
 
-    // Actions
-    setThemeMode,
-    setFidelityLevel,
-    setLanguage,
-    toggleVeil,
-    refreshReality,
-    setEnableLivingTheme,
-  }), [
-    authority,
-    themeMode,
-    temporalPhase,
-    isDark,
-    fidelityLevel,
-    effectiveFidelity,
-    language,
-    reality,
-    isVeilActive,
-    enableLivingTheme,
-    setThemeMode,
-    setFidelityLevel,
-    setLanguage,
-    toggleVeil,
-    refreshReality,
-    setEnableLivingTheme
-  ]);
+      // Actions
+      setThemeMode,
+      setFidelityLevel,
+      setLanguage,
+      toggleVeil,
+      refreshReality,
+      setEnableLivingTheme,
+    }),
+    [
+      authority,
+      themeMode,
+      temporalPhase,
+      isDark,
+      fidelityLevel,
+      effectiveFidelity,
+      language,
+      reality,
+      isVeilActive,
+      enableLivingTheme,
+      setThemeMode,
+      setFidelityLevel,
+      setLanguage,
+      toggleVeil,
+      refreshReality,
+      setEnableLivingTheme,
+    ],
+  );
 }
 
 // Re-export utility functions

@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
-import { useFeatureStore } from '../../../store/useFeatureStore';
 import { useAuthStore } from '../../../store/useAuthStore';
+import { useFeatureStore } from '../../../store/useFeatureStore';
 import { useTenantStore } from '../../../store/useTenantStore';
 import type { Role } from '../../schemas/role.schema';
 import { type TenantKind, type UserContext, UserContextSchema } from '../../schemas/user.schema';
@@ -51,20 +51,23 @@ export const usePermissions = () => {
   const ability = useMemo(() => composeUserAbilities(context), [context]);
 
   // 3. Return ability and context (10 Pillars: Referential Stability)
-  return useMemo(() => ({
-    ability,
-    context,
-    flags,
-    /**
-     * can: Check if action on subject is allowed.
-     * usage: can('read', 'School')
-     */
-    can: (action: Actions, subject: SubjectType, field?: string) =>
-      ability.can(action, subject as any, field),
-    /**
-     * cannot: Check if action on subject is forbidden.
-     */
-    cannot: (action: Actions, subject: SubjectType, field?: string) =>
-      ability.cannot(action, subject as any, field),
-  }), [ability, context, flags]);
+  return useMemo(
+    () => ({
+      ability,
+      context,
+      flags,
+      /**
+       * can: Check if action on subject is allowed.
+       * usage: can('read', 'School')
+       */
+      can: (action: Actions, subject: SubjectType, field?: string) =>
+        ability.can(action, subject as any, field),
+      /**
+       * cannot: Check if action on subject is forbidden.
+       */
+      cannot: (action: Actions, subject: SubjectType, field?: string) =>
+        ability.cannot(action, subject as any, field),
+    }),
+    [ability, context, flags],
+  );
 };

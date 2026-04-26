@@ -1,5 +1,5 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useEffect, useReducer, useCallback, useRef } from 'react';
+import { useCallback, useEffect, useReducer, useRef } from 'react';
+import { storage } from '../lib/storage';
 
 const PERSISTENCE_KEY = 'GURUDEVI_SCHOOL_CREATION_STATE';
 
@@ -96,7 +96,7 @@ export function useSchoolCreation() {
   useEffect(() => {
     async function loadState() {
       try {
-        const savedState = await AsyncStorage.getItem(PERSISTENCE_KEY);
+        const savedState = await storage.getStringAsync(PERSISTENCE_KEY);
         if (savedState) {
           dispatch({ type: 'SET_STATE', payload: JSON.parse(savedState) });
         }
@@ -112,7 +112,7 @@ export function useSchoolCreation() {
   // Persist state changes
   useEffect(() => {
     if (isLoaded.current) {
-      AsyncStorage.setItem(PERSISTENCE_KEY, JSON.stringify(state));
+      storage.set(PERSISTENCE_KEY, JSON.stringify(state));
     }
   }, [state]);
 
@@ -137,7 +137,7 @@ export function useSchoolCreation() {
   }, []);
 
   const resetProgress = useCallback(async () => {
-    await AsyncStorage.removeItem(PERSISTENCE_KEY);
+    storage.delete(PERSISTENCE_KEY);
     dispatch({ type: 'RESET' });
   }, []);
 

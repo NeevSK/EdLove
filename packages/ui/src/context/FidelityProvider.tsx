@@ -1,7 +1,15 @@
-import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode, useMemo } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  ReactNode,
+  useMemo,
+} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { FidelityLevel } from '../types';
-import { computeEffectiveFidelity } from '../utils';
+import { FidelityLevel } from './types';
+import { computeEffectiveFidelity } from './utils';
 import { useReality } from './RealityProvider';
 
 interface FidelityContextValue {
@@ -26,9 +34,10 @@ export function FidelityProvider({ children }: { children: ReactNode }) {
     loadFidelity();
   }, []);
 
-  const effectiveFidelity = useMemo(() => 
-    computeEffectiveFidelity(fidelityLevel, reality.deviceTier),
-  [fidelityLevel, reality.deviceTier]);
+  const effectiveFidelity = useMemo(
+    () => computeEffectiveFidelity(fidelityLevel, reality.deviceTier),
+    [fidelityLevel, reality.deviceTier],
+  );
 
   const setFidelityLevel = useCallback(async (level: FidelityLevel) => {
     setFidelityLevelState(level);
@@ -39,11 +48,14 @@ export function FidelityProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const value = useMemo(() => ({
-    fidelityLevel,
-    effectiveFidelity,
-    setFidelityLevel
-  }), [fidelityLevel, effectiveFidelity, setFidelityLevel]);
+  const value = useMemo(
+    () => ({
+      fidelityLevel,
+      effectiveFidelity,
+      setFidelityLevel,
+    }),
+    [fidelityLevel, effectiveFidelity, setFidelityLevel],
+  );
 
   return <FidelityContext.Provider value={value}>{children}</FidelityContext.Provider>;
 }

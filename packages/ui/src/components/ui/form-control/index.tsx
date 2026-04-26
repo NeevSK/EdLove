@@ -52,10 +52,7 @@ export const FormControlErrorIcon = ({ as: Icon, className, ...props }: any) => 
 export const FormControlErrorText = ({ children, className }: any) => {
   const { id } = React.useContext(FormControlContext);
   return (
-    <Text
-      nativeID={`${id}-error`}
-      className={`text-xs text-phase-danger ml-1 ${className || ''}`}
-    >
+    <Text nativeID={`${id}-error`} className={`text-xs text-phase-danger ml-1 ${className || ''}`}>
       {children}
     </Text>
   );

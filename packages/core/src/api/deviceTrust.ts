@@ -1,8 +1,8 @@
-import { v4 as uuidv4 } from 'uuid';
+import { v7 as uuidv7 } from 'uuid';
+import { coreRuntime } from '../logic/runtimeRegistry';
 import { identityAPI } from '../native/identity';
 import { supabase } from '../native/supabase';
 import { APIError } from '../types';
-import { coreRuntime } from '../logic/runtimeRegistry';
 
 const DEVICE_INSTALL_ID_KEY = 'gurudevi-device-install-id';
 const SERVER_DEVICE_ID_KEY = 'gurudevi-server-device-id';
@@ -59,7 +59,7 @@ async function getOrCreateInstallId() {
   const existing = await coreRuntime.storage.getItem(DEVICE_INSTALL_ID_KEY);
   if (existing) return existing;
 
-  const next = uuidv4();
+  const next = uuidv7();
   await coreRuntime.storage.setItem(DEVICE_INSTALL_ID_KEY, next);
   return next;
 }
@@ -71,7 +71,6 @@ async function getStoredServerDeviceId() {
 async function setStoredServerDeviceId(deviceId: string) {
   await coreRuntime.storage.setItem(SERVER_DEVICE_ID_KEY, deviceId);
 }
-
 
 function unwrapRpcRow<T>(data: T[] | T | null): T | null {
   if (Array.isArray(data)) {

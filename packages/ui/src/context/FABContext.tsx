@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useCallback, useMemo, ReactNode } from 'react';
 import { ActionItem, TabType } from '../types/fab';
 export type { ActionItem, TabType };
 
@@ -43,18 +43,12 @@ export const FABProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setState((prev) => ({ ...prev, visible }));
   }, []);
 
-  const value = useMemo(() => ({ state, registerFAB, unregisterFAB, setVisibility }), [
-    state,
-    registerFAB,
-    unregisterFAB,
-    setVisibility,
-  ]);
-
-  return (
-    <FABContext.Provider value={value}>
-      {children}
-    </FABContext.Provider>
+  const value = useMemo(
+    () => ({ state, registerFAB, unregisterFAB, setVisibility }),
+    [state, registerFAB, unregisterFAB, setVisibility],
   );
+
+  return <FABContext.Provider value={value}>{children}</FABContext.Provider>;
 };
 
 export const useFAB = () => {

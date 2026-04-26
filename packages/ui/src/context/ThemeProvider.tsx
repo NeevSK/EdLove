@@ -1,9 +1,18 @@
-import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode, useMemo } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  ReactNode,
+  useMemo,
+} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useColorScheme } from 'react-native';
 import { useStore } from '@repo/core/logic';
-import { ThemeMode, TemporalPhase } from '../types';
-import { getTemporalPhase, shouldUseDarkTheme } from '../utils';
+import { ThemeMode, ColorSystem, ThemeConfig, TemporalPhase } from './types';
+import { generateThemeTokens, getSystemAppearance, getTemporalPhase, shouldUseDarkTheme } from './utils';
+import { useReality } from './RealityProvider';
 
 interface ThemeContextValue {
   themeMode: ThemeMode;
@@ -28,19 +37,21 @@ const ENABLE_EXPERIMENTAL_DARK_MODE = typeof __DEV__ !== 'undefined' ? __DEV__ :
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const themeMode = useStore((state: any) => state.themeMode);
   const setStoredThemeMode = useStore((state: any) => state.setThemeMode);
-  
+
   const [temporalPhase, setTemporalPhase] = useState<TemporalPhase>(() => getTemporalPhase());
   const [isVeilActive, setIsVeilActive] = useState(false);
   const [enableLivingTheme, setEnableLivingThemeState] = useState<boolean>(true);
   const systemColorScheme = useColorScheme();
 
   // Derived
-  const isDark = useMemo(() => 
-    ENABLE_EXPERIMENTAL_DARK_MODE &&
-    (themeMode === 'dark' ||
-      (themeMode === 'system' && systemColorScheme === 'dark') ||
-      (themeMode === 'auto' && shouldUseDarkTheme(temporalPhase))),
-  [themeMode, systemColorScheme, temporalPhase]);
+  const isDark = useMemo(
+    () =>
+      ENABLE_EXPERIMENTAL_DARK_MODE &&
+      (themeMode === 'dark' ||
+        (themeMode === 'system' && systemColorScheme === 'dark') ||
+        (themeMode === 'auto' && shouldUseDarkTheme(temporalPhase))),
+    [themeMode, systemColorScheme, temporalPhase],
+  );
 
   // Load Persisted
   useEffect(() => {
@@ -63,17 +74,20 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const update = () => {
       const next = getTemporalPhase();
-      setTemporalPhase(prev => prev !== next ? next : prev);
+      setTemporalPhase((prev) => (prev !== next ? next : prev));
     };
     update();
     const interval = setInterval(update, 60000);
     return () => clearInterval(interval);
   }, []);
 
-  const setThemeMode = useCallback((mode: ThemeMode) => {
-    setStoredThemeMode(mode);
-    if (mode === 'auto') setTemporalPhase(getTemporalPhase());
-  }, [setStoredThemeMode]);
+  const setThemeMode = useCallback(
+    (mode: ThemeMode) => {
+      setStoredThemeMode(mode);
+      if (mode === 'auto') setTemporalPhase(getTemporalPhase());
+    },
+    [setStoredThemeMode],
+  );
 
   const toggleVeil = useCallback(async () => {
     const newValue = !isVeilActive;
@@ -94,16 +108,28 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const value = useMemo(() => ({
-    themeMode,
-    temporalPhase,
-    isDark,
-    isVeilActive,
-    enableLivingTheme,
-    setThemeMode,
-    toggleVeil,
-    setEnableLivingTheme
-  }), [themeMode, temporalPhase, isDark, isVeilActive, enableLivingTheme, setThemeMode, toggleVeil, setEnableLivingTheme]);
+  const value = useMemo(
+    () => ({
+      themeMode,
+      temporalPhase,
+      isDark,
+      isVeilActive,
+      enableLivingTheme,
+      setThemeMode,
+      toggleVeil,
+      setEnableLivingTheme,
+    }),
+    [
+      themeMode,
+      temporalPhase,
+      isDark,
+      isVeilActive,
+      enableLivingTheme,
+      setThemeMode,
+      toggleVeil,
+      setEnableLivingTheme,
+    ],
+  );
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 }

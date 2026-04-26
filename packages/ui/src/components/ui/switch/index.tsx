@@ -4,7 +4,7 @@ import { useTheme } from '../../../hooks/useTheme';
 
 /**
  * Switch Component
- * 
+ *
  * A high-impact, hardened binary toggle primitive.
  * Optimized for platform-native feel with design system color synchronization.
  */
@@ -14,13 +14,13 @@ export interface ISwitchProps extends SwitchProps {
   isDisabled?: boolean;
 }
 
-export const Switch = ({ 
-  value, 
-  onValueChange, 
-  isDisabled, 
-  className, 
+export const Switch = ({
+  value,
+  onValueChange,
+  isDisabled,
+  className,
   trackColor: trackColorProp,
-  ...props 
+  ...props
 }: ISwitchProps) => {
   const { accent } = useTheme();
 
@@ -40,7 +40,7 @@ export const Switch = ({
       onValueChange={onValueChange}
       disabled={isDisabled}
       trackColor={trackColorProp || defaultTrackColor}
-      thumbColor={Platform.OS === 'ios' ? '#FFFFFF' : (value ? '#FFFFFF' : '#f4f3f4')}
+      thumbColor={Platform.OS === 'ios' ? '#FFFFFF' : value ? '#FFFFFF' : '#f4f3f4'}
       ios_backgroundColor={inactiveTrackColor}
       // Apply className via style bridge if needed, but NativeWind handles RNSwitch
       style={[{ transform: [{ scale: Platform.OS === 'ios' ? 0.8 : 1 }] }]}

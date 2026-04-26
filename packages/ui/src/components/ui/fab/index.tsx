@@ -7,7 +7,7 @@ cssInterop(Pressable, { className: 'style' });
 
 /**
  * Fab (Floating Action Button)
- * 
+ *
  * A high-impact interaction primitive.
  * Enforces architectural boundaries for overlays and semantic labeling.
  */
@@ -26,17 +26,17 @@ function useFab() {
   return context;
 }
 
-export const Fab = ({ 
-  children, 
-  className, 
-  onPress, 
+export const Fab = ({
+  children,
+  className,
+  onPress,
   placement = 'bottom-right',
   size = 'md',
-  ...props 
-}: { 
-  children?: React.ReactNode; 
-  className?: string; 
-  onPress?: () => void; 
+  ...props
+}: {
+  children?: React.ReactNode;
+  className?: string;
+  onPress?: () => void;
   placement?: FabPlacement;
   size?: 'md' | 'lg';
 } & ViewProps) => {
@@ -65,13 +65,23 @@ export const Fab = ({
   );
 };
 
-export const FabLabel = ({ children, className }: { children: React.ReactNode; className?: string }) => (
-  <Text className={`font-bold text-white ml-2 text-base tracking-tight ${className || ''}`}>{children}</Text>
+export const FabLabel = ({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) => (
+  <Text className={`font-bold text-white ml-2 text-base tracking-tight ${className || ''}`}>
+    {children}
+  </Text>
 );
 
 export const FabIcon = ({ as: Icon, className, size = 20, ...props }: any) => {
   if (!Icon) return null;
-  return <Icon {...props} size={size} color="white" strokeWidth={2.5} className={`${className || ''}`} />;
+  return (
+    <Icon {...props} size={size} color="white" strokeWidth={2.5} className={`${className || ''}`} />
+  );
 };
 
 Fab.displayName = 'Fab';

@@ -6,7 +6,7 @@ import { Platform } from 'react-native';
 
 /**
  * Toast State Excellence (2026 Standard)
- * 
+ *
  * Implements a queue-based, high-performance feedback system.
  * Uses a reducer for atomic state transitions and rigorous memoization.
  */
@@ -17,12 +17,10 @@ interface ToastItem {
   id: string;
   message: string;
   type: ToastType;
-  duration: number;
+  duration?: number;
 }
 
-type ToastAction = 
-  | { type: 'ADD_TOAST'; payload: ToastItem }
-  | { type: 'REMOVE_TOAST'; id: string };
+type ToastAction = { type: 'ADD_TOAST'; payload: ToastItem } | { type: 'REMOVE_TOAST'; id: string };
 
 interface ToastContextType {
   showToast: (options: Omit<ToastItem, 'id'>) => void;
@@ -63,32 +61,46 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const contextValue = useMemo(() => ({ showToast, removeToast }), [showToast, removeToast]);
 
-  const mapTypeToVariant = (type: ToastType): 'success' | 'error' | 'warning' | 'info' | 'attention' => {
+  const mapTypeToVariant = (
+    type: ToastType,
+  ): 'success' | 'error' | 'warning' | 'info' | 'attention' => {
     switch (type) {
-      case 'success': return 'success';
-      case 'error': return 'error';
-      case 'warning': return 'warning';
-      case 'info': return 'info';
-      case 'sanctuary': return 'attention';
-      default: return 'attention';
+      case 'success':
+        return 'success';
+      case 'error':
+        return 'error';
+      case 'warning':
+        return 'warning';
+      case 'info':
+        return 'info';
+      case 'sanctuary':
+        return 'attention';
+      default:
+        return 'attention';
     }
   };
 
   const getIcon = (type: ToastType) => {
     switch (type) {
-      case 'success': return '✨';
-      case 'error': return '⚠️';
-      case 'warning': return '🔸';
-      case 'info': return 'ℹ️';
-      case 'sanctuary': return '💫';
-      default: return '💫';
+      case 'success':
+        return '✨';
+      case 'error':
+        return '⚠️';
+      case 'warning':
+        return '🔸';
+      case 'info':
+        return 'ℹ️';
+      case 'sanctuary':
+        return '💫';
+      default:
+        return '💫';
     }
   };
 
   return (
     <ToastContext.Provider value={contextValue}>
       {children}
-      <VStack 
+      <VStack
         className="absolute top-12 left-4 right-4 z-[1000] gap-2"
         style={{ pointerEvents: 'box-none' }}
       >
@@ -117,8 +129,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
 export const useSanctuaryToast = () => {
   const context = useContext(ToastContext);
-  if (!context)
-    throw new Error('useSanctuaryToast must be used within ToastProvider');
+  if (!context) throw new Error('useSanctuaryToast must be used within ToastProvider');
   return context;
 };
 

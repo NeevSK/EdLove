@@ -100,32 +100,11 @@ export class MaintenanceService {
     return toMcpText(result.stdout, !result.ok);
   }
 
-  handleCheckTypes(args: { package?: string }) {
-    const rawTarget = args.package || "";
-    const cleanTarget = rawTarget.replace(/^@repo\/|^@app\/|^\/|^\.\\|^.\//, "");
-    
-    if (cleanTarget) {
-      const rootSummary = path.join(ROOT_DIR, `audit-${cleanTarget}-summary.txt`);
-      if (fs.existsSync(rootSummary)) fs.unlinkSync(rootSummary);
-
-      try {
-        const output = execSync(`powershell -ExecutionPolicy Bypass -File scripts/audit-errors.ps1 -Target "${cleanTarget}" -LocalOnly`, { cwd: ROOT_DIR }).toString();
-        const summary = findSurgicalReport(`audit-${cleanTarget}-summary.txt`, cleanTarget);
-        return { content: [{ type: "text" as const, text: output }, { type: "text" as const, text: summary }] };
-      } catch (e: any) {
-        const summary = findSurgicalReport(`audit-${cleanTarget}-summary.txt`, cleanTarget);
-        return { content: [{ type: "text" as const, text: e.message }, { type: "text" as const, text: summary }], isError: true };
-      }
-    } else {
-      try {
-        const output = execSync(`powershell -ExecutionPolicy Bypass -File scripts/audit-wrapper.ps1 -Cmd "pnpm turbo run check-types" -Log "reports/check-types.txt"`, { cwd: ROOT_DIR }).toString();
-        const report = readReport("check-types.txt");
-        return { content: [{ type: "text" as const, text: output }, { type: "text" as const, text: report }] };
-      } catch (e: any) {
-        const report = readReport("check-types.txt");
-        return { content: [{ type: "text" as const, text: e.message }, { type: "text" as const, text: report }], isError: true };
-      }
-    }
+  handleLintFix(args: { target?: string }) {
+    const target = normalizeTarget(args.target || ".");
+    console.error(`Sovereign Maintenance: Fixing lint violations in ${target}`);
+    const result = execUtf8(`npx biome check --write "${target}"`);
+    return toMcpText(result.stdout, !result.ok);
   }
 
   handleGenerateGrowthSignals() {

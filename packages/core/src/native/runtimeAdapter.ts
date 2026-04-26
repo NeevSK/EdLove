@@ -1,13 +1,20 @@
-// @ts-ignore
-import * as Device from 'expo-device';
 import NetInfo from '@react-native-community/netinfo';
-// @ts-ignore
-import * as Location from 'expo-location';
-import { storage } from './storage';
-import { Platform, Linking, Share, StatusBar } from 'react-native';
-// @ts-ignore
+import * as Device from 'expo-device';
 import * as Haptics from 'expo-haptics';
-import { CoreRuntimeEnvironment, DeviceMetadata, HapticsProvider, LinkingProvider, LocationProvider, NetworkProvider, ShareProvider, ShareOptions, UIProvider } from '../types/runtime';
+import * as Location from 'expo-location';
+import { Linking, Platform, Share, StatusBar } from 'react-native';
+import type {
+  CoreRuntimeEnvironment,
+  DeviceMetadata,
+  HapticsProvider,
+  LinkingProvider,
+  LocationProvider,
+  NetworkProvider,
+  ShareOptions,
+  ShareProvider,
+  UIProvider,
+} from '../types/runtime';
+import { storage } from './storage';
 
 export const nativeStorageProvider = {
   async getItem(key: string) {
@@ -18,7 +25,7 @@ export const nativeStorageProvider = {
   },
   async removeItem(key: string) {
     storage.delete(key);
-  }
+  },
 };
 
 export const nativeDeviceProvider = {
@@ -74,7 +81,8 @@ export const nativeShareProvider: ShareProvider = {
 };
 
 export const nativeUIProvider: UIProvider = {
-  setStatusBarHidden: (hidden: boolean, animation?: 'none' | 'fade' | 'slide') => StatusBar.setHidden(hidden, animation),
+  setStatusBarHidden: (hidden: boolean, animation?: 'none' | 'fade' | 'slide') =>
+    StatusBar.setHidden(hidden, animation),
 };
 
 export const nativeRuntimeEnvironment: CoreRuntimeEnvironment = {

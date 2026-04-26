@@ -1,9 +1,9 @@
-import NetInfo from '@react-native-community/netinfo';
 import { useCallback, useState } from 'react';
 import { v7 as uuidv7 } from 'uuid';
 import { generateIdempotencyKey } from '../lib/sync/idempotency';
 import { useMutationAuditLog } from '../lib/sync/MutationAuditLog';
 import { useMutationQueue } from '../lib/sync/useMutationQueue';
+import { networkManager } from '../logic/managers/NetworkManager';
 import { useStore } from '../store/useStore';
 
 interface SafeMutationOptions<TData, TVariables> {
@@ -47,8 +47,8 @@ export function useSafeMutation<TData, TVariables>(
       const executeRequest = async (attempt: number): Promise<TData> => {
         try {
           // Check connectivity
-          const state = await NetInfo.fetch();
-          if (!state.isConnected) {
+          const isConnected = await networkManager.isConnected();
+          if (!isConnected) {
             throw new Error('OFFLINE_QUEUE');
           }
 

@@ -13,6 +13,7 @@ import { AuditService } from "./services/AuditService.js";
 import { DiscoveryService } from "./services/DiscoveryService.js";
 import { MaintenanceService } from "./services/MaintenanceService.js";
 import { ScoutService } from "./services/ScoutService.js";
+import { HelpService } from "./services/HelpService.js";
 import { ROOT_DIR } from "./utils/constants.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -29,6 +30,7 @@ class PolymathPlatformServer {
   private discovery: DiscoveryService;
   private maintenance: MaintenanceService;
   private scout: ScoutService;
+  private help: HelpService;
 
   constructor() {
     this.server = new Server(
@@ -40,6 +42,7 @@ class PolymathPlatformServer {
     this.discovery = new DiscoveryService();
     this.maintenance = new MaintenanceService();
     this.scout = new ScoutService();
+    this.help = new HelpService();
 
     this.setupHandlers();
     this.server.onerror = (error) => console.error("[MCP Error]", error);
@@ -47,6 +50,7 @@ class PolymathPlatformServer {
 
   private setupHandlers() {
     this.server.setRequestHandler(ListToolsRequestSchema, async () => {
+      // --- LEGACY MODES (Retained for migration) ---
       const allTools = [
         {
           name: "audit_monorepo_hygiene",
@@ -479,41 +483,176 @@ class PolymathPlatformServer {
         },
       ];
 
+      // --- SOVEREIGN GATEWAYS (The Future) ---
+      const gatewayTools = [
+        {
+          name: "sovereign_audit",
+          description: "Unified auditing engine for hygiene, architecture, and compliance.",
+          inputSchema: {
+            type: "object",
+            properties: {
+              action: { 
+                type: "string", 
+                enum: [
+                  "hygiene", "legacy_ui", "architecture", "a11y", "dependency_health", 
+                  "i18n", "colors", "boundaries", "features", "exports", "lint", "check", "syncpack_fix", "types"
+                ] 
+              },
+              params: { type: "object", description: "Optional parameters specific to the audit action." }
+            },
+            required: ["action"]
+          },
+        },
+        {
+          name: "sovereign_discovery",
+          description: "Unified discovery engine for search, scouting, and intel.",
+          inputSchema: {
+            type: "object",
+            properties: {
+              action: { 
+                type: "string", 
+                enum: ["grep", "scout", "docs", "inventory", "view", "find", "structural", "stats"] 
+              },
+              params: { type: "object", description: "Optional parameters specific to the discovery action." }
+            },
+            required: ["action"]
+          },
+        },
+        {
+          name: "sovereign_maintenance",
+          description: "Unified maintenance engine for healing, refactoring, and synchronization.",
+          inputSchema: {
+            type: "object",
+            properties: {
+              action: { 
+                type: "string", 
+                enum: ["heal", "sync", "checkpoint", "refactor", "normalize", "scaffold", "lint_fix"] 
+              },
+      params: { type: "object", description: "Optional parameters specific to the maintenance action." }
+            },
+            required: ["action"]
+          },
+        },
+        {
+          name: "sovereign_guide",
+          description: "Help, architecture documentation, and tool inventory for the Polymath MCP.",
+          inputSchema: {
+            type: "object",
+            properties: {
+              action: {
+                type: "string",
+                enum: ["architecture", "inventory", "philosophy"]
+              }
+            },
+            required: ["action"]
+          }
+        }
+      ];
+
+      // Smart Selection Strategy
+      if (process.env.MCP_MODE === "GATEWAY" || !process.env.MCP_MODE) {
+        return { tools: gatewayTools };
+      }
+
       if (process.env.MCP_MODE === "LEAN") {
         const highValueToolNames = [
-          "grep_code",
-          "sovereign_scout",
-          "structural_search",
-          "shiny_view",
-          "shiny_find",
-          "audit_monorepo_hygiene",
-          "audit_legacy_ui",
-          "check_package_types",
-          "map_architecture",
-          "get_inventory",
-          "lint_package",
-          "create_checkpoint",
-          "audit_package_architecture",
-          "shiny_refactor",
-          "heal_codebase"
+          "grep_code", "sovereign_scout", "structural_search", "shiny_view", "shiny_find",
+          "audit_monorepo_hygiene", "audit_legacy_ui", "check_package_types", "map_architecture",
+          "get_inventory", "lint_package", "create_checkpoint", "audit_package_architecture",
+          "shiny_refactor", "heal_codebase"
         ];
-        return {
-          tools: allTools.filter(t => highValueToolNames.includes(t.name))
-        };
+        return { tools: allTools.filter(t => highValueToolNames.includes(t.name)) };
       }
 
       return { tools: allTools };
     });
 
-
-
-
-
     this.server.setRequestHandler(CallToolRequestSchema, async (request) => {
       const { name, arguments: args } = request.params;
+      
       try {
+        // --- GATEWAY ROUTING ---
+        if (name === "sovereign_audit") {
+          const { action, params = {} } = args as any;
+          switch (action) {
+            case "hygiene": return this.audit.handleAuditHygiene();
+            case "legacy_ui": return this.audit.handleAuditLegacyUI(params);
+            case "architecture": return this.audit.handleAuditPackageArchitecture(params);
+            case "a11y": return this.audit.handleAuditA11y(params);
+            case "dependency_health": return this.maintenance.handleAuditDependencyHealth();
+            case "i18n": return this.audit.handleAuditI18n();
+            case "colors": return this.audit.handleCheckContrast(params);
+            case "boundaries": return this.audit.handleCheckClassroomBoundaries();
+            case "features": return this.audit.handleAuditFeatureFidelity(params);
+            case "exports": return this.audit.handleAuditExportIntegrity();
+            case "design_tokens": return this.audit.handleAuditColors();
+            case "stale_flags": return this.audit.handleAuditFeatureFlags();
+            case "load_report": return this.audit.handleReportCognitiveLoad(params);
+            case "bundle_leak": return this.audit.handleAuditBundleLeak();
+            case "lint": return this.audit.handleLintPackage(params);
+            case "check": return this.audit.handleBiomeCheck(params);
+            case "syncpack_fix": return this.audit.handleSyncpackFix();
+            case "types": return this.audit.handleCheckTypes(params);
+            default: throw new Error(`Unknown audit action: ${action}`);
+          }
+        }
+
+        if (name === "sovereign_discovery") {
+          const { action, params = {} } = args as any;
+          switch (action) {
+            case "grep": return this.discovery.handleGrepCode(params);
+            case "scout": return this.scout.handleSovereignScout(params);
+            case "docs": return this.discovery.handleSearchDocs(params);
+            case "inventory": return this.discovery.handleGetInventory(params);
+            case "view": return this.discovery.handleShinyView(params);
+            case "find": return this.discovery.handleShinyFind(params);
+            case "structural": return this.discovery.handleStructuralSearch(params);
+            case "stats": return this.discovery.handleGetCodeStats(params);
+            case "component_api": return this.discovery.handleGetComponentApi(params);
+            case "imports": return this.discovery.handleAuditImports();
+            case "ui_report": return this.discovery.handleAuditUIComponents();
+            case "native_leaks": return this.discovery.handleFindNativeLeaks();
+            case "metro_debug": return this.discovery.handleDebugMetro();
+            case "impact": return this.discovery.handleTraceDeletionImpact(params);
+            default: throw new Error(`Unknown discovery action: ${action}`);
+          }
+        }
+
+        if (name === "sovereign_maintenance") {
+          const { action, params = {} } = args as any;
+          switch (action) {
+            case "heal": return this.maintenance.handleHealCodebase(params);
+            case "sync": return this.maintenance.handleSyncIdentity();
+            case "checkpoint": return this.maintenance.handleCreateCheckpoint(params);
+            case "refactor": return this.maintenance.handleRefactorReplace(params);
+            case "normalize": return this.maintenance.handleNormalizeImports(params);
+            case "lint_fix": return this.maintenance.handleLintFix(params);
+            case "inputs": return this.maintenance.handleNormalizeInputs(params);
+            case "scaffold": return this.discovery.handleScaffoldFeatureContext(params);
+            case "zod_bridge": return this.maintenance.handleBridgeSchemaZod(params);
+            case "sleekness_test": return this.maintenance.handleTestSleekness();
+            case "readme_usage": return this.maintenance.handleGenerateReadmeUsage(params);
+            case "scaffold_mocks": return this.maintenance.handleScaffoldMocks(params);
+            case "shield_unicode": return this.maintenance.handleShieldUnicode(params);
+            case "dep_duplicate": return this.maintenance.handleAuditDependencyDuplication();
+            case "schema_drift": return this.maintenance.handleCheckSchemaDrift();
+            case "purge": return this.maintenance.handlePurgeStaleArtifacts(params);
+            default: throw new Error(`Unknown maintenance action: ${action}`);
+          }
+        }
+
+        if (name === "sovereign_guide") {
+          const { action } = args as any;
+          switch (action) {
+            case "architecture": return this.help.handleGetArchitectureDoc();
+            case "inventory": return this.help.handleGetToolInventory();
+            case "philosophy": return this.help.handleGetPhilosophy();
+            default: throw new Error(`Unknown guide action: ${action}`);
+          }
+        }
+
+        // --- LEGACY ROUTING ---
         switch (name) {
-          // Audit Domain
           case "audit_monorepo_hygiene": return this.audit.handleAuditHygiene();
           case 'audit_accessibility': return this.audit.handleAuditA11y(args as any);
           case 'check_contrast': return this.audit.handleCheckContrast(args as any);
@@ -523,8 +662,6 @@ class PolymathPlatformServer {
           case "audit_colors": return this.audit.handleAuditColors();
           case "check_classroom_boundaries": return this.audit.handleCheckClassroomBoundaries();
           case "check_self_boundaries": return this.audit.handleCheckSelfBoundaries();
-
-          // Discovery Domain
           case 'grep_code': return this.discovery.handleGrepCode(args as any);
           case 'sovereign_scout': return this.scout.handleSovereignScout(args as any);
           case 'search_docs': return this.discovery.handleSearchDocs(args as any);
@@ -534,8 +671,6 @@ class PolymathPlatformServer {
           case 'shiny_find': return this.discovery.handleShinyFind(args as any);
           case 'structural_search': return this.discovery.handleStructuralSearch(args as any);
           case "audit_imports": return this.discovery.handleAuditImports();
-
-          // Maintenance Domain
           case "heal_codebase": return this.maintenance.handleHealCodebase(args as any);
           case "sync_identity_schema": return this.maintenance.handleSyncIdentity();
           case "check_package_types": return this.maintenance.handleCheckTypes(args as any);
@@ -548,8 +683,6 @@ class PolymathPlatformServer {
           case "test_sleekness": return this.maintenance.handleTestSleekness();
           case "generate_readme_usage": return this.maintenance.handleGenerateReadmeUsage(args as any);
           case "scaffold_mocks": return this.maintenance.handleScaffoldMocks(args as any);
-
-          // Additional Audit / Discovery
           case "detect_stale_feature_flags": return this.audit.handleAuditFeatureFlags();
           case "report_cognitive_load": return this.audit.handleReportCognitiveLoad(args as any);
           case "audit_ui_components": return this.discovery.handleAuditUIComponents();
@@ -572,9 +705,6 @@ class PolymathPlatformServer {
           case "map_architecture": return this.discovery.handleMapArchitecture(args as any);
 
           default: throw new Error(`Unknown tool: ${name}`);
-
-
-
         }
       } catch (error: any) {
         return { content: [{ type: "text", text: `Error: ${error.message}` }], isError: true };

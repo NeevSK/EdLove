@@ -8,7 +8,7 @@ describe('Radio Component (Robustness)', () => {
       <Radio value="opt1">
         <RadioIndicator />
         <RadioLabel>Option 1</RadioLabel>
-      </Radio>
+      </Radio>,
     );
     expect(getByText('Option 1')).toBeTruthy();
   });
@@ -23,9 +23,9 @@ describe('Radio Component (Robustness)', () => {
         <Radio value="opt2">
           <RadioLabel>Option 2</RadioLabel>
         </Radio>
-      </RadioGroup>
+      </RadioGroup>,
     );
-    
+
     fireEvent.press(getByText('Option 2'));
     expect(onChange).toHaveBeenCalledWith('opt2');
   });
@@ -35,9 +35,9 @@ describe('Radio Component (Robustness)', () => {
     const { getByText } = await render(
       <Radio value="test" isDisabled={true}>
         <RadioLabel>Disabled Radio</RadioLabel>
-      </Radio>
+      </Radio>,
     );
-    
+
     fireEvent.press(getByText('Disabled Radio'));
     // Since Radio takes value/onPress etc., implementation should block it.
   });

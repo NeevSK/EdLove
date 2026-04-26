@@ -1,5 +1,16 @@
 import React, { useState } from 'react';
-import { Box, VStack, HStack, Heading, Text, Button, ButtonText, Pressable, Switch, ScrollView } from '../gluestack';
+import {
+  Box,
+  VStack,
+  HStack,
+  Heading,
+  Text,
+  Button,
+  ButtonText,
+  Pressable,
+  Switch,
+  ScrollView,
+} from '../gluestack';
 import ScreenWrapper from '../components/ScreenWrapper';
 import { useEnvironment } from '../context';
 import { useTheme } from '../hooks/useTheme';
@@ -117,9 +128,9 @@ export default function AppSettingsScreen({ navigation }: any) {
     enableLivingTheme,
     setEnableLivingTheme,
   } = useEnvironment();
-  const isDemoMode = useStore(state => state.isDemoMode);
-  const setDemoMode = useStore(state => state.setDemoMode);
-  const user = useStore(state => state.user);
+  const isDemoMode = useStore((state) => state.isDemoMode);
+  const setDemoMode = useStore((state) => state.setDemoMode);
+  const user = useStore((state) => state.user);
   const { showToast } = useSanctuaryToast();
 
   const [showThemeModal, setShowThemeModal] = useState(false);
@@ -227,10 +238,7 @@ export default function AppSettingsScreen({ navigation }: any) {
                 className={`w-10 h-10 rounded-[12px] items-center justify-center ${enableLivingTheme ? 'bg-phase-primary' : 'bg-phase-surface'}`}
               >
                 <Box className={enableLivingTheme ? 'text-phase-world' : 'text-phase-muted'}>
-                  <Sparkles
-                    size={24}
-                    fill={enableLivingTheme ? 'currentColor' : 'transparent'}
-                  />
+                  <Sparkles size={24} fill={enableLivingTheme ? 'currentColor' : 'transparent'} />
                 </Box>
               </Box>
               <VStack className="flex-1 gap-1">
@@ -473,21 +481,33 @@ export default function AppSettingsScreen({ navigation }: any) {
               id: 'en',
               label: 'English',
               description: 'Change the app language to English',
-              icon: <Box className="text-blue-500"><Globe size={24} /></Box>,
+              icon: (
+                <Box className="text-blue-500">
+                  <Globe size={24} />
+                </Box>
+              ),
               isSelected: language === 'en',
             },
             {
               id: 'si',
               label: 'සිංහල',
               description: 'යෙදුමේ භාෂාව සිංහලට වෙනස් කරන්න',
-              icon: <Box className="text-amber-500"><Globe size={24} /></Box>,
+              icon: (
+                <Box className="text-amber-500">
+                  <Globe size={24} />
+                </Box>
+              ),
               isSelected: language === 'si',
             },
             {
               id: 'ta',
               label: 'தமிழ்',
               description: 'පයன்பාට්‍ටින් මොළියෛ තමිළුක්කු මාට්‍රවුම්',
-              icon: <Box className="text-orange-500"><Globe size={24} /></Box>,
+              icon: (
+                <Box className="text-orange-500">
+                  <Globe size={24} />
+                </Box>
+              ),
               isSelected: language === 'ta',
             },
           ]}

@@ -8,7 +8,7 @@ describe('Input Component (Robustness)', () => {
     const { getByPlaceholderText } = await render(
       <Input>
         <InputField placeholder="Enter name" />
-      </Input>
+      </Input>,
     );
     expect(getByPlaceholderText('Enter name')).toBeTruthy();
   });
@@ -18,9 +18,9 @@ describe('Input Component (Robustness)', () => {
     const { getByPlaceholderText } = await render(
       <Input>
         <InputField placeholder="Enter name" onChangeText={onChangeText} />
-      </Input>
+      </Input>,
     );
-    
+
     fireEvent.changeText(getByPlaceholderText('Enter name'), 'John Doe');
     expect(onChangeText).toHaveBeenCalledWith('John Doe');
   });
@@ -29,21 +29,21 @@ describe('Input Component (Robustness)', () => {
     const { getByTestId } = await render(
       <Input isInvalid={true} testID="input-container">
         <InputField placeholder="Enter name" />
-      </Input>
+      </Input>,
     );
-    
+
     // Check if it has the danger border class (simulation)
     const container = getByTestId('input-container');
     expect(container.props.className).toContain('border-phase-danger');
   });
 
   it('disables child input when isDisabled is true', async () => {
-     const { getByPlaceholderText } = await render(
+    const { getByPlaceholderText } = await render(
       <Input isDisabled={true}>
         <InputField placeholder="Enter name" />
-      </Input>
+      </Input>,
     );
-    
+
     expect(getByPlaceholderText('Enter name').props.editable).toBe(false);
   });
 
@@ -54,9 +54,9 @@ describe('Input Component (Robustness)', () => {
           <InputIcon as={Search} />
         </InputSlot>
         <InputField placeholder="Search..." />
-      </Input>
+      </Input>,
     );
-    
+
     expect(getByTestId('left-slot')).toBeTruthy();
   });
 });

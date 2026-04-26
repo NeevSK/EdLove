@@ -1,8 +1,5 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as Crypto from 'expo-crypto';
-import * as SecureStore from 'expo-secure-store';
-import { Platform } from 'react-native';
-import { v4 as uuidv4 } from 'uuid';
+import { v7 as uuidv7 } from 'uuid';
+import { cryptoManager } from '../logic/managers/CryptoManager';
 
 const PIN_RECORD_VERSION = 1;
 const PIN_HASH_ROUNDS = 200;
@@ -34,37 +31,25 @@ function assertValidPin(pin: string) {
   return normalized;
 }
 
+// Platform-agnostic storage access via CryptoManager (which handles SecureStore/Encrypted mapping)
 async function readStorage(key: string): Promise<string | null> {
-  if (Platform.OS === 'web') {
-    return AsyncStorage.getItem(key);
-  }
-
-  return SecureStore.getItemAsync(key);
+  return cryptoManager.getItemAsync(key);
 }
 
 async function writeStorage(key: string, value: string): Promise<void> {
-  if (Platform.OS === 'web') {
-    await AsyncStorage.setItem(key, value);
-    return;
-  }
-
-  await SecureStore.setItemAsync(key, value);
+  await cryptoManager.setItemAsync(key, value);
 }
 
 async function deleteStorage(key: string): Promise<void> {
-  if (Platform.OS === 'web') {
-    await AsyncStorage.removeItem(key);
-    return;
-  }
-
-  await SecureStore.deleteItemAsync(key);
+  await cryptoManager.deleteItemAsync(key);
 }
 
 async function hashPin(pin: string, salt: string) {
   let digest = `${salt}:${pin}`;
 
   for (let round = 0; round < PIN_HASH_ROUNDS; round += 1) {
-    digest = await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, digest);
+    // algorithm is SHA-256 (standard)
+    digest = await cryptoManager.digestStringAsync('SHA-256', digest);
   }
 
   return digest;
@@ -102,7 +87,7 @@ export const accountPin = {
   async setPin(accountId: string, pin: string) {
     const normalizedPin = assertValidPin(pin);
     const existing = await readPinRecord(accountId);
-    const salt = existing?.salt ?? uuidv4();
+    const salt = existing?.salt ?? uuidv7();
     const hash = await hashPin(normalizedPin, salt);
     const now = new Date().toISOString();
 

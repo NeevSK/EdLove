@@ -14,10 +14,10 @@ const TestComponent = ({ message = 'Hello', type = 'info' as any }) => {
 
 describe('Toast System Logic (2026 Standard)', () => {
   it('triggers and shows a toast message via hook', async () => {
-    const { getByText, queryByText } = render(
+    const { getByText, queryByText } = await render(
       <ToastProvider>
         <TestComponent message="Test Success" />
-      </ToastProvider>
+      </ToastProvider>,
     );
 
     expect(queryByText('Test Success')).toBeNull();
@@ -29,10 +29,10 @@ describe('Toast System Logic (2026 Standard)', () => {
 
   it('automatically removes toast after duration', async () => {
     jest.useFakeTimers();
-    const { getByText, queryByText } = render(
+    const { getByText, queryByText } = await render(
       <ToastProvider>
         <TestComponent message="Timed Toast" />
-      </ToastProvider>
+      </ToastProvider>,
     );
 
     fireEvent.press(getByText('Trigger Toast'));

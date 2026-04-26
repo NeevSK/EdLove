@@ -117,11 +117,7 @@ export const InputSlot = ({
 export const InputIcon = ({ as: Icon, className, color, size, ...props }: any) => {
   if (!Icon) return null;
   return (
-    <Icon
-      {...props}
-      size={size || 18}
-      className={`text-phase-text-secondary ${className || ''}`}
-    />
+    <Icon {...props} size={size || 18} className={`text-phase-text-secondary ${className || ''}`} />
   );
 };
 

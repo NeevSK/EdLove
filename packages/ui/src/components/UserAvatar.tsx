@@ -57,7 +57,9 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
         source={{ uri: avatarUrl }}
         accessible={true}
         accessibilityLabel={fullName ? `Avatar of ${fullName}` : 'User avatar'}
-        accessibilityHint={fullName ? `Shows profile picture for ${fullName}` : 'Shows user profile picture'}
+        accessibilityHint={
+          fullName ? `Shows profile picture for ${fullName}` : 'Shows user profile picture'
+        }
         accessibilityRole="image"
         accessibilityIgnoresInvertColors={true}
         style={[styles.base, { width: size, height: size, borderRadius: radius }, style as any]}
@@ -70,7 +72,9 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
     <View
       accessible={true}
       accessibilityLabel={fullName ? `Avatar of ${fullName}` : 'User avatar'}
-      accessibilityHint={fullName ? `Shows initials for ${fullName}` : 'Shows user initials placeholder'}
+      accessibilityHint={
+        fullName ? `Shows initials for ${fullName}` : 'Shows user initials placeholder'
+      }
       accessibilityRole="image"
       accessibilityIgnoresInvertColors={true}
       style={[

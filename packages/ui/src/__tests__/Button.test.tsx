@@ -8,7 +8,7 @@ describe('Button Component (Robustness)', () => {
     const { getByText } = await render(
       <Button>
         <ButtonText>Click Me</ButtonText>
-      </Button>
+      </Button>,
     );
     expect(getByText('Click Me')).toBeTruthy();
   });
@@ -18,9 +18,9 @@ describe('Button Component (Robustness)', () => {
     const { getByText } = await render(
       <Button onPress={onPress}>
         <ButtonText>Click Me</ButtonText>
-      </Button>
+      </Button>,
     );
-    
+
     fireEvent.press(getByText('Click Me'));
     expect(onPress).toHaveBeenCalled();
   });
@@ -30,9 +30,9 @@ describe('Button Component (Robustness)', () => {
     const { getByText } = await render(
       <Button isDisabled={true} onPress={onPress}>
         <ButtonText>Click Me</ButtonText>
-      </Button>
+      </Button>,
     );
-    
+
     fireEvent.press(getByText('Click Me'));
     expect(onPress).not.toHaveBeenCalled();
   });
@@ -42,7 +42,7 @@ describe('Button Component (Robustness)', () => {
       <Button>
         <ButtonIcon as={LogIn} testID="button-icon" />
         <ButtonText>Login</ButtonText>
-      </Button>
+      </Button>,
     );
     expect(getByTestId('button-icon')).toBeTruthy();
   });

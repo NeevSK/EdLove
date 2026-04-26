@@ -1,6 +1,6 @@
 /**
  * Gurudevi Design Tokens
- * 
+ *
  * THE GOLDEN RULES:
  * 1. 2GB RAM CONSTRAINTS: Avoid heavy blurs (>12px) and extreme shadows.
  * 2. SRI LANKA CONTEXT: High contrast for outdoor usage, calm colors for classroom focus.
@@ -12,27 +12,27 @@ export const tokens = {
     // Core Brand
     primary: '#D4843A', // Saffron
     secondary: '#8BBF7A', // Dalu Green
-    
+
     // Surfaces
     background: '#F5EDD6', // Vellum (Paper-like, easy on eyes)
     surface: '#FFFFFF',
     surfaceSubtle: '#FAF6E9',
-    
+
     // Content
     ink: '#2A2318', // Primary Text
     inkSubtle: '#5B5448', // Secondary Text
-    
+
     // Semantic
     error: '#C64F3E',
     success: '#5B8C4F',
     warning: '#D4A03A',
     info: '#4F7DA3',
-    
+
     // Decorative / Special
     shadowViolet: 'rgba(107, 100, 128, 0.15)',
     glass: 'rgba(255, 255, 255, 0.4)',
   },
-  
+
   spacing: {
     xs: 4,
     sm: 8,
@@ -41,7 +41,7 @@ export const tokens = {
     xl: 32,
     xxl: 48,
   },
-  
+
   radii: {
     xs: 4,
     sm: 8,
@@ -49,7 +49,7 @@ export const tokens = {
     lg: 20,
     full: 9999,
   },
-  
+
   typography: {
     // Sinhala/Tamil friendly font weight logic (prefer Regular/SemiBold over Thin/Black)
     fonts: {
@@ -72,7 +72,7 @@ export const tokens = {
   performance: {
     maxBlurRadius: 12,
     shadowOpacityScale: 0.8,
-  }
+  },
 } as const;
 
 export type Tokens = typeof tokens;

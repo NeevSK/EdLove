@@ -1,6 +1,12 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
-import { Checkbox, CheckboxIndicator, CheckboxIcon, CheckboxLabel, CheckboxGroup } from '../components/ui/checkbox';
+import {
+  Checkbox,
+  CheckboxIndicator,
+  CheckboxIcon,
+  CheckboxLabel,
+  CheckboxGroup,
+} from '../components/ui/checkbox';
 
 describe('Checkbox Component (Robustness)', () => {
   it('renders correctly', async () => {
@@ -8,7 +14,7 @@ describe('Checkbox Component (Robustness)', () => {
       <Checkbox value="test">
         <CheckboxIndicator />
         <CheckboxLabel>Accept Terms</CheckboxLabel>
-      </Checkbox>
+      </Checkbox>,
     );
     expect(getByText('Accept Terms')).toBeTruthy();
   });
@@ -19,9 +25,9 @@ describe('Checkbox Component (Robustness)', () => {
       <Checkbox value="test" onChange={onChange}>
         <CheckboxIndicator />
         <CheckboxLabel>Accept Terms</CheckboxLabel>
-      </Checkbox>
+      </Checkbox>,
     );
-    
+
     fireEvent.press(getByText('Accept Terms'));
     expect(onChange).toHaveBeenCalledWith(true);
   });
@@ -36,9 +42,9 @@ describe('Checkbox Component (Robustness)', () => {
         <Checkbox value="opt2">
           <CheckboxLabel>Option 2</CheckboxLabel>
         </Checkbox>
-      </CheckboxGroup>
+      </CheckboxGroup>,
     );
-    
+
     fireEvent.press(getByText('Option 2'));
     expect(onChange).toHaveBeenCalledWith(['opt1', 'opt2']);
   });
@@ -48,9 +54,9 @@ describe('Checkbox Component (Robustness)', () => {
     const { getByText } = await render(
       <Checkbox value="test" isDisabled={true} onChange={onChange}>
         <CheckboxLabel>Disabled Checkbox</CheckboxLabel>
-      </Checkbox>
+      </Checkbox>,
     );
-    
+
     fireEvent.press(getByText('Disabled Checkbox'));
     expect(onChange).not.toHaveBeenCalled();
   });
