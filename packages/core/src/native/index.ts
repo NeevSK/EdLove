@@ -16,7 +16,7 @@ export {
   nativeStorageProvider,
   nativeUIProvider,
 } from './runtimeAdapter';
-export { storage, StorageKeys } from './storage';
+export { StorageKeys, storage } from './storage';
 export { supabase } from './supabase';
 export { supabaseAuthStorage } from './supabaseAuthStorage';
 export { useAuthorityLifecycle } from './useAuthorityLifecycle';

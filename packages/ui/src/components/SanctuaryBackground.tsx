@@ -9,9 +9,10 @@
  *
  * Phase transitions: 2s crossfade between palettes.
  */
-import React, { useEffect, useRef } from 'react';
-import { StyleSheet, View, Animated } from 'react-native';
+
 import { LinearGradient } from 'expo-linear-gradient';
+import { useEffect, useRef } from 'react';
+import { Animated, StyleSheet, View } from 'react-native';
 import { useTheme } from '../hooks/useTheme';
 
 export function SanctuaryBackground() {
@@ -46,7 +47,7 @@ export function SanctuaryBackground() {
     return () => animation.stop();
     // Note: isDark theme-mode toggles DO trigger a crossfade here to ensure immediate reactive update
     // of the background gradient nodes.
-  }, [phase, isDark]); // Re-run when phase OR theme mode changes.
+  }, [fadeAnim, gradientNodes, animationsEnabled]); // Re-run when phase OR theme mode changes.
 
   return (
     <View style={StyleSheet.absoluteFillObject} pointerEvents="none">

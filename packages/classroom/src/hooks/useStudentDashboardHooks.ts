@@ -1,68 +1,76 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { 
-    useAuthStore,
-    useStudentClassroomsQuery, 
-    useStudentStatsQuery,
-    useStudentAssignmentsQuery,
-    useRewards,
-    assignmentsAPI,
-    Assignment
+import {
+  Assignment,
+  assignmentsAPI,
+  useAuthStore,
+  useRewards,
+  useStudentAssignmentsQuery,
+  useStudentClassroomsQuery,
+  useStudentStatsQuery,
 } from '@repo/core';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 /**
  * useStudentRegistry: Unified hook for a student's sanctuary landscape.
  */
 export function useStudentRegistry() {
-    const user = useAuthStore(state => state.user);
-    const userId = user?.id;
+  const user = useAuthStore((state) => state.user);
+  const userId = user?.id;
 
-    const stats = useStudentStatsQuery(userId);
-    const sanctuaries = useStudentClassroomsQuery(userId);
+  const stats = useStudentStatsQuery(userId);
+  const sanctuaries = useStudentClassroomsQuery(userId);
 
-    return {
-        stats,
-        sanctuaries,
-        isLoading: stats.isLoading || sanctuaries.isLoading,
-    };
+  return {
+    stats,
+    sanctuaries,
+    isLoading: stats.isLoading || sanctuaries.isLoading,
+  };
 }
 
 /**
  * useStudentQuestsPulse: Fetch upcoming assignments and handle submissions.
  */
 export function useStudentQuestsPulse() {
-    const user = useAuthStore(state => state.user);
-    const userId = user?.id;
-    const queryClient = useQueryClient();
+  const user = useAuthStore((state) => state.user);
+  const userId = user?.id;
+  const queryClient = useQueryClient();
 
-    const quests = useStudentAssignmentsQuery(userId);
+  const quests = useStudentAssignmentsQuery(userId);
 
-    const submitMutation = useMutation({
-        mutationFn: async ({ assignmentId, content, photoUri }: { assignmentId: string; content: string; photoUri?: string | null }) => {
-            if (!userId) throw new Error('User not authenticated');
+  const submitMutation = useMutation({
+    mutationFn: async ({
+      assignmentId,
+      content,
+      photoUri,
+    }: {
+      assignmentId: string;
+      content: string;
+      photoUri?: string | null;
+    }) => {
+      if (!userId) throw new Error('User not authenticated');
 
-            return assignmentsAPI.submitSubmission(assignmentId, content, photoUri ?? null);
-        },
-        onSuccess: () => {
-            // Invalidate assignments to reflect submission status (if tracked there)
-            queryClient.invalidateQueries({ queryKey: ['student-assignments', userId] });
-        }
-    });
+      return assignmentsAPI.submitSubmission(assignmentId, content, photoUri ?? null);
+    },
+    onSuccess: () => {
+      // Invalidate assignments to reflect submission status (if tracked there)
+      queryClient.invalidateQueries({ queryKey: ['student-assignments', userId] });
+    },
+  });
 
-    return {
-        quests,
-        submitQuest: submitMutation.mutateAsync,
-        isSubmitting: submitMutation.isPending,
-    };
+  return {
+    quests,
+    submitQuest: submitMutation.mutateAsync,
+    isSubmitting: submitMutation.isPending,
+  };
 }
 
 /**
  * useStudentGrowthPulse: Monitor rewards and progress.
  */
 export function useStudentGrowthPulse() {
-    const { rewards, isLoading } = useRewards();
-    
-    return {
-        points: rewards?.points ?? 0,
-        isLoading,
-    };
+  const { rewards, isLoading } = useRewards();
+
+  return {
+    points: rewards?.points ?? 0,
+    isLoading,
+  };
 }

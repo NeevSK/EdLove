@@ -1,6 +1,6 @@
-import React from 'react';
-import { useTranslation } from 'react-i18next';
 import { usePermissions, useStore } from '@repo/core/logic';
+import type React from 'react';
+import { useTranslation } from 'react-i18next';
 
 export interface WebScreenHeaderProps {
   title?: React.ReactNode;
@@ -55,7 +55,6 @@ export const WebScreenHeader: React.FC<WebScreenHeaderProps> = ({
   return (
     <header
       className="greeting"
-      role="banner"
       style={{
         display: 'flex',
         justifyContent: 'space-between',

@@ -1,19 +1,19 @@
-import { 
-  DocumentWorkflow, 
-  DocumentVersion, 
-  DocumentComment, 
-  DocumentCollaborator,
-  DocumentTemplate,
-  WorkflowTransition,
-  ChangeRecord,
-  DocumentStatus,
-  DocumentWorkflowStep
-} from './types';
 import { supabase } from '@repo/core';
+import {
+  type ChangeRecord,
+  type DocumentCollaborator,
+  type DocumentComment,
+  type DocumentStatus,
+  type DocumentTemplate,
+  type DocumentVersion,
+  type DocumentWorkflow,
+  DocumentWorkflowStep,
+  type WorkflowTransition,
+} from './types';
 
 export class DocumentWorkflowEngine {
   private static instance: DocumentWorkflowEngine;
-  
+
   static getInstance(): DocumentWorkflowEngine {
     if (!DocumentWorkflowEngine.instance) {
       DocumentWorkflowEngine.instance = new DocumentWorkflowEngine();
@@ -28,40 +28,45 @@ export class DocumentWorkflowEngine {
       to: 'review',
       action: 'submit',
       requiredPermissions: ['document.submit'],
-      allowedRoles: ['teacher', 'admin', 'principal']
+      allowedRoles: ['teacher', 'admin', 'principal'],
     },
     {
       from: 'review',
       to: 'approved',
       action: 'approve',
       requiredPermissions: ['document.approve'],
-      allowedRoles: ['admin', 'principal']
+      allowedRoles: ['admin', 'principal'],
     },
     {
       from: 'review',
       to: 'draft',
       action: 'reject',
       requiredPermissions: ['document.reject'],
-      allowedRoles: ['admin', 'principal']
+      allowedRoles: ['admin', 'principal'],
     },
     {
       from: 'approved',
       to: 'published',
       action: 'publish',
       requiredPermissions: ['document.publish'],
-      allowedRoles: ['admin', 'principal']
+      allowedRoles: ['admin', 'principal'],
     },
     {
       from: 'published',
       to: 'archived',
       action: 'archive',
       requiredPermissions: ['document.archive'],
-      allowedRoles: ['admin', 'principal']
-    }
+      allowedRoles: ['admin', 'principal'],
+    },
   ];
 
   // Create document from template
-  async createDraft(template: DocumentTemplate, data: any, authorId: string, schoolId: string): Promise<DocumentWorkflow> {
+  async createDraft(
+    template: DocumentTemplate,
+    data: any,
+    authorId: string,
+    schoolId: string,
+  ): Promise<DocumentWorkflow> {
     const document: Partial<DocumentWorkflow> = {
       id: crypto.randomUUID(),
       templateId: template.id,
@@ -75,8 +80,8 @@ export class DocumentWorkflowEngine {
       version: 1,
       metadata: {
         template,
-        originalData: data
-      }
+        originalData: data,
+      },
     };
 
     const { data: result, error } = await supabase
@@ -96,13 +101,13 @@ export class DocumentWorkflowEngine {
   // Submit document for review
   async submitForReview(documentId: string, userId: string): Promise<void> {
     await this.validateTransition(documentId, 'draft', 'review', userId);
-    
+
     const { error } = await supabase
       .from('document_workflows')
-      .update({ 
-        status: 'review', 
+      .update({
+        status: 'review',
         currentStep: 'submit',
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date().toISOString(),
       })
       .eq('id', documentId);
 
@@ -112,13 +117,13 @@ export class DocumentWorkflowEngine {
   // Approve document
   async approveDocument(documentId: string, userId: string, comments?: string): Promise<void> {
     await this.validateTransition(documentId, 'review', 'approved', userId);
-    
+
     const { error } = await supabase
       .from('document_workflows')
-      .update({ 
-        status: 'approved', 
+      .update({
+        status: 'approved',
         currentStep: 'approve',
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date().toISOString(),
       })
       .eq('id', documentId);
 
@@ -132,13 +137,13 @@ export class DocumentWorkflowEngine {
   // Reject document
   async rejectDocument(documentId: string, userId: string, reason: string): Promise<void> {
     await this.validateTransition(documentId, 'review', 'draft', userId);
-    
+
     const { error } = await supabase
       .from('document_workflows')
-      .update({ 
-        status: 'draft', 
+      .update({
+        status: 'draft',
         currentStep: 'reject',
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date().toISOString(),
       })
       .eq('id', documentId);
 
@@ -150,13 +155,13 @@ export class DocumentWorkflowEngine {
   // Publish document
   async publishDocument(documentId: string, userId: string): Promise<void> {
     await this.validateTransition(documentId, 'approved', 'published', userId);
-    
+
     const { error } = await supabase
       .from('document_workflows')
-      .update({ 
-        status: 'published', 
+      .update({
+        status: 'published',
         currentStep: 'publish',
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date().toISOString(),
       })
       .eq('id', documentId);
 
@@ -166,13 +171,13 @@ export class DocumentWorkflowEngine {
   // Archive document
   async archiveDocument(documentId: string, userId: string): Promise<void> {
     await this.validateTransition(documentId, 'published', 'archived', userId);
-    
+
     const { error } = await supabase
       .from('document_workflows')
-      .update({ 
-        status: 'archived', 
+      .update({
+        status: 'archived',
         currentStep: 'archive',
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date().toISOString(),
       })
       .eq('id', documentId);
 
@@ -192,7 +197,12 @@ export class DocumentWorkflowEngine {
   }
 
   // Create new version
-  async createVersion(documentId: string, content: any, authorId: string, changes?: any): Promise<DocumentVersion> {
+  async createVersion(
+    documentId: string,
+    content: any,
+    authorId: string,
+    changes?: any,
+  ): Promise<DocumentVersion> {
     // Get current version number
     const { data: currentDoc } = await supabase
       .from('document_workflows')
@@ -208,7 +218,7 @@ export class DocumentWorkflowEngine {
       changes: changes || {},
       authorId,
       createdAt: new Date().toISOString(),
-      metadata: {}
+      metadata: {},
     };
 
     const { data, error } = await supabase
@@ -222,9 +232,9 @@ export class DocumentWorkflowEngine {
     // Update document version
     await supabase
       .from('document_workflows')
-      .update({ 
+      .update({
         version: version.version,
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date().toISOString(),
       })
       .eq('id', documentId);
 
@@ -241,29 +251,42 @@ export class DocumentWorkflowEngine {
 
     if (!version) throw new Error('Version not found');
 
-    await this.createVersion(documentId, version.content, userId, `Restored from version ${versionId}`);
+    await this.createVersion(
+      documentId,
+      version.content,
+      userId,
+      `Restored from version ${versionId}`,
+    );
   }
 
   // Add comment
-  async addComment(documentId: string, authorId: string, content: string, type: DocumentComment['type']): Promise<void> {
+  async addComment(
+    documentId: string,
+    authorId: string,
+    content: string,
+    type: DocumentComment['type'],
+  ): Promise<void> {
     const comment: Partial<DocumentComment> = {
       id: crypto.randomUUID(),
       documentId,
       authorId,
       content,
       type,
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
     };
 
-    const { error } = await supabase
-      .from('document_comments')
-      .insert(comment);
+    const { error } = await supabase.from('document_comments').insert(comment);
 
     if (error) throw error;
   }
 
   // Invite collaborator
-  async inviteCollaborator(documentId: string, userId: string, role: DocumentCollaborator['role'], invitedBy: string): Promise<void> {
+  async inviteCollaborator(
+    documentId: string,
+    userId: string,
+    role: DocumentCollaborator['role'],
+    invitedBy: string,
+  ): Promise<void> {
     const collaborator: Partial<DocumentCollaborator> = {
       id: crypto.randomUUID(),
       documentId,
@@ -271,12 +294,10 @@ export class DocumentWorkflowEngine {
       role,
       permissions: this.getPermissionsForRole(role),
       addedAt: new Date().toISOString(),
-      addedBy: invitedBy
+      addedBy: invitedBy,
     };
 
-    const { error } = await supabase
-      .from('document_collaborators')
-      .insert(collaborator);
+    const { error } = await supabase.from('document_collaborators').insert(collaborator);
 
     if (error) throw error;
   }
@@ -294,8 +315,15 @@ export class DocumentWorkflowEngine {
   }
 
   // Private helper methods
-  private async validateTransition(documentId: string, fromStatus: DocumentStatus, toStatus: DocumentStatus, userId: string): Promise<void> {
-    const transition = this.workflowTransitions.find(t => t.from === fromStatus && t.to === toStatus);
+  private async validateTransition(
+    documentId: string,
+    fromStatus: DocumentStatus,
+    toStatus: DocumentStatus,
+    userId: string,
+  ): Promise<void> {
+    const transition = this.workflowTransitions.find(
+      (t) => t.from === fromStatus && t.to === toStatus,
+    );
     if (!transition) {
       throw new Error(`Invalid transition from ${fromStatus} to ${toStatus}`);
     }
@@ -306,8 +334,8 @@ export class DocumentWorkflowEngine {
 
   private processTemplateVariables(template: DocumentTemplate, data: any): any {
     const processedContent = { ...data };
-    
-    template.variables.forEach(variable => {
+
+    template.variables.forEach((variable) => {
       if (variable.type === 'date') {
         processedContent[variable.name] = new Date().toISOString();
       }

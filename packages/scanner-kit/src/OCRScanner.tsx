@@ -2,23 +2,23 @@
 // Supports Sinhala, Tamil, English handwritten and printed text
 // Provider-agnostic: uses OCRPipeline (MLKit by default, cloud for Pro users)
 
-import React, { useState } from "react";
+import * as ImagePicker from 'expo-image-picker';
+import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
-  Image,
-  Alert,
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
   ActivityIndicator,
-} from "react-native";
-import * as ImagePicker from "expo-image-picker";
-import { useTranslation } from "react-i18next";
-import { defaultOCRPipeline, OCRPipeline } from "./ocr/OCRPipeline";
-import { parseStudents, ParsedStudent } from "./ocr/parsers/StudentParser";
-import type { OCRProviderName } from "./ocr/types";
+  Alert,
+  Image,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { defaultOCRPipeline, type OCRPipeline } from './ocr/OCRPipeline';
+import { type ParsedStudent, parseStudents } from './ocr/parsers/StudentParser';
+import type { OCRProviderName } from './ocr/types';
 
-import { ScannedStudent } from "./types";
+import type { ScannedStudent } from './types';
 
 interface OCRScannerProps {
   onStudentsScanned: (students: ScannedStudent[]) => void;
@@ -49,32 +49,30 @@ interface OCRScannerProps {
 }
 
 const DEFAULT_COLORS = {
-  primary: "#1a1a2e",
-  secondary: "#16213e",
-  border: "#2a2a4a",
-  text: "#ffffff",
-  textSecondary: "#a0a0b0",
-  tertiary: "#0f3460",
-  accent: "#f5a623",
-  success: "#4caf50",
-  warning: "#f59e0b",
+  primary: '#1a1a2e',
+  secondary: '#16213e',
+  border: '#2a2a4a',
+  text: '#ffffff',
+  textSecondary: '#a0a0b0',
+  tertiary: '#0f3460',
+  accent: '#f5a623',
+  success: '#4caf50',
+  warning: '#f59e0b',
 };
 
 export default function OCRScanner({
   onStudentsScanned,
   onCancel,
   colors: colorsProp,
-  providerName = "mlkit",
+  providerName = 'mlkit',
   pipeline = defaultOCRPipeline,
 }: OCRScannerProps) {
   const { t } = useTranslation();
   const colors = { ...DEFAULT_COLORS, ...colorsProp };
   const [imageUri, setImageUri] = useState<string | null>(null);
-  const [scannedText, setScannedText] = useState<string>("");
+  const [scannedText, setScannedText] = useState<string>('');
   const [parsedStudents, setParsedStudents] = useState<ParsedStudent[]>([]);
-  const [step, setStep] = useState<"capture" | "processing" | "review">(
-    "capture",
-  );
+  const [step, setStep] = useState<'capture' | 'processing' | 'review'>('capture');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const showToast = (message: string) => {
@@ -85,9 +83,9 @@ export default function OCRScanner({
   // Request camera permissions
   const requestPermissions = async () => {
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
-    if (status !== "granted") {
-      Alert.alert(t("ocr.permission.title"), t("ocr.permission.description"), [
-        { text: t("common.ok") },
+    if (status !== 'granted') {
+      Alert.alert(t('ocr.permission.title'), t('ocr.permission.description'), [
+        { text: t('common.ok') },
       ]);
       return false;
     }
@@ -127,7 +125,7 @@ export default function OCRScanner({
 
   // Process image using the injected OCR pipeline
   const processImage = async (uri: string) => {
-    setStep("processing");
+    setStep('processing');
 
     try {
       const ocrResult = await pipeline.recognize(uri, {
@@ -135,30 +133,30 @@ export default function OCRScanner({
       });
 
       if (!ocrResult.text && ocrResult.blocks.length === 0) {
-        throw new Error("No text detected in image");
+        throw new Error('No text detected in image');
       }
 
       setScannedText(ocrResult.text);
       const students = parseStudents(ocrResult);
 
       if (students.length === 0) {
-        throw new Error("No student data could be parsed from the image");
+        throw new Error('No student data could be parsed from the image');
       }
 
       setParsedStudents(students);
-      setStep("review");
+      setStep('review');
       showToast(`Found ${students.length} student(s)! Review and confirm.`);
     } catch (error) {
-      console.error("OCR Error:", error);
-      showToast("Failed to scan register. Try manual entry instead.");
-      setStep("capture");
+      console.error('OCR Error:', error);
+      showToast('Failed to scan register. Try manual entry instead.');
+      setStep('capture');
       setImageUri(null);
     }
   };
 
   const handleConfirm = () => {
     if (parsedStudents.length === 0) {
-      showToast("No students to add");
+      showToast('No students to add');
       return;
     }
     onStudentsScanned(parsedStudents);
@@ -166,9 +164,9 @@ export default function OCRScanner({
 
   const handleRetry = () => {
     setImageUri(null);
-    setScannedText("");
+    setScannedText('');
     setParsedStudents([]);
-    setStep("capture");
+    setStep('capture');
   };
 
   return (
@@ -177,7 +175,7 @@ export default function OCRScanner({
       {toastMessage && (
         <View
           style={{
-            position: "absolute",
+            position: 'absolute',
             top: 60,
             left: 16,
             right: 16,
@@ -187,18 +185,16 @@ export default function OCRScanner({
             borderRadius: 8,
           }}
         >
-          <Text style={{ color: "#fff", textAlign: "center" }}>
-            {toastMessage}
-          </Text>
+          <Text style={{ color: '#fff', textAlign: 'center' }}>{toastMessage}</Text>
         </View>
       )}
 
       {/* Header */}
       <View
         style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "center",
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
           paddingHorizontal: 24,
           paddingTop: 48,
           paddingBottom: 16,
@@ -206,8 +202,8 @@ export default function OCRScanner({
           borderBottomColor: colors.border,
         }}
       >
-        <Text style={{ color: colors.accent, fontSize: 20, fontWeight: "bold" }}>
-          {t("ocr.title")}
+        <Text style={{ color: colors.accent, fontSize: 20, fontWeight: 'bold' }}>
+          {t('ocr.title')}
         </Text>
         <TouchableOpacity onPress={onCancel}>
           <Text style={{ color: colors.textSecondary, fontSize: 24 }}>✕</Text>
@@ -216,10 +212,10 @@ export default function OCRScanner({
 
       {/* Content */}
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 24 }}>
-        {step === "capture" && (
+        {step === 'capture' && (
           <View style={{ gap: 16 }}>
-            <Text style={{ color: colors.textSecondary, textAlign: "center" }}>
-              {t("ocr.captureDescription")}
+            <Text style={{ color: colors.textSecondary, textAlign: 'center' }}>
+              {t('ocr.captureDescription')}
             </Text>
 
             <TouchableOpacity
@@ -228,11 +224,11 @@ export default function OCRScanner({
                 backgroundColor: colors.accent,
                 padding: 16,
                 borderRadius: 12,
-                alignItems: "center",
+                alignItems: 'center',
               }}
             >
-              <Text style={{ color: "#fff", fontWeight: "bold", fontSize: 16 }}>
-                📷 {t("ocr.takePhoto")}
+              <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 16 }}>
+                📷 {t('ocr.takePhoto')}
               </Text>
             </TouchableOpacity>
 
@@ -243,12 +239,10 @@ export default function OCRScanner({
                 borderColor: colors.border,
                 padding: 16,
                 borderRadius: 12,
-                alignItems: "center",
+                alignItems: 'center',
               }}
             >
-              <Text style={{ color: colors.text, fontSize: 16 }}>
-                {t("ocr.chooseFromGallery")}
-              </Text>
+              <Text style={{ color: colors.text, fontSize: 16 }}>{t('ocr.chooseFromGallery')}</Text>
             </TouchableOpacity>
 
             <View
@@ -264,22 +258,19 @@ export default function OCRScanner({
               <Text
                 style={{
                   color: colors.accent,
-                  fontWeight: "600",
+                  fontWeight: '600',
                   fontSize: 13,
                 }}
               >
-                {t("ocr.tipsTitle")}
+                {t('ocr.tipsTitle')}
               </Text>
               {[
-                "Good lighting (avoid shadows)",
-                "Clear, focused image",
-                "Straight angle (not tilted)",
-                "Include column headers if possible",
+                'Good lighting (avoid shadows)',
+                'Clear, focused image',
+                'Straight angle (not tilted)',
+                'Include column headers if possible',
               ].map((tip) => (
-                <Text
-                  key={tip}
-                  style={{ color: colors.textSecondary, fontSize: 13 }}
-                >
+                <Text key={tip} style={{ color: colors.textSecondary, fontSize: 13 }}>
                   • {tip}
                 </Text>
               ))}
@@ -287,8 +278,8 @@ export default function OCRScanner({
           </View>
         )}
 
-        {step === "processing" && (
-          <View style={{ alignItems: "center", marginTop: 48, gap: 16 }}>
+        {step === 'processing' && (
+          <View style={{ alignItems: 'center', marginTop: 48, gap: 16 }}>
             {imageUri && (
               <Image
                 source={{ uri: imageUri }}
@@ -297,23 +288,22 @@ export default function OCRScanner({
               />
             )}
             <ActivityIndicator size="large" color={colors.accent} />
-            <Text style={{ color: colors.textSecondary, textAlign: "center" }}>
-              {t("ocr.scanning")}
+            <Text style={{ color: colors.textSecondary, textAlign: 'center' }}>
+              {t('ocr.scanning')}
             </Text>
           </View>
         )}
 
-        {step === "review" && (
+        {step === 'review' && (
           <View style={{ gap: 16 }}>
-            <Text style={{ color: colors.textSecondary, textAlign: "center" }}>
-              Found {parsedStudents.length} student(s). Review and confirm or
-              edit manually.
+            <Text style={{ color: colors.textSecondary, textAlign: 'center' }}>
+              Found {parsedStudents.length} student(s). Review and confirm or edit manually.
             </Text>
 
             {imageUri && (
               <Image
                 source={{ uri: imageUri }}
-                style={{ width: "100%", height: 150, borderRadius: 12 }}
+                style={{ width: '100%', height: 150, borderRadius: 12 }}
                 resizeMode="contain"
               />
             )}
@@ -327,24 +317,20 @@ export default function OCRScanner({
                     padding: 16,
                     borderRadius: 12,
                     borderLeftWidth: 4,
-                    borderLeftColor: student.uncertain
-                      ? colors.warning
-                      : colors.success,
+                    borderLeftColor: student.uncertain ? colors.warning : colors.success,
                     borderWidth: 1,
                     borderColor: colors.border,
                   }}
                 >
                   <View
                     style={{
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                      alignItems: "center",
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
                     }}
                   >
                     <View style={{ flex: 1, gap: 4 }}>
-                      <Text style={{ color: colors.text, fontWeight: "600" }}>
-                        {student.name}
-                      </Text>
+                      <Text style={{ color: colors.text, fontWeight: '600' }}>{student.name}</Text>
                       <Text style={{ color: colors.textSecondary, fontSize: 13 }}>
                         Index: {student.index_number}
                       </Text>
@@ -361,13 +347,11 @@ export default function OCRScanner({
                     </View>
                     <Text
                       style={{
-                        color: student.uncertain
-                          ? colors.warning
-                          : colors.success,
+                        color: student.uncertain ? colors.warning : colors.success,
                         fontSize: 18,
                       }}
                     >
-                      {student.uncertain ? "?" : "✓"}
+                      {student.uncertain ? '?' : '✓'}
                     </Text>
                   </View>
                 </View>
@@ -388,16 +372,16 @@ export default function OCRScanner({
                   style={{
                     color: colors.textSecondary,
                     fontSize: 11,
-                    fontFamily: "monospace",
+                    fontFamily: 'monospace',
                   }}
                 >
                   {scannedText.substring(0, 200)}
-                  {scannedText.length > 200 && "..."}
+                  {scannedText.length > 200 && '...'}
                 </Text>
               </View>
             )}
 
-            <View style={{ flexDirection: "row", gap: 12 }}>
+            <View style={{ flexDirection: 'row', gap: 12 }}>
               <TouchableOpacity
                 onPress={handleRetry}
                 style={{
@@ -406,10 +390,10 @@ export default function OCRScanner({
                   borderColor: colors.border,
                   padding: 16,
                   borderRadius: 12,
-                  alignItems: "center",
+                  alignItems: 'center',
                 }}
               >
-                <Text style={{ color: colors.text }}>{t("ocr.tryAgain")}</Text>
+                <Text style={{ color: colors.text }}>{t('ocr.tryAgain')}</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={handleConfirm}
@@ -418,10 +402,10 @@ export default function OCRScanner({
                   backgroundColor: colors.accent,
                   padding: 16,
                   borderRadius: 12,
-                  alignItems: "center",
+                  alignItems: 'center',
                 }}
               >
-                <Text style={{ color: "#fff", fontWeight: "bold" }}>
+                <Text style={{ color: '#fff', fontWeight: 'bold' }}>
                   Confirm ({parsedStudents.length})
                 </Text>
               </TouchableOpacity>

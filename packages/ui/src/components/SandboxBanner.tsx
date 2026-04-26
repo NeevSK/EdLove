@@ -1,9 +1,9 @@
-import React from 'react';
-import { Box, HStack, Text, Pressable } from '../gluestack';
-import { hapticLight } from '../utils/haptics';
 import { useStore } from '@repo/core/logic';
+import { X, Zap } from 'lucide-react-native';
+import type React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Zap, X } from 'lucide-react-native';
+import { Box, HStack, Pressable, Text } from '../gluestack';
+import { hapticLight } from '../utils/haptics';
 
 interface SandboxBannerProps {
   onExit?: () => void;

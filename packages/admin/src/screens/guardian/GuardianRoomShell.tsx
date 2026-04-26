@@ -1,6 +1,6 @@
-import React from 'react';
-import { ArrowLeft } from 'lucide-react-native';
 import { Box, HStack, Icon, Pressable, ScreenWrapper, Text, VStack } from '@repo/ui';
+import { ArrowLeft } from 'lucide-react-native';
+import type React from 'react';
 
 interface GuardianRoomShellProps {
   eyebrow: string;
@@ -20,7 +20,8 @@ export function GuardianRoomShell({
   description,
   stats = [],
   onBack,
-  children}: GuardianRoomShellProps) {
+  children,
+}: GuardianRoomShellProps) {
   return (
     <ScreenWrapper scroll={false} noTopInset>
       <Box className="flex-1 bg-silk px-4 py-4">
@@ -45,8 +46,10 @@ export function GuardianRoomShell({
               {stats.length > 0 ? (
                 <HStack className="gap-3 flex-wrap">
                   {stats.map((stat) => (
-                    <Box key={stat.label}
-                      className="min-w-[31%] flex-1 rounded-2xl border border-starlightGray/20 bg-silk px-4 py-3">
+                    <Box
+                      key={stat.label}
+                      className="min-w-[31%] flex-1 rounded-2xl border border-starlightGray/20 bg-silk px-4 py-3"
+                    >
                       <Text className="text-[11px] font-bold uppercase text-phaseText-secondary">
                         {stat.label}
                       </Text>
@@ -66,4 +69,3 @@ export function GuardianRoomShell({
     </ScreenWrapper>
   );
 }
-

@@ -1,8 +1,8 @@
 import {
-  supabase,
   getSchoolRoleForUser,
   getWorkRolesForUser,
   type SchoolRole,
+  supabase,
   type User,
   type WorkRole,
 } from '@repo/core';
@@ -37,7 +37,15 @@ export const peopleDirectoryAPI = {
     if (options?.personKind === 'student') {
       query = query.eq('role', 'student');
     } else if (options?.personKind === 'staff') {
-      query = query.in('role', ['principal', 'section_head', 'grade_head', 'teacher', 'founder', 'admin', 'developer']);
+      query = query.in('role', [
+        'principal',
+        'section_head',
+        'grade_head',
+        'teacher',
+        'founder',
+        'admin',
+        'developer',
+      ]);
     }
 
     const { data, error } = await query;

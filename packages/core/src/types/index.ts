@@ -1,30 +1,51 @@
 import { APIError } from './API';
-import { User } from './User';
-import { DeviceMetadata } from './runtime';
+import type { DeviceMetadata } from './runtime';
+import type { User } from './User';
 
 export type { Actor, ActorRelationship, ActorType, ContactChannel } from './Actor';
-export { APIError };
-export type { PaginationParams, PaginatedResponse } from './API';
+export type { PaginatedResponse, PaginationParams } from './API';
 export type { Assignment } from './Assignment';
 export type { AttendanceRecord, AttendanceStatus, StudentAttendance } from './Attendance';
-export type { AuthorityTier, PlatformAuthority, SchoolAuthority, WorkCapacity, SchoolRole, WorkRole } from './Authority';
+export type {
+  AuthorityTier,
+  PlatformAuthority,
+  SchoolAuthority,
+  SchoolRole,
+  WorkCapacity,
+  WorkRole,
+} from './Authority';
 export type { Classroom } from './Classroom';
 export type { ClassroomNote } from './ClassroomNote';
-export type { 
-  Group as CommunityGroup, 
-  Group, 
-  GroupMember as CommunityMember, 
-  GroupMember, 
-  Post as CommunityPost, 
-  Post,
+export type {
+  CommunityReaction,
+  Group as CommunityGroup,
+  Group,
+  GroupMember as CommunityMember,
+  GroupMember,
   GroupMessage,
-  CommunityReaction, 
-  ThuthimalGift 
+  Post as CommunityPost,
+  Post,
+  ThuthimalGift,
 } from './Community';
-export type { FormFieldConfig, FieldDefinition, FormConfig, FormTemplate, FormResponse } from './Form';
-export type { StudentGrade, ClassroomGradingSettings } from './Grade';
+export type {
+  FieldDefinition,
+  FormConfig,
+  FormFieldConfig,
+  FormResponse,
+  FormTemplate,
+} from './Form';
+export type { ClassroomGradingSettings, StudentGrade } from './Grade';
 export type { StudentGroup } from './Group';
-export type { ClassroomResourceCategory, ClassroomResourceCondition, ClassroomResourceItem, InventoryItem, InventoryRequest, InstitutionalAsset, ResourceNeedSummary, ResourceOwnerContext } from './Inventory';
+export type {
+  ClassroomResourceCategory,
+  ClassroomResourceCondition,
+  ClassroomResourceItem,
+  InstitutionalAsset,
+  InventoryItem,
+  InventoryRequest,
+  ResourceNeedSummary,
+  ResourceOwnerContext,
+} from './Inventory';
 export type { Lesson } from './Lesson';
 export type { LessonMaterial } from './LessonMaterial';
 export type { MediaAsset, MediaProvider, MediaTransformations } from './Media';
@@ -38,7 +59,12 @@ export type {
   ProfileStackParamList,
   SelfStackParamList,
 } from './navigation';
-export type { SchoolJoinRequest, ClassroomJoinRequest, GroupReport, RequestStatus } from './Onboarding';
+export type {
+  ClassroomJoinRequest,
+  GroupReport,
+  RequestStatus,
+  SchoolJoinRequest,
+} from './Onboarding';
 export type { CapabilityKey, CapabilityResource, PolicyDecision } from './Policy';
 export type { PrincipalNote } from './PrincipalNote';
 export {
@@ -99,6 +125,7 @@ export type {
   WorkspaceSurfaceDefinition,
   WorkspaceZoneId,
 } from './Workspace';
+export { APIError };
 
 // Base types
 export type DeviceInfo = DeviceMetadata & { uniqueId: string };

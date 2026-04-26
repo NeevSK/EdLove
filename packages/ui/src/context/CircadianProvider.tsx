@@ -1,9 +1,10 @@
-import React, { createContext, useContext, useMemo } from 'react';
-import { View } from 'react-native';
 import { vars } from 'nativewind';
-import { useEnvironment } from './EnvironmentContext';
-import { phaseMatrix, colors } from '../theme/Theme';
+import type React from 'react';
+import { createContext, useContext, useMemo } from 'react';
+import { View } from 'react-native';
+import { colors, phaseMatrix } from '../theme/Theme';
 import { getTextOnBackground } from '../utils/colorUtils';
+import { useEnvironment } from './EnvironmentContext';
 
 /**
  * Circadian Context

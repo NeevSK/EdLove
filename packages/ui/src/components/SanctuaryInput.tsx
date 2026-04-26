@@ -1,21 +1,21 @@
-import React from 'react';
 import { AlertCircle } from 'lucide-react-native';
+import type React from 'react';
+import { Theme } from '../theme/Theme';
 import {
   FormControl,
+  FormControlError,
+  FormControlErrorIcon,
+  FormControlErrorText,
   FormControlLabel,
   FormControlLabelText,
-  FormControlError,
-  FormControlErrorText,
-  FormControlErrorIcon,
+  HStack,
   Input,
   InputField,
-  InputSlot,
   InputIcon,
-  HStack,
+  InputSlot,
   Text,
   useFormControlContext,
 } from './ui';
-import { Theme } from '../theme/Theme';
 
 interface SanctuaryInputProps {
   label?: string;

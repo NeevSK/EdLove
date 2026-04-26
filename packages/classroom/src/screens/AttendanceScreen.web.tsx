@@ -1,7 +1,14 @@
-import React, { useEffect, useReducer, useCallback, useMemo } from 'react';
-import { useRoute, useNavigation } from '@react-navigation/native';
-import { api, StudentAttendance, AttendanceRecord, growthSignalsAPI, useStore } from '@repo/core';
-import { Check, X, Clock, ChevronLeft, Save } from 'lucide-react-native';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import {
+  type AttendanceRecord,
+  api,
+  growthSignalsAPI,
+  type StudentAttendance,
+  useStore,
+} from '@repo/core';
+import { Check, ChevronLeft, Clock, Save, X } from 'lucide-react-native';
+import type React from 'react';
+import { useCallback, useEffect, useMemo, useReducer } from 'react';
 
 type Status = 'present' | 'absent' | 'late';
 
@@ -70,7 +77,12 @@ function attendanceReducer(state: AttendanceState, action: AttendanceAction): At
 
 const STATUS_CONFIG: Record<
   Status,
-  { label: string; color: string; bg: string; Icon: React.ComponentType<{ size?: number; color?: string }> }
+  {
+    label: string;
+    color: string;
+    bg: string;
+    Icon: React.ComponentType<{ size?: number; color?: string }>;
+  }
 > = {
   present: { label: 'Present', color: '#16a34a', bg: 'rgba(34,197,94,0.10)', Icon: Check },
   late: { label: 'Late', color: '#d97706', bg: 'rgba(245,158,11,0.10)', Icon: Clock },
@@ -93,7 +105,8 @@ export default function AttendanceScreenWeb() {
         const attendanceDate = new Date().toISOString().split('T')[0] || new Date().toISOString();
         const [data, snapshot] = await Promise.all([
           api.classroomStudents.getAll(classroomId),
-          api.attendance.getClassroomAttendanceSnapshot(classroomId, attendanceDate)
+          api.attendance
+            .getClassroomAttendanceSnapshot(classroomId, attendanceDate)
             .catch(() => ({ records: [] as AttendanceRecord[] })),
         ]);
         const savedStatus = new Map<string, string>(
@@ -122,7 +135,10 @@ export default function AttendanceScreenWeb() {
     dispatch({ type: 'SET_ALL', payload: status });
   }, []);
 
-  const attendanceDate = useMemo(() => new Date().toISOString().split('T')[0] || new Date().toISOString(), []);
+  const attendanceDate = useMemo(
+    () => new Date().toISOString().split('T')[0] || new Date().toISOString(),
+    [],
+  );
 
   const handleSave = async () => {
     dispatch({ type: 'SAVE_START' });
@@ -153,17 +169,28 @@ export default function AttendanceScreenWeb() {
     }
   };
 
-  const counts = useMemo(() => state.students.reduce((acc, student) => {
-    acc[student.status as Status] = (acc[student.status as Status] ?? 0) + 1;
-    return acc;
-  }, {} as Record<Status, number>), [state.students]);
+  const counts = useMemo(
+    () =>
+      state.students.reduce(
+        (acc, student) => {
+          acc[student.status as Status] = (acc[student.status as Status] ?? 0) + 1;
+          return acc;
+        },
+        {} as Record<Status, number>,
+      ),
+    [state.students],
+  );
 
-  const today = useMemo(() => new Date(attendanceDate).toLocaleDateString('en-LK', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  }), [attendanceDate]);
+  const today = useMemo(
+    () =>
+      new Date(attendanceDate).toLocaleDateString('en-LK', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      }),
+    [attendanceDate],
+  );
 
   const { students, loading, saving, saved, error } = state;
 
@@ -190,15 +217,32 @@ export default function AttendanceScreenWeb() {
             <ChevronLeft size={14} /> Back
           </button>
           <div>
-            <h2 style={{ margin: 0, fontSize: '20px', fontWeight: '800' }}>Attendance - {classroomName}</h2>
-            <p style={{ margin: '2px 0 0', fontSize: '12px', color: 'var(--ink-ghost)' }}>{today}</p>
+            <h2 style={{ margin: 0, fontSize: '20px', fontWeight: '800' }}>
+              Attendance - {classroomName}
+            </h2>
+            <p style={{ margin: '2px 0 0', fontSize: '12px', color: 'var(--ink-ghost)' }}>
+              {today}
+            </p>
           </div>
         </div>
 
-        {loading && <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--ink-ghost)' }}>Loading class list...</div>}
+        {loading && (
+          <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--ink-ghost)' }}>
+            Loading class list...
+          </div>
+        )}
 
         {!loading && error && (
-          <div style={{ padding: '16px', background: 'rgba(239,68,68,0.08)', borderRadius: '10px', color: 'var(--ember)', fontSize: '13px', marginBottom: '20px' }}>
+          <div
+            style={{
+              padding: '16px',
+              background: 'rgba(239,68,68,0.08)',
+              borderRadius: '10px',
+              color: 'var(--ember)',
+              fontSize: '13px',
+              marginBottom: '20px',
+            }}
+          >
             {error}
           </div>
         )}
@@ -229,13 +273,28 @@ export default function AttendanceScreenWeb() {
                   </div>
                 );
               })}
-              <span style={{ marginLeft: 'auto', fontSize: '12px', color: 'var(--ink-ghost)', alignSelf: 'center' }}>
+              <span
+                style={{
+                  marginLeft: 'auto',
+                  fontSize: '12px',
+                  color: 'var(--ink-ghost)',
+                  alignSelf: 'center',
+                }}
+              >
                 {students.length} students total
               </span>
             </div>
 
             <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
-              <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--ink-ghost)', alignSelf: 'center', marginRight: '4px' }}>
+              <span
+                style={{
+                  fontSize: '12px',
+                  fontWeight: '700',
+                  color: 'var(--ink-ghost)',
+                  alignSelf: 'center',
+                  marginRight: '4px',
+                }}
+              >
                 Mark all:
               </span>
               {(Object.keys(STATUS_CONFIG) as Status[]).map((status) => (
@@ -259,7 +318,10 @@ export default function AttendanceScreenWeb() {
               ))}
             </div>
 
-            <div className="sanctuary-card" style={{ padding: 0, overflow: 'hidden', marginBottom: '20px' }}>
+            <div
+              className="sanctuary-card"
+              style={{ padding: 0, overflow: 'hidden', marginBottom: '20px' }}
+            >
               {students.map((student, index) => {
                 const config = STATUS_CONFIG[student.status as Status];
                 return (
@@ -271,7 +333,8 @@ export default function AttendanceScreenWeb() {
                       alignItems: 'center',
                       gap: '16px',
                       padding: '14px 20px',
-                      borderBottom: index < students.length - 1 ? '1px solid var(--border-light)' : 'none',
+                      borderBottom:
+                        index < students.length - 1 ? '1px solid var(--border-light)' : 'none',
                       cursor: 'pointer',
                       background: 'transparent',
                       transition: 'background 0.12s',
@@ -283,10 +346,21 @@ export default function AttendanceScreenWeb() {
                       event.currentTarget.style.background = 'transparent';
                     }}
                   >
-                    <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--ink-ghost)', minWidth: '32px' }}>
+                    <span
+                      style={{
+                        fontSize: '12px',
+                        fontWeight: '700',
+                        color: 'var(--ink-ghost)',
+                        minWidth: '32px',
+                      }}
+                    >
                       {student.roll_number ?? index + 1}
                     </span>
-                    <span style={{ flex: 1, fontSize: '14px', fontWeight: '600', color: 'var(--ink)' }}>{student.full_name}</span>
+                    <span
+                      style={{ flex: 1, fontSize: '14px', fontWeight: '600', color: 'var(--ink)' }}
+                    >
+                      {student.full_name}
+                    </span>
                     <div
                       style={{
                         display: 'flex',
@@ -301,7 +375,9 @@ export default function AttendanceScreenWeb() {
                       }}
                     >
                       <config.Icon size={13} color={config.color} />
-                      <span style={{ fontSize: '12px', fontWeight: '700', color: config.color }}>{config.label}</span>
+                      <span style={{ fontSize: '12px', fontWeight: '700', color: config.color }}>
+                        {config.label}
+                      </span>
                     </div>
                   </div>
                 );
@@ -341,7 +417,13 @@ export default function AttendanceScreenWeb() {
                 onClick={handleSave}
                 disabled={saving}
               >
-                {saving ? '... Saving...' : <><Save size={15} /> Complete Marking</>}
+                {saving ? (
+                  '... Saving...'
+                ) : (
+                  <>
+                    <Save size={15} /> Complete Marking
+                  </>
+                )}
               </button>
             )}
           </>

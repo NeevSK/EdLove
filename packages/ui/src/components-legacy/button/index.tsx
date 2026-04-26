@@ -1,13 +1,13 @@
+import { cssInterop } from 'nativewind';
 import React from 'react';
 import {
+  ScrollView as BaseScrollView,
+  View as BaseView,
+  type PressableProps,
   Pressable as RNPressable,
   Text as RNText,
-  type PressableProps,
   type TextProps,
-  View as BaseView,
-  ScrollView as BaseScrollView,
 } from 'react-native';
-import { cssInterop } from 'nativewind';
 
 const StyledPressable = RNPressable;
 const StyledText = RNText;

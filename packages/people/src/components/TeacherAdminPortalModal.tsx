@@ -1,7 +1,17 @@
+import {
+  Box,
+  Heading,
+  HStack,
+  hapticLight,
+  Icon,
+  Pressable,
+  ScrollView,
+  Text,
+  VStack,
+} from '@repo/ui';
+import { X } from 'lucide-react-native';
 import React from 'react';
 import { Modal } from 'react-native';
-import { X } from 'lucide-react-native';
-import { Box, HStack, Text, hapticLight, ScrollView, Pressable, Icon, Heading, VStack } from '@repo/ui';
 import TeacherAdminWidget from './TeacherAdminWidget';
 
 interface TeacherAdminPortalModalProps {
@@ -33,12 +43,12 @@ export default function TeacherAdminPortalModal({
         <Box className="pt-8 pb-6 px-6 border-b border-phase-surface shadow-sm">
           <HStack className="justify-between items-center">
             <VStack>
-                <Heading className="text-2xl font-bold text-phase-text-primary tracking-tight">
+              <Heading className="text-2xl font-bold text-phase-text-primary tracking-tight">
                 {title}
-                </Heading>
-                <Text className="text-[10px] font-bold text-phase-text-tertiary uppercase tracking-widest mt-0.5">
-                    SOVEREIGN MANAGEMENT
-                </Text>
+              </Heading>
+              <Text className="text-[10px] font-bold text-phase-text-tertiary uppercase tracking-widest mt-0.5">
+                SOVEREIGN MANAGEMENT
+              </Text>
             </VStack>
             <Pressable
               onPress={() => {
@@ -51,15 +61,16 @@ export default function TeacherAdminPortalModal({
             </Pressable>
           </HStack>
         </Box>
-        <ScrollView 
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ padding: 24, paddingBottom: 60 }}
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ padding: 24, paddingBottom: 60 }}
         >
           <TeacherAdminWidget onAction={onAction} />
-          
+
           <Box className="mt-12 p-6 bg-phase-surface/30 rounded-[32px] border border-phase-surface/50">
             <Text className="text-xs text-phase-text-tertiary leading-5 font-medium italic text-center">
-                This portal is secured by the Gurudevi Sanctuary Governance protocols. All administrative actions are logged in the sovereign record.
+              This portal is secured by the Gurudevi Sanctuary Governance protocols. All
+              administrative actions are logged in the sovereign record.
             </Text>
           </Box>
         </ScrollView>

@@ -1,8 +1,8 @@
-import React from 'react';
-import { View, Text, StyleSheet, Platform } from 'react-native';
-import { SanctuaryCanvas } from './SanctuaryCanvas';
-import { useQuery } from '@tanstack/react-query';
 import { Theme } from '@repo/ui';
+import { useQuery } from '@tanstack/react-query';
+import type React from 'react';
+import { Platform, StyleSheet, Text, View } from 'react-native';
+import { SanctuaryCanvas } from './SanctuaryCanvas';
 
 // Define types locally to avoid analytics dependency
 interface TenantMetrics {
@@ -16,9 +16,9 @@ const mockTenantMetricsAPI = {
     // Return mock data instead of calling analytics API
     return tenantIds.map(() => ({
       engagement: 0.5 + Math.random() * 0.5,
-      growth: 0.5 + Math.random() * 0.5
+      growth: 0.5 + Math.random() * 0.5,
     }));
-  }
+  },
 };
 
 export const CollaborativeGrove: React.FC<{ tenantIds: string[] }> = ({ tenantIds }) => {
@@ -35,16 +35,16 @@ export const CollaborativeGrove: React.FC<{ tenantIds: string[] }> = ({ tenantId
           return (
             <View key={id} style={styles.treeContainer}>
               {/* Simple geometric tree that grows based on data */}
-              <View 
+              <View
                 style={[
-                  styles.canopy, 
-                  { 
+                  styles.canopy,
+                  {
                     height: 40 + (m.engagement || 0) * 60,
                     width: 40 + (m.engagement || 0) * 40,
                     backgroundColor: Theme.colors.sanctuarySaffron,
-                    opacity: 0.6 + (m.growth || 0) * 0.4
-                  }
-                ]} 
+                    opacity: 0.6 + (m.growth || 0) * 0.4,
+                  },
+                ]}
               />
               <View style={styles.trunk} />
             </View>
@@ -89,5 +89,5 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 8,
     fontStyle: 'italic',
-  }
+  },
 });

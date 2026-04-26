@@ -1,6 +1,6 @@
-import React from 'react';
-import { Pressable as RNPressable, type PressableProps } from 'react-native';
 import { cssInterop } from 'nativewind';
+import React from 'react';
+import { type PressableProps, Pressable as RNPressable } from 'react-native';
 
 cssInterop(RNPressable, { className: 'style' });
 

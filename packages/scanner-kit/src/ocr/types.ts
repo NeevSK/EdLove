@@ -7,14 +7,14 @@
  * never knows which backend produced the output.
  */
 
-//  Core provider interface 
+//  Core provider interface
 
 export interface OCRProvider {
   readonly name: 'mlkit' | 'google_vision' | 'openai_vision';
   recognize(imageUri: string): Promise<OCRRawResult>;
 }
 
-//  Raw output (normalized across all providers) 
+//  Raw output (normalized across all providers)
 
 export interface OCRRawResult {
   /** Full concatenated text of the document */
@@ -45,7 +45,7 @@ export interface OCRBoundingBox {
   height: number;
 }
 
-//  Table structure (from TableParser) 
+//  Table structure (from TableParser)
 
 export interface OCRTable {
   rows: OCRTableRow[];
@@ -55,7 +55,7 @@ export interface OCRTableRow {
   cells: string[];
 }
 
-//  Pipeline options 
+//  Pipeline options
 
 export type OCRProviderName = OCRProvider['name'];
 

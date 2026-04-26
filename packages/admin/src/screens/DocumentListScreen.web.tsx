@@ -1,20 +1,25 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { 
-    Box, 
-    VStack, 
-    HStack, 
-    Text, 
-    Heading, 
-    Pressable, 
-    ScrollView, 
-    useTheme, 
-    useThemedColors,
-    ScreenWrapper,
-    Icon
+import { api, usePermissions } from '@repo/core';
+import {
+  Box,
+  Heading,
+  HStack,
+  Icon,
+  Pressable,
+  ScreenWrapper,
+  ScrollView,
+  Text,
+  useTheme,
+  useThemedColors,
+  VStack,
 } from '@repo/ui';
 import { LayoutGrid, List } from 'lucide-react-native';
-import { usePermissions, api } from '@repo/core';
-import { documentWorkflowAPI, type DocumentWorkflow, type DocumentStatus } from '../document-workflow/api';
+import type React from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import {
+  type DocumentStatus,
+  type DocumentWorkflow,
+  documentWorkflowAPI,
+} from '../document-workflow/api';
 
 interface DocumentListScreenWebProps {
   schoolId: string;
@@ -29,7 +34,7 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
   onDocumentPress,
   onCreateNew,
   viewDate,
-  isPastView
+  isPastView,
 }) => {
   const theme = useTheme();
   const colors = useThemedColors();
@@ -42,16 +47,28 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
   const [sortBy, setSortBy] = useState<'updatedAt' | 'title' | 'status'>('updatedAt');
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('grid');
 
-  const statusFilters: (DocumentStatus | 'all')[] = ['all', 'draft', 'review', 'approved', 'published', 'archived'];
+  const statusFilters: (DocumentStatus | 'all')[] = [
+    'all',
+    'draft',
+    'review',
+    'approved',
+    'published',
+    'archived',
+  ];
 
   const loadDocuments = useCallback(async () => {
     try {
       setIsLoading(true);
-      const userDocuments = await documentWorkflowAPI.getDocuments(schoolId, undefined, user.userId || '');
-      const reviewDocuments = (can('manage', 'AdminDashboard') || can('manage', 'PrincipalDashboard')) 
-        ? await documentWorkflowAPI.getDocumentsForReview(schoolId, user.userId || '')
-        : [];
-      
+      const userDocuments = await documentWorkflowAPI.getDocuments(
+        schoolId,
+        undefined,
+        user.userId || '',
+      );
+      const reviewDocuments =
+        can('manage', 'AdminDashboard') || can('manage', 'PrincipalDashboard')
+          ? await documentWorkflowAPI.getDocumentsForReview(schoolId, user.userId || '')
+          : [];
+
       setDocuments([...userDocuments, ...reviewDocuments]);
     } catch (error) {
       console.error('Failed to load documents:', error);
@@ -64,13 +81,14 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
     let filtered = [...documents];
 
     if (selectedStatus !== 'all') {
-      filtered = filtered.filter(doc => doc.status === selectedStatus);
+      filtered = filtered.filter((doc) => doc.status === selectedStatus);
     }
 
     if (searchQuery.trim()) {
-      filtered = filtered.filter(doc => 
-        doc.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        doc.content?.toString().toLowerCase().includes(searchQuery.toLowerCase())
+      filtered = filtered.filter(
+        (doc) =>
+          doc.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          doc.content?.toString().toLowerCase().includes(searchQuery.toLowerCase()),
       );
     }
 
@@ -99,12 +117,18 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
 
   const getStatusColors = (status: DocumentStatus) => {
     switch (status) {
-      case 'draft': return { bg: 'bg-error/10', text: 'text-error' };
-      case 'review': return { bg: 'bg-action/10', text: 'text-action' };
-      case 'approved': return { bg: 'bg-green-100', text: 'text-green-600' };
-      case 'published': return { bg: 'bg-action', text: 'text-white' };
-      case 'archived': return { bg: 'bg-ink/10', text: 'text-ink/40' };
-      default: return { bg: 'bg-ink/5', text: 'text-ink/30' };
+      case 'draft':
+        return { bg: 'bg-error/10', text: 'text-error' };
+      case 'review':
+        return { bg: 'bg-action/10', text: 'text-action' };
+      case 'approved':
+        return { bg: 'bg-green-100', text: 'text-green-600' };
+      case 'published':
+        return { bg: 'bg-action', text: 'text-white' };
+      case 'archived':
+        return { bg: 'bg-ink/10', text: 'text-ink/40' };
+      default:
+        return { bg: 'bg-ink/5', text: 'text-ink/30' };
     }
   };
 
@@ -114,7 +138,7 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
 
   const renderDocumentItem = (document: DocumentWorkflow) => {
     const statusStyle = getStatusColors(document.status);
-    
+
     if (viewMode === 'grid') {
       return (
         <Pressable
@@ -125,20 +149,22 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
           <VStack className="gap-4">
             <HStack className="justify-between items-start">
               <Box className={`${statusStyle.bg} px-3 py-1 rounded-full`}>
-                <Text className={`text-[10px] font-black uppercase tracking-widest ${statusStyle.text}`}>
+                <Text
+                  className={`text-[10px] font-black uppercase tracking-widest ${statusStyle.text}`}
+                >
                   {document.status}
                 </Text>
               </Box>
               <Text className="text-[10px] font-bold text-ink/30">V{document.version}</Text>
             </HStack>
-            
+
             <VStack className="gap-2">
-                <Text className="text-lg font-black text-ink leading-tight" numberOfLines={2}>
+              <Text className="text-lg font-black text-ink leading-tight" numberOfLines={2}>
                 {document.title}
-                </Text>
-                <Text className="text-xs font-bold text-ink/40">
+              </Text>
+              <Text className="text-xs font-bold text-ink/40">
                 Updated {formatDate(document.updatedAt)}
-                </Text>
+              </Text>
             </VStack>
 
             {document.status === 'review' && document.authorId !== user.userId && (
@@ -172,16 +198,20 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
         </HStack>
 
         <HStack className="gap-6 items-center">
-            <Box className={`${statusStyle.bg} px-3 py-1 rounded-full`}>
-                <Text className={`text-[10px] font-black uppercase tracking-widest ${statusStyle.text}`}>
-                    {document.status}
-                </Text>
+          <Box className={`${statusStyle.bg} px-3 py-1 rounded-full`}>
+            <Text
+              className={`text-[10px] font-black uppercase tracking-widest ${statusStyle.text}`}
+            >
+              {document.status}
+            </Text>
+          </Box>
+          {document.status === 'review' && document.authorId !== user.userId && (
+            <Box className="bg-action/10 px-3 py-1 rounded-full border border-action/20">
+              <Text className="text-[10px] font-black text-action uppercase tracking-widest">
+                Review
+              </Text>
             </Box>
-            {document.status === 'review' && document.authorId !== user.userId && (
-                <Box className="bg-action/10 px-3 py-1 rounded-full border border-action/20">
-                     <Text className="text-[10px] font-black text-action uppercase tracking-widest">Review</Text>
-                </Box>
-            )}
+          )}
         </HStack>
       </Pressable>
     );
@@ -189,11 +219,11 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
 
   if (isLoading) {
     return (
-        <ScreenWrapper>
-            <Box className="flex-1 items-center justify-center bg-silk p-20">
-                <Text className="text-ink/40 font-bold italic">Gathering documentation...</Text>
-            </Box>
-        </ScreenWrapper>
+      <ScreenWrapper>
+        <Box className="flex-1 items-center justify-center bg-silk p-20">
+          <Text className="text-ink/40 font-bold italic">Gathering documentation...</Text>
+        </Box>
+      </ScreenWrapper>
     );
   }
 
@@ -205,14 +235,18 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
           <HStack className="justify-between items-center">
             <VStack>
               <Heading className="text-4xl font-black text-ink tracking-tight">Documents</Heading>
-              <Text className="text-base font-bold text-ink/40">{filteredDocuments.length} total items</Text>
+              <Text className="text-base font-bold text-ink/40">
+                {filteredDocuments.length} total items
+              </Text>
             </VStack>
-            
+
             <Pressable
               onPress={onCreateNew}
               className="bg-action px-8 py-4 rounded-full active:scale-95 shadow-lg shadow-action/20"
             >
-              <Text className="text-white font-black uppercase tracking-widest">+ New Document</Text>
+              <Text className="text-white font-black uppercase tracking-widest">
+                + New Document
+              </Text>
             </Pressable>
           </HStack>
         </Box>
@@ -242,17 +276,25 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
               </select>
 
               <HStack className="bg-silk/50 rounded-2xl p-1 border border-border">
-                <Pressable 
+                <Pressable
                   onPress={() => setViewMode('list')}
                   className={`p-2 rounded-xl ${viewMode === 'list' ? 'bg-white shadow-sm' : ''}`}
                 >
-                  <Icon as={List} size={18} className={viewMode === 'list' ? 'text-action' : 'text-ink/20'} />
+                  <Icon
+                    as={List}
+                    size={18}
+                    className={viewMode === 'list' ? 'text-action' : 'text-ink/20'}
+                  />
                 </Pressable>
-                <Pressable 
+                <Pressable
                   onPress={() => setViewMode('grid')}
                   className={`p-2 rounded-xl ${viewMode === 'grid' ? 'bg-white shadow-sm' : ''}`}
                 >
-                  <Icon as={LayoutGrid} size={18} className={viewMode === 'grid' ? 'text-action' : 'text-ink/20'} />
+                  <Icon
+                    as={LayoutGrid}
+                    size={18}
+                    className={viewMode === 'grid' ? 'text-action' : 'text-ink/20'}
+                  />
                 </Pressable>
               </HStack>
             </HStack>
@@ -260,44 +302,53 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
         </Box>
 
         {/* Status Filter Bar */}
-        <ScrollView 
-          horizontal 
+        <ScrollView
+          horizontal
           showsHorizontalScrollIndicator={false}
           className="max-h-16 flex-none"
-          contentContainerStyle={{ paddingLeft: 48, paddingRight: 48, gap: 12, paddingTop: 8, paddingBottom: 8 }}
+          contentContainerStyle={{
+            paddingLeft: 48,
+            paddingRight: 48,
+            gap: 12,
+            paddingTop: 8,
+            paddingBottom: 8,
+          }}
         >
-          {statusFilters.map(status => (
+          {statusFilters.map((status) => (
             <Pressable
               key={status}
               onPress={() => setSelectedStatus(status)}
               className={`px-6 py-2 rounded-full border transition-all ${
-                selectedStatus === status 
-                  ? 'bg-ink border-ink transform scale-105' 
+                selectedStatus === status
+                  ? 'bg-ink border-ink transform scale-105'
                   : 'bg-white border-border'
               }`}
             >
-              <Text className={`text-xs font-black uppercase tracking-widest ${
-                selectedStatus === status ? 'text-white' : 'text-ink/40'
-              }`}>
+              <Text
+                className={`text-xs font-black uppercase tracking-widest ${
+                  selectedStatus === status ? 'text-white' : 'text-ink/40'
+                }`}
+              >
                 {status}
-                {status !== 'all' && ` (${documents.filter(d => d.status === status).length})`}
+                {status !== 'all' && ` (${documents.filter((d) => d.status === status).length})`}
               </Text>
             </Pressable>
           ))}
         </ScrollView>
 
         {/* Results Area */}
-        <ScrollView 
-          className="flex-1" 
-          contentContainerStyle={{ padding: 48, paddingBottom: 96 }}
-        >
+        <ScrollView className="flex-1" contentContainerStyle={{ padding: 48, paddingBottom: 96 }}>
           {filteredDocuments.length === 0 ? (
             <Box className="items-center justify-center p-20 opacity-20">
-                <Text className="text-2xl font-black text-ink">No Documents Found</Text>
-                <Text className="text-sm font-bold text-ink mt-2">Try adjusting your filters or search query.</Text>
+              <Text className="text-2xl font-black text-ink">No Documents Found</Text>
+              <Text className="text-sm font-bold text-ink mt-2">
+                Try adjusting your filters or search query.
+              </Text>
             </Box>
           ) : (
-            <Box className={viewMode === 'grid' ? 'flex-row flex-wrap justify-between' : 'flex-col'}>
+            <Box
+              className={viewMode === 'grid' ? 'flex-row flex-wrap justify-between' : 'flex-col'}
+            >
               {filteredDocuments.map(renderDocumentItem)}
             </Box>
           )}

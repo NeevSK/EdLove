@@ -1,12 +1,11 @@
+import { Canvas, Group, Path, Skia } from '@shopify/react-native-skia';
 import React from 'react';
-import { Canvas, Path, Skia, Group } from '@shopify/react-native-skia';
-import { useDerivedValue } from 'react-native-reanimated';
-import { useTrubeTime } from '../core/soul/TimeLayer';
 import type { LayoutChangeEvent, StyleProp, ViewStyle } from 'react-native';
 import { View } from 'react-native';
-
+import { useDerivedValue } from 'react-native-reanimated';
 import type { TrubeMotifSpec } from '../core/motif';
 import { resolveMotif } from '../core/motif';
+import { useTrubeTime } from '../core/soul/TimeLayer';
 
 export interface TrubeMotifProps {
   motif: TrubeMotifSpec;
@@ -15,12 +14,7 @@ export interface TrubeMotifProps {
   cornerRadius?: number;
 }
 
-export function TrubeMotif({
-  motif,
-  color,
-  style,
-  cornerRadius = 0,
-}: TrubeMotifProps) {
+export function TrubeMotif({ motif, color, style, cornerRadius = 0 }: TrubeMotifProps) {
   const [bounds, setBounds] = React.useState({ width: 0, height: 0 });
   const resolved = React.useMemo(() => resolveMotif(motif), [motif]);
   const { entropy } = useTrubeTime('silk', true); // Use silk-rate for motif breathing
@@ -32,11 +26,16 @@ export function TrubeMotif({
 
   const onLayout = React.useCallback((event: LayoutChangeEvent) => {
     const { width, height } = event.nativeEvent.layout;
-    setBounds((current) =      current.width === width && current.height === height ? current : { width, height },
+    setBounds(
+      (current =
+        current.width === width && current.height === height ? current : { width, height }),
     );
   }, []);
 
-  const scale = React.useMemo(() => Math.min(bounds.width, bounds.height) / 100, [bounds.height, bounds.width]);
+  const scale = React.useMemo(
+    () => Math.min(bounds.width, bounds.height) / 100,
+    [bounds.height, bounds.width],
+  );
   const translateX = React.useMemo(() => (bounds.width - scale * 100) / 2, [bounds.width, scale]);
   const translateY = React.useMemo(() => (bounds.height - scale * 100) / 2, [bounds.height, scale]);
 

@@ -9,10 +9,10 @@
  * Philosophy: Simple, reusable foundation for UI cards
  */
 
-import React, { FC, useState } from 'react';
-import { Pressable, Platform } from 'react-native';
-import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
-import { Box, VStack, Text } from '../gluestack';
+import { type FC, useState } from 'react';
+import { Platform, Pressable } from 'react-native';
+import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+import { Box, Text, VStack } from '../gluestack';
 
 // ============================================================================
 // TYPES
@@ -133,7 +133,7 @@ const SanctuaryCard: FC<SanctuaryCardProps> = ({
         onHoverOut={Platform.OS === 'web' ? () => setHovered(false) : undefined}
         accessibilityRole={href ? 'link' : 'button'}
         accessibilityLabel={accessibilityLabel}
-        // @ts-ignore - RN Pressable web props
+        // @ts-ignore
         href={href}
         // @ts-ignore
         hrefAttrs={{

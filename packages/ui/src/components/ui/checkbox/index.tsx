@@ -1,7 +1,8 @@
-import React, { createContext, useContext, useState, useMemo } from 'react';
-import { Pressable, View, Text, type ViewProps } from 'react-native';
 import { Check } from 'lucide-react-native';
 import { cssInterop } from 'nativewind';
+import type React from 'react';
+import { createContext, useContext, useMemo, useState } from 'react';
+import { Pressable, Text, View, type ViewProps } from 'react-native';
 
 cssInterop(View, { className: 'style' });
 cssInterop(Pressable, { className: 'style' });
@@ -193,7 +194,7 @@ export const CheckboxGroup = ({
       onValueChange: handleValueChange,
       isDisabled,
     }),
-    [value, isDisabled],
+    [value, isDisabled, handleValueChange],
   );
 
   return (

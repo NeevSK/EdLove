@@ -1,7 +1,6 @@
-import React from 'react';
-import { render, fireEvent } from '@testing-library/react-native';
-import { Input, InputField, InputSlot, InputIcon } from '../components/ui/input';
-import { Eye, Search } from 'lucide-react-native';
+import { fireEvent, render } from '@testing-library/react-native';
+import { Search } from 'lucide-react-native';
+import { Input, InputField, InputIcon, InputSlot } from '../components/ui/input';
 
 describe('Input Component (Robustness)', () => {
   it('renders correctly with default props', async () => {

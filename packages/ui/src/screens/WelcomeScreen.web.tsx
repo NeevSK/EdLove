@@ -18,25 +18,25 @@
  * Shadow rule: Shadow Violet only, never grey/black.
  */
 
-import React, { useState, useMemo } from 'react';
-import {
-  View,
-  Text,
-  Pressable,
-  StyleSheet,
-  useWindowDimensions,
-  ScrollView,
-  ActivityIndicator,
-} from 'react-native';
-import { useTranslation } from 'react-i18next';
-import { Theme } from '../theme/Theme';
-import { useTheme } from '../hooks/useTheme';
-import { VStack } from '../gluestack-legacy';
 import { handleAPIError } from '@repo/core/logic';
 import { authAPI } from '@repo/core/native';
-import { hapticLight, hapticSuccess, hapticError } from '../utils/haptics';
-import { openExternalURL } from '../utils/linking';
 import { useRouter } from 'expo-router';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import {
+  ActivityIndicator,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  useWindowDimensions,
+  View,
+} from 'react-native';
+import { VStack } from '../gluestack-legacy';
+import { useTheme } from '../hooks/useTheme';
+import { Theme } from '../theme/Theme';
+import { hapticError, hapticLight, hapticSuccess } from '../utils/haptics';
+import { openExternalURL } from '../utils/linking';
 
 // \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 // Constants
@@ -95,7 +95,7 @@ function LeftPanel({ isNarrow }: { isNarrow: boolean }) {
       {/* Stats */}
       <View style={styles.statsRow}>
         {STATS.map((s) => (
-          <View key={s.label} style={[styles.statPill, { borderColor: accent.action + '30' }]}>
+          <View key={s.label} style={[styles.statPill, { borderColor: `${accent.action}30` }]}>
             <Text style={[styles.statValue, { color: accent.action }]}>{s.value}</Text>
             <Text style={[styles.statLabel, { color: text.secondary }]}>{s.label}</Text>
           </View>
@@ -108,7 +108,7 @@ function LeftPanel({ isNarrow }: { isNarrow: boolean }) {
             key={p.name}
             style={[
               styles.pillarChip,
-              { borderColor: p.color + '30', backgroundColor: p.color + '10' },
+              { borderColor: `${p.color}30`, backgroundColor: `${p.color}10` },
             ]}
           >
             <Text style={styles.pillarEmoji}>{p.emoji}</Text>
@@ -120,7 +120,7 @@ function LeftPanel({ isNarrow }: { isNarrow: boolean }) {
       <View
         style={[
           styles.quoteBox,
-          { borderLeftColor: accent.action, backgroundColor: accent.action + '0A' },
+          { borderLeftColor: accent.action, backgroundColor: `${accent.action}0A` },
         ]}
       >
         <Text style={[styles.quoteText, { color: text.secondary }]}>
@@ -325,7 +325,7 @@ interface WelcomeScreenProps {
 
 export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) {
   const { t, i18n } = useTranslation();
-  const router = useRouter();
+  const _router = useRouter();
   const { phase, isDark, gradientNodes, text: themeText } = useTheme();
   const { width } = useWindowDimensions();
 
@@ -378,8 +378,8 @@ export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) 
   return (
     <View style={[styles.root, { backgroundColor: bgFrom }]}>
       {/* Subtle ambient glow blobs */}
-      <View style={[styles.blob1, { backgroundColor: Theme.colors.sanctuarySaffron + '12' }]} />
-      <View style={[styles.blob2, { backgroundColor: Theme.colors.sageGreen + '0D' }]} />
+      <View style={[styles.blob1, { backgroundColor: `${Theme.colors.sanctuarySaffron}12` }]} />
+      <View style={[styles.blob2, { backgroundColor: `${Theme.colors.sageGreen}0D` }]} />
       {isNarrow ? (
         // \u2500\u2500 Mobile web: stack vertically \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
         <ScrollView

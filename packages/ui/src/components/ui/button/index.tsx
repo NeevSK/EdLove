@@ -1,13 +1,13 @@
+import { cssInterop } from 'nativewind';
 import React, { createContext, useContext, useMemo } from 'react';
 import {
+  ActivityIndicator,
   Pressable,
-  Text,
   type PressableProps,
+  Text,
   type TextProps,
   View,
-  ActivityIndicator,
 } from 'react-native';
-import { cssInterop } from 'nativewind';
 
 cssInterop(Pressable, { className: 'style' });
 cssInterop(Text, { className: 'style' });
@@ -168,7 +168,7 @@ export const ButtonIcon = ({ as: Icon, className, size, ...props }: any) => {
   const { variant, action, size: buttonSize } = useButton();
   if (!Icon) return null;
 
-  const iconColors = {
+  const _iconColors = {
     solid: '#FFFFFF',
     outline: {
       primary: 'var(--phase-accent)',

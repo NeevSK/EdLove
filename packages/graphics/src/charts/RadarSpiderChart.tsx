@@ -1,6 +1,6 @@
+import { Card, HStack, Theme, VStack } from '@repo/ui';
 import React from 'react';
-import { View, Text, StyleSheet, Dimensions } from 'react-native';
-import { VStack, HStack, Card, Theme } from '@repo/ui';
+import { Dimensions, StyleSheet, Text, View } from 'react-native';
 
 interface RadarPoint {
   label: string;
@@ -25,13 +25,13 @@ export function RadarChart({
   size = 300,
   showLabels = true,
   showGrid = true,
-  animationDuration = 1000
+  animationDuration = 1000,
 }: RadarChartProps) {
   const { width } = Dimensions.get('window');
   const centerX = size / 2;
   const centerY = size / 2;
   const radius = size / 2 - 40;
-  
+
   // Calculate angles for each point
   const angleStep = (2 * Math.PI) / data.length;
   const points = data.map((point, index) => {
@@ -44,7 +44,7 @@ export function RadarChart({
   return (
     <Card style={[styles.container, { width: size, height: size }]}>
       {title && <Text style={styles.title}>{title}</Text>}
-      
+
       <View style={[styles.chartContainer, { width: size, height: size }]}>
         {/* Grid lines */}
         {showGrid && (
@@ -63,11 +63,11 @@ export function RadarChart({
                     top: centerY - radius * scale,
                     borderColor: Theme.colors.border,
                     borderWidth: 1,
-                  }
+                  },
                 ]}
               />
             ))}
-            
+
             {/* Radial grid lines */}
             {data.map((_, index) => {
               const angle = index * angleStep - Math.PI / 2;
@@ -82,29 +82,26 @@ export function RadarChart({
                       left: centerX,
                       top: centerY,
                       backgroundColor: Theme.colors.border,
-                      transform: [
-                        { rotate: `${angle}rad` },
-                        { translateX: radius / 2 }
-                      ]
-                    }
+                      transform: [{ rotate: `${angle}rad` }, { translateX: radius / 2 }],
+                    },
                   ]}
                 />
               );
             })}
           </View>
         )}
-        
+
         {/* Data polygon - Simplified representation for React Native using lines */}
         <View style={StyleSheet.absoluteFill}>
           {points.map((point, index) => {
             const nextPoint = points[(index + 1) % points.length];
             if (!nextPoint) return null;
             // Calculate distance between points for line length
-            const dist = Math.sqrt(Math.pow(nextPoint.x - point.x, 2) + Math.pow(nextPoint.y - point.y, 2));
+            const dist = Math.sqrt((nextPoint.x - point.x) ** 2 + (nextPoint.y - point.y) ** 2);
             const angle = Math.atan2(nextPoint.y - point.y, nextPoint.x - point.x);
-            
+
             return (
-              <View 
+              <View
                 key={`data-line-${index}`}
                 style={[
                   styles.dataLine,
@@ -114,11 +111,8 @@ export function RadarChart({
                     left: point.x,
                     top: point.y,
                     backgroundColor: point.color || Theme.colors.sanctuarySaffron,
-                    transform: [
-                      { rotate: `${angle}rad` },
-                      { translateX: dist / 2 }
-                    ]
-                  }
+                    transform: [{ rotate: `${angle}rad` }, { translateX: dist / 2 }],
+                  },
                 ]}
               />
             );
@@ -126,37 +120,43 @@ export function RadarChart({
         </View>
 
         {/* Labels */}
-        {showLabels && points.map((point, index) => {
-          const angle = index * angleStep - Math.PI / 2;
-          const labelX = centerX + (radius + 20) * Math.cos(angle);
-          const labelY = centerY + (radius + 20) * Math.sin(angle);
-          
-          return (
-            <View
-              key={`label-${index}`}
-              style={[
-                styles.label,
-                {
-                  left: labelX - 40,
-                  top: labelY - 15,
-                  width: 80,
-                }
-              ]}
-            >
-              <Text style={styles.labelText}>{point.label}</Text>
-              <Text style={styles.labelValue}>{point.value}</Text>
-            </View>
-          );
-        })}
-        
+        {showLabels &&
+          points.map((point, index) => {
+            const angle = index * angleStep - Math.PI / 2;
+            const labelX = centerX + (radius + 20) * Math.cos(angle);
+            const labelY = centerY + (radius + 20) * Math.sin(angle);
+
+            return (
+              <View
+                key={`label-${index}`}
+                style={[
+                  styles.label,
+                  {
+                    left: labelX - 40,
+                    top: labelY - 15,
+                    width: 80,
+                  },
+                ]}
+              >
+                <Text style={styles.labelText}>{point.label}</Text>
+                <Text style={styles.labelValue}>{point.value}</Text>
+              </View>
+            );
+          })}
+
         {/* Center point */}
-        <View style={[styles.centerPoint, { 
-          left: centerX - 4, 
-          top: centerY - 4,
-          width: 8,
-          height: 8,
-          backgroundColor: Theme.colors.text
-        }]} />
+        <View
+          style={[
+            styles.centerPoint,
+            {
+              left: centerX - 4,
+              top: centerY - 4,
+              width: 8,
+              height: 8,
+              backgroundColor: Theme.colors.text,
+            },
+          ]}
+        />
       </View>
     </Card>
   );
@@ -178,12 +178,12 @@ export function SpiderChart({
   connections = [],
   maxValue = 100,
   size = 300,
-  showLabels = true
+  showLabels = true,
 }: SpiderChartProps) {
   const centerX = size / 2;
   const centerY = size / 2;
   const radius = size / 2 - 40;
-  
+
   const angleStep = (2 * Math.PI) / data.length;
   const points = data.map((point, index) => {
     const angle = index * angleStep - Math.PI / 2;
@@ -195,7 +195,7 @@ export function SpiderChart({
   return (
     <Card style={[styles.container, { width: size, height: size }]}>
       {title && <Text style={styles.title}>{title}</Text>}
-      
+
       <View style={[styles.chartContainer, { width: size, height: size }]}>
         {/* Axis lines */}
         {data.map((_, index) => {
@@ -211,26 +211,25 @@ export function SpiderChart({
                   left: centerX,
                   top: centerY,
                   backgroundColor: Theme.colors.border,
-                  transform: [
-                    { rotate: `${angle}rad` },
-                    { translateX: radius / 2 }
-                  ]
-                }
+                  transform: [{ rotate: `${angle}rad` }, { translateX: radius / 2 }],
+                },
               ]}
             />
           );
         })}
-        
+
         {/* Connection lines from props */}
         {connections.map((conn, index) => {
-          const startPoint = points.find(p => p.label === conn[0]);
-          const endPoint = points.find(p => p.label === conn[1]);
-          
+          const startPoint = points.find((p) => p.label === conn[0]);
+          const endPoint = points.find((p) => p.label === conn[1]);
+
           if (!startPoint || !endPoint) return null;
-          
-          const dist = Math.sqrt(Math.pow(endPoint.x - startPoint.x, 2) + Math.pow(endPoint.y - startPoint.y, 2));
+
+          const dist = Math.sqrt(
+            (endPoint.x - startPoint.x) ** 2 + (endPoint.y - startPoint.y) ** 2,
+          );
           const angle = Math.atan2(endPoint.y - startPoint.y, endPoint.x - startPoint.x);
-          
+
           return (
             <View
               key={`connection-${index}`}
@@ -243,19 +242,20 @@ export function SpiderChart({
                   top: startPoint.y,
                   backgroundColor: Theme.colors.sanctuarySaffron,
                   opacity: 0.6,
-                  transform: [
-                    { rotate: `${angle}rad` },
-                    { translateX: dist / 2 }
-                  ]
-                }
+                  transform: [{ rotate: `${angle}rad` }, { translateX: dist / 2 }],
+                },
               ]}
             />
           );
         })}
-        
+
         {/* Data points */}
         {points.map((point, index) => (
-          <View key={`point-container-${index}`} style={StyleSheet.absoluteFill} pointerEvents="none">
+          <View
+            key={`point-container-${index}`}
+            style={StyleSheet.absoluteFill}
+            pointerEvents="none"
+          >
             <View
               style={[
                 styles.dataPoint,
@@ -263,7 +263,7 @@ export function SpiderChart({
                   left: point.x - 6,
                   top: point.y - 6,
                   backgroundColor: point.color || Theme.colors.sanctuarySaffron,
-                }
+                },
               ]}
             />
             {showLabels && (
@@ -274,7 +274,7 @@ export function SpiderChart({
                     left: point.x - 40,
                     top: point.y - 30,
                     width: 80,
-                  }
+                  },
                 ]}
               >
                 <Text style={styles.pointLabel}>{point.label}</Text>
@@ -283,15 +283,20 @@ export function SpiderChart({
             )}
           </View>
         ))}
-        
+
         {/* Center point */}
-        <View style={[styles.centerPoint, { 
-          left: centerX - 4, 
-          top: centerY - 4,
-          width: 8,
-          height: 8,
-          backgroundColor: Theme.colors.text
-        }]} />
+        <View
+          style={[
+            styles.centerPoint,
+            {
+              left: centerX - 4,
+              top: centerY - 4,
+              width: 8,
+              height: 8,
+              backgroundColor: Theme.colors.text,
+            },
+          ]}
+        />
       </View>
     </Card>
   );

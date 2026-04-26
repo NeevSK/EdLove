@@ -1,9 +1,9 @@
-import React from 'react';
 import {
   LinearGradient as ExpoLinearGradient,
   type LinearGradientProps,
 } from 'expo-linear-gradient';
 import { cssInterop } from 'nativewind';
+import React from 'react';
 
 cssInterop(ExpoLinearGradient, { className: 'style' });
 

@@ -1,4 +1,4 @@
-import { Skia, SkRuntimeEffect } from '@shopify/react-native-skia';
+import { Skia, type SkRuntimeEffect } from '@shopify/react-native-skia';
 import { soulLibrary } from '../core/soul/SoulLibrary';
 
 /**
@@ -43,20 +43,10 @@ export class SkiaDriver {
   /**
    * Helper to build the standard uniform record for Skia.
    */
-  buildUniforms(
-    surface: any,
-    time: number,
-    entropy: number,
-    width: number,
-    height: number
-  ) {
+  buildUniforms(surface: any, time: number, entropy: number, width: number, height: number) {
     const toRGB = (hex: string) => {
       const color = Skia.Color(hex) as unknown as number;
-      return [
-        ((color >> 16) & 255) / 255,
-        ((color >> 8) & 255) / 255,
-        (color & 255) / 255,
-      ];
+      return [((color >> 16) & 255) / 255, ((color >> 8) & 255) / 255, (color & 255) / 255];
     };
 
     return {

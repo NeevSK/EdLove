@@ -1,14 +1,14 @@
-import React, { useEffect } from 'react';
+import { AlertCircle, CheckCircle, Info, X } from 'lucide-react-native';
+import { useCallback, useEffect } from 'react';
+import { Pressable } from 'react-native';
 import Animated, {
+  runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
   withTiming,
-  runOnJS,
 } from 'react-native-reanimated';
-import { Pressable } from 'react-native';
-import { Box, Text, HStack } from '../gluestack';
-import { CheckCircle, AlertCircle, Info, X } from 'lucide-react-native';
+import { Box, HStack, Text } from '../gluestack';
 
 export type ToastType = 'success' | 'error' | 'info';
 
@@ -43,6 +43,15 @@ export default function SanctuaryToast({
 
   const { icon: Icon, color: iconColor } = getIconData();
 
+  const hide = useCallback(() => {
+    opacity.value = withTiming(0);
+    translateY.value = withTiming(100, {}, (finished) => {
+      if (finished && visible) {
+        runOnJS(onHide)();
+      }
+    });
+  }, [opacity, translateY, visible, onHide]);
+
   useEffect(() => {
     if (visible) {
       translateY.value = withSpring(0, { damping: 15 });
@@ -53,19 +62,9 @@ export default function SanctuaryToast({
       }, duration);
 
       return () => clearTimeout(timer);
-    } else {
-      hide();
     }
-  }, [visible]);
-
-  const hide = () => {
-    opacity.value = withTiming(0);
-    translateY.value = withTiming(100, {}, (finished) => {
-      if (finished && visible) {
-        runOnJS(onHide)();
-      }
-    });
-  };
+    hide();
+  }, [visible, translateY, opacity, hide, duration]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }],

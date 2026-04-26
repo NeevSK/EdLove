@@ -1,7 +1,7 @@
-import React from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { useStore } from '@repo/core';
 import { Box, ScrollView, Text, VStack } from '@repo/ui';
+import React from 'react';
 import { useGuardianWorkspaceData } from '../../guardian';
 import { GuardianRoomShell } from './GuardianRoomShell';
 
@@ -12,25 +12,37 @@ export default function GuardianEventsScreen() {
   const events = dashboard?.upcomingEvents || [];
 
   return (
-    <GuardianRoomShell eyebrow="Calendar, bridge"
+    <GuardianRoomShell
+      eyebrow="Calendar, bridge"
       title="Family, event room"
       description="A, calmer look, ahead for the dates, that shape, home planning, school, participation, and, family presence."
-      stats={[{ label: 'Events', value: events.length },
-        { label: 'RSVP', value: events.filter((event) => event.requiresRsvp).length }]}
-      onBack={() => navigation.goBack()}>
+      stats={[
+        { label: 'Events', value: events.length },
+        { label: 'RSVP', value: events.filter((event) => event.requiresRsvp).length },
+      ]}
+      onBack={() => navigation.goBack()}
+    >
       <ScrollView className="flex-1">
         <VStack className="gap-3 pb-8">
           {events.map((event) => (
-            <Box key={event.id} className="rounded-3xl border border-starlightGray/20 bg-sacredWhite px-4 py-4">
+            <Box
+              key={event.id}
+              className="rounded-3xl border border-starlightGray/20 bg-sacredWhite px-4 py-4"
+            >
               <VStack className="gap-2">
                 <Text className="text-[14px] font-bold text-phaseText-primary">{event.title}</Text>
                 <Text className="text-[12px] text-phaseText-secondary">{event.description}</Text>
                 <Text className="text-[12px] text-phaseText-secondary">
-                  {new Intl.DateTimeFormat('en-LK', { month: 'short', day: 'numeric' }).format(new Date(event.date))} - {event.time}
+                  {new Intl.DateTimeFormat('en-LK', { month: 'short', day: 'numeric' }).format(
+                    new Date(event.date),
+                  )}{' '}
+                  - {event.time}
                   {event.location ? ` - ${event.location}` : ''}
                 </Text>
                 {event.requiresRsvp ? (
-                  <Text className="text-[11px] font-bold uppercase text-phaseText-primary">RSVP, requested</Text>
+                  <Text className="text-[11px] font-bold uppercase text-phaseText-primary">
+                    RSVP, requested
+                  </Text>
                 ) : null}
               </VStack>
             </Box>
@@ -40,4 +52,3 @@ export default function GuardianEventsScreen() {
     </GuardianRoomShell>
   );
 }
-

@@ -1,12 +1,13 @@
-import React, { useEffect } from 'react';
-import { ViewProps } from 'react-native';
+import type React from 'react';
+import { useEffect } from 'react';
+import type { ViewProps } from 'react-native';
 import Animated, {
-  useAnimatedStyle,
-  withRepeat,
-  withTiming,
-  useSharedValue,
-  withSequence,
   Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withSequence,
+  withTiming,
 } from 'react-native-reanimated';
 import { Box } from '../gluestack';
 
@@ -50,7 +51,7 @@ export function LivingGlow({
     } else {
       opacity.value = 0;
     }
-  }, [active, duration]);
+  }, [active, duration, opacity]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     shadowColor: glowColor || (active ? '#FFC107' : 'transparent'), // Fallback to saffron if active

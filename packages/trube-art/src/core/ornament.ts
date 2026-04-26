@@ -1,7 +1,7 @@
 import { clamp } from './color';
 
 export const TRUBE_ORNAMENT_NAMES = ['filigree', 'constellation', 'vein'] as const;
-export type TrubeOrnamentName = typeof TRUBE_ORNAMENT_NAMES[number];
+export type TrubeOrnamentName = (typeof TRUBE_ORNAMENT_NAMES)[number];
 
 export interface TrubeOrnamentSpec {
   kind: 'trube-ornament';
@@ -93,7 +93,11 @@ function buildFiligree(random: () => number, density: number): TrubeResolvedOrna
     for (let point = 0; point < points; point += 1) {
       nodes.push({
         x: clamp(originX + (random() - 0.5) * 0.12, 0.06, 0.94),
-        y: clamp(0.1 + (point / Math.max(1, points - 1)) * 0.8 + (random() - 0.5) * 0.05, 0.08, 0.92),
+        y: clamp(
+          0.1 + (point / Math.max(1, points - 1)) * 0.8 + (random() - 0.5) * 0.05,
+          0.08,
+          0.92,
+        ),
         r: 0.9 + random() * 2.2,
         alpha: 0.12 + random() * 0.25,
       });

@@ -9,7 +9,7 @@ import path from 'path';
 
 const args = process.argv.slice(2);
 const isStagedMode = args.includes('--staged');
-const manualMessage = args.find(a => !a.startsWith('--'));
+const manualMessage = args.find((a) => !a.startsWith('--'));
 
 console.log('🤖 Discovery: Analyzing impact for Smart Changeset...');
 
@@ -19,23 +19,27 @@ const diffCmd = isStagedMode ? 'git diff --name-only --cached' : 'git diff --nam
 const changedFiles = execSync(diffCmd, { encoding: 'utf8' }).split('\n').filter(Boolean);
 
 // 2. Determine the "Intent" (message)
-const intentMessage = manualMessage || (isStagedMode ? 'Work in progress' : execSync('git log -1 --pretty=format:"%s"', { encoding: 'utf8' }));
+const intentMessage =
+  manualMessage ||
+  (isStagedMode
+    ? 'Work in progress'
+    : execSync('git log -1 --pretty=format:"%s"', { encoding: 'utf8' }));
 
 // 3. Identify which packages were touched
 const packagesTouched = new Set();
-changedFiles.forEach(file => {
-    if (file.startsWith('packages/')) {
-        const pkg = file.split('/')[1];
-        packagesTouched.add(`@repo/${pkg}`);
-    } else if (file.startsWith('apps/')) {
-        const app = file.split('/')[1];
-        packagesTouched.add(app);
-    }
+changedFiles.forEach((file) => {
+  if (file.startsWith('packages/')) {
+    const pkg = file.split('/')[1];
+    packagesTouched.add(`@repo/${pkg}`);
+  } else if (file.startsWith('apps/')) {
+    const app = file.split('/')[1];
+    packagesTouched.add(app);
+  }
 });
 
 if (packagesTouched.size === 0) {
-    console.log('ℹ️ No internal packages touched. Skipping versioning intent.');
-    process.exit(0);
+  console.log('ℹ️ No internal packages touched. Skipping versioning intent.');
+  process.exit(0);
 }
 
 // 4. Determine Bump Type from Message
@@ -51,7 +55,9 @@ const timestamp = Date.now();
 const changesetPath = path.join(process.cwd(), '.changeset', `smart-${timestamp}.md`);
 
 const changesetContent = `---
-${Array.from(packagesTouched).map(pkg => `"${pkg}": ${bumpType}`).join('\n')}
+${Array.from(packagesTouched)
+  .map((pkg) => `"${pkg}": ${bumpType}`)
+  .join('\n')}
 ---
 
 ${intentMessage}

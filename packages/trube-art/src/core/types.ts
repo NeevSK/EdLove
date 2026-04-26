@@ -8,7 +8,7 @@ export const TRUBE_SURFACE_NAMES = [
   'skymorphic',
   'water-surface',
 ] as const;
-export type TrubeSurfaceName = typeof TRUBE_SURFACE_NAMES[number];
+export type TrubeSurfaceName = (typeof TRUBE_SURFACE_NAMES)[number];
 
 export const TRUBE_LIGHTING_MODES = [
   'predawn',
@@ -18,28 +18,34 @@ export const TRUBE_LIGHTING_MODES = [
   'dusk',
   'night',
 ] as const;
-export type TrubeLightingMode = typeof TRUBE_LIGHTING_MODES[number];
+export type TrubeLightingMode = (typeof TRUBE_LIGHTING_MODES)[number];
 
 export const TRUBE_INTENSITY_LEVELS = ['subtle', 'balanced', 'vivid'] as const;
-export type TrubeIntensity = typeof TRUBE_INTENSITY_LEVELS[number];
+export type TrubeIntensity = (typeof TRUBE_INTENSITY_LEVELS)[number];
 
 export const TRUBE_MOTION_LEVELS = ['still', 'gentle', 'alive'] as const;
-export type TrubeMotion = typeof TRUBE_MOTION_LEVELS[number];
+export type TrubeMotion = (typeof TRUBE_MOTION_LEVELS)[number];
 
 export const TRUBE_GRAIN_LEVELS = ['soft', 'standard', 'rich'] as const;
-export type TrubeGrain = typeof TRUBE_GRAIN_LEVELS[number];
+export type TrubeGrain = (typeof TRUBE_GRAIN_LEVELS)[number];
 
 export const TRUBE_EXPERIENCE_MODES = ['quiet', 'ambient', 'ceremonial'] as const;
-export type TrubeExperienceMode = typeof TRUBE_EXPERIENCE_MODES[number];
+export type TrubeExperienceMode = (typeof TRUBE_EXPERIENCE_MODES)[number];
 
-export const TRUBE_SCORE_PLACEMENT_ZONES = ['full-bleed', 'upper-third', 'centered', 'lower-third', 'edge-weighted'] as const;
-export type TrubeScorePlacementZone = typeof TRUBE_SCORE_PLACEMENT_ZONES[number];
+export const TRUBE_SCORE_PLACEMENT_ZONES = [
+  'full-bleed',
+  'upper-third',
+  'centered',
+  'lower-third',
+  'edge-weighted',
+] as const;
+export type TrubeScorePlacementZone = (typeof TRUBE_SCORE_PLACEMENT_ZONES)[number];
 
 export const TRUBE_SCORE_TEXT_DENSITIES = ['minimal', 'light', 'moderate'] as const;
-export type TrubeScoreTextDensity = typeof TRUBE_SCORE_TEXT_DENSITIES[number];
+export type TrubeScoreTextDensity = (typeof TRUBE_SCORE_TEXT_DENSITIES)[number];
 
 export const TRUBE_SCORE_REVIEW_STATES = ['approved', 'in-review', 'experimental'] as const;
-export type TrubeScoreReviewState = typeof TRUBE_SCORE_REVIEW_STATES[number];
+export type TrubeScoreReviewState = (typeof TRUBE_SCORE_REVIEW_STATES)[number];
 
 export type TrubeMotif = 'lotus' | 'branch' | 'tide' | 'none';
 export type TrubeOrnament = 'filigree' | 'constellation' | 'vein' | 'none';
@@ -48,7 +54,12 @@ export type TrubeQuality = 'auto' | 'cinematic' | 'balanced' | 'efficient' | 'st
 export type TrubeResolvedQuality = Exclude<TrubeQuality, 'auto'>;
 export type TrubeCapabilityTier = 'tier-1' | 'tier-2' | 'tier-3' | 'compatibility';
 export type TrubeThermalState = 'nominal' | 'warm' | 'hot';
-export type TrubeBackend = 'native-vulkan' | 'native-metal' | 'webgpu' | 'skia-runtime-effect' | 'compatibility-static';
+export type TrubeBackend =
+  | 'native-vulkan'
+  | 'native-metal'
+  | 'webgpu'
+  | 'skia-runtime-effect'
+  | 'compatibility-static';
 export type TrubeTimeDriver = 'reanimated' | 'animated-legacy' | 'static';
 export type TrubeArchitectureVersion = 'v1' | 'v2';
 

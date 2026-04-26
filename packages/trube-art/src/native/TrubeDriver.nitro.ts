@@ -1,4 +1,4 @@
-import { type HybridObject } from 'react-native-nitro-modules';
+import type { HybridObject } from 'react-native-nitro-modules';
 
 /**
  * TrubeGPUDriver \u2014 Nitro JSI Bridge to TrubeCore C++ Engine
@@ -11,10 +11,11 @@ import { type HybridObject } from 'react-native-nitro-modules';
  *
  * Architecture: Tier 1 (API 31+) \u00B7 Full-Metal \u00B7 react-native-nitro-modules
  */
-export interface TrubeGPUDriver extends HybridObject<{
-  android: 'c++';
-  ios: 'c++';
-}> {
+export interface TrubeGPUDriver
+  extends HybridObject<{
+    android: 'c++';
+    ios: 'c++';
+  }> {
   // ---------------------------------------------------------------------------
   // Startup \u2014 called once per surface at app initialization.
   // Each call compiles a WGSL shader and allocates all GPU objects.
@@ -57,7 +58,7 @@ export interface TrubeGPUDriver extends HybridObject<{
     entropy: number,
     intensity: number,
     resW: number,
-    resH: number
+    resH: number,
   ): void;
 
   /**
@@ -65,11 +66,7 @@ export interface TrubeGPUDriver extends HybridObject<{
    * This is used for non-fullscreen motifs and ornaments.
    * Total vertices = vertices.length / 4 (x, y, u, v)
    */
-  addPrimitive(
-    sessionName: string,
-    vertices: number[],
-    indices: number[]
-  ): void;
+  addPrimitive(sessionName: string, vertices: number[], indices: number[]): void;
 
   // ---------------------------------------------------------------------------
   // Kells Time Protocol \u2014 entropy-modulated time.

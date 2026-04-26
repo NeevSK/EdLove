@@ -1,9 +1,9 @@
 import {
-  supabase,
-  staffManagementAPI,
   type StaffLeaveDTO,
   type StaffPresenceSummary,
   type StudentAttendancePulse,
+  staffManagementAPI,
+  supabase,
   type TeacherCarouselItem,
 } from '@repo/core';
 
@@ -64,23 +64,24 @@ async function getPendingEnrollments(schoolId: string, classroomId?: string): Pr
   return count ?? 0;
 }
 
-export const staffOperationsAPI = { 
+export const staffOperationsAPI = {
   ...staffManagementAPI,
   async getStudentPrincipalPulse(
     schoolId: string,
     classroomId?: string,
     date?: string,
-    options?: { actorId?: string; accessKind?: string; reason?: string }
+    options?: { actorId?: string; accessKind?: string; reason?: string },
   ): Promise<StudentPrincipalPulse> {
     const [attendancePulse, submissionRate, pendingEnrollments] = await Promise.all([
       staffManagementAPI.getStudentAttendancePulse(schoolId, classroomId, date, options),
       getSubmissionRate(schoolId, classroomId),
-      getPendingEnrollments(schoolId, classroomId)]);
+      getPendingEnrollments(schoolId, classroomId),
+    ]);
 
     return {
       ...attendancePulse,
       submissionRate,
-      pendingEnrollments
+      pendingEnrollments,
     };
-  }
+  },
 };

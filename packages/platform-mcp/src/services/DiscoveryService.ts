@@ -1,10 +1,9 @@
-import { execSync } from "child_process";
-import fs from "fs";
-import path from "path";
-import { ROOT_DIR } from "../utils/constants.js";
-import { normalizeTarget } from "../utils/pathUtils.js";
-import { executeSovereignTool } from "../utils/execution.js";
-
+import { execSync } from 'child_process';
+import fs from 'fs';
+import path from 'path';
+import { ROOT_DIR } from '../utils/constants.js';
+import { executeSovereignTool } from '../utils/execution.js';
+import { normalizeTarget } from '../utils/pathUtils.js';
 
 export class DiscoveryService {
   handleGrepCode(args: {
@@ -21,22 +20,22 @@ export class DiscoveryService {
     const target = normalizeTarget(args.target || '.');
     const context = args.context ?? 0;
     console.error(`Sovereign Grepping: ${args.query} in ${target} (Context: ${context})`);
-    
+
     const regexFlag = args.isRegex ? '' : '--fixed-strings';
     const globFlag = args.include ? `-g "${args.include}"` : '';
     const typeFlag = args.fileType ? `-t ${args.fileType}` : '';
     const contextFlag = context > 0 ? `-C ${context}` : '';
-    
+
     // Proper exclusions for a shiny monorepo
-    const exclusions = args.includeNodeModules 
-      ? '' 
+    const exclusions = args.includeNodeModules
+      ? ''
       : "-g '!**/node_modules/*' -g '!**/dist/*' -g '!**/.turbo/*' -g '!**/.git/*' -g '!**/build/*' -g '!**/.expo/*'";
 
     const command = `rg --line-number --column --smart-case --heading --color=never ${regexFlag} ${globFlag} ${typeFlag} ${contextFlag} ${exclusions} "${args.query}" "${target}"`;
-    
+
     try {
       let output = execSync(command, { cwd: ROOT_DIR, encoding: 'utf-8' });
-      
+
       if (args.summaryOnly) {
         // Run count command for summary only
         const countCmd = `rg --count --smart-case ${regexFlag} ${globFlag} ${typeFlag} ${exclusions} "${args.query}" "${target}"`;
@@ -57,32 +56,38 @@ export class DiscoveryService {
           output = execSync(`bat --style=full --color=never "${tempFile}"`, { encoding: 'utf-8' });
           fs.unlinkSync(tempFile);
         } catch (batError) {
-          console.error("Bat formatting failed, falling back to raw.");
+          console.error('Bat formatting failed, falling back to raw.');
         }
       }
 
       // Add a small heatmap summary to the end of the results
       const lines = output.split('\n');
       const filesAffected = new Set<string>();
-      lines.forEach(l => {
+      lines.forEach((l) => {
         // Simple heuristic to find file paths in multi-file rg output (contains slashes, doesn't start with space/digit)
-        if (l && !l.startsWith(' ') && !l.match(/^\d+[:-]/) && (l.includes('\\') || l.includes('/'))) {
+        if (
+          l &&
+          !l.startsWith(' ') &&
+          !l.match(/^\d+[:-]/) &&
+          (l.includes('\\') || l.includes('/'))
+        ) {
           filesAffected.add(l.trim());
         }
       });
 
       const summaryText = `\n--- 📊 Sovereign Search Summary ---\nFound matches in ${filesAffected.size} files.\n`;
-      
-      return { 
-        content: [
-          { type: 'text' as const, text: output + summaryText }
-        ] 
+
+      return {
+        content: [{ type: 'text' as const, text: output + summaryText }],
       };
     } catch (e: any) {
       if (e.status === 1) {
         return { content: [{ type: 'text' as const, text: 'No matches found.' }] };
       }
-      return { content: [{ type: 'text' as const, text: `ripgrep failed: ${e.message}` }], isError: true };
+      return {
+        content: [{ type: 'text' as const, text: `ripgrep failed: ${e.message}` }],
+        isError: true,
+      };
     }
   }
 
@@ -135,14 +140,19 @@ export class DiscoveryService {
     }
   }
 
-  handleGetInventory(args: { target?: string; depth?: number; format?: 'text' | 'markdown'; verbose?: boolean }) {
+  handleGetInventory(args: {
+    target?: string;
+    depth?: number;
+    format?: 'text' | 'markdown';
+    verbose?: boolean;
+  }) {
     const target = normalizeTarget(args.target || '.');
     const depth = args.depth || 2;
     const format = args.format || 'text';
     const verbose = args.verbose !== false;
-    
+
     console.error(`Generating shiny inventory for: ${target} (depth: ${depth})`);
-    
+
     if (format === 'markdown' || format === 'text') {
       try {
         // Use eza for a beautiful tree view if requested or as default improvement
@@ -153,17 +163,23 @@ export class DiscoveryService {
         };
       } catch (e) {
         // Fallback to legacy script if eza fails for some reason
-        const output = execSync(`node scripts/generate-inventory.mjs "${target}" ${depth} ${format} ${verbose}`, {
-          cwd: ROOT_DIR,
-        }).toString();
+        const output = execSync(
+          `node scripts/generate-inventory.mjs "${target}" ${depth} ${format} ${verbose}`,
+          {
+            cwd: ROOT_DIR,
+          },
+        ).toString();
         return { content: [{ type: 'text' as const, text: output }] };
       }
     }
-    
-    const output = execSync(`node scripts/generate-inventory.mjs "${target}" ${depth} ${format} ${verbose}`, {
-      cwd: ROOT_DIR,
-    }).toString();
-    
+
+    const output = execSync(
+      `node scripts/generate-inventory.mjs "${target}" ${depth} ${format} ${verbose}`,
+      {
+        cwd: ROOT_DIR,
+      },
+    ).toString();
+
     return {
       content: [{ type: 'text' as const, text: output }],
     };
@@ -175,11 +191,14 @@ export class DiscoveryService {
     try {
       const output = execSync(`bat --color=always --style=full ${range} "${args.path}"`, {
         cwd: ROOT_DIR,
-        encoding: 'utf-8'
+        encoding: 'utf-8',
       });
       return { content: [{ type: 'text' as const, text: output }] };
     } catch (e: any) {
-      return { content: [{ type: 'text' as const, text: `bat failed: ${e.message}` }], isError: true };
+      return {
+        content: [{ type: 'text' as const, text: `bat failed: ${e.message}` }],
+        isError: true,
+      };
     }
   }
 
@@ -189,66 +208,74 @@ export class DiscoveryService {
     try {
       const output = execSync(`fd --type f --hidden --exclude .git "${args.query}" "${target}"`, {
         cwd: ROOT_DIR,
-        encoding: 'utf-8'
+        encoding: 'utf-8',
       });
       return { content: [{ type: 'text' as const, text: output }] };
     } catch (e: any) {
-      return { content: [{ type: 'text' as const, text: `fd failed: ${e.message}` }], isError: true };
+      return {
+        content: [{ type: 'text' as const, text: `fd failed: ${e.message}` }],
+        isError: true,
+      };
     }
   }
 
-  handleStructuralSearch(args: { query: string, target?: string, include?: string }) {
+  handleStructuralSearch(args: { query: string; target?: string; include?: string }) {
     const target = normalizeTarget(args.target || '.');
     const glob = args.include ? `--include "${args.include}"` : '';
     console.error(`Sovereign Structural search (Biome): ${args.query} in ${target}`);
     try {
       // Biome search is great for finding code patterns (e.g. "import { $X } from '$Y'")
-      const output = execSync(`npx biome search "${args.query.replace(/"/g, '\\"')}" "${target}" ${glob}`, {
-        cwd: ROOT_DIR,
-      }).toString();
+      const output = execSync(
+        `npx biome search "${args.query.replace(/"/g, '\\"')}" "${target}" ${glob}`,
+        {
+          cwd: ROOT_DIR,
+        },
+      ).toString();
       return { content: [{ type: 'text' as const, text: output }] };
     } catch (e: any) {
-      return { 
-        content: [{ type: 'text' as const, text: `Biome search failed: ${e.message}\nTry simpler grep if structural patterns fail.` }], 
-        isError: true 
+      return {
+        content: [
+          {
+            type: 'text' as const,
+            text: `Biome search failed: ${e.message}\nTry simpler grep if structural patterns fail.`,
+          },
+        ],
+        isError: true,
       };
     }
   }
 
   handleAuditImports() {
-    console.error("Auditing imports...");
-    const output = execSync("node scripts/audit-imports.mjs", { cwd: ROOT_DIR }).toString();
-    return { content: [{ type: "text" as const, text: output }] };
+    console.error('Auditing imports...');
+    const output = execSync('node scripts/audit-imports.mjs', { cwd: ROOT_DIR }).toString();
+    return { content: [{ type: 'text' as const, text: output }] };
   }
 
-
-
-
   handleAuditUIComponents() {
-    console.error("Auditing all UI component APIs...");
-    const output = execSync("node scripts/audit-ui-api.mjs", { cwd: ROOT_DIR }).toString();
-    return { content: [{ type: "text" as const, text: output }] };
+    console.error('Auditing all UI component APIs...');
+    const output = execSync('node scripts/audit-ui-api.mjs', { cwd: ROOT_DIR }).toString();
+    return { content: [{ type: 'text' as const, text: output }] };
   }
 
   handleFindNativeLeaks() {
-    console.error("Finding native leaks...");
-    const output = execSync("node scripts/find-native-leaks.mjs", { cwd: ROOT_DIR }).toString();
-    return { content: [{ type: "text" as const, text: output }] };
+    console.error('Finding native leaks...');
+    const output = execSync('node scripts/find-native-leaks.mjs', { cwd: ROOT_DIR }).toString();
+    return { content: [{ type: 'text' as const, text: output }] };
   }
 
   handleDebugMetro() {
-    console.error("Debugging Metro resolution...");
-    const output = execSync("node scripts/debug-metro-id.mjs", { cwd: ROOT_DIR }).toString();
-    return { content: [{ type: "text" as const, text: output }] };
+    console.error('Debugging Metro resolution...');
+    const output = execSync('node scripts/debug-metro-id.mjs', { cwd: ROOT_DIR }).toString();
+    return { content: [{ type: 'text' as const, text: output }] };
   }
 
   handleScaffoldFeatureContext(args: { keyword: string }) {
     const result = executeSovereignTool(
-      "scaffold_feature_context",
+      'scaffold_feature_context',
       `node scripts/scaffold-feature-context.mjs "${args.keyword}"`,
-      { keyword: args.keyword }
+      { keyword: args.keyword },
     );
-    return { content: [{ type: "text" as const, text: result.output }] };
+    return { content: [{ type: 'text' as const, text: result.output }] };
   }
 
   handleGetCodeStats(args: { target?: string }) {
@@ -258,7 +285,10 @@ export class DiscoveryService {
       const output = execSync(`tokei "${target}"`, { cwd: ROOT_DIR, encoding: 'utf-8' });
       return { content: [{ type: 'text' as const, text: output }] };
     } catch (e: any) {
-      return { content: [{ type: 'text' as const, text: `tokei failed: ${e.message}` }], isError: true };
+      return {
+        content: [{ type: 'text' as const, text: `tokei failed: ${e.message}` }],
+        isError: true,
+      };
     }
   }
 
@@ -282,7 +312,10 @@ export class DiscoveryService {
       const output = execSync(`dust -d ${depth} "${target}"`, { cwd: ROOT_DIR, encoding: 'utf-8' });
       return { content: [{ type: 'text' as const, text: output }] };
     } catch (e: any) {
-      return { content: [{ type: 'text' as const, text: `dust failed: ${e.message}` }], isError: true };
+      return {
+        content: [{ type: 'text' as const, text: `dust failed: ${e.message}` }],
+        isError: true,
+      };
     }
   }
 
@@ -290,22 +323,25 @@ export class DiscoveryService {
     const target = normalizeTarget(args.target || '.');
     console.error(`Mapping Architecture: ${target}`);
     try {
-      const output = execSync(`node scripts/architect-mapper.mjs "${target}"`, { cwd: ROOT_DIR, encoding: 'utf-8' });
+      const output = execSync(`node scripts/architect-mapper.mjs "${target}"`, {
+        cwd: ROOT_DIR,
+        encoding: 'utf-8',
+      });
       return { content: [{ type: 'text' as const, text: output }] };
     } catch (e: any) {
-      return { content: [{ type: 'text' as const, text: `Mapper failed: ${e.message}` }], isError: true };
+      return {
+        content: [{ type: 'text' as const, text: `Mapper failed: ${e.message}` }],
+        isError: true,
+      };
     }
   }
 
   handleTraceDeletionImpact(args: { symbol: string }) {
     const result = executeSovereignTool(
-      "trace_deletion_impact",
+      'trace_deletion_impact',
       `node scripts/trace-deletion-impact.mjs "${args.symbol}"`,
-      { symbol: args.symbol }
+      { symbol: args.symbol },
     );
-    return { content: [{ type: "text" as const, text: result.output }] };
+    return { content: [{ type: 'text' as const, text: result.output }] };
   }
 }
-
-
-

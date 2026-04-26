@@ -1,6 +1,6 @@
-import React from 'react';
+import { Canvas, ColorMatrix, Paint, Rect, Turbulence } from '@shopify/react-native-skia';
+import type React from 'react';
 import { StyleSheet, useWindowDimensions } from 'react-native';
-import { Canvas, Rect, Turbulence, ColorMatrix, Paint } from '@shopify/react-native-skia';
 
 interface NoiseOverlayProps {
   opacity?: number; // Default 0.03 - 3% warm grain

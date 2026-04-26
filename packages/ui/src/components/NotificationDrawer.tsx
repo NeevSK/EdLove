@@ -1,10 +1,9 @@
-import React from 'react';
+import { Bell, BookOpen, Check, CheckCircle, Info, Users, X } from 'lucide-react-native';
 import { Dimensions, ScrollView } from 'react-native';
-import { Box, VStack, HStack, Text, Heading, Portal, Pressable, Spinner } from '../gluestack';
-import { X, Bell, Info, CheckCircle, Users, BookOpen, Check } from 'lucide-react-native';
-import Animated, { SlideInLeft, SlideOutLeft, Easing } from 'react-native-reanimated';
-import { hapticLight } from '../utils/haptics';
+import Animated, { Easing, SlideInLeft, SlideOutLeft } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Box, Heading, HStack, Portal, Pressable, Spinner, Text, VStack } from '../gluestack';
+import { hapticLight } from '../utils/haptics';
 
 const { width } = Dimensions.get('window');
 const DRAWER_WIDTH = width * 0.65;
@@ -47,7 +46,7 @@ function notificationIcon(type: string) {
 
 function relativeTime(dateStr: string): string {
   const ts = new Date(dateStr).getTime();
-  if (isNaN(ts)) return '';
+  if (Number.isNaN(ts)) return '';
   const diff = Date.now() - ts;
   const mins = Math.floor(diff / 60000);
   if (mins < 1) return 'just now';

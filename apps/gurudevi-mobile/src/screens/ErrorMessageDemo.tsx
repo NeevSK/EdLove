@@ -5,13 +5,7 @@
  * to ensure they render correctly with proper styling and dismiss functionality.
  */
 
-import {
-  Box,
-  ErrorMessage,
-  ScrollView,
-  Text,
-  VStack,
-} from '@repo/ui';
+import { Box, ErrorMessage, ScrollView, Text, VStack } from '@repo/ui';
 import { useState } from 'react';
 
 export default function ErrorMessageDemo() {
@@ -23,15 +17,11 @@ export default function ErrorMessageDemo() {
     <ScrollView className="flex-1 bg-obsidian">
       <Box className="p-lg">
         <VStack space="xl">
-          <Text className="text-3xl font-bold text-sacredWhite">
-            ErrorMessage Component Demo
-          </Text>
+          <Text className="text-3xl font-bold text-sacredWhite">ErrorMessage Component Demo</Text>
 
           {/* Gentle Type */}
           <Box>
-            <Text className="text-xl font-bold text-starlightGray mb-sm">
-              Gentle (Info)
-            </Text>
+            <Text className="text-xl font-bold text-starlightGray mb-sm">Gentle (Info)</Text>
             {showGentle && (
               <ErrorMessage
                 message="Your progress has been saved successfully."
@@ -48,9 +38,7 @@ export default function ErrorMessageDemo() {
 
           {/* Warning Type */}
           <Box>
-            <Text className="text-xl font-bold text-starlightGray mb-sm">
-              Warning
-            </Text>
+            <Text className="text-xl font-bold text-starlightGray mb-sm">Warning</Text>
             {showWarning && (
               <ErrorMessage
                 message="Please review your entries before submitting the form."
@@ -67,9 +55,7 @@ export default function ErrorMessageDemo() {
 
           {/* Severe Type */}
           <Box>
-            <Text className="text-xl font-bold text-starlightGray mb-sm">
-              Severe (Error)
-            </Text>
+            <Text className="text-xl font-bold text-starlightGray mb-sm">Severe (Error)</Text>
             {showSevere && (
               <ErrorMessage
                 message="Connection failed. Please check your internet and try again."
@@ -97,9 +83,7 @@ export default function ErrorMessageDemo() {
 
           {/* Long Message Test */}
           <Box>
-            <Text className="text-xl font-bold text-starlightGray mb-sm">
-              Long Message Test
-            </Text>
+            <Text className="text-xl font-bold text-starlightGray mb-sm">Long Message Test</Text>
             <ErrorMessage
               message="This is a very long error message to test how the component handles text wrapping and layout when the message content is quite extensive and spans multiple lines."
               type="severe"

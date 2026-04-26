@@ -1,37 +1,31 @@
-import React, { useState, useRef, useEffect, useMemo, useReducer, useCallback } from 'react';
+import { coreRuntime, handleAPIError, type Role, validateForm, validators } from '@repo/core/logic';
+import { authAPI, FlowResolver, GuestDataSync, identityAPI, supabase } from '@repo/core/native';
+import * as AuthSession from 'expo-auth-session';
+import * as WebBrowser from 'expo-web-browser';
+import { Mail } from 'lucide-react-native';
+import type React from 'react';
+import { useCallback, useEffect, useReducer, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
+import { BreathAnimation } from '../components/BreathAnimation';
+import { default as GuestDataSyncModal } from '../components/GuestDataSyncModal';
+import { LivingGlow } from '../components/LivingGlow';
+import { SanctuaryBackground } from '../components/SanctuaryBackground';
+import ScreenWrapper from '../components/ScreenWrapper';
 import {
   Box,
-  VStack,
+  Button,
+  ButtonSpinner,
+  ButtonText,
+  Heading,
+  HStack,
   Input,
   InputField,
-  Button,
-  ButtonText,
   Text,
-  Heading,
-  Center,
-  HStack,
-  Pressable,
-  Divider,
-  Spinner,
-  InputSlot,
-  InputIcon,
-  ButtonSpinner,
+  VStack,
 } from '../gluestack';
 import { useTheme } from '../hooks/useTheme';
 import { useSanctuaryToast } from '../providers/ToastProvider';
-import { hapticLight, hapticSuccess, hapticError } from '../utils/haptics';
-import ScreenWrapper from '../components/ScreenWrapper';
-import { default as GuestDataSyncModal } from '../components/GuestDataSyncModal';
-import { coreRuntime, Role, handleAPIError, validators, validateForm } from '@repo/core/logic';
-import { supabase, GuestDataSync, identityAPI, authAPI, FlowResolver } from '@repo/core/native';
-import { useTranslation } from 'react-i18next';
-import { Theme } from '../theme/Theme';
-import { BreathAnimation } from '../components/BreathAnimation';
-import { LivingGlow } from '../components/LivingGlow';
-import { SanctuaryBackground } from '../components/SanctuaryBackground';
-import { Mail } from 'lucide-react-native';
-import * as WebBrowser from 'expo-web-browser';
-import * as AuthSession from 'expo-auth-session';
+import { hapticError, hapticLight, hapticSuccess } from '../utils/haptics';
 
 // Required for expo-auth-session to complete the auth session on Android
 WebBrowser.maybeCompleteAuthSession();
@@ -161,7 +155,7 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
     },
     dispatch,
   ] = useReducer(authReducer, initialState);
-  const syncCheckDoneRef = useRef(false);
+  const _syncCheckDoneRef = useRef(false);
   const passwordRef = useRef<any>(null);
 
   // Load current user from public.users via the internal identity (new architecture pattern).
@@ -188,7 +182,7 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
     // Only run on web to avoid conflicts with deep linking handlers in Expo go
     if (coreRuntime.device.getMetadata().platform !== 'web') return;
 
-    const hashParams = new URL(window.location.href.replace('#', '?')).searchParams;
+    const _hashParams = new URL(window.location.href.replace('#', '?')).searchParams;
     const getUrlParam = (name: string) => {
       const search = new URLSearchParams(window.location.search);
       if (search.has(name)) return search.get(name);
@@ -232,9 +226,9 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [t]);
+  }, [t, showToast]);
 
-  const isRealUser = currentUser && currentUser.email && !currentUser.is_anonymous;
+  const isRealUser = currentUser?.email && !currentUser.is_anonymous;
   const shouldHideGeneralAuth = isRealUser;
 
   // ─── Native redirect URI (used by expo-auth-session) ───────────────────────
@@ -399,7 +393,7 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
       }
       dispatch({ type: 'SET_LOADING', loading: false });
     },
-    [onSuccess, showToast, t],
+    [onSuccess, showToast, t, getRedirectUrl],
   );
 
   async function handleAuth() {

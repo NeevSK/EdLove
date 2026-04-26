@@ -1,7 +1,6 @@
-import React from 'react';
-import { EntityDefinition, EntityMode, EntityInstance } from '@repo/core/logic';
-import SanctuaryModal from './SanctuaryModal.web';
+import type { EntityDefinition, EntityInstance, EntityMode } from '@repo/core/logic';
 import { Box, Text, VStack } from '../gluestack';
+import SanctuaryModal from './SanctuaryModal.web';
 
 export interface EntityModalProps {
   isOpen: boolean;

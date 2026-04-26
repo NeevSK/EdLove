@@ -1,8 +1,7 @@
-import React from 'react';
-import { Text, VStack, HStack, Box } from '../gluestack';
+import { LogOut } from 'lucide-react-native';
+import { Box, HStack, Text, VStack } from '../gluestack';
 import SanctuaryButton from './SanctuaryButton';
 import SanctuaryModal from './SanctuaryModal';
-import { LogOut } from 'lucide-react-native';
 
 interface LogoutModalProps {
   isOpen: boolean;

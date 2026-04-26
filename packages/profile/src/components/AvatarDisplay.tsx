@@ -1,14 +1,9 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { Platform } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
+import { Box, Pressable, Spinner, UserAvatar } from '@repo/ui';
 import * as ImageManipulator from 'expo-image-manipulator';
-import { 
-  UserAvatar, 
-  Box, 
-  Pressable, 
-  Spinner 
-} from '@repo/ui';
+import * as ImagePicker from 'expo-image-picker';
 import { Camera } from 'lucide-react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Platform } from 'react-native';
 import { useProfileNavigation } from '../navigation';
 
 let FileSystem: typeof import('expo-file-system/legacy') | null = null;
@@ -52,9 +47,11 @@ export function AvatarDisplay({
     if (!userId || !FileSystem) return;
     const cachePath = getCachePath(userId);
     if (!cachePath) return;
-    FileSystem.getInfoAsync(cachePath).then(info => {
-      if (info.exists) setLocalCachePath(cachePath);
-    }).catch(() => {});
+    FileSystem.getInfoAsync(cachePath)
+      .then((info) => {
+        if (info.exists) setLocalCachePath(cachePath);
+      })
+      .catch(() => {});
   }, [userId]);
 
   const handlePickAndUpload = useCallback(async () => {
@@ -74,7 +71,7 @@ export function AvatarDisplay({
       const manipulated = await ImageManipulator.manipulateAsync(
         result.assets[0].uri,
         [{ resize: { width: 400, height: 400 } }],
-        { compress: 0.85, format: ImageManipulator.SaveFormat.JPEG }
+        { compress: 0.85, format: ImageManipulator.SaveFormat.JPEG },
       );
 
       const cachePath = FileSystem ? getCachePath(userId) : null;
@@ -95,26 +92,20 @@ export function AvatarDisplay({
     if (!peekable || !userId) return;
     openPublicProfile?.({
       id: userId,
-      type: peekType
+      type: peekType,
     });
   }, [peekable, userId, peekType, openPublicProfile]);
 
   const displayUri = localCachePath || avatarUrl || null;
 
-  const content = (
-    <UserAvatar
-      avatarUrl={displayUri}
-      fullName={fullName}
-      size={size}
-    />
-  );
+  const content = <UserAvatar avatarUrl={displayUri} fullName={fullName} size={size} />;
 
   const containerStyle = { width: size, height: size };
 
   if (!editable) {
     if (peekable) {
       return (
-        <Pressable 
+        <Pressable
           className="rounded-full overflow-hidden"
           style={[containerStyle, style]}
           onPress={handlePeek}
@@ -124,17 +115,14 @@ export function AvatarDisplay({
       );
     }
     return (
-      <Box 
-        className="rounded-full overflow-hidden"
-        style={[containerStyle, style]}
-      >
+      <Box className="rounded-full overflow-hidden" style={[containerStyle, style]}>
         {content}
       </Box>
     );
   }
 
   return (
-    <Pressable 
+    <Pressable
       className="rounded-full overflow-hidden items-center justify-center"
       style={[containerStyle, style]}
       onPress={handlePickAndUpload}
@@ -146,9 +134,9 @@ export function AvatarDisplay({
         </Box>
       ) : (
         <Box className="absolute inset-0 bg-black/20 items-center justify-center">
-            <Box className="bg-black/30 p-2 rounded-full">
-                <Camera size={size * 0.25} color="white" />
-            </Box>
+          <Box className="bg-black/30 p-2 rounded-full">
+            <Camera size={size * 0.25} color="white" />
+          </Box>
         </Box>
       )}
     </Pressable>

@@ -37,14 +37,16 @@ const CAPABILITIES: Record<AdminCapabilityId, AdminCapabilityMeta> = {
   operator_brief: {
     id: 'operator_brief',
     title: 'Operator Brief',
-    description: 'A daily cross-tenant read on incidents, approvals, maintenance pressure, and dogfood signals that need attention now.',
+    description:
+      'A daily cross-tenant read on incidents, approvals, maintenance pressure, and dogfood signals that need attention now.',
     zone: 'today',
     status: 'live',
   },
   admin_registry: {
     id: 'admin_registry',
     title: 'Admin Registry',
-    description: 'A living registry of admin capabilities, feature gates, and maintenance posture across the platform.',
+    description:
+      'A living registry of admin capabilities, feature gates, and maintenance posture across the platform.',
     zone: 'work',
     status: 'live',
     workspaceView: 'admin_registry',
@@ -52,7 +54,8 @@ const CAPABILITIES: Record<AdminCapabilityId, AdminCapabilityMeta> = {
   incident_queue: {
     id: 'incident_queue',
     title: 'Incident Queue',
-    description: 'Open production incidents, regressions, and support escalations that need triage or escalation.',
+    description:
+      'Open production incidents, regressions, and support escalations that need triage or escalation.',
     zone: 'today',
     status: 'live',
     workspaceView: 'incident_queue',
@@ -60,7 +63,8 @@ const CAPABILITIES: Record<AdminCapabilityId, AdminCapabilityMeta> = {
   tenant_health: {
     id: 'tenant_health',
     title: 'Tenant Health',
-    description: 'Cross-tenant health summaries for auth, sync, onboarding, and operational continuity.',
+    description:
+      'Cross-tenant health summaries for auth, sync, onboarding, and operational continuity.',
     zone: 'today',
     status: 'live',
   },
@@ -74,7 +78,8 @@ const CAPABILITIES: Record<AdminCapabilityId, AdminCapabilityMeta> = {
   authority_integrity: {
     id: 'authority_integrity',
     title: 'Authority Integrity',
-    description: 'Role assignment and POA anomalies that could expose the wrong workspace or block access across tenants.',
+    description:
+      'Role assignment and POA anomalies that could expose the wrong workspace or block access across tenants.',
     zone: 'work',
     status: 'live',
     workspaceView: 'authority_repair',
@@ -82,14 +87,16 @@ const CAPABILITIES: Record<AdminCapabilityId, AdminCapabilityMeta> = {
   workspace_integrity: {
     id: 'workspace_integrity',
     title: 'Workspace Integrity',
-    description: 'Layout-sync and canvas drift checks for demo, web, and native parity across the platform.',
+    description:
+      'Layout-sync and canvas drift checks for demo, web, and native parity across the platform.',
     zone: 'work',
     status: 'live',
   },
   tenant_directory: {
     id: 'tenant_directory',
     title: 'Tenant Directory',
-    description: 'Searchable school and tenancy registry for support, governance, and lifecycle handling.',
+    description:
+      'Searchable school and tenancy registry for support, governance, and lifecycle handling.',
     zone: 'institution',
     status: 'live',
     workspaceView: 'tenant_detail',
@@ -97,7 +104,8 @@ const CAPABILITIES: Record<AdminCapabilityId, AdminCapabilityMeta> = {
   operator_actions: {
     id: 'operator_actions',
     title: 'Operator Actions',
-    description: 'Guarded interventions such as retries, resyncs, repairs, and other remediation tasks with explicit accountability.',
+    description:
+      'Guarded interventions such as retries, resyncs, repairs, and other remediation tasks with explicit accountability.',
     zone: 'institution',
     status: 'live',
     workspaceView: 'job_control',
@@ -105,7 +113,8 @@ const CAPABILITIES: Record<AdminCapabilityId, AdminCapabilityMeta> = {
   platform_metrics: {
     id: 'platform_metrics',
     title: 'Platform Metrics',
-    description: 'Daily and weekly platform signal: usage, adoption, error pressure, and operator load.',
+    description:
+      'Daily and weekly platform signal: usage, adoption, error pressure, and operator load.',
     zone: 'outlook',
     status: 'live',
   },
@@ -120,7 +129,8 @@ const CAPABILITIES: Record<AdminCapabilityId, AdminCapabilityMeta> = {
   audit_trail: {
     id: 'audit_trail',
     title: 'Audit Trail',
-    description: 'A private log of interventions, approvals, and operator decisions for accountability and postmortems.',
+    description:
+      'A private log of interventions, approvals, and operator decisions for accountability and postmortems.',
     zone: 'private',
     status: 'live',
     workspaceView: 'audit_log',

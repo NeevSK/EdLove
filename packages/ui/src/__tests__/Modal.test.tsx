@@ -1,6 +1,5 @@
-import React from 'react';
-import { render, fireEvent } from '@testing-library/react-native';
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from '../components/ui/modal';
+import { render } from '@testing-library/react-native';
+import { Modal, ModalBody, ModalFooter, ModalHeader } from '../components/ui/modal';
 
 describe('Modal Component (Robustness)', () => {
   it('does not render when isOpen is false', async () => {

@@ -1,14 +1,15 @@
 // View implementation
+
+import { cssInterop } from 'nativewind';
 import React from 'react';
 import {
-  View as RNView,
-  ScrollView as RNScrollView,
-  Pressable as RNPressable,
-  type ViewProps,
-  type ScrollViewProps,
   type PressableProps,
+  Pressable as RNPressable,
+  ScrollView as RNScrollView,
+  View as RNView,
+  type ScrollViewProps,
+  type ViewProps,
 } from 'react-native';
-import { cssInterop } from 'nativewind';
 
 cssInterop(RNView, { className: 'style' });
 cssInterop(RNScrollView, { className: 'style' });

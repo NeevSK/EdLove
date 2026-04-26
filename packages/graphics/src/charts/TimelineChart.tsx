@@ -1,6 +1,6 @@
+import { Card, HStack, Theme, VStack } from '@repo/ui';
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import { VStack, HStack, Card, Theme } from '@repo/ui';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 interface TimelineEvent {
   id: string;
@@ -27,23 +27,23 @@ export function TimelineChart({
   showDates = true,
   showIcons = true,
   timeFormat = 'relative',
-  maxHeight = 400
+  maxHeight = 400,
 }: TimelineChartProps) {
   const formatTime = (date: Date) => {
     if (timeFormat === 'absolute') {
-      return date.toLocaleDateString([], { 
-        month: 'short', 
-        day: 'numeric', 
-        year: 'numeric' 
+      return date.toLocaleDateString([], {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
       });
     }
-    
+
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
     const diffWeeks = Math.floor(diffDays / 7);
     const diffMonths = Math.floor(diffDays / 30);
-    
+
     if (diffDays === 0) return 'Today';
     if (diffDays === 1) return 'Yesterday';
     if (diffDays < 7) return `${diffDays} days ago`;
@@ -54,31 +54,43 @@ export function TimelineChart({
 
   const getEventColor = (type: TimelineEvent['type']) => {
     switch (type) {
-      case 'milestone': return Theme.colors.success;
-      case 'warning': return Theme.colors.warning;
-      case 'success': return Theme.colors.gurudeviBlue;
-      case 'info': return Theme.colors.textSecondary;
-      case 'error': return Theme.colors.error;
-      default: return Theme.colors.text;
+      case 'milestone':
+        return Theme.colors.success;
+      case 'warning':
+        return Theme.colors.warning;
+      case 'success':
+        return Theme.colors.gurudeviBlue;
+      case 'info':
+        return Theme.colors.textSecondary;
+      case 'error':
+        return Theme.colors.error;
+      default:
+        return Theme.colors.text;
     }
   };
 
   const getEventIcon = (type: TimelineEvent['type'], icon?: string) => {
     if (icon) return icon;
     switch (type) {
-      case 'milestone': return '\uD83C\uDFC6';
-      case 'warning': return '\u26A0\uFE0F';
-      case 'success': return '\u2705';
-      case 'info': return '\u2139\uFE0F';
-      case 'error': return '\u274C';
-      default: return '\uD83D\uDCC5';
+      case 'milestone':
+        return '\uD83C\uDFC6';
+      case 'warning':
+        return '\u26A0\uFE0F';
+      case 'success':
+        return '\u2705';
+      case 'info':
+        return '\u2139\uFE0F';
+      case 'error':
+        return '\u274C';
+      default:
+        return '\uD83D\uDCC5';
     }
   };
 
   return (
     <Card style={styles.container}>
       {title && <Text style={styles.title}>{title}</Text>}
-      
+
       <ScrollView
         style={[styles.timelineContainer, { maxHeight }]}
         showsVerticalScrollIndicator={false}
@@ -87,41 +99,29 @@ export function TimelineChart({
           {events.map((event, index) => (
             <View key={event.id} style={styles.eventContainer}>
               {/* Timeline line */}
-              {index < events.length - 1 && (
-                <View style={styles.timelineLine} />
-              )}
-              
+              {index < events.length - 1 && <View style={styles.timelineLine} />}
+
               {/* Event dot */}
               <View style={styles.eventDot}>
                 <View
                   style={[
                     styles.dotInner,
-                    { backgroundColor: event.color || getEventColor(event.type) }
+                    { backgroundColor: event.color || getEventColor(event.type) },
                   ]}
                 />
                 {showIcons && (
-                  <Text style={styles.eventIcon}>
-                    {getEventIcon(event.type, event.icon)}
-                  </Text>
+                  <Text style={styles.eventIcon}>{getEventIcon(event.type, event.icon)}</Text>
                 )}
               </View>
 
               {/* Event content */}
               <View style={styles.eventContent}>
-                <Text style={styles.eventTitle}>
-                  {event.title}
-                </Text>
+                <Text style={styles.eventTitle}>{event.title}</Text>
                 {event.description && (
-                  <Text style={styles.eventDescription}>
-                    {event.description}
-                  </Text>
+                  <Text style={styles.eventDescription}>{event.description}</Text>
                 )}
-                
-                {showDates && (
-                  <Text style={styles.eventDate}>
-                    {formatTime(event.date)}
-                  </Text>
-                )}
+
+                {showDates && <Text style={styles.eventDate}>{formatTime(event.date)}</Text>}
               </View>
             </View>
           ))}

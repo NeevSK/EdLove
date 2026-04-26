@@ -8,8 +8,8 @@
  * - Supports Sinhala (U+0D80\u2013U+0DFF) and Tamil (U+0B80\u2013U+0BFF) scripts
  */
 
-import type { OCRRawResult } from '../types';
 import type { ScannedStudent } from '../../types';
+import type { OCRRawResult } from '../types';
 
 /** Minimum confidence to consider a block reliable */
 const CONFIDENCE_THRESHOLD = 0.4;
@@ -46,9 +46,7 @@ export function parseStudents(result: OCRRawResult): ParsedStudent[] {
   }
 
   // Deduplicate by name
-  return parsed.filter(
-    (s, idx, self) => idx === self.findIndex(o => o.name === s.name),
-  );
+  return parsed.filter((s, idx, self) => idx === self.findIndex((o) => o.name === s.name));
 }
 
 // \u2500\u2500 Line extraction \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
@@ -63,11 +61,11 @@ function buildLines(result: OCRRawResult): RawLine[] {
     // Plain text fallback \u2014 no block data available
     return result.text
       .split('\n')
-      .filter(t => t.trim().length > 0)
-      .map(text => ({ text, confidence: 1 }));
+      .filter((t) => t.trim().length > 0)
+      .map((text) => ({ text, confidence: 1 }));
   }
 
-  return result.blocks.map(block => ({
+  return result.blocks.map((block) => ({
     text: block.text,
     confidence: block.confidence ?? 1,
   }));
@@ -76,15 +74,20 @@ function buildLines(result: OCRRawResult): RawLine[] {
 // \u2500\u2500 Header detection \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 const HEADER_KEYWORDS = [
-  'name', 'index', 'no.', 'number', '\u0DC1\u0DD2\u0DC2\u0DCA\u200D\u0DBA', '\u0DB1\u0DB8', '\u0B8E\u0BA3\u0BCD', '\u0BAE\u0BBE\u0BA3\u0BB5\u0BB0\u0BCD',
+  'name',
+  'index',
+  'no.',
+  'number',
+  '\u0DC1\u0DD2\u0DC2\u0DCA\u200D\u0DBA',
+  '\u0DB1\u0DB8',
+  '\u0B8E\u0BA3\u0BCD',
+  '\u0BAE\u0BBE\u0BA3\u0BB5\u0BB0\u0BCD',
 ];
 
 function isHeaderLine(line: string): boolean {
   const lower = line.toLowerCase();
   return (
-    line.length < 3 ||
-    HEADER_KEYWORDS.some(kw => lower.includes(kw)) ||
-    /^[-=_|]+$/.test(line) // separator lines
+    line.length < 3 || HEADER_KEYWORDS.some((kw) => lower.includes(kw)) || /^[-=_|]+$/.test(line) // separator lines
   );
 }
 
@@ -93,22 +96,36 @@ function isHeaderLine(line: string): boolean {
 function parseLine(line: string): ScannedStudent | null {
   // Strategy 1: pipe or tab delimited  \u2192  "Name | Index"
   if (line.includes('|') || line.includes('\t')) {
-    const parts = line.split(/[|\t]/).map(p => p.trim()).filter(Boolean);
+    const parts = line
+      .split(/[|\t]/)
+      .map((p) => p.trim())
+      .filter(Boolean);
     if (parts.length >= 2) {
-      return { name: parts[0]!, index_number: parts[1]!, notes: parts.slice(2).join(' ') || undefined };
+      return {
+        name: parts[0]!,
+        index_number: parts[1]!,
+        notes: parts.slice(2).join(' ') || undefined,
+      };
     }
   }
 
   // Strategy 2: double-space delimited  \u2192  "Kamal Perera   42"
-  const spaceSplit = line.split(/\s{2,}/).map(p => p.trim()).filter(Boolean);
+  const spaceSplit = line
+    .split(/\s{2,}/)
+    .map((p) => p.trim())
+    .filter(Boolean);
   if (spaceSplit.length >= 2) {
-    const possibleIndex = spaceSplit.find(part => /^\d+$/.test(part));
+    const possibleIndex = spaceSplit.find((part) => /^\d+$/.test(part));
     const name = spaceSplit[0];
     if (possibleIndex && name) {
       return {
         name,
         index_number: possibleIndex,
-        notes: spaceSplit.slice(1).filter(p => p !== possibleIndex).join(' ') || undefined,
+        notes:
+          spaceSplit
+            .slice(1)
+            .filter((p) => p !== possibleIndex)
+            .join(' ') || undefined,
       };
     }
   }

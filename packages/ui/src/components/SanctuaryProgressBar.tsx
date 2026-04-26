@@ -1,11 +1,11 @@
-import React, { useEffect, useRef } from 'react';
-import { View, Text, Animated, StyleSheet, ViewStyle } from 'react-native';
+import { useEffect, useRef } from 'react';
+import { Animated, StyleSheet, Text, type ViewStyle } from 'react-native';
 import Reanimated, {
-  useSharedValue,
   useAnimatedStyle,
-  withTiming,
-  withSequence,
+  useSharedValue,
   withRepeat,
+  withSequence,
+  withTiming,
 } from 'react-native-reanimated';
 import { Box, HStack, VStack } from '../gluestack';
 
@@ -35,7 +35,7 @@ export function SanctuaryProgressBar({
       duration: 600,
       useNativeDriver: false,
     }).start();
-  }, [percentage]);
+  }, [percentage, fillAnim]);
 
   // Reanimated glow pulse when complete
   const glowOpacity = useSharedValue(0);
@@ -53,7 +53,7 @@ export function SanctuaryProgressBar({
     } else {
       glowOpacity.value = withTiming(0, { duration: 300 });
     }
-  }, [isComplete]);
+  }, [isComplete, glowOpacity]);
 
   const glowAnimStyle = useAnimatedStyle(() => ({
     opacity: glowOpacity.value,

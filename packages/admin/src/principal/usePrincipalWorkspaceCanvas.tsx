@@ -1,18 +1,32 @@
-import React, { useMemo } from 'react';
-import { Icon, Box,
-  HStack,
-  Text,
-  VStack,
-  Pressable,
-  WorkspaceCanvas,
-  type WorkspaceSurfaceDefinition } from '@repo/ui';
 import {
-  type WorkspaceSwitcherTarget,
+  type ResolvedWorkspaceSurface,
   useWorkspaceLayoutSync,
   WORKSPACE_CANVAS_ZONES,
-  type ResolvedWorkspaceSurface,
-  type WorkspaceZoneId} from '@repo/core';
-import { Building2, CalendarCheck, LayoutGrid, MoveRight, NotebookPen, QrCode, Share2, Wind } from 'lucide-react-native';
+  type WorkspaceSwitcherTarget,
+  type WorkspaceZoneId,
+} from '@repo/core';
+import {
+  Box,
+  HStack,
+  Icon,
+  Pressable,
+  Text,
+  VStack,
+  WorkspaceCanvas,
+  type WorkspaceSurfaceDefinition,
+} from '@repo/ui';
+import {
+  Building2,
+  CalendarCheck,
+  LayoutGrid,
+  MoveRight,
+  NotebookPen,
+  QrCode,
+  Share2,
+  Wind,
+} from 'lucide-react-native';
+import type React from 'react';
+import { useMemo } from 'react';
 import DashboardEcho from '../components/principal/DashboardEcho';
 import InstitutionalCalendarSection from '../components/principal/InstitutionalCalendarSection';
 import LeaveApprovalSection from '../components/principal/LeaveApprovalSection';
@@ -26,15 +40,15 @@ import TeacherCarousel from '../components/principal/TeacherCarousel';
 import {
   getPrincipalCapabilityMeta,
   type PrincipalCapabilityId,
+  type PrincipalWorkspaceSurfaceId,
   type PrincipalWorkspaceView,
-  type PrincipalWorkspaceSurfaceId} from './workspace';
+} from './workspace';
 import { getPrincipalPreviewSummary } from './workspacePreview';
-
-
 
 export type PrincipalWorkspaceSurface = WorkspaceSurfaceDefinition<
   PrincipalWorkspaceSurfaceId,
-  PrincipalCapabilityId> & {
+  PrincipalCapabilityId
+> & {
   title: string;
   subtitle?: string;
   summary?: string;
@@ -45,14 +59,17 @@ export type PrincipalWorkspaceSurface = WorkspaceSurfaceDefinition<
   content: React.ReactNode;
 };
 
-type PrincipalWorkspaceStats = { 
-  total_students?: number;
-  total_teachers?: number;
-  total_classrooms?: number;
-  total_sections?: number;
-} | null | undefined;
+type PrincipalWorkspaceStats =
+  | {
+      total_students?: number;
+      total_teachers?: number;
+      total_classrooms?: number;
+      total_sections?: number;
+    }
+  | null
+  | undefined;
 
-type PrincipalWorkspaceCanvasArgs = { 
+type PrincipalWorkspaceCanvasArgs = {
   schoolId: string;
   principalId: string;
   schoolName?: string | null;
@@ -72,15 +89,23 @@ type PrincipalWorkspaceCanvasArgs = {
 
 function WorkspaceSwitcherSurface({
   targets,
-  onSelectTarget}: {
+  onSelectTarget,
+}: {
   targets: WorkspaceSwitcherTarget[];
   onSelectTarget: (target: WorkspaceSwitcherTarget) => void;
 }) {
   return (
     <VStack className="gap-2">
       {targets.map((target) => (
-        <Pressable key={target.id} onPress={() => onSelectTarget(target)} disabled={!target.enabled} className="active:opacity-80">
-          <Box className={`rounded-2xl border p-4 ${target.enabled ? 'border-starlightGray/20 bg-silk' : 'border-starlightGray/10 bg-phase-primary/5'}`}>
+        <Pressable
+          key={target.id}
+          onPress={() => onSelectTarget(target)}
+          disabled={!target.enabled}
+          className="active:opacity-80"
+        >
+          <Box
+            className={`rounded-2xl border p-4 ${target.enabled ? 'border-starlightGray/20 bg-silk' : 'border-starlightGray/10 bg-phase-primary/5'}`}
+          >
             <HStack className="items-center gap-3">
               <Box className="rounded-full bg-phase-warning/10 px-3 py-1">
                 <Text className="text-[10px] font-bold uppercase text-phaseText-primary">
@@ -112,7 +137,8 @@ function SurfaceLauncher({
   title,
   copy,
   actionLabel,
-  onPress}: {
+  onPress,
+}: {
   icon: any;
   title: string;
   copy: string;
@@ -130,13 +156,16 @@ function SurfaceLauncher({
           <Text className="text-[12px] text-phaseText-secondary">{copy}</Text>
         </VStack>
       </HStack>
-      <Pressable onPress={onPress} className="self-start rounded-full bg-phase-interactive px-4 py-2 border border-phase-border shadow-sm active:scale-95 transition-all">
-          <HStack className="items-center gap-2">
-            <Text className="text-[12px] font-black text-white uppercase tracking-widest">
-              {actionLabel}
-            </Text>
-            <Icon as={MoveRight} size={14} className="text-white" />
-          </HStack>
+      <Pressable
+        onPress={onPress}
+        className="self-start rounded-full bg-phase-interactive px-4 py-2 border border-phase-border shadow-sm active:scale-95 transition-all"
+      >
+        <HStack className="items-center gap-2">
+          <Text className="text-[12px] font-black text-white uppercase tracking-widest">
+            {actionLabel}
+          </Text>
+          <Icon as={MoveRight} size={14} className="text-white" />
+        </HStack>
       </Pressable>
     </VStack>
   );
@@ -147,7 +176,8 @@ function ProfileSurface({
   schoolName,
   onOpenProfile,
   onOpenQr,
-  onEditSchool}: {
+  onEditSchool,
+}: {
   stats?: PrincipalWorkspaceStats;
   schoolName?: string | null;
   onOpenProfile: () => void;
@@ -155,9 +185,25 @@ function ProfileSurface({
   onEditSchool: () => void;
 }) {
   const actions = [
-    { icon: Building2, label: 'Institution, profile', hint: schoolName || 'Open, the, official, school, record.', onPress: onOpenProfile },
-    { icon: QrCode, label: 'School, QR', hint: 'Share, the, school, sanctuary, entry, point.', onPress: onOpenQr },
-    { icon: NotebookPen, label: 'Edit, school, details', hint: 'Adjust, institution, basics, and, identity.', onPress: onEditSchool }];
+    {
+      icon: Building2,
+      label: 'Institution, profile',
+      hint: schoolName || 'Open, the, official, school, record.',
+      onPress: onOpenProfile,
+    },
+    {
+      icon: QrCode,
+      label: 'School, QR',
+      hint: 'Share, the, school, sanctuary, entry, point.',
+      onPress: onOpenQr,
+    },
+    {
+      icon: NotebookPen,
+      label: 'Edit, school, details',
+      hint: 'Adjust, institution, basics, and, identity.',
+      onPress: onEditSchool,
+    },
+  ];
 
   return (
     <VStack className="gap-4">
@@ -166,26 +212,39 @@ function ProfileSurface({
           { label: 'Students', value: stats?.total_students ?? 0 },
           { label: 'Teachers', value: stats?.total_teachers ?? 0 },
           { label: 'Classrooms', value: stats?.total_classrooms ?? 0 },
-          { label: 'Sections', value: stats?.total_sections ?? 0 }].map((item) => (
-          <Box key={item.label}
-            className="min-w-[47%] flex-1 p-5 rounded-[24px] bg-phase-surface border border-phase-border shadow-sm">
+          { label: 'Sections', value: stats?.total_sections ?? 0 },
+        ].map((item) => (
+          <Box
+            key={item.label}
+            className="min-w-[47%] flex-1 p-5 rounded-[24px] bg-phase-surface border border-phase-border shadow-sm"
+          >
             <Text className="text-[10px] font-black text-phaseText-muted uppercase tracking-widest">
               {item.label}
             </Text>
-            <Text className="mt-1 text-2xl font-black text-phaseText-primary tracking-tight">{item.value}</Text>
+            <Text className="mt-1 text-2xl font-black text-phaseText-primary tracking-tight">
+              {item.value}
+            </Text>
           </Box>
         ))}
       </HStack>
 
       <VStack className="gap-2">
         {actions.map((action) => (
-          <Pressable key={action.label} onPress={action.onPress} className="active:scale-[0.98] transition-all">
+          <Pressable
+            key={action.label}
+            onPress={action.onPress}
+            className="active:scale-[0.98] transition-all"
+          >
             <Box className="bg-phase-surface rounded-[24px] border border-phase-border p-5 shadow-sm">
               <HStack className="items-center gap-4">
                 <Icon as={action.icon} size="sm" className="text-phase-interactive" />
                 <VStack className="flex-1 gap-0.5">
-                  <Text className="text-[14px] font-black text-phaseText-primary tracking-tight">{action.label}</Text>
-                  <Text className="text-[10px] font-bold text-phaseText-muted uppercase tracking-wider">{action.hint}</Text>
+                  <Text className="text-[14px] font-black text-phaseText-primary tracking-tight">
+                    {action.label}
+                  </Text>
+                  <Text className="text-[10px] font-bold text-phaseText-muted uppercase tracking-wider">
+                    {action.hint}
+                  </Text>
                 </VStack>
               </HStack>
             </Box>
@@ -198,7 +257,8 @@ function ProfileSurface({
 
 function CommonsSurface({
   onOpenCommons,
-  onOpenBreathing}: {
+  onOpenBreathing,
+}: {
   onOpenCommons: () => void;
   onOpenBreathing: () => void;
 }) {
@@ -209,8 +269,12 @@ function CommonsSurface({
           <HStack className="items-center gap-4">
             <Icon as={Share2} size="sm" className="text-phase-interactive" />
             <VStack className="flex-1 gap-0.5">
-              <Text className="text-[14px] font-black text-phaseText-primary tracking-tight">Community, commons</Text>
-              <Text className="text-[10px] font-bold text-phaseText-muted uppercase tracking-wider">Step into the mission layer of the school.</Text>
+              <Text className="text-[14px] font-black text-phaseText-primary tracking-tight">
+                Community, commons
+              </Text>
+              <Text className="text-[10px] font-bold text-phaseText-muted uppercase tracking-wider">
+                Step into the mission layer of the school.
+              </Text>
             </VStack>
           </HStack>
         </Box>
@@ -221,8 +285,12 @@ function CommonsSurface({
           <HStack className="items-center gap-4">
             <Icon as={Wind} size="sm" className="text-phase-warning" />
             <VStack className="flex-1 gap-0.5">
-              <Text className="text-[14px] font-black text-phaseText-primary tracking-tight">Leadership, breathing</Text>
-              <Text className="text-[10px] font-bold text-phaseText-muted uppercase tracking-wider">Reset before the next decision.</Text>
+              <Text className="text-[14px] font-black text-phaseText-primary tracking-tight">
+                Leadership, breathing
+              </Text>
+              <Text className="text-[10px] font-bold text-phaseText-muted uppercase tracking-wider">
+                Reset before the next decision.
+              </Text>
             </VStack>
           </HStack>
         </Box>
@@ -233,7 +301,10 @@ function CommonsSurface({
 
 function createPrincipalSurface(
   surfaceId: PrincipalWorkspaceSurfaceId,
-  config: Omit<PrincipalWorkspaceSurface, 'surfaceId' | 'workspaceId' | 'capabilityKey' | 'ownerPackage'>,
+  config: Omit<
+    PrincipalWorkspaceSurface,
+    'surfaceId' | 'workspaceId' | 'capabilityKey' | 'ownerPackage'
+  >,
 ): PrincipalWorkspaceSurface {
   const meta = getPrincipalCapabilityMeta(surfaceId);
 
@@ -254,7 +325,8 @@ function createPrincipalSurface(
     temporalLabel: config.temporalLabel,
     temporalTone: config.temporalTone,
     metadata: config.metadata,
-    content: config.content};
+    content: config.content,
+  };
 }
 
 export function usePrincipalWorkspaceCanvasSurfaces({
@@ -272,7 +344,8 @@ export function usePrincipalWorkspaceCanvasSurfaces({
   onOpenCommons,
   onOpenQr,
   onOpenBreathing,
-  onEditSchool}: PrincipalWorkspaceCanvasArgs) {
+  onEditSchool,
+}: PrincipalWorkspaceCanvasArgs) {
   return useMemo<PrincipalWorkspaceSurface[]>(
     () => [
       createPrincipalSurface('setup_runway', {
@@ -283,13 +356,16 @@ export function usePrincipalWorkspaceCanvasSurfaces({
         summary: isDemoExperience
           ? getPrincipalPreviewSummary('setup_runway')
           : hasSchool
-          ? 'Keep, setup-heavy, rooms, close while the, school, is, still, taking, shape, then, move, them, aside, once, the, institutional, rhythm, is, stable.'
-          : 'This, runway, becomes, the, first, real, canvas, after, founding, the, school, with, hierarchy, invites, cycles, and, official, profile, work, ready, to, organize.',
+            ? 'Keep, setup-heavy, rooms, close while the, school, is, still, taking, shape, then, move, them, aside, once, the, institutional, rhythm, is, stable.'
+            : 'This, runway, becomes, the, first, real, canvas, after, founding, the, school, with, hierarchy, invites, cycles, and, official, profile, work, ready, to, organize.',
         temporalLabel: isDemoExperience ? 'Preview' : hasSchool ? 'Setup' : 'Next, after, founding',
         temporalTone: 'future',
-        metadata: isDemoExperience ? ['Preview', schoolName || 'Institution', 'Launch, path'] : ['Setup', schoolName || 'Institution'],
+        metadata: isDemoExperience
+          ? ['Preview', schoolName || 'Institution', 'Launch, path']
+          : ['Setup', schoolName || 'Institution'],
         content: (
-          <ManagementStation onAction={(action) => {
+          <ManagementStation
+            onAction={(action) => {
               if (action === 'notes') {
                 navigatePrincipalView('log');
                 return;
@@ -297,21 +373,25 @@ export function usePrincipalWorkspaceCanvasSurfaces({
               navigatePrincipalView(action);
             }}
           />
-        )}),
+        ),
+      }),
       createPrincipalSurface('workspace_switcher', {
         defaultZone: 'institution',
         defaultOrder: 8,
         title: 'Workspace, Switcher',
         subtitle: 'Mixed-role, navigation',
-        summary: 'A, principal, can, still, move, into, guardian, founder, or, academic, work, when, those, capabilities, belong, to, the, same, person.',
+        summary:
+          'A, principal, can, still, move, into, guardian, founder, or, academic, work, when, those, capabilities, belong, to, the, same, person.',
         temporalLabel: 'Role-aware',
         temporalTone: 'neutral',
         metadata: ['Institution', 'Mixed-role'],
         content: (
-          <WorkspaceSwitcherSurface targets={workspaceTargets}
+          <WorkspaceSwitcherSurface
+            targets={workspaceTargets}
             onSelectTarget={(target) => onSelectWorkspaceTarget?.(target)}
           />
-        )}),
+        ),
+      }),
       createPrincipalSurface('morning_brief', {
         defaultZone: 'today',
         defaultOrder: 10,
@@ -323,7 +403,8 @@ export function usePrincipalWorkspaceCanvasSurfaces({
         temporalLabel: isDemoExperience ? 'Preview' : isPastView ? 'Past, view' : 'Today',
         temporalTone: isPastView ? 'past' : 'present',
         metadata: isDemoExperience ? ['Preview', 'Leadership, pulse'] : ['Daily', 'Institution'],
-        content: <MorningSituationalBrief schoolId={schoolId} />}),
+        content: <MorningSituationalBrief schoolId={schoolId} />,
+      }),
       createPrincipalSurface('faculty_overview', {
         defaultZone: 'today',
         defaultOrder: 20,
@@ -334,7 +415,8 @@ export function usePrincipalWorkspaceCanvasSurfaces({
           : 'Read, staffing, availability, teaching, presence, and, who, may, need, support, or, relief.',
         temporalLabel: isDemoExperience ? 'Preview' : 'Live',
         metadata: isDemoExperience ? ['Preview', 'Faculty, signal'] : ['Daily', 'Staff'],
-        content: <TeacherCarousel schoolId={schoolId} />}),
+        content: <TeacherCarousel schoolId={schoolId} />,
+      }),
       createPrincipalSurface('pending_approvals', {
         defaultZone: 'today',
         defaultOrder: 30,
@@ -344,8 +426,11 @@ export function usePrincipalWorkspaceCanvasSurfaces({
           ? getPrincipalPreviewSummary('pending_approvals')
           : 'Keep, sign-offs, moving, so, the, school, day, stays, unblocked.',
         temporalLabel: isDemoExperience ? 'Preview' : 'Action, ready',
-        metadata: isDemoExperience ? ['Preview', 'Operational, decisions'] : ['Daily', 'Operations'],
-        content: <LeaveApprovalSection schoolId={schoolId} principalId={principalId} />}),
+        metadata: isDemoExperience
+          ? ['Preview', 'Operational, decisions']
+          : ['Daily', 'Operations'],
+        content: <LeaveApprovalSection schoolId={schoolId} principalId={principalId} />,
+      }),
       createPrincipalSurface('institutional_calendar', {
         defaultZone: 'today',
         defaultOrder: 40,
@@ -356,7 +441,8 @@ export function usePrincipalWorkspaceCanvasSurfaces({
           : 'Terms, dates, and, events, that, shape, the, next, movements, of, the, institution.',
         temporalLabel: isDemoExperience ? 'Preview' : 'This, cycle',
         metadata: isDemoExperience ? ['Preview', 'Institution, rhythm'] : ['Periodic', 'Calendar'],
-        content: <InstitutionalCalendarSection schoolId={schoolId} principalId={principalId} />}),
+        content: <InstitutionalCalendarSection schoolId={schoolId} principalId={principalId} />,
+      }),
       createPrincipalSurface('observations', {
         defaultZone: 'today',
         defaultOrder: 50,
@@ -367,7 +453,8 @@ export function usePrincipalWorkspaceCanvasSurfaces({
           : 'Hold, recent, walkthrough, notes, and, institutional, observations, close, enough, to, act, on, them.',
         temporalLabel: isDemoExperience ? 'Preview' : 'Recent',
         metadata: isDemoExperience ? ['Preview', 'Leadership, memory'] : ['Daily', 'Follow-up'],
-        content: <PrincipalObservationsSection schoolId={schoolId} principalId={principalId} />}),
+        content: <PrincipalObservationsSection schoolId={schoolId} principalId={principalId} />,
+      }),
       createPrincipalSurface('hierarchy', {
         defaultZone: 'institution',
         defaultOrder: 60,
@@ -378,15 +465,19 @@ export function usePrincipalWorkspaceCanvasSurfaces({
           : 'A, setup, room for grades, sections, and, institutional, structure.',
         temporalLabel: isDemoExperience ? 'Preview, room' : 'Setup, room',
         temporalTone: 'neutral',
-        metadata: isDemoExperience ? ['Preview', `Sections ${stats?.total_sections ?? 0}`] : ['Setup', `Sections ${stats?.total_sections ?? 0}`],
+        metadata: isDemoExperience
+          ? ['Preview', `Sections ${stats?.total_sections ?? 0}`]
+          : ['Setup', `Sections ${stats?.total_sections ?? 0}`],
         content: (
-          <SurfaceLauncher icon={LayoutGrid}
+          <SurfaceLauncher
+            icon={LayoutGrid}
             title="School, hierarchy"
             copy="Shape, grades and, sections when, the institution, changes, then, leave the, daily canvas, uncluttered."
             actionLabel="Open, hierarchy room"
             onPress={() => navigatePrincipalView('hierarchy')}
           />
-        )}),
+        ),
+      }),
       createPrincipalSurface('invites', {
         defaultZone: 'institution',
         defaultOrder: 65,
@@ -399,13 +490,15 @@ export function usePrincipalWorkspaceCanvasSurfaces({
         temporalTone: 'future',
         metadata: isDemoExperience ? ['Preview', 'Governance, entry'] : ['Periodic', 'Onboarding'],
         content: (
-          <SurfaceLauncher icon={Building2}
+          <SurfaceLauncher
+            icon={Building2}
             title="Governance, invites"
             copy="Bring, teachers and, leaders in, deliberately, with, role-aware, invitations and, capability gates."
             actionLabel="Open, invites room"
             onPress={() => navigatePrincipalView('invites')}
           />
-        )}),
+        ),
+      }),
       createPrincipalSurface('cycles', {
         defaultZone: 'institution',
         defaultOrder: 75,
@@ -416,15 +509,19 @@ export function usePrincipalWorkspaceCanvasSurfaces({
           : 'Define, terms, and, academic, periods, so, the, institution, shares, one, stable, timeline.',
         temporalLabel: isDemoExperience ? 'Preview, room' : 'Setup, room',
         temporalTone: 'neutral',
-        metadata: isDemoExperience ? ['Preview', 'Institution, timeline'] : ['Setup', 'Year, structure'],
+        metadata: isDemoExperience
+          ? ['Preview', 'Institution, timeline']
+          : ['Setup', 'Year, structure'],
         content: (
-          <SurfaceLauncher icon={CalendarCheck}
+          <SurfaceLauncher
+            icon={CalendarCheck}
             title="Academic, cycles"
             copy="Set, the institutional, time structure, here so, governance and, learning operate, inside the, same rhythm."
             actionLabel="Open, cycles room"
             onPress={() => navigatePrincipalView('cycles')}
           />
-        )}),
+        ),
+      }),
       createPrincipalSurface('log', {
         defaultZone: 'institution',
         defaultOrder: 90,
@@ -435,7 +532,8 @@ export function usePrincipalWorkspaceCanvasSurfaces({
           : 'A, place for institutional, memory, follow-up, and, leadership, trace, across, time.',
         temporalLabel: isDemoExperience ? 'Preview' : 'Daily, record',
         metadata: isDemoExperience ? ['Preview', 'Governance, memory'] : ['Daily', 'Timeline'],
-        content: <PrincipalGovernanceTimeline schoolId={schoolId} principalId={principalId} />}),
+        content: <PrincipalGovernanceTimeline schoolId={schoolId} principalId={principalId} />,
+      }),
       createPrincipalSurface('notes', {
         defaultZone: 'private',
         defaultOrder: 100,
@@ -447,15 +545,19 @@ export function usePrincipalWorkspaceCanvasSurfaces({
           : 'A, quieter, personal, working, surface, that, the, principal, can, unhide, or, reposition if it, matters.',
         temporalLabel: isDemoExperience ? 'Preview' : 'Private',
         temporalTone: 'neutral',
-        metadata: isDemoExperience ? ['Preview', 'Private, layer'] : ['Private', 'Hidden, by default'],
+        metadata: isDemoExperience
+          ? ['Preview', 'Private, layer']
+          : ['Private', 'Hidden, by default'],
         content: (
-          <SurfaceLauncher icon={NotebookPen}
+          <SurfaceLauncher
+            icon={NotebookPen}
             title="Private, notes"
             copy="Keep a, quieter reflection, space available, without forcing, it onto, the default institutional canvas."
             actionLabel="Open, notes room"
             onPress={() => navigatePrincipalView('notes')}
           />
-        )}),
+        ),
+      }),
       createPrincipalSurface('school_profile', {
         defaultZone: 'institution',
         defaultOrder: 110,
@@ -465,15 +567,19 @@ export function usePrincipalWorkspaceCanvasSurfaces({
           ? getPrincipalPreviewSummary('school_profile')
           : 'Profile, school, snapshot, QR, entry, and, institution, identity, belong, here.',
         temporalLabel: isDemoExperience ? 'Preview' : 'Periodic',
-        metadata: isDemoExperience ? ['Preview', schoolName || 'Institution, profile'] : ['Institution', schoolName || 'Profile'],
+        metadata: isDemoExperience
+          ? ['Preview', schoolName || 'Institution, profile']
+          : ['Institution', schoolName || 'Profile'],
         content: (
-          <ProfileSurface stats={stats}
+          <ProfileSurface
+            stats={stats}
             schoolName={schoolName}
             onOpenProfile={onOpenProfile}
             onOpenQr={onOpenQr}
             onEditSchool={onEditSchool}
           />
-        )}),
+        ),
+      }),
       createPrincipalSurface('resource_needs', {
         defaultZone: 'outlook',
         defaultOrder: 120,
@@ -484,8 +590,11 @@ export function usePrincipalWorkspaceCanvasSurfaces({
           : 'Aggregated, requests, help, the, principal, see, where, support, supply, or, attention, is, accumulating.',
         temporalLabel: isDemoExperience ? 'Preview' : 'Weekly, read',
         temporalTone: 'future',
-        metadata: isDemoExperience ? ['Preview', 'Pressure, signal'] : ['Outlook', 'Classroom, signal'],
-        content: <ResourceNeedsDashboard schoolId={schoolId} />}),
+        metadata: isDemoExperience
+          ? ['Preview', 'Pressure, signal']
+          : ['Outlook', 'Classroom, signal'],
+        content: <ResourceNeedsDashboard schoolId={schoolId} />,
+      }),
       createPrincipalSurface('ecosystem_resonance', {
         defaultZone: 'outlook',
         defaultOrder: 130,
@@ -502,7 +611,8 @@ export function usePrincipalWorkspaceCanvasSurfaces({
             <PulseDashboard schoolId={schoolId} />
             <DashboardEcho schoolId={schoolId} />
           </VStack>
-        )}),
+        ),
+      }),
       createPrincipalSurface('open_commons', {
         defaultZone: 'outlook',
         defaultOrder: 140,
@@ -513,7 +623,9 @@ export function usePrincipalWorkspaceCanvasSurfaces({
           : 'A, bridge from institutional, leadership, into, the, living, community, commons.',
         temporalLabel: isDemoExperience ? 'Preview' : 'Community',
         metadata: isDemoExperience ? ['Preview', 'Mission, bridge'] : ['Outlook', 'Commons'],
-        content: <CommonsSurface onOpenCommons={onOpenCommons} onOpenBreathing={onOpenBreathing} />})],
+        content: <CommonsSurface onOpenCommons={onOpenCommons} onOpenBreathing={onOpenBreathing} />,
+      }),
+    ],
     [
       schoolId,
       principalId,
@@ -529,7 +641,8 @@ export function usePrincipalWorkspaceCanvasSurfaces({
       onOpenCommons,
       onOpenQr,
       onOpenBreathing,
-      onEditSchool],
+      onEditSchool,
+    ],
   );
 }
 
@@ -540,7 +653,8 @@ export function usePrincipalWorkspaceLayout(
   const workspace = useWorkspaceLayoutSync({
     workspaceId: 'principal-workspace',
     userId,
-    surfaces});
+    surfaces,
+  });
 
   const resolvedSurfaceMap = useMemo(
     () => new Map(workspace.surfaces.map((surface) => [surface.surfaceId, surface] as const)),
@@ -556,16 +670,21 @@ export function usePrincipalWorkspaceLayout(
 
           return {
             ...surface,
-            ...resolved} as PrincipalWorkspaceSurface & ResolvedWorkspaceSurface<PrincipalWorkspaceSurfaceId, PrincipalCapabilityId>;
+            ...resolved,
+          } as PrincipalWorkspaceSurface &
+            ResolvedWorkspaceSurface<PrincipalWorkspaceSurfaceId, PrincipalCapabilityId>;
         })
         .filter(Boolean) as Array<
-        PrincipalWorkspaceSurface & ResolvedWorkspaceSurface<PrincipalWorkspaceSurfaceId, PrincipalCapabilityId>>,
+        PrincipalWorkspaceSurface &
+          ResolvedWorkspaceSurface<PrincipalWorkspaceSurfaceId, PrincipalCapabilityId>
+      >,
     [surfaces, resolvedSurfaceMap],
   );
 
   return {
     ...workspace,
-    surfaces: enrichedSurfaces};
+    surfaces: enrichedSurfaces,
+  };
 }
 
 type PrincipalResolvedSurface = PrincipalWorkspaceSurface &
@@ -578,7 +697,8 @@ export function PrincipalWorkspaceCanvas({
   onToggleHidden,
   onTogglePinned,
   onMoveToNextZone,
-  onOpenSurface}: {
+  onOpenSurface,
+}: {
   layout: {
     order: PrincipalWorkspaceSurfaceId[];
     hidden: PrincipalWorkspaceSurfaceId[];
@@ -598,12 +718,15 @@ export function PrincipalWorkspaceCanvas({
   if (!layout) return null;
 
   return (
-    <WorkspaceCanvas surfaces={surfaces}
+    <WorkspaceCanvas
+      surfaces={surfaces}
       layout={layout as any}
       title="Principal, Workspace Canvas"
       subtitle={`Default, leadership, arrangement for ${schoolName || 'the, institution'}, with, room for the principal, to pin, hide, and, move surfaces, according to, real work.`}
       emptyMessage="No, principal surfaces, are available, yet for this workspace."
-      renderSurfaceContent={(surface) => <Box className="flex-1">{(surface as PrincipalResolvedSurface).content}</Box>}
+      renderSurfaceContent={(surface) => (
+        <Box className="flex-1">{(surface as PrincipalResolvedSurface).content}</Box>
+      )}
       getSurfaceTitle={(surface) => (surface as PrincipalResolvedSurface).title}
       getSurfaceSubtitle={(surface) => (surface as PrincipalResolvedSurface).subtitle}
       getSurfaceSummary={(surface) => (surface as PrincipalResolvedSurface).summary}
@@ -619,14 +742,20 @@ export function PrincipalWorkspaceCanvas({
 
         return (
           <HStack className="gap-3 flex-wrap">
-            <Pressable onPress={() => onTogglePinned(typedSurface.surfaceId, !typedSurface.pinned)} className="active:opacity-80">
+            <Pressable
+              onPress={() => onTogglePinned(typedSurface.surfaceId, !typedSurface.pinned)}
+              className="active:opacity-80"
+            >
               <Box className="rounded-full px-4 py-2 bg-phase-primary/5 border border-starlightGray/10">
                 <Text className="text-[12px] font-bold text-phaseText-primary">
                   {typedSurface.pinned ? 'Unpin' : 'Pin'}
                 </Text>
               </Box>
             </Pressable>
-            <Pressable onPress={() => onMoveToNextZone(typedSurface.surfaceId, nextZone)} className="active:opacity-80">
+            <Pressable
+              onPress={() => onMoveToNextZone(typedSurface.surfaceId, nextZone)}
+              className="active:opacity-80"
+            >
               <Box className="rounded-full px-4 py-2 bg-phase-primary/5 border border-starlightGray/10">
                 <Text className="text-[12px] font-bold text-phaseText-primary">
                   Move, to {nextZone}
@@ -636,16 +765,16 @@ export function PrincipalWorkspaceCanvas({
             {detailView ? (
               <Pressable onPress={() => onOpenSurface(typedSurface)} className="active:opacity-80">
                 <Box className="rounded-full px-4 py-2 bg-phase-warning">
-                  <Text className="text-[12px] font-bold text-phaseText-primary">
-                    Open, room
-                  </Text>
+                  <Text className="text-[12px] font-bold text-phaseText-primary">Open, room</Text>
                 </Box>
               </Pressable>
             ) : null}
           </HStack>
         );
       }}
-      onToggleHidden={(surface) => onToggleHidden(surface.surfaceId as PrincipalWorkspaceSurfaceId, !surface.hidden)}
+      onToggleHidden={(surface) =>
+        onToggleHidden(surface.surfaceId as PrincipalWorkspaceSurfaceId, !surface.hidden)
+      }
     />
   );
 }

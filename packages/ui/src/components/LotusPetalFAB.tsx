@@ -1,28 +1,29 @@
-import React, { FC, useMemo, useEffect, useCallback, useState, useRef } from 'react';
-import { View, Pressable, PanResponder, Dimensions, Platform } from 'react-native';
+import { Wind } from 'lucide-react-native';
+import type React from 'react';
+import { type FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Dimensions, PanResponder, Platform, Pressable } from 'react-native';
 import Animated, {
+  Easing,
+  type SharedValue,
   useAnimatedStyle,
+  useSharedValue,
   withRepeat,
-  withTiming,
   withSequence,
   withSpring,
-  SharedValue,
-  useSharedValue,
-  Easing,
+  withTiming,
 } from 'react-native-reanimated';
-import { hapticLight } from '../utils/haptics';
-import { useAccessibility } from '../hooks/useAccessibility';
-import { Wind } from 'lucide-react-native';
-import { Box, VStack, HStack, Text } from '../gluestack';
-import { UniversalModal } from './UniversalModal';
-import { useBottomTabPadding } from './ScreenWrapper';
 import { useFAB } from '../context/FABContext';
+import { Box, HStack, Text, VStack } from '../gluestack';
+import { useAccessibility } from '../hooks/useAccessibility';
+import { hapticLight } from '../utils/haptics';
+import { useBottomTabPadding } from './ScreenWrapper';
+import { UniversalModal } from './UniversalModal';
 
 // ============================================================================
 // TYPES
 // ============================================================================
 
-import { TabType, ActionItem } from '../types/fab';
+import type { ActionItem, TabType } from '../types/fab';
 
 interface LotusPetalFABProps {
   currentTab?: TabType;
@@ -44,7 +45,7 @@ interface LotusPetalFABProps {
 // ============================================================================
 
 const FAB_SIZE = 56;
-const ACTION_DRAWER_HEIGHT = Dimensions.get('window').height * 0.4;
+const _ACTION_DRAWER_HEIGHT = Dimensions.get('window').height * 0.4;
 const FAB_EDGE_MARGIN = 24; // Equivalent to Theme.spacing.lg
 const FAB_DRAG_THRESHOLD = 8;
 const FAB_WEB_STORAGE_KEY = 'gurudevi_lotus_fab_position_v1';
@@ -236,7 +237,7 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = ({
         true,
       );
     }
-  }, [disabled, isReduceMotionEnabled]);
+  }, [disabled, isReduceMotionEnabled, breathingScale, pulseOpacity]);
 
   const containerStyle = useAnimatedStyle(() => ({
     left: positionX.value,
@@ -262,7 +263,7 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = ({
       pressScale.value = withSequence(withTiming(0.9, { duration: 100 }), withSpring(1));
       onPress();
     }
-  }, [disabled, onPress, actions]);
+  }, [disabled, onPress, actions, pressScale]);
 
   if (!isVisible) return null;
 

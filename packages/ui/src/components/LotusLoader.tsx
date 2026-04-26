@@ -1,15 +1,15 @@
-import React, { useEffect } from 'react';
+import { Flower } from 'lucide-react-native';
+import { useEffect } from 'react';
 import { ActivityIndicator } from 'react-native';
 import Animated, {
+  Easing,
   useAnimatedStyle,
   useSharedValue,
   withRepeat,
-  withTiming,
-  Easing,
   withSequence,
+  withTiming,
 } from 'react-native-reanimated';
-import { Text, VStack, Center } from '../gluestack';
-import { Flower } from 'lucide-react-native';
+import { Center, Text, VStack } from '../gluestack';
 
 interface LotusLoaderProps {
   size?: 'sm' | 'md' | 'lg';
@@ -56,7 +56,12 @@ export default function LotusLoader({
       -1,
       false,
     );
-  }, []);
+  }, [
+    // Breathing animation
+    scale, // Gentle rotation
+    rotation, // Glow pulse
+    opacity,
+  ]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }, { rotate: `${rotation.value}deg` }] as any,

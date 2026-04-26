@@ -1,16 +1,3 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { StyleSheet } from 'react-native';
-import { Box, HStack, Text, VStack, Pressable as GSPressable } from '../gluestack';
-import { useReality } from './EnvironmentContext';
-import { useSanctuaryToast } from '../providers/ToastProvider';
-import SanctuaryButton from '../components/SanctuaryButton';
-import SanctuaryModal from '../components/SanctuaryModal';
-import {
-  clearStoredExternalOpenPreference,
-  ExternalLinkTrustLevel,
-  ExternalOpenMethod,
-  registerExternalLinkRuntime,
-} from '../utils/linking';
 import {
   ArrowLeftRight,
   Check,
@@ -19,6 +6,18 @@ import {
   ShieldAlert,
   ShieldCheck,
 } from 'lucide-react-native';
+import React, { useEffect, useMemo, useState } from 'react';
+import SanctuaryButton from '../components/SanctuaryButton';
+import SanctuaryModal from '../components/SanctuaryModal';
+import { Box, Pressable as GSPressable, HStack, Text, VStack } from '../gluestack';
+import { useSanctuaryToast } from '../providers/ToastProvider';
+import {
+  clearStoredExternalOpenPreference,
+  type ExternalLinkTrustLevel,
+  type ExternalOpenMethod,
+  registerExternalLinkRuntime,
+} from '../utils/linking';
+import { useReality } from './EnvironmentContext';
 
 interface PendingRequest {
   url: string;

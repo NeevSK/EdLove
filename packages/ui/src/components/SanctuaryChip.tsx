@@ -1,6 +1,6 @@
-import React from 'react';
+import type React from 'react';
 import { Pressable } from 'react-native';
-import { Box, Text } from '../gluestack';
+import { Text } from '../gluestack';
 
 export interface SanctuaryChipProps {
   label: string;

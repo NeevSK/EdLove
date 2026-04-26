@@ -1,39 +1,30 @@
-import React, { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
-import {
-  useFeatureAccess,
-  usePermissions,
-  useStore,
-  TotalState} from '@repo/core';
+import { type TotalState, useFeatureAccess, usePermissions, useStore } from '@repo/core';
 import {
   Box,
   Button,
   ButtonText,
-  ScreenWrapper,
-  Text,
   HStack,
-  VStack,
-  Icon,
-  SanctuaryModal,
   hapticLight,
+  Icon,
   QRBuilder,
   QRCodeGenerator,
-  useRegisterFAB} from '@repo/ui';
-import {
-  Building2,
-  LayoutGrid,
-  NotebookPen} from 'lucide-react-native';
-import {
-  PrincipalNativeWorkspace} from './PrincipalNativeWorkspace';
-import { PrincipalNativeDashboardShell } from '../bridge/PrincipalNativeDashboardShell';
-import { 
-  PrincipalNotes,
-  CreateSchoolModal} from '../components';
-import { type PrincipalZoneId, type PrincipalWorkspaceView } from '../principal/workspace';
-import { usePrincipalWorkspaceSurfaces } from '../principal/usePrincipalWorkspaceSurfaces';
+  SanctuaryModal,
+  ScreenWrapper,
+  Text,
+  useRegisterFAB,
+  VStack,
+} from '@repo/ui';
+import { Building2, LayoutGrid, NotebookPen } from 'lucide-react-native';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { PrincipalNativeDashboardShell } from '../bridge/PrincipalNativeDashboardShell';
+import { CreateSchoolModal, PrincipalNotes } from '../components';
 import { useSchoolStats } from '../hooks/useSchoolStats';
+import { usePrincipalWorkspaceSurfaces } from '../principal/usePrincipalWorkspaceSurfaces';
+import type { PrincipalWorkspaceView, PrincipalZoneId } from '../principal/workspace';
 import AcademicCycleManager from './AcademicCycleManager';
+import { PrincipalNativeWorkspace } from './PrincipalNativeWorkspace';
 
 interface PrincipalDashboardProps {
   schoolId: string;
@@ -46,7 +37,8 @@ export default function PrincipalDashboard({
   schoolId,
   userId,
   forceDemo,
-  onRefresh}: PrincipalDashboardProps) {
+  onRefresh,
+}: PrincipalDashboardProps) {
   const { t } = useTranslation();
   const navigation = useNavigation<any>();
   const { isGuest } = useFeatureAccess();
@@ -73,7 +65,8 @@ export default function PrincipalDashboard({
     onOpenCommons: () => navigation.navigate('CommunityStack' as any),
     onOpenQr: () => setIsQrModalOpen(true),
     onOpenBreathing: () => setBreathingOpen(true),
-    onEditSchool: () => setIsCreateModalOpen(true)});
+    onEditSchool: () => setIsCreateModalOpen(true),
+  });
 
   useRegisterFAB({
     tabType: 'principal',
@@ -84,19 +77,26 @@ export default function PrincipalDashboard({
             {
               label: t('principal.actions.hierarchy') || 'Manage Hierarchy',
               onPress: () => setActiveView('hierarchy'),
-              icon: LayoutGrid}]
+              icon: LayoutGrid,
+            },
+          ]
         : []),
       ...(canManageStaff
         ? [
             {
               label: t('principal.actions.invites') || 'Manage Invites',
               onPress: () => setActiveView('invites'),
-              icon: Building2}]
+              icon: Building2,
+            },
+          ]
         : []),
       {
         label: t('principal.actions.notes') || 'School Logbook',
         onPress: () => setActiveView('notes'),
-        icon: NotebookPen}]});
+        icon: NotebookPen,
+      },
+    ],
+  });
 
   return (
     <>
@@ -123,11 +123,18 @@ export default function PrincipalDashboard({
         )}
         renderAdditionalView={({ activeView: nextView, navigatePrincipalView }) => {
           if (nextView === 'notes' || nextView === 'log') {
-            return <PrincipalNotes schoolId={schoolId} onBack={() => navigatePrincipalView('main')} />;
+            return (
+              <PrincipalNotes schoolId={schoolId} onBack={() => navigatePrincipalView('main')} />
+            );
           }
 
           if (nextView === 'cycles') {
-            return <AcademicCycleManager schoolId={schoolId} onBack={() => navigatePrincipalView('main')} />;
+            return (
+              <AcademicCycleManager
+                schoolId={schoolId}
+                onBack={() => navigatePrincipalView('main')}
+              />
+            );
           }
 
           return null;
@@ -143,7 +150,8 @@ export default function PrincipalDashboard({
                 id: school.id,
                 name: school.name,
                 handle: school.handle ?? undefined,
-                type: school.type as any}
+                type: school.type as any,
+              }
             : undefined
         }
         onSuccess={() => {
@@ -165,14 +173,15 @@ export default function PrincipalDashboard({
             />
           </Box>
           <Text className="text-phaseText-secondary text-center leading-relaxed font-bold">
-            Scan to join the <Text className="text-phaseText-primary font-black">{school?.name}</Text> sanctuary.
+            Scan to join the{' '}
+            <Text className="text-phaseText-primary font-black">{school?.name}</Text> sanctuary.
           </Text>
           {school?.handle ? (
             <Text className="text-phaseText-muted mt-2 text-xs font-bold uppercase tracking-widest">
               @{school.handle}
             </Text>
           ) : null}
-          
+
           <Button
             onPress={() => {
               hapticLight();
@@ -180,7 +189,9 @@ export default function PrincipalDashboard({
             }}
             className="w-full bg-phase-interactive h-14 rounded-2xl mt-4"
           >
-            <ButtonText className="text-phaseText-inverse font-black uppercase tracking-widest">Close</ButtonText>
+            <ButtonText className="text-phaseText-inverse font-black uppercase tracking-widest">
+              Close
+            </ButtonText>
           </Button>
         </VStack>
       </SanctuaryModal>

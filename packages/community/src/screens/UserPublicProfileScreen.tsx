@@ -1,30 +1,39 @@
-import React, { useEffect, useState, useCallback } from "react";
-import { ScrollView } from "react-native";
+import { useNavigation, useRoute } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { CommunityStackParamList } from '@repo/core';
+import { supabase, usePermissions, useStore } from '@repo/core';
 import {
   Box,
-  VStack,
+  GlobalHeader,
   HStack,
+  Icon,
+  SanctuaryButton,
+  SanctuaryCard,
+  ScreenWrapper,
+  Spinner,
   Text,
   UserAvatar,
-  ScreenWrapper,
-  GlobalHeader,
-  SanctuaryCard,
-  SanctuaryButton,
-  Spinner,
   useRegisterFAB,
-  Icon
+  VStack,
 } from '@repo/ui';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import { useTranslation } from "react-i18next";
-import { supabase, usePermissions } from '@repo/core';
-import { BadgeCheck, BookOpen, MessageSquare, ThumbsUp, School, Send, Info, ShieldAlert, Shield } from 'lucide-react-native';
+import {
+  BadgeCheck,
+  BookOpen,
+  Info,
+  MessageSquare,
+  School,
+  Send,
+  Shield,
+  ShieldAlert,
+  ThumbsUp,
+} from 'lucide-react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { ScrollView } from 'react-native';
 import { communityAPI } from '../api/community';
-import { useStore } from '@repo/core';
-import type { CommunityStackParamList } from '@repo/core';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import SocialShieldModal from '../components/SocialShieldModal';
 
-type Nav = NativeStackNavigationProp<CommunityStackParamList, "UserProfile">;
+type Nav = NativeStackNavigationProp<CommunityStackParamList, 'UserProfile'>;
 
 interface PublicUser {
   id: string;
@@ -37,21 +46,24 @@ interface PublicUser {
 }
 
 const AUTHORITY_LABELS: Record<string, string> = {
-  student: "Student",
-  teacher: "Teacher",
-  grade_head: "Grade Head",
-  section_head: "Section Head",
-  principal: "Principal",
-  founder: "Founder",
-  admin: "Admin",
+  student: 'Student',
+  teacher: 'Teacher',
+  grade_head: 'Grade Head',
+  section_head: 'Section Head',
+  principal: 'Principal',
+  founder: 'Founder',
+  admin: 'Admin',
 };
 
 export default function UserPublicProfileScreen() {
   const { t } = useTranslation();
   const navigation = useNavigation<Nav>();
   const route = useRoute<any>();
-  const { userId: userIdParam, id, userName } =
-    ((route as { params?: { userId?: string; id?: string; userName?: string } }).params ?? {});
+  const {
+    userId: userIdParam,
+    id,
+    userName,
+  } = (route as { params?: { userId?: string; id?: string; userName?: string } }).params ?? {};
   const userId = userIdParam || id || '';
   const { can, flags } = usePermissions();
   const currentUserId = useStore((state) => state.user?.id);
@@ -66,11 +78,11 @@ export default function UserPublicProfileScreen() {
     setLoading(true);
     try {
       if (!userId) {
-        console.error("UserPublicProfileScreen: missing user id in route params");
+        console.error('UserPublicProfileScreen: missing user id in route params');
         setLoading(false);
         return;
       }
-      
+
       const { data: userData } = await supabase
         .from('users')
         .select('id, full_name, authority, avatar_url, public_profile, bio, school:schools(name)')
@@ -90,23 +102,23 @@ export default function UserPublicProfileScreen() {
       }
 
       const { count: postCount } = await supabase
-        .from("community_posts")
-        .select("id", { count: "exact", head: true })
-        .eq("author_id", userId)
-        .eq("is_anonymous", false);
+        .from('community_posts')
+        .select('id', { count: 'exact', head: true })
+        .eq('author_id', userId)
+        .eq('is_anonymous', false);
 
       const { count: endorseCount } = await supabase
-        .from("resource_engagements")
-        .select("id", { count: "exact", head: true })
-        .eq("user_id", userId)
-        .eq("engagement_type", "endorse");
+        .from('resource_engagements')
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', userId)
+        .eq('engagement_type', 'endorse');
 
       setStats({
         posts: postCount ?? 0,
         endorsements: endorseCount ?? 0,
       });
     } catch (err) {
-      console.error("UserPublicProfileScreen fetch error", err);
+      console.error('UserPublicProfileScreen fetch error', err);
     } finally {
       setLoading(false);
     }
@@ -116,7 +128,7 @@ export default function UserPublicProfileScreen() {
     fetchProfile();
   }, [fetchProfile]);
 
-  const authorityLabel = AUTHORITY_LABELS[user?.authority ?? ""] ?? user?.authority ?? "";
+  const authorityLabel = AUTHORITY_LABELS[user?.authority ?? ''] ?? user?.authority ?? '';
   const isPrivate = user && user.public_profile === false && currentUserId !== userId;
 
   const handleMessagePress = async () => {
@@ -126,10 +138,10 @@ export default function UserPublicProfileScreen() {
       const conversationId = await communityAPI.getOrCreateDirectConversation(userId);
       navigation.navigate('DirectMessage', {
         conversationId,
-        userName: user?.full_name || userName || 'Explorer'
+        userName: user?.full_name || userName || 'Explorer',
       });
     } catch (err) {
-      console.error("Failed to initiate DM", err);
+      console.error('Failed to initiate DM', err);
     } finally {
       setInitiatingDM(false);
     }
@@ -137,15 +149,21 @@ export default function UserPublicProfileScreen() {
 
   useRegisterFAB({
     tabType: 'profile',
-    visible: !loading && !!user && !!currentUserId && currentUserId !== userId && flags.isMessagingEnabled && can('create', 'DirectConversation'),
+    visible:
+      !loading &&
+      !!user &&
+      !!currentUserId &&
+      currentUserId !== userId &&
+      flags.isMessagingEnabled &&
+      can('create', 'DirectConversation'),
     onPress: handleMessagePress,
-    icon: <Icon as={Send} size="md" className="text-white" />
+    icon: <Icon as={Send} size="md" className="text-white" />,
   });
 
   return (
     <ScreenWrapper noTopInset scroll={false} className="bg-phase-canvas">
       <GlobalHeader
-        title={user?.full_name ?? userName ?? "Profile"}
+        title={user?.full_name ?? userName ?? 'Profile'}
         subtitle={authorityLabel}
         showBack
         onBack={() => navigation.goBack()}
@@ -154,7 +172,9 @@ export default function UserPublicProfileScreen() {
       {loading ? (
         <Box className="flex-1 items-center justify-center">
           <Spinner />
-          <Text className="text-ink/40 text-xs font-bold uppercase tracking-widest mt-4">Gathering Presence...</Text>
+          <Text className="text-ink/40 text-xs font-bold uppercase tracking-widest mt-4">
+            Gathering Presence...
+          </Text>
         </Box>
       ) : (
         <ScrollView
@@ -168,7 +188,7 @@ export default function UserPublicProfileScreen() {
                 <Box className="shadow-xl">
                   <UserAvatar
                     avatarUrl={user?.avatar_url}
-                    fullName={user?.full_name ?? userName ?? "?"}
+                    fullName={user?.full_name ?? userName ?? '?'}
                     authority={user?.authority}
                     size={120}
                   />
@@ -198,7 +218,7 @@ export default function UserPublicProfileScreen() {
                   <HStack className="mt-1 items-center gap-2 px-3 py-1.5 bg-ink/5 rounded-xl border border-border/50">
                     <Icon as={Shield} size="xs" className="text-ink/40" />
                     <Text className="text-[11px] text-ink/60 font-medium italic">
-                      {t("community.profile.privateSanctuary") || "Private Sanctuary"}
+                      {t('community.profile.privateSanctuary') || 'Private Sanctuary'}
                     </Text>
                   </HStack>
                 )}
@@ -206,34 +226,38 @@ export default function UserPublicProfileScreen() {
                 {user && currentUserId && currentUserId !== userId && (
                   <VStack className="w-full mt-4 gap-3">
                     {flags.isMessagingEnabled && can('create', 'DirectConversation') && (
-                        <SanctuaryButton
-                            action="primary"
-                            onPress={handleMessagePress}
-                            isDisabled={initiatingDM}
-                            className="h-12 rounded-xl"
-                        >
-                            <HStack className="items-center gap-2">
-                                {initiatingDM ? <Spinner /> : <Icon as={Send} size="sm" className="text-white" />}
-                                <Text className="text-white font-bold">
-                                    {t("community.profile.sendMessage")}
-                                </Text>
-                            </HStack>
-                        </SanctuaryButton>
+                      <SanctuaryButton
+                        action="primary"
+                        onPress={handleMessagePress}
+                        isDisabled={initiatingDM}
+                        className="h-12 rounded-xl"
+                      >
+                        <HStack className="items-center gap-2">
+                          {initiatingDM ? (
+                            <Spinner />
+                          ) : (
+                            <Icon as={Send} size="sm" className="text-white" />
+                          )}
+                          <Text className="text-white font-bold">
+                            {t('community.profile.sendMessage')}
+                          </Text>
+                        </HStack>
+                      </SanctuaryButton>
                     )}
 
                     {flags.isSocialShieldEnabled && (
-                        <SanctuaryButton
-                            action="secondary"
-                            onPress={() => setShowShieldModal(true)}
-                            className="h-12 rounded-xl border-border bg-transparent"
-                        >
-                            <HStack className="items-center gap-2">
-                                <Icon as={ShieldAlert} size="sm" className="text-ink/60" />
-                                <Text className="text-ink/60 font-bold">
-                                    {t("community.profile.reportAccount")}
-                                </Text>
-                            </HStack>
-                        </SanctuaryButton>
+                      <SanctuaryButton
+                        action="secondary"
+                        onPress={() => setShowShieldModal(true)}
+                        className="h-12 rounded-xl border-border bg-transparent"
+                      >
+                        <HStack className="items-center gap-2">
+                          <Icon as={ShieldAlert} size="sm" className="text-ink/60" />
+                          <Text className="text-ink/60 font-bold">
+                            {t('community.profile.reportAccount')}
+                          </Text>
+                        </HStack>
+                      </SanctuaryButton>
                     )}
                   </VStack>
                 )}
@@ -243,7 +267,8 @@ export default function UserPublicProfileScreen() {
             {isPrivate ? (
               <Box className="p-6 items-center bg-ink/5 rounded-2xl border border-dashed border-border/60">
                 <Text className="text-center text-ink/40 text-xs font-medium leading-relaxed">
-                  {t("community.profile.privateNote") || "This explorer has chosen to keep their detailed presence private within the sanctuary."}
+                  {t('community.profile.privateNote') ||
+                    'This explorer has chosen to keep their detailed presence private within the sanctuary.'}
                 </Text>
               </Box>
             ) : (
@@ -254,12 +279,10 @@ export default function UserPublicProfileScreen() {
                       <HStack className="items-center gap-2 opacity-60">
                         <Icon as={Info} size="xs" className="text-phase-interactive" />
                         <Text className="text-ink text-[10px] font-bold uppercase tracking-widest">
-                          {t("community.profile.aspiration")}
+                          {t('community.profile.aspiration')}
                         </Text>
                       </HStack>
-                      <Text className="text-ink/70 text-sm leading-relaxed px-1">
-                        {user.bio}
-                      </Text>
+                      <Text className="text-ink/70 text-sm leading-relaxed px-1">{user.bio}</Text>
                     </VStack>
                   </SanctuaryCard>
                 )}
@@ -267,18 +290,18 @@ export default function UserPublicProfileScreen() {
                 <SanctuaryCard className="bg-phase-surface border border-border rounded-3xl">
                   <VStack className="p-5 gap-6">
                     <Text className="text-ink/40 text-[10px] font-bold uppercase tracking-[2px]">
-                      {t("community.profile.contributions")}
+                      {t('community.profile.contributions')}
                     </Text>
                     <HStack className="justify-between items-center px-4">
                       <VStack className="items-center flex-1 gap-2">
                         <Box className="w-10 h-10 rounded-xl bg-phase-interactive/10 items-center justify-center">
-                            <Icon as={MessageSquare} size="sm" className="text-phase-interactive" />
+                          <Icon as={MessageSquare} size="sm" className="text-phase-interactive" />
                         </Box>
                         <VStack className="items-center gap-0.5">
-                            <Text className="text-ink text-xl font-black">{stats.posts}</Text>
-                            <Text className="text-ink/40 text-[10px] font-bold uppercase tracking-tight">
-                            {t("community.profile.posts")}
-                            </Text>
+                          <Text className="text-ink text-xl font-black">{stats.posts}</Text>
+                          <Text className="text-ink/40 text-[10px] font-bold uppercase tracking-tight">
+                            {t('community.profile.posts')}
+                          </Text>
                         </VStack>
                       </VStack>
 
@@ -286,13 +309,13 @@ export default function UserPublicProfileScreen() {
 
                       <VStack className="items-center flex-1 gap-2">
                         <Box className="w-10 h-10 rounded-xl bg-green-500/10 items-center justify-center">
-                            <Icon as={ThumbsUp} size="sm" className="text-green-600" />
+                          <Icon as={ThumbsUp} size="sm" className="text-green-600" />
                         </Box>
                         <VStack className="items-center gap-0.5">
-                            <Text className="text-ink text-xl font-black">{stats.endorsements}</Text>
-                            <Text className="text-ink/40 text-[10px] font-bold uppercase tracking-tight">
-                            {t("community.profile.endorsements")}
-                            </Text>
+                          <Text className="text-ink text-xl font-black">{stats.endorsements}</Text>
+                          <Text className="text-ink/40 text-[10px] font-bold uppercase tracking-tight">
+                            {t('community.profile.endorsements')}
+                          </Text>
                         </VStack>
                       </VStack>
 
@@ -300,13 +323,13 @@ export default function UserPublicProfileScreen() {
 
                       <VStack className="items-center flex-1 gap-2">
                         <Box className="w-10 h-10 rounded-xl bg-ink/5 items-center justify-center">
-                            <Icon as={BookOpen} size="sm" className="text-ink/40" />
+                          <Icon as={BookOpen} size="sm" className="text-ink/40" />
                         </Box>
                         <VStack className="items-center gap-0.5">
-                            <Text className="text-ink/20 text-md font-black">---</Text>
-                            <Text className="text-ink/40 text-[10px] font-bold uppercase tracking-tight text-center">
+                          <Text className="text-ink/20 text-md font-black">---</Text>
+                          <Text className="text-ink/40 text-[10px] font-bold uppercase tracking-tight text-center">
                             Badges
-                            </Text>
+                          </Text>
                         </VStack>
                       </VStack>
                     </HStack>
@@ -314,7 +337,8 @@ export default function UserPublicProfileScreen() {
                 </SanctuaryCard>
 
                 <Text className="text-ink/40 text-[10px] font-medium text-center px-10 leading-relaxed">
-                  {t("community.profile.privacyNote") || "Profile data is maintained securely within the Sanctuary network."}
+                  {t('community.profile.privacyNote') ||
+                    'Profile data is maintained securely within the Sanctuary network.'}
                 </Text>
               </>
             )}
@@ -327,7 +351,7 @@ export default function UserPublicProfileScreen() {
           isOpen={showShieldModal}
           onClose={() => setShowShieldModal(false)}
           targetUserId={userId}
-          targetUserName={user?.full_name ?? userName ?? ""}
+          targetUserName={user?.full_name ?? userName ?? ''}
         />
       )}
     </ScreenWrapper>

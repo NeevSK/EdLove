@@ -1,9 +1,8 @@
-import React from 'react';
-import { Pressable } from 'react-native';
-import { ChevronLeft, ChevronRight, Calendar, RotateCcw } from 'lucide-react-native';
 import { useTemporalStore } from '@repo/core/logic';
+import { Calendar, ChevronLeft, ChevronRight, RotateCcw } from 'lucide-react-native';
+import { Pressable } from 'react-native';
 import Animated, { FadeIn, Layout } from 'react-native-reanimated';
-import { Box, Text, HStack } from '../gluestack';
+import { Box, HStack, Text } from '../gluestack';
 
 /**
  * TemporalNavigator

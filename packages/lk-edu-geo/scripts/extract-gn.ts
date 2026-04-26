@@ -1,6 +1,6 @@
 import fs from 'fs';
-import path from 'path';
 import { createRequire } from 'module';
+import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -8,14 +8,14 @@ const __dirname = path.dirname(__filename);
 const require = createRequire(import.meta.url);
 const XLSX = require('xlsx');
 
-import { Province, District, DSDivision, GNDivision } from '../src/types.js';
+import type { District, DSDivision, GNDivision, Province } from '../src/types.js';
 
 // Phase 9: Source files moved to ./sources/
 const FILE_PATH = path.resolve(__dirname, '../sources/lka_admin_boundaries.xlsx');
 
 async function extract() {
   console.log('\uD83E\uDDD0 Extracting High-Fidelity Administrative Hierarchy (Phase 5)...');
-  
+
   if (!fs.existsSync(FILE_PATH)) {
     throw new Error(`Survey Dept XLSX not found at ${FILE_PATH}`);
   }
@@ -51,7 +51,7 @@ async function extract() {
     adm1_ta: headers.indexOf('adm1_name2'),
     adm1_pcode: headers.indexOf('adm1_pcode'),
     lat: headers.indexOf('center_lat'),
-    lon: headers.indexOf('center_lon')
+    lon: headers.indexOf('center_lon'),
   };
 
   for (const row of rows) {
@@ -67,7 +67,7 @@ async function extract() {
         id: `P_${pCode.replace('LK', '')}`,
         name: row[idx.adm1_en],
         name_si: row[idx.adm1_si],
-        name_ta: row[idx.adm1_ta]
+        name_ta: row[idx.adm1_ta],
       });
     }
 
@@ -77,7 +77,7 @@ async function extract() {
         province_id: provinces.get(pCode)!.id,
         name: row[idx.adm2_en],
         name_si: row[idx.adm2_si],
-        name_ta: row[idx.adm2_ta]
+        name_ta: row[idx.adm2_ta],
       });
     }
 
@@ -88,7 +88,7 @@ async function extract() {
         name: row[idx.adm3_en],
         name_si: row[idx.adm3_si],
         name_ta: row[idx.adm3_ta],
-        p_code: dsCode
+        p_code: dsCode,
       });
     }
 
@@ -103,8 +103,8 @@ async function extract() {
       gn_code: row[idx.adm4_ref] === 'None' ? undefined : row[idx.adm4_ref],
       location: {
         lat: parseFloat(row[idx.lat]),
-        lng: parseFloat(row[idx.lon])
-      }
+        lng: parseFloat(row[idx.lon]),
+      },
     });
   }
 
@@ -112,12 +112,14 @@ async function extract() {
     provinces: Array.from(provinces.values()),
     districts: Array.from(districts.values()),
     dsDivisions: Array.from(dsDivisions.values()),
-    gnDivisions
+    gnDivisions,
   };
 
   fs.writeFileSync('./src/data/admin-hierarchy-official.json', JSON.stringify(result, null, 2));
   console.log(`\u2705 Extraction Complete!`);
-  console.log(`\uD83D\uDCCA Extracted: ${result.gnDivisions.length} GN units with Multilingual labels and Spatial data.`);
+  console.log(
+    `\uD83D\uDCCA Extracted: ${result.gnDivisions.length} GN units with Multilingual labels and Spatial data.`,
+  );
 }
 
 extract().catch(console.error);

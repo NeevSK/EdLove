@@ -1,6 +1,6 @@
-import React from 'react';
+import type React from 'react';
 import { ScrollView } from 'react-native';
-import { Box, Text, HStack, VStack } from '../gluestack';
+import { Box, HStack, Text, VStack } from '../gluestack';
 
 export interface HeatmapPoint {
   date: string;

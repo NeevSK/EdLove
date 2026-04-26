@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { 
+import { communityAPI } from '@repo/community';
+import { growthSignalsAPI, handleAPIError, identityAPI, type School } from '@repo/core';
+import {
   Actionsheet,
   ActionsheetBackdrop,
   ActionsheetContent,
@@ -13,23 +14,24 @@ import {
   FormControl,
   FormControlLabel,
   FormControlLabelText,
+  Heading,
   HStack,
+  hapticLight,
+  hapticSuccess,
   Input,
   InputField,
   SanctuaryModal,
   Spinner,
   Text,
-  VStack,
-  Heading,
-  Icon as UIIcon,
   Textarea,
-  TextareaInput
+  TextareaInput,
+  Icon as UIIcon,
+  useTranslation,
+  VStack,
 } from '@repo/ui';
-import { handleAPIError, growthSignalsAPI, identityAPI, type School } from '@repo/core';
-import { createFounderClassroom, createFounderSchool } from '../../bridge/founderWorkspace';
-import { communityAPI } from '@repo/community';
-import { hapticLight, hapticSuccess, useTranslation } from '@repo/ui';
 import { ChevronDown, LayoutGrid, School as SchoolIcon, Users } from 'lucide-react-native';
+import React, { useState } from 'react';
+import { createFounderClassroom, createFounderSchool } from '../../bridge/founderWorkspace';
 
 interface GlobalCreateModalProps {
   isOpen: boolean;
@@ -44,7 +46,7 @@ export default function GlobalCreateModal({
   isOpen,
   onClose,
   onSuccess,
-  availableSchools
+  availableSchools,
 }: GlobalCreateModalProps) {
   const { t } = useTranslation();
 
@@ -95,7 +97,7 @@ export default function GlobalCreateModal({
         result = await createFounderSchool({
           name: name.trim(),
           type: schoolType,
-          created_by: userId
+          created_by: userId,
         });
 
         if (result) {
@@ -105,7 +107,7 @@ export default function GlobalCreateModal({
               description: `The primary sanctuary for ${name.trim()} members to share and resonate.`,
               group_type: 'school',
               join_policy: 'open',
-              school_id: result.id
+              school_id: result.id,
             },
             userId,
           );
@@ -115,7 +117,7 @@ export default function GlobalCreateModal({
           name: name.trim(),
           school_id: selectedSchoolId,
           grade_number: 1, // Defaulting to 1 for global creator
-          created_by: userId
+          created_by: userId,
         });
 
         if (result) {
@@ -126,7 +128,7 @@ export default function GlobalCreateModal({
               group_type: 'class',
               join_policy: 'restricted',
               school_id: selectedSchoolId,
-              classroom_id: result.id
+              classroom_id: result.id,
             },
             userId,
           );
@@ -138,7 +140,7 @@ export default function GlobalCreateModal({
             description: description.trim(),
             school_id: selectedSchoolId,
             group_type: 'general',
-            join_policy: 'open'
+            join_policy: 'open',
           },
           userId,
         );
@@ -151,8 +153,8 @@ export default function GlobalCreateModal({
           event_type: 'classroom_created',
           event_metadata: {
             classroom_id: result.id,
-            school_id: selectedSchoolId
-          }
+            school_id: selectedSchoolId,
+          },
         });
       }
 
@@ -230,14 +232,18 @@ export default function GlobalCreateModal({
             {type !== 'school' ? (
               <FormControl isRequired>
                 <FormControlLabel>
-                  <FormControlLabelText className="text- ink/40 font-bold text-xs uppercase tracking-wider">Target Institution</FormControlLabelText>
+                  <FormControlLabelText className="text- ink/40 font-bold text-xs uppercase tracking-wider">
+                    Target Institution
+                  </FormControlLabelText>
                 </FormControlLabel>
                 <Button
                   variant="outline"
                   onPress={() => setShowSchoolPicker(true)}
                   className="justify-between border-border bg-silk h-12 rounded-xl px-4"
                 >
-                  <ButtonText className={`font-bold ${selectedSchoolId ? 'text-ink' : 'text-ink/40'}`}>
+                  <ButtonText
+                    className={`font-bold ${selectedSchoolId ? 'text-ink' : 'text-ink/40'}`}
+                  >
                     {selectedSchool ? selectedSchool.name : 'Select School...'}
                   </ButtonText>
                   <UIIcon as={ChevronDown} size="sm" className="text-ink/40" />
@@ -248,7 +254,11 @@ export default function GlobalCreateModal({
             <FormControl isRequired>
               <FormControlLabel>
                 <FormControlLabelText className="text-ink/40 font-bold text-xs uppercase tracking-wider">
-                  {type === 'school' ? 'Institution Name' : type === 'classroom' ? 'Class Name/ID' : 'Group Name'}
+                  {type === 'school'
+                    ? 'Institution Name'
+                    : type === 'classroom'
+                      ? 'Class Name/ID'
+                      : 'Group Name'}
                 </FormControlLabelText>
               </FormControlLabel>
               <Input className="bg-silk border-border h-12 rounded-xl px-2">
@@ -270,7 +280,9 @@ export default function GlobalCreateModal({
             {type === 'group' ? (
               <FormControl>
                 <FormControlLabel>
-                  <FormControlLabelText className="text-ink/40 font-bold text-xs uppercase tracking-wider">Purpose / Description</FormControlLabelText>
+                  <FormControlLabelText className="text-ink/40 font-bold text-xs uppercase tracking-wider">
+                    Purpose / Description
+                  </FormControlLabelText>
                 </FormControlLabel>
                 <Textarea className="border-border bg-silk rounded-xl">
                   <TextareaInput
@@ -302,7 +314,9 @@ export default function GlobalCreateModal({
                 }}
                 className="rounded-xl active:bg-silk"
               >
-                <ActionsheetItemText className="text-ink font-bold">{school.name}</ActionsheetItemText>
+                <ActionsheetItemText className="text-ink font-bold">
+                  {school.name}
+                </ActionsheetItemText>
               </ActionsheetItem>
             ))}
           </VStack>
@@ -316,7 +330,7 @@ function TypeButton({
   active,
   onPress,
   label,
-  icon: Icon
+  icon: Icon,
 }: {
   active: boolean;
   onPress: () => void;
@@ -330,7 +344,11 @@ function TypeButton({
       className={`flex-1 gap-2 h-11 rounded-xl shadow-sm ${active ? 'bg-primary' : 'bg-transparent border-border'}`}
     >
       <UIIcon as={Icon} className={active ? 'text-white' : 'text-ink/40'} size="sm" />
-      <ButtonText className={`font-black text-xs uppercase tracking-widest ${active ? 'text-white' : 'text-ink/40'}`}>{label}</ButtonText>
+      <ButtonText
+        className={`font-black text-xs uppercase tracking-widest ${active ? 'text-white' : 'text-ink/40'}`}
+      >
+        {label}
+      </ButtonText>
     </Button>
   );
 }

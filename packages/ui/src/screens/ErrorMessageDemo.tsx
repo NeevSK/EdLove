@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { Box, VStack, Heading, Text, ScrollView } from '../gluestack';
+import { useState } from 'react';
 import ErrorMessage from '../components/ErrorMessage';
-import { useTheme } from '../hooks/useTheme';
 import ScreenWrapper from '../components/ScreenWrapper';
+import { Heading, ScrollView, Text, VStack } from '../gluestack';
+import { useTheme } from '../hooks/useTheme';
 
 export default function ErrorMessageDemo() {
   const [showGentle, setShowGentle] = useState(true);

@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { ScreenWrapper } from '@repo/ui';
 import { usePermissions } from '@repo/core';
+import { ScreenWrapper } from '@repo/ui';
+import type React from 'react';
+import { useEffect, useState } from 'react';
 import { HierarchyBuilder, InviteManager } from '../components';
-import { PrincipalWorkspaceContainer } from './PrincipalWorkspaceContainer';
 import type { PrincipalWorkspaceView } from '../principal/workspace';
+import { PrincipalWorkspaceContainer } from './PrincipalWorkspaceContainer';
 
 export interface PrincipalNativeWorkspaceRenderCtx {
   activeView: PrincipalWorkspaceView;
@@ -26,7 +27,7 @@ export function PrincipalNativeWorkspace({
   activeView: controlledActiveView,
   onActiveViewChange,
   renderMain,
-  renderAdditionalView
+  renderAdditionalView,
 }: PrincipalNativeWorkspaceProps) {
   const { can } = usePermissions();
   const [internalActiveView, setInternalActiveView] = useState<PrincipalWorkspaceView>('main');
@@ -59,10 +60,10 @@ export function PrincipalNativeWorkspace({
     }
   }, [activeView, canManageSchoolScope, controlledActiveView, onActiveViewChange]);
 
-  const ctx: PrincipalNativeWorkspaceRenderCtx  = {
+  const ctx: PrincipalNativeWorkspaceRenderCtx = {
     activeView,
     canManageSchoolScope,
-    navigatePrincipalView
+    navigatePrincipalView,
   };
 
   const renderWorkspaceView = () => {
@@ -77,7 +78,11 @@ export function PrincipalNativeWorkspace({
     if (activeView === 'invites') {
       return (
         <ScreenWrapper>
-          <InviteManager schoolId={schoolId} userId={userId} onBack={() => navigatePrincipalView('main')} />
+          <InviteManager
+            schoolId={schoolId}
+            userId={userId}
+            onBack={() => navigatePrincipalView('main')}
+          />
         </ScreenWrapper>
       );
     }
@@ -94,4 +99,3 @@ export function PrincipalNativeWorkspace({
     />
   );
 }
-

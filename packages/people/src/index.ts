@@ -3,12 +3,12 @@ import { teacherFeedbackAPI } from './feedback';
 import { peopleMembershipsAPI } from './memberships';
 import { staffAPI } from './staff';
 
+export * from './components';
 export * from './directory';
 export * from './feedback';
+export * from './hooks';
 export * from './memberships';
 export * from './staff';
-export * from './components';
-export * from './hooks';
 
 export const peopleAPI = {
   directory: peopleDirectoryAPI,

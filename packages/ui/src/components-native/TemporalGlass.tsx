@@ -1,13 +1,13 @@
-import React from 'react';
-import { View, ViewStyle, StyleSheet } from 'react-native';
 import {
-  Canvas,
-  RoundedRect,
-  LinearGradient,
-  vec,
-  Paint,
   BlurMask,
+  Canvas,
+  LinearGradient,
+  Paint,
+  RoundedRect,
+  vec,
 } from '@shopify/react-native-skia';
+import type React from 'react';
+import { StyleSheet, View, type ViewStyle } from 'react-native';
 
 interface TemporalGlassProps {
   children: React.ReactNode;

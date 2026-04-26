@@ -1,5 +1,4 @@
-import React from 'react';
-import { render, fireEvent } from '@testing-library/react-native';
+import { fireEvent, render } from '@testing-library/react-native';
 import { Radio, RadioGroup, RadioIndicator, RadioLabel } from '../components/ui/radio';
 
 describe('Radio Component (Robustness)', () => {
@@ -31,7 +30,7 @@ describe('Radio Component (Robustness)', () => {
   });
 
   it('handles disabled state', async () => {
-    const onChange = jest.fn();
+    const _onChange = jest.fn();
     const { getByText } = await render(
       <Radio value="test" isDisabled={true}>
         <RadioLabel>Disabled Radio</RadioLabel>

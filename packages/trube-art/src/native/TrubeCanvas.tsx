@@ -1,9 +1,8 @@
 import React from 'react';
 import type { LayoutChangeEvent, StyleProp, ViewStyle } from 'react-native';
-import { View, StyleSheet } from 'react-native';
-
-import { driverManager } from './DriverManager';
+import { StyleSheet, View } from 'react-native';
 import { createRenderPlan } from '../core/render-plan';
+import type { TrubeScoreName } from '../core/scores';
 import { resolveSurface } from '../core/surface';
 import type {
   TrubeEnvironment,
@@ -11,7 +10,7 @@ import type {
   TrubeSurfaceName,
   TrubeSurfaceSpec,
 } from '../core/types';
-import type { TrubeScoreName } from '../core/scores';
+import { driverManager } from './DriverManager';
 import { UnifiedRenderer } from './renderers/UnifiedRenderer';
 import { useTrubeEnvironment } from './TrubeProvider';
 
@@ -37,10 +36,13 @@ export function TrubeCanvas({
   debugOverlay = false,
 }: TrubeCanvasProps) {
   const { environment: globalEnv } = useTrubeEnvironment();
-  const environment = React.useMemo(() => ({
-    ...globalEnv,
-    ...environmentProp,
-  }), [globalEnv, environmentProp]);
+  const environment = React.useMemo(
+    () => ({
+      ...globalEnv,
+      ...environmentProp,
+    }),
+    [globalEnv, environmentProp],
+  );
 
   const [bounds, setBounds] = React.useState({ width: 0, height: 0 });
 
@@ -68,7 +70,7 @@ export function TrubeCanvas({
   }, [surfaceProp, stageSpec]);
 
   const basePlan = React.useMemo(() => {
-    const input = surfaceProp || (stageSpec?.layers[0]?.surface);
+    const input = surfaceProp || stageSpec?.layers[0]?.surface;
     if (!input) return null;
     return createRenderPlan(input, quality, environment);
   }, [
@@ -82,23 +84,22 @@ export function TrubeCanvas({
     stageSpec,
   ]);
 
-  const plan = React.useMemo(
-    () => {
-      if (!basePlan) return null;
-      return paused
-        ? {
-            ...basePlan,
-            animationEnabled: false,
-            updateIntervalMs: 0,
-          }
-        : basePlan;
-    },
-    [basePlan, paused],
-  );
+  const plan = React.useMemo(() => {
+    if (!basePlan) return null;
+    return paused
+      ? {
+          ...basePlan,
+          animationEnabled: false,
+          updateIntervalMs: 0,
+        }
+      : basePlan;
+  }, [basePlan, paused]);
 
   const handleLayout = React.useCallback((event: LayoutChangeEvent) => {
     const { width, height } = event.nativeEvent.layout;
-    setBounds((current) =      current.width === width && current.height === height ? current : { width, height },
+    setBounds(
+      (current =
+        current.width === width && current.height === height ? current : { width, height }),
     );
   }, []);
 
@@ -126,6 +127,7 @@ export function TrubeCanvas({
           /          {debugOverlay && (
             <View style={StyleSheet.absoluteFill} pointerEvents="none"              {/* Performance Metrics Placeholder */}
             </View          )}
-        </      )}
-    </View  );
+        </      )
+}
+</View  )
 }

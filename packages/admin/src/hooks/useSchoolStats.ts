@@ -1,6 +1,13 @@
-import { useStore, useTemporalStore, SafeZustandStorage, api, MOCK_SCHOOL_STATS, useFeatureAccess } from '@repo/core';
-import { useState, useCallback, useEffect } from 'react';
 import type { School, SchoolStats } from '@repo/core';
+import {
+  api,
+  MOCK_SCHOOL_STATS,
+  SafeZustandStorage,
+  useFeatureAccess,
+  useStore,
+  useTemporalStore,
+} from '@repo/core';
+import { useCallback, useEffect, useState } from 'react';
 
 const SCHOOL_STATS_CACHE_KEY = 'gurudevi-school-stats-cache';
 const SCHOOL_INFO_CACHE_KEY = 'gurudevi-school-info-cache';
@@ -22,7 +29,7 @@ export function useSchoolStats(schoolId: string) {
       try {
         const [cachedStats, cachedSchool] = await Promise.all([
           SafeZustandStorage.getItem(`${SCHOOL_STATS_CACHE_KEY}-${schoolId}-${viewDate}`),
-          SafeZustandStorage.getItem(`${SCHOOL_INFO_CACHE_KEY}-${schoolId}`)
+          SafeZustandStorage.getItem(`${SCHOOL_INFO_CACHE_KEY}-${schoolId}`),
         ]);
 
         if (cachedStats) setStats(JSON.parse(cachedStats));
@@ -55,13 +62,13 @@ export function useSchoolStats(schoolId: string) {
           handle: 'wisdom-academy',
           official_type: 'Primary',
           status: 'active',
-          created_at: new Date().toISOString()
+          created_at: new Date().toISOString(),
         } as School;
         statsData = { ...MOCK_SCHOOL_STATS, is_sample: true } as SchoolStats;
       } else {
         const [sData, stData] = await Promise.all([
           api.school.getSchool(schoolId),
-          api.school.getSchoolStats(schoolId, viewDate)
+          api.school.getSchoolStats(schoolId, viewDate),
         ]);
         schoolData = sData;
         statsData = stData;
@@ -72,8 +79,14 @@ export function useSchoolStats(schoolId: string) {
 
       if (schoolId) {
         await Promise.all([
-          SafeZustandStorage.setItem(`${SCHOOL_INFO_CACHE_KEY}-${schoolId}`, JSON.stringify(schoolData)),
-          SafeZustandStorage.setItem(`${SCHOOL_STATS_CACHE_KEY}-${schoolId}-${viewDate}`, JSON.stringify(statsData))
+          SafeZustandStorage.setItem(
+            `${SCHOOL_INFO_CACHE_KEY}-${schoolId}`,
+            JSON.stringify(schoolData),
+          ),
+          SafeZustandStorage.setItem(
+            `${SCHOOL_STATS_CACHE_KEY}-${schoolId}-${viewDate}`,
+            JSON.stringify(statsData),
+          ),
         ]);
       }
 
@@ -95,6 +108,6 @@ export function useSchoolStats(schoolId: string) {
     stats,
     isLoading,
     error,
-    refreshData
+    refreshData,
   };
 }

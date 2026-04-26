@@ -1,4 +1,4 @@
-import React, { createContext, useContext, ReactNode } from 'react';
+import React, { createContext, type ReactNode, useContext } from 'react';
 
 export type MapProviderType = 'google' | 'apple' | 'maplibre';
 
@@ -9,17 +9,13 @@ interface MapContextProps {
 
 const MapContext = createContext<MapContextProps | undefined>(undefined);
 
-export const MapProvider: React.FC<{ children: ReactNode; initialProvider?: MapProviderType }> = ({ 
-  children, 
-  initialProvider = 'google' 
+export const MapProvider: React.FC<{ children: ReactNode; initialProvider?: MapProviderType }> = ({
+  children,
+  initialProvider = 'google',
 }) => {
   const [provider, setProvider] = React.useState<MapProviderType>(initialProvider);
 
-  return (
-    <MapContext.Provider value={{ provider, setProvider }}>
-      {children}
-    </MapContext.Provider>
-  );
+  return <MapContext.Provider value={{ provider, setProvider }}>{children}</MapContext.Provider>;
 };
 
 export const useMap = () => {

@@ -11,25 +11,25 @@
  * Philosophy: Organic, living UI that breathes with intention
  */
 
-import React, { FC, useMemo, useEffect, useCallback, useState, useRef } from 'react';
-import { View, Pressable, StyleSheet, Text, PanResponder, Dimensions, Image } from 'react-native';
+import * as Haptics from 'expo-haptics';
+import { Edit, Flower2, MessageCircle, Plus, Upload } from 'lucide-react-native';
+import type React from 'react';
+import { type FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Dimensions, Image, PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
 import Animated, {
+  Easing,
+  Extrapolate,
+  interpolate,
+  type SharedValue,
   useAnimatedStyle,
+  useSharedValue,
   withRepeat,
-  withTiming,
   withSequence,
   withSpring,
-  interpolate,
-  SharedValue,
-  Extrapolate,
-  useSharedValue,
-  Easing,
-  runOnJS,
+  withTiming,
 } from 'react-native-reanimated';
-import * as Haptics from 'expo-haptics';
-import { Flower2, Plus, MessageCircle, Upload, Edit } from 'lucide-react-native';
-import { Theme } from '../theme/Theme';
 import { useAccessibility } from '../hooks/useAccessibility';
+import { Theme } from '../theme/Theme';
 
 // ============================================================================
 // TYPES
@@ -58,11 +58,11 @@ interface LotusPetalFABProps {
 // ============================================================================
 
 const FAB_SIZE = 72; // Slightly larger for the art
-const FAB_HIT_SLOP = 10;
-const ACTION_BUBBLE_SIZE = 48;
+const _FAB_HIT_SLOP = 10;
+const _ACTION_BUBBLE_SIZE = 48;
 const ACTION_BUBBLE_SPACING = 12;
 const LONG_PRESS_DURATION = 400; // milliseconds
-const SCREEN_WIDTH = Dimensions.get('window').width;
+const _SCREEN_WIDTH = Dimensions.get('window').width;
 
 // Context-aware configuration
 type IconComponentType = React.ComponentType<{ size: number; color: string; strokeWidth: number }>;
@@ -129,13 +129,13 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
 
   // Memoize current configuration to avoid unnecessary recalculations
   const config = useMemo(() => fabConfig[currentTab], [currentTab]);
-  const IconComponent = config.IconComponent;
+  const _IconComponent = config.IconComponent;
 
   // Safe haptic feedback wrapper
   const triggerHaptic = useCallback(async () => {
     try {
       await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    } catch (error) {
+    } catch (_error) {
       console.warn('Haptic feedback not available');
     }
   }, []);
@@ -203,7 +203,7 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
     } else {
       breathingScale.value = withTiming(1.0, { duration: 200 });
     }
-  }, [disabled, isReduceMotionEnabled]);
+  }, [disabled, isReduceMotionEnabled, breathingScale]);
 
   // ============================================================================
   // ANIMATION STYLES
@@ -243,7 +243,16 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
       );
       onPress();
     }
-  }, [disabled, onPress, actions, showActions, triggerHaptic]);
+  }, [
+    disabled,
+    onPress,
+    actions,
+    showActions,
+    triggerHaptic,
+    pressScale,
+    announce,
+    actionMenuScale,
+  ]);
 
   const actionMenuStyle = useAnimatedStyle(() => {
     return {
@@ -257,7 +266,7 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
       damping: 15,
       stiffness: 150,
     });
-  }, [showActions]);
+  }, [showActions, actionMenuScale]);
 
   useEffect(() => {
     return () => {
@@ -318,11 +327,7 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
         <Image source={LOTUS_IMAGE} style={styles.lotusImage} resizeMode="contain" />
 
         {/* Optional Icon Overlay */}
-        {icon && (
-          <View style={styles.iconOverlay}>
-            <>{icon}</>
-          </View>
-        )}
+        {icon && <View style={styles.iconOverlay}>{icon}</View>}
       </View>
 
       {/* Action Menu */}

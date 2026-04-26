@@ -1,18 +1,20 @@
-import React, {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  useCallback,
-  ReactNode,
-  useMemo,
-} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useColorScheme } from 'react-native';
 import { useStore } from '@repo/core/logic';
-import { ThemeMode, ColorSystem, ThemeConfig, TemporalPhase } from './types';
-import { generateThemeTokens, getSystemAppearance, getTemporalPhase, shouldUseDarkTheme } from './utils';
-import { useReality } from './RealityProvider';
+import {
+  createContext,
+  type ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
+import { useColorScheme } from 'react-native';
+import { type TemporalPhase, type ThemeMode } from './types';
+import {
+  getTemporalPhase,
+  shouldUseDarkTheme,
+} from './utils';
 
 interface ThemeContextValue {
   themeMode: ThemeMode;

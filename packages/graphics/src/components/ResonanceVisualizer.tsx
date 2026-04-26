@@ -1,7 +1,7 @@
-import React, { useMemo } from 'react';
-import { View, StyleSheet, Platform } from 'react-native';
+import type React from 'react';
+import { useMemo } from 'react';
+import { Platform, StyleSheet, View } from 'react-native';
 import { SanctuaryCanvas } from './SanctuaryCanvas';
-
 
 interface ResonanceVisualizerProps {
   score: number; // 0-100
@@ -10,10 +10,7 @@ interface ResonanceVisualizerProps {
 
 import { useActivityPulse } from '@repo/core';
 
-export const ResonanceVisualizer: React.FC<ResonanceVisualizerProps> = ({
-  score,
-  size = 200,
-}) => {
+export const ResonanceVisualizer: React.FC<ResonanceVisualizerProps> = ({ score, size = 200 }) => {
   const { state } = useActivityPulse();
 
   // Map score AND pulse to resonance intensity
@@ -27,7 +24,7 @@ export const ResonanceVisualizer: React.FC<ResonanceVisualizerProps> = ({
     // Un-shimmed Web implementation using CSS gradients and animations
     return (
       <SanctuaryCanvas width={size} height={size}>
-        <View 
+        <View
           style={[
             styles.webGlow,
             {
@@ -35,11 +32,11 @@ export const ResonanceVisualizer: React.FC<ResonanceVisualizerProps> = ({
               height: size,
               borderRadius: size / 2,
               backgroundColor: `rgba(255, 165, 0, ${0.1 + intensity * 0.4})`, // Saffron glow
-            }
+            },
           ]}
         />
         {/* Simple CSS simulation of "subsurface scattering" */}
-        <View 
+        <View
           style={[
             styles.webCore,
             {
@@ -49,7 +46,7 @@ export const ResonanceVisualizer: React.FC<ResonanceVisualizerProps> = ({
               left: size * 0.2,
               top: size * 0.2,
               backgroundColor: `rgba(255, 235, 205, ${0.3 + intensity * 0.6})`, // BlanchedAlmond (Silk)
-            }
+            },
           ]}
         />
       </SanctuaryCanvas>
@@ -59,7 +56,7 @@ export const ResonanceVisualizer: React.FC<ResonanceVisualizerProps> = ({
   // Native implementation would ideally use Skia
   return (
     <SanctuaryCanvas width={size} height={size}>
-      <View 
+      <View
         style={[
           styles.nativeBase,
           {
@@ -67,7 +64,7 @@ export const ResonanceVisualizer: React.FC<ResonanceVisualizerProps> = ({
             height: size,
             borderRadius: size / 2,
             backgroundColor: 'rgba(255, 150, 0, 0.2)',
-          }
+          },
         ]}
       />
     </SanctuaryCanvas>
@@ -86,5 +83,5 @@ const styles = StyleSheet.create({
   nativeBase: {
     justifyContent: 'center',
     alignItems: 'center',
-  }
+  },
 });

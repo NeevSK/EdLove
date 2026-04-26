@@ -11,17 +11,17 @@ export { isDemo } from './api/demo';
 // 4. API & Business Logic (Named exports for better tree-shaking)
 export { deviceTrustAPI } from './api/deviceTrust';
 export {
-  SRI_LANKAN_SCHOOL_TYPES,
   SCHOOL_SECTIONS,
-  SRI_LANKAN_PROVINCES,
   SRI_LANKAN_DISTRICTS,
+  SRI_LANKAN_PROVINCES,
+  SRI_LANKAN_SCHOOL_TYPES,
 } from './constants/SriLankanSchools';
 
 export {
   accountPin,
   validateAccountPin,
 } from './lib/accountPin';
-export { uploadToCloudinary, type CloudinaryUploadResponse } from './lib/cloudinary';
+export { type CloudinaryUploadResponse, uploadToCloudinary } from './lib/cloudinary';
 export {
   CLASSROOM_RESOURCE_SCOPE,
   INSTITUTIONAL_RESOURCE_SCOPE,
@@ -29,12 +29,13 @@ export {
   resolveResourceOwnerContext,
 } from './lib/inventoryScope';
 export {
-  formatFileSize,
   formatDuration,
-  getMediaUrl,
+  formatFileSize,
   getMediaThumbnail,
+  getMediaUrl,
 } from './lib/mediaUtils';
-export { initPostHog, trackEvent, identifyUser, IPostHog } from './lib/monitoring/posthog';
+export { identifyUser, initPostHog, trackEvent } from './lib/monitoring/posthog';
+export type { IPostHog } from './lib/monitoring/posthog';
 export {
   captureException,
   clearSentryUser,
@@ -43,10 +44,10 @@ export {
   setSentryUser,
 } from './lib/monitoring/sentry';
 export {
+  clearPendingGateAction,
+  getPendingGateAction,
   type PendingGateAction,
   setPendingGateAction,
-  getPendingGateAction,
-  clearPendingGateAction,
 } from './lib/pendingGateAction';
 export {
   getAuthorityLabel,
@@ -55,9 +56,10 @@ export {
 } from './lib/permissions';
 export { StorageKeys, storage } from './lib/storage';
 export { SafeZustandStorage } from './lib/storageWrapper';
-export { handleAPIError, withErrorHandling, SanctuaryAPIError } from './logic/apiInterceptor';
+export { handleAPIError, withErrorHandling } from './logic/apiInterceptor';
+export type { SanctuaryAPIError } from './logic/apiInterceptor';
 export { createDomainServices, type DomainServices } from './logic/domains/factory';
-export { type PlatformEvents } from './logic/events/bus';
+export type { PlatformEvents } from './logic/events/bus';
 export { ActivityPulseProvider, useActivityPulse } from './logic/experience/ActivityPulseContext';
 export { default as i18n } from './logic/i18n/config';
 export { LanguageUtils } from './logic/utils/LanguageUtils';
@@ -69,12 +71,17 @@ export {
   getTransactionRange,
   type TemporalRange,
 } from './logic/utils/temporalUtils';
-export { FlowResolver, type FlowResult, type FlowIntent, type FlowOutcome } from './native/flows/FlowResolver';
+export {
+  type FlowIntent,
+  type FlowOutcome,
+  FlowResolver,
+  type FlowResult,
+} from './native/flows/FlowResolver';
 export { GuestDataManager } from './native/guestDataManager';
 export { GuestDataSync } from './native/guestDataSync';
 export { Runtime } from './native/runtime';
 export { supabase } from './native/supabase';
-export { withResilience, invalidateResilience, type ResilienceOptions } from './offline/resilience';
+export { invalidateResilience, type ResilienceOptions, withResilience } from './offline/resilience';
 export { AssetsProvider } from './providers/AssetsProvider';
 export { AuthorityLifecycleProvider } from './providers/AuthorityLifecycleProvider';
 // 3. Auth & Context
@@ -97,25 +104,29 @@ export { v7, v7 as uuidv7 };
 
 import { z } from 'zod';
 
-export { 
-  useTeacherClassroomsQuery, 
+export {
   useStudentClassroomsQuery,
-  useTeacherStatsQuery,
   useStudentStatsQuery,
+  useTeacherClassroomsQuery,
+  useTeacherStatsQuery,
 } from './api/hooks/classroom.hooks';
-export { 
-  useEcosystemStatsQuery, 
-  useEcosystemPulseQuery, 
-  useSentinelGovernanceQuery 
+export {
+  useEcosystemPulseQuery,
+  useEcosystemStatsQuery,
+  useSentinelGovernanceQuery,
 } from './api/hooks/founder.hooks';
 export { useEntity } from './hooks/useEntity';
-export { validateInviteCode, incrementInviteCodeUsage, type InviteCodeData } from './lib/inviteCodes';
+export {
+  type InviteCodeData,
+  incrementInviteCodeUsage,
+  validateInviteCode,
+} from './lib/inviteCodes';
 export { generateIdempotencyKey } from './lib/sync/idempotency';
 export { useMutationAuditLog } from './lib/sync/MutationAuditLog';
 export { default as SyncManager } from './lib/sync/sync/SyncManager';
 export type { MutationOutcome } from './lib/sync/types';
 export { useMutationQueue } from './lib/sync/useMutationQueue';
-export { type EntityType, type EntityMode, type EntityDefinition } from './logic/entities/entity-protocol';
+export type { EntityDefinition, EntityMode, EntityType } from './logic/entities/entity-protocol';
 export { type FieldAnalytics, formAnalytics } from './logic/forms/analytics';
 export { FormHydrator } from './logic/forms/dynamic-loader';
 export type { FormState } from './logic/forms/form-manager';
@@ -130,9 +141,7 @@ export {
   AttendanceStatusSchema,
   StudentAttendanceSchema,
 } from './logic/schemas/attendance.schema';
-export type {
-  Assignment,
-} from './logic/schemas/classroom.schema';
+export type { Assignment } from './logic/schemas/classroom.schema';
 export {
   AssignmentSchema,
   ClassroomSchema,
@@ -164,13 +173,14 @@ export type {
   InviteCodeZod,
   PrincipalInviteRole,
 } from './logic/schemas/principal-workspace.schema';
-export { Role, RoleSchema } from './logic/schemas/role.schema';
+export { RoleSchema } from './logic/schemas/role.schema';
+export type { Role } from './logic/schemas/role.schema';
 export type { User } from './logic/schemas/user.schema';
 export { UserSchema } from './logic/schemas/user.schema';
-export { validators } from './logic/utils/validators';
+export { validateForm, validators } from './logic/utils/validators';
 export {
-  type WorkspaceSwitcherTarget,
   resolveWorkspaceSwitcherTargets,
+  type WorkspaceSwitcherTarget,
 } from './logic/workspace/workspaceSwitcher';
 export { useWorkspaceLayoutSync } from './native/useWorkspaceLayoutSync';
 export type { SchoolGrade, Section } from './types/School';

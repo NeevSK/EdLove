@@ -1,6 +1,6 @@
-import React from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { Box, Text, VStack } from '@repo/ui';
+import React from 'react';
 import { useAdminWorkspaceSnapshot } from '../admin/adminRepository';
 import { AdminRoomPanel, AdminRoomShell } from './AdminRoomShell';
 
@@ -23,16 +23,24 @@ export default function AdminTenantDetail() {
       ]}
     >
       <VStack className="gap-4">
-        <AdminRoomPanel title="Latest tenant" description="This view should eventually accept a tenant picker. For now it opens on the most recent tenant snapshot.">
+        <AdminRoomPanel
+          title="Latest tenant"
+          description="This view should eventually accept a tenant picker. For now it opens on the most recent tenant snapshot."
+        >
           {tenant ? (
             <VStack className="gap-1">
-              <Text className="text-[16px] font-bold text-phaseText-primary">{tenant.name ?? tenant.id}</Text>
+              <Text className="text-[16px] font-bold text-phaseText-primary">
+                {tenant.name ?? tenant.id}
+              </Text>
               <Text className="text-[12px] text-phaseText-secondary">
-                Created {tenant.created_at ? new Date(tenant.created_at).toLocaleString() : 'recently'}.
+                Created{' '}
+                {tenant.created_at ? new Date(tenant.created_at).toLocaleString() : 'recently'}.
               </Text>
             </VStack>
           ) : (
-            <Text className="text-[13px] text-phaseText-secondary">No tenant records surfaced in this snapshot.</Text>
+            <Text className="text-[13px] text-phaseText-secondary">
+              No tenant records surfaced in this snapshot.
+            </Text>
           )}
         </AdminRoomPanel>
       </VStack>

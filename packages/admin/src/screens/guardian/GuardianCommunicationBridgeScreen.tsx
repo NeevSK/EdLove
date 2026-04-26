@@ -1,14 +1,15 @@
-import React from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { Box, HStack, Pressable, Text, VStack } from '@repo/ui';
 import { BookOpenText, MessagesSquare, School } from 'lucide-react-native';
+import type React from 'react';
 import { GuardianRoomShell } from './GuardianRoomShell';
 
 function BridgeCard({
   icon: Icon,
   title,
   copy,
-  onPress}: {
+  onPress,
+}: {
   icon: React.ComponentType<{ size?: number; color?: string }>;
   title: string;
   copy: string;
@@ -35,22 +36,27 @@ export default function GuardianCommunicationBridgeScreen() {
   const navigation = useNavigation<any>();
 
   return (
-    <GuardianRoomShell eyebrow="School-home, bridge"
+    <GuardianRoomShell
+      eyebrow="School-home, bridge"
       title="Communication, bridge"
       description="This, room, helps, the, guardian, move from awareness, into, the, right, school, community, and, resource, spaces, without, losing, context."
-      onBack={() => navigation.goBack()}>
+      onBack={() => navigation.goBack()}
+    >
       <VStack className="gap-3">
-        <BridgeCard icon={MessagesSquare}
+        <BridgeCard
+          icon={MessagesSquare}
           title="Open, community commons"
           copy="Step, into family-safe, community space for school, conversation, groups, and, shared updates."
           onPress={() => navigation.getParent()?.navigate('Community' as never)}
         />
-        <BridgeCard icon={BookOpenText}
+        <BridgeCard
+          icon={BookOpenText}
           title="Open, learning resources"
           copy="Move from school, signal into, study support, and resource, discovery."
           onPress={() => navigation.getParent()?.navigate('Library' as never)}
         />
-        <BridgeCard icon={School}
+        <BridgeCard
+          icon={School}
           title="Return, to family, workspace"
           copy="Come, back to, the guardian, canvas after, checking the, broader school, ecosystem."
           onPress={() => navigation.navigate('GuardianDashboard')}

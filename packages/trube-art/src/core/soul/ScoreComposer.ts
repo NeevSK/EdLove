@@ -1,6 +1,6 @@
-import { tsl, TSLExpression } from './tsl';
 import { MotifLibrary } from './MotifLibrary';
 import { OrnamentLibrary } from './OrnamentLibrary';
+import { type TSLExpression, tsl } from './tsl';
 
 export type MotifName = keyof typeof MotifLibrary;
 export type OrnamentName = keyof typeof OrnamentLibrary;
@@ -10,7 +10,7 @@ export interface ScoreDefinition {
   motif?: MotifName;
   ornament?: OrnamentName;
   motifStyle?: 'draft' | 'ink' | 'luminous';
-  /** 
+  /**
    * Architectural Rationale (2026 Mandate Requirement).
    * Describes the spiritual or environmental motivation for this generative score.
    */
@@ -36,19 +36,15 @@ export const ScoreComposer = {
 
     // 2. Layer Motif (Focal Symbolic Light)
     if (def.motif) {
-      const motifLayer = MotifLibrary[def.motif](
-        tsl.env.uv(), 
-        livingTime, 
-        def.motifStyle || 'ink'
-      );
+      const motifLayer = MotifLibrary[def.motif](tsl.env.uv(), livingTime, def.motifStyle || 'ink');
       // Blending motif with the base using additive/mix combo for bloom effect
       result = tsl.add(result, tsl.mul(motifLayer, tsl.float(0.8)));
     }
 
     if (def.rationale) {
-       console.log(`[Tr\u00FCbe-Art] [Rationale] ${def.rationale}`);
+      console.log(`[Tr\u00FCbe-Art] [Rationale] ${def.rationale}`);
     }
 
     return result;
-  }
+  },
 };

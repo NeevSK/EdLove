@@ -17,7 +17,7 @@ export const SanctuaryLocation = {
       return {
         status: (status.state === 'granted' ? 'granted' : 'denied') as 'granted' | 'denied',
       };
-    } catch (e) {
+    } catch (_e) {
       return { status: 'denied' as const };
     }
   },

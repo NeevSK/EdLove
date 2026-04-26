@@ -1,6 +1,6 @@
-import React from 'react';
-import { ImageBackground as RNImageBackground, type ImageBackgroundProps } from 'react-native';
 import { cssInterop } from 'nativewind';
+import React from 'react';
+import { type ImageBackgroundProps, ImageBackground as RNImageBackground } from 'react-native';
 
 cssInterop(RNImageBackground, { className: 'style' });
 

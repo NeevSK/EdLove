@@ -1,5 +1,5 @@
-import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@repo/core';
+import { useQuery } from '@tanstack/react-query';
 import { PerformanceAnalyzer } from '../engine/PerformanceAnalyzer';
 import { InsightGenerator } from '../ml/InsightGenerator';
 import { Predictor } from '../ml/Predictor';
@@ -12,7 +12,7 @@ const insightGenerator = new InsightGenerator();
 export function useStudentPerformance(
   studentId: string,
   classId: string,
-  timeRange?: { startDate: string; endDate: string }
+  timeRange?: { startDate: string; endDate: string },
 ) {
   return useQuery({
     queryKey: ['student-performance', studentId, classId, timeRange],

@@ -1,8 +1,8 @@
-import React from 'react';
-import { Dimensions, Pressable } from 'react-native';
-import { VStack, HStack, Text, Box } from '../gluestack';
-import { UniversalModal } from './UniversalModal';
 import { X } from 'lucide-react-native';
+import type React from 'react';
+import { Dimensions, Pressable } from 'react-native';
+import { Box, HStack, Text, VStack } from '../gluestack';
+import { UniversalModal } from './UniversalModal';
 
 export interface SanctuaryModalProps {
   isOpen: boolean;

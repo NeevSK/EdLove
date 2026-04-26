@@ -1,11 +1,30 @@
-import React from 'react';
-import { Box, SandboxBanner, Text, WorkspaceCanvas, hapticLight, useRegisterFAB, useThemedColors, Pressable, HStack, ScrollView, AnimatedView, FadeInDown } from '@repo/ui';
 import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import {
+  type ClassroomStackParamList,
+  useFeatureAccess,
+  useStore,
+  useTemporalStore,
+  useWorkspaceLayoutSync,
+} from '@repo/core';
+import {
+  AnimatedView,
+  Box,
+  FadeInDown,
+  HStack,
+  hapticLight,
+  Pressable,
+  SandboxBanner,
+  ScrollView,
+  Text,
+  useRegisterFAB,
+  useThemedColors,
+  WorkspaceCanvas,
+} from '@repo/ui';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { ClassroomStackParamList, useFeatureAccess, useStore, useTemporalStore, useWorkspaceLayoutSync } from '@repo/core';
-import { useStudentWorkspaceData } from '../workspace/useStudentWorkspaceData';
 import { useStudentDashboardSurfaces } from '../workspace/useStudentDashboardSurfaces';
+import { useStudentWorkspaceData } from '../workspace/useStudentWorkspaceData';
 
 interface StudentDashboardProps {
   onRefresh?: () => void;
@@ -65,12 +84,13 @@ export default function StudentDashboard({ forceDemo, userId }: StudentDashboard
     },
   });
 
-  const { layout, surfaces, setSurfaceHidden, setSurfacePinned, setSurfaceZone } = useWorkspaceLayoutSync({
-    workspaceId: 'student-dashboard',
-    userId: userId || 'student-dashboard-guest',
-    surfaces: dashboardSurfaces,
-    enableRemoteSync: false,
-  });
+  const { layout, surfaces, setSurfaceHidden, setSurfacePinned, setSurfaceZone } =
+    useWorkspaceLayoutSync({
+      workspaceId: 'student-dashboard',
+      userId: userId || 'student-dashboard-guest',
+      surfaces: dashboardSurfaces,
+      enableRemoteSync: false,
+    });
 
   if (!layout) {
     return <Box className="flex-1 bg-phase-canvas" />;
@@ -79,18 +99,19 @@ export default function StudentDashboard({ forceDemo, userId }: StudentDashboard
   return (
     <Box className="flex-1 bg-phase-canvas">
       {isDemoExperience ? <SandboxBanner /> : null}
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ padding: 16 }}
-      >
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 16 }}>
         <AnimatedView entering={FadeInDown.duration(400)}>
           <WorkspaceCanvas
             surfaces={dashboardSurfaces}
             layout={layout}
             title={t('classroom.studentDashboardHeading') || 'Your Learning Journey'}
-            subtitle={t('classroom.studentDashboardIntro') || 'Step into your sanctuaries and grow with love.'}
+            subtitle={
+              t('classroom.studentDashboardIntro') ||
+              'Step into your sanctuaries and grow with love.'
+            }
             renderSurfaceContent={(surface) =>
-              surfaces.find((candidate) => candidate.surfaceId === surface.surfaceId)?.content ?? null
+              surfaces.find((candidate) => candidate.surfaceId === surface.surfaceId)?.content ??
+              null
             }
             getSurfaceSubtitle={(surface) =>
               surfaces.find((candidate) => candidate.surfaceId === surface.surfaceId)?.subtitle
@@ -102,11 +123,14 @@ export default function StudentDashboard({ forceDemo, userId }: StudentDashboard
               surfaces.find((candidate) => candidate.surfaceId === surface.surfaceId)?.temporalLabel
             }
             getSurfaceMetadata={(surface) =>
-              surfaces.find((candidate) => candidate.surfaceId === surface.surfaceId)?.metadata as any
+              surfaces.find((candidate) => candidate.surfaceId === surface.surfaceId)
+                ?.metadata as any
             }
             onToggleHidden={(surface) => setSurfaceHidden(surface.surfaceId, !surface.hidden)}
             renderSurfaceActions={(surface) => {
-              const resolved = surfaces.find((candidate) => candidate.surfaceId === surface.surfaceId);
+              const resolved = surfaces.find(
+                (candidate) => candidate.surfaceId === surface.surfaceId,
+              );
               if (!resolved) return null;
 
               return (
@@ -123,14 +147,16 @@ export default function StudentDashboard({ forceDemo, userId }: StudentDashboard
                     onPress={() =>
                       setSurfaceZone(
                         resolved.surfaceId,
-                        resolved.zone === 'work' ? 'today' : resolved.zone === 'today' ? 'private' : 'work'
+                        resolved.zone === 'work'
+                          ? 'today'
+                          : resolved.zone === 'today'
+                            ? 'private'
+                            : 'work',
                       )
                     }
                     className="rounded-full border border-phase-border/40 bg-phase-surface-secondary px-4 py-2"
                   >
-                    <Text className="text-xs font-semibold text-phase-text-primary">
-                      Move zone
-                    </Text>
+                    <Text className="text-xs font-semibold text-phase-text-primary">Move zone</Text>
                   </Pressable>
                 </HStack>
               );

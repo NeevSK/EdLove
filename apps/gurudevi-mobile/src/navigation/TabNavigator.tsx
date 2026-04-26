@@ -6,11 +6,20 @@ import { BreathGuide } from '@repo/self';
 import {
   AchievementUnlockOverlay,
   ErrorBoundary,
-  SanctuaryBackground,
   Modal,
   ModalContent,
+  SanctuaryBackground,
 } from '@repo/ui';
-import { Box, HStack, hapticLight, Icon, Pressable, Text, useTheme, VStack } from '@repo/ui/primitives';
+import {
+  Box,
+  HStack,
+  hapticLight,
+  Icon,
+  Pressable,
+  Text,
+  useTheme,
+  VStack,
+} from '@repo/ui/primitives';
 import { WorkforceShell } from '@repo/workforce';
 import { Hammer, Heart, Library, School, User, Users, X } from 'lucide-react-native';
 import React from 'react';

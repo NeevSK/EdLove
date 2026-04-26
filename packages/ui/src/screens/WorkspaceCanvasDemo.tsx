@@ -1,14 +1,10 @@
-import React, { useMemo, useState } from 'react';
-import { Box, VStack, HStack, Heading, Text, Pressable, ScrollView } from '../gluestack';
 import { createDefaultWorkspaceLayout, setWorkspaceSurfaceHidden } from '@repo/core/logic';
-import type {
-  ResolvedWorkspaceSurface,
-  WorkspaceLayout,
-  WorkspaceSurfaceDefinition,
-} from '@repo/core/types';
-import { WorkspaceCanvas } from '../components/workspace';
-import { useTheme } from '../hooks/useTheme';
+import type { WorkspaceLayout, WorkspaceSurfaceDefinition } from '@repo/core/types';
+import { useMemo, useState } from 'react';
 import ScreenWrapper from '../components/ScreenWrapper';
+import { WorkspaceCanvas } from '../components/workspace';
+import { Box, Heading, HStack, Pressable, ScrollView, Text, VStack } from '../gluestack';
+import { useTheme } from '../hooks/useTheme';
 
 type DemoRole = 'teacher' | 'principal' | 'founder';
 /* ... types truncated ... */

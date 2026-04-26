@@ -1,36 +1,52 @@
-import { 
-  GuardianIdentity, 
-  StudentGuardianRelationship, 
-  GuardianPermissionConfig,
-  GuardianDashboardData,
-  VerificationDocument,
-  RelationshipType} from './types';
 import { api } from '@repo/core';
+import type {
+  GuardianDashboardData,
+  GuardianIdentity,
+  GuardianPermissionConfig,
+  RelationshipType,
+  StudentGuardianRelationship,
+  VerificationDocument,
+} from './types';
 
 export interface GuardianAPI {
   // Identity management
-  createGuardianProfile(data: Omit<GuardianIdentity, 'id' | 'createdAt' | 'updatedAt'>): Promise<GuardianIdentity>;
+  createGuardianProfile(
+    data: Omit<GuardianIdentity, 'id' | 'createdAt' | 'updatedAt'>,
+  ): Promise<GuardianIdentity>;
   verifyGuardian(guardianId: string, documents: VerificationDocument[]): Promise<void>;
-  updateGuardianProfile(guardianId: string, updates: Partial<GuardianIdentity>): Promise<GuardianIdentity>;
+  updateGuardianProfile(
+    guardianId: string,
+    updates: Partial<GuardianIdentity>,
+  ): Promise<GuardianIdentity>;
   getGuardianProfile(guardianId: string): Promise<GuardianIdentity | null>;
-  
+
   // Relationship management
-  linkGuardianToStudent(guardianId: string, studentId: string, relationship: RelationshipType): Promise<StudentGuardianRelationship>;
-  updatePermissions(guardianId: string, studentId: string, permissions: GuardianPermissionConfig[]): Promise<void>;
+  linkGuardianToStudent(
+    guardianId: string,
+    studentId: string,
+    relationship: RelationshipType,
+  ): Promise<StudentGuardianRelationship>;
+  updatePermissions(
+    guardianId: string,
+    studentId: string,
+    permissions: GuardianPermissionConfig[],
+  ): Promise<void>;
   terminateRelationship(guardianId: string, studentId: string): Promise<void>;
-  
+
   // Access and visibility
   getGuardianStudents(guardianId: string): Promise<any[]>; // Student[] from core
   getStudentGuardians(studentId: string): Promise<GuardianIdentity[]>;
-  
+
   // Dashboard and data
   getGuardianDashboard(guardianId: string): Promise<GuardianDashboardData>;
   updateNotificationSettings(guardianId: string, settings: any): Promise<void>;
 }
 
-export const guardianAPI: GuardianAPI  = {
+export const guardianAPI: GuardianAPI = {
   // Identity management
-  async createGuardianProfile(data: Omit<GuardianIdentity, 'id' | 'createdAt' | 'updatedAt'>): Promise<GuardianIdentity> {
+  async createGuardianProfile(
+    data: Omit<GuardianIdentity, 'id' | 'createdAt' | 'updatedAt'>,
+  ): Promise<GuardianIdentity> {
     return api.guardian.createProfile(data as any) as unknown as Promise<GuardianIdentity>;
   },
 
@@ -38,24 +54,42 @@ export const guardianAPI: GuardianAPI  = {
     await api.guardian.verifyGuardian(guardianId, documents as any);
   },
 
-  async updateGuardianProfile(guardianId: string, updates: Partial<GuardianIdentity>): Promise<GuardianIdentity> {
-    return api.guardian.updateProfile(guardianId, updates as any) as unknown as Promise<GuardianIdentity>;
+  async updateGuardianProfile(
+    guardianId: string,
+    updates: Partial<GuardianIdentity>,
+  ): Promise<GuardianIdentity> {
+    return api.guardian.updateProfile(
+      guardianId,
+      updates as any,
+    ) as unknown as Promise<GuardianIdentity>;
   },
 
   async getGuardianProfile(guardianId: string): Promise<GuardianIdentity | null> {
     try {
-      return await api.guardian.getProfile(guardianId) as GuardianIdentity;
+      return (await api.guardian.getProfile(guardianId)) as GuardianIdentity;
     } catch {
       return null;
     }
   },
 
   // Relationship management
-  async linkGuardianToStudent(guardianId: string, studentId: string, relationship: RelationshipType): Promise<StudentGuardianRelationship> {
-    return api.guardian.linkGuardianToStudent(guardianId, studentId, relationship) as unknown as Promise<StudentGuardianRelationship>;
+  async linkGuardianToStudent(
+    guardianId: string,
+    studentId: string,
+    relationship: RelationshipType,
+  ): Promise<StudentGuardianRelationship> {
+    return api.guardian.linkGuardianToStudent(
+      guardianId,
+      studentId,
+      relationship,
+    ) as unknown as Promise<StudentGuardianRelationship>;
   },
 
-  async updatePermissions(guardianId: string, studentId: string, permissions: GuardianPermissionConfig[]): Promise<void> {
+  async updatePermissions(
+    guardianId: string,
+    studentId: string,
+    permissions: GuardianPermissionConfig[],
+  ): Promise<void> {
     await api.guardian.updatePermissions(guardianId, studentId, permissions as any);
   },
 
@@ -79,5 +113,5 @@ export const guardianAPI: GuardianAPI  = {
 
   async updateNotificationSettings(guardianId: string, settings: any): Promise<void> {
     await api.guardian.updateNotificationSettings(guardianId, settings);
-  }
+  },
 };

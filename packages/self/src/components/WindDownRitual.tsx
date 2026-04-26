@@ -1,38 +1,38 @@
-import React, { useState } from 'react';
-import { 
-    Icon, 
-    Box, 
-    Button, 
-    ButtonText, 
-    HStack, 
-    Heading, 
-    Input, 
-    InputField, 
-    PositiveInvitation, 
-    Progress, 
-    ProgressFilledTrack, 
-    Text, 
-    VStack,
-    hapticLight, 
-    hapticSuccess
-} from '@repo/ui';
-import { Moon, CheckCircle } from 'lucide-react-native';
-import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
+import {
+  Box,
+  Button,
+  ButtonText,
+  Heading,
+  HStack,
+  hapticLight,
+  hapticSuccess,
+  Icon,
+  Input,
+  InputField,
+  PositiveInvitation,
+  Progress,
+  ProgressFilledTrack,
+  Text,
+  VStack,
+} from '@repo/ui';
+import { CheckCircle, Moon } from 'lucide-react-native';
+import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 // —————————————————————————————————————————————————————————————————————————————
 // TYPES
 // —————————————————————————————————————————————————————————————————————————————
 
 interface Step {
-    id: string;
-    title: string;
-    description?: string;
-    duration?: number;
-    input?: boolean;
-    value?: string;
-    setValue?: (text: string) => void;
-    placeholder?: string;
+  id: string;
+  title: string;
+  description?: string;
+  duration?: number;
+  input?: boolean;
+  value?: string;
+  setValue?: (text: string) => void;
+  placeholder?: string;
 }
 
 interface WindDownRitualProps {
@@ -58,8 +58,10 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
     {
       id: 'breathe',
       title: t('self.breathe') || 'Mindful Breathing',
-      description: t('self.breatheDesc') || 'Take a few deep breaths to anchor yourself in the present moment.',
-      duration: 30
+      description:
+        t('self.breatheDesc') ||
+        'Take a few deep breaths to anchor yourself in the present moment.',
+      duration: 30,
     },
     {
       id: 'reflect',
@@ -67,7 +69,7 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
       input: true,
       value: wentWell,
       setValue: setWentWell,
-      placeholder: t('self.oneThingWentWell') || 'One thing that went well today...'
+      placeholder: t('self.oneThingWentWell') || 'One thing that went well today...',
     },
     {
       id: 'release',
@@ -75,16 +77,16 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
       input: true,
       value: toRelease,
       setValue: setToRelease,
-      placeholder: t('self.oneThingRelease') || 'One thing I am releasing tonight...'
+      placeholder: t('self.oneThingRelease') || 'One thing I am releasing tonight...',
     },
     {
       id: 'intent',
-      title: t('self.tomorrowIntent') || 'Tomorrow\'s Intent',
+      title: t('self.tomorrowIntent') || "Tomorrow's Intent",
       input: true,
       value: tomorrowIntent,
       setValue: setTomorrowIntent,
-      placeholder: t('self.gentleIntentTomorrow') || 'A gentle intention for tomorrow...'
-    }
+      placeholder: t('self.gentleIntentTomorrow') || 'A gentle intention for tomorrow...',
+    },
   ];
 
   const currentStepData = steps[currentStep] || steps[0]!;
@@ -148,9 +150,7 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
                   <Text className="text-dimGray text-[10px] font-bold uppercase mb-1">
                     {t('self.wentWell') || 'Went Well'}
                   </Text>
-                  <Text className="text-sacredWhite text-sm">
-                    {wentWell}
-                  </Text>
+                  <Text className="text-sacredWhite text-sm">{wentWell}</Text>
                 </Box>
               )}
 
@@ -159,9 +159,7 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
                   <Text className="text-dimGray text-[10px] font-bold uppercase mb-1">
                     {t('self.tomorrowIntentLabel') || 'Intent for Tomorrow'}
                   </Text>
-                  <Text className="text-sacredWhite text-sm">
-                    {tomorrowIntent}
-                  </Text>
+                  <Text className="text-sacredWhite text-sm">{tomorrowIntent}</Text>
                 </Box>
               )}
             </VStack>
@@ -184,10 +182,7 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
   if (!userId) {
     return (
       <Box className="flex-1 p-lg">
-        <PositiveInvitation
-          type="guest"
-          onAction={() => navigation.navigate('Auth' as never)}
-        />
+        <PositiveInvitation type="guest" onAction={() => navigation.navigate('Auth' as never)} />
       </Box>
     );
   }
@@ -212,9 +207,7 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
           <Text className="text-mistGray text-xs">
             {t('self.step') || 'Step'} {currentStep + 1} {t('self.stepOf') || 'of'} {steps.length}
           </Text>
-          <Text className="text-mistGray text-xs font-bold">
-            {Math.round(progress)}%
-          </Text>
+          <Text className="text-mistGray text-xs font-bold">{Math.round(progress)}%</Text>
         </HStack>
         <Progress value={progress} className="h-1.5 bg-white/10 rounded-full">
           <ProgressFilledTrack className="bg-sanctuarySaffron" />
@@ -240,9 +233,7 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
 
           {currentStepData.input && (
             <Box className="mt-2">
-              <Input
-                className="bg-white/5 border-white/10 rounded-comfortable min-h-[140px]"
-              >
+              <Input className="bg-white/5 border-white/10 rounded-comfortable min-h-[140px]">
                 <InputField
                   placeholder={currentStepData.placeholder}
                   value={currentStepData.value}
@@ -261,7 +252,8 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
                 <Icon as={Moon} className="text-sanctuarySaffron" size={40} />
               </Box>
               <Text className="text-mistGray text-sm text-center max-w-[240px] italic">
-                {t('self.breatheInstructions') || 'Breathe in slowly through your nose, and out through your mouth.'}
+                {t('self.breatheInstructions') ||
+                  'Breathe in slowly through your nose, and out through your mouth.'}
               </Text>
             </VStack>
           )}
@@ -276,17 +268,20 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
           isDisabled={currentStep === 0}
           className="border-white/10 rounded-comfortable flex-1 h-12"
         >
-          <ButtonText className="text-mistGray font-bold">
-            {t('common.back') || 'Back'}
-          </ButtonText>
+          <ButtonText className="text-mistGray font-bold">{t('common.back') || 'Back'}</ButtonText>
         </Button>
         <Button
           onPress={handleNext}
-          isDisabled={!!currentStepData.input && (!currentStepData.value || currentStepData.value.trim() === '')}
+          isDisabled={
+            !!currentStepData.input &&
+            (!currentStepData.value || currentStepData.value.trim() === '')
+          }
           className="bg-sanctuarySaffron rounded-comfortable flex-1 h-12"
         >
           <ButtonText className="text-black font-bold">
-            {currentStep === steps.length - 1 ? (t('common.complete') || 'Complete') : (t('common.next') || 'Next')}
+            {currentStep === steps.length - 1
+              ? t('common.complete') || 'Complete'
+              : t('common.next') || 'Next'}
           </ButtonText>
         </Button>
       </HStack>

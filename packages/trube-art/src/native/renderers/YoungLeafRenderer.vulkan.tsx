@@ -1,7 +1,7 @@
 import React from 'react';
+import { YOUNG_LEAF_SOUL } from '../../core/soul/YoungLeafSoul';
 import type { TrubeRendererProps } from '../renderers/types';
 import { NativeSubstrateRenderer } from './NativeSubstrateRenderer';
-import { YOUNG_LEAF_SOUL } from '../../core/soul/YoungLeafSoul';
 
 export function YoungLeafRendererVulkan(props: TrubeRendererProps) {
   return <NativeSubstrateRenderer {...props} soul={YOUNG_LEAF_SOUL} />;

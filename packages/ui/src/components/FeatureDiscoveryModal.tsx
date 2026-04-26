@@ -1,7 +1,6 @@
-import React from 'react';
-import { VStack, Text, Heading, Box } from '../gluestack';
-import SanctuaryModal from './SanctuaryModal';
 import { Info } from 'lucide-react-native';
+import { Box, Heading, Text, VStack } from '../gluestack';
+import SanctuaryModal from './SanctuaryModal';
 
 export interface FeatureDiscoveryModalProps {
   isOpen: boolean;

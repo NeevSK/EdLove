@@ -17,7 +17,7 @@ export class ChequeManager {
       .from('cheques')
       .insert({
         ...cheque,
-        status: 'pending'
+        status: 'pending',
       })
       .select()
       .single();
@@ -35,17 +35,17 @@ export class ChequeManager {
       .from('cheques')
       .update({
         status: 'cleared',
-        cleared_date: clearedDate
+        cleared_date: clearedDate,
       })
       .eq('id', id)
       .select()
       .single();
 
     if (error) throw error;
-    
+
     // In a real implementation, this would also trigger recordTransaction()
     // to move money from "Pending Cheques" to "Bank Account".
-    
+
     return data;
   }
 }

@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { Pressable } from 'react-native';
 import { Info } from 'lucide-react-native';
+import { useState } from 'react';
+import { Pressable } from 'react-native';
 import FeatureDiscoveryModal from './FeatureDiscoveryModal';
 
 export interface FeatureInfoIconProps {

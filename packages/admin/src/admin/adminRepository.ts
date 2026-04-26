@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
 import { historyAPI, supabase } from '@repo/core';
+import { useEffect, useState } from 'react';
 import { getAdminAuditEntries } from './adminControl';
 
 export interface AdminWorkspaceSnapshot {
@@ -9,12 +9,42 @@ export interface AdminWorkspaceSnapshot {
   pendingApprovalCount: number;
   inviteCount: number;
   inventoryRequestCount: number;
-  recentIncidentSignals: Array<{ id: string; title: string; schoolId: string; createdAt: string; status: string }>;
-  recentApprovals: Array<{ id: string; title: string; schoolId: string; createdAt: string; status: string }>;
-  recentInventoryRequests: Array<{ id: string; schoolId: string; status: string; createdAt: string; title: string }>;
+  recentIncidentSignals: Array<{
+    id: string;
+    title: string;
+    schoolId: string;
+    createdAt: string;
+    status: string;
+  }>;
+  recentApprovals: Array<{
+    id: string;
+    title: string;
+    schoolId: string;
+    createdAt: string;
+    status: string;
+  }>;
+  recentInventoryRequests: Array<{
+    id: string;
+    schoolId: string;
+    status: string;
+    createdAt: string;
+    title: string;
+  }>;
   recentSchools: Array<{ id: string; name: string | null; created_at?: string | null }>;
-  recentUsers: Array<{ id: string; full_name: string | null; role?: string | null; school_id?: string | null }>;
-  recentInvites: Array<{ code: string; role: string; is_active?: boolean | null; uses_count?: number | null; max_uses?: number | null; school_id?: string | null }>;
+  recentUsers: Array<{
+    id: string;
+    full_name: string | null;
+    role?: string | null;
+    school_id?: string | null;
+  }>;
+  recentInvites: Array<{
+    code: string;
+    role: string;
+    is_active?: boolean | null;
+    uses_count?: number | null;
+    max_uses?: number | null;
+    school_id?: string | null;
+  }>;
   recentObservations: Array<{ id: string; type: string; content: string; created_at: string }>;
 }
 
@@ -49,13 +79,40 @@ export const adminRepository = {
     ] = await Promise.all([
       supabase.from('schools').select('id', { count: 'exact', head: true }),
       supabase.from('users').select('id', { count: 'exact', head: true }),
-      supabase.from('staff_leaves').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
-      supabase.from('schools').select('id, name, created_at').order('created_at', { ascending: false }).limit(5),
-      supabase.from('users').select('id, full_name, role, school_id').order('created_at', { ascending: false }).limit(5),
-      supabase.from('staff_leaves').select('id, leave_type, school_id, created_at, status').order('created_at', { ascending: false }).limit(5),
-      supabase.from('invite_codes').select('code, role, is_active, uses_count, max_uses, school_id').order('created_at', { ascending: false }).limit(5),
-      supabase.from('school_echo_feedback').select('id, type, content, created_at').order('created_at', { ascending: false }).limit(5),
-      supabase.from('inventory_requests').select('id, school_id, status, created_at').order('created_at', { ascending: false }).limit(5),
+      supabase
+        .from('staff_leaves')
+        .select('id', { count: 'exact', head: true })
+        .eq('status', 'pending'),
+      supabase
+        .from('schools')
+        .select('id, name, created_at')
+        .order('created_at', { ascending: false })
+        .limit(5),
+      supabase
+        .from('users')
+        .select('id, full_name, role, school_id')
+        .order('created_at', { ascending: false })
+        .limit(5),
+      supabase
+        .from('staff_leaves')
+        .select('id, leave_type, school_id, created_at, status')
+        .order('created_at', { ascending: false })
+        .limit(5),
+      supabase
+        .from('invite_codes')
+        .select('code, role, is_active, uses_count, max_uses, school_id')
+        .order('created_at', { ascending: false })
+        .limit(5),
+      supabase
+        .from('school_echo_feedback')
+        .select('id, type, content, created_at')
+        .order('created_at', { ascending: false })
+        .limit(5),
+      supabase
+        .from('inventory_requests')
+        .select('id, school_id, status, created_at')
+        .order('created_at', { ascending: false })
+        .limit(5),
     ]);
 
     return {
@@ -90,7 +147,8 @@ export const adminRepository = {
       recentSchools: (recentSchoolsResult.data ?? []) as AdminWorkspaceSnapshot['recentSchools'],
       recentUsers: (recentUsersResult.data ?? []) as AdminWorkspaceSnapshot['recentUsers'],
       recentInvites: (recentInvitesResult.data ?? []) as AdminWorkspaceSnapshot['recentInvites'],
-      recentObservations: (recentObservationsResult.data ?? []) as AdminWorkspaceSnapshot['recentObservations'],
+      recentObservations: (recentObservationsResult.data ??
+        []) as AdminWorkspaceSnapshot['recentObservations'],
     };
   },
 
@@ -119,7 +177,9 @@ export function useAdminWorkspaceSnapshot() {
         setError(null);
       } catch (caughtError) {
         if (cancelled) return;
-        setError(caughtError instanceof Error ? caughtError.message : 'Failed to load admin snapshot');
+        setError(
+          caughtError instanceof Error ? caughtError.message : 'Failed to load admin snapshot',
+        );
       } finally {
         if (!cancelled) setIsLoading(false);
       }

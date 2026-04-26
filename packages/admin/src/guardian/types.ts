@@ -1,10 +1,10 @@
 export type RelationshipType = 'parent' | 'guardian' | 'caregiver';
-export type GuardianPermission = 
-  | 'attendance' 
-  | 'grades' 
-  | 'reports' 
-  | 'communication' 
-  | 'payments' 
+export type GuardianPermission =
+  | 'attendance'
+  | 'grades'
+  | 'reports'
+  | 'communication'
+  | 'payments'
   | 'medical';
 export type PermissionLevel = 'none' | 'read' | 'write' | 'admin';
 export type CustodyLevel = 'full' | 'partial' | 'visitation';
@@ -93,7 +93,7 @@ export interface TimeRestrictions {
   allowedDays: number[]; // 0-6 (Sunday-Saturday)
   allowedHours: {
     start: string; // HH:mm
-    end: string;   // HH:mm
+    end: string; // HH:mm
   };
   timezone: string;
 }
@@ -207,10 +207,10 @@ export interface GuardianLayoutBreakpoints {
     maxWidth: 768;
     cardPadding: 16;
     fontSize: {
-      small: 12,
-      medium: 14,
-      large: 16,
-      xlarge: 18
+      small: 12;
+      medium: 14;
+      large: 16;
+      xlarge: 18;
     };
   };
   tablet: {
@@ -218,20 +218,20 @@ export interface GuardianLayoutBreakpoints {
     maxWidth: 1024;
     cardPadding: 20;
     fontSize: {
-      small: 13,
-      medium: 15,
-      large: 17,
-      xlarge: 19
+      small: 13;
+      medium: 15;
+      large: 17;
+      xlarge: 19;
     };
   };
   desktop: {
     minWidth: 1025;
     cardPadding: 24;
     fontSize: {
-      small: 14,
-      medium: 16,
-      large: 18,
-      xlarge: 20
+      small: 14;
+      medium: 16;
+      large: 18;
+      xlarge: 20;
     };
   };
 }

@@ -1,40 +1,35 @@
-import React, { useState } from 'react';
+import { useStore } from '@repo/core/logic';
+import {
+  Check,
+  ChevronRight,
+  Eye,
+  Globe,
+  Info,
+  Shield,
+  Smartphone,
+  Sparkles,
+  Zap,
+} from 'lucide-react-native';
+import type React from 'react';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { DeviceAccountManager } from '../components';
+import { useEnvironment } from '../context';
 import {
   Box,
-  VStack,
-  HStack,
-  Heading,
-  Text,
   Button,
   ButtonText,
+  Heading,
+  HStack,
   Pressable,
-  Switch,
   ScrollView,
+  Switch,
+  Text,
+  VStack,
 } from '../gluestack';
-import ScreenWrapper from '../components/ScreenWrapper';
-import { useEnvironment } from '../context';
 import { useTheme } from '../hooks/useTheme';
 import { useSanctuaryToast } from '../providers/ToastProvider';
 import { hapticLight, hapticSuccess } from '../utils/haptics';
-import { useTranslation } from 'react-i18next';
-import {
-  Sun,
-  Moon,
-  Smartphone,
-  Sparkles,
-  Eye,
-  EyeOff,
-  Globe,
-  Type,
-  ChevronRight,
-  Check,
-  Info,
-  Zap,
-  Shield,
-} from 'lucide-react-native';
-
-import { useStore } from '@repo/core/logic';
-import { DeviceAccountManager } from '../components';
 
 interface SettingsOptionProps {
   icon: React.ReactNode;
@@ -128,17 +123,17 @@ export default function AppSettingsScreen({ navigation }: any) {
     enableLivingTheme,
     setEnableLivingTheme,
   } = useEnvironment();
-  const isDemoMode = useStore((state) => state.isDemoMode);
-  const setDemoMode = useStore((state) => state.setDemoMode);
+  const _isDemoMode = useStore((state) => state.isDemoMode);
+  const _setDemoMode = useStore((state) => state.setDemoMode);
   const user = useStore((state) => state.user);
   const { showToast } = useSanctuaryToast();
 
-  const [showThemeModal, setShowThemeModal] = useState(false);
+  const [_showThemeModal, setShowThemeModal] = useState(false);
   const [showFidelityModal, setShowFidelityModal] = useState(false);
   const [showLanguageModal, setShowLanguageModal] = useState(false);
 
   // Theme mode labels
-  const getThemeLabel = () => {
+  const _getThemeLabel = () => {
     if (themeMode === 'system') return t('settings.theme.system');
     if (themeMode === 'auto') return t('settings.theme.auto');
     if (themeMode === 'light') return t('settings.theme.light');
@@ -160,7 +155,7 @@ export default function AppSettingsScreen({ navigation }: any) {
   };
 
   // Temporal phase description
-  const getTemporalDescription = () => {
+  const _getTemporalDescription = () => {
     const time = new Date().toLocaleTimeString(i18n.language, {
       hour: 'numeric',
       minute: '2-digit',
@@ -176,7 +171,7 @@ export default function AppSettingsScreen({ navigation }: any) {
     return `${phases[temporalPhase as keyof typeof phases]} • ${time}`;
   };
 
-  const handleThemeChange = (mode: 'light' | 'dark' | 'auto') => {
+  const _handleThemeChange = (mode: 'light' | 'dark' | 'auto') => {
     setThemeMode(mode);
     hapticSuccess();
     setShowThemeModal(false);
@@ -313,7 +308,7 @@ export default function AppSettingsScreen({ navigation }: any) {
             </HStack>
             <Switch
               value={user?.public_profile !== false}
-              onValueChange={async (val: boolean) => {
+              onValueChange={async (_val: boolean) => {
                 hapticLight();
                 showToast({
                   message: t('settings.profile_visibility_updated', 'Profile visibility updated'),

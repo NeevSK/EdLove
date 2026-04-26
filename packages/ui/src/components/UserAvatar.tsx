@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, Image, StyleSheet } from 'react-native';
+import type React from 'react';
+import { Image, StyleSheet, Text, View } from 'react-native';
 import { Theme } from '../theme/Theme';
 import { getInitialsFromName } from '../utils/stringUtils';
 

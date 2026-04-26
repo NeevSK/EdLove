@@ -1,7 +1,13 @@
-import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals';
-import { multiTenantAnalyticsEngine } from '../../analytics/engine';
+import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals';
 import { multiTenantAnalyticsAPI } from '../../analytics/api';
-import type { TenantMetrics, LiveMetrics, CustomReportConfig, MetricDefinition, EducationSector } from '../../analytics/types';
+import { multiTenantAnalyticsEngine } from '../../analytics/engine';
+import type {
+  CustomReportConfig,
+  EducationSector,
+  LiveMetrics,
+  MetricDefinition,
+  TenantMetrics,
+} from '../../analytics/types';
 
 // Mock Supabase
 jest.mock('@repo/core', () => ({
@@ -11,15 +17,15 @@ jest.mock('@repo/core', () => ({
         eq: jest.fn(() => ({
           gte: jest.fn(() => ({
             lt: jest.fn(() => ({
-              single: jest.fn(() => Promise.resolve({ data: {}, error: null }))
-            }))
-          }))
-        }))
+              single: jest.fn(() => Promise.resolve({ data: {}, error: null })),
+            })),
+          })),
+        })),
       })),
       order: jest.fn(() => Promise.resolve({ data: [], error: null })),
-      insert: jest.fn(() => Promise.resolve({ data: {}, error: null }))
-    }))
-  }
+      insert: jest.fn(() => Promise.resolve({ data: {}, error: null })),
+    })),
+  },
 }));
 
 describe('MultiTenantAnalyticsEngine', () => {
@@ -36,7 +42,7 @@ describe('MultiTenantAnalyticsEngine', () => {
       const tenantIds = ['tenant-1', 'tenant-2'];
       const timeRange = {
         startDate: '2024-01-01',
-        endDate: '2024-03-31'
+        endDate: '2024-03-31',
       };
 
       const result = await multiTenantAnalyticsEngine.aggregateTenantMetrics(tenantIds, timeRange);
@@ -51,7 +57,7 @@ describe('MultiTenantAnalyticsEngine', () => {
       const tenantIds = ['tenant-1'];
       const timeRange = {
         startDate: '2024-01-01',
-        endDate: '2024-03-31'
+        endDate: '2024-03-31',
       };
 
       const result = await multiTenantAnalyticsEngine.aggregateTenantMetrics(tenantIds, timeRange);
@@ -71,9 +77,9 @@ describe('MultiTenantAnalyticsEngine', () => {
       const industry = 'elementary';
 
       const result = await multiTenantAnalyticsEngine.compareTenantPerformance(
-        tenantIds, 
-        metrics as MetricDefinition[], 
-        industry as EducationSector
+        tenantIds,
+        metrics as MetricDefinition[],
+        industry as EducationSector,
       );
 
       expect(result).toHaveLength(2); // One comparison per metric
@@ -88,14 +94,14 @@ describe('MultiTenantAnalyticsEngine', () => {
       const industry = 'elementary';
 
       const result = await multiTenantAnalyticsEngine.compareTenantPerformance(
-        tenantIds, 
-        metrics as MetricDefinition[], 
-        industry as EducationSector
+        tenantIds,
+        metrics as MetricDefinition[],
+        industry as EducationSector,
       );
 
       const comparison = result[0]!;
       const tenants = comparison.tenants;
-      
+
       // Check that rankings are calculated
       tenants.forEach((tenant, index) => {
         expect(tenant.rank).toBeGreaterThan(0);
@@ -119,7 +125,7 @@ describe('MultiTenantAnalyticsEngine', () => {
       expect(result).toHaveProperty('error_rate');
       expect(result).toHaveProperty('system_health');
       expect(result).toHaveProperty('resource_usage');
-      
+
       expect(result!.active_users).toBeDefined();
     });
 
@@ -139,7 +145,7 @@ describe('MultiTenantAnalyticsEngine', () => {
       expect(result!.resource_usage).toHaveProperty('cpu');
       expect(result!.resource_usage).toHaveProperty('memory');
       expect(result!.resource_usage).toHaveProperty('storage');
-      
+
       expect(typeof result!.resource_usage.cpu).toBe('number');
       expect(typeof result!.resource_usage.memory).toBe('number');
       expect(typeof result!.resource_usage.storage).toBe('number');
@@ -148,13 +154,13 @@ describe('MultiTenantAnalyticsEngine', () => {
 
   describe('Custom Reports', () => {
     it('should create custom report with specified configuration', async () => {
-      const config: CustomReportConfig  = {
+      const config: CustomReportConfig = {
         id: 'report-1',
         name: 'Test Report',
         description: 'Test Description',
         metrics: ['attendance_rate', 'grade_average'],
         filters: [],
-        chartType: 'line'
+        chartType: 'line',
       };
 
       const result = await multiTenantAnalyticsEngine.createCustomReport(config);
@@ -168,13 +174,13 @@ describe('MultiTenantAnalyticsEngine', () => {
     });
 
     it('should generate appropriate visualizations based on chart type', async () => {
-      const config: CustomReportConfig  = {
+      const config: CustomReportConfig = {
         id: 'report-1',
         name: 'Test Report',
         description: 'Test Description',
         metrics: ['attendance_rate'],
         filters: [],
-        chartType: 'bar'
+        chartType: 'bar',
       };
 
       const result = await multiTenantAnalyticsEngine.createCustomReport(config);
@@ -187,19 +193,19 @@ describe('MultiTenantAnalyticsEngine', () => {
 
     it('should handle different chart types correctly', async () => {
       const chartTypes = ['line', 'bar', 'pie', 'scatter', 'heatmap'] as const;
-      
+
       for (const chartType of chartTypes) {
-        const config: CustomReportConfig  = {
+        const config: CustomReportConfig = {
           id: `report-${chartType}`,
           name: `${chartType} Report`,
           description: `Test ${chartType} chart`,
           metrics: ['attendance_rate'],
           filters: [],
-          chartType
+          chartType,
         };
 
         const result = await multiTenantAnalyticsEngine.createCustomReport(config);
-        
+
         expect(result.visualizations[0]!.type).toBe(chartType);
       }
     });
@@ -214,7 +220,7 @@ describe('MultiTenantAnalyticsEngine', () => {
 
       expect(Array.isArray(result)).toBe(true);
       // Each anomaly should have required properties
-      result.forEach(anomaly => {
+      result.forEach((anomaly) => {
         expect(anomaly).toHaveProperty('id');
         expect(anomaly).toHaveProperty('tenantId');
         expect(anomaly).toHaveProperty('metric');
@@ -232,13 +238,13 @@ describe('MultiTenantAnalyticsEngine', () => {
       const tenantId = 'tenant-1';
       const timeRange = {
         startDate: '2024-01-01',
-        endDate: '2024-03-31'
+        endDate: '2024-03-31',
       };
 
       const result = await multiTenantAnalyticsEngine.identifyTrends(tenantId, timeRange);
 
       expect(Array.isArray(result)).toBe(true);
-      result.forEach(trend => {
+      result.forEach((trend) => {
         expect(trend).toHaveProperty('metric');
         expect(trend).toHaveProperty('direction');
         expect(trend).toHaveProperty('strength');
@@ -253,14 +259,14 @@ describe('MultiTenantAnalyticsEngine', () => {
     it('should generate predictions based on historical data', async () => {
       const historicalData = {
         attendance_rate: [90, 92, 88, 91, 93],
-        grade_average: [85, 87, 84, 86, 88]
+        grade_average: [85, 87, 84, 86, 88],
       };
 
       const tenantId = 'tenant-1';
       const result = await multiTenantAnalyticsEngine.predictOutcomes(tenantId, historicalData);
 
       expect(Array.isArray(result)).toBe(true);
-      result.forEach(prediction => {
+      result.forEach((prediction) => {
         expect(prediction).toHaveProperty('metric');
         expect(prediction).toHaveProperty('model');
         expect(prediction).toHaveProperty('accuracy');
@@ -276,13 +282,13 @@ describe('MultiTenantAnalyticsEngine', () => {
   describe('Recommendations Engine', () => {
     it('should generate insights based on metrics', async () => {
       const tenantId = 'tenant-1';
-      const context = {  userRole: 'admin' };
-      const options = {  limit: 10 };
+      const context = { userRole: 'admin' };
+      const options = { limit: 10 };
 
       const result = await multiTenantAnalyticsEngine.generateRecommendations(tenantId, context);
 
       expect(Array.isArray(result)).toBe(true);
-      result.forEach(insight => {
+      result.forEach((insight) => {
         expect(insight).toHaveProperty('id');
         expect(insight).toHaveProperty('tenantId');
         expect(insight).toHaveProperty('type');
@@ -307,7 +313,7 @@ describe('MultiTenantAnalyticsEngine', () => {
       expect(result).toHaveProperty('tenant_performance');
       expect(result).toHaveProperty('industry_trends');
       expect(result).toHaveProperty('recommendations');
-      
+
       expect(result.tenant_performance).toHaveProperty('overall_rank');
       expect(result.tenant_performance).toHaveProperty('total_tenants');
       expect(result.tenant_performance).toHaveProperty('percentile');
@@ -319,10 +325,12 @@ describe('MultiTenantAnalyticsEngine', () => {
 
   describe('Performance', () => {
     it('should handle large datasets efficiently', async () => {
-      const tenantIds = Array(100).fill(null).map((_, i) => `tenant-${i}`);
+      const tenantIds = Array(100)
+        .fill(null)
+        .map((_, i) => `tenant-${i}`);
       const timeRange = {
         startDate: '2024-01-01',
-        endDate: '2024-03-31'
+        endDate: '2024-03-31',
       };
 
       const startTime = performance.now();
@@ -337,11 +345,11 @@ describe('MultiTenantAnalyticsEngine', () => {
       const tenantIds = ['tenant-1', 'tenant-2', 'tenant-3'];
       const timeRange = {
         startDate: '2024-01-01',
-        endDate: '2024-03-31'
+        endDate: '2024-03-31',
       };
 
-      const promises = tenantIds.map(tenantId => 
-        multiTenantAnalyticsEngine.aggregateTenantMetrics([tenantId], timeRange)
+      const promises = tenantIds.map((tenantId) =>
+        multiTenantAnalyticsEngine.aggregateTenantMetrics([tenantId], timeRange),
       );
 
       const startTime = performance.now();
@@ -360,19 +368,21 @@ describe('MultiTenantAnalyticsEngine', () => {
       supabase.from.mockImplementation(() => ({
         select: jest.fn(() => ({
           eq: jest.fn(() => ({
-            single: jest.fn(() => Promise.resolve({ 
-              data: null, 
-              error: { message: 'Database connection failed' } 
-            }))
-          }))
-        }))
+            single: jest.fn(() =>
+              Promise.resolve({
+                data: null,
+                error: { message: 'Database connection failed' },
+              }),
+            ),
+          })),
+        })),
       }));
 
       await expect(
         multiTenantAnalyticsEngine.aggregateTenantMetrics(['tenant-1'], {
           startDate: '2024-01-01',
-          endDate: '2024-03-31'
-        })
+          endDate: '2024-03-31',
+        }),
       ).rejects.toThrow();
     });
 
@@ -380,11 +390,11 @@ describe('MultiTenantAnalyticsEngine', () => {
       const invalidTenantIds = '';
       const timeRange = {
         startDate: '2024-01-01',
-        endDate: '2024-03-31'
+        endDate: '2024-03-31',
       };
 
       await expect(
-        multiTenantAnalyticsEngine.aggregateTenantMetrics([invalidTenantIds], timeRange)
+        multiTenantAnalyticsEngine.aggregateTenantMetrics([invalidTenantIds], timeRange),
       ).rejects.toThrow();
     });
   });

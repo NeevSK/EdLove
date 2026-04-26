@@ -1,6 +1,6 @@
-import React from 'react';
-import { View, PanResponder, Animated, Dimensions } from 'react-native';
 import { useTemporalStore } from '@repo/core/logic';
+import React from 'react';
+import { Animated, Dimensions, PanResponder } from 'react-native';
 import { Box, Text } from '../gluestack';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -22,7 +22,7 @@ export const TemporalScrubber: React.FC = () => {
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
       onPanResponderMove: Animated.event([null, { dx: pan }], { useNativeDriver: false }),
-      onPanResponderRelease: (e, gestureState) => {
+      onPanResponderRelease: (_e, gestureState) => {
         // Simple logic to change date based on swipe direction
         const today = new Date();
         if (gestureState.dx < -50) {

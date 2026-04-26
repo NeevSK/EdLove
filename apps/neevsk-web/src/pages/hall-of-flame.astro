@@ -1,64 +1,70 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
 import Navigation from '../components/Navigation.astro';
 import RealitySwitch from '../components/RealitySwitch.astro';
-import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
 import { absoluteUrl } from '../lib/site';
 
 const flameEntries = await getCollection('hall-of-flame', ({ data }) => !data.draft);
 
 const chambers = [
-	{
-		id: "The First Light",
-		title: "The First Light",
-		description: "Born not from ambition, but from reverence. Not from performance, but from pain-transformed-into-purpose. The innermost temple.",
-		color: "embers"
-	},
-	{
-		id: "Chamber of Love",
-		title: "Chamber of Love",
-		description: "For those who met your soul in real life, and lit the first flames of care. Parents, brothers, teachers who SAW you.",
-		color: "plasma"
-	},
-	{
-		id: "Chamber of Tribute",
-		title: "Chamber of Tribute",
-		description: "Lighthouses whose lives sent beams across broken systems. Aaron Swartz, CWW Kannangara, David Foster Wallace.",
-		color: "embers"
-	},
-	{
-		id: "Chamber of Mastery",
-		title: "Chamber of Mastery",
-		description: "Those who ignited your sense of competence, clarity, and craft. Ken Miles, Buckminster Fuller, Linus Torvalds.",
-		color: "plasma"
-	},
-	{
-		id: "Chamber of Inspiration & Respect",
-		title: "Chamber of Inspiration & Respect",
-		description: "Where ideas became nourishment. Ivan Illich, Maria Montessori, bell hooks, Vandana Shiva.",
-		color: "embers"
-	},
-	{
-		id: "Chamber of Support",
-		title: "Chamber of Support",
-		description: "Those who nourish the mission materially, spiritually, and communally. The unseen foundations.",
-		color: "plasma"
-	}
+  {
+    id: 'The First Light',
+    title: 'The First Light',
+    description:
+      'Born not from ambition, but from reverence. Not from performance, but from pain-transformed-into-purpose. The innermost temple.',
+    color: 'embers',
+  },
+  {
+    id: 'Chamber of Love',
+    title: 'Chamber of Love',
+    description:
+      'For those who met your soul in real life, and lit the first flames of care. Parents, brothers, teachers who SAW you.',
+    color: 'plasma',
+  },
+  {
+    id: 'Chamber of Tribute',
+    title: 'Chamber of Tribute',
+    description:
+      'Lighthouses whose lives sent beams across broken systems. Aaron Swartz, CWW Kannangara, David Foster Wallace.',
+    color: 'embers',
+  },
+  {
+    id: 'Chamber of Mastery',
+    title: 'Chamber of Mastery',
+    description:
+      'Those who ignited your sense of competence, clarity, and craft. Ken Miles, Buckminster Fuller, Linus Torvalds.',
+    color: 'plasma',
+  },
+  {
+    id: 'Chamber of Inspiration & Respect',
+    title: 'Chamber of Inspiration & Respect',
+    description:
+      'Where ideas became nourishment. Ivan Illich, Maria Montessori, bell hooks, Vandana Shiva.',
+    color: 'embers',
+  },
+  {
+    id: 'Chamber of Support',
+    title: 'Chamber of Support',
+    description:
+      'Those who nourish the mission materially, spiritually, and communally. The unseen foundations.',
+    color: 'plasma',
+  },
 ];
 
-const groupedEntries = chambers.map(chamber => ({
-    ...chamber,
-    entries: flameEntries
-        .filter(entry => entry.data.chamber === chamber.id)
-        .sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0))
+const groupedEntries = chambers.map((chamber) => ({
+  ...chamber,
+  entries: flameEntries
+    .filter((entry) => entry.data.chamber === chamber.id)
+    .sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0)),
 }));
 
 const structuredData = {
-    '@context': 'https://schema.org',
-    '@type': 'CollectionPage',
-    name: 'Hall of Flame',
-    description: 'A chambered archive of people, lighthouses, and lineages that shaped the work.',
-    url: absoluteUrl('/hall-of-flame'),
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: 'Hall of Flame',
+  description: 'A chambered archive of people, lighthouses, and lineages that shaped the work.',
+  url: absoluteUrl('/hall-of-flame'),
 };
 ---
 

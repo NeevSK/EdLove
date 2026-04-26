@@ -1,7 +1,8 @@
-import React, { createContext, useContext, useMemo } from 'react';
+import { cssInterop } from 'nativewind';
+import type React from 'react';
+import { createContext, useContext, useMemo } from 'react';
 import { Pressable, type ViewProps } from 'react-native';
 import { Text } from '../text';
-import { cssInterop } from 'nativewind';
 
 cssInterop(Pressable, { className: 'style' });
 
@@ -20,7 +21,7 @@ interface FabContextType {
 
 const FabContext = createContext<FabContextType | undefined>(undefined);
 
-function useFab() {
+function _useFab() {
   const context = useContext(FabContext);
   if (!context) throw new Error('useFab must be used within a Fab component');
   return context;

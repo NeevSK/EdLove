@@ -1,11 +1,11 @@
-import React from 'react';
-import { Box, VStack, HStack, Text, ScrollView } from '@repo/ui';
+import { Box, HStack, ScrollView, Text, VStack } from '@repo/ui';
+import type React from 'react';
+import { GuardianEvents } from '../components/guardian/GuardianEvents';
+import { GuardianNotifications } from '../components/guardian/GuardianNotifications';
+import { GuardianChildrenList } from '../components/poa/GuardianChildrenList';
+import { GuardianHeader } from '../components/poa/GuardianHeader';
 import type { StudentOverview } from '../guardian';
 import { useGuardianWorkspaceData } from '../guardian/useGuardianWorkspaceData';
-import { GuardianHeader } from '../components/poa/GuardianHeader';
-import { GuardianChildrenList } from '../components/poa/GuardianChildrenList';
-import { GuardianNotifications } from '../components/guardian/GuardianNotifications';
-import { GuardianEvents } from '../components/guardian/GuardianEvents';
 
 interface GuardianDashboardScreenProps {
   guardianId: string;
@@ -44,19 +44,18 @@ export const GuardianDashboardScreen: React.FC<GuardianDashboardScreenProps> = (
     <Box className="flex-1 bg-phase-canvas">
       <GuardianHeader studentCount={dashboard.students.length} />
 
-      <ScrollView className="flex-1" contentContainerStyle={{ padding: 20 }} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        className="flex-1"
+        contentContainerStyle={{ padding: 20 }}
+        showsVerticalScrollIndicator={false}
+      >
         <VStack className="gap-6">
-          <GuardianChildrenList 
-            students={dashboard.students}
-            onStudentPress={onStudentPress}
-          />
+          <GuardianChildrenList students={dashboard.students} onStudentPress={onStudentPress} />
 
           <Box className="flex-col md:flex-row gap-6">
             <VStack className="flex-1 gap-4">
-              <Text className="text-phaseText-primary font-bold text-lg">
-                Recent Notifications
-              </Text>
-              <GuardianNotifications 
+              <Text className="text-phaseText-primary font-bold text-lg">Recent Notifications</Text>
+              <GuardianNotifications
                 notifications={dashboard.notifications}
                 onNotificationPress={onNotificationPress}
                 limit={5}
@@ -64,10 +63,8 @@ export const GuardianDashboardScreen: React.FC<GuardianDashboardScreenProps> = (
             </VStack>
 
             <VStack className="flex-1 gap-4">
-              <Text className="text-phaseText-primary font-bold text-lg">
-                Upcoming Events
-              </Text>
-              <GuardianEvents 
+              <Text className="text-phaseText-primary font-bold text-lg">Upcoming Events</Text>
+              <GuardianEvents
                 events={dashboard.upcomingEvents}
                 onEventPress={onEventPress}
                 limit={5}

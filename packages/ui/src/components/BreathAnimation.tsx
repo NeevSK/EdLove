@@ -1,13 +1,13 @@
+import { Runtime } from '@repo/core/native';
 import React, { useEffect } from 'react';
+import { View } from 'react-native';
 import Animated, {
-  useSharedValue,
+  Easing,
   useAnimatedStyle,
+  useSharedValue,
   withDelay,
   withTiming,
-  Easing,
 } from 'react-native-reanimated';
-import { View } from 'react-native';
-import { Runtime } from '@repo/core/native';
 
 interface BreathAnimationProps {
   children: React.ReactNode;
@@ -37,7 +37,7 @@ const AnimatedContent = ({ children, delay, duration, direction }: AnimatedConte
       delay,
       withTiming(0, { duration, easing: Easing.out(Easing.quad) }),
     );
-  }, [delay, duration]);
+  }, [delay, duration, translateY, opacity]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,

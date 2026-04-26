@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import type React from 'react';
+import { useState } from 'react';
 import type { PrincipalWorkspaceView } from '../principal/workspace';
 
 interface PrincipalWorkspaceRenderCtx {
@@ -19,7 +20,8 @@ export function PrincipalWorkspaceContainer({
   onActiveViewChange,
   initialView = 'main',
   renderMain,
-  renderView}: PrincipalWorkspaceContainerProps) {
+  renderView,
+}: PrincipalWorkspaceContainerProps) {
   const [internalActiveView, setInternalActiveView] = useState<PrincipalWorkspaceView>(initialView);
   const activeView = controlledActiveView ?? internalActiveView;
   const setActiveView = (view: PrincipalWorkspaceView) => {
@@ -28,7 +30,7 @@ export function PrincipalWorkspaceContainer({
     }
     onActiveViewChange?.(view);
   };
-  const ctx: PrincipalWorkspaceRenderCtx = {  activeView, setActiveView };
+  const ctx: PrincipalWorkspaceRenderCtx = { activeView, setActiveView };
 
   if (activeView !== 'main') {
     return <>{renderView(ctx)}</>;

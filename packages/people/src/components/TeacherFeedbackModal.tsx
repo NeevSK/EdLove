@@ -1,26 +1,32 @@
-import React, { useState } from 'react';
 import {
   Box,
-  VStack,
-  HStack,
-  Text,
   Button,
   ButtonText,
+  HStack,
+  Icon,
   SanctuaryModal,
-  Textarea,
-  TextareaInput,
   Select,
-  SelectTrigger,
-  SelectInput,
-  SelectIcon,
-  SelectPortal,
   SelectBackdrop,
   SelectContent,
+  SelectIcon,
+  SelectInput,
   SelectItem,
+  SelectPortal,
+  SelectTrigger,
   Spinner,
-  Icon
+  Text,
+  Textarea,
+  TextareaInput,
+  VStack,
 } from '@repo/ui';
-import { ChevronDown, MessageSquare, Heart, AlertTriangle, CheckCircle2 } from 'lucide-react-native';
+import {
+  AlertTriangle,
+  CheckCircle2,
+  ChevronDown,
+  Heart,
+  MessageSquare,
+} from 'lucide-react-native';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { teacherFeedbackAPI } from '../feedback';
 
@@ -73,9 +79,9 @@ export default function TeacherFeedbackModal({
 
   const footer = (
     <HStack className="gap-4 w-full">
-      <Button 
-        variant="outline" 
-        onPress={onClose} 
+      <Button
+        variant="outline"
+        onPress={onClose}
         className="flex-1 border-phase-surface rounded-2xl h-14"
       >
         <ButtonText className="text-phase-text-secondary font-bold">
@@ -86,15 +92,15 @@ export default function TeacherFeedbackModal({
         onPress={handleSubmit}
         isDisabled={isSubmitting || !content.trim()}
         className={`flex-[2] rounded-2xl h-14 shadow-lg ${
-          priority === 'high' ? 'bg-phase-error shadow-error/20' : 'bg-phase-interactive shadow-blue-500/20'
+          priority === 'high'
+            ? 'bg-phase-error shadow-error/20'
+            : 'bg-phase-interactive shadow-blue-500/20'
         }`}
       >
         {isSubmitting ? (
           <Spinner className="text-white" />
         ) : (
-          <ButtonText className="text-white font-bold">
-            {t('common.send')}
-          </ButtonText>
+          <ButtonText className="text-white font-bold">{t('common.send')}</ButtonText>
         )}
       </Button>
     </HStack>
@@ -114,14 +120,12 @@ export default function TeacherFeedbackModal({
           <Text className="text-phase-text-tertiary text-[10px] font-black uppercase tracking-[1px] ml-1">
             {t('teacher.feedback.category')}
           </Text>
-          <Select 
-            onValueChange={setCategory} 
-            defaultValue={category}
-          >
-            <SelectTrigger
-              className="border-phase-surface/50 bg-phase-surface/20 h-14 rounded-2xl px-4"
-            >
-              <SelectInput placeholder="Select category" className="text-phase-text-primary font-bold" />
+          <Select onValueChange={setCategory} defaultValue={category}>
+            <SelectTrigger className="border-phase-surface/50 bg-phase-surface/20 h-14 rounded-2xl px-4">
+              <SelectInput
+                placeholder="Select category"
+                className="text-phase-text-primary font-bold"
+              />
               <SelectIcon className="mr-2">
                 <Icon as={ChevronDown} size="sm" className="text-phase-text-tertiary" />
               </SelectIcon>
@@ -149,13 +153,17 @@ export default function TeacherFeedbackModal({
                 size="sm"
                 variant={priority === p ? 'solid' : 'outline'}
                 className={`flex-1 rounded-2xl h-11 border-phase-surface ${
-                  priority === p 
-                    ? (p === 'high' ? 'bg-phase-error' : 'bg-phase-interactive') 
+                  priority === p
+                    ? p === 'high'
+                      ? 'bg-phase-error'
+                      : 'bg-phase-interactive'
                     : 'bg-transparent'
                 }`}
                 onPress={() => setPriority(p)}
               >
-                <ButtonText className={`text-[11px] font-black ${priority === p ? 'text-white' : 'text-phase-text-tertiary'}`}>
+                <ButtonText
+                  className={`text-[11px] font-black ${priority === p ? 'text-white' : 'text-phase-text-tertiary'}`}
+                >
                   {p.toUpperCase()}
                 </ButtonText>
               </Button>
@@ -168,9 +176,7 @@ export default function TeacherFeedbackModal({
           <Text className="text-phase-text-tertiary text-[10px] font-black uppercase tracking-[1px] ml-1">
             {t('teacher.feedback.content')}
           </Text>
-          <Textarea
-            className="bg-phase-surface/20 border-phase-surface/50 min-h-[140px] rounded-[32px] p-2"
-          >
+          <Textarea className="bg-phase-surface/20 border-phase-surface/50 min-h-[140px] rounded-[32px] p-2">
             <TextareaInput
               placeholder={t('teacher.feedback.placeholder')}
               value={content}
@@ -181,9 +187,7 @@ export default function TeacherFeedbackModal({
         </VStack>
 
         {/* Info note */}
-        <Box
-          className="p-4 bg-phase-surface/10 rounded-2xl border-l-[3px] border-phase-interactive border border-phase-surface/30 mt-2"
-        >
+        <Box className="p-4 bg-phase-surface/10 rounded-2xl border-l-[3px] border-phase-interactive border border-phase-surface/30 mt-2">
           <Text className="text-phase-text-tertiary text-[10px] italic leading-4">
             {t('teacher.feedback.note')}
           </Text>

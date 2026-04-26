@@ -1,6 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, TextInput, ScrollView, StyleSheet, Alert } from 'react-native';
-import { VStack, HStack, Card, Theme } from '@repo/ui';
+import { Card, HStack, Theme, VStack } from '@repo/ui';
+import React, { useEffect, useRef, useState } from 'react';
+import { Alert, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 
 interface ChatMessage {
   id: string;
@@ -30,9 +30,9 @@ export function InteractiveChat({
   onEditMessage,
   onDeleteMessage,
   height = 400,
-  placeholder = "Type your message...",
+  placeholder = 'Type your message...',
   showTimestamps = true,
-  allowEditing = true
+  allowEditing = true,
 }: InteractiveChatProps) {
   const [inputText, setInputText] = useState('');
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
@@ -76,21 +76,17 @@ export function InteractiveChat({
 
   const handleDelete = (messageId: string) => {
     if (onDeleteMessage) {
-      Alert.alert(
-        'Delete Message',
-        'Are you sure you want to delete this message?',
-        [
-          { text: 'Cancel', style: 'cancel' },
-          { text: 'Delete', style: 'destructive', onPress: () => onDeleteMessage(messageId) }
-        ]
-      );
+      Alert.alert('Delete Message', 'Are you sure you want to delete this message?', [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Delete', style: 'destructive', onPress: () => onDeleteMessage(messageId) },
+      ]);
     }
   };
 
   const formatTimestamp = (date: Date) => {
-    return date.toLocaleTimeString([], { 
-      hour: '2-digit', 
-      minute: '2-digit' 
+    return date.toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit',
     });
   };
 
@@ -109,21 +105,22 @@ export function InteractiveChat({
 
   const renderMessage = (message: ChatMessage) => {
     const isEditing = editingMessageId === message.id;
-    
+
     return (
       <View key={message.id} style={styles.messageContainer}>
         <HStack style={styles.messageHeader}>
           <Text style={styles.senderText}>
-            {message.sender === 'user' ? 'You' : 
-             message.sender === 'assistant' ? 'Assistant' : 'System'}
+            {message.sender === 'user'
+              ? 'You'
+              : message.sender === 'assistant'
+                ? 'Assistant'
+                : 'System'}
           </Text>
           {showTimestamps && (
-            <Text style={styles.timestampText}>
-              {formatTimestamp(message.timestamp)}
-            </Text>
+            <Text style={styles.timestampText}>{formatTimestamp(message.timestamp)}</Text>
           )}
         </HStack>
-        
+
         <View style={styles.messageContent}>
           {isEditing && allowEditing ? (
             <TextInput
@@ -135,45 +132,34 @@ export function InteractiveChat({
               placeholder="Edit message..."
             />
           ) : (
-            <Text style={getMessageStyle(message)}>
-              {message.text}
-            </Text>
+            <Text style={getMessageStyle(message)}>{message.text}</Text>
           )}
         </View>
-        
+
         {allowEditing && message.sender !== 'system' && (
           <HStack style={styles.messageActions}>
             {message.sender === 'user' && (
               <>
-                <Text 
+                <Text
                   style={styles.actionButton}
                   onPress={() => handleEdit(message.id, message.text)}
                 >
                   Edit
                 </Text>
-                <Text 
-                  style={styles.actionButton}
-                  onPress={() => handleDelete(message.id)}
-                >
+                <Text style={styles.actionButton} onPress={() => handleDelete(message.id)}>
                   Delete
                 </Text>
               </>
             )}
           </HStack>
         )}
-        
+
         {isEditing && (
           <HStack style={styles.editActions}>
-            <Text 
-              style={[styles.actionButton, styles.saveButton]}
-              onPress={handleSaveEdit}
-            >
+            <Text style={[styles.actionButton, styles.saveButton]} onPress={handleSaveEdit}>
               Save
             </Text>
-            <Text 
-              style={[styles.actionButton, styles.cancelButton]}
-              onPress={handleCancelEdit}
-            >
+            <Text style={[styles.actionButton, styles.cancelButton]} onPress={handleCancelEdit}>
               Cancel
             </Text>
           </HStack>
@@ -192,7 +178,7 @@ export function InteractiveChat({
       >
         {messages.map(renderMessage)}
       </ScrollView>
-      
+
       {/* Input Area */}
       <View style={styles.inputContainer}>
         <TextInput
@@ -205,11 +191,8 @@ export function InteractiveChat({
           editable={!editingMessageId}
           onSubmitEditing={handleSend}
         />
-        <Text 
-          style={[
-            styles.sendButton,
-            { opacity: inputText.trim() ? 1 : 0.5 }
-          ]}
+        <Text
+          style={[styles.sendButton, { opacity: inputText.trim() ? 1 : 0.5 }]}
           onPress={handleSend}
         >
           Send

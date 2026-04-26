@@ -1,15 +1,15 @@
-import React, {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  useCallback,
-  ReactNode,
-  useMemo,
-} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import i18n from 'i18next';
-import { Language } from './types';
+import {
+  createContext,
+  type ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
+import type { Language } from './types';
 
 interface LanguageContextValue {
   language: Language;

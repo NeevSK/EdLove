@@ -1,7 +1,7 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { Award, BookMarked } from 'lucide-react-native';
-import { Box, HStack, SkeletonCard, Text, VStack, Icon } from '@repo/ui';
 import { assignmentsAPI } from '@repo/core';
+import { Box, HStack, Icon, SkeletonCard, Text, VStack } from '@repo/ui';
+import { Award, BookMarked } from 'lucide-react-native';
+import React, { useEffect, useMemo, useState } from 'react';
 
 interface GradeRow {
   id: string;
@@ -24,7 +24,7 @@ const DEMO_GRADES: GradeRow[] = [
     feedback: 'Clear reasoning and careful presentation.',
     submitted_at: new Date().toISOString(),
     assignments: { title: 'Wave Function Practice' },
-    classrooms: { name: 'Grade 10 Mathematics' }
+    classrooms: { name: 'Grade 10 Mathematics' },
   },
   {
     id: 'demo-grade-2',
@@ -32,7 +32,7 @@ const DEMO_GRADES: GradeRow[] = [
     feedback: 'Good improvement. Keep refining your lab conclusions.',
     submitted_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3).toISOString(),
     assignments: { title: 'Photosynthesis Lab Report' },
-    classrooms: { name: 'Grade 11 Science' }
+    classrooms: { name: 'Grade 11 Science' },
   },
 ];
 
@@ -75,7 +75,9 @@ export function StudentGradesOverview({ userId, isDemo = false }: StudentGradesO
 
         if (!isActive) return;
 
-        setGrades(((data as GradeRow[] | null) ?? []).filter((row) => typeof row.grade === 'number'));
+        setGrades(
+          ((data as GradeRow[] | null) ?? []).filter((row) => typeof row.grade === 'number'),
+        );
       } catch {
         if (!isActive) return;
         setGrades([]);
@@ -99,7 +101,7 @@ export function StudentGradesOverview({ userId, isDemo = false }: StudentGradesO
     const total = grades.reduce((sum, item) => sum + item.grade, 0);
     return {
       count: grades.length,
-      average: Math.round(total / grades.length)
+      average: Math.round(total / grades.length),
     };
   }, [grades]);
 
@@ -116,12 +118,20 @@ export function StudentGradesOverview({ userId, isDemo = false }: StudentGradesO
     <VStack className="gap-4">
       <HStack className="gap-4">
         <Box className="flex-1 rounded-[32px] border border-sanctuary-border bg-sanctuary-surface p-5">
-          <Text className="text-sanctuary-text-tertiary text-[10px] font-black uppercase tracking-widest">Recent grades</Text>
-          <Text className="mt-2 text-2xl font-black text-sanctuary-text tracking-tighter">{summary.count}</Text>
+          <Text className="text-sanctuary-text-tertiary text-[10px] font-black uppercase tracking-widest">
+            Recent grades
+          </Text>
+          <Text className="mt-2 text-2xl font-black text-sanctuary-text tracking-tighter">
+            {summary.count}
+          </Text>
         </Box>
         <Box className="flex-1 rounded-[32px] border border-sanctuary-border bg-sanctuary-surface p-5">
-          <Text className="text-sanctuary-text-tertiary text-[10px] font-black uppercase tracking-widest">Average</Text>
-          <Text className={`mt-2 text-2xl font-black tracking-tighter ${summary.average === null ? 'text-sanctuary-text-tertiary' : resolveGradeColorClass(summary.average)}`}>
+          <Text className="text-sanctuary-text-tertiary text-[10px] font-black uppercase tracking-widest">
+            Average
+          </Text>
+          <Text
+            className={`mt-2 text-2xl font-black tracking-tighter ${summary.average === null ? 'text-sanctuary-text-tertiary' : resolveGradeColorClass(summary.average)}`}
+          >
             {summary.average === null ? '--' : `${summary.average}%`}
           </Text>
         </Box>
@@ -133,7 +143,9 @@ export function StudentGradesOverview({ userId, isDemo = false }: StudentGradesO
             key={item.id}
             className="items-center gap-4 rounded-[24px] border border-sanctuary-border bg-sanctuary-surface p-5"
           >
-            <Box className={`w-12 h-12 items-center justify-center rounded-2xl border ${resolveGradeBgClass(item.grade)}`}>
+            <Box
+              className={`w-12 h-12 items-center justify-center rounded-2xl border ${resolveGradeBgClass(item.grade)}`}
+            >
               <Icon as={Award} size="sm" className={resolveGradeColorClass(item.grade)} />
             </Box>
             <VStack className="flex-1 gap-1">
@@ -144,10 +156,17 @@ export function StudentGradesOverview({ userId, isDemo = false }: StudentGradesO
                 {item.classrooms?.name ?? 'Classroom'}
               </Text>
               {item.feedback ? (
-                <Text className="text-sanctuary-text-tertiary text-[11px] leading-relaxed italic mt-1" numberOfLines={1}>{item.feedback}</Text>
+                <Text
+                  className="text-sanctuary-text-tertiary text-[11px] leading-relaxed italic mt-1"
+                  numberOfLines={1}
+                >
+                  {item.feedback}
+                </Text>
               ) : null}
             </VStack>
-            <Text className={`text-base font-black tracking-tighter ${resolveGradeColorClass(item.grade)}`}>
+            <Text
+              className={`text-base font-black tracking-tighter ${resolveGradeColorClass(item.grade)}`}
+            >
               {item.grade}%
             </Text>
           </HStack>
@@ -156,7 +175,7 @@ export function StudentGradesOverview({ userId, isDemo = false }: StudentGradesO
         <Box className="rounded-[24px] border border-sanctuary-border bg-sanctuary-surface-secondary p-5">
           <HStack className="items-start gap-4">
             <Box className="w-10 h-10 bg-sanctuary-surface-tertiary rounded-xl items-center justify-center border border-sanctuary-border/30">
-                <Icon as={BookMarked} size="xs" className="text-sanctuary-text-tertiary" />
+              <Icon as={BookMarked} size="xs" className="text-sanctuary-text-tertiary" />
             </Box>
             <VStack className="flex-1 gap-1">
               <Text className="text-sanctuary-text text-sm font-black tracking-tight">

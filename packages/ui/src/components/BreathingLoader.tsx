@@ -11,18 +11,18 @@
  * Philosophy: Calm, meditative loading state that doesn't distract
  */
 
-import React, { FC, useEffect } from 'react';
+import { type FC, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 import Animated, {
-  useSharedValue,
+  Easing,
   useAnimatedStyle,
+  useSharedValue,
   withRepeat,
   withTiming,
-  Easing,
 } from 'react-native-reanimated';
-import { Theme } from '../theme/Theme';
 import { useAccessibility } from '../hooks/useAccessibility';
-import { useTranslation } from 'react-i18next';
+import { Theme } from '../theme/Theme';
 
 interface BreathingLoaderProps {
   size?: number;

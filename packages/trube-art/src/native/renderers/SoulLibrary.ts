@@ -31,5 +31,5 @@ export const SOUL_LIBRARY = {
     float circle(vec2 uv, vec2 center, float radius) {
       return smoothstep(radius, 0.0, length(uv - center));
     }
-  `
+  `,
 };

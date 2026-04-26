@@ -1,5 +1,5 @@
 /* Import Google Fonts - EdLove Typography */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Fira+Code&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Fira+Code&display=swap");
 
 @import "tailwindcss";
 
@@ -126,51 +126,51 @@ p {
 
 /* Cosmic Context */
 .context-cosmic {
-  --theme-bg: #0A1F3D;
-  --theme-text: #FFFFFF;
-  --theme-accent: #4A90E2;
-  --theme-gold: #D4A574;
-  background: linear-gradient(180deg, #0A1F3D 0%, #1E3A5F 100%);
+  --theme-bg: #0a1f3d;
+  --theme-text: #ffffff;
+  --theme-accent: #4a90e2;
+  --theme-gold: #d4a574;
+  background: linear-gradient(180deg, #0a1f3d 0%, #1e3a5f 100%);
   color: var(--theme-text);
 }
 
 /* Diagnostic Context */
 .context-diagnostic {
-  --theme-bg: #F5F5F5;
-  --theme-text: #2C3E50;
-  --theme-accent: #3498DB;
-  --theme-gold: #D4A574;
+  --theme-bg: #f5f5f5;
+  --theme-text: #2c3e50;
+  --theme-accent: #3498db;
+  --theme-gold: #d4a574;
   background: var(--theme-bg);
   color: var(--theme-text);
 }
 
 /* Library Context */
 .context-library {
-  --theme-bg: #FAF9F6;
+  --theme-bg: #faf9f6;
   --theme-text: #333333;
-  --theme-accent: #A8C5D6;
-  --theme-gold: #D4A574;
+  --theme-accent: #a8c5d6;
+  --theme-gold: #d4a574;
   background: var(--theme-bg);
   color: var(--theme-text);
 }
 
 /* Community Context */
 .context-community {
-  --theme-bg: #FFF8F0;
-  --theme-text: #2D2D2D;
-  --theme-accent: #E8B4B8;
-  --theme-gold: #D4A574;
+  --theme-bg: #fff8f0;
+  --theme-text: #2d2d2d;
+  --theme-accent: #e8b4b8;
+  --theme-gold: #d4a574;
   background: var(--theme-bg);
   color: var(--theme-text);
 }
 
 /* Gurudevi Context */
 .context-gurudevi {
-  --theme-bg: #1E3A5F;
-  --theme-text: #FFFFFF;
-  --theme-accent: #008B8B;
-  --theme-gold: #D4A574;
-  background: linear-gradient(180deg, #1E3A5F 0%, #1E5A5A 100%);
+  --theme-bg: #1e3a5f;
+  --theme-text: #ffffff;
+  --theme-accent: #008b8b;
+  --theme-gold: #d4a574;
+  background: linear-gradient(180deg, #1e3a5f 0%, #1e5a5a 100%);
   color: var(--theme-text);
 }
 
@@ -204,7 +204,9 @@ p {
 .floating-pill:hover {
   background: rgba(255, 255, 255, 0.85);
   border-color: var(--color-gold);
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
 .sanctuary-container {
@@ -247,11 +249,13 @@ p {
   top: 0;
   bottom: 0;
   width: 2px;
-  background: linear-gradient(to bottom,
-      transparent,
-      rgba(231, 203, 22, 0.4) 5%,
-      rgba(231, 203, 22, 0.4) 95%,
-      transparent);
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(231, 203, 22, 0.4) 5%,
+    rgba(231, 203, 22, 0.4) 95%,
+    transparent
+  );
   z-index: 0;
 }
 
@@ -272,7 +276,7 @@ p {
   top: 1.5rem;
   width: 16px;
   height: 16px;
-  background: #0A1F3D;
+  background: #0a1f3d;
   border: 2px solid #e7cb16;
   border-radius: 50%;
   z-index: 20;
@@ -286,7 +290,7 @@ p {
 }
 
 .journey-dot::after {
-  content: '';
+  content: "";
   position: absolute;
   inset: -4px;
   border-radius: 50%;

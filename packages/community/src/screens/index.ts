@@ -6,10 +6,10 @@ import InvitationWelcomeScreen from './InvitationWelcomeScreen';
 import InviteCodeEntry from './InviteCodeEntry';
 
 export {
-    AnnouncementsScreen,
-    BaseChatScreen,
-    DirectMessagesListScreen,
-    GroupsScreen,
-    InvitationWelcomeScreen,
-    InviteCodeEntry,
+  AnnouncementsScreen,
+  BaseChatScreen,
+  DirectMessagesListScreen,
+  GroupsScreen,
+  InvitationWelcomeScreen,
+  InviteCodeEntry,
 };

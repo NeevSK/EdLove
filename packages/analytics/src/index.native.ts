@@ -16,6 +16,8 @@ export const initPostHog = async (apiKey: string, hostOrOptions?: string | { hos
   await posthogAnalytics.initialize(apiKey, { host });
 };
 
-export const trackEvent = (event: string, properties?: any) => posthogAnalytics.track(event, properties);
-export const identifyUser = (userId: string, properties?: any) => posthogAnalytics.identify(userId, properties);
+export const trackEvent = (event: string, properties?: any) =>
+  posthogAnalytics.track(event, properties);
+export const identifyUser = (userId: string, properties?: any) =>
+  posthogAnalytics.identify(userId, properties);
 export const resetUser = () => posthogAnalytics.reset();

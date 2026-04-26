@@ -50,7 +50,11 @@ const GRAIN_MULTIPLIER: Record<NonNullable<TrubeSurfaceOptions['grain']>, number
   rich: 1.18,
 };
 
-function resolvePalette(name: TrubeSurfaceName, palette: TrubePalette, light: TrubeLightingMode): TrubePalette {
+function resolvePalette(
+  name: TrubeSurfaceName,
+  palette: TrubePalette,
+  light: TrubeLightingMode,
+): TrubePalette {
   const temperature = LIGHTING_TEMPERATURE[light];
   const brightness = LIGHTING_BRIGHTNESS[light];
   const temperatureTarget = temperature >= 0 ? WARM_LIGHT : COOL_LIGHT;
@@ -70,7 +74,10 @@ function resolvePalette(name: TrubeSurfaceName, palette: TrubePalette, light: Tr
   };
 }
 
-export function surface(name: TrubeSurfaceName, options: TrubeSurfaceOptions = {}): TrubeSurfaceSpec {
+export function surface(
+  name: TrubeSurfaceName,
+  options: TrubeSurfaceOptions = {},
+): TrubeSurfaceSpec {
   const preset = getSurfacePreset(name);
 
   return {
@@ -101,7 +108,9 @@ export function resolveSurface(input: TrubeSurfaceSpec | TrubeSurfaceName): Reso
     ...spec,
     preset,
     palette: resolvedPalette,
-    motionPeriodMs: Math.round(preset.motionPeriodMs * MOTION_PERIOD_MULTIPLIER[spec.options.motion]),
+    motionPeriodMs: Math.round(
+      preset.motionPeriodMs * MOTION_PERIOD_MULTIPLIER[spec.options.motion],
+    ),
     grainFrequency: preset.grainFrequency * GRAIN_MULTIPLIER[spec.options.grain],
     alpha: clamp(spec.options.alpha * INTENSITY_ALPHA[spec.options.intensity], 0.08, 1),
   };

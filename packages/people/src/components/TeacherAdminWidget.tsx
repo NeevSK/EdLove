@@ -1,23 +1,15 @@
-import React from 'react';
-import {
-  VStack,
-  HStack,
-  Box,
-  Text,
-  Pressable,
-  hapticLight,
-  Icon,
-} from '@repo/ui';
-import {
-  FileText,
-  Calendar,
-  ClipboardList,
-  ArrowRightLeft,
-  DollarSign,
-  CheckSquare,
-} from 'lucide-react-native';
-import { useTranslation } from 'react-i18next';
 import { usePermissions } from '@repo/core';
+import { Box, HStack, hapticLight, Icon, Pressable, Text, VStack } from '@repo/ui';
+import {
+  ArrowRightLeft,
+  Calendar,
+  CheckSquare,
+  ClipboardList,
+  DollarSign,
+  FileText,
+} from 'lucide-react-native';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface TeacherAdminWidgetProps {
   onAction?: (action: string) => void;
@@ -34,7 +26,7 @@ export default function TeacherAdminWidget({ onAction }: TeacherAdminWidgetProps
       success: 'text-phase-success bg-phase-success/5 border-phase-success/20',
       error: 'text-phase-error bg-phase-error/5 border-phase-error/20',
     };
-    
+
     const activeColor = colorClasses[variant as keyof typeof colorClasses] || colorClasses.primary;
     const [textColor, bgColor, borderColor] = activeColor.split(' ');
 
@@ -95,7 +87,7 @@ export default function TeacherAdminWidget({ onAction }: TeacherAdminWidgetProps
       variant: 'error',
       visible: flags.isStaffManagementEnabled,
     },
-  ].filter(action => action.visible);
+  ].filter((action) => action.visible);
 
   // Group actions into rows of 2
   const rows = [];

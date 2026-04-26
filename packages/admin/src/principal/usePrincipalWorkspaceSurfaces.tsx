@@ -1,17 +1,17 @@
-import React from 'react';
-import {  VStack } from '@repo/ui';
+import { VStack } from '@repo/ui';
+import type React from 'react';
 import { usePrincipalWorkspaceShell } from '../bridge/principalWorkspaceShell';
-import type { PrincipalWorkspaceView, PrincipalZoneId } from './workspace';
-import MorningSituationalBrief from '../components/principal/MorningSituationalBrief';
-import TeacherCarousel from '../components/principal/TeacherCarousel';
-import LeaveApprovalSection from '../components/principal/LeaveApprovalSection';
+import DashboardEcho from '../components/principal/DashboardEcho';
 import InstitutionalCalendarSection from '../components/principal/InstitutionalCalendarSection';
+import LeaveApprovalSection from '../components/principal/LeaveApprovalSection';
+import MorningSituationalBrief from '../components/principal/MorningSituationalBrief';
 import PrincipalObservationsSection from '../components/principal/PrincipalObservationsSection';
 import PulseDashboard from '../components/principal/PulseDashboard';
 import ResourceNeedsDashboard from '../components/principal/ResourceNeedsDashboard';
-import DashboardEcho from '../components/principal/DashboardEcho';
+import TeacherCarousel from '../components/principal/TeacherCarousel';
+import type { PrincipalWorkspaceView, PrincipalZoneId } from './workspace';
 
-type ZoneSurfaceArgs = { 
+type ZoneSurfaceArgs = {
   schoolId: string;
   userId: string;
   stats?: {
@@ -23,7 +23,7 @@ type ZoneSurfaceArgs = {
   navigatePrincipalView: (view: PrincipalWorkspaceView) => void;
 };
 
-export type PrincipalZoneSurface = { 
+export type PrincipalZoneSurface = {
   id: PrincipalZoneId;
   eyebrow: string;
   title: string;
@@ -40,7 +40,8 @@ export function usePrincipalWorkspaceSurfaces({
   onOpenCommons,
   onOpenQr,
   onOpenBreathing,
-  onEditSchool}: ZoneSurfaceArgs & {
+  onEditSchool,
+}: ZoneSurfaceArgs & {
   onOpenProfile: () => void;
   onOpenCommons: () => void;
   onOpenQr: () => void;
@@ -72,9 +73,11 @@ export function usePrincipalWorkspaceSurfaces({
         <ResourceNeedsDashboard schoolId={schoolId} />
         <DashboardEcho schoolId={schoolId} />
       </VStack>
-    )});
+    ),
+  });
 
   return {
     zoneCounts: shell.zoneCounts,
-    surfaces: shell.surfaces as Record<PrincipalZoneId, PrincipalZoneSurface>};
+    surfaces: shell.surfaces as Record<PrincipalZoneId, PrincipalZoneSurface>,
+  };
 }

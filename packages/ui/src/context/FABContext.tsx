@@ -1,5 +1,13 @@
-import React, { createContext, useContext, useState, useCallback, useMemo, ReactNode } from 'react';
-import { ActionItem, TabType } from '../types/fab';
+import React, {
+  createContext,
+  type ReactNode,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+} from 'react';
+import type { ActionItem, TabType } from '../types/fab';
+
 export type { ActionItem, TabType };
 
 interface FABState {
@@ -71,12 +79,12 @@ export const useRegisterFAB = (config: Partial<FABState>) => {
     // return () => unregisterFAB();
   }, [
     registerFAB,
-    JSON.stringify(config.actions),
     config.tabType,
     config.visible,
     config.onPress,
     // config.icon, // REMOVED: This causes infinite loops if the icon is a new JSX element
     config.onBreathingReset,
     config.hasActiveGaps,
+    config,
   ]);
 };

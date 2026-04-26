@@ -34,11 +34,7 @@ export function PWAInstallBanner() {
     >
       <HStack className="items-center flex-1 gap-3">
         <Box>
-          <Icon
-            as={isIOS ? Share : Download}
-            size={20}
-            className="text-sanctuarySaffron"
-          />
+          <Icon as={isIOS ? Share : Download} size={20} className="text-sanctuarySaffron" />
         </Box>
         <VStack className="flex-1">
           <Text className="text-sm font-bold text-phaseText-primary">
@@ -68,11 +64,7 @@ export function PWAInstallBanner() {
             <Text className="text-ink text-[13px] font-bold">Install</Text>
           </Pressable>
         )}
-        <Pressable
-          onPress={dismiss}
-          className="p-1.5"
-          accessibilityLabel="Dismiss install prompt"
-        >
+        <Pressable onPress={dismiss} className="p-1.5" accessibilityLabel="Dismiss install prompt">
           <Icon as={X} size={18} className="text-phaseText-secondary" />
         </Pressable>
       </HStack>

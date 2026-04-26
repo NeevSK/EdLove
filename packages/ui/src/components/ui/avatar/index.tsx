@@ -1,7 +1,8 @@
-import React, { createContext, useContext, useMemo } from 'react';
-import { View, Text, type ViewProps } from 'react-native';
-import { Image } from '../image';
 import { cssInterop } from 'nativewind';
+import type React from 'react';
+import { createContext, useContext, useMemo } from 'react';
+import { Text, View, type ViewProps } from 'react-native';
+import { Image } from '../image';
 
 cssInterop(View, { className: 'style' });
 cssInterop(Text, { className: 'style' });

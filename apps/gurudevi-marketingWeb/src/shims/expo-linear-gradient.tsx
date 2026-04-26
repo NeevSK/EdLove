@@ -9,13 +9,9 @@ export type LinearGradientProps = ShimProps & Record<string, unknown>;
 
 export const LinearGradient = React.forwardRef(function LinearGradient(
   { children, className, style, ...rest }: LinearGradientProps,
-  ref: ForwardedRef<HTMLDivElement>
+  ref: ForwardedRef<HTMLDivElement>,
 ) {
-  return React.createElement(
-    'div',
-    { ...rest, ref, className, style },
-    children
-  );
+  return React.createElement('div', { ...rest, ref, className, style }, children);
 });
 
 LinearGradient.displayName = 'LinearGradient';

@@ -1,6 +1,7 @@
-import React, { createContext, useContext, useMemo } from 'react';
-import { View, type ViewProps } from 'react-native';
 import { cssInterop } from 'nativewind';
+import type React from 'react';
+import { createContext, useContext, useMemo } from 'react';
+import { View, type ViewProps } from 'react-native';
 import { Box } from '../box';
 import { Text } from '../text';
 
@@ -22,7 +23,7 @@ interface ToastContextType {
 
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
 
-function useToastContext() {
+function _useToastContext() {
   const context = useContext(ToastContext);
   if (!context) throw new Error('useToastContext must be used within a Toast');
   return context;

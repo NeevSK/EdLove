@@ -13,19 +13,20 @@
  *   thuthimal_gift → navigated from here to ThuthimalClaimScreen
  */
 
-import React, { useEffect, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { type RouteProp, useNavigation, useRoute } from '@react-navigation/native';
+import { FlowResolver, identityAPI, type QRPayload } from '@repo/core';
 import {
   Box,
-  VStack,
-  Text,
   Heading,
-  Spinner,
+  hapticError,
+  hapticSuccess,
   ScreenWrapper,
+  Spinner,
+  Text,
+  VStack,
 } from '@repo/ui';
-import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
-import { FlowResolver, identityAPI, type QRPayload } from '@repo/core';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { hapticSuccess, hapticError } from '@repo/ui';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 type QRHandlerRouteParams = {
@@ -69,10 +70,10 @@ export default function QRHandlerScreen() {
         if (result.intent) {
           // Map Abstract Core Intent -> Mobile Specific Navigation
           const intentMap: Record<string, () => void> = {
-            'GOTO_CLASSROOM': () => navigation.navigate('Main', { screen: 'Classroom' }),
-            'GOTO_COMMUNITY': () => navigation.navigate('Main', { screen: 'Community' }),
-            'GOTO_SELF': () => navigation.navigate('Main', { screen: 'Self' }),
-            'GOTO_THUTHIMAL_CLAIM': () => navigation.replace('ThuthimalClaim', result.params)
+            GOTO_CLASSROOM: () => navigation.navigate('Main', { screen: 'Classroom' }),
+            GOTO_COMMUNITY: () => navigation.navigate('Main', { screen: 'Community' }),
+            GOTO_SELF: () => navigation.navigate('Main', { screen: 'Self' }),
+            GOTO_THUTHIMAL_CLAIM: () => navigation.replace('ThuthimalClaim', result.params),
           };
 
           const action = intentMap[result.intent];
@@ -98,31 +99,28 @@ export default function QRHandlerScreen() {
     }
   };
 
-
   return (
     <ScreenWrapper>
       <Box className="flex-1 items-center justify-center p-6">
         <VStack className="items-center gap-4">
-          {status === 'processing' && (
-            <Spinner size="large" className="text-primary-500" />
-          )}
-          {status === 'success' && (
-            <Text className="text-[56px]">✅</Text>
-          )}
-          {status === 'error' && (
-            <Text className="text-[56px]">⚠️</Text>
-          )}
+          {status === 'processing' && <Spinner size="large" className="text-primary-500" />}
+          {status === 'success' && <Text className="text-[56px]">✅</Text>}
+          {status === 'error' && <Text className="text-[56px]">⚠️</Text>}
           <Heading
             className={`text-center ${
-              status === 'success' 
-                ? 'text-success-600' 
-                : status === 'error' 
-                  ? 'text-error-600' 
+              status === 'success'
+                ? 'text-success-600'
+                : status === 'error'
+                  ? 'text-error-600'
                   : 'text-primary-500'
             }`}
             size="xl"
           >
-            {status === 'processing' ? t('qrHandler.processing') : status === 'success' ? t('qrHandler.done') : t('qrHandler.error')}
+            {status === 'processing'
+              ? t('qrHandler.processing')
+              : status === 'success'
+                ? t('qrHandler.done')
+                : t('qrHandler.error')}
           </Heading>
           <Text className="text-center text-typography-500">
             {status === 'processing' ? t('qrHandler.processingMessage') : message}

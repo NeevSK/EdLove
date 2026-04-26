@@ -1,7 +1,7 @@
-import React from 'react';
+import type React from 'react';
 import { FlatList, StyleSheet } from 'react-native';
-import { SanctuaryChip, SanctuaryChipProps } from './SanctuaryChip';
 import { Theme } from '../theme/Theme';
+import { SanctuaryChip, type SanctuaryChipProps } from './SanctuaryChip';
 
 export interface ChipItem {
   label: string;

@@ -1,28 +1,28 @@
-import React, { useState, useEffect } from 'react';
-import {
-  Box,
-  VStack,
-  HStack,
-  Text,
-  Heading,
-  Input,
-  InputField,
-  Button,
-  ButtonText,
-  Pressable,
-  Checkbox,
-  CheckboxIndicator,
-  CheckboxIcon,
-  Icon,
-  SkeletonCard,
-  PositiveInvitation,
-  hapticLight,
-  hapticSuccess
-} from '@repo/ui';
-import { Calendar, Plus, Trash2, Check } from 'lucide-react-native';
-import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import { supabase, useSafeMutation } from '@repo/core';
+import {
+  Box,
+  Button,
+  ButtonText,
+  Checkbox,
+  CheckboxIcon,
+  CheckboxIndicator,
+  Heading,
+  HStack,
+  hapticLight,
+  hapticSuccess,
+  Icon,
+  Input,
+  InputField,
+  PositiveInvitation,
+  Pressable,
+  SkeletonCard,
+  Text,
+  VStack,
+} from '@repo/ui';
+import { Calendar, Check, Plus, Trash2 } from 'lucide-react-native';
+import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useTomorrowPrep } from '../hooks/useTomorrowPrep';
 import type { DailyPrepItem } from '../types';
 
@@ -59,13 +59,11 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
 
   const { mutate: saveItem, isLoading: isSaving } = useSafeMutation(
     async (text: string) => {
-      const { error } = await supabase
-        .from('daily_prep_items')
-        .insert({
-          user_id: userId,
-          item_text: text,
-          prep_date: tomorrowDate
-        });
+      const { error } = await supabase.from('daily_prep_items').insert({
+        user_id: userId,
+        item_text: text,
+        prep_date: tomorrowDate,
+      });
       if (error) throw error;
     },
     {
@@ -74,8 +72,8 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
         setItemText('');
         setShowForm(false);
         refreshData();
-      }
-    }
+      },
+    },
   );
 
   const handleSave = async () => {
@@ -96,10 +94,7 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
 
   const handleDelete = async (id: string) => {
     hapticLight();
-    await supabase
-      .from('daily_prep_items')
-      .delete()
-      .eq('id', id);
+    await supabase.from('daily_prep_items').delete().eq('id', id);
 
     refreshData();
   };
@@ -116,10 +111,7 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
 
   if (!userId) {
     return (
-      <PositiveInvitation
-        type="guest"
-        onAction={() => navigation.navigate('Auth' as never)}
-      />
+      <PositiveInvitation type="guest" onAction={() => navigation.navigate('Auth' as never)} />
     );
   }
 
@@ -129,7 +121,7 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
         <HStack className="items-center gap-2">
           <Icon as={Calendar} className="text-sanctuarySaffron" size={24} />
           <Heading className="text-sacredWhite" size="lg">
-            {t('self.tomorrowPrep') || 'Tomorrow\'s Prep'}
+            {t('self.tomorrowPrep') || "Tomorrow's Prep"}
           </Heading>
         </HStack>
         <Text className="text-mistGray text-sm">
@@ -140,14 +132,16 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
       {items.length < 3 && !showForm && (
         <Button
           size="md"
-          onPress={() => { 
+          onPress={() => {
             hapticLight();
-            setShowForm(true); 
+            setShowForm(true);
           }}
           className="bg-sanctuarySaffron rounded-comfortable"
         >
           <Icon as={Plus} className="text-sacredWhite" size={20} />
-          <ButtonText className="ml-2 text-sacredWhite">{t('self.addPrepItem') || 'Add Item'}</ButtonText>
+          <ButtonText className="ml-2 text-sacredWhite">
+            {t('self.addPrepItem') || 'Add Item'}
+          </ButtonText>
         </Button>
       )}
 
@@ -162,9 +156,7 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
       {showForm ? (
         <VStack className="gap-4">
           <Box>
-            <Input
-              className="bg-ink border-transparent border"
-            >
+            <Input className="bg-ink border-transparent border">
               <InputField
                 placeholder={t('self.prepItem') || 'What needs to be done?'}
                 value={itemText}
@@ -179,16 +171,14 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
             <Button
               size="md"
               variant="outline"
-              onPress={() => { 
+              onPress={() => {
                 hapticLight();
                 setShowForm(false);
                 setItemText('');
               }}
               className="border-ink rounded-comfortable"
             >
-              <ButtonText className="text-mistGray">
-                {t('common.cancel') || 'Cancel'}
-              </ButtonText>
+              <ButtonText className="text-mistGray">{t('common.cancel') || 'Cancel'}</ButtonText>
             </Button>
             <Button
               size="md"
@@ -230,11 +220,7 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
                 onPress={() => handleDelete(item.id)}
                 hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
               >
-                <Icon
-                  as={Trash2}
-                  className="text-dimGray"
-                  size={18}
-                />
+                <Icon as={Trash2} className="text-dimGray" size={18} />
               </Pressable>
             </HStack>
           ))}

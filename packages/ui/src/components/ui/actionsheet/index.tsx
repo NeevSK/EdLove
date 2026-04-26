@@ -1,10 +1,11 @@
-import React, { createContext, useContext, useMemo } from 'react';
-import { View, Pressable, type ViewProps } from 'react-native';
-import Animated, { SlideInDown, SlideOutDown } from 'react-native-reanimated';
 import { cssInterop } from 'nativewind';
-import { Portal } from '../portal';
-import { Overlay } from '../overlay';
+import type React from 'react';
+import { createContext, useContext, useMemo } from 'react';
+import { Pressable, View, type ViewProps } from 'react-native';
+import Animated, { SlideInDown, SlideOutDown } from 'react-native-reanimated';
 import { Box } from '../box';
+import { Overlay } from '../overlay';
+import { Portal } from '../portal';
 import { Text } from '../text';
 
 cssInterop(View, { className: 'style' });

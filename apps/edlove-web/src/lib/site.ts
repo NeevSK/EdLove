@@ -11,7 +11,7 @@ export const SITE_KEYWORDS = [
   'education as care work',
   'Gurudevi',
   'learning ecosystems',
-  'educational philosophy'
+  'educational philosophy',
 ];
 
 export const ORGANIZATION = {
@@ -21,11 +21,7 @@ export const ORGANIZATION = {
   description: SITE_DESCRIPTION,
   email: 'hello@edlove.org',
   foundingDate: '2026',
-  sameAs: [
-    `${SITE_URL}/vision`,
-    `${SITE_URL}/library`,
-    `${SITE_URL}/resources`,
-  ],
+  sameAs: [`${SITE_URL}/vision`, `${SITE_URL}/library`, `${SITE_URL}/resources`],
 };
 
 export function absoluteUrl(pathname: string) {

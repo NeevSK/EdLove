@@ -13,11 +13,7 @@
       "project": ["src/**/*.{ts,tsx,astro,svelte}", "*.{js,ts,tsx}"]
     },
     "packages/*": {
-      "entry": [
-        "src/index.{ts,tsx}",
-        "src/api/index.{ts,tsx}",
-        "src/**/*.svelte"
-      ],
+      "entry": ["src/index.{ts,tsx}", "src/api/index.{ts,tsx}", "src/**/*.svelte"],
       "project": ["src/**/*.{ts,tsx,svelte}"]
     }
   },
@@ -31,11 +27,6 @@
     "**/ios/**",
     "**/.gemini/**"
   ],
-  "ignoreDependencies": [
-    "@repo/types-shim",
-    "husky",
-    "lint-staged",
-    "@repo/eslint-config"
-  ],
+  "ignoreDependencies": ["@repo/types-shim", "husky", "lint-staged", "@repo/eslint-config"],
   "ignoreBinaries": ["turbo"]
 }

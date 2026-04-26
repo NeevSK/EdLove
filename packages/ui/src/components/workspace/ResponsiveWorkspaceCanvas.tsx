@@ -1,6 +1,5 @@
-import React from 'react';
-import { Platform, useWindowDimensions } from 'react-native';
 import { createWorkspaceRendererConfig, type WorkspaceRuntimePlatform } from '@repo/core/logic';
+import { Platform, useWindowDimensions } from 'react-native';
 import { MobileWorkspaceCanvas } from './renderers/MobileWorkspaceCanvas';
 import { TabletWorkspaceCanvas } from './renderers/TabletWorkspaceCanvas';
 import { WebWorkspaceCanvas } from './renderers/WebWorkspaceCanvas';

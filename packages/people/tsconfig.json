@@ -5,12 +5,8 @@
     "rootDir": "./src",
     "baseUrl": ".",
     "paths": {
-      "@repo/people/*": [
-        "./src/*"
-      ]
+      "@repo/people/*": ["./src/*"]
     }
   },
-  "include": [
-    "src/**/*"
-  ]
+  "include": ["src/**/*"]
 }

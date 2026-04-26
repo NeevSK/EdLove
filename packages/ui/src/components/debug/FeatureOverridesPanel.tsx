@@ -1,6 +1,6 @@
-import React from 'react';
-import { VStack, Text, Switch, HStack, Box, ScrollView } from '../../gluestack';
-import { useAuthStore, useFeatureStore, type FeatureFlags } from '@repo/core/logic';
+import { type FeatureFlags, useAuthStore, useFeatureStore } from '@repo/core/logic';
+import type React from 'react';
+import { Box, HStack, ScrollView, Switch, Text, VStack } from '../../gluestack';
 
 /**
  * FeatureOverridesPanel - Developer Tooling for Flag Toggling.
@@ -21,7 +21,7 @@ export const FeatureOverridesPanel: React.FC = () => {
     const updatedUser = {
       ...user,
       flags: {
-        // @ts-ignore - Handle possible missing flags object in older user schema
+        // @ts-expect-error - Handle possible missing flags object in older user schema
         ...(user.flags || {}),
         [key]: value,
       },

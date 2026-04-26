@@ -1,18 +1,18 @@
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { ChevronDown } from 'lucide-react-native';
 import React from 'react';
-import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import {
   Select,
-  SelectTrigger,
-  SelectInput,
-  SelectIcon,
-  SelectPortal,
   SelectBackdrop,
   SelectContent,
-  SelectDragIndicatorWrapper,
   SelectDragIndicator,
+  SelectDragIndicatorWrapper,
+  SelectIcon,
+  SelectInput,
   SelectItem,
+  SelectPortal,
+  SelectTrigger,
 } from '../components/ui/select';
-import { ChevronDown } from 'lucide-react-native';
 
 /**
  * Proactive Component Testing

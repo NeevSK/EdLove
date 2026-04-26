@@ -1,6 +1,6 @@
+import { cssInterop } from 'nativewind';
 import React from 'react';
 import { ActivityIndicator, type ActivityIndicatorProps } from 'react-native';
-import { cssInterop } from 'nativewind';
 
 cssInterop(ActivityIndicator, { className: 'style' });
 

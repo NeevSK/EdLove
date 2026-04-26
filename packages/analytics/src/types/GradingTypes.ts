@@ -1,4 +1,4 @@
-import { GradingScale, GPACalculationOptions } from './AnalyticsTypes';
+import { GPACalculationOptions, type GradingScale } from './AnalyticsTypes';
 
 export const STANDARD_GRADING_SCALE: GradingScale = {
   name: 'Standard 4.0 Scale',
@@ -15,7 +15,7 @@ export const STANDARD_GRADING_SCALE: GradingScale = {
     { min: 67, max: 69, grade: 'D+', gpa: 1.3 },
     { min: 65, max: 66, grade: 'D', gpa: 1.0 },
     { min: 0, max: 64, grade: 'F', gpa: 0.0 },
-  ]
+  ],
 };
 
 export const SIMPLIFIED_GRADING_SCALE: GradingScale = {
@@ -26,7 +26,7 @@ export const SIMPLIFIED_GRADING_SCALE: GradingScale = {
     { min: 50, max: 64, grade: 'C', gpa: 2.0 },
     { min: 35, max: 49, grade: 'S', gpa: 1.0 },
     { min: 0, max: 34, grade: 'F', gpa: 0.0 },
-  ]
+  ],
 };
 
 export const WEIGHTED_GRADING_SCALE: GradingScale = {
@@ -44,7 +44,7 @@ export const WEIGHTED_GRADING_SCALE: GradingScale = {
     { min: 67, max: 69, grade: 'D+', gpa: 2.0 },
     { min: 65, max: 66, grade: 'D', gpa: 1.7 },
     { min: 0, max: 64, grade: 'F', gpa: 0.0 },
-  ]
+  ],
 };
 
 export interface GradingPeriod {

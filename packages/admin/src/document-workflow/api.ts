@@ -1,53 +1,82 @@
-export type { 
-  DocumentWorkflow, 
-  DocumentVersion, 
-  DocumentComment, 
-  DocumentCollaborator,
-  DocumentTemplate,
+export type {
   ChangeRecord,
-  DocumentStatus
+  DocumentCollaborator,
+  DocumentComment,
+  DocumentStatus,
+  DocumentTemplate,
+  DocumentVersion,
+  DocumentWorkflow,
 } from './types';
 
 import { documentWorkflowEngine } from './engine';
-import { 
-  DocumentWorkflow, 
-  DocumentVersion, 
-  DocumentComment, 
-  DocumentCollaborator,
-  DocumentTemplate,
+import type {
   ChangeRecord,
-  DocumentStatus
+  DocumentCollaborator,
+  DocumentComment,
+  DocumentStatus,
+  DocumentTemplate,
+  DocumentVersion,
+  DocumentWorkflow,
 } from './types';
 
 export interface DocumentWorkflowAPI {
   // Lifecycle management
-  createDraft(template: DocumentTemplate, data: any, authorId: string, schoolId: string): Promise<DocumentWorkflow>;
+  createDraft(
+    template: DocumentTemplate,
+    data: any,
+    authorId: string,
+    schoolId: string,
+  ): Promise<DocumentWorkflow>;
   submitForReview(documentId: string, userId: string): Promise<void>;
   approveDocument(documentId: string, userId: string, comments?: string): Promise<void>;
   rejectDocument(documentId: string, userId: string, reason: string): Promise<void>;
   publishDocument(documentId: string, userId: string): Promise<void>;
   archiveDocument(documentId: string, userId: string): Promise<void>;
-  
+
   // Version control
   getVersionHistory(documentId: string): Promise<DocumentVersion[]>;
-  createVersion(documentId: string, content: any, authorId: string, changes?: any): Promise<DocumentVersion>;
+  createVersion(
+    documentId: string,
+    content: any,
+    authorId: string,
+    changes?: any,
+  ): Promise<DocumentVersion>;
   restoreVersion(documentId: string, versionId: string, userId: string): Promise<void>;
-  
+
   // Collaboration
-  addComment(documentId: string, authorId: string, content: string, type: DocumentComment['type']): Promise<void>;
-  inviteCollaborator(documentId: string, userId: string, role: DocumentCollaborator['role'], invitedBy: string): Promise<void>;
+  addComment(
+    documentId: string,
+    authorId: string,
+    content: string,
+    type: DocumentComment['type'],
+  ): Promise<void>;
+  inviteCollaborator(
+    documentId: string,
+    userId: string,
+    role: DocumentCollaborator['role'],
+    invitedBy: string,
+  ): Promise<void>;
   trackChanges(documentId: string): Promise<ChangeRecord[]>;
-  
+
   // Document retrieval
   getDocument(documentId: string): Promise<DocumentWorkflow | null>;
-  getDocuments(schoolId: string, status?: DocumentStatus, authorId?: string): Promise<DocumentWorkflow[]>;
+  getDocuments(
+    schoolId: string,
+    status?: DocumentStatus,
+    authorId?: string,
+  ): Promise<DocumentWorkflow[]>;
   getDocumentsForReview(schoolId: string, userId: string): Promise<DocumentWorkflow[]>;
   getPublishedDocuments(schoolId: string): Promise<DocumentWorkflow[]>;
 }
 
-export const documentWorkflowAPI: DocumentWorkflowAPI  = {
+export const documentWorkflowAPI: DocumentWorkflowAPI = {
   // Lifecycle management
-  async createDraft(template: DocumentTemplate, data: any, authorId: string, schoolId: string): Promise<DocumentWorkflow> {
+  async createDraft(
+    template: DocumentTemplate,
+    data: any,
+    authorId: string,
+    schoolId: string,
+  ): Promise<DocumentWorkflow> {
     return await documentWorkflowEngine.createDraft(template, data, authorId, schoolId);
   },
 
@@ -76,7 +105,12 @@ export const documentWorkflowAPI: DocumentWorkflowAPI  = {
     return await documentWorkflowEngine.getVersionHistory(documentId);
   },
 
-  async createVersion(documentId: string, content: any, authorId: string, changes?: any): Promise<DocumentVersion> {
+  async createVersion(
+    documentId: string,
+    content: any,
+    authorId: string,
+    changes?: any,
+  ): Promise<DocumentVersion> {
     return await documentWorkflowEngine.createVersion(documentId, content, authorId, changes);
   },
 
@@ -85,11 +119,21 @@ export const documentWorkflowAPI: DocumentWorkflowAPI  = {
   },
 
   // Collaboration
-  async addComment(documentId: string, authorId: string, content: string, type: DocumentComment['type']): Promise<void> {
+  async addComment(
+    documentId: string,
+    authorId: string,
+    content: string,
+    type: DocumentComment['type'],
+  ): Promise<void> {
     return await documentWorkflowEngine.addComment(documentId, authorId, content, type);
   },
 
-  async inviteCollaborator(documentId: string, userId: string, role: DocumentCollaborator['role'], invitedBy: string): Promise<void> {
+  async inviteCollaborator(
+    documentId: string,
+    userId: string,
+    role: DocumentCollaborator['role'],
+    invitedBy: string,
+  ): Promise<void> {
     return await documentWorkflowEngine.inviteCollaborator(documentId, userId, role, invitedBy);
   },
 
@@ -105,28 +149,29 @@ export const documentWorkflowAPI: DocumentWorkflowAPI  = {
       .select('*')
       .eq('id', documentId)
       .single();
-    
+
     if (error) throw error;
     return data;
   },
 
-  async getDocuments(schoolId: string, status?: DocumentStatus, authorId?: string): Promise<DocumentWorkflow[]> {
+  async getDocuments(
+    schoolId: string,
+    status?: DocumentStatus,
+    authorId?: string,
+  ): Promise<DocumentWorkflow[]> {
     const { supabase } = await import('@repo/core');
-    let query = supabase
-      .from('document_workflows')
-      .select('*')
-      .eq('schoolId', schoolId);
-    
+    let query = supabase.from('document_workflows').select('*').eq('schoolId', schoolId);
+
     if (status) {
       query = query.eq('status', status);
     }
-    
+
     if (authorId) {
       query = query.eq('authorId', authorId);
     }
-    
+
     const { data, error } = await query.order('updatedAt', { ascending: false });
-    
+
     if (error) throw error;
     return data || [];
   },
@@ -140,7 +185,7 @@ export const documentWorkflowAPI: DocumentWorkflowAPI  = {
       .eq('status', 'review')
       .neq('authorId', userId) // Don't show own documents for review
       .order('updatedAt', { ascending: false });
-    
+
     if (error) throw error;
     return data || [];
   },
@@ -153,8 +198,8 @@ export const documentWorkflowAPI: DocumentWorkflowAPI  = {
       .eq('schoolId', schoolId)
       .eq('status', 'published')
       .order('updatedAt', { ascending: false });
-    
+
     if (error) throw error;
     return data || [];
-  }
+  },
 };

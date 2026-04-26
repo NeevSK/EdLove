@@ -1,8 +1,8 @@
-import React from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { Box, Text, VStack } from '@repo/ui';
+import React from 'react';
 import { useAdminWorkspaceSnapshot } from '../admin/adminRepository';
-import { AdminRoomShell, AdminRoomPanel } from './AdminRoomShell';
+import { AdminRoomPanel, AdminRoomShell } from './AdminRoomShell';
 
 export default function AdminIncidentQueue() {
   const { snapshot: data } = useAdminWorkspaceSnapshot();
@@ -19,7 +19,11 @@ export default function AdminIncidentQueue() {
       onBack={() => navigation.goBack()}
       stats={[
         { label: 'Open incidents', value: data.incidentCount, hint: 'Pending operational items' },
-        { label: 'Recent signals', value: data.recentIncidentSignals.length, hint: 'Fresh queue volume' },
+        {
+          label: 'Recent signals',
+          value: data.recentIncidentSignals.length,
+          hint: 'Fresh queue volume',
+        },
         { label: 'Approvals', value: data.pendingApprovalCount, hint: 'Guarded responses queued' },
       ]}
     >
@@ -30,10 +34,15 @@ export default function AdminIncidentQueue() {
         >
           <VStack className="gap-3">
             {data.recentIncidentSignals.length === 0 ? (
-              <Text className="text-[13px] text-phaseText-secondary">No incident signals surfaced in this snapshot.</Text>
+              <Text className="text-[13px] text-phaseText-secondary">
+                No incident signals surfaced in this snapshot.
+              </Text>
             ) : (
               data.recentIncidentSignals.slice(0, 5).map((item) => (
-                <Box key={item.id} className="rounded-2xl border border-starlightGray/15 bg-silk px-4 py-3">
+                <Box
+                  key={item.id}
+                  className="rounded-2xl border border-starlightGray/15 bg-silk px-4 py-3"
+                >
                   <Text className="text-[13px] font-bold text-phaseText-primary">{item.title}</Text>
                   <Text className="mt-1 text-[11px] text-phaseText-secondary">
                     {item.schoolId} | {item.status} | {new Date(item.createdAt).toLocaleString()}

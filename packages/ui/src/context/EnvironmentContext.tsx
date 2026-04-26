@@ -3,15 +3,14 @@
  * 2026 Sovereign Architecture: Decoupled Atomic State Providers.
  */
 
-import React, { ReactNode, useMemo } from 'react';
 import { useStore } from '@repo/core/logic';
-import { EnvironmentContextValue } from './types';
-
+import { type ReactNode, useMemo } from 'react';
+import { FidelityProvider, useFidelity } from './FidelityProvider';
+import { LanguageProvider, useLanguage } from './LanguageProvider';
 // Atomic Providers
 import { RealityProvider, useReality } from './RealityProvider';
-import { LanguageProvider, useLanguage } from './LanguageProvider';
 import { ThemeProvider, useThemeContext } from './ThemeProvider';
-import { FidelityProvider, useFidelity } from './FidelityProvider';
+import type { EnvironmentContextValue } from './types';
 
 /**
  * Environment Provider Component
@@ -96,5 +95,22 @@ export function useEnvironment(): EnvironmentContextValue {
   );
 }
 
-// Re-export utility functions
+// Re-export utility functions and atomic hooks
+export {
+  RealityProvider,
+  useReality,
+} from './RealityProvider';
+export {
+  ThemeProvider,
+  useThemeContext,
+} from './ThemeProvider';
+export {
+  LanguageProvider,
+  useLanguage,
+} from './LanguageProvider';
+export {
+  FidelityProvider,
+  useFidelity,
+} from './FidelityProvider';
+
 export { getTemporalPhase, shouldUseDarkTheme } from './utils';

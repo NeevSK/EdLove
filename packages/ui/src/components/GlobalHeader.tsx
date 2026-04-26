@@ -1,29 +1,25 @@
-import React, { useState } from 'react';
-import { Dimensions, TouchableOpacity, Pressable } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useTranslation } from 'react-i18next';
+import { useNotifications, usePermissions, useStore } from '@repo/core/logic';
 import {
+  Bell,
   ChevronLeft,
+  Crown,
+  GraduationCap,
   Menu,
+  School,
   Search,
   X,
-  Bell,
-  GraduationCap,
-  Crown,
-  School,
 } from 'lucide-react-native';
-import { BlurView } from 'expo-blur';
-
-import { Box, VStack, HStack, Text } from '../gluestack';
+import type React from 'react';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Pressable, TouchableOpacity } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Box, HStack, Text, VStack } from '../gluestack';
 import { hapticLight } from '../utils/haptics';
-import { TemporalGlass } from '../components-native/TemporalGlass';
-import { UserAvatar } from './UserAvatar';
-import SanctuaryInput from './SanctuaryInput';
 import NotificationDrawer from './NotificationDrawer';
-
-import { useStore, usePermissions } from '@repo/core/logic';
-import { useNotifications } from '@repo/core/logic';
+import SanctuaryInput from './SanctuaryInput';
+import { UserAvatar } from './UserAvatar';
 
 export interface GlobalHeaderProps {
   title?: string;
@@ -160,10 +156,7 @@ export default function GlobalHeader({
               </Pressable>
             ) : (
               showMenu && (
-                <Pressable
-                  accessibilityRole="button"
-                  onPress={() => navigation.openDrawer && navigation.openDrawer()}
-                >
+                <Pressable accessibilityRole="button" onPress={() => navigation.openDrawer?.()}>
                   <Menu className="text-phase-text-primary" size={24} />
                 </Pressable>
               )

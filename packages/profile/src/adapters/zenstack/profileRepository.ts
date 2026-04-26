@@ -7,8 +7,8 @@ import type {
   ProfileJourneyReadOptions,
   ProfileJourneySnapshot,
   ProfileRepository,
-  PulseMetrics,
   ProfileTemporalReadOptions,
+  PulseMetrics,
   WhisperedMomentSnapshot,
 } from '../../domains/profile/ports';
 
@@ -32,21 +32,28 @@ const getPreviousRange = (start: string, end: string) => {
 
 type AuthUserResolver = () => { id: string | null; authority?: string | null };
 
-const normalizeUser = (record: any) => record ? {
-  ...record,
-  role: record.role ?? record.authority,
-} : null;
+const normalizeUser = (record: any) =>
+  record
+    ? {
+        ...record,
+        role: record.role ?? record.authority,
+      }
+    : null;
 
-const normalizeTemporalScale = (viewScale?: ProfileTemporalReadOptions['viewScale']) => viewScale === 'custom' ? 'day' : (viewScale ?? 'day');
+const normalizeTemporalScale = (viewScale?: ProfileTemporalReadOptions['viewScale']) =>
+  viewScale === 'custom' ? 'day' : (viewScale ?? 'day');
 
-const mapWhisperedMoments = (rows: any[] | null | undefined): WhisperedMomentSnapshot[] => (rows || []).map((row) => ({
+const mapWhisperedMoments = (rows: any[] | null | undefined): WhisperedMomentSnapshot[] =>
+  (rows || []).map((row) => ({
     key: row.moment_key as string,
     name_en: (row.moment_name_en as string) ?? (row.moment_key as string),
     name_si: (row.moment_name_si as string) ?? (row.moment_key as string),
     awarded_at: row.awarded_at as string,
   }));
 
-export const createZenStackProfileRepository = (getAuthUser: AuthUserResolver): ProfileRepository => {
+export const createZenStackProfileRepository = (
+  getAuthUser: AuthUserResolver,
+): ProfileRepository => {
   const getDb = () => {
     const { createZenStackDb } = require('@repo/database') as typeof import('@repo/database');
     const authUser = getAuthUser();
@@ -86,7 +93,10 @@ export const createZenStackProfileRepository = (getAuthUser: AuthUserResolver): 
       if (error) throw new APIError('Failed to fetch user profile history', error.code, error);
       return (data || []) as ProfileHistoryEntry[];
     },
-    async getJourneySnapshot(userId, options: ProfileJourneyReadOptions = {}): Promise<ProfileJourneySnapshot> {
+    async getJourneySnapshot(
+      userId,
+      options: ProfileJourneyReadOptions = {},
+    ): Promise<ProfileJourneySnapshot> {
       const asOf = options.asOf ?? options.viewDate ?? null;
       const viewScale = normalizeTemporalScale(options.viewScale);
 
@@ -99,7 +109,12 @@ export const createZenStackProfileRepository = (getAuthUser: AuthUserResolver): 
           .order('recorded_at', { ascending: false })
           .limit(1)
           .maybeSingle();
-        if (rewardsError) throw new APIError('Failed to fetch historical rewards snapshot', rewardsError.code, rewardsError);
+        if (rewardsError)
+          throw new APIError(
+            'Failed to fetch historical rewards snapshot',
+            rewardsError.code,
+            rewardsError,
+          );
 
         const { data: growthVersion, error: growthError } = await supabase
           .from('user_growth_state_versions')
@@ -109,7 +124,12 @@ export const createZenStackProfileRepository = (getAuthUser: AuthUserResolver): 
           .order('recorded_at', { ascending: false })
           .limit(1)
           .maybeSingle();
-        if (growthError) throw new APIError('Failed to fetch historical growth snapshot', growthError.code, growthError);
+        if (growthError)
+          throw new APIError(
+            'Failed to fetch historical growth snapshot',
+            growthError.code,
+            growthError,
+          );
 
         let whisperedQuery = supabase
           .from('whispered_moments')
@@ -123,8 +143,16 @@ export const createZenStackProfileRepository = (getAuthUser: AuthUserResolver): 
           whisperedQuery = whisperedQuery.lte('awarded_at', asOf);
         }
 
-        const { data: whisperedRows, error: whisperedError } = await whisperedQuery.order('awarded_at', { ascending: false });
-        if (whisperedError) throw new APIError('Failed to fetch whispered moments snapshot', whisperedError.code, whisperedError);
+        const { data: whisperedRows, error: whisperedError } = await whisperedQuery.order(
+          'awarded_at',
+          { ascending: false },
+        );
+        if (whisperedError)
+          throw new APIError(
+            'Failed to fetch whispered moments snapshot',
+            whisperedError.code,
+            whisperedError,
+          );
 
         return {
           as_of: asOf,
@@ -134,15 +162,30 @@ export const createZenStackProfileRepository = (getAuthUser: AuthUserResolver): 
         };
       }
 
-      const [{ data: rewards, error: rewardsError }, { data: growth, error: growthError }, { data: whisperedRows, error: whisperedError }] = await Promise.all([
+      const [
+        { data: rewards, error: rewardsError },
+        { data: growth, error: growthError },
+        { data: whisperedRows, error: whisperedError },
+      ] = await Promise.all([
         supabase.from('user_rewards').select('*').eq('user_id', userId).maybeSingle(),
         supabase.from('user_growth_state').select('*').eq('user_id', userId).maybeSingle(),
-        supabase.from('whispered_moments').select('moment_key, moment_name_en, moment_name_si, awarded_at').eq('user_id', userId).order('awarded_at', { ascending: false }),
+        supabase
+          .from('whispered_moments')
+          .select('moment_key, moment_name_en, moment_name_si, awarded_at')
+          .eq('user_id', userId)
+          .order('awarded_at', { ascending: false }),
       ]);
 
-      if (rewardsError) throw new APIError('Failed to fetch rewards snapshot', rewardsError.code, rewardsError);
-      if (growthError) throw new APIError('Failed to fetch growth snapshot', growthError.code, growthError);
-      if (whisperedError) throw new APIError('Failed to fetch whispered moments snapshot', whisperedError.code, whisperedError);
+      if (rewardsError)
+        throw new APIError('Failed to fetch rewards snapshot', rewardsError.code, rewardsError);
+      if (growthError)
+        throw new APIError('Failed to fetch growth snapshot', growthError.code, growthError);
+      if (whisperedError)
+        throw new APIError(
+          'Failed to fetch whispered moments snapshot',
+          whisperedError.code,
+          whisperedError,
+        );
 
       return {
         as_of: null,
@@ -157,7 +200,11 @@ export const createZenStackProfileRepository = (getAuthUser: AuthUserResolver): 
       const limit = options.limit ?? 50;
       const { start, end } = getTemporalRange(viewDate, viewScale);
 
-      const [{ data: rewardRows, error: rewardError }, { data: growthRows, error: growthError }, { data: momentRows, error: momentError }] = await Promise.all([
+      const [
+        { data: rewardRows, error: rewardError },
+        { data: growthRows, error: growthError },
+        { data: momentRows, error: momentError },
+      ] = await Promise.all([
         supabase
           .from('user_rewards_versions')
           .select('id, operation, recorded_at, snapshot')
@@ -184,9 +231,16 @@ export const createZenStackProfileRepository = (getAuthUser: AuthUserResolver): 
           .limit(limit),
       ]);
 
-      if (rewardError) throw new APIError('Failed to fetch rewards history', rewardError.code, rewardError);
-      if (growthError) throw new APIError('Failed to fetch growth history', growthError.code, growthError);
-      if (momentError) throw new APIError('Failed to fetch whispered moments history', momentError.code, momentError);
+      if (rewardError)
+        throw new APIError('Failed to fetch rewards history', rewardError.code, rewardError);
+      if (growthError)
+        throw new APIError('Failed to fetch growth history', growthError.code, growthError);
+      if (momentError)
+        throw new APIError(
+          'Failed to fetch whispered moments history',
+          momentError.code,
+          momentError,
+        );
 
       const rewardEvents: ProfileJourneyEvent[] = (rewardRows || []).map((row: any) => ({
         id: row.id,
@@ -234,10 +288,12 @@ export const createZenStackProfileRepository = (getAuthUser: AuthUserResolver): 
     },
     async updateUserProfile(userId, updates) {
       const db = getDb();
-      return normalizeUser(await db.user.update({
-        where: { id: userId },
-        data: updates,
-      }));
+      return normalizeUser(
+        await db.user.update({
+          where: { id: userId },
+          data: updates,
+        }),
+      );
     },
     async getAnonymousFlag(userId) {
       const db = getDb();
@@ -253,23 +309,23 @@ export const createZenStackProfileRepository = (getAuthUser: AuthUserResolver): 
 
     async getSocialLinks(userId) {
       const db = getDb();
-      return await db.userSocialLink.findMany({
+      return (await db.userSocialLink.findMany({
         where: { user_id: userId },
         orderBy: { order_index: 'asc' },
-      }) as SocialLink[];
+      })) as SocialLink[];
     },
     async upsertSocialLink(link) {
       const db = getDb();
       if (link.id) {
-        return await db.userSocialLink.update({
+        return (await db.userSocialLink.update({
           where: { id: link.id },
           data: link,
-        }) as SocialLink;
+        })) as SocialLink;
       }
 
-      return await db.userSocialLink.create({
+      return (await db.userSocialLink.create({
         data: link,
-      }) as SocialLink;
+      })) as SocialLink;
     },
     async deleteSocialLink(linkId) {
       const db = getDb();
@@ -278,12 +334,12 @@ export const createZenStackProfileRepository = (getAuthUser: AuthUserResolver): 
     async updateSocialLinksOrder(links) {
       const db = getDb();
       await Promise.all(
-        links.map((link) => 
+        links.map((link) =>
           db.userSocialLink.update({
             where: { id: link.id },
             data: { order_index: link.order_index },
-          })
-        )
+          }),
+        ),
       );
     },
 
@@ -310,7 +366,8 @@ export const createZenStackProfileRepository = (getAuthUser: AuthUserResolver): 
         .order('recorded_at', { ascending: false })
         .limit(1)
         .maybeSingle();
-      if (error) throw new APIError('Failed to fetch historical community profile', error.code, error);
+      if (error)
+        throw new APIError('Failed to fetch historical community profile', error.code, error);
       return (data?.snapshot as CommunityProfile | undefined) ?? null;
     },
     async getCommunityProfileHistory(communityId, limit = 20) {
@@ -325,49 +382,53 @@ export const createZenStackProfileRepository = (getAuthUser: AuthUserResolver): 
     },
     async updateCommunityProfile(communityId, field, value) {
       const db = getDb();
-      return await db.group.update({
+      return (await db.group.update({
         where: { id: communityId },
         data: { [field]: value },
-      }) as CommunityProfile;
+      })) as CommunityProfile;
     },
 
     async getSchoolPulse(schoolId, options: ProfileTemporalReadOptions) {
       const db = getDb();
       const { viewDate, viewScale = 'day' } = options;
-      const { start: periodStart, end: periodEnd } = getTemporalRange(viewDate, viewScale === 'custom' ? 'day' : viewScale);
+      const { start: periodStart, end: periodEnd } = getTemporalRange(
+        viewDate,
+        viewScale === 'custom' ? 'day' : viewScale,
+      );
       const { start: previousStart, end: previousEnd } = getPreviousRange(periodStart, periodEnd);
 
-      const [postsThisPeriod, postsPreviousPeriod, libraryActivity, groups, classrooms] = await Promise.all([
-        db.post.findMany({
-          where: {
-            school_id: schoolId,
-            created_at: { gte: new Date(periodStart), lte: new Date(periodEnd) },
-          },
-          select: { id: true },
-        }),
-        db.post.findMany({
-          where: {
-            school_id: schoolId,
-            created_at: { gte: previousStart, lte: previousEnd },
-          },
-          select: { id: true },
-        }),
-        db.libraryResource.findMany({
-          where: {
-            creator_id: { not: undefined },
-            created_at: { gte: new Date(periodStart), lte: new Date(periodEnd) },
-          },
-          select: { id: true },
-        }),
-        db.group.findMany({
-          where: { school_id: schoolId },
-          select: { id: true },
-        }),
-        db.classroom.findMany({
-          where: { school_id: schoolId },
-          select: { id: true },
-        }),
-      ]);
+      const [postsThisPeriod, postsPreviousPeriod, libraryActivity, groups, classrooms] =
+        await Promise.all([
+          db.post.findMany({
+            where: {
+              school_id: schoolId,
+              created_at: { gte: new Date(periodStart), lte: new Date(periodEnd) },
+            },
+            select: { id: true },
+          }),
+          db.post.findMany({
+            where: {
+              school_id: schoolId,
+              created_at: { gte: previousStart, lte: previousEnd },
+            },
+            select: { id: true },
+          }),
+          db.libraryResource.findMany({
+            where: {
+              creator_id: { not: undefined },
+              created_at: { gte: new Date(periodStart), lte: new Date(periodEnd) },
+            },
+            select: { id: true },
+          }),
+          db.group.findMany({
+            where: { school_id: schoolId },
+            select: { id: true },
+          }),
+          db.classroom.findMany({
+            where: { school_id: schoolId },
+            select: { id: true },
+          }),
+        ]);
 
       const totalVolume = postsThisPeriod.length + libraryActivity.length;
       const communityVolume = totalVolume + groups.length;
@@ -375,17 +436,27 @@ export const createZenStackProfileRepository = (getAuthUser: AuthUserResolver): 
       const previousPosts = postsPreviousPeriod.length;
 
       return {
-        resonance_score: Math.min(100, Math.round((communityVolume / RESONANCE_ACTIVITY_ANCHOR) * 100)),
+        resonance_score: Math.min(
+          100,
+          Math.round((communityVolume / RESONANCE_ACTIVITY_ANCHOR) * 100),
+        ),
         aggregated_mood: 'unknown',
         trend:
           previousPosts === 0
-            ? (currentPosts > 0 ? 'rising' : 'stable')
+            ? currentPosts > 0
+              ? 'rising'
+              : 'stable'
             : currentPosts > previousPosts * RISING_THRESHOLD
               ? 'rising'
               : currentPosts < previousPosts * FAILING_THRESHOLD
                 ? 'failing'
                 : 'stable',
-        participation_rate: classrooms.length ? Math.min(100, Math.round((communityVolume / classrooms.length) * PARTICIPATION_SCALE_FACTOR)) : 0,
+        participation_rate: classrooms.length
+          ? Math.min(
+              100,
+              Math.round((communityVolume / classrooms.length) * PARTICIPATION_SCALE_FACTOR),
+            )
+          : 0,
         top_subjects: [],
         interaction_volume: communityVolume,
       } as PulseMetrics;

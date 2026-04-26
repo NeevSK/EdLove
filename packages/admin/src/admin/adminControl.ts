@@ -70,12 +70,21 @@ export function getAdminFeatureSnapshot() {
   };
 }
 
-export function stageFeatureGateChanges(changes: AdminFeatureGateChange[], affectedScope = 'platform'): AdminMutationPreview {
-  logAdminMutation('stage-feature-gate-changes', affectedScope, 'queued', 'Prepared a feature-gate preview for review.');
+export function stageFeatureGateChanges(
+  changes: AdminFeatureGateChange[],
+  affectedScope = 'platform',
+): AdminMutationPreview {
+  logAdminMutation(
+    'stage-feature-gate-changes',
+    affectedScope,
+    'queued',
+    'Prepared a feature-gate preview for review.',
+  );
   return {
     id: makeId('feature-preview'),
     title: 'Feature gate change preview',
-    summary: 'Stage global config updates without mutating live operator state until the preview is approved.',
+    summary:
+      'Stage global config updates without mutating live operator state until the preview is approved.',
     changes,
     affectedScope,
     reversible: true,
@@ -85,13 +94,21 @@ export function stageFeatureGateChanges(changes: AdminFeatureGateChange[], affec
 
 export function commitFeatureGateChanges(changes: AdminFeatureGateChange[]) {
   const current = useFeatureStore.getState().globalConfigs;
-  const next = changes.reduce<Record<string, string | boolean>>((acc, change) => {
-    acc[change.key] = change.value;
-    return acc;
-  }, { ...current });
+  const next = changes.reduce<Record<string, string | boolean>>(
+    (acc, change) => {
+      acc[change.key] = change.value;
+      return acc;
+    },
+    { ...current },
+  );
 
   useFeatureStore.getState().setGlobalConfigs(next);
-  logAdminMutation('commit-feature-gate-changes', 'platform', 'success', `Applied ${changes.length} feature gate change(s).`);
+  logAdminMutation(
+    'commit-feature-gate-changes',
+    'platform',
+    'success',
+    `Applied ${changes.length} feature gate change(s).`,
+  );
 
   return {
     applied: true,
@@ -101,7 +118,12 @@ export function commitFeatureGateChanges(changes: AdminFeatureGateChange[]) {
 }
 
 export function stageGuardedRepair(plan: GuardedRepairPlan): AdminMutationPreview {
-  logAdminMutation(`stage-${plan.kind}-repair`, plan.scope, 'queued', `Prepared a ${plan.kind} repair preview for review.`);
+  logAdminMutation(
+    `stage-${plan.kind}-repair`,
+    plan.scope,
+    'queued',
+    `Prepared a ${plan.kind} repair preview for review.`,
+  );
   return {
     id: makeId('repair-preview'),
     title: plan.title,
@@ -117,7 +139,12 @@ export function stageGuardedRepair(plan: GuardedRepairPlan): AdminMutationPrevie
 }
 
 export function commitGuardedRepair(plan: GuardedRepairPlan) {
-  logAdminMutation(`commit-${plan.kind}-repair`, plan.scope, 'success', `Committed a guarded ${plan.kind} repair.`);
+  logAdminMutation(
+    `commit-${plan.kind}-repair`,
+    plan.scope,
+    'success',
+    `Committed a guarded ${plan.kind} repair.`,
+  );
   return {
     applied: true,
     committedAt: new Date().toISOString(),

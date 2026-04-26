@@ -13,19 +13,25 @@ export class PostHogAnalytics {
   private posthog: PostHog | null = null;
   private isInitialized = false;
 
-  constructor(apiKey?: string, options?: {
-    host?: string;
-    debug?: boolean;
-  }) {
+  constructor(
+    apiKey?: string,
+    options?: {
+      host?: string;
+      debug?: boolean;
+    },
+  ) {
     if (apiKey) {
       this.initialize(apiKey, options);
     }
   }
 
-  async initialize(apiKey: string, options?: {
-    host?: string;
-    debug?: boolean;
-  }): Promise<void> {
+  async initialize(
+    apiKey: string,
+    options?: {
+      host?: string;
+      debug?: boolean;
+    },
+  ): Promise<void> {
     if (this.isInitialized) {
       return;
     }
@@ -36,7 +42,7 @@ export class PostHogAnalytics {
         captureAppLifecycleEvents: true,
         sessionRecording: {
           maskAllInputs: true,
-        }
+        },
       });
       this.isInitialized = true;
     } catch (error) {
@@ -103,22 +109,29 @@ export class PostHogAnalytics {
   }
 
   // Educational specific tracking methods
-  trackAssignmentView(assignmentId: string, properties?: {
-    subject?: string;
-    difficulty?: string;
-    estimatedTime?: number;
-  }): void {
+  trackAssignmentView(
+    assignmentId: string,
+    properties?: {
+      subject?: string;
+      difficulty?: string;
+      estimatedTime?: number;
+    },
+  ): void {
     this.track('assignment_viewed', {
       assignment_id: assignmentId,
       ...properties,
     });
   }
 
-  trackGradeReceived(assignmentId: string, grade: number, properties?: {
-    maxGrade?: number;
-    subject?: string;
-    timeSpent?: number;
-  }): void {
+  trackGradeReceived(
+    assignmentId: string,
+    grade: number,
+    properties?: {
+      maxGrade?: number;
+      subject?: string;
+      timeSpent?: number;
+    },
+  ): void {
     this.track('grade_received', {
       assignment_id: assignmentId,
       grade,
@@ -126,10 +139,14 @@ export class PostHogAnalytics {
     });
   }
 
-  trackStudySession(subject: string, duration: number, properties?: {
-    topics?: string[];
-    completedAssignments?: number;
-  }): void {
+  trackStudySession(
+    subject: string,
+    duration: number,
+    properties?: {
+      topics?: string[];
+      completedAssignments?: number;
+    },
+  ): void {
     this.track('study_session', {
       subject,
       duration,
@@ -137,11 +154,16 @@ export class PostHogAnalytics {
     });
   }
 
-  trackQuizAttempt(quizId: string, score: number, totalQuestions: number, properties?: {
-    topic?: string;
-    difficulty?: string;
-    timeSpent?: number;
-  }): void {
+  trackQuizAttempt(
+    quizId: string,
+    score: number,
+    totalQuestions: number,
+    properties?: {
+      topic?: string;
+      difficulty?: string;
+      timeSpent?: number;
+    },
+  ): void {
     this.track('quiz_attempt', {
       quiz_id: quizId,
       score,

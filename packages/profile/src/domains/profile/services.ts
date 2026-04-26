@@ -7,16 +7,22 @@ import type {
   ProfileJourneyReadOptions,
   ProfileJourneySnapshot,
   ProfileRepository,
-  PulseMetrics,
   ProfileTemporalReadOptions,
+  PulseMetrics,
 } from './ports';
 
 export interface ProfileServices {
   getUserProfile(userId: string): Promise<any | null>;
   getUserProfileAsOf(userId: string, asOf: string): Promise<any | null>;
   getUserProfileHistory(userId: string, limit?: number): Promise<ProfileHistoryEntry[]>;
-  getJourneySnapshot(userId: string, options?: ProfileJourneyReadOptions): Promise<ProfileJourneySnapshot>;
-  getJourneyHistory(userId: string, options?: ProfileJourneyHistoryReadOptions): Promise<ProfileJourneyEvent[]>;
+  getJourneySnapshot(
+    userId: string,
+    options?: ProfileJourneyReadOptions,
+  ): Promise<ProfileJourneySnapshot>;
+  getJourneyHistory(
+    userId: string,
+    options?: ProfileJourneyHistoryReadOptions,
+  ): Promise<ProfileJourneyEvent[]>;
   updateProfile(userId: string, updates: Record<string, any>): Promise<any>;
   isAnonymous(userId: string): Promise<boolean>;
   uploadAvatar(userId: string, localUri: string): Promise<any>;
@@ -24,12 +30,22 @@ export interface ProfileServices {
   getSocialLinks(userId: string): Promise<SocialLink[]>;
   upsertSocialLink(userId: string, link: Partial<SocialLink>): Promise<SocialLink>;
   deleteSocialLink(linkId: string): Promise<void>;
-  updateSocialLinksOrder(userId: string, links: { id: string; order_index: number }[]): Promise<void>;
+  updateSocialLinksOrder(
+    userId: string,
+    links: { id: string; order_index: number }[],
+  ): Promise<void>;
 
   getCommunityProfile(communityId: string): Promise<CommunityProfile | null>;
   getCommunityProfileAsOf(communityId: string, asOf: string): Promise<CommunityProfile | null>;
-  getCommunityProfileHistory(communityId: string, limit?: number): Promise<ProfileHistoryEntry<CommunityProfile>[]>;
-  updateCommunityProfile(communityId: string, field: 'name' | 'description', value: string): Promise<CommunityProfile>;
+  getCommunityProfileHistory(
+    communityId: string,
+    limit?: number,
+  ): Promise<ProfileHistoryEntry<CommunityProfile>[]>;
+  updateCommunityProfile(
+    communityId: string,
+    field: 'name' | 'description',
+    value: string,
+  ): Promise<CommunityProfile>;
 
   getSchoolPulse(schoolId: string, options: ProfileTemporalReadOptions): Promise<PulseMetrics>;
 }
@@ -48,14 +64,18 @@ export const createProfileServices = (repository: ProfileRepository): ProfileSer
   },
 
   getSocialLinks: (userId) => repository.getSocialLinks(userId),
-  upsertSocialLink: (userId, link) => repository.upsertSocialLink({ ...link, user_id: link.user_id || userId }),
+  upsertSocialLink: (userId, link) =>
+    repository.upsertSocialLink({ ...link, user_id: link.user_id || userId }),
   deleteSocialLink: (linkId) => repository.deleteSocialLink(linkId),
   updateSocialLinksOrder: (_userId, links) => repository.updateSocialLinksOrder(links),
 
   getCommunityProfile: (communityId) => repository.getCommunityProfile(communityId),
-  getCommunityProfileAsOf: (communityId, asOf) => repository.getCommunityProfileAsOf(communityId, asOf),
-  getCommunityProfileHistory: (communityId, limit) => repository.getCommunityProfileHistory(communityId, limit),
-  updateCommunityProfile: (communityId, field, value) => repository.updateCommunityProfile(communityId, field, value),
+  getCommunityProfileAsOf: (communityId, asOf) =>
+    repository.getCommunityProfileAsOf(communityId, asOf),
+  getCommunityProfileHistory: (communityId, limit) =>
+    repository.getCommunityProfileHistory(communityId, limit),
+  updateCommunityProfile: (communityId, field, value) =>
+    repository.updateCommunityProfile(communityId, field, value),
 
   getSchoolPulse: (schoolId, options) => repository.getSchoolPulse(schoolId, options),
 });

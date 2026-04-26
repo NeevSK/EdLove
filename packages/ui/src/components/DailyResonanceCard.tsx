@@ -1,6 +1,5 @@
-import React from 'react';
-import { Box, VStack, HStack, Text } from '../gluestack';
-import { LucideIcon } from 'lucide-react-native';
+import type { LucideIcon } from 'lucide-react-native';
+import { Box, HStack, Text, VStack } from '../gluestack';
 import SanctuaryCard from './SanctuaryCard';
 
 interface DailyResonanceCardProps {

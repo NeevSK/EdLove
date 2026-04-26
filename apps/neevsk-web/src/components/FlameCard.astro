@@ -1,16 +1,23 @@
 ---
 interface Props {
-	title: string;
-	description: string;
-	tags?: string[];
-	variant?: 'blue' | 'red';
+  title: string;
+  description: string;
+  tags?: string[];
+  variant?: 'blue' | 'red';
 }
 
 const { title, description, tags = [], variant = 'blue' } = Astro.props;
 
-const variantClass = variant === 'blue' ? 'group-hover:text-glow-blue dark:group-hover:text-glow-blue' : 'group-hover:text-glow-red dark:group-hover:text-glow-red';
-const borderClass = variant === 'blue' ? 'group-hover:border-glow-blue/50' : 'group-hover:border-glow-red/50';
-const glowClass = variant === 'blue' ? 'dark:group-hover:shadow-[0_0_20px_rgba(6,182,212,0.2)]' : 'dark:group-hover:shadow-[0_0_20px_rgba(244,63,94,0.2)]';
+const variantClass =
+  variant === 'blue'
+    ? 'group-hover:text-glow-blue dark:group-hover:text-glow-blue'
+    : 'group-hover:text-glow-red dark:group-hover:text-glow-red';
+const borderClass =
+  variant === 'blue' ? 'group-hover:border-glow-blue/50' : 'group-hover:border-glow-red/50';
+const glowClass =
+  variant === 'blue'
+    ? 'dark:group-hover:shadow-[0_0_20px_rgba(6,182,212,0.2)]'
+    : 'dark:group-hover:shadow-[0_0_20px_rgba(244,63,94,0.2)]';
 ---
 
 <div class={`group relative p-6 border border-ink/10 dark:border-tungsten/10 bg-tungsten/30 dark:bg-void/30 backdrop-blur-sm transition-all duration-500 ${borderClass} ${glowClass}`}>

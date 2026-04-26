@@ -1,59 +1,69 @@
 import { multiTenantAnalyticsEngine } from './engine';
-import {
-  TenantMetrics,
-  TenantComparison,
-  BenchmarkReport,
-  LiveMetrics,
-  CustomReportConfig,
-  ReportResult,
+import type {
   Anomaly,
-  Trend,
-  Prediction,
-  Insight,
   BenchmarkInsights,
-  MetricDefinition,
+  BenchmarkReport,
+  CustomReportConfig,
   DateRange,
-  EducationSector
+  EducationSector,
+  Insight,
+  LiveMetrics,
+  MetricDefinition,
+  Prediction,
+  ReportResult,
+  TenantComparison,
+  TenantMetrics,
+  Trend,
 } from './types';
 
 export interface MultiTenantAnalyticsAPI {
   // Data aggregation
   aggregateTenantMetrics(tenantIds: string[], timeRange: DateRange): Promise<TenantMetrics[]>;
-  compareTenantPerformance(tenantIds: string[], metrics: MetricDefinition[], industry: EducationSector): Promise<TenantComparison[]>;
-  generateBenchmarkReports(tenantIds: string[], industry: EducationSector): Promise<BenchmarkReport[]>;
-  
+  compareTenantPerformance(
+    tenantIds: string[],
+    metrics: MetricDefinition[],
+    industry: EducationSector,
+  ): Promise<TenantComparison[]>;
+  generateBenchmarkReports(
+    tenantIds: string[],
+    industry: EducationSector,
+  ): Promise<BenchmarkReport[]>;
+
   // Real-time analytics
   getLiveMetrics(tenantId: string): Promise<LiveMetrics>;
   createCustomReport(config: CustomReportConfig): Promise<ReportResult>;
   scheduleReport(reportConfig: CustomReportConfig, schedule: any): Promise<string>;
-  
+
   // Pattern recognition
   detectAnomalies(tenantId: string, metrics: MetricDefinition[]): Promise<Anomaly[]>;
   identifyTrends(tenantId: string, timeRange: DateRange): Promise<Trend[]>;
   predictOutcomes(historicalData: any): Promise<Prediction[]>;
-  
+
   // Recommendations
   generateRecommendations(tenantId: string, context: any): Promise<Insight[]>;
   benchmarkPerformance(tenantId: string, industry: EducationSector): Promise<BenchmarkInsights>;
 }
 
-export const multiTenantAnalyticsAPI: MultiTenantAnalyticsAPI  = {
+export const multiTenantAnalyticsAPI: MultiTenantAnalyticsAPI = {
   // Data aggregation
-  async aggregateTenantMetrics(tenantIds: string[], timeRange: DateRange): Promise<TenantMetrics[]> {
+  async aggregateTenantMetrics(
+    tenantIds: string[],
+    timeRange: DateRange,
+  ): Promise<TenantMetrics[]> {
     return await multiTenantAnalyticsEngine.aggregateTenantMetrics(tenantIds, timeRange);
   },
 
   async compareTenantPerformance(
-    tenantIds: string[], 
-    metrics: MetricDefinition[], 
-    industry: EducationSector
+    tenantIds: string[],
+    metrics: MetricDefinition[],
+    industry: EducationSector,
   ): Promise<TenantComparison[]> {
     return await multiTenantAnalyticsEngine.compareTenantPerformance(tenantIds, metrics, industry);
   },
 
   async generateBenchmarkReports(
-    tenantIds: string[], 
-    industry: EducationSector
+    tenantIds: string[],
+    industry: EducationSector,
   ): Promise<BenchmarkReport[]> {
     return await multiTenantAnalyticsEngine.generateBenchmarkReports(tenantIds, industry);
   },
@@ -67,25 +77,16 @@ export const multiTenantAnalyticsAPI: MultiTenantAnalyticsAPI  = {
     return await multiTenantAnalyticsEngine.createCustomReport(config);
   },
 
-  async scheduleReport(
-    reportConfig: CustomReportConfig, 
-    schedule: any
-  ): Promise<string> {
+  async scheduleReport(reportConfig: CustomReportConfig, schedule: any): Promise<string> {
     return await multiTenantAnalyticsEngine.scheduleReport(reportConfig, schedule);
   },
 
   // Pattern recognition
-  async detectAnomalies(
-    tenantId: string, 
-    metrics: MetricDefinition[]
-  ): Promise<Anomaly[]> {
+  async detectAnomalies(tenantId: string, metrics: MetricDefinition[]): Promise<Anomaly[]> {
     return await multiTenantAnalyticsEngine.detectAnomalies(tenantId, metrics);
   },
 
-  async identifyTrends(
-    tenantId: string, 
-    timeRange: DateRange
-  ): Promise<Trend[]> {
+  async identifyTrends(tenantId: string, timeRange: DateRange): Promise<Trend[]> {
     return await multiTenantAnalyticsEngine.identifyTrends(tenantId, timeRange);
   },
 
@@ -94,17 +95,14 @@ export const multiTenantAnalyticsAPI: MultiTenantAnalyticsAPI  = {
   },
 
   // Recommendations
-  async generateRecommendations(
-    tenantId: string, 
-    context: any
-  ): Promise<Insight[]> {
+  async generateRecommendations(tenantId: string, context: any): Promise<Insight[]> {
     return await multiTenantAnalyticsEngine.generateRecommendations(tenantId, context);
   },
 
   async benchmarkPerformance(
-    tenantId: string, 
-    industry: EducationSector
+    tenantId: string,
+    industry: EducationSector,
   ): Promise<BenchmarkInsights> {
     return await multiTenantAnalyticsEngine.benchmarkPerformance(tenantId, industry);
-  }
+  },
 };

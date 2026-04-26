@@ -1,17 +1,16 @@
-import React, {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  useCallback,
-  ReactNode,
-  useMemo,
-} from 'react';
-import { AppState, AppStateStatus } from 'react-native';
-// @ts-ignore
 import NetInfo from '@react-native-community/netinfo';
 import { useStore } from '@repo/core/logic';
-import { RealityState, NetworkQuality, DeviceTier } from './types';
+import {
+  createContext,
+  type ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
+import { AppState, type AppStateStatus } from 'react-native';
+import type { NetworkQuality, RealityState } from './types';
 import { detectDeviceTier, detectNetworkQuality, shouldUseDataSaver } from './utils';
 
 interface RealityContextValue {

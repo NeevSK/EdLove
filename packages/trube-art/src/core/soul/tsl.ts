@@ -12,7 +12,7 @@ class BinaryExpression implements TSLExpression {
     public readonly op: '+' | '-' | '*' | '/' | 'mix',
     public readonly right: TSLExpression,
     public readonly type: TSLType,
-    public readonly kind = 'binary'
+    public readonly kind = 'binary',
   ) {}
 
   render(backend: 'sksl' | 'native'): string {
@@ -26,7 +26,7 @@ class LiteralExpression implements TSLExpression {
   constructor(
     public readonly value: number | string,
     public readonly type: TSLType,
-    public readonly kind = 'literal'
+    public readonly kind = 'literal',
   ) {}
 
   render(): string {
@@ -43,7 +43,7 @@ class CallExpression implements TSLExpression {
     public readonly name: string,
     public readonly args: TSLExpression[],
     public readonly type: TSLType,
-    public readonly kind = 'call'
+    public readonly kind = 'call',
   ) {}
 
   render(backend: 'sksl' | 'native'): string {
@@ -57,7 +57,7 @@ class MemberExpression implements TSLExpression {
     public readonly obj: TSLExpression,
     public readonly member: string,
     public readonly type: TSLType,
-    public readonly kind = 'member'
+    public readonly kind = 'member',
   ) {}
 
   render(backend: 'sksl' | 'native'): string {
@@ -69,7 +69,7 @@ class InputExpression implements TSLExpression {
   constructor(
     public readonly name: string,
     public readonly type: TSLType,
-    public readonly kind = 'input'
+    public readonly kind = 'input',
   ) {}
 
   render(backend: 'sksl' | 'native'): string {

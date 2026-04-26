@@ -11,10 +11,10 @@
 // 3. Central Logo (Lotus emoji) enabled by High Error Correction
 // 4. "Scan Me" branding frame
 
-import React, { useMemo } from 'react';
-import Svg, { Rect, Circle, G, Text as SvgText } from 'react-native-svg';
-import { View, Text, StyleSheet } from 'react-native';
 import QRCode from 'qrcode';
+import { useMemo } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import Svg, { Circle, G, Rect, Text as SvgText } from 'react-native-svg';
 
 export interface QRCodeGeneratorProps {
   value: string;

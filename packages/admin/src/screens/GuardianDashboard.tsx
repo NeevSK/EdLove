@@ -1,21 +1,21 @@
-import React from 'react';
 import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import {
   type GuardianStackParamList,
   resolveWorkspaceSwitcherTargets,
   usePermissions,
   useStore,
-  type WorkspaceSwitcherTarget
+  type WorkspaceSwitcherTarget,
 } from '@repo/core';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Box, ScreenWrapper, Text } from '@repo/ui';
+import React from 'react';
 import {
   GuardianWorkspaceCanvas,
-  type GuardianWorkspaceSurfaceId,
   type GuardianWorkspaceSurface,
+  type GuardianWorkspaceSurfaceId,
   useGuardianWorkspaceCanvasSurfaces,
   useGuardianWorkspaceData,
-  useGuardianWorkspaceLayout
+  useGuardianWorkspaceLayout,
 } from '../guardian';
 import { GuardianDashboardScreen } from './GuardianDashboardScreen';
 
@@ -43,7 +43,7 @@ export default function GuardianDashboard() {
         canManageTeacherDashboard: can('manage', 'TeacherDashboard'),
         canManageStudentDashboard: can('manage', 'StudentDashboard'),
         hasPrimaryInstitution: Boolean(user?.school_id),
-        hasMountedGuardianWorkspace: true
+        hasMountedGuardianWorkspace: true,
       }),
     [can, user?.school_id],
   );
@@ -60,7 +60,7 @@ export default function GuardianDashboard() {
       if (target.id === 'principal' && user?.school_id) {
         navigation.navigate('PrincipalDashboard', {
           schoolId: user.school_id,
-          userId: user.id
+          userId: user.id,
         });
         return;
       }
@@ -81,7 +81,7 @@ export default function GuardianDashboard() {
       if (studentId) {
         navigation.navigate('GuardianStudentDetail', {
           studentId,
-          studentName
+          studentName,
         });
         return;
       }
@@ -102,7 +102,7 @@ export default function GuardianDashboard() {
       students: [],
       notifications: [],
       upcomingEvents: [],
-      recentActivity: []
+      recentActivity: [],
     },
     workspaceTargets,
     onSelectWorkspaceTarget: handleWorkspaceTarget,
@@ -118,14 +118,18 @@ export default function GuardianDashboard() {
       navigation.navigate('GuardianEvents');
     },
     onOpenCommunity: () => navigation.navigate('GuardianCommunicationBridge'),
-    onOpenLibrary: handleOpenLibrary
+    onOpenLibrary: handleOpenLibrary,
   });
 
   const workspace = useGuardianWorkspaceLayout(user?.id, surfaces);
 
   const handleOpenSurface = React.useCallback(
     (surface: GuardianResolvedSurface) => {
-      if (surface.surfaceId === 'children' || surface.surfaceId === 'attendance_watch' || surface.surfaceId === 'learning_pulse') {
+      if (
+        surface.surfaceId === 'children' ||
+        surface.surfaceId === 'attendance_watch' ||
+        surface.surfaceId === 'learning_pulse'
+      ) {
         handleOpenStudentsRoom();
         return;
       }
@@ -166,7 +170,7 @@ export default function GuardianDashboard() {
 
   if (!flags.isGuardianWorkspaceEnabled) {
     return (
-      <GuardianDashboardScreen 
+      <GuardianDashboardScreen
         guardianId={user.id}
         onStudentPress={(student) => handleOpenStudent(student.studentId, student.name)}
         onNotificationPress={(_notification) => navigation.navigate('GuardianNotifications')}
@@ -208,7 +212,7 @@ export default function GuardianDashboard() {
   return (
     <ScreenWrapper scroll={false} noTopInset>
       <Box className="flex-1 bg-phase-canvas px-4 py-4">
-        <GuardianWorkspaceCanvas 
+        <GuardianWorkspaceCanvas
           layout={workspace.layout}
           surfaces={workspace.surfaces}
           schoolName={user.organization_name || null}

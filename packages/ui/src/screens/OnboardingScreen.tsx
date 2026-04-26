@@ -1,28 +1,27 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
+import type { Role } from '@repo/core/logic';
+import { authAPI, identityAPI, supabase } from '@repo/core/native';
+import React, { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { ProgressIndicator } from '../components/ProgressIndicator';
+import ScreenWrapper from '../components/ScreenWrapper';
 import {
   Box,
-  Pressable,
-  VStack,
+  Button,
+  ButtonText,
+  Center,
+  Heading,
   HStack,
   Input,
   InputField,
-  Button,
-  ButtonText,
+  Pressable,
   Text,
-  Heading,
-  Center,
+  VStack,
 } from '../gluestack';
-import { useNavigation } from '@react-navigation/native';
-import { useTranslation } from 'react-i18next';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Theme } from '../theme/Theme';
-import { Role } from '@repo/core/logic';
-import { supabase, identityAPI, authAPI } from '@repo/core/native';
-import { hapticLight, hapticSuccess, hapticError } from '../utils/haptics';
-import ScreenWrapper from '../components/ScreenWrapper';
 import { useTheme } from '../hooks/useTheme';
 import { useSanctuaryToast } from '../providers/ToastProvider';
-import { ProgressIndicator } from '../components/ProgressIndicator';
+import { hapticError, hapticLight, hapticSuccess } from '../utils/haptics';
 
 const JOURNEY_PILLARS = ['Self', 'Classroom', 'Community', 'Library'];
 const TOTAL_STEPS = 7;
@@ -161,7 +160,7 @@ export default function OnboardingScreen({
       }
     };
     initOnboarding();
-  }, []);
+  }, [onComplete]);
 
   const tourScreens = useMemo(
     () => [

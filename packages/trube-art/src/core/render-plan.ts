@@ -1,3 +1,4 @@
+import { resolveSurface } from './surface';
 import type {
   TrubeEnvironment,
   TrubeQuality,
@@ -6,49 +7,51 @@ import type {
   TrubeSurfaceName,
   TrubeSurfaceSpec,
 } from './types';
-import { resolveSurface } from './surface';
 
-const QUALITY_PRESETS: Record  TrubeResolvedQuality,
-  Omit<TrubeRenderPlan, 'capabilityTier' | 'quality' | 'backend' | 'timeDriver'> = {
-  cinematic: {
-    architectureVersion: 'v1',
-    animationEnabled: true,
-    resolutionScale: 0.66,
-    updateIntervalMs: 34,
-    detail: 3,
-    grainOpacity: 0.05,
-    layerOpacity: 0.42,
-  },
-  balanced: {
-    architectureVersion: 'v1',
-    animationEnabled: true,
-    resolutionScale: 0.56,
-    updateIntervalMs: 48,
-    detail: 2,
-    grainOpacity: 0.04,
-    layerOpacity: 0.34,
-  },
-  efficient: {
-    architectureVersion: 'v1',
-    animationEnabled: true,
-    resolutionScale: 0.42,
-    updateIntervalMs: 72,
-    detail: 1,
-    grainOpacity: 0.03,
-    layerOpacity: 0.26,
-  },
-  static: {
-    architectureVersion: 'v1',
-    animationEnabled: false,
-    resolutionScale: 0.32,
-    updateIntervalMs: 0,
-    detail: 0,
-    grainOpacity: 0.025,
-    layerOpacity: 0.18,
-  },
-};
+const QUALITY_PRESETS: Record;
+TrubeResolvedQuality,
+  (Omit<TrubeRenderPlan, 'capabilityTier' | 'quality' | 'backend' | 'timeDriver'> = {
+    cinematic: {
+      architectureVersion: 'v1',
+      animationEnabled: true,
+      resolutionScale: 0.66,
+      updateIntervalMs: 34,
+      detail: 3,
+      grainOpacity: 0.05,
+      layerOpacity: 0.42,
+    },
+    balanced: {
+      architectureVersion: 'v1',
+      animationEnabled: true,
+      resolutionScale: 0.56,
+      updateIntervalMs: 48,
+      detail: 2,
+      grainOpacity: 0.04,
+      layerOpacity: 0.34,
+    },
+    efficient: {
+      architectureVersion: 'v1',
+      animationEnabled: true,
+      resolutionScale: 0.42,
+      updateIntervalMs: 72,
+      detail: 1,
+      grainOpacity: 0.03,
+      layerOpacity: 0.26,
+    },
+    static: {
+      architectureVersion: 'v1',
+      animationEnabled: false,
+      resolutionScale: 0.32,
+      updateIntervalMs: 0,
+      detail: 0,
+      grainOpacity: 0.025,
+      layerOpacity: 0.18,
+    },
+  });
 
-function resolveCapabilityTier(environment: TrubeEnvironment = {}): TrubeRenderPlan['capabilityTier'] {
+function resolveCapabilityTier(
+  environment: TrubeEnvironment = {},
+): TrubeRenderPlan['capabilityTier'] {
   if (environment.capabilityTier) {
     return environment.capabilityTier;
   }
@@ -81,7 +84,11 @@ function resolveQuality(
     return inputQuality;
   }
 
-  if (environment.prefersReducedMotion || environment.lowPowerMode || environment.thermalState === 'hot') {
+  if (
+    environment.prefersReducedMotion ||
+    environment.lowPowerMode ||
+    environment.thermalState === 'hot'
+  ) {
     return 'static';
   }
 
@@ -104,7 +111,11 @@ export function createRenderPlan(
 ): TrubeRenderPlan {
   const resolvedSurface = resolveSurface(input);
   const capabilityTier = resolveCapabilityTier(environment);
-  const resolvedQuality = resolveQuality(quality, environment, resolvedSurface.preset.recommendedQuality);
+  const resolvedQuality = resolveQuality(
+    quality,
+    environment,
+    resolvedSurface.preset.recommendedQuality,
+  );
   const basePlan = QUALITY_PRESETS[resolvedQuality];
 
   if (capabilityTier === 'compatibility') {
@@ -118,26 +129,27 @@ export function createRenderPlan(
   }
 
   const architectureVersion = capabilityTier === 'tier-1' ? 'v2' : 'v1';
-  
+
   // Use DriverManager to pick the actual functional backend at runtime
   // but we default the plan to the capability tier's preferred backend.
   const backend =
     capabilityTier === 'tier-1'
-      ? (environment.pixelRatio && environment.pixelRatio > 2 ? 'native-vulkan' : 'native-metal')
+      ? environment.pixelRatio && environment.pixelRatio > 2
+        ? 'native-vulkan'
+        : 'native-metal'
       : capabilityTier === 'tier-2'
-      ? 'webgpu'
-      : 'skia-runtime-effect';
-  
+        ? 'webgpu'
+        : 'skia-runtime-effect';
+
   const timeDriver =
     resolvedQuality === 'static'
       ? 'static'
       : architectureVersion === 'v2'
-      ? 'reanimated'
-      : 'animated-legacy';
+        ? 'reanimated'
+        : 'animated-legacy';
 
-  const thermalScale = 
-    environment.thermalState === 'hot' ? 0.5 :
-    environment.thermalState === 'warm' ? 0.8 : 1.0;
+  const thermalScale =
+    environment.thermalState === 'hot' ? 0.5 : environment.thermalState === 'warm' ? 0.8 : 1.0;
 
   return {
     capabilityTier,

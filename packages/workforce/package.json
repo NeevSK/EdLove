@@ -17,8 +17,8 @@
     "lucide-react-native": "^0.563.0"
   },
   "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
-    "typescript": "~5.9.2",
+    "@repo/eslint-config": "workspace:^",
+    "typescript": "^5.9.3",
     "eslint": "^9.38.0",
     "react": "19.2.0"
   }

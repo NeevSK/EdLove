@@ -1,6 +1,6 @@
 /**
  * native-shim.web.ts
- * 
+ *
  * This file shims native-only packages to prevent build-time crashes on web.
  * In a real-world scenario, you might alias these in your webpack/bundler config.
  */

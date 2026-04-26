@@ -40,7 +40,10 @@ function guessOwner(filePath) {
   if (normalized.includes('/library/')) return '@repo/library';
   if (normalized.includes('/classroom/FormBuilder')) return '@repo/form-builder';
   if (normalized.includes('/classroom/PublicForm')) return '@repo/form-builder';
-  if (normalized.includes('/classroom/views/principal/') || normalized.includes('PrincipalSchoolView.web.tsx')) {
+  if (
+    normalized.includes('/classroom/views/principal/') ||
+    normalized.includes('PrincipalSchoolView.web.tsx')
+  ) {
     return '@repo/admin';
   }
   if (normalized.includes('/classroom/views/Teacher')) return '@repo/classroom';

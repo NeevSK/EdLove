@@ -1,6 +1,6 @@
-import React from 'react';
-import { View, TextInput, type TextInputProps, type ViewProps } from 'react-native';
 import { cssInterop } from 'nativewind';
+import React from 'react';
+import { TextInput, type TextInputProps, View, type ViewProps } from 'react-native';
 
 cssInterop(View, { className: 'style' });
 cssInterop(TextInput, { className: 'style' });

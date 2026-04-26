@@ -13,17 +13,17 @@ import TeacherClassroomDashboard from './TeacherClassroomDashboard';
 import TimetableScreenWeb from './TimetableScreen.web';
 
 export {
-    /* AcademicCycleManager, (Migrated) */
-    AttendanceReportScreen,
-    ClassroomDetailScreenWeb,
-    ContentLibrary,
-    DemoPlaygroundPanelWeb,
-    /* GradeHeadDashboard, (Migrated) */
-    LessonFeed,
-    NoSchoolViewWeb,
-    /* SectionHeadDashboard, (Migrated) */
-    StudentClassroomDashboard,
-    StudentProfileScreen,
-    TeacherClassroomDashboard,
-    TimetableScreenWeb,
+  /* AcademicCycleManager, (Migrated) */
+  AttendanceReportScreen,
+  ClassroomDetailScreenWeb,
+  ContentLibrary,
+  DemoPlaygroundPanelWeb,
+  /* GradeHeadDashboard, (Migrated) */
+  LessonFeed,
+  NoSchoolViewWeb,
+  /* SectionHeadDashboard, (Migrated) */
+  StudentClassroomDashboard,
+  StudentProfileScreen,
+  TeacherClassroomDashboard,
+  TimetableScreenWeb,
 };

@@ -601,32 +601,32 @@ function createSceneTokens(tokens: PhaseTokens): SceneTokens {
     primary: {
       main: tokens.accent.action,
       muted: isDark ? colors.shroud : colors.linen,
-      lowOpacity: tokens.accent.action + '1A', // 10%
+      lowOpacity: `${tokens.accent.action}1A`, // 10%
     },
     secondary: {
       main: colors.sageGreen,
       muted: colors.mossGreen,
-      lowOpacity: colors.sageGreen + '1A',
+      lowOpacity: `${colors.sageGreen}1A`,
     },
     warning: {
       main: colors.warning,
       muted: colors.amberGlow,
-      lowOpacity: colors.warning + '1A',
+      lowOpacity: `${colors.warning}1A`,
     },
     success: {
       main: tokens.accent.sageGreen,
       muted: colors.mossGreen,
-      lowOpacity: tokens.accent.sageGreen + '1A',
+      lowOpacity: `${tokens.accent.sageGreen}1A`,
     },
     danger: {
       main: tokens.accent.danger,
       muted: colors.emberOrange,
-      lowOpacity: tokens.accent.danger + '1A',
+      lowOpacity: `${tokens.accent.danger}1A`,
     },
     info: {
       main: colors.skyBlue,
       muted: colors.gurudeviBlue,
-      lowOpacity: colors.skyBlue + '1A',
+      lowOpacity: `${colors.skyBlue}1A`,
     },
     border: {
       base: isDark ? colors.borderDark : colors.border,

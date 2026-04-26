@@ -1,20 +1,19 @@
-export * from './core/types';
-export * from './core/presets';
-export * from './core/scores';
-export * from './core/surface';
-export * from './core/render-plan';
-export * from './core/stage';
-export * from './core/ornament';
 export * from './core/motif';
+export * from './core/ornament';
+export * from './core/presets';
+export * from './core/render-plan';
+export * from './core/scores';
 export * from './core/soul/SoulLibrary';
-
+export * from './core/stage';
+export * from './core/surface';
+export * from './core/types';
+export { CompatibilityRenderer } from './native/renderers/CompatibilityRenderer';
 // Native Components
 export { TrubeCanvas } from './native/TrubeCanvas';
-export { TrubeOrnament } from './native/TrubeOrnament';
 export { TrubeMotif } from './native/TrubeMotif';
+export { TrubeOrnament } from './native/TrubeOrnament';
 export { TrubeStage } from './native/TrubeStage';
 export { TrubeView } from './native/TrubeView';
-export { CompatibilityRenderer } from './native/renderers/CompatibilityRenderer';
 
 /**
  * Initializes the Tr\u00FCbe-Art library and pre-warms the soul layer.

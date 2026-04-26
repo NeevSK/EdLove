@@ -14,11 +14,11 @@
   "dependencies": {
     "@repo/accounting": "workspace:*",
     "@repo/core": "workspace:*",
-    "@supabase/supabase-js": "^2.39.0"
+    "@supabase/supabase-js": "2.102.1"
   },
   "devDependencies": {
-    "typescript": "~5.9.2",
+    "typescript": "^5.9.3",
     "eslint": "^9.38.0",
-    "@types/node": "^22.10.2"
+    "@types/node": "^25.5.0"
   }
 }

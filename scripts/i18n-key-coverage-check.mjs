@@ -35,10 +35,14 @@ const walk = async (dir) => {
   for (const entry of entries) {
     const full = path.join(dir, entry.name);
     if (entry.isDirectory()) {
-      if (['node_modules', 'dist', 'build', 'coverage', '.expo', 'android', 'ios', 'docs'].includes(entry.name)) {
+      if (
+        ['node_modules', 'dist', 'build', 'coverage', '.expo', 'android', 'ios', 'docs'].includes(
+          entry.name,
+        )
+      ) {
         continue;
       }
-      result.push(...await walk(full));
+      result.push(...(await walk(full)));
       continue;
     }
 
@@ -100,7 +104,9 @@ if (missingByLocale.length || missingFromBase.length) {
   }
 
   if (missingFromBase.length) {
-    console.error(`- Base locale "${baseLocale}" is missing ${missingFromBase.length} key(s) referenced in source.`);
+    console.error(
+      `- Base locale "${baseLocale}" is missing ${missingFromBase.length} key(s) referenced in source.`,
+    );
     missingFromBase.slice(0, 20).forEach((key) => console.error(`  • ${key}`));
     if (missingFromBase.length > 20) {
       console.error(`  • ...and ${missingFromBase.length - 20} more`);
@@ -111,4 +117,6 @@ if (missingByLocale.length || missingFromBase.length) {
   process.exit(0);
 }
 
-console.log(`✅ i18n key coverage check passed (${localeFiles.length} locales, ${usedKeys.size} used keys).`);
+console.log(
+  `✅ i18n key coverage check passed (${localeFiles.length} locales, ${usedKeys.size} used keys).`,
+);

@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
-import { historyAPI, AuditLogEntry } from '@repo/core/logic';
+import { type AuditLogEntry, historyAPI } from '@repo/core/logic';
+import type React from 'react';
+import { useEffect, useState } from 'react';
+import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 interface HistoryTimelineProps {
   tableName: string;
@@ -35,7 +36,7 @@ export const HistoryTimeline: React.FC<HistoryTimelineProps> = ({ tableName, rec
 
   return (
     <ScrollView style={styles.container}>
-      {history.map((entry, index) => (
+      {history.map((entry, _index) => (
         <View key={entry.id} style={styles.entry}>
           <View style={styles.line} />
           <View style={styles.dot} />

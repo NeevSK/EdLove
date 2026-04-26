@@ -3,7 +3,7 @@
  * Core types for the Environment Context system
  */
 
-import { AuthorityTier } from '@repo/core/types';
+import type { AuthorityTier } from '@repo/core/types';
 
 /**
  * Temporal Phase - Time of day affecting theme and behavior

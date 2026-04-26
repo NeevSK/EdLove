@@ -1,7 +1,14 @@
 import { supabase } from '@repo/core';
 
 export type DocumentStatus = 'draft' | 'review' | 'approved' | 'published' | 'archived';
-export type DocumentWorkflowStep = 'create' | 'submit' | 'review' | 'approve' | 'reject' | 'publish' | 'archive';
+export type DocumentWorkflowStep =
+  | 'create'
+  | 'submit'
+  | 'review'
+  | 'approve'
+  | 'reject'
+  | 'publish'
+  | 'archive';
 
 export interface DocumentWorkflow {
   id: string;

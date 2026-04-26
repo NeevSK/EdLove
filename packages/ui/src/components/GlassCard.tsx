@@ -1,5 +1,5 @@
-import React from 'react';
-import { LayoutChangeEvent } from 'react-native';
+import type React from 'react';
+import type { LayoutChangeEvent } from 'react-native';
 import { Box } from '../gluestack';
 
 interface GlassCardProps {

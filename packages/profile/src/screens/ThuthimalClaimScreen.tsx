@@ -5,33 +5,33 @@
  * Philosophy: Non-transactional, dignified, honors teaching as sacred work.
  */
 
-import React, { useEffect, useState } from 'react';
+import { type RouteProp, useNavigation, useRoute } from '@react-navigation/native';
+import { identityAPI, thuthimalAPI } from '@repo/core';
 import {
+  AnimatedView,
   Box,
-  VStack,
-  HStack,
-  Text,
-  Heading,
-  Spinner,
-  ScreenWrapper,
-  hapticSuccess,
-  hapticError,
   Button,
   ButtonText,
-  AnimatedView,
+  Heading,
+  HStack,
+  hapticError,
+  hapticSuccess,
+  ScreenWrapper,
+  Spinner,
+  Text,
+  VStack,
 } from '@repo/ui';
-import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
-import { thuthimalAPI, identityAPI } from '@repo/core';
+import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Animated, {
-  useSharedValue,
+  FadeInDown,
   useAnimatedStyle,
-  withSpring,
+  useSharedValue,
   withDelay,
   withSequence,
+  withSpring,
   withTiming,
-  FadeInDown,
 } from 'react-native-reanimated';
-import { useTranslation } from 'react-i18next';
 
 type ClaimRouteParams = {
   ThuthimalClaim: {
@@ -204,16 +204,17 @@ export default function ThuthimalClaimScreen() {
               <Text className="text-phase-text-secondary text-center leading-6 text-lg">
                 {t('thuthimalClaim.giftFrom')}
               </Text>
-              <Text className="text-white text-center font-bold text-2xl mt-2">
-                {gifterName}
-              </Text>
+              <Text className="text-white text-center font-bold text-2xl mt-2">{gifterName}</Text>
               <Text className="text-phase-text-tertiary text-center text-sm mt-2">
                 {t('thuthimalClaim.giftRecognition')}
               </Text>
             </Box>
 
             {/* Pro status confirmation */}
-            <HStack className="bg-emerald-500/10 rounded-2xl border border-emerald-500/20 px-6 py-4 items-center" space="sm">
+            <HStack
+              className="bg-emerald-500/10 rounded-2xl border border-emerald-500/20 px-6 py-4 items-center"
+              space="sm"
+            >
               <Text className="text-xl">✨</Text>
               <Text className="text-emerald-500 font-semibold">
                 {t('thuthimalClaim.proActive')}
@@ -222,13 +223,13 @@ export default function ThuthimalClaimScreen() {
 
             {/* Continue button */}
             <Button
-                size="lg"
-                onPress={handleContinue}
-                className="w-full mt-6 bg-phase-interactive rounded-2xl"
+              size="lg"
+              onPress={handleContinue}
+              className="w-full mt-6 bg-phase-interactive rounded-2xl"
             >
-                <ButtonText className="text-white font-bold text-lg">
-                    {t('thuthimalClaim.enterSanctuary')}
-                </ButtonText>
+              <ButtonText className="text-white font-bold text-lg">
+                {t('thuthimalClaim.enterSanctuary')}
+              </ButtonText>
             </Button>
           </VStack>
         </AnimatedView>

@@ -1,6 +1,6 @@
-import fs from "fs";
-import path from "path";
-import { ROOT_DIR } from "../utils/constants.js";
+import fs from 'fs';
+import path from 'path';
+import { ROOT_DIR } from '../utils/constants.js';
 
 /**
  * --- Standardized Knowledge Layer ---
@@ -8,11 +8,17 @@ import { ROOT_DIR } from "../utils/constants.js";
  */
 export class HelpService {
   private getPhilosophyContent() {
-    const philosophyPath = path.join(ROOT_DIR, "packages", "platform-mcp", "docs", "mcp-philosophy.md");
+    const philosophyPath = path.join(
+      ROOT_DIR,
+      'packages',
+      'platform-mcp',
+      'docs',
+      'mcp-philosophy.md',
+    );
     if (fs.existsSync(philosophyPath)) {
-      return fs.readFileSync(philosophyPath, "utf-8");
+      return fs.readFileSync(philosophyPath, 'utf-8');
     }
-    return "# MCP Philosophy\n\nDocumentation file missing.";
+    return '# MCP Philosophy\n\nDocumentation file missing.';
   }
 
   handleGetArchitectureDoc() {
@@ -39,7 +45,7 @@ Instead of exposing 50 individual tools, we use **Gateways**. Each gateway is a 
 2. **Do** add a new \`action\` to the relevant service (\`Audit\`, \`Discovery\`, etc.).
 3. **Do** register the routing in the \`CallToolRequestSchema\` handler in \`index.ts\`.
     `;
-    return { content: [{ type: "text" as const, text: doc }] };
+    return { content: [{ type: 'text' as const, text: doc }] };
   }
 
   handleGetToolInventory() {
@@ -101,10 +107,10 @@ Instead of exposing 50 individual tools, we use **Gateways**. Each gateway is a 
 | **inventory** | This comprehensive list of all actions and their purposes. |
 | **philosophy** | Deep dive into Sovereign Engineering goals. |
     `;
-    return { content: [{ type: "text" as const, text: inventory }] };
+    return { content: [{ type: 'text' as const, text: inventory }] };
   }
 
   handleGetPhilosophy() {
-    return { content: [{ type: "text" as const, text: this.getPhilosophyContent() }] };
+    return { content: [{ type: 'text' as const, text: this.getPhilosophyContent() }] };
   }
 }

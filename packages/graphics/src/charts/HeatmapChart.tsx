@@ -1,6 +1,6 @@
+import { Card, HStack, Theme, VStack } from '@repo/ui';
 import React from 'react';
-import { View, Text, StyleSheet, Dimensions } from 'react-native';
-import { VStack, HStack, Card, Theme } from '@repo/ui';
+import { Dimensions, StyleSheet, Text, View } from 'react-native';
 
 interface HeatmapData {
   x: number;
@@ -22,36 +22,48 @@ export function HeatmapChart({
   title,
   data,
   gridSize = 10,
-  colorScale = ['#f7fafc', '#dbeafe', '#a7f3d', '#fde68a', '#fbbf24', '#f87171', '#dc2626', '#b91c1c'],
+  colorScale = [
+    '#f7fafc',
+    '#dbeafe',
+    '#a7f3d',
+    '#fde68a',
+    '#fbbf24',
+    '#f87171',
+    '#dc2626',
+    '#b91c1c',
+  ],
   showLabels = true,
-  showLegend = true
+  showLegend = true,
 }: HeatmapChartProps) {
   const { width } = Dimensions.get('window');
   const cellSize = Math.min(40, (width - 100) / gridSize);
-  const maxValue = Math.max(...data.map(d => d.value));
+  const maxValue = Math.max(...data.map((d) => d.value));
 
   // Create grid data
-  const grid = Array.from({ length: gridSize }, (_, y) => 
+  const grid = Array.from({ length: gridSize }, (_, y) =>
     Array.from({ length: gridSize }, (_, x) => {
-      const point = data.find(d => d.x === x && d.y === y);
+      const point = data.find((d) => d.x === x && d.y === y);
       return {
         x,
         y,
         value: point?.value || 0,
-        label: point?.label
+        label: point?.label,
       };
-    })
+    }),
   );
 
   const getColor = (value: number) => {
-    const index = Math.min(Math.floor((value / maxValue) * (colorScale.length - 1)), colorScale.length - 1);
+    const index = Math.min(
+      Math.floor((value / maxValue) * (colorScale.length - 1)),
+      colorScale.length - 1,
+    );
     return colorScale[index];
   };
 
   return (
     <Card style={styles.container}>
       {title && <Text style={styles.title}>{title}</Text>}
-      
+
       <VStack space="sm">
         {/* Heatmap Grid */}
         <View style={styles.heatmapContainer}>
@@ -67,21 +79,17 @@ export function HeatmapChart({
                       width: cellSize,
                       height: cellSize,
                       borderWidth: 1,
-                      borderColor: Theme.colors.border
-                    }
+                      borderColor: Theme.colors.border,
+                    },
                   ]}
                 >
-                  {showLabels && cell.label && (
-                    <Text style={styles.cellLabel}>
-                      {cell.label}
-                    </Text>
-                  )}
+                  {showLabels && cell.label && <Text style={styles.cellLabel}>{cell.label}</Text>}
                 </View>
               ))}
             </HStack>
           ))}
         </View>
-        
+
         {/* Legend */}
         {showLegend && (
           <View style={styles.legend}>
@@ -89,9 +97,7 @@ export function HeatmapChart({
             <HStack style={styles.legendItems}>
               {colorScale.map((color, index) => (
                 <HStack key={index} style={styles.legendItem}>
-                  <View 
-                    style={[styles.legendColor, { backgroundColor: color }]} 
-                  />
+                  <View style={[styles.legendColor, { backgroundColor: color }]} />
                   <Text style={styles.legendLabel}>
                     {Math.round((index / (colorScale.length - 1)) * maxValue)}
                   </Text>

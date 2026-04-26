@@ -1,4 +1,10 @@
-import { ConfigPlugin, withPlugins, createRunOncePlugin, withAndroidManifest, withDangerousMod } from '@expo/config-plugins';
+import {
+  type ConfigPlugin,
+  createRunOncePlugin,
+  withAndroidManifest,
+  withDangerousMod,
+  withPlugins,
+} from '@expo/config-plugins';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -25,7 +31,12 @@ const withNitroProGuard: ConfigPlugin = (config) => {
   return withDangerousMod(config, [
     'android',
     async (config) => {
-      const proguardPath = path.join(config.modRequest.projectRoot, 'android', 'app', 'proguard-rules.pro');
+      const proguardPath = path.join(
+        config.modRequest.projectRoot,
+        'android',
+        'app',
+        'proguard-rules.pro',
+      );
       if (fs.existsSync(proguardPath)) {
         const rules = `
 # Trube-Art Nitro Modules Protection

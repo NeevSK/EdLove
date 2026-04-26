@@ -1,19 +1,19 @@
+import { cssInterop } from 'nativewind';
 import React from 'react';
 import {
-  View as RNView,
-  ScrollView as RNScrollView,
-  Pressable as RNPressable,
-  FlatList as RNFlatList,
-  RefreshControl as RNRefreshControl,
-  KeyboardAvoidingView as RNKeyboardAvoidingView,
-  type ViewProps,
-  type ScrollViewProps,
-  type PressableProps,
   type FlatListProps,
-  type RefreshControlProps,
   type KeyboardAvoidingViewProps,
+  type PressableProps,
+  type RefreshControlProps,
+  FlatList as RNFlatList,
+  KeyboardAvoidingView as RNKeyboardAvoidingView,
+  Pressable as RNPressable,
+  RefreshControl as RNRefreshControl,
+  ScrollView as RNScrollView,
+  View as RNView,
+  type ScrollViewProps,
+  type ViewProps,
 } from 'react-native';
-import { cssInterop } from 'nativewind';
 import Animated from 'react-native-reanimated';
 
 cssInterop(RNView, { className: 'style' });

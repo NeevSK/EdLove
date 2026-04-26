@@ -1,7 +1,7 @@
 import { clamp } from './color';
 
 export const TRUBE_MOTIF_NAMES = ['lotus-sketch', 'branch-flow', 'tide-lines'] as const;
-export type TrubeMotifName = typeof TRUBE_MOTIF_NAMES[number];
+export type TrubeMotifName = (typeof TRUBE_MOTIF_NAMES)[number];
 
 export type TrubeMotifStyle = 'draft' | 'ink' | 'luminous';
 
@@ -161,13 +161,13 @@ export function resolveMotif(spec: TrubeMotifSpec): TrubeResolvedMotif {
         ? tideMotif(random, resolved.density)
         : lotusMotif(random, resolved.density);
 
-  const styleMultiplier =
-    resolved.style === 'ink' ? 1.3 : resolved.style === 'luminous' ? 1.05 : 1;
+  const styleMultiplier = resolved.style === 'ink' ? 1.3 : resolved.style === 'luminous' ? 1.05 : 1;
 
   // Tier 1/2 SDF Generation
-  const sdf = resolved.name === 'lotus-sketch' 
-    ? lotusSDF(random, resolved.density) 
-    : `${resolved.name}(density:${resolved.density})`;
+  const sdf =
+    resolved.name === 'lotus-sketch'
+      ? lotusSDF(random, resolved.density)
+      : `${resolved.name}(density:${resolved.density})`;
 
   return {
     spec: resolved,

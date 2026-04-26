@@ -1,18 +1,23 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { 
-    Box, 
-    VStack, 
-    HStack, 
-    Text, 
-    Heading, 
-    ScrollView, 
-    Pressable, 
-    ScreenWrapper,
-    Button,
-    ButtonText
-} from '@repo/ui';
 import { usePermissions } from '@repo/core';
-import { documentWorkflowAPI, type DocumentWorkflow, type DocumentStatus } from '../document-workflow/api';
+import {
+  Box,
+  Button,
+  ButtonText,
+  Heading,
+  HStack,
+  Pressable,
+  ScreenWrapper,
+  ScrollView,
+  Text,
+  VStack,
+} from '@repo/ui';
+import type React from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import {
+  type DocumentStatus,
+  type DocumentWorkflow,
+  documentWorkflowAPI,
+} from '../document-workflow/api';
 
 interface DocumentListScreenProps {
   schoolId: string;
@@ -27,7 +32,7 @@ const DocumentListScreen: React.FC<DocumentListScreenProps> = ({
   onDocumentPress,
   onCreateNew,
   viewDate,
-  isPastView
+  isPastView,
 }) => {
   const { can, context: user } = usePermissions();
   const [documents, setDocuments] = useState<DocumentWorkflow[]>([]);
@@ -35,16 +40,28 @@ const DocumentListScreen: React.FC<DocumentListScreenProps> = ({
   const [selectedStatus, setSelectedStatus] = useState<DocumentStatus | 'all'>('all');
   const [isLoading, setIsLoading] = useState(true);
 
-  const statusFilters: (DocumentStatus | 'all')[] = ['all', 'draft', 'review', 'approved', 'published', 'archived'];
+  const statusFilters: (DocumentStatus | 'all')[] = [
+    'all',
+    'draft',
+    'review',
+    'approved',
+    'published',
+    'archived',
+  ];
 
   const loadDocuments = useCallback(async () => {
     try {
       setIsLoading(true);
-      const userDocuments = await documentWorkflowAPI.getDocuments(schoolId, undefined, user.userId || '');
-      const reviewDocuments = (can('manage', 'AdminDashboard') || can('manage', 'PrincipalDashboard')) 
-        ? await documentWorkflowAPI.getDocumentsForReview(schoolId, user.userId || '')
-        : [];
-      
+      const userDocuments = await documentWorkflowAPI.getDocuments(
+        schoolId,
+        undefined,
+        user.userId || '',
+      );
+      const reviewDocuments =
+        can('manage', 'AdminDashboard') || can('manage', 'PrincipalDashboard')
+          ? await documentWorkflowAPI.getDocumentsForReview(schoolId, user.userId || '')
+          : [];
+
       setDocuments([...userDocuments, ...reviewDocuments]);
     } catch (error) {
       console.error('Failed to load documents:', error);
@@ -57,7 +74,7 @@ const DocumentListScreen: React.FC<DocumentListScreenProps> = ({
     if (selectedStatus === 'all') {
       setFilteredDocuments(documents);
     } else {
-      setFilteredDocuments(documents.filter(doc => doc.status === selectedStatus));
+      setFilteredDocuments(documents.filter((doc) => doc.status === selectedStatus));
     }
   }, [documents, selectedStatus]);
 
@@ -71,12 +88,18 @@ const DocumentListScreen: React.FC<DocumentListScreenProps> = ({
 
   const getStatusColor = (status: DocumentStatus) => {
     switch (status) {
-      case 'draft': return 'bg-phase-danger/10 text-phase-danger';
-      case 'review': return 'bg-phase-interactive/10 text-phase-interactive';
-      case 'approved': return 'bg-phase-success/10 text-phase-success';
-      case 'published': return 'bg-phase-interactive/10 text-phase-interactive';
-      case 'archived': return 'bg-phaseText-muted/10 text-phaseText-muted';
-      default: return 'bg-phaseText-muted/5 text-phaseText-muted';
+      case 'draft':
+        return 'bg-phase-danger/10 text-phase-danger';
+      case 'review':
+        return 'bg-phase-interactive/10 text-phase-interactive';
+      case 'approved':
+        return 'bg-phase-success/10 text-phase-success';
+      case 'published':
+        return 'bg-phase-interactive/10 text-phase-interactive';
+      case 'archived':
+        return 'bg-phaseText-muted/10 text-phaseText-muted';
+      default:
+        return 'bg-phaseText-muted/5 text-phaseText-muted';
     }
   };
 
@@ -100,7 +123,9 @@ const DocumentListScreen: React.FC<DocumentListScreenProps> = ({
           </Text>
         </VStack>
         <Box className={`px-2 py-1 rounded-full ${getStatusColor(document.status).split(' ')[0]}`}>
-          <Text className={`text-[10px] font-black uppercase ${getStatusColor(document.status).split(' ')[1]}`}>
+          <Text
+            className={`text-[10px] font-black uppercase ${getStatusColor(document.status).split(' ')[1]}`}
+          >
             {document.status}
           </Text>
         </Box>
@@ -110,24 +135,21 @@ const DocumentListScreen: React.FC<DocumentListScreenProps> = ({
 
   const renderStatusFilter = (status: DocumentStatus | 'all') => {
     const isActive = selectedStatus === status;
-    const count = status === 'all' 
-      ? documents.length 
-      : documents.filter(doc => doc.status === status).length;
+    const count =
+      status === 'all' ? documents.length : documents.filter((doc) => doc.status === status).length;
 
     return (
       <Pressable
         key={status}
         onPress={() => setSelectedStatus(status)}
         className={`px-4 py-2 rounded-full border mr-2 ${
-          isActive 
-            ? 'bg-phase-interactive border-phase-interactive' 
+          isActive
+            ? 'bg-phase-interactive border-phase-interactive'
             : 'bg-phase-surface border-phase-border active:bg-phaseText-primary/5'
         }`}
       >
         <Text
-          className={`text-sm font-bold ${
-            isActive ? 'text-white' : 'text-phaseText-secondary'
-          }`}
+          className={`text-sm font-bold ${isActive ? 'text-white' : 'text-phaseText-secondary'}`}
         >
           {status === 'all' ? 'All' : status.charAt(0).toUpperCase() + status.slice(1)}
           {count > 0 && ` (${count})`}
@@ -148,40 +170,42 @@ const DocumentListScreen: React.FC<DocumentListScreenProps> = ({
     <Box className="flex-1 bg-phase-canvas">
       <VStack className="p-6 gap-6">
         <HStack className="justify-between items-center">
-            <VStack className="gap-1">
-                <Heading className="text-3xl font-black text-phaseText-primary">Documents</Heading>
-                <Text className="text-sm text-phaseText-muted">Manage your institutional artifacts</Text>
-            </VStack>
-            <Button
-                onPress={onCreateNew}
-                className="bg-phase-interactive rounded-2xl h-11 px-6 shadow-sm active:scale-95"
-            >
-                <ButtonText className="font-black text-white">+ New</ButtonText>
-            </Button>
+          <VStack className="gap-1">
+            <Heading className="text-3xl font-black text-phaseText-primary">Documents</Heading>
+            <Text className="text-sm text-phaseText-muted">
+              Manage your institutional artifacts
+            </Text>
+          </VStack>
+          <Button
+            onPress={onCreateNew}
+            className="bg-phase-interactive rounded-2xl h-11 px-6 shadow-sm active:scale-95"
+          >
+            <ButtonText className="font-black text-white">+ New</ButtonText>
+          </Button>
         </HStack>
 
         <Box className="h-10">
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                <HStack>
-                    {statusFilters.map(renderStatusFilter)}
-                </HStack>
-            </ScrollView>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            <HStack>{statusFilters.map(renderStatusFilter)}</HStack>
+          </ScrollView>
         </Box>
 
-        <ScrollView 
-            className="flex-1" 
-            contentContainerStyle={{ paddingBottom: 40 }} 
-            showsVerticalScrollIndicator={false}
+        <ScrollView
+          className="flex-1"
+          contentContainerStyle={{ paddingBottom: 40 }}
+          showsVerticalScrollIndicator={false}
         >
-            {filteredDocuments.length === 0 ? (
-                <Box className="p-10 items-center justify-center bg-phase-surface rounded-3xl border border-dashed border-phase-border mt-4">
-                    <Text className="text-phaseText-muted italic font-bold text-center">
-                        {selectedStatus === 'all' ? 'No documents yet.' : `No ${selectedStatus} documents found.`}
-                    </Text>
-                </Box>
-            ) : (
-                filteredDocuments.map((doc, idx) => renderDocumentItem(doc, idx))
-            )}
+          {filteredDocuments.length === 0 ? (
+            <Box className="p-10 items-center justify-center bg-phase-surface rounded-3xl border border-dashed border-phase-border mt-4">
+              <Text className="text-phaseText-muted italic font-bold text-center">
+                {selectedStatus === 'all'
+                  ? 'No documents yet.'
+                  : `No ${selectedStatus} documents found.`}
+              </Text>
+            </Box>
+          ) : (
+            filteredDocuments.map((doc, idx) => renderDocumentItem(doc, idx))
+          )}
         </ScrollView>
       </VStack>
     </Box>
@@ -189,4 +213,3 @@ const DocumentListScreen: React.FC<DocumentListScreenProps> = ({
 };
 
 export default DocumentListScreen;
-

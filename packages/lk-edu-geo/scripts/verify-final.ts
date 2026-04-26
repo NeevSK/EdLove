@@ -1,11 +1,11 @@
-import { 
-  getProvinces, 
-  getDistricts, 
-  getPostalUnits, 
-  getSchools, 
-  searchSchools,
+import {
+  getDistricts,
   getHierarchyForSchool,
-  getSchoolsByPostalCode
+  getPostalUnits,
+  getProvinces,
+  getSchools,
+  getSchoolsByPostalCode,
+  searchSchools,
 } from '../src/index.js';
 
 async function verify() {
@@ -34,7 +34,9 @@ async function verify() {
     const firstSchool = schools[0];
     console.log(`- Testing Hierarchy for: ${firstSchool.name} (${firstSchool.id})`);
     const hierarchy = getHierarchyForSchool(firstSchool.id);
-    console.log(`  - Admin: ${hierarchy?.admin.province?.name} > ${hierarchy?.admin.district?.name}`);
+    console.log(
+      `  - Admin: ${hierarchy?.admin.province?.name} > ${hierarchy?.admin.district?.name}`,
+    );
     console.log(`  - Edu: ${hierarchy?.edu.zone?.name} > ${hierarchy?.edu.division?.name}`);
   }
 
@@ -45,7 +47,7 @@ async function verify() {
   console.log('\u2705 All checks passed!');
 }
 
-verify().catch(e => {
+verify().catch((e) => {
   console.error('\u274C Verification Failed:', e);
   process.exit(1);
 });

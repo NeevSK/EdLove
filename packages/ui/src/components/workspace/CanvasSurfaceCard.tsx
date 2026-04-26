@@ -1,10 +1,10 @@
-import React from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
-import { EyeOff, Info, MoveDiagonal2, Pin, Sparkles } from 'lucide-react-native';
 import type { ResolvedWorkspaceSurface } from '@repo/core/logic';
-import { Theme } from '../../theme/Theme';
-import { useThemedColors } from '../../hooks/useThemedColors';
+import { EyeOff, Info, MoveDiagonal2, Pin, Sparkles } from 'lucide-react-native';
+import type React from 'react';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { Text } from '../../gluestack';
+import { useThemedColors } from '../../hooks/useThemedColors';
+import { Theme } from '../../theme/Theme';
 
 export interface CanvasSurfaceCardProps<
   TSurfaceId extends string = string,

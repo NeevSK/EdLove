@@ -1,13 +1,13 @@
-import React from 'react';
 import { useNavigation } from '@react-navigation/native';
-import { Box, ScreenWrapper, Text, VStack } from '@repo/ui';
 import { usePermissions, useStore } from '@repo/core';
-import { useAdminWorkspaceData } from '../admin/useAdminWorkspaceData';
+import { Box, ScreenWrapper, Text, VStack } from '@repo/ui';
+import React from 'react';
 import {
   AdminWorkspaceCanvas,
   useAdminWorkspaceCanvasSurfaces,
   useAdminWorkspaceLayout,
 } from '../admin/useAdminWorkspaceCanvas';
+import { useAdminWorkspaceData } from '../admin/useAdminWorkspaceData';
 import { resolveAdminWorkspaceView } from '../admin/workspace';
 
 interface AdminDashboardProps {

@@ -9,12 +9,13 @@
  * The public API (props) is kept identical so every call site compiles without
  * changes.
  */
-import React, { useCallback } from 'react';
-import { FlatList, RefreshControl, StyleProp, ViewStyle } from 'react-native';
-import { Theme } from '../theme/Theme';
-import { useThemedColors } from '../hooks/useThemedColors';
-import EmptyState from './EmptyState';
+
 import { BookOpen } from 'lucide-react-native';
+import React, { useCallback } from 'react';
+import { FlatList, RefreshControl, type StyleProp, type ViewStyle } from 'react-native';
+import { useThemedColors } from '../hooks/useThemedColors';
+import { Theme } from '../theme/Theme';
+import EmptyState from './EmptyState';
 import type { SanctuaryFlashListProps } from './SanctuaryFlashList';
 
 function SanctuaryFlashListWeb<T>({
@@ -30,7 +31,7 @@ function SanctuaryFlashListWeb<T>({
   ListEmptyComponent,
   ...props
 }: SanctuaryFlashListProps<T>) {
-  const colors = useThemedColors();
+  const _colors = useThemedColors();
 
   const renderEmpty = useCallback(() => {
     if (emptyComponent) return emptyComponent;

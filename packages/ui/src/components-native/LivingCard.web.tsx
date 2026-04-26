@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, ViewStyle, StyleSheet } from 'react-native';
+import type React from 'react';
+import { StyleSheet, View, type ViewStyle } from 'react-native';
 
 interface LivingCardProps {
   children: React.ReactNode;

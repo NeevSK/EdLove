@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
-import { Pressable, Modal } from 'react-native';
-import { Calendar, Search, Wifi, WifiOff, Zap, Layout as LayoutIcon } from 'lucide-react-native';
 import { useTemporalStore } from '@repo/core/logic';
-import { Box, Text, HStack, VStack } from '../gluestack';
+import { Calendar, Layout as LayoutIcon, Search, Wifi, WifiOff, Zap } from 'lucide-react-native';
+import type React from 'react';
+import { useState } from 'react';
+import { Modal, Pressable } from 'react-native';
+import { Box, HStack, Text } from '../gluestack';
 import { TemporalScrubber } from './TemporalScrubber';
 
 /**

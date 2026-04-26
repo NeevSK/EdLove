@@ -1,7 +1,6 @@
-import React from 'react';
-import { render, fireEvent } from '@testing-library/react-native';
-import { Button, ButtonText, ButtonIcon, ButtonSpinner } from '../components/ui/button';
+import { fireEvent, render } from '@testing-library/react-native';
 import { LogIn } from 'lucide-react-native';
+import { Button, ButtonIcon, ButtonText } from '../components/ui/button';
 
 describe('Button Component (Robustness)', () => {
   it('renders correctly with text', async () => {

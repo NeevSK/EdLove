@@ -10,7 +10,7 @@ export class PostHogAnalytics {
   private isInitialized = false;
   private isBrowser = typeof window !== 'undefined';
 
-  async initialize(apiKey: string, options?: { host?: string, debug?: boolean }) {
+  async initialize(apiKey: string, options?: { host?: string; debug?: boolean }) {
     if (this.isInitialized) return;
 
     const host = options?.host || 'https://eu.i.posthog.com';
@@ -24,7 +24,7 @@ export class PostHogAnalytics {
           disable_session_recording: false, // Default to true if not needed, but here we want replay
           loaded: (ph) => {
             if (options?.debug) ph.debug();
-          }
+          },
         });
         this.instance = posthogWeb;
       } else {
@@ -45,7 +45,7 @@ export class PostHogAnalytics {
         this.instance.capture({
           distinctId: properties?.distinctId || 'server_system',
           event,
-          properties
+          properties,
         });
       }
     } catch (error) {
@@ -61,7 +61,7 @@ export class PostHogAnalytics {
       } else {
         this.instance.identify({
           distinctId: userId,
-          properties
+          properties,
         });
       }
     } catch (error) {

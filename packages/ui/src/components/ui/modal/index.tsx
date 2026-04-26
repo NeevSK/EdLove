@@ -1,10 +1,11 @@
-import React, { createContext, useContext, useMemo } from 'react';
+import { cssInterop } from 'nativewind';
+import type React from 'react';
+import { createContext, useContext, useMemo } from 'react';
 import { View, type ViewProps } from 'react-native';
 import Animated, { ZoomIn, ZoomOut } from 'react-native-reanimated';
-import { cssInterop } from 'nativewind';
-import { Portal } from '../portal';
-import { Overlay } from '../overlay';
 import { Box } from '../box';
+import { Overlay } from '../overlay';
+import { Portal } from '../portal';
 
 cssInterop(View, { className: 'style' });
 

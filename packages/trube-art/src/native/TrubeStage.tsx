@@ -13,7 +13,10 @@ export interface TrubeStageProps {
   cornerRadius?: number;
 }
 
-function resolveLayerStyle(role: TrubeStageSpec['layers'][number]['role'], opacity: number): ViewStyle {
+function resolveLayerStyle(
+  role: TrubeStageSpec['layers'][number]['role'],
+  opacity: number,
+): ViewStyle {
   if (role === 'air') {
     return {
       opacity,

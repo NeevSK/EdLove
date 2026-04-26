@@ -9,9 +9,9 @@
  *   const { textOnAccent, textOnReward, accentRgb } = useTheme(); // adaptive text
  */
 import { useEnvironment } from '../context/EnvironmentContext';
-import { resolvePhaseTokens, resolveClassicTokens, ResolvedThemeTokens } from '../theme/Theme';
-import { getTextOnBackground, hexToRgbComponents } from '../utils/colorUtils';
 import type { TemporalPhase, ThemeMode } from '../context/types';
+import { type ResolvedThemeTokens, resolveClassicTokens, resolvePhaseTokens } from '../theme/Theme';
+import { getTextOnBackground, hexToRgbComponents } from '../utils/colorUtils';
 
 /** Adaptive color tokens computed from the current accent/reward. */
 export interface AdaptiveTokens {

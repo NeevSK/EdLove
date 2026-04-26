@@ -1,6 +1,5 @@
-import React from 'react';
-import { Box, VStack, HStack, Text } from '../gluestack';
 import { Trophy } from 'lucide-react-native';
+import { Box, HStack, Text, VStack } from '../gluestack';
 import { SanctuaryProgressBar } from './SanctuaryProgressBar';
 
 export interface SanctuaryStatsItem {

@@ -1,11 +1,9 @@
-import React from 'react';
-import { render, fireEvent } from '@testing-library/react-native';
+import { fireEvent, render } from '@testing-library/react-native';
 import {
   Checkbox,
-  CheckboxIndicator,
-  CheckboxIcon,
-  CheckboxLabel,
   CheckboxGroup,
+  CheckboxIndicator,
+  CheckboxLabel,
 } from '../components/ui/checkbox';
 
 describe('Checkbox Component (Robustness)', () => {

@@ -1,13 +1,13 @@
-import React, { createContext, useContext, useState, useMemo } from 'react';
-import {
-  View,
-  TextInput,
-  Pressable,
-  type ViewProps,
-  type TextInputProps,
-  type PressableProps,
-} from 'react-native';
 import { cssInterop } from 'nativewind';
+import React, { createContext, useContext, useMemo, useState } from 'react';
+import {
+  Pressable,
+  type PressableProps,
+  TextInput,
+  type TextInputProps,
+  View,
+  type ViewProps,
+} from 'react-native';
 
 cssInterop(View, { className: 'style' });
 cssInterop(TextInput, { className: 'style' });
@@ -48,7 +48,7 @@ const Input = React.forwardRef<View, IInputProps>(
         isFocused,
         setIsFocused,
       }),
-      [isDisabled, isInvalid, isFocused, setIsFocused],
+      [isDisabled, isInvalid, isFocused],
     );
 
     return (

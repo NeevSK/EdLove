@@ -3,55 +3,57 @@ import SEO from '../components/SEO.astro';
 import StructuredData from '../components/StructuredData.astro';
 import '../styles/global.css';
 import {
-	ORGANIZATION,
-	SITE_DESCRIPTION,
-	SITE_NAME,
-	SITE_TITLE,
-	SITE_URL,
-	SITE_KEYWORDS,
-	defaultOgImage,
+  defaultOgImage,
+  ORGANIZATION,
+  SITE_DESCRIPTION,
+  SITE_KEYWORDS,
+  SITE_NAME,
+  SITE_TITLE,
+  SITE_URL,
 } from '../lib/site';
 
 interface Props {
-	title?: string;
-	description?: string;
-	image?: string;
-	noindex?: boolean;
-	structuredData?: Record<string, any> | Array<Record<string, any>>;
+  title?: string;
+  description?: string;
+  image?: string;
+  noindex?: boolean;
+  structuredData?: Record<string, any> | Array<Record<string, any>>;
 }
 
 const {
-	title = SITE_TITLE,
-	description = SITE_DESCRIPTION,
-	image,
-	noindex = false,
-	structuredData = [],
+  title = SITE_TITLE,
+  description = SITE_DESCRIPTION,
+  image,
+  noindex = false,
+  structuredData = [],
 } = Astro.props;
 
 const canonical = Astro.url.href;
 const ogImage = image ?? defaultOgImage(Astro.url.pathname);
 const robotsContent = noindex ? 'noindex, nofollow' : 'index, follow';
 const baseStructuredData = [
-	{
-		'@context': 'https://schema.org',
-		'@type': 'Organization',
-		...ORGANIZATION,
-	},
-	{
-		'@context': 'https://schema.org',
-		'@type': 'WebSite',
-		name: SITE_NAME,
-		url: SITE_URL,
-		description: SITE_DESCRIPTION,
-	},
-	{
-		'@context': 'https://schema.org',
-		'@type': 'WebPage',
-		name: title,
-		description,
-		url: canonical,
-	},
-].concat(Array.isArray(structuredData) ? structuredData : [structuredData]).filter(Boolean);
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    ...ORGANIZATION,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: SITE_NAME,
+    url: SITE_URL,
+    description: SITE_DESCRIPTION,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: title,
+    description,
+    url: canonical,
+  },
+]
+  .concat(Array.isArray(structuredData) ? structuredData : [structuredData])
+  .filter(Boolean);
 ---
 
 <!doctype html>

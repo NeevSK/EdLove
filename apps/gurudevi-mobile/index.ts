@@ -4,9 +4,8 @@ import 'react-native-worklets';
 import 'react-native-get-random-values';
 import '../../packages/ui/src/global.css';
 import { registerRootComponent } from 'expo';
-
+import { bootstrapPlatform } from '@repo/core/src/native/bootstrap';
 import App from './App';
-import { bootstrapPlatform } from '../../packages/core/src/native/bootstrap';
 
 // Initialize platform adapters
 bootstrapPlatform().then(() => {

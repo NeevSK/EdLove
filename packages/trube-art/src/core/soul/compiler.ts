@@ -1,4 +1,4 @@
-import { TSLExpression } from './tsl';
+import type { TSLExpression } from './tsl';
 
 export const CORE_SKS_L_FUNCTIONS = `
 float hash(vec2 p) {
@@ -78,10 +78,7 @@ fn kelvinToRGB(k: f32) -> vec3<f32> {
 }
 `;
 
-export function compileSurfaceShader(
-  body: TSLExpression,
-  backend: 'sksl' | 'native'
-): string {
+export function compileSurfaceShader(body: TSLExpression, backend: 'sksl' | 'native'): string {
   if (backend === 'sksl') {
     return `
 ${CORE_SKS_L_FUNCTIONS}

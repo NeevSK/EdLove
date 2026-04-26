@@ -1,8 +1,8 @@
-import React, { createContext, useContext, useReducer, useCallback, useMemo } from 'react';
+import type React from 'react';
+import { createContext, useCallback, useContext, useMemo, useReducer } from 'react';
 import Animated, { FadeInUp, FadeOutUp, Layout } from 'react-native-reanimated';
 import { Toast, ToastTitle } from '../components/ui/toast';
 import { VStack } from '../components/ui/vstack';
-import { Platform } from 'react-native';
 
 /**
  * Toast State Excellence (2026 Standard)

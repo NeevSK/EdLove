@@ -1,7 +1,6 @@
-import React from 'react';
-import { render, fireEvent, act } from '@testing-library/react-native';
+import { act, fireEvent, render } from '@testing-library/react-native';
+import { Pressable, Text } from 'react-native';
 import { ToastProvider, useToast } from '../providers/ToastProvider';
-import { Text, Pressable } from 'react-native';
 
 const TestComponent = ({ message = 'Hello', type = 'info' as any }) => {
   const { showToast } = useToast();

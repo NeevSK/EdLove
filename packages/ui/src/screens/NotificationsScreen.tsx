@@ -1,8 +1,7 @@
-import React from 'react';
-import { Center, VStack, Heading, Text } from '../gluestack';
 import { useTranslation } from 'react-i18next';
-import { useTheme } from '../hooks/useTheme';
 import ScreenWrapper from '../components/ScreenWrapper';
+import { Center, Heading, Text, VStack } from '../gluestack';
+import { useTheme } from '../hooks/useTheme';
 
 export default function NotificationsScreen() {
   const { t } = useTranslation();

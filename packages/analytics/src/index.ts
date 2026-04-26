@@ -1,35 +1,39 @@
 // Core analytics exports - No UI dependencies to prevent circular dependencies
 export * from './engine/GPACalculator';
-export * from './engine/PerformanceAnalyzer';
-export * from './engine/PostHogAnalytics';
-
 // Export database client interface for dependency injection
 export type { DatabaseClient } from './engine/PerformanceAnalyzer';
+export * from './engine/PerformanceAnalyzer';
+export * from './engine/PostHogAnalytics';
 export type { DatabaseClient as PredictorDatabaseClient } from './ml/Predictor';
 
 // Factory functions to create instances with database client
-import { PerformanceAnalyzer, DatabaseClient } from './engine/PerformanceAnalyzer';
-import { Predictor as ML_Predictor } from './ml/Predictor';
+import { type DatabaseClient, PerformanceAnalyzer } from './engine/PerformanceAnalyzer';
 import { posthogAnalytics } from './engine/PostHogAnalytics';
+import { Predictor as ML_Predictor } from './ml/Predictor';
 
 export const createPerformanceAnalyzer = (db: DatabaseClient) => new PerformanceAnalyzer(db);
 export const createPredictor = (db: DatabaseClient) => new ML_Predictor(db);
 
 // Simple grade calculation functions (for backward compatibility)
 import { GPACalculator } from './engine/GPACalculator';
-export type { GradingScale, GPACalculationOptions } from './types/AnalyticsTypes';
 
 // Re-export shared types from core
-export type { StudentGrade, ClassroomGradingSettings } from '@repo/core';
+export type { ClassroomGradingSettings, StudentGrade } from '@repo/core';
+export * from './ml/InsightGenerator';
 
 // ML and prediction exports
 export * from './ml/Predictor';
-export * from './ml/InsightGenerator';
-
+export type {
+  CustomReportConfig,
+  GPACalculationOptions,
+  GradingScale,
+  LiveMetrics,
+  StudentPerformanceMetrics,
+  TenantMetrics,
+} from './types/AnalyticsTypes';
 // Types and interfaces
 export * from './types/AnalyticsTypes';
 export * from './types/GradingTypes';
-export type { StudentPerformanceMetrics, TenantMetrics, LiveMetrics, CustomReportConfig } from './types/AnalyticsTypes';
 
 // Utility functions
 export * from './utils/analyticsHelpers';
@@ -69,6 +73,6 @@ export const multiTenantAnalyticsAPI = {
     error_rate: 0,
     system_health: 'healthy' as 'healthy' | 'warning' | 'critical',
     timestamp: new Date().toISOString(),
-    resource_usage: { cpu: 0, memory: 0, storage: 0 }
-  })
+    resource_usage: { cpu: 0, memory: 0, storage: 0 },
+  }),
 };

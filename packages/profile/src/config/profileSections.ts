@@ -3,15 +3,15 @@ import type { UserProfile } from '../types';
 
 export interface ProfileFieldConfig {
   key: keyof UserProfile;
-  weight: number;           // Relative  hook normalises to 100% automatically
-  label: string;            // Used in "Add your {label} to complete" nudge
+  weight: number; // Relative  hook normalises to 100% automatically
+  label: string; // Used in "Add your {label} to complete" nudge
   onlyForRoles?: AuthorityTier[];
 }
 
 export interface ProfileSectionConfig {
   id: string;
   label: string;
-  countInCompletion: boolean;  // Set false to exclude entire section from score
+  countInCompletion: boolean; // Set false to exclude entire section from score
   roles: AuthorityTier[] | 'all';
   fields: ProfileFieldConfig[];
 }
@@ -23,15 +23,26 @@ export const PROFILE_SECTIONS: ProfileSectionConfig[] = [
     countInCompletion: true,
     roles: 'all',
     fields: [
-      { key: 'full_name',    weight: 2, label: 'full name' },
-      { key: 'avatar_url',   weight: 2, label: 'profile photo' },
-      { key: 'phone',        weight: 1, label: 'phone number' },
+      { key: 'full_name', weight: 2, label: 'full name' },
+      { key: 'avatar_url', weight: 2, label: 'profile photo' },
+      { key: 'phone', weight: 1, label: 'phone number' },
       // Student-only
-      { key: 'index_number', weight: 2, label: 'index number',
-        onlyForRoles: ['student'] },
+      { key: 'index_number', weight: 2, label: 'index number', onlyForRoles: ['student'] },
       // Staff-only (all non-student registered roles)
-      { key: 'nic_number',   weight: 2, label: 'NIC number',
-        onlyForRoles: ['teacher', 'principal', 'grade_head', 'section_head', 'founder', 'admin', 'developer'] as AuthorityTier[] },
+      {
+        key: 'nic_number',
+        weight: 2,
+        label: 'NIC number',
+        onlyForRoles: [
+          'teacher',
+          'principal',
+          'grade_head',
+          'section_head',
+          'founder',
+          'admin',
+          'developer',
+        ] as AuthorityTier[],
+      },
     ],
   },
   {
@@ -39,9 +50,7 @@ export const PROFILE_SECTIONS: ProfileSectionConfig[] = [
     label: 'Your Story',
     countInCompletion: true,
     roles: 'all',
-    fields: [
-      { key: 'bio', weight: 2, label: 'bio' },
-    ],
+    fields: [{ key: 'bio', weight: 2, label: 'bio' }],
   },
   {
     id: 'professional',
@@ -50,8 +59,8 @@ export const PROFILE_SECTIONS: ProfileSectionConfig[] = [
     roles: ['teacher', 'principal', 'grade_head', 'section_head'] as AuthorityTier[],
     fields: [
       { key: 'experience_years', weight: 1, label: 'years of experience' },
-      { key: 'subjects_taught',  weight: 2, label: 'subjects taught' },
-      { key: 'qualifications',   weight: 2, label: 'qualifications' },
+      { key: 'subjects_taught', weight: 2, label: 'subjects taught' },
+      { key: 'qualifications', weight: 2, label: 'qualifications' },
     ],
   },
 ];
