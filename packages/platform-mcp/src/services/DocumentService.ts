@@ -61,7 +61,7 @@ export class DocumentService {
     // 1. Header & Metadata
     sections.push(`# ${data.title}`);
     sections.push(`> **Timestamp:** ${timestamp}`);
-    sections.push(`> **Scope:** \`${data.scope.replace(ROOT_DIR, '') || '/'}\``);
+    sections.push(`> **Scope:** \`${(String(data.scope || '/')).replace(ROOT_DIR || '', '') || '/'}\``);
     sections.push('');
 
     // 2. Executive Summary

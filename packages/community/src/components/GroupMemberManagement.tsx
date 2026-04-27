@@ -64,58 +64,98 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
     loadData();
   }, [loadData]);
 
-  const handleApproval = async (targetUserId: string, status: 'active' | 'rejected') => {
-    try {
-      await communityAPI.handleMemberRequest(groupId, targetUserId, status);
-      hapticLight();
-      showToast({
-        message:
-          status === 'active'
-            ? 'Access granted to the Sanctuary.'
-            : 'The request has been gently declined.',
-        type: status === 'active' ? 'success' : 'info',
-      });
-      loadData();
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  const handleApproval = React.useCallback(
+    async (targetUserId: string, status: 'active' | 'rejected') => {
+      try {
+        await communityAPI.handleMemberRequest(groupId, targetUserId, status);
+        hapticLight();
+        showToast({
+          message:
+            status === 'active'
+              ? 'Access granted to the Sanctuary.'
+              : 'The request has been gently declined.',
+          type: status === 'active' ? 'success' : 'info',
+        });
+        loadData();
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    [groupId, showToast, loadData],
+  );
 
-  const handlePolicyChange = async (newPolicy: string) => {
-    try {
-      await communityAPI.updateJoiningPolicy(groupId, newPolicy);
-      setPolicy(newPolicy);
-      hapticLight();
-      showToast({
-        message: `Joining policy updated to ${newPolicy.toUpperCase()}.`,
-        type: 'success',
-      });
-      loadData();
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  const handlePolicyChange = React.useCallback(
+    async (newPolicy: string) => {
+      try {
+        await communityAPI.updateJoiningPolicy(groupId, newPolicy);
+        setPolicy(newPolicy);
+        hapticLight();
+        showToast({
+          message: `Joining policy updated to ${newPolicy.toUpperCase()}.`,
+          type: 'success',
+        });
+        loadData();
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    [groupId, showToast, loadData],
+  );
 
-  async function handleCapacityChange(targetUserId: string, newCapacity: 'admin' | 'member') {
-    try {
-      setLoading(true);
-      await communityAPI.updateMemberAuthority(groupId, targetUserId, newCapacity);
-      hapticLight();
-      showToast({
-        message:
-          newCapacity === 'admin'
-            ? 'Guardian mantle bestowed.'
-            : 'Relieved of administrative duties.',
-        type: 'success',
+  const handleCapacityChange = React.useCallback(
+    async (targetUserId: string, newCapacity: 'admin' | 'member') => {
+      try {
+        setLoading(true);
+        await communityAPI.updateMemberAuthority(groupId, targetUserId, newCapacity);
+        hapticLight();
+        showToast({
+          message:
+            newCapacity === 'admin'
+              ? 'Guardian mantle bestowed.'
+              : 'Relieved of administrative duties.',
+          type: 'success',
+        });
+        await loadData();
+      } catch (error) {
+        console.error(error);
+        showToast({ message: 'Higher authority required for this shift.', type: 'error' });
+      } finally {
+        setLoading(false);
+      }
+    },
+    [groupId, showToast, loadData],
+  );
+
+  const handleApproveAll = React.useCallback(() => {
+    communityAPI
+      .approveAllPending(groupId)
+      .then(loadData)
+      .catch(() => {
+        /* non-fatal */
       });
-      await loadData();
-    } catch (error) {
-      console.error(error);
-      showToast({ message: 'Higher authority required for this shift.', type: 'error' });
-    } finally {
-      setLoading(false);
-    }
-  }
+  }, [groupId, loadData]);
+
+  const handleEditGroup = React.useCallback(() => setIsEditModalOpen(true), []);
+  const handleCloseEditModal = React.useCallback(() => setIsEditModalOpen(false), []);
+
+  const handleOpenPolicy = React.useCallback(() => handlePolicyChange('open'), [handlePolicyChange]);
+  const handleRestrictedPolicy = React.useCallback(
+    () => handlePolicyChange('restricted'),
+    [handlePolicyChange],
+  );
+
+  const handleProfileNavigation = React.useCallback(
+    (id: string) => {
+      navigation.navigate('PublicProfile', { id, type: 'user' });
+    },
+    [navigation],
+  );
+
+  const handleUpdateSuccess = React.useCallback((updatedGroup: any) => {
+    setGroup(updatedGroup as any);
+    setPolicy(updatedGroup.join_policy as any);
+    setIsEditModalOpen(false);
+  }, []);
 
   if (!group && loading) {
     return <LoadingOverlay visible={true} />;
@@ -134,7 +174,7 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
               <Text className="text-ink/60">Member Management</Text>
             </VStack>
             <Pressable
-              onPress={() => setIsEditModalOpen(true)}
+              onPress={handleEditGroup}
               className="p-3 rounded-xl bg-phase-interactive"
               accessibilityRole="button"
               accessibilityLabel="Open group settings"
@@ -156,7 +196,7 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
           <HStack className="gap-3">
             <Button
               variant={policy === 'open' ? 'solid' : 'outline'}
-              onPress={() => handlePolicyChange('open')}
+              onPress={handleOpenPolicy}
               className={`flex-1 h-11 rounded-xl ${policy === 'open' ? 'bg-phase-interactive' : 'border-border'}`}
             >
               <Text
@@ -167,7 +207,7 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
             </Button>
             <Button
               variant={policy === 'restricted' ? 'solid' : 'outline'}
-              onPress={() => handlePolicyChange('restricted')}
+              onPress={handleRestrictedPolicy}
               className={`flex-1 h-11 rounded-xl ${policy === 'restricted' ? 'bg-phase-interactive' : 'border-border'}`}
             >
               <Text
@@ -185,14 +225,7 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
             <Text className="font-bold text-ink">Pending Requests ({pendingMembers.length})</Text>
             {pendingMembers.length > 0 && (
               <Pressable
-                onPress={() => {
-                  communityAPI
-                    .approveAllPending(groupId)
-                    .then(loadData)
-                    .catch(() => {
-                      /* non-fatal */
-                    });
-                }}
+                onPress={handleApproveAll}
                 accessibilityRole="button"
                 accessibilityLabel="Approve all pending membership requests"
               >
@@ -277,12 +310,7 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
             return (
               <Pressable
                 key={member.user_id}
-                onPress={() =>
-                  navigation.navigate('PublicProfile', {
-                    id: member.user_id,
-                    type: 'user',
-                  })
-                }
+                onPress={() => handleProfileNavigation(member.user_id)}
                 accessibilityRole="button"
                 accessibilityLabel={`View profile of ${member.user?.full_name}`}
               >
@@ -354,7 +382,7 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
 
       <CreateGroupModal
         isOpen={isEditModalOpen}
-        onClose={() => setIsEditModalOpen(false)}
+        onClose={handleCloseEditModal}
         mode="edit"
         initialData={
           group
@@ -369,11 +397,7 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
               }
             : undefined
         }
-        onSuccess={(updatedGroup) => {
-          setGroup(updatedGroup as any);
-          setPolicy(updatedGroup.join_policy as any);
-          setIsEditModalOpen(false);
-        }}
+        onSuccess={handleUpdateSuccess}
       />
     </ScreenWrapper>
   );

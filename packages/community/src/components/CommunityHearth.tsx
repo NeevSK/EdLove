@@ -29,6 +29,21 @@ export default function CommunityHearth({
   const flatListRef = useRef<FlatList>(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
+  const handleEndorse = React.useCallback(
+    (id: string) => {
+      onEndorseManifesto?.(id);
+    },
+    [onEndorseManifesto],
+  );
+
+  const handleSpotlightPress = React.useCallback(() => {
+    if (spotlightPost) {
+      onPressSpotlight?.(spotlightPost.id);
+    }
+  }, [onPressSpotlight, spotlightPost]);
+
+  const Separator = React.useCallback(() => <Box className="w-4" />, []);
+
   // Responsive card width
   const CARD_WIDTH = Platform.OS === 'web' ? Math.min(windowWidth - 120, 700) : windowWidth * 0.85;
 
@@ -73,7 +88,9 @@ export default function CommunityHearth({
           </HStack>
 
           <Pressable
-            onPress={() => onEndorseManifesto?.(item.id)}
+            accessibilityLabel={t('community.endorse') || 'Endorse Manifesto'}
+            accessibilityRole="button"
+            onPress={() => handleEndorse(item.id)}
             className="flex-row items-center bg-phase-interactive px-4 py-2.5 rounded-2xl active:opacity-80 shadow-sm"
           >
             <Icon as={Heart} size="sm" className="text-white fill-white" />
@@ -115,16 +132,21 @@ export default function CommunityHearth({
           snapToInterval={SNAP_INTERVAL}
           decelerationRate="fast"
           contentContainerStyle={{ paddingHorizontal: 20 }}
-          ItemSeparatorComponent={() => <Box className="w-4" />}
+          ItemSeparatorComponent={Separator}
           onMomentumScrollEnd={(e) => {
             const index = Math.round(e.nativeEvent.contentOffset.x / SNAP_INTERVAL);
             setActiveIndex(index);
           }}
+          accessibilityLabel={t('community.manifestoCarousel') || 'Community Manifestos'}
         />
 
         {spotlightPost && (
           <Box className="px-6 mt-2">
-            <Pressable onPress={() => onPressSpotlight?.(spotlightPost.id)}>
+            <Pressable
+              accessibilityLabel={t('community.viewSpotlight') || 'View Spotlight Post'}
+              accessibilityRole="button"
+              onPress={handleSpotlightPress}
+            >
               <GlassCard className="p-5 rounded-3xl border-l-4 border-l-phase-interactive border border-border">
                 <HStack className="items-center gap-4">
                   <Box className="w-12 h-12 rounded-2xl bg-phase-interactive/10 items-center justify-center">

@@ -117,6 +117,34 @@ export default function GroupDetailsScreen() {
     fetchPosts(groupId);
   }, [groupId, user?.id, fetchPosts]);
 
+  const handleBack = React.useCallback(() => navigation.goBack(), [navigation]);
+  const handleShowAdmin = React.useCallback(() => setShowAdmin(true), []);
+  const handleHideAdmin = React.useCallback(() => setShowAdmin(false), []);
+  const handleShowQR = React.useCallback(() => setShowQRModal(true), []);
+  const handleHideQR = React.useCallback(() => setShowQRModal(false), []);
+  const handleChatNavigate = React.useCallback(() => {
+    navigation.navigate('GroupChat', { groupId, groupName: group?.name });
+  }, [navigation, groupId, group?.name]);
+
+  const handlePostLike = React.useCallback((postId: string) => {
+    if (user?.id) {
+      communityAPI.togglePostReaction(postId, user.id).catch(console.error);
+    }
+  }, [user?.id]);
+
+  const handlePostComment = React.useCallback((id: string, authorId?: string, type?: string) => {
+    setCommentPostId(id);
+    setCommentPostAuthorId(authorId);
+    setCommentPostType(type);
+  }, []);
+
+  const handlePostPressEmpty = React.useCallback(() => {}, []);
+
+  const handlePostReport = React.useCallback((id: string) => {
+    setReportPostId(id);
+    setShowReportModal(true);
+  }, []);
+
   const handleJoin = async () => {
     if (!canJoinGroup || !user?.id) {
       await setPendingGateAction({
@@ -197,7 +225,7 @@ export default function GroupDetailsScreen() {
     return (
       <Box className="flex-1 bg-phase-canvas">
         <HStack className="p-4 pt-10 items-center bg-phase-surface border-b border-border gap-4">
-          <Pressable onPress={() => setShowAdmin(false)}>
+          <Pressable onPress={handleHideAdmin}>
             <Icon as={ChevronLeft} size="md" className="text-ink" />
           </Pressable>
           <Text className="font-black text-lg text-ink">{t('community.groups.manage')}</Text>
@@ -305,7 +333,7 @@ export default function GroupDetailsScreen() {
         <HStack className="p-4 items-center justify-between border-b border-border/10 bg-phase-canvas">
           <HStack className="items-center gap-4">
             <Pressable
-              onPress={() => navigation.goBack()}
+              onPress={handleBack}
               className="w-10 h-10 rounded-full bg-phase-surface border border-border items-center justify-center"
             >
               <Icon as={ChevronLeft} size="sm" className="text-ink" />
@@ -317,21 +345,21 @@ export default function GroupDetailsScreen() {
 
           <HStack className="items-center gap-3">
             <Pressable
-              onPress={() => navigation.navigate('GroupChat', { groupId, groupName: group.name })}
+              onPress={handleChatNavigate}
               className="w-10 h-10 rounded-xl bg-phase-surface border border-border items-center justify-center"
             >
               <Icon as={MessageSquare} size="sm" className="text-ink/60" />
             </Pressable>
             {isAdmin && (
               <Pressable
-                onPress={() => setShowAdmin(true)}
+                onPress={handleShowAdmin}
                 className="w-10 h-10 rounded-xl bg-phase-surface border border-border items-center justify-center"
               >
                 <Icon as={Settings} size="sm" className="text-ink/60" />
               </Pressable>
             )}
             <Pressable
-              onPress={() => setShowQRModal(true)}
+              onPress={handleShowQR}
               className="w-10 h-10 rounded-xl bg-phase-surface border border-border items-center justify-center"
             >
               <Icon as={QrCode} size="sm" className="text-ink/60" />
@@ -346,7 +374,7 @@ export default function GroupDetailsScreen() {
           data={posts}
           estimatedItemSize={280}
           ListHeaderComponent={renderHeader}
-          renderItem={({ item, index }: { item: any, index: number }) => (
+          renderItem={({ item, index }: { item: any; index: number }) => (
             <AnimatedView
               entering={FadeInDown.duration(400)
                 .delay(index * 150)
@@ -356,24 +384,10 @@ export default function GroupDetailsScreen() {
                 <PostCard
                   post={item}
                   currentUserId={user?.id}
-                  onPress={() => {}}
-                  onLike={() => {
-                    if (user?.id)
-                      communityAPI.togglePostReaction(item.id, user.id).catch(console.error);
-                  }}
-                  onComment={() => {
-                    setCommentPostId(item.id);
-                    setCommentPostAuthorId(item.author_id ?? undefined);
-                    setCommentPostType(item.post_type);
-                  }}
-                  onReport={
-                    flags.isSocialShieldEnabled
-                      ? () => {
-                          setReportPostId(item.id);
-                          setShowReportModal(true);
-                        }
-                      : undefined
-                  }
+                  onPress={handlePostPressEmpty}
+                  onLike={() => handlePostLike(item.id)}
+                  onComment={() => handlePostComment(item.id, item.author_id, item.post_type)}
+                  onReport={flags.isSocialShieldEnabled ? () => handlePostReport(item.id) : undefined}
                 />
               </Box>
             </AnimatedView>
@@ -413,7 +427,7 @@ export default function GroupDetailsScreen() {
 
         <SanctuaryModal
           isOpen={showQRModal}
-          onClose={() => setShowQRModal(false)}
+          onClose={handleHideQR}
           title={t('community.groups.qrTitle', 'Circle Identity')}
         >
           <VStack className="items-center py-8 gap-8">
@@ -436,7 +450,7 @@ export default function GroupDetailsScreen() {
             <SanctuaryButton
               action="secondary"
               className="w-full h-14 rounded-2xl border-border bg-ink/5"
-              onPress={() => setShowQRModal(false)}
+              onPress={handleHideQR}
             >
               <Text className="text-ink font-bold">{t('common.close') || 'Close'}</Text>
             </SanctuaryButton>

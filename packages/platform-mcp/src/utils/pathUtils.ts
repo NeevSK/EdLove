@@ -6,7 +6,8 @@ import { ROOT_DIR } from './constants.js';
  * --- Alchemist's Transmutation: Path Sovereignty ---
  * Normalizes package aliases (@repo/*, @app/*) to absolute filesystem paths.
  */
-export function normalizeTarget(target: string): string {
+export function normalizeTarget(target?: string): string {
+  if (!target) return ROOT_DIR;
   const clean = target.replace(/^['"]|['"]$/g, ''); // Remove accidental quotes
 
   if (clean.startsWith('@repo/')) {

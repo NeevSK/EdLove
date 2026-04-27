@@ -30,8 +30,7 @@ import {
 } from '@repo/ui/components';
 import { useRegisterFAB } from '@repo/ui/context';
 import { Info, Plus } from '@repo/ui/icons';
-import type React from 'react';
-import { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Platform } from 'react-native';
 import { CommentSheet } from '../components/CommentSheet';
 import CommunityHearth from '../components/CommunityHearth';
@@ -128,23 +127,25 @@ export default function CommunityScreen() {
     [canReadAnnouncements, flags.isMessagingEnabled],
   );
 
+  const handleFabPress = React.useCallback(() => {
+    if (activeMode === 'circles' && canCreateGroup) {
+      setShowCreateGroup(true);
+      return;
+    }
+    if (canCreatePost) {
+      setShowCreatePost(true);
+      return;
+    }
+    if (canCreateGroup) {
+      setShowCreateGroup(true);
+    }
+  }, [activeMode, canCreateGroup, canCreatePost]);
+
   useRegisterFAB({
     tabType: 'community',
     visible: !isPastView && (canCreatePost || canCreateGroup) && isCommunityEnabled,
     icon: <Plus size={24} color="#FFF" />,
-    onPress: () => {
-      if (activeMode === 'circles' && canCreateGroup) {
-        setShowCreateGroup(true);
-        return;
-      }
-      if (canCreatePost) {
-        setShowCreatePost(true);
-        return;
-      }
-      if (canCreateGroup) {
-        setShowCreateGroup(true);
-      }
-    },
+    onPress: handleFabPress,
   });
 
   useEffect(() => {
@@ -221,14 +222,107 @@ export default function CommunityScreen() {
     );
   }
 
-  const openGuestUpgrade = () => {
+  const handleModeChange = React.useCallback((value: string) => {
+    setActiveMode(value as CommunityWorkspaceMode);
+  }, []);
+
+  const handleFilterChange = React.useCallback((value: string) => {
+    setSelectedFilter(value);
+    fetchPosts(value === 'all' ? undefined : value);
+  }, [fetchPosts]);
+
+  const handlePostPress = React.useCallback((groupId?: string, groupName?: string) => {
+    if (groupId) {
+      navigation.navigate('GroupDetails', {
+        groupId,
+        groupName: groupName ?? 'Circle',
+      });
+    }
+  }, [navigation]);
+
+  const handlePostLike = React.useCallback((postId: string) => {
+    if (userId !== 'guest') {
+      communityAPI.togglePostReaction(postId, userId).catch(console.error);
+    }
+  }, [userId]);
+
+  const handlePostComment = React.useCallback((id: string, authorId?: string, type?: string) => {
+    setCommentPostId(id);
+    setCommentPostAuthorId(authorId);
+    setCommentPostType(type);
+  }, []);
+
+  const handlePostReport = React.useCallback((id: string, authorId?: string, authorName?: string) => {
+    setReportPostId(id);
+    setReportTargetUserId(authorId);
+    setReportTargetUserName(authorName);
+    setShowReportModal(true);
+  }, []);
+
+  const handleAuthorPress = React.useCallback((authorId?: string, isAnonymous?: boolean) => {
+    if (authorId && !isAnonymous) {
+      navigation.navigate('PublicProfile', {
+        id: authorId,
+        type: 'user',
+      });
+    }
+  }, [navigation]);
+
+  const handleOpenCircle = React.useCallback(() => {
+    const mainGroup = sanctuaryGroups[0];
+    if (mainGroup) {
+      navigation.navigate('GroupDetails', {
+        groupId: mainGroup.id,
+        groupName: mainGroup.name,
+      });
+    }
+  }, [navigation, sanctuaryGroups]);
+
+  const handleNavigateToGroup = React.useCallback((groupId: string) => {
+    const selected = [...sanctuaryGroups].find((group) => group.id === groupId);
+    navigation.navigate('GroupDetails', {
+      groupId,
+      groupName: selected?.name,
+    });
+  }, [navigation, sanctuaryGroups]);
+
+  const openGuestUpgrade = React.useCallback(() => {
     setPendingGateAction({ kind: 'community_open_create_group', createdAt: Date.now() }).catch(
       () => {},
     );
     navigation.navigate('Auth' as never);
-  };
+  }, [navigation]);
 
-  const renderModeGate = (title: string, description: string, actionLabel = 'Create account') => (
+  const handleClosePostModal = React.useCallback(() => setShowCreatePost(false), []);
+  const handleCloseGroupModal = React.useCallback(() => {
+    setShowCreateGroup(false);
+    fetchGroups();
+  }, [fetchGroups]);
+  const handleCloseReportModal = React.useCallback(() => {
+    setShowReportModal(false);
+    setReportPostId(undefined);
+    setReportTargetUserId(undefined);
+    setReportTargetUserName(undefined);
+  }, []);
+  const handleCloseCommentSheet = React.useCallback(() => setCommentPostId(null), []);
+
+  const handleNewPost = React.useCallback(() => {
+    if (canCreatePost) {
+      setShowCreatePost(true);
+    } else {
+      openGuestUpgrade();
+    }
+  }, [canCreatePost, openGuestUpgrade]);
+
+  const handleNewGroup = React.useCallback(() => {
+    if (canCreateGroup) {
+      setShowCreateGroup(true);
+    } else {
+      openGuestUpgrade();
+    }
+  }, [canCreateGroup, openGuestUpgrade]);
+
+  const renderModeGate = React.useCallback((title: string, description: string, actionLabel = 'Create account') => (
     <Box className="px-4 py-8">
       <PositiveInvitation
         title={title}
@@ -239,7 +333,7 @@ export default function CommunityScreen() {
         onAction={openGuestUpgrade}
       />
     </Box>
-  );
+  ), [openGuestUpgrade]);
 
   const renderHero = () => (
     <Box className="mx-4 mt-3 px-5 py-6 rounded-3xl bg-phase-surface border border-border">
@@ -266,7 +360,7 @@ export default function CommunityScreen() {
           <HorizontalChipRow
             chips={modeChips}
             selectedValue={activeMode}
-            onSelect={(value) => setActiveMode(value as CommunityWorkspaceMode)}
+            onSelect={handleModeChange}
             center={false}
           />
         </Box>
@@ -307,7 +401,7 @@ export default function CommunityScreen() {
           <SanctuaryButton
             action="primary"
             size="sm"
-            onPress={() => (canCreatePost ? setShowCreatePost(true) : openGuestUpgrade())}
+            onPress={handleNewPost}
             className="bg-phase-interactive rounded-xl"
           >
             <Text className="text-white font-bold">New Post</Text>
@@ -315,7 +409,7 @@ export default function CommunityScreen() {
           <SanctuaryButton
             action="secondary"
             size="sm"
-            onPress={() => (canCreateGroup ? setShowCreateGroup(true) : openGuestUpgrade())}
+            onPress={handleNewGroup}
             className="bg-phase-surface border-border rounded-xl"
           >
             <Text className="text-ink font-bold">New Group</Text>
@@ -324,15 +418,7 @@ export default function CommunityScreen() {
             <SanctuaryButton
               action="secondary"
               size="sm"
-              onPress={() => {
-                const mainGroup = sanctuaryGroups[0];
-                if (mainGroup) {
-                  navigation.navigate('GroupDetails', {
-                    groupId: mainGroup.id,
-                    groupName: mainGroup.name,
-                  });
-                }
-              }}
+              onPress={handleOpenCircle}
               className="bg-phase-surface border-border rounded-xl"
             >
               <Text className="text-ink font-bold">Open Circle</Text>
@@ -348,10 +434,7 @@ export default function CommunityScreen() {
       <HorizontalChipRow
         chips={filters}
         selectedValue={selectedFilter}
-        onSelect={(value) => {
-          setSelectedFilter(value);
-          fetchPosts(value === 'all' ? undefined : value);
-        }}
+        onSelect={handleFilterChange}
         center={false}
       />
     </Box>
@@ -374,40 +457,13 @@ export default function CommunityScreen() {
           <Box className="px-4 pb-4">
             <PostCard
               post={item}
-              currentUserId={user?.id}
+              currentUserId={userId}
               isSocialShieldEnabled={flags.isSocialShieldEnabled}
-              onPress={() => {
-                if (item.group_id) {
-                  navigation.navigate('GroupDetails', {
-                    groupId: item.group_id,
-                    groupName: item.group_name ?? 'Circle',
-                  });
-                }
-              }}
-              onLike={() => {
-                if (user?.id) {
-                  communityAPI.togglePostReaction(item.id, user.id).catch(console.error);
-                }
-              }}
-              onComment={() => {
-                setCommentPostId(item.id);
-                setCommentPostAuthorId(item.author_id ?? undefined);
-                setCommentPostType(item.post_type);
-              }}
-              onReport={() => {
-                setReportPostId(item.id);
-                setReportTargetUserId(item.author_id);
-                setReportTargetUserName(item.author_name);
-                setShowReportModal(true);
-              }}
-              onAuthorPress={() => {
-                if (item.author_id && !item.is_anonymous) {
-                  navigation.navigate('PublicProfile', {
-                    id: item.author_id,
-                    type: 'user',
-                  });
-                }
-              }}
+              onPress={() => handlePostPress(item.group_id, item.group_name)}
+              onLike={() => handlePostLike(item.id)}
+              onComment={() => handlePostComment(item.id, item.author_id, item.post_type)}
+              onReport={() => handlePostReport(item.id, item.author_id, item.author_name)}
+              onAuthorPress={() => handleAuthorPress(item.author_id, item.is_anonymous)}
             />
           </Box>
         )}
@@ -560,26 +616,18 @@ export default function CommunityScreen() {
 
         <CreatePostModal
           isOpen={showCreatePost && !isPastView}
-          onClose={() => setShowCreatePost(false)}
+          onClose={handleClosePostModal}
           groupId={selectedFilter !== 'all' ? selectedFilter : undefined}
         />
 
         <CreateGroupModal
           isOpen={showCreateGroup && !isPastView}
-          onClose={() => {
-            setShowCreateGroup(false);
-            fetchGroups();
-          }}
+          onClose={handleCloseGroupModal}
         />
 
         <SocialShieldModal
           isOpen={showReportModal}
-          onClose={() => {
-            setShowReportModal(false);
-            setReportPostId(undefined);
-            setReportTargetUserId(undefined);
-            setReportTargetUserName(undefined);
-          }}
+          onClose={handleCloseReportModal}
           postId={reportPostId}
           targetUserId={reportTargetUserId}
           targetUserName={reportTargetUserName}
@@ -590,7 +638,7 @@ export default function CommunityScreen() {
           postAuthorId={commentPostAuthorId}
           currentUserId={user?.id}
           postType={commentPostType}
-          onClose={() => setCommentPostId(null)}
+          onClose={handleCloseCommentSheet}
         />
       </Box>
     </ScreenWrapper>

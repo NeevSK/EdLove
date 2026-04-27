@@ -1,8 +1,8 @@
 import React from 'react';
 import { usePermissions } from '@repo/core/logic';
-import { ConversationSheet, hapticSuccess, hapticError } from '@repo/ui';
+import { ConversationSheet, hapticSuccess, hapticError, confirmAction } from '@repo/ui';
 import { useComments } from '../hooks/useComments';
-import { Alert, Platform } from 'react-native';
+import { Alert } from 'react-native';
 
 interface CommentSheetProps {
   postId: string | null;
@@ -49,20 +49,12 @@ export function CommentSheet({
   }));
 
   const handleDelete = React.useCallback(async (id: string) => {
-    const confirmDelete = () => {
-      return new Promise<boolean>((resolve) => {
-        if (Platform.OS === 'web') {
-          resolve(window.confirm('Delete this comment?'));
-        } else {
-          Alert.alert('Delete comment', 'Are you sure you want to delete this comment?', [
-            { text: 'Cancel', style: 'cancel', onPress: () => resolve(false) },
-            { text: 'Delete', style: 'destructive', onPress: () => resolve(true) },
-          ]);
-        }
-      });
-    };
-
-    if (await confirmDelete()) {
+    const confirmed = await confirmAction(
+      'Delete comment',
+      'Are you sure you want to delete this comment?'
+    );
+    
+    if (confirmed) {
       try {
         await deleteComment(id);
         hapticSuccess();
@@ -80,6 +72,10 @@ export function CommentSheet({
       hapticError();
     }
   }, [createComment]);
+
+  const handleMarkOfficial = React.useCallback((id: string, flag: boolean) => {
+    markOfficialAnswer({ commentId: id, isOfficial: flag });
+  }, [markOfficialAnswer]);
 
   return (
     <ConversationSheet
@@ -101,7 +97,7 @@ export function CommentSheet({
       onPost={handlePost}
       onDelete={handleDelete}
       onUpvote={toggleUpvote}
-      onMarkOfficial={(id, flag) => markOfficialAnswer({ commentId: id, isOfficial: flag })}
+      onMarkOfficial={handleMarkOfficial}
       
       // Localization
       emptyTitle="The Heart is Quiet"

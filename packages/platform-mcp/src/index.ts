@@ -549,6 +549,7 @@ class PolymathPlatformServer {
                   'check',
                   'syncpack_fix',
                   'types',
+                  'hooks',
                 ],
               },
               params: {
@@ -703,6 +704,8 @@ class PolymathPlatformServer {
               return this.audit.handleSyncpackFix();
             case 'types':
               return this.audit.handleCheckTypes(params);
+            case 'hooks':
+              return this.audit.handleAuditHookViolations(params);
             default:
               throw new Error(`Unknown audit action: ${action}`);
           }

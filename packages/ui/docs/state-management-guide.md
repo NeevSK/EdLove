@@ -128,6 +128,33 @@ Always wrap persistence with a resilient adapter (`SafeZustandStorage`). Mobile 
 
 ---
 
+## 💎 7. Hook Elegance & The 2026 Refresher
+In April 2026, React Hooks are no longer just "utilities"—they are the **Sovereign Interface** for component memory. Elegance is defined by **Intentionality**.
+
+### The React Compiler (React Forget) Shift
+With the **React Compiler** now standard, the focus has shifted from *manual* optimization to *architectural* clarity.
+*   **Trust the Compiler**: Standard memoization is handled at build-time. Only use `useMemo`/`useCallback` when you need **Referential Stability** for dependency arrays in stable hooks or performance-critical leaf nodes.
+*   **Intentionality over Optimization**: Use hooks to declare "This reference is safe to use in a subscription," not "I'm trying to save 2ms of render time."
+
+### The "use()" Revolution
+The `use()` hook has replaced heavy `useEffect` data fetching patterns.
+*   **Conditional Resources**: You can now read Promises and Context conditionally.
+*   **Suspense Integration**: Prefer `use(Promise)` within components to trigger Suspense boundaries, moving logic out of component-level state variables and into the data layer.
+
+### The Action-Based Primitive Suite
+Upgrade legacy `useState` + `useEffect` chains to the **Action Suite** for better UX:
+*   **`useActionState`**: The standard for form logic and submission status.
+*   **`useOptimistic`**: Mandatory for "Zero-Lag" UI interactions.
+*   **`useTransition`**: Used for non-blocking state updates (e.g., filtering large lists) to keep the Main Thread free.
+
+### The "April 2026" Check
+*   **Is it Deterministic?** Can you predict every re-render?
+*   **Is it Minimal?** Are you using `useReducer` or `useActionState` for interdependent state?
+*   **Is it Isolated?** Does a change in this hook trigger re-renders in distant, unrelated nodes?
+*   **Is it an Effect?** If you're using `useEffect` to synchronize data, can it be **Derived State** instead?
+
+---
+
 ## 🏗️ 8. Row-Orchestrator Pattern (New Standard)
 For high-traffic screens with heterogeneous layout segments (Hero banners, multiple horizontal shelves, invitations), avoid monolithic `ScrollView` containers.
 

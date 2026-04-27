@@ -61,6 +61,10 @@ export default function GroupsScreen({
     isPublicOnly: activeSubTab === 'galaxy' && !searchQuery,
   });
 
+  const handleSanctuaryTabPress = useCallback(() => setActiveSubTab('sanctuary'), []);
+  const handleGalaxyTabPress = useCallback(() => setActiveSubTab('galaxy'), []);
+  const handleCreateGroupPress = useCallback(() => onCreateGroup?.(), [onCreateGroup]);
+
   const activeGroups = useMemo(
     () => (activeSubTab === 'sanctuary' ? sanctuaryGroups : galaxyGroups),
     [activeSubTab, sanctuaryGroups, galaxyGroups],
@@ -108,7 +112,7 @@ export default function GroupsScreen({
     <AnimatedView entering={FadeInDown.delay(150).springify()}>
       <HStack className="gap-2 mx-5 mb-4 mt-2 bg-phase-surface p-1 rounded-2xl border border-border">
         <Pressable
-          onPress={() => setActiveSubTab('sanctuary')}
+          onPress={handleSanctuaryTabPress}
           className={`flex-1 py-3 rounded-xl flex-row items-center justify-center gap-2 ${activeSubTab === 'sanctuary' ? 'bg-phase-interactive shadow-sm' : 'bg-transparent'}`}
         >
           <Icon
@@ -123,7 +127,7 @@ export default function GroupsScreen({
           </Text>
         </Pressable>
         <Pressable
-          onPress={() => setActiveSubTab('galaxy')}
+          onPress={handleGalaxyTabPress}
           className={`flex-1 py-3 rounded-xl flex-row items-center justify-center gap-2 ${activeSubTab === 'galaxy' ? 'bg-phase-interactive shadow-sm' : 'bg-transparent'}`}
         >
           <Icon
@@ -149,7 +153,7 @@ export default function GroupsScreen({
       <AnimatedView entering={FadeInDown.duration(600).delay(300).springify()}>
         <Box className="mx-5 mb-5">
           <SanctuaryButton
-            onPress={() => onCreateGroup?.()}
+            onPress={handleCreateGroupPress}
             action="primary"
             className="w-full h-14 rounded-2xl"
           >
@@ -191,7 +195,7 @@ export default function GroupsScreen({
           </VStack>
           <SanctuaryButton
             action="secondary"
-            onPress={() => setActiveSubTab('galaxy')}
+            onPress={handleGalaxyTabPress}
             className="border-border bg-transparent h-14 rounded-2xl px-10"
           >
             <Text className="text-ink font-bold">
@@ -218,7 +222,7 @@ export default function GroupsScreen({
         </VStack>
         <SanctuaryButton
           action="primary"
-          onPress={() => onCreateGroup?.()}
+          onPress={handleCreateGroupPress}
           className="h-14 rounded-2xl px-10"
           isDisabled={!flags.isCommunityEnabled || !can('create', 'Group')}
         >

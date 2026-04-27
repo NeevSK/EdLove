@@ -78,7 +78,9 @@ const handleDone = useCallback(() => {
 2.  **Hunt functions**: Is there an `async` or handler function without `useCallback`? **Action**: Wrap it.
 3.  **Check the Map**: Are you creating objects inside a `.map()` loop? **Action**: Move to `useMemo`.
 4.  **Zustand Check**: are you using `const { a, b } = useStore()`? **Action**: Convert to `useStore(s => s.a)` and `useStore(s => s.b)`.
-5.  **Ref-ability**: Could this variable be a `useRef`? (i.e., does it need to trigger a UI update?). **Action**: Switch to `useRef` if possible to save render cycles.
+5.  **Action Check**: Could this form state or loading flag be `useActionState` / `useOptimistic`? **Action**: Upgrade to Action primitives for Zero-Lag UX.
+6.  **Effect Sanitization**: Is this `useEffect` being used to sync two pieces of state? **Action**: Refactor to **Derived State** (computed during render).
+7.  **Ref-ability**: Could this variable be a `useRef`? (i.e., does it need to trigger a UI update?). **Action**: Switch to `useRef` if possible to save render cycles.
 
 ---
 

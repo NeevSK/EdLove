@@ -44,12 +44,22 @@ export default function CreateGroupModal({
     id: initialData?.id,
   };
 
-  const handleSuccess = (group: any) => {
-    hapticSuccess();
-    setCreatedGroupId(group.id);
-    onCreated?.(group.id);
-    onSuccess?.(group);
-  };
+  const handleSuccess = React.useCallback(
+    (group: any) => {
+      hapticSuccess();
+      setCreatedGroupId(group.id);
+      onCreated?.(group.id);
+      onSuccess?.(group);
+    },
+    [onCreated, onSuccess],
+  );
+
+  const handleEnterCircle = React.useCallback(() => {
+    if (createdGroupId) {
+      onClose();
+      navigation.navigate('GroupDetails', { groupId: createdGroupId });
+    }
+  }, [createdGroupId, navigation, onClose]);
 
   if (createdGroupId) {
     const groupQRValue = QRBuilder.group(createdGroupId);
@@ -77,10 +87,7 @@ export default function CreateGroupModal({
           <SanctuaryButton
             action="primary"
             className="w-full h-14 rounded-2xl"
-            onPress={() => {
-              onClose();
-              navigation.navigate('GroupDetails', { groupId: createdGroupId });
-            }}
+            onPress={handleEnterCircle}
           >
             <Text className="text-white font-bold text-lg">Enter Circle Space</Text>
           </SanctuaryButton>

@@ -85,7 +85,7 @@ if (fs.existsSync(srcDir)) {
     try {
       const excludeFlags = globExclude.map((g) => `-g "!${g}"`).join(' ');
       const includeFlags = `-g "{${globInclude}}/**"`;
-      const cmd = `rg "${pattern}" "." ${includeFlags} ${excludeFlags} -g "**.ts" -g "**.tsx" --with-filename --no-heading --line-number`;
+      const cmd = `rg --pcre2 "${pattern}" "." ${includeFlags} ${excludeFlags} -g "**.ts" -g "**.tsx" --with-filename --no-heading --line-number`;
       const output = execSync(cmd, { cwd: srcDir, encoding: 'utf-8' });
       return output.split('\n').filter((l) => l.trim());
     } catch (e) {
@@ -97,7 +97,7 @@ if (fs.existsSync(srcDir)) {
 
   // 2a. Logic -> UI leaks
   const uiMatches = runAuditRg(
-    'from.*\\b(@repo/ui|components|screens|ui)\\b',
+    '^\\s*import.*from.*\\b(@repo/ui|components|screens|ui)\\b',
     'logic,services,utils,lib,api,hooks,store',
     ['adapters/**'],
   );
@@ -144,7 +144,7 @@ if (fs.existsSync(srcDir)) {
 
   // 4. Zero-Legacy & State Management
   const legacyPrimitives = runAuditRg(
-    'from.*\\b(react-native|@gluestack-ui/themed)\\b.*\\b(View|Text|Pressable|ScrollView|FlatList|TextInput|Button)\\b',
+    '^\\s*import.*from.*\\b(react-native|@gluestack-ui/themed)\\b.*\\b(View|Text|Pressable|ScrollView|FlatList|TextInput|Button)\\b',
     'components,screens,context,features',
     ['components-legacy/**', 'gluestack-legacy/**', '**/index.ts', '**/index.tsx'],
   );
@@ -174,7 +174,7 @@ if (fs.existsSync(srcDir)) {
   missingSelectors.forEach((line) => {
     if (isIgnored(line)) return;
     const parts = normalize(line).split(':');
-    addViolation('SUBSCRIPTION', parts[0], 'Missing atomic selector.', 'N/A');
+    addViolation('SUBSCRIPTION', parts[0], 'Missing atomic selector.', 'packages/ui/docs/state-management-guide.md#iii-the-facade-trap');
   });
 
   // 4d. Memory Sinkholes
@@ -182,7 +182,7 @@ if (fs.existsSync(srcDir)) {
   anonymousSinks.forEach((line) => {
     if (isIgnored(line)) return;
     const parts = normalize(line).split(':');
-    addViolation('MEM SINK', parts[0], 'Inline anonymous function in JSX.', 'N/A');
+    addViolation('MEM SINK', parts[0], 'Inline anonymous function in JSX.', 'packages/ui/docs/state-management-guide.md#ii-the-inline-anonymous-sink');
   });
 
   // 5. Tree-Shaking Hygiene
@@ -196,6 +196,162 @@ if (fs.existsSync(srcDir)) {
       }
     });
   } catch (e) {}
+
+  // 6. Accessibility Compliance (A11Y)
+  const interactiveExpr = '\\b(Pressable|TouchableOpacity|TouchableHighlight|Button|Image|AvatarImage)\\b';
+  const interactiveMatches = runAuditRg(interactiveExpr, 'components,screens,features');
+  interactiveMatches.forEach((line) => {
+    if (isIgnored(line)) return;
+    if (line.includes('accessibilityLabel') || line.includes('accessibilityRole') || line.includes('alt=')) return;
+    
+    const parts = normalize(line).split(':');
+    const file = parts[0];
+    const message = parts.slice(1).join(':').trim();
+
+    // Most primitives should have a label if they have an onPress or are an Image
+    if (line.includes('onPress') || line.includes('Image')) {
+      addViolation('A11Y', file, 'Component missing accessibilityLabel or alt text.', 'apps/gurudevi-mobile/docs/Core/ui-development-guide.md#accessibility');
+    }
+  });
+
+  // 7. React Hook Integrity
+  const hookViolations = runAuditRg('\\buseLayoutEffect\\(', 'components,screens,features');
+  hookViolations.forEach((line) => {
+    if (isIgnored(line)) return;
+    const parts = normalize(line).split(':');
+    addViolation('HOOK VIOLATION', parts[0], 'Use of useLayoutEffect detected. Prefer useEffect or logic-agnostic design.', 'packages/ui/docs/state-management-guide.md');
+  });
+
+  const excessiveEffects = runAuditRg('useEffect\\(\\(.*\\) => \\{', '.');
+  excessiveEffects.forEach((line) => {
+     if (line.includes('useEffect') && !line.includes('[]') && !line.includes(',')) {
+        if (line.endsWith('})') || line.endsWith('});')) {
+           const parts = normalize(line).split(':');
+           addViolation('HOOK VIOLATION', parts[0], 'Effect missing dependency array.', 'packages/ui/docs/state-management-guide.md#2-memory-management-the-referential-tissue');
+        }
+     }
+  });
+
+  // 7b. Action-Based Opportunity
+  const manualFormStates = runAuditRg('useState\\(false\\).*\\bloading\\b', '.');
+  manualFormStates.forEach((line) => {
+    if (isIgnored(line)) return;
+    const parts = normalize(line).split(':');
+    addWarning(`Manual loading state in ${parts[0]}. Consider upgrading to useActionState or useTransition.`);
+  });
+
+  // 7c. Effect Sync Detection
+  const syncEffects = runAuditRg('useEffect\\(\\(.*\\) => \\{\\s+set', '.');
+  syncEffects.forEach((line) => {
+    if (isIgnored(line)) return;
+    const parts = normalize(line).split(':');
+    addViolation('SYNC EFFECT', parts[0], 'Effect used for state synchronization. Use Derived State instead.', 'packages/ui/docs/state-management-guide.md#4-best-practices-checklist');
+  });
+
+  // 8. Boundary Enforcement
+  const isAppImport = runAuditRg('from.*\\b@app/\\b', '.');
+  isAppImport.forEach((line) => {
+    if (isIgnored(line)) return;
+    const parts = normalize(line).split(':');
+    addViolation('BOUNDARY', parts[0], 'Packages must not import from apps. Use shared packages.', 'N/A');
+  });
+
+  const featurePackages = ['admin', 'classroom', 'community', 'people'];
+  const currentBaseName = path.basename(pkgBase);
+  
+  if (currentBaseName === 'core' || currentBaseName === 'ui') {
+     featurePackages.forEach(feature => {
+        const matches = runAuditRg(`from.*\\b(@repo/${feature})\\b`, '.');
+        matches.forEach(line => {
+           if (isIgnored(line)) return;
+           const parts = normalize(line).split(':');
+           addViolation('BOUNDARY', parts[0], `Fundamental package (${currentBaseName}) cannot import from feature package (${feature}).`, 'N/A');
+        });
+     });
+  } else if (featurePackages.includes(currentBaseName)) {
+     featurePackages.filter(f => f !== currentBaseName).forEach(otherFeature => {
+        const matches = runAuditRg(`from.*\\b(@repo/${otherFeature})\\b`, '.');
+        matches.forEach(line => {
+           if (isIgnored(line)) return;
+           const parts = normalize(line).split(':');
+           addViolation('BOUNDARY', parts[0], `Feature package isolation breach: ${currentBaseName} imported from ${otherFeature}.`, 'N/A');
+        });
+     });
+  }
+
+  // 9. Platform Sovereignty (Web Leakage & Shim Integrity)
+  const webApiPattern = '(?<![\\.\'"])\\b(window|document|localStorage|sessionStorage|navigator)\\b(?![\\\'":])';
+  const webApiLeaks = runAuditRg(webApiPattern, '.');
+  webApiLeaks.forEach((line) => {
+    const normalizedLine = normalize(line);
+    const parts = normalizedLine.split(':');
+    const file = parts[0];
+    const text = parts.slice(1).join(':').trim();
+    
+    // Ignore type/interface definitions
+    if (text.includes('type ') || text.includes('interface ')) return;
+    
+    // Only ignore if the word is the property name in an object or a parameter (already handled by regex lookahead)
+    // Extra guard: Ignore if it's a local variable declaration of THAT specific word
+    if (text.match(new RegExp(`^(const|let|var|readonly)\\s+${webApiPattern}\\s*=`))) return;
+
+    if (!file.includes('.web.') && !isIgnored(line)) {
+      addViolation('PLATFORM LEAK', file, `Web-only API usage detected in mobile/shared file: ${text}`, 'N/A');
+    }
+  });
+
+  // 9b. Detecting DOM-like HTML tags in non-web components
+  const htmlTagPattern = '<(div|span|p|img|button|section|ul|li|a)\\b';
+  const htmlLeaks = runAuditRg(htmlTagPattern, 'components,screens,features');
+  htmlLeaks.forEach((line) => {
+    const normalizedLine = normalize(line);
+    const parts = normalizedLine.split(':');
+    const file = parts[0];
+    const text = parts.slice(1).join(':').trim();
+    
+    if (!file.includes('.web.') && !isIgnored(line)) {
+      // Filter out common false positives in TSX (like 'div' in generics or other props)
+      if (text.includes('import ') || text.includes('@repo/ui')) return;
+      addViolation('PLATFORM LEAK', file, `HTML tag leakage detected in mobile component: ${text}`, 'N/A');
+    }
+  });
+
+  // 9c. Detecting Platform Branching (Should use shims)
+  // We explicitly allow Platform.select as it is a modern best practice for medium-complexity values.
+  const platformBranching = runAuditRg('Platform\\.OS === ([\'"]web[\'"]|[\'"]ios[\'"]|[\'"]android[\'"])', 'logic,services,utils,hooks');
+  platformBranching.forEach((line) => {
+    if (isIgnored(line)) return;
+    const parts = normalize(line).split(':');
+    addViolation('SHIM DEBT', parts[0], 'Inline Platform.OS branching detected. Use .native.ts / .web.ts shims for logic to ensure isolation.', 'N/A');
+  });
+
+  // 10. Web Sovereignty (Native Overflow in Web Files)
+  const nativeInWebPattern = '\\b(NativeModules|NativeEventEmitter|RTN\\w+)\\b';
+  const nativeInWebLeaks = runAuditRg(nativeInWebPattern, '.');
+  nativeInWebLeaks.forEach((line) => {
+    const normalizedLine = normalize(line);
+    const parts = normalizedLine.split(':');
+    const file = parts[0];
+    const text = parts.slice(1).join(':').trim();
+
+    if (file.includes('.web.') && !isIgnored(line)) {
+      addViolation('WEB OVERFLOW', file, `Native-only API used in web file: ${text}`, 'N/A');
+    }
+  });
+
+  // 10b. Web SEO Hygiene (Heuristic for screens)
+  const webScreens = runAuditRg('export default', 'screens', ['**.web.tsx']);
+  webScreens.forEach((line) => {
+    const parts = normalize(line).split(':');
+    const file = parts[0];
+    // Check if the file calls DocumentService.setTitle (very loose heuristic)
+    try {
+      const content = fs.readFileSync(path.join(pkgPath, file), 'utf-8');
+      if (!content.includes('setTitle') && !content.includes('useDocumentMetadata')) {
+         // addViolation('WEB HYGIENE', file, 'Web screen might be missing SEO/Document title management.', 'N/A');
+      }
+    } catch (e) {}
+  });
 }
 
 // --- Report Generation ---

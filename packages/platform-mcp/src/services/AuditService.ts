@@ -36,11 +36,83 @@ export class AuditService {
   handleAuditA11y(args: { target?: string }) {
     const target = normalizeTarget(args.target || '.');
     console.error(`Auditing accessibility for: ${target}`);
-    const output = execSync(
-      `powershell -ExecutionPolicy Bypass -File scripts/audit-accessibility.ps1 -Target "${target}"`,
-      { cwd: ROOT_DIR },
-    ).toString();
-    return { content: [{ type: 'text' as const, text: output }] };
+    
+    try {
+      const output = execSync(
+        `powershell -ExecutionPolicy Bypass -File scripts/audit-accessibility.ps1 -Target "${target}"`,
+        { cwd: ROOT_DIR },
+      ).toString();
+
+      const report = this.document.renderReport({
+        title: '♿ Accessibility Audit',
+        scope: target,
+        summary: 'Review of accessibility standard compliance across the specified target.',
+        stats: [{ label: 'Status', value: output.includes('passed') ? '✅ PASS' : '❌ VIOLATIONS FOUND' }],
+        issues: [{ type: 'A11Y', file: target, message: output.trim(), severity: output.includes('passed') ? 'info' : 'error' }],
+        recommendations: [
+          'Ensure all interactive elements have accessibilityLabel.',
+          'Verify contrast ratios for all UI components.',
+          'Check for proper accessibilityRole assignments.'
+        ]
+      });
+
+      return { content: [{ type: 'text' as const, text: report }] };
+    } catch (e: any) {
+      return { 
+        content: [{ type: 'text' as const, text: `Accessibility audit failed:\n${e.message}` }],
+        isError: true 
+      };
+    }
+  }
+
+  handleAuditHookViolations(args: { target?: string }) {
+    const target = normalizeTarget(args.target || '.');
+    console.error(`Auditing hook violations for: ${target}`);
+    
+    try {
+      // We leverage the logic in the architecture script for consistency
+      const output = execSync(`node scripts/audit-package-architecture.mjs "${target}" --json`, {
+        cwd: ROOT_DIR,
+        encoding: 'utf-8',
+      });
+
+      const jsonMatch = output.match(/---BEGIN_JSON_REPORT---([\s\S]*?)---END_JSON_REPORT---/);
+      if (jsonMatch && jsonMatch[1]) {
+        const rawData = JSON.parse(jsonMatch[1]);
+        const hookIssues = rawData.violations.filter((v: any) => v.type === 'HOOK VIOLATION' || v.type === 'STATE DENSITY');
+
+        const report = this.document.renderReport({
+          title: '🪝 React Hook Integrity Audit',
+          scope: target,
+          summary: `Analysis of React Hook patterns and state management hygiene in ${rawData.packageName}.`,
+          stats: [
+            { label: 'Hook Violations', value: hookIssues.length },
+            { label: 'Files Analyzed', value: rawData.stats.subpaths }
+          ],
+          issues: hookIssues.map((v: any) => ({
+            type: v.type,
+            file: v.file,
+            message: v.message,
+            severity: 'error' as const,
+          })),
+          recommendations: [
+            'Avoid useLayoutEffect for better referential stability.',
+            'Refactor high-density useState hooks to useReducer.',
+            'Ensure all effects have explicit dependency arrays.',
+            'Memoize expensive computations with useMemo.'
+          ]
+        });
+
+        return { content: [{ type: 'text' as const, text: report }] };
+      }
+
+      return { content: [{ type: 'text' as const, text: 'Failed to parse hook violations from architecture report.' }] };
+    } catch (e: any) {
+      return { 
+        content: [{ type: 'text' as const, text: `Hook integrity audit failed:\n${e.message}` }],
+        isError: true 
+      };
+    }
   }
 
   handleCheckContrast(args: { fg: string; bg: string }) {
@@ -82,8 +154,8 @@ export class AuditService {
     return { content: [{ type: 'text' as const, text: output }] };
   }
 
-  handleAuditPackageArchitecture(args: { target: string }) {
-    const target = normalizeTarget(args.target);
+  handleAuditPackageArchitecture(args: { target?: string }) {
+    const target = normalizeTarget(args.target || '.');
     console.error(`🔍 Auditing package architecture for: ${target}`);
     
     try {
@@ -131,7 +203,9 @@ export class AuditService {
             'Remediate LOGIC -> UI violations by moving UI logic to components.',
             'Resolve NATIVE POLLUTION by using @repo/ui primitives.',
             'Refactor high-density useState hooks to useReducer state machines.',
+            'Fix A11Y violations by adding accessibilityLabel to interactive components.',
             'Ensure all imports use canonical subpath entry points.',
+            'Simplify complex effects and avoid useLayoutEffect for better stability.',
           ],
         });
 
@@ -257,7 +331,8 @@ export class AuditService {
 
   handleCheckTypes(args: { package?: string }) {
     const rawTarget = args.package || '';
-    const cleanTarget = rawTarget.replace(/^@repo\/|^@app\/|^\/|^\.\\|^.\//, '');
+    // Elegant removal of prefixes using a clearer pattern
+    const cleanTarget = rawTarget.replace(/^(@repo\/|@app\/|\/|\.\\|\.\/)/, '');
 
     if (cleanTarget) {
       const rootSummary = path.join(ROOT_DIR, `audit-${cleanTarget}-summary.md`);

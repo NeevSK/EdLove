@@ -66,9 +66,27 @@ export default function SocialShieldModal({
   const [shouldBlock, setShouldBlock] = useState(false);
   const [step, setStep] = useState<'reason' | 'target'>('reason');
 
-  const handleNext = () => setStep('target');
+  const handleReasonPress = React.useCallback((val: string) => {
+    setReason(val);
+  }, []);
 
-  const handleSubmit = async () => {
+  const handleTargetPress = React.useCallback((val: ReportTarget) => {
+    setTarget(val);
+  }, []);
+
+  const toggleBlock = React.useCallback(() => {
+    setShouldBlock((prev) => !prev);
+  }, []);
+
+  const handleNext = React.useCallback(() => {
+    setStep('target');
+  }, []);
+
+  const handleBack = React.useCallback(() => {
+    setStep('reason');
+  }, []);
+
+  const handleSubmit = React.useCallback(async () => {
     if (!reason || !target) return;
 
     const result = await submitReport({
@@ -105,7 +123,18 @@ export default function SocialShieldModal({
       hapticError();
       showToast({ message: 'Failed to submit report. Please try again.', type: 'error' });
     }
-  };
+  }, [
+    reason,
+    target,
+    submitReport,
+    postId,
+    groupId,
+    targetUserId,
+    shouldBlock,
+    blockUser,
+    onClose,
+    showToast,
+  ]);
 
   return (
     <SanctuaryModal
@@ -127,7 +156,10 @@ export default function SocialShieldModal({
               return (
                 <Pressable
                   key={item.value}
-                  onPress={() => setReason(item.value)}
+                  accessibilityLabel={`Report for ${item.label}`}
+                  accessibilityRole="radio"
+                  accessibilityState={{ selected: isSelected }}
+                  onPress={() => handleReasonPress(item.value)}
                   className={`p-4 rounded-2xl border-2 flex-row items-center gap-4 transition-all ${isSelected ? 'border-phase-interactive bg-phase-interactive/5' : 'border-border bg-phase-surface'}`}
                 >
                   <Box
@@ -150,7 +182,10 @@ export default function SocialShieldModal({
 
             <HStack className="items-center gap-3 mt-2 px-1">
               <Pressable
-                onPress={() => setShouldBlock(!shouldBlock)}
+                accessibilityLabel="Also block this user"
+                accessibilityRole="checkbox"
+                accessibilityState={{ checked: shouldBlock }}
+                onPress={toggleBlock}
                 className={`w-6 h-6 rounded-lg border-2 items-center justify-center ${shouldBlock ? 'border-phase-interactive bg-phase-interactive' : 'border-border'}`}
               >
                 {shouldBlock && <Box className="w-2.5 h-2.5 rounded-sm bg-white" />}
@@ -176,7 +211,10 @@ export default function SocialShieldModal({
               return (
                 <Pressable
                   key={item.value}
-                  onPress={() => setTarget(item.value)}
+                  accessibilityLabel={`Report to ${item.label}`}
+                  accessibilityRole="radio"
+                  accessibilityState={{ selected: isSelected }}
+                  onPress={() => handleTargetPress(item.value)}
                   className={`p-4 rounded-2xl border-2 flex-row items-center gap-4 transition-all ${isSelected ? 'border-phase-interactive bg-phase-interactive/5' : 'border-border bg-phase-surface'}`}
                 >
                   <Box
@@ -205,7 +243,7 @@ export default function SocialShieldModal({
             <HStack className="gap-3 mt-4">
               <SanctuaryButton
                 action="secondary"
-                onPress={() => setStep('reason')}
+                onPress={handleBack}
                 className="flex-1 h-14 rounded-2xl border border-border bg-transparent"
               >
                 <Text className="text-ink font-bold">Back</Text>

@@ -83,10 +83,12 @@ export * from './tokens';
 // ============================================================================
 export * from './utils/a11yUtils';
 export * from './utils/colorUtils';
+export * from './utils/dialogs';
 export * from './utils/DeviceUtils';
 export * from './utils/dateTimeUtils';
 export * from './utils/haptics';
 export * from './utils/linking';
 export * from './utils/SanctuaryLocation';
+export * from './utils/shareAction';
 export * from './utils/stringUtils';
 export * from './utils/themeColors';

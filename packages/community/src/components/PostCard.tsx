@@ -5,15 +5,17 @@ import {
   hapticSuccess, 
   hapticError, 
   useLotusToast,
-  openExternalURL
+  openExternalURL,
+  confirmAction,
+  shareAction
 } from '@repo/ui';
 import { useSocialShield } from '../hooks/useSocialShield';
 import { usePostLogic } from '../hooks/usePostLogic';
 import { usePollLogic } from '../hooks/usePollLogic';
 import { communityAPI } from '../api/community';
 import type { CommunityPost } from '../types';
-import * as Clipboard from 'expo-clipboard';
-import { Platform, Share } from 'react-native';
+
+const EMPTY_HANDLER = () => {};
 
 interface PostCardProps {
   post: CommunityPost;
@@ -69,27 +71,11 @@ export const PostCard = React.memo(function PostCard(props: PostCardProps) {
 
   const handleNativeShare = React.useCallback(async () => {
     const shareUrl = `https://app.gurudevi.edlove.org/app?post=${post.id}`;
-    if (Platform.OS === 'web') {
-      if (typeof navigator !== 'undefined' && navigator.share) {
-        try {
-          await navigator.share({
-            title: `Post by ${post.is_anonymous ? 'Anonymous' : post.author_name}`,
-            url: shareUrl,
-          });
-        } catch {
-          await Clipboard.setStringAsync(shareUrl);
-        }
-      } else {
-        await Clipboard.setStringAsync(shareUrl);
-      }
-    } else {
-      if (onShare) {
-        onShare();
-      } else {
-        Share.share({ message: shareUrl });
-      }
-    }
-  }, [post.id, post.is_anonymous, post.author_name, onShare]);
+    await shareAction({
+      title: `Post by ${post.is_anonymous ? 'Anonymous' : post.author_name}`,
+      url: shareUrl,
+    });
+  }, [post.id, post.is_anonymous, post.author_name]);
 
   const handleBlock = React.useCallback(async () => {
     if (!post.is_anonymous && post.author_id) {
@@ -110,17 +96,20 @@ export const PostCard = React.memo(function PostCard(props: PostCardProps) {
 
   const handleDelete = React.useCallback(async () => {
     closeMenu();
-    const confirm = Platform.OS === 'web' 
-      ? window.confirm('Delete this post?') 
-      : true; // In native we'd use Alert, but keeping it simple for now
+    const confirmed = await confirmAction('Delete Post', 'Are you sure you want to delete this post?');
     
-    if (!confirm) return;
+    if (!confirmed) return;
     try {
       await communityAPI.deletePost(post.id);
     } catch (err) {
       console.error('[PostContainer] delete failed:', err);
     }
   }, [post.id, closeMenu]);
+
+  const onLikeHandler = React.useCallback(() => handleLike(onLike), [handleLike, onLike]);
+  const onResonateHandler = React.useCallback(() => handleResonate(onResonate), [handleResonate, onResonate]);
+  const onReportHandler = React.useCallback(() => { onReport?.(); closeMenu(); }, [onReport, closeMenu]);
+  const onCommentHandler = props.onComment || EMPTY_HANDLER;
 
   return (
     <UIPostCard
@@ -134,10 +123,10 @@ export const PostCard = React.memo(function PostCard(props: PostCardProps) {
       canDelete={can('delete', 'Post')}
       isSocialShieldEnabled={flags.isSocialShieldEnabled}
       onPress={props.onPress}
-      onLike={() => handleLike(onLike)}
-      onResonate={() => handleResonate(onResonate)}
-      onComment={props.onComment || (() => {})}
-      onReport={() => { onReport?.(); closeMenu(); }}
+      onLike={onLikeHandler}
+      onResonate={onResonateHandler}
+      onComment={onCommentHandler}
+      onReport={onReportHandler}
       onAuthorPress={onAuthorPress}
       onShare={handleNativeShare}
       onDelete={handleDelete}
