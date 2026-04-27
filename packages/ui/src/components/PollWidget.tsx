@@ -62,11 +62,15 @@ export function PollWidget({
   const [isExpired, setIsExpired] = React.useState(false);
 
   const progressAnims = React.useRef<Record<string, Animated.Value>>({});
-  options.forEach((opt) => {
-    if (!progressAnims.current[opt.id]) {
-      progressAnims.current[opt.id] = new Animated.Value(0);
-    }
-  });
+  
+  // Initialize animated values for options
+  React.useEffect(() => {
+    options.forEach((opt) => {
+      if (!progressAnims.current[opt.id]) {
+        progressAnims.current[opt.id] = new Animated.Value(0);
+      }
+    });
+  }, [options]);
 
   const hasVoted = userVotes.size > 0;
   const showResults = hasVoted || isExpired || isAuthor;
@@ -149,6 +153,8 @@ export function PollWidget({
             key={opt.id}
             onPress={() => onVote(opt.id)}
             disabled={!canTap}
+            accessibilityRole="button"
+            accessibilityLabel={`Vote for ${opt.text}. Current votes: ${totalVotes > 0 ? Math.round((count / totalVotes) * 100) : 0}%`}
             className={`
               h-12 rounded-xl overflow-hidden relative justify-center border
               ${isWinner ? 'border-sanctuarySaffron' : isSelected ? 'border-phase-accent' : 'border-phase-interactive'}
@@ -207,7 +213,11 @@ export function PollWidget({
           {totalVotes} {totalVotes === 1 ? 'vote' : 'votes'}
         </Text>
         {hasVoted && !isExpired && onRefresh && (
-          <Pressable onPress={onRefresh}>
+          <Pressable 
+            onPress={onRefresh}
+            accessibilityRole="button"
+            accessibilityLabel="Change your vote"
+          >
             <Text className="text-phase-accent text-[11px] font-semibold">Change vote</Text>
           </Pressable>
         )}

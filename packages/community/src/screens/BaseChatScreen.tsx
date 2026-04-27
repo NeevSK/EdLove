@@ -135,7 +135,7 @@ export default function BaseChatScreen({
     if (!loading && messages.length > 0) {
       setTimeout(() => listRef.current?.scrollToEnd({ animated: false }), 100);
     }
-  }, [loading]);
+  }, [loading, messages.length]);
 
   // Send
   const handleSend = async () => {
@@ -182,6 +182,8 @@ export default function BaseChatScreen({
             <Pressable
               onPress={() => onPressAuthor?.(item.author_id, authorName)}
               className="bg-phase-surface rounded-full shadow-sm"
+              accessibilityRole="button"
+              accessibilityLabel={`View profile of ${authorName}`}
             >
               <UserAvatar avatarUrl={item.author?.avatar_url} fullName={authorName} size={32} />
             </Pressable>
@@ -285,6 +287,8 @@ export default function BaseChatScreen({
               <Pressable
                 onPress={handleSend}
                 disabled={!draft.trim() || sending}
+                accessibilityRole="button"
+                accessibilityLabel="Send message"
                 className={`w-12 h-12 rounded-full items-center justify-center shadow-lg transition-all ${
                   draft.trim() ? 'bg-phase-interactive active:scale-95' : 'bg-ink/5'
                 }`}

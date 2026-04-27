@@ -72,6 +72,8 @@ export default function DirectMessagesListScreen() {
             })
           }
           className="mx-5 mb-3"
+          accessibilityRole="button"
+          accessibilityLabel={`Open conversation with ${name}`}
         >
           <HStack className="p-4 items-center bg-phase-surface border border-border rounded-2xl gap-4 shadow-sm active:scale-[0.98] transition-all">
             <Box className="shadow-sm">

@@ -24,7 +24,7 @@ import {
   SanctuaryModal,
   ScreenWrapper,
 } from '@repo/ui/components';
-import { Globe, Megaphone, Pin, Plus, X } from '@repo/ui/icons';
+import { Globe, Megaphone, Pin, Plus } from '@repo/ui/icons';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { communityAPI as community } from '../api/community';
@@ -39,7 +39,6 @@ interface AnnouncementsScreenProps {
 export default function AnnouncementsScreen({
   schoolId,
   userId,
-  userAuthority,
 }: AnnouncementsScreenProps) {
   const { t } = useTranslation();
   const { can } = usePermissions();
@@ -51,11 +50,7 @@ export default function AnnouncementsScreen({
   const [isCreating, setIsCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    loadAnnouncements();
-  }, [schoolId]);
-
-  const loadAnnouncements = async () => {
+  const loadAnnouncements = React.useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
@@ -67,7 +62,11 @@ export default function AnnouncementsScreen({
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [schoolId]);
+
+  useEffect(() => {
+    loadAnnouncements();
+  }, [loadAnnouncements]);
 
   const handleCreateAnnouncement = async () => {
     if (!newAnnouncementContent.trim()) {

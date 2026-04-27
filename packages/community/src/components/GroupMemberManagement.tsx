@@ -7,7 +7,6 @@ import {
   Heading,
   HStack,
   Pressable,
-  Spinner,
   Text,
   VStack,
   Button,
@@ -41,11 +40,7 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
   const { context, can } = usePermissions();
   const userId = context.userId;
 
-  useEffect(() => {
-    loadData();
-  }, [groupId]);
-
-  const loadData = async () => {
+  const loadData = React.useCallback(async () => {
     setLoading(true);
     try {
       const [groupData, pending, active] = await Promise.all([
@@ -63,7 +58,11 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
     } finally {
       setLoading(false);
     }
-  };
+  }, [groupId]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   const handleApproval = async (targetUserId: string, status: 'active' | 'rejected') => {
     try {
@@ -137,6 +136,8 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
             <Pressable
               onPress={() => setIsEditModalOpen(true)}
               className="p-3 rounded-xl bg-phase-interactive"
+              accessibilityRole="button"
+              accessibilityLabel="Open group settings"
             >
               <Icon as={Settings} size="sm" className="text-white" />
             </Pressable>
@@ -192,6 +193,8 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
                       /* non-fatal */
                     });
                 }}
+                accessibilityRole="button"
+                accessibilityLabel="Approve all pending membership requests"
               >
                 <Text className="text-phase-interactive font-semibold text-sm">Approve All</Text>
               </Pressable>
@@ -238,12 +241,16 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
                     <Pressable
                       onPress={() => handleApproval(request.user_id, 'rejected')}
                       className="p-3 rounded-full bg-phase-danger/10"
+                      accessibilityRole="button"
+                      accessibilityLabel={`Reject request from ${request.user?.full_name}`}
                     >
                       <Icon as={UserX} size="sm" className="text-phase-danger" />
                     </Pressable>
                     <Pressable
                       onPress={() => handleApproval(request.user_id, 'active')}
                       className="p-3 rounded-full bg-phase-reward/10"
+                      accessibilityRole="button"
+                      accessibilityLabel={`Approve request from ${request.user?.full_name}`}
                     >
                       <Icon as={UserCheck} size="sm" className="text-phase-reward" />
                     </Pressable>
@@ -276,6 +283,8 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
                     type: 'user',
                   })
                 }
+                accessibilityRole="button"
+                accessibilityLabel={`View profile of ${member.user?.full_name}`}
               >
                 <Box
                   className={`p-4 rounded-2xl bg-phase-surface border ${

@@ -107,27 +107,8 @@ export default function CommunityScreen() {
     isFetchingNextPosts,
   } = useCommunity(selectedFilter !== 'all' ? selectedFilter : undefined);
 
-  if (!isCommunityEnabled) {
-    return (
-      <ScreenWrapper noTopInset={true}>
-        <GlobalHeader title="Community" subtitle="Currently Expanding" />
-        <Box className="flex-1 items-center justify-center p-8 bg-phase-canvas">
-          <VStack space="xl" className="items-center">
-            <Box className="w-16 h-16 bg-phase-warning/10 rounded-full items-center justify-center">
-              <Icon as={Info} size="xl" className="text-phase-warning" />
-            </Box>
-            <Heading className="text-center">Sanctuary Maintenance</Heading>
-            <Text className="text-center text-phase-text-secondary">
-              The community spaces are currently undergoing a structural expansion. Please check
-              back soon for a calmer, more resonant experience.
-            </Text>
-          </VStack>
-        </Box>
-      </ScreenWrapper>
-    );
-  }
-  const { sanctuaryGroups } = useCommunityGroups({ schoolId });
-  const { manifestos } = useManifestos(schoolId || 'default', user?.id ?? undefined);
+  const { sanctuaryGroups = [] } = useCommunityGroups({ schoolId });
+  const { manifestos = [] } = useManifestos(schoolId || 'default', user?.id ?? undefined);
 
   const pulse = useMemo(
     () => deriveCommunityPulse(posts, groups, manifestos, conversations),
@@ -196,7 +177,7 @@ export default function CommunityScreen() {
     return () => {
       cancelled = true;
     };
-  }, [activeMode, canReadMessages]);
+  }, [activeMode, isMessagingEnabled]);
 
   useEffect(() => {
     if (!canReadAnnouncements || activeMode !== 'announcements' || !schoolId) {
@@ -219,6 +200,26 @@ export default function CommunityScreen() {
       cancelled = true;
     };
   }, [activeMode, canReadAnnouncements, schoolId]);
+
+  if (!isCommunityEnabled) {
+    return (
+      <ScreenWrapper noTopInset={true}>
+        <GlobalHeader title="Community" subtitle="Currently Expanding" />
+        <Box className="flex-1 items-center justify-center p-8 bg-phase-canvas">
+          <VStack space="xl" className="items-center">
+            <Box className="w-16 h-16 bg-phase-warning/10 rounded-full items-center justify-center">
+              <Icon as={Info} size="xl" className="text-phase-warning" />
+            </Box>
+            <Heading className="text-center">Sanctuary Maintenance</Heading>
+            <Text className="text-center text-phase-text-secondary">
+              The community spaces are currently undergoing a structural expansion. Please check
+              back soon for a calmer, more resonant experience.
+            </Text>
+          </VStack>
+        </Box>
+      </ScreenWrapper>
+    );
+  }
 
   const openGuestUpgrade = () => {
     setPendingGateAction({ kind: 'community_open_create_group', createdAt: Date.now() }).catch(
@@ -478,7 +479,7 @@ export default function CommunityScreen() {
               onCreatePost={() => setShowCreatePost(true)}
               onCreateGroup={() => setShowCreateGroup(true)}
               onNavigateToGroup={(groupId: string) => {
-                const selected = [...sanctuaryGroups].find((group: any) => group.id === groupId);
+                const selected = [...sanctuaryGroups].find((group) => group.id === groupId);
                 navigation.navigate('GroupDetails', {
                   groupId,
                   groupName: selected?.name,
