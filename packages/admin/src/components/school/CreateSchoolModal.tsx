@@ -12,35 +12,34 @@ import {
   useStore,
 } from '@repo/core';
 import {
+  BookOpen,
   Box,
+  Building2,
   Button,
   ButtonText,
-  Heading,
-  HStack,
-  hapticLight,
-  hapticSuccess,
-  Icon,
-  Pressable,
-  SanctuaryInput,
-  SanctuaryModal,
-  ScrollView,
-  Spinner,
-  Text,
-  VStack,
-} from '@repo/ui';
-import {
-  BookOpen,
-  Building2,
   CheckCircle,
   ChevronLeft,
   ChevronRight,
   Globe,
+  HStack,
+  Heading,
+  Icon,
   MapPin,
   MessageSquare,
+  Pressable,
+  SanctuaryInput,
+  SanctuaryModal,
   School as SchoolIcon,
+  ScrollView,
+  Spinner,
+  Text,
   Users,
-} from 'lucide-react-native';
-import React, { useMemo, useState } from 'react';
+  VStack,
+  hapticLight,
+  hapticSuccess,
+} from '@repo/ui';
+
+import { useMemo, useState } from 'react';
 
 interface CreateSchoolModalProps {
   isOpen: boolean;
@@ -123,7 +122,7 @@ export default function CreateSchoolModal({
         address: state.location.address,
         student_type: state.demographics.studentType,
         religious_affiliation: state.demographics.religiousAffiliation,
-        student_count: parseInt(state.demographics.studentCount) || 0,
+        student_count: parseInt(state.demographics.studentCount, 10) || 0,
         type: (state.basicInfo.officialType || '').includes('Primary')
           ? 'primary'
           : ('mixed' as const),

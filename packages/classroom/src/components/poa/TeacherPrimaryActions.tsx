@@ -1,6 +1,5 @@
 import { FeatureGuard } from '@repo/core';
-import { Box, Button, ButtonText, HStack, hapticLight, Icon } from '@repo/ui';
-import { Plus, ScanLine } from 'lucide-react-native';
+import { Box, Button, ButtonText, HStack, hapticLight, Icon, Plus, ScanLine } from '@repo/ui';
 import React from 'react';
 
 export function TeacherPrimaryActions({ onCreateClassroom }: { onCreateClassroom: () => void }) {

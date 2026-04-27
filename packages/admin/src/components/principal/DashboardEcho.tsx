@@ -6,29 +6,28 @@
 
 import { supabase, useStore } from '@repo/core';
 import {
+  AlertTriangle,
   Box,
   Button,
   ButtonText,
-  Heading,
+  CheckCircle2,
+  ChevronRight,
   HStack,
-  hapticLight,
+  Heading,
+  Heart,
   Icon,
   Input,
   InputField,
+  MessageSquare,
   Pressable,
+  Send,
   Spinner,
   Text,
   VStack,
+  hapticLight,
 } from '@repo/ui';
-import {
-  AlertTriangle,
-  CheckCircle2,
-  ChevronRight,
-  Heart,
-  MessageSquare,
-  Send,
-} from 'lucide-react-native';
-import React, { useEffect, useState } from 'react';
+
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface FeedbackEcho {
@@ -52,7 +51,7 @@ const CATEGORY_ICONS = {
 
 export default function DashboardEcho({ schoolId }: { schoolId: string }) {
   const { t } = useTranslation();
-  const { user } = useStore();
+  const user = useStore(s => s.user);
   const [feedback, setFeedback] = useState<FeedbackEcho[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
@@ -114,7 +113,7 @@ export default function DashboardEcho({ schoolId }: { schoolId: string }) {
 
   useEffect(() => {
     fetchFeedback();
-  }, [schoolId]);
+  }, [fetchFeedback]);
 
   const handleMarkRead = async (id: string) => {
     try {

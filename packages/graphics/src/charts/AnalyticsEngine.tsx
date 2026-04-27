@@ -1,4 +1,4 @@
-import { marksToGPA } from '@repo/analytics';
+import { marksToGPA } from '@repo/core';
 import {
   Card,
   HStack,

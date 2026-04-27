@@ -1,29 +1,27 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { type Assignment, api, type ClassroomStackParamList } from '@repo/core';
 import {
+  BookOpen as BookOpenIcon,
   Box,
+  ClipboardCheck as ClipboardCheckIcon,
+  FileText as FileTextIcon,
   GlobalHeader,
+  GraduationCap as GraduationCapIcon,
   Heading,
   HStack,
   hapticLight,
   Icon,
+  MessageSquare as MessageSquareIcon,
+  NotebookPen as NotebookPenIcon,
   Pressable,
   ScreenWrapper,
   ScrollView,
   SkeletonCard,
   Text,
+  TrendingUp as TrendingUpIcon,
   useBottomTabPadding,
   VStack,
 } from '@repo/ui';
-import {
-  BookOpen as BookOpenIcon,
-  ClipboardCheck as ClipboardCheckIcon,
-  FileText as FileTextIcon,
-  GraduationCap as GraduationCapIcon,
-  MessageSquare as MessageSquareIcon,
-  NotebookPen as NotebookPenIcon,
-  TrendingUp as TrendingUpIcon,
-} from 'lucide-react-native';
 import React, { useState } from 'react';
 import {
   AttendanceView,

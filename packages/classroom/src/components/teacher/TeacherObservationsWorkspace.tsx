@@ -9,15 +9,19 @@ import {
   Icon,
   Input,
   InputField,
+  MessageCircle,
+  Plus,
   Pressable,
   SanctuaryModal,
   ScrollView,
+  Sparkles,
   Spinner,
   Text,
   Theme,
+  Trash2,
+  TriangleAlert,
   VStack,
 } from '@repo/ui';
-import { MessageCircle, Plus, Sparkles, Trash2, TriangleAlert } from 'lucide-react-native';
 import type React from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 

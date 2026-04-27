@@ -1,5 +1,4 @@
-import { hapticLight, Icon, Pressable, Text } from '@repo/ui';
-import { ScanLine } from 'lucide-react-native';
+import { hapticLight, Icon, Pressable, ScanLine, Text } from '@repo/ui';
 import React from 'react';
 
 export function ScanQRAction() {

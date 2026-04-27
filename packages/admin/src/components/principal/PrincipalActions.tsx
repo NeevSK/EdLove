@@ -1,5 +1,19 @@
-import { Box, Heading, HStack, hapticLight, Icon, Pressable, Text, VStack } from '@repo/ui';
-import { Banknote, CalendarDays, ChevronRight, TrendingUp, UserCheck } from 'lucide-react-native';
+import {
+  Banknote,
+  Box,
+  CalendarDays,
+  ChevronRight,
+  HStack,
+  Heading,
+  Icon,
+  Pressable,
+  Text,
+  TrendingUp,
+  UserCheck,
+  VStack,
+  hapticLight,
+} from '@repo/ui';
+
 import type React from 'react';
 import { useTranslation } from 'react-i18next';
 

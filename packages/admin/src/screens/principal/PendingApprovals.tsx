@@ -3,17 +3,17 @@ import {
   Box,
   Button,
   ButtonText,
-  Heading,
+  ClipboardList,
   HStack,
-  hapticLight,
+  Heading,
   Icon,
   Text,
   VStack,
+  hapticLight,
 } from '@repo/ui';
-import { ClipboardList } from 'lucide-react-native';
+
 import type React from 'react';
 import { useTranslation } from 'react-i18next';
-import { LEAVE_STATUS_COLORS } from '../../principal/workspace';
 
 interface PendingApprovalsProps {
   leaves: StaffLeaveDTO[];

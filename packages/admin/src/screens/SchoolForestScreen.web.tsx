@@ -11,8 +11,13 @@
 import { useNavigation } from '@react-navigation/native';
 import type { SchoolForestState, TeacherTree } from '@repo/core';
 import { schoolForestAPI, usePermissions } from '@repo/core';
-import { Icon, SkeletonCard } from '@repo/ui';
-import { ArrowLeft, RefreshCw } from 'lucide-react-native';
+import {
+  ArrowLeft,
+  Icon,
+  RefreshCw,
+  SkeletonCard,
+} from '@repo/ui';
+
 import React, { useEffect, useState } from 'react';
 
 const WEATHER_EMOJI: Record<string, string> = {
@@ -73,7 +78,7 @@ export default function SchoolForestScreen() {
 
   useEffect(() => {
     load();
-  }, [schoolId]);
+  }, [load]);
 
   return (
     <div
@@ -248,7 +253,7 @@ export default function SchoolForestScreen() {
                       style={{
                         display: 'inline-block',
                         padding: '2px 8px',
-                        background: HEALTH_COLOR[tree.tree_health] + '20',
+                        background: `${HEALTH_COLOR[tree.tree_health]}20`,
                         borderRadius: '4px',
                         fontSize: '10px',
                         fontWeight: '700',

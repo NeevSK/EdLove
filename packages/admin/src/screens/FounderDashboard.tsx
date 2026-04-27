@@ -3,41 +3,40 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { type FounderStackParamList, type School, useStore } from '@repo/core';
 import {
   Box,
+  ChevronRight,
   GlobalHeader,
   Heading,
+  HeartPulse,
   HStack,
   Icon,
+  LayoutGrid,
+  Plus,
   Pressable,
+  School as SchoolIcon,
   ScreenWrapper,
   ScrollView,
   Spinner,
   Text,
   useRegisterFAB,
-  VStack,
-} from '@repo/ui';
-import {
-  ChevronRight,
-  HeartPulse,
-  LayoutGrid,
-  Plus,
-  School as SchoolIcon,
   Users,
+  VStack,
   Wind,
   Zap,
-} from 'lucide-react-native';
-import type React from 'react';
-import { useState } from 'react';
+} from '@repo/ui';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useFounderEcosystemStats } from '../bridge/founderWorkspace';
 import { GlobalCreateModal } from '../components';
 
 export default function FounderDashboard() {
   const { t } = useTranslation();
-  const { isDemoMode, user, setBreathingOpen } = useStore();
+  const user = useStore((s) => s.user);
+  const setBreathingOpen = useStore((s) => s.setBreathingOpen);
+  const isDemoMode = useStore((s) => s.isDemoMode);
   const navigation = useNavigation<NativeStackNavigationProp<FounderStackParamList>>();
 
   const { stats, schools, isLoading, refreshData } = useFounderEcosystemStats();
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, _setSearchQuery] = useState('');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const filteredSchools = (schools || []).filter((s) =>
@@ -49,10 +48,33 @@ export default function FounderDashboard() {
     refreshData();
   };
 
+  // Event Handlers
+  const handleOpenCreateModal = React.useCallback(() => setIsCreateModalOpen(true), []);
+  const handleCloseCreateModal = React.useCallback(() => setIsCreateModalOpen(false), []);
+  const handleOpenBreathing = React.useCallback(() => setBreathingOpen(true), [setBreathingOpen]);
+
+  const handleNavigateToSchool = React.useCallback(
+    (schoolId: string) => {
+      navigation.navigate('FounderSchoolDashboard', {
+        schoolId: schoolId,
+        userId: user?.id || 'founder-id',
+      });
+    },
+    [navigation, user?.id],
+  );
+
+  const handleOpenInstitute = React.useCallback(
+    () => {
+      const schoolId = user?.school_id;
+      if (schoolId) handleNavigateToSchool(schoolId);
+    },
+    [user?.school_id, handleNavigateToSchool],
+  );
+
   // Register FAB globally
   useRegisterFAB({
     tabType: 'founder',
-    onPress: () => setIsCreateModalOpen(true),
+    onPress: handleOpenCreateModal,
     icon: <Icon as={Plus} size={24} className="text-white" />,
     visible: true,
   });
@@ -85,17 +107,7 @@ export default function FounderDashboard() {
 
             {/* Quick Access to Main School */}
             {schools.find((s) => s.id === user?.school_id) && (
-              <Pressable
-                onPress={() => {
-                  const schoolId = user?.school_id;
-                  if (schoolId) {
-                    navigation.navigate('FounderSchoolDashboard', {
-                      schoolId: schoolId,
-                      userId: user?.id || 'founder-id',
-                    });
-                  }
-                }}
-              >
+              <Pressable onPress={handleOpenInstitute}>
                 <Box className="p-4 bg-phase-interactive/5 rounded-3xl border border-phase-interactive/20">
                   <HStack className="justify-between items-center">
                     <HStack className="gap-4 items-center flex-1">
@@ -164,7 +176,7 @@ export default function FounderDashboard() {
               <QuickAction
                 icon={Wind}
                 label={t('founder.breathing') || 'Breathing Reset'}
-                onPress={() => setBreathingOpen(true)}
+                onPress={handleOpenBreathing}
                 className="text-phase-interactive"
               />
               <Box className="flex-1" />
@@ -198,12 +210,7 @@ export default function FounderDashboard() {
                   <SchoolGalleryItem
                     key={school.id}
                     school={school}
-                    onPress={() => {
-                      navigation.navigate('FounderSchoolDashboard', {
-                        schoolId: school.id,
-                        userId: 'founder-id',
-                      });
-                    }}
+                    onPress={handleNavigateToSchool}
                   />
                 ))}
 
@@ -220,7 +227,7 @@ export default function FounderDashboard() {
 
       <GlobalCreateModal
         isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
+        onClose={handleCloseCreateModal}
         onSuccess={handleCreateSuccess}
         availableSchools={schools}
       />
@@ -281,9 +288,10 @@ function StatCard({
   );
 }
 
-function SchoolGalleryItem({ school, onPress }: { school: School; onPress: () => void }) {
+function SchoolGalleryItem({ school, onPress }: { school: School; onPress: (id: string) => void }) {
+  const handlePress = React.useCallback(() => onPress(school.id), [onPress, school.id]);
   return (
-    <Pressable onPress={onPress}>
+    <Pressable onPress={handlePress}>
       <Box className="p-4 bg-phase-surface rounded-3xl border border-phase-border flex-row items-center gap-4 active:bg-phase-canvas">
         <Box className="w-12 h-12 rounded-2xl bg-phase-interactive/10 items-center justify-center">
           <Icon as={SchoolIcon} size={24} className="text-phase-interactive" />

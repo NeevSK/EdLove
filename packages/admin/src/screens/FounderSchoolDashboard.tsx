@@ -3,11 +3,14 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { type FounderStackParamList, useFeatureAccess, useStore } from '@repo/core';
 import {
   Box,
+  Compass,
   GlobalHeader,
-  Heading,
+  Globe,
   HStack,
-  hapticLight,
+  Heading,
+  Heart,
   Icon,
+  Plus,
   PositiveInvitation,
   Pressable,
   SandboxBanner,
@@ -16,9 +19,11 @@ import {
   SkeletonCard,
   Text,
   VStack,
+  Zap,
+  hapticLight,
 } from '@repo/ui';
-import { Compass, Globe, Heart, Plus, Zap } from 'lucide-react-native';
-import React, { useState } from 'react';
+
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useFounderSchoolStats } from '../bridge/founderWorkspace';
 import { CreateSchoolModal } from '../components';
@@ -37,7 +42,7 @@ export default function FounderSchoolDashboard({ schoolId, userId }: FounderScho
   const { school, stats, isLoading, refreshData } = useFounderSchoolStats(schoolId);
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const { isDemoMode } = useStore();
+  const isDemoMode = useStore(s => s.isDemoMode);
 
   return (
     <ScreenWrapper noTopInset={true}>

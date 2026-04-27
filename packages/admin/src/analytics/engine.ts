@@ -511,64 +511,70 @@ export class MultiTenantAnalyticsEngine {
     return data || { name: 'Unknown', kind: 'customer' };
   }
 
-  private async calculateAttendanceRate(tenantId: string, timeRange: DateRange): Promise<number> {
+  private async calculateAttendanceRate(_tenantId: string, _timeRange: DateRange): Promise<number> {
     // Implementation would query attendance data
     return 92.5; // Placeholder
   }
 
-  private async calculateGradeAverage(tenantId: string, timeRange: DateRange): Promise<number> {
+  private async calculateGradeAverage(_tenantId: string, _timeRange: DateRange): Promise<number> {
     // Implementation would query grades data
     return 85.3; // Placeholder
   }
 
-  private async getEnrollmentCount(tenantId: string, timeRange: DateRange): Promise<number> {
+  private async getEnrollmentCount(_tenantId: string, _timeRange: DateRange): Promise<number> {
     // Implementation would query enrollment data
     return 1250; // Placeholder
   }
 
-  private async calculateStaffTurnover(tenantId: string, timeRange: DateRange): Promise<number> {
+  private async calculateStaffTurnover(_tenantId: string, _timeRange: DateRange): Promise<number> {
     // Implementation would calculate staff turnover
     return 8.2; // Placeholder
   }
 
   private async calculateResourceUtilization(
-    tenantId: string,
-    timeRange: DateRange,
+    _tenantId: string,
+    _timeRange: DateRange,
   ): Promise<number> {
     // Implementation would calculate resource utilization
     return 78.5; // Placeholder
   }
 
-  private async calculateParentEngagement(tenantId: string, timeRange: DateRange): Promise<number> {
+  private async calculateParentEngagement(
+    _tenantId: string,
+    _timeRange: DateRange,
+  ): Promise<number> {
     // Implementation would calculate parent engagement metrics
     return 65.8; // Placeholder
   }
 
   private async calculateDocumentProcessingTime(
-    tenantId: string,
-    timeRange: DateRange,
+    _tenantId: string,
+    _timeRange: DateRange,
   ): Promise<number> {
     // Implementation would calculate average document processing time
     return 2.4; // Placeholder (days)
   }
 
   private async calculateRevenuePerStudent(
-    tenantId: string,
-    timeRange: DateRange,
+    _tenantId: string,
+    _timeRange: DateRange,
   ): Promise<number> {
     // Implementation would calculate revenue per student
     return 8500; // Placeholder
   }
 
   private async calculateOperationalEfficiency(
-    tenantId: string,
-    timeRange: DateRange,
+    _tenantId: string,
+    _timeRange: DateRange,
   ): Promise<number> {
     // Implementation would calculate operational efficiency
     return 87.2; // Placeholder
   }
 
-  private async calculateComplianceScore(tenantId: string, timeRange: DateRange): Promise<number> {
+  private async calculateComplianceScore(
+    _tenantId: string,
+    _timeRange: DateRange,
+  ): Promise<number> {
     // Implementation would calculate compliance score
     return 94.1; // Placeholder
   }
@@ -588,32 +594,32 @@ export class MultiTenantAnalyticsEngine {
     return 71.3; // Placeholder
   }
 
-  private async executeCustomQuery(config: CustomReportConfig): Promise<any[]> {
+  private async executeCustomQuery(_config: CustomReportConfig): Promise<any[]> {
     // Implementation would build and execute custom queries based on config
     return []; // Placeholder
   }
 
-  private extractPeriodFromFilters(filters: any[]): DateRange {
+  private extractPeriodFromFilters(_filters: any[]): DateRange {
     // Implementation would extract date range from filters
     return this.getLastQuarterRange();
   }
 
   private async getHistoricalMetrics(
-    tenantId: string,
-    metric: MetricDefinition,
-    timeRange: DateRange,
+    _tenantId: string,
+    _metric: MetricDefinition,
+    _timeRange: DateRange,
   ): Promise<any[]> {
     // Implementation would get historical data for anomaly detection
     return []; // Placeholder
   }
 
-  private analyzeForAnomalies(historicalData: any[], metric: MetricDefinition): Anomaly[] {
+  private analyzeForAnomalies(_historicalData: any[], _metric: MetricDefinition): Anomaly[] {
     // Implementation would analyze data for anomalies
     return []; // Placeholder
   }
 
   private async analyzeTrend(
-    tenantId: string,
+    _tenantId: string,
     metric: MetricDefinition,
     timeRange: DateRange,
   ): Promise<Trend> {
@@ -628,9 +634,9 @@ export class MultiTenantAnalyticsEngine {
   }
 
   private async generatePrediction(
-    tenantId: string,
+    _tenantId: string,
     metric: MetricDefinition,
-    historicalData: any,
+    _historicalData: any,
   ): Promise<Prediction> {
     // Implementation would generate predictions
     return {
@@ -646,21 +652,21 @@ export class MultiTenantAnalyticsEngine {
   }
 
   private async analyzeMetricForInsights(
-    tenantId: string,
-    metric: MetricDefinition,
-    value: number,
-    context: any,
+    _tenantId: string,
+    _metric: MetricDefinition,
+    _value: number,
+    _context: any,
   ): Promise<Insight | null> {
     // Implementation would analyze metrics and generate insights
     return null; // Placeholder
   }
 
-  private async getIndustryBenchmarks(industry: EducationSector): Promise<any> {
+  private async getIndustryBenchmarks(_industry: EducationSector): Promise<any> {
     // Implementation would get industry benchmarks
     return {}; // Placeholder
   }
 
-  private calculatePerformanceRanking(tenantMetrics: TenantMetrics, benchmarks: any): any {
+  private calculatePerformanceRanking(_tenantMetrics: TenantMetrics, _benchmarks: any): any {
     // Implementation would calculate performance ranking
     return {
       overall_rank: 1,
@@ -672,20 +678,23 @@ export class MultiTenantAnalyticsEngine {
     }; // Placeholder
   }
 
-  private async analyzeIndustryTrends(industry: EducationSector): Promise<any[]> {
+  private async analyzeIndustryTrends(_industry: EducationSector): Promise<any[]> {
     // Implementation would analyze industry trends
     return []; // Placeholder
   }
 
-  private async generateStrategicRecommendations(performance: any, trends: any[]): Promise<any[]> {
+  private async generateStrategicRecommendations(
+    _performance: any,
+    _trends: any[],
+  ): Promise<any[]> {
     // Implementation would generate strategic recommendations
     return []; // Placeholder
   }
 
   private async getMetricComparison(
     tenantIds: string[],
-    metric: MetricDefinition,
-    timeRange: DateRange,
+    _metric: MetricDefinition,
+    _timeRange: DateRange,
   ): Promise<any[]> {
     // Implementation would get metric comparison data
     return tenantIds.map((id) => ({
@@ -694,13 +703,13 @@ export class MultiTenantAnalyticsEngine {
     })); // Placeholder
   }
 
-  private getIndustryMetrics(industry: EducationSector): MetricDefinition[] {
+  private getIndustryMetrics(_industry: EducationSector): MetricDefinition[] {
     // Return relevant metrics for the industry
     return ['attendance_rate', 'grade_average', 'parent_engagement', 'operational_efficiency'];
   }
 
   private async generateBenchmarkReport(
-    tenantId: string,
+    _tenantId: string,
     metric: MetricDefinition,
     industry: EducationSector,
     timeRange: DateRange,
@@ -726,7 +735,7 @@ export class MultiTenantAnalyticsEngine {
   }
 
   private async getBenchmarksForMetrics(
-    metrics: MetricDefinition[],
+    _metrics: MetricDefinition[],
   ): Promise<Record<MetricDefinition, number>> {
     // Implementation would get benchmarks for all metrics
     return {} as Record<MetricDefinition, number>; // Placeholder

@@ -1,23 +1,21 @@
 import {
+  ArrowRightCircle,
   Box,
+  Building,
+  Building2,
+  ChevronRight,
   Heading,
   HStack,
   hapticLight,
   Icon,
   Pressable,
   ScrollView,
-  Text,
-  VStack,
-} from '@repo/ui';
-import {
-  ArrowRightCircle,
-  Building,
-  Building2,
-  ChevronRight,
   Search,
   ShieldCheck,
+  Text,
+  VStack,
   Zap,
-} from 'lucide-react-native';
+} from '@repo/ui';
 import React from 'react';
 
 interface PrincipalOnboardingViewProps {

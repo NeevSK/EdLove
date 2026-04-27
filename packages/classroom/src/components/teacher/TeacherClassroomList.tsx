@@ -1,5 +1,16 @@
-import { Badge, BadgeText, Box, Heading, HStack, Icon, Pressable, Text, VStack } from '@repo/ui';
-import { Calendar, ChevronRight } from 'lucide-react-native';
+import {
+  Badge,
+  BadgeText,
+  Box,
+  Calendar,
+  ChevronRight,
+  Heading,
+  HStack,
+  Icon,
+  Pressable,
+  Text,
+  VStack,
+} from '@repo/ui';
 import type React from 'react';
 
 interface Classroom {

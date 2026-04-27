@@ -1,6 +1,15 @@
 import { useNavigation } from '@react-navigation/native';
-import { Box, HStack, Pressable, Text, VStack } from '@repo/ui';
-import { BookOpenText, MessagesSquare, School } from 'lucide-react-native';
+import {
+  BookOpenText,
+  Box,
+  HStack,
+  MessagesSquare,
+  Pressable,
+  School,
+  Text,
+  VStack,
+} from '@repo/ui';
+
 import type React from 'react';
 import { GuardianRoomShell } from './GuardianRoomShell';
 

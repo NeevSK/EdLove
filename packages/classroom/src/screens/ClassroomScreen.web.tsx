@@ -1,7 +1,17 @@
 import { useNavigation } from '@react-navigation/native';
 import { usePermissions, useStore } from '@repo/core';
-import { Box, Heading, Icon, Pressable, ScreenWrapper, Text, WebScreenHeader } from '@repo/ui';
-import { ArrowRight, LogIn, School as SchoolIcon } from 'lucide-react-native';
+import {
+  ArrowRight,
+  Box,
+  Heading,
+  Icon,
+  LogIn,
+  Pressable,
+  School as SchoolIcon,
+  ScreenWrapper,
+  Text,
+  WebScreenHeader,
+} from '@repo/ui';
 import React from 'react';
 import CreateClassroomModal from '../components/CreateClassroomModal';
 import PrincipalOnboardingView from '../components/onboarding/PrincipalOnboardingView.web';

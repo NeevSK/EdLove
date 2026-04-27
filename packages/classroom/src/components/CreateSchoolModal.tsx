@@ -4,6 +4,7 @@ import {
   Box,
   Button,
   ButtonText,
+  CheckCircle,
   FormControl,
   FormControlLabel,
   FormControlLabelText,
@@ -14,6 +15,7 @@ import {
   Icon,
   Input,
   InputField,
+  MessageSquare,
   Modal,
   ModalBackdrop,
   ModalBody,
@@ -21,12 +23,12 @@ import {
   ModalFooter,
   ModalHeader,
   Pressable,
+  School,
   Spinner,
   Text,
   Theme,
   VStack,
 } from '@repo/ui';
-import { CheckCircle, MessageSquare, School } from 'lucide-react-native';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -146,7 +148,6 @@ export default function CreateSchoolModal({
 
   const navigateToCommunity = () => {
     if (createdIds?.groupId) {
-      // @ts-expect-error - CommunityStack exists
       navigation.navigate('CommunityStack', {
         screen: 'GroupDetails',
         params: { groupId: createdIds.groupId },

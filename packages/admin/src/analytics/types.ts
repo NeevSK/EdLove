@@ -1,5 +1,3 @@
-import { supabase } from '@repo/core';
-
 export type MetricDefinition =
   | 'attendance_rate'
   | 'grade_average'

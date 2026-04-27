@@ -1,23 +1,21 @@
 import {
+  ArrowRightCircle,
   Box,
+  ChevronRight,
+  GraduationCap,
   Heading,
   HStack,
   hapticLight,
   Icon,
   Pressable,
   ScrollView,
-  Text,
-  VStack,
-} from '@repo/ui';
-import {
-  ArrowRightCircle,
-  ChevronRight,
-  GraduationCap,
   Search,
   ShieldCheck,
+  Text,
   UserPlus,
+  VStack,
   Zap,
-} from 'lucide-react-native';
+} from '@repo/ui';
 import React from 'react';
 
 interface StudentOnboardingViewProps {

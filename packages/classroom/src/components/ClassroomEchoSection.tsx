@@ -1,31 +1,29 @@
 import { echoAPI, supabase, useStore } from '@repo/core';
 import {
+  AlertTriangle,
   Box,
   Button,
   ButtonText,
-  Heading,
-  HStack,
-  hapticLight,
-  Icon,
-  Input,
-  InputField,
-  Pressable,
-  Spinner,
-  Text,
-  VStack,
-} from '@repo/ui';
-import { formatDistanceToNow } from 'date-fns';
-import {
-  AlertTriangle,
   CheckCircle2,
   ChevronRight,
   EyeOff,
+  Heading,
   Heart,
+  HStack,
+  hapticLight,
+  Icon,
   Inbox,
+  Input,
+  InputField,
   MessageSquare,
+  Pressable,
   Send,
+  Spinner,
+  Text,
   User,
-} from 'lucide-react-native';
+  VStack,
+} from '@repo/ui';
+import { formatDistanceToNow } from 'date-fns';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 

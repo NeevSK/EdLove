@@ -6,22 +6,21 @@ import {
   type WorkspaceZoneId,
 } from '@repo/core';
 import {
+  BellRing,
+  BookOpenText,
   Box,
+  ChevronRight,
   HStack,
   Icon,
+  MessageCircleHeart,
   Pressable,
+  ShieldCheck,
   Text,
   VStack,
   WorkspaceCanvas,
   type WorkspaceSurfaceDefinition,
 } from '@repo/ui';
-import {
-  BellRing,
-  BookOpenText,
-  ChevronRight,
-  MessageCircleHeart,
-  ShieldCheck,
-} from 'lucide-react-native';
+
 import type React from 'react';
 import { useMemo } from 'react';
 import type {

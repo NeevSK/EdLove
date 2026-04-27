@@ -3,6 +3,7 @@ import {
   Box,
   Button,
   ButtonText,
+  CheckCircle2,
   FormControl,
   FormControlLabel,
   FormControlLabelText,
@@ -11,12 +12,12 @@ import {
   Icon,
   Input,
   InputField,
+  QrCode,
   SanctuaryModal,
   Spinner,
   Text,
   VStack,
 } from '@repo/ui';
-import { CheckCircle2, QrCode } from 'lucide-react-native';
 import React, { useState } from 'react';
 
 interface ClaimInviteModalProps {

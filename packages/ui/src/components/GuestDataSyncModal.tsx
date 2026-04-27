@@ -61,7 +61,10 @@ function syncReducer(state: State, action: Action): State {
     case 'START_SYNC':
       return { ...state, status: 'syncing', error: null };
     case 'UPDATE_PROGRESS':
-      return { ...state, progress: { current: action.current, total: action.total, step: action.step } };
+      return {
+        ...state,
+        progress: { current: action.current, total: action.total, step: action.step },
+      };
     case 'SET_COMPLETED':
       return { ...state, status: 'completed' };
     case 'SET_ERROR':
@@ -143,26 +146,29 @@ export default function GuestDataSyncModal({
   // RENDER HELPERS
   // ============================================================================
 
-  const footer = state.status !== 'completed' ? (
-    <HStack className="gap-4 w-full">
-      <SanctuaryButton
-        variant="ghost"
-        action="secondary"
-        onPress={handleSkip}
-        isDisabled={state.status === 'syncing'}
-      >
-        {t('common.skip') || 'Skip'}
-      </SanctuaryButton>
-      <SanctuaryButton
-        action="primary"
-        onPress={handleSync}
-        isLoading={state.status === 'syncing'}
-        className="flex-1"
-      >
-        {state.status === 'syncing' ? t('sync.syncing') || 'Syncing...' : t('sync.syncButton') || 'Sync Data'}
-      </SanctuaryButton>
-    </HStack>
-  ) : undefined;
+  const footer =
+    state.status !== 'completed' ? (
+      <HStack className="gap-4 w-full">
+        <SanctuaryButton
+          variant="ghost"
+          action="secondary"
+          onPress={handleSkip}
+          isDisabled={state.status === 'syncing'}
+        >
+          {t('common.skip') || 'Skip'}
+        </SanctuaryButton>
+        <SanctuaryButton
+          action="primary"
+          onPress={handleSync}
+          isLoading={state.status === 'syncing'}
+          className="flex-1"
+        >
+          {state.status === 'syncing'
+            ? t('sync.syncing') || 'Syncing...'
+            : t('sync.syncButton') || 'Sync Data'}
+        </SanctuaryButton>
+      </HStack>
+    ) : undefined;
 
   return (
     <SanctuaryModal
@@ -235,7 +241,9 @@ export default function GuestDataSyncModal({
                 {state.summary.moodLogs > 0 && (
                   <HStack className="justify-between">
                     <Text className="text-phase-text-secondary text-sm">Mood Logs</Text>
-                    <Text className="text-phase-text-primary font-bold">{state.summary.moodLogs}</Text>
+                    <Text className="text-phase-text-primary font-bold">
+                      {state.summary.moodLogs}
+                    </Text>
                   </HStack>
                 )}
                 {state.summary.journalEntries > 0 && (
@@ -249,7 +257,9 @@ export default function GuestDataSyncModal({
                 {state.summary.students > 0 && (
                   <HStack className="justify-between">
                     <Text className="text-phase-text-secondary text-sm">Students</Text>
-                    <Text className="text-phase-text-primary font-bold">{state.summary.students}</Text>
+                    <Text className="text-phase-text-primary font-bold">
+                      {state.summary.students}
+                    </Text>
                   </HStack>
                 )}
                 <Box className="h-px bg-white/5 my-1" />

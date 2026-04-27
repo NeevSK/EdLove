@@ -31,15 +31,9 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
   const [metrics, setMetrics] = useState<TenantMetrics | null>(null);
   const [liveMetrics, setLiveMetrics] = useState<LiveMetrics | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedTimeRange, setSelectedTimeRange] = useState<'week' | 'month' | 'quarter' | 'year'>(
-    'month',
-  );
-
-  useEffect(() => {
-    loadDashboard();
-    const interval = setInterval(loadLiveMetrics, 30000); // Update every 30 seconds
-    return () => clearInterval(interval);
-  }, [tenantId, selectedTimeRange]);
+  const [selectedTimeRange, _setSelectedTimeRange] = useState<
+    'week' | 'month' | 'quarter' | 'year'
+  >('month');
 
   const loadDashboard = async () => {
     try {
@@ -65,6 +59,12 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
       console.error('Failed to load live metrics:', error);
     }
   };
+
+  useEffect(() => {
+    loadDashboard();
+    const interval = setInterval(loadLiveMetrics, 30000); // Update every 30 seconds
+    return () => clearInterval(interval);
+  }, [loadLiveMetrics, loadDashboard]);
 
   const getTimeRange = (range: string) => {
     const now = new Date();

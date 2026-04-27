@@ -1,37 +1,35 @@
 import { useStore } from '@repo/core';
 import {
+  Activity,
+  ArrowRight,
+  BookOpen,
   Box,
   Button,
   ButtonText,
   Center,
-  Heading,
-  HStack,
-  hapticLight,
-  Icon,
-  Pressable,
-  Text,
-  Theme,
-  useThemedColors,
-  VStack,
-} from '@repo/ui';
-import {
-  Activity,
-  ArrowRight,
-  BookOpen,
   ChevronDown,
   Compass,
   Flower,
   Globe,
+  Heading,
   Heart,
+  HStack,
+  hapticLight,
+  Icon,
   LayoutGrid,
   Plus,
+  Pressable,
   School,
   Search,
   Shield,
   Star,
+  Text,
+  Theme,
   Users,
+  useThemedColors,
+  VStack,
   Zap,
-} from 'lucide-react-native';
+} from '@repo/ui';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 

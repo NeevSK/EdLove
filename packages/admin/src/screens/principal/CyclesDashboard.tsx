@@ -1,26 +1,29 @@
 import { api } from '@repo/core';
 import {
+  ArrowLeft,
   Box,
   Button,
   ButtonIcon,
   ButtonText,
+  Calendar,
   FormControl,
   FormControlLabel,
   FormControlLabelText,
-  Heading,
   HStack,
-  hapticLight,
-  hapticMedium,
+  Heading,
   Icon,
   Input,
   InputField,
+  Plus,
   Pressable,
   ScrollView,
   SkeletonCard,
   Text,
   VStack,
+  hapticLight,
+  hapticMedium,
 } from '@repo/ui';
-import { ArrowLeft, Calendar, Plus } from 'lucide-react-native';
+
 import type React from 'react';
 import { useEffect, useState } from 'react';
 
@@ -57,7 +60,7 @@ export const CyclesDashboard: React.FC<CyclesDashboardProps> = ({
 
   useEffect(() => {
     loadAcademicCycles();
-  }, [schoolId]);
+  }, [loadAcademicCycles]);
 
   const handleCreateCycle = async () => {
     if (!newName.trim() || !newStart || !schoolId) return;

@@ -1,3 +1,4 @@
+import { Icon, X, Zap } from '@repo/ui';
 /**
  * DemoPlaygroundPanel.web.tsx
  *
@@ -11,7 +12,6 @@
  *   left: var(--sidebar-w)   = 240px desktop / 0px mobile
  */
 
-import { X, Zap } from 'lucide-react-native';
 import React, { useEffect, useState } from 'react';
 import StudentDashboard from './StudentDashboard';
 import TeacherDashboard from './TeacherDashboard';
@@ -80,7 +80,7 @@ export default function DemoPlaygroundPanel({ role, onClose }: DemoPlaygroundPan
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <Zap size={15} color="var(--amber-glow)" fill="var(--amber-glow)" />
+          <Icon as={Zap} size={15} color="var(--amber-glow)" fill="var(--amber-glow)" />
           <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--amber-glow)' }}>
             Demo {ROLE_LABEL[role]} view with simulated data
           </span>
@@ -102,7 +102,7 @@ export default function DemoPlaygroundPanel({ role, onClose }: DemoPlaygroundPan
             fontFamily: 'var(--font-body)',
           }}
         >
-          <X size={13} /> Exit demo
+          <Icon as={X} size={13} /> Exit demo
         </button>
       </div>
 

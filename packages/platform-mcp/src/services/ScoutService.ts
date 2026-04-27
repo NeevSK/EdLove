@@ -1,8 +1,8 @@
 import { execSync } from 'child_process';
-import fs from 'fs';
 import path from 'path';
 import { ROOT_DIR } from '../utils/constants.js';
 import { normalizeTarget } from '../utils/pathUtils.js';
+import { DocumentService, ReportData } from './DocumentService.js';
 
 /**
  * --- The Sovereign Scout: Orchestrated Intelligence ---
@@ -10,29 +10,38 @@ import { normalizeTarget } from '../utils/pathUtils.js';
  * and codebase grepping into a single, actionable intelligence dossier.
  */
 export class ScoutService {
+  constructor(private document: DocumentService) {}
+
   async handleSovereignScout(args: { query: string; target?: string }) {
     const target = normalizeTarget(args.target || '.');
     const query = args.query;
 
     console.error(`🛰️ Sovereign Scout Mission: "${query}" in ${target}`);
 
-    const results: string[] = [];
-    results.push(`# 🛰️ Sovereign Scout Report: "${query}"`);
-    results.push(`**Scope:** \`${target.replace(ROOT_DIR, '') || '/'}\`\n`);
+    const report: ReportData = {
+      title: `🛰️ Sovereign Scout Report: "${query}"`,
+      scope: target,
+      summary: `Found matches and assets related to "${query}" across the specified scope.`,
+      stats: [],
+      issues: [],
+      heatmap: [],
+      highlights: [],
+    };
 
     // 1. PHASE ONE: File Scout (Scouting for the file itself)
     try {
       const fileScoutCmd = `fd -t f -i -g "*${query}*" --max-results 5 "${target}"`;
       const files = execSync(fileScoutCmd, { cwd: ROOT_DIR, encoding: 'utf-8' }).trim();
       if (files) {
-        results.push(`## 📄 File Scouts Found Assets:`);
-        results.push(
-          files
-            .split('\n')
-            .map((f) => `- 📂 [${path.basename(f)}](${f.replace(ROOT_DIR, '')})`)
-            .join('\n'),
-        );
-        results.push('');
+        const fileList = files.split('\n').map(f => {
+          const rel = f.replace(ROOT_DIR, '').replace(/^[\\\/]/, '');
+          return `- 📂 [${path.basename(f)}](${rel})`;
+        }).join('\n');
+        
+        report.highlights?.push({
+          title: '📄 File Scouts Found Assets',
+          content: fileList
+        });
       }
     } catch (e) {
       // No files found by name
@@ -40,61 +49,46 @@ export class ScoutService {
 
     // 2. PHASE TWO: Knowledge Scout (Documentation Mining)
     try {
-      // Extract numeric query if it's an ID or just use raw query
       const docSearchCmd = `powershell -ExecutionPolicy Bypass -File scripts/search-docs.ps1 -Query "${query}" -Target "." -SummaryOnly`;
       const docs = execSync(docSearchCmd, { cwd: ROOT_DIR, encoding: 'utf-8' }).trim();
       if (docs && !docs.includes('No matching documentation')) {
-        results.push(`## 📖 Knowledge Scout Results:`);
-        results.push(docs);
-        results.push('');
+        report.highlights?.push({
+          title: '📖 Knowledge Scout Results',
+          content: docs
+        });
       }
     } catch (e) {
-      // Doc search failed or script missing
+      // Doc search failed
     }
 
-    // 3. PHASE THREE: Content Scout (Grep Heatmap)
+    // 3. PHASE THREE: Content Scout (Grep Heatmap & Highlights)
     try {
-      // Use the improved grep logic for the heatmap
+      // Highlights (Top 10 code matches)
       const grepCmd = `rg --line-number --column --smart-case --heading --color=never --max-count 10 --fixed-strings "${query}" "${target}"`;
       const rawGrep = execSync(grepCmd, { cwd: ROOT_DIR, encoding: 'utf-8' }).trim();
 
       if (rawGrep) {
-        results.push(`## 🔍 Content Scout Highlights (Top 10):`);
-        results.push('```typescript');
-        results.push(rawGrep);
-        results.push('```\n');
+        report.highlights?.push({
+          title: '🔍 Content Scout Highlights (Top 10)',
+          content: rawGrep,
+          language: 'typescript'
+        });
 
-        // Generate Heatmap Data
+        // Heatmap Data (Count matches in all files)
         const heatmapCmd = `rg --count-matches --fixed-strings "${query}" "${target}"`;
         const heatmapRaw = execSync(heatmapCmd, { cwd: ROOT_DIR, encoding: 'utf-8' }).trim();
 
         if (heatmapRaw) {
-          const counts = heatmapRaw
-            .split('\n')
-            .map((line) => {
-              const parts = line.split(':');
-              const filePath = parts[0];
-              const count = parseInt(parts[1], 10);
-              return { path: filePath, count };
-            })
-            .sort((a, b) => b.count - a.count);
-
-          results.push(`### 🔥 Deployment Heatmap:`);
-          const topPackages = new Set<string>();
-          counts.forEach((c) => {
-            const match = c.path.match(/packages[\\/]([^\\/]+)/);
-            if (match) topPackages.add(`\`@repo/${match[1]}\``);
-          });
-
-          results.push(`Affected Areas: ${Array.from(topPackages).join(', ') || 'Root/Misc'}`);
-          results.push(`Total Files with Matches: ${counts.length}`);
+          report.heatmap = this.document.parseGrepHeatmap(heatmapRaw);
+          report.stats.push({ label: 'Total Matches', value: report.heatmap.reduce((acc, h) => acc + h.count, 0) });
+          report.stats.push({ label: 'Files Affected', value: report.heatmap.length });
         }
       }
     } catch (e) {
-      // Grep failed (likely no matches)
+      // Grep failed
     }
 
-    if (results.length <= 3) {
+    if (report.highlights?.length === 0 && (!report.heatmap || report.heatmap.length === 0)) {
       return {
         content: [
           {
@@ -105,6 +99,13 @@ export class ScoutService {
       };
     }
 
-    return { content: [{ type: 'text' as const, text: results.join('\n') }] };
+    // Add actionable next steps
+    report.recommendations = [
+      `Review content highlights for "${query}" usage patterns.`,
+      `Evaluate the high-density areas identified in the Heatmap.`,
+      `Use 'sovereign_audit:architecture' on the most affected packages for compliance checks.`
+    ];
+
+    return { content: [{ type: 'text' as const, text: this.document.renderReport(report) }] };
   }
 }

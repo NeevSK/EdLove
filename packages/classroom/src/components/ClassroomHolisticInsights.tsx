@@ -1,16 +1,19 @@
 import { type AttendanceRecord, api, type StudentGrade, type StudentObservation } from '@repo/core';
 import {
+  Activity,
   Spinner as ActivityIndicator,
   Box,
+  Calendar,
   Card,
   Center,
+  ChevronRight,
   Heading,
   HStack,
   Icon,
   Text,
+  TrendingUp,
   VStack,
 } from '@repo/ui';
-import { Activity, Calendar, ChevronRight, TrendingUp } from 'lucide-react-native';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 

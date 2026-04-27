@@ -7,23 +7,22 @@ import {
   type WorkspaceZoneId,
 } from '@repo/core';
 import {
+  ArrowUpRight,
+  BookOpen,
   Box,
+  Building2,
+  FolderPlus,
   HStack,
+  MessageSquareHeart,
+  MoveRight,
   Pressable,
+  School as SchoolIcon,
   Text,
   VStack,
   WorkspaceCanvas,
   type WorkspaceSurfaceDefinition,
 } from '@repo/ui';
-import {
-  ArrowUpRight,
-  BookOpen,
-  Building2,
-  FolderPlus,
-  MessageSquareHeart,
-  MoveRight,
-  School as SchoolIcon,
-} from 'lucide-react-native';
+
 import type React from 'react';
 import { useMemo } from 'react';
 import { type FounderCapabilityId, getFounderCapabilityMeta } from './workspace';

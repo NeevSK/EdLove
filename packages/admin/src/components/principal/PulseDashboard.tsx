@@ -1,17 +1,20 @@
 import {
   Box,
   HStack,
+  HeartPulse,
   Icon,
   LivingGlow,
   SanctuaryCard,
   SanctuaryChip,
   SkeletonLoader,
   Text,
+  TrendingUp,
+  Users,
   VStack,
+  Zap,
+  Animated,
+  FadeInUp,
 } from '@repo/ui';
-import { HeartPulse, TrendingUp, Users, Zap } from 'lucide-react-native';
-import React from 'react';
-import Animated, { FadeInUp } from 'react-native-reanimated';
 import { useSchoolPulseQuery } from '../../hooks/useDashboardHooks';
 
 interface PulseDashboardProps {

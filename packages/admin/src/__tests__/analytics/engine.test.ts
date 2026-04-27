@@ -1,13 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals';
-import { multiTenantAnalyticsAPI } from '../../analytics/api';
 import { multiTenantAnalyticsEngine } from '../../analytics/engine';
-import type {
-  CustomReportConfig,
-  EducationSector,
-  LiveMetrics,
-  MetricDefinition,
-  TenantMetrics,
-} from '../../analytics/types';
+import type { CustomReportConfig, EducationSector, MetricDefinition } from '../../analytics/types';
 
 // Mock Supabase
 jest.mock('@repo/core', () => ({
@@ -103,7 +96,7 @@ describe('MultiTenantAnalyticsEngine', () => {
       const tenants = comparison.tenants;
 
       // Check that rankings are calculated
-      tenants.forEach((tenant, index) => {
+      tenants.forEach((tenant, _index) => {
         expect(tenant.rank).toBeGreaterThan(0);
         expect(tenant.rank).toBeLessThanOrEqual(3);
         expect(tenant.percentile).toBeGreaterThanOrEqual(0);
@@ -283,7 +276,7 @@ describe('MultiTenantAnalyticsEngine', () => {
     it('should generate insights based on metrics', async () => {
       const tenantId = 'tenant-1';
       const context = { userRole: 'admin' };
-      const options = { limit: 10 };
+      const _options = { limit: 10 };
 
       const result = await multiTenantAnalyticsEngine.generateRecommendations(tenantId, context);
 

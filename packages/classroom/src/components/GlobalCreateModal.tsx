@@ -18,6 +18,7 @@ import {
   Box,
   Button,
   ButtonText,
+  ChevronDown,
   FormControl,
   FormControlLabel,
   FormControlLabelText,
@@ -27,15 +28,18 @@ import {
   Icon,
   Input,
   InputField,
+  LayoutGrid,
+  Plus,
   SanctuaryModal,
+  School as SchoolIcon,
   Spinner,
   Text,
   Textarea,
   TextareaInput,
   Theme,
+  Users,
   VStack,
 } from '@repo/ui';
-import { ChevronDown, LayoutGrid, Plus, School as SchoolIcon, Users } from 'lucide-react-native';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 

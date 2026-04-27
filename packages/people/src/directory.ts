@@ -14,13 +14,19 @@ export interface PeopleDirectoryEntry extends User {
 }
 
 function mapDirectoryEntry(user: User): PeopleDirectoryEntry {
-  const schoolRole = getSchoolRoleForUser(user);
-  return {
+  const userWithRoles = {
     ...user,
-    schoolRole,
-    workRoles: getWorkRolesForUser(user),
-    personKind: schoolRole === 'student' ? 'student' : 'staff',
+    roles: user.roles || [],
+    created_at: user.created_at || new Date().toISOString(),
+    updated_at: user.updated_at || new Date().toISOString(),
   };
+  const schoolRole = getSchoolRoleForUser(userWithRoles as any);
+  return {
+    ...userWithRoles,
+    schoolRole,
+    workRoles: getWorkRolesForUser(userWithRoles as any),
+    personKind: schoolRole === 'student' ? 'student' : 'staff',
+  } as PeopleDirectoryEntry;
 }
 
 export const peopleDirectoryAPI = {

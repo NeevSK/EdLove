@@ -1,19 +1,19 @@
 import { useAIAgent } from '@repo/ai';
 import { useStore } from '@repo/core';
 import {
+  AlertCircle,
+  BookOpen,
   Box,
   HStack,
   Icon,
-  Pressable,
   SanctuaryButton,
   ScreenWrapper,
   ScrollView,
   Text,
-  useRegisterFAB,
+  Users,
   VStack,
+  useRegisterFAB,
 } from '@repo/ui';
-import { AlertCircle, BookOpen, Users } from 'lucide-react-native';
-import React from 'react';
 
 export default function GradeHeadDashboard({
   schoolId,
@@ -23,7 +23,7 @@ export default function GradeHeadDashboard({
   userId?: string;
 }) {
   const { activeGaps, refreshStatus } = useAIAgent();
-  const userRole = useStore((state: any) => state.userRole);
+  const _userRole = useStore((state: any) => state.userRole);
 
   // Register FAB globally
   useRegisterFAB({

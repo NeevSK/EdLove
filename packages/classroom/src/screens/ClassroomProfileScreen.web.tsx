@@ -1,7 +1,16 @@
 import { useNavigation } from '@react-navigation/native';
 import { AvatarDisplay, EditableItem } from '@repo/profile';
-import { SkeletonCard, useThemedColors } from '@repo/ui';
-import { ArrowLeft, BookOpen, Clock, GraduationCap, Hash, User } from 'lucide-react-native';
+import {
+  ArrowLeft,
+  BookOpen,
+  Clock,
+  GraduationCap,
+  Hash,
+  Icon,
+  SkeletonCard,
+  User,
+  useThemedColors,
+} from '@repo/ui';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useClassroomProfile } from '../hooks/useClassroomProfile';
@@ -46,7 +55,7 @@ export default function ClassroomProfileScreenWeb({ classroomId }: { classroomId
             cursor: 'pointer',
           }}
         >
-          <ArrowLeft size={16} /> {t('common.back') || 'Back'}
+          <Icon as={ArrowLeft} size={16} /> {t('common.back') || 'Back'}
         </button>
       </div>
 
@@ -70,7 +79,7 @@ export default function ClassroomProfileScreenWeb({ classroomId }: { classroomId
                   borderRadius: '24px',
                 }}
               >
-                <GraduationCap size={48} color="var(--accent-action)" />
+                <Icon as={GraduationCap} size={48} color="var(--accent-action)" />
               </div>
 
               <div style={{ flex: 1 }}>
@@ -93,7 +102,7 @@ export default function ClassroomProfileScreenWeb({ classroomId }: { classroomId
                     marginTop: '8px',
                   }}
                 >
-                  <BookOpen size={14} />
+                  <Icon as={BookOpen} size={14} />
                   <span style={{ fontSize: '14px', fontWeight: '600' }}>
                     {classroom.subject || 'General Studies'}
                   </span>
@@ -148,7 +157,7 @@ export default function ClassroomProfileScreenWeb({ classroomId }: { classroomId
             <div
               style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}
             >
-              <User size={16} color={colors.textTertiary} />
+              <Icon as={User} size={16} color={colors.textTertiary} />
               <span style={{ fontSize: '13px', fontWeight: '700', color: colors.textTertiary }}>
                 Teacher
               </span>
@@ -179,7 +188,7 @@ export default function ClassroomProfileScreenWeb({ classroomId }: { classroomId
             <div
               style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}
             >
-              <Clock size={16} color={colors.textTertiary} />
+              <Icon as={Clock} size={16} color={colors.textTertiary} />
               <span style={{ fontSize: '13px', fontWeight: '700', color: colors.textTertiary }}>
                 Academic Year
               </span>

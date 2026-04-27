@@ -10,9 +10,9 @@
  */
 
 import { type FC, useState } from 'react';
-import { Platform, Pressable } from 'react-native';
+import { Platform } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
-import { Box, Text, VStack } from '../gluestack';
+import { Box, Pressable, Text, VStack } from '../gluestack';
 
 // ============================================================================
 // TYPES
@@ -133,9 +133,7 @@ const SanctuaryCard: FC<SanctuaryCardProps> = ({
         onHoverOut={Platform.OS === 'web' ? () => setHovered(false) : undefined}
         accessibilityRole={href ? 'link' : 'button'}
         accessibilityLabel={accessibilityLabel}
-        // @ts-ignore
         href={href}
-        // @ts-ignore
         hrefAttrs={{
           target: target,
           rel: target === '_blank' ? 'noopener noreferrer' : undefined,

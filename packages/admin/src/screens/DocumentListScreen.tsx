@@ -6,7 +6,6 @@ import {
   Heading,
   HStack,
   Pressable,
-  ScreenWrapper,
   ScrollView,
   Text,
   VStack,
@@ -107,7 +106,7 @@ const DocumentListScreen: React.FC<DocumentListScreenProps> = ({
     return new Date(dateString).toLocaleDateString();
   };
 
-  const renderDocumentItem = (document: DocumentWorkflow, index: number) => (
+  const renderDocumentItem = (document: DocumentWorkflow, _index: number) => (
     <Pressable
       key={document.id}
       onPress={() => onDocumentPress(document)}

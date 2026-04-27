@@ -1,13 +1,19 @@
-import { Box, Heading, HStack, Icon, Pressable, Text, VStack } from '@repo/ui';
 import {
   BookOpen,
+  Box,
   ClipboardList,
   Database,
+  Heading,
+  HStack,
+  Icon,
   type LucideIcon,
+  Pressable,
   Settings,
   Shield,
+  Text,
   Users,
-} from 'lucide-react-native';
+  VStack,
+} from '@repo/ui';
 import type React from 'react';
 
 const ICON_MAP: Record<string, LucideIcon> = {

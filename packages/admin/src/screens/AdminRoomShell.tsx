@@ -1,5 +1,15 @@
-import { Box, HStack, Icon, Pressable, ScreenWrapper, Text, VStack } from '@repo/ui';
-import { ArrowLeft, ShieldAlert } from 'lucide-react-native';
+import {
+  ArrowLeft,
+  Box,
+  HStack,
+  Icon,
+  Pressable,
+  ScreenWrapper,
+  ShieldAlert,
+  Text,
+  VStack,
+} from '@repo/ui';
+
 import type React from 'react';
 
 export function AdminRoomShell({

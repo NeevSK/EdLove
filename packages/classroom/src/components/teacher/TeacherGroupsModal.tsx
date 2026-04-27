@@ -3,20 +3,25 @@ import {
   Box,
   Button,
   ButtonText,
+  Check,
+  Edit3,
   Heading,
   HStack,
   hapticLight,
   Icon,
   Input,
   InputField,
+  Layers,
+  Plus,
   Pressable,
   SanctuaryModal,
   ScrollView,
   Text,
+  Trash2,
+  User,
   useLotusToast,
   VStack,
 } from '@repo/ui';
-import { Check, Edit3, Layers, Plus, Trash2, User } from 'lucide-react-native';
 import React, { useEffect, useMemo, useState } from 'react';
 
 interface TeacherGroupsModalProps {

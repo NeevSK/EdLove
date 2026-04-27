@@ -9,17 +9,21 @@
 import { type StaffLeaveDTO, staffManagementAPI } from '@repo/core';
 import {
   Box,
-  Heading,
+  Check,
+  Clock,
+  FileText,
   HStack,
-  hapticLight,
+  Heading,
   Icon,
   Pressable,
   Spinner,
   Text,
   VStack,
+  X,
+  hapticLight,
 } from '@repo/ui';
-import { AlertCircle, Check, Clock, FileText, X } from 'lucide-react-native';
-import React, { useEffect, useState } from 'react';
+
+import { useEffect, useState } from 'react';
 
 interface LeaveApprovalSectionProps {
   schoolId: string;
@@ -53,7 +57,7 @@ export default function LeaveApprovalSection({ schoolId, principalId }: LeaveApp
   useEffect(() => {
     setLoading(true);
     fetchLeaves();
-  }, [schoolId]);
+  }, [fetchLeaves]);
 
   async function handleDecision(leaveId: string, approve: boolean) {
     hapticLight();

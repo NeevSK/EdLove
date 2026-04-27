@@ -23,7 +23,6 @@ import {
 } from '@repo/ui';
 import { BlurView } from 'expo-blur';
 import { BarChart3, FileCheck, Globe, Network, Orbit, Route, Wind, X } from 'lucide-react-native';
-// @ts-expect-error - nativewind is added to package.json but may not be indexed yet
 import { cssInterop } from 'nativewind';
 import React, { useEffect, useMemo, useState } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';

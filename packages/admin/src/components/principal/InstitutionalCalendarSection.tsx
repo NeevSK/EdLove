@@ -20,7 +20,7 @@ import {
   VStack,
 } from '@repo/ui';
 import { Plus } from 'lucide-react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useReducer } from 'react';
 
 interface InstitutionalCalendarSectionProps {
   schoolId: string;
@@ -38,21 +38,63 @@ const TYPE_LABELS: Record<string, string> = {
 
 const TYPE_OPTIONS = ['term_start', 'exam', 'holiday', 'event', 'other'];
 
+type State = {
+  events: CalendarEvent[];
+  isLoading: boolean;
+  isAddFormVisible: boolean;
+  isSaving: boolean;
+  form: {
+    title: string;
+    selectedType: string;
+    startDate: string;
+    endDate: string;
+  };
+};
+
+type Action =
+  | { type: 'SET_EVENTS'; events: CalendarEvent[] }
+  | { type: 'SET_LOADING'; isLoading: boolean }
+  | { type: 'TOGGLE_FORM' }
+  | { type: 'UPDATE_FORM'; field: keyof State['form']; value: any }
+  | { type: 'RESET_FORM' }
+  | { type: 'SET_SAVING'; isSaving: boolean };
+
+const calendarReducer = (state: State, action: Action): State => {
+  switch (action.type) {
+    case 'SET_EVENTS':
+      return { ...state, events: action.events, isLoading: false };
+    case 'SET_LOADING':
+      return { ...state, isLoading: action.isLoading };
+    case 'TOGGLE_FORM':
+      return { ...state, isAddFormVisible: !state.isAddFormVisible };
+    case 'UPDATE_FORM':
+      return { ...state, form: { ...state.form, [action.field]: action.value } };
+    case 'RESET_FORM':
+      return {
+        ...state,
+        form: { title: '', selectedType: 'event', startDate: '', endDate: '' },
+        isAddFormVisible: false,
+        isSaving: false,
+      };
+    case 'SET_SAVING':
+      return { ...state, isSaving: action.isSaving };
+    default:
+      return state;
+  }
+};
+
 export default function InstitutionalCalendarSection({
   schoolId,
   principalId,
   onAddEvent,
 }: InstitutionalCalendarSectionProps) {
-  const [loading, setLoading] = useState(true);
-  const [events, setEvents] = useState<CalendarEvent[]>([]);
-  const [showForm, setShowForm] = useState(false);
-  const [saving, setSaving] = useState(false);
-
-  // Form state
-  const [title, setTitle] = useState('');
-  const [selectedType, setSelectedType] = useState('event');
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
+  const [state, dispatch] = useReducer(calendarReducer, {
+    events: [],
+    isLoading: true,
+    isAddFormVisible: false,
+    isSaving: false,
+    form: { title: '', selectedType: 'event', startDate: '', endDate: '' },
+  });
 
   const getTypeColorClass = (type: string): string => {
     switch (type) {
@@ -72,22 +114,22 @@ export default function InstitutionalCalendarSection({
   async function fetchEvents() {
     try {
       const data = await staffManagementAPI.getUpcomingCalendarEvents(schoolId, 5);
-      setEvents(data);
+      dispatch({ type: 'SET_EVENTS', events: data ?? [] });
     } catch (err) {
       console.error('InstitutionalCalendar: fetch error', err);
-    } finally {
-      setLoading(false);
+      dispatch({ type: 'SET_LOADING', isLoading: false });
     }
   }
 
   useEffect(() => {
-    setLoading(true);
+    dispatch({ type: 'SET_LOADING', isLoading: true });
     fetchEvents();
   }, [schoolId]);
 
   async function handleSave() {
+    const { title, selectedType, startDate, endDate } = state.form;
     if (!title.trim() || !startDate.trim()) return;
-    setSaving(true);
+    dispatch({ type: 'SET_SAVING', isSaving: true });
     try {
       const ok = await staffManagementAPI.createCalendarEvent(schoolId, principalId, {
         title: title.trim(),
@@ -97,17 +139,12 @@ export default function InstitutionalCalendarSection({
       });
       if (ok) {
         hapticLight();
-        setTitle('');
-        setStartDate('');
-        setEndDate('');
-        setSelectedType('event');
-        setShowForm(false);
+        dispatch({ type: 'RESET_FORM' });
         await fetchEvents();
       }
     } catch (err) {
       console.error('InstitutionalCalendar: save error', err);
-    } finally {
-      setSaving(false);
+      dispatch({ type: 'SET_SAVING', isSaving: false });
     }
   }
 
@@ -125,32 +162,34 @@ export default function InstitutionalCalendarSection({
         <Pressable
           onPress={() => {
             hapticLight();
-            setShowForm(!showForm);
+            dispatch({ type: 'TOGGLE_FORM' });
             onAddEvent?.();
           }}
-          className={`rounded-2xl px-5 py-2 flex-row items-center gap-2 active:scale-95 transition-all ${showForm ? 'bg-phase-canvas border border-phase-border' : 'bg-phase-interactive'}`}
+          className={`rounded-2xl px-5 py-2 flex-row items-center gap-2 active:scale-95 transition-all ${state.isAddFormVisible ? 'bg-phase-canvas border border-phase-border' : 'bg-phase-interactive'}`}
+          accessibilityLabel={state.isAddFormVisible ? 'Hide form' : 'Add event'}
+          accessibilityHint="Toggles the form to add a new institutional event to the calendar"
         >
           <Icon
             as={Plus}
             size="xs"
-            className={showForm ? 'text-phaseText-primary' : 'text-white'}
+            className={state.isAddFormVisible ? 'text-phaseText-primary' : 'text-white'}
           />
           <Text
-            className={`text-[12px] font-black uppercase tracking-wider ${showForm ? 'text-phaseText-primary' : 'text-white'}`}
+            className={`text-[12px] font-black uppercase tracking-wider ${state.isAddFormVisible ? 'text-phaseText-primary' : 'text-white'}`}
           >
-            {showForm ? 'Hide' : 'Add Event'}
+            {state.isAddFormVisible ? 'Hide' : 'Add Event'}
           </Text>
         </Pressable>
       </HStack>
 
-      {loading && (
+      {state.isLoading && (
         <VStack className="gap-3">
           <Box className="h-16 bg-phase-canvas border border-phase-border rounded-2xl opacity-50" />
           <Box className="h-16 bg-phase-canvas border border-phase-border rounded-2xl opacity-30" />
         </VStack>
       )}
 
-      {!loading && events.length === 0 && !showForm && (
+      {!state.isLoading && state.events.length === 0 && !state.isAddFormVisible && (
         <Box className="bg-phase-canvas rounded-[24px] border border-dashed border-phase-border py-10 items-center">
           <Text className="text-[14px] font-bold text-phaseText-muted text-center opacity-60">
             No institutional events scheduled.
@@ -158,11 +197,11 @@ export default function InstitutionalCalendarSection({
         </Box>
       )}
 
-      {!loading &&
-        events.map((ev, index) => (
+      {!state.isLoading &&
+        state.events.map((ev, index) => (
           <HStack
             key={ev.id}
-            className={`items-center gap-5 py-5 ${index !== events.length - 1 ? 'border-b border-phase-border/50' : ''}`}
+            className={`items-center gap-5 py-5 ${index !== state.events.length - 1 ? 'border-b border-phase-border/50' : ''}`}
           >
             <Box className={`rounded-lg px-3 py-1 ${getTypeColorClass(ev.type)}`}>
               <Text className="text-[10px] font-black text-white uppercase tracking-widest leading-none">
@@ -184,29 +223,34 @@ export default function InstitutionalCalendarSection({
           </HStack>
         ))}
 
-      {showForm && (
+      {state.isAddFormVisible && (
         <VStack className="mt-8 gap-5 border-t border-phase-border pt-8">
           <Input className="border border-phase-border rounded-[20px] bg-phase-canvas h-14 shadow-sm px-4">
             <InputField
               placeholder="Event Title"
               placeholderTextColor="rgba(0,0,0,0.3)"
-              value={title}
-              onChangeText={setTitle}
+              value={state.form.title}
+              onChangeText={(val) => dispatch({ type: 'UPDATE_FORM', field: 'title', value: val })}
               className="text-[15px] font-black text-phaseText-primary"
+              accessibilityLabel="Event Title"
+              accessibilityHint="Enter a descriptive title for the institutional event"
             />
           </Input>
 
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             <HStack className="gap-2.5">
-              {TYPE_OPTIONS.map((t) => {
-                const isSelected = selectedType === t;
+               {TYPE_OPTIONS.map((t) => {
+                const isSelected = state.form.selectedType === t;
                 return (
                   <Pressable
                     key={t}
                     onPress={() => {
                       hapticLight();
-                      setSelectedType(t);
+                      dispatch({ type: 'UPDATE_FORM', field: 'selectedType', value: t });
                     }}
+                    accessibilityLabel={`Type: ${TYPE_LABELS[t]}`}
+                    accessibilityHint={`Sets the event category to ${TYPE_LABELS[t]}`}
+                    accessibilityState={{ selected: isSelected }}
                   >
                     <Box
                       className={`rounded-full px-5 py-2 border transition-all ${isSelected ? `${getTypeColorClass(t)} border-transparent` : 'bg-phase-canvas border-phase-border'}`}
@@ -228,29 +272,35 @@ export default function InstitutionalCalendarSection({
               <InputField
                 placeholder="YYYY-MM-DD"
                 placeholderTextColor="rgba(0,0,0,0.2)"
-                value={startDate}
-                onChangeText={setStartDate}
+                value={state.form.startDate}
+                onChangeText={(val) => dispatch({ type: 'UPDATE_FORM', field: 'startDate', value: val })}
                 className="text-[14px] font-bold text-phaseText-primary"
+                accessibilityLabel="Start Date"
+                accessibilityHint="Enter the event start date in ISO format"
               />
             </Input>
             <Input className="flex-1 border border-phase-border rounded-[20px] bg-phase-canvas h-14 shadow-sm px-4">
               <InputField
                 placeholder="End (Opt)"
                 placeholderTextColor="rgba(0,0,0,0.2)"
-                value={endDate}
-                onChangeText={setEndDate}
+                value={state.form.endDate}
+                onChangeText={(val) => dispatch({ type: 'UPDATE_FORM', field: 'endDate', value: val })}
                 className="text-[14px] font-bold text-phaseText-primary"
+                accessibilityLabel="End Date"
+                accessibilityHint="Enter the optional end date in ISO format"
               />
             </Input>
           </HStack>
 
           <Pressable
             onPress={handleSave}
-            disabled={saving}
-            className={`bg-phase-interactive rounded-[20px] py-4 items-center shadow-md active:scale-95 transition-all ${saving ? 'opacity-50' : ''}`}
+            disabled={state.isSaving}
+            className={`bg-phase-interactive rounded-[20px] py-4 items-center shadow-md active:scale-95 transition-all ${state.isSaving ? 'opacity-50' : ''}`}
+            accessibilityLabel="Commit to Calendar"
+            accessibilityHint="Synchronizes this event with the institutional calendar"
           >
             <Text className="text-[13px] font-black text-white uppercase tracking-[2px]">
-              {saving ? 'Scheduling...' : 'Commit to Calendar'}
+              {state.isSaving ? 'Scheduling...' : 'Commit to Calendar'}
             </Text>
           </Pressable>
         </VStack>

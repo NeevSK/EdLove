@@ -1,23 +1,21 @@
 import {
+  ArrowRightCircle,
   Box,
+  ChevronRight,
   Heading,
   HStack,
   hapticLight,
   Icon,
-  Pressable,
-  ScrollView,
-  Text,
-  VStack,
-} from '@repo/ui';
-import {
-  ArrowRightCircle,
-  ChevronRight,
   Plus,
+  Pressable,
   School,
+  ScrollView,
   Search,
   ShieldCheck,
+  Text,
+  VStack,
   Zap,
-} from 'lucide-react-native';
+} from '@repo/ui';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 

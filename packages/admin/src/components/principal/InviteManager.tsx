@@ -1,34 +1,39 @@
 import {
   api,
+  coreRuntime,
   handleAPIError,
   type InviteCode,
   type PrincipalInviteRole as UserRole,
 } from '@repo/core';
 import { QRBuilder, QRCodeGenerator } from '@repo/scanner-kit';
 import {
+  ArrowLeft,
   Box,
   Button,
   ButtonText,
-  Heading,
+  Copy,
   HStack,
-  hapticLight,
+  Heading,
+  Heading as ModalHeading,
   Icon,
   Modal,
   ModalBackdrop,
   ModalBody,
   ModalContent,
   ModalHeader,
-  Heading as ModalHeading,
+  Plus,
   Pressable,
+  QrCode,
   ScrollView,
+  Shield,
   Spinner,
   Text,
-  useToast,
+  Users,
   VStack,
+  hapticLight,
+  useToast,
 } from '@repo/ui';
-import * as Clipboard from 'expo-clipboard';
-import { ArrowLeft, ChevronRight, Copy, Plus, QrCode, Shield, Users } from 'lucide-react-native';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface InviteManagerProps {
@@ -62,7 +67,7 @@ export default function InviteManager({ schoolId, userId, onBack }: InviteManage
 
   useEffect(() => {
     loadInviteCodes();
-  }, [schoolId]);
+  }, [loadInviteCodes]);
 
   const handleGenerateCode = async (role: UserRole) => {
     setIsGenerating(true);
@@ -82,7 +87,7 @@ export default function InviteManager({ schoolId, userId, onBack }: InviteManage
   const handleCopyCode = async (code: string) => {
     try {
       hapticLight();
-      await Clipboard.setStringAsync(code);
+      await coreRuntime.clipboard.setStringAsync(code);
       toast.showToast({
         message: t('principal.invites.copied') || 'Copied to Clipboard',
         type: 'success',

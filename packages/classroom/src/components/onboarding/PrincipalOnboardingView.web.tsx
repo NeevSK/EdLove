@@ -1,13 +1,19 @@
-import { Box, Heading, HStack, Icon, Pressable, Text, VStack } from '@repo/ui';
 import {
   ArrowRightCircle,
+  Box,
   Building,
   Building2,
+  Heading,
+  HStack,
+  Icon,
   Layout,
   Plus,
+  Pressable,
   Settings2,
+  Text,
+  VStack,
   Zap,
-} from 'lucide-react-native';
+} from '@repo/ui';
 import React from 'react';
 
 interface PrincipalOnboardingViewProps {
@@ -78,7 +84,7 @@ export default function PrincipalOnboardingViewWeb({
               className="bg-templeGold h-14 rounded-full items-center justify-center shadow-lg shadow-templeGold/20 active:scale-95 transition-transform"
             >
               <HStack className="items-center gap-2">
-                <Plus color="white" size={20} />
+                <Icon as={Plus} color="white" size={20} />
                 <Text className="text-white font-black uppercase tracking-widest">
                   Launch Visual Builder
                 </Text>
@@ -118,7 +124,7 @@ export default function PrincipalOnboardingViewWeb({
                     <Text className="text-templeGold font-black uppercase tracking-widest text-sm">
                       Explore Demo Sanctuary
                     </Text>
-                    <ArrowRightCircle size={16} color="#D4843A" />
+                    <Icon as={ArrowRightCircle} size={16} color="#D4843A" />
                   </HStack>
                 </Pressable>
               </VStack>

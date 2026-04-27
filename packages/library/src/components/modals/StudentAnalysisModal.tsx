@@ -5,6 +5,7 @@ import {
   GlassCard,
   HStack,
   Input,
+  InputField,
   Modal,
   ModalBackdrop,
   ModalBody,
@@ -305,7 +306,7 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
                         cy={layout.center.y}
                         r={layout.radius * scale}
                         fill="none"
-                        stroke={theme.border.primary}
+                        stroke={theme.scene.border.base}
                         strokeWidth={1}
                         opacity={0.2}
                       />
@@ -319,7 +320,7 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
                           y1={layout.center.y}
                           x2={axis.x}
                           y2={axis.y}
-                          stroke={theme.border.primary}
+                          stroke={theme.scene.border.base}
                           strokeWidth={1}
                           opacity={0.3}
                         />
@@ -430,14 +431,16 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
               {/* Silver Lining Analysis */}
               <GlassCard className="p-4">
                 <Text className="text-sm font-bold text-white mb-3">Silver Lining & Potential</Text>
-                <Input
-                  className="text-base leading-[22px] min-h-[120px] bg-black/30 rounded-2xl p-3 border border-white/5 text-white"
-                  multiline
-                  placeholder="What hidden potential do you see in this child? Finding the silver lining in every cloud..."
-                  placeholderTextColor={theme.text.tertiary}
-                  value={state.analysis.silver_lining || ''}
-                  onChangeText={handleUpdateSilverLining}
-                />
+                <Input className="min-h-[120px] bg-black/30 rounded-2xl border border-white/5">
+                  <InputField
+                    className="text-base leading-[22px] text-white p-3"
+                    multiline
+                    placeholder="What hidden potential do you see in this child? Finding the silver lining in every cloud..."
+                    placeholderTextColor={theme.text.muted}
+                    value={state.analysis.silver_lining || ''}
+                    onChangeText={handleUpdateSilverLining}
+                  />
+                </Input>
               </GlassCard>
 
               <Box className="h-[40px]" />

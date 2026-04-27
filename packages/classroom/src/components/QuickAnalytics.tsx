@@ -1,20 +1,28 @@
 import { marksToGPA } from '@repo/analytics';
 import { ProgressRing } from '@repo/graphics';
-import { Box, Card, HStack, Icon, Pressable, ScrollView, Text, Theme, VStack } from '@repo/ui';
 import {
   ArrowRight,
+  Box,
   CalendarCheck,
+  Card,
   LineChart as ChartIcon,
   CircleCheck,
   FileText,
   GraduationCap,
+  HStack,
+  Icon,
   Lightbulb,
   Minus,
+  Pressable,
+  ScrollView,
+  Text,
+  Theme,
   TrendingDown,
   TrendingUp,
   Trophy,
+  VStack,
   Zap,
-} from 'lucide-react-native';
+} from '@repo/ui';
 import React from 'react';
 
 interface AnalyticsWidgetProps {

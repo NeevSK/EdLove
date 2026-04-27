@@ -19,6 +19,7 @@
     "./screens/AppSettingsScreen.web": "./src/screens/AppSettingsScreen.web.tsx",
     "./screens/NotificationsScreen.web": "./src/screens/NotificationsScreen.web.tsx",
     "./native": "./src/components-native/index.ts",
+    "./icons": "./src/icons.ts",
     "./svelte/*": "./src/svelte/*.svelte",
     "./package.json": "./package.json"
   },

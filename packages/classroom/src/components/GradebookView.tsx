@@ -6,6 +6,7 @@ import {
   Heading,
   HStack,
   hapticLight,
+  Pressable,
   ScrollView,
   Spinner,
   Text,

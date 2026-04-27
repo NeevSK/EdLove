@@ -1,4 +1,5 @@
 import dataRaw from './data/lk-edu-data.json';
+
 assert;
 {
   type: 'json';

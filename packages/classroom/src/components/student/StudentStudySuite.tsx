@@ -1,13 +1,19 @@
 import { useNavigation } from '@react-navigation/native';
-import { Box, Heading, HStack, Icon, Pressable, Text, VStack } from '@repo/ui';
 import {
   BookOpen,
+  Box,
   ChevronRight,
+  Heading,
+  HStack,
+  Icon,
   Layout,
   MessageSquare,
+  Pressable,
   Star,
+  Text,
   TrendingUp,
-} from 'lucide-react-native';
+  VStack,
+} from '@repo/ui';
 import React from 'react';
 
 export const StudentStudySuite = () => {

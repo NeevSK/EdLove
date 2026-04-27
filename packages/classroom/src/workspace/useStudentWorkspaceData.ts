@@ -22,7 +22,7 @@ export function useStudentWorkspaceData(forceDemo?: boolean) {
 
   const classrooms = registry.sanctuaries.data ?? [];
   const assignments = questsPulse.quests.data ?? [];
-  const pendingAssignments = assignments.filter((assignment) => !assignment.submitted).length;
+  const pendingAssignments = assignments.filter((assignment: any) => !assignment.submitted).length;
 
   const stats = useMemo(
     () =>

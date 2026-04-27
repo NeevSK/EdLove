@@ -8,7 +8,6 @@ import {
   ScrollView,
   SkeletonCard,
   Text,
-  useTheme,
   VStack,
 } from '@repo/ui';
 import type { PrincipalZoneId } from '../principal/workspace';

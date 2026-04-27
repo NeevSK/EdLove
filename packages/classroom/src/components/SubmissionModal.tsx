@@ -13,20 +13,25 @@ import {
   Box,
   Button,
   ButtonText,
+  Camera,
+  CheckCircle2,
   Heading,
   HStack,
   Icon,
   Image,
+  Image as ImageIcon,
   Pressable,
   SanctuaryModal,
+  Send,
   Spinner,
   Text,
   Textarea,
   TextareaInput,
+  Trash2,
   VStack,
+  X,
 } from '@repo/ui';
 import * as ImagePicker from 'expo-image-picker';
-import { Camera, CheckCircle2, Image as ImageIcon, Send, Trash2, X } from 'lucide-react-native';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 

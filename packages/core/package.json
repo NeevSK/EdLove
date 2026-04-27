@@ -100,6 +100,7 @@
     "@zenstackhq/zod": "3.5.5",
     "date-fns": "^4.1.0",
     "expo-crypto": "~55.0.14",
+    "expo-clipboard": "~55.0.13",
     "i18next": "^25.8.11",
     "isomorphic-webcrypto": "^2.3.8",
     "inngest": "^4.2.4",

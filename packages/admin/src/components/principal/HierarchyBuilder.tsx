@@ -1,12 +1,13 @@
 import { api, type SchoolGrade, type Section } from '@repo/core';
 import {
+  ArrowLeft,
   Box,
   Button,
   ButtonIcon,
   ButtonText,
-  Heading,
+  GraduationCap,
   HStack,
-  hapticLight,
+  Heading,
   Icon,
   Input,
   InputField,
@@ -16,14 +17,17 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
+  Plus,
   Pressable,
+  School as SchoolIcon,
   ScrollView,
   Spinner,
   Text,
   VStack,
+  hapticLight,
 } from '@repo/ui';
-import { ArrowLeft, GraduationCap, Plus, School as SchoolIcon } from 'lucide-react-native';
-import React, { useEffect, useState } from 'react';
+
+import { useReducer, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface HierarchyBuilderProps {
@@ -31,84 +35,170 @@ interface HierarchyBuilderProps {
   onBack: () => void;
 }
 
+type State = {
+  sections: Section[];
+  gradesBySection: { [sectionId: string]: SchoolGrade[] };
+  isLoading: boolean;
+  showAddSection: boolean;
+  showAddGrade: boolean;
+  selectedSectionId: string | null;
+  newSectionName: string;
+  newGradeNumber: string;
+  error: string | null;
+};
+
+type Action =
+  | { type: 'SET_HIERARCHY'; sections: Section[]; gradesMap: { [id: string]: SchoolGrade[] } }
+  | { type: 'SET_LOADING'; payload: boolean }
+  | { type: 'TOGGLE_ADD_SECTION'; payload: boolean }
+  | { type: 'TOGGLE_ADD_GRADE'; payload: boolean; sectionId?: string }
+  | { type: 'UPDATE_SECTION_NAME'; payload: string }
+  | { type: 'UPDATE_GRADE_NUMBER'; payload: string }
+  | { type: 'SET_ERROR'; payload: string | null }
+  | { type: 'RESET_SECTION_FORM' }
+  | { type: 'RESET_GRADE_FORM' };
+
+const initialState: State = {
+  sections: [],
+  gradesBySection: {},
+  isLoading: true,
+  showAddSection: false,
+  showAddGrade: false,
+  selectedSectionId: null,
+  newSectionName: '',
+  newGradeNumber: '',
+  error: null,
+};
+
+function reducer(state: State, action: Action): State {
+  switch (action.type) {
+    case 'SET_HIERARCHY':
+      return {
+        ...state,
+        sections: action.sections,
+        gradesBySection: action.gradesMap,
+        isLoading: false,
+        error: null,
+      };
+    case 'SET_LOADING':
+      return { ...state, isLoading: action.payload };
+    case 'TOGGLE_ADD_SECTION':
+      return { ...state, showAddSection: action.payload, error: action.payload ? state.error : null };
+    case 'TOGGLE_ADD_GRADE':
+      return {
+        ...state,
+        showAddGrade: action.payload,
+        selectedSectionId: action.sectionId ?? (action.payload ? state.selectedSectionId : null),
+        error: action.payload ? state.error : null,
+      };
+    case 'UPDATE_SECTION_NAME':
+      return { ...state, newSectionName: action.payload };
+    case 'UPDATE_GRADE_NUMBER':
+      return { ...state, newGradeNumber: action.payload };
+    case 'SET_ERROR':
+      return { ...state, error: action.payload };
+    case 'RESET_SECTION_FORM':
+      return { ...state, newSectionName: '', showAddSection: false };
+    case 'RESET_GRADE_FORM':
+      return { ...state, newGradeNumber: '', showAddGrade: false, selectedSectionId: null };
+    default:
+      return state;
+  }
+}
+
 export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderProps) {
   const { t } = useTranslation();
-  const [sections, setSections] = useState<Section[]>([]);
-  const [gradesBySection, setGradesBySection] = useState<{ [sectionId: string]: SchoolGrade[] }>(
-    {},
-  );
-  const [isLoading, setIsLoading] = useState(true);
-  const [showAddSection, setShowAddSection] = useState(false);
-  const [showAddGrade, setShowAddGrade] = useState(false);
-  const [selectedSectionId, setSelectedSectionId] = useState<string | null>(null);
-  const [newSectionName, setNewSectionName] = useState('');
-  const [newGradeNumber, setNewGradeNumber] = useState('');
-  const [error, setError] = useState<string | null>(null);
+  const [state, dispatch] = useReducer(reducer, initialState);
 
-  const loadHierarchy = async () => {
-    setIsLoading(true);
-    setError(null);
+  const loadHierarchy = useCallback(async () => {
+    dispatch({ type: 'SET_LOADING', payload: true });
     try {
       const sectionsData = await api.school.getSections(schoolId);
-      setSections(sectionsData);
-
       const gradesMap: { [sectionId: string]: SchoolGrade[] } = {};
       for (const section of sectionsData) {
         const grades = await api.school.getGrades(section.id);
         gradesMap[section.id] = grades;
       }
-      setGradesBySection(gradesMap);
+      dispatch({ type: 'SET_HIERARCHY', sections: sectionsData, gradesMap });
     } catch (err: any) {
       console.error('Failed to load hierarchy:', err);
-      setError(err.message || t('errors.fetchFailed'));
-    } finally {
-      setIsLoading(false);
+      dispatch({ type: 'SET_ERROR', payload: err.message || t('errors.fetchFailed') });
+      dispatch({ type: 'SET_LOADING', payload: false });
     }
-  };
+  }, [schoolId, t]);
 
   useEffect(() => {
     loadHierarchy();
-  }, [schoolId]);
+  }, [loadHierarchy]);
+
+  const handleOpenAddSection = useCallback(() => {
+    hapticLight();
+    dispatch({ type: 'TOGGLE_ADD_SECTION', payload: true });
+  }, []);
+
+  const handleCloseAddSection = useCallback(() => {
+    dispatch({ type: 'RESET_SECTION_FORM' });
+  }, []);
+
+  const handleOpenAddGrade = useCallback((sectionId: string) => {
+    hapticLight();
+    dispatch({ type: 'TOGGLE_ADD_GRADE', payload: true, sectionId });
+  }, []);
+
+  const handleCloseAddGrade = useCallback(() => {
+    dispatch({ type: 'RESET_GRADE_FORM' });
+  }, []);
 
   const handleAddSection = async () => {
-    if (!newSectionName.trim()) {
-      setError(t('principal.hierarchy.errorEmptyName') || 'Section name cannot be empty');
+    if (!state.newSectionName.trim()) {
+      dispatch({
+        type: 'SET_ERROR',
+        payload: t('principal.hierarchy.errorEmptyName') || 'Section name cannot be empty',
+      });
       return;
     }
 
     try {
       hapticLight();
-      await api.school.createSection(schoolId, newSectionName);
-      setNewSectionName('');
-      setShowAddSection(false);
+      await api.school.createSection(schoolId, state.newSectionName);
+      dispatch({ type: 'RESET_SECTION_FORM' });
       await loadHierarchy();
     } catch (err: any) {
       console.error('Failed to create section:', err);
-      setError(err.message || t('errors.somethingWentWrong'));
+      dispatch({ type: 'SET_ERROR', payload: err.message || t('errors.somethingWentWrong') });
     }
   };
 
   const handleAddGrade = async () => {
-    if (!selectedSectionId) return;
+    if (!state.selectedSectionId) return;
 
-    const gradeNum = parseInt(newGradeNumber, 10);
-    if (isNaN(gradeNum) || gradeNum < 1 || gradeNum > 13) {
-      setError(t('principal.hierarchy.errorGradeLimit') || 'Grade number must be between 1 and 13');
+    const gradeNum = parseInt(state.newGradeNumber, 10);
+    if (Number.isNaN(gradeNum) || gradeNum < 1 || gradeNum > 13) {
+      dispatch({
+        type: 'SET_ERROR',
+        payload: t('principal.hierarchy.errorGradeLimit') || 'Grade number must be between 1 and 13',
+      });
       return;
     }
 
     try {
       hapticLight();
-      await api.school.createGrade(selectedSectionId, gradeNum);
-      setNewGradeNumber('');
-      setShowAddGrade(false);
-      setSelectedSectionId(null);
+      await api.school.createGrade(state.selectedSectionId, gradeNum);
+      dispatch({ type: 'RESET_GRADE_FORM' });
       await loadHierarchy();
     } catch (err: any) {
       console.error('Failed to create grade:', err);
-      setError(err.message || t('errors.somethingWentWrong'));
+      dispatch({ type: 'SET_ERROR', payload: err.message || t('errors.somethingWentWrong') });
     }
   };
+
+  const handleUpdateSectionName = useCallback((payload: string) => {
+    dispatch({ type: 'UPDATE_SECTION_NAME', payload });
+  }, []);
+
+  const handleUpdateGradeNumber = useCallback((payload: string) => {
+    dispatch({ type: 'UPDATE_GRADE_NUMBER', payload });
+  }, []);
 
   return (
     <Box className="flex-1 bg-phase-canvas">
@@ -139,10 +229,7 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
 
           <Button
             className="rounded-[20px] h-16 shadow-md w-full bg-phase-interactive"
-            onPress={() => {
-              hapticLight();
-              setShowAddSection(true);
-            }}
+            onPress={handleOpenAddSection}
           >
             <ButtonIcon as={Plus} className="mr-2 text-white" />
             <ButtonText className="text-white font-black uppercase text-[13px] tracking-widest">
@@ -151,82 +238,35 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
           </Button>
 
           {/* Loading State */}
-          {isLoading && (
+          {state.isLoading && (
             <Box className="p-20 items-center">
               <Spinner className="text-phase-interactive" />
             </Box>
           )}
 
           {/* Error State */}
-          {error && (
+          {state.error && (
             <Box className="p-5 bg-phase-danger/5 border border-phase-danger/20 rounded-[24px]">
               <Text className="text-phase-danger font-black text-[13px] tracking-tight">
-                {error}
+                {state.error}
               </Text>
             </Box>
           )}
 
           {/* Hierarchy Tree */}
-          {!isLoading &&
-            sections.map((section) => (
-              <Box
+          {!state.isLoading &&
+            state.sections.map((section) => (
+              <SectionCard
                 key={section.id}
-                className="p-6 bg-phase-surface rounded-[32px] border border-phase-border shadow-sm border-l-8 border-l-phase-interactive"
-              >
-                {/* Section Header */}
-                <HStack className="justify-between items-center mb-6">
-                  <HStack className="gap-3 items-center">
-                    <Box className="p-2 bg-phase-interactive/10 rounded-xl">
-                      <Icon as={SchoolIcon} size="sm" className="text-phase-interactive" />
-                    </Box>
-                    <Text className="text-[18px] font-black text-phaseText-primary tracking-tight">
-                      {section.name}
-                    </Text>
-                  </HStack>
-
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="rounded-full h-10 px-6 border-phase-interactive/30"
-                    onPress={() => {
-                      hapticLight();
-                      setSelectedSectionId(section.id);
-                      setShowAddGrade(true);
-                    }}
-                  >
-                    <ButtonText className="text-phase-interactive text-[11px] font-black uppercase tracking-widest">
-                      + Grade
-                    </ButtonText>
-                  </Button>
-                </HStack>
-
-                {/* Grades List */}
-                <VStack className="gap-3 pl-2">
-                  {gradesBySection[section.id]?.length ? (
-                    gradesBySection[section.id]?.map((grade) => (
-                      <HStack
-                        key={grade.id}
-                        className="gap-4 p-4 bg-phase-canvas rounded-[18px] items-center border border-phase-border/50"
-                      >
-                        <Icon as={GraduationCap} size="xs" className="text-phaseText-muted/30" />
-                        <Text className="text-[14px] font-black text-phaseText-secondary tracking-tight">
-                          {t('principal.hierarchy.grade') || 'Grade'} {grade.number}
-                        </Text>
-                      </HStack>
-                    ))
-                  ) : (
-                    <Box className="py-4 px-4 border border-dashed border-phase-border rounded-[18px]">
-                      <Text className="text-[12px] font-bold text-phaseText-muted italic opacity-60">
-                        {t('principal.hierarchy.noGrades') || 'No grades defined in this section.'}
-                      </Text>
-                    </Box>
-                  )}
-                </VStack>
-              </Box>
+                section={section}
+                grades={state.gradesBySection[section.id] || []}
+                onAddGrade={handleOpenAddGrade}
+                t={t}
+              />
             ))}
 
           {/* Empty State */}
-          {!isLoading && sections.length === 0 && (
+          {!state.isLoading && state.sections.length === 0 && (
             <Box className="p-20 items-center bg-phase-surface rounded-[40px] border border-dashed border-phase-border">
               <Box className="w-16 h-16 bg-phase-canvas rounded-full items-center justify-center mb-6">
                 <Icon as={SchoolIcon} size="md" className="text-phaseText-muted/20" />
@@ -241,13 +281,7 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
       </ScrollView>
 
       {/* Add Section Modal */}
-      <Modal
-        isOpen={showAddSection}
-        onClose={() => {
-          setShowAddSection(false);
-          setNewSectionName('');
-        }}
-      >
+      <Modal isOpen={state.showAddSection} onClose={handleCloseAddSection}>
         <ModalBackdrop />
         <ModalContent className="bg-phase-surface rounded-[40px] p-2 border border-phase-border shadow-2xl">
           <ModalHeader className="p-8">
@@ -271,8 +305,8 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
                     t('principal.hierarchy.sectionNamePlaceholder') || 'e.g., Primary Wing'
                   }
                   placeholderTextColor="rgba(0,0,0,0.3)"
-                  value={newSectionName}
-                  onChangeText={setNewSectionName}
+                  value={state.newSectionName}
+                  onChangeText={handleUpdateSectionName}
                   className="text-phaseText-primary font-black text-[15px]"
                 />
               </Input>
@@ -283,10 +317,7 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
               <Button
                 variant="outline"
                 className="flex-1 rounded-[16px] h-14 border-phase-border bg-phase-canvas"
-                onPress={() => {
-                  setShowAddSection(false);
-                  setNewSectionName('');
-                }}
+                onPress={handleCloseAddSection}
               >
                 <ButtonText className="text-phaseText-primary font-black uppercase text-[11px] tracking-widest">
                   {t('common.cancel')}
@@ -306,14 +337,7 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
       </Modal>
 
       {/* Add Grade Modal */}
-      <Modal
-        isOpen={showAddGrade}
-        onClose={() => {
-          setShowAddGrade(false);
-          setNewGradeNumber('');
-          setSelectedSectionId(null);
-        }}
-      >
+      <Modal isOpen={state.showAddGrade} onClose={handleCloseAddGrade}>
         <ModalBackdrop />
         <ModalContent className="bg-phase-surface rounded-[40px] p-2 border border-phase-border shadow-2xl">
           <ModalHeader className="p-8">
@@ -335,8 +359,8 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
                 <InputField
                   placeholder={t('principal.hierarchy.gradeNumberPlaceholder') || 'e.g., 5'}
                   placeholderTextColor="rgba(0,0,0,0.3)"
-                  value={newGradeNumber}
-                  onChangeText={setNewGradeNumber}
+                  value={state.newGradeNumber}
+                  onChangeText={handleUpdateGradeNumber}
                   keyboardType="numeric"
                   className="text-phaseText-primary font-black text-[15px]"
                 />
@@ -348,11 +372,7 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
               <Button
                 variant="outline"
                 className="flex-1 rounded-[16px] h-14 border-phase-border bg-phase-canvas"
-                onPress={() => {
-                  setShowAddGrade(false);
-                  setNewGradeNumber('');
-                  setSelectedSectionId(null);
-                }}
+                onPress={handleCloseAddGrade}
               >
                 <ButtonText className="text-phaseText-primary font-black uppercase text-[11px] tracking-widest">
                   {t('common.cancel')}
@@ -370,6 +390,70 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
           </ModalFooter>
         </ModalContent>
       </Modal>
+    </Box>
+  );
+}
+
+function SectionCard({
+  section,
+  grades,
+  onAddGrade,
+  t,
+}: {
+  section: Section;
+  grades: SchoolGrade[];
+  onAddGrade: (id: string) => void;
+  t: any;
+}) {
+  const handleAddGrade = useCallback(() => onAddGrade(section.id), [onAddGrade, section.id]);
+
+  return (
+    <Box
+      key={section.id}
+      className="p-6 bg-phase-surface rounded-[32px] border border-phase-border shadow-sm border-l-8 border-l-phase-interactive"
+    >
+      <HStack className="justify-between items-center mb-6">
+        <HStack className="gap-3 items-center">
+          <Box className="p-2 bg-phase-interactive/10 rounded-xl">
+            <Icon as={SchoolIcon} size="sm" className="text-phase-interactive" />
+          </Box>
+          <Text className="text-[18px] font-black text-phaseText-primary tracking-tight">
+            {section.name}
+          </Text>
+        </HStack>
+        <Button
+          variant="outline"
+          size="sm"
+          className="rounded-full h-10 px-6 border-phase-interactive/30"
+          onPress={handleAddGrade}
+        >
+          <ButtonText className="text-phase-interactive text-[11px] font-black uppercase tracking-widest">
+            + Grade
+          </ButtonText>
+        </Button>
+      </HStack>
+
+      <VStack className="gap-3 pl-2">
+        {grades.length ? (
+          grades.map((grade) => (
+            <HStack
+              key={grade.id}
+              className="gap-4 p-4 bg-phase-canvas rounded-[18px] items-center border border-phase-border/50"
+            >
+              <Icon as={GraduationCap} size="xs" className="text-phaseText-muted/30" />
+              <Text className="text-[14px] font-black text-phaseText-secondary tracking-tight">
+                {t('principal.hierarchy.grade') || 'Grade'} {grade.number}
+              </Text>
+            </HStack>
+          ))
+        ) : (
+          <Box className="py-4 px-4 border border-dashed border-phase-border rounded-[18px]">
+            <Text className="text-[12px] font-bold text-phaseText-muted italic opacity-60">
+              {t('principal.hierarchy.noGrades') || 'No grades defined in this section.'}
+            </Text>
+          </Box>
+        )}
+      </VStack>
     </Box>
   );
 }

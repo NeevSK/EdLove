@@ -4,9 +4,10 @@ import { schoolAPI, useSchoolCreation, useStore } from '@repo/core';
 import { QRBuilder, QRCodeGenerator } from '@repo/scanner-kit';
 import {
   Box,
+  Check,
   GlobalHeader,
-  Heading,
   HStack,
+  Heading,
   Icon,
   SanctuaryButton,
   ScreenWrapper,
@@ -16,8 +17,8 @@ import {
   Text,
   VStack,
 } from '@repo/ui';
-import { ArrowLeft, ArrowRight, Check } from 'lucide-react-native';
-import React, { useState } from 'react';
+
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // Step Components
@@ -37,7 +38,9 @@ const STEP_LABELS = [
 export default function SchoolCreationScreen() {
   const { t } = useTranslation();
   const navigation = useNavigation<any>();
-  const { user, setUser, setDemoMode } = useStore();
+  const user = useStore(s => s.user);
+  const setUser = useStore(s => s.setUser);
+  const setDemoMode = useStore(s => s.setDemoMode);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successData, setSuccessData] = useState<{
     schoolId: string;

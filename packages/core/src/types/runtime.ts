@@ -57,6 +57,11 @@ export interface UIProvider {
   setStatusBarHidden(hidden: boolean, animation?: 'none' | 'fade' | 'slide'): void;
 }
 
+export interface ClipboardProvider {
+  getStringAsync(): Promise<string>;
+  setStringAsync(content: string): Promise<boolean>;
+}
+
 export interface CoreRuntimeEnvironment {
   storage: StorageProvider;
   device: DeviceProvider;
@@ -66,4 +71,5 @@ export interface CoreRuntimeEnvironment {
   network: NetworkProvider;
   share: ShareProvider;
   ui: UIProvider;
+  clipboard: ClipboardProvider;
 }

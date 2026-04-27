@@ -1,7 +1,7 @@
 import { useNavigation } from '@react-navigation/native';
 import { usePermissions } from '@repo/core';
 import { Box, HStack, Pressable, Text, VStack } from '@repo/ui';
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   commitFeatureGateChanges,
   getAdminAuditEntries,
@@ -13,14 +13,11 @@ import { AdminRoomPanel, AdminRoomShell } from './AdminRoomShell';
 export default function AdminFeatureRegistry() {
   const navigation = useNavigation<any>();
   const { flags } = usePermissions();
-  const snapshot = useMemo(() => getAdminFeatureSnapshot(), [flags]);
+  const snapshot = useMemo(() => getAdminFeatureSnapshot(), []);
   const [preview, setPreview] = useState(() =>
     stageFeatureGateChanges([{ key: 'MAINTENANCE_MODE', value: false }], 'platform'),
   );
-  const auditEntries = useMemo(
-    () => getAdminAuditEntries(),
-    [snapshot.activeFlagCount, snapshot.maintenanceMode],
-  );
+  const auditEntries = useMemo(() => getAdminAuditEntries(), []);
 
   return (
     <AdminRoomShell

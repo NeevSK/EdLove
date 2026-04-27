@@ -60,7 +60,9 @@ export const resetUser = () => {
 };
 
 // Convenience exports for backward compatibility
-const gpaCalculator = new GPACalculator();
+import { GPACalculator as CoreGPACalculator } from '@repo/core';
+
+const gpaCalculator = new CoreGPACalculator();
 export const marksToGPA = (marks: number) => gpaCalculator.marksToGPA(marks);
 export const calculateRanks = (grades: any[]) => gpaCalculator.calculateRanks(grades);
 

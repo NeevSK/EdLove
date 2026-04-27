@@ -1,6 +1,14 @@
 import { FeatureGuard } from '@repo/core';
-import { Box, Button, ButtonText, HStack, hapticLight, Icon } from '@repo/ui';
-import { ClipboardList, MessageCircle } from 'lucide-react-native';
+import {
+  Box,
+  Button,
+  ButtonText,
+  ClipboardList,
+  HStack,
+  hapticLight,
+  Icon,
+  MessageCircle,
+} from '@repo/ui';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 

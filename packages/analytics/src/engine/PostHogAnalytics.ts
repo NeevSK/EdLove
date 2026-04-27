@@ -69,6 +69,30 @@ export class PostHogAnalytics {
     }
   }
 
+  screen(name: string, properties?: Record<string, any>) {
+    if (!this.isInitialized) return;
+    try {
+      if (this.isBrowser) {
+        // In posthog-js, screen is commonly implemented via capture with specific event name
+        this.instance.capture('$screen', {
+          $screen_name: name,
+          ...properties,
+        });
+      } else {
+        this.instance.capture({
+          distinctId: properties?.distinctId || 'server_system',
+          event: '$screen',
+          properties: {
+            $screen_name: name,
+            ...properties,
+          },
+        });
+      }
+    } catch (error) {
+      console.error('[PostHog Universal] screen failed:', error);
+    }
+  }
+
   reset() {
     if (!this.isInitialized) return;
     try {

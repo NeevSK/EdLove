@@ -1,7 +1,21 @@
 import { api } from '@repo/core';
-import { ActivityIndicator, Box, Heading, HStack, Text, Icon as UIIcon, VStack } from '@repo/ui';
-import { AlertCircle, BookOpen, Lightbulb, Package, Users, Wifi } from 'lucide-react-native';
-import React, { useEffect, useState } from 'react';
+import {
+  ActivityIndicator,
+  AlertCircle,
+  BookOpen,
+  Box,
+  HStack,
+  Heading,
+  Icon as UIIcon,
+  Lightbulb,
+  Package,
+  Text,
+  Users,
+  VStack,
+  Wifi,
+} from '@repo/ui';
+
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface ResourceNeed {
@@ -60,12 +74,6 @@ export default function ResourceNeedsDashboard({ schoolId }: ResourceNeedsDashbo
     }
   };
 
-  useEffect(() => {
-    if (schoolId) {
-      fetchResourceNeeds();
-    }
-  }, [schoolId]);
-
   const fetchResourceNeeds = async () => {
     try {
       setIsLoading(true);
@@ -77,6 +85,12 @@ export default function ResourceNeedsDashboard({ schoolId }: ResourceNeedsDashbo
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (schoolId) {
+      fetchResourceNeeds();
+    }
+  }, [schoolId, fetchResourceNeeds]);
 
   if (isLoading) {
     return (

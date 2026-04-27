@@ -1,8 +1,12 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { type ClassroomGradingSettings, growthSignalsAPI, useStore } from '@repo/core';
 import {
+  Award,
   Box,
   Center,
+  Check,
+  ChevronLeft,
+  Edit3,
   Heading,
   HStack,
   Icon,
@@ -18,22 +22,16 @@ import {
   Pressable,
   SanctuaryButton,
   ScrollView,
+  Settings2,
   Spinner,
   Text,
   Textarea,
   TextareaInput,
-  VStack,
-} from '@repo/ui';
-import {
-  Award,
-  Check,
-  ChevronLeft,
-  Edit3,
-  Settings2,
   TrendingUp,
   Users,
+  VStack,
   X,
-} from 'lucide-react-native';
+} from '@repo/ui';
 import type React from 'react';
 import { useState } from 'react';
 import type { SortOption } from '../hooks/useGradebook';
@@ -131,12 +129,12 @@ function GradeModal({
           </VStack>
         </ModalBody>
         <ModalFooter className="gap-3">
-          <SanctuaryButton variant="secondary" onPress={onClose} className="flex-1">
+          <SanctuaryButton action="secondary" onPress={onClose} className="flex-1">
             <Text className="font-bold text-phaseText-secondary">Cancel</Text>
           </SanctuaryButton>
           <SanctuaryButton
             onPress={handleSave}
-            disabled={saving}
+            isDisabled={saving}
             className="flex-[2] bg-phase-interactive"
           >
             <HStack className="items-center justify-center gap-2">
@@ -226,12 +224,12 @@ function SettingsModal({
           </Pressable>
         </ModalBody>
         <ModalFooter className="gap-3">
-          <SanctuaryButton variant="secondary" onPress={onClose} className="flex-1">
+          <SanctuaryButton action="secondary" onPress={onClose} className="flex-1">
             <Text className="font-bold text-phaseText-secondary">Cancel</Text>
           </SanctuaryButton>
           <SanctuaryButton
             onPress={handleSave}
-            disabled={saving}
+            isDisabled={saving}
             className="flex-[2] bg-phase-interactive"
           >
             <HStack className="items-center justify-center gap-2">
@@ -307,7 +305,7 @@ export default function GradebookScreenWeb() {
       <VStack className="max-w-[780px] mx-auto py-12 px-6 w-full">
         <HStack className="items-center justify-between mb-8 gap-4 flex-wrap">
           <SanctuaryButton
-            variant="secondary"
+            action="secondary"
             onPress={() => navigation.goBack()}
             className="px-4 py-2 bg-phase-surface/40 border-phase-border/20"
           >
@@ -322,7 +320,7 @@ export default function GradebookScreenWeb() {
             </Heading>
           </Box>
           <SanctuaryButton
-            variant="secondary"
+            action="secondary"
             onPress={() => setShowSettings(true)}
             className="px-4 py-2 bg-phase-surface/40 border-phase-border/20"
           >
@@ -393,7 +391,7 @@ export default function GradebookScreenWeb() {
                 return (
                   <SanctuaryButton
                     key={sort.id}
-                    variant={isActive ? 'primary' : 'secondary'}
+                    action={isActive ? 'primary' : 'secondary'}
                     onPress={() => setSortBy(sort.id)}
                     className={`px-4 py-2 h-auto ${isActive ? 'bg-phase-interactive border-transparent' : 'bg-phase-surface/40 border-phase-border/20'}`}
                   >
@@ -466,7 +464,7 @@ export default function GradebookScreenWeb() {
                       </VStack>
                       <HStack className="gap-2">
                         <SanctuaryButton
-                          variant="secondary"
+                          action="secondary"
                           onPress={() => setGradingId(grade.student_id)}
                           className="h-9 px-3 flex-1 bg-phase-surface/40 border-phase-border/30"
                         >
@@ -476,7 +474,7 @@ export default function GradebookScreenWeb() {
                         </SanctuaryButton>
                         {grade.id && (
                           <SanctuaryButton
-                            variant="secondary"
+                            action="secondary"
                             onPress={() => publishGrade(grade.id)}
                             className={`h-9 px-3 flex-1 border-2 ${grade.publication_state === 'published' ? 'border-phase-success/40 bg-phase-success/5' : 'border-phase-interactive/40 bg-phase-interactive/5'}`}
                           >

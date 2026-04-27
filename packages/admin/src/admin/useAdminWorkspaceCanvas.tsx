@@ -5,25 +5,24 @@ import {
   type WorkspaceZoneId,
 } from '@repo/core';
 import {
-  Box,
-  HStack,
-  Pressable,
-  Text,
-  VStack,
-  WorkspaceCanvas,
-  type WorkspaceSurfaceDefinition,
-} from '@repo/ui';
-import {
   AlertTriangle,
+  Box,
   CheckCircle2,
   CircleAlert,
   Clock3,
   Database,
   GitBranch,
+  HStack,
+  Pressable,
   RefreshCw,
   Search,
   ShieldCheck,
-} from 'lucide-react-native';
+  Text,
+  VStack,
+  WorkspaceCanvas,
+  type WorkspaceSurfaceDefinition,
+} from '@repo/ui';
+
 import type React from 'react';
 import { useMemo } from 'react';
 import type { AdminWorkspaceData } from './useAdminWorkspaceData';
@@ -678,14 +677,6 @@ export function useAdminWorkspaceCanvasSurfaces({
       data.recentSchools,
       data.recentUsers,
       data.schoolCount,
-      featureFlags.isAIAssistantEnabled,
-      featureFlags.isDevelopingAI,
-      featureFlags.isDevelopingAnalyticsDashboard,
-      featureFlags.isDevelopingFormBuilder,
-      featureFlags.isDevelopingWorkspace,
-      featureFlags.isInventoryEnabled,
-      featureFlags.isStaffManagementEnabled,
-      featureFlags.isTemplateManagementEnabled,
       featureFlags.isUnderMaintenance,
       enabledFlags,
       onOpenIncidentQueue,
@@ -694,6 +685,8 @@ export function useAdminWorkspaceCanvasSurfaces({
       onOpenJobControl,
       onOpenAuditLog,
       onOpenReleaseControl,
+      freshSignals,
+      data.userCount,
     ],
   );
 }

@@ -2,44 +2,42 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { api, type Classroom, type ClassroomStackParamList, usePermissions } from '@repo/core';
 import { StudentAnalysisModal } from '@repo/library';
 import {
+  BookOpen,
   Box,
   Button,
   ButtonText,
+  ClipboardCheck,
+  ClipboardList,
+  FileText,
   GlobalHeader,
+  GraduationCap,
   Heading,
   HStack,
   hapticLight,
   Icon,
   Input,
   InputField,
-  Pressable,
-  SanctuaryModal,
-  ScreenWrapper,
-  ScrollView,
-  SkeletonCard,
-  Spinner,
-  Text,
-  Theme,
-  useBottomTabPadding,
-  useRegisterFAB,
-  useThemedColors,
-  VStack,
-} from '@repo/ui';
-import {
-  BookOpen,
-  ClipboardCheck,
-  ClipboardList,
-  FileText,
-  GraduationCap,
   Layers3,
   LayoutGrid,
   MessageSquare,
   NotebookPen,
   Plus,
+  Pressable,
+  SanctuaryModal,
+  ScreenWrapper,
+  ScrollView,
+  SkeletonCard,
   Sparkles,
+  Spinner,
+  Text,
+  Theme,
   TrendingUp,
   Users,
-} from 'lucide-react-native';
+  useBottomTabPadding,
+  useRegisterFAB,
+  useThemedColors,
+  VStack,
+} from '@repo/ui';
 import React, { useState } from 'react';
 import {
   AttendanceView,
@@ -247,7 +245,7 @@ export default function TeacherClassroomDashboard({ route, navigation }: Props) 
         setShowAddMonthModal(true);
       }
     },
-    icon: <Plus size={24} color="#FFF" />,
+    icon: <Icon as={Plus} size={24} color="#FFF" />,
     visible: activeFeature === 'lessons',
   });
 

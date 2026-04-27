@@ -21,6 +21,31 @@ export class HelpService {
     return '# MCP Philosophy\n\nDocumentation file missing.';
   }
 
+  handleGetHelpOverview() {
+    const overview = `
+# 🚀 Polymath Platform MCP: Sovereign Control Plane
+
+Welcome to the Polymath Platform MCP. This server uses a **Gateway Pattern** to organize a vast array of tools while staying within model context limits.
+
+## 🌉 The Four Core Gateways
+You can access all functionality through these four primary entry points:
+
+1.  **⚖️ sovereign_audit**: Hygiene, architecture, compliance, and quality checks.
+2.  **🔍 sovereign_discovery**: Search, intelligence, scouting, and code statistics.
+3.  **🔧 sovereign_maintenance**: Refactoring, healing, imports normalization, and git checkpoints.
+4.  **📖 sovereign_guide**: Philosophy, orientation, and this comprehensive tool inventory.
+
+## 🛠️ Quick Access
+- Run \`sovereign_guide(action: 'inventory')\` to see the full list of 50+ specialized actions.
+- Run \`sovereign_guide(action: 'architecture')\` to learn about the Gateway design.
+- Run \`sovereign_guide(action: 'philosophy')\` to understand our Sovereign Engineering goals.
+
+---
+*Tip: If you're looking for a specific tool, use \`sovereign_discovery(action: 'inventory')\` to browse the codebase or \`sovereign_guide(action: 'inventory')\` to browse the MCP capabilities.*
+    `;
+    return { content: [{ type: 'text' as const, text: overview }] };
+  }
+
   handleGetArchitectureDoc() {
     const doc = `
 # 🏛️ Polymath MCP Architecture: The Gateway Pattern
@@ -51,6 +76,13 @@ Instead of exposing 50 individual tools, we use **Gateways**. Each gateway is a 
   handleGetToolInventory() {
     const inventory = `
 # 🛠️ Master Tool Index (Inventory)
+
+## 🏁 Primary Commands
+These tools are available directly as top-level commands.
+| Tool | Function |
+| :--- | :--- |
+| **help** | Get a high-level overview of the MCP and its gateways. |
+| **info** | Get detailed architectural background and philosophy. |
 
 ## 🔍 Discovery Gateway (\`sovereign_discovery\`)
 | Action | Legacy Name | Function |

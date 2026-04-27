@@ -7,19 +7,25 @@ import {
   Button,
   ButtonText,
   Center,
+  Edit2,
   FlatList,
   Heading,
   HStack,
   hapticLight,
   hapticMedium,
   Icon,
+  MoreVertical,
+  Plus,
   Pressable,
+  QrCode,
   SanctuaryModal,
+  Sparkles,
   Text,
+  Trash2,
   VStack,
+  X,
 } from '@repo/ui';
 import * as Clipboard from 'expo-clipboard';
-import { Edit2, MoreVertical, Plus, QrCode, Sparkles, Trash2, X } from 'lucide-react-native';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AddStudentModal } from './AddStudentModal';

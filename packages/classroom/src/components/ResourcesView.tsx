@@ -9,6 +9,9 @@ import {
   Box,
   Button,
   ButtonText,
+  ExternalLink,
+  File,
+  FileText,
   Heading,
   HStack,
   hapticLight,
@@ -16,7 +19,11 @@ import {
   Icon,
   Input,
   InputField,
+  Link as LinkIcon,
+  MoreVertical,
   openExternalURL,
+  Pin,
+  Plus,
   Pressable,
   SanctuaryModal,
   ScrollView,
@@ -24,18 +31,9 @@ import {
   Text,
   Textarea,
   TextareaInput,
+  Trash2,
   VStack,
 } from '@repo/ui';
-import {
-  ExternalLink,
-  File,
-  FileText,
-  Link as LinkIcon,
-  MoreVertical,
-  Pin,
-  Plus,
-  Trash2,
-} from 'lucide-react-native';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useResources } from '../hooks/useResources';

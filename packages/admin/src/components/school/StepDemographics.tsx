@@ -7,11 +7,10 @@ import {
   Pressable,
   SanctuaryInput,
   Text,
-  useTheme,
+  Users,
   VStack,
 } from '@repo/ui';
-import { Users } from 'lucide-react-native';
-import React from 'react';
+
 import { useTranslation } from 'react-i18next';
 
 interface StepDemographicsProps {

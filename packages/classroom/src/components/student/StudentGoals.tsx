@@ -1,6 +1,15 @@
 import { useNavigation } from '@react-navigation/native';
-import { Box, Button, ButtonText, HStack, Icon, SkeletonCard, Text, VStack } from '@repo/ui';
-import { Target } from 'lucide-react-native';
+import {
+  Box,
+  Button,
+  ButtonText,
+  HStack,
+  Icon,
+  SkeletonCard,
+  Target,
+  Text,
+  VStack,
+} from '@repo/ui';
 import React from 'react';
 
 export const StudentGoals = ({ goals, loading }: { goals: any[]; loading: boolean }) => {

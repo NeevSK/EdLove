@@ -1,5 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import {
+  BookOpen,
   Box,
   HStack,
   Icon,
@@ -9,7 +10,6 @@ import {
   Text,
   VStack,
 } from '@repo/ui';
-import { BookOpen } from 'lucide-react-native';
 import React from 'react';
 
 interface Classroom {

@@ -3,7 +3,7 @@ import { coreRuntime } from '@repo/core';
 import {
   AnimatedView,
   Box,
-  FadeIn,
+  FadeInUp,
   formatTimeMs,
   HStack,
   Pressable,
@@ -126,7 +126,7 @@ export default function VideoPlayerScreen({ route }: VideoPlayerScreenProps) {
       </Pressable>
 
       {showControls && (
-        <AnimatedView entering={FadeIn} className="absolute inset-0" pointerEvents="box-none">
+        <AnimatedView entering={FadeInUp} className="absolute inset-0" pointerEvents="box-none">
           <Box className="flex-1 bg-black/40 p-4">
             {/* Header */}
             <HStack className="justify-between items-center">

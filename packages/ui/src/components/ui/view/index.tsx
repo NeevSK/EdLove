@@ -64,6 +64,7 @@ export const FlatList = React.forwardRef<
     contentContainerClassName={contentContainerClassName}
   />
 ));
+export type FlatList = RNFlatList;
 FlatList.displayName = 'FlatList';
 
 export const RefreshControl = React.forwardRef<

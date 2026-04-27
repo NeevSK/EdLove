@@ -1,6 +1,5 @@
 import { assignmentsAPI } from '@repo/core';
-import { Box, HStack, Icon, SkeletonCard, Text, VStack } from '@repo/ui';
-import { Award, BookMarked } from 'lucide-react-native';
+import { Award, BookMarked, Box, HStack, Icon, SkeletonCard, Text, VStack } from '@repo/ui';
 import React, { useEffect, useMemo, useState } from 'react';
 
 interface GradeRow {

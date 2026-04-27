@@ -7,24 +7,23 @@ import {
 } from '@repo/core';
 import {
   Box,
-  HStack,
-  Icon,
-  Pressable,
-  Text,
-  VStack,
-  WorkspaceCanvas,
-  type WorkspaceSurfaceDefinition,
-} from '@repo/ui';
-import {
   Building2,
   CalendarCheck,
+  HStack,
+  Icon,
   LayoutGrid,
   MoveRight,
   NotebookPen,
+  Pressable,
   QrCode,
   Share2,
+  Text,
+  VStack,
   Wind,
-} from 'lucide-react-native';
+  WorkspaceCanvas,
+  type WorkspaceSurfaceDefinition,
+} from '@repo/ui';
+
 import type React from 'react';
 import { useMemo } from 'react';
 import DashboardEcho from '../components/principal/DashboardEcho';

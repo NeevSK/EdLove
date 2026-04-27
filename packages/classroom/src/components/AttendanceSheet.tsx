@@ -8,6 +8,8 @@
 import type { AttendanceStatus, StudentAttendance } from '@repo/core';
 import {
   Box,
+  Check,
+  Clock,
   FlatList,
   Heading,
   HStack,
@@ -16,10 +18,11 @@ import {
   Input,
   InputField,
   Pressable,
+  Search,
   Text,
   VStack,
+  X,
 } from '@repo/ui';
-import { Check, Clock, Search, X } from 'lucide-react-native';
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GestureHandlerRootView, Swipeable } from 'react-native-gesture-handler';

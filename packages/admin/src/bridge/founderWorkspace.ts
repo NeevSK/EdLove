@@ -8,7 +8,7 @@ import {
   useStore,
   useTemporalStore,
 } from '@repo/core';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useReducer, useState } from 'react';
 
 const ECOSYSTEM_STATS_CACHE_KEY = 'gurudevi-ecosystem-stats-cache';
 const ECOSYSTEM_SCHOOLS_CACHE_KEY = 'gurudevi-ecosystem-schools-cache';
@@ -45,13 +45,51 @@ export interface FounderEcosystemStats {
   submissions_7d: number;
 }
 
+type EcosystemStatsState = {
+  stats: FounderEcosystemStats | null;
+  schools: School[];
+  isLoading: boolean;
+  error: string | null;
+};
+
+type EcosystemStatsAction =
+  | { type: 'LOAD_CACHE'; stats: FounderEcosystemStats | null; schools: School[] }
+  | { type: 'REFRESH_START' }
+  | { type: 'REFRESH_SUCCESS'; stats: FounderEcosystemStats; schools: School[] }
+  | { type: 'SET_MOCK_STATS'; stats: FounderEcosystemStats }
+  | { type: 'REFRESH_FAILURE'; error: string }
+  | { type: 'SET_LOADING'; isLoading: boolean };
+
+const ecosystemStatsReducer = (
+  state: EcosystemStatsState,
+  action: EcosystemStatsAction,
+): EcosystemStatsState => {
+  switch (action.type) {
+    case 'LOAD_CACHE':
+      return { ...state, stats: action.stats, schools: action.schools, isLoading: false };
+    case 'REFRESH_START':
+      return { ...state, isLoading: true, error: null };
+    case 'REFRESH_SUCCESS':
+      return { ...state, stats: action.stats, schools: action.schools, isLoading: false, error: null };
+    case 'SET_MOCK_STATS':
+      return { ...state, stats: action.stats, schools: [], isLoading: false, error: null };
+    case 'REFRESH_FAILURE':
+      return { ...state, isLoading: false, error: action.error };
+    case 'SET_LOADING':
+      return { ...state, isLoading: action.isLoading };
+    default:
+      return state;
+  }
+};
+
 export function useFounderEcosystemStats() {
-  const isOnline = useStore((state) => state.isOnline);
   const isDemoMode = useStore((state) => state.isDemoMode);
-  const [stats, setStats] = useState<FounderEcosystemStats | null>(null);
-  const [schools, setSchools] = useState<School[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [state, dispatch] = useReducer(ecosystemStatsReducer, {
+    stats: null,
+    schools: [],
+    isLoading: true,
+    error: null,
+  });
 
   useEffect(() => {
     const loadCache = async () => {
@@ -61,12 +99,14 @@ export function useFounderEcosystemStats() {
           SafeZustandStorage.getItem(ECOSYSTEM_SCHOOLS_CACHE_KEY),
         ]);
 
-        if (cachedStats) setStats(JSON.parse(cachedStats));
-        if (cachedSchools) setSchools(JSON.parse(cachedSchools));
+        dispatch({
+          type: 'LOAD_CACHE',
+          stats: cachedStats ? JSON.parse(cachedStats) : null,
+          schools: cachedSchools ? JSON.parse(cachedSchools) : [],
+        });
       } catch (caughtError) {
         console.warn('Failed to load founder ecosystem cache', caughtError);
-      } finally {
-        setIsLoading(false);
+        dispatch({ type: 'SET_LOADING', isLoading: false });
       }
     };
 
@@ -74,6 +114,7 @@ export function useFounderEcosystemStats() {
   }, []);
 
   const refreshData = useCallback(async () => {
+    dispatch({ type: 'REFRESH_START' });
     try {
       if (isDemoMode) {
         const mockStats: FounderEcosystemStats = {
@@ -105,9 +146,7 @@ export function useFounderEcosystemStats() {
           total_submissions: 1250,
           submissions_7d: 145,
         };
-        setStats(mockStats);
-        setSchools([]);
-        setError(null);
+        dispatch({ type: 'SET_MOCK_STATS', stats: mockStats });
         return;
       }
 
@@ -116,35 +155,32 @@ export function useFounderEcosystemStats() {
         api.founder.getAllSchools(),
       ]);
 
-      setStats(statsData);
-      setSchools(schoolsData);
+      dispatch({ type: 'REFRESH_SUCCESS', stats: statsData, schools: schoolsData });
 
       await Promise.all([
         SafeZustandStorage.setItem(ECOSYSTEM_STATS_CACHE_KEY, JSON.stringify(statsData)),
         SafeZustandStorage.setItem(ECOSYSTEM_SCHOOLS_CACHE_KEY, JSON.stringify(schoolsData)),
       ]);
-
-      setError(null);
-    } catch (caughtError: any) {
+    } catch (caughtError: unknown) {
       console.error('Failed to refresh founder ecosystem data', caughtError);
-      setError(caughtError.message || 'Failed to sync platform data');
-    } finally {
-      setIsLoading(false);
+      dispatch({
+        type: 'REFRESH_FAILURE',
+        error: caughtError instanceof Error ? caughtError.message : 'Failed to sync platform data',
+      });
     }
   }, [isDemoMode]);
 
   useEffect(() => {
     void refreshData();
-  }, [isOnline, refreshData]);
+  }, [refreshData]);
 
   return {
-    stats,
-    schools,
-    isLoading,
-    error,
+    ...state,
     refreshData,
   };
 }
+
+
 
 export async function createFounderSchool(input: {
   name: string;
@@ -163,18 +199,56 @@ export async function createFounderClassroom(input: {
   return api.founder.createClassroom(input);
 }
 
+type SchoolStatsState = {
+  stats: SchoolStats | null;
+  school: School | null;
+  isLoading: boolean;
+  error: string | null;
+};
+
+type SchoolStatsAction =
+  | { type: 'LOAD_CACHE'; stats: SchoolStats | null; school: School | null }
+  | { type: 'REFRESH_START' }
+  | { type: 'REFRESH_SUCCESS'; stats: SchoolStats; school: School }
+  | { type: 'REFRESH_FAILURE'; error: string }
+  | { type: 'SET_LOADING'; isLoading: boolean };
+
+const schoolStatsReducer = (
+  state: SchoolStatsState,
+  action: SchoolStatsAction,
+): SchoolStatsState => {
+  switch (action.type) {
+    case 'LOAD_CACHE':
+      return { ...state, stats: action.stats, school: action.school, isLoading: false };
+    case 'REFRESH_START':
+      return { ...state, isLoading: true, error: null };
+    case 'REFRESH_SUCCESS':
+      return { ...state, stats: action.stats, school: action.school, isLoading: false, error: null };
+    case 'REFRESH_FAILURE':
+      return { ...state, isLoading: false, error: action.error };
+    case 'SET_LOADING':
+      return { ...state, isLoading: action.isLoading };
+    default:
+      return state;
+  }
+};
+
 export function useFounderSchoolStats(schoolId: string) {
-  const isOnline = useStore((state) => state.isOnline);
-  const { viewDate } = useTemporalStore();
+  const viewDate = useTemporalStore((s) => s.viewDate);
   const isDemoMode = useStore((state) => state.isDemoMode);
   const { isGuest } = useFeatureAccess();
-  const [stats, setStats] = useState<SchoolStats | null>(null);
-  const [school, setSchool] = useState<School | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [state, dispatch] = useReducer(schoolStatsReducer, {
+    stats: null,
+    school: null,
+    isLoading: true,
+    error: null,
+  });
 
   useEffect(() => {
-    if (!schoolId) return;
+    if (!schoolId) {
+      dispatch({ type: 'SET_LOADING', isLoading: false });
+      return;
+    }
 
     const loadCache = async () => {
       try {
@@ -183,12 +257,14 @@ export function useFounderSchoolStats(schoolId: string) {
           SafeZustandStorage.getItem(`${SCHOOL_INFO_CACHE_KEY}-${schoolId}`),
         ]);
 
-        if (cachedStats) setStats(JSON.parse(cachedStats));
-        if (cachedSchool) setSchool(JSON.parse(cachedSchool));
+        dispatch({
+          type: 'LOAD_CACHE',
+          stats: cachedStats ? JSON.parse(cachedStats) : null,
+          school: cachedSchool ? JSON.parse(cachedSchool) : null,
+        });
       } catch (caughtError) {
         console.warn('Failed to load founder school stats cache', caughtError);
-      } finally {
-        setIsLoading(false);
+        dispatch({ type: 'SET_LOADING', isLoading: false });
       }
     };
 
@@ -197,10 +273,11 @@ export function useFounderSchoolStats(schoolId: string) {
 
   const refreshData = useCallback(async () => {
     if (!schoolId && !isDemoMode && !isGuest) {
-      setIsLoading(false);
+      dispatch({ type: 'SET_LOADING', isLoading: false });
       return;
     }
 
+    dispatch({ type: 'REFRESH_START' });
     try {
       let schoolData: School;
       let statsData: SchoolStats;
@@ -209,7 +286,6 @@ export function useFounderSchoolStats(schoolId: string) {
         schoolData = {
           id: 'sample-school',
           name: 'Wisdom Academy',
-          type: 'primary',
           handle: 'wisdom-academy',
           official_type: 'Primary',
           status: 'active',
@@ -223,8 +299,7 @@ export function useFounderSchoolStats(schoolId: string) {
         ]);
       }
 
-      setSchool(schoolData);
-      setStats(statsData);
+      dispatch({ type: 'REFRESH_SUCCESS', stats: statsData, school: schoolData });
 
       if (schoolId) {
         await Promise.all([
@@ -238,25 +313,28 @@ export function useFounderSchoolStats(schoolId: string) {
           ),
         ]);
       }
-
-      setError(null);
-    } catch (caughtError: any) {
+    } catch (caughtError: unknown) {
       console.error('Failed to refresh founder school stats', caughtError);
-      setError(caughtError.message || 'Failed to sync school data');
-    } finally {
-      setIsLoading(false);
+      dispatch({
+        type: 'REFRESH_FAILURE',
+        error: caughtError instanceof Error ? caughtError.message : 'Failed to sync school data',
+      });
     }
   }, [isDemoMode, isGuest, schoolId, viewDate]);
 
   useEffect(() => {
     void refreshData();
-  }, [isOnline, refreshData]);
+  }, [refreshData]);
 
   return {
-    school,
-    stats,
-    isLoading,
-    error,
+    ...state,
     refreshData,
   };
 }
+
+export const founderWorkspaceAPI = {
+  useEcosystemStats: useFounderEcosystemStats,
+  useSchoolStats: useFounderSchoolStats,
+  createSchool: createFounderSchool,
+  createClassroom: createFounderClassroom,
+};

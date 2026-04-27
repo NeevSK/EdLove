@@ -23,8 +23,8 @@ import {
   SandboxBanner,
   ScrollView,
   useThemedColors,
+  X,
 } from '@repo/ui';
-import { X } from 'lucide-react-native';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import Animated, { FadeInDown } from 'react-native-reanimated';
@@ -182,7 +182,7 @@ export default function TeacherDashboardWeb({
         onAction={handleAdminAction}
       />
 
-      <Modal isOpen={isBreathingOpen} onClose={() => setIsBreathingOpen(false)} size="full">
+      <Modal isOpen={isBreathingOpen} onClose={() => setIsBreathingOpen(false)}>
         <ModalBackdrop />
         <ModalContent className="flex-1 bg-phase-canvas">
           <ModalHeader className="pt-12 pb-4 px-6 border-b border-phase-border">

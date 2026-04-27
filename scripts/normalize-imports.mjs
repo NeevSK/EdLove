@@ -78,19 +78,31 @@ walk(targetPath, (filePath) => {
   const currentPkg = workspaces.find((w) => filePath.startsWith(w.path));
 
   // Handle relative imports to @repo/* aliases
-  // Pattern: from '../packages/core/...' or from '../../packages/core'
-  const relativeToAliasRegex = /from\s+['"](\.\.?\/)+(?:packages|apps)\/([^'"]+)['"]/g;
-  content = content.replace(relativeToAliasRegex, (match, dots, relativePath) => {
-    const parts = relativePath.split('/');
-    const pkgName = parts[0];
-    const subPath = parts.slice(1).join('/');
+  // Matches:
+  // - ../../packages/core/... (Root-relative)
+  // - ../../ui/... (Sibling-relative)
+  const relativeImportRegex = /from\s+['"](\.\.\/[^'"]+)['"]/g;
+  content = content.replace(relativeImportRegex, (match, relPath) => {
+    try {
+      const absoluteTarget = path.resolve(path.dirname(filePath), relPath);
+      const targetWorkspace = workspaces.find((w) => absoluteTarget.startsWith(w.path));
 
-    const fullAlias = `@repo/${pkgName}`;
-    const workspace = workspaces.find((w) => w.name === fullAlias);
+      if (targetWorkspace && targetWorkspace !== currentPkg) {
+        const subPath = absoluteTarget
+          .slice(targetWorkspace.path.length)
+          .replace(/\\/g, '/')
+          .replace(/^\//, '')
+          .replace(/\.(ts|tsx|js|jsx)$/, '')
+          .replace(/\/index$/, '');
 
-    if (workspace) {
-      changed = true;
-      return `from '${fullAlias}${subPath ? '/' + subPath : ''}'`;
+        const alias = targetWorkspace.alias || `@repo/${path.basename(targetWorkspace.path)}`;
+        const finalImport = subPath ? `${alias}/${subPath}` : alias;
+
+        changed = true;
+        return `from '${finalImport}'`;
+      }
+    } catch (e) {
+      // Ignore errors for invalid paths
     }
     return match;
   });

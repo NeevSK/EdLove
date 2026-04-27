@@ -1,25 +1,27 @@
 import {
+  ArrowLeft,
   Box,
   Button,
   ButtonIcon,
   ButtonText,
+  Castle,
   FormControl,
-  Heading,
   HStack,
-  hapticLight,
-  hapticSuccess,
+  Heading,
   Icon,
   Input,
   InputField,
+  Plus,
   Pressable,
   ScrollView,
   SkeletonCard,
   Text,
   VStack,
+  hapticLight,
+  hapticSuccess,
 } from '@repo/ui';
-import { ArrowLeft, Castle, Plus } from 'lucide-react-native';
 import type React from 'react';
-import { useEffect, useState } from 'react';
+import { useReducer, useCallback, useEffect } from 'react';
 import { type SchoolSectionRow, sectionsAPI } from '../../sections';
 
 interface HierarchyDashboardProps {
@@ -28,49 +30,94 @@ interface HierarchyDashboardProps {
   onBack: () => void;
 }
 
+type State = {
+  sections: SchoolSectionRow[];
+  loading: boolean;
+  saving: boolean;
+  newSectionName: string;
+  newSectionGrade: string;
+};
+
+type Action =
+  | { type: 'SET_SECTIONS'; payload: SchoolSectionRow[] }
+  | { type: 'SET_LOADING'; payload: boolean }
+  | { type: 'SET_SAVING'; payload: boolean }
+  | { type: 'UPDATE_FIELD'; field: 'newSectionName' | 'newSectionGrade'; value: string }
+  | { type: 'ADD_SECTION'; payload: SchoolSectionRow }
+  | { type: 'RESET_FORM' };
+
+const initialState: State = {
+  sections: [],
+  loading: true,
+  saving: false,
+  newSectionName: '',
+  newSectionGrade: '',
+};
+
+function reducer(state: State, action: Action): State {
+  switch (action.type) {
+    case 'SET_SECTIONS':
+      return { ...state, sections: action.payload, loading: false };
+    case 'SET_LOADING':
+      return { ...state, loading: action.payload };
+    case 'SET_SAVING':
+      return { ...state, saving: action.payload };
+    case 'UPDATE_FIELD':
+      return { ...state, [action.field]: action.value };
+    case 'ADD_SECTION':
+      return { ...state, sections: [...state.sections, action.payload], newSectionName: '', newSectionGrade: '' };
+    case 'RESET_FORM':
+      return { ...state, newSectionName: '', newSectionGrade: '' };
+    default:
+      return state;
+  }
+}
+
 export const HierarchyDashboard: React.FC<HierarchyDashboardProps> = ({
   schoolId,
   isPastView,
   onBack,
 }) => {
-  const [sections, setSections] = useState<SchoolSectionRow[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [newSectionName, setNewSectionName] = useState('');
-  const [newSectionGrade, setNewSectionGrade] = useState('');
+  const [state, dispatch] = useReducer(reducer, initialState);
 
-  const loadSections = async () => {
+  const loadSections = useCallback(async () => {
     if (!schoolId) return;
-    setLoading(true);
+    dispatch({ type: 'SET_LOADING', payload: true });
     try {
       const data = await sectionsAPI.listSchoolSections(schoolId);
-      setSections(data ?? []);
+      dispatch({ type: 'SET_SECTIONS', payload: data ?? [] });
     } finally {
-      setLoading(false);
+      dispatch({ type: 'SET_LOADING', payload: false });
     }
-  };
+  }, [schoolId]);
 
   useEffect(() => {
     loadSections();
-  }, [schoolId]);
+  }, [loadSections]);
+
+  const handleUpdateName = useCallback((value: string) => {
+    dispatch({ type: 'UPDATE_FIELD', field: 'newSectionName', value });
+  }, []);
+
+  const handleUpdateGrade = useCallback((value: string) => {
+    dispatch({ type: 'UPDATE_FIELD', field: 'newSectionGrade', value });
+  }, []);
 
   const handleCreateSection = async () => {
-    if (!newSectionName.trim()) return;
-    setSaving(true);
+    if (!state.newSectionName.trim()) return;
+    dispatch({ type: 'SET_SAVING', payload: true });
     try {
       const data = await sectionsAPI.createSchoolSection({
         schoolId,
-        name: newSectionName,
-        grade: newSectionGrade,
+        name: state.newSectionName,
+        grade: state.newSectionGrade,
       });
-      setSections((prev) => [...prev, data]);
-      setNewSectionName('');
-      setNewSectionGrade('');
+      dispatch({ type: 'ADD_SECTION', payload: data });
       hapticSuccess();
     } catch (err) {
       console.error('Failed to create section:', err);
     } finally {
-      setSaving(false);
+      dispatch({ type: 'SET_SAVING', payload: false });
     }
   };
 
@@ -83,6 +130,8 @@ export const HierarchyDashboard: React.FC<HierarchyDashboardProps> = ({
             onBack();
           }}
           className="active:scale-95 transition-all"
+          accessibilityLabel="Go back"
+          accessibilityHint="Navigates back to the main principal dashboard"
         >
           <HStack className="items-center gap-2 bg-phase-surface self-start px-5 py-2.5 rounded-2xl border border-phase-border shadow-sm">
             <Icon as={ArrowLeft} size="sm" className="text-phaseText-primary" />
@@ -112,12 +161,14 @@ export const HierarchyDashboard: React.FC<HierarchyDashboardProps> = ({
             <FormControl className="flex-1 min-w-[140px]">
               <Input className="h-14 rounded-2xl bg-phase-canvas border-phase-border shadow-inner">
                 <InputField
-                  value={newSectionGrade}
-                  onChangeText={setNewSectionGrade}
+                  value={state.newSectionGrade}
+                  onChangeText={handleUpdateGrade}
                   readOnly={isPastView}
                   placeholder="Grade (e.g. 8)"
                   placeholderTextColor="rgba(0,0,0,0.2)"
                   className="font-bold text-phaseText-primary"
+                  accessibilityLabel="Grade Level"
+                  accessibilityHint="Enter the numeric grade level for the new section"
                 />
               </Input>
             </FormControl>
@@ -125,25 +176,26 @@ export const HierarchyDashboard: React.FC<HierarchyDashboardProps> = ({
             <FormControl className="flex-1 min-w-[140px]">
               <Input className="h-14 rounded-2xl bg-phase-canvas border-phase-border shadow-inner">
                 <InputField
-                  value={newSectionName}
-                  onChangeText={setNewSectionName}
+                  value={state.newSectionName}
+                  onChangeText={handleUpdateName}
                   readOnly={isPastView}
                   placeholder="Section (e.g. 8A)"
                   placeholderTextColor="rgba(0,0,0,0.2)"
                   className="font-bold text-phaseText-primary"
+                  accessibilityLabel="Section Name"
+                  accessibilityHint="Enter the unique identifier for the new section"
                 />
               </Input>
             </FormControl>
 
             <Button
-              onPress={() => {
-                hapticLight();
-                handleCreateSection();
-              }}
-              isDisabled={!newSectionName.trim() || saving || isPastView}
+              onPress={handleCreateSection}
+              isDisabled={!state.newSectionName.trim() || state.saving || isPastView}
               className="bg-phase-interactive rounded-2xl h-14 shadow-sm active:scale-95 px-6"
+              accessibilityLabel="Add New Tier"
+              accessibilityHint="Initializes a new governance tier with the specified grade and name"
             >
-              {saving ? (
+              {state.saving ? (
                 <ButtonText className="font-black">...</ButtonText>
               ) : (
                 <>
@@ -157,13 +209,13 @@ export const HierarchyDashboard: React.FC<HierarchyDashboardProps> = ({
           </HStack>
         </Box>
 
-        {loading ? (
+        {state.loading ? (
           <VStack className="gap-4">
             <SkeletonCard height={90} className="rounded-3xl" />
             <SkeletonCard height={90} className="rounded-3xl" />
             <SkeletonCard height={90} className="rounded-3xl" />
           </VStack>
-        ) : sections.length === 0 ? (
+        ) : state.sections.length === 0 ? (
           <Box className="p-12 items-center justify-center bg-phase-canvas rounded-3xl border border-dashed border-phase-border">
             <Text className="text-phaseText-muted italic font-black text-sm uppercase tracking-widest">
               No active modules found
@@ -171,7 +223,7 @@ export const HierarchyDashboard: React.FC<HierarchyDashboardProps> = ({
           </Box>
         ) : (
           <HStack className="flex-wrap gap-4">
-            {sections.map((s) => (
+            {state.sections.map((s) => (
               <Box
                 key={s.id}
                 className="bg-phase-surface p-6 rounded-3xl border border-phase-border border-l-[6px] border-l-phase-interactive min-w-[160px] flex-1 shadow-sm active:scale-98 transition-all"

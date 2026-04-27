@@ -117,6 +117,10 @@ export const ActionsheetDragIndicator = () => (
   <Box className="w-12 h-1.5 bg-phase-interactive/20 rounded-full" />
 );
 
+export const ActionsheetIcon = ({ children, className }: any) => (
+  <Box className={`mr-3 ${className || ''}`}>{children}</Box>
+);
+
 Actionsheet.displayName = 'Actionsheet';
 ActionsheetContent.displayName = 'ActionsheetContent';
 ActionsheetItem.displayName = 'ActionsheetItem';

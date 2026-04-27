@@ -1,9 +1,12 @@
 import { SRI_LANKAN_DISTRICTS, SRI_LANKAN_PROVINCES } from '@repo/core';
 import {
+  ChevronDown,
+  Flag,
   FormControl,
   FormControlLabel,
   FormControlLabelText,
   Icon,
+  MapPin,
   SanctuaryInput,
   Select,
   SelectBackdrop,
@@ -15,11 +18,10 @@ import {
   SelectItem,
   SelectPortal,
   SelectTrigger,
-  useTheme,
   VStack,
 } from '@repo/ui';
-import { ChevronDown, Flag, MapPin } from 'lucide-react-native';
-import React, { useMemo } from 'react';
+
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface StepLocationProps {
@@ -50,7 +52,7 @@ export default function StepLocation({ data, onUpdate }: StepLocationProps) {
           </FormControlLabelText>
         </FormControlLabel>
         <Select
-          selectedValue={data.provinceId}
+          value={data.provinceId}
           onValueChange={(value: string) => onUpdate({ provinceId: value, districtId: '' })}
         >
           <SelectTrigger className="h-12 rounded-xl bg-phase-surface border border-phase-border">
@@ -87,7 +89,7 @@ export default function StepLocation({ data, onUpdate }: StepLocationProps) {
           </FormControlLabelText>
         </FormControlLabel>
         <Select
-          selectedValue={data.districtId}
+          value={data.districtId}
           onValueChange={(value: string) => onUpdate({ districtId: value })}
         >
           <SelectTrigger className="h-12 rounded-xl bg-phase-surface border border-phase-border">

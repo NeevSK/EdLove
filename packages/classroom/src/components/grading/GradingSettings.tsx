@@ -67,7 +67,7 @@ export default function GradingSettings({
 
           <RadioGroup
             value={gradingMode}
-            onValueChange={(value: string) => setGradingMode(value as any)}
+            onChange={(value: string) => setGradingMode(value as any)}
           >
             <VStack className="gap-3">
               {[
@@ -96,7 +96,7 @@ export default function GradingSettings({
                   key={item.value}
                   className={`p-4 rounded-generous border ${gradingMode === item.value ? 'bg-templeGold/10 border-templeGold/40' : 'bg-phase-surface/50 border-phase-canvas'}`}
                 >
-                  <Radio value={item.value} size="md">
+                  <Radio value={item.value}>
                     <RadioIndicator className="mr-4 border-phase-canvas">
                       <RadioIcon className="bg-templeGold" />
                     </RadioIndicator>

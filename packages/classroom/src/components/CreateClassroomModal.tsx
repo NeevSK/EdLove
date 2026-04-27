@@ -8,6 +8,7 @@ import {
   FormControl,
   FormControlLabel,
   FormControlLabelText,
+  Globe,
   Heading,
   HStack,
   hapticLight,
@@ -17,12 +18,12 @@ import {
   InputField,
   Pressable,
   SanctuaryModal,
+  ScanLine,
   Spinner,
   Text,
   useTheme,
   VStack,
 } from '@repo/ui';
-import { Globe, ScanLine } from 'lucide-react-native';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import GuestConversionPrompt from '../shared/GuestConversionPrompt';

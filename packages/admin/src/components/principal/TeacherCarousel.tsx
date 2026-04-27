@@ -12,7 +12,6 @@ import { staffManagementAPI, type TeacherCarouselItem } from '@repo/core';
 import {
   Box,
   getInitialsFromName,
-  Heading,
   HStack,
   hapticLight,
   Pressable,
@@ -21,7 +20,7 @@ import {
   Text,
   VStack,
 } from '@repo/ui';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface TeacherCarouselProps {
   schoolId: string;

@@ -6,11 +6,23 @@ cssInterop(RNPressable, { className: 'style' });
 
 export interface IPressableProps extends PressableProps {
   className?: string;
+  href?: string;
+  hrefAttrs?: {
+    target?: string;
+    rel?: string;
+    download?: string;
+  };
 }
 
-const Pressable = React.forwardRef<any, IPressableProps>(({ className, ...props }, ref) => (
-  <RNPressable {...props} ref={ref} {...({ className } as any)} />
-));
+const Pressable = React.forwardRef<any, IPressableProps>(
+  ({ className, href, hrefAttrs, ...props }, ref) => (
+    <RNPressable
+      {...props}
+      ref={ref}
+      {...({ className, href, hrefAttrs } as any)}
+    />
+  ),
+);
 
 Pressable.displayName = 'Pressable';
 

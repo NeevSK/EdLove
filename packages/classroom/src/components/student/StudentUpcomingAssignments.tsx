@@ -1,5 +1,4 @@
-import { Box, Button, ButtonText, HStack, Icon, Text, VStack } from '@repo/ui';
-import { CheckCircle2, Clock } from 'lucide-react-native';
+import { Box, Button, ButtonText, CheckCircle2, Clock, HStack, Icon, Text, VStack } from '@repo/ui';
 import React from 'react';
 
 interface Assignment {

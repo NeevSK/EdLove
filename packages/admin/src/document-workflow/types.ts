@@ -1,5 +1,3 @@
-import { supabase } from '@repo/core';
-
 export type DocumentStatus = 'draft' | 'review' | 'approved' | 'published' | 'archived';
 export type DocumentWorkflowStep =
   | 'create'

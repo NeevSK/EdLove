@@ -1,7 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import { useStore } from '@repo/core';
 import { Box, ScrollView, Text, VStack } from '@repo/ui';
-import React from 'react';
 import { useGuardianWorkspaceData } from '../../guardian';
 import { GuardianRoomShell } from './GuardianRoomShell';
 

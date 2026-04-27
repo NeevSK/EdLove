@@ -12,17 +12,21 @@ import { studentsAPI } from '@repo/core';
 import type { ScannedStudent } from '@repo/scanner-kit';
 import {
   Box,
+  Camera,
+  Check,
   Heading,
   HStack,
   Icon,
+  Info,
   Pressable,
+  RotateCcw,
   SanctuaryToast,
   ScrollView,
   Text,
   useToast,
   VStack,
+  X,
 } from '@repo/ui';
-import { Camera, Check, Info, RotateCcw, X } from 'lucide-react-native';
 import React, { useState } from 'react';
 import OCRScanner from './OCRScanner';
 

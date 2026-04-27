@@ -36,7 +36,6 @@ export class GoogleVisionProvider implements OCRProvider {
 
 async function uriToBase64(uri: string): Promise<string> {
   // expo-file-system/legacy  the sub-path export for SDK 51+ legacy FileSystem APIs.
-  // @ts-expect-error  type declarations for the sub-path export may be absent in some package configs
   const { readAsStringAsync, EncodingType } = await import('expo-file-system/legacy');
   return readAsStringAsync(uri, { encoding: EncodingType.Base64 });
 }

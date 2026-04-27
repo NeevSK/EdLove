@@ -1,25 +1,31 @@
 import {
+  AlertTriangle,
+  ArrowLeft,
   Box,
   Button,
   ButtonIcon,
   ButtonText,
-  Heading,
+  Footprints,
   HStack,
-  hapticLight,
-  hapticMedium,
-  hapticSuccess,
+  Heading,
   Icon,
   LotusDropdown,
+  Medal,
+  Plus,
   Pressable,
   ScrollView,
   SkeletonCard,
+  StickyNote,
   Text,
   Textarea,
   TextareaInput,
   VStack,
+  hapticLight,
+  hapticMedium,
+  hapticSuccess,
 } from '@repo/ui';
 import { formatDistanceToNow } from 'date-fns';
-import { AlertTriangle, ArrowLeft, Footprints, Medal, Plus, StickyNote } from 'lucide-react-native';
+
 import type React from 'react';
 import { useCallback, useEffect, useState } from 'react';
 import { observationsAPI, type PrincipalObservation } from '../../observations';

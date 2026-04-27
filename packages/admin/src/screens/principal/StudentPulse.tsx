@@ -1,6 +1,18 @@
 import type { StudentAttendancePulse } from '@repo/core';
-import { Box, Heading, HStack, hapticLight, Icon, Pressable, Text, VStack } from '@repo/ui';
-import { AlertTriangle, GraduationCap, TrendingUp } from 'lucide-react-native';
+import {
+  AlertTriangle,
+  Box,
+  GraduationCap,
+  HStack,
+  Heading,
+  Icon,
+  Pressable,
+  Text,
+  TrendingUp,
+  VStack,
+  hapticLight,
+} from '@repo/ui';
+
 import type React from 'react';
 import { useTranslation } from 'react-i18next';
 

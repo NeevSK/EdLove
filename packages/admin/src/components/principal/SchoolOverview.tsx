@@ -1,7 +1,13 @@
 import type { School } from '@repo/core';
-import { Box, HStack, Icon, Text, VStack } from '@repo/ui';
-import { Building2, MapPin } from 'lucide-react-native';
-import React from 'react';
+import {
+  Box,
+  Building2,
+  HStack,
+  Icon,
+  MapPin,
+  Text,
+  VStack,
+} from '@repo/ui';
 
 interface SchoolOverviewProps {
   school: School;

@@ -1,6 +1,16 @@
-import { Box, Heading, HStack, Icon, Pressable, Text, VStack } from '@repo/ui';
-import { GraduationCap, Plus, School, X } from 'lucide-react-native';
-import React from 'react';
+import {
+  Box,
+  GraduationCap,
+  HStack,
+  Heading,
+  Icon,
+  Plus,
+  Pressable,
+  School,
+  Text,
+  VStack,
+  X,
+} from '@repo/ui';
 
 interface StepHierarchyProps {
   data: {

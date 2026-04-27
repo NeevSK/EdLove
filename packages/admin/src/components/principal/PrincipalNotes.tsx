@@ -30,7 +30,7 @@ import {
   StickyNote,
   X,
 } from 'lucide-react-native';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useReducer } from 'react';
 
 // -- Types ----------------------------------------------------
 
@@ -44,6 +44,66 @@ type NoteGroup = { label: string; data: PrincipalNote[] };
 type NoteRow =
   | { type: 'HEADER'; label: string; id: string }
   | { type: 'NOTE'; note: PrincipalNote; id: string };
+
+type State = {
+  notes: PrincipalNote[];
+  isLoading: boolean;
+  isComposing: boolean;
+  draft: string;
+  draftType: PrincipalNote['note_type'];
+  isSaving: boolean;
+};
+
+type Action =
+  | { type: 'SET_NOTES'; notes: PrincipalNote[] }
+  | { type: 'SET_LOADING'; isLoading: boolean }
+  | { type: 'START_COMPOSING'; defaultType?: PrincipalNote['note_type'] }
+  | { type: 'STOP_COMPOSING' }
+  | { type: 'UPDATE_DRAFT'; draft: string }
+  | { type: 'SET_DRAFT_TYPE'; draftType: PrincipalNote['note_type'] }
+  | { type: 'SAVE_START' }
+  | { type: 'SAVE_SUCCESS'; note: PrincipalNote }
+  | { type: 'SAVE_FAILURE' }
+  | { type: 'UPDATE_NOTE'; note: PrincipalNote }
+  | { type: 'DELETE_NOTE'; id: string };
+
+const notesReducer = (state: State, action: Action): State => {
+  switch (action.type) {
+    case 'SET_NOTES':
+      return { ...state, notes: action.notes, isLoading: false };
+    case 'SET_LOADING':
+      return { ...state, isLoading: action.isLoading };
+    case 'START_COMPOSING':
+      return { ...state, isComposing: true, draftType: action.defaultType || state.draftType };
+    case 'STOP_COMPOSING':
+      return { ...state, isComposing: false, draft: '' };
+    case 'UPDATE_DRAFT':
+      return { ...state, draft: action.draft };
+    case 'SET_DRAFT_TYPE':
+      return { ...state, draftType: action.draftType };
+    case 'SAVE_START':
+      return { ...state, isSaving: true };
+    case 'SAVE_SUCCESS':
+      return {
+        ...state,
+        isSaving: false,
+        isComposing: false,
+        draft: '',
+        notes: [action.note, ...state.notes],
+      };
+    case 'SAVE_FAILURE':
+      return { ...state, isSaving: false };
+    case 'UPDATE_NOTE':
+      return {
+        ...state,
+        notes: state.notes.map((n) => (n.id === action.note.id ? action.note : n)),
+      };
+    case 'DELETE_NOTE':
+      return { ...state, notes: state.notes.filter((n) => n.id !== action.id) };
+    default:
+      return state;
+  }
+};
 
 // -- Note type metadata ----------------------------------------
 
@@ -134,12 +194,14 @@ function groupNotes(notes: PrincipalNote[]): NoteGroup[] {
 
 export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps) {
   const { showToast } = useToast();
-  const [notes, setNotes] = useState<PrincipalNote[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [composing, setComposing] = useState(false);
-  const [draft, setDraft] = useState('');
-  const [draftType, setDraftType] = useState<PrincipalNote['note_type']>('todo');
-  const [saving, setSaving] = useState(false);
+  const [state, dispatch] = useReducer(notesReducer, {
+    notes: [],
+    isLoading: true,
+    isComposing: false,
+    draft: '',
+    draftType: 'todo',
+    isSaving: false,
+  });
 
   const isIos = coreRuntime.device.getMetadata().platform === 'ios';
 
@@ -181,6 +243,8 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
                   onPress={() => onToggleDone(note)}
                   className={`w-7 h-7 rounded-lg border-2 items-center justify-center ${note.is_done ? 'bg-phase-interactive border-phase-interactive' : 'border-phase-interactive/40'}`}
                   hitSlop={12}
+                  accessibilityLabel={`Mark "${note.content}" as ${note.is_done ? 'incomplete' : 'complete'}`}
+                  accessibilityHint="Toggles the completion status of this item"
                 >
                   {note.is_done && <Icon as={CheckSquare} size="xs" className="text-white" />}
                 </Pressable>
@@ -200,7 +264,11 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
 
             <HStack className="gap-5 items-center">
               {!note.is_done && (
-                <Pressable onPress={() => onTogglePin(note)}>
+                <Pressable
+                  onPress={() => onTogglePin(note)}
+                  accessibilityLabel={note.is_pinned ? 'Unpin item' : 'Pin item'}
+                  accessibilityHint="Keeps this item at the top of the log"
+                >
                   <Icon
                     as={Pin}
                     size="xs"
@@ -211,7 +279,11 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
                   />
                 </Pressable>
               )}
-              <Pressable onPress={() => onDelete(note.id)}>
+              <Pressable
+                onPress={() => onDelete(note.id)}
+                accessibilityLabel="Delete item"
+                accessibilityHint="Permanently removes this entry from the log"
+              >
                 <Icon as={X} size="xs" className="text-phaseText-muted/40" />
               </Pressable>
             </HStack>
@@ -231,11 +303,10 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
   const fetchNotes = useCallback(async () => {
     try {
       const data = await api.principalNotes.getAll(schoolId);
-      setNotes(data || []);
+      dispatch({ type: 'SET_NOTES', notes: data ?? [] });
     } catch (err) {
       console.error('PrincipalNotes: fetch error', err);
-    } finally {
-      setLoading(false);
+      dispatch({ type: 'SET_LOADING', isLoading: false });
     }
   }, [schoolId]);
 
@@ -244,7 +315,7 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
   }, [fetchNotes]);
 
   const rows = useMemo(() => {
-    const groups = groupNotes(notes);
+    const groups = groupNotes(state.notes);
     const result: NoteRow[] = [];
     for (const g of groups) {
       result.push({ type: 'HEADER', label: g.label, id: `header-${g.label}` });
@@ -253,25 +324,22 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
       }
     }
     return result;
-  }, [notes]);
+  }, [state.notes]);
 
   const handleSave = async () => {
-    if (!draft.trim()) return;
-    setSaving(true);
+    if (!state.draft.trim()) return;
+    dispatch({ type: 'SAVE_START' });
     try {
       const created = await api.principalNotes.create({
         school_id: schoolId,
-        content: draft.trim(),
-        note_type: draftType,
+        content: state.draft.trim(),
+        note_type: state.draftType,
       });
       hapticLight();
-      setNotes((prev) => [created, ...prev]);
-      setDraft('');
-      setComposing(false);
+      dispatch({ type: 'SAVE_SUCCESS', note: created });
     } catch {
       showToast({ message: 'Could not save note.', type: 'error' });
-    } finally {
-      setSaving(false);
+      dispatch({ type: 'SAVE_FAILURE' });
     }
   };
 
@@ -280,7 +348,7 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
     try {
       hapticLight();
       const updated = await api.principalNotes.update(note.id, { is_done: !note.is_done });
-      setNotes((prev) => prev.map((n) => (n.id === updated.id ? updated : n)));
+      dispatch({ type: 'UPDATE_NOTE', note: updated });
     } catch {
       showToast({ message: 'Could not update note.', type: 'error' });
     }
@@ -291,7 +359,7 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
     try {
       hapticLight();
       const updated = await api.principalNotes.update(note.id, { is_pinned: !note.is_pinned });
-      setNotes((prev) => prev.map((n) => (n.id === updated.id ? updated : n)));
+      dispatch({ type: 'UPDATE_NOTE', note: updated });
     } catch {
       showToast({ message: 'Could not update note.', type: 'error' });
     }
@@ -301,7 +369,7 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
     try {
       hapticLight();
       await api.principalNotes.delete(id);
-      setNotes((prev) => prev.filter((n) => n.id !== id));
+      dispatch({ type: 'DELETE_NOTE', id });
       showToast({ message: 'Note deleted.', type: 'success' });
     } catch {
       showToast({ message: 'Could not delete note.', type: 'error' });
@@ -349,7 +417,7 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
         keyboardVerticalOffset={100}
       >
         <VStack className="flex-1">
-          {loading ? (
+          {state.isLoading ? (
             <Box className="flex-1 items-center justify-center">
               <ActivityIndicator className="text-phase-interactive" size="large" />
             </Box>
@@ -367,7 +435,7 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
               renderItem={renderRow}
               contentContainerStyle={{
                 paddingTop: 24,
-                paddingBottom: composing ? 0 : 140,
+                paddingBottom: state.isComposing ? 0 : 140,
               }}
               showsVerticalScrollIndicator={false}
             />
@@ -375,7 +443,7 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
         </VStack>
       </KeyboardAvoidingView>
 
-      {composing ? (
+      {state.isComposing ? (
         <Box className="bg-phase-surface border-t border-phase-border p-8 pb-12 shadow-2xl rounded-t-[40px]">
           <HStack className="justify-between items-center mb-8">
             <VStack className="gap-1">
@@ -389,9 +457,11 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
             <Pressable
               onPress={() => {
                 hapticLight();
-                setComposing(false);
+                dispatch({ type: 'STOP_COMPOSING' });
               }}
               className="w-10 h-10 items-center justify-center bg-phase-canvas rounded-full border border-phase-border"
+              accessibilityLabel="Close composer"
+              accessibilityHint="Discards the current draft and closes the composer"
             >
               <Icon as={ChevronDown} size="sm" className="text-phaseText-muted" />
             </Pressable>
@@ -404,16 +474,19 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
                 (typeof NOTE_TYPE_META)[keyof typeof NOTE_TYPE_META],
               ][]
             ).map(([type, meta]) => {
-              const isActive = draftType === type;
+              const isActive = state.draftType === type;
               const IconNode = meta.icon;
               return (
                 <Pressable
                   key={type}
                   onPress={() => {
                     hapticLight();
-                    setDraftType(type);
+                    dispatch({ type: 'SET_DRAFT_TYPE', draftType: type });
                   }}
                   className={`flex-row items-center px-5 py-2.5 rounded-full border transition-all ${isActive ? 'bg-phase-interactive border-transparent' : 'bg-phase-canvas border-phase-border'}`}
+                  accessibilityLabel={`Filter by ${meta.label}`}
+                  accessibilityHint={`Changes the note type to ${meta.label}`}
+                  accessibilityState={{ selected: isActive }}
                 >
                   <Icon
                     as={IconNode}
@@ -432,13 +505,15 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
 
           <Input className="min-h-[160px] bg-phase-canvas border-phase-border rounded-[28px] p-6 shadow-inner">
             <InputField
-              value={draft}
-              onChangeText={setDraft}
-              placeholder={NOTE_TYPE_META[draftType].placeholder}
+              value={state.draft}
+              onChangeText={(val) => dispatch({ type: 'UPDATE_DRAFT', draft: val })}
+              placeholder={NOTE_TYPE_META[state.draftType].placeholder}
               placeholderTextColor="rgba(0,0,0,0.3)"
               multiline
               autoFocus
               className="text-[17px] font-bold text-phaseText-primary leading-[24px]"
+              accessibilityLabel="Note content"
+              accessibilityHint="Type your governance note or signal here"
             />
           </Input>
 
@@ -446,10 +521,11 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
             <Pressable
               onPress={() => {
                 hapticLight();
-                setComposing(false);
-                setDraft('');
+                dispatch({ type: 'STOP_COMPOSING' });
               }}
               className="flex-1 h-16 rounded-[20px] bg-phase-canvas border border-phase-border items-center justify-center active:scale-95 transition-all"
+              accessibilityLabel="Abort"
+              accessibilityHint="Discards the current draft and closes the composer"
             >
               <Text className="font-black uppercase text-[11px] text-phaseText-secondary tracking-[2px]">
                 Abort
@@ -460,11 +536,13 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
                 hapticLight();
                 handleSave();
               }}
-              disabled={!draft.trim() || saving}
-              className={`flex-[1.8] h-16 rounded-[20px] bg-phase-interactive shadow-md items-center justify-center active:scale-95 transition-all ${!draft.trim() || saving ? 'opacity-50' : ''}`}
+              disabled={!state.draft.trim() || state.isSaving}
+              className={`flex-[1.8] h-16 rounded-[20px] bg-phase-interactive shadow-md items-center justify-center active:scale-95 transition-all ${!state.draft.trim() || state.isSaving ? 'opacity-50' : ''}`}
+              accessibilityLabel="Commit Signal"
+              accessibilityHint="Saves the current note to the institutional log"
             >
               <HStack className="gap-2 items-center">
-                {saving ? (
+                {state.isSaving ? (
                   <ActivityIndicator size="small" color="#FFFFFF" />
                 ) : (
                   <Text className="font-black uppercase text-[11px] text-white tracking-[3px]">
@@ -480,9 +558,11 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
           <Pressable
             onPress={() => {
               hapticLight();
-              setComposing(true);
+              dispatch({ type: 'START_COMPOSING' });
             }}
             className="w-20 h-20 rounded-[30px] justify-center items-center shadow-xl bg-phase-interactive active:scale-90 transition-all"
+            accessibilityLabel="New Signal"
+            accessibilityHint="Opens the composer to capture a new institutional note or to-do"
           >
             <Icon as={NotebookPen} size="md" className="text-white" />
           </Pressable>

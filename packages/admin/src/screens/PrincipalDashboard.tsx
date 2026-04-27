@@ -2,21 +2,22 @@ import { useNavigation } from '@react-navigation/native';
 import { type TotalState, useFeatureAccess, usePermissions, useStore } from '@repo/core';
 import {
   Box,
+  Building2,
   Button,
   ButtonText,
-  HStack,
-  hapticLight,
-  Icon,
+  LayoutGrid,
+  NotebookPen,
   QRBuilder,
   QRCodeGenerator,
   SanctuaryModal,
   ScreenWrapper,
   Text,
-  useRegisterFAB,
   VStack,
+  hapticLight,
+  useRegisterFAB,
 } from '@repo/ui';
-import { Building2, LayoutGrid, NotebookPen } from 'lucide-react-native';
-import React, { useState } from 'react';
+
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PrincipalNativeDashboardShell } from '../bridge/PrincipalNativeDashboardShell';
 import { CreateSchoolModal, PrincipalNotes } from '../components';

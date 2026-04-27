@@ -1,13 +1,19 @@
-import { Box, Heading, HStack, Icon, Pressable, Text, VStack } from '@repo/ui';
 import {
   ArrowRightCircle,
   BookOpen,
+  Box,
   GraduationCap,
+  Heading,
+  HStack,
+  Icon,
   Layout,
+  Pressable,
   QrCode,
   Search,
   Sparkles,
-} from 'lucide-react-native';
+  Text,
+  VStack,
+} from '@repo/ui';
 import React from 'react';
 
 interface StudentOnboardingViewProps {
@@ -93,7 +99,7 @@ export default function StudentOnboardingViewWeb({
                     <Text className="text-templeGold font-black uppercase tracking-widest text-sm">
                       Explore Student Sandbox
                     </Text>
-                    <ArrowRightCircle size={16} color="#D4843A" />
+                    <Icon as={ArrowRightCircle} size={16} color="#D4843A" />
                   </HStack>
                 </Pressable>
               </VStack>

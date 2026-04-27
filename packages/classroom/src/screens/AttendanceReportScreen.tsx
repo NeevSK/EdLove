@@ -1,7 +1,11 @@
 import { reportingAPI } from '@repo/admin';
 import { type AcademicCycle, type AttendanceReport, api } from '@repo/core';
 import {
+  Activity,
+  AlertTriangle,
   Box,
+  Calendar,
+  ChevronRight,
   GlobalHeader,
   Heading,
   HStack,
@@ -11,17 +15,11 @@ import {
   ScrollView,
   SkeletonCard,
   Text,
-  VStack,
-} from '@repo/ui';
-import {
-  Activity,
-  AlertTriangle,
-  Calendar,
-  ChevronRight,
   TrendingDown,
   TrendingUp,
   Users,
-} from 'lucide-react-native';
+  VStack,
+} from '@repo/ui';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 

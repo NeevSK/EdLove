@@ -8,23 +8,28 @@ import {
   useTemporalStore,
 } from '@repo/core';
 import {
+  ArrowLeft,
   Box,
+  Calendar,
   Card,
   Center,
+  Clock3,
   Heading,
   HStack,
   hapticMedium,
   Icon,
+  Lock,
   Pressable,
   RefreshControl,
   ScrollView,
+  ShieldCheck,
   Spinner,
   Text,
   Theme,
+  Trophy,
   useThemedColors,
   VStack,
 } from '@repo/ui';
-import { ArrowLeft, Calendar, Clock3, Lock, ShieldCheck, Trophy } from 'lucide-react-native';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -157,7 +162,7 @@ export default function StudentProfileScreen() {
       <HStack className="gap-md">
         <Card className="flex-1 p-md bg-phase-surface-secondary">
           <VStack className="items-center gap-xs">
-            <Calendar size={20} color={Theme.colors.sanctuarySaffron} />
+            <Icon as={Calendar} size={20} color={Theme.colors.sanctuarySaffron} />
             <Heading className="text-xl text-phase-text-primary">{attendanceRate}%</Heading>
             <Text className="text-[10px] text-phase-text-secondary">
               {t('student.attendance') || 'Attendance'}
@@ -166,7 +171,7 @@ export default function StudentProfileScreen() {
         </Card>
         <Card className="flex-1 p-md bg-phase-surface-secondary">
           <VStack className="items-center gap-xs">
-            <Trophy size={20} color={Theme.colors.amberGlow} />
+            <Icon as={Trophy} size={20} color={Theme.colors.amberGlow} />
             <Heading className="text-xl text-phase-text-primary">
               {latestGrade?.grade ? latestGrade.grade : 'N/A'}
             </Heading>
@@ -179,7 +184,7 @@ export default function StudentProfileScreen() {
       <HStack className="gap-md">
         <Card className="flex-1 p-md bg-phase-surface-secondary">
           <VStack className="items-center gap-xs">
-            <Clock3 size={20} color={Theme.colors.gurudeviBlue} />
+            <Icon as={Clock3} size={20} color={Theme.colors.gurudeviBlue} />
             <Heading className="text-xl text-phase-text-primary">{snapshotRecords.length}</Heading>
             <Text className="text-[10px] text-phase-text-secondary">
               {t('student.snapshotRecords') || 'As-of Records'}
@@ -188,7 +193,7 @@ export default function StudentProfileScreen() {
         </Card>
         <Card className="flex-1 p-md bg-phase-surface-secondary">
           <VStack className="items-center gap-xs">
-            <ShieldCheck size={20} color={Theme.colors.sageGreen} />
+            <Icon as={ShieldCheck} size={20} color={Theme.colors.sageGreen} />
             <Heading className="text-xl text-phase-text-primary">{timeline.length}</Heading>
             <Text className="text-[10px] text-phase-text-secondary">
               {t('student.timelineEvents') || 'Timeline Events'}
@@ -320,7 +325,7 @@ export default function StudentProfileScreen() {
         <Heading size="sm" className="text-phase-text-primary">
           {t('student.governanceNotes') || 'Professional Governance'}
         </Heading>
-        <Lock size={16} color={colors.textTertiary} />
+        <Icon as={Lock} size={16} color={colors.textTertiary} />
       </HStack>
       {observations.length === 0 && (
         <Text className="italic text-center p-10 text-phase-text-tertiary">

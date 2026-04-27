@@ -4,27 +4,25 @@ import {
   Box,
   Button,
   ButtonText,
+  CheckCircle2,
+  ChevronDown,
+  ChevronUp,
+  Edit2,
   FadeInDown,
+  FileText,
   Heading,
   HStack,
   Icon,
+  Link as LinkIcon,
+  Plus,
   Pressable,
   ScrollView,
   SkeletonCard,
   Spinner,
   Text,
+  Trash2,
   VStack,
 } from '@repo/ui';
-import {
-  CheckCircle2,
-  ChevronDown,
-  ChevronUp,
-  Edit2,
-  FileText,
-  Link as LinkIcon,
-  Plus,
-  Trash2,
-} from 'lucide-native';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 

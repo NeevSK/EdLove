@@ -7,19 +7,23 @@ import {
   HStack,
   hapticLight,
   hapticSuccess,
+  Icon,
   Input,
   InputField,
+  Plus,
   Pressable,
   SanctuaryToast,
+  Save,
   ScrollView,
   Text,
   Textarea,
   TextareaInput,
   Theme,
+  Trash2,
   useToast,
   VStack,
+  X,
 } from '@repo/ui';
-import { Plus, Save, Trash2, X } from 'lucide-react-native';
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -157,7 +161,7 @@ export default function BulkStudentCreation({
           </Text>
         </VStack>
         <Pressable onPress={onCancel} className="rounded-full bg-phase-surface-secondary p-3">
-          <X size={20} color="#1F2937" />
+          <Icon as={X} size={20} color="#1F2937" />
         </Pressable>
       </HStack>
 
@@ -357,7 +361,7 @@ export default function BulkStudentCreation({
                           </Text>
                         </Pressable>
                         <Pressable onPress={() => removeStudent(index)}>
-                          <Trash2 size={18} color={Theme.colors.emberRed} />
+                          <Icon as={Trash2} size={18} color={Theme.colors.emberRed} />
                         </Pressable>
                       </HStack>
                     </HStack>
@@ -373,7 +377,7 @@ export default function BulkStudentCreation({
                 className="rounded-full border-sanctuarySaffron"
               >
                 <HStack className="items-center gap-2">
-                  <Plus size={18} color={Theme.colors.sanctuarySaffron} />
+                  <Icon as={Plus} size={18} color={Theme.colors.sanctuarySaffron} />
                   <ButtonText className="font-black uppercase tracking-wider text-sanctuarySaffron">
                     {t('bulk_creation.addOneMore') || 'Add One More'}
                   </ButtonText>
@@ -386,7 +390,7 @@ export default function BulkStudentCreation({
                 className="rounded-full bg-sanctuarySaffron"
               >
                 <HStack className="items-center gap-2">
-                  <Save size={18} color={Theme.colors.sanctuaryInk} />
+                  <Icon as={Save} size={18} color={Theme.colors.sanctuaryInk} />
                   <ButtonText className="font-black uppercase tracking-wider text-sanctuary-ink">
                     {t('bulk_creation.addStudentsAction', { count: validStudentsCount }) ||
                       `Add ${validStudentsCount} Student(s)`}

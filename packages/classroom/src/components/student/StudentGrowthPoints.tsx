@@ -1,5 +1,4 @@
-import { Box, Heading, HStack, Icon, Text, VStack } from '@repo/ui';
-import { Trophy } from 'lucide-react-native';
+import { Box, Heading, HStack, Icon, Text, Trophy, VStack } from '@repo/ui';
 import React from 'react';
 
 interface StudentGrowthPointsProps {

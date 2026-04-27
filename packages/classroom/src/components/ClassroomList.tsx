@@ -7,23 +7,28 @@ import {
   useStore,
 } from '@repo/core';
 import {
+  BookOpen,
   Box,
+  ChevronRight,
+  ClipboardCheck,
   FlatList,
   Heading,
   HStack,
   hapticLight,
   hapticSuccess,
   Icon,
+  Plus,
   PositiveInvitation,
   Pressable,
   SanctuaryToast,
   SkeletonCard,
   Spinner,
   Text,
+  Users,
   useToast,
   VStack,
+  Zap,
 } from '@repo/ui';
-import { BookOpen, ChevronRight, ClipboardCheck, Plus, Users, Zap } from 'lucide-react-native';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import CreateClassroomModal from './CreateClassroomModal';

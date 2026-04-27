@@ -1,23 +1,20 @@
 import {
+  AlertCircle,
   Box,
-  Heading,
+  ClipboardCheck,
   HStack,
-  hapticLight,
   Icon,
   Pressable,
   Spinner,
   Text,
-  VStack,
-} from '@repo/ui';
-import {
-  AlertCircle,
-  ChevronRight,
-  ClipboardCheck,
   TrendingUp,
   UserPlus,
   Users,
-} from 'lucide-react-native';
-import React, { useEffect, useState } from 'react';
+  VStack,
+  hapticLight,
+} from '@repo/ui';
+
+import { useEffect, useState } from 'react';
 import { type StudentPrincipalPulse, staffOperationsAPI } from '../../staff';
 
 interface StudentPulseSectionProps {

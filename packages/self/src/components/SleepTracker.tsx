@@ -17,9 +17,6 @@ import {
   Icon,
   SkeletonCard,
   Slider,
-  SliderFilledTrack,
-  SliderThumb,
-  SliderTrack,
   Text,
   VStack,
 } from '@repo/ui';

@@ -1,16 +1,17 @@
 import {
   Box,
-  Heading,
+  Briefcase,
+  ChevronRight,
   HStack,
-  hapticLight,
+  Heading,
   Icon,
   Pressable,
   ScrollView,
   Text,
+  User,
   VStack,
+  hapticLight,
 } from '@repo/ui';
-import { Briefcase, ChevronRight, User } from 'lucide-react-native';
-import React from 'react';
 
 interface StaffMember {
   id: string;

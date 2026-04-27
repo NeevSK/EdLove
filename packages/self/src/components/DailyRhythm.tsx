@@ -395,7 +395,7 @@ function DailyRhythmContent() {
                   Vibration Type
                 </Text>
                 <Select
-                  selectedValue={editingPeriod?.type}
+                  value={editingPeriod?.type}
                   onValueChange={(val: string) =>
                     setEditingPeriod((prev) => ({ ...prev, type: val as any }))
                   }

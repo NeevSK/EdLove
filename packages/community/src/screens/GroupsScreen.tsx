@@ -1,4 +1,3 @@
-// @ts-expect-error - Temporary until we decide on demo logic location
 import { isDemo, usePermissions } from '@repo/core';
 import {
   AnimatedView,

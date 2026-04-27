@@ -95,6 +95,14 @@ export function useEnvironment(): EnvironmentContextValue {
   );
 }
 
+export {
+  FidelityProvider,
+  useFidelity,
+} from './FidelityProvider';
+export {
+  LanguageProvider,
+  useLanguage,
+} from './LanguageProvider';
 // Re-export utility functions and atomic hooks
 export {
   RealityProvider,
@@ -104,13 +112,5 @@ export {
   ThemeProvider,
   useThemeContext,
 } from './ThemeProvider';
-export {
-  LanguageProvider,
-  useLanguage,
-} from './LanguageProvider';
-export {
-  FidelityProvider,
-  useFidelity,
-} from './FidelityProvider';
 
 export { getTemporalPhase, shouldUseDarkTheme } from './utils';

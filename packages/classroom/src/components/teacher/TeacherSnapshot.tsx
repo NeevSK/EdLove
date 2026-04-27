@@ -1,5 +1,4 @@
-import { Box, HStack, Icon, Text, VStack } from '@repo/ui';
-import { MapPin } from 'lucide-react-native';
+import { Box, HStack, Icon, MapPin, Text, VStack } from '@repo/ui';
 import type React from 'react';
 
 interface SnapshotItem {

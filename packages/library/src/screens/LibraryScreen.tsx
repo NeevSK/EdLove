@@ -52,7 +52,7 @@ import {
   Play,
   Plus,
 } from 'lucide-react-native';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { libraryAPI } from '../api/library';
 import AddCollectionModal from '../components/AddCollectionModal';
@@ -190,6 +190,8 @@ export default function LibraryScreen() {
     isActionSheetVisible: false,
     isCollectionPickerVisible: false,
   };
+
+  const isFetchingPublicRef = useRef(false);
 
   type LibraryAction =
     | { type: 'SET_SEARCH'; query: string }

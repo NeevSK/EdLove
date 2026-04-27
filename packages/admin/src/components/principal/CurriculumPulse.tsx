@@ -1,17 +1,20 @@
 import { supabase } from '@repo/core';
 import {
+  BookOpen,
   Box,
-  Heading,
+  Clock,
   HStack,
+  Heading,
   Icon,
   Progress,
   ProgressFilledTrack,
   Spinner,
   Text,
   VStack,
+  Zap,
 } from '@repo/ui';
-import { BookOpen, Clock, Zap } from 'lucide-react-native';
-import React, { useEffect, useState } from 'react';
+
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface GradeProgress {
@@ -49,7 +52,7 @@ export default function CurriculumPulse({ schoolId }: { schoolId: string }) {
       } else {
         setProgress(data || []);
       }
-    } catch (err) {
+    } catch (_err) {
       setMockData();
     } finally {
       setIsLoading(false);
@@ -58,7 +61,7 @@ export default function CurriculumPulse({ schoolId }: { schoolId: string }) {
 
   useEffect(() => {
     fetchCurriculumProgress();
-  }, [schoolId]);
+  }, [fetchCurriculumProgress]);
 
   if (isLoading) {
     return (

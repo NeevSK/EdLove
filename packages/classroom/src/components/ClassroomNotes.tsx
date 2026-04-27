@@ -22,33 +22,31 @@
 import type { ClassroomNote } from '@repo/core';
 import { api, coreRuntime } from '@repo/core';
 import {
+  Bell,
+  BookOpen,
   Box,
+  ChevronDown,
   FlatList,
+  Globe,
   HStack,
   hapticLight,
   Icon,
   Input,
   InputField,
   KeyboardAvoidingView,
-  PositiveInvitation,
-  Pressable,
-  Spinner,
-  Text,
-  useLotusToast,
-  VStack,
-} from '@repo/ui';
-import {
-  Bell,
-  BookOpen,
-  ChevronDown,
-  Globe,
   Lock,
   Megaphone,
   NotebookPen,
   Pin,
+  PositiveInvitation,
+  Pressable,
+  Spinner,
   StickyNote,
+  Text,
+  useLotusToast,
+  VStack,
   X,
-} from 'lucide-react-native';
+} from '@repo/ui';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 // ─── Types ──────────────────────────────────────────────────────────────────

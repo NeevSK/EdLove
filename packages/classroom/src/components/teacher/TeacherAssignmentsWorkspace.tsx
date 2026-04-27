@@ -1,19 +1,23 @@
 import { assignmentsAPI } from '@repo/core';
 import {
   Box,
+  CalendarDays,
+  ClipboardList,
+  Clock3,
   Heading,
   HStack,
   hapticLight,
   Icon,
   Input,
   InputField,
+  Plus,
   Pressable,
   SanctuaryModal,
+  Sparkles,
   Spinner,
   Text,
   VStack,
 } from '@repo/ui';
-import { CalendarDays, ClipboardList, Clock3, Plus, Sparkles } from 'lucide-react-native';
 import type React from 'react';
 import { useCallback, useEffect, useState } from 'react';
 

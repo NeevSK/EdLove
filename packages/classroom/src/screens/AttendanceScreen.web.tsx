@@ -6,7 +6,7 @@ import {
   type StudentAttendance,
   useStore,
 } from '@repo/core';
-import { Check, ChevronLeft, Clock, Save, X } from 'lucide-react-native';
+import { Check, ChevronLeft, Clock, Icon, Save, X } from '@repo/ui';
 import type React from 'react';
 import { useCallback, useEffect, useMemo, useReducer } from 'react';
 
@@ -214,7 +214,7 @@ export default function AttendanceScreenWeb() {
               color: 'var(--ink-ghost)',
             }}
           >
-            <ChevronLeft size={14} /> Back
+            <Icon as={ChevronLeft} size={14} /> Back
           </button>
           <div>
             <h2 style={{ margin: 0, fontSize: '20px', fontWeight: '800' }}>
@@ -399,7 +399,7 @@ export default function AttendanceScreenWeb() {
                   fontSize: '14px',
                 }}
               >
-                <Check size={18} /> Attendance saved for today
+                <Icon as={Check} size={18} /> Attendance saved for today
               </div>
             ) : (
               <button
@@ -421,7 +421,7 @@ export default function AttendanceScreenWeb() {
                   '... Saving...'
                 ) : (
                   <>
-                    <Save size={15} /> Complete Marking
+                    <Icon as={Save} size={15} /> Complete Marking
                   </>
                 )}
               </button>

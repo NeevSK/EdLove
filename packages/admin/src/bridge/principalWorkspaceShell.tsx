@@ -1,15 +1,19 @@
 import {
   Box,
-  Heading,
+  Building2,
   HStack,
+  Heading,
+  MessageSquare,
+  NotebookPen,
   Pressable,
+  QrCode,
   ScrollView,
   Text,
-  useTheme,
-  useThemedColors,
   VStack,
+  Wind,
+  useTheme,
 } from '@repo/ui';
-import { Building2, MessageSquare, NotebookPen, QrCode, Wind } from 'lucide-react-native';
+
 import type React from 'react';
 import { useMemo } from 'react';
 import {
@@ -87,7 +91,7 @@ export const PrincipalWorkspaceShell: React.FC<any> = ({
           </VStack>
 
           <HStack className="gap-1 bg-phase-canvas p-1.5 rounded-2xl self-start border border-phase-border">
-            {['Dashboard', 'Structure', 'Invites', 'Logbook'].map((tab, i) => {
+            {['Dashboard', 'Structure', 'Invites', 'Logbook'].map((tab, _i) => {
               const isActive =
                 (tab === 'Dashboard' && activeView === 'main') ||
                 (tab === 'Structure' && activeView === 'hierarchy') ||
@@ -159,7 +163,7 @@ function InstitutionLinks({
   onOpenBreathing: () => void;
   onEditSchool: () => void;
 }) {
-  const colors = useTheme().scene;
+  const _colors = useTheme().scene;
 
   const LinkRow = ({
     icon: Icon,

@@ -2,15 +2,17 @@ import {
   Box,
   Button,
   ButtonText,
-  Heading,
+  Compass,
+  DoorOpen,
   HStack,
-  hapticLight,
+  Heading,
   Icon,
+  School,
   Text,
+  Users,
   VStack,
+  hapticLight,
 } from '@repo/ui';
-import { Compass, DoorOpen, School, Users } from 'lucide-react-native';
-import React from 'react';
 
 interface PrincipalOnboardingViewProps {
   isGuest: boolean;

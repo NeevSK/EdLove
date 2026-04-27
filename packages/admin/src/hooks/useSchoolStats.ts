@@ -13,8 +13,8 @@ const SCHOOL_STATS_CACHE_KEY = 'gurudevi-school-stats-cache';
 const SCHOOL_INFO_CACHE_KEY = 'gurudevi-school-info-cache';
 
 export function useSchoolStats(schoolId: string) {
-  const isOnline = useStore((state) => state.isOnline);
-  const { viewDate } = useTemporalStore();
+  const _isOnline = useStore((state) => state.isOnline);
+  const viewDate = useTemporalStore(s => s.viewDate);
   const isDemoMode = useStore((state) => state.isDemoMode);
   const { isGuest } = useFeatureAccess();
   const [stats, setStats] = useState<SchoolStats | null>(null);
@@ -101,7 +101,7 @@ export function useSchoolStats(schoolId: string) {
 
   useEffect(() => {
     void refreshData();
-  }, [refreshData, isOnline]);
+  }, [refreshData]);
 
   return {
     school,

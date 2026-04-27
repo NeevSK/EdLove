@@ -46,24 +46,28 @@ export const TerraView: React.FC<PerspectiveViewProps> = ({ data, onNodePress })
 
   // Dark Map Style (Sanctuary Ink / Obsidian)
   const mapStyle = [
-        { "elementType": "geometry", "stylers": [{ "color": "#1A1610" }] },
-        { "elementType": "labels.text.stroke", "stylers": [{ "color": "#1A1610" }] },
-        { "elementType": "labels.text.fill", "stylers": [{ "color": "#8C8273" }] },
-        { "featureType": "administrative.locality", "elementType": "labels.text.fill", "stylers": [{ "color": "#F6BF8C" }] },
-        { "featureType": "poi", "elementType": "labels.text.fill", "stylers": [{ "color": "#8C8273" }] },
-        { "featureType": "poi.park", "elementType": "geometry", "stylers": [{ "color": "#2A2318" }] },
-        { "featureType": "road", "elementType": "geometry", "stylers": [{ "color": "#3D3528" }] },
-        { "featureType": "road", "elementType": "geometry.stroke", "stylers": [{ "color": "#1A1610" }] },
-        { "featureType": "road", "labels.text.fill", "stylers": [{ "color": "#6A6358" }] },
-        { "featureType": "water", "elementType": "geometry", "stylers": [{ "color": "#0F172A" }] },
-        { "featureType": "water", "elementType": "labels.text.fill", "stylers": [{ "color": "#2563EB" }] }
-    ];
+    { elementType: 'geometry', stylers: [{ color: '#1A1610' }] },
+    { elementType: 'labels.text.stroke', stylers: [{ color: '#1A1610' }] },
+    { elementType: 'labels.text.fill', stylers: [{ color: '#8C8273' }] },
+    {
+      featureType: 'administrative.locality',
+      elementType: 'labels.text.fill',
+      stylers: [{ color: '#F6BF8C' }],
+    },
+    { featureType: 'poi', elementType: 'labels.text.fill', stylers: [{ color: '#8C8273' }] },
+    { featureType: 'poi.park', elementType: 'geometry', stylers: [{ color: '#2A2318' }] },
+    { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#3D3528' }] },
+    { featureType: 'road', elementType: 'geometry.stroke', stylers: [{ color: '#1A1610' }] },
+    { featureType: 'road', elementType: 'labels.text.fill', stylers: [{ color: '#6A6358' }] },
+    { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#0F172A' }] },
+    { featureType: 'water', elementType: 'labels.text.fill', stylers: [{ color: '#2563EB' }] },
+  ];
 
   return (
     <Box className="absolute inset-0 bg-[#1A1610]">
       <UnifiedMapView
         ref={mapRef}
-        className="absolute inset-0"
+        style={{ flex: 1 }}
         region={initialRegion}
         customMapStyle={mapStyle}
         rotateEnabled={false}

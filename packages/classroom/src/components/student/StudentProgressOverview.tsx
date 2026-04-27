@@ -1,6 +1,5 @@
 import type { Assignment } from '@repo/core';
-import { Box, HStack, Icon, Text, VStack } from '@repo/ui';
-import { CheckCircle2, Sparkles, Target } from 'lucide-react-native';
+import { Box, CheckCircle2, HStack, Icon, Sparkles, Target, Text, VStack } from '@repo/ui';
 import React, { useMemo } from 'react';
 
 type GoalCard = {

@@ -1,5 +1,4 @@
-import { hapticLight, Icon, Pressable, Text } from '@repo/ui';
-import { ClipboardList } from 'lucide-react-native';
+import { ClipboardList, hapticLight, Icon, Pressable, Text } from '@repo/ui';
 import React from 'react';
 
 export function MyEchoesAction() {

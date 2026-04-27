@@ -28,7 +28,6 @@ interface MLKitBarcode {
 }
 let BarcodeScanning: any = null;
 try {
-  // @ts-expect-error - Module may not be available in all environments/configurations
   BarcodeScanning = require('@react-native-ml-kit/barcode-scanning').default as any;
 } catch {
   // Not installed or not linked — will fall back gracefully

@@ -130,7 +130,14 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 export const useSanctuaryToast = () => {
   const context = useContext(ToastContext);
   if (!context) throw new Error('useSanctuaryToast must be used within ToastProvider');
-  return context;
+  return {
+    ...context,
+    showToast: (options: { message: string; type?: ToastType; duration?: number }) =>
+      context.showToast({
+        type: 'sanctuary',
+        ...options,
+      } as ToastItem),
+  };
 };
 
 export { useSanctuaryToast as useToast };

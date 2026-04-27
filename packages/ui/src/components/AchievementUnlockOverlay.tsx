@@ -57,13 +57,7 @@ export default function AchievementUnlockOverlay({
 
       return () => clearTimeout(timer);
     }
-  }, [
-    visible,
-    translateY,
-    scale,
-    opacity,
-    performHide,
-  ]);
+  }, [visible, translateY, scale, opacity, performHide]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }, { scale: scale.value }] as any,

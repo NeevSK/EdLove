@@ -1,14 +1,13 @@
 import { supabase } from '@repo/core';
-import {
-  type ChangeRecord,
-  type DocumentCollaborator,
-  type DocumentComment,
-  type DocumentStatus,
-  type DocumentTemplate,
-  type DocumentVersion,
-  type DocumentWorkflow,
-  DocumentWorkflowStep,
-  type WorkflowTransition,
+import type {
+  ChangeRecord,
+  DocumentCollaborator,
+  DocumentComment,
+  DocumentStatus,
+  DocumentTemplate,
+  DocumentVersion,
+  DocumentWorkflow,
+  WorkflowTransition,
 } from './types';
 
 export class DocumentWorkflowEngine {
@@ -316,10 +315,10 @@ export class DocumentWorkflowEngine {
 
   // Private helper methods
   private async validateTransition(
-    documentId: string,
+    _documentId: string,
     fromStatus: DocumentStatus,
     toStatus: DocumentStatus,
-    userId: string,
+    _userId: string,
   ): Promise<void> {
     const transition = this.workflowTransitions.find(
       (t) => t.from === fromStatus && t.to === toStatus,

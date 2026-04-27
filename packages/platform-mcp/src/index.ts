@@ -11,6 +11,7 @@ import { DiscoveryService } from './services/DiscoveryService.js';
 import { HelpService } from './services/HelpService.js';
 import { MaintenanceService } from './services/MaintenanceService.js';
 import { ScoutService } from './services/ScoutService.js';
+import { DocumentService } from './services/DocumentService.js';
 import { ROOT_DIR } from './utils/constants.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -28,6 +29,7 @@ class PolymathPlatformServer {
   private maintenance: MaintenanceService;
   private scout: ScoutService;
   private help: HelpService;
+  private document: DocumentService;
 
   constructor() {
     this.server = new Server(
@@ -35,10 +37,11 @@ class PolymathPlatformServer {
       { capabilities: { tools: {} } },
     );
 
-    this.audit = new AuditService();
+    this.document = new DocumentService();
+    this.audit = new AuditService(this.document);
     this.discovery = new DiscoveryService();
     this.maintenance = new MaintenanceService();
-    this.scout = new ScoutService();
+    this.scout = new ScoutService(this.document);
     this.help = new HelpService();
 
     this.setupHandlers();
@@ -614,6 +617,16 @@ class PolymathPlatformServer {
             required: ['action'],
           },
         },
+        {
+          name: 'help',
+          description: 'Get help and overview of all available Polymath MCP tools and gateways.',
+          inputSchema: { type: 'object', properties: {} },
+        },
+        {
+          name: 'info',
+          description: 'Get architectural information and philosophy of the Polymath Platform.',
+          inputSchema: { type: 'object', properties: {} },
+        },
       ];
 
       // Smart Selection Strategy
@@ -784,6 +797,13 @@ class PolymathPlatformServer {
           }
         }
 
+        if (name === 'help') {
+          return this.help.handleGetHelpOverview();
+        }
+        if (name === 'info') {
+          return this.help.handleGetArchitectureDoc();
+        }
+
         // --- LEGACY ROUTING ---
         switch (name) {
           case 'audit_monorepo_hygiene':
@@ -827,7 +847,7 @@ class PolymathPlatformServer {
           case 'sync_identity_schema':
             return this.maintenance.handleSyncIdentity();
           case 'check_package_types':
-            return this.maintenance.handleCheckTypes(args as any);
+            return this.audit.handleCheckTypes(args as any);
           case 'create_checkpoint':
             return this.maintenance.handleCreateCheckpoint(args as any);
           case 'normalize_imports':

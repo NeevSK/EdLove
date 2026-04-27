@@ -305,7 +305,7 @@ export default function EditProfileModal({
                         {t('profile.role') || 'Sovereign Role'}
                       </Text>
                       <Select
-                        selectedValue={selectedRole || 'student'}
+                        value={selectedRole || 'student'}
                         onValueChange={(value: string | null) => setSelectedRole(value as Role)}
                       >
                         <SelectTrigger className="h-16 rounded-3xl bg-phase-surface/30 border-phase-surface/50 px-6">

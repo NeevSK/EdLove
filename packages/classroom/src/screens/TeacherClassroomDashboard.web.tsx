@@ -1,43 +1,42 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { api, usePermissions } from '@repo/core';
 import {
+  ArrowLeft,
+  BookOpen,
   Box,
   Button,
   ButtonText,
+  ClipboardCheck,
+  ClipboardList,
+  FileText,
+  GraduationCap,
   Heading,
   HStack,
+  Icon,
   Input,
   InputField,
+  Layers3,
+  LayoutGrid,
+  MessageSquare,
   Modal,
   ModalBackdrop,
   ModalBody,
   ModalContent,
   ModalFooter,
   ModalHeader,
+  NotebookPen,
   Pressable,
   ScreenWrapper,
   ScrollView,
   SkeletonCard,
+  Sparkles,
   Text,
   Theme,
+  TrendingUp,
+  Users,
   useThemedColors,
   VStack,
 } from '@repo/ui';
-import {
-  ArrowLeft,
-  BookOpen,
-  ClipboardCheck,
-  ClipboardList,
-  FileText,
-  GraduationCap,
-  Layers3,
-  LayoutGrid,
-  MessageSquare,
-  NotebookPen,
-  Sparkles,
-  TrendingUp,
-  Users,
-} from 'lucide-react-native';
 import React, { useState } from 'react';
 import {
   AttendanceView,
@@ -279,7 +278,7 @@ export default function TeacherClassroomDashboardWeb() {
                     style={{ borderColor: colors.border }}
                   >
                     <HStack className="items-center gap-1.5">
-                      <Layers3 size={16} color={colors.text} />
+                      <Icon as={Layers3} size={16} color={colors.text} />
                       <ButtonText style={{ color: colors.text }}>Groups</ButtonText>
                     </HStack>
                   </Button>
@@ -393,7 +392,7 @@ export default function TeacherClassroomDashboardWeb() {
                       borderColor: colors.border,
                     }}
                   >
-                    <ArrowLeft size={16} color={colors.text} />
+                    <Icon as={ArrowLeft} size={16} color={colors.text} />
                     <Text className="font-semibold" style={{ color: colors.text }}>
                       Back
                     </Text>
@@ -505,7 +504,6 @@ export default function TeacherClassroomDashboardWeb() {
               <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                 <HStack className="gap-sm px-md py-md">
                   {FEATURES.map((feature) => {
-                    const Icon = feature.icon;
                     const isActive = activeFeature === feature.id;
                     const tone = FEATURE_TONES[feature.id];
                     return (
@@ -519,6 +517,7 @@ export default function TeacherClassroomDashboardWeb() {
                         >
                           <HStack className="items-center gap-xs">
                             <Icon
+                              as={feature.icon}
                               size={16}
                               color={isActive ? Theme.colors.sacredWhite : tone.color}
                             />

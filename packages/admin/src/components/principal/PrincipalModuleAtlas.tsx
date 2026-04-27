@@ -1,15 +1,20 @@
-import { Box, Heading, HStack, Icon, Text, VStack } from '@repo/ui';
 import {
   ArrowRight,
   BookCopy,
+  Box,
   BriefcaseBusiness,
   ClipboardCheck,
   FileSpreadsheet,
   Files,
+  HStack,
+  Heading,
+  Icon,
   Landmark,
   Package,
-} from 'lucide-react-native';
-import React from 'react';
+  Text,
+  VStack,
+} from '@repo/ui';
+
 import {
   PRINCIPAL_CAPABILITY_REGISTRY,
   type PrincipalCapabilityId,

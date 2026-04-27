@@ -1,6 +1,18 @@
-import { Box, HStack, hapticLight, Icon, Pressable, Text, VStack } from '@repo/ui';
-import { ArrowRight, LayoutGrid, Milestone, NotebookPen, UserPlus } from 'lucide-react-native';
-import React from 'react';
+import {
+  ArrowRight,
+  Box,
+  HStack,
+  Icon,
+  LayoutGrid,
+  Milestone,
+  NotebookPen,
+  Pressable,
+  Text,
+  UserPlus,
+  VStack,
+  hapticLight,
+} from '@repo/ui';
+
 import { useTranslation } from 'react-i18next';
 
 interface ManagementStationProps {

@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import { guardianAPI } from '../../guardian/api';
-import type { GuardianDashboard, StudentOverview } from '../../guardian/types';
+import type { GuardianDashboardData as GuardianDashboard } from '../../guardian/types';
 import { GuardianDashboardScreen } from '../../screens/GuardianDashboardScreen';
 
 // Mock the API

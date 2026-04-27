@@ -1,6 +1,5 @@
 import { useStore } from '@repo/core';
-import { Box, Heading, HStack, Icon, Text, VStack } from '@repo/ui';
-import { Star } from 'lucide-react-native';
+import { Box, Heading, HStack, Icon, Star, Text, VStack } from '@repo/ui';
 import React from 'react';
 
 export function StudentHeader({ isDemo }: { isDemo: boolean }) {

@@ -1,6 +1,7 @@
 import { api, type Student } from '@repo/core';
 import { StudentAnalysisModal } from '@repo/library';
 import {
+  Activity,
   Box,
   Button,
   ButtonText,
@@ -8,11 +9,13 @@ import {
   HStack,
   Icon,
   Pressable,
+  Sparkles,
   Spinner,
   Text,
+  TrendingUp,
+  TriangleAlert,
   VStack,
 } from '@repo/ui';
-import { Activity, Sparkles, TrendingUp, TriangleAlert } from 'lucide-react-native';
 import type React from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 

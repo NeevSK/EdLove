@@ -1,7 +1,11 @@
 import { useAIAgent } from '@repo/ai';
 import { useStore } from '@repo/core';
+import React from 'react';
 import {
+  AlertCircle,
   Box,
+  Calendar,
+  CalendarCheck,
   HStack,
   Icon,
   SanctuaryButton,
@@ -9,10 +13,9 @@ import {
   ScrollView,
   Text,
   useRegisterFAB,
+  Users,
   VStack,
 } from '@repo/ui';
-import { AlertCircle, Calendar, CalendarCheck, Users } from 'lucide-react-native';
-import React from 'react';
 
 export default function SectionHeadDashboard({
   schoolId,
@@ -23,7 +26,21 @@ export default function SectionHeadDashboard({
 }) {
   const { activeGaps, refreshStatus, generateTimetable, isThinking, lastTimetableDraft } =
     useAIAgent();
-  const userRole = useStore((state: any) => state.userRole);
+  const _userRole = useStore((state: any) => state.userRole);
+
+  const handleExecuteRelief = React.useCallback((action: string) => {
+    console.log('Executing relief:', action);
+  }, []);
+
+  const handleReviewDraft = React.useCallback(() => {
+    console.log('Reviewing draft');
+  }, []);
+
+  const handleCreateDraft = React.useCallback(() => {
+    generateTimetable('current-school');
+  }, [generateTimetable]);
+
+  const handleGenericAction = React.useCallback(() => {}, []);
 
   // Register FAB globally
   useRegisterFAB({
@@ -66,7 +83,7 @@ export default function SectionHeadDashboard({
                   </HStack>
                   <Box className="mt-4">
                     <SanctuaryButton
-                      onPress={() => console.log('Executing relief:', gap.suggestedAction)}
+                      onPress={() => handleExecuteRelief(gap.suggestedAction)}
                       size="sm"
                     >
                       <Text className="text-white font-bold">Assign Relief Teacher</Text>
@@ -101,7 +118,7 @@ export default function SectionHeadDashboard({
                     Draft generated for your section.
                   </Text>
                 </HStack>
-                <SanctuaryButton onPress={() => console.log('Reviewing draft')} size="sm">
+                <SanctuaryButton onPress={handleReviewDraft} size="sm">
                   Review Section Draft
                 </SanctuaryButton>
               </VStack>
@@ -142,13 +159,13 @@ export default function SectionHeadDashboard({
             <Text className="font-bold text-xs text-phaseText-muted uppercase tracking-widest px-1">
               QUICK COORDINATION
             </Text>
-            <SanctuaryButton onPress={() => {}} variant="outline">
+            <SanctuaryButton onPress={handleGenericAction} variant="outline">
               <HStack className="gap-3 items-center">
                 <Icon as={Calendar} size="sm" className="text-phaseText-primary" />
                 <Text className="font-bold text-phaseText-primary">Review Section Schedule</Text>
               </HStack>
             </SanctuaryButton>
-            <SanctuaryButton onPress={() => {}} variant="outline">
+            <SanctuaryButton onPress={handleGenericAction} variant="outline">
               <HStack className="gap-3 items-center">
                 <Icon as={Users} size="sm" className="text-phaseText-primary" />
                 <Text className="font-bold text-phaseText-primary">Staff Workload Balance</Text>

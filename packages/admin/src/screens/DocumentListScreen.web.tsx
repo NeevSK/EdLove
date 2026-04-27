@@ -1,18 +1,20 @@
-import { api, usePermissions } from '@repo/core';
+import { usePermissions } from '@repo/core';
 import {
   Box,
-  Heading,
   HStack,
+  Heading,
   Icon,
+  LayoutGrid,
+  List,
   Pressable,
   ScreenWrapper,
   ScrollView,
   Text,
+  VStack,
   useTheme,
   useThemedColors,
-  VStack,
 } from '@repo/ui';
-import { LayoutGrid, List } from 'lucide-react-native';
+
 import type React from 'react';
 import { useCallback, useEffect, useState } from 'react';
 import {
@@ -36,8 +38,8 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
   viewDate,
   isPastView,
 }) => {
-  const theme = useTheme();
-  const colors = useThemedColors();
+  const _theme = useTheme();
+  const _colors = useThemedColors();
   const { can, context: user } = usePermissions();
   const [documents, setDocuments] = useState<DocumentWorkflow[]>([]);
   const [filteredDocuments, setFilteredDocuments] = useState<DocumentWorkflow[]>([]);
@@ -98,7 +100,6 @@ const DocumentListScreenWeb: React.FC<DocumentListScreenWebProps> = ({
           return a.title.localeCompare(b.title);
         case 'status':
           return a.status.localeCompare(b.status);
-        case 'updatedAt':
         default:
           return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
       }

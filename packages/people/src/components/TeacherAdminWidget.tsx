@@ -8,7 +8,6 @@ import {
   DollarSign,
   FileText,
 } from 'lucide-react-native';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface TeacherAdminWidgetProps {

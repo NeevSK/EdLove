@@ -1,5 +1,4 @@
-import { hapticLight, Icon, Pressable, Text } from '@repo/ui';
-import { MessageCircle } from 'lucide-react-native';
+import { hapticLight, Icon, MessageCircle, Pressable, Text } from '@repo/ui';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 

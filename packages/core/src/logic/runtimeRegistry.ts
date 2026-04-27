@@ -71,6 +71,14 @@ export const coreRuntime = {
     return runtime.ui;
   },
 
+  get clipboard() {
+    if (!runtime)
+      throw new Error(
+        'CoreRuntime: Clipboard provider not registered. Call coreRuntime.register() during app initialization.',
+      );
+    return runtime.clipboard;
+  },
+
   isRegistered() {
     return runtime !== null;
   },

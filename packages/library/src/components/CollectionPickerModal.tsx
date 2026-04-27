@@ -1,5 +1,6 @@
 import {
   Box,
+  Center,
   FlatList,
   HStack,
   Icon,
@@ -36,7 +37,7 @@ export const CollectionPickerModal: React.FC<CollectionPickerModalProps> = ({
   const theme = useTheme();
 
   return (
-    <Modal isOpen={visible} onClose={onClose} size="lg">
+    <Modal isOpen={visible} onClose={onClose}>
       <ModalBackdrop />
       <ModalContent className="bg-phase-surface rounded-[24px]">
         <ModalHeader className="p-5 border-b border-phase-border">

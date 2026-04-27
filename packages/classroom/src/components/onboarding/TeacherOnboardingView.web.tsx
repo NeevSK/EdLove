@@ -1,5 +1,19 @@
-import { Box, Heading, HStack, Icon, Pressable, Text, VStack } from '@repo/ui';
-import { ArrowRightCircle, BookOpen, Plus, School, Search, Users, Zap } from 'lucide-react-native';
+import {
+  ArrowRightCircle,
+  BookOpen,
+  Box,
+  Heading,
+  HStack,
+  Icon,
+  Plus,
+  Pressable,
+  School,
+  Search,
+  Text,
+  Users,
+  VStack,
+  Zap,
+} from '@repo/ui';
 import React from 'react';
 
 interface TeacherOnboardingViewProps {
@@ -85,7 +99,7 @@ export default function TeacherOnboardingViewWeb({
                     <Text className="text-templeGold font-black uppercase tracking-widest text-sm">
                       Explore Teacher Sandbox
                     </Text>
-                    <ArrowRightCircle size={16} color="#D4843A" />
+                    <Icon as={ArrowRightCircle} size={16} color="#D4843A" />
                   </HStack>
                 </Pressable>
               </VStack>

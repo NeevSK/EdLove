@@ -4,8 +4,11 @@ import path from 'path';
 import { ROOT_DIR } from '../utils/constants.js';
 import { executeSovereignTool } from '../utils/execution.js';
 import { findSurgicalReport, normalizeTarget, readReport } from '../utils/pathUtils.js';
+import { DocumentService } from './DocumentService.js';
 
 export class AuditService {
+  constructor(private document: DocumentService) {}
+
   handleAuditHygiene() {
     console.error('Running Hygiene Audit...');
     try {
@@ -82,10 +85,28 @@ export class AuditService {
   handleAuditPackageArchitecture(args: { target: string }) {
     const target = normalizeTarget(args.target);
     console.error(`Auditing package architecture for: ${target}`);
-    const output = execSync(`node scripts/audit-package-architecture.mjs "${target}"`, {
-      cwd: ROOT_DIR,
-    }).toString();
-    return { content: [{ type: 'text' as const, text: output }] };
+    try {
+      const output = execSync(`node scripts/audit-package-architecture.mjs "${target}"`, {
+        cwd: ROOT_DIR,
+      }).toString();
+
+      // Extract Markdown report if present
+      const match = output.match(/---BEGIN_MARKDOWN_REPORT---([\s\S]*?)---END_MARKDOWN_REPORT---/);
+      if (match && match[1]) {
+        return {
+          content: [
+            { type: 'text' as const, text: match[1].trim() },
+          ],
+        };
+      }
+
+      return { content: [{ type: 'text' as const, text: output }] };
+    } catch (e: any) {
+      return {
+        content: [{ type: 'text' as const, text: `Audit failed: ${e.message}\n${e.stdout || ''}` }],
+        isError: true,
+      };
+    }
   }
 
   handleAuditColors() {
@@ -131,12 +152,23 @@ export class AuditService {
     const fallbacks = execSync('node scripts/i18n-fallback-policy-check.mjs', {
       cwd: ROOT_DIR,
     }).toString();
+
+    const report = this.document.renderReport({
+      title: '🌐 Sovereign i18n Audit',
+      scope: 'packages/i18n',
+      summary: 'Analysis of localization coverage and fallback policies across the platform.',
+      stats: [
+        { label: 'Status', value: 'Review Required' }
+      ],
+      issues: [
+        { type: 'COVERAGE', file: 'i18n-assets', message: coverage.trim(), severity: 'info' },
+        { type: 'FALLBACK', file: 'i18n-policy', message: fallbacks.trim(), severity: 'warning' }
+      ]
+    });
+
     return {
       content: [
-        { type: 'text' as const, text: '## Key Coverage' },
-        { type: 'text' as const, text: coverage },
-        { type: 'text' as const, text: '## Fallback Policy' },
-        { type: 'text' as const, text: fallbacks },
+        { type: 'text' as const, text: report },
       ],
     };
   }
@@ -174,7 +206,7 @@ export class AuditService {
     const cleanTarget = rawTarget.replace(/^@repo\/|^@app\/|^\/|^\.\\|^.\//, '');
 
     if (cleanTarget) {
-      const rootSummary = path.join(ROOT_DIR, `audit-${cleanTarget}-summary.txt`);
+      const rootSummary = path.join(ROOT_DIR, `audit-${cleanTarget}-summary.md`);
       if (fs.existsSync(rootSummary)) fs.unlinkSync(rootSummary);
 
       try {
@@ -182,7 +214,13 @@ export class AuditService {
           `powershell -ExecutionPolicy Bypass -File scripts/audit-errors.ps1 -Target "${cleanTarget}" -LocalOnly`,
           { cwd: ROOT_DIR },
         ).toString();
-        const summary = findSurgicalReport(`audit-${cleanTarget}-summary.txt`, cleanTarget);
+
+        // Prioritize .md report, fallback to .txt
+        let summary = findSurgicalReport(`audit-${cleanTarget}-summary.md`, cleanTarget);
+        if (summary.startsWith('Discovery failed')) {
+          summary = findSurgicalReport(`audit-${cleanTarget}-summary.txt`, cleanTarget);
+        }
+
         return {
           content: [
             { type: 'text' as const, text: output },
@@ -190,7 +228,10 @@ export class AuditService {
           ],
         };
       } catch (e: any) {
-        const summary = findSurgicalReport(`audit-${cleanTarget}-summary.txt`, cleanTarget);
+        let summary = findSurgicalReport(`audit-${cleanTarget}-summary.md`, cleanTarget);
+        if (summary.startsWith('Discovery failed')) {
+          summary = findSurgicalReport(`audit-${cleanTarget}-summary.txt`, cleanTarget);
+        }
         return {
           content: [
             { type: 'text' as const, text: e.message },
@@ -202,10 +243,15 @@ export class AuditService {
     } else {
       try {
         const output = execSync(
-          `powershell -ExecutionPolicy Bypass -File scripts/audit-wrapper.ps1 -Cmd "pnpm turbo run check-types" -Log "reports/check-types.txt"`,
+          `powershell -ExecutionPolicy Bypass -File scripts/audit-wrapper.ps1 -Cmd "pnpm turbo run check-types" -Log "reports/check-types.md"`,
           { cwd: ROOT_DIR },
         ).toString();
-        const report = readReport('check-types.txt');
+
+        let report = readReport('check-types.md');
+        if (report === 'Report not found.') {
+          report = readReport('check-types.txt');
+        }
+
         return {
           content: [
             { type: 'text' as const, text: output },
@@ -213,7 +259,10 @@ export class AuditService {
           ],
         };
       } catch (e: any) {
-        const report = readReport('check-types.txt');
+        let report = readReport('check-types.md');
+        if (report === 'Report not found.') {
+          report = readReport('check-types.txt');
+        }
         return {
           content: [
             { type: 'text' as const, text: e.message },

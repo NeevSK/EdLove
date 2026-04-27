@@ -14,18 +14,23 @@ import {
   Box,
   Button,
   ButtonText,
+  Camera,
+  CheckCircle2,
   Heading,
   HStack,
   Icon,
+  Image as ImageIcon,
   Modal,
   ModalBackdrop,
   ModalContent,
   SanctuaryModal,
+  Send,
   Spinner,
   Text,
+  Trash2,
   VStack,
+  X,
 } from '@repo/ui';
-import { Camera, CheckCircle2, Image as ImageIcon, Send, Trash2, X } from 'lucide-react-native';
 import type React from 'react';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';

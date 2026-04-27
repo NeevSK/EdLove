@@ -14,6 +14,8 @@ import {
   Checkbox,
   CheckboxIcon,
   CheckboxIndicator,
+  Check as CheckIcon,
+  Edit2,
   Heading,
   HStack,
   hapticLight,
@@ -26,13 +28,15 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
+  Plus,
   Pressable,
   SanctuaryModal,
   ScrollView,
   Text,
+  Trash2,
+  Users,
   VStack,
 } from '@repo/ui';
-import { Check as CheckIcon, Edit2, Plus, Trash2, Users } from 'lucide-react-native';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -386,7 +390,6 @@ export default function GroupManager({ classroomId }: GroupManagerProps) {
                           isChecked={isChecked}
                           onChange={() => toggleStudentSelection(student.id)}
                           aria-label="Select student"
-                          size="sm"
                         >
                           <CheckboxIndicator
                             className={

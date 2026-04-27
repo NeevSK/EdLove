@@ -13,16 +13,22 @@ import {
   type StudentAttendancePulse,
   staffManagementAPI,
 } from '@repo/core';
-import { Box, HStack, hapticLight, Icon, Pressable, Text, VStack } from '@repo/ui';
 import {
   AlertCircle,
+  Box,
   ChevronRight,
   FileCheck,
+  HStack,
+  Icon,
+  Pressable,
+  Text,
   TrendingDown,
   TrendingUp,
-  Users,
-} from 'lucide-react-native';
-import React, { useEffect, useState } from 'react';
+  VStack,
+  hapticLight,
+} from '@repo/ui';
+
+import { useEffect, useState } from 'react';
 
 interface MorningSituationalBriefProps {
   schoolId: string;

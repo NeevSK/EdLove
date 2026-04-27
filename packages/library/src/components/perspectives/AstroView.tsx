@@ -93,7 +93,7 @@ export const AstroView: React.FC<PerspectiveViewProps> = ({
 
   const combinedGesture = useMemo(() => {
     const pinch = Gesture.Pinch()
-      .onUpdate((e) => {
+      .onUpdate((e: any) => {
         scale.value = savedScale.value * e.scale;
       })
       .onEnd(() => {
@@ -101,7 +101,7 @@ export const AstroView: React.FC<PerspectiveViewProps> = ({
       });
 
     const pan = Gesture.Pan()
-      .onUpdate((e) => {
+      .onUpdate((e: any) => {
         translateX.value = savedTranslateX.value + e.translationX;
         translateY.value = savedTranslateY.value + e.translationY;
       })

@@ -1,6 +1,18 @@
-import { Box, HStack, hapticLight, Icon, Pressable, SanctuaryModal, Text, VStack } from '@repo/ui';
-import type { LucideIcon } from 'lucide-react-native';
-import { Clock, Info, Plus } from 'lucide-react-native';
+import {
+  Box,
+  Clock,
+  HStack,
+  Icon,
+  Info,
+  Plus,
+  Pressable,
+  SanctuaryModal,
+  Text,
+  VStack,
+  hapticLight,
+  type LucideIcon,
+} from '@repo/ui';
+
 import type React from 'react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';

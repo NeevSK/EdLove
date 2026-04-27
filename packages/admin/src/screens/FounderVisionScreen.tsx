@@ -1,18 +1,19 @@
 import { UniversalPerspective } from '@repo/library';
 import {
   Box,
+  GitMerge,
   GlassCard,
-  Heading,
   HStack,
+  Heading,
   Icon,
   Pressable,
   ScrollView,
+  Share2,
+  Shield,
   Text,
-  View,
   VStack,
+  Zap,
 } from '@repo/ui';
-import { GitMerge, Share2, Shield, Zap } from 'lucide-react-native';
-import React from 'react';
 
 /**
  * FounderVisionScreen - Strategic App-Logic Visualization.

@@ -1,6 +1,16 @@
 import { FeatureGuard } from '@repo/core';
-import { Box, HStack, hapticLight, Icon, Pressable, Text } from '@repo/ui';
-import { History, MessageSquare, Plus, QrCode } from 'lucide-react-native';
+import {
+  Box,
+  History,
+  HStack,
+  hapticLight,
+  Icon,
+  MessageSquare,
+  Plus,
+  Pressable,
+  QrCode,
+  Text,
+} from '@repo/ui';
 import type React from 'react';
 
 interface ActionProps {

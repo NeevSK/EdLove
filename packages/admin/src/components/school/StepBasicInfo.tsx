@@ -1,6 +1,12 @@
-import { SanctuaryInput, VStack } from '@repo/ui';
-import { Globe, Mail, Phone, School } from 'lucide-react-native';
-import React from 'react';
+import {
+  Globe,
+  Mail,
+  Phone,
+  SanctuaryInput,
+  School,
+  VStack,
+} from '@repo/ui';
+
 import { useTranslation } from 'react-i18next';
 
 interface StepBasicInfoProps {

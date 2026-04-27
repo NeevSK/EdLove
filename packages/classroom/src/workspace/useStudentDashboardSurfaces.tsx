@@ -1,23 +1,21 @@
 import {
+  BookOpen,
   Box,
+  ClipboardCheck,
   HStack,
   Icon,
+  Layout,
+  MessageSquare,
   PositiveInvitation,
   Pressable,
+  Star,
   TemporalNavigator,
   Text,
   VStack,
-  type WorkspaceSurfaceDefinition,
-} from '@repo/ui';
-import {
-  BookOpen,
-  ClipboardCheck,
-  Layout,
-  MessageSquare,
-  Star,
   Wind,
+  type WorkspaceSurfaceDefinition,
   Zap,
-} from 'lucide-react-native';
+} from '@repo/ui';
 import type React from 'react';
 import { useMemo } from 'react';
 import { ClassroomList } from '../components';

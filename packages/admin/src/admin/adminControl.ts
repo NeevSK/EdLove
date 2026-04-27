@@ -42,7 +42,7 @@ function logAdminMutation(
   name: string,
   scope: string,
   status: MutationOutcome,
-  summary: string,
+  _summary: string,
   lastError?: string,
 ) {
   const id = makeId('admin-mutation');

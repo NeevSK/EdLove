@@ -1,6 +1,13 @@
 import { FeatureGuard } from '@repo/core';
-import { Box, GlobalHeader, SanctuaryNudge, SandboxBanner, ScreenWrapper } from '@repo/ui';
-import { Wind } from 'lucide-react-native';
+import {
+  Box,
+  GlobalHeader,
+  Icon,
+  SanctuaryNudge,
+  SandboxBanner,
+  ScreenWrapper,
+  Wind,
+} from '@repo/ui';
 import React, { useMemo } from 'react';
 import { StudentOnboardingView, TeacherOnboardingView } from '../components';
 import StudentDashboard from '../screens/StudentDashboard';

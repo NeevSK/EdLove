@@ -19,7 +19,7 @@ export function normalizeTarget(target: string): string {
     if (rest.length > 0) {
       return path.join(base, ...rest);
     }
-    return path.join(base, 'src');
+    return base;
   }
 
   if (clean.startsWith('@app/')) {
@@ -32,10 +32,19 @@ export function normalizeTarget(target: string): string {
     if (rest.length > 0) {
       return path.join(base, ...rest);
     }
-    return path.join(base, 'src');
+    return base;
   }
 
-  return path.isAbsolute(clean) ? clean : path.join(ROOT_DIR, clean);
+  if (path.isAbsolute(clean)) return clean;
+
+  // Fallback: Check if it's a naked package or app name
+  const pkgPath = path.join(ROOT_DIR, 'packages', clean);
+  if (fs.existsSync(pkgPath)) return pkgPath;
+
+  const appPath = path.join(ROOT_DIR, 'apps', clean);
+  if (fs.existsSync(appPath)) return appPath;
+
+  return path.join(ROOT_DIR, clean);
 }
 
 /**

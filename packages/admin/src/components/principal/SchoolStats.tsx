@@ -1,7 +1,14 @@
 import type { SchoolStats as ISchoolStats } from '@repo/core';
-import { Box, HStack, Icon, Text, VStack } from '@repo/ui';
-import { Building, GraduationCap, Users } from 'lucide-react-native';
-import React from 'react';
+import {
+  Box,
+  Building,
+  GraduationCap,
+  HStack,
+  Icon,
+  Text,
+  Users,
+  VStack,
+} from '@repo/ui';
 
 interface SchoolStatsProps {
   stats: ISchoolStats;

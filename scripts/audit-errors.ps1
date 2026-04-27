@@ -34,7 +34,7 @@ if (Test-Path -Path $Target) {
 }
 
 $logFile = Join-Path $rootDir "audit-$targetName.log"
-$summaryFile = Join-Path $rootDir "audit-$targetName-summary.txt"
+$summaryFile = Join-Path $rootDir "audit-$targetName-summary.md"
 
 Write-Host ">>> Auditing errors in $targetName ($targetPath)..." -ForegroundColor Cyan
 if ($LocalOnly) { Write-Host ">>> MODE: Local-Only (Filtering out shared/external errors)" -ForegroundColor Yellow }
@@ -43,14 +43,12 @@ if (Test-Path -Path $logFile) { Remove-Item -Path $logFile }
 
 # 2. Run TSC
 Set-Location -Path $targetPath
-# Force UTF8 environment for the sub-command
 $env:NODE_OPTIONS = "--max-old-space-size=4096"
 $tscCmd = "pnpm exec tsc --noEmit --pretty false"
 Write-Host ">>> Running: $tscCmd" -ForegroundColor Gray
 
 # Execute and capture
 if ($IsWindows) {
-    # Use powershell to ensure encoding is handled correctly during capture
     powershell -Command "[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; $tscCmd" 2>&1 | Out-File -FilePath "$logFile" -Encoding utf8
 } else {
     Invoke-Expression "$tscCmd 2>&1" | Out-File -FilePath "$logFile" -Encoding utf8
@@ -63,7 +61,6 @@ if (Test-Path -Path $logFile) {
     $fileData = @{}
     $globalErrors = 0
     $filteredErrors = 0
-    
     $currentError = $null
     
     foreach ($line in $content) {
@@ -75,7 +72,6 @@ if (Test-Path -Path $logFile) {
         $msg = ""
         $isMatch = $false
 
-        # Pattern 1: File(L,C) or File:L:C
         if ($line -match "^(.*?)(?:\(|\:)(\d+)(?:[\, \:]+(\d+))?[\)\s\-\:]*\s+(error|warning)\s+TS(\d+):\s*(.*)$") {
             $file = $Matches[1].Trim()
             $lineN = $Matches[2]
@@ -83,7 +79,6 @@ if (Test-Path -Path $logFile) {
             $msg = $Matches[6]
             $isMatch = $true
         } 
-        # Pattern 2: Global errors (no line number)
         elseif ($line -match "^\s*(error|warning)\s+TS(\d+):\s*(.*)$") {
             $file = "Project Scope"
             $lineN = "0"
@@ -96,7 +91,6 @@ if (Test-Path -Path $logFile) {
             $isExcluded = $false
             $cleanFile = $file
             if ($file -ne "Project Scope") {
-                # If path contains 'node_modules' or starts with '../' it's external
                 if ($file -match "node_modules" -or $file -match "^\.\./") {
                     $isExcluded = $true
                 }
@@ -129,53 +123,90 @@ if (Test-Path -Path $logFile) {
         }
     }
     
-    $report = @()
-    $report += "========================================================"
-    $report += "SURGICAL ERROR ANALYSIS: $targetName $(if($LocalOnly){'[LOCAL ONLY]'})"
-    $report += "========================================================"
-    $report += "Timestamp: $((Get-Date).ToString("yyyy-MM-dd HH:mm:ss"))"
-    $report += "Target:    $targetPath"
+    $Report = @()
+    $Report += "# Sovereign Surgical Error Analysis: " + $targetName
+    if ($LocalOnly) { $Report += "> **Mode:** Local Only Filtering" }
+    $Report += ""
+    $Report += "> **Timestamp:** " + (Get-Date -Format 'yyyy-MM-dd HH:mm:ss')
+    $Report += "> **Target:** " + $targetPath
     if ($LocalOnly) {
-        $report += "Filtered:  $filteredErrors errors in external packages hidden"
+        $Report += "> **Filtered:** " + $filteredErrors + " external errors hidden"
     }
-    $report += "Total:     $globalErrors Errors $(if($LocalOnly){'in local scope'})"
-    $report += "========================================================"
-    $report += ""
+    $Report += "> **Total Errors:** " + $globalErrors
+    $Report += ""
 
     if ($globalErrors -eq 0) {
-        $report += "✅ ZERO LOCAL ERRORS FOUND. Workspace is surgically clean."
+        $Report += "## SUCCESS"
+        $Report += "ZERO local errors found. The codebase is surgically clean."
     } else {
+        $Report += "## Executive Summary"
+        $Report += ""
+        $Report += "| File Path | Errors | Common Codes |"
+        $Report += "| :--- | :---: | :--- |"
+        
         $sortedFiles = $fileData.Keys | Sort-Object { $fileData[$_].Errors.Count } -Descending
         foreach ($f in $sortedFiles) {
             $data = $fileData[$f]
-            $report += "FILE: $f"
-            $report += "COUNT: $($data.Errors.Count) errors"
-            
-            $codes = @()
-            foreach ($c in $data.Codes.Keys) { $codes += "TS$c ($($data.Codes[$c])x)" }
-            $report += "CATEGORIES: $($codes -join ', ')"
-            
-            $report += "LOCATIONS:"
+            $codesList = @()
+            foreach ($c in $data.Codes.Keys) { $codesList += "TS$c" }
+            $codesStr = $codesList -join ', '
+            $errCount = $data.Errors.Count
+            $Report += "| $f | $errCount | $codesStr |"
+        }
+        $Report += ""
+
+        $Report += "## Error Distribution"
+        $Report += ""
+        $allCodes = @{}
+        foreach ($f in $fileData.Keys) {
+            foreach ($c in $fileData[$f].Codes.Keys) {
+                if (-not $allCodes.ContainsKey($c)) { $allCodes[$c] = 0 }
+                $allCodes[$c] += $fileData[$f].Codes[$c]
+            }
+        }
+        $Report += "| Code | Count | Description (Heuristic) |"
+        $Report += "| :--- | :---: | :--- |"
+        foreach ($c in ($allCodes.Keys | Sort-Object { $allCodes[$_] } -Descending)) {
+            $exampleMsg = ""
+            foreach($f in $fileData.Keys) {
+                foreach($e in $fileData[$f].Errors) {
+                    if($e.Code -eq $c) { $exampleMsg = $e.Message; break }
+                }
+                if($exampleMsg) { break }
+            }
+            $shortMsg = $exampleMsg
+            if($exampleMsg.Length -gt 60) { $shortMsg = $exampleMsg.Substring(0, 57) + '...' }
+            $cCount = $allCodes[$c]
+            $Report += "| TS$c | $cCount | $shortMsg |"
+        }
+        $Report += ""
+
+        $Report += "## Detailed Findings"
+        $Report += ""
+        foreach ($f in $sortedFiles) {
+            $data = $fileData[$f]
+            $Report += "### File: " + $f
+            $Report += "Total errors in file: " + $data.Errors.Count
+            $Report += ""
             foreach ($err in $data.Errors) {
-                $location = "[Line $($err.Line), Col $($err.Col)]"
-                $report += "  $($location.PadRight(20)) TS$($err.Code): $($err.Message)"
+                $Report += "- [ ] **Line " + $err.Line + ", Col " + $err.Col + "** | TS" + $err.Code
+                $Report += "  > " + $err.Message
                 foreach ($ctx in $err.Context) {
-                    $report += "    > $ctx"
+                    $Report += "  > * " + $ctx
                 }
             }
-            $report += "--------------------------------------------------------"
-            $report += ""
+            $Report += ""
+            $Report += "---"
         }
     }
 
-    # Determine optimal report location (Order vs convenience)
-    $summaryFile = "audit-$targetName-summary.txt"
     $reportsDir = Join-Path $rootDir "reports"
-    $summaryPath = if (Test-Path $reportsDir) { Join-Path $reportsDir $summaryFile } else { Join-Path $rootDir $summaryFile }
+    if (-not (Test-Path $reportsDir)) { New-Item -ItemType Directory -Path $reportsDir | Out-Null }
+    $summaryPath = Join-Path $reportsDir ("audit-" + $targetName + "-summary.md")
 
-    $report | Out-File -FilePath $summaryPath -Encoding utf8 -Force
+    $Report | Out-File -FilePath "$summaryPath" -Encoding utf8 -Force
     Write-Host "`n>>> Full Surgical Analysis Complete." -ForegroundColor Cyan
-    Write-Host ">>> Total Local Errors: $globalErrors" -ForegroundColor $(if($globalErrors -gt 0){'Red'}else{'Green'})
-    if ($LocalOnly) { Write-Host ">>> Filtered Out: $filteredErrors Shared Errors" -ForegroundColor Gray }
-    Write-Host ">>> Report saved: $summaryPath" -ForegroundColor Yellow
+    Write-Host (">>> Total Local Errors: " + $globalErrors) -ForegroundColor $(if($globalErrors -gt 0){'Red'}else{'Green'})
+    if ($LocalOnly) { Write-Host (">>> Filtered Out: " + $filteredErrors + " Shared Errors") -ForegroundColor Gray }
+    Write-Host (">>> Report saved: " + $summaryPath) -ForegroundColor Yellow
 }

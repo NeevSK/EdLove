@@ -1,3 +1,4 @@
+import { api } from '@repo/core';
 import type { GuardianDashboardData } from './types';
 
 export async function buildGuardianDashboard(guardianId: string): Promise<GuardianDashboardData> {

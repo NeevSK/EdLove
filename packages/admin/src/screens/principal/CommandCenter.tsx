@@ -1,5 +1,17 @@
-import { Box, Heading, HStack, Icon, Pressable, Text, VStack } from '@repo/ui';
-import { CalendarCheck, FileText, NotebookPen, Users } from 'lucide-react-native';
+import {
+  Box,
+  CalendarCheck,
+  FileText,
+  HStack,
+  Heading,
+  Icon,
+  NotebookPen,
+  Pressable,
+  Text,
+  Users,
+  VStack,
+} from '@repo/ui';
+
 import type React from 'react';
 import { useTranslation } from 'react-i18next';
 import type { PrincipalWorkspaceView } from '../../principal/workspace';

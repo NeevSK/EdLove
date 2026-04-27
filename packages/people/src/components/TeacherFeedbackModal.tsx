@@ -26,7 +26,7 @@ import {
   Heart,
   MessageSquare,
 } from 'lucide-react-native';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { teacherFeedbackAPI } from '../feedback';
 
@@ -120,7 +120,7 @@ export default function TeacherFeedbackModal({
           <Text className="text-phase-text-tertiary text-[10px] font-black uppercase tracking-[1px] ml-1">
             {t('teacher.feedback.category')}
           </Text>
-          <Select onValueChange={setCategory} defaultValue={category}>
+          <Select onValueChange={setCategory} value={category}>
             <SelectTrigger className="border-phase-surface/50 bg-phase-surface/20 h-14 rounded-2xl px-4">
               <SelectInput
                 placeholder="Select category"

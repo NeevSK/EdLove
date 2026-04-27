@@ -23,7 +23,6 @@ import {
   useStore,
   useTemporalStore,
 } from '@repo/core';
-import { FounderGlow, Icon as SanctuaryIcon, SkeletonCard, TemporalNavigator } from '@repo/ui';
 import {
   Activity,
   ArrowUpRight,
@@ -31,17 +30,22 @@ import {
   CloudRain,
   Cloudy,
   ExternalLink,
+  FounderGlow,
   Globe,
+  Icon as SanctuaryIcon,
   LayoutGrid,
   Plus,
   Search,
   Shield,
+  SkeletonCard,
   Sun,
+  TemporalNavigator,
   TrendingUp,
   Users,
   Zap,
-} from 'lucide-react-native';
-import React, { useState } from 'react';
+} from '@repo/ui';
+
+import { useState } from 'react';
 import { GlobalCreateModal } from '../components';
 
 type DashboardTab = 'pulse' | 'institutions' | 'staff' | 'sentinel';
@@ -51,7 +55,7 @@ export default function FounderDashboardWeb() {
   const { ability } = usePermissions();
   // Use user from useStore to get the full user object with full_name, etc.
   const user = useStore((state) => state.user);
-  const { isPastView } = useTemporalStore();
+  const isPastView = useTemporalStore(s => s.isPastView);
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');

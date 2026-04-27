@@ -61,7 +61,8 @@ export const nativeLinkingProvider: LinkingProvider = {
 
 export const nativeLocationProvider: LocationProvider = {
   requestPermissionsAsync: () => Location.requestForegroundPermissionsAsync(),
-  watchPositionAsync: (options, callback) => Location.watchPositionAsync(options, callback),
+  watchPositionAsync: (options: any, callback: (location: any) => void) =>
+    Location.watchPositionAsync(options, callback),
   Accuracy: Location.Accuracy,
 };
 
@@ -94,4 +95,8 @@ export const nativeRuntimeEnvironment: CoreRuntimeEnvironment = {
   network: nativeNetworkProvider,
   share: nativeShareProvider,
   ui: nativeUIProvider,
+  clipboard: {
+    getStringAsync: async () => '',
+    setStringAsync: async () => false,
+  },
 };

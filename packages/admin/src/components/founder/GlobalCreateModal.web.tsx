@@ -8,34 +8,32 @@ import {
   ActionsheetDragIndicatorWrapper,
   ActionsheetItem,
   ActionsheetItemText,
+  Activity,
   Box,
   Button,
   ButtonText,
+  ChevronDown,
   FormControl,
   FormControlLabel,
   FormControlLabelText,
-  Heading,
+  Globe,
   HStack,
+  Heading,
+  Icon as UIIcon,
   Input,
   InputField,
+  LayoutGrid,
   SanctuaryModal,
+  School as SchoolIcon,
   Spinner,
   Text,
   Textarea,
   TextareaInput,
-  Icon as UIIcon,
-  useTheme,
+  Users,
   VStack,
 } from '@repo/ui';
-import {
-  Activity,
-  ChevronDown,
-  Globe,
-  LayoutGrid,
-  School as SchoolIcon,
-  Users,
-} from 'lucide-react-native';
-import React, { useState } from 'react';
+
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { createFounderClassroom, createFounderSchool } from '../../bridge/founderWorkspace';
 

@@ -1,30 +1,23 @@
 import type { PublishedSchoolGradingCompletion } from '@repo/core';
 import {
   Box,
+  Building2,
   Button,
   ButtonIcon,
   ButtonText,
-  Heading,
   HStack,
-  hapticLight,
+  Heading,
   Icon,
-  Pressable,
-  Text,
-  VStack,
-  WebScreenHeader,
-} from '@repo/ui';
-import {
-  AlertTriangle,
-  Building2,
-  Clock,
-  GraduationCap,
-  Info,
   LayoutGrid,
   NotebookPen,
-  Plus,
   Share2,
+  Text,
   TrendingUp,
-} from 'lucide-react-native';
+  VStack,
+  WebScreenHeader,
+  hapticLight,
+} from '@repo/ui';
+
 import type React from 'react';
 import { useTranslation } from 'react-i18next';
 import {

@@ -166,7 +166,6 @@ export const LibraryThumbnailCard = React.memo(
           onLongPress={handleLongPress}
           className="w-[148px] h-[192px] rounded-3xl overflow-hidden bg-phase-surface border border-phase-border shadow-sm active:opacity-90 active:scale-[0.98]"
           accessibilityRole={href ? 'link' : 'button'}
-          // @ts-expect-error
           href={href}
           hrefAttrs={{
             target,

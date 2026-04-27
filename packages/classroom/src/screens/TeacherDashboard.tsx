@@ -21,8 +21,8 @@ import {
   ScrollView,
   Theme,
   useThemedColors,
+  X,
 } from '@repo/ui';
-import { X } from 'lucide-react-native';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { CreateClassroomModal } from '../components';

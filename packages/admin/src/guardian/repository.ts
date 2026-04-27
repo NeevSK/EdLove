@@ -29,7 +29,7 @@ export async function getStudentGuardiansRows(studentId: string): Promise<Guardi
   return api.guardian.getStudentGuardians(studentId) as Promise<GuardianIdentity[]>;
 }
 
-export async function getStudentAttendanceRows(studentId: string, sinceIso: string) {
+export async function getStudentAttendanceRows(studentId: string, _sinceIso: string) {
   const guardians = await api.guardian.getStudentGuardians(studentId);
   const guardianId = guardians[0]?.id;
   if (!guardianId) return [];
@@ -58,7 +58,11 @@ export async function getStudentRecentGradesRows(studentId: string, limit = 5) {
   }));
 }
 
-export async function getUpcomingAssignmentsRows(classroomId: string, afterIso: string, limit = 3) {
+export async function getUpcomingAssignmentsRows(
+  _classroomId: string,
+  afterIso: string,
+  _limit = 3,
+) {
   void afterIso;
   return [];
 }
@@ -76,7 +80,7 @@ export async function getGuardianNotificationsRows(guardianId: string, limit = 1
   }));
 }
 
-export async function getUpcomingSchoolEventsRows(afterIso: string, limit = 5) {
+export async function getUpcomingSchoolEventsRows(afterIso: string, _limit = 5) {
   void afterIso;
   return [];
 }

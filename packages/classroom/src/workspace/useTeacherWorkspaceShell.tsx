@@ -8,8 +8,7 @@ import {
   useTemporalStore,
 } from '@repo/core';
 import { resolveQR } from '@repo/scanner-kit';
-import { hapticLight, useRegisterFAB, useSanctuaryToast } from '@repo/ui';
-import { Plus } from 'lucide-react-native';
+import { hapticLight, Icon, Plus, useRegisterFAB, useSanctuaryToast } from '@repo/ui';
 import { useCallback, useEffect, useState } from 'react';
 
 type WorkspaceClassroom = {
@@ -47,7 +46,7 @@ export function useTeacherWorkspaceShell(
       setModalMode('create');
       setIsCreateModalOpen(true);
     },
-    icon: <Plus size={24} color="#FFF" />,
+    icon: <Icon as={Plus} size={24} color="#FFF" />,
     visible: !isGuest && !isPastView,
   });
 

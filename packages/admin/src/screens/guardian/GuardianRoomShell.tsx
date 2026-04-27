@@ -1,5 +1,14 @@
-import { Box, HStack, Icon, Pressable, ScreenWrapper, Text, VStack } from '@repo/ui';
-import { ArrowLeft } from 'lucide-react-native';
+import {
+  ArrowLeft,
+  Box,
+  HStack,
+  Icon,
+  Pressable,
+  ScreenWrapper,
+  Text,
+  VStack,
+} from '@repo/ui';
+
 import type React from 'react';
 
 interface GuardianRoomShellProps {

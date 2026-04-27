@@ -1,27 +1,25 @@
 import { useNavigation } from '@react-navigation/native';
 import { AvatarDisplay, ContactLinktree, EditableItem, useSchoolProfile } from '@repo/profile';
 import {
-  Box,
-  Heading,
-  HStack,
-  hapticLight,
-  Icon,
-  Pressable,
-  SkeletonCard,
-  Text,
-  VStack,
-} from '@repo/ui';
-import {
   ArrowLeft,
   BookOpen,
+  Box,
   ChevronRight,
   Globe,
+  HStack,
+  Heading,
+  Icon,
   Layout,
+  Pressable,
   School as SchoolIcon,
   Shield,
+  SkeletonCard,
+  Text,
   Users,
-} from 'lucide-react-native';
-import React from 'react';
+  VStack,
+  hapticLight,
+} from '@repo/ui';
+
 import { useTranslation } from 'react-i18next';
 
 export default function SchoolProfileScreenWeb({ schoolId }: { schoolId: string }) {

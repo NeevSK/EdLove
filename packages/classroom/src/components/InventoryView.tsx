@@ -8,9 +8,12 @@ import {
   useStore,
 } from '@repo/core';
 import {
+  AlertTriangle,
   Box,
   Button,
   ButtonText,
+  CheckCircle,
+  Clipboard,
   Heading,
   HStack,
   hapticLight,
@@ -25,27 +28,22 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
+  Monitor,
+  Package,
+  PenTool,
+  Plus,
   PositiveInvitation,
   Pressable,
   ScrollView,
+  Sofa,
   Text,
   Textarea,
   TextareaInput,
   Theme,
   useThemedColors,
   VStack,
-} from '@repo/ui';
-import {
-  AlertTriangle,
-  CheckCircle,
-  Clipboard,
-  Monitor,
-  Package,
-  PenTool,
-  Plus,
-  Sofa,
   X,
-} from 'lucide-react-native';
+} from '@repo/ui';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useInventory } from '../hooks/useInventory';
@@ -210,7 +208,7 @@ export default function InventoryView({ classroomId }: InventoryViewProps) {
                       className="w-10 h-10 rounded-xl items-center justify-center bg-[--silk]"
                       style={{ backgroundColor: colors.tertiary }}
                     >
-                      <Package size={20} color={colors.text} />
+                      <Icon as={Package} size={20} color={colors.text} />
                     </Box>
                     <VStack>
                       <Text className="font-bold" style={{ color: colors.text }}>

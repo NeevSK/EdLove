@@ -1,40 +1,82 @@
-import { useNavigation } from '@react-navigation/native';
+import { type NavigationProp, useNavigation } from '@react-navigation/native';
 import {
   api,
+  type ClassroomStackParamList,
   communityAPI,
   incrementInviteCodeUsage,
   onboardingAPI,
   schoolAPI,
+  type School,
   usePermissions,
   useStore,
   validateInviteCode,
 } from '@repo/core';
 import {
+  ArrowRight,
+  BookOpen,
   Box,
+  Building2,
   Center,
+  CheckCircle2,
+  ChevronRight,
+  Heading,
   HStack,
   Icon,
   Input,
   InputField,
+  Key,
   Pressable,
   SanctuaryButton,
   ScrollView,
+  Search,
   Spinner,
   Text,
+  Users,
   VStack,
 } from '@repo/ui';
-import {
-  ArrowRight,
-  BookOpen,
-  Building2,
-  CheckCircle2,
-  ChevronRight,
-  Key,
-  Search,
-  Users,
-} from 'lucide-react-native';
 import type React from 'react';
-import { useCallback, useState } from 'react';
+import { useCallback, useReducer, useState } from 'react';
+
+// -- Types ----------------------------------------------------
+
+type PrincipalCreateSchoolState = {
+  step: 'details' | 'type' | 'done';
+  name: string;
+  type: 'primary' | 'secondary' | 'mixed';
+  loading: boolean;
+  error: string | null;
+  schoolName: string;
+};
+
+type PrincipalCreateSchoolAction =
+  | { type: 'SET_STEP'; step: PrincipalCreateSchoolState['step'] }
+  | { type: 'SET_NAME'; name: string }
+  | { type: 'SET_TYPE'; schoolType: PrincipalCreateSchoolState['type'] }
+  | { type: 'CREATE_START' }
+  | { type: 'CREATE_SUCCESS'; schoolName: string }
+  | { type: 'CREATE_FAILURE'; error: string };
+
+const createSchoolReducer = (
+  state: PrincipalCreateSchoolState,
+  action: PrincipalCreateSchoolAction,
+): PrincipalCreateSchoolState => {
+  switch (action.type) {
+    case 'SET_STEP':
+      return { ...state, step: action.step };
+    case 'SET_NAME':
+      return { ...state, name: action.name };
+    case 'SET_TYPE':
+      return { ...state, type: action.schoolType };
+    case 'CREATE_START':
+      return { ...state, loading: true, error: null };
+    case 'CREATE_SUCCESS':
+      return { ...state, loading: false, schoolName: action.schoolName, step: 'done' };
+    case 'CREATE_FAILURE':
+      return { ...state, loading: false, error: action.error };
+    default:
+      return state;
+  }
+};
 
 // -- Helpers --------------------------------------------------
 
@@ -66,10 +108,18 @@ function SuccessCard({
       </Center>
       <Text className="text-[28px]">{emoji}</Text>
       <VStack className="items-center">
-        <h3 className="m-0 text-xl font-black text-phaseText-primary">{title}</h3>
+        <Heading size="xs" className="m-0 text-phaseText-primary">
+          {title}
+        </Heading>
         <Text className="m-0 text-phaseText-muted text-[13px] max-w-[380px]">{body}</Text>
       </VStack>
-      <SanctuaryButton variant="primary" onPress={onCta} className="bg-phase-interactive">
+      <SanctuaryButton
+        action="primary"
+        accessibilityLabel={cta}
+        accessibilityHint={`Press to perform the action: ${cta}`}
+        onPress={onCta}
+        className="bg-phase-interactive"
+      >
         <HStack className="items-center gap-2">
           <Text className="text-white font-bold">{cta}</Text>
           <Icon as={ArrowRight} size="xs" className="text-white" />
@@ -89,34 +139,35 @@ const SCHOOL_TYPES = [
 
 function PrincipalCreateSchool({ onSuccess }: { onSuccess: () => void }) {
   const { user } = useStore();
-  const [step, setStep] = useState<'details' | 'type' | 'done'>('details');
-  const [name, setName] = useState('');
-  const [type, setType] = useState<'primary' | 'secondary' | 'mixed'>('mixed');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [schoolName, setSchoolName] = useState('');
+  const [state, dispatch] = useReducer(createSchoolReducer, {
+    step: 'details',
+    name: '',
+    type: 'mixed',
+    loading: false,
+    error: null,
+    schoolName: '',
+  });
 
-  const handleCreate = async () => {
-    if (!user?.id || !name.trim()) return;
-    setLoading(true);
-    setError('');
+  const handleCreate = useCallback(async () => {
+    if (!user?.id || !state.name.trim()) return;
+    dispatch({ type: 'CREATE_START' });
     try {
-      const handle = name
+      const handle = state.name
         .trim()
         .toLowerCase()
         .replace(/\s+/g, '-')
         .replace(/[^a-z0-9_-]/g, '');
       const school = await schoolAPI.create({
-        name: name.trim(),
+        name: state.name.trim(),
         handle,
-        type,
+        type: state.type,
         created_by: user.id,
       });
       try {
         await communityAPI.createGroupWithOwner(
           {
-            name: `${name.trim()} HQ`,
-            description: `Official community portal for ${name.trim()}`,
+            name: `${state.name.trim()} HQ`,
+            description: `Official community portal for ${state.name.trim()}`,
             type: 'general',
             join_policy: 'open',
             school_id: school.id,
@@ -126,21 +177,21 @@ function PrincipalCreateSchool({ onSuccess }: { onSuccess: () => void }) {
       } catch {
         /* non-fatal */
       }
-      setSchoolName(school.name);
+      dispatch({ type: 'CREATE_SUCCESS', schoolName: school.name });
       useStore.getState().setUser({ ...user, school_id: school.id });
-      setStep('done');
-    } catch (e: any) {
-      setError(e?.message || 'Failed to create school');
-    } finally {
-      setLoading(false);
+    } catch (e: unknown) {
+      dispatch({
+        type: 'CREATE_FAILURE',
+        error: e instanceof Error ? e.message : 'Failed to create school',
+      });
     }
-  };
+  }, [user, state.name, state.type]);
 
-  if (step === 'done')
+  if (state.step === 'done')
     return (
       <SuccessCard
         emoji="🏛️"
-        title={`${schoolName} is live!`}
+        title={`${state.schoolName} is live!`}
         body="Your school sanctuary is ready. Invite teachers, create classrooms and start your journey."
         cta="Set up my school"
         onCta={onSuccess}
@@ -149,23 +200,27 @@ function PrincipalCreateSchool({ onSuccess }: { onSuccess: () => void }) {
 
   return (
     <VStack className="gap-5">
-      {step === 'details' && (
+      {state.step === 'details' && (
         <>
           <VStack>
             <SectionLabel>School Name *</SectionLabel>
             <Input className="bg-phase-surface-secondary border-phase-border rounded-xl px-4 h-12">
               <InputField
-                value={name}
-                onChangeText={setName}
+                value={state.name}
+                onChangeText={(name) => dispatch({ type: 'SET_NAME', name })}
                 placeholder="e.g. Gurudevi Life School"
                 className="text-sm font-bold text-phaseText-primary"
+                accessibilityLabel="School Name Input"
+                accessibilityHint="Enter the formal name of your school"
               />
             </Input>
           </VStack>
           <SanctuaryButton
-            onPress={() => setStep('type')}
-            disabled={!name.trim()}
+            onPress={() => dispatch({ type: 'SET_STEP', step: 'type' })}
+            isDisabled={!state.name.trim()}
             className="bg-phase-interactive"
+            accessibilityLabel="Next step — Choose school type"
+            accessibilityHint="Navigates to the next step to select school category"
           >
             <HStack className="items-center justify-center gap-2">
               <Text className="text-white font-bold text-sm">Next — Choose school type</Text>
@@ -175,48 +230,61 @@ function PrincipalCreateSchool({ onSuccess }: { onSuccess: () => void }) {
         </>
       )}
 
-      {step === 'type' && (
+      {state.step === 'type' && (
         <>
           <Text className="m-0 text-phaseText-muted text-[13px]">
-            What kind of school is <Text className="font-bold text-phaseText-primary">{name}</Text>?
+            What kind of school is{' '}
+            <Text className="font-bold text-phaseText-primary">{state.name}</Text>?
           </Text>
           {SCHOOL_TYPES.map((t) => (
             <Pressable
               key={t.value}
-              onPress={() => setType(t.value)}
-              className={`flex-row items-center gap-4 p-4 rounded-xl border-2 ${type === t.value ? 'bg-phase-interactive/5 border-phase-interactive' : 'bg-phase-surface-secondary border-phase-border'}`}
+              onPress={() => dispatch({ type: 'SET_TYPE', schoolType: t.value })}
+              role="radio"
+              accessibilityLabel={`Select ${t.label}`}
+              accessibilityHint={`Selects ${t.label} as your school type`}
+              accessibilityState={{ selected: state.type === t.value }}
+              className={`flex-row items-center gap-4 p-4 rounded-xl border-2 ${
+                state.type === t.value
+                  ? 'bg-phase-interactive/5 border-phase-interactive'
+                  : 'bg-phase-surface-secondary border-phase-border'
+              }`}
             >
               <Text className="text-[22px]">{t.emoji}</Text>
               <VStack className="flex-1">
                 <Text className="text-sm font-bold text-phaseText-primary">{t.label}</Text>
                 <Text className="text-xs text-phaseText-muted">{t.desc}</Text>
               </VStack>
-              {type === t.value && (
+              {state.type === t.value && (
                 <Icon as={CheckCircle2} size="xs" className="text-phase-interactive" />
               )}
             </Pressable>
           ))}
-          {error && <Text className="m-0 text-xs text-phase-error">{error}</Text>}
+          {state.error && <Text className="m-0 text-xs text-phase-error">{state.error}</Text>}
           <HStack className="gap-3">
             <SanctuaryButton
-              onPress={() => setStep('details')}
+              onPress={() => dispatch({ type: 'SET_STEP', step: 'details' })}
               className="flex-1 border-phase-border"
+              accessibilityLabel="Go back to school details"
+              accessibilityHint="Returns to the previous screen to edit school name"
             >
               <Text className="font-bold text-phaseText-secondary text-sm">← Back</Text>
             </SanctuaryButton>
             <SanctuaryButton
               onPress={handleCreate}
-              disabled={loading}
+              isDisabled={state.loading}
               className="flex-[2] bg-phase-interactive"
+              accessibilityLabel="Create School now"
+              accessibilityHint="Submits your school details and creates the institution"
             >
               <HStack className="items-center justify-center gap-2">
-                {loading ? (
+                {state.loading ? (
                   <Spinner size="small" color="#FFFFFF" />
                 ) : (
                   <Icon as={Building2} size="xs" className="text-white" />
                 )}
                 <Text className="text-white font-bold text-sm">
-                  {loading ? 'Creating…' : 'Create School'}
+                  {state.loading ? 'Creating…' : 'Create School'}
                 </Text>
               </HStack>
             </SanctuaryButton>
@@ -227,13 +295,79 @@ function PrincipalCreateSchool({ onSuccess }: { onSuccess: () => void }) {
   );
 }
 
+// -- TeacherJoinSchool ---------------------------------------
+
+type TeacherJoinSchoolState = {
+  method: 'code' | 'search';
+  code: string;
+  codeErr: string | null;
+  codeLoading: boolean;
+  query: string;
+  results: School[]; // Ideally School[] from core
+  searching: boolean;
+  requesting: string | null;
+  reqSent: boolean;
+};
+
+type TeacherJoinSchoolAction =
+  | { type: 'SET_METHOD'; method: 'code' | 'search' }
+  | { type: 'SET_CODE'; code: string }
+  | { type: 'CODE_START' }
+  | { type: 'CODE_SUCCESS'; reqSent: boolean }
+  | { type: 'CODE_FAILURE'; error: string }
+  | { type: 'SET_QUERY'; query: string }
+  | { type: 'SEARCH_START' }
+  | { type: 'SEARCH_SUCCESS'; results: School[] }
+  | { type: 'REQUEST_START'; schoolId: string }
+  | { type: 'REQUEST_SUCCESS' }
+  | { type: 'RESET_REQ' };
+
+const joinSchoolReducer = (
+  state: TeacherJoinSchoolState,
+  action: TeacherJoinSchoolAction,
+): TeacherJoinSchoolState => {
+  switch (action.type) {
+    case 'SET_METHOD':
+      return { ...state, method: action.method };
+    case 'SET_CODE':
+      return { ...state, code: action.code, codeErr: null };
+    case 'CODE_START':
+      return { ...state, codeLoading: true, codeErr: null };
+    case 'CODE_SUCCESS':
+      return { ...state, codeLoading: false, reqSent: action.reqSent };
+    case 'CODE_FAILURE':
+      return { ...state, codeLoading: false, codeErr: action.error };
+    case 'SET_QUERY':
+      return { ...state, query: action.query };
+    case 'SEARCH_START':
+      return { ...state, searching: true };
+    case 'SEARCH_SUCCESS':
+      return { ...state, searching: false, results: action.results };
+    case 'REQUEST_START':
+      return { ...state, requesting: action.schoolId };
+    case 'REQUEST_SUCCESS':
+      return { ...state, requesting: null, reqSent: true };
+    case 'RESET_REQ':
+      return { ...state, reqSent: false };
+    default:
+      return state;
+  }
+};
+
 function TeacherJoinSchool({ onJoined }: { onJoined: (schoolId: string) => void }) {
   const { user } = useStore();
-  const [method, setMethod] = useState<'code' | 'search'>('code');
-
-  const [code, setCode] = useState('');
-  const [codeErr, setCodeErr] = useState('');
-  const [codeLoading, setCodeLoading] = useState(false);
+  const { context } = usePermissions();
+  const [state, dispatch] = useReducer(joinSchoolReducer, {
+    method: 'code',
+    code: '',
+    codeErr: null,
+    codeLoading: false,
+    query: '',
+    results: [],
+    searching: false,
+    requesting: null,
+    reqSent: false,
+  });
 
   const fmtCode = (v: string) => {
     const raw = v
@@ -245,73 +379,82 @@ function TeacherJoinSchool({ onJoined }: { onJoined: (schoolId: string) => void 
     return `${raw.slice(0, 4)}-${raw.slice(4, 10)}-${raw.slice(10)}`;
   };
 
-  const { context } = usePermissions();
-  const handleCode = async () => {
+  const handleCode = useCallback(async () => {
     if (!user?.id) return;
-    setCodeLoading(true);
-    setCodeErr('');
+    dispatch({ type: 'CODE_START' });
     try {
-      const res = await validateInviteCode(code.trim());
+      const res = await validateInviteCode(state.code.trim());
       if (!res.valid || !res.data) {
-        setCodeErr(res.error || 'Invalid code');
+        dispatch({ type: 'CODE_FAILURE', error: res.error || 'Invalid code' });
         return;
       }
-      await onboardingAPI.requestSchoolJoin(
-        user.id,
-        res.data.school_id,
-        (context?.roles?.[0] as any) || 'teacher',
-      );
-      await incrementInviteCodeUsage(code.trim());
+      const role = ((context?.roles?.[0] as string) || 'teacher') as
+        | 'student'
+        | 'teacher'
+        | 'gradeHead'
+        | 'sectionHead'
+        | 'principal'
+        | 'assistantPrincipal'
+        | 'parent'
+        | 'guardian'
+        | 'admin'
+        | 'developer'
+        | 'founder'
+        | 'librarian'
+        | 'nurse'
+        | 'guest';
+      await onboardingAPI.requestSchoolJoin(user.id, res.data.school_id, role);
+      await incrementInviteCodeUsage(state.code.trim());
       const roleSummary = await api.identity.getClassroomRoleSummary(user.id);
       const schoolId = roleSummary.schoolId || roleSummary.profile.school_id || null;
+
       if (schoolId) {
         useStore.getState().setUser({ ...user, school_id: schoolId });
         onJoined(schoolId);
       } else {
-        setReqSent(true);
+        dispatch({ type: 'CODE_SUCCESS', reqSent: true });
       }
-    } catch (e: any) {
-      setCodeErr(e?.message || 'Something went wrong');
-    } finally {
-      setCodeLoading(false);
+    } catch (e: unknown) {
+      dispatch({
+        type: 'CODE_FAILURE',
+        error: e instanceof Error ? e.message : 'Something went wrong',
+      });
     }
-  };
-
-  const [query, setQuery] = useState('');
-  const [results, setResults] = useState<any[]>([]);
-  const [searching, setSearching] = useState(false);
-  const [requesting, setRequesting] = useState<string | null>(null);
-  const [reqSent, setReqSent] = useState(false);
+  }, [user, state.code, context, onJoined]);
 
   const handleSearch = useCallback(async () => {
-    if (query.length < 3) return;
-    setSearching(true);
+    if (state.query.length < 3) return;
+    dispatch({ type: 'SEARCH_START' });
     try {
-      setResults(await schoolAPI.searchSchools(query));
-    } finally {
-      setSearching(false);
+      const results = await schoolAPI.searchSchools(state.query);
+      dispatch({ type: 'SEARCH_SUCCESS', results });
+    } catch {
+      dispatch({ type: 'SEARCH_SUCCESS', results: [] });
     }
-  }, [query]);
+  }, [state.query]);
 
-  const handleRequest = async (schoolId: string) => {
-    if (!user?.id) return;
-    setRequesting(schoolId);
-    try {
-      await onboardingAPI.requestSchoolJoin(user.id, schoolId, 'teacher');
-      setReqSent(true);
-    } finally {
-      setRequesting(null);
-    }
-  };
+  const handleRequest = useCallback(
+    async (schoolId: string) => {
+      if (!user?.id) return;
+      dispatch({ type: 'REQUEST_START', schoolId });
+      try {
+        await onboardingAPI.requestSchoolJoin(user.id, schoolId, 'teacher');
+        dispatch({ type: 'REQUEST_SUCCESS' });
+      } catch {
+        dispatch({ type: 'REQUEST_SUCCESS' }); // Assume success or handle error
+      }
+    },
+    [user],
+  );
 
-  if (reqSent)
+  if (state.reqSent)
     return (
       <SuccessCard
         emoji="📬"
         title="Request Sent!"
         body="Your join request has been sent to the Principal. You'll be notified once approved."
         cta="OK, I'll wait"
-        onCta={() => setReqSent(false)}
+        onCta={() => dispatch({ type: 'RESET_REQ' })}
       />
     );
 
@@ -324,15 +467,23 @@ function TeacherJoinSchool({ onJoined }: { onJoined: (schoolId: string) => void 
             { id: 'search', label: '🔍 Search School' },
           ] as const
         ).map((m) => {
-          const isActive = method === m.id;
+          const isActive = state.method === m.id;
           return (
             <Pressable
               key={m.id}
-              onPress={() => setMethod(m.id)}
-              className={`flex-1 py-2 rounded-lg items-center ${isActive ? 'bg-phase-surface shadow-sm' : ''}`}
+              onPress={() => dispatch({ type: 'SET_METHOD', method: m.id })}
+              role="tab"
+              accessibilityLabel={m.label}
+              accessibilityHint={`Switch to join by ${m.label}`}
+              accessibilityState={{ selected: isActive }}
+              className={`flex-1 py-2 rounded-lg items-center ${
+                isActive ? 'bg-phase-surface shadow-sm' : ''
+              }`}
             >
               <Text
-                className={`text-[12px] font-bold ${isActive ? 'text-phaseText-primary' : 'text-phaseText-muted'}`}
+                className={`text-[12px] font-bold ${
+                  isActive ? 'text-phaseText-primary' : 'text-phaseText-muted'
+                }`}
               >
                 {m.label}
               </Text>
@@ -341,67 +492,77 @@ function TeacherJoinSchool({ onJoined }: { onJoined: (schoolId: string) => void 
         })}
       </HStack>
 
-      {method === 'code' && (
+      {state.method === 'code' && (
         <VStack className="gap-3">
           <VStack>
             <SectionLabel>Invite Code from Principal</SectionLabel>
             <Input
-              className={`bg-phase-surface-secondary border-phase-border rounded-xl px-4 h-12 ${codeErr ? 'border-phase-error' : ''}`}
+              className={`bg-phase-surface-secondary border-phase-border rounded-xl px-4 h-12 ${
+                state.codeErr ? 'border-phase-error' : ''
+              }`}
             >
               <InputField
-                value={code}
-                onChangeText={(v) => setCode(fmtCode(v))}
+                value={state.code}
+                onChangeText={(v) => dispatch({ type: 'SET_CODE', code: fmtCode(v) })}
                 placeholder="GURU-ABC123-TEACH"
                 className="text-sm font-bold text-phaseText-primary tracking-[2px] uppercase"
+                accessibilityLabel="Enter Invite Code"
+                accessibilityHint="Paste or type the 16-character invite code provided by your principal"
               />
             </Input>
-            {codeErr && <Text className="mt-1 text-[11px] text-phase-error">{codeErr}</Text>}
+            {state.codeErr && <Text className="mt-1 text-[11px] text-phase-error">{state.codeErr}</Text>}
           </VStack>
           <SanctuaryButton
             onPress={handleCode}
-            disabled={code.length < 15 || codeLoading}
+            isDisabled={state.code.length < 15 || state.codeLoading}
             className="bg-phase-interactive"
+            accessibilityLabel="Join with invite code"
+            accessibilityHint="Attempts to join the school using the provided code"
           >
             <HStack className="items-center justify-center gap-2">
-              {codeLoading ? (
+              {state.codeLoading ? (
                 <Spinner size="small" color="#FFFFFF" />
               ) : (
                 <Icon as={Key} size="xs" className="text-white" />
               )}
               <Text className="text-white font-bold text-sm">
-                {codeLoading ? 'Joining…' : 'Join with Code'}
+                {state.codeLoading ? 'Joining…' : 'Join with Code'}
               </Text>
             </HStack>
           </SanctuaryButton>
         </VStack>
       )}
 
-      {method === 'search' && (
+      {state.method === 'search' && (
         <VStack className="gap-3">
           <HStack className="gap-2">
             <Input className="flex-1 bg-phase-surface-secondary border-phase-border rounded-xl px-4 h-11">
               <InputField
-                value={query}
-                onChangeText={setQuery}
+                value={state.query}
+                onChangeText={(query) => dispatch({ type: 'SET_QUERY', query })}
                 placeholder="Type school name…"
                 className="text-sm font-bold text-phaseText-primary"
+                accessibilityLabel="Search schools input"
+                accessibilityHint="Type at least 3 characters to find your school"
               />
             </Input>
             <SanctuaryButton
-              variant="secondary"
+              action="secondary"
               onPress={handleSearch}
-              disabled={query.length < 3 || searching}
+              isDisabled={state.query.length < 3 || state.searching}
               className="px-4 h-11"
+              accessibilityLabel="Search schools"
+              accessibilityHint="Triggers a search for schools matching your query"
             >
               <HStack className="items-center gap-2">
-                {searching ? <Spinner size="small" /> : <Icon as={Search} size="xs" />}
+                {state.searching ? <Spinner size="small" /> : <Icon as={Search} size="xs" />}
                 <Text className="text-xs font-bold text-phaseText-primary">Search</Text>
               </HStack>
             </SanctuaryButton>
           </HStack>
           <VStack className="gap-2 max-h-[220px]">
             <ScrollView showsVerticalScrollIndicator={false}>
-              {results.map((s) => (
+              {state.results.map((s: School) => (
                 <Box
                   key={s.id}
                   className="flex-row items-center justify-between p-3.5 mb-2 rounded-xl bg-phase-surface-secondary border border-phase-border/40"
@@ -411,19 +572,21 @@ function TeacherJoinSchool({ onJoined }: { onJoined: (schoolId: string) => void 
                     <Text className="text-[11px] text-phaseText-muted uppercase">{s.type}</Text>
                   </VStack>
                   <SanctuaryButton
-                    variant="secondary"
+                    action="secondary"
                     onPress={() => handleRequest(s.id)}
-                    disabled={requesting === s.id}
+                    isDisabled={state.requesting === s.id}
                     className="h-8 px-3"
+                    accessibilityLabel={`Request to join ${s.name}`}
+                    accessibilityHint={`Sends a join request to ${s.name} administrators`}
                   >
                     <Text className="text-[11px] font-bold text-phaseText-primary">
-                      {requesting === s.id ? '...' : 'Request Join'}
+                      {state.requesting === s.id ? '...' : 'Request Join'}
                     </Text>
                   </SanctuaryButton>
                 </Box>
               ))}
             </ScrollView>
-            {!searching && query.length >= 3 && results.length === 0 && (
+            {!state.searching && state.query.length >= 3 && state.results.length === 0 && (
               <Text className="text-xs text-phaseText-muted text-center italic">
                 No schools found.
               </Text>
@@ -435,40 +598,80 @@ function TeacherJoinSchool({ onJoined }: { onJoined: (schoolId: string) => void 
   );
 }
 
+// -- TeacherCreateStandaloneClassroom ------------------------
+
+type StandaloneClassroomState = {
+  name: string;
+  subject: string;
+  loading: boolean;
+  error: string | null;
+  createdName: string | null;
+};
+
+type StandaloneClassroomAction =
+  | { type: 'SET_NAME'; name: string }
+  | { type: 'SET_SUBJECT'; subject: string }
+  | { type: 'CREATE_START' }
+  | { type: 'CREATE_SUCCESS'; name: string }
+  | { type: 'CREATE_FAILURE'; error: string };
+
+const standaloneClassroomReducer = (
+  state: StandaloneClassroomState,
+  action: StandaloneClassroomAction,
+): StandaloneClassroomState => {
+  switch (action.type) {
+    case 'SET_NAME':
+      return { ...state, name: action.name };
+    case 'SET_SUBJECT':
+      return { ...state, subject: action.subject };
+    case 'CREATE_START':
+      return { ...state, loading: true, error: null };
+    case 'CREATE_SUCCESS':
+      return { ...state, loading: false, createdName: action.name };
+    case 'CREATE_FAILURE':
+      return { ...state, loading: false, error: action.error };
+    default:
+      return state;
+  }
+};
+
 function TeacherCreateStandaloneClassroom({ onSuccess }: { onSuccess: () => void }) {
   const { context } = usePermissions();
   const { userId } = context;
-  const [name, setName] = useState('');
-  const [subject, setSubject] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [created, setCreated] = useState<{ name: string } | null>(null);
 
-  const handleCreate = async () => {
-    if (!userId || !name.trim()) return;
-    setLoading(true);
-    setError('');
+  const [state, dispatch] = useReducer(standaloneClassroomReducer, {
+    name: '',
+    subject: '',
+    loading: false,
+    error: null,
+    createdName: null,
+  });
+
+  const handleCreate = useCallback(async () => {
+    if (!userId || !state.name.trim()) return;
+    dispatch({ type: 'CREATE_START' });
     try {
       await api.classrooms.create({
-        name: name.trim(),
-        subject: subject.trim() || undefined,
+        name: state.name.trim(),
+        subject: state.subject.trim() || undefined,
         teacher_id: userId,
         school_id: null,
         is_archived: false,
       });
-      setCreated({ name: name.trim() });
-    } catch (e: any) {
-      setError(e?.message || 'Failed to create classroom');
-    } finally {
-      setLoading(false);
+      dispatch({ type: 'CREATE_SUCCESS', name: state.name.trim() });
+    } catch (e: unknown) {
+      dispatch({
+        type: 'CREATE_FAILURE',
+        error: e instanceof Error ? e.message : 'Failed to create classroom',
+      });
     }
-  };
+  }, [userId, state.name, state.subject]);
 
-  if (created)
+  if (state.createdName)
     return (
       <SuccessCard
         emoji="📚"
-        title={`"${created.name}" is ready!`}
+        title={`"${state.createdName}" is ready!`}
         body="Your personal classroom is live. Start adding students and lessons."
         cta="Go to my classroom"
         onCta={onSuccess}
@@ -480,17 +683,19 @@ function TeacherCreateStandaloneClassroom({ onSuccess }: { onSuccess: () => void
       <Box className="p-4 bg-phase-interactive/5 rounded-xl border border-phase-interactive/10">
         <Text className="text-[12px] text-phaseText-muted leading-[1.6]">
           💡 A <Text className="font-bold text-phaseText-primary">standalone classroom</Text> is
-          personal &mdash; it's not linked to any school.
+          personal &mdash; it&apos;s not linked to any school.
         </Text>
       </Box>
       <VStack>
         <SectionLabel>Classroom Name *</SectionLabel>
         <Input className="bg-phase-surface-secondary border-phase-border rounded-xl px-4 h-12">
           <InputField
-            value={name}
-            onChangeText={setName}
+            value={state.name}
+            onChangeText={(name) => dispatch({ type: 'SET_NAME', name })}
             placeholder="e.g. Grade 10B Science"
             className="text-sm font-bold text-phaseText-primary"
+            accessibilityLabel="Classroom Name Input"
+            accessibilityHint="Enter the name for your personal classroom"
           />
         </Input>
       </VStack>
@@ -498,21 +703,25 @@ function TeacherCreateStandaloneClassroom({ onSuccess }: { onSuccess: () => void
         <SectionLabel>Subject</SectionLabel>
         <Input className="bg-phase-surface-secondary border-phase-border rounded-xl px-4 h-12">
           <InputField
-            value={subject}
-            onChangeText={setSubject}
+            value={state.subject}
+            onChangeText={(subject) => dispatch({ type: 'SET_SUBJECT', subject })}
             placeholder="e.g. Biology"
             className="text-sm font-bold text-phaseText-primary"
+            accessibilityLabel="Subject Input"
+            accessibilityHint="Optionally specify the subject for this classroom"
           />
         </Input>
       </VStack>
-      {error && <Text className="text-xs text-phase-error">{error}</Text>}
+      {state.error && <Text className="text-xs text-phase-error text-center">{state.error}</Text>}
       <SanctuaryButton
         onPress={handleCreate}
-        disabled={!name.trim() || loading}
+        isDisabled={!state.name.trim() || state.loading}
         className="bg-phase-interactive"
+        accessibilityLabel="Create personal classroom now"
+        accessibilityHint="Initializes your standalone classroom"
       >
         <HStack className="items-center justify-center gap-2">
-          {loading ? (
+          {state.loading ? (
             <Spinner size="small" color="#FFFFFF" />
           ) : (
             <Icon as={BookOpen} size="xs" className="text-white" />
@@ -535,14 +744,23 @@ function TeacherFlow({ onSuccess }: { onSuccess: () => void }) {
 
   return (
     <VStack className="gap-6">
-      <HStack className="gap-1.5 p-1 bg-phase-surface/40 rounded-[12px] border border-phase-border/20">
+      <HStack
+        className="gap-1.5 p-1 bg-phase-surface/40 rounded-[12px] border border-phase-border/20"
+        role="tablist"
+      >
         {TABS.map((t) => {
           const isActive = tab === t.id;
           return (
             <Pressable
               key={t.id}
               onPress={() => setTab(t.id)}
-              className={`flex-1 py-2.5 rounded-xl flex-row items-center justify-center gap-2 ${isActive ? 'bg-phase-surface shadow-sm' : ''}`}
+              role="tab"
+              accessibilityLabel={t.label}
+              accessibilityHint={`Switch to ${t.label} flow`}
+              accessibilityState={{ selected: isActive }}
+              className={`flex-1 py-2.5 rounded-xl flex-row items-center justify-center gap-2 ${
+                isActive ? 'bg-phase-surface shadow-sm' : ''
+              }`}
             >
               <Icon
                 as={t.icon}
@@ -550,7 +768,9 @@ function TeacherFlow({ onSuccess }: { onSuccess: () => void }) {
                 className={isActive ? 'text-phase-interactive' : 'text-phaseText-muted'}
               />
               <Text
-                className={`text-[12px] font-bold ${isActive ? 'text-phase-interactive' : 'text-phaseText-muted'}`}
+                className={`text-[12px] font-bold ${
+                  isActive ? 'text-phase-interactive' : 'text-phaseText-muted'
+                }`}
               >
                 {t.label}
               </Text>
@@ -582,27 +802,59 @@ function TeacherFlow({ onSuccess }: { onSuccess: () => void }) {
   );
 }
 
+// -- StudentJoinClassroom ------------------------------------
+
+type StudentJoinState = {
+  code: string;
+  loading: boolean;
+  error: string | null;
+  done: boolean;
+};
+
+type StudentJoinAction =
+  | { type: 'SET_CODE'; code: string }
+  | { type: 'JOIN_START' }
+  | { type: 'JOIN_SUCCESS' }
+  | { type: 'JOIN_FAILURE'; error: string };
+
+const studentJoinReducer = (state: StudentJoinState, action: StudentJoinAction): StudentJoinState => {
+  switch (action.type) {
+    case 'SET_CODE':
+      return { ...state, code: action.code, error: null };
+    case 'JOIN_START':
+      return { ...state, loading: true, error: null };
+    case 'JOIN_SUCCESS':
+      return { ...state, loading: false, done: true };
+    case 'JOIN_FAILURE':
+      return { ...state, loading: false, error: action.error };
+    default:
+      return state;
+  }
+};
+
 function StudentJoinClassroom({ onSuccess }: { onSuccess: () => void }) {
-  const [code, setCode] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [done, setDone] = useState(false);
+  const [state, dispatch] = useReducer(studentJoinReducer, {
+    code: '',
+    loading: false,
+    error: null,
+    done: false,
+  });
 
-  const handleClaim = async () => {
-    if (!code.trim()) return;
-    setLoading(true);
-    setError('');
+  const handleClaim = useCallback(async () => {
+    if (!state.code.trim()) return;
+    dispatch({ type: 'JOIN_START' });
     try {
-      await api.classroomStudents.claimStudent(code.trim());
-      setDone(true);
-    } catch (e: any) {
-      setError(e?.message || 'Invalid code or record already claimed');
-    } finally {
-      setLoading(false);
+      await api.classroomStudents.claimStudent(state.code.trim());
+      dispatch({ type: 'JOIN_SUCCESS' });
+    } catch (e: unknown) {
+      dispatch({
+        type: 'JOIN_FAILURE',
+        error: e instanceof Error ? e.message : 'Invalid code or record already claimed',
+      });
     }
-  };
+  }, [state.code]);
 
-  if (done)
+  if (state.done)
     return (
       <SuccessCard
         emoji="🌱"
@@ -627,26 +879,33 @@ function StudentJoinClassroom({ onSuccess }: { onSuccess: () => void }) {
       <VStack>
         <SectionLabel>Your Classroom Code</SectionLabel>
         <Input
-          className={`bg-phase-surface-secondary border-phase-border rounded-2xl px-6 h-20 items-center justify-center ${error ? 'border-phase-error' : ''}`}
+          className={`bg-phase-surface-secondary border-phase-border rounded-2xl px-6 h-20 items-center justify-center ${
+            state.error ? 'border-phase-error' : ''
+          }`}
         >
           <InputField
-            value={code}
-            onChangeText={(v) => setCode(v.toLowerCase().slice(0, 12))}
+            value={state.code}
+            onChangeText={(v) => dispatch({ type: 'SET_CODE', code: v.toLowerCase().slice(0, 12) })}
             placeholder="a1b2c3d4"
             className="text-[28px] font-black text-phaseText-primary tracking-[6px] text-center uppercase"
-            style={{ outline: 'none' } as any}
+            // @ts-expect-error - style with outline is web-specific
+            style={{ outline: 'none' }}
+            accessibilityLabel="Classroom invite code input"
+            accessibilityHint="8-character code provided by your teacher"
           />
         </Input>
-        {error && <Text className="mt-2 text-xs text-phase-error text-center">{error}</Text>}
+        {state.error && <Text className="mt-2 text-xs text-phase-error text-center">{state.error}</Text>}
       </VStack>
 
       <SanctuaryButton
         onPress={handleClaim}
-        disabled={code.length < 6 || loading}
+        isDisabled={state.code.length < 6 || state.loading}
         className="bg-phase-interactive h-14"
+        accessibilityLabel="Join Classroom now"
+        accessibilityHint="Redeems your classroom code and enrolls you in the class"
       >
         <HStack className="items-center justify-center gap-2">
-          {loading ? (
+          {state.loading ? (
             <Spinner size="small" color="#FFFFFF" />
           ) : (
             <Icon as={BookOpen} size="xs" className="text-white" />
@@ -662,19 +921,19 @@ function StudentJoinClassroom({ onSuccess }: { onSuccess: () => void }) {
 
 export default function NoSchoolView() {
   const { can } = usePermissions();
-  const navigation = useNavigation<any>();
+  const navigation = useNavigation<NavigationProp<ClassroomStackParamList>>();
 
   const canCreateSchool = can('create', 'School');
   const canCreateClassroom = can('create', 'Classroom');
   const canJoinClassroom = can('submit', 'AssignmentSubmission');
 
-  const handleSuccess = () => {
+  const handleSuccess = useCallback(() => {
     try {
-      (navigation.navigate as any)('Classroom');
+      navigation.navigate('Classroom' as never);
     } catch {
       /* noop */
     }
-  };
+  }, [navigation]);
 
   const META = canCreateSchool
     ? {
@@ -699,7 +958,9 @@ export default function NoSchoolView() {
       <VStack className="max-w-[520px] mx-auto py-12 px-6 w-full">
         <VStack className="items-center text-center mb-10">
           <Text className="text-5xl mb-3">{META.emoji}</Text>
-          <h1 className="text-[28px] font-black text-phaseText-primary mb-2">{META.heading}</h1>
+          <Heading className="text-[28px] font-black text-phaseText-primary mb-2">
+            {META.heading}
+          </Heading>
           <Text className="text-center text-phaseText-muted text-sm leading-[1.6] max-w-[380px]">
             {META.sub}
           </Text>

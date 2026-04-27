@@ -1,5 +1,4 @@
-import { hapticLight, Icon, Pressable, Text } from '@repo/ui';
-import { Plus } from 'lucide-react-native';
+import { hapticLight, Icon, Plus, Pressable, Text } from '@repo/ui';
 import React from 'react';
 
 export function CreateClassroomAction({ onCreateClassroom }: { onCreateClassroom: () => void }) {
