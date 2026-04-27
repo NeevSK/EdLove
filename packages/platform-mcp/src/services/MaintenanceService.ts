@@ -50,11 +50,12 @@ export class MaintenanceService {
 
       if (!staged) return toMcpText('Nothing to commit.');
 
-      // Try tools, ignore errors as they are non-critical optimizations
-      execUtf8(`node scripts/smart-changeset.mjs --staged "${args.message.replace(/"/g, '\\"')}"`);
-      execUtf8('git add .changeset/*.md');
+    // Try tools, ignore errors as they are non-critical optimizations
+    const msg = args.message || 'chore: maintenance checkpoint';
+    execUtf8(`node scripts/smart-changeset.mjs --staged "${msg.replace(/"/g, '\\"')}"`);
+    execUtf8('git add .changeset/*.md');
 
-      fs.writeFileSync(tempMsgPath, args.message, 'utf-8');
+    fs.writeFileSync(tempMsgPath, msg, 'utf-8');
 
       execUtf8(
         `powershell -ExecutionPolicy Bypass -File scripts/commit-ledger.ps1 -CommitMsgFile "${tempMsgPath}"`,
