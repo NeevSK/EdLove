@@ -1,6 +1,10 @@
-import { identityAPI, supabase, usePermissions } from '@repo/core';
-import { Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui';
-import { Bell, BellOff, MoreVertical, ShieldAlert, UserX } from 'lucide-react-native';
+import { identityAPI } from '@repo/core/api';
+import { usePermissions } from '@repo/core/logic';
+import { supabase } from '@repo/core/native';
+import { Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
+import { Bell, BellOff, MoreVertical, ShieldAlert, UserX } from '@repo/ui/icons';
+import { useLotusToast } from '@repo/ui/hooks';
+import { hapticError, hapticSuccess } from '@repo/ui/utils';
 import React, { useEffect, useState } from 'react';
 import { useSocialShield } from '../hooks/useSocialShield';
 import SocialShieldModal from './SocialShieldModal';
@@ -19,6 +23,7 @@ export default function HeaderMoreMenu({
   targetUserName,
 }: HeaderMoreMenuProps) {
   const { toggleMute, blockUser } = useSocialShield();
+  const { showToast } = useLotusToast();
   const { flags } = usePermissions();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
@@ -47,14 +52,36 @@ export default function HeaderMoreMenu({
 
   const handleToggleMute = async () => {
     const newState = !isMuted;
-    await toggleMute({ conversationId, groupId, isMuted: newState });
-    setIsMuted(newState);
+    const result = await toggleMute({ conversationId, groupId, isMuted: newState });
+    if (result && result.success) {
+      hapticSuccess();
+      showToast({
+        message: newState
+          ? 'Notifications silenced for this sanctuary.'
+          : 'Notifications restored.',
+        type: 'success',
+      });
+      setIsMuted(newState);
+    } else {
+      hapticError();
+      showToast({ message: 'Failed to update mute settings.', type: 'error' });
+    }
     setIsMenuOpen(false);
   };
 
   const handleBlock = async () => {
     if (targetUserId) {
-      await blockUser(targetUserId);
+      const result = await blockUser(targetUserId);
+      if (result && result.success) {
+        hapticSuccess();
+        showToast({
+          message: 'User has been blocked. They can no longer see your content or message you.',
+          type: 'success',
+        });
+      } else {
+        hapticError();
+        showToast({ message: 'Failed to block user.', type: 'error' });
+      }
       setIsMenuOpen(false);
     }
   };

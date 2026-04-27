@@ -1,4 +1,4 @@
-import { supabase } from '@repo/core';
+import { supabase } from '@repo/core/native';
 
 import type { ManifestoStatus, ManifestoVibe, SanctuaryManifesto } from '../types';
 

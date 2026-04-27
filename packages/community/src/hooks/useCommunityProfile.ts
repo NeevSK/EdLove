@@ -1,10 +1,6 @@
-import {
-  communityAPI,
-  handleAPIError,
-  supabase,
-  useMutationQueue,
-  usePermissions,
-} from '@repo/core';
+import { communityAPI } from '../api/community';
+import { useMutationQueue, usePermissions, handleAPIError } from '@repo/core/logic';
+import { supabase } from '@repo/core/native';
 import { useCallback, useEffect, useState } from 'react';
 
 export function useCommunityProfile(communityId: string) {

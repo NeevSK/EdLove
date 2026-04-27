@@ -4,7 +4,8 @@
  * Provides: fetching, unread count badge, mark-as-read, real-time subscription.
  */
 
-import { supabase, useStore } from '@repo/core';
+import { supabase } from '@repo/core/native';
+import { useStore } from '@repo/core/store';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import React from 'react';
 import { communityAPI } from '../api/community';

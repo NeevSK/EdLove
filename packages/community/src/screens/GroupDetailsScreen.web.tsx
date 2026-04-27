@@ -1,5 +1,5 @@
 import { useRoute } from '@react-navigation/native';
-import { useEntity } from '@repo/core';
+import { useEntity } from '@repo/core/hooks';;
 import { Box, Center, EntityView, Spinner } from '@repo/ui';
 import React from 'react';
 

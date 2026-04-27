@@ -3,7 +3,7 @@
 // Educational Ecology Support System
 // ============================================================================
 
-import type { Announcement, AuthorityTier } from '@repo/core';
+import type { Announcement, AuthorityTier } from '@repo/core/types';
 
 export interface AnnouncementWithAuthor extends Announcement {
   author_name?: string;

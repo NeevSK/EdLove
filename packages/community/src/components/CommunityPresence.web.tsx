@@ -5,7 +5,7 @@
  * focused on rendering only.
  */
 
-import { Users, WifiOff } from 'lucide-react-native';
+import { Users, WifiOff } from '@repo/ui/icons';
 import React from 'react';
 import { useCommunityPresence } from '../hooks/useCommunityPresence';
 

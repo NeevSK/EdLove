@@ -1,34 +1,36 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import {
-  type CommunityStackParamList,
   clearPendingGateAction,
   getPendingGateAction,
   setPendingGateAction,
-  supabase,
   usePermissions,
-  useStore,
-} from '@repo/core';
+} from '@repo/core/logic';
+import { supabase } from '@repo/core/native';
+import { useStore } from '@repo/core/store';
+import type { CommunityStackParamList } from '@repo/core/types';
 import { QRBuilder, QRCodeGenerator } from '@repo/scanner-kit';
 import {
-  AnimatedView,
   Box,
-  FadeInDown,
+  Heading as UIHeading,
   HStack,
-  Icon,
   Image,
   Pressable,
+  Spinner,
+  Text,
+  VStack,
+  Icon,
+  AnimatedView,
+} from '@repo/ui/primitives';
+import {
   SanctuaryButton,
   SanctuaryCard,
   SanctuaryFlashList,
   SanctuaryModal,
   ScreenWrapper,
-  Spinner,
-  Text,
-  Heading as UIHeading,
-  useLotusToast,
-  VStack,
-} from '@repo/ui';
+} from '@repo/ui/components';
+import { FadeInDown } from 'react-native-reanimated';
+import { useLotusToast } from '@repo/ui/hooks';
 import {
   ChevronLeft,
   MessageSquare,
@@ -39,7 +41,7 @@ import {
   UserPlus,
   Users,
   X,
-} from 'lucide-react-native';
+} from '@repo/ui/icons';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { communityAPI } from '../api/community';
@@ -344,7 +346,7 @@ export default function GroupDetailsScreen() {
           data={posts}
           estimatedItemSize={280}
           ListHeaderComponent={renderHeader}
-          renderItem={({ item, index }) => (
+          renderItem={({ item, index }: { item: any, index: number }) => (
             <AnimatedView
               entering={FadeInDown.duration(400)
                 .delay(index * 150)

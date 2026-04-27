@@ -1,18 +1,21 @@
 import { useNavigation } from '@react-navigation/native';
-import { identityAPI, supabase } from '@repo/core';
+import { identityAPI } from '@repo/core/api';
+import { supabase } from '@repo/core/native';
 import {
   Box,
-  FadeInDown,
   Heading,
   HStack,
   Icon,
+  Text,
+  VStack,
+} from '@repo/ui/primitives';
+import {
   SanctuaryButton,
   ScreenWrapper,
-  Text,
-  useSanctuaryToast,
-  VStack,
-} from '@repo/ui';
-import { ArrowRight, GraduationCap, ShieldCheck } from 'lucide-react-native';
+} from '@repo/ui/components';
+import { FadeInDown } from 'react-native-reanimated';
+import { useSanctuaryToast } from '@repo/ui/hooks';
+import { ArrowRight, GraduationCap, ShieldCheck } from '@repo/ui/icons';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import Animated from 'react-native-reanimated';

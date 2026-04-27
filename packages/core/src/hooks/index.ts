@@ -28,3 +28,4 @@ export { useTeacherClassroom } from './useTeacherClassroom';
 export { useTemporalHeatmap } from './useTemporalHeatmap';
 export { useTenantContext } from './useTenantContext';
 export { useTracking } from './useTracking';
+export { useEntity } from './useEntity';

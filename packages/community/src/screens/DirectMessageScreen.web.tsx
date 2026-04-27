@@ -13,7 +13,9 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { CommunityStackParamList } from '@repo/core';
-import { socialAPI, supabase, useStore, useTemporalStore } from '@repo/core';
+import { socialAPI } from '@repo/core/api';
+import { supabase } from '@repo/core/native';
+import { useStore, useTemporalStore } from '@repo/core/logic';;
 import { formatTimestamp, getInitialsFromName } from '@repo/ui';
 import type React from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';

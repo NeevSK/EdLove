@@ -1,22 +1,11 @@
 import { useNavigation } from '@react-navigation/native';
-import {
-  communityAPI,
-  setPendingGateAction,
-  usePendingGateAction,
-  usePermissions,
-  useStore,
-} from '@repo/core';
-import {
-  Box,
-  Heading,
-  Icon,
-  PositiveInvitation,
-  Spinner,
-  Text,
-  VStack,
-  WebScreenHeader,
-} from '@repo/ui';
-import { Bell, Compass, Info, Plus, Shield, Users2 } from 'lucide-react-native';
+import { communityAPI } from '@repo/core/api';
+import { usePendingGateAction } from '@repo/core/hooks';
+import { useStore } from '@repo/core/logic';
+import { setPendingGateAction, usePermissions } from '@repo/core';;
+import { WebScreenHeader } from '@repo/ui/components';
+import { Box, Heading, Icon, PositiveInvitation, Spinner, Text, VStack } from '@repo/ui';;
+import { Bell, Compass, Info, Plus, Shield, Users2 } from '@repo/ui/icons';
 import React, { useEffect, useMemo, useState } from 'react';
 import { CommentSheet } from '../components/CommentSheet';
 import CommunityHearth from '../components/CommunityHearth';

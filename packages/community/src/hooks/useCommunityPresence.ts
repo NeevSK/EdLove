@@ -1,4 +1,4 @@
-import { usePermissions } from '@repo/core';
+import { usePermissions } from '@repo/core/logic';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { fetchPresenceFallbackCount, startPresenceSession } from '../api/presence';
 

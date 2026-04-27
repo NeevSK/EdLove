@@ -7,18 +7,26 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const ROOT_DIR = path.join(__dirname, '..');
 
-const targetPackage = process.argv[2];
+const args = process.argv.slice(2);
+const isJson = args.includes('--json');
+const targetPackage = args.filter(a => !a.startsWith('--'))[0];
 
 if (!targetPackage) {
   console.error('Please specify a package path (e.g. packages/core).');
   process.exit(1);
 }
 
-const pkgBase = path.isAbsolute(targetPackage) ? targetPackage : path.join(ROOT_DIR, targetPackage);
-const pkgJsonPath = path.join(pkgBase, 'package.json');
+let pkgBase = path.isAbsolute(targetPackage) ? targetPackage : path.join(ROOT_DIR, targetPackage);
+let pkgJsonPath = path.join(pkgBase, 'package.json');
+
+// Traverse upwards to find package.json if not in current target
+while (!fs.existsSync(pkgJsonPath) && pkgBase !== ROOT_DIR && pkgBase !== path.dirname(pkgBase)) {
+  pkgBase = path.dirname(pkgBase);
+  pkgJsonPath = path.join(pkgBase, 'package.json');
+}
 
 if (!fs.existsSync(pkgJsonPath)) {
-  console.error(`Package.json not found at ${pkgJsonPath}`);
+  console.error(`Package.json not found at ${pkgJsonPath} or any parent directory up to ${ROOT_DIR}`);
   process.exit(1);
 }
 
@@ -27,9 +35,9 @@ console.log(`\x1b[36m>>> Shiny Auditing Package Architecture: ${targetPackage}\x
 const pkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, 'utf-8'));
 const pkgName = pkgJson.name || path.basename(pkgBase);
 
-// --- Report Orchestrator ---
 const report = {
   title: `🏛️ sovereign_audit:architecture - ${pkgName}`,
+  packageName: pkgName,
   timestamp: new Date().toISOString(),
   target: targetPackage,
   packageRoot: pkgBase,
@@ -244,8 +252,15 @@ if (report.stats.violationCount > 0) {
 }
 console.log(`>>> Report generated: \x1b[33m${reportPath}\x1b[0m\n`);
 
-// Output Markdown to stdout for the MCP service to capture
-console.log('---BEGIN_MARKDOWN_REPORT---');
-console.log(finalMarkdown);
-console.log('---END_MARKDOWN_REPORT---');
+// Output structured data if requested
+if (isJson) {
+  console.log('---BEGIN_JSON_REPORT---');
+  console.log(JSON.stringify(report, null, 2));
+  console.log('---END_JSON_REPORT---');
+} else {
+  // Output Markdown to stdout for the MCP service to capture
+  console.log('---BEGIN_MARKDOWN_REPORT---');
+  console.log(finalMarkdown);
+  console.log('---END_MARKDOWN_REPORT---');
+}
 

@@ -6,24 +6,27 @@
  * Refactored for Sanctuary V3.
  */
 
-import { supabase, useStore } from '@repo/core';
+import { supabase } from '@repo/core/native';
+import { useStore } from '@repo/core/store';
 import {
-  AnimatedView,
   Box,
-  FadeInDown,
-  FlatList,
-  GlobalHeader,
   HStack,
-  Icon,
   InputField,
   Pressable,
-  ScreenWrapper,
   Spinner,
   Text,
-  UserAvatar,
   VStack,
-} from '@repo/ui';
-import { MessageSquare, Send } from 'lucide-react-native';
+  Icon,
+  AnimatedView,
+} from '@repo/ui/primitives';
+import {
+  GlobalHeader,
+  ScreenWrapper,
+  UserAvatar,
+} from '@repo/ui/components';
+import { FlatList } from 'react-native';
+import { FadeInDown } from 'react-native-reanimated';
+import { MessageSquare, Send } from '@repo/ui/icons';
 import type React from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -226,7 +229,7 @@ export default function BaseChatScreen({
           <FlatList
             ref={listRef}
             data={messages}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(item: ChatMessage) => item.id}
             renderItem={renderMessage}
             contentContainerStyle={{
               paddingVertical: 20,

@@ -1,15 +1,6 @@
-import {
-  Box,
-  Heading,
-  HStack,
-  LivingGlow,
-  Pressable,
-  SanctuaryCard,
-  Text,
-  Theme,
-  VStack,
-} from '@repo/ui';
-import { Heart, ShieldCheck, Star, Target } from 'lucide-react-native';
+import { LivingGlow } from '@repo/ui/components';
+import { Box, Heading, HStack, Pressable, SanctuaryCard, Text, Theme, VStack } from '@repo/ui';;
+import { Heart, ShieldCheck, Star, Target } from '@repo/ui/icons';
 import React from 'react';
 import Animated, { LinearTransition } from 'react-native-reanimated';
 import type { SanctuaryManifesto } from '../types';

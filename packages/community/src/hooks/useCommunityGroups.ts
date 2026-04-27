@@ -1,6 +1,13 @@
 import { useMemo } from 'react';
 import type { CommunityGroup } from '../types';
 import { useCommunity } from './useCommunity';
+ 
+export const GROUP_KEYS = {
+  all: ['groups'] as const,
+  lists: () => [...GROUP_KEYS.all, 'list'] as const,
+  list: (filters: any) => [...GROUP_KEYS.lists(), { filters }] as const,
+  details: (id: string) => [...GROUP_KEYS.all, 'detail', id] as const,
+};
 
 export interface UseCommunityGroupsOptions {
   schoolId?: string;

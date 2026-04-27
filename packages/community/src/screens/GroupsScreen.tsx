@@ -1,21 +1,24 @@
-import { isDemo, usePermissions } from '@repo/core';
+import { isDemo, usePermissions } from '@repo/core/logic';
 import {
   AnimatedView,
   Box,
-  FadeInDown,
   Heading,
   HStack,
   Icon,
+  Input,
   InputField,
   Pressable,
-  SanctuaryButton,
-  SanctuaryFlashList,
-  SkeletonCard,
   Spinner,
   Text,
   VStack,
-} from '@repo/ui';
-import { Compass, Globe, Plus, Shield, Users, X } from 'lucide-react-native';
+  SkeletonCard,
+} from '@repo/ui/primitives';
+import {
+  SanctuaryButton,
+  SanctuaryFlashList,
+} from '@repo/ui/components';
+import { FadeInDown } from 'react-native-reanimated';
+import { Compass, Globe, Plus, Shield, Users, X } from '@repo/ui/icons';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import GroupCard from '../components/GroupCard';

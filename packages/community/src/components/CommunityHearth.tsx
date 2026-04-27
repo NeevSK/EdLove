@@ -1,5 +1,5 @@
 import { Box, FlatList, GlassCard, Heading, HStack, Icon, Pressable, Text, VStack } from '@repo/ui';
-import { Heart, Megaphone, Sparkles, Users } from 'lucide-react-native';
+import { Heart, Megaphone, Sparkles, Users } from '@repo/ui/icons';
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, useWindowDimensions } from 'react-native';

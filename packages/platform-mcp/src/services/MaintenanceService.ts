@@ -81,6 +81,14 @@ export class MaintenanceService {
     return toMcpText(result.stdout, !result.ok);
   }
 
+  handleHealArchitecture(args: { target?: string; dryRun?: boolean }) {
+    const target = normalizeTarget(args.target || '.');
+    const dryRunFlag = args.dryRun ? '--dry-run' : '';
+    console.error(`🏰 Healing architecture for: ${target} ${dryRunFlag}`);
+    const result = execUtf8(`node scripts/heal-architecture.mjs "${target}" ${dryRunFlag}`);
+    return toMcpText(result.stdout, !result.ok);
+  }
+
   handleNormalizeImports(args: { target?: string }) {
     const target = normalizeTarget(args.target || '.');
     const result = execUtf8(`node scripts/normalize-imports.mjs "${target}"`);

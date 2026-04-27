@@ -1,5 +1,5 @@
 import { Box, HStack, Icon, SanctuaryCard, Text, VStack } from '@repo/ui';
-import { Globe, Lock, Users } from 'lucide-react-native';
+import { Globe, Lock, Users } from '@repo/ui/icons';
 import React from 'react';
 
 interface GroupCardProps {

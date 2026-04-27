@@ -5,23 +5,26 @@
  * Refactored for Sanctuary V3.
  */
 
-import { type AuthorityTier, usePermissions } from '@repo/core';
+import { usePermissions } from '@repo/core/logic';
+import type { AuthorityTier } from '@repo/core/types';
 import {
   Box,
   Heading,
   HStack,
-  Icon,
   InputField,
-  SanctuaryButton,
-  SanctuaryModal,
-  ScreenWrapper,
   ScrollView,
   Spinner,
   Switch,
   Text,
   VStack,
-} from '@repo/ui';
-import { Globe, Megaphone, Pin, Plus, X } from 'lucide-react-native';
+  Icon,
+} from '@repo/ui/primitives';
+import {
+  SanctuaryButton,
+  SanctuaryModal,
+  ScreenWrapper,
+} from '@repo/ui/components';
+import { Globe, Megaphone, Pin, Plus, X } from '@repo/ui/icons';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { communityAPI as community } from '../api/community';

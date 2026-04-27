@@ -84,13 +84,63 @@ export class AuditService {
 
   handleAuditPackageArchitecture(args: { target: string }) {
     const target = normalizeTarget(args.target);
-    console.error(`Auditing package architecture for: ${target}`);
+    console.error(`🔍 Auditing package architecture for: ${target}`);
+    
     try {
-      const output = execSync(`node scripts/audit-package-architecture.mjs "${target}"`, {
-        cwd: ROOT_DIR,
-      }).toString();
+      // Ensure we are targeting a directory for the audit script
+      const stats = fs.statSync(target);
+      const targetDir = stats.isDirectory() ? target : path.dirname(target);
 
-      // Extract Markdown report if present
+      const output = execSync(`node scripts/audit-package-architecture.mjs "${targetDir}" --json`, {
+        cwd: ROOT_DIR,
+        encoding: 'utf-8',
+      });
+
+      // Extract JSON report
+      const jsonMatch = output.match(/---BEGIN_JSON_REPORT---([\s\S]*?)---END_JSON_REPORT---/);
+      if (jsonMatch && jsonMatch[1]) {
+        const rawData = JSON.parse(jsonMatch[1]);
+        
+        // Transform to DocumentService format
+        const report = this.document.renderReport({
+          title: `🏛️ Architectural Audit: ${rawData.packageName}`,
+          scope: rawData.target,
+          summary: `The architectural audit for **${rawData.packageName}** reveals **${rawData.stats.violationCount}** violations and **${rawData.stats.warningCount}** hygiene warnings.`,
+          stats: [
+            { label: 'Total Violations', value: rawData.stats.violationCount },
+            { label: 'Hygiene Warnings', value: rawData.stats.warningCount },
+            { label: 'Subpath Exports', value: rawData.stats.subpaths },
+          ],
+          issues: [
+            ...rawData.warnings.map((w: string) => ({
+              type: 'Hygiene',
+              file: 'Package Metadata',
+              message: w,
+              severity: 'warning' as const,
+            })),
+            ...rawData.violations.map((v: any) => ({
+              type: v.type,
+              file: v.file,
+              line: v.line,
+              message: v.message,
+              severity: 'error' as const,
+              reference: v.ref,
+            })),
+          ],
+          recommendations: [
+            'Remediate LOGIC -> UI violations by moving UI logic to components.',
+            'Resolve NATIVE POLLUTION by using @repo/ui primitives.',
+            'Refactor high-density useState hooks to useReducer state machines.',
+            'Ensure all imports use canonical subpath entry points.',
+          ],
+        });
+
+        return {
+          content: [{ type: 'text' as const, text: report }],
+        };
+      }
+
+      // Fallback to Markdown if JSON fails
       const match = output.match(/---BEGIN_MARKDOWN_REPORT---([\s\S]*?)---END_MARKDOWN_REPORT---/);
       if (match && match[1]) {
         return {
@@ -102,8 +152,12 @@ export class AuditService {
 
       return { content: [{ type: 'text' as const, text: output }] };
     } catch (e: any) {
+      console.error(`❌ Audit execution failed: ${e.message}`);
       return {
-        content: [{ type: 'text' as const, text: `Audit failed: ${e.message}\n${e.stdout || ''}` }],
+        content: [{ 
+          type: 'text' as const, 
+          text: `Audit failed for ${target}:\n${e.message}\n\nSTDOUT: ${e.stdout || ''}\nSTDERR: ${e.stderr || ''}` 
+        }],
         isError: true,
       };
     }

@@ -7,20 +7,22 @@
 
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import type { CommunityStackParamList } from '@repo/core';
+import type { CommunityStackParamList } from '@repo/core/types';
 import {
   Box,
-  FadeInDown,
   HStack,
-  Icon,
   Pressable,
-  SanctuaryFlashList,
   Spinner,
   Text,
-  UserAvatar,
   VStack,
-} from '@repo/ui';
-import { ChevronRight, MessageSquare } from 'lucide-react-native';
+  Icon,
+} from '@repo/ui/primitives';
+import {
+  UserAvatar,
+  SanctuaryFlashList,
+} from '@repo/ui/components';
+import { FadeInDown } from 'react-native-reanimated';
+import { ChevronRight, MessageSquare } from '@repo/ui/icons';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Animated from 'react-native-reanimated';
@@ -109,7 +111,7 @@ export default function DirectMessagesListScreen() {
     <Box className="flex-1 bg-phase-canvas">
       <SanctuaryFlashList
         data={conversations}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item: DirectConversation) => item.id}
         estimatedItemSize={80}
         renderItem={renderItem}
         onRefresh={onRefresh}

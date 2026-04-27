@@ -1,18 +1,20 @@
 import { useNavigation } from '@react-navigation/native';
-import type { EntityDefinition } from '@repo/core';
+import { type EntityDefinition } from '@repo/core/logic';
 import { QRBuilder, QRCodeGenerator } from '@repo/scanner-kit';
 import {
   Box,
-  EntityModal,
   Heading,
-  hapticSuccess,
-  Icon,
-  SanctuaryButton,
-  SanctuaryModal,
   Text,
   VStack,
-} from '@repo/ui';
-import { CheckCircle } from 'lucide-react-native';
+  Icon,
+} from '@repo/ui/primitives';
+import {
+  EntityModal,
+  SanctuaryButton,
+  SanctuaryModal,
+} from '@repo/ui/components';
+import { hapticSuccess } from '@repo/ui/utils';
+import { CheckCircle } from '@repo/ui/icons';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 

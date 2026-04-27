@@ -1,22 +1,25 @@
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { type CommunityStackParamList, usePermissions } from '@repo/core';
+import { usePermissions } from '@repo/core/logic';
+import type { CommunityStackParamList } from '@repo/core/types';
 import {
   Box,
-  Button,
   Heading,
   HStack,
-  hapticLight,
-  Icon,
-  LoadingOverlay,
   Pressable,
-  ScreenWrapper,
   Spinner,
   Text,
-  useSanctuaryToast,
   VStack,
-} from '@repo/ui';
-import { Info, Settings, Shield, UserCheck, UserX } from 'lucide-react-native';
+  Button,
+  Icon,
+} from '@repo/ui/primitives';
+import {
+  LoadingOverlay,
+  ScreenWrapper,
+} from '@repo/ui/components';
+import { useSanctuaryToast } from '@repo/ui/hooks';
+import { hapticLight } from '@repo/ui/utils';
+import { Info, Settings, Shield, UserCheck, UserX } from '@repo/ui/icons';
 import React, { useEffect, useState } from 'react';
 import { communityAPI } from '../api/community';
 import type { CommunityGroup } from '../types';

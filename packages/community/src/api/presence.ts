@@ -1,4 +1,4 @@
-import { supabase } from '@repo/core';
+import { supabase } from '@repo/core/native';
 
 export interface PresenceFallbackCountOptions {
   targetRoles: string[];
@@ -86,3 +86,9 @@ export function startPresenceSession(options: PresenceSessionOptions): () => voi
     supabase.removeChannel(watcherChannel);
   };
 }
+
+export const presenceAPI = {
+  fetchPresenceFallbackCount,
+  markUserPresenceSeen,
+  startPresenceSession,
+};

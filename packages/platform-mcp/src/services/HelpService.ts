@@ -118,6 +118,7 @@ These tools are available directly as top-level commands.
 | **lint** | \`lint_package\` | High-speed Biome linting for packages. Supports \`fix: true\`. |
 | **check** | \`format:fix\` | Primary Biome check/format/fix tool (\`biome check --write\`). |
 | **syncpack_fix** | \`maintenance:fix\` | Fixes package.json version mismatches monorepo-wide. |
+| **types** | \`check_package_types\` | Targeted tsc audits for specific packages. |
 
 ## 🔧 Maintenance Gateway (\`sovereign_maintenance\`)
 | Action | Legacy Name | Function |
@@ -128,6 +129,7 @@ These tools are available directly as top-level commands.
 | **refactor** | \`shiny_refactor\` | Modern project-wide find/replace using sd. |
 | **types** | \`check_package_types\` | Targeted tsc audits for specific packages. |
 | **normalize** | \`normalize_imports\` | Local relative -> Workspace alias transformation. |
+| **heal_architecture**| [NEW] | Automatically resolves root-to-subpath import violations. |
 | **scaffold** | \`scaffold_feature_context\` | Intelligence scout for feature keywords. |
 | **zod_bridge** | \`bridge_schema_zod\` | JSON Schema to Zod validator generation. |
 | **readme_usage** | \`generate_readme_usage\` | JSDoc to Markdown usage generator. |

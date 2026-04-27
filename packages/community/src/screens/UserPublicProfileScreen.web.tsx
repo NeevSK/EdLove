@@ -1,24 +1,28 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import type { CommunityStackParamList } from '@repo/core';
-import { supabase, usePermissions, useStore } from '@repo/core';
+import { usePermissions } from '@repo/core/logic';
+import { supabase } from '@repo/core/native';
+import { useStore } from '@repo/core/store';
+import type { CommunityStackParamList } from '@repo/core/types';
 import { GiveThuthimalModal } from '@repo/profile';
 import {
   Box,
+  Heading,
+  HStack,
+  Text,
+  VStack,
   Button,
   ButtonIcon,
   ButtonText,
+  Theme,
+} from '@repo/ui/primitives';
+import {
   GlobalHeader,
-  Heading,
-  HStack,
   LoadingOverlay,
   SanctuaryBackground,
   ScreenWrapper,
-  Text,
-  Theme,
   UserAvatar,
-  VStack,
-} from '@repo/ui';
+} from '@repo/ui/components';
 import {
   Activity,
   BadgeCheck,
@@ -30,7 +34,7 @@ import {
   MessageSquare,
   Send,
   Shield,
-} from 'lucide-react-native';
+} from '@repo/ui/icons';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, ScrollView } from 'react-native';

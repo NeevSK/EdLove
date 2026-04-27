@@ -4,12 +4,13 @@ import {
   HStack,
   Icon,
   Pressable,
-  SanctuaryButton,
-  SanctuaryModal,
   Text,
   VStack,
-} from '@repo/ui';
-import { AlertTriangle, LifeBuoy, ShieldCheck, ShieldOff, UserX, X } from 'lucide-react-native';
+} from '@repo/ui/primitives';
+import { SanctuaryButton, SanctuaryModal } from '@repo/ui/components';
+import { useLotusToast } from '@repo/ui/hooks';
+import { hapticError, hapticSuccess } from '@repo/ui/utils';
+import { AlertTriangle, LifeBuoy, ShieldCheck, ShieldOff, UserX, X } from '@repo/ui/icons';
 import React, { useState } from 'react';
 import { type ReportTarget, useSocialShield } from '../hooks/useSocialShield';
 
@@ -59,6 +60,7 @@ export default function SocialShieldModal({
   targetUserName = 'this user',
 }: SocialShieldModalProps) {
   const { submitReport, blockUser } = useSocialShield();
+  const { showToast } = useLotusToast();
   const [reason, setReason] = useState<string>('');
   const [target, setTarget] = useState<ReportTarget>('platform');
   const [shouldBlock, setShouldBlock] = useState(false);
@@ -69,7 +71,7 @@ export default function SocialShieldModal({
   const handleSubmit = async () => {
     if (!reason || !target) return;
 
-    const success = await submitReport({
+    const result = await submitReport({
       postId,
       groupId,
       targetUserId,
@@ -77,9 +79,21 @@ export default function SocialShieldModal({
       target,
     });
 
-    if (success) {
+    if (result && result.success) {
+      hapticSuccess();
+      showToast({
+        message: 'Thank you for sharing your concern. Our guardians will review this shortly.',
+        type: 'success',
+      });
+
       if (shouldBlock && targetUserId) {
-        await blockUser(targetUserId);
+        const blockResult = await blockUser(targetUserId);
+        if (blockResult && blockResult.success) {
+          showToast({
+            message: 'User has also been blocked.',
+            type: 'success',
+          });
+        }
       }
       onClose();
       // Reset for next time
@@ -87,6 +101,9 @@ export default function SocialShieldModal({
       setReason('');
       setTarget('platform');
       setShouldBlock(false);
+    } else {
+      hapticError();
+      showToast({ message: 'Failed to submit report. Please try again.', type: 'error' });
     }
   };
 

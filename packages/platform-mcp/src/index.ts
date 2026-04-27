@@ -593,6 +593,7 @@ class PolymathPlatformServer {
                   'normalize',
                   'scaffold',
                   'lint_fix',
+                  'heal_architecture',
                 ],
               },
               params: {
@@ -756,6 +757,8 @@ class PolymathPlatformServer {
               return this.maintenance.handleRefactorReplace(params);
             case 'normalize':
               return this.maintenance.handleNormalizeImports(params);
+            case 'heal_architecture':
+              return this.maintenance.handleHealArchitecture(params);
             case 'lint_fix':
               return this.maintenance.handleLintFix(params);
             case 'inputs':

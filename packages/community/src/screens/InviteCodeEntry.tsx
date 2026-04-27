@@ -1,23 +1,26 @@
-import { type InviteCodeData, validateInviteCode } from '@repo/core';
+import { validateInviteCode, type InviteCodeData } from '@repo/core/logic';
 import {
   Box,
   Heading,
   HStack,
+  Pressable,
+  Spinner,
+  Text,
+  VStack,
+  Icon,
+  InputField,
+} from '@repo/ui/primitives';
+import {
+  SanctuaryButton,
+  ScreenWrapper,
+} from '@repo/ui/components';
+import { useSanctuaryToast } from '@repo/ui/hooks';
+import {
   hapticError,
   hapticLight,
   hapticSuccess,
-  Icon,
-  InputField,
-  Pressable,
-  SanctuaryButton,
-  ScreenWrapper,
-  Spinner,
-  Text,
-  Toast,
-  useSanctuaryToast,
-  VStack,
-} from '@repo/ui';
-import { ArrowRight, HelpCircle, Shield } from 'lucide-react-native';
+} from '@repo/ui/utils';
+import { ArrowRight, HelpCircle, Shield } from '@repo/ui/icons';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 

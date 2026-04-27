@@ -1,21 +1,25 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import type { CommunityStackParamList } from '@repo/core';
-import { supabase, usePermissions, useStore } from '@repo/core';
+import { usePermissions } from '@repo/core/logic';
+import { supabase } from '@repo/core/native';
+import { useStore } from '@repo/core/store';
+import type { CommunityStackParamList } from '@repo/core/types';
 import {
   Box,
-  GlobalHeader,
   HStack,
+  Spinner,
+  Text,
+  VStack,
   Icon,
+} from '@repo/ui/primitives';
+import {
+  GlobalHeader,
   SanctuaryButton,
   SanctuaryCard,
   ScreenWrapper,
-  Spinner,
-  Text,
   UserAvatar,
-  useRegisterFAB,
-  VStack,
-} from '@repo/ui';
+} from '@repo/ui/components';
+import { useRegisterFAB } from '@repo/ui/context';
 import {
   BadgeCheck,
   BookOpen,
@@ -26,7 +30,7 @@ import {
   Shield,
   ShieldAlert,
   ThumbsUp,
-} from 'lucide-react-native';
+} from '@repo/ui/icons';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView } from 'react-native';

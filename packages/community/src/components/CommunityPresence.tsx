@@ -5,7 +5,7 @@
  */
 
 import { Box, Heading, HStack, Icon, Spinner, Text, View, VStack } from '@repo/ui';
-import { Users, WifiOff } from 'lucide-react-native';
+import { Users, WifiOff } from '@repo/ui/icons';
 import React, { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import Animated, {

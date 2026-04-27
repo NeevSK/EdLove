@@ -5,7 +5,8 @@
  * Safe to mount with postId=null (does nothing).
  */
 
-import { supabase, usePermissions } from '@repo/core';
+import { usePermissions } from '@repo/core/logic';
+import { supabase } from '@repo/core/native';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import React from 'react';
 import { communityAPI } from '../api/community';

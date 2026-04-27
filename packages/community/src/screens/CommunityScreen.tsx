@@ -2,32 +2,34 @@ import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import {
   type CommunityStackParamList,
+} from '@repo/core/types';
+import {
   communityAPI,
-  setPendingGateAction,
-  usePermissions,
-  useStore,
-  useTemporalStore,
-  useTracking,
-} from '@repo/core';
+} from '@repo/core/api';
+import { usePermissions, setPendingGateAction } from '@repo/core/logic';
+import { useStore, useTemporalStore } from '@repo/core/store';
+import { useTracking } from '@repo/core/hooks';
 import {
   Box,
-  GlobalHeader,
   Heading,
-  HorizontalChipRow,
   HStack,
   Icon,
+  Spinner,
+  Text,
+  VStack,
+  ScrollView,
+} from '@repo/ui/primitives';
+import {
+  GlobalHeader,
+  HorizontalChipRow,
   PositiveInvitation,
   SanctuaryButton,
   SanctuaryFlashList,
   ScreenWrapper,
-  ScrollView,
-  Spinner,
-  Text,
   useBottomTabPadding,
-  useRegisterFAB,
-  VStack,
-} from '@repo/ui';
-import { Info, Plus } from 'lucide-react-native';
+} from '@repo/ui/components';
+import { useRegisterFAB } from '@repo/ui/context';
+import { Info, Plus } from '@repo/ui/icons';
 import type React from 'react';
 import { useEffect, useMemo, useState } from 'react';
 import { Platform } from 'react-native';

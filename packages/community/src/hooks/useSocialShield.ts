@@ -1,5 +1,5 @@
-import { supabase, useStore } from '@repo/core';
-import { hapticError, hapticSuccess, useLotusToast } from '@repo/ui';
+import { supabase } from '@repo/core/native';
+import { useStore } from '@repo/core/store';
 import { useCallback, useState } from 'react';
 import { communityAPI } from '../api/community';
 
@@ -7,7 +7,6 @@ export type ReportTarget = 'teacher' | 'principal' | 'platform';
 
 export function useSocialShield() {
   const { user } = useStore();
-  const { showToast } = useLotusToast();
   const [loading, setLoading] = useState(false);
 
   /**
@@ -23,21 +22,15 @@ export function useSocialShield() {
           .insert([{ blocker_id: user.id, blocked_id: blockedId }]);
 
         if (error) throw error;
-
-        hapticSuccess();
-        showToast({
-          message: 'User has been blocked. They can no longer see your content or message you.',
-          type: 'success',
-        });
+        return { success: true };
       } catch (error) {
         console.error('[SocialShield] Block Error:', error);
-        hapticError();
-        showToast({ message: 'Failed to block user.', type: 'error' });
+        return { success: false, error };
       } finally {
         setLoading(false);
       }
     },
-    [user, showToast],
+    [user],
   );
 
   /**
@@ -55,18 +48,15 @@ export function useSocialShield() {
           .eq('blocked_id', blockedId);
 
         if (error) throw error;
-
-        hapticSuccess();
-        showToast({ message: 'User has been unblocked.', type: 'success' });
+        return { success: true };
       } catch (error) {
         console.error('[SocialShield] Unblock Error:', error);
-        hapticError();
-        showToast({ message: 'Failed to unblock user.', type: 'error' });
+        return { success: false, error };
       } finally {
         setLoading(false);
       }
     },
-    [user, showToast],
+    [user],
   );
 
   /**
@@ -90,23 +80,15 @@ export function useSocialShield() {
         );
 
         if (error) throw error;
-
-        hapticSuccess();
-        showToast({
-          message: params.isMuted
-            ? 'Notifications silenced for this sanctuary.'
-            : 'Notifications restored.',
-          type: 'success',
-        });
+        return { success: true };
       } catch (error) {
         console.error('[SocialShield] Mute Error:', error);
-        hapticError();
-        showToast({ message: 'Failed to update mute settings.', type: 'error' });
+        return { success: false, error };
       } finally {
         setLoading(false);
       }
     },
-    [user, showToast],
+    [user],
   );
 
   /**
@@ -134,22 +116,15 @@ export function useSocialShield() {
           user.id,
         );
 
-        hapticSuccess();
-        showToast({
-          message: 'Thank you for sharing your concern. Our guardians will review this shortly.',
-          type: 'success',
-        });
-        return true;
+        return { success: true };
       } catch (error) {
         console.error('[SocialShield] Report Error:', error);
-        hapticError();
-        showToast({ message: 'Failed to submit report.', type: 'error' });
-        return false;
+        return { success: false, error };
       } finally {
         setLoading(false);
       }
     },
-    [user, showToast],
+    [user],
   );
 
   return {
