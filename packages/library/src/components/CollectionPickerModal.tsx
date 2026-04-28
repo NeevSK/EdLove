@@ -1,135 +1,97 @@
-import React from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, FlatList, Modal } from 'react-native';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { LibraryCollection } from '../types';
+import {
+  Box,
+  Center,
+  FlatList,
+  HStack,
+  Icon,
+  Modal,
+  ModalBackdrop,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalHeader,
+  Pressable,
+  Text,
+  useTheme,
+  VStack,
+} from '@repo/ui';
+import { ChevronRight, Folder, Lock, X } from 'lucide-react-native';
+import type React from 'react';
+import type { LibraryCollection } from '../types';
 
 interface CollectionPickerModalProps {
-    visible: boolean;
-    onClose: () => void;
-    collections: LibraryCollection[];
-    onSelect: (collectionId: string) => void;
-    isAdding: boolean;
+  visible: boolean;
+  onClose: () => void;
+  collections: LibraryCollection[];
+  onSelect: (collectionId: string) => void;
+  isAdding: boolean;
 }
 
 export const CollectionPickerModal: React.FC<CollectionPickerModalProps> = ({
-    visible,
-    onClose,
-    collections,
-    onSelect,
-    isAdding,
+  visible,
+  onClose,
+  collections,
+  onSelect,
+  isAdding,
 }) => {
-    return (
-        <Modal
-            visible={visible}
-            transparent={true}
-            animationType="fade"
-            onRequestClose={onClose}
-        >
-            <View style={styles.overlay}>
-                <View style={styles.content}>
-                    <View style={styles.header}>
-                        <Text style={styles.title}>Add to Collection</Text>
-                        <TouchableOpacity onPress={onClose}>
-                            <MaterialCommunityIcons name="close" size={24} color="#666" />
-                        </TouchableOpacity>
-                    </View>
-                    <FlatList
-                        data={collections}
-                        keyExtractor={(item) => item.id}
-                        renderItem={({ item }) => (
-                            <TouchableOpacity 
-                                style={styles.item} 
-                                onPress={() => onSelect(item.id)}
-                                disabled={isAdding}
-                            >
-                                <MaterialCommunityIcons 
-                                    name={item.visibility === 'private' ? 'lock' : 'folder-outline'} 
-                                    size={20} 
-                                    color="#666" 
-                                />
-                                <View style={styles.itemInfo}>
-                                    <Text style={styles.itemName}>{item.name}</Text>
-                                    <View style={styles.badgeContainer}>
-                                        <Text style={styles.badgeText}>{item.visibility}</Text>
-                                    </View>
-                                </View>
-                                <MaterialCommunityIcons name="chevron-right" size={20} color="#CCC" />
-                            </TouchableOpacity>
-                        )}
-                        ListEmptyComponent={
-                            <View style={styles.empty}>
-                                <Text style={styles.emptyText}>No collections found.</Text>
-                            </View>
-                        }
-                    />
-                </View>
-            </View>
-        </Modal>
-    );
-};
+  const theme = useTheme();
 
-const styles = StyleSheet.create({
-    overlay: {
-        flex: 1,
-        backgroundColor: 'rgba(0,0,0,0.5)',
-        justifyContent: 'center',
-        padding: 20,
-    },
-    content: {
-        backgroundColor: '#FFF',
-        borderRadius: 20,
-        maxHeight: '70%',
-        overflow: 'hidden',
-    },
-    header: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        padding: 20,
-        borderBottomWidth: 1,
-        borderBottomColor: '#F0F0F0',
-    },
-    title: {
-        fontSize: 18,
-        fontWeight: '700',
-        color: '#111',
-    },
-    item: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        padding: 16,
-        borderBottomWidth: 1,
-        borderBottomColor: '#F9F9F9',
-    },
-    itemInfo: {
-        flex: 1,
-        marginLeft: 15,
-    },
-    itemName: {
-        fontSize: 16,
-        fontWeight: '500',
-        color: '#333',
-    },
-    badgeContainer: {
-        backgroundColor: '#F0F2FF',
-        paddingHorizontal: 6,
-        paddingVertical: 2,
-        borderRadius: 4,
-        alignSelf: 'flex-start',
-        marginTop: 4,
-    },
-    badgeText: {
-        fontSize: 10,
-        color: '#2E5CFF',
-        fontWeight: '600',
-        textTransform: 'uppercase',
-    },
-    empty: {
-        padding: 40,
-        alignItems: 'center',
-    },
-    emptyText: {
-        fontSize: 14,
-        color: '#999',
-    },
-});
+  return (
+    <Modal isOpen={visible} onClose={onClose}>
+      <ModalBackdrop />
+      <ModalContent className="bg-phase-surface rounded-[24px]">
+        <ModalHeader className="p-5 border-b border-phase-border">
+          <HStack className="justify-between items-center w-full">
+            <Text className="text-lg font-extrabold text-phaseText-primary">Add to Collection</Text>
+            <Pressable onPress={onClose} className="p-2 rounded-full hover:bg-phase-surface-light">
+              <Icon as={X} size="xl" className="text-phaseText-secondary" />
+            </Pressable>
+          </HStack>
+        </ModalHeader>
+
+        <ModalBody className="p-0">
+          <FlatList
+            data={collections}
+            keyExtractor={(item: any) => item.id}
+            renderItem={({ item }: { item: any }) => (
+              <Pressable
+                className="flex-row items-center p-5 border-b border-phase-border active:opacity-70"
+                onPress={() => onSelect(item.id)}
+                disabled={isAdding}
+              >
+                <Box className="w-12 h-12 items-center justify-center rounded-2xl bg-phase-accent/10 mr-4">
+                  {item.visibility === 'private' ? (
+                    <Icon as={Lock} size="lg" className="text-phase-accent" />
+                  ) : (
+                    <Icon as={Folder} size="lg" className="text-phase-accent" />
+                  )}
+                </Box>
+
+                <VStack className="flex-1 gap-1">
+                  <Text className="text-base font-extrabold text-phaseText-primary">
+                    {item.name}
+                  </Text>
+                  <Box className="bg-phase-accent/10 px-2.5 py-1 rounded-full self-start">
+                    <Text className="text-[10px] font-black text-phase-accent uppercase tracking-widest">
+                      {item.visibility}
+                    </Text>
+                  </Box>
+                </VStack>
+
+                <Icon as={ChevronRight} size="sm" className="text-phaseText-tertiary" />
+              </Pressable>
+            )}
+            ListEmptyComponent={
+              <Center className="p-10">
+                <Text className="text-sm font-medium text-phaseText-tertiary">
+                  No collections found.
+                </Text>
+              </Center>
+            }
+            contentContainerStyle={{ paddingBottom: 20 }}
+          />
+        </ModalBody>
+      </ModalContent>
+    </Modal>
+  );
+};

@@ -1,6 +1,6 @@
+import { ProgressRing, SimpleBarChart, SimpleLineChart, SimplePieChart } from '@repo/graphics';
+import { Box, colors, HStack, Text } from '@repo/ui';
 import React from 'react';
-import { Box, HStack, Text, colors } from '@repo/ui';
-import { SimpleBarChart, SimpleLineChart, SimplePieChart, ProgressRing } from '@repo/graphics';
 
 interface AnalyticsChartProps {
   title: string;
@@ -21,14 +21,7 @@ export function AnalyticsChart({
 }: AnalyticsChartProps) {
   switch (type) {
     case 'bar':
-      return (
-        <SimpleBarChart
-          title={title}
-          data={data}
-          height={height}
-          showValues={showValues}
-        />
-      );
+      return <SimpleBarChart title={title} data={data} height={height} showValues={showValues} />;
 
     case 'line':
       return (
@@ -53,10 +46,7 @@ export function AnalyticsChart({
           style={{ height }}
         >
           {title ? (
-            <Text
-              className="mb-4 text-center text-base font-bold"
-              style={{ color: colors.text }}
-            >
+            <Text className="mb-4 text-center text-base font-bold" style={{ color: colors.text }}>
               {title}
             </Text>
           ) : null}
@@ -67,10 +57,7 @@ export function AnalyticsChart({
             color={data[0]?.color}
             showLabel={true}
           />
-          <Text
-            className="mt-3 text-center text-sm"
-            style={{ color: colors.text }}
-          >
+          <Text className="mt-3 text-center text-sm" style={{ color: colors.text }}>
             {data[0]?.label}: {progressValue}/{progressMax}
           </Text>
         </Box>
@@ -100,15 +87,9 @@ export function MultiSeriesChart({
   height = 250,
 }: MultiSeriesChartProps) {
   return (
-    <Box
-      className="rounded-3xl border border-black/5 bg-white/70 px-4 py-4"
-      style={{ height }}
-    >
+    <Box className="rounded-3xl border border-black/5 bg-white/70 px-4 py-4" style={{ height }}>
       {title ? (
-        <Text
-          className="mb-4 text-center text-base font-bold"
-          style={{ color: colors.text }}
-        >
+        <Text className="mb-4 text-center text-base font-bold" style={{ color: colors.text }}>
           {title}
         </Text>
       ) : null}
@@ -122,11 +103,7 @@ export function MultiSeriesChart({
               {entry.name}
             </Text>
             {type === 'line' ? (
-              <SimpleLineChart
-                data={entry.data}
-                height={height - 60}
-                color={entry.color}
-              />
+              <SimpleLineChart data={entry.data} height={height - 60} color={entry.color} />
             ) : (
               <SimpleBarChart
                 data={entry.data.map((datum) => ({

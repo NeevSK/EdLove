@@ -5,7 +5,7 @@
  * Philosophy: "The Mud Rule" - If it works on iPhone but lags on $100 Android, it's broken
  */
 
-import React, { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { useEnvironment } from '../context';
 
 interface EnvironmentGuardProps {

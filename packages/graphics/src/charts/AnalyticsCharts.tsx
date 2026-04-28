@@ -1,7 +1,7 @@
-import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import { SanctuaryCanvas } from '../components/SanctuaryCanvas';
 import { Text, Theme, useThemedColors } from '@repo/ui';
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
+import { SanctuaryCanvas } from '../components/SanctuaryCanvas';
 
 // —————————————————————————————————————————————————————————————————————————————
 // SIMPLE BAR CHART
@@ -14,45 +14,37 @@ interface SimpleBarChartProps {
   showValues?: boolean;
 }
 
-export function SimpleBarChart({ 
-  data, 
-  title, 
+export function SimpleBarChart({
+  data,
+  title,
   height = 200,
-  showValues = true 
+  showValues = true,
 }: SimpleBarChartProps) {
   const colors = useThemedColors();
-  const maxValue = Math.max(...data.map(d => d.value), 1);
+  const maxValue = Math.max(...data.map((d) => d.value), 1);
   const barWidth = Math.max(20, (300 - data.length * 40) / data.length);
 
   return (
     <View style={[styles.container, { height }]}>
-      {title && (
-        <Text style={[styles.title, { color: colors.text }]}>
-          {title}
-        </Text>
-      )}
+      {title && <Text style={[styles.title, { color: colors.text }]}>{title}</Text>}
       <View style={styles.chartContainer}>
         {data.map((item, index) => (
           <View key={index} style={styles.barContainer}>
-            <View 
+            <View
               style={[
                 styles.bar,
-                { 
+                {
                   height: (item.value / maxValue) * (height - 60),
                   width: barWidth,
                   backgroundColor: item.color || colors.primary,
-                  marginBottom: showValues ? 4 : 0
-                }
-              ]} 
+                  marginBottom: showValues ? 4 : 0,
+                },
+              ]}
             />
             {showValues && (
-              <Text style={[styles.valueLabel, { color: colors.text }]}>
-                {item.value}
-              </Text>
+              <Text style={[styles.valueLabel, { color: colors.text }]}>{item.value}</Text>
             )}
-            <Text style={[styles.barLabel, { color: colors.textSecondary }]}>
-              {item.label}
-            </Text>
+            <Text style={[styles.barLabel, { color: colors.textSecondary }]}>{item.label}</Text>
           </View>
         ))}
       </View>
@@ -71,15 +63,10 @@ interface SimpleLineChartProps {
   color?: string;
 }
 
-export function SimpleLineChart({ 
-  data, 
-  title, 
-  height = 200,
-  color
-}: SimpleLineChartProps) {
+export function SimpleLineChart({ data, title, height = 200, color }: SimpleLineChartProps) {
   const colors = useThemedColors();
   const chartColor = color || colors.primary;
-  const values = data.map(d => d.y);
+  const values = data.map((d) => d.y);
   const maxValue = Math.max(...values, 1);
   const minValue = Math.min(...values, 0);
   const range = maxValue - minValue || 1;
@@ -89,61 +76,72 @@ export function SimpleLineChart({
 
   return (
     <View style={[styles.container, { height }]}>
-      {title && (
-        <Text style={[styles.title, { color: colors.text }]}>
-          {title}
-        </Text>
-      )}
-      <View style={[styles.chartContainer, { width: chartWidth, height: chartHeight, alignItems: 'flex-start' }]}>
+      {title && <Text style={[styles.title, { color: colors.text }]}>{title}</Text>}
+      <View
+        style={[
+          styles.chartContainer,
+          { width: chartWidth, height: chartHeight, alignItems: 'flex-start' },
+        ]}
+      >
         {data.map((point, index) => {
           const y = chartHeight - ((point.y - minValue) / range) * chartHeight;
           const x = (index / (data.length - 1 || 1)) * chartWidth;
-          
+
           return (
             <View key={index} style={StyleSheet.absoluteFill}>
               {/* Line segment to previous point */}
               {index > 0 && data[index - 1] && (
-                <View 
+                <View
                   style={[
                     styles.line,
                     {
                       left: ((index - 1) / (data.length - 1)) * chartWidth,
-                      top: chartHeight - (((data[index - 1]?.y ?? 0) - minValue) / range) * chartHeight,
+                      top:
+                        chartHeight -
+                        (((data[index - 1]?.y ?? 0) - minValue) / range) * chartHeight,
                       width: chartWidth / (data.length - 1),
                       height: 2,
                       backgroundColor: chartColor,
                       transform: [
-                        { translateY: (y - (chartHeight - (((data[index - 1]?.y ?? 0) - minValue) / range) * chartHeight)) / 2 },
-                        { rotate: `${Math.atan2(y - (chartHeight - (((data[index - 1]?.y ?? 0) - minValue) / range) * chartHeight), chartWidth / (data.length - 1)) * (180 / Math.PI)}deg` }
-                      ]
-                    }
-                  ]} 
+                        {
+                          translateY:
+                            (y -
+                              (chartHeight -
+                                (((data[index - 1]?.y ?? 0) - minValue) / range) * chartHeight)) /
+                            2,
+                        },
+                        {
+                          rotate: `${Math.atan2(y - (chartHeight - (((data[index - 1]?.y ?? 0) - minValue) / range) * chartHeight), chartWidth / (data.length - 1)) * (180 / Math.PI)}deg`,
+                        },
+                      ],
+                    },
+                  ]}
                 />
               )}
-              
+
               {/* Point dot */}
-              <View 
+              <View
                 style={[
                   styles.point,
                   {
                     left: x - 4,
                     top: y - 4,
-                    backgroundColor: chartColor
-                  }
-                ]} 
+                    backgroundColor: chartColor,
+                  },
+                ]}
               />
-              
+
               {/* X-Axis Label */}
-              <Text 
+              <Text
                 style={[
-                  styles.pointLabel, 
-                  { 
-                    left: x - 20, 
-                    width: 40, 
-                    textAlign: 'center', 
+                  styles.pointLabel,
+                  {
+                    left: x - 20,
+                    width: 40,
+                    textAlign: 'center',
                     top: chartHeight + 10,
-                    color: colors.textSecondary
-                  }
+                    color: colors.textSecondary,
+                  },
                 ]}
               >
                 {point.x}
@@ -166,30 +164,23 @@ interface SimplePieChartProps {
   size?: number;
 }
 
-export function SimplePieChart({ 
-  data, 
-  title, 
-  size = 200 
-}: SimplePieChartProps) {
+export function SimplePieChart({ data, title, size = 200 }: SimplePieChartProps) {
   const colors = useThemedColors();
   const total = data.reduce((sum, item) => sum + item.value, 0) || 1;
   const radius = size / 2 - 20;
 
   return (
     <View style={[styles.container, { height: size, width: '100%' }]}>
-      {title && (
-        <Text style={[styles.title, { color: colors.text }]}>
-          {title}
-        </Text>
-      )}
+      {title && <Text style={[styles.title, { color: colors.text }]}>{title}</Text>}
       <View style={[styles.pieContainer, { width: size, height: size - 40 }]}>
         {data.map((item, index) => {
           const percentage = (item.value / total) * 100;
-          const startAngle = data.slice(0, index).reduce((sum, prev) => sum + prev.value, 0) / total * 360;
-          
+          const startAngle =
+            (data.slice(0, index).reduce((sum, prev) => sum + prev.value, 0) / total) * 360;
+
           return (
             <View key={index} style={styles.pieSliceContainer}>
-              <View 
+              <View
                 style={[
                   styles.pieSlice,
                   {
@@ -198,12 +189,13 @@ export function SimplePieChart({
                     width: radius * 2,
                     height: radius * 2,
                     borderRadius: radius,
-                    opacity: 0.8
-                  }
-                ]} 
+                    opacity: 0.8,
+                  },
+                ]}
               />
               <Text style={[styles.pieLabel, { color: colors.text }]}>
-                {item.label}{percentage > 5 ? ` (${percentage.toFixed(0)}%)` : ''}
+                {item.label}
+                {percentage > 5 ? ` (${percentage.toFixed(0)}%)` : ''}
               </Text>
             </View>
           );
@@ -225,12 +217,12 @@ interface ProgressRingProps {
   showLabel?: boolean;
 }
 
-export function ProgressRing({ 
-  value, 
-  max, 
+export function ProgressRing({
+  value,
+  max,
   size = 120,
   color,
-  showLabel = true 
+  showLabel = true,
 }: ProgressRingProps) {
   const colors = useThemedColors();
   const percentage = Math.min(100, Math.max(0, (value / max) * 100));
@@ -240,7 +232,7 @@ export function ProgressRing({
     <View style={[styles.container, { width: size, height: size }]}>
       <View style={styles.ringContainer}>
         {/* Background ring */}
-        <View 
+        <View
           style={[
             styles.ring,
             {
@@ -249,13 +241,13 @@ export function ProgressRing({
               width: size,
               height: size,
               borderRadius: size / 2,
-              opacity: 0.3
-            }
-          ]} 
+              opacity: 0.3,
+            },
+          ]}
         />
-        
+
         {/* Progress ring visualization (Simulated with dashed/solid borders) */}
-        <View 
+        <View
           style={[
             styles.ring,
             {
@@ -267,11 +259,11 @@ export function ProgressRing({
               borderRadius: size / 2,
               borderLeftColor: 'transparent',
               borderBottomColor: 'transparent',
-              transform: [{ rotate: `${(percentage / 100) * 360 - 45}deg` }]
-            }
-          ]} 
+              transform: [{ rotate: `${(percentage / 100) * 360 - 45}deg` }],
+            },
+          ]}
         />
-        
+
         {/* Center content */}
         <View style={styles.ringCenter}>
           {showLabel && (

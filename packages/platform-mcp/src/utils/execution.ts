@@ -1,13 +1,13 @@
-import { execSync } from "child_process";
-import fs from "fs";
-import path from "path";
-import { ROOT_DIR } from "./constants.js";
+import { execSync } from 'child_process';
+import fs from 'fs';
+import path from 'path';
+import { ROOT_DIR } from './constants.js';
 
 interface ExecutionResult {
   tool: string;
   timestamp: string;
   durationMs: number;
-  status: "success" | "failure";
+  status: 'success' | 'failure';
   output: string;
   metadata?: any;
 }
@@ -18,26 +18,26 @@ interface ExecutionResult {
 export function executeSovereignTool(
   toolName: string,
   command: string,
-  metadata: any = {}
+  metadata: any = {},
 ): ExecutionResult {
   const startTime = Date.now();
   const timestamp = new Date().toISOString();
-  let status: "success" | "failure" = "success";
-  let output = "";
+  let status: 'success' | 'failure' = 'success';
+  let output = '';
 
   try {
     console.error(`[Sovereign] Executing ${toolName}...`);
-    output = execSync(command, { 
-      cwd: ROOT_DIR, 
-      shell: true, 
-      encoding: "utf8",
-      maxBuffer: 10 * 1024 * 1024 
+    output = execSync(command, {
+      cwd: ROOT_DIR,
+      shell: true,
+      encoding: 'utf8',
+      maxBuffer: 10 * 1024 * 1024,
     } as any) as unknown as string;
   } catch (e: any) {
-    status = "failure";
+    status = 'failure';
     // Capture the detailed output from the subprocess if available
-    const stdout = e.stdout?.toString() || "";
-    const stderr = e.stderr?.toString() || "";
+    const stdout = e.stdout?.toString() || '';
+    const stderr = e.stderr?.toString() || '';
     output = `${e.message}\n${stdout}\n${stderr}`.trim();
   }
 
@@ -48,19 +48,15 @@ export function executeSovereignTool(
     durationMs,
     status,
     output,
-    metadata
+    metadata,
   };
 
   // Persist report
-  const reportDir = path.join(ROOT_DIR, "reports");
+  const reportDir = path.join(ROOT_DIR, 'reports');
   if (!fs.existsSync(reportDir)) fs.mkdirSync(reportDir);
 
-  const reportFileName = `${toolName}_${timestamp.replace(/[:.]/g, "-")}.json`;
-  fs.writeFileSync(
-    path.join(reportDir, reportFileName),
-    JSON.stringify(result, null, 2),
-    "utf-8"
-  );
+  const reportFileName = `${toolName}_${timestamp.replace(/[:.]/g, '-')}.json`;
+  fs.writeFileSync(path.join(reportDir, reportFileName), JSON.stringify(result, null, 2), 'utf-8');
 
   return result;
 }

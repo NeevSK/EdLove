@@ -59,4 +59,4 @@ declare module 'react-native-gesture-handler' {
   export const State: any;
 }
 
-export { };
+export {};

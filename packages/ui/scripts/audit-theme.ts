@@ -5,9 +5,9 @@
  * Run with: npx tsx scripts/audit-theme.ts
  */
 
-import { colors, phaseMatrix, resolvePhaseTokens } from '../src/theme/Theme';
+import type { TemporalPhase } from '../src/context/types';
+import { resolvePhaseTokens } from '../src/theme/Theme';
 import { checkAccessibility, toHex } from '../src/utils/a11yUtils';
-import { TemporalPhase } from '../src/context/types';
 
 const PHASES: TemporalPhase[] = ['predawn', 'dawn', 'morning', 'afternoon', 'dusk', 'night'];
 const MODES: ('light' | 'dark')[] = ['light', 'dark'];

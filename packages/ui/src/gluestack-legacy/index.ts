@@ -1,10 +1,10 @@
-import React from 'react';
+import type React from 'react';
 import {
-  View as RNView,
-  Text as RNText,
   FlatList as RNFlatList,
   SectionList as RNSectionList,
   Switch as RNSwitch,
+  Text as RNText,
+  View as RNView,
 } from 'react-native';
 
 /**
@@ -24,37 +24,36 @@ import {
 // Layout Components - Local Primitives
 // ============================================================================
 import { Box } from '../components-legacy/box';
+import { Button, ButtonText } from '../components-legacy/button';
 import { Center } from '../components-legacy/center';
+import { Divider, Heading, Spinner } from '../components-legacy/divider';
 import { HStack } from '../components-legacy/hstack';
-import { VStack } from '../components-legacy/vstack';
-import { View, ScrollView, Pressable } from '../components-legacy/view';
-import { Spinner, Heading, Divider } from '../components-legacy/divider';
 import { Image } from '../components-legacy/image';
 import { Text } from '../components-legacy/text';
-import { Button, ButtonText } from '../components-legacy/button';
+import { Pressable, ScrollView, View } from '../components-legacy/view';
+import { VStack } from '../components-legacy/vstack';
 
 export {
   Box,
-  Center,
-  HStack,
-  VStack,
-  View,
-  ScrollView,
-  Pressable,
-  Spinner,
-  Heading,
-  Divider,
-  Image,
-  Text,
   Button,
   ButtonText,
+  Center,
+  Divider,
+  Heading,
+  HStack,
+  Image,
+  Pressable,
+  ScrollView,
+  Spinner,
+  Text,
+  View,
+  VStack,
 };
 
 // ============================================================================
 // Form Components - Local Primitives
 // ============================================================================
 import {
-  FormControl as LocalFormControl,
   FormControlError,
   FormControlErrorIcon,
   FormControlErrorText,
@@ -63,6 +62,7 @@ import {
   FormControlLabel,
   FormControlLabelText,
   type IFormControlProps,
+  FormControl as LocalFormControl,
 } from '../components-legacy/form-control';
 
 export const FormControl = LocalFormControl as React.ComponentType<IFormControlProps>;
@@ -76,9 +76,9 @@ export {
   FormControlLabelText,
 };
 
-import { Input, InputField, InputSlot, InputIcon } from '../components-legacy/input';
+import { Input, InputField, InputIcon, InputSlot } from '../components-legacy/input';
 
-export { Input, InputField, InputSlot, InputIcon };
+export { Input, InputField, InputIcon, InputSlot };
 
 // ============================================================================
 // Toast Components - Stubs
@@ -92,7 +92,7 @@ export const useToast = () => ({ show: () => {} }) as any;
 // Button Helpers - Stubs
 // ============================================================================
 export const ButtonSpinner = View as any;
-export const ButtonIcon = (props: any) => null;
+export const ButtonIcon = (_props: any) => null;
 
 // ============================================================================
 // Select Components - Stubs
@@ -144,7 +144,7 @@ export const Switch = RNSwitch as any;
 
 export const Checkbox = RNView as any;
 export const CheckboxIndicator = RNView as any;
-export const CheckboxIcon = (props: any) => null;
+export const CheckboxIcon = (_props: any) => null;
 export const CheckboxLabel = RNText as any;
 export const CheckboxGroup = RNView as any;
 
@@ -154,12 +154,12 @@ export const LinkText = RNText as any;
 export const Radio = RNView as any;
 export const RadioGroup = RNView as any;
 export const RadioIndicator = RNView as any;
-export const RadioIcon = (props: any) => null;
+export const RadioIcon = (_props: any) => null;
 export const RadioLabel = RNText as any;
 
 export const Fab = RNView as any;
 export const FabLabel = RNText as any;
-export const FabIcon = (props: any) => null;
+export const FabIcon = (_props: any) => null;
 
 export const Progress = RNView as any;
 export const ProgressFilledTrack = RNView as any;

@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { 
+import {
   Actionsheet,
   ActionsheetBackdrop,
   ActionsheetContent,
@@ -14,22 +13,24 @@ import {
   FormControlLabel,
   FormControlLabelText,
   HStack,
+  Icon,
   Input,
   InputField,
+  Pressable,
   SanctuaryModal,
   Spinner,
   Text,
-  VStack,
-  Heading,
-  Icon as UIIcon,
   Textarea,
-  TextareaInput
+  TextareaInput,
+  VStack,
+  useToast,
 } from '@repo/ui';
-import { handleAPIError, growthSignalsAPI, identityAPI, type School } from '@repo/core';
+import { api, handleAPIError, growthSignalsAPI, identityAPI, type School } from '@repo/core';
 import { createFounderClassroom, createFounderSchool } from '../../bridge/founderWorkspace';
 import { communityAPI } from '@repo/community';
 import { hapticLight, hapticSuccess, useTranslation } from '@repo/ui';
-import { ChevronDown, LayoutGrid, School as SchoolIcon, Users } from 'lucide-react-native';
+import { ChevronDown, LayoutGrid, School as SchoolIcon, Users, UserPlus } from 'lucide-react-native';
+import React, { useReducer, useState } from 'react';
 
 interface GlobalCreateModalProps {
   isOpen: boolean;
@@ -38,52 +39,99 @@ interface GlobalCreateModalProps {
   availableSchools: School[];
 }
 
+type State = {
+  type: CreateType;
+  name: string;
+  description: string;
+  selectedSchoolId: string;
+  schoolType: 'primary' | 'secondary' | 'mixed';
+  isSubmitting: boolean;
+  error: string | null;
+  showSchoolPicker: boolean;
+};
+
+type Action =
+  | { type: 'SET_TYPE'; createType: CreateType }
+  | { type: 'SET_NAME'; name: string }
+  | { type: 'SET_DESCRIPTION'; description: string }
+  | { type: 'SET_SCHOOL'; schoolId: string }
+  | { type: 'SET_SCHOOL_TYPE'; schoolType: 'primary' | 'secondary' | 'mixed' }
+  | { type: 'SET_SUBMITTING'; isSubmitting: boolean }
+  | { type: 'SET_ERROR'; error: string | null }
+  | { type: 'TOGGLE_PICKER'; isOpen: boolean }
+  | { type: 'RESET' };
+
+const createReducer = (state: State, action: Action): State => {
+  switch (action.type) {
+    case 'SET_TYPE':
+      return { ...state, type: action.createType, error: null };
+    case 'SET_NAME':
+      return { ...state, name: action.name, error: null };
+    case 'SET_DESCRIPTION':
+      return { ...state, description: action.description };
+    case 'SET_SCHOOL':
+      return { ...state, selectedSchoolId: action.schoolId, error: null };
+    case 'SET_SCHOOL_TYPE':
+      return { ...state, schoolType: action.schoolType };
+    case 'SET_SUBMITTING':
+      return { ...state, isSubmitting: action.isSubmitting };
+    case 'SET_ERROR':
+      return { ...state, error: action.error };
+    case 'TOGGLE_PICKER':
+      return { ...state, showSchoolPicker: action.isOpen };
+    case 'RESET':
+      return {
+        ...state,
+        name: '',
+        description: '',
+        selectedSchoolId: '',
+        schoolType: 'mixed',
+        error: null,
+        isSubmitting: false,
+      };
+    default:
+      return state;
+  }
+};
+
 type CreateType = 'school' | 'classroom' | 'group';
 
 export default function GlobalCreateModal({
   isOpen,
   onClose,
   onSuccess,
-  availableSchools
+  availableSchools,
 }: GlobalCreateModalProps) {
   const { t } = useTranslation();
-
-  const [type, setType] = useState<CreateType>('school');
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [selectedSchoolId, setSelectedSchoolId] = useState<string>('');
-  const [schoolType, setSchoolType] = useState<'primary' | 'secondary' | 'mixed'>('mixed');
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [showSchoolPicker, setShowSchoolPicker] = useState(false);
-
-  const resetForm = () => {
-    setName('');
-    setDescription('');
-    setSelectedSchoolId('');
-    setSchoolType('mixed');
-    setError(null);
-  };
+  const toast = useToast();
+  const [state, dispatch] = useReducer(createReducer, {
+    type: 'school',
+    name: '',
+    description: '',
+    selectedSchoolId: '',
+    schoolType: 'mixed',
+    isSubmitting: false,
+    error: null,
+    showSchoolPicker: false,
+  });
 
   const handleClose = () => {
-    resetForm();
+    dispatch({ type: 'RESET' });
     onClose();
   };
 
   const handleSubmit = async () => {
-    if (!name.trim()) {
-      setError('Name is required');
+    if (!state.name.trim()) {
+      dispatch({ type: 'SET_ERROR', error: 'Name is required' });
       return;
     }
 
-    if (type !== 'school' && !selectedSchoolId) {
-      setError('Please select a target school');
+    if (state.type !== 'school' && !state.selectedSchoolId) {
+      dispatch({ type: 'SET_ERROR', error: 'Please select a target school' });
       return;
     }
 
-    setIsSubmitting(true);
-    setError(null);
+    dispatch({ type: 'SET_SUBMITTING', isSubmitting: true });
     hapticLight();
 
     try {
@@ -91,82 +139,90 @@ export default function GlobalCreateModal({
       if (!userId) throw new Error('Not authenticated');
 
       let result: any;
-      if (type === 'school') {
+      if (state.type === 'school') {
         result = await createFounderSchool({
-          name: name.trim(),
-          type: schoolType,
-          created_by: userId
+          name: state.name.trim(),
+          type: state.schoolType,
+          created_by: userId,
         });
 
         if (result) {
           await communityAPI.createGroupWithOwner(
             {
-              name: `${name.trim()} Sanctuary`,
-              description: `The primary sanctuary for ${name.trim()} members to share and resonate.`,
+              name: `${state.name.trim()} Sanctuary`,
+              description: `The primary sanctuary for ${state.name.trim()} members to share and resonate.`,
               group_type: 'school',
               join_policy: 'open',
-              school_id: result.id
+              school_id: result.id,
             },
-            userId,
+            userId
           );
         }
-      } else if (type === 'classroom') {
+      } else if (state.type === 'classroom') {
         result = await createFounderClassroom({
-          name: name.trim(),
-          school_id: selectedSchoolId,
-          grade_number: 1, // Defaulting to 1 for global creator
-          created_by: userId
+          name: state.name.trim(),
+          school_id: state.selectedSchoolId,
+          grade_number: 1,
+          created_by: userId,
         });
 
         if (result) {
           await communityAPI.createGroupWithOwner(
             {
-              name: `${name.trim()} Sanctuary`,
-              description: `A sacred space for the ${name.trim()} classroom discussions and heart-sharing.`,
+              name: `${state.name.trim()} Sanctuary`,
+              description: `A sacred space for the ${state.name.trim()} classroom discussions and heart-sharing.`,
               group_type: 'class',
               join_policy: 'restricted',
-              school_id: selectedSchoolId,
-              classroom_id: result.id
+              school_id: state.selectedSchoolId,
+              classroom_id: result.id,
             },
-            userId,
+            userId
           );
         }
-      } else if (type === 'group') {
+      } else if (state.type === 'group') {
         result = await communityAPI.createGroupWithOwner(
           {
-            name: name.trim(),
-            description: description.trim(),
-            school_id: selectedSchoolId,
+            name: state.name.trim(),
+            description: state.description.trim(),
+            school_id: state.selectedSchoolId,
             group_type: 'general',
-            join_policy: 'open'
+            join_policy: 'open',
           },
-          userId,
+          userId
         );
       }
 
       hapticSuccess();
-      if (type === 'classroom' && result) {
+      if (state.type === 'classroom' && result) {
         growthSignalsAPI.emitSilent({
           user_id: userId,
           event_type: 'classroom_created',
           event_metadata: {
             classroom_id: result.id,
-            school_id: selectedSchoolId
-          }
+            school_id: state.selectedSchoolId,
+          },
         });
       }
 
-      onSuccess(type, result);
+      toast.showToast({
+        message: `Success: ${state.type} initialized`,
+        type: 'success',
+      });
+      onSuccess(state.type, result);
       handleClose();
     } catch (err: any) {
       const apiError = handleAPIError(err, true);
-      setError(apiError.message || 'Action failed');
+      dispatch({ type: 'SET_ERROR', error: apiError.message });
+      toast.showToast({
+        message: `Error: ${apiError.message}`,
+        type: 'error',
+      });
     } finally {
-      setIsSubmitting(false);
+      dispatch({ type: 'SET_SUBMITTING', isSubmitting: false });
     }
   };
 
-  const selectedSchool = availableSchools.find((s) => s.id === selectedSchoolId);
+  const selectedSchool = availableSchools.find((s) => s.id === state.selectedSchoolId);
 
   return (
     <>
@@ -178,106 +234,133 @@ export default function GlobalCreateModal({
           <HStack className="gap-3 w-full">
             <Button
               variant="outline"
+              action="secondary"
               onPress={handleClose}
-              className="flex-1 rounded-2xl h-12"
-              isDisabled={isSubmitting}
+              className="flex-1 rounded-2xl border-phase-border"
+              isDisabled={state.isSubmitting}
+              accessibilityLabel="Cancel"
+              accessibilityHint="Discards changes and closes the creation modal"
             >
-              <ButtonText className="text-ink/60 font-bold">Cancel</ButtonText>
+              <ButtonText className="text-phaseText-secondary font-bold uppercase tracking-wider">
+                Cancel
+              </ButtonText>
             </Button>
             <Button
               onPress={handleSubmit}
-              className="flex-1 rounded-2xl h-12 bg-phase-accent shadow-sm"
-              isDisabled={isSubmitting || !name.trim()}
+              className={`flex-1 rounded-2xl bg-phase-interactive shadow-sm ${state.isSubmitting || !state.name.trim() ? 'opacity-50' : ''}`}
+              isDisabled={state.isSubmitting || !state.name.trim()}
+              accessibilityLabel="Initialize"
+              accessibilityHint="Starts the creation process for the selected entity"
             >
-              {isSubmitting ? (
-                <Spinner color="white" size="small" />
+              {state.isSubmitting ? (
+                <Spinner color="#FFFFFF" size="small" />
               ) : (
-                <ButtonText className="text-white font-bold">Initialize</ButtonText>
+                <ButtonText className="text-white font-black uppercase tracking-[2px]">
+                  Initialize
+                </ButtonText>
               )}
             </Button>
           </HStack>
         }
       >
-        <VStack className="gap-6 p-4">
+        <VStack className="gap-6 py-4">
           <HStack className="gap-2">
             <TypeButton
-              active={type === 'school'}
-              onPress={() => setType('school')}
+              active={state.type === 'school'}
+              onPress={() => dispatch({ type: 'SET_TYPE', createType: 'school' })}
               label="School"
-              icon={SchoolIcon}
+              icon={<Icon as={SchoolIcon} size="xs" />}
             />
             <TypeButton
-              active={type === 'classroom'}
-              onPress={() => setType('classroom')}
+              active={state.type === 'classroom'}
+              onPress={() => dispatch({ type: 'SET_TYPE', createType: 'classroom' })}
               label="Class"
-              icon={LayoutGrid}
+              icon={<Icon as={LayoutGrid} size="xs" />}
             />
             <TypeButton
-              active={type === 'group'}
-              onPress={() => setType('group')}
+              active={state.type === 'group'}
+              onPress={() => dispatch({ type: 'SET_TYPE', createType: 'group' })}
               label="Group"
-              icon={Users}
+              icon={<Icon as={Users} size="xs" />}
             />
           </HStack>
 
-          {error ? (
-            <Box className="p-3 bg-red-50 rounded-xl border border-red-200">
-              <Text className="text-red-600 text-[13px] font-bold">{error}</Text>
+          {state.error ? (
+            <Box className="p-4 bg-phase-danger/10 border border-phase-danger/30 rounded-2xl">
+              <Text className="text-phase-danger text-[13px] font-bold">{state.error}</Text>
             </Box>
           ) : null}
 
-          <VStack className="gap-4">
-            {type !== 'school' ? (
+          <VStack className="gap-5">
+            {state.type !== 'school' ? (
               <FormControl isRequired>
                 <FormControlLabel>
-                  <FormControlLabelText className="text- ink/40 font-bold text-xs uppercase tracking-wider">Target Institution</FormControlLabelText>
+                  <FormControlLabelText className="text-phaseText-secondary text-xs font-bold uppercase tracking-wider">
+                    Target Institution
+                  </FormControlLabelText>
                 </FormControlLabel>
-                <Button
-                  variant="outline"
-                  onPress={() => setShowSchoolPicker(true)}
-                  className="justify-between border-border bg-silk h-12 rounded-xl px-4"
+                <Pressable
+                  onPress={() => {
+                    hapticLight();
+                    dispatch({ type: 'TOGGLE_PICKER', isOpen: true });
+                  }}
+                  className="flex-row justify-between items-center px-4 h-14 bg-phase-canvas border border-phase-border rounded-2xl active:scale-[0.98] transition-all"
+                  accessibilityLabel="Target School"
+                  accessibilityHint="Select which school this classroom or group belongs to"
                 >
-                  <ButtonText className={`font-bold ${selectedSchoolId ? 'text-ink' : 'text-ink/40'}`}>
+                  <Text
+                    className={`font-bold ${state.selectedSchoolId ? 'text-phaseText-primary' : 'text-phaseText-muted'}`}
+                  >
                     {selectedSchool ? selectedSchool.name : 'Select School...'}
-                  </ButtonText>
-                  <UIIcon as={ChevronDown} size="sm" className="text-ink/40" />
-                </Button>
+                  </Text>
+                  <Icon as={ChevronDown} size="sm" className="text-phaseText-muted" />
+                </Pressable>
               </FormControl>
             ) : null}
 
             <FormControl isRequired>
               <FormControlLabel>
-                <FormControlLabelText className="text-ink/40 font-bold text-xs uppercase tracking-wider">
-                  {type === 'school' ? 'Institution Name' : type === 'classroom' ? 'Class Name/ID' : 'Group Name'}
+                <FormControlLabelText className="text-phaseText-secondary text-xs font-bold uppercase tracking-wider">
+                  {state.type === 'school'
+                    ? 'Institution Name'
+                    : state.type === 'classroom'
+                      ? 'Class Name/ID'
+                      : 'Group Name'}
                 </FormControlLabelText>
               </FormControlLabel>
-              <Input className="bg-silk border-border h-12 rounded-xl px-2">
+              <Input className="h-14 bg-phase-canvas border-phase-border rounded-2xl">
                 <InputField
-                  value={name}
-                  onChangeText={setName}
+                  value={state.name}
+                  onChangeText={(val) => dispatch({ type: 'SET_NAME', name: val })}
                   placeholder={
-                    type === 'school'
+                    state.type === 'school'
                       ? t('founder.create.schoolName', { defaultValue: 'e.g. Gurudevi Academy' })
-                      : type === 'classroom'
+                      : state.type === 'classroom'
                         ? t('founder.create.className', { defaultValue: 'e.g. Grade 8A' })
                         : t('founder.create.groupName', { defaultValue: 'e.g. Parent Council' })
                   }
-                  className="text-ink font-bold"
+                  className="text-phaseText-primary font-bold"
+                  accessibilityLabel="Entity Name"
+                  accessibilityHint="Enter the formal name for the new entity"
                 />
               </Input>
             </FormControl>
 
-            {type === 'group' ? (
+            {state.type === 'group' ? (
               <FormControl>
                 <FormControlLabel>
-                  <FormControlLabelText className="text-ink/40 font-bold text-xs uppercase tracking-wider">Purpose / Description</FormControlLabelText>
+                  <FormControlLabelText className="text-phaseText-secondary text-xs font-bold uppercase tracking-wider">
+                    Purpose / Description
+                  </FormControlLabelText>
                 </FormControlLabel>
-                <Textarea className="border-border bg-silk rounded-xl">
+                <Textarea className="bg-phase-canvas border-phase-border rounded-2xl p-0 overflow-hidden">
                   <TextareaInput
-                    value={description}
-                    onChangeText={setDescription}
+                    value={state.description}
+                    onChangeText={(val) => dispatch({ type: 'SET_DESCRIPTION', description: val })}
                     placeholder="Briefly describe this community space..."
-                    className="text-ink font-bold"
+                    className="p-4 text-phaseText-primary font-medium"
+                    accessibilityLabel="Description"
+                    accessibilityHint="Provide a short overview of the group's intent"
                   />
                 </Textarea>
               </FormControl>
@@ -286,9 +369,12 @@ export default function GlobalCreateModal({
         </VStack>
       </SanctuaryModal>
 
-      <Actionsheet isOpen={showSchoolPicker} onClose={() => setShowSchoolPicker(false)}>
+      <Actionsheet
+        isOpen={state.showSchoolPicker}
+        onClose={() => dispatch({ type: 'TOGGLE_PICKER', isOpen: false })}
+      >
         <ActionsheetBackdrop />
-        <ActionsheetContent className="bg-white">
+        <ActionsheetContent className="bg-phase-surface">
           <ActionsheetDragIndicatorWrapper>
             <ActionsheetDragIndicator />
           </ActionsheetDragIndicatorWrapper>
@@ -297,12 +383,15 @@ export default function GlobalCreateModal({
               <ActionsheetItem
                 key={school.id}
                 onPress={() => {
-                  setSelectedSchoolId(school.id);
-                  setShowSchoolPicker(false);
+                  hapticLight();
+                  dispatch({ type: 'SET_SCHOOL', schoolId: school.id });
+                  dispatch({ type: 'TOGGLE_PICKER', isOpen: false });
                 }}
-                className="rounded-xl active:bg-silk"
+                className="rounded-xl active:bg-phase-canvas"
               >
-                <ActionsheetItemText className="text-ink font-bold">{school.name}</ActionsheetItemText>
+                <ActionsheetItemText className="text-phaseText-primary font-bold">
+                  {school.name}
+                </ActionsheetItemText>
               </ActionsheetItem>
             ))}
           </VStack>
@@ -316,21 +405,32 @@ function TypeButton({
   active,
   onPress,
   label,
-  icon: Icon
+  icon,
 }: {
   active: boolean;
   onPress: () => void;
   label: string;
-  icon: any;
+  icon: React.ReactElement;
 }) {
   return (
-    <Button
-      variant={active ? 'solid' : 'outline'}
-      onPress={onPress}
-      className={`flex-1 gap-2 h-11 rounded-xl shadow-sm ${active ? 'bg-primary' : 'bg-transparent border-border'}`}
+    <Pressable
+      onPress={() => {
+        hapticLight();
+        onPress();
+      }}
+      className={`flex-1 flex-row items-center justify-center gap-2 py-3 rounded-xl border transition-all ${active ? 'bg-phase-interactive border-phase-interactive' : 'bg-phase-canvas border-phase-border'}`}
+      accessibilityLabel={`Select ${label}`}
+      accessibilityHint={`Sets the creation type to ${label}`}
+      accessibilityState={{ selected: active }}
     >
-      <UIIcon as={Icon} className={active ? 'text-white' : 'text-ink/40'} size="sm" />
-      <ButtonText className={`font-black text-xs uppercase tracking-widest ${active ? 'text-white' : 'text-ink/40'}`}>{label}</ButtonText>
-    </Button>
+      {React.cloneElement(icon, {
+        className: active ? 'text-white' : 'text-phaseText-secondary',
+      } as any)}
+      <Text
+        className={`text-[11px] font-black uppercase tracking-wider ${active ? 'text-white' : 'text-phaseText-secondary'}`}
+      >
+        {label}
+      </Text>
+    </Pressable>
   );
 }

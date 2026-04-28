@@ -1,8 +1,8 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
 import Navigation from '../components/Navigation.astro';
 import RealitySwitch from '../components/RealitySwitch.astro';
-import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
 import { absoluteUrl } from '../lib/site';
 
 const archiveEntries = await getCollection('archive', ({ data }) => !data.draft);
@@ -11,25 +11,27 @@ archiveEntries.sort((a, b) => b.data.publishDate.getTime() - a.data.publishDate.
 const getArchiveSlug = (id: string) => id.replace(/\.(md|mdx)$/, '');
 
 const formatDate = (date: Date) => {
-    return date.toLocaleDateString('en-CA', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit'
-    }).replace(/-/g, '.');
+  return date
+    .toLocaleDateString('en-CA', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    })
+    .replace(/-/g, '.');
 };
 
 const structuredData = {
-    '@context': 'https://schema.org',
-    '@type': 'CollectionPage',
-    name: 'Archive',
-    description: 'A collection of uncollapsed thoughts and epistemic artifacts.',
-    url: absoluteUrl('/archive'),
-    hasPart: archiveEntries.map((entry, index) => ({
-        '@type': 'ListItem',
-        position: index + 1,
-        name: entry.data.title,
-        url: absoluteUrl(`/archive/${getArchiveSlug(entry.id)}`),
-    })),
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: 'Archive',
+  description: 'A collection of uncollapsed thoughts and epistemic artifacts.',
+  url: absoluteUrl('/archive'),
+  hasPart: archiveEntries.map((entry, index) => ({
+    '@type': 'ListItem',
+    position: index + 1,
+    name: entry.data.title,
+    url: absoluteUrl(`/archive/${getArchiveSlug(entry.id)}`),
+  })),
 };
 ---
 

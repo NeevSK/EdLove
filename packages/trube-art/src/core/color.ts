@@ -41,7 +41,9 @@ export function mix(hexA: string, hexB: string, amount: number): string {
   return `#${channelsA
     .map((value, index) => {
       const target = channelsB[index] ?? value;
-      return clampChannel(value + (target - value) * t).toString(16).padStart(2, '0');
+      return clampChannel(value + (target - value) * t)
+        .toString(16)
+        .padStart(2, '0');
     })
     .join('')}`;
 }

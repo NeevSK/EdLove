@@ -100,18 +100,26 @@ export default function ClassroomScreen() {
                     /
     </FeatureGuard                <FeatureGuard action="read" subject="FounderPulse"                    <SanctuaryNudge
     title=
-    t('founder.nudges.breathing.title') || 'Visionary Pulse';
-    description={t('founder.nudges.breathing.message') || "Taking a moment for yourself is the best way to lead by example for your ecosystem."}
-    actionLabel={t('founder.nudges.breathing.action') || "Mindful Reset"}
-    onAction={() => setBreathingOpen(true)}
+    t('founder.nudges.breathing.title') || 'Visionary Pulse'
+    description=
+    t('founder.nudges.breathing.message') ||
+      'Taking a moment for yourself is the best way to lead by example for your ecosystem.'
+    actionLabel=
+    t('founder.nudges.breathing.action') || 'Mindful Reset'
+    onAction=
+    () => setBreathingOpen(true);
     icon={Wind}
                     /
     </FeatureGuard                <FeatureGuard action="read" subject="StudentPulse"                    <SanctuaryNudge
     title=
-    t('student.nudges.breathing.title') || 'Learning Fuel';
-    description={t('student.nudges.breathing.message') || "Studies are easier when your mind is calm. Reset your breath to improve focus."}
-    actionLabel={t('student.nudges.breathing.action') || "Breathe Now"}
-    onAction={() => setBreathingOpen(true)}
+    t('student.nudges.breathing.title') || 'Learning Fuel'
+    description=
+    t('student.nudges.breathing.message') ||
+      'Studies are easier when your mind is calm. Reset your breath to improve focus.'
+    actionLabel=
+    t('student.nudges.breathing.action') || 'Breathe Now'
+    onAction=
+    () => setBreathingOpen(true);
     icon={Wind}
                     /
     </FeatureGuard            </        )

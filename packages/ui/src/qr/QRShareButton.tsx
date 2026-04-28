@@ -11,8 +11,8 @@
  * Used in: InviteManager, SchoolCreationScreen (success), IdentityCard.
  */
 
-import React, { useRef } from 'react';
-import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { useRef } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import QRCodeGenerator from '../components/QRCodeGenerator';
 
 // Lazy-loaded to avoid hard native deps crashing in environments where
@@ -21,7 +21,7 @@ import QRCodeGenerator from '../components/QRCodeGenerator';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const loadViewShot = async (): Promise<any> => {
   try {
-    // @ts-ignore — optional peer dependency; may not be installed
+    // @ts-expect-error — optional peer dependency; may not be installed
     return await import('react-native-view-shot');
   } catch {
     return null;

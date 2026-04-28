@@ -1,16 +1,16 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { AuthorityTier } from '@repo/core';
-import type { UserProfile } from '../types';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { PROFILE_SECTIONS } from '../config/profileSections';
 import { isFieldFilled } from '../lib/isFieldFilled';
+import type { UserProfile } from '../types';
 
 const CELEBRATION_KEY = '@gurudevi/profile_completed_celebrated';
 
 export interface ProfileCompletionResult {
-  percentage: number;       // 0\u2013100 integer
+  percentage: number; // 0\u2013100 integer
   isComplete: boolean;
-  nextHint: string;         // e.g. "Add your profile photo to complete"
+  nextHint: string; // e.g. "Add your profile photo to complete"
   sectionBreakdown: {
     [sectionId: string]: { score: number; label: string };
   };
@@ -26,7 +26,7 @@ export function useProfileCompletion(
   const [hasSeenCelebration, setHasSeenCelebration] = useState(true);
 
   useEffect(() => {
-    AsyncStorage.getItem(CELEBRATION_KEY).then(val => {
+    AsyncStorage.getItem(CELEBRATION_KEY).then((val) => {
       // val === null means never set \u2192 hasn't seen it
       setHasSeenCelebration(val === 'true');
     });
@@ -48,7 +48,7 @@ export function useProfileCompletion(
     }
 
     // 1. Filter sections by countInCompletion and role eligibility
-    const eligibleSections = PROFILE_SECTIONS.filter(section => {
+    const eligibleSections = PROFILE_SECTIONS.filter((section) => {
       if (!section.countInCompletion) return false;
       if (section.roles === 'all') return true;
       return (section.roles as AuthorityTier[]).includes(role);
@@ -62,7 +62,7 @@ export function useProfileCompletion(
 
     for (const section of eligibleSections) {
       // 2. Filter fields by onlyForRoles
-      const eligibleFields = section.fields.filter(f => {
+      const eligibleFields = section.fields.filter((f) => {
         if (!f.onlyForRoles) return true;
         return f.onlyForRoles.includes(role);
       });
@@ -86,16 +86,15 @@ export function useProfileCompletion(
       }
 
       sectionBreakdown[section.id] = {
-        score: sectionTotalWeight > 0
-          ? Math.round((sectionFilledWeight / sectionTotalWeight) * 100)
-          : 100,
+        score:
+          sectionTotalWeight > 0
+            ? Math.round((sectionFilledWeight / sectionTotalWeight) * 100)
+            : 100,
         label: section.label,
       };
     }
 
-    const percentage = totalWeight > 0
-      ? Math.round((filledWeight / totalWeight) * 100)
-      : 0;
+    const percentage = totalWeight > 0 ? Math.round((filledWeight / totalWeight) * 100) : 0;
 
     return {
       percentage,

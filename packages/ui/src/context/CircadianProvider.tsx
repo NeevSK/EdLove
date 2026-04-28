@@ -1,9 +1,10 @@
-import React, { createContext, useContext, useMemo } from 'react';
-import { View } from 'react-native';
 import { vars } from 'nativewind';
-import { useEnvironment } from './EnvironmentContext';
-import { phaseMatrix, colors } from '../theme/Theme';
+import type React from 'react';
+import { createContext, useContext, useMemo } from 'react';
+import { View } from 'react-native';
+import { colors, phaseMatrix } from '../theme/Theme';
 import { getTextOnBackground } from '../utils/colorUtils';
+import { useEnvironment } from './EnvironmentContext';
 
 /**
  * Circadian Context
@@ -51,8 +52,10 @@ export const CircadianProvider = ({ children }: { children: React.ReactNode }) =
     });
   }, [temporalPhase, isDark]);
 
+  const contextValue = useMemo(() => ({ phase: temporalPhase }), [temporalPhase]);
+
   return (
-    <CircadianContext.Provider value={{ phase: temporalPhase }}>
+    <CircadianContext.Provider value={contextValue}>
       <View style={[circadianVars, { flex: 1 }]}>{children}</View>
     </CircadianContext.Provider>
   );

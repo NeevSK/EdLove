@@ -341,13 +341,13 @@ half4 main(vec2 fragCoord) {
 // =============================================================================
 
 export const SKSL_SURFACES: Record<string, string> = {
-  aurora:          AURORA_SKSL,
-  silk:            SILK_SKSL,
-  'young-leaf':    YOUNG_LEAF_SKSL,
-  mist:            MIST_SKSL,
-  waterfall:       WATERFALL_SKSL,
-  'evening-sky':   EVENING_SKY_SKSL,
-  skymorphic:      SKYMORPHIC_SKSL,
+  aurora: AURORA_SKSL,
+  silk: SILK_SKSL,
+  'young-leaf': YOUNG_LEAF_SKSL,
+  mist: MIST_SKSL,
+  waterfall: WATERFALL_SKSL,
+  'evening-sky': EVENING_SKY_SKSL,
+  skymorphic: SKYMORPHIC_SKSL,
   'water-surface': WATER_SURFACE_SKSL,
 };
 

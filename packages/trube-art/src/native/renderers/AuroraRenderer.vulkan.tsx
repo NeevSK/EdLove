@@ -1,7 +1,7 @@
 import React from 'react';
+import { AURORA_SOUL } from '../../core/soul/AuroraSoul';
 import type { TrubeRendererProps } from '../renderers/types';
 import { NativeSubstrateRenderer } from './NativeSubstrateRenderer';
-import { AURORA_SOUL } from '../../core/soul/AuroraSoul';
 
 /**
  * AuroraRendererVulkan  Tier 1 path leveraging the NativeSubstrateRenderer base.

@@ -1,15 +1,15 @@
-import React from 'react';
-import { View, ViewStyle, StyleSheet } from 'react-native';
 import {
   Canvas,
-  Rect,
-  RadialGradient,
-  vec,
-  Turbulence,
   ColorMatrix,
   Group,
+  RadialGradient,
+  Rect,
   RoundedRect,
+  Turbulence,
+  vec,
 } from '@shopify/react-native-skia';
+import type React from 'react';
+import { StyleSheet, View, type ViewStyle } from 'react-native';
 
 import { useTheme } from '../hooks/useTheme';
 

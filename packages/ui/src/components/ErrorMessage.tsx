@@ -3,9 +3,9 @@
  * Hardened v3 implementation.
  */
 
-import React, { FC } from 'react';
-import { View, HStack, Text, Pressable } from '../gluestack';
-import { Info, AlertTriangle, AlertCircle, X } from 'lucide-react-native';
+import { AlertCircle, AlertTriangle, Info, X } from 'lucide-react-native';
+import type { FC } from 'react';
+import { HStack, Pressable, Text, View } from '../gluestack';
 
 interface ErrorMessageProps {
   message: string;

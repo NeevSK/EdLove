@@ -1,13 +1,13 @@
+import { cssInterop } from 'nativewind';
 import React from 'react';
 import {
-  View,
-  TextInput,
   Pressable,
-  type ViewProps,
-  type TextInputProps,
   type PressableProps,
+  TextInput,
+  type TextInputProps,
+  View,
+  type ViewProps,
 } from 'react-native';
-import { cssInterop } from 'nativewind';
 import { useFormControl } from '../form-control';
 
 cssInterop(View, { className: 'style' });

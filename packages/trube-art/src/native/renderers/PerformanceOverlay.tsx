@@ -1,6 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { SURFACE_REFRESH_RATES, SurfaceType } from '../../core/soul/TimeLayer';
+import { StyleSheet, Text, View } from 'react-native';
+import { SURFACE_REFRESH_RATES, type SurfaceType } from '../../core/soul/TimeLayer';
 import type { TrubeRenderPlan } from '../../core/types';
 
 interface PerformanceOverlayProps {

@@ -1,12 +1,12 @@
 ---
-import Layout from '../../layouts/Layout.astro';
-import CosmicParticles from '../../components/CosmicParticles.astro';
 import { getCollection, render } from 'astro:content';
+import CosmicParticles from '../../components/CosmicParticles.astro';
+import Layout from '../../layouts/Layout.astro';
 import { absoluteUrl } from '../../lib/site';
 
 export async function getStaticPaths() {
   const cosmosEntries = await getCollection('cosmos');
-  return cosmosEntries.map(entry => ({
+  return cosmosEntries.map((entry) => ({
     params: { slug: entry.id },
     props: { entry },
   }));

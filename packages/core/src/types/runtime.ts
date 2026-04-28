@@ -32,12 +32,34 @@ export interface LinkingProvider {
 
 export interface LocationProvider {
   requestPermissionsAsync: () => Promise<{ status: string }>;
-  watchPositionAsync: (options: any, callback: (location: any) => void) => Promise<{ remove: () => void }>;
+  watchPositionAsync: (
+    options: any,
+    callback: (location: any) => void,
+  ) => Promise<{ remove: () => void }>;
   Accuracy: Record<string, any>;
 }
 
 export interface NetworkProvider {
   fetch(): Promise<{ isConnected: boolean | null; type: string; details?: any }>;
+}
+
+export interface ShareOptions {
+  title?: string;
+  message?: string;
+  url?: string;
+}
+
+export interface ShareProvider {
+  share(options: ShareOptions): Promise<void>;
+}
+
+export interface UIProvider {
+  setStatusBarHidden(hidden: boolean, animation?: 'none' | 'fade' | 'slide'): void;
+}
+
+export interface ClipboardProvider {
+  getStringAsync(): Promise<string>;
+  setStringAsync(content: string): Promise<boolean>;
 }
 
 export interface CoreRuntimeEnvironment {
@@ -47,4 +69,7 @@ export interface CoreRuntimeEnvironment {
   linking: LinkingProvider;
   location: LocationProvider;
   network: NetworkProvider;
+  share: ShareProvider;
+  ui: UIProvider;
+  clipboard: ClipboardProvider;
 }

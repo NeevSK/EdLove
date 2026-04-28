@@ -7,9 +7,9 @@
  * maintaining a second parallel theme system.
  */
 
-import { TemporalPhase } from '../context/types';
+import type { TemporalPhase } from '../context/types';
 import {
-  ResolvedThemeTokens,
+  type ResolvedThemeTokens,
   resolveClassicTokens,
   resolvePhaseTokens,
   Theme,

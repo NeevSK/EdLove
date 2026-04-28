@@ -1,4 +1,4 @@
-import { type ReactNode, type JSX } from 'react';
+import type { JSX, ReactNode } from 'react';
 
 export function Card({
   className,

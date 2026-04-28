@@ -1,179 +1,173 @@
-import React, { useState } from 'react';
+import type { ClassroomGradingSettings } from '@repo/core';
 import {
-    VStack,
-    HStack,
-    Text,
-    Heading,
-    Box,
-    ScrollView,
-    Button,
-    ButtonText,
-    Spinner,
-    hapticLight,
+  Box,
+  Button,
+  ButtonText,
+  Heading,
+  HStack,
+  hapticLight,
+  Pressable,
+  ScrollView,
+  Spinner,
+  Text,
+  VStack,
 } from '@repo/ui';
-import { TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ClassroomGradingSettings } from '@repo/core';
 import { useGradebook } from '../hooks/useGradebook';
 import GradebookTable from './grading/GradebookTable';
 import GradingSettings from './grading/GradingSettings';
 
 interface GradebookViewProps {
-    classroomId: string;
+  classroomId: string;
 }
 
 export default function GradebookView({ classroomId }: GradebookViewProps) {
-    const { t } = useTranslation();
-    const {
-        grades,
-        studentNames,
-        gradingSettings,
-        isLoading,
-        error,
-        sortBy,
-        setSortBy,
-        sortedGrades,
-        stats,
-        updateSettings
-    } = useGradebook(classroomId);
+  const { t } = useTranslation();
+  const {
+    grades,
+    studentNames,
+    gradingSettings,
+    isLoading,
+    error,
+    sortBy,
+    setSortBy,
+    sortedGrades,
+    stats,
+    updateSettings,
+  } = useGradebook(classroomId);
 
-    const [showSettings, setShowSettings] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
 
-    const handleSaveSettings = async (
-        settings: Omit<ClassroomGradingSettings, 'classroom_id'
-    >) => {
-        try {
-            await updateSettings(settings);
-            setShowSettings(false);
-        } catch (err: any) {
-            console.error('Failed to save settings in UI:', err);
-        }
-    };
-
-    if (showSettings) {
-        return gradingSettings ? (
-            <GradingSettings
-                currentSettings={gradingSettings as any}
-                onSave={handleSaveSettings}
-                onCancel={() => setShowSettings(false)}
-            />
-        ) : null;
+  const handleSaveSettings = async (settings: Omit<ClassroomGradingSettings, 'classroom_id'>) => {
+    try {
+      await updateSettings(settings);
+      setShowSettings(false);
+    } catch (err: any) {
+      console.error('Failed to save settings in UI:', err);
     }
+  };
 
-    return (
-        <VStack className="flex-1 bg-sanctuary-surface">
-            <ScrollView contentContainerStyle={{ padding: 16 }}>
-                <VStack className="gap-6">
-                    {/* Header Stats & Controls */}
-                    <VStack className="gap-4">
-                        {/* Stats Summary */}
-                        <HStack
-                            className="gap-4 p-4 bg-sanctuary-surface-secondary rounded-[24px] border border-sanctuary-border shadow-sm"
-                        >
-                            <VStack className="flex-1">
-                                <Text className="text-sanctuary-text-tertiary text-xs">
-                                    {t('grading.gradebook.totalStudents') || 'Total Students'}
-                                </Text>
-                                <Text className="text-sanctuary-text font-bold text-xl">
-                                    {grades.length}
-                                </Text>
-                            </VStack>
+  if (showSettings) {
+    return gradingSettings ? (
+      <GradingSettings
+        currentSettings={gradingSettings as any}
+        onSave={handleSaveSettings}
+        onCancel={() => setShowSettings(false)}
+      />
+    ) : null;
+  }
 
-                            <VStack className="flex-1">
-                                <Text className="text-sanctuary-text-tertiary text-xs">
-                                    {t('grading.gradebook.averageMarks') || 'Average'}
-                                </Text>
-                                <Text className="text-sanctuary-text font-bold text-xl">
-                                    {stats.averageMarks}
-                                </Text>
-                            </VStack>
+  return (
+    <VStack className="flex-1 bg-sanctuary-surface">
+      <ScrollView contentContainerStyle={{ padding: 16 }}>
+        <VStack className="gap-6">
+          {/* Header Stats & Controls */}
+          <VStack className="gap-4">
+            {/* Stats Summary */}
+            <HStack className="gap-4 p-4 bg-sanctuary-surface-secondary rounded-[24px] border border-sanctuary-border shadow-sm">
+              <VStack className="flex-1">
+                <Text className="text-sanctuary-text-tertiary text-xs">
+                  {t('grading.gradebook.totalStudents') || 'Total Students'}
+                </Text>
+                <Text className="text-sanctuary-text font-bold text-xl">{grades.length}</Text>
+              </VStack>
 
-                            <Button
-                                variant="outline"
-                                action="secondary"
-                                onPress={() => {
-                                    hapticLight();
-                                    setShowSettings(true);
-                                }}
-                                className="self-center h-9 rounded-full px-4 border-sanctuary-border"
-                            >
-                                <ButtonText className="text-xs text-sanctuary-text-secondary font-medium">
-                                    {t('grading.settings.button') || 'Settings'}
-                                </ButtonText>
-                            </Button>
-                        </HStack>
+              <VStack className="flex-1">
+                <Text className="text-sanctuary-text-tertiary text-xs">
+                  {t('grading.gradebook.averageMarks') || 'Average'}
+                </Text>
+                <Text className="text-sanctuary-text font-bold text-xl">{stats.averageMarks}</Text>
+              </VStack>
 
-                        {/* Sort Options */}
-                        <HStack className="flex-wrap gap-2 items-center px-1">
-                            <Text className="text-sanctuary-text-tertiary text-sm mr-1">
-                                {t('grading.gradebook.sortBy') || 'Sort by:'}
-                            </Text>
+              <Button
+                variant="outline"
+                action="secondary"
+                onPress={() => {
+                  hapticLight();
+                  setShowSettings(true);
+                }}
+                className="self-center h-9 rounded-full px-4 border-sanctuary-border"
+              >
+                <ButtonText className="text-xs text-sanctuary-text-secondary font-medium">
+                  {t('grading.settings.button') || 'Settings'}
+                </ButtonText>
+              </Button>
+            </HStack>
 
-                            {(['rank', 'marks', 'name'] as const).map((option) => (
-                                <TouchableOpacity
-                                    key={option}
-                                    onPress={() => {
-                                        hapticLight();
-                                        setSortBy(option);
-                                    }}
-                                >
-                                    <Box
-                                        className={`py-1.5 px-4 rounded-full border ${
-                                            sortBy === option
-                                                ? 'bg-sanctuarySaffron border-sanctuarySaffron'
-                                                : 'bg-sanctuary-surface-secondary border-sanctuary-border'
-                                        }`}
-                                    >
-                                        <Text
-                                            className={`text-xs ${
-                                                sortBy === option
-                                                    ? 'text-white font-bold'
-                                                    : 'text-sanctuary-text-secondary'
-                                            }`}
-                                        >
-                                            {t(`grading.gradebook.sort${option.charAt(0).toUpperCase() + option.slice(1)}`) || option.charAt(0).toUpperCase() + option.slice(1)}
-                                        </Text>
-                                    </Box>
-                                </TouchableOpacity>
-                            ))}
-                        </HStack>
-                    </VStack>
+            {/* Sort Options */}
+            <HStack className="flex-wrap gap-2 items-center px-1">
+              <Text className="text-sanctuary-text-tertiary text-sm mr-1">
+                {t('grading.gradebook.sortBy') || 'Sort by:'}
+              </Text>
 
-                    {/* Content Area */}
-                    <Box className="flex-1">
-                        {isLoading && (
-                            <Box className="py-12 items-center">
-                                <Spinner className="text-sanctuarySaffron" />
-                                <Text className="text-sanctuary-text-tertiary mt-4 animate-pulse">Synchronizing Gradebook...</Text>
-                            </Box>
-                        )}
+              {(['rank', 'marks', 'name'] as const).map((option) => (
+                <Pressable
+                  key={option}
+                  onPress={() => {
+                    hapticLight();
+                    setSortBy(option);
+                  }}
+                  className="active:opacity-80"
+                >
+                  <Box
+                    className={`py-1.5 px-4 rounded-full border ${
+                      sortBy === option
+                        ? 'bg-sanctuarySaffron border-sanctuarySaffron'
+                        : 'bg-sanctuary-surface-secondary border-sanctuary-border'
+                    }`}
+                  >
+                    <Text
+                      className={`text-xs ${
+                        sortBy === option ? 'text-white font-bold' : 'text-sanctuary-text-secondary'
+                      }`}
+                    >
+                      {t(
+                        `grading.gradebook.sort${option.charAt(0).toUpperCase() + option.slice(1)}`,
+                      ) || option.charAt(0).toUpperCase() + option.slice(1)}
+                    </Text>
+                  </Box>
+                </Pressable>
+              ))}
+            </HStack>
+          </VStack>
 
-                        {error && !isLoading && (
-                            <Box className="p-4 bg-sanctuary-error-transparent rounded-2xl border border-sanctuary-error">
-                                <Text className="text-sanctuary-error text-sm font-medium">{error}</Text>
-                            </Box>
-                        )}
+          {/* Content Area */}
+          <Box className="flex-1">
+            {isLoading && (
+              <Box className="py-12 items-center">
+                <Spinner className="text-sanctuarySaffron" />
+                <Text className="text-sanctuary-text-tertiary mt-4 animate-pulse">
+                  Synchronizing Gradebook...
+                </Text>
+              </Box>
+            )}
 
-                        {!isLoading && !error && grades.length > 0 && gradingSettings && (
-                            <GradebookTable
-                                grades={sortedGrades as any}
-                                gradingSettings={gradingSettings}
-                                studentNames={studentNames}
-                            />
-                        )}
+            {error && !isLoading && (
+              <Box className="p-4 bg-sanctuary-error-transparent rounded-2xl border border-sanctuary-error">
+                <Text className="text-sanctuary-error text-sm font-medium">{error}</Text>
+              </Box>
+            )}
 
-                        {!isLoading && !error && grades.length === 0 && (
-                            <Box className="py-20 items-center justify-center bg-sanctuary-surface-secondary rounded-[32px] border border-dashed border-sanctuary-border">
-                                <Text className="text-sanctuary-text-tertiary text-base text-center px-8">
-                                    {t('grading.gradebook.noGrades') || 'No grades found in the sacred archives for this classroom.'}
-                                </Text>
-                            </Box>
-                        )}
-                    </Box>
-                </VStack>
-            </ScrollView>
+            {!isLoading && !error && grades.length > 0 && gradingSettings && (
+              <GradebookTable
+                grades={sortedGrades as any}
+                gradingSettings={gradingSettings}
+                studentNames={studentNames}
+              />
+            )}
+
+            {!isLoading && !error && grades.length === 0 && (
+              <Box className="py-20 items-center justify-center bg-sanctuary-surface-secondary rounded-[32px] border border-dashed border-sanctuary-border">
+                <Text className="text-sanctuary-text-tertiary text-base text-center px-8">
+                  {t('grading.gradebook.noGrades') ||
+                    'No grades found in the sacred archives for this classroom.'}
+                </Text>
+              </Box>
+            )}
+          </Box>
         </VStack>
-    );
+      </ScrollView>
+    </VStack>
+  );
 }
-
-

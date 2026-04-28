@@ -1,8 +1,8 @@
-import { Platform } from 'react-native';
-import { usePostHog } from 'posthog-react-native';
 import { useActivityPulse } from '@repo/core';
-import { posthogAnalytics as posthogWeb } from '../engine/PostHogAnalytics.web';
+import { usePostHog } from 'posthog-react-native';
+import { Platform } from 'react-native';
 import { posthogAnalytics } from '../engine/PostHogAnalytics';
+import { posthogAnalytics as posthogWeb } from '../engine/PostHogAnalytics.web';
 
 // Use the existing singleton for convenience, but we'll prefer the provider-based approach where possible
 const posthogNative = posthogAnalytics;

@@ -3,104 +3,119 @@ param(
     [string]$Cmd,
     
     [Parameter(Mandatory=$false)]
-    [string]$Log = "reports/audit-summary.txt",
-    
-    [Parameter(Mandatory=$false)]
-    [string]$Cwd = "."
+    [string]$Log = 'reports/audit-summary.md'
 )
 
-# Time stamping
-$startTime = Get-Date
-$logDir = [System.IO.Path]::GetDirectoryName($Log)
-if (![string]::IsNullOrWhiteSpace($logDir) -and !(Test-Path -Path $logDir)) {
-    New-Item -ItemType Directory -Path $logDir -Force | Out-Null
+# Robust PowerShell Audit Wrapper
+$ErrorActionPreference = 'Continue'
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+
+$StartTime = Get-Date
+$Separator = '--------------------------------------------------------------------------------'
+
+Write-Host ">>> Starting Audit: $StartTime" -ForegroundColor Cyan
+Write-Host ">>> Command: $Cmd" -ForegroundColor Cyan
+Write-Host $Separator -ForegroundColor Gray
+
+# Ensure log directory exists
+$LogDir = Split-Path -Path $Log -Parent
+if ($LogDir -and !(Test-Path -Path $LogDir)) {
+    New-Item -ItemType Directory -Path $LogDir -Force | Out-Null
 }
 
-Write-Host "`n>>> Starting Audit: $startTime" -ForegroundColor Cyan
-Write-Host ">>> Command: $Cmd" -ForegroundColor Cyan
-
-# Execute command and capture output
-$exitCode = 0
-$rawOutput = ""
+# Execute command and capture output while streaming to console
+$ExitCode = 0
+$RawLines = New-Object System.Collections.Generic.List[string]
 
 try {
-    # Execute in a script block to capture output reliably
-    $rawOutput = Invoke-Expression $Cmd 2>&1 | Out-String
-    $exitCode = $LASTEXITCODE
+    # Execute and stream
+    # Using scriptblock to handle complex commands better
+    $sb = [scriptblock]::Create($Cmd)
+    & $sb 2>&1 | ForEach-Object {
+        $line = $_.ToString()
+        Write-Host $line
+        $RawLines.Add($line)
+    }
+    $ExitCode = $LASTEXITCODE
 } catch {
-    Write-Host "Error executing command: $_" -ForegroundColor Red
-    $exitCode = 1
-    $rawOutput = "ERROR: $_"
+    Write-Host "!!! Execution Error: $_" -ForegroundColor Red
+    $ExitCode = 1
+    $RawLines.Add("ERROR: $_")
 }
 
-# Advanced Categorization Logic
-$lines = $rawOutput -split "`r?`n" | Where-Object { ![string]::IsNullOrWhiteSpace($_) }
-$findings = $lines | Where-Object { $_ -match "warn|error|TS\d+|❌|⚠️" }
-
-$summary = @{}
-$groupedFindings = $findings | ForEach-Object {
-    if ($_ -match "((?:apps|packages)/[^/]+)/(.*)") {
-        $category = $matches[1]
-        $file = $matches[2]
-        [PSCustomObject]@{
-            Category = $category
-            File     = $file
-            Line     = $_
-        }
-    } else {
-        [PSCustomObject]@{
-            Category = "General / Root"
-            File     = "Global"
-            Line     = $_
-        }
+# Categorization Logic
+$Findings = @()
+foreach ($line in $RawLines) {
+    if ($line -match 'warn|error|TS\d+') {
+        $Findings += $line
     }
-} 
-
-if ($groupedFindings) {
-    $groups = $groupedFindings | Group-Object Category
-} else {
-    $groups = @()
 }
 
-# Construct Report Header
-$reportHeader = @"
-================================================================================
-MONOREPO HYGIENE AUDIT REPORT
-Generated: $(Get-Date -Format "yyyy-MM-dd HH:mm:ss")
-Command:   $Cmd
-================================================================================
+$Groups = @{}
+foreach ($item in $Findings) {
+    $category = 'General'
+    if ($item -match '((?:apps|packages)/[^/]+)') {
+        $category = $Matches[1]
+    }
+    if (-not $Groups.ContainsKey($category)) { $Groups[$category] = @() }
+    $Groups[$category] += $item
+}
 
-SUMMARY BY CATEGORY:
---------------------------------------------------------------------------------
-"@
+# Construct Report (Array of strings to avoid interpolation traps)
+$Report = @()
+$Report += '# Sovereign Monorepo Hygiene Audit Report'
+$Report += ''
+$Report += '> **Generated:** ' + (Get-Date -Format 'yyyy-MM-dd HH:mm:ss')
+$Report += '> **Command:** ' + $Cmd
+$Report += ''
+$Report += '## Executive Summary'
+$Report += ''
+$Report += '| Category | Findings |'
+$Report += '| :--- | :---: |'
 
-if ($groups.Count -gt 0) {
-    foreach ($group in $groups | Sort-Object Name) {
-        $reportHeader += "`n[$($group.Name)]: $($group.Count) findings"
+$SortedCategories = $Groups.Keys | Sort-Object
+if ($SortedCategories.Count -gt 0) {
+    foreach ($cat in $SortedCategories) {
+        $count = $Groups[$cat].Count
+        $Report += "| $cat | $count |"
     }
 } else {
-    $reportHeader += "`nNo critical findings identified."
+    $Report += '| All Categories | 0 Findings |'
+}
+$Report += ''
+
+$Report += '## Detailed Findings'
+$Report += ''
+if ($SortedCategories.Count -gt 0) {
+    foreach ($cat in $SortedCategories) {
+        $Report += "### Category: $cat"
+        foreach ($line in $Groups[$cat]) {
+            $Report += "- $line"
+        }
+        $Report += ''
+    }
+} else {
+    $Report += 'No findings identified.'
 }
 
-$reportHeader += "`n--------------------------------------------------------------------------------`n"
+$Report += ''
+$Report += '## Raw Output'
+$Report += '```text'
+foreach ($line in $RawLines) { $Report += $line }
+$Report += '```'
 
-# Final Output Construction
-$finalContent = $reportHeader + "`nDETAILED FINDINGS:`n" + "--------------------------------------------------------------------------------`n" + $rawOutput
+# Finalizing
+$Report | Out-File -FilePath $Log -Encoding utf8 -Force
 
-# Write to Log
-$finalContent | Out-File -FilePath $Log -Encoding utf8 -Force
+$EndTime = Get-Date
+$Duration = $EndTime - $StartTime
 
-# Calculate Duration
-$endTime = Get-Date
-$duration = $endTime - $startTime
+Write-Host ''
+Write-Host $Separator -ForegroundColor Gray
+Write-Host 'AUDIT SUMMARY' -ForegroundColor Yellow
+Write-Host ("Duration: {0}m {1}s" -f $Duration.Minutes, $Duration.Seconds)
+Write-Host ("Findings: {0}" -f $Findings.Count)
+Write-Host ("Log File: {0}" -f $Log)
+Write-Host $Separator -ForegroundColor Gray
 
-# Console Output (Summary)
-Write-Host "`n----------------------------------------" -ForegroundColor Gray
-Write-Host "AUDIT SUMMARY" -ForegroundColor Yellow
-Write-Host "Duration: $($duration.Minutes)m $($duration.Seconds)s"
-Write-Host "Status:   $(if($exitCode -eq 0 -and $findings.Count -eq 0){'SUCCESS'}else{'FAILED'})" -ForegroundColor $(if($exitCode -eq 0 -and $findings.Count -eq 0){'Green'}else{'Red'})
-Write-Host "Findings: $($findings.Count)" -ForegroundColor $(if($findings.Count -gt 0){'Yellow'}else{'White'})
-Write-Host "Log File: $Log"
-Write-Host "----------------------------------------`n" -ForegroundColor Gray
-
-exit $exitCode
+exit $ExitCode

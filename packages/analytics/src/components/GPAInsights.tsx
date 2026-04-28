@@ -1,5 +1,5 @@
+import { Box, Card, colors, HStack, Text, VStack } from '@repo/ui';
 import React from 'react';
-import { Box, Card, HStack, Text, VStack, colors } from '@repo/ui';
 import { formatGPA, getGradeColor } from '../utils/analyticsHelpers';
 
 interface GPAInsightsProps {
@@ -42,7 +42,9 @@ export function GPAInsights({
             </Text>
             <Text
               className="text-center text-[28px] font-bold"
-              style={{ color: getGradeColor(currentGPA >= 3.5 ? 'A' : currentGPA >= 2.5 ? 'B' : 'C') }}
+              style={{
+                color: getGradeColor(currentGPA >= 3.5 ? 'A' : currentGPA >= 2.5 ? 'B' : 'C'),
+              }}
             >
               {formatGPA(currentGPA)}
             </Text>
@@ -55,7 +57,9 @@ export function GPAInsights({
               </Text>
               <Text
                 className="text-center text-[28px] font-bold"
-                style={{ color: getGradeColor(predictedGPA >= 3.5 ? 'A' : predictedGPA >= 2.5 ? 'B' : 'C') }}
+                style={{
+                  color: getGradeColor(predictedGPA >= 3.5 ? 'A' : predictedGPA >= 2.5 ? 'B' : 'C'),
+                }}
               >
                 {formatGPA(predictedGPA)}
               </Text>
@@ -76,7 +80,10 @@ export function GPAInsights({
           <Text className="text-sm" style={{ color: colors.text }}>
             Target: {formatGPA(targetGPA)}
           </Text>
-          <Box className="h-2 w-full overflow-hidden rounded-full" style={{ backgroundColor: colors.border }}>
+          <Box
+            className="h-2 w-full overflow-hidden rounded-full"
+            style={{ backgroundColor: colors.border }}
+          >
             <Box
               className="h-full rounded-full"
               style={{
@@ -95,15 +102,13 @@ export function GPAInsights({
             Recommendations
           </Text>
           <VStack className="gap-2">
-            {generateRecommendations(currentGPA, trendDirection, gapToTarget).map((recommendation, index) => (
-              <Text
-                key={index}
-                className="text-sm leading-5"
-                style={{ color: colors.text }}
-              >
-                • {recommendation}
-              </Text>
-            ))}
+            {generateRecommendations(currentGPA, trendDirection, gapToTarget).map(
+              (recommendation, index) => (
+                <Text key={index} className="text-sm leading-5" style={{ color: colors.text }}>
+                  • {recommendation}
+                </Text>
+              ),
+            )}
           </VStack>
         </VStack>
       </VStack>
@@ -114,7 +119,7 @@ export function GPAInsights({
 function generateRecommendations(
   currentGPA: number,
   trendDirection: string,
-  gapToTarget: number
+  gapToTarget: number,
 ): string[] {
   const recommendations: string[] = [];
 

@@ -1,16 +1,15 @@
-import { 
+import { FeatureGuard } from '@repo/core';
+import {
   Box,
   GlobalHeader,
   HStack,
+  Pressable,
   SandboxBanner,
   ScrollView,
   SkeletonCard,
   Text,
   VStack,
-  useTheme,
-  Pressable
 } from '@repo/ui';
-import { FeatureGuard } from '@repo/core';
 import type { PrincipalZoneId } from '../principal/workspace';
 
 function ZoneButton({
@@ -19,7 +18,8 @@ function ZoneButton({
   detail,
   count,
   isActive,
-  onPress}: {
+  onPress,
+}: {
   id: PrincipalZoneId;
   label: string;
   detail: string;
@@ -30,23 +30,27 @@ function ZoneButton({
   return (
     <Pressable onPress={() => onPress(id)} className="flex-1 active:scale-95 transition-all">
       <Box
-        className={`p-4 rounded-3xl border min-h-[74px] shadow-sm ${ isActive ? 'border-phase-interactive bg-phase-interactive/5' : 'border-phase-border bg-phase-surface' }`}
+        className={`p-4 rounded-3xl border min-h-[74px] shadow-sm ${isActive ? 'border-phase-interactive bg-phase-interactive/5' : 'border-phase-border bg-phase-surface'}`}
       >
         <HStack className="justify-between items-center">
-          <Text className={`text-[13px] font-black uppercase tracking-wider ${isActive ? 'text-phase-interactive' : 'text-phaseText-secondary'}`}>
+          <Text
+            className={`text-[13px] font-black uppercase tracking-wider ${isActive ? 'text-phase-interactive' : 'text-phaseText-secondary'}`}
+          >
             {label}
           </Text>
           <Box
-            className={`px-2 py-0.5 rounded-full ${ isActive ? 'bg-phase-interactive/10' : 'bg-phase-canvas' }`}
+            className={`px-2 py-0.5 rounded-full ${isActive ? 'bg-phase-interactive/10' : 'bg-phase-canvas'}`}
           >
             <Text
-              className={`text-[10px] font-black ${ isActive ? 'text-phase-interactive' : 'text-phaseText-muted' }`}
+              className={`text-[10px] font-black ${isActive ? 'text-phase-interactive' : 'text-phaseText-muted'}`}
             >
               {count}
             </Text>
           </Box>
         </HStack>
-        <Text className={`text-[11px] font-bold mt-2 ${isActive ? 'text-phase-interactive/60' : 'text-phaseText-muted'}`}>
+        <Text
+          className={`text-[11px] font-bold mt-2 ${isActive ? 'text-phase-interactive/60' : 'text-phaseText-muted'}`}
+        >
           {detail}
         </Text>
       </Box>
@@ -75,7 +79,8 @@ export function PrincipalNativeDashboardShell({
   zoneCounts,
   isLoading,
   error,
-  children}: PrincipalNativeDashboardShellProps) {
+  children,
+}: PrincipalNativeDashboardShellProps) {
   // We use NativeWind for styling, so theme hook is removed as it's legacy.
 
   return (
@@ -83,9 +88,7 @@ export function PrincipalNativeDashboardShell({
       {showSandboxBanner ? <SandboxBanner /> : null}
       <GlobalHeader title={title} subtitle={subtitle} />
 
-      <Box
-        className="px-lg pb-md border-b border-phase-surface/10 bg-phase-world"
-      >
+      <Box className="px-lg pb-md border-b border-phase-surface/10 bg-phase-world">
         <HStack className="gap-1">
           <ZoneButton
             id="today"
@@ -117,9 +120,7 @@ export function PrincipalNativeDashboardShell({
       <ScrollView>
         <VStack className="gap-lg p-lg pb-[120px]">
           {error ? (
-            <Box
-              className="p-md bg-phase-danger/10 rounded-xl border border-phase-danger"
-            >
+            <Box className="p-md bg-phase-danger/10 rounded-xl border border-phase-danger">
               <Text className="text-phaseText-primary">{error}</Text>
             </Box>
           ) : null}
@@ -131,8 +132,8 @@ export function PrincipalNativeDashboardShell({
               <SkeletonCard height={220} />
             </VStack>
           ) : (
-            <FeatureGuard 
-              feature="isDevelopingWorkspace" 
+            <FeatureGuard
+              feature="isDevelopingWorkspace"
               fallback={
                 <Box className="p-xl bg-phase-canvas rounded-3xl border border-dashed border-phase-border items-center justify-center min-h-[300px]">
                   <Text className="text-phaseText-secondary font-bold text-center">

@@ -1,48 +1,71 @@
-import React from 'react';
-import { View } from 'react-native';
+import { cssInterop } from 'nativewind';
+import type React from 'react';
+import { createContext, useContext, useMemo } from 'react';
+import { View, type ViewProps } from 'react-native';
 import Animated, { ZoomIn, ZoomOut } from 'react-native-reanimated';
-import { Portal } from '../portal';
-import { Overlay } from '../overlay';
 import { Box } from '../box';
+import { Overlay } from '../overlay';
+import { Portal } from '../portal';
+
+cssInterop(View, { className: 'style' });
 
 /**
  * Modal Component
  *
- * Hardened primitive for modal dialogs.
- * Composes Portal and Overlay for a stable UX.
+ * A high-impact, hardened dialog primitive.
+ * Enforces architectural boundaries and design system consistency.
  */
+
+interface ModalContextType {
+  onClose: () => void;
+}
+
+const ModalContext = createContext<ModalContextType | undefined>(undefined);
+
+function useModal() {
+  const context = useContext(ModalContext);
+  if (!context) throw new Error('useModal must be used within a Modal');
+  return context;
+}
+
 export const Modal = ({
   isOpen,
   onClose,
   children,
+  ...props
 }: {
   isOpen: boolean;
   onClose: () => void;
   children: React.ReactNode;
-}) => {
+} & ViewProps) => {
+  const contextValue = useMemo(() => ({ onClose }), [onClose]);
+
   if (!isOpen) return null;
 
   return (
-    <Portal>
-      <Overlay isOpen={isOpen} onPress={onClose} />
-      <View
-        className="absolute inset-0 items-center justify-center p-4"
-        pointerEvents="box-none"
-        style={{ zIndex: 1001 }}
-      >
-        <Animated.View
-          entering={ZoomIn.duration(300).springify()}
-          exiting={ZoomOut.duration(200)}
-          className="w-full max-w-[500px]"
-          accessibilityRole={'dialog' as any}
-          accessibilityViewIsModal={true}
+    <ModalContext.Provider value={contextValue}>
+      <Portal>
+        <Overlay isOpen={isOpen} onPress={onClose} />
+        <View
+          className="absolute inset-0 items-center justify-center p-4"
+          pointerEvents="box-none"
+          style={{ zIndex: 1001 }}
+          {...props}
         >
-          <Box className="bg-silk rounded-2xl overflow-hidden shadow-2xl border border-linen">
-            {children}
-          </Box>
-        </Animated.View>
-      </View>
-    </Portal>
+          <Animated.View
+            entering={ZoomIn.duration(300).springify().damping(20)}
+            exiting={ZoomOut.duration(200)}
+            className="w-full max-w-[500px]"
+            accessibilityRole="alert"
+            accessibilityViewIsModal={true}
+          >
+            <Box className="bg-phase-elevated rounded-3xl overflow-hidden shadow-2xl border border-phase-interactive/10">
+              {children}
+            </Box>
+          </Animated.View>
+        </View>
+      </Portal>
+    </ModalContext.Provider>
   );
 };
 
@@ -54,20 +77,41 @@ export const ModalContent = ({ children, className }: any) => (
 
 export const ModalHeader = ({ children, className }: any) => (
   <Box
-    className={`px-5 py-4 flex-row items-center justify-between border-b border-linen ${className || ''}`}
+    className={`px-6 py-5 flex-row items-center justify-between border-b border-phase-interactive/5 ${className || ''}`}
   >
     {children}
   </Box>
 );
 
 export const ModalBody = ({ children, className }: any) => (
-  <Box className={`px-5 py-4 ${className || ''}`}>{children}</Box>
+  <Box className={`px-6 py-5 ${className || ''}`}>{children}</Box>
 );
 
 export const ModalFooter = ({ children, className }: any) => (
-  <Box className={`px-5 py-4 border-t border-linen flex-row justify-end gap-3 ${className || ''}`}>
+  <Box
+    className={`px-6 py-5 border-t border-phase-interactive/5 flex-row justify-end gap-4 ${className || ''}`}
+  >
     {children}
   </Box>
 );
 
-export const ModalCloseButton = ({ children, ...props }: any) => <Box {...props}>{children}</Box>;
+export const ModalCloseButton = ({ children, onPress, ...props }: any) => {
+  const { onClose } = useModal();
+  return (
+    <Box
+      {...props}
+      onPress={() => {
+        onClose();
+        onPress?.();
+      }}
+    >
+      {children}
+    </Box>
+  );
+};
+
+Modal.displayName = 'Modal';
+ModalHeader.displayName = 'ModalHeader';
+ModalFooter.displayName = 'ModalFooter';
+
+export { Modal as default };

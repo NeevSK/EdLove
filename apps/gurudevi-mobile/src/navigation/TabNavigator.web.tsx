@@ -523,7 +523,8 @@ export default function TabNavigator({ onTabChange }: { onTabChange?: (tab: stri
             }}
             screenListeners={{
               state: (e) => {
-                const s = (e.data as { state?: { index: number; routes: { name: string }[] } })?.state;
+                const s = (e.data as { state?: { index: number; routes: { name: string }[] } })
+                  ?.state;
                 if (!s || s.index === undefined) return;
                 const routeName = s.routes[s.index]?.name;
                 if (routeName) {

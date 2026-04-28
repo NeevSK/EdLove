@@ -1,9 +1,9 @@
 import {
-  supabase,
   getSchoolRoleForUser,
   getWorkRolesForUser,
   type Membership,
   type ScopeRef,
+  supabase,
 } from '@repo/core';
 
 interface MembershipSeed {

@@ -1,21 +1,22 @@
-import React, { useMemo } from 'react';
-import { Pressable, ScrollView } from 'react-native';
+import { useManualSnapshot, useTemporalHeatmap } from '@repo/core/logic';
+import {
+  Calendar,
+  Camera,
+  Clock,
+  History,
+  type LucideIcon,
+  MessageSquare,
+  Sparkles,
+  TrendingUp,
+  Zap,
+} from 'lucide-react-native';
+import type React from 'react';
+import { useMemo } from 'react';
+import { Pressable } from 'react-native';
+import { Box, HStack, Text, VStack } from '../gluestack';
+import { ResonantHeatmap } from './ResonantHeatmap';
 import SanctuaryCard from './SanctuaryCard';
 import { SanctuaryChip } from './SanctuaryChip';
-import {
-  LucideIcon,
-  History,
-  Calendar,
-  Clock,
-  Sparkles,
-  MessageSquare,
-  Zap,
-  Camera,
-  TrendingUp,
-} from 'lucide-react-native';
-import { useManualSnapshot, useTemporalHeatmap } from '@repo/core/logic';
-import { ResonantHeatmap } from './ResonantHeatmap';
-import { Box, VStack, HStack, Text } from '../gluestack';
 
 export interface JourneyEvent {
   id: string;

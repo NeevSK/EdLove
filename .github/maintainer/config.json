@@ -5,16 +5,7 @@
   "noMergeExternalPRs": true,
   "semantics": {
     "intent": {
-      "bug": [
-        "bug",
-        "crash",
-        "error",
-        "exception",
-        "fails",
-        "failing",
-        "broken",
-        "regression"
-      ],
+      "bug": ["bug", "crash", "error", "exception", "fails", "failing", "broken", "regression"],
       "feature": [
         "feature",
         "enhancement",
@@ -23,13 +14,7 @@
         "add support",
         "request"
       ],
-      "question": [
-        "how do i",
-        "how can i",
-        "is it possible",
-        "what does",
-        "question"
-      ],
+      "question": ["how do i", "how can i", "is it possible", "what does", "question"],
       "support": [
         "help",
         "support",
@@ -39,49 +24,16 @@
         "setup",
         "install"
       ],
-      "meta": [
-        "roadmap",
-        "governance",
-        "maintainer",
-        "community",
-        "discussion"
-      ]
+      "meta": ["roadmap", "governance", "maintainer", "community", "discussion"]
     },
     "needsInfo": {
-      "repro": [
-        "steps to reproduce",
-        "repro steps",
-        "reproduction"
-      ],
-      "expected": [
-        "expected behavior",
-        "expected result"
-      ],
-      "actual": [
-        "actual behavior",
-        "actual result"
-      ],
-      "environment": [
-        "environment",
-        "os",
-        "operating system",
-        "platform"
-      ],
-      "version": [
-        "version",
-        "openskills version",
-        "node version"
-      ],
-      "logs": [
-        "logs",
-        "stack trace",
-        "error output"
-      ],
-      "testPlan": [
-        "test plan",
-        "testing",
-        "tests run"
-      ]
+      "repro": ["steps to reproduce", "repro steps", "reproduction"],
+      "expected": ["expected behavior", "expected result"],
+      "actual": ["actual behavior", "actual result"],
+      "environment": ["environment", "os", "operating system", "platform"],
+      "version": ["version", "openskills version", "node version"],
+      "logs": ["logs", "stack trace", "error output"],
+      "testPlan": ["test plan", "testing", "tests run"]
     },
     "environmentTokens": [
       "windows",
@@ -109,23 +61,11 @@
         "refs",
         "linked to"
       ],
-      "duplicateHints": [
-        "duplicate",
-        "same issue",
-        "same error",
-        "same problem"
-      ]
+      "duplicateHints": ["duplicate", "same issue", "same error", "same problem"]
     },
     "errors": {
       "signatures": [],
-      "keywords": [
-        "error",
-        "exception",
-        "failed",
-        "failure",
-        "crash",
-        "security error"
-      ]
+      "keywords": ["error", "exception", "failed", "failure", "crash", "security error"]
     }
   },
   "heuristics": {
@@ -135,43 +75,23 @@
       "issueSignals": {
         "missingRepro": {
           "enabled": true,
-          "applyTo": [
-            "bug",
-            "unknown"
-          ]
+          "applyTo": ["bug", "unknown"]
         },
         "missingExpectedActual": {
           "enabled": true,
-          "applyTo": [
-            "bug",
-            "unknown"
-          ]
+          "applyTo": ["bug", "unknown"]
         },
         "missingEnvironment": {
           "enabled": true,
-          "applyTo": [
-            "bug",
-            "support",
-            "question",
-            "unknown"
-          ]
+          "applyTo": ["bug", "support", "question", "unknown"]
         },
         "missingVersion": {
           "enabled": true,
-          "applyTo": [
-            "bug",
-            "support",
-            "question",
-            "unknown"
-          ]
+          "applyTo": ["bug", "support", "question", "unknown"]
         },
         "missingLogs": {
           "enabled": true,
-          "applyTo": [
-            "bug",
-            "support",
-            "unknown"
-          ]
+          "applyTo": ["bug", "support", "unknown"]
         }
       },
       "prSignals": {
@@ -252,44 +172,17 @@
     "prs": 30
   },
   "labels": {
-    "blocked": [
-      "blocked",
-      "on-hold"
-    ],
-    "needsInfo": [
-      "needs-info",
-      "needs-more-info",
-      "waiting-for-response"
-    ],
-    "needsDecision": [
-      "needs-decision"
-    ],
-    "closable": [
-      "duplicate",
-      "wontfix",
-      "invalid",
-      "out-of-scope"
-    ]
+    "blocked": ["blocked", "on-hold"],
+    "needsInfo": ["needs-info", "needs-more-info", "waiting-for-response"],
+    "needsDecision": ["needs-decision"],
+    "closable": ["duplicate", "wontfix", "invalid", "out-of-scope"]
   },
   "typeLabels": {
-    "bug": [
-      "bug"
-    ],
-    "feature": [
-      "feature",
-      "enhancement"
-    ],
-    "question": [
-      "question"
-    ],
-    "support": [
-      "support"
-    ],
-    "meta": [
-      "meta",
-      "governance",
-      "roadmap"
-    ]
+    "bug": ["bug"],
+    "feature": ["feature", "enhancement"],
+    "question": ["question"],
+    "support": ["support"],
+    "meta": ["meta", "governance", "roadmap"]
   },
   "priority": {
     "issue": {

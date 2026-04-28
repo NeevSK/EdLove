@@ -1,5 +1,4 @@
-import React from 'react';
-import { Pressable, Text, Platform } from 'react-native';
+import { Platform, Pressable, Text } from 'react-native';
 import { openExternalURL } from '../../../utils/linking';
 
 /**

@@ -1,7 +1,7 @@
+import { GradeHeadDashboard, PrincipalDashboard, SectionHeadDashboard } from '@repo/admin';
 import React from 'react';
-import { PrincipalDashboard, SectionHeadDashboard, GradeHeadDashboard } from '@repo/admin';
-import type { ClassroomWorkspaceSurface, PrincipalInsight } from '../types/workspace';
 import { PrincipalOnboardingView } from '../components';
+import type { ClassroomWorkspaceSurface, PrincipalInsight } from '../types/workspace';
 
 export function appendPrincipalWorkspaceSurfaces(
   surfaces: ClassroomWorkspaceSurface[],
@@ -81,7 +81,9 @@ export function appendPrincipalWorkspaceSurfaces(
       summary: 'Mixed teaching and coordination capability within the classroom holon.',
       temporalLabel: 'Work',
       metadata: ['Academic', 'Mixed-role'],
-      content: <SectionHeadDashboard schoolId={schoolIdToUse || undefined} userId={classroomData.userId} />,
+      content: (
+        <SectionHeadDashboard schoolId={schoolIdToUse || undefined} userId={classroomData.userId} />
+      ),
     });
   }
 
@@ -100,8 +102,9 @@ export function appendPrincipalWorkspaceSurfaces(
       summary: 'Cross-class coordination for grade-wide rhythms, issues, and academic flow.',
       temporalLabel: 'Work',
       metadata: ['Academic', 'Mixed-role'],
-      content: <GradeHeadDashboard schoolId={schoolIdToUse || undefined} userId={classroomData.userId} />,
+      content: (
+        <GradeHeadDashboard schoolId={schoolIdToUse || undefined} userId={classroomData.userId} />
+      ),
     });
   }
 }
-

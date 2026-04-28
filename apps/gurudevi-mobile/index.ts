@@ -3,11 +3,11 @@ import 'react-native-reanimated';
 import 'react-native-worklets';
 import 'react-native-get-random-values';
 import '../../packages/ui/src/global.css';
+import { bootstrapPlatform } from '@repo/core/src/native/bootstrap';
 import { registerRootComponent } from 'expo';
-
 import App from './App';
 
-// registerRootComponent calls AppRegistry.registerComponent('main', () => App);
-// It also ensures that whether you load the app in Expo Go or in a native build,
-// the environment is set up appropriately
-registerRootComponent(App);
+// Initialize platform adapters
+bootstrapPlatform().then(() => {
+  registerRootComponent(App);
+});

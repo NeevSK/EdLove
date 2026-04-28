@@ -26,7 +26,10 @@ if (!toolName) {
 const rawArgs = process.argv.slice(3);
 
 let toolArgs = {};
-if (rawArgs.length === 1 && (rawArgs[0].trim().startsWith('{') || rawArgs[0].trim().startsWith('['))) {
+if (
+  rawArgs.length === 1 &&
+  (rawArgs[0].trim().startsWith('{') || rawArgs[0].trim().startsWith('['))
+) {
   try {
     toolArgs = JSON.parse(rawArgs[0]);
   } catch {
@@ -86,4 +89,3 @@ const result = spawnSync('node', ['--input-type=module', '-'], {
 if (result.stdout) process.stdout.write(result.stdout);
 if (result.stderr) process.stderr.write(result.stderr);
 process.exit(result.status ?? 1);
-

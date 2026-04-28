@@ -1,14 +1,15 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection, render } from 'astro:content';
 import Navigation from '../../components/Navigation.astro';
 import RealitySwitch from '../../components/RealitySwitch.astro';
-import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
 import { absoluteUrl } from '../../lib/site';
 
 export async function getStaticPaths() {
   const archiveEntries = await getCollection('archive');
-  return archiveEntries.map(entry => ({
-    params: { slug: entry.id.replace(/\.(md|mdx)$/, '') }, props: { entry },
+  return archiveEntries.map((entry) => ({
+    params: { slug: entry.id.replace(/\.(md|mdx)$/, '') },
+    props: { entry },
   }));
 }
 
@@ -16,27 +17,29 @@ const { entry } = Astro.props;
 const { Content } = await render(entry);
 
 const formatDate = (date: Date) => {
-    return date.toLocaleDateString('en-CA', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit'
-    }).replace(/-/g, '.');
+  return date
+    .toLocaleDateString('en-CA', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    })
+    .replace(/-/g, '.');
 };
 
 const articleSlug = entry.id.replace(/\.(md|mdx)$/i, '');
 const articleUrl = absoluteUrl(`/archive/${articleSlug}`);
 const structuredData = {
-    '@context': 'https://schema.org',
-    '@type': 'Article',
-    headline: entry.data.title,
-    description: entry.data.subtitle ?? entry.data.title,
-    url: articleUrl,
-    datePublished: entry.data.publishDate.toISOString(),
-    keywords: entry.data.tags ?? [],
-    author: {
-        '@type': 'Person',
-        name: 'NeevSK',
-    },
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: entry.data.title,
+  description: entry.data.subtitle ?? entry.data.title,
+  url: articleUrl,
+  datePublished: entry.data.publishDate.toISOString(),
+  keywords: entry.data.tags ?? [],
+  author: {
+    '@type': 'Person',
+    name: 'NeevSK',
+  },
 };
 ---
 

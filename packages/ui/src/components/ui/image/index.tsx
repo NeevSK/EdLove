@@ -1,6 +1,6 @@
-import React from 'react';
-import { Image as RNImage, type ImageProps } from 'react-native';
 import { cssInterop } from 'nativewind';
+import React from 'react';
+import { type ImageProps, Image as RNImage } from 'react-native';
 
 cssInterop(RNImage, { className: 'style' });
 

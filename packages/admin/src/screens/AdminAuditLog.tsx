@@ -1,4 +1,3 @@
-import React from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { Box, Text, VStack } from '@repo/ui';
 import { getAdminAuditEntries } from '../admin/adminControl';
@@ -17,17 +16,29 @@ export default function AdminAuditLog() {
       onBack={() => navigation.goBack()}
       stats={[
         { label: 'Entries', value: entries.length, hint: 'Persisted operator events' },
-        { label: 'Queued', value: entries.filter((entry) => entry.status === 'queued').length, hint: 'Awaiting review or follow-up' },
+        {
+          label: 'Queued',
+          value: entries.filter((entry) => entry.status === 'queued').length,
+          hint: 'Awaiting review or follow-up',
+        },
       ]}
     >
       <VStack className="gap-4">
-        <AdminRoomPanel title="Recent observations" description="The audit trail should read like a durable operator memory, not a debug dump.">
+        <AdminRoomPanel
+          title="Recent observations"
+          description="The audit trail should read like a durable operator memory, not a debug dump."
+        >
           <VStack className="gap-3">
             {entries.length === 0 ? (
-              <Text className="text-[13px] text-phaseText-secondary">No admin audit entries are persisted yet.</Text>
+              <Text className="text-[13px] text-phaseText-secondary">
+                No admin audit entries are persisted yet.
+              </Text>
             ) : (
               entries.map((item) => (
-                <Box key={item.id} className="rounded-2xl border border-starlightGray/15 bg-silk px-4 py-3">
+                <Box
+                  key={item.id}
+                  className="rounded-2xl border border-starlightGray/15 bg-silk px-4 py-3"
+                >
                   <Text className="text-[13px] font-bold text-phaseText-primary">{item.name}</Text>
                   <Text className="mt-1 text-[12px] text-phaseText-secondary">{item.summary}</Text>
                   <Text className="mt-2 text-[11px] text-phaseText-secondary">

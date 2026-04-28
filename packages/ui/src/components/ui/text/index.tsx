@@ -1,6 +1,6 @@
+import { cssInterop } from 'nativewind';
 import React from 'react';
 import { Text as RNText, type TextProps } from 'react-native';
-import { cssInterop } from 'nativewind';
 
 cssInterop(RNText, { className: 'style' });
 

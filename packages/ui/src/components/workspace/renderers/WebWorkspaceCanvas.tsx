@@ -1,9 +1,8 @@
-import React from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
 import type { WorkspaceRendererConfig } from '@repo/core/logic';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import { Theme } from '../../../theme/Theme';
 import { CanvasZoneColumn } from '../CanvasZoneColumn';
-import { WorkspaceCanvasEmptyState, WorkspaceCanvasHero, useWorkspaceCanvasData } from '../shared';
+import { useWorkspaceCanvasData, WorkspaceCanvasEmptyState, WorkspaceCanvasHero } from '../shared';
 import type { WorkspaceCanvasProps } from '../types';
 
 export interface WebWorkspaceCanvasProps<

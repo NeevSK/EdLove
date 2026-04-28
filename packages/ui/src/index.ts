@@ -1,112 +1,15 @@
 import React from 'react';
 
-// 1. Fundamental Styling & Canonical Primitives
-export * from './theme/Theme';
-export * from './components/ui/box';
-export * from './components/ui/center';
-export * from './components/ui/hstack';
-export * from './components/ui/vstack';
-export {
-  View,
-  ScrollView,
-  FlatList,
-  RefreshControl,
-  AnimatedView,
-  KeyboardAvoidingView,
-} from './components/ui/view';
-export * from './components/ui/text';
-export * from './components/ui/divider';
-export * from './components/ui/icon';
-export * from './components/ui/pressable';
-export * from './components/ui/badge';
-export * from './components/ui/button';
-export * from './components/ui/input';
-export * from './components/ui/form-control';
-export * from './components/ui/switch';
-export * from './components/ui/checkbox';
-export * from './components/ui/select';
-export * from './components/ui/textarea';
-export * from './components/ui/progress';
-export * from './components/ui/slider';
-export * from './components/ui/avatar';
-export * from './components/ui/radio';
-export * from './components/ui/link';
-export * from './components/ui/portal';
-export * from './components/ui/overlay';
-export * from './components/ui/modal';
-export * from './components/ui/toast';
-export * from './components/ui/actionsheet';
-export { Spinner, Spinner as ActivityIndicator } from './components/ui/spinner';
-export * from './components/ui/fab';
-export * from './components/ui/image';
-export * from './components/ui/image-background';
-export * from './components/ui/linear-gradient';
-
-import { PortalProvider } from './components/ui/portal';
-
-export const GluestackUIProvider = ({ children }: { children: React.ReactNode; config?: any }) => {
-  return React.createElement(PortalProvider, null, children);
-};
-
-export const createConfig = <T>(config: T) => config;
-export const gluestackConfig = {
-  tokens: {
-    colors: {},
-    space: {},
-    fontSizes: {},
-    lineHeights: {},
-    letterSpacings: {},
-    fonts: {},
-    fontWeights: {},
-    radii: {},
-    borderWidths: {},
-    breakpoints: {},
-    mediaQueries: {},
-    opacity: {},
-    shadows: {},
-    zIndex: {},
-  },
-  aliases: {},
-};
-
-// 2. Context & Providers (Logic State)
-export * from './context';
-export * from './providers/ToastProvider';
-export { SanctuaryProvider } from './providers/SanctuaryProvider';
-
-// 3. Hooks (Logic Access)
-export * from './hooks/useTheme';
-export * from './hooks/useThemedColors';
-export * from './hooks/useAccessibility';
-export * from './hooks/useDemoBridge';
-export { useTranslation } from 'react-i18next';
-
-// 4. Components (UI Building Blocks)
-export * from './components';
-
-// 5. Screens (Pages/Compositions)
-export * from './screens';
-
-// Utilities
-export * from './utils/DeviceUtils';
-export * from './utils/haptics';
-export * from './utils/themeColors';
-export * from './utils/linking';
-export * from './utils/SanctuaryLocation';
-export * from './utils/colorUtils';
-export * from './utils/stringUtils';
-export * from './utils/dateTimeUtils';
-export * from './utils/a11yUtils';
-
-// Canvas & Workspace (Shared patterns)
+// ============================================================================
+// TIER 5: EXTERNAL BRIDGE (Core Types & Re-animated)
+// ============================================================================
 export type {
-  WorkspaceSurfaceDefinition,
   ResolvedWorkspaceSurface,
   WorkspaceLayout,
+  WorkspaceSurfaceDefinition,
   WorkspaceZoneId,
 } from '@repo/core/types';
-
-// Re-exports for common animations (compatibility)
+export { useTranslation } from 'react-i18next';
 export {
   FadeInDown,
   FadeInUp,
@@ -114,7 +17,78 @@ export {
   FadeOutUp,
   SlideInDown,
   SlideInUp,
+  default as Animated,
 } from 'react-native-reanimated';
+// ============================================================================
+// TIER 3: COMPOSITIONS (Design System Components)
+// ============================================================================
+export * from './components';
+export { SanctuaryGlobalStyles } from './components/SanctuaryGlobalStyles';
+// ============================================================================
+// TIER 4: CONTEXT & LOGIC (Providers, Hooks, Contexts)
+// ============================================================================
+export * from './context';
+// ============================================================================
+// TIER 2: PRIMITIVES (Base UI Components)
+// ============================================================================
+// We export these through the gluestack abstraction for consistency
+export * from './gluestack';
+// Resolve ambiguities by explicitly re-exporting component versions of common names
+export {
+  Badge,
+  Box,
+  CheckIcon,
+  createConfig,
+  GluestackUIProvider,
+  gluestackConfig,
+  Heading,
+  Icon,
+  Image,
+  Link,
+  Radio,
+  Slider,
+  Text,
+  View,
+} from './gluestack';
+export * from './hooks/useAccessibility';
+export * from './hooks/useDemoBridge';
+export * from './hooks/useResponsive';
+export * from './hooks/useTheme';
+export * from './hooks/useThemedColors';
+// ============================================================================
+// TIER 8: ICONS & BRANDING
+// ============================================================================
+// Avoid collisions with UI components by re-exporting only non-conflicting icon names
+// OR explicitly overriding the common ones below.
+export * from './icons';
+export { SanctuaryProvider } from './providers/SanctuaryProvider';
+export * from './providers/ToastProvider';
+export {
+  useSanctuaryToast,
+  useSanctuaryToast as useLotusToast,
+  useSanctuaryToast as useToast,
+} from './providers/ToastProvider';
+// ============================================================================
+// TIER 6: SCREENS & COMPOSITIONS
+// ============================================================================
+export * from './screens';
+// ============================================================================
+// TIER 1: FOUNDATIONS (Tokens, Theme, Config)
+// ============================================================================
+export * from './theme/Theme';
+export * from './tokens';
 
-export { useSanctuaryToast, useSanctuaryToast as useLotusToast } from './providers/ToastProvider';
-export { useSanctuaryToast as useToast } from './providers/ToastProvider';
+// ============================================================================
+// TIER 7: UTILITIES
+// ============================================================================
+export * from './utils/a11yUtils';
+export * from './utils/colorUtils';
+export * from './utils/dialogs';
+export * from './utils/DeviceUtils';
+export * from './utils/dateTimeUtils';
+export * from './utils/haptics';
+export * from './utils/linking';
+export * from './utils/SanctuaryLocation';
+export * from './utils/shareAction';
+export * from './utils/stringUtils';
+export * from './utils/themeColors';

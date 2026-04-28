@@ -1,16 +1,16 @@
-import React from 'react';
+import { X } from 'lucide-react-native';
+import type React from 'react';
+import { Pressable } from 'react-native';
 import {
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Text,
   HStack,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  Text,
   VStack,
 } from '../gluestack';
-import { X } from 'lucide-react-native';
-import { Pressable } from 'react-native';
 
 const Heading = ({ children, className }: any) => (
   <Text className={`text-xl font-bold ${className || ''}`}>{children}</Text>

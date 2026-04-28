@@ -19,20 +19,20 @@ function getAllFiles(dirPath, arrayOfFiles = []) {
   return arrayOfFiles;
 }
 
-const files = getAllFiles(CORE_SRC).filter(f => f.endsWith('.ts') || f.endsWith('.tsx'));
+const files = getAllFiles(CORE_SRC).filter((f) => f.endsWith('.ts') || f.endsWith('.tsx'));
 
-files.forEach(filePath => {
-  let content = fs.readFileSync(filePath, 'utf8');
+files.forEach((filePath) => {
+  const content = fs.readFileSync(filePath, 'utf8');
   const dir = path.dirname(filePath);
-  
+
   const newContent = content.replace(/from\s+['"]@\/(.*?)['"]/g, (match, importPath) => {
     const absoluteImportPath = path.resolve(CORE_SRC, importPath);
     let relativePath = path.relative(dir, absoluteImportPath).replace(/\\/g, '/');
-    
+
     if (!relativePath.startsWith('.')) {
       relativePath = './' + relativePath;
     }
-    
+
     return `from '${relativePath}'`;
   });
 

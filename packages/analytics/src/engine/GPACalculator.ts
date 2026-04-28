@@ -1,15 +1,10 @@
-import { 
-  GradingScale, 
-  GPACalculationOptions
-} from '../types/AnalyticsTypes';
-import { StudentGrade } from '@repo/core';
-import { 
-  GradebookEntry 
-} from '../types/GradingTypes';
-import { 
-  STANDARD_GRADING_SCALE, 
-  SIMPLIFIED_GRADING_SCALE, 
-  WEIGHTED_GRADING_SCALE 
+import type { StudentGrade } from '@repo/core';
+import type { GPACalculationOptions, GradingScale } from '../types/AnalyticsTypes';
+import {
+  type GradebookEntry,
+  SIMPLIFIED_GRADING_SCALE,
+  STANDARD_GRADING_SCALE,
+  WEIGHTED_GRADING_SCALE,
 } from '../types/GradingTypes';
 
 export class GPACalculator {
@@ -48,17 +43,17 @@ export class GPACalculator {
    * Convert marks to grade and GPA based on the configured scale
    */
   public marksToGradeAndGPA(marks: number): { grade: string; gpa: number } {
-    const range = this.scale.ranges.find((r: { min: number; max: number; grade: string; gpa: number }) => marks >= r.min && marks <= r.max);
+    const range = this.scale.ranges.find(
+      (r: { min: number; max: number; grade: string; gpa: number }) =>
+        marks >= r.min && marks <= r.max,
+    );
     return range || { grade: 'F', gpa: 0.0 };
   }
 
   /**
    * Calculate GPA from a list of grades
    */
-  public calculateGPA(
-    grades: StudentGrade[], 
-    options: GPACalculationOptions = {}
-  ): number {
+  public calculateGPA(grades: StudentGrade[], options: GPACalculationOptions = {}): number {
     if (grades.length === 0) return 0.0;
 
     let totalPoints = 0;
@@ -72,7 +67,7 @@ export class GPACalculator {
 
       const weight = options.weights?.[grade.assignment_id || ''] || 1;
       const { gpa } = this.marksToGradeAndGPA(grade.marks);
-      
+
       totalPoints += gpa * weight;
       totalCredits += weight;
     }
@@ -83,21 +78,22 @@ export class GPACalculator {
   /**
    * Calculate cumulative GPA across multiple grading periods
    */
-  public calculateCumulativeGPA(
-    gradebookEntries: GradebookEntry[]
-  ): { periodGPAs: { [periodId: string]: number }; cumulativeGPA: number } {
+  public calculateCumulativeGPA(gradebookEntries: GradebookEntry[]): {
+    periodGPAs: { [periodId: string]: number };
+    cumulativeGPA: number;
+  } {
     const periodGPAs: { [periodId: string]: StudentGrade[] } = {};
-    
+
     // Group grades by period
     for (const entry of gradebookEntries) {
       if (!entry?.periodId) continue;
-      
+
       let periodGrades = periodGPAs[entry.periodId];
       if (!periodGrades) {
         periodGrades = [];
         periodGPAs[entry.periodId] = periodGrades;
       }
-      
+
       periodGrades.push({
         id: entry.id ?? '',
         student_id: entry.studentId ?? '',
@@ -108,7 +104,7 @@ export class GPACalculator {
         created_at: entry.gradedAt,
         updated_at: entry.gradedAt,
         classroom_id: '', // Not in GradebookEntry, but required for POA type
-        graded_by: '' // Not in GradebookEntry, but required for POA type
+        graded_by: '', // Not in GradebookEntry, but required for POA type
       });
     }
 
@@ -120,7 +116,7 @@ export class GPACalculator {
     for (const [periodId, grades] of Object.entries(periodGPAs)) {
       const periodGPA = this.calculateGPA(grades);
       calculatedPeriodGPAs[periodId] = periodGPA;
-      
+
       // For cumulative, we'll use equal weighting for periods
       totalQualityPoints += periodGPA;
       totalCredits += 1;
@@ -130,7 +126,7 @@ export class GPACalculator {
 
     return {
       periodGPAs: calculatedPeriodGPAs,
-      cumulativeGPA
+      cumulativeGPA,
     };
   }
 
@@ -140,10 +136,10 @@ export class GPACalculator {
   public predictGPA(
     currentGrades: StudentGrade[],
     remainingAssignments: { maxMarks: number; weight: number }[],
-    options: GPACalculationOptions = {}
+    options: GPACalculationOptions = {},
   ): { predictedGPA: number; minGPA: number; maxGPA: number } {
     const currentGPA = this.calculateGPA(currentGrades, options);
-    
+
     if (remainingAssignments.length === 0) {
       return { predictedGPA: currentGPA, minGPA: currentGPA, maxGPA: currentGPA };
     }
@@ -154,18 +150,20 @@ export class GPACalculator {
 
     for (const grade of currentGrades) {
       if (options.excludeAssignments?.includes(grade.assignment_id || '')) continue;
-      
+
       const weight = options.weights?.[grade.assignment_id || ''] || 1;
       currentQualityPoints += grade.gpa * weight;
       currentCredits += weight;
     }
 
     // Predict scenarios
-    const remainingCredits = remainingAssignments.reduce((sum, assignment) => 
-      sum + (assignment.weight || 1), 0);
+    const remainingCredits = remainingAssignments.reduce(
+      (sum, assignment) => sum + (assignment.weight || 1),
+      0,
+    );
 
     // Best case: perfect scores on remaining assignments
-    const bestCasePoints = currentQualityPoints + (4.0 * remainingCredits);
+    const bestCasePoints = currentQualityPoints + 4.0 * remainingCredits;
     const maxGPA = (currentQualityPoints + bestCasePoints) / (currentCredits + remainingCredits);
 
     // Worst case: failing scores on remaining assignments
@@ -173,13 +171,14 @@ export class GPACalculator {
     const minGPA = worstCasePoints / (currentCredits + remainingCredits);
 
     // Realistic prediction based on current performance
-    const predictedGPA = (currentGPA * currentCredits + currentGPA * remainingCredits) / 
-                        (currentCredits + remainingCredits);
+    const predictedGPA =
+      (currentGPA * currentCredits + currentGPA * remainingCredits) /
+      (currentCredits + remainingCredits);
 
     return {
       predictedGPA: Math.min(4.0, Math.max(0.0, predictedGPA)),
       minGPA: Math.min(4.0, Math.max(0.0, minGPA)),
-      maxGPA: Math.min(4.0, Math.max(0.0, maxGPA))
+      maxGPA: Math.min(4.0, Math.max(0.0, maxGPA)),
     };
   }
 
@@ -188,7 +187,7 @@ export class GPACalculator {
    */
   public getGradeDistribution(grades: StudentGrade[]): { [grade: string]: number } {
     const distribution: { [grade: string]: number } = {};
-    
+
     for (const grade of grades) {
       const { grade: letterGrade } = this.marksToGradeAndGPA(grade.marks);
       distribution[letterGrade] = (distribution[letterGrade] || 0) + 1;
@@ -201,25 +200,27 @@ export class GPACalculator {
    * Calculate class rank based on GPA
    */
   public calculateClassRanks(
-    studentGPAs: { studentId: string; gpa: number }[]
+    studentGPAs: { studentId: string; gpa: number }[],
   ): { studentId: string; gpa: number; rank: number; percentile: number }[] {
     // Sort by GPA descending
     const sorted = [...studentGPAs].sort((a, b) => b.gpa - a.gpa);
-    
+
     return sorted.map((student, index) => ({
       ...student,
       rank: index + 1,
-      percentile: ((sorted.length - index) / sorted.length) * 100
+      percentile: ((sorted.length - index) / sorted.length) * 100,
     }));
   }
 
   /**
    * Simple rank calculation based on marks (legacy compatibility)
    */
-  public calculateRanks(grades: { id: string; marks: number; [key: string]: any }[]): { id: string; marks: number; rank: number; [key: string]: any }[] {
+  public calculateRanks(
+    grades: { id: string; marks: number; [key: string]: any }[],
+  ): { id: string; marks: number; rank: number; [key: string]: any }[] {
     const sorted = [...grades].sort((a, b) => b.marks - a.marks);
-    return grades.map(grade => {
-      const rank = sorted.findIndex(s => s.id === grade.id) + 1;
+    return grades.map((grade) => {
+      const rank = sorted.findIndex((s) => s.id === grade.id) + 1;
       return { ...grade, rank };
     });
   }

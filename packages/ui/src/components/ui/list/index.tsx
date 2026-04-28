@@ -1,11 +1,11 @@
+import { cssInterop } from 'nativewind';
 import React from 'react';
 import {
+  type FlatListProps,
   FlatList as RNFlatList,
   SectionList as RNSectionList,
-  type FlatListProps,
   type SectionListProps,
 } from 'react-native';
-import { cssInterop } from 'nativewind';
 
 cssInterop(RNFlatList, { className: 'style', contentContainerClassName: 'contentContainerStyle' });
 cssInterop(RNSectionList, {

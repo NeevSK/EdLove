@@ -1,4 +1,4 @@
-import { SITE_DESCRIPTION, SITE_NAME, SITE_URL, absoluteUrl } from '../lib/site';
+import { absoluteUrl, SITE_DESCRIPTION, SITE_NAME, SITE_URL } from '../lib/site';
 
 const entries = [
   {
@@ -65,12 +65,12 @@ export function GET() {
         entries,
       },
       null,
-      2
+      2,
     ),
     {
       headers: {
         'Content-Type': 'application/json; charset=utf-8',
       },
-    }
+    },
   );
 }

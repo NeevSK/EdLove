@@ -1,4 +1,4 @@
-import { tsl, TSLExpression } from './tsl';
+import { type TSLExpression, tsl } from './tsl';
 
 export const OrnamentLibrary = {
   /**
@@ -27,5 +27,5 @@ export const OrnamentLibrary = {
     const noise = tsl.fbm(tsl.mul(uv, tsl.float(10.0)), 6);
     const structure = tsl.smoothstep(tsl.float(0.5), tsl.float(0.51), noise);
     return tsl.mul(tsl.env.shadow(), tsl.mul(structure, tsl.float(0.3)));
-  }
+  },
 };

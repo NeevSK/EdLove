@@ -1,6 +1,6 @@
-import React from 'react';
-import { Box, Card, HStack, ScrollView, Text, VStack, colors, useThemedColors } from '@repo/ui';
 import { SimpleBarChart } from '@repo/graphics';
+import { Box, Card, colors, HStack, ScrollView, Text, useThemedColors, VStack } from '@repo/ui';
+import React from 'react';
 import type { StudentPerformanceMetrics } from '../types/AnalyticsTypes';
 import { formatGPA, getGradeColor, getPerformanceLevel } from '../utils/analyticsHelpers';
 
@@ -81,7 +81,9 @@ export function PerformanceDashboard({
                       : themeColors.warning,
               }}
             >
-              Trend: {metrics.trendDirection.charAt(0).toUpperCase() + metrics.trendDirection.slice(1)} ({performanceLevel})
+              Trend:{' '}
+              {metrics.trendDirection.charAt(0).toUpperCase() + metrics.trendDirection.slice(1)} (
+              {performanceLevel})
             </Text>
           </Box>
         </Card>
@@ -109,11 +111,7 @@ export function PerformanceDashboard({
             </Text>
             <VStack className="gap-2">
               {insights.map((insight, index) => (
-                <Text
-                  key={index}
-                  className="text-sm leading-5"
-                  style={{ color: themeColors.text }}
-                >
+                <Text key={index} className="text-sm leading-5" style={{ color: themeColors.text }}>
                   • {insight}
                 </Text>
               ))}
@@ -128,11 +126,7 @@ export function PerformanceDashboard({
             </Text>
             <VStack className="gap-2">
               {recommendations.map((recommendation, index) => (
-                <Text
-                  key={index}
-                  className="text-sm leading-5"
-                  style={{ color: themeColors.text }}
-                >
+                <Text key={index} className="text-sm leading-5" style={{ color: themeColors.text }}>
                   {index + 1}. {recommendation}
                 </Text>
               ))}

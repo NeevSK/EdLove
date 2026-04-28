@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
+import { type ThemeColors, toThemeColors } from '../utils/themeColors';
 import { useTheme } from './useTheme';
-import { ThemeColors, toThemeColors } from '../utils/themeColors';
 
 /**
  * Legacy compatibility hook for components that still expect the older

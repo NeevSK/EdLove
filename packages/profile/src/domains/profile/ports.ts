@@ -1,5 +1,4 @@
-import type { SocialLink, UserGrowthState } from '@repo/core';
-import type { TemporalScale } from '@repo/core';
+import type { SocialLink, TemporalScale, UserGrowthState } from '@repo/core';
 
 export interface CommunityProfile {
   id: string;
@@ -81,8 +80,14 @@ export interface ProfileRepository {
   getUserProfile(userId: string): Promise<any | null>;
   getUserProfileAsOf(userId: string, asOf: string): Promise<any | null>;
   getUserProfileHistory(userId: string, limit?: number): Promise<ProfileHistoryEntry[]>;
-  getJourneySnapshot(userId: string, options?: ProfileJourneyReadOptions): Promise<ProfileJourneySnapshot>;
-  getJourneyHistory(userId: string, options?: ProfileJourneyHistoryReadOptions): Promise<ProfileJourneyEvent[]>;
+  getJourneySnapshot(
+    userId: string,
+    options?: ProfileJourneyReadOptions,
+  ): Promise<ProfileJourneySnapshot>;
+  getJourneyHistory(
+    userId: string,
+    options?: ProfileJourneyHistoryReadOptions,
+  ): Promise<ProfileJourneyEvent[]>;
   updateUserProfile(userId: string, updates: Record<string, any>): Promise<any>;
   getAnonymousFlag(userId: string): Promise<boolean>;
   uploadAvatarAsset(localUri: string): Promise<string>;
@@ -94,8 +99,15 @@ export interface ProfileRepository {
 
   getCommunityProfile(communityId: string): Promise<CommunityProfile | null>;
   getCommunityProfileAsOf(communityId: string, asOf: string): Promise<CommunityProfile | null>;
-  getCommunityProfileHistory(communityId: string, limit?: number): Promise<ProfileHistoryEntry<CommunityProfile>[]>;
-  updateCommunityProfile(communityId: string, field: 'name' | 'description', value: string): Promise<CommunityProfile>;
+  getCommunityProfileHistory(
+    communityId: string,
+    limit?: number,
+  ): Promise<ProfileHistoryEntry<CommunityProfile>[]>;
+  updateCommunityProfile(
+    communityId: string,
+    field: 'name' | 'description',
+    value: string,
+  ): Promise<CommunityProfile>;
 
   getSchoolPulse(schoolId: string, options: ProfileTemporalReadOptions): Promise<PulseMetrics>;
 }

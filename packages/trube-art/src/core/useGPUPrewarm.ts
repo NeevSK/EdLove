@@ -14,12 +14,7 @@ import { useEffect, useState } from 'react';
 import { driverManager } from '../native/DriverManager';
 import { getSurfaceNames, getSurfaceShader } from './soul/SoulLibrary';
 
-export type PrewarmStatus =
-  | 'idle'
-  | 'warming'
-  | 'ready'
-  | 'partial'
-  | 'unavailable';
+export type PrewarmStatus = 'idle' | 'warming' | 'ready' | 'partial' | 'unavailable';
 
 export interface PrewarmResult {
   status: PrewarmStatus;
@@ -67,11 +62,11 @@ export function useGPUPrewarm(): PrewarmResult {
         return;
       }
 
-      setResult(prev => ({ ...prev, status: 'warming' }));
+      setResult((prev) => ({ ...prev, status: 'warming' }));
 
       try {
         await driverManager.prewarm();
-        
+
         if (!cancelled) {
           setResult({
             status: 'ready',
@@ -93,7 +88,9 @@ export function useGPUPrewarm(): PrewarmResult {
     }
 
     runPrewarm();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   return result;

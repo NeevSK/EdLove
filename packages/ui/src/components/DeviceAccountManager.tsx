@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import { accountPin, type DeviceAccountRecord, useDeviceAccounts } from '@repo/core/logic';
+import { Shield } from 'lucide-react-native';
+import { useEffect, useState } from 'react';
 import { Alert, Platform } from 'react-native';
 import { Box, Button, ButtonText, Heading, HStack, Text, VStack } from '../gluestack';
-import { useDeviceAccounts, accountPin, type DeviceAccountRecord } from '@repo/core/logic';
-import AccountPinModal, { type AccountPinModalMode } from './AccountPinModal';
-import { hapticError, hapticLight, hapticSuccess } from '../utils/haptics';
 import { useSanctuaryToast } from '../providers/ToastProvider';
-import { Shield } from 'lucide-react-native';
+import { hapticError, hapticLight, hapticSuccess } from '../utils/haptics';
+import AccountPinModal, { type AccountPinModalMode } from './AccountPinModal';
 
 type PendingPinAction = { mode: AccountPinModalMode; account: DeviceAccountRecord } | null;
 

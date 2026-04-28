@@ -11,7 +11,7 @@
  */
 
 import { supabase } from '@repo/core';
-import type { OCRProvider, OCRRawResult, OCRBlock } from '../types';
+import type { OCRBlock, OCRProvider, OCRRawResult } from '../types';
 
 export class GoogleVisionProvider implements OCRProvider {
   readonly name = 'google_vision' as const;
@@ -32,11 +32,10 @@ export class GoogleVisionProvider implements OCRProvider {
   }
 }
 
-//  Helpers 
+//  Helpers
 
 async function uriToBase64(uri: string): Promise<string> {
   // expo-file-system/legacy  the sub-path export for SDK 51+ legacy FileSystem APIs.
-  // @ts-ignore  type declarations for the sub-path export may be absent in some package configs
   const { readAsStringAsync, EncodingType } = await import('expo-file-system/legacy');
   return readAsStringAsync(uri, { encoding: EncodingType.Base64 });
 }

@@ -1,31 +1,31 @@
-import { useState, useEffect } from 'react';
-import { api, InventoryItem } from '@repo/core';
+import { api, type InventoryItem } from '@repo/core';
 import { useQuery } from '@tanstack/react-query';
+import { useEffect, useState } from 'react';
 
 /**
  * useInventory Hook
- * 
+ *
  * Manages classroom inventory with a "Local-First" approach.
  * Loads instantly from cache, background fetches from API.
  */
 export function useInventory(classroomId: string) {
-    const [items, setItems] = useState<InventoryItem[]>([]);
+  const [items, setItems] = useState<InventoryItem[]>([]);
 
-    const { data, isLoading } = useQuery({
-        queryKey: ['inventory', classroomId],
-        queryFn: () => api.inventory.getAll(classroomId),
-        enabled: !!classroomId,
-    });
+  const { data, isLoading } = useQuery({
+    queryKey: ['inventory', classroomId],
+    queryFn: () => api.inventory.getAll(classroomId),
+    enabled: !!classroomId,
+  });
 
-    useEffect(() => {
-        if (data) {
-            setItems(data);
-        }
-    }, [data]);
+  useEffect(() => {
+    if (data) {
+      setItems(data);
+    }
+  }, [data]);
 
-    return {
-        items,
-        setItems,
-        isLoading
-    };
+  return {
+    items,
+    setItems,
+    isLoading,
+  };
 }

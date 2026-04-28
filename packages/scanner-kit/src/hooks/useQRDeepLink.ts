@@ -10,10 +10,10 @@
  * under 'pending_qr_action' — redeemed after login via redeemPendingQRAction().
  */
 
-import { useEffect, useCallback, useRef } from 'react';
-import { Linking } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { resolveQR, type QRPayload } from '@repo/core';
+import { type QRPayload, resolveQR } from '@repo/core';
+import { useCallback, useEffect, useRef } from 'react';
+import { Linking } from 'react-native';
 
 export const PENDING_QR_KEY = 'pending_qr_action';
 
@@ -30,7 +30,7 @@ export function useQRDeepLink(onQRAction?: QRDeepLinkHandler) {
   const dispatchOrStore = useCallback(async (url: string) => {
     if (!url || typeof url !== 'string') return;
     if (!url.startsWith('gurudevi://qr')) return;
-    
+
     const result = resolveQR(url);
     if (!result.ok) return;
 

@@ -1,16 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { 
-    Box, 
-    VStack, 
-    HStack, 
-    Text, 
-    Heading, 
-    ScrollView, 
-    Pressable, 
-    ScreenWrapper,
-    GlobalHeader
+import { type LiveMetrics, multiTenantAnalyticsAPI, type TenantMetrics } from '@repo/analytics';
+import {
+  Box,
+  GlobalHeader,
+  Heading,
+  HStack,
+  Pressable,
+  ScreenWrapper,
+  ScrollView,
+  Text,
+  VStack,
 } from '@repo/ui';
-import { multiTenantAnalyticsAPI, type TenantMetrics, type LiveMetrics } from '@repo/analytics';
+import type React from 'react';
+import { useEffect, useState } from 'react';
 
 interface AnalyticsDashboardScreenProps {
   tenantId: string;
@@ -25,24 +26,23 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
   tenantName,
   userRole,
   onReportPress,
-  onMetricDrillDown
+  onMetricDrillDown,
 }) => {
   const [metrics, setMetrics] = useState<TenantMetrics | null>(null);
   const [liveMetrics, setLiveMetrics] = useState<LiveMetrics | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedTimeRange, setSelectedTimeRange] = useState<'week' | 'month' | 'quarter' | 'year'>('month');
-
-  useEffect(() => {
-    loadDashboard();
-    const interval = setInterval(loadLiveMetrics, 30000); // Update every 30 seconds
-    return () => clearInterval(interval);
-  }, [tenantId, selectedTimeRange]);
+  const [selectedTimeRange, _setSelectedTimeRange] = useState<
+    'week' | 'month' | 'quarter' | 'year'
+  >('month');
 
   const loadDashboard = async () => {
     try {
       setIsLoading(true);
       const timeRange = getTimeRange(selectedTimeRange);
-      const tenantMetrics = await multiTenantAnalyticsAPI.aggregateTenantMetrics([tenantId], timeRange);
+      const tenantMetrics = await multiTenantAnalyticsAPI.aggregateTenantMetrics(
+        [tenantId],
+        timeRange,
+      );
       setMetrics(tenantMetrics[0] || null);
     } catch (error) {
       console.error('Failed to load analytics dashboard:', error);
@@ -59,6 +59,12 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
       console.error('Failed to load live metrics:', error);
     }
   };
+
+  useEffect(() => {
+    loadDashboard();
+    const interval = setInterval(loadLiveMetrics, 30000); // Update every 30 seconds
+    return () => clearInterval(interval);
+  }, [loadLiveMetrics, loadDashboard]);
 
   const getTimeRange = (range: string) => {
     const now = new Date();
@@ -83,7 +89,7 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
 
     return {
       startDate: startDate.toISOString(),
-      endDate: now.toISOString()
+      endDate: now.toISOString(),
     };
   };
 
@@ -93,7 +99,7 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
       grade_average: { good: 85, warning: 75 },
       parent_engagement: { good: 70, warning: 50 },
       operational_efficiency: { good: 85, warning: 70 },
-      compliance_score: { good: 90, warning: 80 }
+      compliance_score: { good: 90, warning: 80 },
     };
 
     const threshold = thresholds[metric as keyof typeof thresholds];
@@ -106,10 +112,14 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
 
   const getSystemHealthColor = (health: string) => {
     switch (health) {
-      case 'healthy': return 'text-phase-interactive';
-      case 'warning': return 'text-phase-warning';
-      case 'critical': return 'text-phase-danger';
-      default: return 'text-phaseText-secondary';
+      case 'healthy':
+        return 'text-phase-interactive';
+      case 'warning':
+        return 'text-phase-warning';
+      case 'critical':
+        return 'text-phase-danger';
+      default:
+        return 'text-phaseText-secondary';
     }
   };
 
@@ -119,15 +129,21 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
       grade_average: '↑ 1.8%',
       parent_engagement: '↓ 0.5%',
       operational_efficiency: '↑ 3.2%',
-      compliance_score: '→ 0.0%'
+      compliance_score: '→ 0.0%',
     };
-    
+
     return trends[metric] || '→ 0.0%';
   };
 
   const formatValue = (value: number, key: string) => {
-    const formatted = typeof value === 'number' ? value.toFixed(1) : (value || 0);
-    const suffix = key.includes('rate') || key.includes('engagement') || key.includes('efficiency') || key.includes('score') ? '%' : '';
+    const formatted = typeof value === 'number' ? value.toFixed(1) : value || 0;
+    const suffix =
+      key.includes('rate') ||
+      key.includes('engagement') ||
+      key.includes('efficiency') ||
+      key.includes('score')
+        ? '%'
+        : '';
     return `${formatted}${suffix}`;
   };
 
@@ -152,7 +168,12 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
     </Pressable>
   );
 
-  const renderLiveMetricCard = (title: string, value: string | number, subtitle: string, colorClass: string) => (
+  const renderLiveMetricCard = (
+    title: string,
+    value: string | number,
+    subtitle: string,
+    colorClass: string,
+  ) => (
     <Box
       key={title}
       className="bg-phase-surface p-4 rounded-3xl border border-phase-border flex-1 min-w-[140px] mb-3 items-center"
@@ -160,12 +181,8 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
       <Text className="text-[10px] font-black uppercase tracking-wider text-phaseText-muted mb-2">
         {title}
       </Text>
-      <Text className={`text-xl font-black ${colorClass}`}>
-        {value}
-      </Text>
-      <Text className="text-[10px] font-bold text-phaseText-muted/50 mt-1">
-        {subtitle}
-      </Text>
+      <Text className={`text-xl font-black ${colorClass}`}>{value}</Text>
+      <Text className="text-[10px] font-bold text-phaseText-muted/50 mt-1">{subtitle}</Text>
     </Box>
   );
 
@@ -173,7 +190,9 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
     return (
       <ScreenWrapper>
         <Box className="flex-1 items-center justify-center p-10 bg-phase-canvas">
-          <Text className="text-phaseText-muted font-bold italic">Loading analytics dashboard...</Text>
+          <Text className="text-phaseText-muted font-bold italic">
+            Loading analytics dashboard...
+          </Text>
         </Box>
       </ScreenWrapper>
     );
@@ -182,68 +201,89 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
   return (
     <ScreenWrapper noTopInset={true}>
       <GlobalHeader title="Analytics" subtitle={tenantName} />
-      
-      <ScrollView 
-        className="flex-1 bg-phase-canvas" 
+
+      <ScrollView
+        className="flex-1 bg-phase-canvas"
         contentContainerStyle={{ padding: 24, paddingBottom: 48 }}
         showsVerticalScrollIndicator={false}
       >
         <VStack className="gap-8">
-            <VStack className="gap-4">
-                <Heading className="text-base font-black text-phaseText-primary uppercase tracking-widest opacity-40">
-                    Key Performance Metrics
-                </Heading>
-                <HStack className="flex-wrap justify-between">
-                    {metrics && Object.entries(metrics.metrics).map(([key, value]) => {
-                    const metricTitles: Record<string, string> = {
-                        attendance_rate: 'Attendance',
-                        grade_average: 'Grades',
-                        enrollment_count: 'Enrollment',
-                        staff_turnover: 'Turnover',
-                        resource_utilization: 'Resources',
-                        parent_engagement: 'Engagement',
-                        document_processing_time: 'Doc Speed',
-                        revenue_per_student: 'Revenue',
-                        operational_efficiency: 'Efficiency',
-                        compliance_score: 'Compliance'
-                    };
-                    
-                    const metricIcons: Record<string, string> = {
-                        attendance_rate: '📊',
-                        grade_average: '🎯',
-                        enrollment_count: '👥',
-                        staff_turnover: '🔄',
-                        resource_utilization: '📦',
-                        parent_engagement: '👨‍👩‍👧‍👦',
-                        document_processing_time: '📄',
-                        revenue_per_student: '💰',
-                        operational_efficiency: '⚡',
-                        compliance_score: '✅'
-                    };
-                    
-                    return renderMetricCard(
-                        key, 
-                        value as number, 
-                        metricTitles[key] || key,
-                        metricIcons[key] || '📊'
-                    );
-                    })}
-                </HStack>
-            </VStack>
+          <VStack className="gap-4">
+            <Heading className="text-base font-black text-phaseText-primary uppercase tracking-widest opacity-40">
+              Key Performance Metrics
+            </Heading>
+            <HStack className="flex-wrap justify-between">
+              {metrics &&
+                Object.entries(metrics.metrics).map(([key, value]) => {
+                  const metricTitles: Record<string, string> = {
+                    attendance_rate: 'Attendance',
+                    grade_average: 'Grades',
+                    enrollment_count: 'Enrollment',
+                    staff_turnover: 'Turnover',
+                    resource_utilization: 'Resources',
+                    parent_engagement: 'Engagement',
+                    document_processing_time: 'Doc Speed',
+                    revenue_per_student: 'Revenue',
+                    operational_efficiency: 'Efficiency',
+                    compliance_score: 'Compliance',
+                  };
 
-            {liveMetrics && (
+                  const metricIcons: Record<string, string> = {
+                    attendance_rate: '📊',
+                    grade_average: '🎯',
+                    enrollment_count: '👥',
+                    staff_turnover: '🔄',
+                    resource_utilization: '📦',
+                    parent_engagement: '👨‍👩‍👧‍👦',
+                    document_processing_time: '📄',
+                    revenue_per_student: '💰',
+                    operational_efficiency: '⚡',
+                    compliance_score: '✅',
+                  };
+
+                  return renderMetricCard(
+                    key,
+                    value as number,
+                    metricTitles[key] || key,
+                    metricIcons[key] || '📊',
+                  );
+                })}
+            </HStack>
+          </VStack>
+
+          {liveMetrics && (
             <VStack className="gap-4">
-                <Heading className="text-base font-black text-phaseText-primary uppercase tracking-widest opacity-40">
-                    Live System Health
-                </Heading>
-                <HStack className="flex-wrap gap-4">
-                    {renderLiveMetricCard('Active Users', liveMetrics.active_users, 'Currently online', 'text-phase-interactive')}
-                    {renderLiveMetricCard('API Reqs/m', liveMetrics.api_requests_per_minute, 'Last 60s', getSystemHealthColor(liveMetrics.system_health))}
-                    {renderLiveMetricCard('Error Rate', `${liveMetrics.error_rate.toFixed(1)}%`, 'Last 60s', liveMetrics.error_rate > 5 ? 'text-phase-danger' : 'text-phase-interactive')}
-                    {renderLiveMetricCard('Health', liveMetrics.system_health.toUpperCase(), `Updated ${new Date(liveMetrics.timestamp).toLocaleTimeString()}`, getSystemHealthColor(liveMetrics.system_health))}
-                </HStack>
+              <Heading className="text-base font-black text-phaseText-primary uppercase tracking-widest opacity-40">
+                Live System Health
+              </Heading>
+              <HStack className="flex-wrap gap-4">
+                {renderLiveMetricCard(
+                  'Active Users',
+                  liveMetrics.active_users,
+                  'Currently online',
+                  'text-phase-interactive',
+                )}
+                {renderLiveMetricCard(
+                  'API Reqs/m',
+                  liveMetrics.api_requests_per_minute,
+                  'Last 60s',
+                  getSystemHealthColor(liveMetrics.system_health),
+                )}
+                {renderLiveMetricCard(
+                  'Error Rate',
+                  `${liveMetrics.error_rate.toFixed(1)}%`,
+                  'Last 60s',
+                  liveMetrics.error_rate > 5 ? 'text-phase-danger' : 'text-phase-interactive',
+                )}
+                {renderLiveMetricCard(
+                  'Health',
+                  liveMetrics.system_health.toUpperCase(),
+                  `Updated ${new Date(liveMetrics.timestamp).toLocaleTimeString()}`,
+                  getSystemHealthColor(liveMetrics.system_health),
+                )}
+              </HStack>
             </VStack>
-            )}
+          )}
         </VStack>
       </ScrollView>
     </ScreenWrapper>
@@ -251,4 +291,3 @@ export const AnalyticsDashboardScreen: React.FC<AnalyticsDashboardScreenProps> =
 };
 
 export default AnalyticsDashboardScreen;
-

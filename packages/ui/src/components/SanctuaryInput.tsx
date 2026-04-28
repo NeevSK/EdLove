@@ -1,21 +1,21 @@
-import React from 'react';
 import { AlertCircle } from 'lucide-react-native';
+import type React from 'react';
+import { Theme } from '../theme/Theme';
 import {
   FormControl,
+  FormControlError,
+  FormControlErrorIcon,
+  FormControlErrorText,
   FormControlLabel,
   FormControlLabelText,
-  FormControlError,
-  FormControlErrorText,
-  FormControlErrorIcon,
+  HStack,
   Input,
   InputField,
-  InputSlot,
   InputIcon,
-  HStack,
+  InputSlot,
   Text,
   useFormControlContext,
 } from './ui';
-import { Theme } from '../theme/Theme';
 
 interface SanctuaryInputProps {
   label?: string;
@@ -114,8 +114,8 @@ export default function SanctuaryInput({
           numberOfLines={numberOfLines}
           accessibilityLabel={accessibilityLabel || label}
           accessibilityHint={accessibilityHint}
-          accessibilityLabelledBy={id ? `${id}-label` : undefined}
-          accessibilityDescribedBy={hasError && id ? `${id}-error` : undefined}
+          aria-labelledby={id ? `${id}-label` : undefined}
+          aria-describedby={hasError && id ? `${id}-error` : undefined}
         />
 
         {rightIcon && (

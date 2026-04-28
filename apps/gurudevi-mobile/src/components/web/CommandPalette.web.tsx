@@ -17,12 +17,7 @@ import {
   VStack,
 } from '@repo/ui';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-  withTiming,
-} from 'react-native-reanimated';
+import { useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 
 const { shroud, sanctuarySaffron, mistGray, willow } = colors;
 
@@ -52,17 +47,17 @@ interface Command {
 
 // ─── Custom Web Hooks ────────────────────────────────────────────────────────
 function useWebDimensions() {
-  const [dims, setDims] = useState({ 
+  const [dims, setDims] = useState({
     width: window.innerWidth,
     height: window.innerHeight,
   });
-  
+
   useEffect(() => {
     const handler = () => setDims({ width: window.innerWidth, height: window.innerHeight });
     window.addEventListener('resize', handler);
     return () => window.removeEventListener('resize', handler);
   }, []);
-  
+
   return dims;
 }
 
@@ -296,10 +291,7 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
   return (
     <Box className="absolute inset-0 z-[1000]" pointerEvents="box-none">
       {/* Backdrop */}
-      <AnimatedView 
-        style={backdropStyle} 
-        className="absolute inset-0 bg-black/40"
-      >
+      <AnimatedView style={backdropStyle} className="absolute inset-0 bg-black/40">
         <Pressable
           className="absolute inset-0"
           onPress={close}
@@ -328,7 +320,9 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
               borderBottomWidth: searchFocused ? 1.5 : 1,
             }}
           >
-            <Text className="text-xl w-[22px] text-center" style={{ color: sanctuarySaffron }}>⌕</Text>
+            <Text className="text-xl w-[22px] text-center" style={{ color: sanctuarySaffron }}>
+              ⌕
+            </Text>
             {/* Standard HTML input for Sovereign Web purity */}
             <input
               ref={inputRef as any}
@@ -344,7 +338,12 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
               spellCheck="false"
             />
             <Box className="px-2 py-0.75 rounded-md border border-lotusDeepPink/20">
-              <Text className="text-[11px] font-bold tracking-wider" style={{ color: sectionColor }}>ESC</Text>
+              <Text
+                className="text-[11px] font-bold tracking-wider"
+                style={{ color: sectionColor }}
+              >
+                ESC
+              </Text>
             </Box>
           </Box>
 
@@ -356,7 +355,7 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
           >
             {Object.entries(sections).map(([sectionName, cmds]) => (
               <Box key={sectionName}>
-                <Text 
+                <Text
                   className="text-[10px] font-bold tracking-[1px] px-5 pt-3.5 pb-1"
                   style={{ color: sectionColor }}
                 >
@@ -373,16 +372,20 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
                       onPress={cmd.action}
                       onHoverIn={() => setSelectedIndex(idx)}
                       className="flex-row items-center mx-2 px-3 py-2.5 rounded-xl gap-3 relative"
-                      style={isSelected ? {
-                        backgroundColor: isDark
-                          ? 'rgba(212,132,58,0.12)'
-                          : 'rgba(212,132,58,0.08)',
-                      } : undefined}
+                      style={
+                        isSelected
+                          ? {
+                              backgroundColor: isDark
+                                ? 'rgba(212,132,58,0.12)'
+                                : 'rgba(212,132,58,0.08)',
+                            }
+                          : undefined
+                      }
                     >
                       {/* Active bar */}
-                      <Box 
-                        className="absolute left-0 top-[20%] bottom-[20%] w-[3px] rounded-sm bg-sanctuarySaffron" 
-                        style={{ opacity: isSelected ? 1 : 0 }} 
+                      <Box
+                        className="absolute left-0 top-[20%] bottom-[20%] w-[3px] rounded-sm bg-sanctuarySaffron"
+                        style={{ opacity: isSelected ? 1 : 0 }}
                       />
 
                       <Box
@@ -409,10 +412,7 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
                           {cmd.label}
                         </Text>
                         {cmd.subtitle && (
-                          <Text 
-                            className="text-xs leading-4"
-                            style={{ color: sectionColor }}
-                          >
+                          <Text className="text-xs leading-4" style={{ color: sectionColor }}>
                             {cmd.subtitle}
                           </Text>
                         )}

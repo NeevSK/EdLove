@@ -1,5 +1,5 @@
-import { TemporalPhase, DeviceTier, NetworkQuality } from './types';
 import { coreRuntime } from '@repo/core/logic';
+import type { DeviceTier, NetworkQuality, TemporalPhase } from './types';
 
 /**
  * Determines the temporal phase based on current time

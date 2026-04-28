@@ -9,13 +9,21 @@ export interface PrincipalObservation {
   created_at: string;
 }
 
-export const observationsAPI = { 
+export const observationsAPI = {
   async listRecent(principalId: string, limit = 5): Promise<PrincipalObservation[]> {
-    return api.principalWorkspace.listRecentObservations(principalId, limit) as Promise<PrincipalObservation[]>;
+    return api.principalWorkspace.listRecentObservations(principalId, limit) as Promise<
+      PrincipalObservation[]
+    >;
   },
 
-  async listByDate(principalId: string, viewDate: string, limit = 10): Promise<PrincipalObservation[]> {
-    return api.principalWorkspace.listObservationsByDate(principalId, viewDate, limit) as Promise<PrincipalObservation[]>;
+  async listByDate(
+    principalId: string,
+    viewDate: string,
+    limit = 10,
+  ): Promise<PrincipalObservation[]> {
+    return api.principalWorkspace.listObservationsByDate(principalId, viewDate, limit) as Promise<
+      PrincipalObservation[]
+    >;
   },
 
   async create(input: {
@@ -37,7 +45,7 @@ export const observationsAPI = {
   }) {
     return api.principalWorkspace.recordObservationFollowUp({
       ...input,
-      status: input.status ?? 'noted'
+      status: input.status ?? 'noted',
     });
-  }
+  },
 };

@@ -27,10 +27,7 @@ export class OCRPipeline {
     return this;
   }
 
-  async recognize(
-    imageUri: string,
-    options: OCRRecognizeOptions = {},
-  ): Promise<OCRRawResult> {
+  async recognize(imageUri: string, options: OCRRecognizeOptions = {}): Promise<OCRRawResult> {
     const { provider: providerName = 'mlkit' } = options;
     const provider = this.registry.get(providerName) ?? this.registry.get('mlkit');
 
@@ -45,10 +42,7 @@ export class OCRPipeline {
     } catch (err) {
       // Fallback to mlkit unless we already are using it
       if (providerName !== 'mlkit') {
-        console.warn(
-          `OCRPipeline: "${providerName}" failed, falling back to mlkit.`,
-          err,
-        );
+        console.warn(`OCRPipeline: "${providerName}" failed, falling back to mlkit.`, err);
         return this.recognize(imageUri, { provider: 'mlkit' });
       }
       throw err;

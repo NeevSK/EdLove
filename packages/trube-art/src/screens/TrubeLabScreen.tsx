@@ -1,5 +1,5 @@
+import { Box, ScreenWrapper, Text, useTheme, VStack } from '@repo/ui';
 import React from 'react';
-import { Box, Text, VStack, ScreenWrapper, useTheme } from '@repo/ui';
 
 export default function TrubeLabScreen() {
   const { text } = useTheme();

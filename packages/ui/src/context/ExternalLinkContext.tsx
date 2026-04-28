@@ -1,16 +1,3 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { StyleSheet } from 'react-native';
-import { Box, HStack, Text, VStack, Pressable as GSPressable } from '../gluestack';
-import { useEnvironment } from './EnvironmentContext';
-import { useSanctuaryToast } from '../providers/ToastProvider';
-import SanctuaryButton from '../components/SanctuaryButton';
-import SanctuaryModal from '../components/SanctuaryModal';
-import {
-  clearStoredExternalOpenPreference,
-  ExternalLinkTrustLevel,
-  ExternalOpenMethod,
-  registerExternalLinkRuntime,
-} from '../utils/linking';
 import {
   ArrowLeftRight,
   Check,
@@ -19,6 +6,18 @@ import {
   ShieldAlert,
   ShieldCheck,
 } from 'lucide-react-native';
+import React, { useEffect, useMemo, useState } from 'react';
+import SanctuaryButton from '../components/SanctuaryButton';
+import SanctuaryModal from '../components/SanctuaryModal';
+import { Box, Pressable as GSPressable, HStack, Text, VStack } from '../gluestack';
+import { useSanctuaryToast } from '../providers/ToastProvider';
+import {
+  clearStoredExternalOpenPreference,
+  type ExternalLinkTrustLevel,
+  type ExternalOpenMethod,
+  registerExternalLinkRuntime,
+} from '../utils/linking';
+import { useReality } from './EnvironmentContext';
 
 interface PendingRequest {
   url: string;
@@ -92,7 +91,7 @@ function getTrustCopy(level: ExternalLinkTrustLevel | undefined) {
 }
 
 export function ExternalLinkProvider({ children }: { children: React.ReactNode }) {
-  const { reality } = useEnvironment();
+  const { reality } = useReality();
   const { showToast } = useSanctuaryToast();
   const [pendingRequest, setPendingRequest] = useState<PendingRequest | null>(null);
   const [selectedMethod, setSelectedMethod] = useState<ExternalOpenMethod>('new_tab');
@@ -114,12 +113,16 @@ export function ExternalLinkProvider({ children }: { children: React.ReactNode }
     return () => registerExternalLinkRuntime(null);
   }, [reality.networkQuality, showToast]);
 
-  const methods = pendingRequest
-    ? pendingRequest.platform === 'web'
-      ? webMethods
-      : nativeMethods
-    : [];
-  const trustCopy = getTrustCopy(pendingRequest?.options.trustLevel);
+  const methods = useMemo(
+    () => (pendingRequest ? (pendingRequest.platform === 'web' ? webMethods : nativeMethods) : []),
+    [pendingRequest],
+  );
+
+  const trustCopy = useMemo(
+    () => getTrustCopy(pendingRequest?.options.trustLevel),
+    [pendingRequest],
+  );
+
   const TrustIcon = trustCopy.icon;
 
   const modalSubtitle = useMemo(() => {
@@ -132,13 +135,14 @@ export function ExternalLinkProvider({ children }: { children: React.ReactNode }
     return `Choose how links from ${source} should open on this ${pendingRequest.platform === 'web' ? 'browser' : 'device'}.`;
   }, [pendingRequest]);
 
-  const closeRequest = (
-    result: { method: ExternalOpenMethod; persistPreference: boolean } | null,
-  ) => {
-    if (!pendingRequest) return;
-    pendingRequest.resolve(result);
-    setPendingRequest(null);
-  };
+  const closeRequest = React.useCallback(
+    (result: { method: ExternalOpenMethod; persistPreference: boolean } | null) => {
+      if (!pendingRequest) return;
+      pendingRequest.resolve(result);
+      setPendingRequest(null);
+    },
+    [pendingRequest],
+  );
 
   return (
     <>

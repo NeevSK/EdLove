@@ -1,12 +1,11 @@
+import { Canvas, Circle, Group, Line, vec } from '@shopify/react-native-skia';
 import React from 'react';
-import { Canvas, Circle, Line, vec, Group } from '@shopify/react-native-skia';
-import { useDerivedValue } from 'react-native-reanimated';
-import { useTrubeTime } from '../core/soul/TimeLayer';
-import type { StyleProp, ViewStyle, LayoutChangeEvent } from 'react-native';
+import type { LayoutChangeEvent, StyleProp, ViewStyle } from 'react-native';
 import { View } from 'react-native';
-
+import { useDerivedValue } from 'react-native-reanimated';
 import type { TrubeOrnamentSpec } from '../core/ornament';
 import { resolveOrnament } from '../core/ornament';
+import { useTrubeTime } from '../core/soul/TimeLayer';
 
 export interface TrubeOrnamentProps {
   ornament: TrubeOrnamentSpec;
@@ -15,12 +14,7 @@ export interface TrubeOrnamentProps {
   cornerRadius?: number;
 }
 
-export function TrubeOrnament({
-  ornament,
-  color,
-  style,
-  cornerRadius = 0,
-}: TrubeOrnamentProps) {
+export function TrubeOrnament({ ornament, color, style, cornerRadius = 0 }: TrubeOrnamentProps) {
   const [bounds, setBounds] = React.useState({ width: 0, height: 0 });
   const resolved = React.useMemo(() => resolveOrnament(ornament), [ornament]);
   const { entropy } = useTrubeTime('skymorphic', true);
@@ -31,7 +25,9 @@ export function TrubeOrnament({
 
   const onLayout = React.useCallback((event: LayoutChangeEvent) => {
     const { width, height } = event.nativeEvent.layout;
-    setBounds((current) =      current.width === width && current.height === height ? current : { width, height },
+    setBounds(
+      (current =
+        current.width === width && current.height === height ? current : { width, height }),
     );
   }, []);
 

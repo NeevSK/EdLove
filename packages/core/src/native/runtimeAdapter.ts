@@ -1,13 +1,20 @@
-// @ts-ignore
-import * as Device from 'expo-device';
 import NetInfo from '@react-native-community/netinfo';
-// @ts-ignore
-import * as Location from 'expo-location';
-import { storage } from './storage';
-import { Platform, Linking } from 'react-native';
-// @ts-ignore
+import * as Device from 'expo-device';
 import * as Haptics from 'expo-haptics';
-import { CoreRuntimeEnvironment, DeviceMetadata, HapticsProvider, LinkingProvider, LocationProvider, NetworkProvider } from '../types/runtime';
+import * as Location from 'expo-location';
+import { Linking, Platform, Share, StatusBar } from 'react-native';
+import type {
+  CoreRuntimeEnvironment,
+  DeviceMetadata,
+  HapticsProvider,
+  LinkingProvider,
+  LocationProvider,
+  NetworkProvider,
+  ShareOptions,
+  ShareProvider,
+  UIProvider,
+} from '../types/runtime';
+import { storage } from './storage';
 
 export const nativeStorageProvider = {
   async getItem(key: string) {
@@ -18,7 +25,7 @@ export const nativeStorageProvider = {
   },
   async removeItem(key: string) {
     storage.delete(key);
-  }
+  },
 };
 
 export const nativeDeviceProvider = {
@@ -54,12 +61,29 @@ export const nativeLinkingProvider: LinkingProvider = {
 
 export const nativeLocationProvider: LocationProvider = {
   requestPermissionsAsync: () => Location.requestForegroundPermissionsAsync(),
-  watchPositionAsync: (options, callback) => Location.watchPositionAsync(options, callback),
+  watchPositionAsync: (options: any, callback: (location: any) => void) =>
+    Location.watchPositionAsync(options, callback),
   Accuracy: Location.Accuracy,
 };
 
 export const nativeNetworkProvider: NetworkProvider = {
   fetch: () => NetInfo.fetch(),
+};
+
+export const nativeShareProvider: ShareProvider = {
+  share: async (options: ShareOptions) => {
+    // React Native's Share.share expects ShareContent where message is mandatory for some platforms
+    await Share.share({
+      title: options.title,
+      message: options.message ?? '',
+      url: options.url,
+    });
+  },
+};
+
+export const nativeUIProvider: UIProvider = {
+  setStatusBarHidden: (hidden: boolean, animation?: 'none' | 'fade' | 'slide') =>
+    StatusBar.setHidden(hidden, animation),
 };
 
 export const nativeRuntimeEnvironment: CoreRuntimeEnvironment = {
@@ -69,4 +93,10 @@ export const nativeRuntimeEnvironment: CoreRuntimeEnvironment = {
   linking: nativeLinkingProvider,
   location: nativeLocationProvider,
   network: nativeNetworkProvider,
+  share: nativeShareProvider,
+  ui: nativeUIProvider,
+  clipboard: {
+    getStringAsync: async () => '',
+    setStringAsync: async () => false,
+  },
 };

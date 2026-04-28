@@ -1,16 +1,14 @@
-﻿import React from 'react';
+﻿import { usePermissions } from '@repo/core';
 import { WebScreenHeader } from '@repo/ui';
+import React from 'react';
 
-
-import { usePermissions } from '@repo/core';
-
-import { 
-    StudentSelfView, 
-    TeacherSelfView, 
-    PrincipalSelfView, 
-    FounderSelfView, 
-    GuardianSelfView,
-    AdminSelfView 
+import {
+  AdminSelfView,
+  FounderSelfView,
+  GuardianSelfView,
+  PrincipalSelfView,
+  StudentSelfView,
+  TeacherSelfView,
 } from './self';
 
 /**
@@ -28,10 +26,10 @@ export default function SelfScreenWeb() {
       return { title: 'Sadhana', note: 'Guardian Sanctuary' };
     }
     if (can('manage', 'PrincipalDashboard')) {
-       return { title: 'Sadhana', note: "Principal's Inner Sanctuary" };
+      return { title: 'Sadhana', note: "Principal's Inner Sanctuary" };
     }
     if (can('manage', 'FounderDashboard')) {
-       return { title: 'Sadhana', note: "Founder's Vision Lab" };
+      return { title: 'Sadhana', note: "Founder's Vision Lab" };
     }
     return { title: 'Sadhana', note: 'Personal Growth Stream' };
   };
@@ -41,7 +39,8 @@ export default function SelfScreenWeb() {
     if (can('manage', 'AdminDashboard')) return <AdminSelfView />;
     if (can('manage', 'PrincipalDashboard')) return <PrincipalSelfView />;
     if (can('manage', 'TeacherDashboard')) return <TeacherSelfView />;
-    if (context.roles.includes('guardian') || context.roles.includes('parent')) return <GuardianSelfView />;
+    if (context.roles.includes('guardian') || context.roles.includes('parent'))
+      return <GuardianSelfView />;
     if (can('manage', 'StudentDashboard')) return <StudentSelfView />;
     return <StudentSelfView />;
   };
@@ -51,14 +50,8 @@ export default function SelfScreenWeb() {
   return (
     <div className="sanctuary-screen">
       <div className="sanctuary-container">
-        <WebScreenHeader
-          title={title}
-          note={note}
-          showPersonalizedGreeting
-        />
-        <div style={{ marginTop: 24 }}>
-          {renderDashboard()}
-        </div>
+        <WebScreenHeader title={title} note={note} showPersonalizedGreeting />
+        <div style={{ marginTop: 24 }}>{renderDashboard()}</div>
       </div>
     </div>
   );

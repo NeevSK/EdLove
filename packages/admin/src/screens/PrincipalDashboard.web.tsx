@@ -1,40 +1,44 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigation, NavigationProp } from '@react-navigation/native';
-import { useAuthStore, useFeatureAccess, usePermissions, useTemporalStore, api } from '@repo/core';
-import { PrincipalWorkspaceContainer } from './PrincipalWorkspaceContainer';
-import { resolvePrincipalWorkspaceView } from '../principal/workspace';
+import { type NavigationProp, useNavigation } from '@react-navigation/native';
+import {
+  api,
+  type CalendarEvent,
+  type MappingTopologyZod as KnowledgeTopology,
+  type PublishedSchoolGradingCompletion,
+  type PulseMetricsZod,
+  type School,
+  type SchoolStats,
+  type StaffLeaveDTO,
+  type StaffPresenceSummary,
+  type TeacherCarouselItem,
+  type User,
+  useAuthStore,
+  useFeatureAccess,
+  usePermissions,
+  useTemporalStore,
+} from '@repo/core';
+import { hapticLight, SandboxBanner, WebScreenHeader } from '@repo/ui';
+import { useQuery } from '@tanstack/react-query';
+import type React from 'react';
+import { useEffect, useState } from 'react';
+import {
+  useCurriculumPulse,
+  useMappingTopologyQuery,
+  useOperationalAwareness,
+  useSchoolPulseQuery,
+  useSchoolStatsQuery,
+  useStaffResonance,
+} from '../hooks/useDashboardHooks';
+import type { FeedbackEcho, GradeProgress } from '../insights';
+import type { ResourceNeedSummary } from '../inventory';
+import type { PrincipalObservation } from '../observations';
 import type { PrincipalWorkspaceView } from '../principal/workspace';
+import { resolvePrincipalWorkspaceView } from '../principal/workspace';
+import { type StudentPrincipalPulse, staffOperationsAPI } from '../staff';
+import { PrincipalWorkspaceContainer } from './PrincipalWorkspaceContainer';
+import { CyclesDashboard } from './principal/CyclesDashboard';
 import { HierarchyDashboard } from './principal/HierarchyDashboard';
 import { InvitesDashboard } from './principal/InvitesDashboard';
 import { LogbookDashboard } from './principal/LogbookDashboard';
-import { CyclesDashboard } from './principal/CyclesDashboard';
-import { SandboxBanner, hapticLight, WebScreenHeader } from '@repo/ui';
-import {
-  type School,
-  type SchoolStats,
-  type User,
-  type StaffPresenceSummary,
-  type TeacherCarouselItem,
-  type StaffLeaveDTO,
-  type CalendarEvent,
-  type PulseMetricsZod,
-  type PublishedSchoolGradingCompletion
-} from '@repo/core';
-import { type FeedbackEcho, type GradeProgress } from '../insights';
-import { type ResourceNeedSummary } from '../inventory';
-import { type PrincipalObservation } from '../observations';
-import { type MappingTopologyZod as KnowledgeTopology } from '@repo/core';
-import {
-  useStaffResonance,
-  useSchoolPulseQuery,
-  useCurriculumPulse,
-  useOperationalAwareness,
-  useMappingTopologyQuery,
-  useSchoolStatsQuery
-} from '../hooks/useDashboardHooks';
-
-import { useQuery } from '@tanstack/react-query';
-import { staffOperationsAPI, type StudentPrincipalPulse } from '../staff';
 
 const DEMO_PRINCIPAL_SCHOOL_ID = 'mock-school';
 
@@ -126,8 +130,16 @@ interface PrincipalDashboardWebProps {
   LogbookDashboardComponent?: React.ComponentType<LogbookDashboardProps>;
   CyclesDashboardComponent?: React.ComponentType<CyclesDashboardProps>;
   PrincipalOnboardingViewComponent: React.ComponentType<PrincipalOnboardingViewProps>;
-  CreateSchoolModalComponent: React.ComponentType<{ isOpen: boolean; onClose: () => void; onSuccess?: () => void }>;
-  CreateClassroomModalComponent: React.ComponentType<{ isOpen: boolean; onClose: () => void; onSuccess?: () => void }>;
+  CreateSchoolModalComponent: React.ComponentType<{
+    isOpen: boolean;
+    onClose: () => void;
+    onSuccess?: () => void;
+  }>;
+  CreateClassroomModalComponent: React.ComponentType<{
+    isOpen: boolean;
+    onClose: () => void;
+    onSuccess?: () => void;
+  }>;
 }
 
 export default function PrincipalDashboardWeb({
@@ -142,12 +154,13 @@ export default function PrincipalDashboardWeb({
   CyclesDashboardComponent = CyclesDashboard,
   PrincipalOnboardingViewComponent,
   CreateSchoolModalComponent,
-  CreateClassroomModalComponent
+  CreateClassroomModalComponent,
 }: PrincipalDashboardWebProps) {
-  const user = useAuthStore(state => state.user) as User | null;
+  const user = useAuthStore((state) => state.user) as User | null;
   const { isGuest } = useFeatureAccess();
   const { can } = usePermissions();
-  const { viewDate, isPastView } = useTemporalStore();
+  const viewDate = useTemporalStore(s => s.viewDate);
+  const isPastView = useTemporalStore(s => s.isPastView);
   const navigation = useNavigation<NavigationProp<any>>();
 
   const effectiveSchoolId = schoolId || user?.school_id || '';
@@ -175,22 +188,24 @@ export default function PrincipalDashboardWeb({
 
   const studentPulseQuery = useQuery({
     queryKey: ['student-attendance-pulse', principalSchoolId, viewDate],
-    queryFn: () => staffOperationsAPI.getStudentPrincipalPulse(principalSchoolId, undefined, viewDate, {
+    queryFn: () =>
+      staffOperationsAPI.getStudentPrincipalPulse(principalSchoolId, undefined, viewDate, {
         actorId: effectiveUserId,
         accessKind: 'institutional_read',
-        reason: 'principal_dashboard_attendance_pulse'
-    }),
-    enabled: !!principalSchoolId
+        reason: 'principal_dashboard_attendance_pulse',
+      }),
+    enabled: !!principalSchoolId,
   });
 
   const publishedGradingCompletionQuery = useQuery({
     queryKey: ['principal-published-grading-completion', principalSchoolId, viewDate],
-    queryFn: () => api.grading.getSchoolPublishedGradingCompletion(principalSchoolId, viewDate || '', {
+    queryFn: () =>
+      api.grading.getSchoolPublishedGradingCompletion(principalSchoolId, viewDate || '', {
         actorId: effectiveUserId,
         accessKind: 'institutional_read',
-        reason: 'principal_dashboard_published_grading_completion'
-    }),
-    enabled: !!principalSchoolId
+        reason: 'principal_dashboard_published_grading_completion',
+      }),
+    enabled: !!principalSchoolId,
   });
 
   const presence = staff.presence.data || null;
@@ -235,16 +250,43 @@ export default function PrincipalDashboardWeb({
 
   const renderPrincipalView = (view: PrincipalWorkspaceView) => {
     if (view === 'hierarchy') {
-      return <HierarchyDashboardComponent schoolId={principalSchoolId} isPastView={isPastView} onBack={handleBackToDashboard} />;
+      return (
+        <HierarchyDashboardComponent
+          schoolId={principalSchoolId}
+          isPastView={isPastView}
+          onBack={handleBackToDashboard}
+        />
+      );
     }
     if (view === 'invites') {
-      return <InvitesDashboardComponent schoolId={principalSchoolId} userId={effectiveUserId} isPastView={isPastView} onBack={handleBackToDashboard} />;
+      return (
+        <InvitesDashboardComponent
+          schoolId={principalSchoolId}
+          userId={effectiveUserId}
+          isPastView={isPastView}
+          onBack={handleBackToDashboard}
+        />
+      );
     }
     if (view === 'log' || view === 'notes') {
-      return <LogbookDashboardComponent userId={effectiveUserId} schoolId={principalSchoolId} viewDate={viewDate} isPastView={isPastView} onBack={handleBackToDashboard} />;
+      return (
+        <LogbookDashboardComponent
+          userId={effectiveUserId}
+          schoolId={principalSchoolId}
+          viewDate={viewDate}
+          isPastView={isPastView}
+          onBack={handleBackToDashboard}
+        />
+      );
     }
     if (view === 'cycles') {
-      return <CyclesDashboardComponent schoolId={principalSchoolId} isPastView={isPastView} onBack={handleBackToDashboard} />;
+      return (
+        <CyclesDashboardComponent
+          schoolId={principalSchoolId}
+          isPastView={isPastView}
+          onBack={handleBackToDashboard}
+        />
+      );
     }
     return null;
   };
@@ -253,8 +295,17 @@ export default function PrincipalDashboardWeb({
     return (
       <div style={{ minHeight: '100vh', background: 'var(--background)' }}>
         <WebScreenHeader title="Gurudevi Principal" note="Educational Management Sanctuary" />
-        <PrincipalOnboardingViewComponent onTryDemo={handleTryDemo} onCreateSchool={handleCreateSchool} onJoinSchool={handleJoinSchool} isGuest={isGuest} />
-        <CreateSchoolModalComponent isOpen={isCreateSchoolOpen} onClose={() => setIsCreateSchoolOpen(false)} onSuccess={() => onRefresh?.()} />
+        <PrincipalOnboardingViewComponent
+          onTryDemo={handleTryDemo}
+          onCreateSchool={handleCreateSchool}
+          onJoinSchool={handleJoinSchool}
+          isGuest={isGuest}
+        />
+        <CreateSchoolModalComponent
+          isOpen={isCreateSchoolOpen}
+          onClose={() => setIsCreateSchoolOpen(false)}
+          onSuccess={() => onRefresh?.()}
+        />
       </div>
     );
   }
@@ -266,7 +317,9 @@ export default function PrincipalDashboardWeb({
         <PrincipalWorkspaceContainer
           activeView={activeView}
           onActiveViewChange={navigatePrincipalView}
-          renderView={({ activeView: nextView }: { activeView: PrincipalWorkspaceView }) => renderPrincipalView(nextView)}
+          renderView={({ activeView: nextView }: { activeView: PrincipalWorkspaceView }) =>
+            renderPrincipalView(nextView)
+          }
           renderMain={() => (
             <DashboardContentComponent
               school={school ?? null}
@@ -291,22 +344,35 @@ export default function PrincipalDashboardWeb({
               observations={observations}
               viewDate={viewDate}
               onNavigate={navigatePrincipalView}
-              onAddAction={(featureId: string) => navigatePrincipalView(resolvePrincipalWorkspaceView(featureId) as PrincipalWorkspaceView)}
-              onHistoryAction={(featureId: string) => navigatePrincipalView(resolvePrincipalWorkspaceView(featureId) as PrincipalWorkspaceView)}
+              onAddAction={(featureId: string) =>
+                navigatePrincipalView(
+                  resolvePrincipalWorkspaceView(featureId) as PrincipalWorkspaceView,
+                )
+              }
+              onHistoryAction={(featureId: string) =>
+                navigatePrincipalView(
+                  resolvePrincipalWorkspaceView(featureId) as PrincipalWorkspaceView,
+                )
+              }
               onAddStaff={() => navigatePrincipalView('invites')}
               onAddClassroom={() => setShowCreateClassroom(true)}
               onMarkEchoRead={() => {}}
               onApproveLeave={() => {}}
               onRejectLeave={() => {}}
               onShowAtRisk={() => {}}
-              onNavigateToProfile={() => navigation.navigate('SchoolProfile', { schoolId: principalSchoolId })}
+              onNavigateToProfile={() =>
+                navigation.navigate('SchoolProfile', { schoolId: principalSchoolId })
+              }
               onOpenCommons={() => navigation.navigate('Main', { screen: 'Community' })}
             />
           )}
         />
       </div>
-      <CreateClassroomModalComponent isOpen={showCreateClassroom} onClose={() => setShowCreateClassroom(false)} onSuccess={() => onRefresh?.()} />
+      <CreateClassroomModalComponent
+        isOpen={showCreateClassroom}
+        onClose={() => setShowCreateClassroom(false)}
+        onSuccess={() => onRefresh?.()}
+      />
     </div>
   );
 }
-

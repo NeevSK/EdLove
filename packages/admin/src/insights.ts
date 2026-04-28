@@ -1,4 +1,4 @@
-import { supabase, getTemporalRange } from '@repo/core';
+import { getTemporalRange, supabase } from '@repo/core';
 
 export interface GradeProgress {
   grade: string;
@@ -21,7 +21,7 @@ export interface FeedbackEcho {
   responded_at?: string;
 }
 
-export const insightsAPI = { 
+export const insightsAPI = {
   async listCurriculumProgress(schoolId: string): Promise<GradeProgress[]> {
     const { data, error } = await supabase
       .from('curriculum_progress')
@@ -33,11 +33,12 @@ export const insightsAPI = {
     return (data ?? []) as GradeProgress[];
   },
 
-  async listFeedbackEchoes(schoolId: string, limit = 5, viewDate?: string): Promise<FeedbackEcho[]> {
-    let query = supabase
-      .from('school_echo_feedback')
-      .select('*')
-      .eq('school_id', schoolId);
+  async listFeedbackEchoes(
+    schoolId: string,
+    limit = 5,
+    viewDate?: string,
+  ): Promise<FeedbackEcho[]> {
+    let query = supabase.from('school_echo_feedback').select('*').eq('school_id', schoolId);
 
     if (viewDate) {
       const range = getTemporalRange(viewDate, 'day');
@@ -51,7 +52,10 @@ export const insightsAPI = {
   },
 
   async markEchoRead(id: string): Promise<void> {
-    const { error } = await supabase.from('school_echo_feedback').update({ is_read: true }).eq('id', id);
+    const { error } = await supabase
+      .from('school_echo_feedback')
+      .update({ is_read: true })
+      .eq('id', id);
     if (error) throw error;
   },
 
@@ -63,10 +67,11 @@ export const insightsAPI = {
         principal_response: response,
         responded_by: principalId,
         responded_at: respondedAt,
-        is_read: true})
+        is_read: true,
+      })
       .eq('id', id);
 
     if (error) throw error;
     return respondedAt;
-  }
+  },
 };

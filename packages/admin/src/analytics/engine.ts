@@ -1,25 +1,25 @@
-import { 
-  TenantMetrics, 
-  TenantComparison, 
-  BenchmarkReport, 
-  LiveMetrics,
-  CustomReportConfig,
-  ReportResult,
+import { type GraphNode, supabase } from '@repo/core';
+import { type ForceLayoutOptions, forceLayout } from '@repo/graphics';
+import type {
   Anomaly,
-  Trend,
-  Prediction,
-  Insight,
   BenchmarkInsights,
-  MetricDefinition,
+  BenchmarkReport,
+  CustomReportConfig,
   DateRange,
-  EducationSector
+  EducationSector,
+  Insight,
+  LiveMetrics,
+  MetricDefinition,
+  Prediction,
+  ReportResult,
+  TenantComparison,
+  TenantMetrics,
+  Trend,
 } from './types';
-import { forceLayout, type ForceLayoutOptions } from '@repo/graphics';
-import { supabase, type GraphNode } from '@repo/core';
 
 export class MultiTenantAnalyticsEngine {
   private static instance: MultiTenantAnalyticsEngine;
-  
+
   static getInstance(): MultiTenantAnalyticsEngine {
     if (!MultiTenantAnalyticsEngine.instance) {
       MultiTenantAnalyticsEngine.instance = new MultiTenantAnalyticsEngine();
@@ -28,25 +28,28 @@ export class MultiTenantAnalyticsEngine {
   }
 
   // Data aggregation methods
-  async aggregateTenantMetrics(tenantIds: string[], timeRange: DateRange): Promise<TenantMetrics[]> {
+  async aggregateTenantMetrics(
+    tenantIds: string[],
+    timeRange: DateRange,
+  ): Promise<TenantMetrics[]> {
     const metrics: TenantMetrics[] = [];
-    
+
     for (const tenantId of tenantIds) {
       const tenantMetrics = await this.calculateTenantMetrics(tenantId, timeRange);
       metrics.push(tenantMetrics);
     }
-    
+
     return metrics;
   }
 
   async compareTenantPerformance(
-    tenantIds: string[], 
-    metrics: MetricDefinition[], 
-    industry: EducationSector
+    tenantIds: string[],
+    metrics: MetricDefinition[],
+    industry: EducationSector,
   ): Promise<TenantComparison[]> {
     const comparisons: TenantComparison[] = [];
     const timeRange = this.getLastQuarterRange();
-    
+
     for (const metric of metrics) {
       const tenantData = await this.getMetricComparison(tenantIds, metric, timeRange);
       const comparison: TenantComparison = {
@@ -55,40 +58,46 @@ export class MultiTenantAnalyticsEngine {
           tenantId: tenantIds[index] || '',
           tenantName: data.tenantName || '',
           value: Number(data.value) || 0,
-          rank: this.calculateRank(Number(data.value), tenantData.map(d => Number(d.value))),
-          percentile: this.calculatePercentile(Number(data.value), tenantData.map(d => Number(d.value)))
+          rank: this.calculateRank(
+            Number(data.value),
+            tenantData.map((d) => Number(d.value)),
+          ),
+          percentile: this.calculatePercentile(
+            Number(data.value),
+            tenantData.map((d) => Number(d.value)),
+          ),
         })),
         industry,
-        period: timeRange
+        period: timeRange,
       };
-      
+
       comparisons.push(comparison);
     }
-    
+
     return comparisons;
   }
 
   async generateBenchmarkReports(
-    tenantIds: string[], 
-    industry: EducationSector
+    tenantIds: string[],
+    industry: EducationSector,
   ): Promise<BenchmarkReport[]> {
     const reports: BenchmarkReport[] = [];
     const timeRange = this.getLastQuarterRange();
-    
+
     for (const tenantId of tenantIds) {
       for (const metric of this.getIndustryMetrics(industry)) {
         const report = await this.generateBenchmarkReport(tenantId, metric, industry, timeRange);
         reports.push(report);
       }
     }
-    
+
     return reports;
   }
 
   // Real-time analytics
   async getLiveMetrics(tenantId: string): Promise<LiveMetrics> {
     const now = new Date().toISOString();
-    
+
     // Get active users from sessions table
     const { data: activeSessions } = await supabase
       .from('user_sessions')
@@ -104,8 +113,9 @@ export class MultiTenantAnalyticsEngine {
       .gte('timestamp', new Date(Date.now() - 60 * 1000).toISOString());
 
     const apiRequestsPerMinute = apiMetrics?.length || 0;
-    const errorRate = apiMetrics ? 
-      (apiMetrics.filter(m => m.status_code >= 400).length / apiMetrics.length) * 100 : 0;
+    const errorRate = apiMetrics
+      ? (apiMetrics.filter((m) => m.status_code >= 400).length / apiMetrics.length) * 100
+      : 0;
 
     return {
       timestamp: now,
@@ -117,20 +127,20 @@ export class MultiTenantAnalyticsEngine {
       resource_usage: {
         cpu: await this.getCPUUsage(),
         memory: await this.getMemoryUsage(),
-        storage: await this.getStorageUsage()
-      }
+        storage: await this.getStorageUsage(),
+      },
     };
   }
 
   async createCustomReport(config: CustomReportConfig): Promise<ReportResult> {
     const startTime = Date.now();
-    
+
     // Execute the custom query based on config
     const data = await this.executeCustomQuery(config);
-    
+
     // Generate visualizations using graphics package
     const visualizations = await this.generateVisualizations(config, data);
-    
+
     const result: ReportResult = {
       id: crypto.randomUUID(),
       configId: config.id,
@@ -139,150 +149,141 @@ export class MultiTenantAnalyticsEngine {
         generatedAt: new Date().toISOString(),
         period: this.extractPeriodFromFilters(config.filters),
         recordCount: data.length,
-        executionTime: Date.now() - startTime
+        executionTime: Date.now() - startTime,
       },
-      visualizations
+      visualizations,
     };
-    
+
     // Save report result
-    await supabase
-      .from('report_results')
-      .insert(result);
-    
+    await supabase.from('report_results').insert(result);
+
     return result;
   }
 
-  async scheduleReport(
-    reportConfig: CustomReportConfig, 
-    schedule: any
-  ): Promise<string> {
+  async scheduleReport(reportConfig: CustomReportConfig, schedule: any): Promise<string> {
     const scheduleId = crypto.randomUUID();
-    
-    await supabase
-      .from('scheduled_reports')
-      .insert({
-        id: scheduleId,
-        config_id: reportConfig.id,
-        schedule,
-        created_at: new Date().toISOString()
-      });
-    
+
+    await supabase.from('scheduled_reports').insert({
+      id: scheduleId,
+      config_id: reportConfig.id,
+      schedule,
+      created_at: new Date().toISOString(),
+    });
+
     return scheduleId;
   }
 
   // Pattern recognition
-  async detectAnomalies(
-    tenantId: string, 
-    metrics: MetricDefinition[]
-  ): Promise<Anomaly[]> {
+  async detectAnomalies(tenantId: string, metrics: MetricDefinition[]): Promise<Anomaly[]> {
     const anomalies: Anomaly[] = [];
     const timeRange = this.getLastMonthRange();
-    
+
     for (const metric of metrics) {
       const historicalData = await this.getHistoricalMetrics(tenantId, metric, timeRange);
       const detectedAnomalies = this.analyzeForAnomalies(historicalData, metric);
       anomalies.push(...detectedAnomalies);
     }
-    
+
     return anomalies;
   }
 
-  async identifyTrends(
-    tenantId: string, 
-    timeRange: DateRange
-  ): Promise<Trend[]> {
+  async identifyTrends(tenantId: string, timeRange: DateRange): Promise<Trend[]> {
     const trends: Trend[] = [];
     const metrics: MetricDefinition[] = [
-      'attendance_rate', 'grade_average', 'parent_engagement', 'operational_efficiency'
+      'attendance_rate',
+      'grade_average',
+      'parent_engagement',
+      'operational_efficiency',
     ];
-    
+
     for (const metric of metrics) {
       const trend = await this.analyzeTrend(tenantId, metric, timeRange);
       trends.push(trend);
     }
-    
+
     return trends;
   }
 
-  async predictOutcomes(
-    tenantId: string, 
-    historicalData: any
-  ): Promise<Prediction[]> {
+  async predictOutcomes(tenantId: string, historicalData: any): Promise<Prediction[]> {
     const predictions: Prediction[] = [];
-    
+
     // Use historical data to train simple predictive models
-    for (const metric of ['attendance_rate', 'grade_average', 'enrollment_count'] as MetricDefinition[]) {
+    for (const metric of [
+      'attendance_rate',
+      'grade_average',
+      'enrollment_count',
+    ] as MetricDefinition[]) {
       const prediction = await this.generatePrediction(tenantId, metric, historicalData);
       predictions.push(prediction);
     }
-    
+
     return predictions;
   }
 
   // Recommendations engine
-  async generateRecommendations(
-    tenantId: string, 
-    context: any
-  ): Promise<Insight[]> {
+  async generateRecommendations(tenantId: string, context: any): Promise<Insight[]> {
     const insights: Insight[] = [];
-    
+
     // Analyze current performance and generate insights
-    const currentMetrics = await this.aggregateTenantMetrics([tenantId], this.getLastQuarterRange());
+    const currentMetrics = await this.aggregateTenantMetrics(
+      [tenantId],
+      this.getLastQuarterRange(),
+    );
     const tenantMetrics = currentMetrics[0];
-    
+
     if (!tenantMetrics) return insights;
-    
+
     // Generate insights based on metric analysis
     for (const [metric, value] of Object.entries(tenantMetrics.metrics)) {
       const insight = await this.analyzeMetricForInsights(
-        tenantId, 
-        metric as MetricDefinition, 
-        value, 
-        context
+        tenantId,
+        metric as MetricDefinition,
+        value,
+        context,
       );
       if (insight) {
         insights.push(insight);
       }
     }
-    
+
     return insights;
   }
 
   async benchmarkPerformance(
-    tenantId: string, 
-    industry: EducationSector
+    tenantId: string,
+    industry: EducationSector,
   ): Promise<BenchmarkInsights> {
     const tenantMetrics = await this.aggregateTenantMetrics([tenantId], this.getLastQuarterRange());
     const industryBenchmarks = await this.getIndustryBenchmarks(industry);
-    
+
     const metrics = tenantMetrics[0];
     if (!metrics) {
       throw new Error(`Could not calculate metrics for tenant ${tenantId}`);
     }
-    
-    const tenantPerformance = this.calculatePerformanceRanking(
-      metrics, 
-      industryBenchmarks
-    );
-    
+
+    const tenantPerformance = this.calculatePerformanceRanking(metrics, industryBenchmarks);
+
     const industryTrends = await this.analyzeIndustryTrends(industry);
     const recommendations = await this.generateStrategicRecommendations(
-      tenantPerformance, 
-      industryTrends
+      tenantPerformance,
+      industryTrends,
     );
-    
+
     return {
       industry,
       tenant_performance: tenantPerformance,
       industry_trends: industryTrends,
-      recommendations
+      recommendations,
     };
   }
 
   // Private helper methods
-  private async calculateTenantMetrics(tenantId: string, timeRange: DateRange): Promise<TenantMetrics> {
+  private async calculateTenantMetrics(
+    tenantId: string,
+    timeRange: DateRange,
+  ): Promise<TenantMetrics> {
     const tenantInfo = await this.getTenantInfo(tenantId);
-    
+
     const metrics: Record<MetricDefinition, number> = {
       attendance_rate: await this.calculateAttendanceRate(tenantId, timeRange),
       grade_average: await this.calculateGradeAverage(tenantId, timeRange),
@@ -293,22 +294,22 @@ export class MultiTenantAnalyticsEngine {
       document_processing_time: await this.calculateDocumentProcessingTime(tenantId, timeRange),
       revenue_per_student: await this.calculateRevenuePerStudent(tenantId, timeRange),
       operational_efficiency: await this.calculateOperationalEfficiency(tenantId, timeRange),
-      compliance_score: await this.calculateComplianceScore(tenantId, timeRange)
+      compliance_score: await this.calculateComplianceScore(tenantId, timeRange),
     };
-    
+
     return {
       tenantId,
       tenantName: tenantInfo.name,
       tenantKind: tenantInfo.kind,
       metrics,
       period: timeRange,
-      benchmarks: await this.getBenchmarksForMetrics(Object.keys(metrics) as MetricDefinition[])
+      benchmarks: await this.getBenchmarksForMetrics(Object.keys(metrics) as MetricDefinition[]),
     };
   }
 
   private async generateVisualizations(config: CustomReportConfig, data: any[]): Promise<any[]> {
     const visualizations = [];
-    
+
     switch (config.chartType) {
       case 'line':
         visualizations.push(await this.createLineChart(config, data));
@@ -326,7 +327,7 @@ export class MultiTenantAnalyticsEngine {
         visualizations.push(await this.createHeatmap(config, data));
         break;
     }
-    
+
     return visualizations;
   }
 
@@ -339,36 +340,36 @@ export class MultiTenantAnalyticsEngine {
       group: 'analytics',
       x: index * 50,
       y: (item.value ?? 0) * 10,
-      metadata: item
+      metadata: item,
     }));
-    
+
     const layoutOptions: ForceLayoutOptions = {
       width: 800,
       height: 400,
       linkDistance: 100,
       chargeStrength: -50,
-      ticks: 100
+      ticks: 100,
     };
-    
+
     const layout = forceLayout({ nodes, links: [] }, layoutOptions);
-    
+
     return {
       type: 'line',
       title: config.name,
-      data: nodes.map(node => {
+      data: nodes.map((node) => {
         const pos = layout.positions.get(node.id);
         return {
           x: pos?.x ?? 0,
           y: pos?.y ?? 0,
-          ...node.metadata
+          ...node.metadata,
         };
       }),
       config: {
         responsive: true,
         interactive: true,
         legend: true,
-        tooltip: true
-      }
+        tooltip: true,
+      },
     };
   }
 
@@ -381,36 +382,36 @@ export class MultiTenantAnalyticsEngine {
       group: 'analytics',
       x: index * 50,
       y: (item.value ?? 0) * 10,
-      metadata: item
+      metadata: item,
     }));
-    
+
     const layoutOptions: ForceLayoutOptions = {
       width: 800,
       height: 400,
       linkDistance: 100,
       chargeStrength: -50,
-      ticks: 100
+      ticks: 100,
     };
-    
+
     const layout = forceLayout({ nodes, links: [] }, layoutOptions);
-    
+
     return {
       type: 'bar',
       title: config.name,
-      data: nodes.map(node => {
+      data: nodes.map((node) => {
         const pos = layout.positions.get(node.id);
         return {
           x: pos?.x ?? 0,
           y: pos?.y ?? 0,
-          ...node.metadata
+          ...node.metadata,
         };
       }),
       config: {
         responsive: true,
         interactive: true,
         legend: true,
-        tooltip: true
-      }
+        tooltip: true,
+      },
     };
   }
 
@@ -423,8 +424,8 @@ export class MultiTenantAnalyticsEngine {
         responsive: true,
         interactive: true,
         legend: true,
-        tooltip: true
-      }
+        tooltip: true,
+      },
     };
   }
 
@@ -437,8 +438,8 @@ export class MultiTenantAnalyticsEngine {
         responsive: true,
         interactive: true,
         legend: true,
-        tooltip: true
-      }
+        tooltip: true,
+      },
     };
   }
 
@@ -451,8 +452,8 @@ export class MultiTenantAnalyticsEngine {
         responsive: true,
         interactive: true,
         legend: true,
-        tooltip: true
-      }
+        tooltip: true,
+      },
     };
   }
 
@@ -462,10 +463,10 @@ export class MultiTenantAnalyticsEngine {
     const quarter = Math.floor(now.getMonth() / 3);
     const startOfQuarter = new Date(now.getFullYear(), quarter * 3, 1);
     const endOfQuarter = new Date(now.getFullYear(), (quarter + 1) * 3, 0);
-    
+
     return {
       startDate: startOfQuarter.toISOString(),
-      endDate: endOfQuarter.toISOString()
+      endDate: endOfQuarter.toISOString(),
     };
   }
 
@@ -473,10 +474,10 @@ export class MultiTenantAnalyticsEngine {
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-    
+
     return {
       startDate: startOfMonth.toISOString(),
-      endDate: endOfMonth.toISOString()
+      endDate: endOfMonth.toISOString(),
     };
   }
 
@@ -491,7 +492,10 @@ export class MultiTenantAnalyticsEngine {
     return (index / (sorted.length - 1)) * 100;
   }
 
-  private calculateSystemHealth(errorRate: number, apiRequestsPerMinute: number): 'healthy' | 'warning' | 'critical' {
+  private calculateSystemHealth(
+    errorRate: number,
+    apiRequestsPerMinute: number,
+  ): 'healthy' | 'warning' | 'critical' {
     if (errorRate > 10 || apiRequestsPerMinute < 10) return 'critical';
     if (errorRate > 5 || apiRequestsPerMinute < 50) return 'warning';
     return 'healthy';
@@ -507,52 +511,70 @@ export class MultiTenantAnalyticsEngine {
     return data || { name: 'Unknown', kind: 'customer' };
   }
 
-  private async calculateAttendanceRate(tenantId: string, timeRange: DateRange): Promise<number> {
+  private async calculateAttendanceRate(_tenantId: string, _timeRange: DateRange): Promise<number> {
     // Implementation would query attendance data
     return 92.5; // Placeholder
   }
 
-  private async calculateGradeAverage(tenantId: string, timeRange: DateRange): Promise<number> {
+  private async calculateGradeAverage(_tenantId: string, _timeRange: DateRange): Promise<number> {
     // Implementation would query grades data
     return 85.3; // Placeholder
   }
 
-  private async getEnrollmentCount(tenantId: string, timeRange: DateRange): Promise<number> {
+  private async getEnrollmentCount(_tenantId: string, _timeRange: DateRange): Promise<number> {
     // Implementation would query enrollment data
     return 1250; // Placeholder
   }
 
-  private async calculateStaffTurnover(tenantId: string, timeRange: DateRange): Promise<number> {
+  private async calculateStaffTurnover(_tenantId: string, _timeRange: DateRange): Promise<number> {
     // Implementation would calculate staff turnover
     return 8.2; // Placeholder
   }
 
-  private async calculateResourceUtilization(tenantId: string, timeRange: DateRange): Promise<number> {
+  private async calculateResourceUtilization(
+    _tenantId: string,
+    _timeRange: DateRange,
+  ): Promise<number> {
     // Implementation would calculate resource utilization
     return 78.5; // Placeholder
   }
 
-  private async calculateParentEngagement(tenantId: string, timeRange: DateRange): Promise<number> {
+  private async calculateParentEngagement(
+    _tenantId: string,
+    _timeRange: DateRange,
+  ): Promise<number> {
     // Implementation would calculate parent engagement metrics
     return 65.8; // Placeholder
   }
 
-  private async calculateDocumentProcessingTime(tenantId: string, timeRange: DateRange): Promise<number> {
+  private async calculateDocumentProcessingTime(
+    _tenantId: string,
+    _timeRange: DateRange,
+  ): Promise<number> {
     // Implementation would calculate average document processing time
     return 2.4; // Placeholder (days)
   }
 
-  private async calculateRevenuePerStudent(tenantId: string, timeRange: DateRange): Promise<number> {
+  private async calculateRevenuePerStudent(
+    _tenantId: string,
+    _timeRange: DateRange,
+  ): Promise<number> {
     // Implementation would calculate revenue per student
     return 8500; // Placeholder
   }
 
-  private async calculateOperationalEfficiency(tenantId: string, timeRange: DateRange): Promise<number> {
+  private async calculateOperationalEfficiency(
+    _tenantId: string,
+    _timeRange: DateRange,
+  ): Promise<number> {
     // Implementation would calculate operational efficiency
     return 87.2; // Placeholder
   }
 
-  private async calculateComplianceScore(tenantId: string, timeRange: DateRange): Promise<number> {
+  private async calculateComplianceScore(
+    _tenantId: string,
+    _timeRange: DateRange,
+  ): Promise<number> {
     // Implementation would calculate compliance score
     return 94.1; // Placeholder
   }
@@ -572,38 +594,50 @@ export class MultiTenantAnalyticsEngine {
     return 71.3; // Placeholder
   }
 
-  private async executeCustomQuery(config: CustomReportConfig): Promise<any[]> {
+  private async executeCustomQuery(_config: CustomReportConfig): Promise<any[]> {
     // Implementation would build and execute custom queries based on config
     return []; // Placeholder
   }
 
-  private extractPeriodFromFilters(filters: any[]): DateRange {
+  private extractPeriodFromFilters(_filters: any[]): DateRange {
     // Implementation would extract date range from filters
     return this.getLastQuarterRange();
   }
 
-  private async getHistoricalMetrics(tenantId: string, metric: MetricDefinition, timeRange: DateRange): Promise<any[]> {
+  private async getHistoricalMetrics(
+    _tenantId: string,
+    _metric: MetricDefinition,
+    _timeRange: DateRange,
+  ): Promise<any[]> {
     // Implementation would get historical data for anomaly detection
     return []; // Placeholder
   }
 
-  private analyzeForAnomalies(historicalData: any[], metric: MetricDefinition): Anomaly[] {
+  private analyzeForAnomalies(_historicalData: any[], _metric: MetricDefinition): Anomaly[] {
     // Implementation would analyze data for anomalies
     return []; // Placeholder
   }
 
-  private async analyzeTrend(tenantId: string, metric: MetricDefinition, timeRange: DateRange): Promise<Trend> {
+  private async analyzeTrend(
+    _tenantId: string,
+    metric: MetricDefinition,
+    timeRange: DateRange,
+  ): Promise<Trend> {
     // Implementation would analyze trends
     return {
       metric,
       direction: 'stable',
       strength: 0.5,
       period: timeRange,
-      confidence: 0.8
+      confidence: 0.8,
     }; // Placeholder
   }
 
-  private async generatePrediction(tenantId: string, metric: MetricDefinition, historicalData: any): Promise<Prediction> {
+  private async generatePrediction(
+    _tenantId: string,
+    metric: MetricDefinition,
+    _historicalData: any,
+  ): Promise<Prediction> {
     // Implementation would generate predictions
     return {
       metric,
@@ -613,26 +647,26 @@ export class MultiTenantAnalyticsEngine {
       timeframe: 'next_quarter',
       prediction: 0,
       factors: [],
-      generatedAt: new Date().toISOString()
+      generatedAt: new Date().toISOString(),
     }; // Placeholder
   }
 
   private async analyzeMetricForInsights(
-    tenantId: string, 
-    metric: MetricDefinition, 
-    value: number, 
-    context: any
+    _tenantId: string,
+    _metric: MetricDefinition,
+    _value: number,
+    _context: any,
   ): Promise<Insight | null> {
     // Implementation would analyze metrics and generate insights
     return null; // Placeholder
   }
 
-  private async getIndustryBenchmarks(industry: EducationSector): Promise<any> {
+  private async getIndustryBenchmarks(_industry: EducationSector): Promise<any> {
     // Implementation would get industry benchmarks
     return {}; // Placeholder
   }
 
-  private calculatePerformanceRanking(tenantMetrics: TenantMetrics, benchmarks: any): any {
+  private calculatePerformanceRanking(_tenantMetrics: TenantMetrics, _benchmarks: any): any {
     // Implementation would calculate performance ranking
     return {
       overall_rank: 1,
@@ -640,43 +674,45 @@ export class MultiTenantAnalyticsEngine {
       percentile: 85.5,
       strengths: [],
       weaknesses: [],
-      opportunities: []
+      opportunities: [],
     }; // Placeholder
   }
 
-  private async analyzeIndustryTrends(industry: EducationSector): Promise<any[]> {
+  private async analyzeIndustryTrends(_industry: EducationSector): Promise<any[]> {
     // Implementation would analyze industry trends
     return []; // Placeholder
   }
 
-  private async generateStrategicRecommendations(performance: any, trends: any[]): Promise<any[]> {
+  private async generateStrategicRecommendations(
+    _performance: any,
+    _trends: any[],
+  ): Promise<any[]> {
     // Implementation would generate strategic recommendations
     return []; // Placeholder
   }
 
-  private async getMetricComparison(tenantIds: string[], metric: MetricDefinition, timeRange: DateRange): Promise<any[]> {
+  private async getMetricComparison(
+    tenantIds: string[],
+    _metric: MetricDefinition,
+    _timeRange: DateRange,
+  ): Promise<any[]> {
     // Implementation would get metric comparison data
-    return tenantIds.map(id => ({
+    return tenantIds.map((id) => ({
       tenantName: `Tenant ${id}`,
-      value: Math.random() * 100
+      value: Math.random() * 100,
     })); // Placeholder
   }
 
-  private getIndustryMetrics(industry: EducationSector): MetricDefinition[] {
+  private getIndustryMetrics(_industry: EducationSector): MetricDefinition[] {
     // Return relevant metrics for the industry
-    return [
-      'attendance_rate',
-      'grade_average',
-      'parent_engagement',
-      'operational_efficiency'
-    ];
+    return ['attendance_rate', 'grade_average', 'parent_engagement', 'operational_efficiency'];
   }
 
   private async generateBenchmarkReport(
-    tenantId: string, 
-    metric: MetricDefinition, 
-    industry: EducationSector, 
-    timeRange: DateRange
+    _tenantId: string,
+    metric: MetricDefinition,
+    industry: EducationSector,
+    timeRange: DateRange,
   ): Promise<BenchmarkReport> {
     // Implementation would generate benchmark report
     return {
@@ -686,19 +722,21 @@ export class MultiTenantAnalyticsEngine {
         industry_average: 80,
         top_quartile: 95,
         bottom_quartile: 65,
-        median: 80
+        median: 80,
       },
       tenant_performance: {
         value: 85,
         rank: 3,
         percentile: 75,
-        improvement_suggestions: []
+        improvement_suggestions: [],
       },
-      period: timeRange
+      period: timeRange,
     }; // Placeholder
   }
 
-  private async getBenchmarksForMetrics(metrics: MetricDefinition[]): Promise<Record<MetricDefinition, number>> {
+  private async getBenchmarksForMetrics(
+    _metrics: MetricDefinition[],
+  ): Promise<Record<MetricDefinition, number>> {
     // Implementation would get benchmarks for all metrics
     return {} as Record<MetricDefinition, number>; // Placeholder
   }

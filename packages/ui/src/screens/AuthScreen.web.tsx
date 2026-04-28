@@ -1,25 +1,23 @@
-import React, { useState } from 'react';
+import { handleAPIError, supabase, validateForm, validators } from '@repo/core';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { supabase, validators, validateForm, handleAPIError } from '@repo/core';
+import { BreathAnimation } from '../components/BreathAnimation';
+import { LivingGlow } from '../components/LivingGlow';
+import { SanctuaryBackground } from '../components/SanctuaryBackground';
 import {
   Box,
-  VStack,
-  HStack,
-  Text,
-  Heading,
   Button,
+  ButtonSpinner,
   ButtonText,
+  Heading,
+  HStack,
   Input,
   InputField,
-  Pressable,
-  Center,
-  ButtonSpinner,
+  Text,
+  VStack,
 } from '../gluestack';
 import { useTheme } from '../hooks/useTheme';
 import { useSanctuaryToast } from '../providers/ToastProvider';
-import { SanctuaryBackground } from '../components/SanctuaryBackground';
-import { BreathAnimation } from '../components/BreathAnimation';
-import { LivingGlow } from '../components/LivingGlow';
 
 interface AuthScreenProps {
   onContinueAsGuest?: () => void;
@@ -38,7 +36,7 @@ export function AuthScreenWeb({
 }: AuthScreenProps) {
   const { t } = useTranslation();
   const { scene, accent, text } = useTheme();
-  const surfaceToken = scene.surface;
+  const _surfaceToken = scene.surface;
   const { showToast } = useSanctuaryToast();
 
   const [mode, setMode] = useState<'signup' | 'login'>(

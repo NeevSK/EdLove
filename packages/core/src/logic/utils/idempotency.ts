@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from 'uuid';
+import { v7 as uuidv7 } from 'uuid';
 
 /**
  * Idempotency Utility
@@ -14,7 +14,7 @@ export const Idempotency = {
    * and persist it until the server confirms success.
    */
   generateKey: (namespace?: string) => {
-    const key = uuidv4();
+    const key = uuidv7();
     return namespace ? `${namespace}:${key}` : key;
   },
 

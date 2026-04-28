@@ -4,11 +4,7 @@
   "generatedAt": "2026-03-24T19:16:15.721Z",
   "exportVersion": 1,
   "approvals": {
-    "approved": [
-      "goethe-night-study",
-      "lotus-dawn",
-      "lotus-vigil"
-    ],
+    "approved": ["goethe-night-study", "lotus-dawn", "lotus-vigil"],
     "inReview": [
       "branch-wind",
       "beethoven-dawn",
@@ -16,9 +12,7 @@
       "vellum-prayer",
       "sanctuary-air"
     ],
-    "experimental": [
-      "tidal-memory"
-    ]
+    "experimental": ["tidal-memory"]
   },
   "canonical": [
     {

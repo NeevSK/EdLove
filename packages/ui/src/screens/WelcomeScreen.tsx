@@ -1,30 +1,30 @@
-import React, { useState } from 'react';
+import { handleAPIError, LanguageUtils } from '@repo/core/logic';
+import { authAPI } from '@repo/core/native';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Image } from 'react-native';
+import ScreenWrapper from '../components/ScreenWrapper';
 import {
   Box,
-  VStack,
-  Text,
-  Heading,
   Button,
   ButtonText,
-  HStack,
   Checkbox,
-  CheckboxIndicator,
   CheckboxIcon,
+  CheckboxIndicator,
   CheckIcon,
+  Heading,
+  HStack,
   Link,
   LinkText,
   Pressable,
   Spinner,
+  Text,
+  VStack,
 } from '../gluestack';
-import { Theme } from '../theme/Theme';
 import { useTheme } from '../hooks/useTheme';
 import { useSanctuaryToast } from '../providers/ToastProvider';
-import { useTranslation } from 'react-i18next';
-import { Image } from 'react-native';
-import { hapticLight, hapticSuccess, hapticError } from '../utils/haptics';
-import ScreenWrapper from '../components/ScreenWrapper';
-import { handleAPIError, LanguageUtils } from '@repo/core/logic';
-import { authAPI } from '@repo/core/native';
+import { Theme } from '../theme/Theme';
+import { hapticError, hapticLight, hapticSuccess } from '../utils/haptics';
 
 const LOGO = require('../../assets/icon.png');
 

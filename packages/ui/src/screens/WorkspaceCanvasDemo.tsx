@@ -1,14 +1,10 @@
-import React, { useMemo, useState } from 'react';
-import { Box, VStack, HStack, Heading, Text, Pressable, ScrollView } from '../gluestack';
 import { createDefaultWorkspaceLayout, setWorkspaceSurfaceHidden } from '@repo/core/logic';
-import type {
-  ResolvedWorkspaceSurface,
-  WorkspaceLayout,
-  WorkspaceSurfaceDefinition,
-} from '@repo/core/types';
-import { WorkspaceCanvas } from '../components/workspace';
-import { useTheme } from '../hooks/useTheme';
+import type { WorkspaceLayout, WorkspaceSurfaceDefinition } from '@repo/core/types';
+import { useMemo, useState } from 'react';
 import ScreenWrapper from '../components/ScreenWrapper';
+import { WorkspaceCanvas } from '../components/workspace';
+import { Box, Heading, HStack, Pressable, ScrollView, Text, VStack } from '../gluestack';
+import { useTheme } from '../hooks/useTheme';
 
 type DemoRole = 'teacher' | 'principal' | 'founder';
 /* ... types truncated ... */
@@ -240,7 +236,11 @@ export default function WorkspaceCanvasDemo() {
         borderColor: tone === 'primary' ? '#D4AF37' : scene.border.base,
       }}
     >
-      <Text size="xs" className="font-bold" style={{ color: tone === 'primary' ? text.primary : text.secondary }}>
+      <Text
+        size="xs"
+        className="font-bold"
+        style={{ color: tone === 'primary' ? text.primary : text.secondary }}
+      >
         {label}
       </Text>
     </Box>
@@ -251,7 +251,9 @@ export default function WorkspaceCanvasDemo() {
       <ScrollView className="flex-1">
         <VStack className="p-6 gap-6">
           <VStack className="gap-2">
-            <Text size="xs" className="font-bold tracking-widest text-[#SaffronMuted] uppercase">SHARED CANVAS DEMO</Text>
+            <Text size="xs" className="font-bold tracking-widest text-[#SaffronMuted] uppercase">
+              SHARED CANVAS DEMO
+            </Text>
             <Heading size="xl">Capability-first workspace canvas</Heading>
             <Text size="md" style={{ color: text.secondary }} className="max-w-[760px]">
               One responsive entry point now selects mobile, tablet, or web renderers while still
@@ -284,8 +286,13 @@ export default function WorkspaceCanvasDemo() {
             ))}
           </HStack>
 
-          <VStack className="rounded-xl border p-4 gap-1" style={{ backgroundColor: scene.surface.bg, borderColor: scene.border.base }}>
-            <Text size="xs" className="font-bold tracking-widest text-[#SaffronMuted] uppercase">Demo note</Text>
+          <VStack
+            className="rounded-xl border p-4 gap-1"
+            style={{ backgroundColor: scene.surface.bg, borderColor: scene.border.base }}
+          >
+            <Text size="xs" className="font-bold tracking-widest text-[#SaffronMuted] uppercase">
+              Demo note
+            </Text>
             <Text size="md">{notice}</Text>
           </VStack>
 
@@ -297,7 +304,9 @@ export default function WorkspaceCanvasDemo() {
             getSurfaceSubtitle={(surface) =>
               SURFACE_LIBRARY[surface.surfaceId as DemoSurfaceId].subtitle
             }
-            getSurfaceSummary={(surface) => SURFACE_LIBRARY[surface.surfaceId as DemoSurfaceId].summary}
+            getSurfaceSummary={(surface) =>
+              SURFACE_LIBRARY[surface.surfaceId as DemoSurfaceId].summary
+            }
             getSurfaceSnapshot={(surface) =>
               SURFACE_LIBRARY[surface.surfaceId as DemoSurfaceId].snapshot
             }
@@ -320,9 +329,15 @@ export default function WorkspaceCanvasDemo() {
             )}
             renderSurfaceContent={(surface) => (
               <VStack className="gap-1">
-                <Text size="sm" className="font-bold">Surface contract</Text>
-                <Text size="sm" style={{ color: text.secondary }}>Capability: {surface.capabilityKey}</Text>
-                <Text size="sm" style={{ color: text.secondary }}>Package owner: {surface.ownerPackage}</Text>
+                <Text size="sm" className="font-bold">
+                  Surface contract
+                </Text>
+                <Text size="sm" style={{ color: text.secondary }}>
+                  Capability: {surface.capabilityKey}
+                </Text>
+                <Text size="sm" style={{ color: text.secondary }}>
+                  Package owner: {surface.ownerPackage}
+                </Text>
                 <Text size="sm" style={{ color: text.secondary }}>
                   Mobile/Web: {surface.mobileSupport ? 'mobile ' : ''}
                   {surface.webSupport ? 'web' : ''}
@@ -330,7 +345,9 @@ export default function WorkspaceCanvasDemo() {
               </VStack>
             )}
             onSurfacePress={(surface) => {
-              setNotice(`${String(surface.surfaceId)} selected in the ${ROLE_LABELS[role]} canvas.`);
+              setNotice(
+                `${String(surface.surfaceId)} selected in the ${ROLE_LABELS[role]} canvas.`,
+              );
             }}
             onPressSurfaceInfo={(surface) => {
               setNotice(SURFACE_LIBRARY[surface.surfaceId as DemoSurfaceId].info);

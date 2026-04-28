@@ -11,11 +11,11 @@
  *   </SmartShelf>
  */
 
-import React from 'react';
-import { View, ScrollView, Text, Pressable, StyleSheet } from 'react-native';
 import { ChevronRight } from 'lucide-react-native';
-import { Theme } from '../theme/Theme';
+import type React from 'react';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useThemedColors } from '../hooks/useThemedColors';
+import { Theme } from '../theme/Theme';
 
 // ============================================================================
 // TYPES

@@ -1,40 +1,44 @@
-import React, { useState, useEffect } from "react";
-import { ScrollView, Platform } from "react-native";
+import { useNavigation, useRoute } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { usePermissions } from '@repo/core/logic';
+import { supabase } from '@repo/core/native';
+import { useStore } from '@repo/core/store';
+import type { CommunityStackParamList } from '@repo/core/types';
+import { GiveThuthimalModal } from '@repo/profile';
 import {
-  VStack,
-  HStack,
   Box,
-  Text,
   Heading,
+  HStack,
+  Text,
+  VStack,
   Button,
-  ButtonText,
   ButtonIcon,
-  ScreenWrapper,
+  ButtonText,
+  Theme,
+} from '@repo/ui/primitives';
+import {
+  GlobalHeader,
   LoadingOverlay,
   SanctuaryBackground,
-  GlobalHeader,
+  ScreenWrapper,
   UserAvatar,
-  Theme
-} from '@repo/ui';
+} from '@repo/ui/components';
 import {
-  Send,
-  MapPin,
-  Calendar,
-  Shield,
-  Medal,
   Activity,
-  MessageSquare,
-  Heart,
   BadgeCheck,
-  Gift
-} from "lucide-react-native";
-import { useNavigation, useRoute } from "@react-navigation/native";
-import { useTranslation } from "react-i18next";
-import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import type { CommunityStackParamList } from "@repo/core";
-import { usePermissions, supabase, useStore } from "@repo/core";
-import { GiveThuthimalModal } from "@repo/profile";
-import { communityAPI } from "../api/community";
+  Calendar,
+  Gift,
+  Heart,
+  MapPin,
+  Medal,
+  MessageSquare,
+  Send,
+  Shield,
+} from '@repo/ui/icons';
+import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Platform, ScrollView } from 'react-native';
+import { communityAPI } from '../api/community';
 
 /**
  * UserPublicProfileScreen.web
@@ -47,18 +51,21 @@ import { communityAPI } from "../api/community";
 export default function UserPublicProfileScreen() {
   const { t } = useTranslation();
   const route = useRoute<any>();
-  const navigation =
-    useNavigation<NativeStackNavigationProp<CommunityStackParamList>>();
+  const navigation = useNavigation<NativeStackNavigationProp<CommunityStackParamList>>();
   const params = (route as any)?.params ?? {};
-  const { userId: userIdParam, id, userName } = params as {
+  const {
+    userId: userIdParam,
+    id,
+    userName,
+  } = params as {
     userId?: string;
     id?: string;
     userName?: string;
   };
-  const userId = userIdParam || id || "";
+  const userId = userIdParam || id || '';
   const { context, can } = usePermissions();
   const currentUserId = context.userId;
-  const currentUser = useStore(state => state.user);
+  const currentUser = useStore((state) => state.user);
 
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
@@ -82,14 +89,16 @@ export default function UserPublicProfileScreen() {
     try {
       const { data, error } = await supabase
         .from('users')
-        .select('id, full_name, authority:role, avatar_url, public_profile, username, bio, school:schools(name)')
+        .select(
+          'id, full_name, authority:role, avatar_url, public_profile, username, bio, school:schools(name)',
+        )
         .eq('id', userId)
         .single();
 
       if (error) throw error;
       setUser({
         ...data,
-        school_name: (data.school as any)?.name ?? null
+        school_name: (data.school as any)?.name ?? null,
       });
 
       const [postsRes, endorsementsRes] = await Promise.all([
@@ -102,12 +111,12 @@ export default function UserPublicProfileScreen() {
           .from('resource_engagements')
           .select('id', { count: 'exact', head: true })
           .eq('user_id', userId)
-          .eq('engagement_type', 'endorse')
+          .eq('engagement_type', 'endorse'),
       ]);
 
       setStats({
         posts: postsRes.count ?? 0,
-        endorsements: endorsementsRes.count ?? 0
+        endorsements: endorsementsRes.count ?? 0,
       });
     } catch (error) {
       console.error('[UserProfile.web] Load Error:', error);
@@ -120,14 +129,13 @@ export default function UserPublicProfileScreen() {
     if (!currentUserId || !userId) return;
     setInitiatingDM(true);
     try {
-      const conversationId =
-        await communityAPI.getOrCreateDirectConversation(userId);
-      navigation.navigate("DirectMessage", {
+      const conversationId = await communityAPI.getOrCreateDirectConversation(userId);
+      navigation.navigate('DirectMessage', {
         conversationId: conversationId,
-        userName: user?.full_name || userName || "User",
+        userName: user?.full_name || userName || 'User',
       });
     } catch (error) {
-      console.error("[UserProfile.web] DM Error:", error);
+      console.error('[UserProfile.web] DM Error:', error);
     } finally {
       setInitiatingDM(false);
     }
@@ -159,23 +167,27 @@ export default function UserPublicProfileScreen() {
                   </Heading>
                   <BadgeCheck size={20} color="#E67E22" />
                 </HStack>
-                <Text className="text-sm text-muted-foreground">
-                  @{user?.username || "member"}
-                </Text>
+                <Text className="text-sm text-muted-foreground">@{user?.username || 'member'}</Text>
               </VStack>
             </VStack>
 
             <VStack className="gap-3">
               {user?.school_name && <InfoRow icon={<MapPin size={16} />} text={user.school_name} />}
-              <InfoRow icon={<Calendar size={16} />} text={t("community.profile.memberOfGurudevi") || "Member of Gurudevi"} />
-              <InfoRow icon={<Shield size={16} />} text={user?.authority?.toUpperCase() || 'MEMBER'} />
+              <InfoRow
+                icon={<Calendar size={16} />}
+                text={t('community.profile.memberOfGurudevi') || 'Member of Gurudevi'}
+              />
+              <InfoRow
+                icon={<Shield size={16} />}
+                text={user?.authority?.toUpperCase() || 'MEMBER'}
+              />
             </VStack>
 
             {isPrivate && (
               <HStack className="gap-2 items-center opacity-70 p-3 rounded-xl bg-black/5">
                 <Shield size={14} color="rgba(255,255,255,0.6)" />
                 <Text className="text-[12px] text-muted-foreground italic">
-                  {t("community.profile.privateSanctuary") || "Private Sanctuary"}
+                  {t('community.profile.privateSanctuary') || 'Private Sanctuary'}
                 </Text>
               </HStack>
             )}
@@ -190,21 +202,20 @@ export default function UserPublicProfileScreen() {
                 >
                   <ButtonIcon as={Send} size={18} color="white" />
                   <ButtonText className="text-white font-extrabold ml-2">
-                    {t("community.profile.sendMessage")}
+                    {t('community.profile.sendMessage')}
                   </ButtonText>
                 </Button>
-                {can('create', { __typename: 'Thuthimal', recipient_id: userId } as any) && currentUser && (
-                  <Button
-                    variant="outline"
-                    onPress={() => setShowThuthimal(true)}
-                    className="h-[52px] rounded-[26px]"
-                  >
-                    <ButtonIcon as={Gift} size={18} color="#E67E22" />
-                    <ButtonText className="font-extrabold ml-2">
-                      Send Thuthimal {'=O'}
-                    </ButtonText>
-                  </Button>
-                )}
+                {can('create', { __typename: 'Thuthimal', recipient_id: userId } as any) &&
+                  currentUser && (
+                    <Button
+                      variant="outline"
+                      onPress={() => setShowThuthimal(true)}
+                      className="h-[52px] rounded-[26px]"
+                    >
+                      <ButtonIcon as={Gift} size={18} color="#E67E22" />
+                      <ButtonText className="font-extrabold ml-2">Send Thuthimal {'=O'}</ButtonText>
+                    </Button>
+                  )}
               </VStack>
             )}
 
@@ -222,24 +233,21 @@ export default function UserPublicProfileScreen() {
           </VStack>
         </Box>
 
-
         {/* 2. Center Column: Contributions Feed */}
         <Box className="flex-1 h-full">
           <GlobalHeader
-            title={t("community.profile.resonanceSphere") || "Resonance Sphere"}
-            subtitle={`${t("community.profile.publicPresenceOf") || "Public presence of"} ${user?.full_name || userName}`}
+            title={t('community.profile.resonanceSphere') || 'Resonance Sphere'}
+            subtitle={`${t('community.profile.publicPresenceOf') || 'Public presence of'} ${user?.full_name || userName}`}
           />
 
-          <ScrollView
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ padding: 40 }}
-          >
+          <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 40 }}>
             <VStack className="gap-6 max-w-[700px] w-full self-center">
               {isPrivate ? (
                 <Box className="p-10 rounded-3xl bg-surface-lowest border border-outline-variant items-center gap-4">
                   <Shield size={48} color="rgba(255,255,255,0.4)" />
                   <Text className="text-base text-muted-foreground text-center">
-                    {t("community.profile.privateNote") || "This explorer has chosen to keep their detailed presence private."}
+                    {t('community.profile.privateNote') ||
+                      'This explorer has chosen to keep their detailed presence private.'}
                   </Text>
                 </Box>
               ) : (
@@ -247,31 +255,37 @@ export default function UserPublicProfileScreen() {
                   <Box className="p-6 rounded-3xl bg-surface-lowest border border-outline-variant">
                     <VStack className="gap-3">
                       <Heading className="text-[18px] font-extrabold text-foreground">
-                        {t("community.profile.aspiration")}
+                        {t('community.profile.aspiration')}
                       </Heading>
                       <Text className="text-base leading-relaxed text-muted-foreground">
-                        {user?.bio || t("community.profile.defaultBio") || "This user is on a journey of growth and resonance within the Gurudevi ecosystem."}
+                        {user?.bio ||
+                          t('community.profile.defaultBio') ||
+                          'This user is on a journey of growth and resonance within the Gurudevi ecosystem.'}
                       </Text>
                     </VStack>
                   </Box>
 
                   <Heading className="text-xl font-black text-foreground mt-3">
-                    {t("community.profile.publicResonance") || "Public Resonance"}
+                    {t('community.profile.publicResonance') || 'Public Resonance'}
                   </Heading>
 
-                  {[1, 2, 3].map(i => (
-                    <Box key={i} className="p-6 rounded-3xl bg-surface-lowest border border-outline-variant">
+                  {[1, 2, 3].map((i) => (
+                    <Box
+                      key={i}
+                      className="p-6 rounded-3xl bg-surface-lowest border border-outline-variant"
+                    >
                       <VStack className="gap-3">
                         <HStack className="justify-between">
                           <Text className="text-[12px] font-bold text-primary-500">
-                            {(t("community.profile.reflection") || "REFLECTION").toUpperCase()}
+                            {(t('community.profile.reflection') || 'REFLECTION').toUpperCase()}
                           </Text>
                           <Text className="text-[12px] text-muted-foreground">
-                            {t("community.profile.recent") || "Recent"}
+                            {t('community.profile.recent') || 'Recent'}
                           </Text>
                         </HStack>
                         <Text className="text-[15px] leading-relaxed text-foreground">
-                          The intersection of ancient mindfulness and modern algorithmic efficiency is where true wisdom resides.
+                          The intersection of ancient mindfulness and modern algorithmic efficiency
+                          is where true wisdom resides.
                         </Text>
                         <HStack className="gap-4">
                           <HStack className="gap-1 items-center">
@@ -292,7 +306,6 @@ export default function UserPublicProfileScreen() {
           </ScrollView>
         </Box>
 
-
         {/* 3. Right Column: Stats & Badges */}
         <Box className="w-[320px] h-full border-l border-outline-variant bg-white/[0.01]">
           <VStack className="gap-8 p-8">
@@ -300,22 +313,40 @@ export default function UserPublicProfileScreen() {
               <>
                 <VStack className="gap-4">
                   <Heading className="text-[18px] font-extrabold text-foreground">
-                    {t("community.profile.resonanceStats")}
+                    {t('community.profile.resonanceStats')}
                   </Heading>
                   <HStack className="flex-wrap gap-3">
-                    <StatCard label={t("community.profile.posts") || "Posts"} value={stats.posts.toString()} icon={<MessageSquare size={16} />} />
-                    <StatCard label={t("community.profile.endorsements") || "Endorsements"} value={stats.endorsements.toString()} icon={<Heart size={16} />} />
-                    <StatCard label={t("community.profile.pulse") || "Pulse"} value={t("community.profile.pulseActive") || "Active"} icon={<Activity size={16} />} />
+                    <StatCard
+                      label={t('community.profile.posts') || 'Posts'}
+                      value={stats.posts.toString()}
+                      icon={<MessageSquare size={16} />}
+                    />
+                    <StatCard
+                      label={t('community.profile.endorsements') || 'Endorsements'}
+                      value={stats.endorsements.toString()}
+                      icon={<Heart size={16} />}
+                    />
+                    <StatCard
+                      label={t('community.profile.pulse') || 'Pulse'}
+                      value={t('community.profile.pulseActive') || 'Active'}
+                      icon={<Activity size={16} />}
+                    />
                   </HStack>
                 </VStack>
 
                 <VStack className="gap-4">
                   <Heading className="text-[18px] font-extrabold text-foreground">
-                    {t("community.profile.sanctuaryHonors")}
+                    {t('community.profile.sanctuaryHonors')}
                   </Heading>
                   <VStack className="gap-3">
-                    <BadgeItem icon={<Medal size={18} color="#E67E22" />} title={t("community.profile.explorer") || "Explorer"} />
-                    <BadgeItem icon={<BadgeCheck size={18} color="#10b981" />} title={t("community.profile.verified") || "Verified"} />
+                    <BadgeItem
+                      icon={<Medal size={18} color="#E67E22" />}
+                      title={t('community.profile.explorer') || 'Explorer'}
+                    />
+                    <BadgeItem
+                      icon={<BadgeCheck size={18} color="#10b981" />}
+                      title={t('community.profile.verified') || 'Verified'}
+                    />
                   </VStack>
                 </VStack>
               </>
@@ -324,7 +355,7 @@ export default function UserPublicProfileScreen() {
               <VStack className="gap-3 items-center p-5 rounded-[20px] border border-dashed border-outline-variant">
                 <Shield size={24} color="rgba(255,255,255,0.4)" />
                 <Text className="text-[12px] text-muted-foreground text-center">
-                  {t("community.profile.privacyProtected") || "Privacy Protected"}
+                  {t('community.profile.privacyProtected') || 'Privacy Protected'}
                 </Text>
               </VStack>
             )}
@@ -337,35 +368,24 @@ export default function UserPublicProfileScreen() {
   );
 }
 
-
 function InfoRow({ icon, text }: { icon: any; text: string }) {
   return (
     <HStack className="gap-3 items-center">
-      {React.cloneElement(icon, { size: 16, color: "rgba(255,255,255,0.6)" })}
+      {React.cloneElement(icon, { size: 16, color: 'rgba(255,255,255,0.6)' })}
       <Text className="text-sm text-muted-foreground">{text}</Text>
     </HStack>
   );
 }
 
-function StatCard({
-  label,
-  value,
-  icon,
-}: {
-  label: string;
-  value: string;
-  icon: any;
-}) {
+function StatCard({ label, value, icon }: { label: string; value: string; icon: any }) {
   return (
     <VStack className="flex-1 min-w-[100px] p-4 rounded-[20px] bg-surface-lowest border border-outline-variant gap-1">
       <HStack className="justify-between items-center">
         {React.cloneElement(icon as React.ReactElement<any>, {
-          color: "#E67E22",
+          color: '#E67E22',
           size: 14,
         })}
-        <Text className="text-[18px] font-black text-foreground">
-          {value}
-        </Text>
+        <Text className="text-[18px] font-black text-foreground">{value}</Text>
       </HStack>
       <Text className="text-[11px] font-bold text-muted-foreground tracking-wider uppercase">
         {label}
@@ -378,9 +398,7 @@ function BadgeItem({ icon, title }: { icon: any; title: string }) {
   return (
     <HStack className="p-3.5 rounded-2xl bg-surface-lowest border border-outline-variant items-center gap-3">
       {icon}
-      <Text className="text-sm font-bold text-foreground">
-        {title}
-      </Text>
+      <Text className="text-sm font-bold text-foreground">{title}</Text>
     </HStack>
   );
 }

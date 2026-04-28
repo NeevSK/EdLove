@@ -1,14 +1,14 @@
-import React, { useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
 import {
   groupResolvedWorkspaceSurfacesByZone,
   resolveWorkspaceSurfaceLayout,
   type WorkspaceRendererConfig,
 } from '@repo/core/logic';
 import { LayoutGrid, Pin } from 'lucide-react-native';
-import { Theme } from '../../theme/Theme';
-import { useThemedColors } from '../../hooks/useThemedColors';
+import { useMemo } from 'react';
+import { StyleSheet, View } from 'react-native';
 import { Text } from '../../gluestack';
+import { useThemedColors } from '../../hooks/useThemedColors';
+import { Theme } from '../../theme/Theme';
 import type { WorkspaceCanvasProps } from './types';
 
 export function useWorkspaceCanvasData<

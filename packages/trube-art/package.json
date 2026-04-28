@@ -45,16 +45,16 @@
     "react-native-wgpu": ">= 0.1.0"
   },
   "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
+    "@repo/eslint-config": "workspace:^",
     "@types/node": "^25.5.0",
-    "@types/react": "~19.1.10",
+    "@types/react": "^19.2.14",
     "@webgpu/types": "^0.1.54",
     "eslint": "^9.38.0",
-    "react-native-nitro-modules": "~0.21.0",
-    "react-native-reanimated": "~4.2.1-nitro",
+    "react-native-nitro-modules": "0.33.9",
+    "react-native-reanimated": "^4.2.1",
     "react-native-wgpu": "~0.1.5",
     "rimraf": "^6.0.1",
     "typegpu": "~0.3.2",
-    "typescript": "~5.9.2"
+    "typescript": "^5.9.3"
   }
 }

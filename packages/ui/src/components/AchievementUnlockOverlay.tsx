@@ -1,14 +1,14 @@
-import React, { useEffect } from 'react';
+import { Trophy } from 'lucide-react-native';
+import { useCallback, useEffect } from 'react';
+import { Dimensions } from 'react-native';
 import Animated, {
+  runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
   withTiming,
-  runOnJS,
 } from 'react-native-reanimated';
-import { Dimensions } from 'react-native';
-import { Box, VStack, Text, Center } from '../gluestack';
-import { Trophy } from 'lucide-react-native';
+import { Box, Center, Text, VStack } from '../gluestack';
 
 const { width } = Dimensions.get('window');
 
@@ -33,6 +33,16 @@ export default function AchievementUnlockOverlay({
   const scale = useSharedValue(0.8);
   const opacity = useSharedValue(0);
 
+  const performHide = useCallback(() => {
+    opacity.value = withTiming(0, { duration: 300 });
+    scale.value = withTiming(0.8, { duration: 300 });
+    translateY.value = withTiming(-200, { duration: 400 }, (finished) => {
+      if (finished) {
+        runOnJS(onHide)();
+      }
+    });
+  }, [opacity, scale, translateY, onHide]);
+
   useEffect(() => {
     if (visible) {
       // Animate In
@@ -42,22 +52,12 @@ export default function AchievementUnlockOverlay({
 
       // Auto Hide after 4 seconds
       const timer = setTimeout(() => {
-        hide();
+        performHide();
       }, 4000);
 
       return () => clearTimeout(timer);
     }
-  }, [visible]);
-
-  const hide = () => {
-    opacity.value = withTiming(0, { duration: 300 });
-    scale.value = withTiming(0.8, { duration: 300 });
-    translateY.value = withTiming(-200, { duration: 400 }, (finished) => {
-      if (finished) {
-        runOnJS(onHide)();
-      }
-    });
-  };
+  }, [visible, translateY, scale, opacity, performHide]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }, { scale: scale.value }] as any,

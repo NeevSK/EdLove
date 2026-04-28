@@ -1,5 +1,5 @@
 import { supabase } from '@repo/core';
-import { FinancialTransaction, LedgerEntry } from './types';
+import type { FinancialTransaction, LedgerEntry } from './types';
 
 export class Ledger {
   /**
@@ -8,7 +8,7 @@ export class Ledger {
    */
   static async recordTransaction(
     transaction: Omit<FinancialTransaction, 'id' | 'entries'>,
-    entries: Omit<LedgerEntry, 'id' | 'transactionId' | 'createdAt'>[]
+    entries: Omit<LedgerEntry, 'id' | 'transactionId' | 'createdAt'>[],
   ) {
     // 1. Validate Double Entry Balance
     const total = entries.reduce((sum, entry) => {
@@ -30,9 +30,9 @@ export class Ledger {
     if (txError) throw txError;
 
     // 3. Insert Ledger Entries
-    const entriesWithTxId = entries.map(e => ({
+    const entriesWithTxId = entries.map((e) => ({
       ...e,
-      transaction_id: tx.id
+      transaction_id: tx.id,
     }));
 
     const { error: entriesError } = await supabase

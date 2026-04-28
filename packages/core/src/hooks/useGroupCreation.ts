@@ -1,5 +1,5 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useState } from 'react';
+import { storage } from '../lib/storage';
 
 const PERSISTENCE_KEY = 'GURUDEVI_GROUP_CREATION_STATE';
 
@@ -38,7 +38,7 @@ export function useGroupCreation() {
   useEffect(() => {
     const loadState = async () => {
       try {
-        const savedState = await AsyncStorage.getItem(PERSISTENCE_KEY);
+        const savedState = await storage.getStringAsync(PERSISTENCE_KEY);
         if (savedState) {
           setState(JSON.parse(savedState));
         }
@@ -53,7 +53,7 @@ export function useGroupCreation() {
 
   useEffect(() => {
     if (isLoaded) {
-      AsyncStorage.setItem(PERSISTENCE_KEY, JSON.stringify(state));
+      storage.set(PERSISTENCE_KEY, JSON.stringify(state));
     }
   }, [state, isLoaded]);
 
@@ -66,7 +66,7 @@ export function useGroupCreation() {
     setState((prev) => ({ ...prev, setup: { ...prev.setup, ...setup } }));
 
   const resetProgress = async () => {
-    await AsyncStorage.removeItem(PERSISTENCE_KEY);
+    storage.delete(PERSISTENCE_KEY);
     setState(initialState);
   };
 

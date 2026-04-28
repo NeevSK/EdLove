@@ -29,4 +29,7 @@ To maintain the **100/100 Architectural Maturity** of this package, the followin
 3.  **Atomic UI Design**: Raw React Native primitives (e.g., `<View>`, `<Text>`, `StyleSheet`) are forbidden. Use Sanctuary V3 primitives (`Box`, `VStack`, `HStack`, `Heading`, `Text`, `Pressable`) and NativeWind utility classes.
 4.  **Isomorphism**: All components should be designed to run on Web and Mobile without modification, utilizing the `nativeRuntimeEnvironment` adapter for platform-specific bridge logic.
 
+5.  **State Excellence**: Every provider MUST be referentially stable. Use `useReducer` for complex logic and `useMemo` for context values. Follow the [State vs. Memory Management Guide](./docs/state-management-guide.md).
+
 Failure to follow these rules will lower the package's maturity score and trigger architectural audit warnings.
+

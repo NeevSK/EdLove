@@ -54,7 +54,11 @@ function CardsShimmer() {
       {/* Filter pills */}
       <div style={{ display: 'flex', gap: 8, marginBottom: 32 }}>
         {[80, 110, 90, 70, 100].map((w, i) => (
-          <div key={`pill-${i}`} className="wsm-block" style={{ width: w, height: 34, borderRadius: 50 }} />
+          <div
+            key={`pill-${i}`}
+            className="wsm-block"
+            style={{ width: w, height: 34, borderRadius: 50 }}
+          />
         ))}
       </div>
       {/* Card grid */}

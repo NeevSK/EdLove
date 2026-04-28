@@ -1,4 +1,4 @@
-import { PaymentProvider } from './types';
+import type { PaymentProvider } from './types';
 
 export class PaymentRegistry {
   private providers: Map<string, PaymentProvider> = new Map();

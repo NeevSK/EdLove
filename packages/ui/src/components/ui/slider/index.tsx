@@ -1,17 +1,15 @@
-import React from 'react';
-import { View as RNView } from 'react-native';
 import RNSlider, { type SliderProps as RNSliderProps } from '@react-native-community/slider';
 import { cssInterop } from 'nativewind';
+import React from 'react';
+import { useTheme } from '../../../hooks/useTheme';
 
 /**
- * Slider Implementation (Hardened v3)
+ * Slider Component
  *
- * Supports both:
- * 1. Native Slider (via @react-native-community/slider)
- * 2. Composite Slider (for custom designs like form-builder)
+ * A high-impact, hardened value picker.
+ * Optimized for platform-native interaction with design system color integration.
  */
 
-// 1. Native Slider with NativeWind support
 cssInterop(RNSlider, { className: 'style' });
 
 export interface ISliderProps extends RNSliderProps {
@@ -20,49 +18,25 @@ export interface ISliderProps extends RNSliderProps {
   maxValue?: number;
 }
 
-export const Slider = React.forwardRef<RNSlider, ISliderProps>(
-  ({ className, minValue, maxValue, ...props }, ref) => (
-    <RNSlider
-      {...(props as any)}
-      ref={ref}
-      minimumValue={minValue ?? props.minimumValue}
-      maximumValue={maxValue ?? props.maximumValue}
-    />
-  ),
-);
+export const Slider = React.forwardRef<any, ISliderProps>(
+  ({ className, minValue, maxValue, ...props }, ref) => {
+    const { accent } = useTheme();
 
-// 2. Composite Components (Legacy support for form-builder)
-const View = RNView as any;
-
-export const SliderTrack = ({ children, className }: any) => (
-  <View
-    {...({
-      className: `h-1 w-full bg-phase-surface border border-phase-surface rounded-full overflow-hidden ${className || ''}`,
-    } as any)}
-  >
-    {children}
-  </View>
-);
-
-export const SliderFilledTrack = ({ className, style, width = '0%' }: any) => (
-  <View
-    {...({
-      style: { ...style, width },
-      className: `h-full bg-phase-accent ${className || ''}`,
-    } as any)}
-  />
-);
-
-export const SliderThumb = ({ className, style }: any) => (
-  <View
-    {...({
-      style,
-      className: `w-5 h-5 bg-white border border-phase-accent rounded-full shadow-sm absolute ${className || ''}`,
-    } as any)}
-  />
+    return (
+      <RNSlider
+        {...props}
+        ref={ref as any}
+        minimumValue={minValue ?? props.minimumValue ?? 0}
+        maximumValue={maxValue ?? props.maximumValue ?? 100}
+        minimumTrackTintColor={accent?.action || '#D4843A'}
+        maximumTrackTintColor="#E9E9EA"
+        thumbTintColor={accent?.action || '#D4843A'}
+        className={className}
+      />
+    );
+  },
 );
 
 Slider.displayName = 'Slider';
-SliderTrack.displayName = 'SliderTrack';
-SliderFilledTrack.displayName = 'SliderFilledTrack';
-SliderThumb.displayName = 'SliderThumb';
+
+export { Slider as default };

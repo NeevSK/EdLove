@@ -15,14 +15,15 @@
  * Roles: teacher · student · principal (NOT founder / admin / developer).
  */
 
-import React, { useState, useMemo, useEffect } from 'react';
-import { useWindowDimensions } from 'react-native';
-import { useTranslation } from 'react-i18next';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { AuthorityTier } from '@repo/core/logic';
-import { identityAPI, authAPI, supabase } from '@repo/core/native';
+import type { AuthorityTier } from '@repo/core/logic';
+import { authAPI, identityAPI, supabase } from '@repo/core/native';
+import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useWindowDimensions } from 'react-native';
 
-import { hapticLight, hapticSuccess, hapticError } from '../utils/haptics';
+import { hapticError, hapticLight, hapticSuccess } from '../utils/haptics';
+
 // Using direct i18n calls for language switching on web.
 
 // ──────────────────────────────────────────────────────────
@@ -349,7 +350,6 @@ export default function OnboardingScreenWeb({
             onKeyDown={(e) => {
               if (e.key === 'Enter' && name.trim()) handleNext();
             }}
-            autoFocus
             autoComplete="given-name"
           />
           <div className="ob-actions">

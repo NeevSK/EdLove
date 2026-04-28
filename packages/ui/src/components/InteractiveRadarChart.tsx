@@ -1,6 +1,7 @@
-import React, { useMemo } from 'react';
-import { View, Text, StyleSheet, Dimensions } from 'react-native';
-import Svg, { Polygon, Line, Circle, G, Text as SvgText } from 'react-native-svg';
+import type React from 'react';
+import { useMemo } from 'react';
+import { StyleSheet, View } from 'react-native';
+import Svg, { Circle, G, Line, Polygon, Text as SvgText } from 'react-native-svg';
 import { Theme } from '../theme/Theme';
 
 export interface RadarDimension {
@@ -40,7 +41,7 @@ export const InteractiveRadarChart: React.FC<InteractiveRadarChartProps> = ({
         y: centerY + Math.sin(angle) * radius,
       };
     });
-  }, [dimensions.length, centerX, centerY, radius, angleStep]);
+  }, [centerX, centerY, radius, angleStep, dimensions.map]);
 
   // Calculate vertex positions for the data polygon
   const dataPoints = useMemo(() => {

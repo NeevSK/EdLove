@@ -1,6 +1,5 @@
-import React from 'react';
-import { View, StyleSheet, useWindowDimensions, ScrollView } from 'react-native';
-import { Theme } from '../theme/Theme';
+import type React from 'react';
+import { ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { useThemedColors } from '../hooks/useThemedColors';
 
 interface AdaptiveLayoutProps {

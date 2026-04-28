@@ -1,6 +1,6 @@
-import React from 'react';
-import { View, ViewStyle, Platform } from 'react-native';
 import { FeatureGuard } from '@repo/core';
+import type React from 'react';
+import { Platform, View, type ViewStyle } from 'react-native';
 
 interface SanctuaryCanvasProps {
   children?: React.ReactNode;
@@ -27,7 +27,7 @@ export const SanctuaryCanvas: React.FC<SanctuaryCanvasProps> = ({
   render,
 }) => {
   const standardContent = render?.standard ? render.standard() : null;
-  
+
   return (
     <FeatureGuard feature="isGraphicsEngineEnabled">
       {Platform.OS === 'web' ? (

@@ -1,6 +1,5 @@
 export * from './useLibrary';
 export * from './useMapPresence';
-export * from './usePerspectiveLayout';
 export * from './useMappingSync';
+export * from './usePerspectiveLayout';
 export * from './useTopologyPulse';
-

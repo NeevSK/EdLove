@@ -1,7 +1,7 @@
-import React from 'react';
-import { View, Text, ActivityIndicator } from 'react-native';
-import { GeographicPerspective } from './GeographicPerspective';
+import type React from 'react';
+import { ActivityIndicator, Text, View } from 'react-native';
 import { useGeoData } from '../../hooks/useGeoData';
+import { GeographicPerspective } from './GeographicPerspective';
 
 interface GeospatialStudioProps {
   datasetId: string;
@@ -20,7 +20,7 @@ export const GeospatialStudio: React.FC<GeospatialStudioProps> = ({ datasetId })
   // Transform geo_features into the format expected by GeoThematicEngine/GeographicPerspective
   // If the data is point-based, we can map properties. If it's linked to admin_id, we can do choropleths.
   const districtData: Record<string, number> = {};
-  data.forEach(feature => {
+  data.forEach((feature) => {
     if (feature.admin_id) {
       districtData[feature.admin_id] = feature.properties.viability_score || 0;
     }
@@ -46,4 +46,4 @@ export const GeospatialStudio: React.FC<GeospatialStudioProps> = ({ datasetId })
       </View>
     </View>
   );
-}
+};

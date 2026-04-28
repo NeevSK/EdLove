@@ -40,7 +40,7 @@ export const RedirectToApp = () => {
 
     // Using direct window.location for deep linking on web
     window.location.href = url;
-    
+
     // Fallback if app not installed (basic version)
     setTimeout(() => {
       if (!document.hidden) {

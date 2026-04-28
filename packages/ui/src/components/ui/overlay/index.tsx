@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
+import type { View } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { Pressable } from '../view';
 

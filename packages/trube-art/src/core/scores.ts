@@ -22,7 +22,7 @@ export const TRUBE_SCORE_NAMES = [
   'sanctuary-air',
 ] as const;
 
-export type TrubeScoreName = typeof TRUBE_SCORE_NAMES[number];
+export type TrubeScoreName = (typeof TRUBE_SCORE_NAMES)[number];
 
 export interface TrubeScorePreset {
   name: TrubeScoreName;
@@ -103,17 +103,20 @@ export const GURUDEVI_CANONICAL_SCORES: TrubeCanonicalScore[] = [
   {
     name: 'lotus-dawn',
     role: 'Quiet awakening',
-    rationale: 'The default spiritual morning scene: warm, breathable, and suitable for reading-led surfaces.',
+    rationale:
+      'The default spiritual morning scene: warm, breathable, and suitable for reading-led surfaces.',
   },
   {
     name: 'goethe-night-study',
     role: 'Ambient depth',
-    rationale: 'The standard nocturnal atmosphere: rich enough to feel alive, restrained enough to stay behind content.',
+    rationale:
+      'The standard nocturnal atmosphere: rich enough to feel alive, restrained enough to stay behind content.',
   },
   {
     name: 'lotus-vigil',
     role: 'Ceremonial signature',
-    rationale: 'The first true signature scene for sacred or emotionally heightened moments inside Gurudevi.',
+    rationale:
+      'The first true signature scene for sacred or emotionally heightened moments inside Gurudevi.',
   },
 ];
 
@@ -331,7 +334,8 @@ export const SCORE_PRESETS: Record<TrubeScoreName, TrubeScorePreset> = {
       focalZone: 'lower-third',
       safeOverlayZone: 'upper-third',
       textDensity: 'minimal',
-      preferredUse: 'Transitional surfaces, meditative pauses, and low-contrast reading environments.',
+      preferredUse:
+        'Transitional surfaces, meditative pauses, and low-contrast reading environments.',
       avoidUse: 'Moments that need symbolic focus or strong emotional arrival.',
     },
     stage: stage(
@@ -373,7 +377,8 @@ export const SCORE_PRESETS: Record<TrubeScoreName, TrubeScorePreset> = {
     description: 'A rising aurora ensemble with leaf warmth and ceremonial light.',
     experience: 'ceremonial',
     emphasis: 'Expansive arrival energy, meant to feel like a first movement opening.',
-    restraint: 'Reserve for launches, welcomes, and hero canvases rather than dense utility screens.',
+    restraint:
+      'Reserve for launches, welcomes, and hero canvases rather than dense utility screens.',
     lineage: {
       doctrine: 'Heroic opening with controlled ceremonial lift.',
       dialect: 'Gurudevi dawn grandeur.',
@@ -440,10 +445,12 @@ export const SCORE_PRESETS: Record<TrubeScoreName, TrubeScorePreset> = {
   'lotus-vigil': {
     name: 'lotus-vigil',
     label: 'Lotus Vigil',
-    description: 'A dark contemplative chamber with drafted lotus geometry and subtle constellations.',
+    description:
+      'A dark contemplative chamber with drafted lotus geometry and subtle constellations.',
     experience: 'ceremonial',
     emphasis: 'A meditative focal scene with stillness at the center and fine detail at the edge.',
-    restraint: 'Pair with low-density layouts and a limited text hierarchy so the vigil can breathe.',
+    restraint:
+      'Pair with low-density layouts and a limited text hierarchy so the vigil can breathe.',
     lineage: {
       doctrine: 'Sacred focus with low-density interface framing.',
       dialect: 'Gurudevi liturgical stillness.',
@@ -458,7 +465,8 @@ export const SCORE_PRESETS: Record<TrubeScoreName, TrubeScorePreset> = {
       focalZone: 'centered',
       safeOverlayZone: 'lower-third',
       textDensity: 'minimal',
-      preferredUse: 'Sacred pauses, milestone completions, and moments where the interface should feel almost liturgical.',
+      preferredUse:
+        'Sacred pauses, milestone completions, and moments where the interface should feel almost liturgical.',
       avoidUse: 'Transactional tasks, multi-card dashboards, or strong competing iconography.',
     },
     stage: stage(
@@ -556,8 +564,10 @@ export const SCORE_PRESETS: Record<TrubeScoreName, TrubeScorePreset> = {
     label: 'Vellum Prayer',
     description: 'Soft vellum-like warmth with filigree breath and restrained lotus draftsmanship.',
     experience: 'quiet',
-    emphasis: 'Paperlike calm with enough authored detail to feel devotional rather than decorative.',
-    restraint: 'Use with very light interface chrome and avoid loud accents, strong borders, or dense utility bars.',
+    emphasis:
+      'Paperlike calm with enough authored detail to feel devotional rather than decorative.',
+    restraint:
+      'Use with very light interface chrome and avoid loud accents, strong borders, or dense utility bars.',
     lineage: {
       doctrine: 'Quiet material depth with almost tactile softness.',
       dialect: 'Gurudevi vellum warmth and drafted prayerful stillness.',
@@ -573,7 +583,8 @@ export const SCORE_PRESETS: Record<TrubeScoreName, TrubeScorePreset> = {
       safeOverlayZone: 'lower-third',
       textDensity: 'minimal',
       preferredUse: 'Reading entry points, sacred notes, and reflective single-column surfaces.',
-      avoidUse: 'Notification-heavy screens or layouts with multiple competing call-to-action groups.',
+      avoidUse:
+        'Notification-heavy screens or layouts with multiple competing call-to-action groups.',
     },
     stage: stage(
       [
@@ -611,10 +622,13 @@ export const SCORE_PRESETS: Record<TrubeScoreName, TrubeScorePreset> = {
   'sanctuary-air': {
     name: 'sanctuary-air',
     label: 'Sanctuary Air',
-    description: 'A peripheral atmospheric field with cool mist and slight aurora lift for support screens.',
+    description:
+      'A peripheral atmospheric field with cool mist and slight aurora lift for support screens.',
     experience: 'ambient',
-    emphasis: 'Breath at the edges, openness in the center, and enough motion to keep utility screens from feeling sterile.',
-    restraint: 'Keep the center clear and do not add competing central illustrations or high-density overlays.',
+    emphasis:
+      'Breath at the edges, openness in the center, and enough motion to keep utility screens from feeling sterile.',
+    restraint:
+      'Keep the center clear and do not add competing central illustrations or high-density overlays.',
     lineage: {
       doctrine: 'Periphery motion with operational calm.',
       dialect: 'Gurudevi support-surface airiness.',
@@ -629,7 +643,8 @@ export const SCORE_PRESETS: Record<TrubeScoreName, TrubeScorePreset> = {
       focalZone: 'edge-weighted',
       safeOverlayZone: 'centered',
       textDensity: 'moderate',
-      preferredUse: 'Operational screens that still deserve atmosphere, especially settings and profile areas.',
+      preferredUse:
+        'Operational screens that still deserve atmosphere, especially settings and profile areas.',
       avoidUse: 'Hero landings, ceremonial moments, or sacred focus scenes.',
     },
     stage: stage(
@@ -672,7 +687,9 @@ export function getScorePreset(name: TrubeScoreName): TrubeScorePreset {
 }
 
 export function getScoresForExperience(mode: TrubeExperienceMode): TrubeScorePreset[] {
-  return TRUBE_SCORE_NAMES.map((name) => SCORE_PRESETS[name]).filter((score) => score.experience === mode);
+  return TRUBE_SCORE_NAMES.map((name) => SCORE_PRESETS[name]).filter(
+    (score) => score.experience === mode,
+  );
 }
 
 export function getExperienceGuidance(mode: TrubeExperienceMode): TrubeExperienceGuidance {
@@ -697,7 +714,9 @@ export function getCollectionScores(collectionId: string): TrubeScorePreset[] {
 }
 
 export function getScoresByReviewState(state: TrubeScoreReviewState): TrubeScorePreset[] {
-  return TRUBE_SCORE_NAMES.map((name) => SCORE_PRESETS[name]).filter((score) => score.review.state === state);
+  return TRUBE_SCORE_NAMES.map((name) => SCORE_PRESETS[name]).filter(
+    (score) => score.review.state === state,
+  );
 }
 
 export function getProductionReadyScores(): TrubeScorePreset[] {

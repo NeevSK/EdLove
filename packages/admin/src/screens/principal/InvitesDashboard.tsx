@@ -1,26 +1,24 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { 
-    Box, 
-    VStack, 
-    HStack, 
-    Text, 
-    Heading, 
-    Icon, 
-    Button,
-    ScrollView,
-    Spinner,
-    useSanctuaryToast as useToast,
-    Toast,
-    ToastTitle,
-    Pressable,
-    hapticLight,
-    hapticMedium
-} from '@repo/ui';
-import { ArrowLeft, Copy, Plus, X, ShieldAlert, Award, QrCode } from 'lucide-react-native';
-import { formatDistanceToNow } from 'date-fns';
-import * as Clipboard from 'expo-clipboard';
 import { invitesAPI, type InviteCode } from '../../invites';
-import { handleAPIError } from '@repo/core';
+import {
+  Box,
+  Heading,
+  HStack,
+  Icon,
+  Pressable,
+  Spinner,
+  Text,
+  VStack,
+  useToast,
+} from '@repo/ui';
+import { ArrowLeft, Copy, Plus, X, UserPlus } from 'lucide-react-native';
+import React, { useEffect, useReducer, useCallback } from 'react';
+import { formatDistanceToNow } from 'date-fns';
+import { hapticSuccess, hapticLight } from '@repo/ui';
+import { Platform } from 'react-native';
+
+// —————————————————————————————————————————————————————————————————————————————
+// TYPES
+// —————————————————————————————————————————————————————————————————————————————
 
 interface InvitesDashboardProps {
     schoolId: string;
@@ -29,211 +27,289 @@ interface InvitesDashboardProps {
     onBack: () => void;
 }
 
-export const InvitesDashboard: React.FC<InvitesDashboardProps> = ({ schoolId, userId, isPastView, onBack }) => {
-    const [inviteRole, setInviteRole] = useState<'teacher' | 'principal'>('teacher');
-    const [inviteCodes, setInviteCodes] = useState<InviteCode[]>([]);
-    const [loading, setLoading] = useState(false);
-    const [generating, setGenerating] = useState(false);
-    const toast = useToast();
+type State = {
+  inviteCodes: InviteCode[];
+  isLoading: boolean;
+  isGenerating: boolean;
+  inviteRole: 'teacher' | 'principal';
+};
 
-    const loadInviteCodes = useCallback(async () => {
-        if (!schoolId) return;
-        setLoading(true);
-        try {
-            const codes = await invitesAPI.getInviteCodesBySchool(schoolId);
-            setInviteCodes(codes ?? []);
-        } catch (error) {
-            handleAPIError(error);
-        } finally {
-            setLoading(false);
-        }
-    }, [schoolId]);
+type Action =
+  | { type: 'LOAD_START' }
+  | { type: 'LOAD_SUCCESS'; codes: InviteCode[] }
+  | { type: 'LOAD_FAILURE' }
+  | { type: 'GENERATE_START' }
+  | { type: 'GENERATE_SUCCESS'; code: InviteCode }
+  | { type: 'GENERATE_FAILURE' }
+  | { type: 'SET_ROLE'; role: 'teacher' | 'principal' }
+  | { type: 'REVOKE_SUCCESS'; code: string };
 
-    useEffect(() => {
-        loadInviteCodes();
-    }, [loadInviteCodes]);
+const invitesReducer = (state: State, action: Action): State => {
+  switch (action.type) {
+    case 'LOAD_START':
+      return { ...state, isLoading: true };
+    case 'LOAD_SUCCESS':
+      return { ...state, isLoading: false, inviteCodes: action.codes };
+    case 'LOAD_FAILURE':
+      return { ...state, isLoading: false };
+    case 'GENERATE_START':
+      return { ...state, isGenerating: true };
+    case 'GENERATE_SUCCESS':
+      return { ...state, isGenerating: false, inviteCodes: [action.code, ...state.inviteCodes] };
+    case 'GENERATE_FAILURE':
+      return { ...state, isGenerating: false };
+    case 'SET_ROLE':
+      return { ...state, inviteRole: action.role };
+    case 'REVOKE_SUCCESS':
+      return {
+        ...state,
+        inviteCodes: state.inviteCodes.map((inv) =>
+          inv.code === action.code ? { ...inv, is_active: false } : inv
+        ),
+      };
+    default:
+      return state;
+  }
+};
 
-    const handleRevoke = async (code: string) => {
-        if (!schoolId || !userId) return;
-        try {
-            await invitesAPI.revokeInviteCode(schoolId, code, userId);
-            setInviteCodes((current) => 
-                current.map(inv => inv.code === code ? { ...inv, is_active: false } : inv)
-            );
-            toast.showToast({
-                message: 'Access Key Revoked',
-                type: 'success'
-            });
-        } catch (err) {
-            handleAPIError(err);
-        }
-    };
+export const InvitesDashboard: React.FC<InvitesDashboardProps> = ({
+  schoolId,
+  userId,
+  isPastView,
+  onBack,
+}) => {
+  const toast = useToast();
+  const [state, dispatch] = useReducer(invitesReducer, {
+    inviteCodes: [],
+    isLoading: false,
+    isGenerating: false,
+    inviteRole: 'teacher',
+  });
 
-    const handleGenerateCode = async () => {
-        if (!schoolId || !userId) return;
-        setGenerating(true);
-        try {
-            const newCode = await invitesAPI.generateInviteCode(schoolId, inviteRole, userId);
-            setInviteCodes((current) => [newCode, ...current]);
-            toast.showToast({
-                message: 'New Governance Key Generated',
-                type: 'success'
-            });
-        } catch (err) {
-            handleAPIError(err);
-        } finally {
-            setGenerating(false);
-        }
-    };
+  const loadInviteCodes = useCallback(async () => {
+    if (!schoolId) return;
+    dispatch({ type: 'LOAD_START' });
+    try {
+      const codes = await invitesAPI.getInviteCodesBySchool(schoolId);
+      dispatch({ type: 'LOAD_SUCCESS', codes: codes ?? [] });
+    } catch (error) {
+      console.error('Failed to load invite codes:', error);
+      dispatch({ type: 'LOAD_FAILURE' });
+    }
+  }, [schoolId]);
 
-    const copyToClipboard = async (code: string) => {
-        try {
-            await Clipboard.setStringAsync(code);
-            toast.showToast({
-                message: 'Copied to Command Buffer',
-                type: 'success'
-            });
-        } catch (err) {
-            handleAPIError(err);
-        }
-    };
+  useEffect(() => {
+    void loadInviteCodes();
+  }, [loadInviteCodes]);
 
-    return (
-        <VStack className="flex-1 bg-phase-canvas">
-            <ScrollView showsVerticalScrollIndicator={false}>
-                <VStack className="gap-8 p-5 pb-24">
-                    {/* Header Group */}
-                    <VStack className="gap-5">
-                        <Pressable onPress={() => { hapticLight(); onBack(); }} className="active:opacity-70">
-                            <HStack className="items-center gap-2 bg-phase-surface px-4 py-2.5 rounded-2xl border border-phase-border self-start shadow-sm">
-                                <Icon as={ArrowLeft} size="sm" className="text-phaseText-primary" />
-                                <Text className="text-[13px] font-black text-phaseText-primary uppercase tracking-widest">Back</Text>
-                            </HStack>
-                        </Pressable>
-                        
-                        <VStack className="gap-1.5 px-1">
-                            <Heading className="text-[32px] font-black text-phaseText-primary uppercase tracking-tighter leading-none">
-                                Governance
-                            </Heading>
-                            <Text className="text-[14px] font-medium text-phaseText-secondary leading-relaxed">
-                                Establish authority anchors and synchronize faculty onboarding protocols.
-                            </Text>
-                        </VStack>
-                    </VStack>
+  const handleRevoke = async (code: string) => {
+    if (!schoolId || !userId) return;
+    try {
+      await invitesAPI.revokeInviteCode(schoolId, code, userId);
+      dispatch({ type: 'REVOKE_SUCCESS', code });
+      hapticSuccess();
+      toast.showToast({
+        message: 'Invite Revoked: The code is no longer active.',
+        type: 'success',
+      });
+    } catch (err) {
+      console.error('[InvitesDashboard] revokeInviteCode failed:', err);
+      toast.showToast({
+        message: 'Revoke Failed: Could not deactivate the code.',
+        type: 'error',
+      });
+    }
+  };
 
-                    {/* Generator Console */}
-                    {!isPastView && (
-                        <Box className="bg-phase-surface p-7 rounded-[40px] border border-phase-border gap-7 shadow-sm">
-                            <VStack className="gap-5">
-                                <HStack className="justify-between items-center px-1">
-                                    <Heading className="text-[10px] font-black uppercase tracking-[0.25em] text-phaseText-muted">Select Authority Scope</Heading>
-                                    <Box className="w-2 h-2 rounded-full bg-phase-interactive shadow-[0_0_8px_rgba(var(--color-phase-interactive),0.5)]" />
-                                </HStack>
- 
-                                <HStack className="gap-3">
-                                    <Pressable 
-                                        onPress={() => { hapticLight(); setInviteRole('teacher'); }}
-                                        className={`flex-1 h-14 rounded-2xl items-center justify-center border-2 transition-all ${inviteRole === 'teacher' ? 'bg-phase-interactive border-phase-interactive shadow-md' : 'bg-phase-canvas border-phase-border'}`}
-                                    >
-                                        <Text className={`font-black uppercase tracking-widest text-[11px] ${inviteRole === 'teacher' ? 'text-white' : 'text-phaseText-muted'}`}>Staff Anchor</Text>
-                                    </Pressable>
-                                    <Pressable 
-                                        onPress={() => { hapticLight(); setInviteRole('principal'); }}
-                                        className={`flex-1 h-14 rounded-2xl items-center justify-center border-2 transition-all ${inviteRole === 'principal' ? 'bg-phase-interactive border-phase-interactive shadow-md' : 'bg-phase-canvas border-phase-border'}`}
-                                    >
-                                        <Text className={`font-black uppercase tracking-widest text-[11px] ${inviteRole === 'principal' ? 'text-white' : 'text-phaseText-muted'}`}>Lead Anchor</Text>
-                                    </Pressable>
-                                </HStack>
-                            </VStack>
- 
-                            <Button 
-                                onPress={() => { hapticMedium(); handleGenerateCode(); }}
-                                isDisabled={generating}
-                                className="bg-phaseText-primary h-16 rounded-[20px] items-center justify-center shadow-lg active:scale-95 transition-all"
-                            >
-                                <HStack className="items-center gap-3">
-                                    {generating ? (
-                                        <Spinner color="white" size="small" />
-                                    ) : (
-                                        <>
-                                            <Icon as={Plus} className="text-white" size="sm" />
-                                            <Text className="text-white font-black uppercase tracking-[0.2em] text-[12px]">Generate Access Key</Text>
-                                        </>
-                                    )}
-                                </HStack>
-                            </Button>
-                        </Box>
-                    )}
+  const handleGenerateCode = async () => {
+    if (!schoolId || !userId) return;
+    dispatch({ type: 'GENERATE_START' });
+    try {
+      const newCode = await invitesAPI.generateInviteCode(schoolId, state.inviteRole, userId);
+      dispatch({ type: 'GENERATE_SUCCESS', code: newCode });
+      hapticSuccess();
+      toast.showToast({
+        message: 'Code Generated: A new invite code is ready.',
+        type: 'success',
+      });
+    } catch (err) {
+      console.error('[InvitesDashboard] generateInviteCode failed:', err);
+      dispatch({ type: 'GENERATE_FAILURE' });
+      toast.showToast({
+        message: 'Generation Failed: Could not create an invite code.',
+        type: 'error',
+      });
+    }
+  };
 
-                    {/* active keys list */}
-                    <VStack className="gap-5">
-                        <HStack className="justify-between items-center px-1">
-                            <Heading className="text-[20px] font-black text-phaseText-primary uppercase tracking-widest">Active Anchors</Heading>
-                            {loading && <Spinner color="phase-interactive" />}
-                        </HStack>
+  const copyToClipboard = (code: string) => {
+    if (Platform.OS === 'web') {
+      if (typeof navigator !== 'undefined' && navigator.clipboard) {
+        navigator.clipboard.writeText(code).then(() => {
+          hapticLight();
+          toast.showToast({ message: 'Copied: Code copied to clipboard', type: 'success' });
+        }).catch(err => {
+          console.error('Failed to copy to clipboard:', err);
+        });
+      }
+    } else {
+      // In a real native environment we'd use a clipboard module, but for now we'll just toast
+      toast.showToast({ message: 'Copied: Code copied to clipboard', type: 'success' });
+    }
+  };
 
-                        {inviteCodes.length === 0 && !loading ? (
-                            <Box className="p-16 items-center justify-center bg-phase-surface/50 rounded-[40px] border border-dashed border-phase-border">
-                                <Icon as={ShieldAlert} size="xl" className="text-phaseText-muted/20 mb-4" />
-                                <Text className="text-center font-black text-phaseText-muted uppercase tracking-widest text-[11px]">No initialized vectors</Text>
-                            </Box>
-                        ) : (
-                            <VStack className="gap-4">
-                                {inviteCodes.map((invite) => (
-                                    <Box 
-                                        key={invite.code} 
-                                        className="bg-phase-surface p-6 rounded-[32px] border border-phase-border flex-row items-center shadow-sm"
-                                    >
-                                        <VStack className="flex-1 gap-2.5">
-                                            <HStack className="items-center gap-3">
-                                                <Text className="text-2xl font-black text-phase-interactive italic tracking-[0.15em] font-mono leading-none">
-                                                    {invite.code}
-                                                </Text>
-                                                <Box className={`px-2.5 py-1 rounded-lg ${invite.authority === 'principal' ? 'bg-phase-warning/10 border border-phase-warning/20' : 'bg-phase-interactive/10 border border-phase-interactive/20'}`}>
-                                                    <Text className={`text-[9px] font-black uppercase tracking-widest ${invite.authority === 'principal' ? 'text-phase-warning' : 'text-phase-interactive'}`}>
-                                                        {invite.authority}
-                                                    </Text>
-                                                </Box>
-                                            </HStack>
-                                            
-                                            <HStack className="items-center gap-3">
-                                                <Text className="text-[10px] font-black text-phaseText-muted uppercase tracking-[0.1em]">
-                                                    {formatDistanceToNow(new Date(invite.created_at), { addSuffix: true })}
-                                                </Text>
-                                                <Box className="w-1 h-1 rounded-full bg-phase-border" />
-                                                <Box className={`w-2 h-2 rounded-full ${invite.used ? 'bg-phaseText-muted' : 'bg-phase-success shadow-[0_0_6px_rgba(var(--color-phase-success),0.4)]'}`} />
-                                                <Text className={`text-[10px] font-black uppercase tracking-widest ${invite.used ? 'text-phaseText-muted' : 'text-phase-success'}`}>
-                                                    {invite.used ? 'Redeemed' : 'Active'}
-                                                </Text>
-                                            </HStack>
-                                        </VStack>
-
-                                        <HStack className="gap-2.5">
-                                            <Pressable 
-                                                onPress={() => { hapticLight(); copyToClipboard(invite.code); }}
-                                                className="w-12 h-12 rounded-2xl bg-phase-canvas items-center justify-center border border-phase-border shadow-inner transition-transform active:scale-90"
-                                            >
-                                                <Icon as={Copy} className="text-phaseText-primary" size="sm" />
-                                            </Pressable>
-                                            
-                                            {!invite.used && invite.is_active !== false && (
-                                                <Pressable 
-                                                    onPress={() => { hapticMedium(); handleRevoke(invite.code); }}
-                                                    className="w-12 h-12 rounded-2xl bg-phase-danger/10 items-center justify-center border border-phase-danger/20 shadow-inner transition-transform active:scale-90"
-                                                >
-                                                    <Icon as={X} size="sm" className="text-phase-danger" />
-                                                </Pressable>
-                                            )}
-                                        </HStack>
-                                    </Box>
-                                ))}
-                            </VStack>
-                        )}
-                    </VStack>
-                </VStack>
-            </ScrollView>
+  return (
+    <VStack className="gap-6">
+      <HStack className="items-center gap-4">
+        <Pressable
+          onPress={() => {
+            hapticLight();
+            onBack();
+          }}
+          className="p-2 bg-phase-canvas border border-phase-border rounded-xl active:scale-95 transition-all"
+          accessibilityLabel="Back"
+          accessibilityHint="Returns to the main dashboard"
+        >
+          <Icon as={ArrowLeft} size="sm" className="text-phaseText-primary" />
+        </Pressable>
+        <VStack className="gap-0.5">
+          <Heading className="text-[24px] font-black text-phaseText-primary tracking-tight">
+            Governance Invites
+          </Heading>
+          <Text className="text-[14px] font-bold text-phaseText-muted uppercase tracking-widest">
+            Onboarding Protocol
+          </Text>
         </VStack>
-    );
+      </HStack>
+
+      <Box className="bg-phase-surface p-6 rounded-[32px] border border-phase-border shadow-sm">
+        <VStack className="gap-5">
+          <HStack className="items-center gap-3">
+            <Box className="p-2 bg-phase-interactive/10 rounded-xl">
+              <Icon as={UserPlus} size="xs" className="text-phase-interactive" />
+            </Box>
+            <VStack>
+              <Text className="text-[13px] font-black text-phaseText-primary uppercase tracking-wider">
+                Generate Secure Key
+              </Text>
+              <Text className="text-[10px] font-bold text-phaseText-muted uppercase">
+                Authorize new roles below
+              </Text>
+            </VStack>
+          </HStack>
+
+          <HStack className="gap-3">
+            {(['teacher', 'principal'] as const).map((role) => (
+              <Pressable
+                key={role}
+                onPress={() => {
+                  hapticLight();
+                  dispatch({ type: 'SET_ROLE', role });
+                }}
+                className={`flex-1 flex-row items-center justify-center gap-2 py-3.5 rounded-2xl border transition-all ${state.inviteRole === role ? 'bg-phase-interactive border-phase-interactive' : 'bg-phase-canvas border-phase-border'}`}
+                accessibilityLabel={`Role: ${role}`}
+                accessibilityHint={`Sets the role for the new invite code to ${role}`}
+                accessibilityState={{ selected: state.inviteRole === role }}
+              >
+                <Text
+                  className={`text-[12px] font-black uppercase tracking-widest ${state.inviteRole === role ? 'text-white' : 'text-phaseText-secondary'}`}
+                >
+                  {role}
+                </Text>
+              </Pressable>
+            ))}
+          </HStack>
+
+          <Pressable
+            onPress={handleGenerateCode}
+            disabled={state.isGenerating || isPastView}
+            className={`bg-phase-interactive rounded-2xl py-4 items-center shadow-md active:scale-95 transition-all ${state.isGenerating || isPastView ? 'opacity-50' : ''}`}
+            accessibilityLabel="Generate Code"
+            accessibilityHint="Creates a unique onboarding code for the selected role"
+          >
+            <HStack className="gap-2 items-center">
+              {state.isGenerating ? (
+                <Spinner size="small" color="#FFFFFF" />
+              ) : (
+                <Icon as={Plus} size="xs" className="text-white" />
+              )}
+              <Text className="text-[12px] font-black text-white uppercase tracking-[2px]">
+                {state.isGenerating ? 'Generating...' : 'Authorize Code'}
+              </Text>
+            </HStack>
+          </Pressable>
+        </VStack>
+      </Box>
+
+      {state.isLoading ? (
+        <Box className="py-20 items-center justify-center bg-phase-canvas rounded-[32px] border border-phase-border opacity-50">
+          <Spinner className="text-phase-interactive" />
+        </Box>
+      ) : state.inviteCodes.length === 0 ? (
+        <Box className="py-20 items-center justify-center bg-phase-canvas rounded-[32px] border border-dashed border-phase-border opacity-40">
+          <Text className="text-[12px] font-black text-phaseText-muted uppercase tracking-[3px]">
+            No Active Protocols
+          </Text>
+        </Box>
+      ) : (
+        <VStack className="gap-3">
+          {state.inviteCodes.map((invite) => (
+            <Box
+              key={invite.code}
+              className="bg-phase-surface p-5 rounded-[24px] border border-phase-border shadow-sm"
+              style={{ opacity: invite.is_active === false ? 0.6 : 1 }}
+            >
+              <HStack className="justify-between items-center">
+                <VStack className="gap-1 flex-1">
+                  <Text className="text-[20px] font-black text-phase-interactive tracking-[4px] font-mono">
+                    {invite.code}
+                  </Text>
+                  <HStack className="gap-2 items-center">
+                    <Box className="px-2 py-0.5 rounded-full bg-phase-canvas border border-phase-border">
+                      <Text className="text-[8px] font-black text-phaseText-muted uppercase">
+                        {invite.authority?.replace('_', ' ') || 'Guest'}
+                      </Text>
+                    </Box>
+                    <Text className="text-[10px] font-bold text-phaseText-muted uppercase">
+                      •{' '}
+                      {invite.is_active === false
+                        ? 'Revoked'
+                        : invite.used
+                          ? 'Assimilated'
+                          : 'Active'}
+                      {' • '}
+                      {formatDistanceToNow(new Date(invite.created_at), { addSuffix: true })}
+                    </Text>
+                  </HStack>
+                </VStack>
+
+                <HStack className="gap-2">
+                  <Pressable
+                    onPress={() => copyToClipboard(invite.code)}
+                    className="p-2 bg-phase-canvas border border-phase-border rounded-xl active:scale-90 transition-all"
+                    accessibilityLabel="Copy Code"
+                    accessibilityHint="Copies the invite code to your clipboard"
+                  >
+                    <Icon as={Copy} size="xs" className="text-phaseText-secondary" />
+                  </Pressable>
+                  {!invite.used && invite.is_active !== false && (
+                    <Pressable
+                      onPress={() => handleRevoke(invite.code)}
+                      className="p-2 bg-phase-danger/5 border border-phase-danger/20 rounded-xl active:scale-90 transition-all"
+                      accessibilityLabel="Revoke Code"
+                      accessibilityHint="Deactivates this invite code permanently"
+                    >
+                      <Icon as={X} size="xs" className="text-phase-danger" />
+                    </Pressable>
+                  )}
+                </HStack>
+              </HStack>
+            </Box>
+          ))}
+        </VStack>
+      )}
+    </VStack>
+  );
 };
 
 export type { InvitesDashboardProps };

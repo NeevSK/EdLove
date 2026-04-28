@@ -1,6 +1,6 @@
-import React from 'react';
-import { View, ViewStyle, StyleSheet } from 'react-native';
 import { useActivityPulse } from '@repo/core/logic';
+import type React from 'react';
+import { StyleSheet, View, type ViewStyle } from 'react-native';
 
 interface TemporalGlassProps {
   children: React.ReactNode;
@@ -45,7 +45,6 @@ export const TemporalGlass: React.FC<TemporalGlassProps> = ({
           overflow: 'hidden',
           // High-fidelity web "Un-shimming" layer with Quantum Resonance
           boxShadow: `inset 0 1px 0 0 ${edges.top}, 0 0 0 1px ${edges.bottom}, 0 4px 24px 0 rgba(0,0,0,${0.1 + resonanceShift})`,
-          // @ts-ignore
           backdropFilter: `blur(${20 + resonanceShift * 20}px) saturate(${180 + resonanceShift * 100}%)`,
           backgroundColor: `rgba(255, 255, 255, ${0.05 + resonanceShift * 0.05})`,
         } as any,

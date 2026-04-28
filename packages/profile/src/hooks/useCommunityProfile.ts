@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState } from 'react';
 import { useStore, useTemporalStore } from '@repo/core';
+import { useCallback, useEffect, useState } from 'react';
 import { profileAPI } from '../api/profile';
 import type { CommunityProfile } from '../domains/profile/ports';
 
@@ -21,9 +21,10 @@ export function useCommunityProfile(communityId: string) {
 
     setLoading(true);
     try {
-      const data = phase === 'past'
-        ? await profileAPI.getCommunityProfileAsOf(communityId, viewDate)
-        : await profileAPI.getCommunityProfile(communityId);
+      const data =
+        phase === 'past'
+          ? await profileAPI.getCommunityProfileAsOf(communityId, viewDate)
+          : await profileAPI.getCommunityProfile(communityId);
       setCommunity(data ?? null);
     } catch {
       setCommunity(null);

@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { View, StyleSheet } from 'react-native';
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { StyleSheet, View } from 'react-native';
 
 /**
  * Portal Registry System

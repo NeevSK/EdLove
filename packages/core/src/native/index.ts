@@ -1,15 +1,23 @@
-export * from './appCrypto';
-export * from './auth';
-export * from './deviceTrust';
-export * from './flows/FlowResolver';
-export * from './guestDataManager';
-export * from './guestDataSync';
-export * from './identity';
-export * from './runtime';
-export * from './sentry';
-export * from './storage';
-export * from './supabase';
-export * from './supabaseAuthStorage';
-export * from './useAuthorityLifecycle';
-export * from './useWorkspaceLayoutSync';
-export * from './runtimeAdapter';
+export { authAPI } from './auth';
+export { deviceTrustAPI } from './deviceTrust';
+export { FlowResolver } from './flows/FlowResolver';
+export { GuestDataManager } from './guestDataManager';
+export { GuestDataSync } from './guestDataSync';
+export { identityAPI } from './identity';
+export { Runtime } from './runtime';
+export {
+  nativeDeviceProvider,
+  nativeHapticsProvider,
+  nativeLinkingProvider,
+  nativeLocationProvider,
+  nativeNetworkProvider,
+  nativeRuntimeEnvironment,
+  nativeShareProvider,
+  nativeStorageProvider,
+  nativeUIProvider,
+} from './runtimeAdapter';
+export { StorageKeys, storage } from './storage';
+export { supabase } from './supabase';
+export { supabaseAuthStorage } from './supabaseAuthStorage';
+export { useAuthorityLifecycle } from './useAuthorityLifecycle';
+export { useWorkspaceLayoutSync } from './useWorkspaceLayoutSync';

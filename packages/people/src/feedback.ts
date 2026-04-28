@@ -43,7 +43,9 @@ export const teacherFeedbackAPI = {
 
     const { data, error } = await supabase
       .from('school_echo_feedback')
-      .select('id, category, content, priority, is_read, principal_response, responded_at, created_at')
+      .select(
+        'id, category, content, priority, is_read, principal_response, responded_at, created_at',
+      )
       .eq('teacher_id', teacherId)
       .order('created_at', { ascending: false })
       .limit(limit);

@@ -14,18 +14,18 @@ import { Skia, type SkRuntimeEffect } from '@shopify/react-native-skia';
 import { getSKSLSurface, getSKSLSurfaceNames } from './sksl-shaders';
 
 // \u2500\u2500 WGSL: Shared noise library (prepended to every surface shader) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
- 
+
 const NOISE_WGSL: string = require('../../native/shaders/shared/noise.wgsl');
 
 // \u2500\u2500 WGSL: Surface shader map \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 const WGSL_SURFACE_SHADERS: Record<string, string> = {
-  aurora:          require('../../native/shaders/surfaces/aurora.wgsl'),
-  silk:            require('../../native/shaders/surfaces/silk.wgsl'),
-  'young-leaf':    require('../../native/shaders/surfaces/young-leaf.wgsl'),
-  mist:            require('../../native/shaders/surfaces/mist.wgsl'),
-  waterfall:       require('../../native/shaders/surfaces/waterfall.wgsl'),
-  'evening-sky':   require('../../native/shaders/surfaces/evening-sky.wgsl'),
-  skymorphic:      require('../../native/shaders/surfaces/skymorphic.wgsl'),
+  aurora: require('../../native/shaders/surfaces/aurora.wgsl'),
+  silk: require('../../native/shaders/surfaces/silk.wgsl'),
+  'young-leaf': require('../../native/shaders/surfaces/young-leaf.wgsl'),
+  mist: require('../../native/shaders/surfaces/mist.wgsl'),
+  waterfall: require('../../native/shaders/surfaces/waterfall.wgsl'),
+  'evening-sky': require('../../native/shaders/surfaces/evening-sky.wgsl'),
+  skymorphic: require('../../native/shaders/surfaces/skymorphic.wgsl'),
   'water-surface': require('../../native/shaders/surfaces/water-surface.wgsl'),
 };
 
@@ -34,7 +34,7 @@ const ASSEMBLED_WGSL: Record<string, string> = Object.fromEntries(
   Object.entries(WGSL_SURFACE_SHADERS).map(([name, shader]) => [
     name,
     `${NOISE_WGSL}\n\n/* === ${name} surface === */\n${shader}`,
-  ])
+  ]),
 );
 
 // \u2500\u2500 SkSL: Compiled RuntimeEffect cache \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500

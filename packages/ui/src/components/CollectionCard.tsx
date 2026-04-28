@@ -11,11 +11,10 @@
  * Philosophy: Engaging, visual, and curated — inspired by streaming services.
  */
 
-import React from 'react';
-import { Pressable, ImageBackground } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { BadgeCheck, BookOpen, Bookmark } from 'lucide-react-native';
-import { Box, VStack, HStack, Text } from '../gluestack';
+import { BadgeCheck, Bookmark, BookOpen } from 'lucide-react-native';
+import { ImageBackground, Pressable } from 'react-native';
+import { Box, HStack, Text, VStack } from '../gluestack';
 
 // ============================================================================
 // CONSTANTS

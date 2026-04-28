@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 /**
  * Auto-generate barrel files (index.ts) for package screens
- * 
+ *
  * Usage: node scripts/refactor/generate-barrels.mjs [package-name]
  * Example: node scripts/refactor/generate-barrels.mjs classroom
- * 
+ *
  * If no package name provided, processes all packages.
  */
 
@@ -18,14 +18,14 @@ const packagesDir = path.join(repoRoot, 'packages');
 // Packages that need barrel generation
 const TARGET_PACKAGES = [
   'classroom',
-  'admin', 
+  'admin',
   'profile',
   'library',
   'core',
   'ui',
   'community',
   'self',
-  'form-builder'
+  'form-builder',
 ];
 
 /**
@@ -33,7 +33,7 @@ const TARGET_PACKAGES = [
  */
 function generateScreensBarrel(packagePath) {
   const screensDir = path.join(packagePath, 'src', 'screens');
-  
+
   if (!fs.existsSync(screensDir)) {
     console.log(`  ℹ️  No screens directory found`);
     return false;
@@ -41,7 +41,7 @@ function generateScreensBarrel(packagePath) {
 
   // Find all .tsx files (excluding .web.tsx variants for now to avoid duplicates in default exports)
   const files = globSync('*.tsx', { cwd: screensDir })
-    .filter(f => !f.endsWith('.d.ts'))
+    .filter((f) => !f.endsWith('.d.ts'))
     .sort();
 
   if (files.length === 0) {
@@ -58,7 +58,7 @@ function generateScreensBarrel(packagePath) {
     const baseName = path.basename(file, '.tsx');
     const isWeb = baseName.endsWith('.web');
     const cleanName = isWeb ? baseName.slice(0, -4) : baseName;
-    
+
     // Skip if we've already processed this base name (prefer web version for export naming)
     if (processedBaseNames.has(cleanName)) {
       continue;
@@ -66,17 +66,20 @@ function generateScreensBarrel(packagePath) {
     processedBaseNames.add(cleanName);
 
     // Determine import style based on naming convention
-    if (baseName.includes('Screen') || baseName.includes('Dashboard') || baseName.includes('View') || baseName.includes('Panel')) {
+    if (
+      baseName.includes('Screen') ||
+      baseName.includes('Dashboard') ||
+      baseName.includes('View') ||
+      baseName.includes('Panel')
+    ) {
       // Named exports for screens
       const importName = cleanName;
       const exportName = cleanName;
-      
+
       if (file.startsWith(cleanName + '.web')) {
         imports.push(`import ${importName}Web from './${cleanName}.web';`);
         exports.push(exportName + 'Web');
-      } else if (files.some(f => f === `${cleanName}.web.tsx`)) {
-        // Has web variant, skip native import to avoid conflicts
-        continue;
+      } else if (files.some((f) => f === `${cleanName}.web.tsx`)) {
       } else {
         imports.push(`import ${importName} from './${cleanName}';`);
         exports.push(exportName);
@@ -85,12 +88,11 @@ function generateScreensBarrel(packagePath) {
       // Default exports for other components
       const importName = cleanName;
       const exportName = cleanName;
-      
+
       if (file.startsWith(cleanName + '.web')) {
         imports.push(`import ${importName}Web from './${cleanName}.web';`);
         exports.push(exportName + 'Web');
-      } else if (files.some(f => f === `${cleanName}.web.tsx`)) {
-        continue;
+      } else if (files.some((f) => f === `${cleanName}.web.tsx`)) {
       } else {
         imports.push(`import ${importName} from './${cleanName}';`);
         exports.push(exportName);
@@ -102,7 +104,7 @@ function generateScreensBarrel(packagePath) {
   const barrelContent = `${imports.join('\n')}
 
 export {
-${exports.map(e => `    ${e},`).join('\n')}
+${exports.map((e) => `    ${e},`).join('\n')}
 };
 `;
 
@@ -117,7 +119,7 @@ ${exports.map(e => `    ${e},`).join('\n')}
  */
 function processPackage(packageName) {
   const packagePath = path.join(packagesDir, packageName);
-  
+
   if (!fs.existsSync(packagePath)) {
     console.error(`❌ Package not found: ${packageName}`);
     return false;
@@ -153,7 +155,7 @@ async function main() {
   console.log('\n🎉 Done! Run this script after adding new screens to auto-update barrels.');
 }
 
-main().catch(err => {
+main().catch((err) => {
   console.error('❌ Error:', err);
   process.exit(1);
 });

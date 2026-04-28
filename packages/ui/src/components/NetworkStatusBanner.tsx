@@ -1,11 +1,9 @@
-import React from 'react';
-import { Box, Text, HStack, Spinner } from '../gluestack';
+import { useMutationQueue, useStore } from '@repo/core/logic';
 import { WifiOff } from 'lucide-react-native';
 import { Platform } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { SlideInUp, SlideOutUp } from 'react-native-reanimated';
-import { useStore } from '@repo/core/logic';
-import { useMutationQueue } from '@repo/core/logic';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Box, HStack, Spinner, Text } from '../gluestack';
 
 /**
  * NetworkStatusBanner

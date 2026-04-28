@@ -1,5 +1,5 @@
 import { APCAcontrast, sRGBtoY } from 'apca-w3';
-import { parse, formatHex, converter } from 'culori';
+import { converter, formatHex, parse } from 'culori';
 import { getContrastRatio } from './colorUtils';
 
 /**

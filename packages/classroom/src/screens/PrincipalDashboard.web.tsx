@@ -1,6 +1,6 @@
-import React from 'react';
-import { PrincipalDashboardWeb, DashboardContent } from '@repo/admin';
+import { DashboardContent, PrincipalDashboardWeb } from '@repo/admin';
 import type { ComponentType } from 'react';
+import React from 'react';
 import CreateSchoolModal from '../components/CreateSchoolModal';
 
 type Props = {

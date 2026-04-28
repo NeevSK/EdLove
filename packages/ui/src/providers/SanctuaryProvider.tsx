@@ -1,9 +1,10 @@
-import React, { ReactNode } from 'react';
+import type React from 'react';
+import type { ReactNode } from 'react';
+import { CircadianProvider } from '../context/CircadianProvider';
 import { EnvironmentProvider } from '../context/EnvironmentContext';
-import { ToastProvider } from './ToastProvider';
 import { ExternalLinkProvider } from '../context/ExternalLinkContext';
 import { FABProvider } from '../context/FABContext';
-import { CircadianProvider } from '../context/CircadianProvider';
+import { ToastProvider } from './ToastProvider';
 
 interface SanctuaryProviderProps {
   children: ReactNode;

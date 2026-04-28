@@ -29,14 +29,14 @@ for (const entry of manifest.entries ?? []) {
   const source = fs.readFileSync(filePath, 'utf8').trim();
   const cleanSource = source
     .split('\n')
-    .filter(line => {
+    .filter((line) => {
       const trimmed = line.trim();
       return !trimmed.startsWith('*') && !trimmed.startsWith('//') && !trimmed.startsWith('/*');
     })
     .join(' ')
     .trim()
     .replace(/\s+/g, ' ');
-    
+
   const isThinAdapter =
     /^export\s+\{\s*default\s*\}\s+from\s+['"][^'"]+['"];?$/.test(cleanSource) ||
     /^export\s+\{\s*[A-Za-z0-9_]+\s+as\s+default\s*\}\s+from\s+['"][^'"]+['"];?$/.test(cleanSource);

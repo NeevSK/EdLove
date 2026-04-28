@@ -1,6 +1,6 @@
 import React from 'react';
-import { View } from '../view';
 import { Text } from '../text';
+import { View } from '../view';
 import { VStack } from '../vstack';
 
 const FormControlContext = React.createContext<{
@@ -52,10 +52,7 @@ export const FormControlErrorIcon = ({ as: Icon, className, ...props }: any) => 
 export const FormControlErrorText = ({ children, className }: any) => {
   const { id } = React.useContext(FormControlContext);
   return (
-    <Text
-      nativeID={`${id}-error`}
-      className={`text-xs text-phase-danger ml-1 ${className || ''}`}
-    >
+    <Text nativeID={`${id}-error`} className={`text-xs text-phase-danger ml-1 ${className || ''}`}>
       {children}
     </Text>
   );

@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useMemo, useState, useEffect } from 'react';
+import type React from 'react';
+import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { AppState } from 'react-native';
 import type { TrubeEnvironment, TrubeThermalState } from '../core/types';
 import { driverManager } from './DriverManager';
@@ -16,10 +17,10 @@ interface TrubeContextType {
 
 const TrubeContext = createContext<TrubeContextType | undefined>(undefined);
 
-export function TrubeProvider({ 
-  children, 
-  telemetry 
-}: { 
+export function TrubeProvider({
+  children,
+  telemetry,
+}: {
   children: React.ReactNode;
   telemetry?: TrubeTelemetry;
 }) {
@@ -32,7 +33,7 @@ export function TrubeProvider({
   });
 
   const setEnvironment = (newEnv: Partial<TrubeEnvironment>) => {
-    setEnvState(prev => ({ ...prev, ...newEnv }));
+    setEnvState((prev) => ({ ...prev, ...newEnv }));
   };
 
   useEffect(() => {
@@ -44,14 +45,18 @@ export function TrubeProvider({
     // 1. Initial Capability Probe & Pre-warm
     const bestBackend = driverManager.getBestBackend();
     setEnvironment({
-      capabilityTier: bestBackend.includes('native') ? 'tier-1' : bestBackend === 'webgpu' ? 'tier-2' : 'tier-3',
+      capabilityTier: bestBackend.includes('native')
+        ? 'tier-1'
+        : bestBackend === 'webgpu'
+          ? 'tier-2'
+          : 'tier-3',
     });
 
     // 2. Trigger GPU Pre-warm Sequence
     driverManager.prewarm();
 
     // 3. Mock Thermal/Power Listeners (In real production, use react-native-device-info)
-    const subscription = AppState.addEventListener('change', nextAppState => {
+    const subscription = AppState.addEventListener('change', (nextAppState) => {
       if (nextAppState === 'background') {
         // Optimization: Drop quality to static when app is backgrounded
         setEnvironment({ thermalState: 'warm' });
@@ -71,11 +76,14 @@ export function TrubeProvider({
     }
   }, [environment.thermalState]);
 
-  const value = useMemo(() => ({ 
-    environment, 
-    setEnvironment,
-    telemetry 
-  }), [environment, telemetry]);
+  const value = useMemo(
+    () => ({
+      environment,
+      setEnvironment,
+      telemetry,
+    }),
+    [environment, telemetry],
+  );
 
   return (
     <TrubeContext.Provider value={value}      {children}

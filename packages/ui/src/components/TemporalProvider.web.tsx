@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useMemo } from 'react';
 import { useTemporalStore } from '@repo/core/logic';
+import type React from 'react';
+import { createContext, useContext, useMemo } from 'react';
 
 interface TemporalContextType {
   blurAmount: number;

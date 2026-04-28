@@ -1,15 +1,8 @@
-import React, { useState, useEffect } from "react";
-import {
-  View,
-  StyleSheet,
-  Modal,
-  TouchableOpacity,
-  Text,
-  ActivityIndicator,
-} from "react-native";
-import { CameraView, CameraType, useCameraPermissions } from "expo-camera";
-import * as ImagePicker from "expo-image-picker";
-import { useTranslation } from "react-i18next";
+import { type CameraType, CameraView, useCameraPermissions } from 'expo-camera';
+import * as ImagePicker from 'expo-image-picker';
+import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { ActivityIndicator, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 /**
  * ScannerModal — QR code scanner for Gurudevi
@@ -35,8 +28,7 @@ interface MLKitBarcode {
 }
 let BarcodeScanning: any = null;
 try {
-  // @ts-ignore - Module may not be available in all environments/configurations
-  BarcodeScanning = require("@react-native-ml-kit/barcode-scanning").default as any;
+  BarcodeScanning = require('@react-native-ml-kit/barcode-scanning').default as any;
 } catch {
   // Not installed or not linked — will fall back gracefully
   BarcodeScanning = null;
@@ -56,15 +48,15 @@ export default function ScannerModal({
   onClose,
   onScan,
   title,
-  accentColor = "#f5a623",
+  accentColor = '#f5a623',
 }: ScannerModalProps) {
   const { t } = useTranslation();
   const [permission, requestPermission] = useCameraPermissions();
   const [scanned, setScanned] = useState(false);
-  const [facing, setFacing] = useState<CameraType>("back");
+  const [facing, setFacing] = useState<CameraType>('back');
   const [processing, setProcessing] = useState(false);
   const [galleryError, setGalleryError] = useState<string | null>(null);
-  const modalTitle = title ?? t("scanner.title");
+  const modalTitle = title ?? t('scanner.title');
 
   useEffect(() => {
     if (visible) {
@@ -83,25 +75,23 @@ export default function ScannerModal({
     setGalleryError(null);
     try {
       if (!BarcodeScanning) {
-        setGalleryError(t("scanner.errors.customBuild"));
+        setGalleryError(t('scanner.errors.customBuild'));
         return;
       }
 
       const barcodes = (await BarcodeScanning.scan(uri)) as MLKitBarcode[];
 
       // Find the first QR code in the result
-      const qr = barcodes.find(
-        (b) => b.format === "QR_CODE" || b.type === "QR_CODE",
-      );
+      const qr = barcodes.find((b) => b.format === 'QR_CODE' || b.type === 'QR_CODE');
 
       if (qr?.value || qr?.rawValue) {
         handleBarCodeScanned({ data: (qr.value ?? qr.rawValue)! });
       } else {
-        setGalleryError(t("scanner.errors.noQrFound"));
+        setGalleryError(t('scanner.errors.noQrFound'));
       }
     } catch (error) {
-      console.error("Gallery Scan Error:", error);
-      setGalleryError(t("scanner.errors.scanFailed"));
+      console.error('Gallery Scan Error:', error);
+      setGalleryError(t('scanner.errors.scanFailed'));
     } finally {
       setProcessing(false);
     }
@@ -120,7 +110,7 @@ export default function ScannerModal({
         await processImage(result.assets[0].uri);
       }
     } catch (error) {
-      console.error("Pick Image Error:", error);
+      console.error('Pick Image Error:', error);
     }
   };
 
@@ -132,7 +122,7 @@ export default function ScannerModal({
   };
 
   function toggleCameraFacing() {
-    setFacing((current: CameraType) => (current === "back" ? "front" : "back"));
+    setFacing((current: CameraType) => (current === 'back' ? 'front' : 'back'));
   }
 
   if (!permission) {
@@ -144,20 +134,18 @@ export default function ScannerModal({
       <Modal visible={visible} animationType="slide" transparent>
         <View style={styles.container}>
           <View style={styles.permissionContainer}>
-            <View style={{ gap: 10, alignItems: "center" }}>
-              <Text style={{ textAlign: "center", color: "#fff" }}>
-                {t("scanner.permission.message")}
+            <View style={{ gap: 10, alignItems: 'center' }}>
+              <Text style={{ textAlign: 'center', color: '#fff' }}>
+                {t('scanner.permission.message')}
               </Text>
               <TouchableOpacity
                 onPress={requestPermission}
                 style={[styles.button, { backgroundColor: accentColor }]}
               >
-                <Text style={styles.buttonText}>
-                  {t("scanner.permission.grant")}
-                </Text>
+                <Text style={styles.buttonText}>{t('scanner.permission.grant')}</Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={onClose}>
-                <Text style={{ color: "#888" }}>{t("common.cancel")}</Text>
+                <Text style={{ color: '#888' }}>{t('common.cancel')}</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -178,13 +166,13 @@ export default function ScannerModal({
           style={styles.camera}
           facing={facing}
           onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
-          barcodeScannerSettings={{ barcodeTypes: ["qr"] }}
+          barcodeScannerSettings={{ barcodeTypes: ['qr'] }}
         >
           <View style={styles.overlay}>
             <View style={styles.header}>
               <Text style={styles.heading}>{modalTitle}</Text>
               <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-                <Text style={{ color: "white", fontSize: 20 }}>✕</Text>
+                <Text style={{ color: 'white', fontSize: 20 }}>✕</Text>
               </TouchableOpacity>
             </View>
 
@@ -192,21 +180,19 @@ export default function ScannerModal({
               {processing ? (
                 <View
                   style={{
-                    backgroundColor: "rgba(0,0,0,0.7)",
+                    backgroundColor: 'rgba(0,0,0,0.7)',
                     padding: 20,
                     borderRadius: 10,
-                    alignItems: "center",
+                    alignItems: 'center',
                   }}
                 >
                   <ActivityIndicator size="large" color={accentColor} />
-                  <Text style={{ color: "white", marginTop: 10 }}>
-                    {t("scanner.status.mlKit")}
-                  </Text>
+                  <Text style={{ color: 'white', marginTop: 10 }}>{t('scanner.status.mlKit')}</Text>
                 </View>
               ) : galleryError ? (
                 <View
                   style={{
-                    backgroundColor: "rgba(220,50,50,0.85)",
+                    backgroundColor: 'rgba(220,50,50,0.85)',
                     padding: 14,
                     borderRadius: 10,
                     maxWidth: 260,
@@ -214,8 +200,8 @@ export default function ScannerModal({
                 >
                   <Text
                     style={{
-                      color: "white",
-                      textAlign: "center",
+                      color: 'white',
+                      textAlign: 'center',
                       fontSize: 13,
                     }}
                   >
@@ -223,23 +209,21 @@ export default function ScannerModal({
                   </Text>
                   <TouchableOpacity
                     onPress={() => setGalleryError(null)}
-                    style={{ marginTop: 8, alignSelf: "center" }}
+                    style={{ marginTop: 8, alignSelf: 'center' }}
                   >
                     <Text
                       style={{
-                        color: "white",
-                        textDecorationLine: "underline",
+                        color: 'white',
+                        textDecorationLine: 'underline',
                         fontSize: 12,
                       }}
                     >
-                      {t("scanner.dismiss")}
+                      {t('scanner.dismiss')}
                     </Text>
                   </TouchableOpacity>
                 </View>
               ) : (
-                <Text style={styles.instructionText}>
-                  {t("scanner.instructions")}
-                </Text>
+                <Text style={styles.instructionText}>{t('scanner.instructions')}</Text>
               )}
             </View>
 
@@ -250,10 +234,8 @@ export default function ScannerModal({
                 disabled={processing}
               >
                 <Text style={{ fontSize: 24 }}>🖼️</Text>
-                <Text
-                  style={[styles.controlLabel, processing && { color: "gray" }]}
-                >
-                  {t("scanner.controls.gallery")}
+                <Text style={[styles.controlLabel, processing && { color: 'gray' }]}>
+                  {t('scanner.controls.gallery')}
                 </Text>
               </TouchableOpacity>
 
@@ -263,10 +245,8 @@ export default function ScannerModal({
                 disabled={processing}
               >
                 <Text style={{ fontSize: 24 }}>🔄</Text>
-                <Text
-                  style={[styles.controlLabel, processing && { color: "gray" }]}
-                >
-                  {t("scanner.controls.flip")}
+                <Text style={[styles.controlLabel, processing && { color: 'gray' }]}>
+                  {t('scanner.controls.flip')}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -278,64 +258,64 @@ export default function ScannerModal({
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "black" },
+  container: { flex: 1, backgroundColor: 'black' },
   permissionContainer: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     padding: 20,
-    backgroundColor: "#1a1a2e",
+    backgroundColor: '#1a1a2e',
   },
   camera: { flex: 1 },
   overlay: {
     flex: 1,
-    backgroundColor: "transparent",
-    justifyContent: "space-between",
+    backgroundColor: 'transparent',
+    justifyContent: 'space-between',
   },
   header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     padding: 16,
     paddingTop: 50,
-    backgroundColor: "rgba(0,0,0,0.3)",
+    backgroundColor: 'rgba(0,0,0,0.3)',
   },
-  scannerArea: { flex: 1, justifyContent: "center", alignItems: "center" },
-  heading: { color: "white", fontSize: 18, fontWeight: "bold" },
+  scannerArea: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  heading: { color: 'white', fontSize: 18, fontWeight: 'bold' },
   closeButton: {
     padding: 8,
-    backgroundColor: "rgba(0,0,0,0.3)",
+    backgroundColor: 'rgba(0,0,0,0.3)',
     borderRadius: 20,
   },
   instructionText: {
-    color: "white",
+    color: 'white',
     fontSize: 14,
-    textAlign: "center",
-    backgroundColor: "rgba(0,0,0,0.5)",
+    textAlign: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
     padding: 10,
     borderRadius: 8,
-    overflow: "hidden",
+    overflow: 'hidden',
   },
   controls: {
-    flexDirection: "row",
-    justifyContent: "center",
+    flexDirection: 'row',
+    justifyContent: 'center',
     padding: 40,
     paddingBottom: 60,
   },
   controlButton: {
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "rgba(0,0,0,0.4)",
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0,0,0,0.4)',
     padding: 16,
     borderRadius: 16,
     minWidth: 80,
   },
   controlLabel: {
-    color: "white",
+    color: 'white',
     fontSize: 12,
     marginTop: 4,
-    fontWeight: "500",
+    fontWeight: '500',
   },
   button: { paddingVertical: 10, paddingHorizontal: 20, borderRadius: 8 },
-  buttonText: { color: "white", fontWeight: "bold" },
+  buttonText: { color: 'white', fontWeight: 'bold' },
 }) as any;

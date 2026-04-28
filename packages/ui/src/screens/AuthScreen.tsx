@@ -1,37 +1,31 @@
-import React, { useState, useRef, useEffect, useMemo } from 'react';
+import { coreRuntime, handleAPIError, type Role, validateForm, validators } from '@repo/core/logic';
+import { authAPI, FlowResolver, GuestDataSync, identityAPI, supabase } from '@repo/core/native';
+import * as AuthSession from 'expo-auth-session';
+import * as WebBrowser from 'expo-web-browser';
+import { Mail } from 'lucide-react-native';
+import type React from 'react';
+import { useCallback, useEffect, useReducer, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
+import { BreathAnimation } from '../components/BreathAnimation';
+import { default as GuestDataSyncModal } from '../components/GuestDataSyncModal';
+import { LivingGlow } from '../components/LivingGlow';
+import { SanctuaryBackground } from '../components/SanctuaryBackground';
+import ScreenWrapper from '../components/ScreenWrapper';
 import {
   Box,
-  VStack,
+  Button,
+  ButtonSpinner,
+  ButtonText,
+  Heading,
+  HStack,
   Input,
   InputField,
-  Button,
-  ButtonText,
   Text,
-  Heading,
-  Center,
-  HStack,
-  Pressable,
-  Divider,
-  Spinner,
-  InputSlot,
-  InputIcon,
-  ButtonSpinner,
+  VStack,
 } from '../gluestack';
 import { useTheme } from '../hooks/useTheme';
 import { useSanctuaryToast } from '../providers/ToastProvider';
-import { hapticLight, hapticSuccess, hapticError } from '../utils/haptics';
-import ScreenWrapper from '../components/ScreenWrapper';
-import { default as GuestDataSyncModal } from '../components/GuestDataSyncModal';
-import { coreRuntime, Role, handleAPIError, validators, validateForm } from '@repo/core/logic';
-import { supabase, GuestDataSync, identityAPI, authAPI, FlowResolver } from '@repo/core/native';
-import { useTranslation } from 'react-i18next';
-import { Theme } from '../theme/Theme';
-import { BreathAnimation } from '../components/BreathAnimation';
-import { LivingGlow } from '../components/LivingGlow';
-import { SanctuaryBackground } from '../components/SanctuaryBackground';
-import { Mail } from 'lucide-react-native';
-import * as WebBrowser from 'expo-web-browser';
-import * as AuthSession from 'expo-auth-session';
+import { hapticError, hapticLight, hapticSuccess } from '../utils/haptics';
 
 // Required for expo-auth-session to complete the auth session on Android
 WebBrowser.maybeCompleteAuthSession();
@@ -81,17 +75,87 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
   const { t } = useTranslation();
   const { accent, text, glow } = useTheme();
   const { showToast } = useSanctuaryToast();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [showEmailAuth, setShowEmailAuth] = useState(initialMode === 'login');
-  const [isSignUp, setIsSignUp] = useState(initialMode !== 'login');
-  const [showScanner, setShowScanner] = useState(false);
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [currentUser, setCurrentUser] = useState<any>(null);
-  const [showSyncModal, setShowSyncModal] = useState(false);
-  const [newUserId, setNewUserId] = useState<string>('');
-  const syncCheckDoneRef = useRef(false);
+  // --- 1. STATE MACHINE (Mechanism) ---
+  interface AuthState {
+    email: string;
+    password: string;
+    loading: boolean;
+    showEmailAuth: boolean;
+    isSignUp: boolean;
+    showScanner: boolean;
+    errors: Record<string, string>;
+    currentUser: any;
+    showSyncModal: boolean;
+    newUserId: string;
+  }
+
+  const initialState: AuthState = {
+    email: '',
+    password: '',
+    loading: false,
+    showEmailAuth: initialMode === 'login',
+    isSignUp: initialMode !== 'login',
+    showScanner: false,
+    errors: {},
+    currentUser: null,
+    showSyncModal: false,
+    newUserId: '',
+  };
+
+  type AuthAction =
+    | { type: 'SET_FIELD'; field: 'email' | 'password' | 'newUserId'; value: string }
+    | { type: 'SET_LOADING'; loading: boolean }
+    | { type: 'SET_MODE'; isSignUp: boolean; showEmailAuth?: boolean }
+    | { type: 'SET_SCANNER'; visible: boolean }
+    | { type: 'SET_ERRORS'; errors: Record<string, string> }
+    | { type: 'SET_USER'; user: any }
+    | { type: 'SET_SYNC_MODAL'; isOpen: boolean }
+    | { type: 'RESET_ERRORS' };
+
+  function authReducer(state: AuthState, action: AuthAction): AuthState {
+    switch (action.type) {
+      case 'SET_FIELD':
+        return { ...state, [action.field]: action.value };
+      case 'SET_LOADING':
+        return { ...state, loading: action.loading };
+      case 'SET_MODE':
+        return {
+          ...state,
+          isSignUp: action.isSignUp,
+          showEmailAuth: action.showEmailAuth ?? state.showEmailAuth,
+          errors: {},
+        };
+      case 'SET_SCANNER':
+        return { ...state, showScanner: action.visible };
+      case 'SET_ERRORS':
+        return { ...state, errors: action.errors };
+      case 'SET_USER':
+        return { ...state, currentUser: action.user };
+      case 'SET_SYNC_MODAL':
+        return { ...state, showSyncModal: action.isOpen };
+      case 'RESET_ERRORS':
+        return { ...state, errors: {} };
+      default:
+        return state;
+    }
+  }
+
+  const [
+    {
+      email,
+      password,
+      loading,
+      showEmailAuth,
+      isSignUp,
+      showScanner,
+      errors,
+      currentUser,
+      showSyncModal,
+      newUserId,
+    },
+    dispatch,
+  ] = useReducer(authReducer, initialState);
+  const _syncCheckDoneRef = useRef(false);
   const passwordRef = useRef<any>(null);
 
   // Load current user from public.users via the internal identity (new architecture pattern).
@@ -99,7 +163,7 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
   useEffect(() => {
     identityAPI.getMyInternalId().then(async (internalId) => {
       if (!internalId) {
-        setCurrentUser(null);
+        dispatch({ type: 'SET_USER', user: null });
         return;
       }
       const { data } = await supabase
@@ -107,7 +171,7 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
         .select('id, email, is_anonymous, full_name')
         .eq('id', internalId)
         .maybeSingle();
-      if (data) setCurrentUser(data);
+      if (data) dispatch({ type: 'SET_USER', user: data });
     });
   }, []);
 
@@ -118,7 +182,7 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
     // Only run on web to avoid conflicts with deep linking handlers in Expo go
     if (coreRuntime.device.getMetadata().platform !== 'web') return;
 
-    const hashParams = new URL(window.location.href.replace('#', '?')).searchParams;
+    const _hashParams = new URL(window.location.href.replace('#', '?')).searchParams;
     const getUrlParam = (name: string) => {
       const search = new URLSearchParams(window.location.search);
       if (search.has(name)) return search.get(name);
@@ -130,9 +194,7 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
     if (!errorCode) return;
 
     if (errorCode === 'identity_already_exists') {
-      // Switch to login tab and show a helpful message
-      setIsSignUp(false);
-      setShowEmailAuth(true);
+      dispatch({ type: 'SET_MODE', isSignUp: false, showEmailAuth: true });
       // Decode and surface the message after a short delay so AuthScreen has mounted
       setTimeout(() => {
         showToast({
@@ -164,9 +226,9 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [t]);
+  }, [t, showToast]);
 
-  const isRealUser = currentUser && currentUser.email && !currentUser.is_anonymous;
+  const isRealUser = currentUser?.email && !currentUser.is_anonymous;
   const shouldHideGeneralAuth = isRealUser;
 
   // ─── Native redirect URI (used by expo-auth-session) ───────────────────────
@@ -180,152 +242,159 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
     });
   };
 
-  async function handleOAuthSignIn(provider: 'google') {
-    setLoading(true);
-    hapticLight();
+  const handleOAuthSignIn = useCallback(
+    async (provider: 'google') => {
+      dispatch({ type: 'SET_LOADING', loading: true });
+      hapticLight();
 
-    const redirectUrl = getRedirectUrl();
-    const session = await authAPI.getSession().catch(() => null);
-    const isAnon = session?.user?.is_anonymous || !session?.user?.email;
+      const redirectUrl = getRedirectUrl();
+      const session = await authAPI.getSession().catch(() => null);
+      const isAnon = session?.user?.is_anonymous || !session?.user?.email;
 
-    // ── Web platform: classic browser-redirect flow ───────────
-    if (coreRuntime.device.getMetadata().platform === 'web') {
-      if (isAnon && session?.user) {
-        const { error } = await supabase.auth.linkIdentity({
-          provider,
-          options: { redirectTo: redirectUrl },
-        });
-        if (error) {
-          if (error.message.includes('already linked')) {
-            showToast({
-              message:
-                t('auth.alreadyLinked') ||
-                'This Google account is already linked to another sanctuary soul. Please login instead.',
-              type: 'error',
-            });
-          } else {
-            handleAPIError(error);
-          }
-          setLoading(false);
-        }
-        return;
-      }
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider,
-        options: {
-          redirectTo: redirectUrl,
-          queryParams: { prompt: 'select_account' },
-        },
-      });
-      if (error) {
-        handleAPIError(error);
-        setLoading(false);
-      }
-      return;
-    }
-
-    // ── Native platform: use expo-auth-session ───
-    const oauthOptions =
-      isAnon && session?.user
-        ? await supabase.auth.linkIdentity({
+      // ── Web platform: classic browser-redirect flow ───────────
+      if (coreRuntime.device.getMetadata().platform === 'web') {
+        if (isAnon && session?.user) {
+          const { error } = await supabase.auth.linkIdentity({
             provider,
-            options: {
-              redirectTo: redirectUrl,
-              skipBrowserRedirect: true,
-              queryParams: { prompt: 'select_account' },
-            },
-          })
-        : await supabase.auth.signInWithOAuth({
-            provider,
-            options: {
-              redirectTo: redirectUrl,
-              skipBrowserRedirect: true,
-              queryParams: { prompt: 'select_account' },
-            },
+            options: { redirectTo: redirectUrl },
           });
-
-    const oauthError = oauthOptions.error;
-    const oauthUrl = (oauthOptions.data as any)?.url as string | null | undefined;
-
-    if (oauthError) {
-      if (oauthError.message.includes('already linked')) {
-        showToast({
-          message:
-            t('auth.alreadyLinked') ||
-            'This Google account is already linked to another sanctuary soul. Please login instead.',
-          type: 'error',
-        });
-      } else {
-        handleAPIError(oauthError);
-      }
-      setLoading(false);
-      return;
-    }
-
-    if (!oauthUrl) {
-      showToast({
-        message: 'Could not reach Google sign-in. Please try again.',
-        type: 'error',
-      });
-      setLoading(false);
-      return;
-    }
-
-    const authResponse = await WebBrowser.openAuthSessionAsync(oauthUrl, redirectUrl);
-
-    if (authResponse.type === 'success' && (authResponse as any).url) {
-      const url = new URL((authResponse as any).url);
-      const params = Object.fromEntries(url.searchParams.entries());
-      const access_token = params.access_token || url.hash.match(/access_token=([^&]+)/)?.[1];
-      const refresh_token = params.refresh_token || url.hash.match(/refresh_token=([^&]+)/)?.[1];
-      if (!access_token || !refresh_token) {
-        setLoading(false);
-        return;
-      }
-
-      const { error: sessErr } = await supabase.auth.setSession({
-        access_token,
-        refresh_token,
-      });
-
-      if (sessErr) {
-        handleAPIError(sessErr);
-      } else {
-        hapticSuccess();
-        const userId = await identityAPI.getMyInternalId();
-        if (userId) {
-          const internalId = userId;
-          const pendingInvite = await coreRuntime.storage.getItem('pending_invite');
-          if (pendingInvite && internalId) {
-            try {
-              const invite = JSON.parse(pendingInvite);
-              if (invite.school_id) {
-                await supabase
-                  .from('users')
-                  .update({ school_id: invite.school_id, role: (invite.role as Role) || 'teacher' })
-                  .eq('id', internalId);
-                await coreRuntime.storage.removeItem('pending_invite');
-                showToast({
-                  message: 'Welcome to your new school sanctuary!',
-                  type: 'success',
-                });
-              }
-            } catch (e) {
-              console.error('Failed to apply pending invite', e);
+          if (error) {
+            if (error.message.includes('already linked')) {
+              showToast({
+                message:
+                  t('auth.alreadyLinked') ||
+                  'This Google account is already linked to another sanctuary soul. Please login instead.',
+                type: 'error',
+              });
+            } else {
+              handleAPIError(error);
             }
           }
+          dispatch({ type: 'SET_LOADING', loading: false });
+          return;
         }
-        const hasGuestData = await GuestDataSync.hasGuestData();
-        if (isAnon && hasGuestData && userId) {
-          setNewUserId(userId);
-          setShowSyncModal(true);
+
+        const { error } = await supabase.auth.signInWithOAuth({
+          provider,
+          options: {
+            redirectTo: redirectUrl,
+            queryParams: { prompt: 'select_account' },
+          },
+        });
+        if (error) {
+          handleAPIError(error);
+          dispatch({ type: 'SET_LOADING', loading: false });
+        }
+        return;
+      }
+
+      // ── Native platform: use expo-auth-session ───
+      const oauthOptions =
+        isAnon && session?.user
+          ? await supabase.auth.linkIdentity({
+              provider,
+              options: {
+                redirectTo: redirectUrl,
+                skipBrowserRedirect: true,
+                queryParams: { prompt: 'select_account' },
+              },
+            })
+          : await supabase.auth.signInWithOAuth({
+              provider,
+              options: {
+                redirectTo: redirectUrl,
+                skipBrowserRedirect: true,
+                queryParams: { prompt: 'select_account' },
+              },
+            });
+
+      const oauthError = oauthOptions.error;
+      const oauthUrl = (oauthOptions.data as any)?.url as string | null | undefined;
+
+      if (oauthError) {
+        if (oauthError.message.includes('already linked')) {
+          showToast({
+            message:
+              t('auth.alreadyLinked') ||
+              'This Google account is already linked to another sanctuary soul. Please login instead.',
+            type: 'error',
+          });
         } else {
-          if (onSuccess) onSuccess();
+          handleAPIError(oauthError);
+        }
+        dispatch({ type: 'SET_LOADING', loading: false });
+        return;
+      }
+
+      if (!oauthUrl) {
+        showToast({
+          message: 'Could not reach Google sign-in. Please try again.',
+          type: 'error',
+        });
+        dispatch({ type: 'SET_LOADING', loading: false });
+        return;
+      }
+
+      const authResponse = await WebBrowser.openAuthSessionAsync(oauthUrl, redirectUrl);
+
+      if (authResponse.type === 'success' && (authResponse as any).url) {
+        const url = new URL((authResponse as any).url);
+        const params = Object.fromEntries(url.searchParams.entries());
+        const access_token = params.access_token || url.hash.match(/access_token=([^&]+)/)?.[1];
+        const refresh_token = params.refresh_token || url.hash.match(/refresh_token=([^&]+)/)?.[1];
+        if (!access_token || !refresh_token) {
+          dispatch({ type: 'SET_LOADING', loading: false });
+          return;
+        }
+
+        const { error: sessErr } = await supabase.auth.setSession({
+          access_token,
+          refresh_token,
+        });
+
+        if (sessErr) {
+          handleAPIError(sessErr);
+        } else {
+          hapticSuccess();
+          const userId = await identityAPI.getMyInternalId();
+          if (userId) {
+            const internalId = userId;
+            const pendingInvite = await coreRuntime.storage.getItem('pending_invite');
+            if (pendingInvite && internalId) {
+              try {
+                const invite = JSON.parse(pendingInvite);
+                if (invite.school_id) {
+                  await supabase
+                    .from('users')
+                    .update({
+                      school_id: invite.school_id,
+                      role: (invite.role as Role) || 'teacher',
+                    })
+                    .eq('id', internalId);
+                  await coreRuntime.storage.removeItem('pending_invite');
+                  showToast({
+                    message: 'Welcome to your new school sanctuary!',
+                    type: 'success',
+                  });
+                }
+              } catch (e) {
+                console.error('Failed to apply pending invite', e);
+              }
+            }
+          }
+          const hasGuestData = await GuestDataSync.hasGuestData();
+          if (isAnon && hasGuestData && userId) {
+            dispatch({ type: 'SET_FIELD', field: 'newUserId', value: userId });
+            dispatch({ type: 'SET_SYNC_MODAL', isOpen: true });
+          } else {
+            if (onSuccess) onSuccess();
+          }
         }
       }
-    }
-    setLoading(false);
-  }
+      dispatch({ type: 'SET_LOADING', loading: false });
+    },
+    [onSuccess, showToast, t, getRedirectUrl],
+  );
 
   async function handleAuth() {
     const { isValid, errors: valErrors } = validateForm(
@@ -337,11 +406,11 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
     );
 
     if (!isValid) {
-      setErrors(valErrors);
+      dispatch({ type: 'SET_ERRORS', errors: valErrors });
       return;
     }
 
-    setLoading(true);
+    dispatch({ type: 'SET_LOADING', loading: true });
     try {
       if (isSignUp) {
         const currentSession = await authAPI.getSession().catch(() => null);
@@ -360,8 +429,8 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
           // Check for guest data to sync
           const hasGuestData = await GuestDataSync.hasGuestData();
           if (hasGuestData && internalId) {
-            setNewUserId(internalId);
-            setShowSyncModal(true);
+            dispatch({ type: 'SET_FIELD', field: 'newUserId', value: internalId });
+            dispatch({ type: 'SET_SYNC_MODAL', isOpen: true });
           } else {
             if (onSuccess) onSuccess();
           }
@@ -382,8 +451,8 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
                   'You already have a sanctuary soul! Switching to login...',
                 type: 'success',
               });
-              setIsSignUp(false);
-              setLoading(false);
+              dispatch({ type: 'SET_MODE', isSignUp: false });
+              dispatch({ type: 'SET_LOADING', loading: false });
               return;
             }
             throw error;
@@ -428,9 +497,14 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
         type: 'error',
       });
     } finally {
-      setLoading(false);
+      dispatch({ type: 'SET_LOADING', loading: false });
     }
   }
+
+  const handleModeChange = useCallback((signUp: boolean) => {
+    hapticLight();
+    dispatch({ type: 'SET_MODE', isSignUp: signUp, showEmailAuth: false });
+  }, []);
 
   return (
     <ScreenWrapper scroll>
@@ -529,12 +603,7 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
                     style={{
                       backgroundColor: isSignUp ? accent.action : 'transparent',
                     }}
-                    onPress={() => {
-                      hapticLight();
-                      setIsSignUp(true);
-                      setShowEmailAuth(false);
-                      setErrors({});
-                    }}
+                    onPress={() => handleModeChange(true)}
                   >
                     <ButtonText
                       className="text-sm font-bold"
@@ -549,12 +618,7 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
                     style={{
                       backgroundColor: !isSignUp ? accent.action : 'transparent',
                     }}
-                    onPress={() => {
-                      hapticLight();
-                      setIsSignUp(false);
-                      setShowEmailAuth(false);
-                      setErrors({});
-                    }}
+                    onPress={() => handleModeChange(false)}
                   >
                     <ButtonText
                       className="text-sm font-bold"
@@ -598,7 +662,7 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
                       variant="outline"
                       onPress={() => {
                         hapticLight();
-                        setShowEmailAuth(true);
+                        dispatch({ type: 'SET_MODE', isSignUp, showEmailAuth: true });
                       }}
                       isDisabled={loading}
                       className="h-[54px] rounded-2xl border-phase-border bg-transparent"
@@ -634,7 +698,9 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
                           <InputField
                             placeholder={t('auth.email')}
                             value={email}
-                            onChangeText={setEmail}
+                            onChangeText={(text) =>
+                              dispatch({ type: 'SET_FIELD', field: 'email', value: text })
+                            }
                             keyboardType="email-address"
                             autoComplete="email"
                             className="text-phase-primary"
@@ -649,7 +715,9 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
                             ref={passwordRef}
                             placeholder={t('auth.password')}
                             value={password}
-                            onChangeText={setPassword}
+                            onChangeText={(text) =>
+                              dispatch({ type: 'SET_FIELD', field: 'password', value: text })
+                            }
                             secureTextEntry
                             autoComplete={isSignUp ? 'new-password' : 'current-password'}
                             className="text-phase-primary"
@@ -678,8 +746,7 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
                         <Button
                           variant="ghost"
                           onPress={() => {
-                            setShowEmailAuth(false);
-                            setErrors({});
+                            dispatch({ type: 'SET_MODE', isSignUp, showEmailAuth: false });
                           }}
                           className="self-center"
                         >
@@ -737,10 +804,10 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
       {Scanner && (
         <Scanner
           visible={showScanner}
-          onClose={() => setShowScanner(false)}
+          onClose={() => dispatch({ type: 'SET_SCANNER', visible: false })}
           onScan={async (data) => {
             hapticSuccess();
-            setShowScanner(false);
+            dispatch({ type: 'SET_SCANNER', visible: false });
             const userId = await identityAPI.getMyInternalId();
             if (!userId) {
               showToast({ message: 'Please sign in first to use QR codes', type: 'error' });
@@ -760,11 +827,11 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
         isOpen={showSyncModal}
         userId={newUserId}
         onSyncComplete={() => {
-          setShowSyncModal(false);
+          dispatch({ type: 'SET_SYNC_MODAL', isOpen: false });
           if (onSuccess) onSuccess();
         }}
         onClose={() => {
-          setShowSyncModal(false);
+          dispatch({ type: 'SET_SYNC_MODAL', isOpen: false });
         }}
       />
     </ScreenWrapper>

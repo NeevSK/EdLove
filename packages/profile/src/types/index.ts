@@ -1,13 +1,13 @@
-import { AuthorityTier, SocialLink, StaffAttendance, StaffLeave } from '@repo/core';
+import { type AuthorityTier, type SocialLink, StaffAttendance, StaffLeave } from '@repo/core';
 
 export interface ProfileStats {
-    classes_taught?: number;
-    students_count?: number;
-    assignments_graded?: number;
-    attendance_streak?: number;
-    assignments_completed?: number;
-    assignments_count?: number;
-    guru_points?: number;
+  classes_taught?: number;
+  students_count?: number;
+  assignments_graded?: number;
+  attendance_streak?: number;
+  assignments_completed?: number;
+  assignments_count?: number;
+  guru_points?: number;
 }
 
 /**
@@ -31,43 +31,43 @@ export interface ProfileStats {
  *          'inferred' means derived purely from behavioral signals.
  */
 export interface OrientationSeeds {
-    depth_breadth: number;   // 0100
-    reflect_act: number;     // 0100
-    solo_social: number;     // 0100
-    steady_surge: number;    // 0100
-    source: 'seeded' | 'inferred' | 'mixed';
-    seeded_at?: string;      // ISO timestamp
-    last_updated?: string;
+  depth_breadth: number; // 0100
+  reflect_act: number; // 0100
+  solo_social: number; // 0100
+  steady_surge: number; // 0100
+  source: 'seeded' | 'inferred' | 'mixed';
+  seeded_at?: string; // ISO timestamp
+  last_updated?: string;
 }
 
 export interface UserProfile extends ProfileStats {
-    id: string;
-    email: string;
-    full_name: string;
-    username?: string;
-    role: AuthorityTier;
-    avatar_url?: string;
-    is_anonymous?: boolean;
-    public_profile?: boolean;
-    profile_completed?: boolean;
-    bio?: string;
-    index_number?: string;
-    nic_number?: string;
-    school_id?: string;
-    school_name?: string;
-    is_thuthimal?: boolean;
-    thuthimal_gifter?: string;
-    thuthimal_gifted_at?: string;
-    level?: number;
-    phone?: string;
-    created_at?: string;
-    experience_years?: number;
-    subjects_taught?: string | string[];
-    qualifications?: string | string[];
-    social_links?: SocialLink[];
-    /**
-     * Private orientation fingerprint  never shown as a type label.
-     * Used to subtly personalize content ordering and self-section visuals.
-     */
-    orientation_seeds?: OrientationSeeds | null;
+  id: string;
+  email: string;
+  full_name: string;
+  username?: string;
+  role: AuthorityTier;
+  avatar_url?: string;
+  is_anonymous?: boolean;
+  public_profile?: boolean;
+  profile_completed?: boolean;
+  bio?: string;
+  index_number?: string;
+  nic_number?: string;
+  school_id?: string;
+  school_name?: string;
+  is_thuthimal?: boolean;
+  thuthimal_gifter?: string;
+  thuthimal_gifted_at?: string;
+  level?: number;
+  phone?: string;
+  created_at?: string;
+  experience_years?: number;
+  subjects_taught?: string | string[];
+  qualifications?: string | string[];
+  social_links?: SocialLink[];
+  /**
+   * Private orientation fingerprint  never shown as a type label.
+   * Used to subtly personalize content ordering and self-section visuals.
+   */
+  orientation_seeds?: OrientationSeeds | null;
 }

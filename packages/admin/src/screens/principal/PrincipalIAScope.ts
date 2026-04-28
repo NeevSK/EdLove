@@ -1,7 +1,9 @@
 export type {
   PrincipalFeatureScope,
-  PrincipalFeatureScopeMeta} from '../../principal/workspace';
+  PrincipalFeatureScopeMeta,
+} from '../../principal/workspace';
 
 export {
+  getPrincipalFeatureScopeMeta,
   PRINCIPAL_FEATURE_SCOPE_MAP,
-  getPrincipalFeatureScopeMeta} from '../../principal/workspace';
+} from '../../principal/workspace';

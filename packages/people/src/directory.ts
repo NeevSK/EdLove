@@ -1,8 +1,8 @@
 import {
-  supabase,
   getSchoolRoleForUser,
   getWorkRolesForUser,
   type SchoolRole,
+  supabase,
   type User,
   type WorkRole,
 } from '@repo/core';
@@ -14,13 +14,19 @@ export interface PeopleDirectoryEntry extends User {
 }
 
 function mapDirectoryEntry(user: User): PeopleDirectoryEntry {
-  const schoolRole = getSchoolRoleForUser(user);
-  return {
+  const userWithRoles = {
     ...user,
-    schoolRole,
-    workRoles: getWorkRolesForUser(user),
-    personKind: schoolRole === 'student' ? 'student' : 'staff',
+    roles: user.roles || [],
+    created_at: user.created_at || new Date().toISOString(),
+    updated_at: user.updated_at || new Date().toISOString(),
   };
+  const schoolRole = getSchoolRoleForUser(userWithRoles as any);
+  return {
+    ...userWithRoles,
+    schoolRole,
+    workRoles: getWorkRolesForUser(userWithRoles as any),
+    personKind: schoolRole === 'student' ? 'student' : 'staff',
+  } as PeopleDirectoryEntry;
 }
 
 export const peopleDirectoryAPI = {
@@ -37,7 +43,15 @@ export const peopleDirectoryAPI = {
     if (options?.personKind === 'student') {
       query = query.eq('role', 'student');
     } else if (options?.personKind === 'staff') {
-      query = query.in('role', ['principal', 'section_head', 'grade_head', 'teacher', 'founder', 'admin', 'developer']);
+      query = query.in('role', [
+        'principal',
+        'section_head',
+        'grade_head',
+        'teacher',
+        'founder',
+        'admin',
+        'developer',
+      ]);
     }
 
     const { data, error } = await query;

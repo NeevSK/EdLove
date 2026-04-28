@@ -31,10 +31,9 @@ export class OpenAIVisionProvider implements OCRProvider {
   }
 }
 
-//  Helpers 
+//  Helpers
 
 async function uriToBase64(uri: string): Promise<string> {
-  // @ts-ignore  expo-file-system/legacy sub-path types may be absent in some package configs
   const { readAsStringAsync, EncodingType } = await import('expo-file-system/legacy');
   return readAsStringAsync(uri, { encoding: EncodingType.Base64 });
 }

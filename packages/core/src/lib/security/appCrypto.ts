@@ -1,4 +1,4 @@
-import * as SecureStore from 'expo-secure-store';
+import { cryptoManager } from '../../logic/managers/CryptoManager';
 import { supabase } from '../../native/supabase';
 
 export const AppCryptoEngine = {
@@ -7,9 +7,8 @@ export const AppCryptoEngine = {
    */
   async deriveKEK(secret: string, salt: string): Promise<string> {
     const normalized = secret.trim().toLowerCase();
-    // Placeholder for true pbkdf2 from react-native-quick-crypto or expo-crypto
-    // return await crypto.pbkdf2(normalized, salt, 100000, 32, 'sha256');
-    return `mock_kek_pbkdf2_${normalized}_${salt}`;
+    // Use the manager for digest
+    return await cryptoManager.digestStringAsync('SHA-256', `${normalized}:${salt}`);
   },
 
   /**
@@ -63,9 +62,10 @@ export const AppCryptoEngine = {
    * Master Biometric Override (Saves raw Master DEK to hardware enclave)
    */
   async enrollParentKey(accountId: string, masterDEK: string) {
-    await SecureStore.setItemAsync(`master_dek_${accountId}`, masterDEK, {
+    await cryptoManager.setItemAsync(`master_dek_${accountId}`, masterDEK, {
       requireAuthentication: true,
-      keychainAccessible: SecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
+      // Note: Options should be abstracted or passed carefully in a truly platform-agnostic way
+      // For now, we pass them through to the native adapter.
     });
   },
 };

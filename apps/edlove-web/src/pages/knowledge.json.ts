@@ -27,7 +27,14 @@ function normalizeId(id: string) {
 }
 
 export async function GET() {
-  const collectionNames = ['cosmos', 'library', 'resources', 'community', 'gurudevi', 'sri-lanka'] as const;
+  const collectionNames = [
+    'cosmos',
+    'library',
+    'resources',
+    'community',
+    'gurudevi',
+    'sri-lanka',
+  ] as const;
 
   const entries = (
     await Promise.all(
@@ -48,7 +55,7 @@ export async function GET() {
             url: absoluteUrl(pathname),
           };
         });
-      })
+      }),
     )
   ).flat();
 

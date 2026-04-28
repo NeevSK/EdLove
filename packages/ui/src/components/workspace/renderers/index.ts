@@ -1,6 +1,6 @@
-export { MobileWorkspaceCanvas } from './MobileWorkspaceCanvas';
 export type { MobileWorkspaceCanvasProps } from './MobileWorkspaceCanvas';
-export { TabletWorkspaceCanvas } from './TabletWorkspaceCanvas';
+export { MobileWorkspaceCanvas } from './MobileWorkspaceCanvas';
 export type { TabletWorkspaceCanvasProps } from './TabletWorkspaceCanvas';
-export { WebWorkspaceCanvas } from './WebWorkspaceCanvas';
+export { TabletWorkspaceCanvas } from './TabletWorkspaceCanvas';
 export type { WebWorkspaceCanvasProps } from './WebWorkspaceCanvas';
+export { WebWorkspaceCanvas } from './WebWorkspaceCanvas';

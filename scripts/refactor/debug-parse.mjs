@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+
 const content = fs.readFileSync('packages/self/type_errors_direct_v1.txt', 'utf8');
 const lines = content.split('\n');
 const regex = /(.+\.tsx?)\((\d+),(\d+)\):\s+error\s+(TS\d+):\s+(.+)/;

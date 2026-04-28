@@ -1,8 +1,8 @@
-import React from 'react';
-import { StyleSheet, Platform, StatusBar } from 'react-native';
-import { KeyboardAvoidingView, View, ScrollView } from './ui/view';
+import type React from 'react';
+import { Platform, StatusBar, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../hooks/useTheme';
+import { KeyboardAvoidingView, ScrollView, View } from './ui/view';
 
 interface ScreenWrapperProps {
   children: React.ReactNode;

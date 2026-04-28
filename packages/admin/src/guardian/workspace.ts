@@ -36,10 +36,11 @@ function defineGuardianCapability(
 ): GuardianCapabilityMeta {
   return {
     id,
-    ...config};
+    ...config,
+  };
 }
 
-export const GUARDIAN_CAPABILITY_REGISTRY: Record<GuardianCapabilityId, GuardianCapabilityMeta>  = {
+export const GUARDIAN_CAPABILITY_REGISTRY: Record<GuardianCapabilityId, GuardianCapabilityMeta> = {
   workspace_switcher: defineGuardianCapability('workspace_switcher', {
     title: 'Workspace, Switcher',
     description:
@@ -47,7 +48,8 @@ export const GUARDIAN_CAPABILITY_REGISTRY: Record<GuardianCapabilityId, Guardian
     zone: 'institution',
     cadence: 'daily',
     scope: 'school_bridge',
-    status: 'live'}),
+    status: 'live',
+  }),
   family_snapshot: defineGuardianCapability('family_snapshot', {
     title: 'Family, Snapshot',
     description:
@@ -55,7 +57,8 @@ export const GUARDIAN_CAPABILITY_REGISTRY: Record<GuardianCapabilityId, Guardian
     zone: 'today',
     cadence: 'daily',
     scope: 'family',
-    status: 'live'}),
+    status: 'live',
+  }),
   children: defineGuardianCapability('children', {
     title: 'Children',
     description:
@@ -63,7 +66,8 @@ export const GUARDIAN_CAPABILITY_REGISTRY: Record<GuardianCapabilityId, Guardian
     zone: 'work',
     cadence: 'daily',
     scope: 'student_linked',
-    status: 'live'}),
+    status: 'live',
+  }),
   attendance_watch: defineGuardianCapability('attendance_watch', {
     title: 'Attendance, Watch',
     description:
@@ -71,7 +75,8 @@ export const GUARDIAN_CAPABILITY_REGISTRY: Record<GuardianCapabilityId, Guardian
     zone: 'today',
     cadence: 'daily',
     scope: 'student_linked',
-    status: 'live'}),
+    status: 'live',
+  }),
   learning_pulse: defineGuardianCapability('learning_pulse', {
     title: 'Learning, Pulse',
     description:
@@ -79,7 +84,8 @@ export const GUARDIAN_CAPABILITY_REGISTRY: Record<GuardianCapabilityId, Guardian
     zone: 'work',
     cadence: 'weekly',
     scope: 'student_linked',
-    status: 'live'}),
+    status: 'live',
+  }),
   school_feed: defineGuardianCapability('school_feed', {
     title: 'School, Feed',
     description:
@@ -87,7 +93,8 @@ export const GUARDIAN_CAPABILITY_REGISTRY: Record<GuardianCapabilityId, Guardian
     zone: 'today',
     cadence: 'daily',
     scope: 'school_bridge',
-    status: 'live'}),
+    status: 'live',
+  }),
   upcoming_events: defineGuardianCapability('upcoming_events', {
     title: 'Upcoming, Events',
     description:
@@ -95,7 +102,8 @@ export const GUARDIAN_CAPABILITY_REGISTRY: Record<GuardianCapabilityId, Guardian
     zone: 'outlook',
     cadence: 'periodic',
     scope: 'school_bridge',
-    status: 'live'}),
+    status: 'live',
+  }),
   communication_bridge: defineGuardianCapability('communication_bridge', {
     title: 'Communication, Bridge',
     description:
@@ -103,7 +111,8 @@ export const GUARDIAN_CAPABILITY_REGISTRY: Record<GuardianCapabilityId, Guardian
     zone: 'institution',
     cadence: 'periodic',
     scope: 'school_bridge',
-    status: 'live'}),
+    status: 'live',
+  }),
   visibility_boundaries: defineGuardianCapability('visibility_boundaries', {
     title: 'Visibility, Boundaries',
     description:
@@ -111,7 +120,9 @@ export const GUARDIAN_CAPABILITY_REGISTRY: Record<GuardianCapabilityId, Guardian
     zone: 'private',
     cadence: 'horizon',
     scope: 'family',
-    status: 'live'})};
+    status: 'live',
+  }),
+};
 
 export function getGuardianCapabilityMeta(featureId: string): GuardianCapabilityMeta | undefined {
   return GUARDIAN_CAPABILITY_REGISTRY[featureId as GuardianCapabilityId];

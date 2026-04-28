@@ -1,60 +1,125 @@
-import React, { createContext, useContext, useState } from 'react';
-import { Pressable, View, Text } from 'react-native';
 import { Check } from 'lucide-react-native';
+import { cssInterop } from 'nativewind';
+import type React from 'react';
+import { createContext, useContext, useMemo, useState } from 'react';
+import { Pressable, Text, View, type ViewProps } from 'react-native';
 
-// --- Context for CheckboxGroup ---
-const CheckboxGroupContext = createContext<{
+cssInterop(View, { className: 'style' });
+cssInterop(Pressable, { className: 'style' });
+cssInterop(Text, { className: 'style' });
+
+/**
+ * Checkbox Component
+ *
+ * A high-impact, hardened form primitive.
+ * Enforces strong types and accessibility standards for data integrity.
+ */
+
+// --- Contexts ---
+interface CheckboxGroupContextType {
   values: string[];
   onValueChange: (value: string) => void;
-} | null>(null);
+  isDisabled?: boolean;
+}
 
-// --- Checkbox Indicator ---
-export const CheckboxIndicator = ({ children, className }: any) => {
-  const { isChecked }: any = useContext(CheckboxContext);
+const CheckboxGroupContext = createContext<CheckboxGroupContextType | null>(null);
+
+interface CheckboxContextType {
+  isChecked: boolean;
+  isDisabled: boolean;
+  isInvalid?: boolean;
+}
+
+const CheckboxContext = createContext<CheckboxContextType | null>(null);
+
+function useCheckbox() {
+  const context = useContext(CheckboxContext);
+  if (!context) throw new Error('useCheckbox must be used within a Checkbox');
+  return context;
+}
+
+// --- Sub-components ---
+
+export const CheckboxIndicator = ({
+  children,
+  className,
+}: {
+  children?: React.ReactNode;
+  className?: string;
+}) => {
+  const { isChecked, isDisabled, isInvalid } = useCheckbox();
+
   return (
     <View
       className={`
-                w-5 h-5 rounded-md border-2 items-center justify-center
-                ${isChecked ? 'bg-phase-accent border-phase-accent' : 'bg-transparent border-phase-text-secondary opacity-40'}
-                ${className || ''}
-            `}
+        w-6 h-6 rounded-lg border-2 items-center justify-center transition-all duration-200
+        ${
+          isChecked
+            ? 'bg-phase-accent border-phase-accent shadow-sm'
+            : 'bg-transparent border-phase-interactive/30'
+        }
+        ${isInvalid ? 'border-phase-danger' : ''}
+        ${isDisabled ? 'opacity-40' : ''}
+        ${className || ''}
+      `}
     >
       {children}
     </View>
   );
 };
 
-// --- Checkbox Icon ---
-export const CheckboxIcon = ({ as: Icon = Check, className }: any) => {
-  const { isChecked }: any = useContext(CheckboxContext);
-  if (!isChecked) return null;
-  return <Icon size={14} color="white" className={`${className || ''}`} />;
-};
-
 export const CheckIcon = Check;
 
-// --- Checkbox Label ---
-export const CheckboxLabel = ({ children, className }: any) => (
-  <Text className={`text-phase-text-primary ml-2 text-sm font-medium ${className || ''}`}>
-    {children}
-  </Text>
-);
+export const CheckboxIcon = ({ as: Icon = Check, className, size = 14 }: any) => {
+  const { isChecked } = useCheckbox();
+  if (!isChecked) return null;
 
-// --- Checkbox Context ---
-const CheckboxContext = createContext<{ isChecked: boolean } | null>(null);
+  return <Icon size={size} color="white" strokeWidth={3} className={`${className || ''}`} />;
+};
 
-// --- Checkbox Root ---
+export const CheckboxLabel = ({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) => {
+  const { isDisabled } = useCheckbox();
+  return (
+    <Text
+      className={`text-phase-text-primary ml-3 text-base font-medium tracking-tight ${isDisabled ? 'opacity-50' : ''} ${className || ''}`}
+    >
+      {children}
+    </Text>
+  );
+};
+
+// --- Main Components ---
+
+export interface ICheckboxProps extends ViewProps {
+  value: string;
+  isChecked?: boolean;
+  isDisabled?: boolean;
+  isInvalid?: boolean;
+  onChange?: (checked: boolean) => void;
+  children?: React.ReactNode;
+  className?: string;
+}
+
 export const Checkbox = ({
   children,
   value,
   isChecked: isCheckedProp,
   onChange,
   className,
-  isDisabled,
+  isDisabled: isDisabledProp,
+  isInvalid,
   ...props
-}: any) => {
+}: ICheckboxProps) => {
   const groupContext = useContext(CheckboxGroupContext);
   const [internalChecked, setInternalChecked] = useState(false);
+
+  const isDisabled = isDisabledProp || groupContext?.isDisabled || false;
 
   const isChecked = groupContext
     ? groupContext.values.includes(value)
@@ -64,6 +129,7 @@ export const Checkbox = ({
 
   const handlePress = () => {
     if (isDisabled) return;
+
     if (groupContext) {
       groupContext.onValueChange(value);
     } else {
@@ -73,12 +139,26 @@ export const Checkbox = ({
     }
   };
 
+  const contextValue = useMemo(
+    () => ({
+      isChecked,
+      isDisabled,
+      isInvalid,
+    }),
+    [isChecked, isDisabled, isInvalid],
+  );
+
   return (
-    <CheckboxContext.Provider value={{ isChecked }}>
+    <CheckboxContext.Provider value={contextValue}>
       <Pressable
         onPress={handlePress}
         disabled={isDisabled}
-        className={`flex-row items-center py-1 ${isDisabled ? 'opacity-50' : ''} ${className || ''}`}
+        accessibilityRole="checkbox"
+        accessibilityState={{
+          checked: isChecked,
+          disabled: isDisabled,
+        }}
+        className={`flex-row items-center py-2 active:opacity-80 ${className || ''}`}
         {...props}
       >
         {children}
@@ -87,18 +167,46 @@ export const Checkbox = ({
   );
 };
 
-// --- Checkbox Group ---
-export const CheckboxGroup = ({ children, value = [], onChange, className }: any) => {
+export const CheckboxGroup = ({
+  children,
+  value = [],
+  onChange,
+  isDisabled,
+  className,
+  ...props
+}: {
+  children: React.ReactNode;
+  value?: string[];
+  onChange?: (values: string[]) => void;
+  isDisabled?: boolean;
+  className?: string;
+} & ViewProps) => {
   const handleValueChange = (val: string) => {
-    const nextValue = value.includes(val)
-      ? value.filter((v: string) => v !== val)
-      : [...value, val];
+    if (isDisabled) return;
+
+    const nextValue = value.includes(val) ? value.filter((v) => v !== val) : [...value, val];
     onChange?.(nextValue);
   };
 
+  const contextValue = useMemo(
+    () => ({
+      values: value,
+      onValueChange: handleValueChange,
+      isDisabled,
+    }),
+    [value, isDisabled, handleValueChange],
+  );
+
   return (
-    <CheckboxGroupContext.Provider value={{ values: value, onValueChange: handleValueChange }}>
-      <View className={`${className || ''}`}>{children}</View>
+    <CheckboxGroupContext.Provider value={contextValue}>
+      <View {...props} className={`${className || ''}`}>
+        {children}
+      </View>
     </CheckboxGroupContext.Provider>
   );
 };
+
+Checkbox.displayName = 'Checkbox';
+CheckboxGroup.displayName = 'CheckboxGroup';
+
+export { Checkbox as default };

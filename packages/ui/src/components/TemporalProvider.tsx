@@ -1,6 +1,7 @@
-import React, { createContext, useContext, useMemo } from 'react';
-import { View, StyleSheet } from 'react-native';
 import { useTemporalStore } from '@repo/core/logic';
+import type React from 'react';
+import { createContext, useContext, useMemo } from 'react';
+import { StyleSheet, View } from 'react-native';
 
 interface TemporalContextType {
   blurAmount: number;

@@ -1,4 +1,3 @@
-import React from 'react';
 import { VStack } from '../gluestack';
 import PositiveInvitation from './PositiveInvitation';
 import SanctuaryButton from './SanctuaryButton';

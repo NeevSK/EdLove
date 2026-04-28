@@ -1,15 +1,15 @@
-import { supabase } from '@repo/core';
 import { Ledger } from '@repo/accounting';
-import { PaymentIntent, PaymentStatus } from './types';
+import { supabase } from '@repo/core';
+import { PaymentIntent, type PaymentStatus } from './types';
 
 export class PaymentService {
   /**
    * Finalizes a payment and records it in the accounting ledger.
    */
   static async finalizePayment(
-    paymentIntentId: string, 
+    paymentIntentId: string,
     status: PaymentStatus,
-    accounts: { debit_account_id: string; credit_account_id: string }
+    accounts: { debit_account_id: string; credit_account_id: string },
   ) {
     if (status !== 'succeeded') return;
 
@@ -29,31 +29,31 @@ export class PaymentService {
         date: new Date().toISOString().split('T')[0] ?? new Date().toISOString(),
         description: `Payment ${paymentIntentId} via ${payment.provider || 'unknown'}`,
         referenceNo: payment.external_id || undefined,
-        metadata: { payment_id: paymentIntentId }
+        metadata: { payment_id: paymentIntentId },
       },
       [
         {
           accountId: accounts.debit_account_id, // e.g., "Cash at Bank"
           amount: payment.amount,
           side: 'debit',
-          description: 'Payment collection'
+          description: 'Payment collection',
         },
         {
           accountId: accounts.credit_account_id, // e.g., "Student Fees Receivable" or "Sales Income"
           amount: payment.amount,
           side: 'credit',
-          description: 'Fee settlement'
-        }
-      ]
+          description: 'Fee settlement',
+        },
+      ],
     );
 
     // 3. Link back to Payment Transaction
     const { error: updateError } = await supabase
       .schema('payments')
       .from('transactions')
-      .update({ 
+      .update({
         status: 'succeeded',
-        ledger_transaction_id: tx.id 
+        ledger_transaction_id: tx.id,
       })
       .eq('id', paymentIntentId);
 

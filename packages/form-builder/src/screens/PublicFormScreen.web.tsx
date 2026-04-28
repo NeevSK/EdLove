@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { VStack, Box, Heading, Text, useThemedColors, Theme, LotusLoader } from '@repo/ui';
-import { api, FormHydrator, FormTemplate } from '@repo/core';
-import NativeForm from '../NativeForm';
 import { useRoute } from '@react-navigation/native';
+import { api, FormHydrator, type FormTemplate } from '@repo/core';
+import { Box, Heading, LotusLoader, Text, Theme, useThemedColors, VStack } from '@repo/ui';
+import React, { useEffect, useState } from 'react';
+import NativeForm from '../NativeForm';
 
 export default function PublicFormScreenWeb() {
   const route = useRoute<any>();
@@ -36,26 +36,57 @@ export default function PublicFormScreenWeb() {
 
   if (loading) {
     return (
-      <VStack sx={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.backgroundDark }}>
+      <VStack
+        sx={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: colors.backgroundDark,
+        }}
+      >
         <LotusLoader />
-        <Text sx={{ marginTop: 16, color: colors.textSecondary }}>Preparing your dignified experience...</Text>
+        <Text sx={{ marginTop: 16, color: colors.textSecondary }}>
+          Preparing your dignified experience...
+        </Text>
       </VStack>
     );
   }
 
   if (error || !template) {
     return (
-      <VStack sx={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.backgroundDark, padding: 40 }}>
-        <Heading size="lg" sx={{ color: Theme.colors.emberRed }}>Access Denied</Heading>
-        <Text sx={{ textAlign: 'center', marginTop: 12, color: colors.textSecondary }}>{error}</Text>
+      <VStack
+        sx={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: colors.backgroundDark,
+          padding: 40,
+        }}
+      >
+        <Heading size="lg" sx={{ color: Theme.colors.emberRed }}>
+          Access Denied
+        </Heading>
+        <Text sx={{ textAlign: 'center', marginTop: 12, color: colors.textSecondary }}>
+          {error}
+        </Text>
       </VStack>
     );
   }
 
   if (submitted) {
     return (
-      <VStack sx={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.backgroundDark, padding: 40 }}>
-        <Heading size="xl" sx={{ color: Theme.colors.sageGreen }}>Thank You</Heading>
+      <VStack
+        sx={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: colors.backgroundDark,
+          padding: 40,
+        }}
+      >
+        <Heading size="xl" sx={{ color: Theme.colors.sageGreen }}>
+          Thank You
+        </Heading>
         <Text sx={{ textAlign: 'center', marginTop: 12, color: colors.textSecondary }}>
           Your response has been securely recorded in the Gurudevi ecosystem.
         </Text>
@@ -86,7 +117,15 @@ export default function PublicFormScreenWeb() {
   });
 
   return (
-    <VStack sx={{ flex: 1, backgroundColor: colors.backgroundDark, padding: 20, alignItems: 'center', justifyContent: 'center' }}>
+    <VStack
+      sx={{
+        flex: 1,
+        backgroundColor: colors.backgroundDark,
+        padding: 20,
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
       <Box
         sx={{
           backgroundColor: 'white',
@@ -100,7 +139,9 @@ export default function PublicFormScreenWeb() {
         }}
       >
         <VStack sx={{ marginBottom: 32, alignItems: 'center' }}>
-          <Heading size="xl" sx={{ textAlign: 'center' }}>{template.title}</Heading>
+          <Heading size="xl" sx={{ textAlign: 'center' }}>
+            {template.title}
+          </Heading>
           {template.description && (
             <Text sx={{ textAlign: 'center', marginTop: 8, color: colors.textSecondary }}>
               {template.description}

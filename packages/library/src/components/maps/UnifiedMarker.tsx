@@ -1,86 +1,65 @@
-import React from 'react';
-import { Marker, Callout } from 'react-native-maps';
 import * as MapLibreGL from '@maplibre/maplibre-react-native';
+import { Box, Text } from '@repo/ui';
+import type React from 'react';
+import { Marker } from 'react-native-maps';
 import { useMap } from './MapProvider';
-import { View, Text, StyleSheet } from 'react-native';
 
 interface UnifiedMarkerProps {
-    id?: string;
-    coordinate: {
-        latitude: number;
-        longitude: number;
-    };
-    title?: string;
-    description?: string;
-    onPress?: () => void;
-    pinColor?: string;
-    children?: React.ReactNode;
+  id?: string;
+  coordinate: {
+    latitude: number;
+    longitude: number;
+  };
+  title?: string;
+  description?: string;
+  onPress?: () => void;
+  pinColor?: string;
+  children?: React.ReactNode;
 }
 
 export const UnifiedMarker: React.FC<UnifiedMarkerProps> = ({
-    id,
-    coordinate,
-    title,
-    description,
-    onPress,
-    pinColor,
-    children,
+  id,
+  coordinate,
+  title,
+  description,
+  onPress,
+  pinColor,
+  children,
 }) => {
-    const { provider } = useMap();
+  const { provider } = useMap();
 
-    if (provider === 'maplibre') {
-        return (
-            <MapLibreGL.PointAnnotation
-                id={id || `marker-${coordinate.latitude}-${coordinate.longitude}`}
-                coordinate={[coordinate.longitude, coordinate.latitude]}
-                onSelected={onPress}
-            >
-                {(children as React.ReactElement) || (
-                    <View style={[styles.dot, { backgroundColor: pinColor || '#FF0000' }]} />
-                )}
-                <MapLibreGL.Callout>
-                    <View style={styles.callout}>
-                        <Text style={styles.calloutTitle}>{title}</Text>
-                        {description && <Text style={styles.calloutDesc}>{description}</Text>}
-                    </View>
-                </MapLibreGL.Callout>
-            </MapLibreGL.PointAnnotation>
-        );
-    }
-
+  if (provider === 'maplibre') {
     return (
-        <Marker
-            coordinate={coordinate}
-            title={title}
-            description={description}
-            onPress={onPress}
-            pinColor={pinColor}
-        >
-            {children}
-        </Marker>
+      <MapLibreGL.PointAnnotation
+        id={id || `marker-${coordinate.latitude}-${coordinate.longitude}`}
+        coordinate={[coordinate.longitude, coordinate.latitude]}
+        onSelected={onPress}
+      >
+        {(children as React.ReactElement) || (
+          <Box
+            className="w-[15px] h-[15px] rounded-full border-2 border-white"
+            style={{ backgroundColor: pinColor || '#FF0000' }}
+          />
+        )}
+        <MapLibreGL.Callout>
+          <Box className="p-2.5 bg-white rounded-lg min-w-[100px] shadow-sm">
+            <Text className="font-bold text-sm text-[#000000]">{title}</Text>
+            {description && <Text className="text-[12px] text-[#666666]">{description}</Text>}
+          </Box>
+        </MapLibreGL.Callout>
+      </MapLibreGL.PointAnnotation>
     );
-};
+  }
 
-const styles = StyleSheet.create({
-    dot: {
-        width: 15,
-        height: 15,
-        borderRadius: 7.5,
-        borderWidth: 2,
-        borderColor: '#FFFFFF',
-    },
-    callout: {
-        padding: 10,
-        backgroundColor: 'white',
-        borderRadius: 5,
-        minWidth: 100,
-    },
-    calloutTitle: {
-        fontWeight: 'bold',
-        fontSize: 14,
-    },
-    calloutDesc: {
-        fontSize: 12,
-        color: '#666',
-    },
-});
+  return (
+    <Marker
+      coordinate={coordinate}
+      title={title}
+      description={description}
+      onPress={onPress}
+      pinColor={pinColor}
+    >
+      {children}
+    </Marker>
+  );
+};

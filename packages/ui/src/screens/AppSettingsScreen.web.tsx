@@ -1,29 +1,35 @@
-import React, { useState } from 'react';
-import { Box, VStack, HStack, Heading, Text, Button, ButtonText, Pressable, Switch, ScrollView } from '../gluestack';
-import ScreenWrapper from '../components/ScreenWrapper';
+import { useStore } from '@repo/core/logic';
+import {
+  Check,
+  ChevronRight,
+  Eye,
+  Globe,
+  Info,
+  Shield,
+  Smartphone,
+  Sparkles,
+  Zap,
+} from 'lucide-react-native';
+import type React from 'react';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { DeviceAccountManager } from '../components';
 import { useEnvironment } from '../context';
+import {
+  Box,
+  Button,
+  ButtonText,
+  Heading,
+  HStack,
+  Pressable,
+  ScrollView,
+  Switch,
+  Text,
+  VStack,
+} from '../gluestack';
 import { useTheme } from '../hooks/useTheme';
 import { useSanctuaryToast } from '../providers/ToastProvider';
 import { hapticLight, hapticSuccess } from '../utils/haptics';
-import { useTranslation } from 'react-i18next';
-import {
-  Sun,
-  Moon,
-  Smartphone,
-  Sparkles,
-  Eye,
-  EyeOff,
-  Globe,
-  Type,
-  ChevronRight,
-  Check,
-  Info,
-  Zap,
-  Shield,
-} from 'lucide-react-native';
-
-import { useStore } from '@repo/core/logic';
-import { DeviceAccountManager } from '../components';
 
 interface SettingsOptionProps {
   icon: React.ReactNode;
@@ -117,15 +123,17 @@ export default function AppSettingsScreen({ navigation }: any) {
     enableLivingTheme,
     setEnableLivingTheme,
   } = useEnvironment();
-  const { isDemoMode, setDemoMode, user } = useStore();
+  const _isDemoMode = useStore((state) => state.isDemoMode);
+  const _setDemoMode = useStore((state) => state.setDemoMode);
+  const user = useStore((state) => state.user);
   const { showToast } = useSanctuaryToast();
 
-  const [showThemeModal, setShowThemeModal] = useState(false);
+  const [_showThemeModal, setShowThemeModal] = useState(false);
   const [showFidelityModal, setShowFidelityModal] = useState(false);
   const [showLanguageModal, setShowLanguageModal] = useState(false);
 
   // Theme mode labels
-  const getThemeLabel = () => {
+  const _getThemeLabel = () => {
     if (themeMode === 'system') return t('settings.theme.system');
     if (themeMode === 'auto') return t('settings.theme.auto');
     if (themeMode === 'light') return t('settings.theme.light');
@@ -147,7 +155,7 @@ export default function AppSettingsScreen({ navigation }: any) {
   };
 
   // Temporal phase description
-  const getTemporalDescription = () => {
+  const _getTemporalDescription = () => {
     const time = new Date().toLocaleTimeString(i18n.language, {
       hour: 'numeric',
       minute: '2-digit',
@@ -163,7 +171,7 @@ export default function AppSettingsScreen({ navigation }: any) {
     return `${phases[temporalPhase as keyof typeof phases]} • ${time}`;
   };
 
-  const handleThemeChange = (mode: 'light' | 'dark' | 'auto') => {
+  const _handleThemeChange = (mode: 'light' | 'dark' | 'auto') => {
     setThemeMode(mode);
     hapticSuccess();
     setShowThemeModal(false);
@@ -225,10 +233,7 @@ export default function AppSettingsScreen({ navigation }: any) {
                 className={`w-10 h-10 rounded-[12px] items-center justify-center ${enableLivingTheme ? 'bg-phase-primary' : 'bg-phase-surface'}`}
               >
                 <Box className={enableLivingTheme ? 'text-phase-world' : 'text-phase-muted'}>
-                  <Sparkles
-                    size={24}
-                    fill={enableLivingTheme ? 'currentColor' : 'transparent'}
-                  />
+                  <Sparkles size={24} fill={enableLivingTheme ? 'currentColor' : 'transparent'} />
                 </Box>
               </Box>
               <VStack className="flex-1 gap-1">
@@ -303,7 +308,7 @@ export default function AppSettingsScreen({ navigation }: any) {
             </HStack>
             <Switch
               value={user?.public_profile !== false}
-              onValueChange={async (val: boolean) => {
+              onValueChange={async (_val: boolean) => {
                 hapticLight();
                 showToast({
                   message: t('settings.profile_visibility_updated', 'Profile visibility updated'),
@@ -471,21 +476,33 @@ export default function AppSettingsScreen({ navigation }: any) {
               id: 'en',
               label: 'English',
               description: 'Change the app language to English',
-              icon: <Box className="text-blue-500"><Globe size={24} /></Box>,
+              icon: (
+                <Box className="text-blue-500">
+                  <Globe size={24} />
+                </Box>
+              ),
               isSelected: language === 'en',
             },
             {
               id: 'si',
               label: 'සිංහල',
               description: 'යෙදුමේ භාෂාව සිංහලට වෙනස් කරන්න',
-              icon: <Box className="text-amber-500"><Globe size={24} /></Box>,
+              icon: (
+                <Box className="text-amber-500">
+                  <Globe size={24} />
+                </Box>
+              ),
               isSelected: language === 'si',
             },
             {
               id: 'ta',
               label: 'தமிழ்',
               description: 'පයன்பාට්‍ටින් මොළියෛ තමිළුක්කු මාට්‍රවුම්',
-              icon: <Box className="text-orange-500"><Globe size={24} /></Box>,
+              icon: (
+                <Box className="text-orange-500">
+                  <Globe size={24} />
+                </Box>
+              ),
               isSelected: language === 'ta',
             },
           ]}

@@ -1,7 +1,18 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import { marksToGPA } from '@repo/core';
+import {
+  Card,
+  HStack,
+  Input,
+  InputField,
+  Pressable,
+  ScrollView,
+  Text,
+  Theme,
+  View,
+  VStack,
+} from '@repo/ui';
+import React, { useCallback, useMemo, useState } from 'react';
 import { StyleSheet } from 'react-native';
-import { View, Text, ScrollView, VStack, HStack, Card, Input, InputField, Pressable, Theme } from '@repo/ui';
-import { marksToGPA } from '@repo/analytics';
 
 interface AnalyticsEngineProps {
   data: any[];
@@ -16,7 +27,7 @@ export function AnalyticsEngine({
   title,
   showFilters = true,
   showExport = true,
-  showRealTime = false
+  showRealTime = false,
 }: AnalyticsEngineProps) {
   const [selectedMetric, setSelectedMetric] = useState('all');
   const [dateRange, setDateRange] = useState('month');
@@ -24,30 +35,35 @@ export function AnalyticsEngine({
 
   // Calculate analytics metrics
   const analytics = useMemo(() => {
-    if (!data || data.length === 0) return {
-      totalItems: 0,
-      averageValue: 0,
-      trendDirection: 'stable' as 'up' | 'down' | 'stable',
-      topPerformers: [],
-      distribution: {},
-      insights: []
-    };
+    if (!data || data.length === 0)
+      return {
+        totalItems: 0,
+        averageValue: 0,
+        trendDirection: 'stable' as 'up' | 'down' | 'stable',
+        topPerformers: [],
+        distribution: {},
+        insights: [],
+      };
 
-    const numericData = data.filter(item => typeof item.value === 'number');
+    const numericData = data.filter((item) => typeof item.value === 'number');
     const totalItems = numericData.length;
     const averageValue = numericData.reduce((sum, item) => sum + item.value, 0) / totalItems;
-    
+
     // Calculate trend
     const sortedData = [...numericData].sort((a, b) => b.value - a.value);
     const midPoint = Math.floor(sortedData.length / 2);
-    const trendDirection = sortedData.length > 1 ? 
-      (sortedData[midPoint].value > sortedData[midPoint - 1].value ? 'up' : 'down') : 'stable';
+    const trendDirection =
+      sortedData.length > 1
+        ? sortedData[midPoint].value > sortedData[midPoint - 1].value
+          ? 'up'
+          : 'down'
+        : 'stable';
 
     // Get top performers
-    const topPerformers = sortedData.slice(0, 5).map(item => ({
+    const topPerformers = sortedData.slice(0, 5).map((item) => ({
       id: item.id,
       name: item.name,
-      value: item.value
+      value: item.value,
     }));
 
     // Calculate distribution
@@ -63,7 +79,7 @@ export function AnalyticsEngine({
       `Average value: ${averageValue.toFixed(2)}`,
       `Trend: ${trendDirection}`,
       `Top performer: ${topPerformers[0]?.name || 'N/A'}`,
-      `Distribution: ${Object.keys(distribution).length} categories`
+      `Distribution: ${Object.keys(distribution).length} categories`,
     ];
 
     return {
@@ -72,7 +88,7 @@ export function AnalyticsEngine({
       trendDirection,
       topPerformers,
       distribution,
-      insights
+      insights,
     };
   }, [data]);
 
@@ -81,16 +97,16 @@ export function AnalyticsEngine({
       title: title || 'Analytics Report',
       date: new Date().toISOString(),
       metrics: analytics,
-      data: data
+      data: data,
     };
-    
+
     // In real app, this would save to file or share
     console.log('Exporting analytics:', exportData);
   }, [analytics, title]);
 
   const filteredData = useMemo(() => {
     if (selectedMetric === 'all') return data;
-    return data.filter(item => {
+    return data.filter((item) => {
       const grade = marksToGPA(item.value).grade;
       return selectedMetric === grade;
     });
@@ -99,7 +115,7 @@ export function AnalyticsEngine({
   return (
     <Card style={styles.container}>
       {title && <Text style={styles.title}>{title}</Text>}
-      
+
       {/* Filters */}
       {showFilters && (
         <View style={styles.filters}>
@@ -108,16 +124,18 @@ export function AnalyticsEngine({
               <Text style={styles.filterLabel}>Metric</Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                 <HStack space="sm">
-                  {['all', 'A', 'B', 'C', 'S', 'F'].map(grade => (
+                  {['all', 'A', 'B', 'C', 'S', 'F'].map((grade) => (
                     <Pressable
                       key={grade}
                       onPress={() => setSelectedMetric(grade)}
-                      className={selectedMetric === grade ? 'rounded-lg bg-gurudeviBlue' : 'rounded-lg'}
+                      className={
+                        selectedMetric === grade ? 'rounded-lg bg-gurudeviBlue' : 'rounded-lg'
+                      }
                     >
                       <Text
                         style={[
                           styles.filterOption,
-                          selectedMetric === grade && styles.selectedFilter
+                          selectedMetric === grade && styles.selectedFilter,
                         ]}
                       >
                         {grade === 'all' ? 'All' : grade}
@@ -127,22 +145,19 @@ export function AnalyticsEngine({
                 </HStack>
               </ScrollView>
             </VStack>
-            
+
             <VStack className="flex-1">
               <Text style={styles.filterLabel}>Date Range</Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                 <HStack space="sm">
-                  {['week', 'month', 'quarter', 'year'].map(range => (
+                  {['week', 'month', 'quarter', 'year'].map((range) => (
                     <Pressable
                       key={range}
                       onPress={() => setDateRange(range)}
                       className={dateRange === range ? 'rounded-lg bg-gurudeviBlue' : 'rounded-lg'}
                     >
                       <Text
-                        style={[
-                          styles.filterOption,
-                          dateRange === range && styles.selectedFilter
-                        ]}
+                        style={[styles.filterOption, dateRange === range && styles.selectedFilter]}
                       >
                         {range.charAt(0).toUpperCase() + range.slice(1)}
                       </Text>
@@ -176,20 +191,31 @@ export function AnalyticsEngine({
               <Text style={styles.summaryValue}>{analytics.totalItems}</Text>
               <Text style={styles.summaryLabel}>Total Items</Text>
             </VStack>
-            
+
             <VStack className="flex-1 items-center">
               <Text style={styles.summaryValue}>{analytics.averageValue.toFixed(2)}</Text>
               <Text style={styles.summaryLabel}>Average</Text>
             </VStack>
-            
+
             <VStack className="flex-1 items-center">
-              <Text style={[
-                styles.summaryValue,
-                { color: analytics.trendDirection === 'up' ? Theme.colors.success : 
-                         analytics.trendDirection === 'down' ? Theme.colors.error : Theme.colors.warning }
-              ]}>
-                {analytics.trendDirection === 'up' ? '\u2191' : 
-                 analytics.trendDirection === 'down' ? '\u2193' : '\u2192'}
+              <Text
+                style={[
+                  styles.summaryValue,
+                  {
+                    color:
+                      analytics.trendDirection === 'up'
+                        ? Theme.colors.success
+                        : analytics.trendDirection === 'down'
+                          ? Theme.colors.error
+                          : Theme.colors.warning,
+                  },
+                ]}
+              >
+                {analytics.trendDirection === 'up'
+                  ? '\u2191'
+                  : analytics.trendDirection === 'down'
+                    ? '\u2193'
+                    : '\u2192'}
               </Text>
               <Text style={styles.summaryLabel}>Trend</Text>
             </VStack>
@@ -200,9 +226,7 @@ export function AnalyticsEngine({
       {showExport && (
         <View style={styles.exportContainer}>
           <Pressable onPress={handleExport} className="rounded-xl bg-gurudeviBlue">
-            <Text style={styles.exportButton}>
-              \uD83D\uDCE4 Export Report
-            </Text>
+            <Text style={styles.exportButton}>\uD83D\uDCE4 Export Report</Text>
           </Pressable>
         </View>
       )}

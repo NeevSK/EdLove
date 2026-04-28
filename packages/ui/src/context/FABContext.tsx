@@ -1,5 +1,13 @@
-import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
-import { ActionItem, TabType } from '../types/fab';
+import React, {
+  createContext,
+  type ReactNode,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+} from 'react';
+import type { ActionItem, TabType } from '../types/fab';
+
 export type { ActionItem, TabType };
 
 interface FABState {
@@ -43,11 +51,12 @@ export const FABProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setState((prev) => ({ ...prev, visible }));
   }, []);
 
-  return (
-    <FABContext.Provider value={{ state, registerFAB, unregisterFAB, setVisibility }}>
-      {children}
-    </FABContext.Provider>
+  const value = useMemo(
+    () => ({ state, registerFAB, unregisterFAB, setVisibility }),
+    [state, registerFAB, unregisterFAB, setVisibility],
   );
+
+  return <FABContext.Provider value={value}>{children}</FABContext.Provider>;
 };
 
 export const useFAB = () => {
@@ -70,12 +79,12 @@ export const useRegisterFAB = (config: Partial<FABState>) => {
     // return () => unregisterFAB();
   }, [
     registerFAB,
-    JSON.stringify(config.actions),
     config.tabType,
     config.visible,
     config.onPress,
     // config.icon, // REMOVED: This causes infinite loops if the icon is a new JSX element
     config.onBreathingReset,
     config.hasActiveGaps,
+    config,
   ]);
 };

@@ -1,10 +1,11 @@
-import React, { useEffect } from 'react';
+import type React from 'react';
+import { useEffect } from 'react';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withRepeat,
-  withTiming,
   withSequence,
+  withTiming,
 } from 'react-native-reanimated';
 
 interface SkeletonProps {
@@ -30,7 +31,7 @@ const SkeletonLoader: React.FC<SkeletonProps> = ({
       -1,
       true,
     );
-  }, []);
+  }, [opacity]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,

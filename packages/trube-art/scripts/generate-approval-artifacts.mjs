@@ -5,9 +5,7 @@ import ts from 'typescript';
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const packageRoot = path.resolve(scriptDir, '..');
-const packageJson = JSON.parse(
-  fs.readFileSync(path.join(packageRoot, 'package.json'), 'utf8'),
-);
+const packageJson = JSON.parse(fs.readFileSync(path.join(packageRoot, 'package.json'), 'utf8'));
 
 function ensureDir(dirPath) {
   fs.mkdirSync(dirPath, { recursive: true });

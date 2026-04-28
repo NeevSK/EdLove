@@ -1,10 +1,10 @@
-import React, { useCallback } from 'react';
-import { RefreshControl, StyleProp, ViewStyle } from 'react-native';
-import { FlashList, FlashListProps } from '@shopify/flash-list';
-import { Theme } from '../theme/Theme';
-import { useThemedColors } from '../hooks/useThemedColors';
-import EmptyState from './EmptyState';
+import { FlashList, type FlashListProps } from '@shopify/flash-list';
 import { BookOpen } from 'lucide-react-native';
+import React, { useCallback } from 'react';
+import { RefreshControl, type StyleProp, type ViewStyle } from 'react-native';
+import { useThemedColors } from '../hooks/useThemedColors';
+import { Theme } from '../theme/Theme';
+import EmptyState from './EmptyState';
 
 export interface SanctuaryFlashListProps<T> extends Omit<FlashListProps<T>, 'refreshControl'> {
   /** Estimated size of a single list item (RECOGNIZED BY RECYCLER) */
@@ -46,7 +46,7 @@ export function SanctuaryFlashList<T>({
   ListEmptyComponent,
   ...props
 }: SanctuaryFlashListProps<T>) {
-  const colors = useThemedColors();
+  const _colors = useThemedColors();
 
   const renderEmpty = useCallback(() => {
     if (emptyComponent) return emptyComponent;

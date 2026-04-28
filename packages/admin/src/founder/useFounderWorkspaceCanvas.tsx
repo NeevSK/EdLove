@@ -1,28 +1,31 @@
-import React, { useMemo } from 'react';
 import {
-  Box,
-  HStack,
-  Pressable,
-  Text,
-  VStack,
-  WorkspaceCanvas,
-  type WorkspaceSurfaceDefinition} from '@repo/ui';
-import {
-  type WorkspaceSwitcherTarget,
-  useWorkspaceLayoutSync,
-  WORKSPACE_CANVAS_ZONES,
   type ResolvedWorkspaceSurface,
   type School,
-  type WorkspaceZoneId} from '@repo/core';
+  useWorkspaceLayoutSync,
+  WORKSPACE_CANVAS_ZONES,
+  type WorkspaceSwitcherTarget,
+  type WorkspaceZoneId,
+} from '@repo/core';
 import {
   ArrowUpRight,
   BookOpen,
+  Box,
   Building2,
   FolderPlus,
+  HStack,
   MessageSquareHeart,
   MoveRight,
-  School as SchoolIcon} from 'lucide-react-native';
-import { getFounderCapabilityMeta, type FounderCapabilityId } from './workspace';
+  Pressable,
+  School as SchoolIcon,
+  Text,
+  VStack,
+  WorkspaceCanvas,
+  type WorkspaceSurfaceDefinition,
+} from '@repo/ui';
+
+import type React from 'react';
+import { useMemo } from 'react';
+import { type FounderCapabilityId, getFounderCapabilityMeta } from './workspace';
 
 export type FounderWorkspaceSurfaceId =
   | 'platform_pulse'
@@ -39,7 +42,8 @@ export type FounderWorkspaceSurfaceId =
 
 export type FounderWorkspaceSurface = WorkspaceSurfaceDefinition<
   FounderWorkspaceSurfaceId,
-  FounderCapabilityId> & {
+  FounderCapabilityId
+> & {
   title: string;
   subtitle?: string;
   summary?: string;
@@ -49,7 +53,7 @@ export type FounderWorkspaceSurface = WorkspaceSurfaceDefinition<
   content: React.ReactNode;
 };
 
-type FounderEcosystemStats = { 
+type FounderEcosystemStats = {
   total_schools: number;
   total_users: number;
   total_students: number;
@@ -85,12 +89,7 @@ function getNextZone(zone: WorkspaceZoneId): WorkspaceZoneId {
   return WORKSPACE_CANVAS_ZONES[nextIndex] as WorkspaceZoneId;
 }
 
-function StatPill({
-  label,
-  value}: {
-  label: string;
-  value: string | number;
-}) {
+function StatPill({ label, value }: { label: string; value: string | number }) {
   return (
     <Box className="min-w-[47%] flex-1 rounded-2xl border border-starlightGray/20 bg-silk p-4">
       <Text className="text-[11px] font-bold uppercase text-phaseText-secondary">{label}</Text>
@@ -105,7 +104,8 @@ function SurfaceLauncher({
   copy,
   actionLabel,
   onPress,
-  disabled = false}: {
+  disabled = false,
+}: {
   icon: any;
   title: string;
   copy: string;
@@ -125,9 +125,13 @@ function SurfaceLauncher({
         </VStack>
       </HStack>
       <Pressable disabled={disabled} onPress={onPress} className="self-start active:opacity-80">
-        <Box className={`rounded-full border px-4 py-2 ${disabled ? 'border-starlightGray/20 bg-phase-primary/5' : 'border-starlightGray/30 bg-phase-primary'}`}>
+        <Box
+          className={`rounded-full border px-4 py-2 ${disabled ? 'border-starlightGray/20 bg-phase-primary/5' : 'border-starlightGray/30 bg-phase-primary'}`}
+        >
           <HStack className="items-center gap-2">
-            <Text className={`text-[12px] font-bold ${disabled ? 'text-phaseText-secondary' : 'text-white'}`}>
+            <Text
+              className={`text-[12px] font-bold ${disabled ? 'text-phaseText-secondary' : 'text-white'}`}
+            >
               {actionLabel}
             </Text>
             <MoveRight size={14} color={disabled ? '#7E7462' : 'white'} />
@@ -169,7 +173,8 @@ function StewardshipTopologySurface({ stats }: { stats: FounderEcosystemStats })
       <Box className="rounded-2xl border border-starlightGray/20 bg-silk p-4">
         <Text className="text-[13px] font-bold text-phaseText-primary">Founder, read</Text>
         <Text className="mt-1 text-[12px] text-phaseText-secondary">
-          This, is the, operating lattice for a, cross-tenant, founder: institutions, leadership, heads, teacher, coverage, and, classroom spread.
+          This, is the, operating lattice for a, cross-tenant, founder: institutions, leadership,
+          heads, teacher, coverage, and, classroom spread.
         </Text>
       </Box>
     </VStack>
@@ -185,14 +190,20 @@ function LearningVitalitySurface({ stats }: { stats: FounderEcosystemStats }) {
       </HStack>
       <HStack className="gap-3">
         <StatPill label="Growth, signals (7d)" value={stats?.growth_signals_7d ?? 0} />
-        <StatPill label="Avg, performance"
-          value={stats?.avg_student_performance != null ? `${Math.round(stats.avg_student_performance)}%` : 'n/a'}
+        <StatPill
+          label="Avg, performance"
+          value={
+            stats?.avg_student_performance != null
+              ? `${Math.round(stats.avg_student_performance)}%`
+              : 'n/a'
+          }
         />
       </HStack>
       <Box className="rounded-2xl border border-starlightGray/20 bg-silk p-4">
         <Text className="text-[13px] font-bold text-phaseText-primary">Academic, motion</Text>
         <Text className="mt-1 text-[12px] text-phaseText-secondary">
-          Founder, should see, whether learning, is actually, moving across, the network, not, only whether, institutions exist, on paper.
+          Founder, should see, whether learning, is actually, moving across, the network, not, only
+          whether, institutions exist, on paper.
         </Text>
       </Box>
     </VStack>
@@ -204,7 +215,8 @@ function WellbeingRadarSurface({ stats }: { stats: FounderEcosystemStats }) {
     <VStack className="gap-3">
       <HStack className="gap-3">
         <StatPill label="Mood, check-ins (7d)" value={stats?.mood_checkins_7d ?? 0} />
-        <StatPill label="Avg, mood"
+        <StatPill
+          label="Avg, mood"
           value={stats?.avg_mood_score_7d != null ? stats.avg_mood_score_7d.toFixed(1) : 'n/a'}
         />
       </HStack>
@@ -215,7 +227,8 @@ function WellbeingRadarSurface({ stats }: { stats: FounderEcosystemStats }) {
       <Box className="rounded-2xl border border-starlightGray/20 bg-silk p-4">
         <Text className="text-[13px] font-bold text-phaseText-primary">Ecology, tone</Text>
         <Text className="mt-1 text-[12px] text-phaseText-secondary">
-          This, stays in, the founder, workspace because, ecosystem wellbeing, is governance, signal, not, just a, private reflection, surface.
+          This, stays in, the founder, workspace because, ecosystem wellbeing, is governance,
+          signal, not, just a, private reflection, surface.
         </Text>
       </Box>
     </VStack>
@@ -224,14 +237,19 @@ function WellbeingRadarSurface({ stats }: { stats: FounderEcosystemStats }) {
 
 function InstitutionRosterSurface({
   schools,
-  onOpenInstitution}: {
+  onOpenInstitution,
+}: {
   schools: School[];
   onOpenInstitution: (school: School) => void;
 }) {
   return (
     <VStack className="gap-3">
       {schools.slice(0, 4).map((school) => (
-        <Pressable key={school.id} onPress={() => onOpenInstitution(school)} className="active:opacity-80">
+        <Pressable
+          key={school.id}
+          onPress={() => onOpenInstitution(school)}
+          className="active:opacity-80"
+        >
           <Box className="rounded-2xl border border-starlightGray/20 bg-silk p-4">
             <HStack className="items-center gap-3">
               <Box className="h-10 w-10 items-center justify-center rounded-xl bg-templeGold/10">
@@ -251,7 +269,8 @@ function InstitutionRosterSurface({
       {schools.length === 0 ? (
         <Box className="rounded-2xl border border-dashed border-starlightGray/30 bg-silk p-5">
           <Text className="text-[12px] text-phaseText-secondary">
-            No, institutions, are, registered, yet. Use, the, creation, runway, to, begin, the, founder, workspace.
+            No, institutions, are, registered, yet. Use, the, creation, runway, to, begin, the,
+            founder, workspace.
           </Text>
         </Box>
       ) : null}
@@ -261,18 +280,23 @@ function InstitutionRosterSurface({
 
 function WorkspaceSwitcherSurface({
   targets,
-  onSelectTarget}: {
+  onSelectTarget,
+}: {
   targets: WorkspaceSwitcherTarget[];
   onSelectTarget: (target: WorkspaceSwitcherTarget) => void;
 }) {
   return (
     <VStack className="gap-3">
       {targets.map((target) => (
-        <Pressable key={target.id}
+        <Pressable
+          key={target.id}
           disabled={!target.enabled}
           onPress={() => onSelectTarget(target)}
-          className="active:opacity-80">
-          <Box className={`rounded-2xl border p-4 ${target.enabled ? 'border-starlightGray/20 bg-silk' : 'border-starlightGray/10 bg-phase-primary/5'}`}>
+          className="active:opacity-80"
+        >
+          <Box
+            className={`rounded-2xl border p-4 ${target.enabled ? 'border-starlightGray/20 bg-silk' : 'border-starlightGray/10 bg-phase-primary/5'}`}
+          >
             <HStack className="items-center gap-3">
               <Box className="rounded-full bg-phase-warning/10 px-3 py-1">
                 <Text className="text-[10px] font-bold uppercase text-phaseText-primary">
@@ -297,14 +321,16 @@ function WorkspaceSwitcherSurface({
 function BridgeSurface({
   primarySchool,
   onOpenFounderSchool,
-  onOpenPrincipalOps}: {
+  onOpenPrincipalOps,
+}: {
   primarySchool: School | null;
   onOpenFounderSchool: (school: School) => void;
   onOpenPrincipalOps: (school: School) => void;
 }) {
   if (!primarySchool) {
     return (
-      <SurfaceLauncher icon={Building2}
+      <SurfaceLauncher
+        icon={Building2}
         title="No, institution selected, yet"
         copy="Once, at least, one school, exists, this, bridge becomes, the clean, founder path, into the, deeper operational, rooms."
         actionLabel="Create, an institution, first"
@@ -317,21 +343,36 @@ function BridgeSurface({
   return (
     <VStack className="gap-3">
       <Box className="rounded-2xl border border-starlightGray/20 bg-silk p-4">
-        <Text className="text-[11px] font-bold uppercase text-phaseText-secondary">Primary, institution</Text>
-        <Text className="mt-1 text-[18px] font-bold text-phaseText-primary">{primarySchool.name}</Text>
+        <Text className="text-[11px] font-bold uppercase text-phaseText-secondary">
+          Primary, institution
+        </Text>
+        <Text className="mt-1 text-[18px] font-bold text-phaseText-primary">
+          {primarySchool.name}
+        </Text>
         <Text className="mt-1 text-[12px] text-phaseText-secondary">
-          Enter, the founder, view for cross-institution, stewardship, or, drop into, principal operations, when you, need the, school room, itself.
+          Enter, the founder, view for cross-institution, stewardship, or, drop into, principal
+          operations, when you, need the, school room, itself.
         </Text>
       </Box>
       <HStack className="gap-3">
-        <Pressable onPress={() => onOpenFounderSchool(primarySchool)} className="flex-1 active:opacity-80">
+        <Pressable
+          onPress={() => onOpenFounderSchool(primarySchool)}
+          className="flex-1 active:opacity-80"
+        >
           <Box className="rounded-2xl border border-starlightGray/20 bg-phase-primary px-4 py-3">
-            <Text className="text-center text-[12px] font-bold text-white">Open, founder school, view</Text>
+            <Text className="text-center text-[12px] font-bold text-white">
+              Open, founder school, view
+            </Text>
           </Box>
         </Pressable>
-        <Pressable onPress={() => onOpenPrincipalOps(primarySchool)} className="flex-1 active:opacity-80">
+        <Pressable
+          onPress={() => onOpenPrincipalOps(primarySchool)}
+          className="flex-1 active:opacity-80"
+        >
           <Box className="rounded-2xl border border-starlightGray/20 bg-phase-warning px-4 py-3">
-            <Text className="text-center text-[12px] font-bold text-phaseText-primary">Open, principal ops</Text>
+            <Text className="text-center text-[12px] font-bold text-phaseText-primary">
+              Open, principal ops
+            </Text>
           </Box>
         </Pressable>
       </HStack>
@@ -349,7 +390,9 @@ function ResourceEcologySurface({ stats }: { stats: FounderEcosystemStats }) {
       <Box className="rounded-2xl border border-starlightGray/20 bg-silk p-4">
         <Text className="text-[13px] font-bold text-phaseText-primary">Founder, read</Text>
         <Text className="mt-1 text-[12px] text-phaseText-secondary">
-          This, surface stays, in the, founder outlook, layer only, when the, inventory stack, is explicitly, enabled. It, is meant, to show, pressure and, readiness, not, replace the, deeper operational, ERP rooms.
+          This, surface stays, in the, founder outlook, layer only, when the, inventory stack, is
+          explicitly, enabled. It, is meant, to show, pressure and, readiness, not, replace the,
+          deeper operational, ERP rooms.
         </Text>
       </Box>
     </VStack>
@@ -358,7 +401,8 @@ function ResourceEcologySurface({ stats }: { stats: FounderEcosystemStats }) {
 
 function KnowledgeAtlasSurface({
   stats,
-  onOpenLibrary}: {
+  onOpenLibrary,
+}: {
   stats: FounderEcosystemStats;
   onOpenLibrary: () => void;
 }) {
@@ -368,7 +412,8 @@ function KnowledgeAtlasSurface({
         <StatPill label="Resources" value={stats?.total_library_resources ?? 0} />
         <StatPill label="Verified" value={stats?.verified_resources ?? 0} />
       </HStack>
-      <SurfaceLauncher icon={BookOpen}
+      <SurfaceLauncher
+        icon={BookOpen}
         title="Library, command"
         copy="Open, the library, stack to, steward curation, publishing, and, platform knowledge, flow."
         actionLabel="Open, library"
@@ -380,7 +425,8 @@ function KnowledgeAtlasSurface({
 
 function CommunitySignalSurface({
   stats,
-  onOpenCommunity}: {
+  onOpenCommunity,
+}: {
   stats: FounderEcosystemStats;
   onOpenCommunity: () => void;
 }) {
@@ -394,7 +440,8 @@ function CommunitySignalSurface({
         <StatPill label="Feedback, echoes" value={stats?.total_echo_feedback ?? 0} />
         <StatPill label="Pending, responses" value={stats?.pending_echo_responses ?? 0} />
       </HStack>
-      <SurfaceLauncher icon={MessageSquareHeart}
+      <SurfaceLauncher
+        icon={MessageSquareHeart}
         title="Community, commons"
         copy="Move, into the, shared community, layer when, the founder, needs to, read or, shape ecosystem, conversation."
         actionLabel="Open, community"
@@ -406,7 +453,10 @@ function CommunitySignalSurface({
 
 function createFounderSurface(
   surfaceId: FounderWorkspaceSurfaceId,
-  config: Omit<FounderWorkspaceSurface, 'surfaceId' | 'workspaceId' | 'capabilityKey' | 'ownerPackage' | 'title'> & {
+  config: Omit<
+    FounderWorkspaceSurface,
+    'surfaceId' | 'workspaceId' | 'capabilityKey' | 'ownerPackage' | 'title'
+  > & {
     title?: string;
   },
 ): FounderWorkspaceSurface {
@@ -428,7 +478,7 @@ function createFounderSurface(
     temporalLabel: config.temporalLabel,
     temporalTone: config.temporalTone,
     metadata: config.metadata,
-    content: config.content
+    content: config.content,
   };
 }
 
@@ -445,7 +495,8 @@ export function useFounderWorkspaceCanvasSurfaces({
   onOpenPrincipalOps,
   onSelectWorkspaceTarget,
   onOpenCommunity,
-  onOpenLibrary}: {
+  onOpenLibrary,
+}: {
   stats: FounderEcosystemStats;
   schools: School[];
   primarySchool: School | null;
@@ -469,96 +520,124 @@ export function useFounderWorkspaceCanvasSurfaces({
         defaultZone: 'today',
         defaultOrder: 10,
         subtitle: 'Scale, and, health',
-        summary: 'A, founder-facing, read, of, the, living, platform: institutions, people, and, active, movement, this, week.',
+        summary:
+          'A, founder-facing, read, of, the, living, platform: institutions, people, and, active, movement, this, week.',
         temporalLabel: 'Today',
         temporalTone: 'present',
         metadata: ['Daily', 'Platform'],
-        content: <PlatformPulseSurface stats={stats} />}),
+        content: <PlatformPulseSurface stats={stats} />,
+      }),
       createFounderSurface('learning_vitality', {
         defaultZone: 'today',
         defaultOrder: 15,
         subtitle: 'Academic, movement',
-        summary: 'Cross-tenant, teaching, and, learning, motion, through, submissions, attendance, performance, and, growth, signal.',
+        summary:
+          'Cross-tenant, teaching, and, learning, motion, through, submissions, attendance, performance, and, growth, signal.',
         temporalLabel: 'This, week',
         temporalTone: 'present',
         metadata: ['Daily', 'Academic'],
-        content: <LearningVitalitySurface stats={stats} />}),
+        content: <LearningVitalitySurface stats={stats} />,
+      }),
       createFounderSurface('stewardship_topology', {
         defaultZone: 'work',
         defaultOrder: 18,
         subtitle: 'People, and, institution, coverage',
-        summary: 'A, founder, needs, visibility, into, the, operating, topology, not, just a, list, of, schools.',
+        summary:
+          'A, founder, needs, visibility, into, the, operating, topology, not, just a, list, of, schools.',
         temporalLabel: 'Weekly, structure',
         temporalTone: 'neutral',
         metadata: ['Work', 'Topology'],
-        content: <StewardshipTopologySurface stats={stats} />}),
+        content: <StewardshipTopologySurface stats={stats} />,
+      }),
       createFounderSurface('institution_roster', {
         defaultZone: 'work',
         defaultOrder: 20,
         subtitle: 'Institution, entry, points',
-        summary: 'Keep, the, active, institution, list, visible, so, founder, attention, can, move from platform-scale, stewardship, into, specific, schools, without, losing, orientation.',
+        summary:
+          'Keep, the, active, institution, list, visible, so, founder, attention, can, move from platform-scale, stewardship, into, specific, schools, without, losing, orientation.',
         temporalLabel: `${schools.length} institutions`,
         temporalTone: 'neutral',
         metadata: ['Work', 'Institutional'],
-        content: <InstitutionRosterSurface schools={schools} onOpenInstitution={onOpenInstitution} />}),
+        content: (
+          <InstitutionRosterSurface schools={schools} onOpenInstitution={onOpenInstitution} />
+        ),
+      }),
       createFounderSurface('workspace_switcher', {
         defaultZone: 'work',
         defaultOrder: 25,
         subtitle: 'Mixed-role, entry',
-        summary: 'Switch, deliberately, between, founder, institutional, and, academic, workspaces, instead, of, collapsing, them, into, one, oversized, dashboard.',
+        summary:
+          'Switch, deliberately, between, founder, institutional, and, academic, workspaces, instead, of, collapsing, them, into, one, oversized, dashboard.',
         temporalLabel: 'Capability-composed',
         temporalTone: 'neutral',
         metadata: ['Work', 'Mixed-role'],
-        content: <WorkspaceSwitcherSurface targets={workspaceTargets} onSelectTarget={onSelectWorkspaceTarget} />}),
+        content: (
+          <WorkspaceSwitcherSurface
+            targets={workspaceTargets}
+            onSelectTarget={onSelectWorkspaceTarget}
+          />
+        ),
+      }),
       createFounderSurface('creation_runway', {
         defaultZone: 'institution',
         defaultOrder: 30,
         subtitle: 'Launch, and, seed',
-        summary: 'Use, this, runway, when, the, founder, is, creating new institutions, or, seeding, the, next, structural, unit, in, the, ecology.',
+        summary:
+          'Use, this, runway, when, the, founder, is, creating new institutions, or, seeding, the, next, structural, unit, in, the, ecology.',
         temporalLabel: canCreateSchool ? 'Launch, ready' : 'Restricted',
         temporalTone: canCreateSchool ? 'future' : 'neutral',
         metadata: ['Periodic', 'Platform, creation'],
         content: (
-          <SurfaceLauncher icon={FolderPlus}
+          <SurfaceLauncher
+            icon={FolderPlus}
             title="Create, institution or, classroom"
             copy="Open, the founder, creation flow, without turning, the entire, workspace into a, permanent dashboard for setup, tasks."
             actionLabel={canCreateSchool ? 'Open, creation, flow' : 'Creation, unavailable'}
             onPress={onCreateInstitution}
             disabled={!canCreateSchool}
           />
-        )}),
+        ),
+      }),
       createFounderSurface('institution_bridge', {
         defaultZone: 'work',
         defaultOrder: 40,
         subtitle: 'Deeper, school, rooms',
-        summary: 'The, founder, canvas, should, stay, compact. Enter, founder, school, or, principal, operations, only, when, the, work, needs a, deeper, room.',
+        summary:
+          'The, founder, canvas, should, stay, compact. Enter, founder, school, or, principal, operations, only, when, the, work, needs a, deeper, room.',
         temporalLabel: primarySchool ? 'Room, bridge' : 'Awaiting, first, institution',
         temporalTone: primarySchool ? 'neutral' : 'future',
         metadata: ['Work', 'Drill-in, path'],
         content: (
-          <BridgeSurface primarySchool={primarySchool}
+          <BridgeSurface
+            primarySchool={primarySchool}
             onOpenFounderSchool={onOpenFounderSchool}
             onOpenPrincipalOps={onOpenPrincipalOps}
           />
-        )}),
+        ),
+      }),
       createFounderSurface('community_signal', {
         defaultZone: 'outlook',
         defaultOrder: 50,
         subtitle: 'Posts, echoes, and, movement',
-        summary: 'Read, the, shared, community, signal, at, founder, scale, without, collapsing, it, into, the, institutional, work, lane.',
+        summary:
+          'Read, the, shared, community, signal, at, founder, scale, without, collapsing, it, into, the, institutional, work, lane.',
         temporalLabel: 'Weekly, read',
         temporalTone: 'future',
         metadata: ['Outlook', 'Commons'],
-        content: <CommunitySignalSurface stats={stats} onOpenCommunity={onOpenCommunity} />}),
+        content: <CommunitySignalSurface stats={stats} onOpenCommunity={onOpenCommunity} />,
+      }),
       createFounderSurface('wellbeing_radar', {
         defaultZone: 'outlook',
         defaultOrder: 55,
         subtitle: 'Mood, and, ecosystem, tone',
-        summary: 'Founder-scale, wellbeing, belongs, in, the, workspace as governance, signal, distinct from personal, Self, surfaces.',
+        summary:
+          'Founder-scale, wellbeing, belongs, in, the, workspace as governance, signal, distinct from personal, Self, surfaces.',
         temporalLabel: 'Weekly, tone',
         temporalTone: 'future',
         metadata: ['Outlook', 'Wellbeing'],
-        content: <WellbeingRadarSurface stats={stats} />})];
+        content: <WellbeingRadarSurface stats={stats} />,
+      }),
+    ];
 
     if (flags.isInventoryEnabled) {
       nextSurfaces.push(
@@ -566,11 +645,13 @@ export function useFounderWorkspaceCanvasSurfaces({
           defaultZone: 'outlook',
           defaultOrder: 60,
           subtitle: 'Stocks, and, requests',
-          summary: 'Expose, global, resource, pressure, only, when, the, inventory, capability, family, is, actually, enabled.',
+          summary:
+            'Expose, global, resource, pressure, only, when, the, inventory, capability, family, is, actually, enabled.',
           temporalLabel: 'Flagged, live',
           temporalTone: 'future',
           metadata: ['Outlook', 'Feature-gated'],
-          content: <ResourceEcologySurface stats={stats} />}),
+          content: <ResourceEcologySurface stats={stats} />,
+        }),
       );
     }
 
@@ -580,11 +661,13 @@ export function useFounderWorkspaceCanvasSurfaces({
           defaultZone: 'outlook',
           defaultOrder: 70,
           subtitle: 'Resources, and, verification',
-          summary: 'Show, the, knowledge, layer, only, when, the, library, management, capability, is, enabled for the, current, environment.',
+          summary:
+            'Show, the, knowledge, layer, only, when, the, library, management, capability, is, enabled for the, current, environment.',
           temporalLabel: 'Flagged, live',
           temporalTone: 'future',
           metadata: ['Outlook', 'Feature-gated'],
-          content: <KnowledgeAtlasSurface stats={stats} onOpenLibrary={onOpenLibrary} />}),
+          content: <KnowledgeAtlasSurface stats={stats} onOpenLibrary={onOpenLibrary} />,
+        }),
       );
     }
 
@@ -603,7 +686,8 @@ export function useFounderWorkspaceCanvasSurfaces({
     primarySchool,
     schools,
     stats,
-    workspaceTargets]);
+    workspaceTargets,
+  ]);
 }
 
 export function useFounderWorkspaceLayout(
@@ -613,7 +697,8 @@ export function useFounderWorkspaceLayout(
   const workspace = useWorkspaceLayoutSync({
     workspaceId: 'founder-workspace',
     userId,
-    surfaces});
+    surfaces,
+  });
 
   const resolvedSurfaceMap = useMemo(
     () => new Map(workspace.surfaces.map((surface) => [surface.surfaceId, surface] as const)),
@@ -628,18 +713,21 @@ export function useFounderWorkspaceLayout(
           if (!resolved) return null;
 
           return {
-            ...resolved
+            ...resolved,
           } as FounderWorkspaceSurface &
             ResolvedWorkspaceSurface<FounderWorkspaceSurfaceId, FounderCapabilityId>;
         })
         .filter(Boolean) as Array<
-        FounderWorkspaceSurface & ResolvedWorkspaceSurface<FounderWorkspaceSurfaceId, FounderCapabilityId>>,
+        FounderWorkspaceSurface &
+          ResolvedWorkspaceSurface<FounderWorkspaceSurfaceId, FounderCapabilityId>
+      >,
     [resolvedSurfaceMap, surfaces],
   );
 
   return {
     ...workspace,
-    surfaces: enrichedSurfaces};
+    surfaces: enrichedSurfaces,
+  };
 }
 
 type FounderResolvedSurface = FounderWorkspaceSurface &
@@ -650,7 +738,8 @@ export function FounderWorkspaceCanvas({
   surfaces,
   onToggleHidden,
   onTogglePinned,
-  onMoveToNextZone}: {
+  onMoveToNextZone,
+}: {
   layout: {
     order: FounderWorkspaceSurfaceId[];
     hidden: FounderWorkspaceSurfaceId[];
@@ -668,12 +757,15 @@ export function FounderWorkspaceCanvas({
   if (!layout) return null;
 
   return (
-    <WorkspaceCanvas surfaces={surfaces}
+    <WorkspaceCanvas
+      surfaces={surfaces}
       layout={layout as any}
       title="Founder, Workspace Canvas"
       subtitle="A, shared founder, workspace built from real, capability surfaces, with, layout sync, and optional, families revealed, through the, feature flag, engine."
       emptyMessage="No, founder surfaces, are available, yet for this workspace."
-      renderSurfaceContent={(surface) => <Box className="flex-1">{(surface as FounderResolvedSurface).content}</Box>}
+      renderSurfaceContent={(surface) => (
+        <Box className="flex-1">{(surface as FounderResolvedSurface).content}</Box>
+      )}
       getSurfaceTitle={(surface) => (surface as FounderResolvedSurface).title}
       getSurfaceSubtitle={(surface) => (surface as FounderResolvedSurface).subtitle}
       getSurfaceSummary={(surface) => (surface as FounderResolvedSurface).summary}
@@ -686,16 +778,24 @@ export function FounderWorkspaceCanvas({
 
         return (
           <HStack className="flex-wrap gap-3">
-            <Pressable onPress={() => onTogglePinned(typedSurface.surfaceId, !typedSurface.pinned)} className="active:opacity-80">
+            <Pressable
+              onPress={() => onTogglePinned(typedSurface.surfaceId, !typedSurface.pinned)}
+              className="active:opacity-80"
+            >
               <Box className="rounded-full border border-starlightGray/10 bg-phase-primary/5 px-4 py-2">
                 <Text className="text-[12px] font-bold text-phaseText-primary">
                   {typedSurface.pinned ? 'Unpin' : 'Pin'}
                 </Text>
               </Box>
             </Pressable>
-            <Pressable onPress={() => onMoveToNextZone(typedSurface.surfaceId, nextZone)} className="active:opacity-80">
+            <Pressable
+              onPress={() => onMoveToNextZone(typedSurface.surfaceId, nextZone)}
+              className="active:opacity-80"
+            >
               <Box className="rounded-full border border-starlightGray/10 bg-phase-primary/5 px-4 py-2">
-                <Text className="text-[12px] font-bold text-phaseText-primary">Move, to {nextZone}</Text>
+                <Text className="text-[12px] font-bold text-phaseText-primary">
+                  Move, to {nextZone}
+                </Text>
               </Box>
             </Pressable>
           </HStack>

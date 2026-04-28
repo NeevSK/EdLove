@@ -1,17 +1,7 @@
-import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { Platform, View, Text as RNText, TouchableOpacity, StyleSheet } from 'react-native';
-import {
-  Box,
-  VStack,
-  Text,
-  Heading,
-  Center,
-  Button,
-  ButtonText,
-  ButtonIcon,
-  HStack,
-} from '../gluestack';
 import { AlertTriangle, RefreshCw } from 'lucide-react-native';
+import { Component, type ErrorInfo, type ReactNode } from 'react';
+import { Platform, Text as RNText, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Box, Button, ButtonIcon, ButtonText, Center, Heading, Text, VStack } from '../gluestack';
 
 interface Props {
   children: ReactNode;

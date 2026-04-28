@@ -1,10 +1,27 @@
 # UI Development Guide (Zero-Legacy Edition)
 
-Welcome to the new UI architecture for Gurudevi. This guide outlines how to build and maintain components using **NativeWind** and our **Owner-Owned Primitives**.
+Welcome to the new UI architecture- Continue replacing package-internal imports of `src/gluestack/index.tsx` inside `src/components/*`, `src/components/workspace/*`, `src/context/*`, and `src/screens/*` with direct canonical primitive imports.
+- Keep `src/components-legacy/*` and `src/gluestack-legacy/index.ts` documented but non-canonical until a later delete pass.
 
-## Core Principles
+### **Hardening Journal (2026-04-25)**
+*Proactive component foundation reset.*
 
-1.  **Tailwind First**: All styling must be done via `className` strings using Tailwind utility classes.
+| Progress | Component | Category | Status |
+| :--- | :--- | :--- | :--- |
+| ✅ | `Select` | Interactive | Hardened |
+| ✅ | `Input` | Input | Hardened |
+| ✅ | `Button` | Interactive | Hardened |
+| ✅ | `Actionsheet` | Overlay | Hardened |
+| ✅ | `Checkbox` | Choice | Hardened |
+| ✅ | `Radio` | Choice | Hardened |
+| ✅ | `Modal` | Overlay | Hardened |
+| ✅ | `Toast` | Feedback | Hardened |
+| ✅ | `Switch` | Choice | Hardened |
+| ✅ | `Progress` | Feedback | Hardened |
+| ✅ | `Avatar` | Identity | Hardened |
+| ✅ | `Slider` | Value | Hardened |
+| ✅ | `Fab` | Overlay | Hardened |
+ using Tailwind utility classes.
 2.  **No Vendor Bloat**: We use locally implementation layout primitives to avoid large external dependencies and complex type systems.
 3.  **Fabric Ready**: All components must be compliant with the React Native New Architecture (Fabric).
 
@@ -120,5 +137,60 @@ NativeWind 4 supports `active:` and `hover:` (web) prefixes:
 <Pressable className="bg-blue-500 active:bg-blue-700">
 ```
 
+## 🧠 State Management Excellence (2026 April Standard)
+
+To maintain the "Zero-Legacy" performance guarantee, abide by these "Atomic Subscription" rules for all stateful components and providers.
+
+### 1. The "Atomic" Rule (Context Splitting)
+**Never** put stable data and high-frequency changing data in the same Context. 
+- **Rule**: If a piece of state changes more than once per second (animations, keyboard, scroll), it MUST live in a separate provider or a fine-grained store.
+- **Why**: Prevents the entire app from re-rendering every time the interface jitters.
+
+### 2. Memoization is Mandatory
+Every value passed through a Provider's `value` prop MUST be wrapped in `useMemo`. Every function MUST be wrapped in `useCallback`.
+- **Logic**: Use the `Z-State` pattern (Z-Index + Zero-Bridge). Keep overlay state (Toasts/Modals) in specialized stores to avoid "God Context" re-renders.
+
+### 3. Reducers for Mechanisms, Hooks for Skins
+If a component has more than 2 related `useState` hooks, or logic that follows a sequence (like a Toast queue), use `useReducer`.
+- **Discriminated Unions**: All actions must be strictly typed.
+- **Example**: `type Action = { type: 'ADD_TOAST', payload: Toast } | { type: 'REMOVE_TOAST', id: string }`.
+
+### 4. Side-Effect Hygiene & Self-Healing
+Internal timers, event listeners, or subscriptions must be cleaned up in a `useEffect` return block.
+- **Self-Healing**: Prefer state that is a derived view of a data source. If the database changes, the UI should "heal" (sync) without manual `setSomething` calls.
+
+---
+
 ## Need Help?
 Check the [ADR-001](./adr-001-ui-foundation-reset.md) for the architectural rationale behind these changes.
+
+---
+
+## 🛠️ Hardening Log (2026-04-25)
+*Systematic transition to Zero-Legacy Architecture.*
+
+### **Phase 1: Foundation (Hardened)**
+| Date | Component | Changes | Status |
+| :--- | :--- | :--- | :--- |
+| Apr 25 | `Select` | `SelectContext` implementation, Slide animations, Aria roles. | ✅ Hardened |
+| Apr 25 | `Input` | `InputContext` for focus state, standardized accessibility. | ✅ Hardened |
+| Apr 25 | `Button` | `ButtonContext` for variant/action propagation. | ✅ Hardened |
+| Apr 25 | `Actionsheet` | `Portal` integration, `SlideInDown` animations. | ✅ Hardened |
+| Apr 25 | `Checkbox` | `GroupContext` for multi-selection logic, robust types. | ✅ Hardened |
+| Apr 25 | `Radio` | `GroupContext` for single-selection exclusion. | ✅ Hardened |
+| Apr 25 | `Modal` | `Portal` & `Overlay` orchestration, `ZoomIn` animations. | ✅ Hardened |
+
+### **Phase 2: Feedback & Interaction (Hardened)**
+| Date | Component | Changes | Status |
+| :--- | :--- | :--- | :--- |
+| Apr 25 | `Toast` | `ToastContext` integration, Action-based styling (Success/Error). | ✅ Hardened |
+| Apr 25 | `Switch` | Platform-native theme bridge, type safety hardened. | ✅ Hardened |
+| Apr 25 | `Progress` | `ProgressContext` for track synchronization, Aria roles. | ✅ Hardened |
+| Apr 25 | `Avatar` | `AvatarContext` for size-aware typography scaling. | ✅ Hardened |
+| Apr 25 | `Slider` | Bridge to `@react-native-community/slider` stabilized. | ✅ Hardened |
+| Apr 25 | `Fab` | Placement logic hardened, active-state feedback added. | ✅ Hardened |
+
+### **Phase 3: Media & Display (Next)**
+- [ ] `Image` (Caching & loading state)
+- [ ] `Badge` (Action mapping)
+- [ ] `Textarea` (Auto-grow & validation)

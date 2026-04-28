@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
-import { v4 as uuidv4 } from 'uuid';
+import { v7 as uuidv7 } from 'uuid';
 import { APIError } from '../types';
 import { identityAPI } from './identity';
 import { supabase } from './supabase';
@@ -69,7 +69,7 @@ async function getOrCreateInstallId() {
   const existing = await AsyncStorage.getItem(DEVICE_INSTALL_ID_KEY);
   if (existing) return existing;
 
-  const next = uuidv4();
+  const next = uuidv7();
   await AsyncStorage.setItem(DEVICE_INSTALL_ID_KEY, next);
   return next;
 }

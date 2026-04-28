@@ -1,11 +1,11 @@
-import React from 'react';
-import { 
+import type React from 'react';
+import {
+  LineChart as GiftedAreaChart,
   BarChart as GiftedBarChart,
   LineChart as GiftedLineChart,
   PieChart as GiftedPieChart,
-  LineChart as GiftedAreaChart,
+  LineChart as GiftedScatterChart,
   BarChart as GiftedStackedBarChart,
-  LineChart as GiftedScatterChart
 } from 'react-native-gifted-charts';
 
 // Re-export with proper typing

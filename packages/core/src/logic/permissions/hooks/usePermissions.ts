@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
+import { useAuthStore } from '../../../store/useAuthStore';
 import { useFeatureStore } from '../../../store/useFeatureStore';
-import { type TotalState, useStore } from '../../../store/useStore';
+import { useTenantStore } from '../../../store/useTenantStore';
 import type { Role } from '../../schemas/role.schema';
 import { type TenantKind, type UserContext, UserContextSchema } from '../../schemas/user.schema';
 import type { Actions, SubjectType } from '../abilities/base';
@@ -11,10 +12,8 @@ import { composeUserAbilities } from '../composer';
  * Re-renders automatically on permission change via store updates.
  */
 export const usePermissions = () => {
-  const { user, schoolType } = useStore((state: TotalState) => ({
-    user: state.user,
-    schoolType: state.schoolType,
-  }));
+  const user = useAuthStore((state) => state.user);
+  const schoolType = useTenantStore((state) => state.schoolType);
   const flags = useFeatureStore((state) => state.flags);
 
   // 1. Build context from store (Supabase auth + app state)
@@ -51,21 +50,24 @@ export const usePermissions = () => {
   // 2. Compose abilities (CASL)
   const ability = useMemo(() => composeUserAbilities(context), [context]);
 
-  // 3. Return ability and context
-  return {
-    ability,
-    context,
-    flags,
-    /**
-     * can: Check if action on subject is allowed.
-     * usage: can('read', 'School')
-     */
-    can: (action: Actions, subject: SubjectType, field?: string) =>
-      ability.can(action, subject as any, field),
-    /**
-     * cannot: Check if action on subject is forbidden.
-     */
-    cannot: (action: Actions, subject: SubjectType, field?: string) =>
-      ability.cannot(action, subject as any, field),
-  };
+  // 3. Return ability and context (10 Pillars: Referential Stability)
+  return useMemo(
+    () => ({
+      ability,
+      context,
+      flags,
+      /**
+       * can: Check if action on subject is allowed.
+       * usage: can('read', 'School')
+       */
+      can: (action: Actions, subject: SubjectType, field?: string) =>
+        ability.can(action, subject as any, field),
+      /**
+       * cannot: Check if action on subject is forbidden.
+       */
+      cannot: (action: Actions, subject: SubjectType, field?: string) =>
+        ability.cannot(action, subject as any, field),
+    }),
+    [ability, context, flags],
+  );
 };

@@ -6,13 +6,13 @@ const SOURCE_DIRS = [
   'apps/gurudevi-mobile/src',
   'packages/self/src',
   'packages/community/src',
-  'packages/scanner-kit/src'
+  'packages/scanner-kit/src',
 ];
 
 const LOCALE_FILES = {
   en: 'apps/gurudevi-mobile/src/i18n/locales/en.json',
   si: 'apps/gurudevi-mobile/src/i18n/locales/si.json',
-  ta: 'apps/gurudevi-mobile/src/i18n/locales/ta.json'
+  ta: 'apps/gurudevi-mobile/src/i18n/locales/ta.json',
 };
 
 const SOURCE_FILE_EXTENSIONS = new Set(['.ts', '.tsx', '.js', '.jsx']);

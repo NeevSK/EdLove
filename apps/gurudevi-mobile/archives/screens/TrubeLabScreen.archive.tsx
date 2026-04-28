@@ -339,7 +339,10 @@ sx={{ fontSize: '$md' as any, fontWeight: '600' }
 </HStack              </VStack
               <VStack
 space = 'sm' < Text
-color={text.primary}
+color=
+{
+  text.primary;
+}
 sx={{ fontSize: '$md' as any, fontWeight: '600' }
 }                  Canonical Gurudevi Standard
                 </Text                <Text color=
@@ -462,15 +465,15 @@ sx={{ fontSize: '$sm' as any, lineHeight: 20 }
   });
 }
 </VStack              </VStack < Box
-sx={{
-                  padding: 16,
-                  borderRadius: 20,
+sx=
+{
+  padding: 16, borderRadius;
+  : 20,
                   backgroundColor: scene.surface.bg,
                   borderWidth: 1,
                   borderColor: scene.surface.border,
-                }
 }
-                              <VStack space="sm"                  <Text color=
+<VStack space="sm"                  <Text color=
 {
   text.onSurface;
 }
@@ -527,18 +530,23 @@ $;
                           setScoreName(next.name);
                         }
                       }}
-                    /                  </HStack                </VStack              </Box            </React.Fragment          ) : null}
+                    /                  </HStack                </VStack
+</Box            </React.Fragment          ) : null
+}
 
           <Box
-            sx={{
-              height: 320,
-              borderRadius: 28,
+            sx=
+{
+  height: 320, borderRadius;
+  : 28,
               overflow: 'hidden',
               borderWidth: 1,
               borderColor: scene.elevated.border,
               backgroundColor: scene.canvas.bg,
-            }}
-                      <TrubeStage cornerRadius={28} stage={composition} style={{ flex: 1 }} /            {resolvedOrnament ? (
+}
+<TrubeStage cornerRadius={28} stage={composition} style={{ flex: 1 }} /
+{
+  resolvedOrnament ? (
               <TrubeOrnament
                 color={accent.action}
                 cornerRadius={28}
@@ -550,8 +558,10 @@ $;
                   bottom: 0,
                   left: 0,
                 }}
-              /            ) : null}
-            {resolvedMotif ? (
+              /            ) : null
+}
+{
+  resolvedMotif ? (
               <TrubeMotif
                 color={text.onCanvas}
                 cornerRadius={28}
@@ -563,8 +573,9 @@ $;
                   bottom: 0,
                   left: 0,
                 }}
-              /            ) : null}
-            <Box
+              /            ) : null
+}
+<Box
               sx={{
                 position: 'absolute',
                 left: 20,
@@ -578,8 +589,10 @@ $;
               }}
                           <Text color={text.onChrome} sx={{ fontSize: '$md' as any, fontWeight: '700' }}                {previewTitle}
               </Text              <Text color={text.secondary} sx={{ fontSize: '$xs' as any, marginTop: 4 }}                {previewMeta}
-              </Text            </Box          </Box
-          {labMode === 'study' ? (
+              </Text            </Box
+</Box
+{
+  labMode === 'study' ? (
             <React.Fragment              <VStack space="sm"                <Text color={text.primary} sx={{ fontSize: '$md' as any, fontWeight: '600' }}                  Instrument
                 </Text                <HStack space="sm" flexWrap="wrap"                  {SURFACES.map((item) => (
                     <SegmentedOption
@@ -587,54 +600,89 @@ $;
                       active={surfaceName === item}
                       label={item}
                       onPress={() => setSurfaceName(item)}
-                    /                  ))}
-                </HStack              </VStack
-              <VStack space="sm"                <Text color={text.primary} sx={{ fontSize: '$md' as any, fontWeight: '600' }}                  Arrangement
-                </Text                <HStack space="sm" flexWrap="wrap"                  {ARRANGEMENTS.map((item) => (
+                    /                  )
+  )
+}
+</HStack              </VStack
+              <VStack space="sm"                <Text color=
+{
+  text.primary;
+}
+sx={{ fontSize: '$md' as any, fontWeight: '600' }
+}                  Arrangement
+                </Text                <HStack space="sm" flexWrap="wrap"
+{
+  ARRANGEMENTS.map((item) => (
                     <SegmentedOption
                       key={item}
                       active={arrangement === item}
                       label={item}
                       onPress={() => setArrangement(item)}
-                    /                  ))}
-                </HStack              </VStack
-              <VStack space="sm"                <Text color={text.primary} sx={{ fontSize: '$md' as any, fontWeight: '600' }}                  Lighting
-                </Text                <HStack space="sm" flexWrap="wrap"                  {LIGHTS.map((item) => (
+                    /                  ))
+}
+</HStack              </VStack
+              <VStack space="sm"                <Text color=
+{
+  text.primary;
+}
+sx={{ fontSize: '$md' as any, fontWeight: '600' }
+}                  Lighting
+                </Text                <HStack space="sm" flexWrap="wrap"
+{
+  LIGHTS.map((item) => (
                     <SegmentedOption
                       key={item}
                       active={light === item}
                       label={item}
                       onPress={() => setLight(item)}
-                    /                  ))}
-                </HStack              </VStack
-              <VStack space="sm"                <Text color={text.primary} sx={{ fontSize: '$md' as any, fontWeight: '600' }}                  Ornament
-                </Text                <HStack space="sm" flexWrap="wrap"                  {ORNAMENTS.map((item) => (
+                    /                  ))
+}
+</HStack              </VStack
+              <VStack space="sm"                <Text color=
+{
+  text.primary;
+}
+sx={{ fontSize: '$md' as any, fontWeight: '600' }
+}                  Ornament
+                </Text                <HStack space="sm" flexWrap="wrap"
+{
+  ORNAMENTS.map((item) => (
                     <SegmentedOption
                       key={item}
                       active={ornamentName === item}
                       label={item}
                       onPress={() => setOrnamentName(item)}
-                    /                  ))}
-                </HStack              </VStack
-              <VStack space="sm"                <Text color={text.primary} sx={{ fontSize: '$md' as any, fontWeight: '600' }}                  Motif
-                </Text                <HStack space="sm" flexWrap="wrap"                  {MOTIFS.map((item) => (
+                    /                  ))
+}
+</HStack              </VStack
+              <VStack space="sm"                <Text color=
+{
+  text.primary;
+}
+sx={{ fontSize: '$md' as any, fontWeight: '600' }
+}                  Motif
+                </Text                <HStack space="sm" flexWrap="wrap"
+{
+  MOTIFS.map((item) => (
                     <SegmentedOption
                       key={item}
                       active={motifName === item}
                       label={item}
                       onPress={() => setMotifName(item)}
-                    /                  ))}
-                </HStack              </VStack            </React.Fragment          ) : null}
+                    /                  ))
+}
+</HStack              </VStack            </React.Fragment          ) : null}
 
           <Box
-            sx={{
-              padding: 16,
-              borderRadius: 20,
+            sx=
+{
+  padding: 16, borderRadius;
+  : 20,
               backgroundColor: scene.surface.bg,
               borderWidth: 1,
               borderColor: scene.surface.border,
-            }}
-                      <VStack space="sm"              <Text color={text.onSurface} sx={{ fontSize: '$md' as any, fontWeight: '700' }}                Why this phase matters
+}
+<VStack space="sm"              <Text color={text.onSurface} sx={{ fontSize: '$md' as any, fontWeight: '700' }}                Why this phase matters
               </Text              <Text color={text.secondary} sx={{ fontSize: '$sm' as any, lineHeight: 20 }}                Tiny detail matters when it stays surprising under attention. Great scores feel spatial and inevitable,
                 while weak ones feel decorative and disposable.
               </Text              {labMode === 'masterpiece' ? (
@@ -642,47 +690,75 @@ $;
                 </Text              ) : null}
               {labMode === 'masterpiece' ? (
                 <Text color={text.secondary} sx={{ fontSize: '$sm' as any, lineHeight: 20 }}                  Review: {score.review.state} / {score.review.approvedFor}
-                </Text              ) : null}
-              {labMode === 'masterpiece' ? (
+                </Text
+) : null}
+{
+  labMode === 'masterpiece' ? (
                 <Text color={text.secondary} sx={{ fontSize: '$sm' as any, lineHeight: 20 }}                  Review note: {score.review.note}
-                </Text              ) : null}
-              {labMode === 'masterpiece' ? (
-                <Text color={text.secondary} sx={{ fontSize: '$sm' as any, lineHeight: 20 }}                  Placement: focal {score.placement.focalZone}, overlay-safe {score.placement.safeOverlayZone}, text {score.placement.textDensity}
-                </Text              ) : null}
-              {labMode === 'masterpiece' ? (
+                </Text              ) : null
+}
+{
+  labMode === 'masterpiece'
+    ? (
+        <Text color={text.secondary} sx={{ fontSize: '$sm' as any, lineHeight: 20 }}                  Placement: focal {score.placement.focalZone}, overlay-safe {score.placement.safeOverlayZone}, text {score.placement.textDensity}
+                </Text
+      )
+    : null;
+}
+{
+  labMode === 'masterpiece' ? (
                 <Text color={text.secondary} sx={{ fontSize: '$sm' as any, lineHeight: 20 }}                  Lineage doctrine: {score.lineage.doctrine}
-                </Text              ) : null}
-              {labMode === 'masterpiece' ? (
+                </Text              ) : null
+}
+{
+  labMode === 'masterpiece' ? (
                 <Text color={text.secondary} sx={{ fontSize: '$sm' as any, lineHeight: 20 }}                  Dialect: {score.lineage.dialect}
-                </Text              ) : null}
-              {labMode === 'masterpiece' ? (
+                </Text              ) : null
+}
+{
+  labMode === 'masterpiece' ? (
                 <Text color={text.secondary} sx={{ fontSize: '$sm' as any, lineHeight: 20 }}                  Temperament: {score.lineage.temperament}
-                </Text              ) : null}
-              {labMode === 'masterpiece' ? (
+                </Text              ) : null
+}
+{
+  labMode === 'masterpiece' ? (
                 <Text color={text.secondary} sx={{ fontSize: '$sm' as any, lineHeight: 20 }}                  Prefer: {score.placement.preferredUse}
-                </Text              ) : null}
-              {labMode === 'masterpiece' ? (
+                </Text              ) : null
+}
+{
+  labMode === 'masterpiece' ? (
                 <Text color={text.secondary} sx={{ fontSize: '$sm' as any, lineHeight: 20 }}                  Avoid: {score.placement.avoidUse}
-                </Text              ) : null}
-            </VStack          </Box
+                </Text              ) : null
+}
+</VStack          </Box
           <Button
-            onPress={() => {
-              if (labMode === 'masterpiece') {
-                setExperienceMode('ceremonial');
-                setScoreName('lotus-vigil');
-                return;
-              }
+            onPress=
+{
+  () => {
+    if (labMode === 'masterpiece') {
+      setExperienceMode('ceremonial');
+      setScoreName('lotus-vigil');
+      return;
+    }
 
-              setArrangement('orchestra');
-              setSurfaceName('aurora');
-              setLight('night');
-              setOrnamentName('constellation');
-              setMotifName('lotus-sketch');
-            }}
-            sx={{
+    setArrangement('orchestra');
+    setSurfaceName('aurora');
+    setLight('night');
+    setOrnamentName('constellation');
+    setMotifName('lotus-sketch');
+  };
+}
+sx={{
               backgroundColor: accent.action,
               borderRadius: 999,
-            }}
-                      <ButtonText sx={{ color: text.onAccent }}              {labMode === 'masterpiece' ? 'Load Ceremonial Benchmark' : 'Reset To Night Orchestra'}
-            </ButtonText          </Button        </VStack      </ScrollView    </ScreenWrapper  );
+            }
+}
+                      <ButtonText sx=
+{
+  color: text.onAccent;
+}
+{
+  labMode === 'masterpiece' ? 'Load Ceremonial Benchmark' : 'Reset To Night Orchestra';
+}
+</ButtonText          </Button        </VStack      </ScrollView    </ScreenWrapper  )
 }

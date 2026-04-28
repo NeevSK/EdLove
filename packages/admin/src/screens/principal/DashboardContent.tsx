@@ -1,24 +1,29 @@
-import React from 'react';
-import { useTranslation } from 'react-i18next';
-import { Building2, LayoutGrid, NotebookPen, Share2, Clock, Plus, Info, GraduationCap, TrendingUp, AlertTriangle } from 'lucide-react-native';
 import type { PublishedSchoolGradingCompletion } from '@repo/core';
 import {
-  getPrincipalCapabilitiesByZone,
-  type PrincipalWorkspaceView} from '../../principal/workspace';
-import { 
-    WebScreenHeader, 
-    Box, 
-    VStack, 
-    HStack, 
-    Text, 
-    Heading, 
-    Pressable, 
-    Icon,
-    Button,
-    ButtonText,
-    ButtonIcon,
-    hapticLight
+  Box,
+  Building2,
+  Button,
+  ButtonIcon,
+  ButtonText,
+  HStack,
+  Heading,
+  Icon,
+  LayoutGrid,
+  NotebookPen,
+  Share2,
+  Text,
+  TrendingUp,
+  VStack,
+  WebScreenHeader,
+  hapticLight,
 } from '@repo/ui';
+
+import type React from 'react';
+import { useTranslation } from 'react-i18next';
+import {
+  getPrincipalCapabilitiesByZone,
+  type PrincipalWorkspaceView,
+} from '../../principal/workspace';
 import { getPrincipalFeatureScopeMeta } from './PrincipalIAScope';
 
 export interface DashboardContentProps {
@@ -53,7 +58,12 @@ export interface DashboardContentProps {
   onNavigateToProfile: () => void;
   onOpenCommons: () => void;
   observations: any[];
-  renderTodayZone?: (context: { schoolId: string; principalId: string } & Pick<DashboardContentProps, 'studentPulse' | 'atRiskCount' | 'onShowAtRisk'>) => React.ReactNode;
+  renderTodayZone?: (
+    context: { schoolId: string; principalId: string } & Pick<
+      DashboardContentProps,
+      'studentPulse' | 'atRiskCount' | 'onShowAtRisk'
+    >,
+  ) => React.ReactNode;
   renderInstitutionZone?: (context: { schoolId: string; principalId: string }) => React.ReactNode;
   renderOutlookZone?: (context: { schoolId: string; principalId: string }) => React.ReactNode;
 }
@@ -62,7 +72,8 @@ function ZoneShell({
   title,
   subtitle,
   count,
-  children}: {
+  children,
+}: {
   title: string;
   subtitle: string;
   count: number;
@@ -72,8 +83,12 @@ function ZoneShell({
     <Box className="flex-col gap-6 min-w-0 bg-phase-surface border border-phase-border rounded-[32px] p-6 shadow-sm">
       <HStack className="justify-between items-start gap-4">
         <VStack className="flex-1 min-w-0">
-          <Heading className="text-[20px] font-black text-phaseText-primary tracking-tight">{title}</Heading>
-          <Text className="text-[13px] leading-relaxed text-phaseText-muted font-bold mt-1.5">{subtitle}</Text>
+          <Heading className="text-[20px] font-black text-phaseText-primary tracking-tight">
+            {title}
+          </Heading>
+          <Text className="text-[13px] leading-relaxed text-phaseText-muted font-bold mt-1.5">
+            {subtitle}
+          </Text>
         </VStack>
         <Box className="bg-phase-canvas px-3 py-1 rounded-full border border-phase-border shadow-inner">
           <Text className="text-[10px] font-black uppercase tracking-widest text-phaseText-muted">
@@ -81,9 +96,7 @@ function ZoneShell({
           </Text>
         </Box>
       </HStack>
-      <Box className="mt-2">
-        {children}
-      </Box>
+      <Box className="mt-2">{children}</Box>
     </Box>
   );
 }
@@ -100,7 +113,8 @@ export function DashboardContent({
   onShowAtRisk,
   renderTodayZone,
   renderInstitutionZone,
-  renderOutlookZone}: DashboardContentProps) {
+  renderOutlookZone,
+}: DashboardContentProps) {
   const { t } = useTranslation();
   const schoolId = school?.id ?? '';
   const principalId = user?.id ?? '';
@@ -120,38 +134,54 @@ export function DashboardContent({
 
   const todayCount = getPrincipalCapabilitiesByZone('today', 'live').length;
   const institutionCount = getPrincipalCapabilitiesByZone('institution', 'live').length;
-  const outlookCount = getPrincipalCapabilitiesByZone('outlook').filter((capability) => capability.status !== 'hidden').length;
+  const outlookCount = getPrincipalCapabilitiesByZone('outlook').filter(
+    (capability) => capability.status !== 'hidden',
+  ).length;
 
   return (
     <VStack className="gap-8 pb-32">
       <WebScreenHeader
-        title={<Text className="text-phaseText-primary font-black">Principal <Text className="text-phase-interactive">Workspace</Text>.</Text>}
+        title={
+          <Text className="text-phaseText-primary font-black">
+            Principal <Text className="text-phase-interactive">Workspace</Text>.
+          </Text>
+        }
         note={`Balanced leadership cockpit for ${school?.name || 'your institution'}: operate today, govern the school, and seed future cycles.`}
         timeText={school?.name || 'Institutional Governance'}
-        actions={(
+        actions={
           <HStack className="gap-3 flex-wrap">
             <Button
               variant="outline"
               action="secondary"
-              onPress={() => { hapticLight(); onNavigateToProfile(); }}
+              onPress={() => {
+                hapticLight();
+                onNavigateToProfile();
+              }}
               className="rounded-2xl border-phase-border bg-phase-surface shadow-sm active:scale-95 transition-all"
             >
               <ButtonIcon as={Building2} className="text-phaseText-primary" />
-              <ButtonText className="text-phaseText-primary font-black uppercase tracking-widest text-[11px] ml-2">{t('principal.ia.actions.profileCta') || 'Institutional Profile'}</ButtonText>
+              <ButtonText className="text-phaseText-primary font-black uppercase tracking-widest text-[11px] ml-2">
+                {t('principal.ia.actions.profileCta') || 'Institutional Profile'}
+              </ButtonText>
               {renderScopeBadge('school_profile')}
             </Button>
             <Button
               variant="outline"
               action="secondary"
-              onPress={() => { hapticLight(); onOpenCommons(); }}
+              onPress={() => {
+                hapticLight();
+                onOpenCommons();
+              }}
               className="rounded-2xl border-phase-interactive bg-phase-interactive/5 active:scale-95 transition-all"
             >
               <ButtonIcon as={Share2} className="text-phase-interactive" />
-              <ButtonText className="text-phase-interactive font-black uppercase tracking-widest text-[11px] ml-2">{t('principal.ia.actions.commonsCta') || 'Community Commons'}</ButtonText>
+              <ButtonText className="text-phase-interactive font-black uppercase tracking-widest text-[11px] ml-2">
+                {t('principal.ia.actions.commonsCta') || 'Community Commons'}
+              </ButtonText>
               {renderScopeBadge('open_commons')}
             </Button>
           </HStack>
-        )}
+        }
       />
 
       <Box className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 items-start">
@@ -170,51 +200,64 @@ export function DashboardContent({
         >
           <VStack className="gap-4">
             <HStack className="gap-3">
-                <Button
-                    variant="outline"
-                    action="secondary"
-                    className="flex-1 rounded-[20px] justify-between border-phase-border bg-phase-surface h-14 px-5 shadow-sm active:scale-95 transition-all"
-                    onPress={() => { hapticLight(); onNavigate('hierarchy'); }}
-                >
-                    <HStack className="items-center gap-3">
-                        <ButtonIcon as={LayoutGrid} className="text-phaseText-primary" />
-                        <ButtonText className="text-phaseText-primary font-bold text-[14px]">Shape structure</ButtonText>
-                    </HStack>
-                    {renderScopeBadge('hierarchy')}
-                </Button>
+              <Button
+                variant="outline"
+                action="secondary"
+                className="flex-1 rounded-[20px] justify-between border-phase-border bg-phase-surface h-14 px-5 shadow-sm active:scale-95 transition-all"
+                onPress={() => {
+                  hapticLight();
+                  onNavigate('hierarchy');
+                }}
+              >
+                <HStack className="items-center gap-3">
+                  <ButtonIcon as={LayoutGrid} className="text-phaseText-primary" />
+                  <ButtonText className="text-phaseText-primary font-bold text-[14px]">
+                    Shape structure
+                  </ButtonText>
+                </HStack>
+                {renderScopeBadge('hierarchy')}
+              </Button>
             </HStack>
             <HStack className="gap-3">
-                <Button
-                    variant="outline"
-                    action="secondary"
-                    className="flex-1 rounded-[20px] justify-between border-phase-border bg-phase-surface h-14 px-5 shadow-sm active:scale-95 transition-all"
-                    onPress={() => { hapticLight(); onNavigate('invites'); }}
-                >
-                    <HStack className="items-center gap-3">
-                        <ButtonIcon as={Building2} className="text-phaseText-primary" />
-                        <ButtonText className="text-phaseText-primary font-bold text-[14px]">Role invites</ButtonText>
-                    </HStack>
-                    {renderScopeBadge('invites')}
-                </Button>
+              <Button
+                variant="outline"
+                action="secondary"
+                className="flex-1 rounded-[20px] justify-between border-phase-border bg-phase-surface h-14 px-5 shadow-sm active:scale-95 transition-all"
+                onPress={() => {
+                  hapticLight();
+                  onNavigate('invites');
+                }}
+              >
+                <HStack className="items-center gap-3">
+                  <ButtonIcon as={Building2} className="text-phaseText-primary" />
+                  <ButtonText className="text-phaseText-primary font-bold text-[14px]">
+                    Role invites
+                  </ButtonText>
+                </HStack>
+                {renderScopeBadge('invites')}
+              </Button>
             </HStack>
             <HStack className="gap-3">
-                <Button
-                    variant="outline"
-                    action="secondary"
-                    className="flex-1 rounded-[20px] justify-between border-phase-border bg-phase-surface h-14 px-5 shadow-sm active:scale-95 transition-all"
-                    onPress={() => { hapticLight(); onNavigate('notes'); }}
-                >
-                    <HStack className="items-center gap-3">
-                        <ButtonIcon as={NotebookPen} className="text-phaseText-primary" />
-                        <ButtonText className="text-phaseText-primary font-bold text-[14px]">Open logbook</ButtonText>
-                    </HStack>
-                    {renderScopeBadge('log')}
-                </Button>
+              <Button
+                variant="outline"
+                action="secondary"
+                className="flex-1 rounded-[20px] justify-between border-phase-border bg-phase-surface h-14 px-5 shadow-sm active:scale-95 transition-all"
+                onPress={() => {
+                  hapticLight();
+                  onNavigate('notes');
+                }}
+              >
+                <HStack className="items-center gap-3">
+                  <ButtonIcon as={NotebookPen} className="text-phaseText-primary" />
+                  <ButtonText className="text-phaseText-primary font-bold text-[14px]">
+                    Open logbook
+                  </ButtonText>
+                </HStack>
+                {renderScopeBadge('log')}
+              </Button>
             </HStack>
           </VStack>
-          <Box className="mt-6">
-            {renderInstitutionZone?.({ schoolId, principalId })}
-          </Box>
+          <Box className="mt-6">{renderInstitutionZone?.({ schoolId, principalId })}</Box>
         </ZoneShell>
 
         <ZoneShell
@@ -226,10 +269,20 @@ export function DashboardContent({
             <Box className="p-5 rounded-3xl border border-phase-border bg-phase-canvas shadow-inner mb-6">
               <HStack className="items-center gap-3 mb-2">
                 <Icon as={TrendingUp} size="xs" className="text-phase-success" />
-                <Text className="text-[10px] font-black uppercase tracking-widest text-phase-success">Academic Performance</Text>
+                <Text className="text-[10px] font-black uppercase tracking-widest text-phase-success">
+                  Academic Performance
+                </Text>
               </HStack>
               <Text className="text-[14px] leading-relaxed text-phaseText-secondary font-medium">
-                Published grading is live in <Text className="font-black text-phaseText-primary">{publishedGradingCompletion.classroomsWithPublishedGrades}</Text> of <Text className="font-black text-phaseText-primary">{publishedGradingCompletion.totalClassrooms}</Text> classrooms.
+                Published grading is live in{' '}
+                <Text className="font-black text-phaseText-primary">
+                  {publishedGradingCompletion.classroomsWithPublishedGrades}
+                </Text>{' '}
+                of{' '}
+                <Text className="font-black text-phaseText-primary">
+                  {publishedGradingCompletion.totalClassrooms}
+                </Text>{' '}
+                classrooms.
               </Text>
             </Box>
           )}

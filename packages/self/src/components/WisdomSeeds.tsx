@@ -4,28 +4,28 @@
  * Standardized to Zero-Legacy: purged corrupted StyleSheet and migrated to NativeWind v4.
  */
 
-import React, { useState } from 'react';
-import { 
-    Icon, 
-    Box, 
-    HStack, 
-    Input, 
-    InputField, 
-    Button, 
-    ButtonText, 
-    Text, 
-    VStack, 
-    ScrollView, 
-    Pressable,
-    Heading 
+import { useNavigation } from '@react-navigation/native';
+import { supabase, usePermissions, useSafeMutation } from '@repo/core';
+import {
+  Box,
+  Button,
+  ButtonText,
+  Heading,
+  HStack,
+  Icon,
+  Input,
+  InputField,
+  Pressable,
+  ScrollView,
+  Text,
+  VStack,
 } from '@repo/ui';
-import { Leaf, Plus, Send, ChevronRight, Sprout } from 'lucide-react-native';
+import { ChevronRight, Leaf, Plus, Send, Sprout } from 'lucide-react-native';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { supabase, useSafeMutation, usePermissions } from '@repo/core';
+import Animated, { FadeIn, FadeInDown, Layout } from 'react-native-reanimated';
 import { useWisdom } from '../hooks/useWisdom';
 import type { WisdomNote } from '../types/Wellbeing';
-import { useNavigation } from '@react-navigation/native';
-import Animated, { FadeIn, FadeInDown, Layout } from 'react-native-reanimated';
 
 interface WisdomSeedsProps {
   userId?: string;
@@ -46,12 +46,10 @@ export default function WisdomSeeds({ userId }: WisdomSeedsProps) {
   const { mutate, isLoading: isSaving } = useSafeMutation(
     async (insightText: string) => {
       if (!activeUserId) throw new Error('User not authenticated');
-      const { error } = await supabase
-        .from('wisdom_notes')
-        .insert({
-          user_id: activeUserId,
-          insight: insightText
-        });
+      const { error } = await supabase.from('wisdom_notes').insert({
+        user_id: activeUserId,
+        insight: insightText,
+      });
       if (error) throw error;
     },
     {
@@ -59,8 +57,8 @@ export default function WisdomSeeds({ userId }: WisdomSeedsProps) {
         setInsight('');
         setShowForm(false);
         refreshData();
-      }
-    }
+      },
+    },
   );
 
   const handleSave = () => {
@@ -79,12 +77,16 @@ export default function WisdomSeeds({ userId }: WisdomSeedsProps) {
             {t('self.wisdomSeeds') || 'Wisdom Seeds'}
           </Heading>
         </HStack>
-        
-        <Pressable 
+
+        <Pressable
           onPress={() => setShowForm(!showForm)}
           className={`w-10 h-10 rounded-full items-center justify-center transition-all active:scale-90 ${showForm ? 'bg-obsidian border border-white/10' : 'bg-emeraldGreen shadow-lg shadow-emeraldGreen/20'}`}
         >
-          <Icon as={showForm ? ChevronRight : Plus} size={20} className={showForm ? 'text-mistGray' : 'text-obsidian'} />
+          <Icon
+            as={showForm ? ChevronRight : Plus}
+            size={20}
+            className={showForm ? 'text-mistGray' : 'text-obsidian'}
+          />
         </Pressable>
       </HStack>
 
@@ -95,10 +97,10 @@ export default function WisdomSeeds({ userId }: WisdomSeedsProps) {
               <Text className="text-mistGray text-xs font-bold px-1">
                 {t('self.plantSeed') || 'Plant a new seed of wisdom'}
               </Text>
-              
+
               <Box className="bg-white/5 rounded-2xl border border-white/5 p-4 min-h-[100px]">
                 <Input className="border-0">
-                  <InputField 
+                  <InputField
                     value={insight}
                     onChangeText={setInsight}
                     multiline
@@ -111,14 +113,16 @@ export default function WisdomSeeds({ userId }: WisdomSeedsProps) {
               </Box>
 
               <Box className="items-end">
-                <Button 
+                <Button
                   onPress={handleSave}
                   isDisabled={!insight.trim() || isSaving}
                   className={`bg-emeraldGreen rounded-full px-8 py-3 h-12 shadow-md shadow-emeraldGreen/10 ${isSaving ? 'opacity-50' : ''}`}
                 >
                   <HStack className="items-center gap-2">
                     {isSaving ? (
-                      <Text className="text-obsidian text-[11px] font-black uppercase tracking-widest">Growing...</Text>
+                      <Text className="text-obsidian text-[11px] font-black uppercase tracking-widest">
+                        Growing...
+                      </Text>
                     ) : (
                       <>
                         <Icon as={Send} size={12} className="text-obsidian" />
@@ -135,8 +139,8 @@ export default function WisdomSeeds({ userId }: WisdomSeedsProps) {
         </Animated.View>
       )}
 
-      <ScrollView 
-        showsVerticalScrollIndicator={false} 
+      <ScrollView
+        showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 40 }}
         className="flex-1"
       >
@@ -150,22 +154,24 @@ export default function WisdomSeeds({ userId }: WisdomSeedsProps) {
             </Box>
           ) : (
             notes.map((note, index) => (
-              <Animated.View 
-                  key={note.id} 
-                  entering={FadeIn.delay(index * 100)}
-                  layout={Layout}
-              >
-                <Pressable 
+              <Animated.View key={note.id} entering={FadeIn.delay(index * 100)} layout={Layout}>
+                <Pressable
                   onPress={() => navigation.navigate('WisdomDetail', { id: note.id })}
                   className="bg-white/5 p-lg rounded-2xl border border-white/5 active:bg-white/10 active:scale-[0.98] transition-all"
                 >
                   <HStack className="items-center justify-between">
                     <VStack className="flex-1 gap-1 pr-4">
-                      <Text className="text-sacredWhite/80 text-sm leading-relaxed" numberOfLines={2}>
+                      <Text
+                        className="text-sacredWhite/80 text-sm leading-relaxed"
+                        numberOfLines={2}
+                      >
                         {note.insight}
                       </Text>
                       <Text className="text-mistGray/30 text-[9px] font-black uppercase tracking-widest">
-                        {new Date(note.created_at || Date.now()).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                        {new Date(note.created_at || Date.now()).toLocaleDateString(undefined, {
+                          month: 'short',
+                          day: 'numeric',
+                        })}
                       </Text>
                     </VStack>
                     <Icon as={ChevronRight} size={14} className="text-mistGray/20" />

@@ -1,18 +1,17 @@
-import React, { useState } from 'react';
+import { AlertCircle, ChevronDown } from 'lucide-react-native';
+import { useState } from 'react';
 import { Pressable } from 'react-native';
 import {
-  VStack,
-  HStack,
-  Text,
-  Box,
   Actionsheet,
   ActionsheetContent,
-  ActionsheetDragIndicatorWrapper,
   ActionsheetDragIndicator,
+  ActionsheetDragIndicatorWrapper,
   ActionsheetItem,
   ActionsheetItemText,
+  HStack,
+  Text,
+  VStack,
 } from '../gluestack';
-import { ChevronDown, AlertCircle } from 'lucide-react-native';
 
 interface LotusDropdownProps {
   label?: string;

@@ -8,12 +8,17 @@
  * School: SCH_XXXXXXX (e.g., SCH_0000001)
  */
 
-export type SchoolType = "National" | "Provincial" | "Pirivena" | "International" | "Semi-Government";
-export type Medium = "Sinhala" | "Tamil" | "English" | "Mixed";
-export type Level = "Primary" | "Secondary" | "Mixed";
-export type Gender = "Boys" | "Girls" | "Mixed";
-export type Status = "Active" | "Closed" | "Merged";
-export type Religion = "Buddhist" | "Hindu" | "Catholic" | "Christian" | "Muslim" | "Other";
+export type SchoolType =
+  | 'National'
+  | 'Provincial'
+  | 'Pirivena'
+  | 'International'
+  | 'Semi-Government';
+export type Medium = 'Sinhala' | 'Tamil' | 'English' | 'Mixed';
+export type Level = 'Primary' | 'Secondary' | 'Mixed';
+export type Gender = 'Boys' | 'Girls' | 'Mixed';
+export type Status = 'Active' | 'Closed' | 'Merged';
+export type Religion = 'Buddhist' | 'Hindu' | 'Catholic' | 'Christian' | 'Muslim' | 'Other';
 
 export interface Province {
   id: string; // P_1 (Western)

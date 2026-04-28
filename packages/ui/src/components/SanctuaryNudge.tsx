@@ -1,10 +1,10 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
 import { BlurView } from 'expo-blur';
-import { Theme } from '../theme/Theme';
-import SanctuaryButton from './SanctuaryButton';
+import type React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 import { useThemedColors } from '../hooks/useThemedColors';
+import { Theme } from '../theme/Theme';
+import SanctuaryButton from './SanctuaryButton';
 
 interface SanctuaryNudgeProps {
   title: string;
@@ -21,7 +21,7 @@ export const SanctuaryNudge: React.FC<SanctuaryNudgeProps> = ({
   onAction,
   icon = '✨',
 }) => {
-  const colors = useThemedColors();
+  const _colors = useThemedColors();
 
   const renderIcon = () => {
     if (!icon) return null;

@@ -7,6 +7,14 @@ export { useManualSnapshot } from '../hooks/useManualSnapshot';
 export { type AppNotification, useNotifications } from '../hooks/useNotifications';
 export { useTemporalHeatmap } from '../hooks/useTemporalHeatmap';
 export { accountPin } from '../lib/accountPin';
+export { isDemo } from '../api/demo';
+export { type CloudinaryUploadResponse, uploadToCloudinary } from '../lib/cloudinary';
+export {
+  clearPendingGateAction,
+  getPendingGateAction,
+  type PendingGateAction,
+  setPendingGateAction,
+} from '../lib/pendingGateAction';
 export { useMutationQueue } from '../lib/sync/useMutationQueue';
 export { useAuthorityLifecycle } from '../native/useAuthorityLifecycle';
 export { useAuth } from '../providers/AuthProvider';
@@ -14,6 +22,7 @@ export { useAuthStore } from '../store/useAuthStore';
 export { useFeatureStore } from '../store/useFeatureStore';
 export { useStore } from '../store/useStore';
 export { useTemporalStore } from '../store/useTemporalStore';
+export { type InviteCodeData, incrementInviteCodeUsage, validateInviteCode } from '../lib/inviteCodes';
 export type { APIError } from '../types/API';
 // Types (Agnostic / logic-layer)
 export type { AuthorityTier } from '../types/Authority';
@@ -36,8 +45,8 @@ export * from './permissions/feature-engine';
 export * from './permissions/guards/FeatureGuard';
 export * from './permissions/guards/RouteGuard';
 export * from './permissions/hooks/usePermissions';
+export * from './runtimeRegistry';
 export * from './schemas';
 export * from './store-slices';
 export * from './utils';
 export * from './workspace/index';
-export * from './runtimeRegistry';

@@ -35,87 +35,111 @@ function defineFounderCapability(
 ): FounderCapabilityMeta {
   return {
     id,
-    ...config};
+    ...config,
+  };
 }
 
-export const FOUNDER_CAPABILITY_REGISTRY: Record<FounderCapabilityId, FounderCapabilityMeta>  = {
+export const FOUNDER_CAPABILITY_REGISTRY: Record<FounderCapabilityId, FounderCapabilityMeta> = {
   platform_pulse: defineFounderCapability('platform_pulse', {
     title: 'Platform, Pulse',
-    description: 'A, living, read, of, ecosystem, scale, health, and, near-term, movement, across, the, platform.',
+    description:
+      'A, living, read, of, ecosystem, scale, health, and, near-term, movement, across, the, platform.',
     zone: 'today',
     cadence: 'daily',
     scope: 'platform',
-    status: 'live'}),
+    status: 'live',
+  }),
   stewardship_topology: defineFounderCapability('stewardship_topology', {
     title: 'Stewardship, Topology',
-    description: 'Institutional, and, people, topology, showing, where, founder, attention, is, distributed, across, the, ecology.',
+    description:
+      'Institutional, and, people, topology, showing, where, founder, attention, is, distributed, across, the, ecology.',
     zone: 'work',
     cadence: 'weekly',
     scope: 'institutional',
-    status: 'live'}),
+    status: 'live',
+  }),
   learning_vitality: defineFounderCapability('learning_vitality', {
     title: 'Learning, Vitality',
-    description: 'Cross-tenant, academic, motion, through, submissions, attendance, classroom, coverage, and, growth, signal.',
+    description:
+      'Cross-tenant, academic, motion, through, submissions, attendance, classroom, coverage, and, growth, signal.',
     zone: 'today',
     cadence: 'daily',
     scope: 'ecology_crosscutting',
-    status: 'live'}),
+    status: 'live',
+  }),
   wellbeing_radar: defineFounderCapability('wellbeing_radar', {
     title: 'Wellbeing, Radar',
-    description: 'Founder-scale, read, of, mood, check-ins, and, health, tone, across, the, ecosystem, without, collapsing, into, Self.',
+    description:
+      'Founder-scale, read, of, mood, check-ins, and, health, tone, across, the, ecosystem, without, collapsing, into, Self.',
     zone: 'outlook',
     cadence: 'weekly',
     scope: 'ecology_crosscutting',
-    status: 'live'}),
+    status: 'live',
+  }),
   workspace_switcher: defineFounderCapability('workspace_switcher', {
     title: 'Workspace, Switcher',
-    description: 'A, mixed-role switch layer for moving, between, founder, institutional, and, academic, workspaces.',
+    description:
+      'A, mixed-role switch layer for moving, between, founder, institutional, and, academic, workspaces.',
     zone: 'work',
     cadence: 'daily',
     scope: 'platform',
-    status: 'live'}),
+    status: 'live',
+  }),
   institution_roster: defineFounderCapability('institution_roster', {
     title: 'Institution, Roster',
-    description: 'A, founder-facing, roster, of, institutions, to, enter, review, and, steward, at, the, right, depth.',
+    description:
+      'A, founder-facing, roster, of, institutions, to, enter, review, and, steward, at, the, right, depth.',
     zone: 'work',
     cadence: 'weekly',
     scope: 'institutional',
-    status: 'live'}),
+    status: 'live',
+  }),
   creation_runway: defineFounderCapability('creation_runway', {
     title: 'Creation, Runway',
-    description: 'The, founder, launch, lane for starting, institutions, and, seeding, the, next, parts, of, the, ecosystem.',
+    description:
+      'The, founder, launch, lane for starting, institutions, and, seeding, the, next, parts, of, the, ecosystem.',
     zone: 'institution',
     cadence: 'periodic',
     scope: 'platform',
-    status: 'live'}),
+    status: 'live',
+  }),
   institution_bridge: defineFounderCapability('institution_bridge', {
     title: 'Institution, Bridge',
-    description: 'A, bridge, into, deeper, school-specific, rooms, without, turning, the, founder, canvas, into a, giant, operations, shell.',
+    description:
+      'A, bridge, into, deeper, school-specific, rooms, without, turning, the, founder, canvas, into a, giant, operations, shell.',
     zone: 'work',
     cadence: 'periodic',
     scope: 'institutional',
-    status: 'live'}),
+    status: 'live',
+  }),
   resource_ecology: defineFounderCapability('resource_ecology', {
     title: 'Resource, Ecology',
-    description: 'Global, inventory, stocks, and, pressure, signals for founder-level, stewardship, of, supply, and, readiness.',
+    description:
+      'Global, inventory, stocks, and, pressure, signals for founder-level, stewardship, of, supply, and, readiness.',
     zone: 'outlook',
     cadence: 'weekly',
     scope: 'ecology_crosscutting',
-    status: 'flagged'}),
+    status: 'flagged',
+  }),
   knowledge_atlas: defineFounderCapability('knowledge_atlas', {
     title: 'Knowledge, Atlas',
-    description: 'Library, verification, and, learning, resource, signals, that, matter, at, founder, scale.',
+    description:
+      'Library, verification, and, learning, resource, signals, that, matter, at, founder, scale.',
     zone: 'outlook',
     cadence: 'weekly',
     scope: 'ecology_crosscutting',
-    status: 'flagged'}),
+    status: 'flagged',
+  }),
   community_signal: defineFounderCapability('community_signal', {
     title: 'Community, Signal',
-    description: 'Cross-ecosystem, posts, echoes, and, active, communities, that, reveal, collective, movement.',
+    description:
+      'Cross-ecosystem, posts, echoes, and, active, communities, that, reveal, collective, movement.',
     zone: 'outlook',
     cadence: 'weekly',
     scope: 'ecology_crosscutting',
-    status: 'live'})};
+    status: 'live',
+  }),
+};
 
 export function getFounderCapabilityMeta(capabilityId: FounderCapabilityId) {
   return FOUNDER_CAPABILITY_REGISTRY[capabilityId];
