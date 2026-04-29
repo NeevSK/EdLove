@@ -16,5 +16,5 @@ keywords = ["sbp"]
 [[rules]]
 description = "Generic Secret"
 id = "generic-secret"
-regex = '''(?i)secret|password|passwd|api_key|apikey|auth_token|credentials'''
-# Simple generic rule to catch common patterns
+regex = '''(?i)(secret|password|passwd|api[_-]?key|auth[_-]?token|credentials)\s*[:=]\s*['"][^'"]+['"]'''
+# Generic rule targeting likely hardcoded secret assignments
