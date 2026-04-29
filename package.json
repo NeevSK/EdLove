@@ -42,7 +42,7 @@
     "change": "pnpm exec changeset",
     "change:smart": "node scripts/smart-changeset.mjs",
     "version:all": "pnpm exec changeset version && pnpm install",
-    "mcp:supabase:debug": "node scripts/mcp-proxy.mjs pnpm exec mcp-server-supabase",
+    "mcp:supabase:debug": "node --no-warnings scripts/mcp-proxy.mjs pnpm --silent exec mcp-server-supabase --project-ref ${env.SUPABASE_PROJECT_REF}",
     "preinstall": "node -e \"if(process.env.npm_config_user_agent && !/pnpm/.test(process.env.npm_config_user_agent)) { console.error('\\u001b[31mFATAL: This project requires pnpm. Use \\'pnpm install\\' to continue.\\u001b[0m'); process.exit(1); }\""
   },
   "devDependencies": {

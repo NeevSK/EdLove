@@ -53,7 +53,10 @@ const finalArgs = args.map((arg) => {
 const child = spawn(command, finalArgs, {
   stdio: 'inherit',
   shell: true,
-  env: process.env,
+  env: {
+    ...process.env,
+    NODE_NO_WARNINGS: '1',
+  },
 });
 
 // 5. Lifecycle Management
