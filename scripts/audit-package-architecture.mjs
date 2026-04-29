@@ -553,7 +553,10 @@ const finalMarkdown = mdSections.join('\n');
 // Write Report
 const reportDir = path.join(ROOT_DIR, 'reports');
 if (!fs.existsSync(reportDir)) fs.mkdirSync(reportDir);
-const cleanPkgName = String(pkgName || 'unknown').replace('@repo/', '').replace('@app/', '').replace(/[^\w-]/g, '_');
+const cleanPkgName = String(pkgName || 'unknown')
+  .replace('@repo/', '')
+  .replace('@app/', '')
+  .replace(/[^\w-]/g, '_');
 const reportFileName = `audit-${cleanPkgName}-architecture.md`;
 const reportPath = path.join(reportDir, reportFileName);
 fs.writeFileSync(reportPath, finalMarkdown, 'utf-8');

@@ -8,16 +8,16 @@ export const Text = React.forwardRef<
   RNText,
   TextProps & { className?: string; size?: string; sx?: StyleProp<TextStyle> }
 >(({ className, size, sx, style, ...props }, ref) => {
-    const Component = RNText as any;
-    return (
-      <Component
-        {...props}
-        ref={ref}
-        className={`text-phase-text-primary ${size ? `text-${size}` : 'text-base'} ${className || ''}`}
-        style={[sx, style]}
-      />
-    );
-  });
+  const Component = RNText as any;
+  return (
+    <Component
+      {...props}
+      ref={ref}
+      className={`text-phase-text-primary ${size ? `text-${size}` : 'text-base'} ${className || ''}`}
+      style={[sx, style]}
+    />
+  );
+});
 Text.displayName = 'Text';
 
 export const Heading = React.forwardRef<

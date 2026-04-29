@@ -1,7 +1,5 @@
 import { formatDistanceToNow } from 'date-fns';
 import React from 'react';
-import { LivingGlow } from './LivingGlow';
-import { SanctuaryCard } from './SanctuaryCard';
 import { useTheme } from '../hooks/useTheme';
 import {
   AlertTriangle,
@@ -20,7 +18,6 @@ import {
   Video,
   X as XIcon,
 } from '../icons';
-import { Theme } from '../theme/Theme';
 import {
   Avatar,
   AvatarFallbackText,
@@ -33,7 +30,10 @@ import {
   Text,
   VStack,
 } from '../primitives';
+import { Theme } from '../theme/Theme';
+import { LivingGlow } from './LivingGlow';
 import { type PollData, PollWidget } from './PollWidget';
+import { SanctuaryCard } from './SanctuaryCard';
 
 export interface Author {
   id: string;

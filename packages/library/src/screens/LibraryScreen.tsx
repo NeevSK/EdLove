@@ -13,8 +13,8 @@ import {
   useTracking,
 } from '@repo/core';
 import {
-  AssetCreationModal,
   AnimatedView,
+  AssetCreationModal,
   Box,
   CollectionCard,
   CollectionCreationModal,

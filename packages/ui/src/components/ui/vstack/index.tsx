@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, type StyleProp, type ViewProps, type ViewStyle } from 'react-native';
+import { type StyleProp, View, type ViewProps, type ViewStyle } from 'react-native';
 
 export interface IVStackProps extends ViewProps {
   className?: string;

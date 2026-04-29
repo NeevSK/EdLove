@@ -1,11 +1,11 @@
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import React, { useCallback, useState } from 'react';
+import { identityAPI } from '../../native/identity';
 import { useStore, useTemporalStore } from '../../store';
 import { APIError } from '../../types/API';
-import { type Post } from '../../types/Community';
+import type { Post } from '../../types/Community';
 import { communityAPI } from '../community';
 import { growthSignalsAPI } from '../growthSignals';
-import { identityAPI } from '../../native/identity';
 
 /**
  * Community Query Key Factory

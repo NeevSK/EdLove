@@ -1,15 +1,10 @@
-import { BlurView } from 'expo-blur';
 import { useNavigation } from '@react-navigation/native';
+import { FeatureGuard, usePermissions, useStore } from '@repo/core';
 import {
   CaptureEngine,
   getAvailablePerspectives as getEnginePerspectives,
   KnowledgeParser,
 } from '@repo/graphics';
-import {
-  FeatureGuard,
-  usePermissions,
-  useStore,
-} from '@repo/core';
 import {
   AstroView,
   Box,
@@ -32,8 +27,9 @@ import {
   VatyaView,
   VStack,
 } from '@repo/ui';
-import { cssInterop } from 'nativewind';
+import { BlurView } from 'expo-blur';
 import { BarChart3, FileCheck, Globe, Network, Orbit, Route, Wind, X } from 'lucide-react-native';
+import { cssInterop } from 'nativewind';
 import React, { useEffect, useMemo, useState } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Animated, {
@@ -260,7 +256,7 @@ export default function MapScreen() {
 
       <Box className="p-3 bg-phase-surface">
         <Box className="rounded-[20px] overflow-hidden border border-phase-border">
-          {/* @ts-ignore - className resolved via cssInterop */}
+          {/* @ts-expect-error - className resolved via cssInterop */}
           <BlurView intensity={30} tint="dark" className="flex-row bg-phase-surface/80">
             <ScrollView
               horizontal
@@ -309,7 +305,7 @@ export default function MapScreen() {
 
           {selectedNode && (
             <Box className="absolute bottom-10 left-5 right-5 rounded-[32px] overflow-hidden border border-white/10 shadow-2xl">
-              {/* @ts-ignore - className resolved via cssInterop */}
+              {/* @ts-expect-error - className resolved via cssInterop */}
               <BlurView intensity={25} tint="dark" className="p-5 bg-black/40">
                 <VStack className="gap-3">
                   <HStack className="justify-between items-center">

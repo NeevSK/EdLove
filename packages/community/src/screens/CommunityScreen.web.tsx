@@ -1,14 +1,13 @@
 import { useNavigation } from '@react-navigation/native';
+import { usePermissions } from '@repo/core';
 import { setPendingGateAction } from '@repo/core/logic';
-import { usePermissions } from '@repo/core';;
+
 import { communityAPI } from '@repo/core/api';
+import { useManifestoHooks, useNotificationHooks } from '@repo/core/api/hooks';
 import { usePendingGateAction } from '@repo/core/hooks';
 import { useStore } from '@repo/core/logic';
-
 import { Box, Heading, Icon, PositiveInvitation, Spinner, Text, VStack } from '@repo/ui';
 import { WebScreenHeader } from '@repo/ui/components';
-
-import { useManifestoHooks, useNotificationHooks } from '@repo/core/api/hooks';
 import { Bell, Compass, Info, Plus, Shield, Users2 } from '@repo/ui/icons';
 import React, { useEffect, useMemo, useState } from 'react';
 import { CommentSheet } from '../components/CommentSheet';

@@ -27,8 +27,7 @@
     "@supabase/supabase-js": "2.102.1",
     "@intuitui-labs/lk-edu-geo": "workspace:*",
     "@repo/core": "workspace:*",
-    "@repo/ui": "workspace:*",
-    "srilankan-postalcode-backend": "^1.0.0"
+    "@repo/ui": "workspace:*"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:^",

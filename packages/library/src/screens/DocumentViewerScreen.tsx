@@ -35,11 +35,12 @@ export function DocumentViewerScreen() {
 
   const [aiSummaryReady, setAiSummaryReady] = useState(false);
 
-  const { downloadState, progress, errorMsg, startDownload, openInNativeViewer } = useMediaDownloader({
-    url,
-    resourceId: route.params.resourceId,
-    mimeType: resolveDocumentMimeType(format),
-  });
+  const { downloadState, progress, errorMsg, startDownload, openInNativeViewer } =
+    useMediaDownloader({
+      url,
+      resourceId: route.params.resourceId,
+      mimeType: resolveDocumentMimeType(format),
+    });
 
   const handleBack = useCallback(() => {
     navigation.goBack();

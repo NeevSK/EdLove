@@ -11,17 +11,12 @@ export interface UseCommunityGroupsOptions {
 
 export function useCommunityGroups(options: UseCommunityGroupsOptions = {}) {
   const { searchQuery, isPublicOnly, schoolId } = options;
-  const {
-    groups,
-    loading,
-    fetchGroups,
-    fetchNextGroups,
-    hasNextGroups,
-    isFetchingNextGroups,
-  } = useCommunity(undefined, { searchQuery, isPublicOnly });
+  const { groups, loading, fetchGroups, fetchNextGroups, hasNextGroups, isFetchingNextGroups } =
+    useCommunity(undefined, { searchQuery, isPublicOnly });
 
   const classroomGroups = useMemo(
-    () => (groups || []).filter((group: any) => group.type === 'class' || group.type === 'classroom'),
+    () =>
+      (groups || []).filter((group: any) => group.type === 'class' || group.type === 'classroom'),
     [groups],
   );
   const clubGroups = useMemo(
@@ -29,7 +24,8 @@ export function useCommunityGroups(options: UseCommunityGroupsOptions = {}) {
     [groups],
   );
   const interestGroups = useMemo(
-    () => (groups || []).filter((group: any) => group.type === 'interest' || group.type === 'grade'),
+    () =>
+      (groups || []).filter((group: any) => group.type === 'interest' || group.type === 'grade'),
     [groups],
   );
   const sanctuaryGroups = useMemo(

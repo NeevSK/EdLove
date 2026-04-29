@@ -1,6 +1,7 @@
-import { Pressable } from '@repo/ui/primitives';
+import { Box, Heading, HStack, Text, Theme, VStack } from '@repo/ui';
 import { SanctuaryCard } from '@repo/ui/components';
-import { Box, Heading, HStack, Text, Theme, VStack } from '@repo/ui';;
+import { Pressable } from '@repo/ui/primitives';
+
 import { LivingGlow } from '@repo/ui/components';
 
 import { Heart, ShieldCheck, Star, Target } from '@repo/ui/icons';

@@ -1,5 +1,6 @@
 import { usePermissions } from '@repo/core/logic';
-import { ContentComposer } from '@repo/ui/components';;
+import { ContentComposer } from '@repo/ui/components';
+
 import React from 'react';
 import { useComposerLogic } from '../hooks/useComposerLogic';
 

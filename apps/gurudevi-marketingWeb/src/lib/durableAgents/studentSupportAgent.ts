@@ -1,16 +1,13 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
-import {
-  synthesizeDurableAgentDraft,
-  type DurableAgentSynthesisMode,
-} from "./llmProvider";
+import type { SupabaseClient } from '@supabase/supabase-js';
+import { type DurableAgentSynthesisMode, synthesizeDurableAgentDraft } from './llmProvider';
 
-export type StudentSupportEvidenceScope = "attendance" | "grades" | "wellbeing";
+export type StudentSupportEvidenceScope = 'attendance' | 'grades' | 'wellbeing';
 
-export type StudentSupportRunMode = "demo" | "live";
+export type StudentSupportRunMode = 'demo' | 'live';
 export type StudentSupportDemoScenario =
-  | "quiet-struggle"
-  | "resilient-improver"
-  | "wellbeing-watch";
+  | 'quiet-struggle'
+  | 'resilient-improver'
+  | 'wellbeing-watch';
 
 export type StudentSupportContext = {
   runId: string;
@@ -75,11 +72,11 @@ export const studentSupportDemoScenarios: Record<
     wellbeing?: StudentWellbeingEvidence;
   }
 > = {
-  "quiet-struggle": {
-    title: "Quiet Struggle",
+  'quiet-struggle': {
+    title: 'Quiet Struggle',
     focusPrompt:
-      "Draft a careful teacher-facing snapshot for a student who may need extra support without sounding alarmist.",
-    evidenceScopes: ["attendance", "grades", "wellbeing"],
+      'Draft a careful teacher-facing snapshot for a student who may need extra support without sounding alarmist.',
+    evidenceScopes: ['attendance', 'grades', 'wellbeing'],
     attendance: {
       windowDays: 21,
       totalRecords: 21,
@@ -100,11 +97,11 @@ export const studentSupportDemoScenarios: Record<
       averageMoodScore: 2.7,
     },
   },
-  "resilient-improver": {
-    title: "Resilient Improver",
+  'resilient-improver': {
+    title: 'Resilient Improver',
     focusPrompt:
-      "Draft a teacher-facing snapshot that recognizes steady student improvement and suggests one supportive next move.",
-    evidenceScopes: ["attendance", "grades"],
+      'Draft a teacher-facing snapshot that recognizes steady student improvement and suggests one supportive next move.',
+    evidenceScopes: ['attendance', 'grades'],
     attendance: {
       windowDays: 21,
       totalRecords: 21,
@@ -120,11 +117,11 @@ export const studentSupportDemoScenarios: Record<
       latestMarks: [69, 75, 81],
     },
   },
-  "wellbeing-watch": {
-    title: "Wellbeing Watch",
+  'wellbeing-watch': {
+    title: 'Wellbeing Watch',
     focusPrompt:
-      "Draft a teacher-facing note that stays evidence-bound and invites a gentle check-in for this student.",
-    evidenceScopes: ["attendance", "wellbeing"],
+      'Draft a teacher-facing note that stays evidence-bound and invites a gentle check-in for this student.',
+    evidenceScopes: ['attendance', 'wellbeing'],
     attendance: {
       windowDays: 21,
       totalRecords: 21,
@@ -141,14 +138,12 @@ export const studentSupportDemoScenarios: Record<
   },
 };
 
-export function getStudentSupportDemoScenario(
-  scenario?: StudentSupportDemoScenario,
-) {
-  return studentSupportDemoScenarios[scenario ?? "quiet-struggle"];
+export function getStudentSupportDemoScenario(scenario?: StudentSupportDemoScenario) {
+  return studentSupportDemoScenarios[scenario ?? 'quiet-struggle'];
 }
 
 function asPercent(value: number | null) {
-  if (value === null || Number.isNaN(value)) return "unknown";
+  if (value === null || Number.isNaN(value)) return 'unknown';
   return `${Math.round(value)}%`;
 }
 
@@ -157,21 +152,15 @@ export async function loadStudentSupportContext(
   classroomId: string,
   studentId: string,
 ): Promise<StudentSupportStudentContext> {
-  const [
-    { data: classroom, error: classroomError },
-    { data: student, error: studentError },
-  ] = await Promise.all([
-    supabase
-      .from("classrooms")
-      .select("id, name, school_id, teacher_id")
-      .eq("id", classroomId)
-      .maybeSingle(),
-    supabase
-      .from("users")
-      .select("id, full_name")
-      .eq("id", studentId)
-      .maybeSingle(),
-  ]);
+  const [{ data: classroom, error: classroomError }, { data: student, error: studentError }] =
+    await Promise.all([
+      supabase
+        .from('classrooms')
+        .select('id, name, school_id, teacher_id')
+        .eq('id', classroomId)
+        .maybeSingle(),
+      supabase.from('users').select('id, full_name').eq('id', studentId).maybeSingle(),
+    ]);
 
   if (classroomError) throw classroomError;
   if (studentError) throw studentError;
@@ -181,7 +170,7 @@ export async function loadStudentSupportContext(
 
   return {
     studentId,
-    studentName: student?.full_name ?? "Student",
+    studentName: student?.full_name ?? 'Student',
     classroomId,
     classroomName: classroom.name,
     schoolId: classroom.school_id ?? null,
@@ -195,16 +184,14 @@ export async function loadStudentAttendanceEvidence(
   studentId: string,
   windowDays = 21,
 ): Promise<StudentAttendanceEvidence> {
-  const since = new Date(
-    Date.now() - windowDays * 24 * 60 * 60 * 1000,
-  ).toISOString();
+  const since = new Date(Date.now() - windowDays * 24 * 60 * 60 * 1000).toISOString();
 
   const { data, error } = await supabase
-    .from("attendance")
-    .select("status, created_at")
-    .eq("classroom_id", classroomId)
-    .eq("student_id", studentId)
-    .gte("created_at", since);
+    .from('attendance')
+    .select('status, created_at')
+    .eq('classroom_id', classroomId)
+    .eq('student_id', studentId)
+    .gte('created_at', since);
 
   if (error) throw error;
 
@@ -213,15 +200,14 @@ export async function loadStudentAttendanceEvidence(
   let lateCount = 0;
 
   for (const row of data ?? []) {
-    const status = String(row.status ?? "").toLowerCase();
-    if (status === "present") presentCount++;
-    else if (status === "absent") absentCount++;
-    else if (status === "late") lateCount++;
+    const status = String(row.status ?? '').toLowerCase();
+    if (status === 'present') presentCount++;
+    else if (status === 'absent') absentCount++;
+    else if (status === 'late') lateCount++;
   }
 
   const totalRecords = (data ?? []).length;
-  const attendanceRate =
-    totalRecords > 0 ? (presentCount / totalRecords) * 100 : null;
+  const attendanceRate = totalRecords > 0 ? (presentCount / totalRecords) * 100 : null;
 
   return {
     windowDays,
@@ -239,17 +225,15 @@ export async function loadStudentGradesEvidence(
   studentId: string,
   windowDays = 45,
 ): Promise<StudentGradesEvidence> {
-  const since = new Date(
-    Date.now() - windowDays * 24 * 60 * 60 * 1000,
-  ).toISOString();
+  const since = new Date(Date.now() - windowDays * 24 * 60 * 60 * 1000).toISOString();
 
   const { data, error } = await supabase
-    .from("grades")
-    .select("marks, created_at")
-    .eq("classroom_id", classroomId)
-    .eq("student_id", studentId)
-    .gte("created_at", since)
-    .order("created_at", { ascending: false });
+    .from('grades')
+    .select('marks, created_at')
+    .eq('classroom_id', classroomId)
+    .eq('student_id', studentId)
+    .gte('created_at', since)
+    .order('created_at', { ascending: false });
 
   if (error) throw error;
 
@@ -261,9 +245,7 @@ export async function loadStudentGradesEvidence(
     windowDays,
     totalGrades: (data ?? []).length,
     averageMarks:
-      marks.length > 0
-        ? marks.reduce((sum, value) => sum + value, 0) / marks.length
-        : null,
+      marks.length > 0 ? marks.reduce((sum, value) => sum + value, 0) / marks.length : null,
     latestMarks: marks.slice(0, 3),
   };
 }
@@ -273,15 +255,13 @@ export async function loadStudentWellbeingEvidence(
   studentId: string,
   windowDays = 14,
 ): Promise<StudentWellbeingEvidence> {
-  const since = new Date(
-    Date.now() - windowDays * 24 * 60 * 60 * 1000,
-  ).toISOString();
+  const since = new Date(Date.now() - windowDays * 24 * 60 * 60 * 1000).toISOString();
 
   const { data, error } = await supabase
-    .from("mood_logs")
-    .select("mood_score, occurred_at")
-    .eq("user_id", studentId)
-    .gte("occurred_at", since);
+    .from('mood_logs')
+    .select('mood_score, occurred_at')
+    .eq('user_id', studentId)
+    .gte('occurred_at', since);
 
   if (error) throw error;
 
@@ -293,9 +273,7 @@ export async function loadStudentWellbeingEvidence(
     windowDays,
     moodCheckins: (data ?? []).length,
     averageMoodScore:
-      scores.length > 0
-        ? scores.reduce((sum, value) => sum + value, 0) / scores.length
-        : null,
+      scores.length > 0 ? scores.reduce((sum, value) => sum + value, 0) / scores.length : null,
   };
 }
 
@@ -307,21 +285,15 @@ export function buildDemoStudentSupportEvidence(
   return {
     student: {
       studentId: context.studentId,
-      studentName: context.studentName ?? "Nethmi Perera",
+      studentName: context.studentName ?? 'Nethmi Perera',
       classroomId: context.classroomId,
-      classroomName: "Grade 7 Lotus",
+      classroomName: 'Grade 7 Lotus',
       schoolId: context.schoolId,
-      teacherId: context.teacherId ?? "33333333-3333-3333-3333-333333333333",
+      teacherId: context.teacherId ?? '33333333-3333-3333-3333-333333333333',
     },
-    attendance: context.evidenceScopes.includes("attendance")
-      ? scenario.attendance
-      : undefined,
-    grades: context.evidenceScopes.includes("grades")
-      ? scenario.grades
-      : undefined,
-    wellbeing: context.evidenceScopes.includes("wellbeing")
-      ? scenario.wellbeing
-      : undefined,
+    attendance: context.evidenceScopes.includes('attendance') ? scenario.attendance : undefined,
+    grades: context.evidenceScopes.includes('grades') ? scenario.grades : undefined,
+    wellbeing: context.evidenceScopes.includes('wellbeing') ? scenario.wellbeing : undefined,
   };
 }
 
@@ -348,13 +320,11 @@ export function buildDeterministicStudentSupportDraft(
   if (evidence.grades) {
     lines.push(
       `Recent grade evidence includes ${evidence.grades.totalGrades} scores with an average marks level of ${
-        evidence.grades.averageMarks === null
-          ? "unknown"
-          : evidence.grades.averageMarks.toFixed(1)
+        evidence.grades.averageMarks === null ? 'unknown' : evidence.grades.averageMarks.toFixed(1)
       }. The latest marks trend is ${
         evidence.grades.latestMarks.length > 0
-          ? evidence.grades.latestMarks.join(", ")
-          : "not available"
+          ? evidence.grades.latestMarks.join(', ')
+          : 'not available'
       }.`,
     );
   }
@@ -363,18 +333,18 @@ export function buildDeterministicStudentSupportDraft(
     lines.push(
       `Wellbeing signals show ${evidence.wellbeing.moodCheckins} mood check-ins with an average score of ${
         evidence.wellbeing.averageMoodScore === null
-          ? "unknown"
+          ? 'unknown'
           : evidence.wellbeing.averageMoodScore.toFixed(1)
       }/5.`,
     );
   }
 
   lines.push(
-    "Suggested next move: do one quiet teacher check-in, confirm whether the current pattern is temporary or persistent, and decide if a gentle classroom support adjustment would help.",
+    'Suggested next move: do one quiet teacher check-in, confirm whether the current pattern is temporary or persistent, and decide if a gentle classroom support adjustment would help.',
   );
-  lines.push("This is a draft for human review, not an automated judgment.");
+  lines.push('This is a draft for human review, not an automated judgment.');
 
-  return lines.join("\n\n");
+  return lines.join('\n\n');
 }
 
 export async function synthesizeStudentSupportDraft(
@@ -386,19 +356,16 @@ export async function synthesizeStudentSupportDraft(
 }> {
   return synthesizeDurableAgentDraft({
     systemPrompt:
-      "You are drafting a teacher-facing student support snapshot for internal review. Be warm, specific, non-diagnostic, and evidence-bound. Never overclaim. Keep it under 200 words and end with one careful next move.",
+      'You are drafting a teacher-facing student support snapshot for internal review. Be warm, specific, non-diagnostic, and evidence-bound. Never overclaim. Keep it under 200 words and end with one careful next move.',
     userPayload: {
       focusPrompt: focusPrompt ?? null,
       evidence,
       output_shape: {
-        style: "two short paragraphs",
-        end_with: "one suggested next move",
-        note: "state clearly that this is a draft for human review",
+        style: 'two short paragraphs',
+        end_with: 'one suggested next move',
+        note: 'state clearly that this is a draft for human review',
       },
     },
-    deterministicFallback: buildDeterministicStudentSupportDraft(
-      evidence,
-      focusPrompt,
-    ),
+    deterministicFallback: buildDeterministicStudentSupportDraft(evidence, focusPrompt),
   });
 }

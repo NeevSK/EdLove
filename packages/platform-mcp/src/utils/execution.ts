@@ -135,10 +135,7 @@ export function runPowerShellScript(
 ): CommandRunResult {
   const availability = getPowerShellAvailability();
   if (!availability.available || !availability.binary) {
-    const message = [
-      `PowerShell script unavailable: ${scriptPath}`,
-      availability.guidance,
-    ]
+    const message = [`PowerShell script unavailable: ${scriptPath}`, availability.guidance]
       .filter(Boolean)
       .join('\n');
 

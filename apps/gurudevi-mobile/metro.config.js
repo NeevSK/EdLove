@@ -8,9 +8,7 @@ const workspaceRoot = path.resolve(projectRoot, '../..');
 
 function resolvePnpmPackageRuntime(packageName, runtimeFile) {
   const pnpmRoot = path.resolve(workspaceRoot, 'node_modules/.pnpm');
-  const pkgDir = fs
-    .readdirSync(pnpmRoot)
-    .find((entry) => entry.startsWith(`${packageName}@`));
+  const pkgDir = fs.readdirSync(pnpmRoot).find((entry) => entry.startsWith(`${packageName}@`));
 
   if (!pkgDir) {
     throw new Error(`Unable to locate ${packageName} in pnpm store at ${pnpmRoot}`);
@@ -59,7 +57,7 @@ config.resolver.blockList = [
   // Ignore transient Vite prebundle cache folders in sibling apps. These can be
   // missing at startup and crash Metro's fallback watcher on Windows.
   /apps\/.*\/node_modules\/\.vite\/.*/,
-  /apps\\.*\\node_modules\\\.vite\\.*/
+  /apps\\.*\\node_modules\\\.vite\\.*/,
 ];
 
 const SINGLETON_OVERRIDES = {

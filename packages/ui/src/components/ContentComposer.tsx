@@ -1,6 +1,5 @@
 import React from 'react';
 import { Platform } from 'react-native';
-import SanctuaryModal from './SanctuaryModal';
 import { BarChart3, Clock, Image as ImageIcon, Lock, Mic, Plus, Trash2, Users, X } from '../icons';
 import {
   AnimatedView,
@@ -21,6 +20,7 @@ import {
   TextareaInput,
   VStack,
 } from '../primitives';
+import SanctuaryModal from './SanctuaryModal';
 
 export interface Tag {
   id: string;

@@ -138,9 +138,13 @@ export class AuditService {
   handleBiomeCheck(args: { target?: string; write?: boolean }) {
     const target = normalizeTarget(args.target || '.');
     console.error(`Biome check for: ${target}`);
-    const result = runCommand('npx', ['biome', 'check', ...(args.write ? ['--write'] : []), target], {
-      shell: process.platform === 'win32',
-    });
+    const result = runCommand(
+      'npx',
+      ['biome', 'check', ...(args.write ? ['--write'] : []), target],
+      {
+        shell: process.platform === 'win32',
+      },
+    );
     return toText(result.combined, !result.ok);
   }
 
@@ -156,9 +160,16 @@ export class AuditService {
     const targetDir = fs.statSync(target).isDirectory() ? target : path.dirname(target);
     console.error(`Auditing package architecture for: ${targetDir}`);
 
-    const result = runCommand('node', ['scripts/audit-package-architecture.mjs', targetDir, '--json']);
+    const result = runCommand('node', [
+      'scripts/audit-package-architecture.mjs',
+      targetDir,
+      '--json',
+    ]);
     if (!result.ok) {
-      return toText(summarizeCommandFailure(`Architecture audit for ${targetDir}`, result.combined), true);
+      return toText(
+        summarizeCommandFailure(`Architecture audit for ${targetDir}`, result.combined),
+        true,
+      );
     }
 
     const jsonSection = extractTaggedSection(result.stdout, 'JSON');
@@ -298,7 +309,7 @@ export class AuditService {
   handleCheckTypes(args: { package?: string }) {
     const rawTarget = String(args?.package || '');
     const cleanTarget = rawTarget
-      .replace(/^(@repo\/|@app\/|packages\/|apps\/|[\/\\]|\.\/|\.\\)/, '')
+      .replace(/^(@repo\/|@app\/|packages\/|apps\/|[/\\]|\.\/|\.\\)/, '')
       .replace(/[\\/]$/, '')
       .replace(/[\\/]/g, '-');
 
@@ -348,7 +359,11 @@ export class AuditService {
 
     const reportFound = report && report !== 'Report not found.';
     return toText(
-      [reportFound ? 'Type audit report across monorepo:' : 'Global type audit failed.', result.combined, report]
+      [
+        reportFound ? 'Type audit report across monorepo:' : 'Global type audit failed.',
+        result.combined,
+        report,
+      ]
         .filter(Boolean)
         .join('\n\n'),
       !reportFound || !result.ok,

@@ -1,15 +1,6 @@
-import {
-  Box,
-  FlatList,
-  Heading,
-  HStack,
-  Icon,
-  Pressable,
-  Text,
-  VStack,
-} from '@repo/ui/primitives';
 import { GlassCard } from '@repo/ui/components';
 import { Heart, Megaphone, Sparkles, Users } from '@repo/ui/icons';
+import { Box, FlatList, Heading, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, useWindowDimensions } from 'react-native';

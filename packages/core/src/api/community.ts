@@ -635,7 +635,8 @@ export const communityAPI = {
     if (error) throw error;
 
     supabase.rpc('increment_comment_count', { p_post_id: postId }).then(({ error: rpcError }) => {
-      if (rpcError) console.warn('[communityAPI] increment_comment_count failed:', rpcError.message);
+      if (rpcError)
+        console.warn('[communityAPI] increment_comment_count failed:', rpcError.message);
     });
 
     return data;

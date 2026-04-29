@@ -1,9 +1,10 @@
 import { usePollLogic, usePostLogic, useSocialShieldHooks } from '@repo/core/api/hooks';
 import { usePermissions } from '@repo/core/logic';
 import type { CommunityPost } from '@repo/core/types';
-import { hapticError, hapticSuccess } from '@repo/ui/primitives';
+import { confirmAction, shareAction, useLotusToast } from '@repo/ui';
 import { PostCard as UIPostCard } from '@repo/ui/components';
-import { confirmAction, shareAction, useLotusToast } from '@repo/ui';;
+import { hapticError, hapticSuccess } from '@repo/ui/primitives';
+
 import React from 'react';
 import { communityAPI } from '../api/community';
 

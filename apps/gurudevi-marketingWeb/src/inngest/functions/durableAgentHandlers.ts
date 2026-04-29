@@ -2,7 +2,7 @@ import {
   teacherSummaryRequestedEvent,
   teacherSummaryRequestedPayloadSchema,
   v7 as uuidv7,
-} from "@repo/core";
+} from '@repo/core';
 import {
   buildDemoEvidence,
   type EvidenceScope,
@@ -13,41 +13,29 @@ import {
   loadWellbeingEvidence,
   synthesizeTeacherSummaryDraft,
   type TeacherSummaryEvidence,
-} from "../../lib/durableAgents/teacherSummaryAgent";
-import { inngest } from "../../lib/inngest";
-import { supabaseAdmin } from "../../lib/supabase";
-import { insertWorkerAuditLog } from "../lib/workerObservability";
+} from '../../lib/durableAgents/teacherSummaryAgent';
+import { inngest } from '../../lib/inngest';
+import { supabaseAdmin } from '../../lib/supabase';
+import { insertWorkerAuditLog } from '../lib/workerObservability';
 
 async function loadLiveEvidence(
   classroomId: string,
   scopes: EvidenceScope[],
 ): Promise<TeacherSummaryEvidence> {
-  const classroom = await loadClassroomSummaryContext(
-    supabaseAdmin,
-    classroomId,
-  );
+  const classroom = await loadClassroomSummaryContext(supabaseAdmin, classroomId);
   const evidence: TeacherSummaryEvidence = { classroom };
 
-  if (scopes.includes("attendance")) {
-    evidence.attendance = await loadAttendanceEvidence(
-      supabaseAdmin,
-      classroomId,
-    );
+  if (scopes.includes('attendance')) {
+    evidence.attendance = await loadAttendanceEvidence(supabaseAdmin, classroomId);
   }
-  if (scopes.includes("grades")) {
+  if (scopes.includes('grades')) {
     evidence.grades = await loadGradesEvidence(supabaseAdmin, classroomId);
   }
-  if (scopes.includes("wellbeing")) {
-    evidence.wellbeing = await loadWellbeingEvidence(
-      supabaseAdmin,
-      classroomId,
-    );
+  if (scopes.includes('wellbeing')) {
+    evidence.wellbeing = await loadWellbeingEvidence(supabaseAdmin, classroomId);
   }
-  if (scopes.includes("assignments")) {
-    evidence.assignments = await loadAssignmentsEvidence(
-      supabaseAdmin,
-      classroomId,
-    );
+  if (scopes.includes('assignments')) {
+    evidence.assignments = await loadAssignmentsEvidence(supabaseAdmin, classroomId);
   }
 
   return evidence;
@@ -55,8 +43,8 @@ async function loadLiveEvidence(
 
 export const teacherSummaryRequested = inngest.createFunction(
   {
-    id: "teacher-summary-requested",
-    name: "Teacher Summary Requested",
+    id: 'teacher-summary-requested',
+    name: 'Teacher Summary Requested',
     triggers: [teacherSummaryRequestedEvent],
   },
   async ({ event, step }) => {
@@ -64,19 +52,19 @@ export const teacherSummaryRequested = inngest.createFunction(
     const correlationId = request.correlationId ?? request.runId;
     const causationId = request.causationId ?? request.runId;
 
-    await step.run("log-agent-run-started", async () => {
+    await step.run('log-agent-run-started', async () => {
       await insertWorkerAuditLog({
         supabase: supabaseAdmin,
         id: uuidv7(),
-        action: "durable_agent_started",
+        action: 'durable_agent_started',
         entityId: request.runId,
-        entityType: "durable_agent_run",
+        entityType: 'durable_agent_run',
         schoolId: request.schoolId,
         idempotencyKey: `durable-agent:${request.runId}:started`,
         correlationId,
         causationId,
         metadata: {
-          runType: "teacher_summary_draft",
+          runType: 'teacher_summary_draft',
           mode: request.mode,
           demoScenario: request.demoScenario ?? null,
           classroomId: request.classroomId,
@@ -88,8 +76,8 @@ export const teacherSummaryRequested = inngest.createFunction(
     });
 
     try {
-      const evidence = await step.run("load-governed-evidence", async () => {
-        if (request.mode === "demo") {
+      const evidence = await step.run('load-governed-evidence', async () => {
+        if (request.mode === 'demo') {
           return buildDemoEvidence({
             runId: request.runId,
             mode: request.mode,
@@ -103,13 +91,10 @@ export const teacherSummaryRequested = inngest.createFunction(
           });
         }
 
-        return loadLiveEvidence(
-          request.classroomId,
-          request.evidenceScopes as EvidenceScope[],
-        );
+        return loadLiveEvidence(request.classroomId, request.evidenceScopes as EvidenceScope[]);
       });
 
-      const synthesis = await step.run("synthesize-summary-draft", async () => {
+      const synthesis = await step.run('synthesize-summary-draft', async () => {
         return synthesizeTeacherSummaryDraft(evidence, request.focusPrompt);
       });
 
@@ -121,19 +106,19 @@ export const teacherSummaryRequested = inngest.createFunction(
         reviewMode: request.reviewMode,
       };
 
-      await step.run("log-agent-run-completed", async () => {
+      await step.run('log-agent-run-completed', async () => {
         await insertWorkerAuditLog({
           supabase: supabaseAdmin,
           id: uuidv7(),
-          action: "durable_agent_completed",
+          action: 'durable_agent_completed',
           entityId: request.runId,
-          entityType: "durable_agent_run",
+          entityType: 'durable_agent_run',
           schoolId: request.schoolId,
           idempotencyKey: `durable-agent:${request.runId}:completed`,
           correlationId,
           causationId,
           metadata: {
-            runType: "teacher_summary_draft",
+            runType: 'teacher_summary_draft',
             mode: request.mode,
             demoScenario: request.demoScenario ?? null,
             classroomId: request.classroomId,
@@ -148,31 +133,28 @@ export const teacherSummaryRequested = inngest.createFunction(
 
       return {
         runId: request.runId,
-        status: "completed",
+        status: 'completed',
         governor,
       };
     } catch (error) {
-      await step.run("log-agent-run-failed", async () => {
+      await step.run('log-agent-run-failed', async () => {
         await insertWorkerAuditLog({
           supabase: supabaseAdmin,
           id: uuidv7(),
-          action: "durable_agent_failed",
+          action: 'durable_agent_failed',
           entityId: request.runId,
-          entityType: "durable_agent_run",
+          entityType: 'durable_agent_run',
           schoolId: request.schoolId,
           idempotencyKey: `durable-agent:${request.runId}:failed`,
           correlationId,
           causationId,
           metadata: {
-            runType: "teacher_summary_draft",
+            runType: 'teacher_summary_draft',
             mode: request.mode,
             demoScenario: request.demoScenario ?? null,
             classroomId: request.classroomId,
             teacherId: request.teacherId ?? null,
-            error:
-              error instanceof Error
-                ? error.message
-                : "Unknown durable-agent failure",
+            error: error instanceof Error ? error.message : 'Unknown durable-agent failure',
           },
         });
       });

@@ -1,9 +1,9 @@
+import { identityAPI } from '@repo/core/api';
 import {
   useCreatePostMutation,
   useGroupsInfiniteQuery,
   usePostsInfiniteQuery,
 } from '@repo/core/api/hooks';
-import { identityAPI } from '@repo/core/api';
 import { useStore, useTemporalStore } from '@repo/core/store';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useMemo } from 'react';

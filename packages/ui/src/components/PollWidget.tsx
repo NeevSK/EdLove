@@ -2,8 +2,8 @@ import React from 'react';
 import { Animated } from 'react-native';
 import { useTheme } from '../hooks/useTheme';
 import { Check, Clock, Lock } from '../icons';
-import { Theme } from '../theme/Theme';
 import { AnimatedView, Box, HStack, Icon, Pressable, Spinner, Text, VStack } from '../primitives';
+import { Theme } from '../theme/Theme';
 
 export interface PollOption {
   id: string;

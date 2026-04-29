@@ -1,3 +1,8 @@
+export {
+  AssetCreationModal as AddResourceModal,
+  CollectionCreationModal as AddCollectionModal,
+  UniversalPerspective,
+} from '@repo/ui';
 export { libraryAPI } from './api';
 export { CollectionPickerModal } from './components/CollectionPickerModal';
 export { ResourceList, type ResourceListProps } from './components/ResourceList';
@@ -29,11 +34,6 @@ export {
   type ResourceVisibility,
 } from './types';
 export { buildLibraryExternalLinkOptions } from './utils/externalLinks';
-export {
-  AssetCreationModal as AddResourceModal,
-  CollectionCreationModal as AddCollectionModal,
-  UniversalPerspective,
-} from '@repo/ui';
 
 export const LIBRARY_UI_CATEGORIES_LOCAL = [
   { id: 'All', en: 'All' },

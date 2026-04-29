@@ -28,7 +28,16 @@ export class ScoutService {
     };
 
     try {
-      const fileScout = runCommand('fd', ['-t', 'f', '-i', '-g', `*${query}*`, '--max-results', '5', target]);
+      const fileScout = runCommand('fd', [
+        '-t',
+        'f',
+        '-i',
+        '-g',
+        `*${query}*`,
+        '--max-results',
+        '5',
+        target,
+      ]);
       const files = fileScout.stdout.trim();
       if (files) {
         const fileList = files
@@ -86,7 +95,12 @@ export class ScoutService {
           language: 'typescript',
         });
 
-        const heatmapResult = runCommand('rg', ['--count-matches', '--fixed-strings', query, target]);
+        const heatmapResult = runCommand('rg', [
+          '--count-matches',
+          '--fixed-strings',
+          query,
+          target,
+        ]);
         const heatmapRaw = heatmapResult.stdout.trim();
 
         if (heatmapRaw) {

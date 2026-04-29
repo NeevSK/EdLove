@@ -2,11 +2,11 @@ import type { PerspectiveViewProps } from '@repo/core';
 import { Layers, Network, Orbit, TrendingUp } from 'lucide-react-native';
 import type React from 'react';
 import { useMemo } from 'react';
-import SanctuaryStatsCard from '../SanctuaryStatsCard';
 import { useResponsive } from '../../hooks/useResponsive';
 import { useTheme } from '../../hooks/useTheme';
-import { Theme } from '../../theme/Theme';
 import { Box, HStack, ScrollView, Text, VStack } from '../../primitives';
+import { Theme } from '../../theme/Theme';
+import SanctuaryStatsCard from '../SanctuaryStatsCard';
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const { BarChart, PieChart } = require('react-native-gifted-charts') as {

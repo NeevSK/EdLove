@@ -2,8 +2,8 @@ import type { PerspectiveViewProps } from '@repo/core';
 import type React from 'react';
 import { useMemo } from 'react';
 import { useThemedColors } from '../../hooks/useThemedColors';
-import { Theme } from '../../theme/Theme';
 import { Box } from '../../primitives';
+import { Theme } from '../../theme/Theme';
 import { UnifiedMapView } from '../maps/UnifiedMapView';
 import { UnifiedMarker } from '../maps/UnifiedMarker';
 

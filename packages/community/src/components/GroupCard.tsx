@@ -1,5 +1,6 @@
+import { Box, HStack, Icon, Text, VStack } from '@repo/ui';
 import { SanctuaryCard } from '@repo/ui/components';
-import { Box, HStack, Icon, Text, VStack } from '@repo/ui';;
+
 import { BookOpen, Globe, GraduationCap, Lock, Users } from '@repo/ui/icons';
 import React from 'react';
 import type { GroupType } from '../types';

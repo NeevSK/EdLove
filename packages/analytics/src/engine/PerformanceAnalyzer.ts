@@ -1,8 +1,8 @@
-import {
-  type ClassAnalytics,
-  type PredictionRequest,
-  type PredictionResult,
-  type StudentPerformanceMetrics,
+import type {
+  ClassAnalytics,
+  PredictionRequest,
+  PredictionResult,
+  StudentPerformanceMetrics,
 } from '../types/AnalyticsTypes';
 import { GPACalculator } from './GPACalculator';
 

@@ -3,7 +3,10 @@ import { Pause, Play, RotateCcw, RotateCw, X } from 'lucide-react-native';
 import type React from 'react';
 import { useCallback, useEffect, useReducer, useRef } from 'react';
 import { Pressable } from 'react-native';
-import { Box, HStack, SanctuaryButton, Text, useTheme, VStack } from '../../index';
+import { Box, HStack, Text, VStack } from '../../gluestack';
+import { useTheme } from '../../hooks/useTheme';
+import { SanctuaryButton } from '../SanctuaryButton';
+
 import { formatTimeMs } from '../../utils/dateTimeUtils';
 
 export interface VideoPlayerProps {

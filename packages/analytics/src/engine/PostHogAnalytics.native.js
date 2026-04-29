@@ -1,114 +1,109 @@
 import PostHog from 'posthog-react-native';
 export class PostHogAnalytics {
-    posthog = null;
-    isInitialized = false;
-    constructor(apiKey, options) {
-        if (apiKey) {
-            this.initialize(apiKey, options);
-        }
+  posthog = null;
+  isInitialized = false;
+  constructor(apiKey, options) {
+    if (apiKey) {
+      this.initialize(apiKey, options);
     }
-    async initialize(apiKey, options) {
-        if (this.isInitialized) {
-            return;
-        }
-        try {
-            this.posthog = new PostHog(apiKey, {
-                host: options?.host || 'https://eu.i.posthog.com',
-                captureAppLifecycleEvents: true,
-                enableSessionReplay: true,
-                sessionReplayConfig: {
-                    maskAllTextInputs: true,
-                },
-            });
-            this.isInitialized = true;
-        }
-        catch (error) {
-            console.error('Failed to initialize PostHog:', error);
-        }
+  }
+  async initialize(apiKey, options) {
+    if (this.isInitialized) {
+      return;
     }
-    track(event, properties) {
-        if (!this.isInitialized || !this.posthog) {
-            console.warn('PostHog not initialized. Event not tracked:', event);
-            return;
-        }
-        try {
-            this.posthog.capture(event, properties);
-        }
-        catch (error) {
-            console.error('Failed to track event:', error);
-        }
+    try {
+      this.posthog = new PostHog(apiKey, {
+        host: options?.host || 'https://eu.i.posthog.com',
+        captureAppLifecycleEvents: true,
+        enableSessionReplay: true,
+        sessionReplayConfig: {
+          maskAllTextInputs: true,
+        },
+      });
+      this.isInitialized = true;
+    } catch (error) {
+      console.error('Failed to initialize PostHog:', error);
     }
-    capture(event, properties) {
-        this.track(event, properties);
+  }
+  track(event, properties) {
+    if (!this.isInitialized || !this.posthog) {
+      console.warn('PostHog not initialized. Event not tracked:', event);
+      return;
     }
-    identify(userId, userProperties) {
-        if (!this.isInitialized || !this.posthog) {
-            console.warn('PostHog not initialized. User not identified:', userId);
-            return;
-        }
-        try {
-            this.posthog.identify(userId);
-            if (userProperties) {
-                this.posthog.register(userProperties);
-            }
-        }
-        catch (error) {
-            console.error('Failed to identify user:', error);
-        }
+    try {
+      this.posthog.capture(event, properties);
+    } catch (error) {
+      console.error('Failed to track event:', error);
     }
-    reset() {
-        if (!this.isInitialized || !this.posthog) {
-            return;
-        }
-        try {
-            this.posthog.reset();
-        }
-        catch (error) {
-            console.error('Failed to reset PostHog:', error);
-        }
+  }
+  capture(event, properties) {
+    this.track(event, properties);
+  }
+  identify(userId, userProperties) {
+    if (!this.isInitialized || !this.posthog) {
+      console.warn('PostHog not initialized. User not identified:', userId);
+      return;
     }
-    screen(screenName, properties) {
-        if (!this.isInitialized || !this.posthog) {
-            console.warn('PostHog not initialized. Screen not tracked:', screenName);
-            return;
-        }
-        try {
-            this.posthog.screen(screenName, properties);
-        }
-        catch (error) {
-            console.error('Failed to track screen:', error);
-        }
+    try {
+      this.posthog.identify(userId);
+      if (userProperties) {
+        this.posthog.register(userProperties);
+      }
+    } catch (error) {
+      console.error('Failed to identify user:', error);
     }
-    // Educational specific tracking methods
-    trackAssignmentView(assignmentId, properties) {
-        this.track('assignment_viewed', {
-            assignment_id: assignmentId,
-            ...properties,
-        });
+  }
+  reset() {
+    if (!this.isInitialized || !this.posthog) {
+      return;
     }
-    trackGradeReceived(assignmentId, grade, properties) {
-        this.track('grade_received', {
-            assignment_id: assignmentId,
-            grade,
-            ...properties,
-        });
+    try {
+      this.posthog.reset();
+    } catch (error) {
+      console.error('Failed to reset PostHog:', error);
     }
-    trackStudySession(subject, duration, properties) {
-        this.track('study_session', {
-            subject,
-            duration,
-            ...properties,
-        });
+  }
+  screen(screenName, properties) {
+    if (!this.isInitialized || !this.posthog) {
+      console.warn('PostHog not initialized. Screen not tracked:', screenName);
+      return;
     }
-    trackQuizAttempt(quizId, score, totalQuestions, properties) {
-        this.track('quiz_attempt', {
-            quiz_id: quizId,
-            score,
-            total_questions: totalQuestions,
-            percentage: Math.round((score / totalQuestions) * 100),
-            ...properties,
-        });
+    try {
+      this.posthog.screen(screenName, properties);
+    } catch (error) {
+      console.error('Failed to track screen:', error);
     }
+  }
+  // Educational specific tracking methods
+  trackAssignmentView(assignmentId, properties) {
+    this.track('assignment_viewed', {
+      assignment_id: assignmentId,
+      ...properties,
+    });
+  }
+  trackGradeReceived(assignmentId, grade, properties) {
+    this.track('grade_received', {
+      assignment_id: assignmentId,
+      grade,
+      ...properties,
+    });
+  }
+  trackStudySession(subject, duration, properties) {
+    this.track('study_session', {
+      subject,
+      duration,
+      ...properties,
+    });
+  }
+  trackQuizAttempt(quizId, score, totalQuestions, properties) {
+    this.track('quiz_attempt', {
+      quiz_id: quizId,
+      score,
+      total_questions: totalQuestions,
+      percentage: Math.round((score / totalQuestions) * 100),
+      ...properties,
+    });
+  }
 }
 // Singleton instance for easy access
 export const posthogAnalytics = new PostHogAnalytics();

@@ -8,10 +8,10 @@ export {
   LIBRARY_UI_CATEGORIES,
   type LibraryCollection,
   type LibraryResource,
-  type ResourceFormat,
-  type ResourceType,
   type ResourceDifficulty,
   type ResourceFilters,
+  type ResourceFormat,
   type ResourceLanguage,
+  type ResourceType,
   type ResourceVisibility,
 } from './Library';

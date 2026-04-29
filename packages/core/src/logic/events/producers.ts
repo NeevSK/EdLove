@@ -1,8 +1,8 @@
-import type { Inngest } from "inngest";
-import type { Classroom, Student, StudentGrade, User } from "../schemas";
-import type { Attendance } from "../schemas/attendance.schema";
+import type { Inngest } from 'inngest';
+import type { Classroom, Student, StudentGrade, User } from '../schemas';
+import type { Attendance } from '../schemas/attendance.schema';
 
-type SendableInngestClient = Pick<Inngest.Any, "send">;
+type SendableInngestClient = Pick<Inngest.Any, 'send'>;
 
 export interface WorkflowCorrelationMetadata {
   correlationId?: string;
@@ -10,14 +10,11 @@ export interface WorkflowCorrelationMetadata {
   tenantId?: string;
 }
 
-export type SchoolAttendanceRecordedPayload = Attendance &
-  WorkflowCorrelationMetadata;
+export type SchoolAttendanceRecordedPayload = Attendance & WorkflowCorrelationMetadata;
 export type UserCreatedPayload = User & WorkflowCorrelationMetadata;
 export type UserUpdatedPayload = User & WorkflowCorrelationMetadata;
-export type SchoolClassroomCreatedPayload = Classroom &
-  WorkflowCorrelationMetadata;
-export type SchoolGradePublishedPayload = StudentGrade &
-  WorkflowCorrelationMetadata;
+export type SchoolClassroomCreatedPayload = Classroom & WorkflowCorrelationMetadata;
+export type SchoolGradePublishedPayload = StudentGrade & WorkflowCorrelationMetadata;
 export type StudentOnboardedPayload = Student & WorkflowCorrelationMetadata;
 
 export interface WellbeingMoodLoggedPayload {
@@ -45,16 +42,16 @@ export interface SyncMutationQueuedPayload {
 
 export interface TeacherSummaryRequestedPayload {
   runId: string;
-  mode?: "demo" | "live";
-  demoScenario?: "attendance-dip" | "steady-growth" | "wellbeing-watch";
+  mode?: 'demo' | 'live';
+  demoScenario?: 'attendance-dip' | 'steady-growth' | 'wellbeing-watch';
   schoolId: string;
   classroomId: string;
   teacherId?: string | null;
   requestedBy?: string | null;
   requestedAt: string;
   focusPrompt?: string;
-  reviewMode?: "draft_only";
-  evidenceScopes: Array<"attendance" | "grades" | "wellbeing" | "assignments">;
+  reviewMode?: 'draft_only';
+  evidenceScopes: Array<'attendance' | 'grades' | 'wellbeing' | 'assignments'>;
   correlationId?: string;
   causationId?: string;
   tenantId?: string;
@@ -62,8 +59,8 @@ export interface TeacherSummaryRequestedPayload {
 
 export interface StudentSupportRequestedPayload {
   runId: string;
-  mode?: "demo" | "live";
-  demoScenario?: "quiet-struggle" | "resilient-improver" | "wellbeing-watch";
+  mode?: 'demo' | 'live';
+  demoScenario?: 'quiet-struggle' | 'resilient-improver' | 'wellbeing-watch';
   schoolId: string;
   classroomId: string;
   teacherId?: string | null;
@@ -72,8 +69,8 @@ export interface StudentSupportRequestedPayload {
   requestedBy?: string | null;
   requestedAt: string;
   focusPrompt?: string;
-  reviewMode?: "draft_only";
-  evidenceScopes: Array<"attendance" | "grades" | "wellbeing">;
+  reviewMode?: 'draft_only';
+  evidenceScopes: Array<'attendance' | 'grades' | 'wellbeing'>;
   correlationId?: string;
   causationId?: string;
   tenantId?: string;
@@ -89,7 +86,7 @@ export async function sendWellbeingMoodLogged(
 ) {
   return client.send({
     id: input.eventId,
-    name: "wellbeing/mood.logged",
+    name: 'wellbeing/mood.logged',
     data: {
       studentId: input.studentId,
       moodScore: input.moodScore,
@@ -102,24 +99,18 @@ export async function sendWellbeingMoodLogged(
   });
 }
 
-export async function sendUserCreated(
-  client: SendableInngestClient,
-  input: UserCreatedPayload,
-) {
+export async function sendUserCreated(client: SendableInngestClient, input: UserCreatedPayload) {
   return client.send({
     id: input.id,
-    name: "user/created",
+    name: 'user/created',
     data: input,
   });
 }
 
-export async function sendUserUpdated(
-  client: SendableInngestClient,
-  input: UserUpdatedPayload,
-) {
+export async function sendUserUpdated(client: SendableInngestClient, input: UserUpdatedPayload) {
   return client.send({
     id: input.id,
-    name: "user/updated",
+    name: 'user/updated',
     data: input,
   });
 }
@@ -130,7 +121,7 @@ export async function sendSchoolClassroomCreated(
 ) {
   return client.send({
     id: input.id,
-    name: "school/classroom.created",
+    name: 'school/classroom.created',
     data: input,
   });
 }
@@ -141,7 +132,7 @@ export async function sendSchoolAttendanceRecorded(
 ) {
   return client.send({
     id: input.id,
-    name: "school/attendance.recorded",
+    name: 'school/attendance.recorded',
     data: {
       ...input,
       correlationId: input.correlationId,
@@ -157,7 +148,7 @@ export async function sendSchoolGradePublished(
 ) {
   return client.send({
     id: input.id,
-    name: "school/grade.published",
+    name: 'school/grade.published',
     data: input,
   });
 }
@@ -168,7 +159,7 @@ export async function sendStudentOnboarded(
 ) {
   return client.send({
     id: input.id,
-    name: "student/onboarded",
+    name: 'student/onboarded',
     data: input,
   });
 }
@@ -179,7 +170,7 @@ export async function sendSyncMutationQueued(
 ) {
   return client.send({
     id: input.eventId ?? input.mutationId,
-    name: "sync/mutation-queued",
+    name: 'sync/mutation-queued',
     data: {
       mutationId: input.mutationId,
       action: input.action,
@@ -199,10 +190,10 @@ export async function sendTeacherSummaryRequested(
 ) {
   return client.send({
     id: input.runId,
-    name: "agent/teacher-summary.requested",
+    name: 'agent/teacher-summary.requested',
     data: {
       runId: input.runId,
-      mode: input.mode ?? "demo",
+      mode: input.mode ?? 'demo',
       demoScenario: input.demoScenario,
       schoolId: input.schoolId,
       classroomId: input.classroomId,
@@ -210,7 +201,7 @@ export async function sendTeacherSummaryRequested(
       requestedBy: input.requestedBy,
       requestedAt: input.requestedAt,
       focusPrompt: input.focusPrompt,
-      reviewMode: input.reviewMode ?? "draft_only",
+      reviewMode: input.reviewMode ?? 'draft_only',
       evidenceScopes: input.evidenceScopes,
       correlationId: input.correlationId,
       causationId: input.causationId,
@@ -225,10 +216,10 @@ export async function sendStudentSupportRequested(
 ) {
   return client.send({
     id: input.runId,
-    name: "agent/student-support.requested",
+    name: 'agent/student-support.requested',
     data: {
       runId: input.runId,
-      mode: input.mode ?? "demo",
+      mode: input.mode ?? 'demo',
       demoScenario: input.demoScenario,
       schoolId: input.schoolId,
       classroomId: input.classroomId,
@@ -238,7 +229,7 @@ export async function sendStudentSupportRequested(
       requestedBy: input.requestedBy,
       requestedAt: input.requestedAt,
       focusPrompt: input.focusPrompt,
-      reviewMode: input.reviewMode ?? "draft_only",
+      reviewMode: input.reviewMode ?? 'draft_only',
       evidenceScopes: input.evidenceScopes,
       correlationId: input.correlationId,
       causationId: input.causationId,

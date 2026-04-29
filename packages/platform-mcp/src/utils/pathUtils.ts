@@ -84,7 +84,9 @@ export function describeTarget(target?: string | null): NormalizedTargetInfo {
 
   const clean = stripWrappingQuotes(input);
   const aliasCandidate = detectAliasCandidate(clean);
-  const normalized = path.resolve(aliasCandidate ?? (path.isAbsolute(clean) ? clean : path.join(ROOT_DIR, clean)));
+  const normalized = path.resolve(
+    aliasCandidate ?? (path.isAbsolute(clean) ? clean : path.join(ROOT_DIR, clean)),
+  );
   const withinRepo = normalized === ROOT_DIR || normalized.startsWith(`${ROOT_DIR}${path.sep}`);
   const exists = fs.existsSync(normalized);
 

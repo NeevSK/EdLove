@@ -2,14 +2,13 @@ import {
   sendStudentSupportRequested,
   studentSupportRequestedPayloadSchema,
   uuidv7,
-} from "@repo/core";
-import { inngest } from "../../../lib/inngest";
-import { supabaseAdmin } from "../../../lib/supabase";
+} from '@repo/core';
+import { inngest } from '../../../lib/inngest';
+import { supabaseAdmin } from '../../../lib/supabase';
 
 const requestSchema = studentSupportRequestedPayloadSchema.extend({
   runId: studentSupportRequestedPayloadSchema.shape.runId.optional(),
-  requestedAt:
-    studentSupportRequestedPayloadSchema.shape.requestedAt.optional(),
+  requestedAt: studentSupportRequestedPayloadSchema.shape.requestedAt.optional(),
 });
 
 export const prerender = false;
@@ -20,10 +19,7 @@ export async function POST({ request }: { request: Request }) {
   try {
     body = await request.json();
   } catch {
-    return Response.json(
-      { error: "Request body must be valid JSON." },
-      { status: 400 },
-    );
+    return Response.json({ error: 'Request body must be valid JSON.' }, { status: 400 });
   }
 
   const runId = uuidv7();
@@ -38,7 +34,7 @@ export async function POST({ request }: { request: Request }) {
   if (!parsed.success) {
     return Response.json(
       {
-        error: "Invalid durable-agent request.",
+        error: 'Invalid durable-agent request.',
         issues: parsed.error.issues,
       },
       { status: 400 },
@@ -53,15 +49,15 @@ export async function POST({ request }: { request: Request }) {
     causationId: parsed.data.causationId ?? runId,
   };
 
-  const { error: auditError } = await supabaseAdmin.from("audit_logs").insert({
+  const { error: auditError } = await supabaseAdmin.from('audit_logs').insert({
     id: uuidv7(),
-    action: "durable_agent_requested",
+    action: 'durable_agent_requested',
     entity_id: payload.runId,
-    entity_type: "durable_agent_run",
+    entity_type: 'durable_agent_run',
     school_id: payload.schoolId,
     idempotency_key: `durable-agent:${payload.runId}:requested`,
     metadata: {
-      runType: "student_support_snapshot",
+      runType: 'student_support_snapshot',
       mode: payload.mode,
       demoScenario: payload.demoScenario ?? null,
       classroomId: payload.classroomId,
@@ -79,10 +75,7 @@ export async function POST({ request }: { request: Request }) {
   });
 
   if (auditError) {
-    return Response.json(
-      { error: "Failed to stage the durable-agent run." },
-      { status: 500 },
-    );
+    return Response.json({ error: 'Failed to stage the durable-agent run.' }, { status: 500 });
   }
 
   await sendStudentSupportRequested(inngest, payload);
@@ -90,7 +83,7 @@ export async function POST({ request }: { request: Request }) {
   return Response.json(
     {
       runId: payload.runId,
-      status: "queued",
+      status: 'queued',
       mode: payload.mode,
       reviewMode: payload.reviewMode,
     },

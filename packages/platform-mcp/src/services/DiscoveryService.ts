@@ -175,7 +175,10 @@ export class DiscoveryService {
 
     return {
       content: [
-        { type: 'text' as const, text: `File: ${String(filePath || '').replace(ROOT_DIR || '', '')}` },
+        {
+          type: 'text' as const,
+          text: `File: ${String(filePath || '').replace(ROOT_DIR || '', '')}`,
+        },
         { type: 'text' as const, text: api },
       ],
     };
@@ -229,7 +232,15 @@ export class DiscoveryService {
   handleShinyFind(args: { query: string; target?: string }) {
     const target = normalizeTarget(args.target || '.');
     console.error(`Shiny Find: ${args.query} in ${target}`);
-    const output = runCommand('fd', ['--type', 'f', '--hidden', '--exclude', '.git', args.query, target]);
+    const output = runCommand('fd', [
+      '--type',
+      'f',
+      '--hidden',
+      '--exclude',
+      '.git',
+      args.query,
+      target,
+    ]);
     return toText(output.combined, !output.ok);
   }
 

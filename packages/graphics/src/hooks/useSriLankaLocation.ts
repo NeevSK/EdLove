@@ -1,5 +1,5 @@
 import type { DSDivision, GNDivision } from '@intuitui-labs/lk-edu-geo';
-import { SRI_LANKAN_DISTRICTS } from '@repo/core';
+import * as LKEduGeo from '@intuitui-labs/lk-edu-geo';
 import * as Location from 'expo-location';
 import { useCallback, useMemo, useState } from 'react';
 import { Drilldown } from '../data/AdministrativeHierarchy';
@@ -36,8 +36,8 @@ export function useSriLankaLocation(initialState?: Partial<LocationState>) {
         if (inferred) {
           newState.city = inferred.city;
           newState.districtId = inferred.districtId;
-          const district = SRI_LANKAN_DISTRICTS.find((d) => d.id === inferred.districtId);
-          if (district) newState.provinceId = district.provinceId;
+          // In this unified model, the caller is responsible for provincial alignment 
+          // or we can add a helper to Drilldown to find province by district.
         }
       }
 
@@ -74,7 +74,9 @@ export function useSriLankaLocation(initialState?: Partial<LocationState>) {
 
       if (address) {
         // Heuristic: Match city/district from reverse geocode
-        const district = SRI_LANKAN_DISTRICTS.find(
+        const provinces = Drilldown.getProvinces();
+        const districts = Drilldown.getDistricts('');
+        const district = districts.find(
           (d) =>
             d.en.toLowerCase() === address.district?.toLowerCase() ||
             d.en.toLowerCase() === address.city?.toLowerCase(),
@@ -83,7 +85,6 @@ export function useSriLankaLocation(initialState?: Partial<LocationState>) {
         updateLocation({
           city: address.city || '',
           districtId: district?.id || '',
-          provinceId: district?.provinceId || '',
           postalCode: address.postalCode || '',
         });
       }

@@ -10,7 +10,13 @@ import {
 import { useTracking } from '@repo/core/hooks';
 import { setPendingGateAction, usePermissions } from '@repo/core/logic';
 import { useStore, useTemporalStore } from '@repo/core/store';
-import type { CommunityStackParamList } from '@repo/core/types';
+import type {
+  AnnouncementWithAuthor,
+  CommunityPost,
+  CommunityStackParamList,
+  DirectConversation,
+  SanctuaryGroup,
+} from '@repo/core/types';
 import {
   GlobalHeader,
   HorizontalChipRow,
@@ -31,12 +37,6 @@ import CreateGroupModal from '../components/CreateGroupModal';
 import CreatePostModal from '../components/CreatePostModal';
 import PostCard from '../components/PostCard';
 import SocialShieldModal from '../components/SocialShieldModal';
-import type {
-  AnnouncementWithAuthor,
-  CommunityPost,
-  DirectConversation,
-  SanctuaryGroup,
-} from '@repo/core/types';
 import AnnouncementsScreen from './AnnouncementsScreen';
 import {
   type CommunityWorkspaceMode,
@@ -191,7 +191,6 @@ export default function CommunityScreen() {
     };
   }, [activeMode, isMessagingEnabled]);
 
-
   const handleModeChange = React.useCallback(
     (value: string) => {
       setActiveMode(value as CommunityWorkspaceMode);
@@ -202,12 +201,9 @@ export default function CommunityScreen() {
     [isMessagingEnabled],
   );
 
-  const handleFilterChange = React.useCallback(
-    (value: string) => {
-      setSelectedFilter(value);
-    },
-    [],
-  );
+  const handleFilterChange = React.useCallback((value: string) => {
+    setSelectedFilter(value);
+  }, []);
 
   const handlePostPress = React.useCallback(
     (groupId?: string, groupName?: string) => {

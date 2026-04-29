@@ -110,7 +110,6 @@ export type { PrivacyLevel, SocialLink, SocialPlatform } from './Social';
 export type { StaffAttendance, StaffAttendanceStatus } from './StaffAttendance';
 export type { LeaveStatus, LeaveType, StaffLeave } from './StaffLeave';
 export type { BulkStudent, Student } from './Student';
-export type { ThuthimalGift } from './Thuthimal';
 export type { Task } from './Task';
 export type { TeacherNote } from './TeacherNote';
 export type { LongitudinalRecord, TemporalBounds, TemporalPoint } from './Temporal';
@@ -121,6 +120,7 @@ export type {
   ScopeType,
   TenantContext,
 } from './Tenancy';
+export type { ThuthimalGift } from './Thuthimal';
 export type {
   GraphLink,
   GraphNode,

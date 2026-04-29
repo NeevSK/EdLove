@@ -78,7 +78,7 @@ export default function PDFViewerScreen({ route }: PDFViewerScreenProps) {
 
       {/* Inline iframe viewer */}
       <Box className="flex-1 overflow-hidden">
-        {/* @ts-ignore - 'iframe' is valid in react-native-web */}
+        {/* @ts-expect-error - 'iframe' is valid in react-native-web */}
         <iframe
           key={iframeKey}
           src={url}

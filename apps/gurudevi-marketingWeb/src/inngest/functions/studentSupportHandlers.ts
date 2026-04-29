@@ -2,52 +2,41 @@ import {
   studentSupportRequestedEvent,
   studentSupportRequestedPayloadSchema,
   v7 as uuidv7,
-} from "@repo/core";
-import { inngest } from "../../lib/inngest";
-import { supabaseAdmin } from "../../lib/supabase";
+} from '@repo/core';
 import {
   buildDemoStudentSupportEvidence,
   loadStudentAttendanceEvidence,
   loadStudentGradesEvidence,
   loadStudentSupportContext,
   loadStudentWellbeingEvidence,
-  synthesizeStudentSupportDraft,
   type StudentSupportEvidence,
   type StudentSupportEvidenceScope,
-} from "../../lib/durableAgents/studentSupportAgent";
-import { insertWorkerAuditLog } from "../lib/workerObservability";
+  synthesizeStudentSupportDraft,
+} from '../../lib/durableAgents/studentSupportAgent';
+import { inngest } from '../../lib/inngest';
+import { supabaseAdmin } from '../../lib/supabase';
+import { insertWorkerAuditLog } from '../lib/workerObservability';
 
 async function loadLiveStudentEvidence(
   classroomId: string,
   studentId: string,
   scopes: StudentSupportEvidenceScope[],
 ): Promise<StudentSupportEvidence> {
-  const student = await loadStudentSupportContext(
-    supabaseAdmin,
-    classroomId,
-    studentId,
-  );
+  const student = await loadStudentSupportContext(supabaseAdmin, classroomId, studentId);
   const evidence: StudentSupportEvidence = { student };
 
-  if (scopes.includes("attendance")) {
+  if (scopes.includes('attendance')) {
     evidence.attendance = await loadStudentAttendanceEvidence(
       supabaseAdmin,
       classroomId,
       studentId,
     );
   }
-  if (scopes.includes("grades")) {
-    evidence.grades = await loadStudentGradesEvidence(
-      supabaseAdmin,
-      classroomId,
-      studentId,
-    );
+  if (scopes.includes('grades')) {
+    evidence.grades = await loadStudentGradesEvidence(supabaseAdmin, classroomId, studentId);
   }
-  if (scopes.includes("wellbeing")) {
-    evidence.wellbeing = await loadStudentWellbeingEvidence(
-      supabaseAdmin,
-      studentId,
-    );
+  if (scopes.includes('wellbeing')) {
+    evidence.wellbeing = await loadStudentWellbeingEvidence(supabaseAdmin, studentId);
   }
 
   return evidence;
@@ -55,8 +44,8 @@ async function loadLiveStudentEvidence(
 
 export const studentSupportRequested = inngest.createFunction(
   {
-    id: "student-support-requested",
-    name: "Student Support Requested",
+    id: 'student-support-requested',
+    name: 'Student Support Requested',
     triggers: [studentSupportRequestedEvent],
   },
   async ({ event, step }) => {
@@ -64,19 +53,19 @@ export const studentSupportRequested = inngest.createFunction(
     const correlationId = request.correlationId ?? request.runId;
     const causationId = request.causationId ?? request.runId;
 
-    await step.run("log-student-support-started", async () => {
+    await step.run('log-student-support-started', async () => {
       await insertWorkerAuditLog({
         supabase: supabaseAdmin,
         id: uuidv7(),
-        action: "durable_agent_started",
+        action: 'durable_agent_started',
         entityId: request.runId,
-        entityType: "durable_agent_run",
+        entityType: 'durable_agent_run',
         schoolId: request.schoolId,
         idempotencyKey: `durable-agent:${request.runId}:started`,
         correlationId,
         causationId,
         metadata: {
-          runType: "student_support_snapshot",
+          runType: 'student_support_snapshot',
           mode: request.mode,
           demoScenario: request.demoScenario ?? null,
           classroomId: request.classroomId,
@@ -90,37 +79,32 @@ export const studentSupportRequested = inngest.createFunction(
     });
 
     try {
-      const evidence = await step.run(
-        "load-student-support-evidence",
-        async () => {
-          if (request.mode === "demo") {
-            return buildDemoStudentSupportEvidence({
-              runId: request.runId,
-              mode: request.mode,
-              demoScenario: request.demoScenario,
-              schoolId: request.schoolId,
-              classroomId: request.classroomId,
-              teacherId: request.teacherId,
-              studentId: request.studentId,
-              studentName: request.studentName,
-              requestedBy: request.requestedBy,
-              focusPrompt: request.focusPrompt,
-              evidenceScopes: request.evidenceScopes,
-            });
-          }
+      const evidence = await step.run('load-student-support-evidence', async () => {
+        if (request.mode === 'demo') {
+          return buildDemoStudentSupportEvidence({
+            runId: request.runId,
+            mode: request.mode,
+            demoScenario: request.demoScenario,
+            schoolId: request.schoolId,
+            classroomId: request.classroomId,
+            teacherId: request.teacherId,
+            studentId: request.studentId,
+            studentName: request.studentName,
+            requestedBy: request.requestedBy,
+            focusPrompt: request.focusPrompt,
+            evidenceScopes: request.evidenceScopes,
+          });
+        }
 
-          return loadLiveStudentEvidence(
-            request.classroomId,
-            request.studentId,
-            request.evidenceScopes as StudentSupportEvidenceScope[],
-          );
-        },
-      );
+        return loadLiveStudentEvidence(
+          request.classroomId,
+          request.studentId,
+          request.evidenceScopes as StudentSupportEvidenceScope[],
+        );
+      });
 
-      const synthesis = await step.run(
-        "synthesize-student-support-draft",
-        async () =>
-          synthesizeStudentSupportDraft(evidence, request.focusPrompt),
+      const synthesis = await step.run('synthesize-student-support-draft', async () =>
+        synthesizeStudentSupportDraft(evidence, request.focusPrompt),
       );
 
       const governor = {
@@ -131,19 +115,19 @@ export const studentSupportRequested = inngest.createFunction(
         reviewMode: request.reviewMode,
       };
 
-      await step.run("log-student-support-completed", async () => {
+      await step.run('log-student-support-completed', async () => {
         await insertWorkerAuditLog({
           supabase: supabaseAdmin,
           id: uuidv7(),
-          action: "durable_agent_completed",
+          action: 'durable_agent_completed',
           entityId: request.runId,
-          entityType: "durable_agent_run",
+          entityType: 'durable_agent_run',
           schoolId: request.schoolId,
           idempotencyKey: `durable-agent:${request.runId}:completed`,
           correlationId,
           causationId,
           metadata: {
-            runType: "student_support_snapshot",
+            runType: 'student_support_snapshot',
             mode: request.mode,
             demoScenario: request.demoScenario ?? null,
             classroomId: request.classroomId,
@@ -160,33 +144,30 @@ export const studentSupportRequested = inngest.createFunction(
 
       return {
         runId: request.runId,
-        status: "completed",
+        status: 'completed',
         governor,
       };
     } catch (error) {
-      await step.run("log-student-support-failed", async () => {
+      await step.run('log-student-support-failed', async () => {
         await insertWorkerAuditLog({
           supabase: supabaseAdmin,
           id: uuidv7(),
-          action: "durable_agent_failed",
+          action: 'durable_agent_failed',
           entityId: request.runId,
-          entityType: "durable_agent_run",
+          entityType: 'durable_agent_run',
           schoolId: request.schoolId,
           idempotencyKey: `durable-agent:${request.runId}:failed`,
           correlationId,
           causationId,
           metadata: {
-            runType: "student_support_snapshot",
+            runType: 'student_support_snapshot',
             mode: request.mode,
             demoScenario: request.demoScenario ?? null,
             classroomId: request.classroomId,
             teacherId: request.teacherId ?? null,
             studentId: request.studentId,
             studentName: request.studentName ?? null,
-            error:
-              error instanceof Error
-                ? error.message
-                : "Unknown durable-agent failure",
+            error: error instanceof Error ? error.message : 'Unknown durable-agent failure',
           },
         });
       });

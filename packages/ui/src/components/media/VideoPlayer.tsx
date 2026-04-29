@@ -6,8 +6,8 @@ import { Pressable } from 'react-native';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 import { useTheme } from '../../hooks/useTheme';
 import { Box, HStack, Text, VStack } from '../../primitives';
-import { SanctuaryButton } from '../SanctuaryButton';
 import { formatTimeMs } from '../../utils/dateTimeUtils';
+import { SanctuaryButton } from '../SanctuaryButton';
 
 export interface VideoPlayerProps {
   url: string;

@@ -1,4 +1,4 @@
-﻿import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import type { FounderStackParamList } from '@repo/core';
 import { useTheme } from '@repo/ui';
 import React from 'react';
@@ -8,7 +8,7 @@ const FounderDashboard = React.lazy(() => import('@repo/admin/screens/FounderDas
 const FounderSchoolDashboard = React.lazy(
   () => import('@repo/admin/screens/FounderSchoolDashboard'),
 );
-const AdminDashboard = React.lazy(() => import('@repo/admin/screens/AdminDashboard.web'));
+const AdminDashboard = React.lazy(() => import('@repo/admin/screens/AdminDashboard'));
 const AdminIncidentQueue = React.lazy(() => import('@repo/admin/screens/AdminIncidentQueue'));
 const AdminTenantDetail = React.lazy(() => import('@repo/admin/screens/AdminTenantDetail'));
 const AdminAuthorityRepair = React.lazy(() => import('@repo/admin/screens/AdminAuthorityRepair'));

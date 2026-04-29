@@ -116,11 +116,7 @@ const Button = React.forwardRef<View, IButtonProps>(
             busy: !!isLoading,
           }}
           className={`${baseStyle} ${variantStyle} ${sizeStyle} ${isDisabled || isLoading ? 'opacity-40' : ''} ${className || ''}`}
-          style={
-            typeof style === 'function'
-              ? (state) => [sx, style(state)]
-              : [sx, style]
-          }
+          style={typeof style === 'function' ? (state) => [sx, style(state)] : [sx, style]}
         >
           {isLoading ? (
             <ButtonSpinner color={variant === 'solid' ? '#FFFFFF' : undefined} />
