@@ -44,7 +44,6 @@ export { default as LogoutModal } from './LogoutModal';
 export { default as LotusDropdown } from './LotusDropdown';
 export { default as LotusLoader } from './LotusLoader';
 export { default as LotusPetalFAB } from './LotusPetalFAB';
-export * from './maps';
 export * from './media/AssetCollectionPicker';
 export * from './media/AssetCreationPortal';
 export * from './media/AssetShareModal';

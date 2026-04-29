@@ -2,15 +2,13 @@ import 'react-native-url-polyfill/auto';
 import './src/i18n/config'; // Initialize i18n
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import {
-  AdminAuditLog,
-  AdminAuthorityRepair,
-  AdminDashboard,
-  AdminIncidentQueue,
-  AdminJobControl,
-  AdminReleaseControl,
-  AdminTenantDetail,
-} from '@repo/admin';
+import AdminAuditLog from '@repo/admin/screens/AdminAuditLog';
+import AdminAuthorityRepair from '@repo/admin/screens/AdminAuthorityRepair';
+import AdminDashboard from '@repo/admin/screens/AdminDashboard';
+import AdminIncidentQueue from '@repo/admin/screens/AdminIncidentQueue';
+import AdminJobControl from '@repo/admin/screens/AdminJobControl';
+import AdminReleaseControl from '@repo/admin/screens/AdminReleaseControl';
+import AdminTenantDetail from '@repo/admin/screens/AdminTenantDetail';
 import {
   identifyUser,
   initPostHog,

@@ -75,6 +75,11 @@ export {
   useSanctuaryToast as useToast,
 } from './providers/ToastProvider';
 
+// Direct media exports stay on the public surface, but bypass the broad components barrel
+// so platform-specific files do not participate in root require cycles.
+export type { VideoPlayerProps } from './components/media/VideoPlayer';
+export { VideoPlayer } from './components/media/VideoPlayer';
+
 // ============================================================================
 // TIER 6: SCREENS & COMPOSITIONS
 // ============================================================================

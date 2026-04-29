@@ -4,7 +4,7 @@
  * Thin wrapper for the Classroom School Forest (Vibes) UI.
  */
 
-import { SchoolForestScreenWeb } from '@repo/admin';
+import SchoolForestScreenWeb from '@repo/admin/screens/SchoolForestScreen.web';
 import { ErrorBoundary } from '@repo/ui';
 
 const SchoolForestWrapper = (props: Record<string, unknown>) => (

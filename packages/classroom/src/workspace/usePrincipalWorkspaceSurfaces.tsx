@@ -1,4 +1,6 @@
-import { GradeHeadDashboard, PrincipalDashboard, SectionHeadDashboard } from '@repo/admin';
+import PrincipalDashboard from '@repo/admin/screens/PrincipalDashboard';
+import GradeHeadDashboard from '@repo/admin/screens/GradeHeadDashboard';
+import SectionHeadDashboard from '@repo/admin/screens/SectionHeadDashboard';
 import React from 'react';
 import { PrincipalOnboardingView } from '../components';
 import type { ClassroomWorkspaceSurface, PrincipalInsight } from '../types/workspace';
