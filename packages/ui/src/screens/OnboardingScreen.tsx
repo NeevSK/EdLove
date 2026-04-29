@@ -127,11 +127,7 @@ export default function OnboardingScreen({
         // Re-run the initialization once signed in
         return initOnboarding();
       }
-      const { data: profile } = await supabase
-        .from('users')
-        .select('full_name, is_anonymous, role, onboarding_completed')
-        .eq('id', internalId)
-        .maybeSingle();
+      const profile = await identityAPI.getProfile(internalId);
 
       if (!profile) return;
 
@@ -253,11 +249,7 @@ export default function OnboardingScreen({
       hapticSuccess();
 
       // Check if user already exists in public.users to avoid overwriting critical data
-      const { data: existingProfile } = await supabase
-        .from('users')
-        .select('school_id')
-        .eq('id', internalId)
-        .single();
+      const existingProfile = await identityAPI.getProfile(internalId);
 
       // 1. Create a default school (Personal Workspace) only if they don't have one
       let schoolId = existingProfile?.school_id;
@@ -294,8 +286,7 @@ export default function OnboardingScreen({
       const currentSession = await authAPI.getSession().catch(() => null);
       const actuallyAnonymous = currentSession?.user?.is_anonymous ?? true;
 
-      const { error: profileError } = await supabase.from('users').upsert({
-        id: internalId,
+      await identityAPI.updateProfile(internalId, {
         full_name: name || 'Gurudevi User',
         role: role,
         school_id: schoolId,
@@ -303,11 +294,6 @@ export default function OnboardingScreen({
         onboarding_completed_at: new Date().toISOString(),
         is_anonymous: actuallyAnonymous,
       });
-
-      if (profileError) {
-        console.error('❌ Onboarding: Profile upsert failed:', profileError.message);
-        throw profileError;
-      }
 
       console.log('✅ Onboarding: Profile successfully synced to DB.');
 

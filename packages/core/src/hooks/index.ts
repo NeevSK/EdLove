@@ -1,4 +1,5 @@
 export { useAccountDeletion } from './useAccountDeletion';
+export { useIdentity } from './useIdentity';
 export { useAuthorityFeatures } from './useAuthorityFeatures';
 export { useBanyanGrowth } from './useBanyanGrowth';
 export { useClassroomCreation } from './useClassroomCreation';

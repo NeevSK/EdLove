@@ -1,5 +1,6 @@
 import { coreRuntime, handleAPIError, type Role, validateForm, validators } from '@repo/core/logic';
-import { authAPI, FlowResolver, GuestDataSync, identityAPI, supabase } from '@repo/core/native';
+import { authAPI, FlowResolver, GuestDataSync, identityAPI } from '@repo/core/native';
+import { useIdentity } from '@repo/core/hooks';
 import * as AuthSession from 'expo-auth-session';
 import * as WebBrowser from 'expo-web-browser';
 import { Mail } from 'lucide-react-native';
@@ -158,22 +159,16 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
   const _syncCheckDoneRef = useRef(false);
   const passwordRef = useRef<any>(null);
 
-  // Load current user from public.users via the internal identity (new architecture pattern).
-  // This gives us email + is_anonymous from our own DB, not raw Supabase auth.
+  const { internalId: myId, profile: myProfile } = useIdentity();
+
+  // Sync internal profile to reducer state
   useEffect(() => {
-    identityAPI.getMyInternalId().then(async (internalId) => {
-      if (!internalId) {
-        dispatch({ type: 'SET_USER', user: null });
-        return;
-      }
-      const { data } = await supabase
-        .from('users')
-        .select('id, email, is_anonymous, full_name')
-        .eq('id', internalId)
-        .maybeSingle();
-      if (data) dispatch({ type: 'SET_USER', user: data });
-    });
-  }, []);
+    if (myProfile) {
+      dispatch({ type: 'SET_USER', user: myProfile });
+    } else {
+      dispatch({ type: 'SET_USER', user: null });
+    }
+  }, [myProfile]);
 
   // ─── Browser callback handling ─────────────────────────────────────────────
   // For web and mobile (via redirected app protocols), we check the URL for tokens
@@ -248,17 +243,15 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
       hapticLight();
 
       const redirectUrl = getRedirectUrl();
-      const session = await authAPI.getSession().catch(() => null);
+      const session = await authAPI.getAuthSession().catch(() => null);
       const isAnon = session?.user?.is_anonymous || !session?.user?.email;
 
       // ── Web platform: classic browser-redirect flow ───────────
       if (coreRuntime.device.getMetadata().platform === 'web') {
         if (isAnon && session?.user) {
-          const { error } = await supabase.auth.linkIdentity({
-            provider,
-            options: { redirectTo: redirectUrl },
-          });
-          if (error) {
+          try {
+            await authAPI.linkOAuthIdentity(provider, redirectUrl);
+          } catch (error: any) {
             if (error.message.includes('already linked')) {
               showToast({
                 message:
@@ -274,14 +267,9 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
           return;
         }
 
-        const { error } = await supabase.auth.signInWithOAuth({
-          provider,
-          options: {
-            redirectTo: redirectUrl,
-            queryParams: { prompt: 'select_account' },
-          },
-        });
-        if (error) {
+        try {
+          await authAPI.signInWithOAuth(provider, redirectUrl);
+        } catch (error: any) {
           handleAPIError(error);
           dispatch({ type: 'SET_LOADING', loading: false });
         }
@@ -289,88 +277,49 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
       }
 
       // ── Native platform: use expo-auth-session ───
-      const oauthOptions =
-        isAnon && session?.user
-          ? await supabase.auth.linkIdentity({
-              provider,
-              options: {
-                redirectTo: redirectUrl,
-                skipBrowserRedirect: true,
-                queryParams: { prompt: 'select_account' },
-              },
-            })
-          : await supabase.auth.signInWithOAuth({
-              provider,
-              options: {
-                redirectTo: redirectUrl,
-                skipBrowserRedirect: true,
-                queryParams: { prompt: 'select_account' },
-              },
-            });
+      try {
+        const oauthOptions =
+          isAnon && session?.user
+            ? await authAPI.linkOAuthIdentity(provider, redirectUrl, true)
+            : await authAPI.signInWithOAuth(provider, redirectUrl, true);
 
-      const oauthError = oauthOptions.error;
-      const oauthUrl = (oauthOptions.data as any)?.url as string | null | undefined;
+        const oauthUrl = (oauthOptions as any)?.url as string | null | undefined;
 
-      if (oauthError) {
-        if (oauthError.message.includes('already linked')) {
+        if (!oauthUrl) {
           showToast({
-            message:
-              t('auth.alreadyLinked') ||
-              'This Google account is already linked to another sanctuary soul. Please login instead.',
+            message: 'Could not reach Google sign-in. Please try again.',
             type: 'error',
           });
-        } else {
-          handleAPIError(oauthError);
-        }
-        dispatch({ type: 'SET_LOADING', loading: false });
-        return;
-      }
-
-      if (!oauthUrl) {
-        showToast({
-          message: 'Could not reach Google sign-in. Please try again.',
-          type: 'error',
-        });
-        dispatch({ type: 'SET_LOADING', loading: false });
-        return;
-      }
-
-      const authResponse = await WebBrowser.openAuthSessionAsync(oauthUrl, redirectUrl);
-
-      if (authResponse.type === 'success' && (authResponse as any).url) {
-        const url = new URL((authResponse as any).url);
-        const params = Object.fromEntries(url.searchParams.entries());
-        const access_token = params.access_token || url.hash.match(/access_token=([^&]+)/)?.[1];
-        const refresh_token = params.refresh_token || url.hash.match(/refresh_token=([^&]+)/)?.[1];
-        if (!access_token || !refresh_token) {
           dispatch({ type: 'SET_LOADING', loading: false });
           return;
         }
 
-        const { error: sessErr } = await supabase.auth.setSession({
-          access_token,
-          refresh_token,
-        });
+        const authResponse = await WebBrowser.openAuthSessionAsync(oauthUrl, redirectUrl);
 
-        if (sessErr) {
-          handleAPIError(sessErr);
-        } else {
+        if (authResponse.type === 'success' && (authResponse as any).url) {
+          const url = new URL((authResponse as any).url);
+          const params = Object.fromEntries(url.searchParams.entries());
+          const access_token = params.access_token || url.hash.match(/access_token=([^&]+)/)?.[1];
+          const refresh_token = params.refresh_token || url.hash.match(/refresh_token=([^&]+)/)?.[1];
+          if (!access_token || !refresh_token) {
+            dispatch({ type: 'SET_LOADING', loading: false });
+            return;
+          }
+
+          await authAPI.setSession(access_token, refresh_token);
+
           hapticSuccess();
-          const userId = await identityAPI.getMyInternalId();
-          if (userId) {
-            const internalId = userId;
+          const internalId = await identityAPI.getMyInternalId();
+          if (internalId) {
             const pendingInvite = await coreRuntime.storage.getItem('pending_invite');
-            if (pendingInvite && internalId) {
+            if (pendingInvite) {
               try {
                 const invite = JSON.parse(pendingInvite);
                 if (invite.school_id) {
-                  await supabase
-                    .from('users')
-                    .update({
-                      school_id: invite.school_id,
-                      role: (invite.role as Role) || 'teacher',
-                    })
-                    .eq('id', internalId);
+                  await identityAPI.updateProfile(internalId, {
+                    school_id: invite.school_id,
+                    role: (invite.role as Role) || 'teacher',
+                  });
                   await coreRuntime.storage.removeItem('pending_invite');
                   showToast({
                     message: 'Welcome to your new school sanctuary!',
@@ -383,12 +332,23 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
             }
           }
           const hasGuestData = await GuestDataSync.hasGuestData();
-          if (isAnon && hasGuestData && userId) {
-            dispatch({ type: 'SET_FIELD', field: 'newUserId', value: userId });
+          if (isAnon && hasGuestData && internalId) {
+            dispatch({ type: 'SET_FIELD', field: 'newUserId', value: internalId });
             dispatch({ type: 'SET_SYNC_MODAL', isOpen: true });
           } else {
             if (onSuccess) onSuccess();
           }
+        }
+      } catch (error: any) {
+        if (error.message?.includes('already linked')) {
+          showToast({
+            message:
+              t('auth.alreadyLinked') ||
+              'This Google account is already linked to another sanctuary soul. Please login instead.',
+            type: 'error',
+          });
+        } else {
+          handleAPIError(error);
         }
       }
       dispatch({ type: 'SET_LOADING', loading: false });
@@ -413,7 +373,7 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
     dispatch({ type: 'SET_LOADING', loading: true });
     try {
       if (isSignUp) {
-        const currentSession = await authAPI.getSession().catch(() => null);
+        const currentSession = await authAPI.getAuthSession().catch(() => null);
         const isAnon = currentSession?.user?.is_anonymous || !currentSession?.user?.email;
 
         if (isAnon && currentSession?.user) {
@@ -435,34 +395,12 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
             if (onSuccess) onSuccess();
           }
         } else {
-          const { data, error } = await supabase.auth.signUp({
-            email,
-            password,
-          });
-          if (error) {
-            if (
-              error.message.includes('already registered') ||
-              error.message.includes('Email already in use') ||
-              (error as any).status === 422
-            ) {
-              showToast({
-                message:
-                  t('auth.alreadyRegistered') ||
-                  'You already have a sanctuary soul! Switching to login...',
-                type: 'success',
-              });
-              dispatch({ type: 'SET_MODE', isSignUp: false });
-              dispatch({ type: 'SET_LOADING', loading: false });
-              return;
-            }
-            throw error;
-          }
+          await authAPI.signUp(email, password);
           hapticSuccess();
           showToast({ message: t('auth.checkEmail'), type: 'success' });
         }
       } else {
-        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
+        await authAPI.signIn(email, password);
 
         hapticSuccess();
         const internalId = await identityAPI.getMyInternalId();
@@ -472,10 +410,10 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
             try {
               const invite = JSON.parse(pendingInvite);
               if (invite.school_id) {
-                await supabase
-                  .from('users')
-                  .update({ school_id: invite.school_id, role: (invite.role as Role) || 'teacher' })
-                  .eq('id', internalId);
+                await identityAPI.updateProfile(internalId, {
+                  school_id: invite.school_id,
+                  role: (invite.role as Role) || 'teacher',
+                });
                 await coreRuntime.storage.removeItem('pending_invite');
                 showToast({ message: 'Reconnected to your school sanctuary!', type: 'success' });
               }

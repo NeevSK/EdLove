@@ -50,12 +50,13 @@ const EXCLUDES = [
   '.git',
   'dist',
   'build',
-  '.next',
+  'archives',
+  'legacy',
   'scripts',
   'docs',
   'supabase/migrations',
-  'packages/core/src/api/identity.ts', // Exclude the API definition itself
-  'packages/core/src/api/auth.ts', // Exclude the low-level auth wrapper
+  'packages/core/src/native/identity.ts', // Exclude the API definition itself
+  'packages/core/src/native/auth.ts', // Exclude the low-level auth wrapper
 ];
 
 function scanDirectory(dir, results = []) {
@@ -66,7 +67,10 @@ function scanDirectory(dir, results = []) {
     // Normalize paths for Windows compatibility
     const relativePath = path.relative(rootDir, fullPath).replace(/\\/g, '/');
 
-    if (EXCLUDES.some((exclude) => relativePath.startsWith(exclude) || file === exclude)) {
+    if (EXCLUDES.some((exclude) => {
+      const parts = relativePath.split('/');
+      return parts.includes(exclude) || relativePath === exclude || relativePath.endsWith(exclude);
+    })) {
       continue;
     }
 
