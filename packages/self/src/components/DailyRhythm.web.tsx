@@ -4,28 +4,12 @@
  * Standardized to Zero-Legacy: purged corrupted imports and migrated to Sanctuary V3 architecture.
  */
 
-import {
-  Box,
-  Button,
-  ButtonText,
-  Heading,
-  HStack,
-  Icon,
-  Input,
-  InputField,
-  Pressable,
-  Select,
-  SelectBackdrop,
-  SelectContent,
-  SelectInput,
-  SelectItem,
-  SelectPortal,
-  SelectTrigger,
-  Text,
-  VStack,
-} from '@repo/ui';
-import { Activity, Calendar, ChevronDown, Clock, MapPin, Plus, Trash2 } from 'lucide-react-native';
-import React, { useState } from 'react';
+import { Box, Button, Input } from '@repo/ui/primitives';
+import { ButtonText, HStack, Heading, Icon, InputField, Select, SelectBackdrop, SelectContent, SelectInput, SelectItem, SelectPortal, SelectTrigger, Text, VStack } from '@repo/ui/primitives';
+import { Pressable } from '@repo/ui/primitives';
+
+import { Calendar, ChevronDown, Clock, MapPin, Plus, Trash2 } from 'lucide-react-native';
+import { useState } from 'react';
 import { useTimetable } from '../hooks/useTimetable';
 import type { Period } from '../types';
 

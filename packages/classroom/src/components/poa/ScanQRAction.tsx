@@ -1,5 +1,7 @@
-import { hapticLight, Icon, Pressable, ScanLine, Text } from '@repo/ui';
-import React from 'react';
+import { ScanLine } from '@repo/ui/icons';
+import { Icon, Text } from '@repo/ui/primitives';
+import { Pressable } from '@repo/ui/primitives';
+import { hapticLight } from '@repo/ui/utils/haptics';
 
 export function ScanQRAction() {
   return (

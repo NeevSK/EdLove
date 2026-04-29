@@ -2,10 +2,8 @@ import {
   getDistrictsByProvince,
   getDSDivisionsByDistrict,
   getGNDivisionsByDSDivision,
-  getMetadata,
   getProvinces,
   getSchoolContext,
-  getSchools,
   searchSchools,
 } from '../src/index.js';
 

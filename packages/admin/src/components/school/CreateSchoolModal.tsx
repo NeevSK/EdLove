@@ -1,43 +1,22 @@
 import { useNavigation } from '@react-navigation/native';
 import {
-  communityAPI,
-  identityAPI,
   RELIGIOUS_AFFILIATIONS,
   SRI_LANKAN_DISTRICTS,
   SRI_LANKAN_PROVINCES,
   SRI_LANKAN_SCHOOL_TYPES,
   STUDENT_TYPES,
-  useEntity,
-  useSchoolCreation,
-  useStore,
 } from '@repo/core';
-import {
-  BookOpen,
-  Box,
-  Building2,
-  Button,
-  ButtonText,
-  CheckCircle,
-  ChevronLeft,
-  ChevronRight,
-  Globe,
-  HStack,
-  Heading,
-  Icon,
-  MapPin,
-  MessageSquare,
-  Pressable,
-  SanctuaryInput,
-  SanctuaryModal,
-  School as SchoolIcon,
-  ScrollView,
-  Spinner,
-  Text,
-  Users,
-  VStack,
-  hapticLight,
-  hapticSuccess,
-} from '@repo/ui';
+import { communityAPI, identityAPI } from '@repo/core/api';
+import { useEntity, useSchoolCreation } from '@repo/core/hooks';
+import { useStore } from '@repo/core/logic';
+
+import SanctuaryInput from '@repo/ui/components/SanctuaryInput';
+import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
+import { BookOpen, Building2, CheckCircle, ChevronLeft, ChevronRight, Globe, MapPin, MessageSquare, School as SchoolIcon, Users } from '@repo/ui/icons';
+import { Box, Button } from '@repo/ui/primitives';
+import { ButtonText, HStack, Heading, Icon, Spinner, Text, VStack } from '@repo/ui/primitives';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 
 import { useMemo, useState } from 'react';
 

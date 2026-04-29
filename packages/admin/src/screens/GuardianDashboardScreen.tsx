@@ -1,4 +1,7 @@
-import { Box, ScrollView, Text, VStack } from '@repo/ui';
+import { Box } from '@repo/ui/primitives';
+import { Text, VStack } from '@repo/ui/primitives';
+import { ScrollView } from '@repo/ui/primitives';
+
 import type React from 'react';
 import { GuardianEvents } from '../components/guardian/GuardianEvents';
 import { GuardianNotifications } from '../components/guardian/GuardianNotifications';

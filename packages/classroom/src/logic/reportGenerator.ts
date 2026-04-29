@@ -1,4 +1,4 @@
-import { supabase } from '@repo/core';
+import { supabase } from '@repo/core/native';
 
 /**
  * ReportGenerator - Automates "Clerical Decay" by synthesizing data into exports.

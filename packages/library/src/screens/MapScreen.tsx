@@ -1,44 +1,36 @@
 import { useNavigation } from '@react-navigation/native';
-import { FeatureGuard, usePermissions, useStore } from '@repo/core';
+import { FeatureGuard, usePermissions } from '@repo/core';
+import { useStore } from '@repo/core/logic';
+
 import {
   CaptureEngine,
   getAvailablePerspectives as getEnginePerspectives,
   KnowledgeParser,
 } from '@repo/graphics';
+import GlobalHeader from '@repo/ui/components/GlobalHeader';
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { useReality } from '@repo/ui/context';
+import { useResponsive } from '@repo/ui/hooks';
 import {
-  Box,
-  GlobalHeader,
-  HStack,
-  Pressable,
-  Icon as SanctuaryIcon,
-  ScreenWrapper,
-  ScrollView,
-  Spinner,
-  Text,
-  Theme,
-  useReality,
-  useResponsive,
-  useTheme,
-  VStack,
-} from '@repo/ui';
+  AstroView,
+  DharmaView,
+  JyotiView,
+  TerraView,
+  VastuView,
+  VatyaView,
+} from '@repo/ui/components/visualization';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Icon as SanctuaryIcon, Spinner, Text, VStack } from '@repo/ui/primitives';
+import { Pressable, ScrollView, useTheme } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme';
+
 import { BlurView } from 'expo-blur';
 import { BarChart3, FileCheck, Globe, Network, Orbit, Route, Wind, X } from 'lucide-react-native';
 import { cssInterop } from 'nativewind';
 import React, { useEffect, useMemo, useState } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import Animated, {
-  FadeInDown,
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-} from 'react-native-reanimated';
+import { useSharedValue, withSpring } from 'react-native-reanimated';
 import { libraryAPI } from '../api/library';
-import { AstroView } from '../components/perspectives/AstroView';
-import { DharmaView } from '../components/perspectives/DharmaView';
-import { JyotiView } from '../components/perspectives/JyotiView';
-import { TerraView } from '../components/perspectives/TerraView';
-import { VastuView } from '../components/perspectives/VastuView';
-import { VatyaView } from '../components/perspectives/VatyaView';
 import { usePerspectiveLayout } from '../hooks/usePerspectiveLayout';
 import type { KnowledgeNode, KnowledgeTopology } from '../types/Library';
 
@@ -256,7 +248,6 @@ export default function MapScreen() {
 
       <Box className="p-3 bg-phase-surface">
         <Box className="rounded-[20px] overflow-hidden border border-phase-border">
-          {/* @ts-ignore - className resolved via cssInterop */}
           <BlurView intensity={30} tint="dark" className="flex-row bg-phase-surface/80">
             <ScrollView
               horizontal
@@ -305,7 +296,6 @@ export default function MapScreen() {
 
           {selectedNode && (
             <Box className="absolute bottom-10 left-5 right-5 rounded-[32px] overflow-hidden border border-white/10 shadow-2xl">
-              {/* @ts-ignore - className resolved via cssInterop */}
               <BlurView intensity={25} tint="dark" className="p-5 bg-black/40">
                 <VStack className="gap-3">
                   <HStack className="justify-between items-center">
@@ -353,7 +343,7 @@ export default function MapScreen() {
   );
 }
 
-function StatCardNative({
+function _StatCardNative({
   label,
   value,
   icon: IconComponent,

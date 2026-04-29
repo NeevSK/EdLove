@@ -82,8 +82,6 @@ class InputExpression implements TSLExpression {
 
 export const tsl = {
   float: (v: number | string) => new LiteralExpression(v, 'float'),
-  vec2: (x: TSLExpression, y: TSLExpression) => new CallExpression('vec2', [x, y], 'vec2'),
-  vec3: (x: TSLExpression, y: TSLExpression, z: TSLExpression) => new CallExpression('vec3', [x, y, z], 'vec3'),
   
   add: (a: TSLExpression, b: TSLExpression) => new BinaryExpression(a, '+', b, a.type),
   sub: (a: TSLExpression, b: TSLExpression) => new BinaryExpression(a, '-', b, a.type),
@@ -102,9 +100,9 @@ export const tsl = {
   fbm: (p: TSLExpression, octaves: number) => 
     new CallExpression('fbm', [p, new LiteralExpression(octaves, 'float')], 'float'),
 
-  warp: (p: TSLExpression, strength: TSLExpression) =    new CallExpression('domainWarp', [p, strength], 'vec2'),
+  warp: (_p: TSLExpression, _strength: TSLExpression) =    new CallExpression('domainWarp', [p, strength], 'vec2'),
 
-  kelvin: (k: TSLExpression) =    new CallExpression('kelvinToRGB', [k], 'vec3'),
+  kelvin: (_k: TSLExpression) =    new CallExpression('kelvinToRGB', [k], 'vec3'),
 
   length: (a: TSLExpression) => new CallExpression('length', [a], 'float'),
   normalize: (a: TSLExpression) => new CallExpression('normalize', [a], a.type),

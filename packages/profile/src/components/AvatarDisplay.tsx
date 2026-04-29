@@ -1,8 +1,12 @@
-import { Box, Pressable, Spinner, UserAvatar } from '@repo/ui';
+import { Box } from '@repo/ui/primitives';
+import { Spinner } from '@repo/ui/primitives';
+import { UserAvatar } from '@repo/ui/components/UserAvatar';
+import { Pressable } from '@repo/ui/primitives';
+
 import * as ImageManipulator from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
 import { Camera } from 'lucide-react-native';
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 import { useProfileNavigation } from '../navigation';
 

@@ -1,6 +1,10 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { AddStudentModal, useInventory } from '@repo/classroom';
-import { api, assignmentsAPI, supabase, useStore, useUserRole } from '@repo/core';
+import { useUserRole } from '@repo/core';
+import { api, assignmentsAPI } from '@repo/core/api';
+import { useStore } from '@repo/core/logic';
+import { supabase } from '@repo/core/native';
+
 import { formatDistanceToNow } from 'date-fns';
 import {
   ArrowLeft,

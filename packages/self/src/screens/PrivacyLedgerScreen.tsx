@@ -4,22 +4,18 @@
  * Standardized to Zero-Legacy: purged corrupted imports and migrated to Sanctuary V3 architecture.
  */
 
-import { type PrivacyLedgerEntry, privacyAPI } from '@repo/core';
-import {
-  Box,
-  FlatList,
-  GlobalHeader,
-  Heading,
-  HStack,
-  Icon,
-  SanctuaryCard,
-  ScreenWrapper,
-  Spinner,
-  Text,
-  VStack,
-} from '@repo/ui';
+import type { PrivacyLedgerEntry } from '@repo/core';
+import { privacyAPI } from '@repo/core/api';
+
+import GlobalHeader from '@repo/ui/components/GlobalHeader';
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Heading, Icon, Spinner, Text, VStack } from '@repo/ui/primitives';
+import { SanctuaryCard } from '@repo/ui/components/SanctuaryCard';
+import { FlatList } from '@repo/ui/primitives';
+
 import { Clock, FileText, Lock, Shield, ShieldCheck } from 'lucide-react-native';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
 export default function PrivacyLedgerScreen() {
@@ -41,7 +37,7 @@ export default function PrivacyLedgerScreen() {
   }, []);
 
   const renderEntry = ({ item, index }: { item: PrivacyLedgerEntry; index: number }) => {
-    const date = new Date(item.created_at).toLocaleDateString(undefined, {
+    const _date = new Date(item.created_at).toLocaleDateString(undefined, {
       month: 'short',
       day: 'numeric',
       year: 'numeric',

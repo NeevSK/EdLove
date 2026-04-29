@@ -1,4 +1,6 @@
-﻿import { APIError, supabase } from '@repo/core';
+﻿import { supabase } from '@repo/core/native';
+import { APIError } from '@repo/core/types';
+
 import type { DailyContent } from '../types';
 
 // ============================================================================

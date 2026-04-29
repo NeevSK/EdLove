@@ -1,4 +1,4 @@
-import { VStack } from '@repo/ui';
+import { VStack } from '@repo/ui/primitives';
 import type React from 'react';
 import { usePrincipalWorkspaceShell } from '../bridge/principalWorkspaceShell';
 import DashboardEcho from '../components/principal/DashboardEcho';

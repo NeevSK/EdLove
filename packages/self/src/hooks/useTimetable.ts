@@ -1,11 +1,8 @@
-﻿import {
-  authAPI,
-  GuestDataManager,
-  identityAPI,
-  SafeZustandStorage,
-  supabase,
-  useStore,
-} from '@repo/core';
+﻿import { SafeZustandStorage } from '@repo/core';
+import { authAPI, identityAPI } from '@repo/core/api';
+import { useStore } from '@repo/core/logic';
+import { GuestDataManager, supabase } from '@repo/core/native';
+
 import { useCallback, useEffect, useState } from 'react';
 
 const TIMETABLE_CACHE_KEY = 'gurudevi-timetable-cache';
@@ -101,7 +98,7 @@ export const useTimetable = (activeDay: number) => {
 
   useEffect(() => {
     fetchPeriods();
-  }, [fetchPeriods, isOnline]);
+  }, [fetchPeriods]);
 
   const addPeriod = async (period: Omit<Period, 'id' | 'user_id'>) => {
     // Optimistic Update

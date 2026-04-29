@@ -9,20 +9,21 @@
  */
 
 import { type RouteProp, useNavigation, useRoute } from '@react-navigation/native';
-import { identityAPI, thuthimalAPI } from '@repo/core';
+import { identityAPI, thuthimalAPI } from '@repo/core/api';
+
 import {
   Box,
   Heading,
   HStack,
-  hapticError,
-  hapticSuccess,
   ScreenWrapper,
   Spinner,
   Text,
-  Theme,
   useThemedColors,
   VStack,
 } from '@repo/ui';
+import { Theme } from '@repo/ui/theme';
+import { hapticError, hapticSuccess } from '@repo/ui/utils/haptics';
+
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, TouchableOpacity } from 'react-native';

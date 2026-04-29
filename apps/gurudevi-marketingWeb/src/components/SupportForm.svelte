@@ -56,7 +56,7 @@ manager.subscribe((s) => {
   state = s;
 });
 
-function mailtoHref() {
+function _mailtoHref() {
   const { issueType, name, email, message } = state.values;
   const subject = `Gurudevi (${issueType})`;
   const body = [

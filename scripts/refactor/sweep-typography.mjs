@@ -22,7 +22,7 @@ function healFile(filePath) {
   // We only target Text or Heading tags for shorthand
   content = content.replace(
     /<(Text|Heading)([^>]*?)\s+(bold|italic)(\s|>)/g,
-    (m, tag, pre, prop, post) => {
+    (_m, tag, pre, prop, post) => {
       const className = prop === 'bold' ? 'font-bold' : 'italic';
       return `<${tag}${pre} className="${className}"${post}`;
     },
@@ -51,14 +51,14 @@ function healFile(filePath) {
     // Search for multiple classNames within a likely tag scope
     content = content.replace(
       /(<[\w.]+\s+[^>]*?)className="([^"]*)"([^>]*?)className="([^"]*)"/g,
-      (m, tagPrefix, c1, middle, c2) => {
+      (_m, tagPrefix, c1, middle, c2) => {
         return `${tagPrefix}className="${c1.trim()} ${c2.trim()}"${middle}`;
       },
     );
   } while (content !== prev);
 
   // Final pass to clean up double spaces inside tags
-  content = content.replace(/<([\w.]+)\s+([^>]+)>/g, (m, tag, attrs) => {
+  content = content.replace(/<([\w.]+)\s+([^>]+)>/g, (_m, tag, attrs) => {
     return `<${tag} ${attrs.replace(/\s+/g, ' ').trim()}>`;
   });
 

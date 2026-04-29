@@ -1,5 +1,5 @@
 ---
-const links = [
+const _links = [
   { href: '/', label: 'Home', theme: 'home' },
   { href: '/personal', label: 'Personal', theme: 'nature' },
   { href: '/intellectual', label: 'Intellectual', theme: 'twilight' },
@@ -295,7 +295,6 @@ const { pathname } = Astro.url;
 <script>
   // Scroll detection
   const nav = document.getElementById('main-nav');
-  let lastScroll = 0;
 
   window.addEventListener('scroll', () => {
     const currentScroll = window.pageYOffset;

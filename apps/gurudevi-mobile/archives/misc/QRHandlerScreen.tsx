@@ -15,20 +15,14 @@
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { type RouteProp, useNavigation, useRoute } from '@react-navigation/native';
-import { FlowResolver, identityAPI } from '@repo/core';
+import { identityAPI } from '@repo/core/api';
+import { FlowResolver } from '@repo/core/native';
+
 import type { QRPayload } from '@repo/scanner-kit';
-import {
-  Box,
-  Heading,
-  hapticError,
-  hapticSuccess,
-  ScreenWrapper,
-  Spinner,
-  Text,
-  Theme,
-  useThemedColors,
-  VStack,
-} from '@repo/ui';
+import { Box, Heading, ScreenWrapper, Spinner, Text, useThemedColors, VStack } from '@repo/ui';
+import { Theme } from '@repo/ui/theme';
+import { hapticError, hapticSuccess } from '@repo/ui/utils/haptics';
+
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 

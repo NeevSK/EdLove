@@ -10,40 +10,27 @@ import { supabase } from '@repo/core/native';
 import { useStore } from '@repo/core/store';
 import type { CommunityStackParamList } from '@repo/core/types';
 import { QRBuilder, QRCodeGenerator } from '@repo/scanner-kit';
+import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
+import { SanctuaryCard } from '@repo/ui/components/SanctuaryCard';
+import SanctuaryFlashList from '@repo/ui/components/SanctuaryFlashList';
+import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { useLotusToast } from '@repo/ui/hooks';
+import { ChevronLeft, MessageSquare, MoreVertical, QrCode, Settings, UserPlus, Users } from '@repo/ui/icons';
 import {
+  AnimatedView,
   Box,
-  Heading as UIHeading,
   HStack,
+  Icon,
   Image,
   Pressable,
   Spinner,
   Text,
   VStack,
-  Icon,
-  AnimatedView,
 } from '@repo/ui/primitives';
-import {
-  SanctuaryButton,
-  SanctuaryCard,
-  SanctuaryFlashList,
-  SanctuaryModal,
-  ScreenWrapper,
-} from '@repo/ui/components';
-import { FadeInDown } from 'react-native-reanimated';
-import { useLotusToast } from '@repo/ui/hooks';
-import {
-  ChevronLeft,
-  MessageSquare,
-  MoreVertical,
-  QrCode,
-  Settings,
-  Shield,
-  UserPlus,
-  Users,
-  X,
-} from '@repo/ui/icons';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { FadeInDown } from 'react-native-reanimated';
 import { communityAPI } from '../api/community';
 import { CommentSheet } from '../components/CommentSheet';
 import GroupMemberManagement from '../components/GroupMemberManagement';
@@ -126,11 +113,14 @@ export default function GroupDetailsScreen() {
     navigation.navigate('GroupChat', { groupId, groupName: group?.name });
   }, [navigation, groupId, group?.name]);
 
-  const handlePostLike = React.useCallback((postId: string) => {
-    if (user?.id) {
-      communityAPI.togglePostReaction(postId, user.id).catch(console.error);
-    }
-  }, [user?.id]);
+  const handlePostLike = React.useCallback(
+    (postId: string) => {
+      if (user?.id) {
+        communityAPI.togglePostReaction(postId, user.id).catch(console.error);
+      }
+    },
+    [user?.id],
+  );
 
   const handlePostComment = React.useCallback((id: string, authorId?: string, type?: string) => {
     setCommentPostId(id);
@@ -177,7 +167,7 @@ export default function GroupDetailsScreen() {
           type: 'success',
         });
       }
-    } catch (err) {
+    } catch (_err) {
       showToast({
         message: t('common.error'),
         type: 'error',
@@ -202,7 +192,7 @@ export default function GroupDetailsScreen() {
     return () => {
       cancelled = true;
     };
-  }, [canJoinGroup, groupId, user?.id, isMember, group?.join_policy]);
+  }, [canJoinGroup, groupId, user?.id, isMember, handleJoin]);
 
   if (loading) {
     return (
@@ -387,7 +377,9 @@ export default function GroupDetailsScreen() {
                   onPress={handlePostPressEmpty}
                   onLike={() => handlePostLike(item.id)}
                   onComment={() => handlePostComment(item.id, item.author_id, item.post_type)}
-                  onReport={flags.isSocialShieldEnabled ? () => handlePostReport(item.id) : undefined}
+                  onReport={
+                    flags.isSocialShieldEnabled ? () => handlePostReport(item.id) : undefined
+                  }
                 />
               </Box>
             </AnimatedView>

@@ -1,30 +1,30 @@
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import {
-  type CommunityStackParamList,
-  FeatureGuard,
-  useStore,
-  useTemporalStore,
-  useTracking,
-} from '@repo/core';
+import { type CommunityStackParamList, FeatureGuard } from '@repo/core';
+import { useTracking } from '@repo/core/hooks';
+import { useStore, useTemporalStore } from '@repo/core/logic';
+
 import {
   Box,
   FadeInDown,
   GlobalHeader,
   Heading,
-  HorizontalChipRow,
   PositiveInvitation,
-  SanctuaryButton,
   SanctuaryFlashList,
   ScreenWrapper,
-  TemporalNavigator,
   Text,
-  Theme,
-  useBottomTabPadding,
-  useRegisterFAB,
   useThemedColors,
   VStack,
 } from '@repo/ui';
+import {
+  HorizontalChipRow,
+  SanctuaryButton,
+  TemporalNavigator,
+  useBottomTabPadding,
+} from '@repo/ui/components';
+import { useRegisterFAB } from '@repo/ui/context/FABContext';
+import { Theme } from '@repo/ui/theme';
+
 import { Mail, PenTool } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';

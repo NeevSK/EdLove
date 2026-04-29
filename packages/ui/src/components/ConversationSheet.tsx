@@ -1,7 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Platform } from 'react-native';
+import { Actionsheet } from '../gluestack';
+import { ChevronDown, EyeOff, Lock, Send, Shield, ThumbsUp, Trash2 } from '../icons';
 import {
   Box,
+  FlatList,
   HStack,
   Icon,
   Input,
@@ -11,11 +14,8 @@ import {
   Spinner,
   Text,
   VStack,
-  FlatList,
 } from '../primitives';
-import { Actionsheet } from '../gluestack';
 import { formatTimestamp, getInitialsFromName } from '../utils';
-import { ChevronDown, EyeOff, Lock, Send, Shield, ThumbsUp, Trash2 } from '../icons';
 
 export interface CommentAuthor {
   id: string;
@@ -42,7 +42,7 @@ interface ConversationSheetProps {
   isLoading?: boolean;
   isPosting?: boolean;
   currentUserId?: string;
-  
+
   // Features
   showOfficialBadge?: boolean;
   canMarkOfficial?: boolean;
@@ -55,7 +55,7 @@ interface ConversationSheetProps {
   onDelete: (id: string) => void;
   onUpvote: (id: string) => void;
   onMarkOfficial?: (id: string, flag: boolean) => void;
-  
+
   // Localization
   emptyTitle?: string;
   emptySubtitle?: string;
@@ -86,8 +86,12 @@ function CommentRow({
   const initials = getInitialsFromName(comment.author.name);
 
   return (
-    <Box className={`flex-row mb-5 pl-1 ${comment.isOfficial ? 'border-l-4 border-l-phase-reward' : ''}`}>
-      <Box className={`w-9 h-9 rounded-full items-center justify-center mr-3 mt-1 shrink-0 ${comment.isAnonymous ? 'bg-phase-surface border border-border' : 'bg-phase-interactive/10'}`}>
+    <Box
+      className={`flex-row mb-5 pl-1 ${comment.isOfficial ? 'border-l-4 border-l-phase-reward' : ''}`}
+    >
+      <Box
+        className={`w-9 h-9 rounded-full items-center justify-center mr-3 mt-1 shrink-0 ${comment.isAnonymous ? 'bg-phase-surface border border-border' : 'bg-phase-interactive/10'}`}
+      >
         {comment.isAnonymous ? (
           <Icon as={EyeOff} size="xs" className="text-ink/40" />
         ) : (
@@ -102,7 +106,9 @@ function CommentRow({
             {showOfficialBadge && comment.isOfficial && (
               <HStack className="items-center px-1.5 py-0.5 rounded-md bg-phase-reward">
                 <Icon as={Shield} size="xs" className="text-white" />
-                <Text className="text-[9px] text-white font-bold ml-0.5 uppercase tracking-tighter">Official</Text>
+                <Text className="text-[9px] text-white font-bold ml-0.5 uppercase tracking-tighter">
+                  Official
+                </Text>
               </HStack>
             )}
           </HStack>
@@ -113,18 +119,33 @@ function CommentRow({
 
         <HStack className="items-center mt-2.5 gap-6">
           <Pressable onPress={() => onUpvote(comment.id)} className="flex-row items-center">
-            <Icon as={ThumbsUp} size="xs" className={comment.hasUpvoted ? 'text-phase-interactive' : 'text-ink/40'} />
+            <Icon
+              as={ThumbsUp}
+              size="xs"
+              className={comment.hasUpvoted ? 'text-phase-interactive' : 'text-ink/40'}
+            />
             {comment.upvotes > 0 && (
-              <Text className={`text-[11px] font-bold ml-1.5 ${comment.hasUpvoted ? 'text-phase-interactive' : 'text-ink/40'}`}>
+              <Text
+                className={`text-[11px] font-bold ml-1.5 ${comment.hasUpvoted ? 'text-phase-interactive' : 'text-ink/40'}`}
+              >
                 {comment.upvotes}
               </Text>
             )}
           </Pressable>
 
           {canMarkOfficial && onMarkOfficial && (
-            <Pressable onPress={() => onMarkOfficial(comment.id, !comment.isOfficial)} className="flex-row items-center">
-              <Icon as={Shield} size="xs" className={comment.isOfficial ? 'text-phase-reward' : 'text-ink/40'} />
-              <Text className={`text-[11px] font-bold ml-1.5 ${comment.isOfficial ? 'text-phase-reward' : 'text-ink/40'}`}>
+            <Pressable
+              onPress={() => onMarkOfficial(comment.id, !comment.isOfficial)}
+              className="flex-row items-center"
+            >
+              <Icon
+                as={Shield}
+                size="xs"
+                className={comment.isOfficial ? 'text-phase-reward' : 'text-ink/40'}
+              />
+              <Text
+                className={`text-[11px] font-bold ml-1.5 ${comment.isOfficial ? 'text-phase-reward' : 'text-ink/40'}`}
+              >
                 {comment.isOfficial ? 'Unmark' : 'Mark answer'}
               </Text>
             </Pressable>
@@ -192,7 +213,11 @@ export function ConversationSheet({
           <Box className="flex-1 overflow-hidden">
             {/* Header */}
             <HStack className="items-center px-5 py-4 border-b border-border">
-              <Pressable onPress={onClose} className="w-10 h-10 items-center justify-center rounded-full bg-ink/5" hitSlop={12}>
+              <Pressable
+                onPress={onClose}
+                className="w-10 h-10 items-center justify-center rounded-full bg-ink/5"
+                hitSlop={12}
+              >
                 <Icon as={ChevronDown} size="md" className="text-ink/60" />
               </Pressable>
               <Text className="text-md font-bold text-ink flex-1 text-center">
@@ -209,7 +234,9 @@ export function ConversationSheet({
             ) : comments.length === 0 ? (
               <VStack className="flex-1 items-center justify-center py-12 px-8 gap-3">
                 <Text className="text-md font-bold text-ink/20">{emptyTitle}</Text>
-                <Text className="text-sm text-ink/40 text-center leading-relaxed">{emptySubtitle}</Text>
+                <Text className="text-sm text-ink/40 text-center leading-relaxed">
+                  {emptySubtitle}
+                </Text>
               </VStack>
             ) : (
               <FlatList
@@ -240,7 +267,11 @@ export function ConversationSheet({
                   className={`w-11 h-11 rounded-2xl border items-center justify-center shrink-0 ${isAnonymous ? 'bg-phase-interactive border-phase-interactive' : 'bg-phase-surface border-border'}`}
                   hitSlop={8}
                 >
-                  <Icon as={Lock} size="sm" className={isAnonymous ? 'text-white' : 'text-ink/40'} />
+                  <Icon
+                    as={Lock}
+                    size="sm"
+                    className={isAnonymous ? 'text-white' : 'text-ink/40'}
+                  />
                 </Pressable>
               )}
 
@@ -260,7 +291,15 @@ export function ConversationSheet({
                 disabled={!draft.trim() || isPosting}
                 className={`w-11 h-11 rounded-2xl items-center justify-center shrink-0 ${!draft.trim() ? 'bg-ink/5' : 'bg-phase-interactive'}`}
               >
-                {isPosting ? <Spinner /> : <Icon as={Send} size="sm" className={!draft.trim() ? 'text-ink/20' : 'text-white'} />}
+                {isPosting ? (
+                  <Spinner />
+                ) : (
+                  <Icon
+                    as={Send}
+                    size="sm"
+                    className={!draft.trim() ? 'text-ink/20' : 'text-white'}
+                  />
+                )}
               </Pressable>
             </HStack>
           </Box>

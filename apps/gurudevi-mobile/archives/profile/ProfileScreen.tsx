@@ -1,5 +1,7 @@
 import { useNavigation } from '@react-navigation/native';
-import { useAccountDeletion, useStore, useTracking } from '@repo/core';
+import { useAccountDeletion, useTracking } from '@repo/core/hooks';
+import { useStore } from '@repo/core/logic';
+
 import {
   LivingJourneyPanel,
   ProfileListItem,
@@ -17,19 +19,17 @@ import {
   GlobalHeader,
   Heading,
   HStack,
-  hapticError,
-  hapticLight,
-  hapticSuccess,
   IdentityCard,
   LogoutModal,
-  SanctuaryProgressBar,
   ScreenWrapper,
   Text,
-  Theme,
-  useBottomTabPadding,
   useThemedColors,
   VStack,
 } from '@repo/ui';
+import { SanctuaryProgressBar, useBottomTabPadding } from '@repo/ui/components';
+import { Theme } from '@repo/ui/theme';
+import { hapticError, hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+
 import {
   Edit3,
   Heart,

@@ -1,5 +1,5 @@
 ﻿// WelcomeScreen Tests \u2014 grounded in actual component behaviour
-import { WelcomeScreen } from '@repo/ui';
+import WelcomeScreen from '@repo/ui/screens/WelcomeScreen';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
 const mockSignInAnonymously = jest.fn();

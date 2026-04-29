@@ -5,39 +5,24 @@ import { supabase } from '@repo/core/native';
 import { useStore } from '@repo/core/store';
 import type { CommunityStackParamList } from '@repo/core/types';
 import { GiveThuthimalModal } from '@repo/profile';
+import GlobalHeader from '@repo/ui/components/GlobalHeader';
+import LoadingOverlay from '@repo/ui/components/LoadingOverlay';
+import { SanctuaryBackground } from '@repo/ui/components/SanctuaryBackground';
+import { UserAvatar } from '@repo/ui/components/UserAvatar';
+import { Activity, BadgeCheck, Calendar, Gift, Heart, MapPin, Medal, MessageSquare, Send, Shield } from '@repo/ui/icons';
 import {
   Box,
+  Button,
+  ButtonIcon,
+  ButtonText,
   Heading,
   HStack,
   Text,
   VStack,
-  Button,
-  ButtonIcon,
-  ButtonText,
-  Theme,
 } from '@repo/ui/primitives';
-import {
-  GlobalHeader,
-  LoadingOverlay,
-  SanctuaryBackground,
-  ScreenWrapper,
-  UserAvatar,
-} from '@repo/ui/components';
-import {
-  Activity,
-  BadgeCheck,
-  Calendar,
-  Gift,
-  Heart,
-  MapPin,
-  Medal,
-  MessageSquare,
-  Send,
-  Shield,
-} from '@repo/ui/icons';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Platform, ScrollView } from 'react-native';
+import { ScrollView } from 'react-native';
 import { communityAPI } from '../api/community';
 
 /**
@@ -72,16 +57,6 @@ export default function UserPublicProfileScreen() {
   const [initiatingDM, setInitiatingDM] = useState(false);
   const [showThuthimal, setShowThuthimal] = useState(false);
   const [stats, setStats] = useState({ posts: 0, endorsements: 0 });
-
-  useEffect(() => {
-    if (userId) {
-      loadProfile();
-    } else {
-      setUser(null);
-      setStats({ posts: 0, endorsements: 0 });
-      setLoading(false);
-    }
-  }, [userId]);
 
   const loadProfile = async () => {
     if (!userId) return;
@@ -124,6 +99,16 @@ export default function UserPublicProfileScreen() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (userId) {
+      loadProfile();
+    } else {
+      setUser(null);
+      setStats({ posts: 0, endorsements: 0 });
+      setLoading(false);
+    }
+  }, [userId, loadProfile]);
 
   const handleMessagePress = async () => {
     if (!currentUserId || !userId) return;

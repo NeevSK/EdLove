@@ -1,6 +1,8 @@
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { type ClassroomStackParamList, useWorkspaceLayoutSync } from '@repo/core';
+import type { ClassroomStackParamList } from '@repo/core';
+import { useWorkspaceLayoutSync } from '@repo/core/native';
+
 import {
   TeacherAdminPortalModal,
   TeacherEchoHistoryModal,
@@ -8,24 +10,12 @@ import {
 } from '@repo/people';
 import { ScannerModal } from '@repo/scanner-kit';
 import { BreathGuide } from '@repo/self';
-import {
-  Box,
-  Heading,
-  HStack,
-  Icon,
-  Modal,
-  ModalBackdrop,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalHeader,
-  Pressable,
-  SandboxBanner,
-  ScrollView,
-  useThemedColors,
-  X,
-} from '@repo/ui';
-import React from 'react';
+import SandboxBanner from '@repo/ui/components/SandboxBanner';
+import { useThemedColors } from '@repo/ui/hooks';
+import { X } from '@repo/ui/icons';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Heading, Icon, Modal, ModalBackdrop, ModalBody, ModalContent, ModalHeader } from '@repo/ui/primitives';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
 import { useTranslation } from 'react-i18next';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { CreateClassroomModal } from '../components';

@@ -1,6 +1,9 @@
 import { useNavigation } from '@react-navigation/native';
 import { usePermissions } from '@repo/core';
-import { Box, HStack, Pressable, Text, VStack } from '@repo/ui';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Text, VStack } from '@repo/ui/primitives';
+import { Pressable } from '@repo/ui/primitives';
+
 import { useState } from 'react';
 import { commitGuardedRepair, stageGuardedRepair } from '../admin/adminControl';
 import { useAdminWorkspaceSnapshot } from '../admin/adminRepository';

@@ -1,4 +1,5 @@
-import { supabase } from '@repo/core';
+import { supabase } from '@repo/core/native';
+
 import type { FinancialTransaction, LedgerEntry } from './types';
 
 export class Ledger {

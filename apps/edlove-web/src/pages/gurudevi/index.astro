@@ -1,8 +1,5 @@
 ---
-import { getCollection, render } from 'astro:content';
-import CinematicBackground from '../../components/CinematicBackground.astro';
-import ExpandableContent from '../../components/ExpandableContent.astro';
-import Layout from '../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
 
 const gurudeviEntries = await getCollection('gurudevi', ({ data }) => !data.draft);
 gurudeviEntries.sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
@@ -126,7 +123,7 @@ gurudeviEntries.sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
                     <p class="font-body text-sm text-[var(--color-midnightInk)]/40 max-w-sm mx-auto">Join the private list for early access and sovereign benefits.</p>
                 </div>
 
-                <form class="flex flex-col sm:flex-row gap-4 max-w-md mx-auto" onsubmit="event.preventDefault();">
+                <form class="flex flex-col sm:flex-row gap-4 max-w-md mx-auto" onsubmit="return false;">
                     <input 
                         type="email" 
                         placeholder="your@email.com" 

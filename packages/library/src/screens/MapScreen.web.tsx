@@ -4,25 +4,10 @@ import {
   getAvailablePerspectives as getEnginePerspectives,
   KnowledgeParser,
 } from '@repo/graphics';
-import {
-  Box,
-  GlobalHeader,
-  HStack,
-  LotusLoader,
-  Pressable,
-  Icon as SanctuaryIcon,
-  ScreenWrapper,
-  ScrollView,
-  Text,
-  Theme,
-  useResponsive,
-  useTheme,
-  View,
-  VStack,
-} from '@repo/ui';
-import { BarChart3, FileCheck, Globe, Network, Orbit, Route, Wind, X } from 'lucide-react-native';
-import React, { useEffect, useMemo, useState } from 'react';
-import { libraryAPI } from '../api/library';
+import GlobalHeader from '@repo/ui/components/GlobalHeader';
+import LotusLoader from '@repo/ui/components/LotusLoader';
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { useResponsive } from '@repo/ui/hooks';
 import {
   AstroView,
   DharmaView,
@@ -30,7 +15,15 @@ import {
   TerraView,
   VastuView,
   VatyaView,
-} from '../components/perspectives';
+} from '@repo/ui/components/visualization';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Icon as SanctuaryIcon, Text, VStack } from '@repo/ui/primitives';
+import { Pressable, ScrollView, useTheme } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme';
+
+import { BarChart3, FileCheck, Globe, Network, Orbit, Route, Wind, X } from 'lucide-react-native';
+import { useEffect, useMemo, useState } from 'react';
+import { libraryAPI } from '../api/library';
 import { usePerspectiveLayout } from '../hooks/usePerspectiveLayout';
 import type { KnowledgeNode, KnowledgeTopology } from '../types/Library';
 
@@ -130,7 +123,7 @@ export default function MapScreen() {
       if (svgElement) {
         const dataUrl = await CaptureEngine.svgToDataURL(svgElement);
         console.log('--- VISUALIZATION CAPTURED ---');
-        console.log('Snapshot ready for Report:', dataUrl.substring(0, 50) + '...');
+        console.log('Snapshot ready for Report:', `${dataUrl.substring(0, 50)}...`);
         alert('Success: Visualization captured and synced to the Student Report.');
       } else {
         alert('Error: No visualization found to export.');
@@ -147,7 +140,7 @@ export default function MapScreen() {
     if (loading) {
       return (
         <Box className="flex-1 justify-center items-center">
-          <LotusLoader size={60} />
+          <LotusLoader size="lg" />
         </Box>
       );
     }
@@ -204,7 +197,7 @@ export default function MapScreen() {
 
     return (
       <Box className="flex-1 justify-center items-center">
-        <LotusLoader size={40} />
+        <LotusLoader size="md" />
       </Box>
     );
   };

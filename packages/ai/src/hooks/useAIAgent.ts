@@ -1,4 +1,8 @@
-import { authAPI, identityAPI, moonPhaseAPI, supabase, usePermissions, useStore } from '@repo/core';
+import { usePermissions } from '@repo/core';
+import { authAPI, identityAPI, moonPhaseAPI } from '@repo/core/api';
+import { useStore } from '@repo/core/logic';
+import { supabase } from '@repo/core/native';
+
 import { useCallback, useState } from 'react';
 import { type CoordinationGap, TimetableScheduler } from '../api/agents';
 
@@ -250,7 +254,7 @@ export function useAIAgent() {
         setIsThinking(false);
       }
     },
-    [messages, userRole, user, activeGaps],
+    [messages, userRole, user, activeGaps, can],
   );
 
   const clearHistory = useCallback(() => {
@@ -281,7 +285,7 @@ export function useAIAgent() {
  * Local Socratic fallback  used when the edge function is unreachable.
  * Keeps the AI feeling present even without network.
  */
-function generateLocalFallback(input: string, role: string | null, can: any): string {
+function generateLocalFallback(input: string, _role: string | null, can: any): string {
   const lowerInput = input.toLowerCase();
   if (lowerInput.includes('lesson') || lowerInput.includes('class')) {
     return 'Lessons are more than delivery  they are shared experiences. How was the energy in the room?';

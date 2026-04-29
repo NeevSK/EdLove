@@ -1,19 +1,10 @@
 import { usePermissions } from '@repo/core';
-import {
-  Box,
-  HStack,
-  Heading,
-  Icon,
-  LayoutGrid,
-  List,
-  Pressable,
-  ScreenWrapper,
-  ScrollView,
-  Text,
-  VStack,
-  useTheme,
-  useThemedColors,
-} from '@repo/ui';
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { useThemedColors } from '@repo/ui/hooks';
+import { LayoutGrid, List } from '@repo/ui/icons';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Heading, Icon, Text, VStack } from '@repo/ui/primitives';
+import { Pressable, ScrollView, useTheme } from '@repo/ui/primitives';
 
 import type React from 'react';
 import { useCallback, useEffect, useState } from 'react';

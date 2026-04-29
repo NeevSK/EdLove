@@ -5,7 +5,7 @@
  */
 
 import { InvitationWelcomeScreen as PackageInvitationWelcome } from '@repo/community';
-import { ErrorBoundary } from '@repo/ui';
+import ErrorBoundary from '@repo/ui/components/ErrorBoundary';
 
 const InvitationWelcomeWrapper = (props: Record<string, unknown>) => (
   <ErrorBoundary name="Invitation Welcome">

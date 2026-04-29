@@ -1,4 +1,5 @@
-import { Box, Heading, HStack, Text, VStack } from '@repo/ui';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Heading, Text, VStack } from '@repo/ui/primitives';
 import type React from 'react';
 
 interface TeacherStatCardProps {

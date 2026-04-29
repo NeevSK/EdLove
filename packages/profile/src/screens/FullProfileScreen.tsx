@@ -1,24 +1,17 @@
-import { useStore } from '@repo/core';
+import { useStore } from '@repo/core/logic';
+
 // Local Package Imports
 import { StaffPresencePulse } from '@repo/people';
-import {
-  AchievementUnlockOverlay,
-  Box,
-  Button,
-  ButtonText,
-  Center,
-  GlobalHeader,
-  Heading,
-  HStack,
-  hapticSuccess,
-  IdentityCard,
-  Pressable,
-  SanctuaryProgressBar,
-  ScreenWrapper,
-  Text,
-  useBottomTabPadding,
-  VStack,
-} from '@repo/ui';
+import AchievementUnlockOverlay from '@repo/ui/components/AchievementUnlockOverlay';
+import GlobalHeader from '@repo/ui/components/GlobalHeader';
+import IdentityCard from '@repo/ui/components/IdentityCard';
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { Box, Button, ButtonText, Center, HStack, Heading, Text, VStack } from '@repo/ui/primitives';
+import { SanctuaryProgressBar } from '@repo/ui/components/SanctuaryProgressBar';
+import { useBottomTabPadding } from '@repo/ui/components/ScreenWrapper';
+import { Pressable } from '@repo/ui/primitives';
+import { hapticSuccess } from '@repo/ui/utils/haptics';
+
 import {
   AtSign,
   BookOpen,
@@ -32,9 +25,9 @@ import {
   School,
   User as UserIcon,
 } from 'lucide-react-native';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, Platform, ScrollView, useWindowDimensions } from 'react-native';
+import { ScrollView, useWindowDimensions } from 'react-native';
 import Reanimated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { AddSocialLinkModal } from '../components/AddSocialLinkModal';
 import { AvatarDisplay } from '../components/AvatarDisplay';
@@ -89,7 +82,12 @@ export const FullProfileScreen = ({ route, navigation }: any) => {
       }, 2000);
       return () => clearTimeout(timer);
     }
-  }, [completionResult.isComplete, completionResult.hasSeenCompletionCelebration, barOpacity]);
+  }, [
+    completionResult.isComplete,
+    completionResult.hasSeenCompletionCelebration,
+    barOpacity,
+    completionResult.markCompletionCelebrationSeen,
+  ]);
 
   if (!profile) return null;
 

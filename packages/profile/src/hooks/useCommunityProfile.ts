@@ -1,4 +1,5 @@
-import { useStore, useTemporalStore } from '@repo/core';
+import { useStore, useTemporalStore } from '@repo/core/logic';
+
 import { useCallback, useEffect, useState } from 'react';
 import { profileAPI } from '../api/profile';
 import type { CommunityProfile } from '../domains/profile/ports';

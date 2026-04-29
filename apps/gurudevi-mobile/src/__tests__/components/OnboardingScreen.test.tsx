@@ -9,7 +9,7 @@ jest.mock('expo-image-picker', () => ({
   MediaTypeOptions: { Images: 'Images' },
 }));
 
-import { OnboardingScreen } from '@repo/ui';
+import OnboardingScreen from '@repo/ui/screens/OnboardingScreen';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
 jest.mock('@react-navigation/native', () => ({

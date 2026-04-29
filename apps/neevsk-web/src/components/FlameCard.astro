@@ -8,13 +8,13 @@ interface Props {
 
 const { title, description, tags = [], variant = 'blue' } = Astro.props;
 
-const variantClass =
+const _variantClass =
   variant === 'blue'
     ? 'group-hover:text-glow-blue dark:group-hover:text-glow-blue'
     : 'group-hover:text-glow-red dark:group-hover:text-glow-red';
-const borderClass =
+const _borderClass =
   variant === 'blue' ? 'group-hover:border-glow-blue/50' : 'group-hover:border-glow-red/50';
-const glowClass =
+const _glowClass =
   variant === 'blue'
     ? 'dark:group-hover:shadow-[0_0_20px_rgba(6,182,212,0.2)]'
     : 'dark:group-hover:shadow-[0_0_20px_rgba(244,63,94,0.2)]';

@@ -40,8 +40,9 @@ export class PostHogAnalytics {
       this.posthog = new PostHog(apiKey, {
         host: options?.host || 'https://eu.i.posthog.com',
         captureAppLifecycleEvents: true,
-        sessionRecording: {
-          maskAllInputs: true,
+        enableSessionReplay: true,
+        sessionReplayConfig: {
+          maskAllTextInputs: true,
         },
       });
       this.isInitialized = true;

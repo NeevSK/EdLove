@@ -17,8 +17,12 @@
  */
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { identityAPI, supabase, type UserRole } from '@repo/core';
-import { hapticError, hapticLight, hapticSuccess } from '@repo/ui';
+import type { UserRole } from '@repo/core';
+import { identityAPI } from '@repo/core/api';
+import { supabase } from '@repo/core/native';
+
+import { hapticError, hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useWindowDimensions } from 'react-native';

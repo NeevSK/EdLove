@@ -1,4 +1,6 @@
-import { handleAPIError, supabase, validateForm, validators } from '@repo/core';
+import { handleAPIError, validateForm, validators } from '@repo/core';
+import { authAPI } from '@repo/core/native';
+
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BreathAnimation } from '../components/BreathAnimation';
@@ -73,11 +75,8 @@ export function AuthScreenWeb({
     setLoading(true);
     setErrors({});
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: { redirectTo: window.location.origin },
-      });
-      if (error) throw error;
+      await authAPI.signInWithOAuth('google', window.location.origin);
+    } catch (err: any) {
     } catch (err: any) {
       const apiError = handleAPIError(err);
       showToast({
@@ -109,19 +108,13 @@ export function AuthScreenWeb({
 
     try {
       if (mode === 'signup') {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: { emailRedirectTo: window.location.origin },
-        });
-        if (error) throw error;
+        await authAPI.signUp(email, password);
         showToast({
           message: t('auth.checkEmail') || 'Check your email to confirm your account',
           type: 'success',
         });
       } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
+        await authAPI.signIn(email, password);
         onSuccess?.();
       }
     } catch (err: any) {

@@ -6,24 +6,13 @@
 
 // Types
 import type { AttendanceStatus, StudentAttendance } from '@repo/core';
-import {
-  Box,
-  Check,
-  Clock,
-  FlatList,
-  Heading,
-  HStack,
-  hapticLight,
-  Icon,
-  Input,
-  InputField,
-  Pressable,
-  Search,
-  Text,
-  VStack,
-  X,
-} from '@repo/ui';
-import React, { useEffect } from 'react';
+import { Check, Clock, Search, X } from '@repo/ui/icons';
+import { Box, Input } from '@repo/ui/primitives';
+import { HStack, Heading, Icon, InputField, Text, VStack } from '@repo/ui/primitives';
+import { FlatList, Pressable } from '@repo/ui/primitives';
+import { hapticLight } from '@repo/ui/utils/haptics';
+
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GestureHandlerRootView, Swipeable } from 'react-native-gesture-handler';
 import { useAttendance } from '../hooks/useAttendance';

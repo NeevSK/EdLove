@@ -1,21 +1,15 @@
 import { useAIAgent } from '@repo/ai';
-import { useStore } from '@repo/core';
+import { useStore } from '@repo/core/logic';
+
+import { AlertCircle, Calendar, CalendarCheck, Users } from '@repo/ui/icons';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Icon, Text, VStack } from '@repo/ui/primitives';
+import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { useRegisterFAB } from '@repo/ui/context/FABContext';
+import { ScrollView } from '@repo/ui/primitives';
+
 import React from 'react';
-import {
-  AlertCircle,
-  Box,
-  Calendar,
-  CalendarCheck,
-  HStack,
-  Icon,
-  SanctuaryButton,
-  ScreenWrapper,
-  ScrollView,
-  Text,
-  useRegisterFAB,
-  Users,
-  VStack,
-} from '@repo/ui';
 
 export default function SectionHeadDashboard({
   schoolId,
@@ -36,7 +30,7 @@ export default function SectionHeadDashboard({
     console.log('Reviewing draft');
   }, []);
 
-  const handleCreateDraft = React.useCallback(() => {
+  const _handleCreateDraft = React.useCallback(() => {
     generateTimetable('current-school');
   }, [generateTimetable]);
 

@@ -18,6 +18,8 @@ export interface QueuedMutation {
   userId?: string; // Attribution for conflict resolution
 }
 
+export type QueuedMutationDispatchResult = false | 'dispatched';
+
 export interface MutationQueueState {
   queue: QueuedMutation[];
   deadLetterQueue: QueuedMutation[]; // Permanent failures
@@ -35,6 +37,7 @@ export interface MutationQueueState {
 
 export type MutationOutcome =
   | 'success'
+  | 'dispatched'
   | 'transient_failure'
   | 'permanent_failure'
   | 'terminal_abort'

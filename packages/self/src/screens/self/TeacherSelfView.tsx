@@ -1,7 +1,14 @@
 import { useNavigation } from '@react-navigation/native';
-import { supabase, useBanyanGrowth, useJourneyHistory, usePermissions, useStore } from '@repo/core';
-import { Box, ScreenWrapper, useTheme, useThemedColors, VStack } from '@repo/ui';
-import React, { useState } from 'react';
+import { usePermissions } from '@repo/core';
+import { useBanyanGrowth, useJourneyHistory } from '@repo/core/hooks';
+import { useStore } from '@repo/core/logic';
+
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { Box } from '@repo/ui/primitives';
+import { VStack } from '@repo/ui/primitives';
+import { useTheme } from '@repo/ui/primitives';
+
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 // Kernel Imports from @repo/self (Breaking require cycle)
 import { BaseSelfView } from '../../components/BaseSelfView';
@@ -33,8 +40,8 @@ import { JournalSection, MoodSection, TeacherPulse } from '../../views/sections'
 
 export default function TeacherSelfView() {
   const { t } = useTranslation();
-  const navigation = useNavigation<any>();
-  const colors = useTheme().scene;
+  const _navigation = useNavigation<any>();
+  const _colors = useTheme().scene;
 
   // State & Kernel Hooks
   const { context } = usePermissions();
@@ -53,7 +60,7 @@ export default function TeacherSelfView() {
   // UI State
   const [isMoodPickerOpen, setIsMoodPickerOpen] = useState(false);
   const [isSavingMood, setIsSavingMood] = useState(false);
-  const [isPulseDashboardOpen, setIsPulseDashboardOpen] = useState(true);
+  const [_isPulseDashboardOpen, _setIsPulseDashboardOpen] = useState(true);
   const justFinishedOnboarding = useStore((state) => state.justFinishedOnboarding);
   const setJustFinishedOnboarding = useStore((state) => state.setJustFinishedOnboarding);
   const { entries: journalEntries, loading: loadingJournals } = useJournalEntries();

@@ -4,21 +4,13 @@
  * Standardized to Zero-Legacy: purged corrupted StyleSheet and migrated to NativeWind v4.
  */
 
-import {
-  Box,
-  Heading,
-  HStack,
-  Icon,
-  Input,
-  InputField,
-  Pressable,
-  Spinner,
-  Text,
-  VStack,
-} from '@repo/ui';
+import { Box, Input } from '@repo/ui/primitives';
+import { HStack, Heading, Icon, InputField, Spinner, Text, VStack } from '@repo/ui/primitives';
+import { Pressable } from '@repo/ui/primitives';
+
 import { formatDistanceToNow } from 'date-fns';
 import { History, MessageSquare, Plus, X } from 'lucide-react-native';
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import Animated, { FadeIn, FadeInUp, Layout } from 'react-native-reanimated';
 import { MOOD_COLORS, MOOD_LABELS, MOOD_OPTIONS } from '../constants/wellbeing';
 import type { MoodLog } from '../types/Wellbeing';

@@ -1,6 +1,7 @@
 import { ProgressRing, SimpleBarChart, SimpleLineChart, SimplePieChart } from '@repo/graphics';
-import { Box, colors, HStack, Text } from '@repo/ui';
-import React from 'react';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Text } from '@repo/ui/primitives';
+import { colors } from '@repo/ui/theme';
 
 interface AnalyticsChartProps {
   title: string;

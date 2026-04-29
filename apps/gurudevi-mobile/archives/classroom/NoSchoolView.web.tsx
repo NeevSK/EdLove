@@ -15,16 +15,10 @@
  */
 
 import { useNavigation } from '@react-navigation/native';
-import {
-  api,
-  communityAPI,
-  incrementInviteCodeUsage,
-  onboardingAPI,
-  schoolAPI,
-  supabase,
-  useStore,
-  validateInviteCode,
-} from '@repo/core';
+import { api, communityAPI, onboardingAPI, schoolAPI } from '@repo/core/api';
+import { incrementInviteCodeUsage, useStore, validateInviteCode } from '@repo/core/logic';
+import { supabase } from '@repo/core/native';
+
 import {
   ArrowRight,
   BookOpen,

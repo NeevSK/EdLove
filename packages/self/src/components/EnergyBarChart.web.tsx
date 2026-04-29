@@ -10,7 +10,6 @@
  *
  * Metro automatically resolves .web.tsx over .tsx on the web platform.
  */
-import React from 'react';
 import { ENERGY_COLORS } from '../constants/wellbeing';
 
 interface EnergyBarChartProps {

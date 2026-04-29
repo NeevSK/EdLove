@@ -1,17 +1,17 @@
 import {
-  APIError,
   applyTemporalFilter,
   assertContractCoverage,
   composeUserAbilities,
   createTemporalPOAProxy,
   defineContractCoverage,
   growthSignalsAPI,
-  identityAPI,
   impactRipplesAPI,
   libraryContract,
   type Role,
-  supabase,
 } from '@repo/core';
+import { identityAPI } from '@repo/core/api';
+import { supabase } from '@repo/core/native';
+import { APIError } from '@repo/core/types';
 
 import type {
   CollectionFilters,
@@ -25,7 +25,6 @@ import type {
   ResourceFilters,
 } from '../types';
 import { knowledgeDB } from './database';
-import { knowledgeSync } from './sync';
 
 // ============================================================================
 // HELPERS

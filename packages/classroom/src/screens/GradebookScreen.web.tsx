@@ -1,37 +1,13 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { type ClassroomGradingSettings, growthSignalsAPI, useStore } from '@repo/core';
-import {
-  Award,
-  Box,
-  Center,
-  Check,
-  ChevronLeft,
-  Edit3,
-  Heading,
-  HStack,
-  Icon,
-  Input,
-  InputField,
-  Modal,
-  ModalBackdrop,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  Pressable,
-  SanctuaryButton,
-  ScrollView,
-  Settings2,
-  Spinner,
-  Text,
-  Textarea,
-  TextareaInput,
-  TrendingUp,
-  Users,
-  VStack,
-  X,
-} from '@repo/ui';
+import { type ClassroomGradingSettings, growthSignalsAPI } from '@repo/core';
+import { useStore } from '@repo/core/logic';
+
+import { Award, Check, ChevronLeft, Edit3, Settings2, TrendingUp, Users } from '@repo/ui/icons';
+import { Box, Input, Textarea } from '@repo/ui/primitives';
+import { Center, HStack, Heading, Icon, InputField, Modal, ModalBackdrop, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, Spinner, Text, TextareaInput, VStack } from '@repo/ui/primitives';
+import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+
 import type React from 'react';
 import { useState } from 'react';
 import type { SortOption } from '../hooks/useGradebook';

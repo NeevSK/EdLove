@@ -2,7 +2,7 @@ import type React from 'react';
 import { Button, ButtonIcon, ButtonSpinner, ButtonText } from './ui/button';
 
 interface SanctuaryButtonProps {
-  onPress: () => void;
+  onPress?: () => void;
   children: React.ReactNode;
   variant?: 'solid' | 'outline' | 'ghost' | 'link';
   isLoading?: boolean;
@@ -16,9 +16,10 @@ interface SanctuaryButtonProps {
   accessibilityLabel?: string;
   accessibilityHint?: string;
   className?: string;
+  iconProps?: any;
 }
 
-export default function SanctuaryButton({
+export function SanctuaryButton({
   onPress,
   children,
   variant = 'solid',
@@ -33,6 +34,7 @@ export default function SanctuaryButton({
   accessibilityLabel,
   accessibilityHint,
   className = '',
+  iconProps,
 }: SanctuaryButtonProps) {
   // Semantic Mapping using Phase Tokens
   const getBgClass = () => {
@@ -130,13 +132,13 @@ export default function SanctuaryButton({
       {isLoading ? (
         <ButtonSpinner className={`mr-2 ${getTextClass()}`} />
       ) : leftIcon ? (
-        <ButtonIcon as={leftIcon} className={`mr-2 ${getTextClass()}`} />
+        <ButtonIcon as={leftIcon} className={`mr-2 ${getTextClass()}`} {...iconProps} />
       ) : null}
 
       <ButtonText className={`font-semibold ${getTextClass()}`}>{children}</ButtonText>
 
       {!isLoading && rightIcon && (
-        <ButtonIcon as={rightIcon} className={`ml-2 ${getTextClass()}`} />
+        <ButtonIcon as={rightIcon} className={`ml-2 ${getTextClass()}`} {...iconProps} />
       )}
     </Button>
   );

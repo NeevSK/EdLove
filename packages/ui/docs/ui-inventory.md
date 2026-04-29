@@ -98,7 +98,9 @@ This document is the package-local source of truth for `packages/ui`.
 | `src/components/HistoryTimeline.tsx` | shared component | unknown-unverified | canonical | keep | Shared component layer; several files still import the internal gluestack bridge and must be healed over time. |
 | `src/components/HorizontalChipRow.tsx` | shared component | unknown-unverified | canonical | keep | Shared component layer; several files still import the internal gluestack bridge and must be healed over time. |
 | `src/components/IdentityCard.tsx` | shared component | unknown-unverified | canonical | keep | Shared component layer; several files still import the internal gluestack bridge and must be healed over time. |
-| `src/components/index.ts` | shared component | unknown-unverified | canonical | keep | Shared component layer; several files still import the internal gluestack bridge and must be healed over time. |
+| `src/components/index.ts` | shared component | used | canonical | keep | Shared component layer; exported as root API. |
+| `src/components/InternalBrowser.tsx` | shared component | used | canonical | keep | Sandboxed internal browser (Decision 11); implements react-native-webview. |
+| `src/components/InternalBrowser.web.tsx` | shared component | used | canonical | keep | Web implementation of sandboxed browser using iframe. |
 | `src/components/InteractiveRadarChart.tsx` | shared component | unknown-unverified | canonical | keep | Shared component layer; several files still import the internal gluestack bridge and must be healed over time. |
 | `src/components/JourneyHistoryCard.tsx` | shared component | unknown-unverified | canonical | keep | Shared component layer; several files still import the internal gluestack bridge and must be healed over time. |
 | `src/components/LivingGlow.tsx` | shared component | unknown-unverified | canonical | keep | Shared component layer; several files still import the internal gluestack bridge and must be healed over time. |

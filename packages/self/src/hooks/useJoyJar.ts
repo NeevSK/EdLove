@@ -1,4 +1,6 @@
-﻿import { SafeZustandStorage, useStore } from '@repo/core';
+﻿import { SafeZustandStorage } from '@repo/core';
+import { useStore } from '@repo/core/logic';
+
 import { useCallback, useEffect, useState } from 'react';
 import { createJoyMoment, fetchJoyMoments } from '../api/selfFeatureRepository';
 import type { JoyMoment } from '../types';
@@ -55,7 +57,7 @@ export function useJoyJar(userId?: string) {
   // Fetch on mount/online change
   useEffect(() => {
     refreshData();
-  }, [refreshData, isOnline]);
+  }, [refreshData]);
 
   return {
     joyMoments,

@@ -1,8 +1,16 @@
 import { useNavigation } from '@react-navigation/native';
-import { FeatureGuard, useStore } from '@repo/core';
-import { Box, HStack, hapticLight, ScreenWrapper, Text, Theme, useTheme, VStack } from '@repo/ui';
+import { FeatureGuard } from '@repo/core';
+import { useStore } from '@repo/core/logic';
+
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Text, VStack } from '@repo/ui/primitives';
+import { useTheme } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme';
+import { hapticLight } from '@repo/ui/utils/haptics';
+
 import { ChevronLeft, Send, Sparkles } from 'lucide-react-native';
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   FlatList,
@@ -37,7 +45,7 @@ export default function AIAssistantScreen() {
         flatListRef.current?.scrollToEnd({ animated: true });
       }, 100);
     }
-  }, [messages, isThinking]);
+  }, [messages]);
 
   const renderMessage = ({ item }: { item: Message }) => {
     const isUser = item.role === 'user';

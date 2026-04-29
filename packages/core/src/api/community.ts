@@ -1,4 +1,4 @@
-﻿import {
+import {
   CommunityGroupSchema,
   CommunityPostSchema,
   GroupMemberSchema,
@@ -76,7 +76,14 @@ export const communityAPI = {
   /**
    * @authority read Group
    */
-  async getGroups(filters: { limit: number; offset: number; school_id?: string }) {
+  async getGroups(filters: {
+    limit: number;
+    offset: number;
+    school_id?: string;
+    search?: string;
+    is_public?: boolean;
+    type?: string;
+  }) {
     let query = supabase
       .from('community_groups')
       .select('*')
@@ -85,6 +92,15 @@ export const communityAPI = {
 
     if (filters.school_id) {
       query = query.eq('school_id', filters.school_id);
+    }
+    if (filters.search) {
+      query = query.ilike('name', `%${filters.search}%`);
+    }
+    if (filters.is_public !== undefined) {
+      query = query.eq('is_public', filters.is_public);
+    }
+    if (filters.type) {
+      query = query.eq('group_type', filters.type);
     }
 
     const { data, error } = await query;
@@ -103,7 +119,7 @@ export const communityAPI = {
     viewScale?: TemporalScale;
   }) {
     let query = supabase
-      .from('community_posts')
+      .from('community_posts_with_counts')
       .select('*')
       .range(filters.offset, filters.offset + filters.limit - 1);
 
@@ -566,6 +582,216 @@ export const communityAPI = {
       }),
       { likes: 0, comments: 0, shares: 0 },
     );
+  },
+
+  /**
+   * @authority read Post
+   */
+  async getComments(
+    postId: string,
+    limit = 60,
+    options: { viewDate?: string; viewScale?: TemporalScale } = {},
+  ) {
+    let query = supabase
+      .from('community_comments')
+      .select('*, author:users!community_comments_author_id_fkey(full_name, avatar_url, role)')
+      .eq('post_id', postId);
+
+    if (options.viewDate) {
+      query = applyTemporalFilter(query, {
+        column: 'created_at',
+        mode: 'event_time',
+        capability: 'event_stream',
+        scale: options.viewScale,
+      });
+    } else {
+      query = query.order('created_at', { ascending: false }).limit(limit);
+    }
+
+    const { data, error } = await query;
+    if (error) throw error;
+
+    return (data || []).reverse();
+  },
+
+  /**
+   * @authority create Post
+   */
+  async createComment(postId: string, content: string, isAnonymous = false) {
+    const myId = await identityAPI.getMyInternalId();
+    if (!myId) throw new Error('Authentication required');
+
+    const { data, error } = await supabase
+      .from('community_comments')
+      .insert({
+        post_id: postId,
+        author_id: myId,
+        content: content.trim(),
+        is_anonymous: isAnonymous,
+      })
+      .select('*, author:users!community_comments_author_id_fkey(full_name, avatar_url, role)')
+      .single();
+
+    if (error) throw error;
+
+    supabase.rpc('increment_comment_count', { p_post_id: postId }).then(({ error: rpcError }) => {
+      if (rpcError)
+        console.warn('[communityAPI] increment_comment_count failed:', rpcError.message);
+    });
+
+    return data;
+  },
+
+  /**
+   * @authority delete Post
+   */
+  async deleteComment(commentId: string) {
+    const { error } = await supabase.from('community_comments').delete().eq('id', commentId);
+    if (error) throw error;
+  },
+
+  /**
+   * @authority update Post
+   */
+  async toggleCommentUpvote(commentId: string) {
+    const myId = await identityAPI.getMyInternalId();
+    if (!myId) throw new Error('Authentication required');
+
+    const { data: existing } = await supabase
+      .from('community_comment_upvotes')
+      .select('comment_id')
+      .eq('comment_id', commentId)
+      .eq('user_id', myId)
+      .maybeSingle();
+
+    if (existing) {
+      await supabase
+        .from('community_comment_upvotes')
+        .delete()
+        .eq('comment_id', commentId)
+        .eq('user_id', myId);
+      return false;
+    }
+
+    await supabase
+      .from('community_comment_upvotes')
+      .insert({ comment_id: commentId, user_id: myId });
+    return true;
+  },
+
+  /**
+   * @authority update Post
+   */
+  async markOfficialAnswer(commentId: string, isOfficial: boolean) {
+    const { error } = await supabase
+      .from('community_comments')
+      .update({ is_official_answer: isOfficial })
+      .eq('id', commentId);
+    if (error) throw error;
+  },
+
+  /**
+   * @authority create User
+   */
+  async reportContent(
+    params: {
+      postId?: string;
+      groupId?: string;
+      targetUserId?: string;
+      reason: string;
+      report_target: 'teacher' | 'principal' | 'platform';
+    },
+    reporterId: string,
+  ) {
+    const { data, error } = await supabase
+      .from('community_reports')
+      .insert([
+        {
+          reporter_id: reporterId,
+          post_id: params.postId,
+          group_id: params.groupId,
+          target_user_id: params.targetUserId,
+          reason: params.reason,
+          report_target: params.report_target,
+          status: 'pending',
+        },
+      ])
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  },
+
+  /**
+   * @authority read User
+   */
+  async getNotifications(
+    limit = 30,
+    options: { viewDate?: string; viewScale?: TemporalScale } = {},
+  ) {
+    const myId = await identityAPI.getMyInternalId();
+    if (!myId) return [];
+
+    let query = supabase.from('notifications').select('*').eq('user_id', myId);
+
+    if (options.viewDate) {
+      query = applyTemporalFilter(query, {
+        column: 'created_at',
+        mode: 'event_time',
+        capability: 'event_stream',
+        scale: options.viewScale,
+      });
+    } else {
+      query = query.order('created_at', { ascending: false }).limit(limit);
+    }
+
+    const { data, error } = await query;
+    if (error) throw error;
+    return data || [];
+  },
+
+  /**
+   * @authority read User
+   */
+  async getUnreadNotificationCount() {
+    const myId = await identityAPI.getMyInternalId();
+    if (!myId) return 0;
+
+    const { count, error } = await supabase
+      .from('notifications')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', myId)
+      .eq('is_read', false);
+
+    if (error) return 0;
+    return count ?? 0;
+  },
+
+  /**
+   * @authority update User
+   */
+  async markNotificationRead(notificationId: string) {
+    const { error } = await supabase
+      .from('notifications')
+      .update({ is_read: true, read_at: new Date().toISOString() })
+      .eq('id', notificationId);
+    if (error) throw error;
+  },
+
+  /**
+   * @authority update User
+   */
+  async markAllNotificationsRead() {
+    const myId = await identityAPI.getMyInternalId();
+    if (!myId) return;
+
+    const { error } = await supabase
+      .from('notifications')
+      .update({ is_read: true, read_at: new Date().toISOString() })
+      .eq('user_id', myId)
+      .eq('is_read', false);
+    if (error) throw error;
   },
 };
 

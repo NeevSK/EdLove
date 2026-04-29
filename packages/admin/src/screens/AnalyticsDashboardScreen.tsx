@@ -1,15 +1,10 @@
 import { type LiveMetrics, multiTenantAnalyticsAPI, type TenantMetrics } from '@repo/analytics';
-import {
-  Box,
-  GlobalHeader,
-  Heading,
-  HStack,
-  Pressable,
-  ScreenWrapper,
-  ScrollView,
-  Text,
-  VStack,
-} from '@repo/ui';
+import GlobalHeader from '@repo/ui/components/GlobalHeader';
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Heading, Text, VStack } from '@repo/ui/primitives';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+
 import type React from 'react';
 import { useEffect, useState } from 'react';
 

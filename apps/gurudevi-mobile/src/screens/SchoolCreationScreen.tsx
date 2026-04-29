@@ -4,8 +4,8 @@
  * Thin wrapper for the Admin School Creation UI.
  */
 
-import { SchoolCreationScreen } from '@repo/admin';
-import { ErrorBoundary } from '@repo/ui';
+import SchoolCreationScreen from '@repo/admin/screens/SchoolCreationScreen';
+import ErrorBoundary from '@repo/ui/components/ErrorBoundary';
 
 const SchoolCreationWrapper = (props: Record<string, unknown>) => (
   <ErrorBoundary name="School Creation">

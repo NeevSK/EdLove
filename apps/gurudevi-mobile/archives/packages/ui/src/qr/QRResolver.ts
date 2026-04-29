@@ -12,7 +12,7 @@
  */
 
 import type { QRAction, QRPayload } from '@repo/core';
-import { QR_VERSION } from '@repo/core';
+import { QR_VERSION } from '@repo/core/types';
 
 export type QRResolveResult =
   | { ok: true; payload: QRPayload }

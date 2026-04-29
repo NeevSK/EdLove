@@ -9,7 +9,7 @@
 
 import { formatDistanceToNow } from 'date-fns';
 import { Heart, Plus } from 'lucide-react-native';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useGratitude } from '../hooks/useGratitude';
 import type { GratitudeEntry } from '../types';
 
@@ -134,7 +134,6 @@ export default function GratitudeGlimmers({ userId }: GratitudeGlimmersProps) {
             ))}
           </div>
           <textarea
-            autoFocus
             value={content}
             onChange={(e) => setContent(e.target.value)}
             onKeyDown={(e) => {

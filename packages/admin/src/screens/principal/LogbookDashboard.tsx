@@ -1,29 +1,11 @@
-import {
-  AlertTriangle,
-  ArrowLeft,
-  Box,
-  Button,
-  ButtonIcon,
-  ButtonText,
-  Footprints,
-  HStack,
-  Heading,
-  Icon,
-  LotusDropdown,
-  Medal,
-  Plus,
-  Pressable,
-  ScrollView,
-  SkeletonCard,
-  StickyNote,
-  Text,
-  Textarea,
-  TextareaInput,
-  VStack,
-  hapticLight,
-  hapticMedium,
-  hapticSuccess,
-} from '@repo/ui';
+import LotusDropdown from '@repo/ui/components/LotusDropdown';
+import { AlertTriangle, ArrowLeft, Footprints, Medal, Plus, StickyNote } from '@repo/ui/icons';
+import { Box, Button, Textarea } from '@repo/ui/primitives';
+import { ButtonIcon, ButtonText, HStack, Heading, Icon, Text, TextareaInput, VStack } from '@repo/ui/primitives';
+import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+import { hapticLight, hapticMedium, hapticSuccess } from '@repo/ui/utils/haptics';
+
 import { formatDistanceToNow } from 'date-fns';
 
 import type React from 'react';

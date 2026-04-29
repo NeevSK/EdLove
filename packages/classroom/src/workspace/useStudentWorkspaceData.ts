@@ -1,4 +1,5 @@
-import { useStore } from '@repo/core';
+import { useStore } from '@repo/core/logic';
+
 import { useMemo } from 'react';
 import {
   useStudentGrowthPulse,

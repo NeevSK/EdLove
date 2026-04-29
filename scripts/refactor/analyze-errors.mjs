@@ -1,5 +1,4 @@
 import fs from 'node:fs';
-import path from 'node:path';
 
 /**
  * Parses a TSC error file and generates a summary of errors per file and per category.
@@ -36,11 +35,11 @@ function analyzeErrors(filePath) {
       currentError = { file, lineNum, col, errorCode, message };
     } else if (currentError && trimmedLine.startsWith('  ')) {
       // Append second line of message (indented)
-      currentError.message += ' ' + trimmedLine.trim();
+      currentError.message += ` ${trimmedLine.trim()}`;
     } else if (currentError && !trimmedLine.match(tscErrorRegex) && trimmedLine.length > 0) {
       // It might be a follow-up line without the double space (sometimes happens in certain tsc outputs)
       if (trimmedLine.includes('is not assignable to type')) {
-        currentError.message += ' ' + trimmedLine.trim();
+        currentError.message += ` ${trimmedLine.trim()}`;
       }
     }
   });
@@ -108,7 +107,7 @@ function analyzeErrors(filePath) {
     categories: sortedCategories.map(([name, count]) => ({
       name,
       count,
-      percent: ((count / totalErrors.count) * 100).toFixed(2) + '%',
+      percent: `${((count / totalErrors.count) * 100).toFixed(2)}%`,
     })),
     topOffendingFiles: sortedFiles.map(([name, data]) => ({ file: name, count: data.count })),
   };

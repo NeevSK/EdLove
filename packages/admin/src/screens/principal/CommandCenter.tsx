@@ -1,16 +1,7 @@
-import {
-  Box,
-  CalendarCheck,
-  FileText,
-  HStack,
-  Heading,
-  Icon,
-  NotebookPen,
-  Pressable,
-  Text,
-  Users,
-  VStack,
-} from '@repo/ui';
+import { CalendarCheck, FileText, NotebookPen, Users } from '@repo/ui/icons';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Heading, Icon, Text, VStack } from '@repo/ui/primitives';
+import { Pressable } from '@repo/ui/primitives';
 
 import type React from 'react';
 import { useTranslation } from 'react-i18next';

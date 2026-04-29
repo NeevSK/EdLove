@@ -31,26 +31,29 @@ function useSelect() {
 export const Select = ({
   children,
   value = '',
+  selectedValue,
   onValueChange = () => {},
   isDisabled = false,
   ...props
 }: {
   children: React.ReactNode;
   value?: string;
+  selectedValue?: string;
   onValueChange?: (val: string) => void;
   isDisabled?: boolean;
 } & ViewProps) => {
   const [isOpen, setIsOpen] = useState(false);
+  const resolvedValue = selectedValue ?? value;
 
   const contextValue = useMemo(
     () => ({
       isOpen,
       setIsOpen,
-      value,
+      value: resolvedValue,
       onValueChange,
       isDisabled,
     }),
-    [isOpen, value, onValueChange, isDisabled],
+    [isOpen, resolvedValue, onValueChange, isDisabled],
   );
 
   return (

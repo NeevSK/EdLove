@@ -4,10 +4,13 @@ import {
   type GuardianStackParamList,
   resolveWorkspaceSwitcherTargets,
   usePermissions,
-  useStore,
   type WorkspaceSwitcherTarget,
 } from '@repo/core';
-import { Box, ScreenWrapper, Text } from '@repo/ui';
+import { useStore } from '@repo/core/logic';
+
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { Box } from '@repo/ui/primitives';
+import { Text } from '@repo/ui/primitives';
 import React from 'react';
 import {
   GuardianWorkspaceCanvas,

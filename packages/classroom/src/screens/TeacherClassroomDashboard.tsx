@@ -1,44 +1,23 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { api, type Classroom, type ClassroomStackParamList, usePermissions } from '@repo/core';
+import { type Classroom, type ClassroomStackParamList, usePermissions } from '@repo/core';
+import { api } from '@repo/core/api';
+
 import { StudentAnalysisModal } from '@repo/library';
-import {
-  BookOpen,
-  Box,
-  Button,
-  ButtonText,
-  ClipboardCheck,
-  ClipboardList,
-  FileText,
-  GlobalHeader,
-  GraduationCap,
-  Heading,
-  HStack,
-  hapticLight,
-  Icon,
-  Input,
-  InputField,
-  Layers3,
-  LayoutGrid,
-  MessageSquare,
-  NotebookPen,
-  Plus,
-  Pressable,
-  SanctuaryModal,
-  ScreenWrapper,
-  ScrollView,
-  SkeletonCard,
-  Sparkles,
-  Spinner,
-  Text,
-  Theme,
-  TrendingUp,
-  Users,
-  useBottomTabPadding,
-  useRegisterFAB,
-  useThemedColors,
-  VStack,
-} from '@repo/ui';
-import React, { useState } from 'react';
+import GlobalHeader from '@repo/ui/components/GlobalHeader';
+import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { useThemedColors } from '@repo/ui/hooks';
+import { BookOpen, ClipboardCheck, ClipboardList, FileText, GraduationCap, Layers3, LayoutGrid, MessageSquare, NotebookPen, Plus, Sparkles, TrendingUp, Users } from '@repo/ui/icons';
+import { Box, Input } from '@repo/ui/primitives';
+import { HStack, Heading, Icon, InputField, Spinner, Text, VStack } from '@repo/ui/primitives';
+import { useBottomTabPadding } from '@repo/ui/components/ScreenWrapper';
+import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
+import { useRegisterFAB } from '@repo/ui/context/FABContext';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme';
+import { hapticLight } from '@repo/ui/utils/haptics';
+
+import { useState } from 'react';
 import {
   AttendanceView,
   ClassroomEchoSection,
@@ -132,8 +111,8 @@ export default function TeacherClassroomDashboard({ route, navigation }: Props) 
   const { can, context } = usePermissions();
   const [activeFeature, setActiveFeature] = useState<FeatureId>('insights');
   const [showGroupsModal, setShowGroupsModal] = useState(false);
-  const colors = useThemedColors();
-  const bottomPadding = useBottomTabPadding();
+  const _colors = useThemedColors();
+  const _bottomPadding = useBottomTabPadding();
   const activeTone = FEATURE_TONES[activeFeature];
 
   // Lessons/Content Management State

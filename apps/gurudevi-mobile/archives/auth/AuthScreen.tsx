@@ -1,5 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { GuestDataSync, handleAPIError, identityAPI, supabase } from '@repo/core';
+import { handleAPIError } from '@repo/core';
+import { identityAPI } from '@repo/core/api';
+import { GuestDataSync, supabase } from '@repo/core/native';
+
 import { resolveQR, ScannerModal } from '@repo/scanner-kit';
 import {
   Box,
@@ -11,21 +14,21 @@ import {
   GuestDataSyncModal,
   Heading,
   HStack,
-  hapticLight,
-  hapticSuccess,
   Input,
   InputField,
-  LivingGlow,
-  Pressable,
   ScreenWrapper,
   Text,
-  Theme,
   Toast,
   ToastTitle,
   useThemedColors,
   useToast,
   VStack,
 } from '@repo/ui';
+import { LivingGlow } from '@repo/ui/components';
+import { Pressable } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme';
+import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+
 import * as AuthSession from 'expo-auth-session';
 import * as WebBrowser from 'expo-web-browser';
 import { Mail } from 'lucide-react-native';

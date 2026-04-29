@@ -2,7 +2,7 @@ import { Lock, Shield, Smartphone } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { Box, HStack, Text, VStack } from '../gluestack';
 import { Theme } from '../theme/Theme';
-import SanctuaryButton from './SanctuaryButton';
+import { SanctuaryButton } from './SanctuaryButton';
 import SanctuaryInput from './SanctuaryInput';
 import SanctuaryModal from './SanctuaryModal';
 

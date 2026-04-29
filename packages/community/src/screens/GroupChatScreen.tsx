@@ -11,7 +11,6 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { supabase } from '@repo/core/native';
 import { useTemporalStore } from '@repo/core/store';
 import type { CommunityStackParamList } from '@repo/core/types';
-import React from 'react';
 import { communityAPI } from '../api/community';
 import HeaderMoreMenu from '../components/HeaderMoreMenu';
 import BaseChatScreen, { type ChatMessage, type SubscriptionConfig } from './BaseChatScreen';

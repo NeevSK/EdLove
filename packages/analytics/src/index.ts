@@ -14,26 +14,15 @@ import { Predictor as ML_Predictor } from './ml/Predictor';
 export const createPerformanceAnalyzer = (db: DatabaseClient) => new PerformanceAnalyzer(db);
 export const createPredictor = (db: DatabaseClient) => new ML_Predictor(db);
 
-// Simple grade calculation functions (for backward compatibility)
-import { GPACalculator } from './engine/GPACalculator';
-
 // Re-export shared types from core
 export type { ClassroomGradingSettings, StudentGrade } from '@repo/core';
 export * from './ml/InsightGenerator';
 
 // ML and prediction exports
 export * from './ml/Predictor';
-export type {
-  CustomReportConfig,
-  GPACalculationOptions,
-  GradingScale,
-  LiveMetrics,
-  StudentPerformanceMetrics,
-  TenantMetrics,
-} from './types/AnalyticsTypes';
+
 // Types and interfaces
-export * from './types/AnalyticsTypes';
-export * from './types/GradingTypes';
+export * from './types';
 
 // Utility functions
 export * from './utils/analyticsHelpers';
@@ -68,8 +57,8 @@ export const calculateRanks = (grades: any[]) => gpaCalculator.calculateRanks(gr
 
 // Mock implementation for multiTenantAnalyticsAPI until full implementation is moved
 export const multiTenantAnalyticsAPI = {
-  aggregateTenantMetrics: async (ids: string[], range: any) => [],
-  getLiveMetrics: async (id: string) => ({
+  aggregateTenantMetrics: async (_ids: string[], _range: any) => [],
+  getLiveMetrics: async (_id: string) => ({
     active_users: 0,
     api_requests_per_minute: 0,
     error_rate: 0,

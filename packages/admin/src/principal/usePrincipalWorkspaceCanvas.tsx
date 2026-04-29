@@ -1,28 +1,22 @@
 import {
   type ResolvedWorkspaceSurface,
-  useWorkspaceLayoutSync,
   WORKSPACE_CANVAS_ZONES,
+  type WorkspaceSurfaceDefinition,
   type WorkspaceSwitcherTarget,
   type WorkspaceZoneId,
 } from '@repo/core';
+import { useWorkspaceLayoutSync } from '@repo/core/native';
+
 import {
   Box,
-  Building2,
-  CalendarCheck,
   HStack,
-  Icon,
-  LayoutGrid,
-  MoveRight,
-  NotebookPen,
-  Pressable,
-  QrCode,
-  Share2,
   Text,
   VStack,
-  Wind,
-  WorkspaceCanvas,
-  type WorkspaceSurfaceDefinition,
-} from '@repo/ui';
+  Icon,
+} from '@repo/ui/primitives';
+import { Building2, CalendarCheck, LayoutGrid, MoveRight, NotebookPen, QrCode, Share2, Wind } from '@repo/ui/icons';
+import { WorkspaceCanvas } from '@repo/ui/components/workspace';
+import { Pressable } from '@repo/ui/primitives';
 
 import type React from 'react';
 import { useMemo } from 'react';

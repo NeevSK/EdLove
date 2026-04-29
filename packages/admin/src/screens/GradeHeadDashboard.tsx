@@ -1,19 +1,13 @@
 import { useAIAgent } from '@repo/ai';
-import { useStore } from '@repo/core';
-import {
-  AlertCircle,
-  BookOpen,
-  Box,
-  HStack,
-  Icon,
-  SanctuaryButton,
-  ScreenWrapper,
-  ScrollView,
-  Text,
-  Users,
-  VStack,
-  useRegisterFAB,
-} from '@repo/ui';
+import { useStore } from '@repo/core/logic';
+
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { AlertCircle, BookOpen, Users } from '@repo/ui/icons';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Icon, Text, VStack } from '@repo/ui/primitives';
+import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
+import { useRegisterFAB } from '@repo/ui/context/FABContext';
+import { ScrollView } from '@repo/ui/primitives';
 
 export default function GradeHeadDashboard({
   schoolId,

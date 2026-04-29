@@ -1,5 +1,5 @@
 import { ScannerModal } from '@repo/scanner-kit';
-import { AuthScreen as UIAuthScreen } from '@repo/ui/screens';
+import UIAuthScreen from '@repo/ui/screens/AuthScreen';
 
 /**
  * High-End "Assembled" Screen

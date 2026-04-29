@@ -40,7 +40,7 @@ export const CaptureEngine = {
           resolve(canvas.toDataURL('image/png'));
         };
 
-        img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
+        img.src = `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(svgData)))}`;
       } catch (err) {
         reject(err);
       }

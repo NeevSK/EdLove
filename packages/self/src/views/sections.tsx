@@ -5,7 +5,7 @@
  */
 
 import { usePermissions } from '@repo/core/logic';
-import { Box, Heading, HStack, Icon, Spinner, Text, VStack } from '@repo/ui/primitives';
+import { Box, HStack, Icon, Spinner, Text, VStack } from '@repo/ui/primitives';
 import {
   BookOpen,
   Brain,

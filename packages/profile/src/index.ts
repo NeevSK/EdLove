@@ -1,22 +1,7 @@
 export * from './api/profile';
 export * from './api/social';
-export { default as AchievementGallery } from './components/AchievementGallery';
-export { AddSocialLinkModal } from './components/AddSocialLinkModal';
-export { AvatarDisplay } from './components/AvatarDisplay';
-export { ContactLinktree } from './components/ContactLinktree';
-export { default as ControlScroll } from './components/ControlScroll';
-// Components
-export * from './components/EditableItem';
-export { default as EditProfileModal } from './components/EditProfileModal';
-export { GiveThuthimalModal } from './components/GiveThuthimalModal';
-export { InlineSocialLinkEditor } from './components/InlineSocialLinkEditor';
-export { default as LivingJourneyPanel } from './components/LivingJourneyPanel';
-export { default as ProfileListItem } from './components/ProfileListItem';
-export { default as ProfileSkeleton } from './components/ProfileSkeleton';
-export { SocialSanctuary } from './components/SocialSanctuary';
-export { default as SupportSection } from './components/SupportSection';
-export { default as ThuthimalBadge } from './components/ThuthimalBadge';
-export { default as UserStatsCard } from './components/UserStatsCard';
+export * from './components';
+
 export * from './config/profileSections';
 export * from './hooks/useCommunityProfile';
 export * from './hooks/useCommunityProfileHistory';

@@ -1,34 +1,13 @@
 import { useNavigation } from '@react-navigation/native';
-import { api, communityAPI, identityAPI } from '@repo/core';
-import {
-  Box,
-  Button,
-  ButtonText,
-  CheckCircle,
-  FormControl,
-  FormControlLabel,
-  FormControlLabelText,
-  Heading,
-  HStack,
-  hapticLight,
-  hapticSuccess,
-  Icon,
-  Input,
-  InputField,
-  MessageSquare,
-  Modal,
-  ModalBackdrop,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  Pressable,
-  School,
-  Spinner,
-  Text,
-  Theme,
-  VStack,
-} from '@repo/ui';
+import { api, communityAPI, identityAPI } from '@repo/core/api';
+
+import { CheckCircle, MessageSquare, School } from '@repo/ui/icons';
+import { Box, Button, Input } from '@repo/ui/primitives';
+import { ButtonText, FormControl, FormControlLabel, FormControlLabelText, HStack, Heading, Icon, InputField, Modal, ModalBackdrop, ModalBody, ModalContent, ModalFooter, ModalHeader, Spinner, Text, VStack } from '@repo/ui/primitives';
+import { Pressable } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme';
+import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 

@@ -1,5 +1,7 @@
-import { Box, Card, colors, HStack, Text, VStack } from '@repo/ui';
-import React from 'react';
+import { Card } from '@repo/ui/components/SanctuaryCard';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Text, VStack } from '@repo/ui/primitives';
+import { colors } from '@repo/ui/theme';
 import { formatGPA, getGradeColor } from '../utils/analyticsHelpers';
 
 interface GPAInsightsProps {

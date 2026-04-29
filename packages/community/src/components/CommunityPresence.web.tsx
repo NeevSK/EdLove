@@ -6,7 +6,6 @@
  */
 
 import { Users, WifiOff } from '@repo/ui/icons';
-import React from 'react';
 import { useCommunityPresence } from '../hooks/useCommunityPresence';
 
 interface CommunityPresenceProps {

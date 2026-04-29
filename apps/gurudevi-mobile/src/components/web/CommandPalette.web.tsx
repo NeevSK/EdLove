@@ -5,17 +5,11 @@
  * Includes Sovereign Web decoupling by removing react-native UI dependencies.
  */
 
-import {
-  AnimatedView,
-  Box,
-  colors,
-  HStack,
-  Pressable,
-  ScrollView,
-  Text,
-  useTheme,
-  VStack,
-} from '@repo/ui';
+import { Box } from '@repo/ui/primitives';
+import { Text, VStack } from '@repo/ui/primitives';
+import { AnimatedView, Pressable, ScrollView, useTheme } from '@repo/ui/primitives';
+import { colors } from '@repo/ui/theme';
+
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 
@@ -269,7 +263,7 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
 
   useEffect(() => {
     setSelectedIndex(0);
-  }, [query]);
+  }, []);
 
   const cardStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,

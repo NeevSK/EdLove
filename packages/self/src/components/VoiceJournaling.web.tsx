@@ -7,24 +7,15 @@
  */
 
 import { usePermissions } from '@repo/core';
-import {
-  AnimatedView,
-  Box,
-  Button,
-  ButtonText,
-  Heading,
-  HStack,
-  hapticLight,
-  hapticSuccess,
-  Icon,
-  Pressable,
-  Text,
-  VStack,
-} from '@repo/ui';
+import { Box, Button } from '@repo/ui/primitives';
+import { ButtonText, HStack, Heading, Icon, Text, VStack } from '@repo/ui/primitives';
+import { AnimatedView, Pressable } from '@repo/ui/primitives';
+import { hapticSuccess } from '@repo/ui/utils/haptics';
+
 import { AlertCircle, Check, Mic, Play, Square, Trash2 } from 'lucide-react-native';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import Animated, {
+import {
   cancelAnimation,
   Easing,
   FadeInUp,
@@ -136,12 +127,12 @@ export default function VoiceJournaling({ userId, onComplete }: VoiceJournalingP
         -1,
         true,
       );
-    } catch (err) {
+    } catch (_err) {
       setRecordingState('unsupported');
     }
-  }, [recordingState]);
+  }, [recordingState, waveHeight, stopRecording, pulseScale]);
 
-  const stopRecording = useCallback(() => {
+  function stopRecording() {
     if (mediaRecorderRef.current?.state === 'recording') {
       mediaRecorderRef.current.stop();
     }
@@ -151,7 +142,7 @@ export default function VoiceJournaling({ userId, onComplete }: VoiceJournalingP
     pulseScale.value = withTiming(1);
     waveHeight.value = withTiming(12);
     setRecordingState('recorded');
-  }, [pulseScale, waveHeight]);
+  }
 
   const playRecording = useCallback(() => {
     if (!audioUrl) return;

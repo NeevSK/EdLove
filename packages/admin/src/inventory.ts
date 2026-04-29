@@ -1,10 +1,6 @@
-import {
-  type InstitutionalAsset,
-  type InventoryRequest,
-  inventoryAPI,
-  type ResourceNeedSummary,
-  supabase,
-} from '@repo/core';
+import type { InstitutionalAsset, InventoryRequest, ResourceNeedSummary } from '@repo/core';
+import { inventoryAPI } from '@repo/core/api';
+import { supabase } from '@repo/core/native';
 
 function isMissingTable(error: unknown): boolean {
   const message = (error as any)?.message ?? '';

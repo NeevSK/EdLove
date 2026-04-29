@@ -40,7 +40,7 @@ class DriverManager {
     try {
       this.nativeDriver = NitroModules.createHybridObject<TrubeGPUDriver>('TrubeGPUDriver');
       console.log('[Tr\u00FCbe-Art] [Tier 1] Native Driver Linked.');
-    } catch (e) {
+    } catch (_e) {
       console.log('[Tr\u00FCbe-Art] [Tier 1] Native Driver not available.');
     }
 

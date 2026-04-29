@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { type ColorPalette, GeoThematicEngine } from '../../algorithms/GeoThematicEngine';
 import { SriLankaMap } from './SriLankaMap';

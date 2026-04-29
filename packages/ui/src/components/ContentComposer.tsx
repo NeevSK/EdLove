@@ -1,8 +1,9 @@
-import React from 'react';
 import { Platform } from 'react-native';
+import { BarChart3, Clock, Image as ImageIcon, Lock, Mic, Plus, Trash2, Users, X } from '../icons';
 import {
-  AnimatedView,
   Box,
+  Button,
+  ButtonText,
   HStack,
   Icon,
   Image,
@@ -16,21 +17,8 @@ import {
   Textarea,
   TextareaInput,
   VStack,
-  Button,
-  ButtonText,
 } from '../primitives';
-import { SanctuaryModal } from '../components';
-import {
-  BarChart3,
-  Clock,
-  Image as ImageIcon,
-  Lock,
-  Mic,
-  Plus,
-  Trash2,
-  Users,
-  X,
-} from '../icons';
+import SanctuaryModal from './SanctuaryModal';
 
 export interface Tag {
   id: string;
@@ -43,7 +31,7 @@ export interface ComposerProps {
   title?: string;
   submitLabel?: string;
   placeholder?: string;
-  
+
   // State
   content: string;
   isSubmitting: boolean;
@@ -51,7 +39,7 @@ export interface ComposerProps {
   selectedImage: string | null;
   selectedTags: string[];
   tags?: Tag[];
-  
+
   // Poll State (Optional)
   isPollMode: boolean;
   pollOptions: string[];
@@ -94,14 +82,42 @@ const DEFAULT_PRESETS = [
 
 export function ContentComposer(props: ComposerProps) {
   const {
-    isOpen, onClose, title = 'Create Content', submitLabel = 'Post', placeholder = "What's on your mind?",
-    content, isSubmitting, isUploading, selectedImage, selectedTags, tags = [],
-    isPollMode, pollOptions, pollIsAnonymous, pollAllowMultiple, pollDurationHours, pollCustomEndsAt, showCustomDate,
+    isOpen,
+    onClose,
+    title = 'Create Content',
+    submitLabel = 'Post',
+    placeholder = "What's on your mind?",
+    content,
+    isSubmitting,
+    isUploading,
+    selectedImage,
+    selectedTags,
+    tags = [],
+    isPollMode,
+    pollOptions,
+    pollIsAnonymous,
+    pollAllowMultiple,
+    pollDurationHours,
+    pollCustomEndsAt,
+    showCustomDate,
     durationPresets = DEFAULT_PRESETS,
-    allowPolls = true, allowMedia = true, allowTags = true,
-    onContentChange, onToggleTag, onPickImage, onRemoveImage, onTogglePollMode,
-    onAddPollOption, onUpdatePollOption, onRemovePollOption, onSetPollDuration,
-    onSetShowCustomDate, onSetCustomDate, onSetPollAnonymous, onSetPollMultiple, onSubmit
+    allowPolls = true,
+    allowMedia = true,
+    allowTags = true,
+    onContentChange,
+    onToggleTag,
+    onPickImage,
+    onRemoveImage,
+    onTogglePollMode,
+    onAddPollOption,
+    onUpdatePollOption,
+    onRemovePollOption,
+    onSetPollDuration,
+    onSetShowCustomDate,
+    onSetCustomDate,
+    onSetPollAnonymous,
+    onSetPollMultiple,
+    onSubmit,
   } = props;
 
   const footer = (
@@ -110,7 +126,9 @@ export function ContentComposer(props: ComposerProps) {
       isDisabled={(!content.trim() && !selectedImage) || isSubmitting || isUploading}
       className="w-full bg-phase-interactive h-12 rounded-2xl active:opacity-90"
     >
-      <ButtonText className="text-inverted font-bold">{isSubmitting ? 'Posting...' : submitLabel}</ButtonText>
+      <ButtonText className="text-inverted font-bold">
+        {isSubmitting ? 'Posting...' : submitLabel}
+      </ButtonText>
     </Button>
   );
 
@@ -189,7 +207,11 @@ export function ContentComposer(props: ComposerProps) {
                           }}
                           className={`px-3 py-1.5 rounded-full border ${isActive ? 'bg-phase-interactive border-phase-interactive' : 'bg-phase-surface border-border'}`}
                         >
-                          <Text className={`text-xs ${isActive ? 'text-inverted font-semibold' : 'text-ink/60'}`}>{p.label}</Text>
+                          <Text
+                            className={`text-xs ${isActive ? 'text-inverted font-semibold' : 'text-ink/60'}`}
+                          >
+                            {p.label}
+                          </Text>
                         </Pressable>
                       );
                     })}
@@ -202,7 +224,11 @@ export function ContentComposer(props: ComposerProps) {
                         }}
                         className={`px-3 py-1.5 rounded-full border ${showCustomDate ? 'bg-phase-interactive border-phase-interactive' : 'bg-phase-surface border-border'}`}
                       >
-                        <Text className={`text-xs ${showCustomDate ? 'text-inverted font-semibold' : 'text-ink/60'}`}>Custom</Text>
+                        <Text
+                          className={`text-xs ${showCustomDate ? 'text-inverted font-semibold' : 'text-ink/60'}`}
+                        >
+                          Custom
+                        </Text>
                       </Pressable>
                     )}
                   </HStack>
@@ -244,7 +270,11 @@ export function ContentComposer(props: ComposerProps) {
                       onPress={() => onToggleTag(tag.id)}
                       className={`px-3 py-1.5 rounded-full border ${active ? 'bg-phase-interactive border-phase-interactive' : 'bg-phase-surface border-border'}`}
                     >
-                      <Text className={`text-xs ${active ? 'text-inverted font-semibold' : 'text-ink/60'}`}>{tag.label}</Text>
+                      <Text
+                        className={`text-xs ${active ? 'text-inverted font-semibold' : 'text-ink/60'}`}
+                      >
+                        {tag.label}
+                      </Text>
                     </Pressable>
                   );
                 })}
@@ -255,8 +285,15 @@ export function ContentComposer(props: ComposerProps) {
 
         {selectedImage && (
           <Box className="relative rounded-2xl overflow-hidden h-[200px]">
-            <Image source={{ uri: selectedImage }} className="w-full h-full rounded-2xl" alt="Selected image" />
-            <Pressable onPress={onRemoveImage} className="absolute top-2 right-2 bg-black/40 p-2 rounded-full">
+            <Image
+              source={{ uri: selectedImage }}
+              className="w-full h-full rounded-2xl"
+              alt="Selected image"
+            />
+            <Pressable
+              onPress={onRemoveImage}
+              className="absolute top-2 right-2 bg-black/40 p-2 rounded-full"
+            >
               <Icon as={Trash2} size="sm" className="text-inverted" />
             </Pressable>
             {isUploading && (
@@ -270,16 +307,30 @@ export function ContentComposer(props: ComposerProps) {
         {/* Toolbar */}
         <HStack className="gap-4">
           {allowMedia && (
-            <Pressable onPress={onPickImage} className={`p-3 rounded-xl ${selectedImage ? 'bg-phase-interactive/10' : 'bg-phase-surface'}`}>
-              <Icon as={ImageIcon} size="md" className={selectedImage ? 'text-phase-interactive' : 'text-ink/40'} />
+            <Pressable
+              onPress={onPickImage}
+              className={`p-3 rounded-xl ${selectedImage ? 'bg-phase-interactive/10' : 'bg-phase-surface'}`}
+            >
+              <Icon
+                as={ImageIcon}
+                size="md"
+                className={selectedImage ? 'text-phase-interactive' : 'text-ink/40'}
+              />
             </Pressable>
           )}
           <Pressable className="p-3 bg-phase-surface rounded-xl">
             <Icon as={Mic} size="md" className="text-ink/40" />
           </Pressable>
           {allowPolls && (
-            <Pressable onPress={onTogglePollMode} className={`p-3 rounded-xl ${isPollMode ? 'bg-phase-interactive' : 'bg-phase-surface'}`}>
-              <Icon as={BarChart3} size="md" className={isPollMode ? 'text-inverted' : 'text-ink/40'} />
+            <Pressable
+              onPress={onTogglePollMode}
+              className={`p-3 rounded-xl ${isPollMode ? 'bg-phase-interactive' : 'bg-phase-surface'}`}
+            >
+              <Icon
+                as={BarChart3}
+                size="md"
+                className={isPollMode ? 'text-inverted' : 'text-ink/40'}
+              />
             </Pressable>
           )}
         </HStack>

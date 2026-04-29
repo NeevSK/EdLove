@@ -2,7 +2,7 @@ import { ROOT_DIR } from '../utils/constants.js';
 
 /**
  * --- The Sovereign Document Service ---
- * A centralized engine for transforming raw codebase analysis into 
+ * A centralized engine for transforming raw codebase analysis into
  * premium, highly-structured engineering dossiers.
  */
 
@@ -58,10 +58,19 @@ export class DocumentService {
     const timestamp = new Date().toISOString();
     const sections: string[] = [];
 
-    // 1. Header & Metadata
+    const scopeStr = String(data.scope || '/');
+    const rootPath = String(ROOT_DIR || '').toLowerCase();
+    const scopeLower = scopeStr.toLowerCase();
+
+    // Case-insensitive removal of root path for cleaner reports
+    let displayScope = scopeStr;
+    if (scopeLower.startsWith(rootPath)) {
+      displayScope = scopeStr.substring(rootPath.length);
+    }
+
     sections.push(`# ${data.title}`);
     sections.push(`> **Timestamp:** ${timestamp}`);
-    sections.push(`> **Scope:** \`${(String(data.scope || '/')).replace(ROOT_DIR || '', '') || '/'}\``);
+    sections.push(`> **Scope:** \`${displayScope.replace(/^[\\/]/, '') || '/'}\``);
     sections.push('');
 
     // 2. Executive Summary
@@ -74,17 +83,17 @@ export class DocumentService {
       sections.push('### 📈 Key Metrics');
       sections.push('| Metric | Value |');
       sections.push('| :--- | :--- |');
-      data.stats.forEach(s => sections.push(`| **${s.label}** | ${s.value} |`));
+      data.stats.forEach((s) => sections.push(`| **${s.label}** | ${s.value} |`));
       sections.push('');
     }
 
     // 4. Heatmap (Distribution)
     if (data.heatmap && data.heatmap.length > 0) {
       sections.push('### 🔥 Deployment Heatmap');
-      
+
       // Calculate top packages
       const topPackages = new Map<string, number>();
-      data.heatmap.forEach(h => {
+      data.heatmap.forEach((h) => {
         const match = h.path.match(/packages[\\/]([^\\/]+)/) || h.path.match(/apps[\\/]([^\\/]+)/);
         const pkg = match ? `@repo/${match[1]}` : 'Root/Misc';
         topPackages.set(pkg, (topPackages.get(pkg) || 0) + h.count);
@@ -95,7 +104,7 @@ export class DocumentService {
       sections.push('| :--- | :--- |');
       sortedPkgs.forEach(([pkg, count]) => sections.push(`| ${pkg} | ${count} matches |`));
       sections.push('');
-      
+
       if (data.heatmap.length > 10) {
         sections.push(`*Total files affected: ${data.heatmap.length}*`);
         sections.push('');
@@ -104,7 +113,7 @@ export class DocumentService {
 
     // 5. Highlights (Code Snippets / Previews)
     if (data.highlights && data.highlights.length > 0) {
-      data.highlights.forEach(h => {
+      data.highlights.forEach((h) => {
         sections.push(`## ${h.title}`);
         if (h.language) {
           sections.push(`\`\`\`${h.language}`);
@@ -120,24 +129,25 @@ export class DocumentService {
     // 6. Categorized Findings
     if (data.issues.length > 0) {
       sections.push('## 🔍 Detailed Findings');
-      
+
       // Group by Issue Type
       const categories = new Map<string, AnalysisIssue[]>();
-      data.issues.forEach(i => {
+      data.issues.forEach((i) => {
         const list = categories.get(i.type) || [];
         list.push(i);
         categories.set(i.type, list);
       });
 
       for (const [type, items] of categories.entries()) {
-        const icon = items.some(i => i.severity === 'error') ? '❌' : '⚠️';
+        const icon = items.some((i) => i.severity === 'error') ? '❌' : '⚠️';
         sections.push(`### ${icon} ${type}`);
         sections.push('| File | Issue | Documentation |');
         sections.push('| :--- | :--- | :--- |');
-        
-        items.forEach(item => {
+
+        items.forEach((item) => {
           const fileLink = `\`${item.file}\``;
-          const docLink = item.reference && item.reference !== 'N/A' ? `[Guide](${item.reference})` : 'N/A';
+          const docLink =
+            item.reference && item.reference !== 'N/A' ? `[Guide](${item.reference})` : 'N/A';
           const lineInfo = item.line ? ` (L${item.line})` : '';
           sections.push(`| ${fileLink}${lineInfo} | ${item.message} | ${docLink} |`);
         });
@@ -145,13 +155,15 @@ export class DocumentService {
       }
     } else {
       sections.push('## ✅ Conclusion');
-      sections.push('No critical issues detected. The architecture remains compliant and pristine.');
+      sections.push(
+        'No critical issues detected. The architecture remains compliant and pristine.',
+      );
     }
 
     // 7. Visual Charts (ASCII Progress Bars)
     if (data.charts && data.charts.length > 0) {
       sections.push('## 📊 Analysis Charts');
-      data.charts.forEach(c => {
+      data.charts.forEach((c) => {
         const barWidth = 20;
         const filled = Math.round((c.value / 100) * barWidth);
         const bar = '█'.repeat(filled) + '░'.repeat(barWidth - filled);
@@ -164,7 +176,7 @@ export class DocumentService {
     // 8. Recommendations (Next Steps)
     if (data.recommendations && data.recommendations.length > 0) {
       sections.push('## 🚀 Recommended Next Steps');
-      data.recommendations.forEach(r => sections.push(`- [ ] ${r}`));
+      data.recommendations.forEach((r) => sections.push(`- [ ] ${r}`));
       sections.push('');
     }
 
@@ -189,11 +201,11 @@ export class DocumentService {
   parseGrepHeatmap(raw: string): HeatmapEntry[] {
     return raw
       .split('\n')
-      .filter(line => line.includes(':'))
-      .map(line => {
+      .filter((line) => line.includes(':'))
+      .map((line) => {
         const [filePath, count] = line.split(':');
         return { path: filePath, count: parseInt(count, 10) };
       })
-      .filter(h => !isNaN(h.count));
+      .filter((h) => !Number.isNaN(h.count));
   }
 }

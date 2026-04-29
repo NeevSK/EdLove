@@ -1,4 +1,3 @@
-import React from 'react';
 import { SILK_SOUL } from '../../core/soul/SilkSoul';
 import type { TrubeRendererProps } from '../renderers/types';
 import { NativeSubstrateRenderer } from './NativeSubstrateRenderer';

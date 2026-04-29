@@ -1,26 +1,23 @@
 import { isDemo, usePermissions } from '@repo/core/logic';
+import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
+import SanctuaryFlashList from '@repo/ui/components/SanctuaryFlashList';
+import { Compass, Globe, Plus, Shield, X } from '@repo/ui/icons';
 import {
   AnimatedView,
   Box,
   Heading,
   HStack,
   Icon,
-  Input,
   InputField,
   Pressable,
+  SkeletonCard,
   Spinner,
   Text,
   VStack,
-  SkeletonCard,
 } from '@repo/ui/primitives';
-import {
-  SanctuaryButton,
-  SanctuaryFlashList,
-} from '@repo/ui/components';
-import { FadeInDown } from 'react-native-reanimated';
-import { Compass, Globe, Plus, Shield, Users, X } from '@repo/ui/icons';
-import React, { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { FadeInDown } from 'react-native-reanimated';
 import GroupCard from '../components/GroupCard';
 import { useCommunityGroups } from '../hooks/useCommunityGroups';
 import type { Group } from '../types';
@@ -38,7 +35,6 @@ interface GroupsScreenProps {
 export default function GroupsScreen({
   userId,
   schoolId,
-  onCreatePost,
   onCreateGroup,
   onNavigateToGroup,
 }: GroupsScreenProps) {
@@ -99,6 +95,8 @@ export default function GroupsScreen({
             <Pressable
               onPress={handleClearSearch}
               className="w-8 h-8 rounded-full bg-ink/5 items-center justify-center"
+              accessibilityRole="button"
+              accessibilityLabel="Clear search"
             >
               <Icon as={X} size="xs" className="text-ink/60" />
             </Pressable>
@@ -114,6 +112,9 @@ export default function GroupsScreen({
         <Pressable
           onPress={handleSanctuaryTabPress}
           className={`flex-1 py-3 rounded-xl flex-row items-center justify-center gap-2 ${activeSubTab === 'sanctuary' ? 'bg-phase-interactive shadow-sm' : 'bg-transparent'}`}
+          accessibilityRole="tab"
+          accessibilityLabel="Sanctuary tab"
+          accessibilityState={{ selected: activeSubTab === 'sanctuary' }}
         >
           <Icon
             as={Shield}
@@ -129,6 +130,9 @@ export default function GroupsScreen({
         <Pressable
           onPress={handleGalaxyTabPress}
           className={`flex-1 py-3 rounded-xl flex-row items-center justify-center gap-2 ${activeSubTab === 'galaxy' ? 'bg-phase-interactive shadow-sm' : 'bg-transparent'}`}
+          accessibilityRole="tab"
+          accessibilityLabel="Galaxy tab"
+          accessibilityState={{ selected: activeSubTab === 'galaxy' }}
         >
           <Icon
             as={Globe}
@@ -167,7 +171,7 @@ export default function GroupsScreen({
     );
   };
 
-  const getEmptyComponent = () => {
+  const getEmptyComponent = useCallback(() => {
     if (loading) {
       return (
         <VStack className="gap-5 py-4 px-5">
@@ -232,7 +236,15 @@ export default function GroupsScreen({
         </SanctuaryButton>
       </VStack>
     );
-  };
+  }, [
+    loading,
+    activeSubTab,
+    handleGalaxyTabPress,
+    handleCreateGroupPress,
+    t,
+    flags.isCommunityEnabled,
+    can,
+  ]);
 
   const renderItem = useCallback(
     ({ item, index }: { item: Group; index: number }) => {
@@ -244,7 +256,7 @@ export default function GroupsScreen({
               id={item.id}
               name={isDemo() ? `(Sample) ${item.name}` : item.name}
               memberCount={item.member_count}
-              type={(item.type || (item as any).group_type || 'general') as any}
+              type={item.type || 'general'}
               description={item.description}
               onPress={() => onNavigateToGroup(item.id)}
             />
@@ -257,7 +269,7 @@ export default function GroupsScreen({
 
   const keyExtractor = useCallback((item: Group) => item.id, []);
 
-  const ListEmptyComponent = useMemo(() => getEmptyComponent(), [loading, activeSubTab]);
+  const ListEmptyComponent = useMemo(() => getEmptyComponent(), [getEmptyComponent]);
 
   const handleEndReached = useCallback(() => {
     if (hasNextGroups && !isFetchingNextGroups) {
@@ -271,7 +283,7 @@ export default function GroupsScreen({
       {renderSearchBar()}
       {renderGalaxyActions()}
       <SanctuaryFlashList
-        data={activeGroups as any}
+        data={activeGroups}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
         estimatedItemSize={120}

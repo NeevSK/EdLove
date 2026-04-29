@@ -5,7 +5,7 @@
  */
 
 import { AnnouncementsScreen as PackageAnnouncementsScreen } from '@repo/community';
-import { ErrorBoundary } from '@repo/ui';
+import ErrorBoundary from '@repo/ui/components/ErrorBoundary';
 
 const AnnouncementsWrapper = (props: Record<string, unknown>) => (
   <ErrorBoundary name="Announcements">

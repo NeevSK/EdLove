@@ -1,21 +1,23 @@
 import { cssInterop } from 'nativewind';
 import React from 'react';
-import { Text as RNText, type TextProps } from 'react-native';
+import { Text as RNText, type StyleProp, type TextProps, type TextStyle } from 'react-native';
 
 cssInterop(RNText, { className: 'style' });
 
-export const Text = React.forwardRef<RNText, TextProps & { className?: string; size?: string }>(
-  ({ className, size, ...props }, ref) => {
-    const Component = RNText as any;
-    return (
-      <Component
-        {...props}
-        ref={ref}
-        className={`text-phase-text-primary ${size ? `text-${size}` : 'text-base'} ${className || ''}`}
-      />
-    );
-  },
-);
+export const Text = React.forwardRef<
+  RNText,
+  TextProps & { className?: string; size?: string; sx?: StyleProp<TextStyle> }
+>(({ className, size, sx, style, ...props }, ref) => {
+  const Component = RNText as any;
+  return (
+    <Component
+      {...props}
+      ref={ref}
+      className={`text-phase-text-primary ${size ? `text-${size}` : 'text-base'} ${className || ''}`}
+      style={[sx, style]}
+    />
+  );
+});
 Text.displayName = 'Text';
 
 export const Heading = React.forwardRef<
@@ -23,8 +25,9 @@ export const Heading = React.forwardRef<
   TextProps & {
     className?: string;
     size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | '5xl';
+    sx?: StyleProp<TextStyle>;
   }
->(({ className, size = 'lg', ...props }, ref) => {
+>(({ className, size = 'lg', sx, style, ...props }, ref) => {
   const sizeMap: Record<string, string> = {
     xs: 'text-xs',
     sm: 'text-sm',
@@ -42,6 +45,7 @@ export const Heading = React.forwardRef<
       {...props}
       ref={ref}
       className={`font-bold text-phase-text-primary ${sizeMap[size]} ${className || ''}`}
+      style={[sx, style]}
     />
   );
 });

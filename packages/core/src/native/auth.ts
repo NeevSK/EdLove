@@ -6,10 +6,19 @@ import { supabase } from './supabase';
 export const authAPI = {
   /**
    * Get current auth session.
+   * @deprecated Use identityAPI for application logic. If you need the raw session for system tasks, use getAuthSession().
    * NOTE: This returns the Supabase auth session (JWT, is_anonymous, email, etc.).
-   * Do NOT use session.user.id for DB queries  use identityAPI.getMyInternalId() instead.
+   * Do NOT use session.user.id for DB queries — use identityAPI.getMyInternalId() instead.
    */
   async getSession() {
+    return this.getAuthSession();
+  },
+
+  /**
+   * Returns the raw Supabase auth session.
+   * Internal use only for system-level authentication tasks.
+   */
+  async getAuthSession() {
     const { data, error } = await supabase.auth.getSession();
 
     if (error) {
@@ -21,10 +30,18 @@ export const authAPI = {
 
   /**
    * Get current Supabase auth user object.
-   * NOTE: Returns the auth layer user. Do NOT use user.id for DB queries
-   * use identityAPI.getMyInternalId() to get the internal users.id instead.
+   * @deprecated Use identityAPI.getMyInternalId() for ID resolution. Use getAuthUser() if you need raw metadata.
+   * NOTE: Returns the auth layer user. Do NOT use user.id for DB queries.
    */
   async getUser() {
+    return this.getAuthUser();
+  },
+
+  /**
+   * Returns the raw Supabase auth user object.
+   * Internal use only for identity resolution or auth metadata extraction.
+   */
+  async getAuthUser() {
     const { data, error } = await supabase.auth.getUser();
 
     if (error) {
@@ -45,6 +62,62 @@ export const authAPI = {
 
     if (error) {
       throw new APIError('Failed to sign in', error.code, error);
+    }
+
+    return data;
+  },
+
+  /**
+   * Sign in with OAuth provider
+   */
+  async signInWithOAuth(provider: 'google', redirectTo?: string, skipBrowserRedirect = false) {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo,
+        skipBrowserRedirect,
+        queryParams: { prompt: 'select_account' },
+      },
+    });
+
+    if (error) {
+      throw new APIError('Failed to sign in with OAuth', error.code, error);
+    }
+
+    return data;
+  },
+
+  /**
+   * Link OAuth identity to current auth account
+   */
+  async linkOAuthIdentity(provider: 'google', redirectTo?: string, skipBrowserRedirect = false) {
+    const { data, error } = await supabase.auth.linkIdentity({
+      provider,
+      options: {
+        redirectTo,
+        skipBrowserRedirect,
+        queryParams: { prompt: 'select_account' },
+      },
+    });
+
+    if (error) {
+      throw new APIError('Failed to link OAuth identity', error.code, error);
+    }
+
+    return data;
+  },
+
+  /**
+   * Manually sets the auth session (e.g. after OAuth redirect)
+   */
+  async setSession(access_token: string, refresh_token: string) {
+    const { data, error } = await supabase.auth.setSession({
+      access_token,
+      refresh_token,
+    });
+
+    if (error) {
+      throw new APIError('Failed to set session', error.code, error);
     }
 
     return data;

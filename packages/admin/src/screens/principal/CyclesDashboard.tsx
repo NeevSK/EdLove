@@ -1,28 +1,11 @@
-import { api } from '@repo/core';
-import {
-  ArrowLeft,
-  Box,
-  Button,
-  ButtonIcon,
-  ButtonText,
-  Calendar,
-  FormControl,
-  FormControlLabel,
-  FormControlLabelText,
-  HStack,
-  Heading,
-  Icon,
-  Input,
-  InputField,
-  Plus,
-  Pressable,
-  ScrollView,
-  SkeletonCard,
-  Text,
-  VStack,
-  hapticLight,
-  hapticMedium,
-} from '@repo/ui';
+import { api } from '@repo/core/api';
+
+import { ArrowLeft, Calendar, Plus } from '@repo/ui/icons';
+import { Box, Button, Input } from '@repo/ui/primitives';
+import { ButtonIcon, ButtonText, FormControl, FormControlLabel, FormControlLabelText, HStack, Heading, Icon, InputField, Text, VStack } from '@repo/ui/primitives';
+import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+import { hapticLight, hapticMedium } from '@repo/ui/utils/haptics';
 
 import type React from 'react';
 import { useEffect, useState } from 'react';

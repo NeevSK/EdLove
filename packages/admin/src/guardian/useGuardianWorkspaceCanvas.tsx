@@ -1,25 +1,22 @@
 import {
   type ResolvedWorkspaceSurface,
-  useWorkspaceLayoutSync,
   WORKSPACE_CANVAS_ZONES,
+  type WorkspaceSurfaceDefinition,
   type WorkspaceSwitcherTarget,
   type WorkspaceZoneId,
 } from '@repo/core';
+import { useWorkspaceLayoutSync } from '@repo/core/native';
+
 import {
-  BellRing,
-  BookOpenText,
   Box,
-  ChevronRight,
   HStack,
   Icon,
-  MessageCircleHeart,
-  Pressable,
-  ShieldCheck,
   Text,
   VStack,
-  WorkspaceCanvas,
-  type WorkspaceSurfaceDefinition,
-} from '@repo/ui';
+} from '@repo/ui/primitives';
+import { BellRing, BookOpenText, ChevronRight, MessageCircleHeart, ShieldCheck } from '@repo/ui/icons';
+import { WorkspaceCanvas } from '@repo/ui/components/workspace';
+import { Pressable } from '@repo/ui/primitives';
 
 import type React from 'react';
 import { useMemo } from 'react';

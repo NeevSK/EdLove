@@ -1,30 +1,13 @@
 import type { BulkStudent } from '@repo/core';
-import {
-  Box,
-  Button,
-  ButtonText,
-  Heading,
-  HStack,
-  hapticLight,
-  hapticSuccess,
-  Icon,
-  Input,
-  InputField,
-  Plus,
-  Pressable,
-  SanctuaryToast,
-  Save,
-  ScrollView,
-  Text,
-  Textarea,
-  TextareaInput,
-  Theme,
-  Trash2,
-  useToast,
-  VStack,
-  X,
-} from '@repo/ui';
-import React, { useMemo, useState } from 'react';
+import { Plus, Save, Trash2, X } from '@repo/ui/icons';
+import { Box, Button, Input, Textarea } from '@repo/ui/primitives';
+import { ButtonText, HStack, Heading, Icon, InputField, Text, TextareaInput, VStack } from '@repo/ui/primitives';
+import { useToast } from '@repo/ui/providers';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme';
+import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface BulkStudentCreationProps {
@@ -94,7 +77,7 @@ export default function BulkStudentCreation({
 
   const moveToNext = () => {
     const student = students[currentIndex];
-    if (!student || !student.name.trim() || !student.index_number.trim()) {
+    if (!student?.name.trim() || !student.index_number.trim()) {
       showError(t('bulk_creation.errors.requiredFields') || 'Name and Index are required');
       return;
     }

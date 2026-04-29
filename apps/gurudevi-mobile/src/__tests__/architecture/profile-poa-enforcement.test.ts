@@ -1,4 +1,6 @@
-import { type TotalState, useStore } from '@repo/core';
+import type { TotalState } from '@repo/core';
+import { useStore } from '@repo/core/logic';
+
 import { profileAPI } from '@repo/profile/api/profile';
 import { socialAPI } from '@repo/profile/api/social';
 import { profileServices } from '@repo/profile/domains/profile/runtime';

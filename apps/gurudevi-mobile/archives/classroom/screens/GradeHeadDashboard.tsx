@@ -1,15 +1,11 @@
 import { useAIAgent } from '@repo/ai';
-import { useStore } from '@repo/core';
-import {
-  Box,
-  HStack,
-  SanctuaryButton,
-  ScreenWrapper,
-  Text,
-  Theme,
-  useRegisterFAB,
-  VStack,
-} from '@repo/ui';
+import { useStore } from '@repo/core/logic';
+
+import { Box, HStack, ScreenWrapper, Text, VStack } from '@repo/ui';
+import { SanctuaryButton } from '@repo/ui/components';
+import { useRegisterFAB } from '@repo/ui/context/FABContext';
+import { Theme } from '@repo/ui/theme';
+
 import { AlertCircle, BookOpen, Users } from 'lucide-react-native';
 import { ScrollView, StyleSheet } from 'react-native';
 

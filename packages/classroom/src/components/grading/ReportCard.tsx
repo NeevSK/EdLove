@@ -4,9 +4,12 @@
  * Displays a student's report card with all their grades.
  */
 
-import { calculateRanks, marksToGPA, type StudentGrade } from '@repo/analytics';
-import { Box, Heading, HStack, ScrollView, Text, VStack } from '@repo/ui';
-import React, { useMemo } from 'react';
+import { marksToGPA, type StudentGrade } from '@repo/analytics';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Heading, Text, VStack } from '@repo/ui/primitives';
+import { ScrollView } from '@repo/ui/primitives';
+
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface ReportCardProps {

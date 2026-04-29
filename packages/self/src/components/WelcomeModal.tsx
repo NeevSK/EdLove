@@ -1,14 +1,9 @@
-import {
-  Button,
-  ButtonText,
-  hapticSuccess,
-  SanctuaryModal,
-  Text,
-  Theme,
-  useTheme,
-  VStack,
-} from '@repo/ui';
-import React from 'react';
+import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
+import { Button } from '@repo/ui/primitives';
+import { ButtonText, Text, VStack } from '@repo/ui/primitives';
+import { useTheme } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme';
+import { hapticSuccess } from '@repo/ui/utils/haptics';
 import { useTranslation } from 'react-i18next';
 
 interface WelcomeModalProps {

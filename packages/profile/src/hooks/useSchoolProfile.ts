@@ -1,5 +1,8 @@
 import type { School, SchoolStats } from '@repo/core';
-import { handleAPIError, schoolAPI, useMutationQueue, usePermissions } from '@repo/core';
+import { handleAPIError, usePermissions } from '@repo/core';
+import { schoolAPI } from '@repo/core/api';
+import { useMutationQueue } from '@repo/core/logic';
+
 import { useCallback, useEffect, useState } from 'react';
 
 export function useSchoolProfile(schoolId: string) {
@@ -56,7 +59,7 @@ export function useSchoolProfile(schoolId: string) {
     try {
       await schoolAPI.update(school.id, { [field]: value });
       return { success: true };
-    } catch (error) {
+    } catch (_error) {
       console.log('= Sync pending for school:', field);
       return { success: true, pending: true };
     }

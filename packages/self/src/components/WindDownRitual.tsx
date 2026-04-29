@@ -1,23 +1,11 @@
 import { useNavigation } from '@react-navigation/native';
-import {
-  Box,
-  Button,
-  ButtonText,
-  Heading,
-  HStack,
-  hapticLight,
-  hapticSuccess,
-  Icon,
-  Input,
-  InputField,
-  PositiveInvitation,
-  Progress,
-  ProgressFilledTrack,
-  Text,
-  VStack,
-} from '@repo/ui';
+import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
+import { Box, Button, Input } from '@repo/ui/primitives';
+import { ButtonText, HStack, Heading, Icon, InputField, Progress, ProgressFilledTrack, Text, VStack } from '@repo/ui/primitives';
+import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+
 import { CheckCircle, Moon } from 'lucide-react-native';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // —————————————————————————————————————————————————————————————————————————————

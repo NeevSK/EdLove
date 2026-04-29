@@ -3,6 +3,7 @@ import { useStore } from '../../../store/useStore';
 import { classifyError } from '../errorClassifier';
 import { useMutationAuditLog } from '../MutationAuditLog';
 import { MUTATION_REGISTRY } from '../registry';
+import type { QueuedMutation, QueuedMutationDispatchResult } from '../types';
 import { useMutationQueue } from '../useMutationQueue';
 
 /**
@@ -15,7 +16,13 @@ import { useMutationQueue } from '../useMutationQueue';
  * - Dead Letter Queue (Reparative recovery)
  * - Audit Log synchronization
  */
-export default function SyncManager() {
+interface SyncManagerProps {
+  dispatchQueuedMutation?: (
+    mutation: QueuedMutation,
+  ) => Promise<QueuedMutationDispatchResult> | QueuedMutationDispatchResult;
+}
+
+export default function SyncManager({ dispatchQueuedMutation }: SyncManagerProps = {}) {
   const isOnline = useStore((state) => state.isOnline);
   const { queue, removeFromQueue, updateMutation, moveToDeadLetter, setSyncing, isSyncing } =
     useMutationQueue();
@@ -47,6 +54,16 @@ export default function SyncManager() {
           moveToDeadLetter(item.id, 'UNKNOWN_MUTATION');
           updateEntry(item.id, 'dead_letter', 'Unknown mutation registry key');
           continue;
+        }
+
+        if (dispatchQueuedMutation) {
+          const dispatchResult = await dispatchQueuedMutation(item);
+          if (dispatchResult === 'dispatched') {
+            removeFromQueue(item.id);
+            updateEntry(item.id, 'dispatched');
+            processedCount++;
+            continue;
+          }
         }
 
         updateEntry(item.id, 'syncing');
@@ -101,6 +118,7 @@ export default function SyncManager() {
     updateMutation,
     moveToDeadLetter,
     setSyncing,
+    dispatchQueuedMutation,
     updateEntry,
     showToast,
   ]);

@@ -3,15 +3,7 @@
  * Time-based helpers for greetings, formatting, and sanctuary time-aware features
  */
 
-import {
-  lotusDeepPink,
-  obsidian,
-  sacredWhite,
-  sanctuarySaffron,
-  shadowViolet,
-  shroud,
-  templeGold,
-} from '@repo/ui';
+import { lotusDeepPink, obsidian, sacredWhite, sanctuarySaffron, shadowViolet, shroud, templeGold } from '@repo/ui/theme';
 
 /**
  * Time of Day Types

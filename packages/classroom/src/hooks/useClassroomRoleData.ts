@@ -1,4 +1,7 @@
-import { api, usePermissions, useStore } from '@repo/core';
+import { usePermissions } from '@repo/core';
+import { api } from '@repo/core/api';
+import { useStore } from '@repo/core/logic';
+
 import { useCallback, useEffect, useState } from 'react';
 
 export interface ClassroomRoleData {
@@ -8,7 +11,7 @@ export interface ClassroomRoleData {
   realClassCount: number;
 }
 
-export function useClassroomRoleData(refreshTrigger: number = 0) {
+export function useClassroomRoleData(_refreshTrigger: number = 0) {
   const { context } = usePermissions();
   const { userId, schoolId } = context;
   const {
@@ -108,7 +111,7 @@ export function useClassroomRoleData(refreshTrigger: number = 0) {
 
   useEffect(() => {
     fetchData();
-  }, [fetchData, refreshTrigger]);
+  }, [fetchData]);
 
   return { data, loading, fetchRoleData: fetchData };
 }

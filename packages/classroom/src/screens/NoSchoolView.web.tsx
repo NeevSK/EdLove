@@ -1,39 +1,14 @@
 import { type NavigationProp, useNavigation } from '@react-navigation/native';
-import {
-  api,
-  type ClassroomStackParamList,
-  communityAPI,
-  incrementInviteCodeUsage,
-  onboardingAPI,
-  schoolAPI,
-  type School,
-  usePermissions,
-  useStore,
-  validateInviteCode,
-} from '@repo/core';
-import {
-  ArrowRight,
-  BookOpen,
-  Box,
-  Building2,
-  Center,
-  CheckCircle2,
-  ChevronRight,
-  Heading,
-  HStack,
-  Icon,
-  Input,
-  InputField,
-  Key,
-  Pressable,
-  SanctuaryButton,
-  ScrollView,
-  Search,
-  Spinner,
-  Text,
-  Users,
-  VStack,
-} from '@repo/ui';
+import { type ClassroomStackParamList, type School, usePermissions } from '@repo/core';
+import { api, communityAPI, onboardingAPI, schoolAPI } from '@repo/core/api';
+import { incrementInviteCodeUsage, useStore, validateInviteCode } from '@repo/core/logic';
+
+import { ArrowRight, BookOpen, Building2, CheckCircle2, ChevronRight, Key, Search, Users } from '@repo/ui/icons';
+import { Box, Input } from '@repo/ui/primitives';
+import { Center, HStack, Heading, Icon, InputField, Spinner, Text, VStack } from '@repo/ui/primitives';
+import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+
 import type React from 'react';
 import { useCallback, useReducer, useState } from 'react';
 
@@ -510,7 +485,9 @@ function TeacherJoinSchool({ onJoined }: { onJoined: (schoolId: string) => void 
                 accessibilityHint="Paste or type the 16-character invite code provided by your principal"
               />
             </Input>
-            {state.codeErr && <Text className="mt-1 text-[11px] text-phase-error">{state.codeErr}</Text>}
+            {state.codeErr && (
+              <Text className="mt-1 text-[11px] text-phase-error">{state.codeErr}</Text>
+            )}
           </VStack>
           <SanctuaryButton
             onPress={handleCode}
@@ -817,7 +794,10 @@ type StudentJoinAction =
   | { type: 'JOIN_SUCCESS' }
   | { type: 'JOIN_FAILURE'; error: string };
 
-const studentJoinReducer = (state: StudentJoinState, action: StudentJoinAction): StudentJoinState => {
+const studentJoinReducer = (
+  state: StudentJoinState,
+  action: StudentJoinAction,
+): StudentJoinState => {
   switch (action.type) {
     case 'SET_CODE':
       return { ...state, code: action.code, error: null };
@@ -894,7 +874,9 @@ function StudentJoinClassroom({ onSuccess }: { onSuccess: () => void }) {
             accessibilityHint="8-character code provided by your teacher"
           />
         </Input>
-        {state.error && <Text className="mt-2 text-xs text-phase-error text-center">{state.error}</Text>}
+        {state.error && (
+          <Text className="mt-2 text-xs text-phase-error text-center">{state.error}</Text>
+        )}
       </VStack>
 
       <SanctuaryButton

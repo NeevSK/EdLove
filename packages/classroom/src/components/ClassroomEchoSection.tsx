@@ -1,30 +1,15 @@
-import { echoAPI, supabase, useStore } from '@repo/core';
-import {
-  AlertTriangle,
-  Box,
-  Button,
-  ButtonText,
-  CheckCircle2,
-  ChevronRight,
-  EyeOff,
-  Heading,
-  Heart,
-  HStack,
-  hapticLight,
-  Icon,
-  Inbox,
-  Input,
-  InputField,
-  MessageSquare,
-  Pressable,
-  Send,
-  Spinner,
-  Text,
-  User,
-  VStack,
-} from '@repo/ui';
+import { echoAPI } from '@repo/core/api';
+import { useStore } from '@repo/core/logic';
+import { supabase } from '@repo/core/native';
+
+import { EyeOff, Inbox, User } from '@repo/ui/icons';
+import { Box, Button, Input } from '@repo/ui/primitives';
+import { ButtonText, HStack, Heading, Icon, InputField, Spinner, Text, VStack } from '@repo/ui/primitives';
+import { Pressable } from '@repo/ui/primitives';
+import { hapticLight } from '@repo/ui/utils/haptics';
+
 import { formatDistanceToNow } from 'date-fns';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface Echo {
@@ -84,9 +69,9 @@ export default function ClassroomEchoSection({ classroomId, isTeacher }: Props) 
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [classroomId]);
+  }, [classroomId, fetchEchoes]);
 
-  const fetchEchoes = async () => {
+  async function fetchEchoes() {
     try {
       const data = await echoAPI.getEchoesByClassroom(classroomId);
       setEchoes(data || []);
@@ -95,7 +80,7 @@ export default function ClassroomEchoSection({ classroomId, isTeacher }: Props) 
     } finally {
       setIsLoading(false);
     }
-  };
+  }
 
   const handleSendEcho = async () => {
     if (!newEcho.trim() || isSending) return;

@@ -1,12 +1,12 @@
 import { useNavigation } from '@react-navigation/native';
-import { authAPI, useAccountDeletion, useStore, useUserRole } from '@repo/core';
-import {
-  DeleteAccountModal,
-  LogoutModal,
-  useEnvironment,
-  useThemedColors,
-  WebScreenHeader,
-} from '@repo/ui';
+import { useUserRole } from '@repo/core';
+import { authAPI } from '@repo/core/api';
+import { useAccountDeletion } from '@repo/core/hooks';
+import { useStore } from '@repo/core/logic';
+
+import { DeleteAccountModal, LogoutModal, useEnvironment, useThemedColors } from '@repo/ui';
+import { WebScreenHeader } from '@repo/ui/components';
+
 import {
   ChevronRight,
   Globe,

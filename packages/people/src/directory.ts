@@ -2,10 +2,10 @@ import {
   getSchoolRoleForUser,
   getWorkRolesForUser,
   type SchoolRole,
-  supabase,
   type User,
   type WorkRole,
 } from '@repo/core';
+import { supabase } from '@repo/core/native';
 
 export interface PeopleDirectoryEntry extends User {
   schoolRole: SchoolRole | null;

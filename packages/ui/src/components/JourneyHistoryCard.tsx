@@ -15,7 +15,7 @@ import { useMemo } from 'react';
 import { Pressable } from 'react-native';
 import { Box, HStack, Text, VStack } from '../gluestack';
 import { ResonantHeatmap } from './ResonantHeatmap';
-import SanctuaryCard from './SanctuaryCard';
+import { SanctuaryCard } from './SanctuaryCard';
 import { SanctuaryChip } from './SanctuaryChip';
 
 export interface JourneyEvent {

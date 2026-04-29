@@ -25,6 +25,7 @@ export interface Province {
   name: string;
   name_si?: string;
   name_ta?: string;
+  mnemonic?: string;
 }
 
 export interface District {
@@ -33,6 +34,7 @@ export interface District {
   name: string;
   name_si?: string;
   name_ta?: string;
+  mnemonic?: string;
 }
 
 /**

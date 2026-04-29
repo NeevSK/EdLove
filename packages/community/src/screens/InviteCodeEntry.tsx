@@ -1,27 +1,21 @@
-import { validateInviteCode, type InviteCodeData } from '@repo/core/logic';
+import { type InviteCodeData, validateInviteCode } from '@repo/core/logic';
+import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { useSanctuaryToast } from '@repo/ui/hooks';
+import { ArrowRight, HelpCircle, Shield } from '@repo/ui/icons';
 import {
   Box,
   Heading,
   HStack,
+  Icon,
+  InputField,
   Pressable,
   Spinner,
   Text,
   VStack,
-  Icon,
-  InputField,
 } from '@repo/ui/primitives';
-import {
-  SanctuaryButton,
-  ScreenWrapper,
-} from '@repo/ui/components';
-import { useSanctuaryToast } from '@repo/ui/hooks';
-import {
-  hapticError,
-  hapticLight,
-  hapticSuccess,
-} from '@repo/ui/utils';
-import { ArrowRight, HelpCircle, Shield } from '@repo/ui/icons';
-import React, { useState } from 'react';
+import { hapticError, hapticLight, hapticSuccess } from '@repo/ui/utils';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface InviteCodeEntryProps {
@@ -59,7 +53,7 @@ export default function InviteCodeEntry({ onCodeValidated, onSkip }: InviteCodeE
         hapticError();
         notify(result.error || t('invite.error.invalid') || 'Invalid code', 'error');
       }
-    } catch (err) {
+    } catch (_err) {
       hapticError();
       notify('An unexpected error occurred', 'error');
     } finally {
@@ -174,6 +168,11 @@ export default function InviteCodeEntry({ onCodeValidated, onSkip }: InviteCodeE
           {/* Skip / Create School */}
           <VStack className="mt-2 items-center">
             <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={
+                t('invite.createSchool') || 'Principal registration? Create School'
+              }
+              accessibilityHint="Navigates to the school creation screen for principals"
               onPress={() => {
                 hapticLight();
                 onSkip();

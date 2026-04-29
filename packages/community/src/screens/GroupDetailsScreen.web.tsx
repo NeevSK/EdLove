@@ -1,7 +1,9 @@
 import { useRoute } from '@react-navigation/native';
-import { useEntity } from '@repo/core/hooks';;
-import { Box, Center, EntityView, Spinner } from '@repo/ui';
-import React from 'react';
+import { useEntity } from '@repo/core/hooks';
+
+import EntityView from '@repo/ui/components/EntityView';
+import { Box } from '@repo/ui/primitives';
+import { Center, Spinner } from '@repo/ui/primitives';
 
 /**
  * GroupDetailsScreenWeb

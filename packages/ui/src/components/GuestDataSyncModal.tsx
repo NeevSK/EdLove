@@ -3,7 +3,7 @@ import { AlertCircle, AlertTriangle, Check } from 'lucide-react-native';
 import { useCallback, useEffect, useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Box, HStack, Spinner, Text, VStack } from '../gluestack';
-import SanctuaryButton from './SanctuaryButton';
+import { SanctuaryButton } from './SanctuaryButton';
 import SanctuaryModal from './SanctuaryModal';
 
 interface GuestDataSyncModalProps {

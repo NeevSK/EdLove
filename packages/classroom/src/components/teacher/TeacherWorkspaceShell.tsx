@@ -1,6 +1,8 @@
 import { resolveWorkspaceSurfaceLayout, type WorkspaceLayout } from '@repo/core';
-import { Box, Heading, HStack, Text, useResponsive, VStack } from '@repo/ui';
-import React, { useMemo } from 'react';
+import { useResponsive } from '@repo/ui/hooks';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Heading, Text, VStack } from '@repo/ui/primitives';
+import { useMemo } from 'react';
 import type {
   TeacherDashboardCapabilityKey,
   TeacherDashboardSurface,

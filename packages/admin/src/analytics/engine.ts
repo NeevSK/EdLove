@@ -1,4 +1,6 @@
-import { type GraphNode, supabase } from '@repo/core';
+import type { GraphNode } from '@repo/core';
+import { supabase } from '@repo/core/native';
+
 import { type ForceLayoutOptions, forceLayout } from '@repo/graphics';
 import type {
   Anomaly,

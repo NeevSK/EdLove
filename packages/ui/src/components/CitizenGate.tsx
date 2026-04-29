@@ -1,6 +1,6 @@
 import { VStack } from '../gluestack';
 import PositiveInvitation from './PositiveInvitation';
-import SanctuaryButton from './SanctuaryButton';
+import { SanctuaryButton } from './SanctuaryButton';
 
 export interface CitizenGateProps {
   context?: 'self' | 'library' | 'classroom' | 'community' | 'profile' | 'general';

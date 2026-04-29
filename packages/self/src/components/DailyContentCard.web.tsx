@@ -4,9 +4,12 @@
  * Standardized to Zero-Legacy: purged raw HTML/inline styles and fixed syntax corruption in style objects.
  */
 
-import { Box, HStack, Icon, Pressable, Spinner, Text, VStack } from '@repo/ui';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Icon, Spinner, Text, VStack } from '@repo/ui/primitives';
+import { Pressable } from '@repo/ui/primitives';
+
 import { Lightbulb, Sparkles, User } from 'lucide-react-native';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Animated, { FadeIn, Layout } from 'react-native-reanimated';
 import { dailyContentAPI } from '../api/dailyContent';
 import type { DailyContent } from '../types/Wellbeing';
@@ -34,7 +37,7 @@ export default function DailyContentCard({ type }: DailyContentCardProps) {
       })
       .catch(() => {})
       .finally(() => setLoading(false));
-  }, [type, isMotivation]);
+  }, [isMotivation]);
 
   if (loading) {
     return (

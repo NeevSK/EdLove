@@ -1,14 +1,7 @@
-import {
-  ActivityIndicator,
-  Box,
-  Heading,
-  HStack,
-  hapticLight,
-  Icon,
-  Pressable,
-  Text,
-  VStack,
-} from '@repo/ui';
+import { Box, HStack, Heading, Icon, Spinner, Text, VStack } from '@repo/ui/primitives';
+import { Pressable } from '@repo/ui/primitives';
+import { hapticLight } from '@repo/ui/utils/haptics';
+
 import { format } from 'date-fns';
 import { Calendar, CheckCircle2, Clock, LogIn, LogOut } from 'lucide-react-native';
 import type React from 'react';
@@ -133,7 +126,7 @@ export const StaffPresencePulse: React.FC<StaffPresencePulseProps> = ({ userId, 
             }`}
           >
             {actionLoading ? (
-              <ActivityIndicator size="small" color="white" />
+              <Spinner size="small" color="white" />
             ) : (
               <>
                 <Icon as={isCheckedIn ? LogOut : LogIn} size="sm" className="text-white" />

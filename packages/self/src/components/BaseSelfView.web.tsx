@@ -1,14 +1,12 @@
-import { usePermissions, useTemporalStore } from '@repo/core';
-import {
-  Box,
-  FeatureInfoIcon,
-  HStack,
-  Pressable,
-  ScrollView,
-  TemporalNavigator,
-  Text,
-  VStack,
-} from '@repo/ui';
+import { usePermissions } from '@repo/core';
+import { useTemporalStore } from '@repo/core/logic';
+
+import FeatureInfoIcon from '@repo/ui/components/FeatureInfoIcon';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Text, VStack } from '@repo/ui/primitives';
+import { TemporalNavigator } from '@repo/ui/components/TemporalNavigator';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+
 import React from 'react';
 import { FEATURE_DISCOVERY_DATA, FEATURE_EMOJIS } from '../constants/selfRegistry';
 import { useDynamicSelfFeatures } from '../hooks/useDynamicSelfFeatures';
@@ -117,7 +115,7 @@ export function BaseSelfView({
               style={
                 activeCategoryId === domain.id
                   ? {
-                      backgroundColor: domain.accentColor + '15',
+                      backgroundColor: `${domain.accentColor}15`,
                       borderColor: domain.accentColor,
                     }
                   : {}

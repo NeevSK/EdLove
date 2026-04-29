@@ -1,8 +1,6 @@
 import {
   amberGlow,
   bark,
-  createConfig,
-  gluestackConfig as defaultConfig,
   emberRed,
   gurudeviBlue,
   gurudeviViolet,
@@ -19,7 +17,8 @@ import {
   silk,
   starlightGray,
   vellum,
-} from '@repo/ui';
+} from '@repo/ui/theme';
+import { createConfig, gluestackConfig as defaultConfig } from '@repo/ui/primitives';
 
 // Extend the default config with our Sanctuary colors
 // This allows using bg="$sanctuarySaffron" instead of sanctuarySaffron

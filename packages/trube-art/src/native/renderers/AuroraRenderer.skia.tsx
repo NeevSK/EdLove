@@ -1,5 +1,4 @@
-import { Canvas, Rect, RuntimeShader, Skia } from '@shopify/react-native-skia';
-import React from 'react';
+import { Canvas, Rect, RuntimeShader } from '@shopify/react-native-skia';
 import { StyleSheet } from 'react-native';
 import { useTrubeTime } from '../../core/soul/TimeLayer';
 import { driverManager } from '../DriverManager';

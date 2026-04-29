@@ -1,7 +1,7 @@
 import type { AuthorityTier } from '@repo/core';
-import { Box, Heading, HStack, Progress, ProgressFilledTrack, Text, VStack } from '@repo/ui';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Heading, Progress, ProgressFilledTrack, Text, VStack } from '@repo/ui/primitives';
 import { Activity, BookOpen, Clock, Database, Globe, Star, Users } from 'lucide-react-native';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface UserStatsCardProps {

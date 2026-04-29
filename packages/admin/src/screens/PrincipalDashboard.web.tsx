@@ -1,6 +1,5 @@
 import { type NavigationProp, useNavigation } from '@react-navigation/native';
 import {
-  api,
   type CalendarEvent,
   type MappingTopologyZod as KnowledgeTopology,
   type PublishedSchoolGradingCompletion,
@@ -11,12 +10,15 @@ import {
   type StaffPresenceSummary,
   type TeacherCarouselItem,
   type User,
-  useAuthStore,
-  useFeatureAccess,
   usePermissions,
-  useTemporalStore,
 } from '@repo/core';
-import { hapticLight, SandboxBanner, WebScreenHeader } from '@repo/ui';
+import { api } from '@repo/core/api';
+import { useFeatureAccess } from '@repo/core/hooks';
+import { useAuthStore, useTemporalStore } from '@repo/core/logic';
+
+import SandboxBanner from '@repo/ui/components/SandboxBanner';
+import { WebScreenHeader } from '@repo/ui/components/WebScreenHeader.web';
+import { hapticLight } from '@repo/ui/utils/haptics';
 import { useQuery } from '@tanstack/react-query';
 import type React from 'react';
 import { useEffect, useState } from 'react';
@@ -159,8 +161,8 @@ export default function PrincipalDashboardWeb({
   const user = useAuthStore((state) => state.user) as User | null;
   const { isGuest } = useFeatureAccess();
   const { can } = usePermissions();
-  const viewDate = useTemporalStore(s => s.viewDate);
-  const isPastView = useTemporalStore(s => s.isPastView);
+  const viewDate = useTemporalStore((s) => s.viewDate);
+  const isPastView = useTemporalStore((s) => s.isPastView);
   const navigation = useNavigation<NavigationProp<any>>();
 
   const effectiveSchoolId = schoolId || user?.school_id || '';

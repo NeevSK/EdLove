@@ -1,20 +1,20 @@
 import { AnalyticsProvider } from '@repo/analytics/ui';
-import { SyncManager, useAuth, usePermissions } from '@repo/core';
-import {
-  Box,
-  Center,
-  EnvironmentProvider,
-  ExternalLinkProvider,
-  FABProvider,
-  GluestackUIProvider,
-  SanctuaryGlobalStyles,
-  Spinner,
-  ToastProvider,
-} from '@repo/ui';
+import { SyncManager, usePermissions } from '@repo/core';
+import { useAuth } from '@repo/core/logic';
+
+import { EnvironmentProvider, ExternalLinkProvider } from '@repo/ui/context';
+import { GluestackUIProvider } from '@repo/ui/gluestack';
+import { Box } from '@repo/ui/primitives';
+import { Center, Spinner } from '@repo/ui/primitives';
+import { ToastProvider } from '@repo/ui/providers';
+import { SanctuaryGlobalStyles } from '@repo/ui/components/SanctuaryGlobalStyles';
+import { FABProvider } from '@repo/ui/context/FABContext';
+
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import type React from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { config } from '../../gluestack-ui.config';
+import { dispatchQueuedMutationToInngest } from '../lib/inngestEvents';
 import { useAssets } from './AssetProvider';
 import { DeepLinkProvider } from './DeepLinkProvider';
 
@@ -66,7 +66,7 @@ export function SanctuaryProvider({ children }: SanctuaryProviderProps) {
                       }}
                     >
                       <Box className="flex-1">{children}</Box>
-                      <SyncManager />
+                      <SyncManager dispatchQueuedMutation={dispatchQueuedMutationToInngest} />
                     </AnalyticsProvider>
                   </ExternalLinkProvider>
                 </ToastProvider>

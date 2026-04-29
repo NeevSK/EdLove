@@ -1,20 +1,7 @@
-import {
-  Icon,
-  Select,
-  SelectBackdrop,
-  SelectContent,
-  SelectDragIndicator,
-  SelectDragIndicatorWrapper,
-  SelectIcon,
-  SelectInput,
-  SelectItem,
-  SelectPortal,
-  SelectTrigger,
-  Text,
-  View,
-} from '@repo/ui';
+import { Select, SelectBackdrop, SelectContent, SelectDragIndicator, SelectDragIndicatorWrapper, SelectIcon, SelectInput, SelectItem, SelectPortal, SelectTrigger, Text } from '@repo/ui/primitives';
+import { View } from '@repo/ui/primitives';
+
 import { ChevronDown } from 'lucide-react-native';
-import React from 'react';
 
 interface FormSelectProps {
   label: string;

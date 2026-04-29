@@ -2,8 +2,16 @@ param (
     [string]$Path = "packages/library/src"
 )
 
-# Use fd for lightning-fast file location
-$fileNames = & fd -t f -e tsx . $Path
+# Smart discovery with cross-platform fallback
+$fileNames = @()
+if (Get-Command fd -ErrorAction SilentlyContinue) {
+    # Preferred: Fast discovery with fd
+    $fd = (Get-Command fd).Source
+    $fileNames = & $fd -t f -e tsx . $Path
+} else {
+    # Fallback: Native PowerShell discovery
+    $fileNames = Get-ChildItem -Path $Path -Filter *.tsx -File -Recurse | ForEach-Object { Resolve-Path $_.FullName -Relative }
+}
 
 foreach ($fileName in $fileNames) {
     Write-Host "Healing JSX Tags: $fileName"

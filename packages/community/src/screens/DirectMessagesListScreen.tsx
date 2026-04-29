@@ -8,24 +8,13 @@
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { CommunityStackParamList } from '@repo/core/types';
-import {
-  Box,
-  HStack,
-  Pressable,
-  Spinner,
-  Text,
-  VStack,
-  Icon,
-} from '@repo/ui/primitives';
-import {
-  UserAvatar,
-  SanctuaryFlashList,
-} from '@repo/ui/components';
-import { FadeInDown } from 'react-native-reanimated';
+import SanctuaryFlashList from '@repo/ui/components/SanctuaryFlashList';
+import { UserAvatar } from '@repo/ui/components/UserAvatar';
 import { ChevronRight, MessageSquare } from '@repo/ui/icons';
-import React, { useCallback, useEffect, useState } from 'react';
+import { Box, HStack, Icon, Pressable, Spinner, Text, VStack } from '@repo/ui/primitives';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import Animated from 'react-native-reanimated';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 import { communityAPI } from '../api/community';
 import type { DirectConversation } from '../types';
 

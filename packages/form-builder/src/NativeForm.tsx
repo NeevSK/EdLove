@@ -1,24 +1,11 @@
 import type { FormManager } from '@repo/core';
-import { useForm } from '@repo/core';
-import {
-  Box,
-  Button,
-  ButtonText,
-  Divider,
-  Heading,
-  HStack,
-  Icon,
-  Input,
-  InputField,
-  Pressable,
-  Spinner,
-  Text,
-  Textarea,
-  TextareaInput,
-  VStack,
-} from '@repo/ui';
-import { Info, Star } from 'lucide-react-native';
-import React from 'react';
+import { useForm } from '@repo/core/hooks';
+
+import { Box, Button, Input, Textarea } from '@repo/ui/primitives';
+import { ButtonText, Divider, HStack, Heading, Icon, InputField, Spinner, Text, TextareaInput, VStack } from '@repo/ui/primitives';
+import { Pressable } from '@repo/ui/primitives';
+
+import { Info } from 'lucide-react-native';
 
 interface NativeFormProps<T extends Record<string, any>> {
   manager: FormManager<T>;

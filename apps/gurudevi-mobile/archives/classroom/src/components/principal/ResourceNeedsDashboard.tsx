@@ -1,15 +1,8 @@
-﻿import { api } from '@repo/core';
-import {
-  Box,
-  Heading,
-  HStack,
-  Spinner,
-  Text,
-  Theme,
-  typography,
-  useThemedColors,
-  VStack,
-} from '@repo/ui';
+﻿import { api } from '@repo/core/api';
+
+import { Box, Heading, HStack, Spinner, Text, useThemedColors, VStack } from '@repo/ui';
+import { Theme, typography } from '@repo/ui/theme';
+
 import { AlertCircle, BookOpen, Lightbulb, Package, Users, Wifi } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';

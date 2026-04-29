@@ -5,7 +5,6 @@ import { runOnJS, useFrameCallback } from 'react-native-reanimated';
 import { Canvas, type CanvasRef } from 'react-native-wgpu';
 import { ScoreComposer } from '../../core/soul/ScoreComposer';
 import { soulLibrary } from '../../core/soul/SoulLibrary';
-import { useTrubeTime } from '../../core/soul/TimeLayer';
 import { driverManager } from '../DriverManager';
 import type { TrubeRendererProps } from '../renderers/types';
 import type { TrubeGPUDriver } from '../TrubeDriver.nitro';
@@ -31,7 +30,7 @@ export function NativeSubstrateRenderer({
   const canvasRef = useRef<CanvasRef>(null);
 
   // 1. Compose the score
-  const score = useMemo(
+  const _score = useMemo(
     () =>
       ScoreComposer.compose({
         surface: soul,
@@ -94,7 +93,7 @@ export function NativeSubstrateRenderer({
     'worklet';
 
     if (!isWarmed || !plan.animationEnabled) return;
-    if (!driver || !driver.isReady) return;
+    if (!driver?.isReady) return;
 
     const t = driver.entropyTime;
     const entropyValue =

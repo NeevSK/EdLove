@@ -1,22 +1,18 @@
-import { usePermissions, useStore } from '@repo/core';
+import { usePermissions } from '@repo/core';
+import { useStore } from '@repo/core/logic';
+
 import { StaffPresencePulse } from '@repo/people';
 import { QRCodeGenerator } from '@repo/scanner-kit';
-import { CitizenGate } from '@repo/ui';
+import CitizenGate from '@repo/ui/components/CitizenGate';
 import {
-  ArrowUpRight,
   Briefcase,
-  Building,
   CheckCircle2,
   Edit3,
-  ExternalLink,
   FileText,
   Globe,
   GraduationCap,
-  Plus,
-  Search,
-  Shield,
 } from 'lucide-react-native';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AvatarDisplay } from '../components/AvatarDisplay';
 import { ContactLinktree } from '../components/ContactLinktree';

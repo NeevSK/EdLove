@@ -1,25 +1,8 @@
-import {
-  Box,
-  Button,
-  ButtonText,
-  Cloud,
-  Heading,
-  Icon,
-  Lock,
-  Modal,
-  ModalBackdrop,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalHeader,
-  Sparkles,
-  Text,
-  Theme,
-  useThemedColors,
-  VStack,
-  X,
-} from '@repo/ui';
-import React from 'react';
+import { useThemedColors } from '@repo/ui/hooks';
+import { Cloud, Lock, Sparkles, X } from '@repo/ui/icons';
+import { Box, Button } from '@repo/ui/primitives';
+import { ButtonText, Heading, Icon, Modal, ModalBackdrop, ModalBody, ModalCloseButton, ModalContent, ModalHeader, Text, VStack } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme';
 import { useTranslation } from 'react-i18next';
 
 export interface GuestConversionPromptProps {

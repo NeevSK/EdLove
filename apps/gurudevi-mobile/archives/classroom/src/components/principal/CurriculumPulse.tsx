@@ -9,7 +9,8 @@
  * - Empathetic support for teachers transitioning to new reforms.
  */
 
-import { supabase } from '@repo/core';
+import { supabase } from '@repo/core/native';
+
 import {
   Box,
   Heading,
@@ -18,10 +19,11 @@ import {
   ProgressFilledTrack,
   Spinner,
   Text,
-  Theme,
   useThemedColors,
   VStack,
 } from '@repo/ui';
+import { Theme } from '@repo/ui/theme';
+
 import { BookOpen, Clock, Zap } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';

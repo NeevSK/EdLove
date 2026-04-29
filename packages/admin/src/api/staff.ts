@@ -1,4 +1,6 @@
-import { APIError, type StaffAttendance, type StaffLeave, supabase } from '@repo/core';
+import type { StaffAttendance, StaffLeave } from '@repo/core';
+import { supabase } from '@repo/core/native';
+import { APIError } from '@repo/core/types';
 
 export const staffAPI = {
   /**

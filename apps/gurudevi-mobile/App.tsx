@@ -2,15 +2,13 @@ import 'react-native-url-polyfill/auto';
 import './src/i18n/config'; // Initialize i18n
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import {
-  AdminAuditLog,
-  AdminAuthorityRepair,
-  AdminDashboard,
-  AdminIncidentQueue,
-  AdminJobControl,
-  AdminReleaseControl,
-  AdminTenantDetail,
-} from '@repo/admin';
+import AdminAuditLog from '@repo/admin/screens/AdminAuditLog';
+import AdminAuthorityRepair from '@repo/admin/screens/AdminAuthorityRepair';
+import AdminDashboard from '@repo/admin/screens/AdminDashboard';
+import AdminIncidentQueue from '@repo/admin/screens/AdminIncidentQueue';
+import AdminJobControl from '@repo/admin/screens/AdminJobControl';
+import AdminReleaseControl from '@repo/admin/screens/AdminReleaseControl';
+import AdminTenantDetail from '@repo/admin/screens/AdminTenantDetail';
 import {
   identifyUser,
   initPostHog,
@@ -18,36 +16,31 @@ import {
   trackEvent,
 } from '@repo/analytics';
 import {
-  APIError,
   type AuthorityTier,
-  authAPI,
   clearSentryUser,
-  identityAPI,
   initSentry,
   injectPostHog,
   type SchoolType,
   SyncManager,
   setSentryUser,
-  supabase,
-  useStore,
 } from '@repo/core';
-import { coreRuntime } from '@repo/core/logic';
-import { nativeRuntimeEnvironment } from '@repo/core/native';
+import { authAPI, identityAPI } from '@repo/core/api';
+import { coreRuntime, useStore } from '@repo/core/logic';
+import { nativeRuntimeEnvironment, supabase } from '@repo/core/native';
+import { APIError } from '@repo/core/types';
 import { useQRDeepLink } from '@repo/scanner-kit';
-import {
-  Box,
-  Center,
-  EnvironmentProvider,
-  ErrorBoundary,
-  ExternalLinkProvider,
-  FABProvider,
-  GluestackUIProvider,
-  NetworkStatusBanner,
-  SanctuaryGlobalStyles,
-  SanctuaryToast,
-  Spinner,
-  ToastProvider,
-} from '@repo/ui';
+import ErrorBoundary from '@repo/ui/components/ErrorBoundary';
+import NetworkStatusBanner from '@repo/ui/components/NetworkStatusBanner';
+import SanctuaryToast from '@repo/ui/components/SanctuaryToast';
+import { EnvironmentProvider, ExternalLinkProvider } from '@repo/ui/context';
+import { GluestackUIProvider } from '@repo/ui/gluestack';
+import { Box } from '@repo/ui/primitives';
+import { Center, Spinner } from '@repo/ui/primitives';
+import { ToastProvider } from '@repo/ui/providers';
+import { sanctuarySaffron } from '@repo/ui/theme';
+import { SanctuaryGlobalStyles } from '@repo/ui/components/SanctuaryGlobalStyles';
+import { FABProvider } from '@repo/ui/context/FABContext';
+
 import type { Session } from '@supabase/supabase-js';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import * as Font from 'expo-font';
@@ -78,13 +71,20 @@ import { updateWebPageTitle } from './src/utils/useWebPageTitle';
 
 // Lazy load PublicFormScreen as it's web-only and large
 const PublicFormScreen = React.lazy(() =>
-  import('@repo/form-builder').then((module) => ({ default: module.PublicFormScreenWeb })),
+  import('@repo/form-builder').then((module) => ({
+    default: module.PublicFormScreenWeb,
+  })),
 );
 
-import { sanctuarySaffron } from '@repo/ui';
+import {
+  dispatchQueuedMutationToInngest,
+  installMobileWorkflowEventBridge,
+} from './src/lib/inngestEvents';
 
 // Create a client
 const queryClient = new QueryClient();
+
+installMobileWorkflowEventBridge();
 
 // Root Stack for Modals
 const RootStack = createNativeStackNavigator();
@@ -444,7 +444,11 @@ function AppContent({
   isProfileLoading: boolean;
   showWelcome: boolean;
   setShowWelcome: (show: boolean) => void;
-  toast: { message: string; type: 'success' | 'error' | 'info'; duration?: number } | null;
+  toast: {
+    message: string;
+    type: 'success' | 'error' | 'info';
+    duration?: number;
+  } | null;
   hideToast: () => void;
 }) {
   const handleTabChange = React.useCallback(
@@ -682,7 +686,7 @@ function AppContent({
                 )}
               </RootStack.Navigator>
             </NavigationContainer>
-            <SyncManager />
+            <SyncManager dispatchQueuedMutation={dispatchQueuedMutationToInngest} />
             <NetworkStatusBanner />
             {Platform.OS === 'web' && <CommandPalette />}
             {Platform.OS === 'web' && <PWAInstallBanner />}

@@ -5,23 +5,18 @@
  */
 
 import { useNavigation } from '@react-navigation/native';
-import { supabase, usePermissions, useSafeMutation } from '@repo/core';
-import {
-  Box,
-  Heading,
-  HStack,
-  hapticLight,
-  Icon,
-  Input,
-  InputField,
-  PositiveInvitation,
-  Pressable,
-  ScrollView,
-  Text,
-  VStack,
-} from '@repo/ui';
+import { usePermissions } from '@repo/core';
+import { useSafeMutation } from '@repo/core/hooks';
+import { supabase } from '@repo/core/native';
+
+import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
+import { Box, Input } from '@repo/ui/primitives';
+import { HStack, Heading, Icon, InputField, Text, VStack } from '@repo/ui/primitives';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+import { hapticLight } from '@repo/ui/utils/haptics';
+
 import { History, Quote, Send } from 'lucide-react-native';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Animated, { FadeIn, FadeInDown, Layout } from 'react-native-reanimated';
 import { useDecisionJournal } from '../hooks/useDecisionJournal';
 

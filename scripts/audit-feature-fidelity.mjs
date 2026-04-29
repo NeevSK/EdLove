@@ -1,6 +1,6 @@
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { AlchemistExecution } from './utils/execution.mjs';
 
 /**
@@ -175,7 +175,7 @@ function checkFilesystemCoverage(name, technicalKey, paths, knownFiles) {
   return coverage;
 }
 
-function discoverShadowFeatures(documented, shadow, knownFiles, flags, paths) {
+function discoverShadowFeatures(_documented, shadow, knownFiles, flags, paths) {
   for (const searchPath of paths) {
     if (!fs.existsSync(searchPath)) continue;
     const files = fs.readdirSync(searchPath);

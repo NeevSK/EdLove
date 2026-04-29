@@ -1,20 +1,11 @@
-import { type AttendanceRecord, api, type StudentGrade, type StudentObservation } from '@repo/core';
-import {
-  Activity,
-  Spinner as ActivityIndicator,
-  Box,
-  Calendar,
-  Card,
-  Center,
-  ChevronRight,
-  Heading,
-  HStack,
-  Icon,
-  Text,
-  TrendingUp,
-  VStack,
-} from '@repo/ui';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import type { AttendanceRecord, StudentGrade, StudentObservation } from '@repo/core';
+import { api } from '@repo/core/api';
+
+import { Card } from '@repo/ui/components/SanctuaryCard';
+import { Activity, Calendar, ChevronRight, TrendingUp } from '@repo/ui/icons';
+import { Box } from '@repo/ui/primitives';
+import { Center, HStack, Heading, Icon, Spinner as ActivityIndicator, Text, VStack } from '@repo/ui/primitives';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface ClassroomHolisticInsightsProps {

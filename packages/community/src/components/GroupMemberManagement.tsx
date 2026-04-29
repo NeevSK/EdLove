@@ -2,69 +2,107 @@ import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { usePermissions } from '@repo/core/logic';
 import type { CommunityStackParamList } from '@repo/core/types';
-import {
-  Box,
-  Heading,
-  HStack,
-  Pressable,
-  Text,
-  VStack,
-  Button,
-  Icon,
-} from '@repo/ui/primitives';
-import {
-  LoadingOverlay,
-  ScreenWrapper,
-} from '@repo/ui/components';
+import LoadingOverlay from '@repo/ui/components/LoadingOverlay';
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { useSanctuaryToast } from '@repo/ui/hooks';
-import { hapticLight } from '@repo/ui/utils';
 import { Info, Settings, Shield, UserCheck, UserX } from '@repo/ui/icons';
-import React, { useEffect, useState } from 'react';
+import { Box, Button, Heading, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
+import { hapticLight } from '@repo/ui/utils';
+import { useCallback, useEffect, useReducer, useState } from 'react';
 import { communityAPI } from '../api/community';
-import type { CommunityGroup } from '../types';
+import type { CommunityGroup, GroupJoinPolicy, GroupJoinRequest, GroupMember } from '../types';
 import CreateGroupModal from './CreateGroupModal';
 
 interface GroupMemberManagementProps {
   groupId: string;
 }
 
+interface State {
+  group: CommunityGroup | null;
+  pendingMembers: GroupJoinRequest[];
+  activeMembers: GroupMember[];
+  loading: boolean;
+  policy: GroupJoinPolicy;
+}
+
+type Action =
+  | { type: 'FETCH_START'; silent?: boolean }
+  | {
+      type: 'FETCH_SUCCESS';
+      payload: { group: CommunityGroup; pending: GroupJoinRequest[]; active: GroupMember[] };
+    }
+  | { type: 'SET_POLICY'; payload: GroupJoinPolicy }
+  | { type: 'SET_GROUP'; payload: CommunityGroup }
+  | { type: 'SET_LOADING'; payload: boolean };
+
+const initialState: State = {
+  group: null,
+  pendingMembers: [],
+  activeMembers: [],
+  loading: true,
+  policy: 'restricted',
+};
+
+function reducer(state: State, action: Action): State {
+  switch (action.type) {
+    case 'FETCH_START':
+      return { ...state, loading: !action.silent };
+    case 'FETCH_SUCCESS':
+      return {
+        ...state,
+        loading: false,
+        group: action.payload.group,
+        pendingMembers: action.payload.pending,
+        activeMembers: action.payload.active,
+        policy: action.payload.group.join_policy,
+      };
+    case 'SET_POLICY':
+      return { ...state, policy: action.payload };
+    case 'SET_GROUP':
+      return { ...state, group: action.payload, policy: action.payload.join_policy };
+    case 'SET_LOADING':
+      return { ...state, loading: action.payload };
+    default:
+      return state;
+  }
+}
+
 export default function GroupMemberManagement({ groupId }: GroupMemberManagementProps) {
   const navigation = useNavigation<NativeStackNavigationProp<CommunityStackParamList>>();
   const { showToast } = useSanctuaryToast();
-  const [group, setGroup] = useState<CommunityGroup | null>(null);
-  const [pendingMembers, setPendingMembers] = useState<any[]>([]);
-  const [activeMembers, setActiveMembers] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [policy, setPolicy] = useState<string>('restricted');
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const { group, pendingMembers, activeMembers, loading, policy } = state;
+
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const { context, can } = usePermissions();
   const userId = context.userId;
 
-  const loadData = React.useCallback(async () => {
-    setLoading(true);
-    try {
-      const [groupData, pending, active] = await Promise.all([
-        communityAPI.getGroupById(groupId),
-        communityAPI.getPendingMembers(groupId),
-        communityAPI.getActiveMembers(groupId),
-      ]);
+  const loadData = useCallback(
+    async (silent = false) => {
+      dispatch({ type: 'FETCH_START', silent });
+      try {
+        const [groupData, pending, active] = await Promise.all([
+          communityAPI.getGroupById(groupId),
+          communityAPI.getPendingMembers(groupId),
+          communityAPI.getActiveMembers(groupId),
+        ]);
 
-      setGroup(groupData);
-      setPendingMembers(pending);
-      setActiveMembers(active);
-      setPolicy(groupData.join_policy);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  }, [groupId]);
+        dispatch({
+          type: 'FETCH_SUCCESS',
+          payload: { group: groupData, pending, active },
+        });
+      } catch (error) {
+        console.error('Failed to load group management data:', error);
+      }
+    },
+    [groupId],
+  );
 
   useEffect(() => {
-    loadData();
+    loadData(true);
   }, [loadData]);
 
-  const handleApproval = React.useCallback(
+  const handleApproval = useCallback(
     async (targetUserId: string, status: 'active' | 'rejected') => {
       try {
         await communityAPI.handleMemberRequest(groupId, targetUserId, status);
@@ -76,7 +114,7 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
               : 'The request has been gently declined.',
           type: status === 'active' ? 'success' : 'info',
         });
-        loadData();
+        loadData(true);
       } catch (error) {
         console.error(error);
       }
@@ -84,17 +122,17 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
     [groupId, showToast, loadData],
   );
 
-  const handlePolicyChange = React.useCallback(
-    async (newPolicy: string) => {
+  const handlePolicyChange = useCallback(
+    async (newPolicy: GroupJoinPolicy) => {
       try {
         await communityAPI.updateJoiningPolicy(groupId, newPolicy);
-        setPolicy(newPolicy);
+        dispatch({ type: 'SET_POLICY', payload: newPolicy });
         hapticLight();
         showToast({
           message: `Joining policy updated to ${newPolicy.toUpperCase()}.`,
           type: 'success',
         });
-        loadData();
+        loadData(true);
       } catch (error) {
         console.error(error);
       }
@@ -102,10 +140,10 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
     [groupId, showToast, loadData],
   );
 
-  const handleCapacityChange = React.useCallback(
+  const handleCapacityChange = useCallback(
     async (targetUserId: string, newCapacity: 'admin' | 'member') => {
       try {
-        setLoading(true);
+        dispatch({ type: 'SET_LOADING', payload: true });
         await communityAPI.updateMemberAuthority(groupId, targetUserId, newCapacity);
         hapticLight();
         showToast({
@@ -115,45 +153,44 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
               : 'Relieved of administrative duties.',
           type: 'success',
         });
-        await loadData();
+        await loadData(true);
       } catch (error) {
         console.error(error);
         showToast({ message: 'Higher authority required for this shift.', type: 'error' });
       } finally {
-        setLoading(false);
+        dispatch({ type: 'SET_LOADING', payload: false });
       }
     },
     [groupId, showToast, loadData],
   );
 
-  const handleApproveAll = React.useCallback(() => {
+  const handleApproveAll = useCallback(() => {
     communityAPI
       .approveAllPending(groupId)
-      .then(loadData)
+      .then(() => loadData(true))
       .catch(() => {
         /* non-fatal */
       });
   }, [groupId, loadData]);
 
-  const handleEditGroup = React.useCallback(() => setIsEditModalOpen(true), []);
-  const handleCloseEditModal = React.useCallback(() => setIsEditModalOpen(false), []);
+  const handleEditGroup = useCallback(() => setIsEditModalOpen(true), []);
+  const handleCloseEditModal = useCallback(() => setIsEditModalOpen(false), []);
 
-  const handleOpenPolicy = React.useCallback(() => handlePolicyChange('open'), [handlePolicyChange]);
-  const handleRestrictedPolicy = React.useCallback(
+  const handleOpenPolicy = useCallback(() => handlePolicyChange('open'), [handlePolicyChange]);
+  const handleRestrictedPolicy = useCallback(
     () => handlePolicyChange('restricted'),
     [handlePolicyChange],
   );
 
-  const handleProfileNavigation = React.useCallback(
+  const handleProfileNavigation = useCallback(
     (id: string) => {
       navigation.navigate('PublicProfile', { id, type: 'user' });
     },
     [navigation],
   );
 
-  const handleUpdateSuccess = React.useCallback((updatedGroup: any) => {
-    setGroup(updatedGroup as any);
-    setPolicy(updatedGroup.join_policy as any);
+  const handleUpdateSuccess = useCallback((updatedGroup: CommunityGroup) => {
+    dispatch({ type: 'SET_GROUP', payload: updatedGroup });
     setIsEditModalOpen(false);
   }, []);
 
@@ -178,6 +215,7 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
               className="p-3 rounded-xl bg-phase-interactive"
               accessibilityRole="button"
               accessibilityLabel="Open group settings"
+              accessibilityHint="Opens a modal to edit group name, description, and policy"
             >
               <Icon as={Settings} size="sm" className="text-white" />
             </Pressable>
@@ -228,6 +266,7 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
                 onPress={handleApproveAll}
                 accessibilityRole="button"
                 accessibilityLabel="Approve all pending membership requests"
+                accessibilityHint="Grant sanctuary access to all currently pending users"
               >
                 <Text className="text-phase-interactive font-semibold text-sm">Approve All</Text>
               </Pressable>
@@ -239,7 +278,7 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
               <Text className="text-center text-ink/40">No pending requests at the moment.</Text>
             </Box>
           ) : (
-            pendingMembers.map((request: any) => (
+            pendingMembers.map((request) => (
               <Box
                 key={request.user_id}
                 className="p-4 rounded-2xl bg-phase-surface border border-border"
@@ -276,6 +315,7 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
                       className="p-3 rounded-full bg-phase-danger/10"
                       accessibilityRole="button"
                       accessibilityLabel={`Reject request from ${request.user?.full_name}`}
+                      accessibilityHint="Declines the membership request"
                     >
                       <Icon as={UserX} size="sm" className="text-phase-danger" />
                     </Pressable>
@@ -284,6 +324,7 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
                       className="p-3 rounded-full bg-phase-reward/10"
                       accessibilityRole="button"
                       accessibilityLabel={`Approve request from ${request.user?.full_name}`}
+                      accessibilityHint="Grants full sanctuary access to the user"
                     >
                       <Icon as={UserCheck} size="sm" className="text-phase-reward" />
                     </Pressable>
@@ -302,10 +343,10 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
             const isAdmin = member.capacity === 'admin';
             const isMe = member.user_id === userId;
             const canManage = can('manage', {
-              __typename: 'CommunityGroup',
-              groupId,
+              __typename: 'GroupMember',
+              ...member,
               memberId: member.user_id,
-            } as any);
+            });
 
             return (
               <Pressable
@@ -313,6 +354,7 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
                 onPress={() => handleProfileNavigation(member.user_id)}
                 accessibilityRole="button"
                 accessibilityLabel={`View profile of ${member.user?.full_name}`}
+                accessibilityHint="Navigates to the user's public sanctuary profile"
               >
                 <Box
                   className={`p-4 rounded-2xl bg-phase-surface border ${
@@ -391,8 +433,8 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
                 name: group.name,
                 handle: group.handle,
                 description: group.description,
-                groupType: (group.group_type || group.type) as any,
-                joinPolicy: group.join_policy as any,
+                groupType: (group.group_type || group.type) as CommunityGroup['type'],
+                joinPolicy: group.join_policy,
                 imageUrl: group.image_url,
               }
             : undefined

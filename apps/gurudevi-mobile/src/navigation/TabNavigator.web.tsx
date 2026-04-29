@@ -4,8 +4,11 @@ import { useNotifications, useRewards } from '@repo/core/hooks';
 import { usePermissions } from '@repo/core/logic';
 import { useStore } from '@repo/core/store';
 import { BreathGuide } from '@repo/self';
-import { AchievementUnlockOverlay, ErrorBoundary, UniversalModal } from '@repo/ui';
-import { Box, HStack, Icon, Text, useTheme } from '@repo/ui/primitives';
+import AchievementUnlockOverlay from '@repo/ui/components/AchievementUnlockOverlay';
+import ErrorBoundary from '@repo/ui/components/ErrorBoundary';
+import { UniversalModal } from '@repo/ui/components/UniversalModal';
+
+import { Box, HStack, Icon, Text } from '@repo/ui/primitives';
 import {
   Bell,
   ChevronLeft,

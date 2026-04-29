@@ -1,43 +1,17 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { api, usePermissions } from '@repo/core';
-import {
-  ArrowLeft,
-  BookOpen,
-  Box,
-  Button,
-  ButtonText,
-  ClipboardCheck,
-  ClipboardList,
-  FileText,
-  GraduationCap,
-  Heading,
-  HStack,
-  Icon,
-  Input,
-  InputField,
-  Layers3,
-  LayoutGrid,
-  MessageSquare,
-  Modal,
-  ModalBackdrop,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  NotebookPen,
-  Pressable,
-  ScreenWrapper,
-  ScrollView,
-  SkeletonCard,
-  Sparkles,
-  Text,
-  Theme,
-  TrendingUp,
-  Users,
-  useThemedColors,
-  VStack,
-} from '@repo/ui';
-import React, { useState } from 'react';
+import { usePermissions } from '@repo/core';
+import { api } from '@repo/core/api';
+
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { useThemedColors } from '@repo/ui/hooks';
+import { ArrowLeft, BookOpen, ClipboardCheck, ClipboardList, FileText, GraduationCap, Layers3, LayoutGrid, MessageSquare, NotebookPen, Sparkles, TrendingUp, Users } from '@repo/ui/icons';
+import { Box, Button, Input } from '@repo/ui/primitives';
+import { ButtonText, HStack, Heading, Icon, InputField, Modal, ModalBackdrop, ModalBody, ModalContent, ModalFooter, ModalHeader, Text, VStack } from '@repo/ui/primitives';
+import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme';
+
+import { useState } from 'react';
 import {
   AttendanceView,
   ClassroomEchoSection,

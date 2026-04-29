@@ -13,8 +13,11 @@
 
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { type FounderStackParamList, type School, useStore } from '@repo/core';
-import { SkeletonCard } from '@repo/ui';
+import type { FounderStackParamList, School } from '@repo/core';
+import { useStore } from '@repo/core/logic';
+
+import { SkeletonCard } from '@repo/ui/components';
+
 import {
   Activity,
   ArrowUpRight,

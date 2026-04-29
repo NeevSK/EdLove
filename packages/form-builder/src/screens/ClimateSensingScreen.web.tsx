@@ -1,4 +1,6 @@
-import { FormManager, supabase } from '@repo/core';
+import { FormManager } from '@repo/core';
+import { supabase } from '@repo/core/native';
+
 import {
   ArrowRight,
   Building2,
@@ -13,7 +15,7 @@ import {
   Users,
   Wifi,
 } from 'lucide-react';
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   type ClimateSensingData,
   createClimateSensingSchema,
@@ -36,8 +38,10 @@ export const ClimateSensingScreenWeb = ({
   initialSchoolName,
 }: ClimateSensingWebProps) => {
   // School Identity State
-  const [selectedSchool, setSelectedSchool] = useState<{ id: string; name: string } | null>(
-    initialSchoolId ? { id: initialSchoolId, name: initialSchoolName || initialSchoolId } : null,
+  const [selectedSchool, setSelectedSchool] = useState<SchoolRegistryItem | null>(
+    initialSchoolId
+      ? { id: initialSchoolId, name: initialSchoolName || initialSchoolId, census_id: null }
+      : null,
   );
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<SchoolRegistryItem[]>([]);
@@ -142,7 +146,7 @@ export const ClimateSensingScreenWeb = ({
 
   const manager = useMemo(
     () => new FormManager(createClimateSensingSchema(handleSubmit)),
-    [selectedSchool],
+    [handleSubmit],
   );
 
   // View: Success Screen

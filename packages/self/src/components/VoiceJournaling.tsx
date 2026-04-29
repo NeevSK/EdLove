@@ -4,26 +4,17 @@
  * Simple, focused, and intimate interface.
  */
 
-import {
-  AnimatedView,
-  Box,
-  Button,
-  ButtonText,
-  Heading,
-  HStack,
-  hapticLight,
-  hapticSuccess,
-  Icon,
-  Text,
-  VStack,
-} from '@repo/ui';
+import { Box, Button } from '@repo/ui/primitives';
+import { HStack, Heading, Icon, Text, VStack } from '@repo/ui/primitives';
+import { AnimatedView } from '@repo/ui/primitives';
+import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+
 import { Check, Mic, Square, Volume2, X } from 'lucide-react-native';
 import type React from 'react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import Animated, {
+import {
   Easing,
-  FadeIn,
   FadeInUp,
   interpolate,
   useAnimatedStyle,
@@ -94,7 +85,7 @@ export const VoiceJournaling: React.FC<VoiceJournalingProps> = ({ userId, onFini
       pulseScale.value = withTiming(1);
       audioGraph.forEach((val) => (val.value = withTiming(4)));
     }
-  }, [recordingState, pulseScale]);
+  }, [recordingState, pulseScale, audioGraph.forEach]);
 
   const formatDuration = (seconds: number) => {
     const mins = Math.floor(seconds / 60);

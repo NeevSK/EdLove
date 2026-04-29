@@ -1,17 +1,9 @@
 import type { StudentAttendancePulse } from '@repo/core';
-import {
-  AlertTriangle,
-  Box,
-  GraduationCap,
-  HStack,
-  Heading,
-  Icon,
-  Pressable,
-  Text,
-  TrendingUp,
-  VStack,
-  hapticLight,
-} from '@repo/ui';
+import { AlertTriangle, GraduationCap, TrendingUp } from '@repo/ui/icons';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Heading, Icon, Text, VStack } from '@repo/ui/primitives';
+import { Pressable } from '@repo/ui/primitives';
+import { hapticLight } from '@repo/ui/utils/haptics';
 
 import type React from 'react';
 import { useTranslation } from 'react-i18next';

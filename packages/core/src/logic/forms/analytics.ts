@@ -14,6 +14,7 @@ export const formAnalytics = {
    */
   aggregate(fields: FieldDefinition[], responses: FormResponse[]): FieldAnalytics[] {
     return fields.map((field) => {
+      const fieldLabel = field.label ?? field.name ?? field.id;
       const values = responses
         .map((r) => r.data[field.name])
         .filter((v) => v !== undefined && v !== null);
@@ -46,7 +47,7 @@ export const formAnalytics = {
 
       return {
         fieldId: field.id,
-        label: field.label,
+        label: fieldLabel,
         type: field.type,
         totalResponses: values.length,
         data: aggregatedData,
@@ -60,7 +61,7 @@ export const formAnalytics = {
   toCSV(fields: FieldDefinition[], responses: FormResponse[]): string {
     if (responses.length === 0) return '';
 
-    const headers = ['Submitted At', ...fields.map((f) => f.label)];
+    const headers = ['Submitted At', ...fields.map((f) => f.label ?? f.name ?? f.id)];
     const rows = responses.map((r) => {
       const row = [
         new Date(r.submitted_at).toLocaleString(),
@@ -82,7 +83,7 @@ export const formAnalytics = {
    * Converts form responses to an Excel-compatible XML (SpreadsheetML) string
    */
   toXLSX(fields: FieldDefinition[], responses: FormResponse[]): string {
-    const headers = ['Submitted At', ...fields.map((f) => f.label)];
+    const headers = ['Submitted At', ...fields.map((f) => f.label ?? f.name ?? f.id)];
     const rows = responses.map((r) => {
       return [
         new Date(r.submitted_at).toLocaleString(),

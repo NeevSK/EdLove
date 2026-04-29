@@ -1,32 +1,16 @@
 import type { Student } from '@repo/core';
-import { studentsAPI } from '@repo/core';
+import { studentsAPI } from '@repo/core/api';
+
 import { QRCodeGenerator } from '@repo/scanner-kit';
-import {
-  Spinner as ActivityIndicator,
-  Box,
-  Button,
-  ButtonText,
-  Center,
-  Edit2,
-  FlatList,
-  Heading,
-  HStack,
-  hapticLight,
-  hapticMedium,
-  Icon,
-  MoreVertical,
-  Plus,
-  Pressable,
-  QrCode,
-  SanctuaryModal,
-  Sparkles,
-  Text,
-  Trash2,
-  VStack,
-  X,
-} from '@repo/ui';
+import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
+import { Edit2, Plus, QrCode, Sparkles, Trash2 } from '@repo/ui/icons';
+import { Box, Button } from '@repo/ui/primitives';
+import { ButtonText, Center, HStack, Heading, Icon, Spinner as ActivityIndicator, Text, VStack } from '@repo/ui/primitives';
+import { FlatList, Pressable } from '@repo/ui/primitives';
+import { hapticLight, hapticMedium } from '@repo/ui/utils/haptics';
+
 import * as Clipboard from 'expo-clipboard';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AddStudentModal } from './AddStudentModal';
 

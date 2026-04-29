@@ -1,4 +1,4 @@
-const fs = require('fs');
+const fs = require('node:fs');
 const { getContrastRatio } = require('./packages/ui/src/utils/colorUtils');
 const { phaseMatrix } = require('./packages/ui/src/theme/Theme');
 

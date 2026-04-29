@@ -41,7 +41,7 @@ sleekPackages.forEach((pkg) => {
             leak: lib,
           });
         });
-    } catch (e) {
+    } catch (_e) {
       // No matches for this lib
     }
   });

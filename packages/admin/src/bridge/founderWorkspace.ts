@@ -1,14 +1,9 @@
-import {
-  api,
-  MOCK_SCHOOL_STATS,
-  SafeZustandStorage,
-  type School,
-  type SchoolStats,
-  useFeatureAccess,
-  useStore,
-  useTemporalStore,
-} from '@repo/core';
-import { useCallback, useEffect, useReducer, useState } from 'react';
+import { MOCK_SCHOOL_STATS, SafeZustandStorage, type School, type SchoolStats } from '@repo/core';
+import { api } from '@repo/core/api';
+import { useFeatureAccess } from '@repo/core/hooks';
+import { useStore, useTemporalStore } from '@repo/core/logic';
+
+import { useCallback, useEffect, useReducer } from 'react';
 
 const ECOSYSTEM_STATS_CACHE_KEY = 'gurudevi-ecosystem-stats-cache';
 const ECOSYSTEM_SCHOOLS_CACHE_KEY = 'gurudevi-ecosystem-schools-cache';
@@ -70,7 +65,13 @@ const ecosystemStatsReducer = (
     case 'REFRESH_START':
       return { ...state, isLoading: true, error: null };
     case 'REFRESH_SUCCESS':
-      return { ...state, stats: action.stats, schools: action.schools, isLoading: false, error: null };
+      return {
+        ...state,
+        stats: action.stats,
+        schools: action.schools,
+        isLoading: false,
+        error: null,
+      };
     case 'SET_MOCK_STATS':
       return { ...state, stats: action.stats, schools: [], isLoading: false, error: null };
     case 'REFRESH_FAILURE':
@@ -180,8 +181,6 @@ export function useFounderEcosystemStats() {
   };
 }
 
-
-
 export async function createFounderSchool(input: {
   name: string;
   type: string;
@@ -223,7 +222,13 @@ const schoolStatsReducer = (
     case 'REFRESH_START':
       return { ...state, isLoading: true, error: null };
     case 'REFRESH_SUCCESS':
-      return { ...state, stats: action.stats, school: action.school, isLoading: false, error: null };
+      return {
+        ...state,
+        stats: action.stats,
+        school: action.school,
+        isLoading: false,
+        error: null,
+      };
     case 'REFRESH_FAILURE':
       return { ...state, isLoading: false, error: action.error };
     case 'SET_LOADING':

@@ -1,14 +1,12 @@
 import { FeatureGuard } from '@repo/core';
-import {
-  Box,
-  GlobalHeader,
-  Icon,
-  SanctuaryNudge,
-  SandboxBanner,
-  ScreenWrapper,
-  Wind,
-} from '@repo/ui';
-import React, { useMemo } from 'react';
+import GlobalHeader from '@repo/ui/components/GlobalHeader';
+import SandboxBanner from '@repo/ui/components/SandboxBanner';
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { Wind } from '@repo/ui/icons';
+import { Box } from '@repo/ui/primitives';
+import { SanctuaryNudge } from '@repo/ui/components/SanctuaryNudge';
+
+import { useMemo } from 'react';
 import { StudentOnboardingView, TeacherOnboardingView } from '../components';
 import StudentDashboard from '../screens/StudentDashboard';
 import TeacherDashboard from '../screens/TeacherDashboard';
@@ -250,7 +248,6 @@ export function useClassroomWorkspaceSurfaces({
     setIsCreateSchoolOpen,
     setIsCreateClassroomOpen,
     setIsClaimInviteOpen,
-    setBreathingOpen,
     fetchRoleData,
     navigation,
     renderNudge,

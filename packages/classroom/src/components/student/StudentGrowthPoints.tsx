@@ -1,5 +1,6 @@
-import { Box, Heading, HStack, Icon, Text, Trophy, VStack } from '@repo/ui';
-import React from 'react';
+import { Trophy } from '@repo/ui/icons';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Heading, Icon, Text } from '@repo/ui/primitives';
 
 interface StudentGrowthPointsProps {
   points: number;

@@ -4,26 +4,20 @@
  * Simple, gentle way to track sleep quality
  */
 
-import { supabase, usePermissions, useSafeMutation } from '@repo/core';
-import {
-  AnimatedView,
-  Box,
-  Button,
-  ButtonText,
-  Heading,
-  HStack,
-  hapticLight,
-  hapticSuccess,
-  Icon,
-  SkeletonCard,
-  Slider,
-  Text,
-  VStack,
-} from '@repo/ui';
+import { usePermissions } from '@repo/core';
+import { useSafeMutation } from '@repo/core/hooks';
+import { supabase } from '@repo/core/native';
+
+import { Box, Button, Slider } from '@repo/ui/primitives';
+import { ButtonText, HStack, Heading, Icon, Text, VStack } from '@repo/ui/primitives';
+import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
+import { AnimatedView } from '@repo/ui/primitives';
+import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+
 import { Moon, Stars } from 'lucide-react-native';
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import Animated, {
+import {
   Easing,
   FadeIn,
   useAnimatedStyle,
@@ -95,7 +89,7 @@ export default function SleepTracker({ userId, disabled: componentDisabled }: Sl
           t('sleepTracker.excellentDesc') || 'Deep, peaceful sleep. Feeling rejuvenated.',
       },
     ],
-    [i18n.resolvedLanguage, t],
+    [t],
   );
 
   const currentQuality = SLEEP_QUALITY[sleepQuality - 1] || SLEEP_QUALITY[2]!;

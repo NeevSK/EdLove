@@ -81,7 +81,7 @@ files.forEach((filePath) => {
   // Handle standard @repo/core imports
   content = content.replace(
     /import\s+\{(.*?)\}\s+from\s+['"]@repo\/core['"]/g,
-    (match, importList) => {
+    (_match, importList) => {
       const items = importList
         .split(',')
         .map((i) => i.trim())

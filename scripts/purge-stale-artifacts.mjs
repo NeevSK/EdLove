@@ -1,6 +1,6 @@
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { AlchemistExecution } from './utils/execution.mjs';
 
 /**
@@ -35,7 +35,7 @@ async function run() {
 
   const isDryRun = process.argv.includes('--dry-run');
   const customAge = process.argv.find((arg) => arg.startsWith('--age='))?.split('=')[1];
-  const maxAge = (customAge ? parseInt(customAge) : CONFIG.maxAgeDays) * 24 * 60 * 60 * 1000;
+  const maxAge = (customAge ? parseInt(customAge, 10) : CONFIG.maxAgeDays) * 24 * 60 * 60 * 1000;
 
   const results = {
     deleted: [],

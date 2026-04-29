@@ -12,7 +12,7 @@
 
 import { useEffect, useState } from 'react';
 import { driverManager } from '../native/DriverManager';
-import { getSurfaceNames, getSurfaceShader } from './soul/SoulLibrary';
+import { getSurfaceNames } from './soul/SoulLibrary';
 
 export type PrewarmStatus = 'idle' | 'warming' | 'ready' | 'partial' | 'unavailable';
 
@@ -75,7 +75,7 @@ export function useGPUPrewarm(): PrewarmResult {
             totalMs: Date.now() - t0,
           });
         }
-      } catch (e) {
+      } catch (_e) {
         if (!cancelled) {
           setResult({
             status: 'unavailable',

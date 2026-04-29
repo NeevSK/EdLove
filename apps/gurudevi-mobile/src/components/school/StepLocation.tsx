@@ -1,21 +1,6 @@
 import { SRI_LANKAN_DISTRICTS, SRI_LANKAN_PROVINCES } from '@repo/core';
-import {
-  FormControl,
-  FormControlLabel,
-  FormControlLabelText,
-  SanctuaryInput,
-  Select,
-  SelectBackdrop,
-  SelectContent,
-  SelectDragIndicator,
-  SelectDragIndicatorWrapper,
-  SelectIcon,
-  SelectInput,
-  SelectItem,
-  SelectPortal,
-  SelectTrigger,
-  VStack,
-} from '@repo/ui';
+import SanctuaryInput from '@repo/ui/components/SanctuaryInput';
+import { FormControl, FormControlLabel, FormControlLabelText, Select, SelectBackdrop, SelectContent, SelectDragIndicator, SelectDragIndicatorWrapper, SelectIcon, SelectInput, SelectItem, SelectPortal, SelectTrigger, VStack } from '@repo/ui/primitives';
 import { ChevronDown, Flag, MapPin } from 'lucide-react-native';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';

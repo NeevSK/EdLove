@@ -1,20 +1,7 @@
-import {
-  ArrowRightCircle,
-  BookOpen,
-  Box,
-  Heading,
-  HStack,
-  Icon,
-  Plus,
-  Pressable,
-  School,
-  Search,
-  Text,
-  Users,
-  VStack,
-  Zap,
-} from '@repo/ui';
-import React from 'react';
+import { ArrowRightCircle, BookOpen, Plus, School, Search, Users, Zap } from '@repo/ui/icons';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Heading, Icon, Text, VStack } from '@repo/ui/primitives';
+import { Pressable } from '@repo/ui/primitives';
 
 interface TeacherOnboardingViewProps {
   onTryDemo: () => void;

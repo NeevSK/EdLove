@@ -1,14 +1,8 @@
 import { useNavigation } from '@react-navigation/native';
-import {
-  BookOpenText,
-  Box,
-  HStack,
-  MessagesSquare,
-  Pressable,
-  School,
-  Text,
-  VStack,
-} from '@repo/ui';
+import { BookOpenText, MessagesSquare, School } from '@repo/ui/icons';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Text, VStack } from '@repo/ui/primitives';
+import { Pressable } from '@repo/ui/primitives';
 
 import type React from 'react';
 import { GuardianRoomShell } from './GuardianRoomShell';

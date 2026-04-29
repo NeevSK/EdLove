@@ -10,7 +10,8 @@
  * Pro-gated: same as GoogleVisionProvider.
  */
 
-import { supabase } from '@repo/core';
+import { supabase } from '@repo/core/native';
+
 import type { OCRProvider, OCRRawResult } from '../types';
 
 export class OpenAIVisionProvider implements OCRProvider {

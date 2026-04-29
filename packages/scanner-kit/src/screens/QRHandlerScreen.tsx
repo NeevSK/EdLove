@@ -15,18 +15,15 @@
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { type RouteProp, useNavigation, useRoute } from '@react-navigation/native';
-import { FlowResolver, identityAPI, type QRPayload } from '@repo/core';
-import {
-  Box,
-  Heading,
-  hapticError,
-  hapticSuccess,
-  ScreenWrapper,
-  Spinner,
-  Text,
-  VStack,
-} from '@repo/ui';
-import React, { useEffect, useState } from 'react';
+import { identityAPI } from '@repo/core/api';
+import { FlowResolver } from '@repo/core/native';
+import type { QRPayload } from '@repo/core/types';
+
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { Box, Heading, Spinner, Text, VStack } from '@repo/ui/primitives';
+import { hapticError, hapticSuccess } from '@repo/ui/utils/haptics';
+
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 type QRHandlerRouteParams = {
@@ -41,14 +38,6 @@ export default function QRHandlerScreen() {
   const [message, setMessage] = useState('');
 
   const payload = route.params?.payload;
-
-  useEffect(() => {
-    if (!payload) {
-      navigation.goBack();
-      return;
-    }
-    executeAction(payload);
-  }, []);
 
   const executeAction = async (p: QRPayload) => {
     try {
@@ -98,6 +87,14 @@ export default function QRHandlerScreen() {
       setTimeout(() => navigation.goBack(), 2500);
     }
   };
+
+  useEffect(() => {
+    if (!payload) {
+      navigation.goBack();
+      return;
+    }
+    executeAction(payload);
+  }, [payload, navigation, executeAction]);
 
   return (
     <ScreenWrapper>

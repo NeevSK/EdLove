@@ -1,3 +1,5 @@
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 import {
   type ConfigPlugin,
   createRunOncePlugin,
@@ -5,8 +7,6 @@ import {
   withDangerousMod,
   withPlugins,
 } from '@expo/config-plugins';
-import * as fs from 'fs';
-import * as path from 'path';
 
 const pkg = require('../../package.json');
 

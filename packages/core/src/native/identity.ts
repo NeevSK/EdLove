@@ -110,13 +110,27 @@ export const identityAPI = {
       }
 
       // Brand new user (no record in users or auth_identities)
-      // We use the Auth UID as the internal ID.
+      // We use the Auth UID as the initial internal ID and proactively map it.
+      await this.linkIdentity(authUid, 'supabase', authUid);
       cachedInternalId = authUid;
       return authUid;
     }
 
     cachedInternalId = internalId;
     return internalId;
+  },
+
+  /**
+   * Fetches the full user profile from the `users` table.
+   */
+  async getProfile(userId: string): Promise<User> {
+    const { data, error } = await supabase.from('users').select('*').eq('id', userId).single();
+
+    if (error) {
+      throw new APIError('Failed to fetch user profile', error.code, error);
+    }
+
+    return UserSchema.parse(data);
   },
 
   /**

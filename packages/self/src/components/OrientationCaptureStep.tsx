@@ -5,24 +5,16 @@
  */
 
 import type { OrientationSeeds } from '@repo/profile';
-import {
-  Box,
-  Heading,
-  HStack,
-  hapticLight,
-  hapticSuccess,
-  Icon,
-  Pressable,
-  ScrollView,
-  Text,
-  VStack,
-} from '@repo/ui';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Heading, Icon, Text, VStack } from '@repo/ui/primitives';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+
 import {
   BookOpen,
   Calendar,
   ChevronLeft,
   FolderCheck,
-  Info,
   Map,
   Microscope,
   PenTool,
@@ -34,7 +26,7 @@ import {
   Wrench,
   Zap,
 } from 'lucide-react-native';
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import Animated, { FadeIn, FadeInRight, Layout } from 'react-native-reanimated';
 
 // ============================================================================

@@ -1,13 +1,12 @@
 import {
-  api as coreAPI,
   KnowledgeTopologySchema,
-  mappingAPI,
   type PulseMetricsZod,
   type School,
   type SchoolStats,
-  useStore,
-  useTemporalStore,
 } from '@repo/core';
+import { api as coreAPI, mappingAPI } from '@repo/core/api';
+import { useStore, useTemporalStore } from '@repo/core/logic';
+
 import { useQuery } from '@tanstack/react-query';
 import { approvalsAPI } from '../approvals';
 import { adminCalendarAPI } from '../calendar';
@@ -20,8 +19,8 @@ import { staffOperationsAPI } from '../staff';
  * Hook for School Pulse (metrics like resonance score)
  */
 export function useSchoolPulseQuery(schoolId: string) {
-  const viewDate = useTemporalStore(s => s.viewDate);
-  const viewScale = useTemporalStore(s => s.viewScale);
+  const viewDate = useTemporalStore((s) => s.viewDate);
+  const viewScale = useTemporalStore((s) => s.viewScale);
 
   return useQuery({
     queryKey: ['school-pulse', schoolId, viewDate, viewScale],
@@ -35,7 +34,7 @@ export function useSchoolPulseQuery(schoolId: string) {
  * Hook for mapping topology
  */
 export function useMappingTopologyQuery(schoolId: string) {
-  const viewDate = useTemporalStore(s => s.viewDate);
+  const viewDate = useTemporalStore((s) => s.viewDate);
   return useQuery({
     queryKey: ['mapping-topology', schoolId, viewDate],
     queryFn: async () => {
@@ -50,7 +49,7 @@ export function useMappingTopologyQuery(schoolId: string) {
  * Hook for school stats and info
  */
 export function useSchoolStatsQuery(schoolId: string) {
-  const viewDate = useTemporalStore(s => s.viewDate);
+  const viewDate = useTemporalStore((s) => s.viewDate);
   const isDemoMode = useStore((state) => state.isDemoMode);
   return useQuery({
     queryKey: ['school-stats', schoolId, viewDate, isDemoMode],
@@ -92,7 +91,7 @@ export function useSchoolStatsQuery(schoolId: string) {
  * Manages all staff-related dashboard data (presence, carousel, pending approvals)
  */
 export function useStaffResonance(schoolId: string) {
-  const viewDate = useTemporalStore(s => s.viewDate);
+  const viewDate = useTemporalStore((s) => s.viewDate);
 
   const presence = useQuery({
     queryKey: ['staff-presence', schoolId, viewDate],
@@ -120,7 +119,7 @@ export function useStaffResonance(schoolId: string) {
  * Manages student feedback echoes and curriculum progress
  */
 export function useCurriculumPulse(schoolId: string) {
-  const viewDate = useTemporalStore(s => s.viewDate);
+  const viewDate = useTemporalStore((s) => s.viewDate);
 
   const echoes = useQuery({
     queryKey: ['echo-items', schoolId, viewDate],
@@ -142,7 +141,7 @@ export function useCurriculumPulse(schoolId: string) {
  * Manages resource needs, upcoming events, and recent observations
  */
 export function useOperationalAwareness(schoolId: string, principalId: string) {
-  const viewDate = useTemporalStore(s => s.viewDate);
+  const viewDate = useTemporalStore((s) => s.viewDate);
 
   const resourceNeeds = useQuery({
     queryKey: ['resource-needs', schoolId],

@@ -1,4 +1,8 @@
-import { classroomsAPI, supabase, type TotalState, useStore } from '@repo/core';
+import type { TotalState } from '@repo/core';
+import { classroomsAPI } from '@repo/core/api';
+import { useStore } from '@repo/core/logic';
+import { supabase } from '@repo/core/native';
+
 import { selfAPI } from '@repo/self';
 
 const TEACHER_ID = '11111111-1111-4111-8111-111111111111';

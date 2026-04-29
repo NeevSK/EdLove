@@ -1,22 +1,8 @@
-import {
-  ArrowRightCircle,
-  Box,
-  Building,
-  Building2,
-  ChevronRight,
-  Heading,
-  HStack,
-  hapticLight,
-  Icon,
-  Pressable,
-  ScrollView,
-  Search,
-  ShieldCheck,
-  Text,
-  VStack,
-  Zap,
-} from '@repo/ui';
-import React from 'react';
+import { ArrowRightCircle, Building, Building2, ChevronRight, Search, ShieldCheck, Zap } from '@repo/ui/icons';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Heading, Icon, Text, VStack } from '@repo/ui/primitives';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+import { hapticLight } from '@repo/ui/utils/haptics';
 
 interface PrincipalOnboardingViewProps {
   onTryDemo: () => void;

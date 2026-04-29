@@ -7,24 +7,22 @@
 
 import { usePermissions } from '@repo/core/logic';
 import type { AuthorityTier } from '@repo/core/types';
+import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
+import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { Globe, Megaphone, Pin, Plus } from '@repo/ui/icons';
 import {
   Box,
   Heading,
   HStack,
+  Icon,
   InputField,
   ScrollView,
   Spinner,
   Switch,
   Text,
   VStack,
-  Icon,
 } from '@repo/ui/primitives';
-import {
-  SanctuaryButton,
-  SanctuaryModal,
-  ScreenWrapper,
-} from '@repo/ui/components';
-import { Globe, Megaphone, Pin, Plus } from '@repo/ui/icons';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { communityAPI as community } from '../api/community';
@@ -36,10 +34,7 @@ interface AnnouncementsScreenProps {
   userAuthority: AuthorityTier;
 }
 
-export default function AnnouncementsScreen({
-  schoolId,
-  userId,
-}: AnnouncementsScreenProps) {
+export default function AnnouncementsScreen({ schoolId, userId }: AnnouncementsScreenProps) {
   const { t } = useTranslation();
   const { can } = usePermissions();
   const [announcements, setAnnouncements] = useState<AnnouncementWithAuthor[]>([]);

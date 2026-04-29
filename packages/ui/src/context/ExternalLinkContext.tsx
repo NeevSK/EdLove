@@ -7,7 +7,7 @@ import {
   ShieldCheck,
 } from 'lucide-react-native';
 import React, { useEffect, useMemo, useState } from 'react';
-import SanctuaryButton from '../components/SanctuaryButton';
+import { SanctuaryButton } from '../components/SanctuaryButton';
 import SanctuaryModal from '../components/SanctuaryModal';
 import { Box, Pressable as GSPressable, HStack, Text, VStack } from '../gluestack';
 import { useSanctuaryToast } from '../providers/ToastProvider';

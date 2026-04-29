@@ -4,36 +4,15 @@
  * Standardized to Zero-Legacy: purged raw HTML/inline styles and integrated Sanctuary design tokens.
  */
 
-import { supabase, useTemporalStore } from '@repo/core';
-import {
-  AnimatedView,
-  Box,
-  Button,
-  ButtonText,
-  Heading,
-  HStack,
-  Icon,
-  Input,
-  InputField,
-  Pressable,
-  Progress,
-  ProgressFilledTrack,
-  SkeletonLoader,
-  Spinner,
-  Text,
-  VStack,
-} from '@repo/ui';
-import {
-  Activity,
-  CheckCircle,
-  ChevronRight,
-  Clock,
-  Info,
-  Sparkles,
-  Wind,
-} from 'lucide-react-native';
-import React, { useEffect, useRef, useState } from 'react';
-import { FadeIn, FadeInDown, Layout, ZoomIn, ZoomOut } from 'react-native-reanimated';
+import { useTemporalStore } from '@repo/core/logic';
+
+import { Box, Button, Input } from '@repo/ui/primitives';
+import { ButtonText, HStack, Heading, Icon, InputField, Spinner, Text, VStack } from '@repo/ui/primitives';
+import { AnimatedView, Pressable } from '@repo/ui/primitives';
+
+import { Activity, CheckCircle, ChevronRight, Clock, Wind } from 'lucide-react-native';
+import { useEffect, useRef, useState } from 'react';
+import { FadeIn, FadeInDown, Layout } from 'react-native-reanimated';
 import { useMoodLogs } from '../hooks/useMoodLogs';
 
 interface MoodLotusProps {
@@ -60,7 +39,7 @@ const MOOD_TOKEN_BGS = [
   'bg-emeraldGreen',
   'bg-sanctuarySaffron',
 ];
-const MOOD_ACCENTS = ['', '#FF453A', '#FF9F0A', '#6A6358', '#34C759', '#F6B100'];
+const _MOOD_ACCENTS = ['', '#FF453A', '#FF9F0A', '#6A6358', '#34C759', '#F6B100'];
 
 const BREATH_STEPS = [
   { label: 'Breathe In', seconds: 4, color: 'text-skyBlue', accent: '#3B82F6' },

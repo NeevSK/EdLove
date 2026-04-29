@@ -1,5 +1,4 @@
-import { supabase } from '@repo/core';
-import { LibraryResource } from '../types';
+import { supabase } from '@repo/core/native';
 import { type KnowledgeNodeIndex, knowledgeDB } from './database';
 
 const SYNC_KEY = 'library_index_sync';

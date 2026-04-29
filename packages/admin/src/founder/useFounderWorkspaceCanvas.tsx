@@ -1,27 +1,18 @@
 import {
   type ResolvedWorkspaceSurface,
   type School,
-  useWorkspaceLayoutSync,
   WORKSPACE_CANVAS_ZONES,
   type WorkspaceSwitcherTarget,
   type WorkspaceZoneId,
 } from '@repo/core';
-import {
-  ArrowUpRight,
-  BookOpen,
-  Box,
-  Building2,
-  FolderPlus,
-  HStack,
-  MessageSquareHeart,
-  MoveRight,
-  Pressable,
-  School as SchoolIcon,
-  Text,
-  VStack,
-  WorkspaceCanvas,
-  type WorkspaceSurfaceDefinition,
-} from '@repo/ui';
+import { useWorkspaceLayoutSync } from '@repo/core/native';
+
+import type { WorkspaceSurfaceDefinition } from '@repo/core/types';
+import { WorkspaceCanvas } from '@repo/ui/components/workspace/WorkspaceCanvas';
+import { ArrowUpRight, BookOpen, Building2, FolderPlus, MessageSquareHeart, MoveRight, School as SchoolIcon } from '@repo/ui/icons';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Text, VStack } from '@repo/ui/primitives';
+import { Pressable } from '@repo/ui/primitives';
 
 import type React from 'react';
 import { useMemo } from 'react';

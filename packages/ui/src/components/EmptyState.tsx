@@ -1,6 +1,6 @@
 import type { LucideIcon } from 'lucide-react-native';
 import { Box, Center, Heading, Text, VStack } from '../gluestack';
-import SanctuaryButton from './SanctuaryButton';
+import { SanctuaryButton } from './SanctuaryButton';
 
 interface EmptyStateProps {
   icon: LucideIcon;

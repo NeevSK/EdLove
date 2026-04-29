@@ -13,7 +13,10 @@
  */
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { GuestDataSync, handleAPIError, identityAPI, supabase } from '@repo/core';
+import { handleAPIError } from '@repo/core';
+import { identityAPI } from '@repo/core/api';
+import { GuestDataSync, supabase } from '@repo/core/native';
+
 import { GuestDataSyncModal } from '@repo/ui';
 import * as WebBrowser from 'expo-web-browser';
 import type React from 'react';

@@ -1,18 +1,7 @@
-import {
-  Box,
-  Button,
-  ButtonText,
-  Compass,
-  DoorOpen,
-  HStack,
-  Heading,
-  Icon,
-  School,
-  Text,
-  Users,
-  VStack,
-  hapticLight,
-} from '@repo/ui';
+import { Compass, DoorOpen, School, Users } from '@repo/ui/icons';
+import { Box, Button } from '@repo/ui/primitives';
+import { ButtonText, HStack, Heading, Icon, Text, VStack } from '@repo/ui/primitives';
+import { hapticLight } from '@repo/ui/utils/haptics';
 
 interface PrincipalOnboardingViewProps {
   isGuest: boolean;

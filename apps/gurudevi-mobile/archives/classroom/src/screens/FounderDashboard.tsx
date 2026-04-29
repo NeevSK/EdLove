@@ -1,22 +1,25 @@
 ﻿import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { type ClassroomStackParamList, type School, useStore } from '@repo/core';
+import type { ClassroomStackParamList, School } from '@repo/core';
+import { useStore } from '@repo/core/logic';
+
 import {
   Box,
   GlobalHeader,
   Heading,
   HStack,
-  hapticLight,
   SandboxBanner,
   ScreenWrapper,
-  ScrollView,
-  SkeletonCard,
   Text,
-  Theme,
-  useRegisterFAB,
   useThemedColors,
   VStack,
 } from '@repo/ui';
+import { SkeletonCard } from '@repo/ui/components';
+import { useRegisterFAB } from '@repo/ui/context/FABContext';
+import { ScrollView } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme';
+import { hapticLight } from '@repo/ui/utils/haptics';
+
 import {
   ChevronRight,
   HeartPulse,

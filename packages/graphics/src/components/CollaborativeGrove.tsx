@@ -1,7 +1,8 @@
-import { Theme } from '@repo/ui';
+import { Theme } from '@repo/ui/theme';
+
 import { useQuery } from '@tanstack/react-query';
 import type React from 'react';
-import { Platform, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { SanctuaryCanvas } from './SanctuaryCanvas';
 
 // Define types locally to avoid analytics dependency
@@ -12,7 +13,7 @@ interface TenantMetrics {
 
 // Mock API function to avoid analytics dependency
 const mockTenantMetricsAPI = {
-  aggregateTenantMetrics: async (tenantIds: string[], range: string): Promise<TenantMetrics[]> => {
+  aggregateTenantMetrics: async (tenantIds: string[], _range: string): Promise<TenantMetrics[]> => {
     // Return mock data instead of calling analytics API
     return tenantIds.map(() => ({
       engagement: 0.5 + Math.random() * 0.5,

@@ -1,16 +1,8 @@
 import { useNavigation } from '@react-navigation/native';
-import {
-  Box,
-  Button,
-  ButtonText,
-  HStack,
-  Icon,
-  SkeletonCard,
-  Target,
-  Text,
-  VStack,
-} from '@repo/ui';
-import React from 'react';
+import { Target } from '@repo/ui/icons';
+import { Box, Button } from '@repo/ui/primitives';
+import { ButtonText, HStack, Icon, Text, VStack } from '@repo/ui/primitives';
+import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 
 export const StudentGoals = ({ goals, loading }: { goals: any[]; loading: boolean }) => {
   const navigation = useNavigation<any>();

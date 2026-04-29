@@ -16,7 +16,7 @@ function processFile(filePath) {
 
   if (rnViewImport.test(content)) {
     // Remove View from react-native import
-    content = content.replace(rnViewImport, (m, imports) => {
+    content = content.replace(rnViewImport, (_m, imports) => {
       const remaining = imports
         .split(',')
         .map((i) => i.trim())
@@ -34,7 +34,7 @@ function processFile(filePath) {
       });
     } else {
       // Add after react-native import or at top
-      content = `import { Box } from '@repo/ui';\n` + content;
+      content = `import { Box } from '@repo/ui';\n${content}`;
     }
 
     // 3. Replace <View and </View> with <Box and </Box>
@@ -45,7 +45,7 @@ function processFile(filePath) {
   // 4. Handle Text from react-native (move to @repo/ui)
   const rnTextImport = /import\s*\{([^}]*Text[^}]*)\}\s*from\s*['"]react-native['"]/;
   if (rnTextImport.test(content)) {
-    content = content.replace(rnTextImport, (m, imports) => {
+    content = content.replace(rnTextImport, (_m, imports) => {
       const remaining = imports
         .split(',')
         .map((i) => i.trim())
@@ -61,7 +61,7 @@ function processFile(filePath) {
         return `import { Text, ${imports.trim()} } from '@repo/ui'`;
       });
     } else {
-      content = `import { Text } from '@repo/ui';\n` + content;
+      content = `import { Text } from '@repo/ui';\n${content}`;
     }
   }
 

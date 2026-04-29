@@ -1,8 +1,12 @@
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { GuardianStackParamList } from '@repo/core';
-import { useStore } from '@repo/core';
-import { Box, Pressable, ScrollView, Text, VStack } from '@repo/ui';
+import { useStore } from '@repo/core/logic';
+
+import { Box } from '@repo/ui/primitives';
+import { Text, VStack } from '@repo/ui/primitives';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+
 import { useGuardianWorkspaceData } from '../../guardian';
 import { GuardianRoomShell } from './GuardianRoomShell';
 

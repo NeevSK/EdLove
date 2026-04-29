@@ -6,21 +6,13 @@
  */
 
 import type { SocialLink } from '@repo/core';
-import {
-  Box,
-  Button,
-  ButtonText,
-  FadeInDown,
-  HStack,
-  hapticHeavy,
-  hapticLight,
-  LivingGlow,
-  openExternalURL,
-  Pressable,
-  showExternalLinkOptions,
-  Text,
-  VStack,
-} from '@repo/ui';
+import { Box, Button, ButtonText, HStack, Text, VStack } from '@repo/ui/primitives';
+import { openExternalURL, showExternalLinkOptions } from '@repo/ui/utils';
+import { FadeInDown } from 'react-native-reanimated';
+import { LivingGlow } from '@repo/ui/components/LivingGlow';
+import { Pressable } from '@repo/ui/primitives';
+import { hapticHeavy, hapticLight } from '@repo/ui/utils/haptics';
+
 import * as Clipboard from 'expo-clipboard';
 import {
   Edit2,

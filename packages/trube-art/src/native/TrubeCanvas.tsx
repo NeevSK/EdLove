@@ -10,7 +10,6 @@ import type {
   TrubeSurfaceName,
   TrubeSurfaceSpec,
 } from '../core/types';
-import { driverManager } from './DriverManager';
 import { UnifiedRenderer } from './renderers/UnifiedRenderer';
 import { useTrubeEnvironment } from './TrubeProvider';
 
@@ -82,6 +81,7 @@ export function TrubeCanvas({
     quality,
     surfaceProp,
     stageSpec,
+    environment,
   ]);
 
   const plan = React.useMemo(() => {

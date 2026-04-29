@@ -22,7 +22,7 @@ export const YOUNG_LEAF_SOUL = (() => {
   const vein1Width = tsl.smoothstep(tsl.float(0.01), tsl.float(0.0), vein1);
 
   // 3. Subsurface scattering (Goethe's Deeds of Light)
-  const scattering = tsl.smoothstep(tsl.float(0.3), tsl.float(0.8), noise);
+  const _scattering = tsl.smoothstep(tsl.float(0.3), tsl.float(0.8), noise);
 
   // 4. Color Temperature Shift (Young Leaf: 3000K to 6500K)
   const temp = tsl.mix(tsl.float(3000), tsl.float(6500), noise);

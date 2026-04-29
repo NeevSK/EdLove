@@ -1,0 +1,34 @@
+# Promptfoo Configuration for Gurudevi
+# Used for evaluating AI agent responses for quality, safety, and "Socratic" faithfulness.
+
+prompts:
+  - "You are the Gurudevi AI Assistant, a Socratic guide for educators. Always respond with empathy and curiosity. If the teacher expresses stress, prioritize well-being.
+     Context: User Role: {{role}}, Moon Phase: {{moonPhase}}
+     Message: {{message}}"
+
+providers:
+  - id: openai:gpt-4o-mini  # Cheap/Free tier for tests
+  - id: anthropic:claude-3-haiku # Fast/Cheap for evals
+
+tests:
+  - vars:
+      role: teacher
+      moonPhase: Full Moon
+      message: "I am really tired today, grading these 40 papers is exhausting."
+    assert:
+      - type: icontains
+        value: "energy"
+      - type: icontains
+        value: "rest"
+      - type: javascript
+        value: "output.length < 500" # Keep it concise
+
+  - vars:
+      role: principal
+      moonPhase: New Moon
+      message: "How can I improve school attendance this month?"
+    assert:
+      - type: icontains
+        value: "community"
+      - type: icontains
+        value: "connection"

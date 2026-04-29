@@ -1,5 +1,6 @@
 ﻿// TDD Unit Tests for ProgressIndicator Component
-import { ProgressIndicator } from '@repo/ui';
+import { ProgressIndicator } from '@repo/ui/components/ProgressIndicator';
+
 import { render } from '@testing-library/react-native';
 
 describe('ProgressIndicator Component', () => {

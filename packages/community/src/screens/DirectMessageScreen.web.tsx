@@ -14,9 +14,12 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { CommunityStackParamList } from '@repo/core';
 import { socialAPI } from '@repo/core/api';
+import { useStore, useTemporalStore } from '@repo/core/logic';
 import { supabase } from '@repo/core/native';
-import { useStore, useTemporalStore } from '@repo/core/logic';;
-import { formatTimestamp, getInitialsFromName } from '@repo/ui';
+
+import { formatTimestamp } from '@repo/ui/utils/dateTimeUtils';
+import { getInitialsFromName } from '@repo/ui/utils/stringUtils';
+
 import type React from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { communityAPI } from '../api/community';
@@ -94,7 +97,7 @@ export default function DirectMessageScreen() {
 
   useEffect(() => {
     if (!loading) scrollToBottom(false);
-  }, [loading]);
+  }, [loading, scrollToBottom]);
 
   // \u2500\u2500 Real-time subscription \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
   useEffect(() => {

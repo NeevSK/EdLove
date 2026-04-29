@@ -1,18 +1,17 @@
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
 import * as dotenv from 'dotenv';
-import path from 'path';
-import { fileURLToPath } from 'url';
 
 // --- Service Imports: The Modular Sovereignty ---
 import { AuditService } from './services/AuditService.js';
 import { DiscoveryService } from './services/DiscoveryService.js';
+import { DocumentService } from './services/DocumentService.js';
 import { HelpService } from './services/HelpService.js';
 import { MaintenanceService } from './services/MaintenanceService.js';
 import { ScoutService } from './services/ScoutService.js';
-import { DocumentService } from './services/DocumentService.js';
-import { ROOT_DIR } from './utils/constants.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -545,6 +544,10 @@ class PolymathPlatformServer {
                   'boundaries',
                   'features',
                   'exports',
+                  'design_tokens',
+                  'stale_flags',
+                  'load_report',
+                  'bundle_leak',
                   'lint',
                   'check',
                   'syncpack_fix',
@@ -568,7 +571,23 @@ class PolymathPlatformServer {
             properties: {
               action: {
                 type: 'string',
-                enum: ['grep', 'scout', 'docs', 'inventory', 'view', 'find', 'structural', 'stats'],
+                enum: [
+                  'grep',
+                  'scout',
+                  'docs',
+                  'inventory',
+                  'view',
+                  'find',
+                  'structural',
+                  'stats',
+                  'component_api',
+                  'imports',
+                  'ui_report',
+                  'native_leaks',
+                  'metro_debug',
+                  'impact',
+                  'jina',
+                ],
               },
               params: {
                 type: 'object',
@@ -592,9 +611,19 @@ class PolymathPlatformServer {
                   'checkpoint',
                   'refactor',
                   'normalize',
+                  'inputs',
                   'scaffold',
                   'lint_fix',
                   'heal_architecture',
+                  'zod_bridge',
+                  'sleekness_test',
+                  'readme_usage',
+                  'scaffold_mocks',
+                  'shield_unicode',
+                  'dep_duplicate',
+                  'schema_drift',
+                  'purge',
+                  'runbyte_config',
                 ],
               },
               params: {
@@ -613,7 +642,7 @@ class PolymathPlatformServer {
             properties: {
               action: {
                 type: 'string',
-                enum: ['architecture', 'inventory', 'philosophy'],
+                enum: ['architecture', 'inventory', 'philosophy', 'runbyte'],
               },
             },
             required: ['action'],
@@ -742,6 +771,8 @@ class PolymathPlatformServer {
               return this.discovery.handleDebugMetro();
             case 'impact':
               return this.discovery.handleTraceDeletionImpact(params);
+            case 'jina':
+              return this.discovery.handleJinaReader(params);
             default:
               throw new Error(`Unknown discovery action: ${action}`);
           }
@@ -784,6 +815,8 @@ class PolymathPlatformServer {
               return this.maintenance.handleCheckSchemaDrift();
             case 'purge':
               return this.maintenance.handlePurgeStaleArtifacts(params);
+            case 'runbyte_config':
+              return this.maintenance.handleGenerateRunbyteConfig(params);
             default:
               throw new Error(`Unknown maintenance action: ${action}`);
           }
@@ -798,6 +831,8 @@ class PolymathPlatformServer {
               return this.help.handleGetToolInventory();
             case 'philosophy':
               return this.help.handleGetPhilosophy();
+            case 'runbyte':
+              return this.help.handleGetRunbyteGuide();
             default:
               throw new Error(`Unknown guide action: ${action}`);
           }

@@ -1,24 +1,14 @@
 import { useRoute } from '@react-navigation/native';
-import {
-  type AttendanceStatus,
-  api,
-  growthSignalsAPI,
-  type StudentAttendance,
-  useSafeMutation,
-  useStore,
-} from '@repo/core';
-import {
-  Box,
-  Button,
-  ButtonText,
-  hapticSuccess,
-  Pressable,
-  Spinner,
-  Text,
-  Theme,
-  VStack,
-} from '@repo/ui';
-import React, { useCallback, useEffect, useState } from 'react';
+import { type AttendanceStatus, growthSignalsAPI, type StudentAttendance } from '@repo/core';
+import { api } from '@repo/core/api';
+import { useSafeMutation } from '@repo/core/hooks';
+import { useStore } from '@repo/core/logic';
+
+import { Box, Button } from '@repo/ui/primitives';
+import { ButtonText, Spinner, Text, VStack } from '@repo/ui/primitives';
+import { hapticSuccess } from '@repo/ui/utils/haptics';
+
+import { useCallback, useEffect, useState } from 'react';
 import AttendanceSheet from '../components/AttendanceSheet';
 
 type AttendanceScreenRouteProp = {
@@ -69,7 +59,7 @@ export default function AttendanceScreen() {
       })) as StudentAttendance[];
 
       setStudents(attendanceData);
-    } catch (err) {
+    } catch (_err) {
       setError('Failed to load student list');
     } finally {
       setIsLoading(false);

@@ -1,22 +1,9 @@
 import type { PublishedSchoolGradingCompletion } from '@repo/core';
-import {
-  Box,
-  Building2,
-  Button,
-  ButtonIcon,
-  ButtonText,
-  HStack,
-  Heading,
-  Icon,
-  LayoutGrid,
-  NotebookPen,
-  Share2,
-  Text,
-  TrendingUp,
-  VStack,
-  WebScreenHeader,
-  hapticLight,
-} from '@repo/ui';
+import { Building2, LayoutGrid, NotebookPen, Share2, TrendingUp } from '@repo/ui/icons';
+import { Box, Button } from '@repo/ui/primitives';
+import { ButtonIcon, ButtonText, HStack, Heading, Icon, Text, VStack } from '@repo/ui/primitives';
+import { WebScreenHeader } from '@repo/ui/components/WebScreenHeader.web';
+import { hapticLight } from '@repo/ui/utils/haptics';
 
 import type React from 'react';
 import { useTranslation } from 'react-i18next';

@@ -1,23 +1,28 @@
-import { Box, HStack, Pressable, Text, VStack } from '@repo/ui';
-import React, { useRef } from 'react';
+import { Box, HStack, Text } from '@repo/ui/primitives';
+import { Pressable } from '@repo/ui/primitives';
+
+import { useRef } from 'react';
 import QRCodeGenerator from '../QRCodeGenerator';
 
-// Lazy-loaded to avoid hard native deps crashing in environments where
-// they may not be linked (e.g. storybook, web preview).
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const loadViewShot = async (): Promise<any> => {
+const optionalImport = async <T = any>(moduleName: string): Promise<T | null> => {
   try {
-    // @ts-expect-error — optional peer dependency; may not be installed
-    return await import('react-native-view-shot');
+    const importer = new Function('moduleName', 'return import(moduleName)') as (
+      name: string,
+    ) => Promise<T>;
+    return await importer(moduleName);
   } catch {
     return null;
   }
 };
 
-// @ts-expect-error
-const loadSharing = () => import('expo-sharing');
-// @ts-expect-error
-const loadClipboard = () => import('expo-clipboard');
+// Lazy-load optional native integrations so unsupported environments do not crash.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const loadViewShot = async (): Promise<any> => {
+  return optionalImport('react-native-view-shot');
+};
+
+const loadSharing = () => optionalImport<any>('expo-sharing');
+const loadClipboard = () => optionalImport<any>('expo-clipboard');
 
 interface QRShareButtonProps {
   /** Canonical gurudevi://qr?... URI produced by QRBuilder */
@@ -43,10 +48,7 @@ export default function QRShareButton({
   accentColor = '#f5a623',
 }: QRShareButtonProps) {
   const viewRef = useRef<any>(null);
-
   const shareUrl = shortUrl ?? value;
-
-  // ── Share as image ────────────────────────────────────────────────────────
 
   const handleShareImage = async () => {
     try {
@@ -55,7 +57,12 @@ export default function QRShareButton({
         console.warn('QRShareButton: react-native-view-shot not available');
         return;
       }
+
       const Sharing = await loadSharing();
+      if (!Sharing) {
+        console.warn('QRShareButton: expo-sharing not available');
+        return;
+      }
       if (!viewRef.current) return;
 
       const uri = await viewShot.captureRef(viewRef, { format: 'png', quality: 1 });
@@ -70,11 +77,13 @@ export default function QRShareButton({
     }
   };
 
-  // ── Copy link ─────────────────────────────────────────────────────────────
-
   const handleCopyLink = async () => {
     try {
       const Clipboard = await loadClipboard();
+      if (!Clipboard) {
+        console.warn('QRShareButton: expo-clipboard not available');
+        return;
+      }
       await Clipboard.setStringAsync(shareUrl);
     } catch (err) {
       console.warn('QRShareButton: copy link failed', err);
@@ -83,7 +92,6 @@ export default function QRShareButton({
 
   return (
     <Box className="items-center p-4 rounded-2xl" style={{ backgroundColor }}>
-      {/* QR code — captured by ViewShot */}
       <Box
         ref={viewRef}
         collapsable={false}
@@ -93,7 +101,6 @@ export default function QRShareButton({
         <QRCodeGenerator value={value} size={size} label={label} />
       </Box>
 
-      {/* Action buttons */}
       <HStack className="w-full gap-3">
         <Pressable
           onPress={handleShareImage}
@@ -102,7 +109,7 @@ export default function QRShareButton({
           accessibilityLabel="Share QR code as image"
         >
           <Text className="text-[13px] font-semibold" style={{ color: accentColor }}>
-            📤 Share Image
+            Share Image
           </Text>
         </Pressable>
 
@@ -113,7 +120,7 @@ export default function QRShareButton({
           accessibilityLabel="Copy QR link to clipboard"
         >
           <Text className="text-[13px] font-semibold" style={{ color: accentColor }}>
-            🔗 Copy Link
+            Copy Link
           </Text>
         </Pressable>
       </HStack>

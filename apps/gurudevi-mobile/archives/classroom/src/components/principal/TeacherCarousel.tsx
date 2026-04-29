@@ -8,17 +8,15 @@
  *  - Class count
  */
 
-import { staffManagementAPI, type TeacherCarouselItem } from '@repo/core';
-import {
-  Box,
-  getInitialsFromName,
-  HStack,
-  ScrollView,
-  SkeletonCard,
-  Text,
-  Theme,
-  useThemedColors,
-} from '@repo/ui';
+import type { TeacherCarouselItem } from '@repo/core';
+import { staffManagementAPI } from '@repo/core/api';
+
+import { Box, HStack, Text, useThemedColors } from '@repo/ui';
+import { SkeletonCard } from '@repo/ui/components';
+import { ScrollView } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme';
+import { getInitialsFromName } from '@repo/ui/utils/stringUtils';
+
 import { useEffect, useState } from 'react';
 import { TouchableOpacity } from 'react-native';
 

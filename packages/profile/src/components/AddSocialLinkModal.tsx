@@ -1,16 +1,7 @@
 import type { PrivacyLevel, SocialLink, SocialPlatform } from '@repo/core';
-import {
-  Box,
-  Button,
-  ButtonText,
-  Heading,
-  HStack,
-  Input,
-  InputField,
-  Pressable,
-  Text,
-  VStack,
-} from '@repo/ui';
+import { Box, Button, ButtonText, HStack, Heading, Input, InputField, Text, VStack } from '@repo/ui/primitives';
+import { Pressable } from '@repo/ui/primitives';
+
 import {
   Check,
   Globe,
@@ -27,7 +18,7 @@ import {
 import type React from 'react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Modal, Platform, ScrollView } from 'react-native';
+import { Modal, ScrollView } from 'react-native';
 import { useSocialLinks } from '../hooks/useSocialLinks';
 
 interface AddSocialLinkModalProps {

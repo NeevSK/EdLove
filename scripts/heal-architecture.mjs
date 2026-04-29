@@ -1,17 +1,16 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { execSync } from 'node:child_process';
 
 /**
  * --- Architectural Healer: The Sovereign Transition ---
- * 
- * This script automatically fixes 'root-import' violations by re-mapping 
+ *
+ * This script automatically fixes 'root-import' violations by re-mapping
  * symbols to their canonical subpath entry points.
  */
 
 const ROOT = process.cwd();
 const args = process.argv.slice(2);
-const targetInput = args.filter(a => !a.startsWith('--'))[0] || '.';
+const targetInput = args.filter((a) => !a.startsWith('--'))[0] || '.';
 const isDryRun = args.includes('--dry-run');
 
 const targetPath = path.isAbsolute(targetInput) ? targetInput : path.join(ROOT, targetInput);
@@ -39,9 +38,9 @@ for (const pkg of packagesToMap) {
 
     const relSubPath = subPath.replace('./', '');
     const fullAlias = `${pkg.name}/${relSubPath}`;
-    
+
     // Resolve the internal path (e.g. ./src/api/index.ts)
-    let internalPath = typeof target === 'string' ? target : target.import || target.default;
+    const internalPath = typeof target === 'string' ? target : target.import || target.default;
     if (!internalPath) continue;
 
     const indexPath = path.join(pkgDir, internalPath);
@@ -51,12 +50,13 @@ for (const pkg of packagesToMap) {
     // Note: This is an approximation but very effective for our barrel files
     const content = fs.readFileSync(indexPath, 'utf8');
     const exportRegex = /export\s+\{([^}]+)\}/g;
-    const namedExportRegex = /export\s+(const|function|class|type|interface|enum)\s+([a-zA-Z0-9_$]+)/g;
-    
+    const namedExportRegex =
+      /export\s+(const|function|class|type|interface|enum)\s+([a-zA-Z0-9_$]+)/g;
+
     let match;
     while ((match = exportRegex.exec(content)) !== null) {
-      const symbols = match[1].split(',').map(s => s.split(' as ')[0].trim());
-      symbols.forEach(s => {
+      const symbols = match[1].split(',').map((s) => s.split(' as ')[0].trim());
+      symbols.forEach((s) => {
         if (s && !symbolMap.has(s)) symbolMap.set(s, fullAlias);
       });
     }
@@ -97,17 +97,20 @@ walk(targetPath, (filePath) => {
   const importRegex = /import\s+(?:type\s+)?\{([^}]+)\}\s+from\s+['"](@repo\/(?:core|ui))['"]/g;
 
   content = content.replace(importRegex, (fullMatch, symbolStr, alias) => {
-    const symbols = symbolStr.split(',').map(s => s.trim()).filter(Boolean);
+    const symbols = symbolStr
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean);
     const remapped = new Map(); // Subpath -> Set of symbols
 
     const remainingSymbols = [];
 
-    symbols.forEach(s => {
+    symbols.forEach((s) => {
       // Handle "Symbol as Alias"
       const name = s.split(/\s+as\s+/)[0].trim();
       const subPath = symbolMap.get(name);
 
-      if (subPath && subPath.startsWith(alias)) {
+      if (subPath?.startsWith(alias)) {
         if (!remapped.has(subPath)) remapped.set(subPath, new Set());
         remapped.get(subPath).add(s);
       } else {
@@ -119,16 +122,20 @@ walk(targetPath, (filePath) => {
 
     changed = true;
     const newImports = [];
-    
+
     // Group re-mapped symbols
     for (const [subPath, symSet] of remapped.entries()) {
       const isType = fullMatch.includes('import type');
-      newImports.push(`import ${isType ? 'type ' : ''}{ ${Array.from(symSet).join(', ')} } from '${subPath}';`);
+      newImports.push(
+        `import ${isType ? 'type ' : ''}{ ${Array.from(symSet).join(', ')} } from '${subPath}';`,
+      );
     }
 
     // Keep symbols that couldn't be re-mapped in the root (though there shouldn't be many if discovery is good)
     if (remainingSymbols.length > 0) {
-      newImports.push(`import ${fullMatch.includes('import type') ? 'type ' : ''}{ ${remainingSymbols.join(', ')} } from '${alias}';`);
+      newImports.push(
+        `import ${fullMatch.includes('import type') ? 'type ' : ''}{ ${remainingSymbols.join(', ')} } from '${alias}';`,
+      );
     }
 
     return newImports.join('\n');

@@ -165,8 +165,8 @@ export class WebGPUDriver {
     time: number,
     entropy: number,
     intensity: number,
-    resW: number,
-    resH: number,
+    _resW: number,
+    _resH: number,
   ) {
     // Session ID is derived from name for simplicity in standard path
     // In Tier 2, we usually have one pipeline/buffer per named surface.

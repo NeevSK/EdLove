@@ -1,19 +1,20 @@
-import { useStore } from '@repo/core';
+import { useStore } from '@repo/core/logic';
+
 import {
   Box,
   Button,
   ButtonText,
   Heading,
   HStack,
-  hapticLight,
-  hapticSuccess,
-  Pressable,
   Text,
-  Theme,
   useEnvironment,
   useThemedColors,
   VStack,
 } from '@repo/ui';
+import { Pressable } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme';
+import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+
 import {
   Check,
   ChevronRight,

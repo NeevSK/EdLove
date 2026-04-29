@@ -5,29 +5,18 @@
  */
 
 import { useNavigation } from '@react-navigation/native';
-import { supabase } from '@repo/core';
-import {
-  AnimatedView,
-  Box,
-  Button,
-  ButtonText,
-  Heading,
-  HStack,
-  Icon,
-  Progress,
-  ProgressFilledTrack,
-  Spinner,
-  Text,
-  VStack,
-} from '@repo/ui';
+import { supabase } from '@repo/core/native';
+
+import { Box, Button } from '@repo/ui/primitives';
+import { ButtonText, HStack, Heading, Icon, Text, VStack } from '@repo/ui/primitives';
+import { AnimatedView } from '@repo/ui/primitives';
+
 import { Flower2, Leaf, Shapes, Sparkles, Sprout, TreePine } from 'lucide-react-native';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import Animated, {
+import {
   Easing,
-  FadeIn,
   FadeInDown,
-  Layout,
   useAnimatedStyle,
   useSharedValue,
   withRepeat,
@@ -138,7 +127,7 @@ export default function ProgressTree({ userId }: ProgressTreeProps) {
       -1,
       true,
     );
-  }, [userId]);
+  }, [userId, treeScale]);
 
   useEffect(() => {
     const stage =
@@ -157,7 +146,7 @@ export default function ProgressTree({ userId }: ProgressTreeProps) {
     }
 
     setCurrentStage(stage);
-  }, [interactionCount]);
+  }, [interactionCount, currentStage.stage, bloomScale, bloomOpacity]);
 
   const treeAnimatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: treeScale.value }],

@@ -1,23 +1,17 @@
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { socialAPI } from '@repo/core';
-import {
-  Box,
-  Center,
-  GlobalHeader,
-  Heading,
-  HStack,
-  hapticLight,
-  hapticSuccess,
-  Icon,
-  Pressable,
-  ScreenWrapper,
-  Text,
-  UserAvatar,
-  VStack,
-} from '@repo/ui';
+import { socialAPI } from '@repo/core/api';
+
+import GlobalHeader from '@repo/ui/components/GlobalHeader';
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { Box } from '@repo/ui/primitives';
+import { Center, HStack, Heading, Icon, Text, VStack } from '@repo/ui/primitives';
+import { UserAvatar } from '@repo/ui/components/UserAvatar';
+import { Pressable } from '@repo/ui/primitives';
+import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+
 import { Shield, Trash2, XCircle } from 'lucide-react-native';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, RefreshControl, ScrollView } from 'react-native';
 
@@ -50,7 +44,7 @@ export default function MuteHubScreen() {
 
   useEffect(() => {
     fetchMutes();
-  }, []);
+  }, [fetchMutes]);
 
   const handleUnmute = async (userId: string, userName: string) => {
     Alert.alert(

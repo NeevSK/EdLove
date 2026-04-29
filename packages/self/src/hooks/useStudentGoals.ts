@@ -1,4 +1,6 @@
-﻿import { SafeZustandStorage, useStore, useTemporalStore } from '@repo/core';
+﻿import { SafeZustandStorage } from '@repo/core';
+import { useStore, useTemporalStore } from '@repo/core/logic';
+
 import { useCallback, useEffect, useState } from 'react';
 import {
   createStudentGoal,
@@ -50,7 +52,7 @@ export function useStudentGoals(userId?: string) {
 
   useEffect(() => {
     refreshData();
-  }, [refreshData, isOnline]);
+  }, [refreshData]);
 
   const addGoal = useCallback(
     async (text: string) => {

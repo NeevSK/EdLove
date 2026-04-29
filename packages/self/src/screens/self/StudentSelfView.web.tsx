@@ -1,6 +1,9 @@
-﻿import { useJourneyHistory, useNaturePaths, usePermissions, useStudentGoals } from '@repo/core';
-import { JourneyHistoryCard, TemporalProvider, TemporalShield } from '@repo/ui';
-import React from 'react';
+﻿import { usePermissions } from '@repo/core';
+import { useJourneyHistory, useNaturePaths, useStudentGoals } from '@repo/core/hooks';
+
+import { JourneyHistoryCard } from '@repo/ui/components/JourneyHistoryCard';
+import { TemporalProvider } from '@repo/ui/components/TemporalProvider';
+import { TemporalShield } from '@repo/ui/components/TemporalShield';
 import { useTranslation } from 'react-i18next';
 import { BaseSelfView } from '../../components/BaseSelfView';
 import BreathGuide from '../../components/BreathGuide';

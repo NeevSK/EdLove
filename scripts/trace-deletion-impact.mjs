@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 import { execSync } from 'node:child_process';
-import path from 'node:path';
 
 const symbol = process.argv[2];
 if (!symbol) {
@@ -45,6 +44,6 @@ try {
 
   const riskLevel = lines.length > 20 ? 'EXTREME' : lines.length > 5 ? 'MODERATE' : 'LOW';
   console.log(`\n⚠️ Deletion Risk Assessment: ${riskLevel}`);
-} catch (e) {
+} catch (_e) {
   console.log(`✅ Symbol "${symbol}" appears to be unused. Safe to delete!`);
 }

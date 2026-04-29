@@ -1,60 +1,33 @@
 import {
-  api,
   coreRuntime,
+  FeatureGuard,
   type FieldDefinition,
-  FormFieldConfig,
   FormHydrator,
-  FormManager,
   type FormResponse,
-  FormTemplate,
   formAnalytics,
 } from '@repo/core';
-import { FeatureGuard } from '@repo/core/permissions/guards/FeatureGuard';
+import { api } from '@repo/core/api';
+
 import { QRCodeGenerator } from '@repo/scanner-kit';
+import { useThemedColors } from '@repo/ui/hooks';
+import { Box, Button, Input } from '@repo/ui/primitives';
+import { ButtonText, HStack, Heading, Icon, InputField, Text, VStack } from '@repo/ui/primitives';
+import { FlatList, Pressable } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme';
+
 import {
-  Box,
-  Button,
-  ButtonText,
-  Divider,
-  Heading,
-  HStack,
-  Icon,
-  Input,
-  InputField,
-  Pressable,
-  SanctuaryToast,
-  ScrollView,
-  Spinner,
-  Text,
-  Theme,
-  useThemedColors,
-  View,
-  VStack,
-} from '@repo/ui';
-import {
-  ArrowLeft,
   BarChart3,
-  ChevronDown,
-  ChevronUp,
   Clock,
   Download,
-  Edit3,
   Eye,
   GripVertical,
   Layout,
-  Lock,
-  Maximize2,
   Plus,
-  Printer,
-  QrCode,
   Save,
-  Settings,
   Settings2,
-  Share2,
   Trash2,
-  Users,
 } from 'lucide-react-native';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import NativeForm from './NativeForm';
 
 interface FormBuilderProps {
@@ -220,9 +193,9 @@ export const FormBuilder = ({
     if (activeTab === 'analytics' && templateId) {
       fetchResponses();
     }
-  }, [activeTab, templateId]);
+  }, [activeTab, templateId, fetchResponses]);
 
-  const fetchResponses = async () => {
+  async function fetchResponses() {
     setIsFetchingResponses(true);
     try {
       const data = await api.forms.getResponses(templateId!);
@@ -232,7 +205,7 @@ export const FormBuilder = ({
     } finally {
       setIsFetchingResponses(false);
     }
-  };
+  }
 
   const handleExportCSV = () => {
     const csv = formAnalytics.toCSV(fields, responses);
@@ -306,7 +279,7 @@ export const FormBuilder = ({
     }
   };
 
-  const handleSave = () => handleAction(false);
+  const _handleSave = () => handleAction(false);
   const handlePublish = () => handleAction(true);
 
   return (

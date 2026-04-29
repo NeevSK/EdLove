@@ -1,4 +1,5 @@
-import { mappingAPI } from '@repo/core';
+import { mappingAPI } from '@repo/core/api';
+
 import type { KnowledgeTopology } from '@repo/graphics';
 import { useEffect, useState } from 'react';
 
@@ -28,7 +29,7 @@ export function useTopologyPulse(schoolId?: string) {
     if (schoolId) {
       refreshPulse();
     }
-  }, [schoolId]);
+  }, [schoolId, refreshPulse]);
 
   return { pulse, loading, error, refreshPulse };
 }

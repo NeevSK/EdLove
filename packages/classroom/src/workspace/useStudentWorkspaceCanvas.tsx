@@ -1,12 +1,16 @@
 import {
   type ResolvedWorkspaceSurface,
-  useWorkspaceLayoutSync,
   WORKSPACE_CANVAS_ZONES,
   type WorkspaceLayout,
   type WorkspaceZoneId,
 } from '@repo/core';
-import { Box, HStack, Pressable, Text, WorkspaceCanvas } from '@repo/ui';
-import React, { useMemo } from 'react';
+import { useWorkspaceLayoutSync } from '@repo/core/native';
+
+import { Box, HStack, Text } from '@repo/ui/primitives';
+import { WorkspaceCanvas } from '@repo/ui/components/workspace';
+import { Pressable } from '@repo/ui/primitives';
+
+import { useMemo } from 'react';
 import type {
   StudentDashboardCapabilityKey,
   StudentDashboardSurface,

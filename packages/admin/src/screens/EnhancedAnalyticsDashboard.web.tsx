@@ -1,6 +1,8 @@
 import { useClassPerformance, usePredictions, useStudentPerformance } from '@repo/analytics/hooks';
 import { GPAInsights, PerformanceDashboard } from '@repo/analytics/ui';
-import { Card, HStack, ScrollView, Text, VStack } from '@repo/ui';
+import { Card } from '@repo/ui/components/SanctuaryCard';
+import { HStack, Text, VStack } from '@repo/ui/primitives';
+import { ScrollView } from '@repo/ui/primitives';
 
 interface EnhancedAnalyticsDashboardProps {
   schoolId?: string;

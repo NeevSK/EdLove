@@ -1,21 +1,17 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { useStore } from '@repo/core';
+import { useStore } from '@repo/core/logic';
+
 import { StaffPresencePulse } from '@repo/people';
-import {
-  Box,
-  GlobalHeader,
-  Heading,
-  HStack,
-  hapticSuccess,
-  SanctuaryButton,
-  ScreenWrapper,
-  Text,
-  Theme,
-  useThemedColors,
-  VStack,
-} from '@repo/ui';
+import GlobalHeader from '@repo/ui/components/GlobalHeader';
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { useThemedColors } from '@repo/ui/hooks';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Heading, Text, VStack } from '@repo/ui/primitives';
+import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
+import { hapticSuccess } from '@repo/ui/utils/haptics';
+
 import { AtSign, Edit3, User as UserIcon } from 'lucide-react-native';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView } from 'react-native';
 import { AddSocialLinkModal } from '../components/AddSocialLinkModal';
@@ -35,7 +31,7 @@ export default function FullProfileScreenWeb() {
   const initialProfile = initialParams as unknown as UserProfile;
 
   const { t } = useTranslation();
-  const colors = useThemedColors();
+  const _colors = useThemedColors();
   const { user: currentUser } = useStore();
 
   const {

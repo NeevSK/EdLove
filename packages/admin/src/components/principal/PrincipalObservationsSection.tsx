@@ -6,22 +6,15 @@
  *  - Inline new-observation form
  */
 
-import { supabase } from '@repo/core';
-import {
-  Box,
-  Heading,
-  HStack,
-  hapticLight,
-  Icon,
-  Input,
-  InputField,
-  Pressable,
-  Spinner,
-  Text,
-  VStack,
-} from '@repo/ui';
+import { supabase } from '@repo/core/native';
+
+import { Box, Input } from '@repo/ui/primitives';
+import { HStack, Heading, Icon, InputField, Spinner, Text, VStack } from '@repo/ui/primitives';
+import { Pressable } from '@repo/ui/primitives';
+import { hapticLight } from '@repo/ui/utils/haptics';
+
 import { Plus } from 'lucide-react-native';
-import React, { useEffect, useReducer } from 'react';
+import { useEffect, useReducer } from 'react';
 
 interface Observation {
   id: string;
@@ -130,7 +123,7 @@ export default function PrincipalObservationsSection({
   useEffect(() => {
     dispatch({ type: 'SET_LOADING', isLoading: true });
     fetchObservations();
-  }, [principalId]);
+  }, [fetchObservations]);
 
   async function handleSave() {
     const { content, obsType } = state.form;
@@ -165,13 +158,15 @@ export default function PrincipalObservationsSection({
             Institutional Logs
           </Text>
         </VStack>
-         <Pressable
+        <Pressable
           onPress={() => {
             hapticLight();
             dispatch({ type: 'TOGGLE_FORM' });
           }}
           className={`rounded-[18px] px-4 py-2.5 flex-row items-center gap-2 active:scale-95 transition-all shadow-sm ${state.isAddFormVisible ? 'bg-phase-canvas border border-phase-border' : 'bg-phase-interactive'}`}
-          accessibilityLabel={state.isAddFormVisible ? 'Hide observation form' : 'Create new observation'}
+          accessibilityLabel={
+            state.isAddFormVisible ? 'Hide observation form' : 'Create new observation'
+          }
           accessibilityHint="Toggles the form to record a new institutional observation"
         >
           <Icon
@@ -254,7 +249,7 @@ export default function PrincipalObservationsSection({
             </Input>
           </VStack>
 
-           <HStack className="gap-2.5 flex-wrap">
+          <HStack className="gap-2.5 flex-wrap">
             {OBS_TYPE_OPTIONS.map((t) => {
               const isSelected = state.form.obsType === t;
               const styles = getObsStyles(t);
@@ -283,7 +278,7 @@ export default function PrincipalObservationsSection({
             })}
           </HStack>
 
-           <Pressable
+          <Pressable
             onPress={() => {
               hapticLight();
               handleSave();

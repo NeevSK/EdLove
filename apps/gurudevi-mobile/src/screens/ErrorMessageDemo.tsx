@@ -5,7 +5,11 @@
  * to ensure they render correctly with proper styling and dismiss functionality.
  */
 
-import { Box, ErrorMessage, ScrollView, Text, VStack } from '@repo/ui';
+import ErrorMessage from '@repo/ui/components/ErrorMessage';
+import { Box } from '@repo/ui/primitives';
+import { Text, VStack } from '@repo/ui/primitives';
+import { ScrollView } from '@repo/ui/primitives';
+
 import { useState } from 'react';
 
 export default function ErrorMessageDemo() {

@@ -1,5 +1,8 @@
-import { Box, HStack, Icon, Pressable, ScrollView, Text, VStack } from '@repo/ui';
-import { Bookmark, BookOpen, FileText, Film, Link as LinkIcon } from '@repo/ui/icons';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Icon, Text, VStack } from '@repo/ui/primitives';
+import { BookOpen, Bookmark, FileText, Film } from '@repo/ui/icons';
+import { Link as LinkIcon } from '@repo/ui/primitives';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
 import type React from 'react';
 
 export interface PinnedResourcesShelfProps {

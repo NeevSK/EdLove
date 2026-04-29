@@ -1,6 +1,5 @@
-import { execSync } from 'child_process';
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 
 const PACKAGES_DIR = path.resolve(process.cwd(), 'packages');
 const TARGET_PACKAGES = fs
@@ -47,7 +46,7 @@ function getFiles(dir) {
   list.forEach((file) => {
     file = path.join(dir, file);
     const stat = fs.statSync(file);
-    if (stat && stat.isDirectory()) {
+    if (stat?.isDirectory()) {
       results = results.concat(getFiles(file));
     } else if (file.endsWith('.ts') || file.endsWith('.tsx')) {
       results.push(file);

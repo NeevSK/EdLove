@@ -1,6 +1,4 @@
-import fs from 'fs';
-import http from 'http';
-import path from 'path';
+import http from 'node:http';
 
 const args = process.argv.slice(2);
 const searchId = args[0] || '6459'; // Default to the id the user reported

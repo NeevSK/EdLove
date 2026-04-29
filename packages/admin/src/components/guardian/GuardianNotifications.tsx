@@ -1,4 +1,7 @@
-import { Box, Pressable, Text, VStack } from '@repo/ui';
+import { Box } from '@repo/ui/primitives';
+import { Text, VStack } from '@repo/ui/primitives';
+import { Pressable } from '@repo/ui/primitives';
+
 import type React from 'react';
 
 interface GuardianNotificationsProps {

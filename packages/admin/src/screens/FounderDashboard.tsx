@@ -1,28 +1,23 @@
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { type FounderStackParamList, type School, useStore } from '@repo/core';
+import type { FounderStackParamList, School } from '@repo/core';
+import { useStore } from '@repo/core/logic';
+
+import GlobalHeader from '@repo/ui/components/GlobalHeader';
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { useRegisterFAB } from '@repo/ui/context/FABContext';
+import { ChevronRight, HeartPulse, LayoutGrid, Plus, School as SchoolIcon, Users, Wind, Zap } from '@repo/ui/icons';
 import {
   Box,
-  ChevronRight,
-  GlobalHeader,
   Heading,
-  HeartPulse,
   HStack,
   Icon,
-  LayoutGrid,
-  Plus,
   Pressable,
-  School as SchoolIcon,
-  ScreenWrapper,
   ScrollView,
   Spinner,
   Text,
-  useRegisterFAB,
-  Users,
   VStack,
-  Wind,
-  Zap,
-} from '@repo/ui';
+} from '@repo/ui/primitives';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useFounderEcosystemStats } from '../bridge/founderWorkspace';
@@ -32,7 +27,7 @@ export default function FounderDashboard() {
   const { t } = useTranslation();
   const user = useStore((s) => s.user);
   const setBreathingOpen = useStore((s) => s.setBreathingOpen);
-  const isDemoMode = useStore((s) => s.isDemoMode);
+  const _isDemoMode = useStore((s) => s.isDemoMode);
   const navigation = useNavigation<NativeStackNavigationProp<FounderStackParamList>>();
 
   const { stats, schools, isLoading, refreshData } = useFounderEcosystemStats();
@@ -63,13 +58,10 @@ export default function FounderDashboard() {
     [navigation, user?.id],
   );
 
-  const handleOpenInstitute = React.useCallback(
-    () => {
-      const schoolId = user?.school_id;
-      if (schoolId) handleNavigateToSchool(schoolId);
-    },
-    [user?.school_id, handleNavigateToSchool],
-  );
+  const handleOpenInstitute = React.useCallback(() => {
+    const schoolId = user?.school_id;
+    if (schoolId) handleNavigateToSchool(schoolId);
+  }, [user?.school_id, handleNavigateToSchool]);
 
   // Register FAB globally
   useRegisterFAB({

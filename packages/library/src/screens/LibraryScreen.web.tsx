@@ -1,22 +1,18 @@
 import { type NavigationProp, useNavigation } from '@react-navigation/native';
-import {
-  growthSignalsAPI,
-  impactRipplesAPI,
-  setPendingGateAction,
-  supabase,
-  usePendingGateAction,
-  usePermissions,
-  useStore,
-  useTemporalStore,
-} from '@repo/core';
-import {
-  openExternalURL,
-  SmartShelf,
-  showExternalLinkOptions,
-  TemporalNavigator,
-  useRegisterFAB,
-  WebScreenHeader,
-} from '@repo/ui';
+import { growthSignalsAPI, impactRipplesAPI, usePermissions } from '@repo/core';
+import { usePendingGateAction } from '@repo/core/hooks';
+import { setPendingGateAction, useStore, useTemporalStore } from '@repo/core/logic';
+import { supabase } from '@repo/core/native';
+
+import { useResponsive } from '@repo/ui/hooks';
+import { AssetCreationModal } from '@repo/ui/components/media/AssetCreationPortal';
+import { SmartShelf } from '@repo/ui/components/SmartShelf';
+import { UniversalPerspective } from '@repo/ui/components/visualization';
+import { openExternalURL, showExternalLinkOptions } from '@repo/ui/utils';
+import { TemporalNavigator } from '@repo/ui/components/TemporalNavigator';
+import { WebScreenHeader } from '@repo/ui/components/WebScreenHeader.web';
+import { useRegisterFAB } from '@repo/ui/context/FABContext';
+
 import {
   Bookmark,
   Clock,
@@ -30,12 +26,10 @@ import {
   Plus,
   Search,
 } from 'lucide-react-native';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { libraryAPI } from '../api/library';
-import AddResourceModal from '../components/AddResourceModal';
 import { LibraryThumbnailCard } from '../components/LibraryThumbnailCard';
-import { UniversalPerspective } from '../components/perspectives/UniversalPerspective';
 import { LIBRARY_UI_CATEGORIES } from '../constants/categories';
 import { getOrderedShelfDefs } from '../constants/shelf';
 import { useLibrary } from '../hooks/useLibrary';
@@ -53,6 +47,7 @@ function StackFallback() {
 export default function LibraryScreenWeb() {
   const { t } = useTranslation();
   const navigation = useNavigation<NavigationProp<Record<string, unknown>>>();
+  const { width } = useResponsive();
   const { can } = usePermissions();
   const { isPastView } = useTemporalStore();
 
@@ -136,6 +131,55 @@ export default function LibraryScreenWeb() {
     () => getOrderedShelfDefs(user?.orientation_seeds),
     [user?.orientation_seeds],
   );
+  const mapTopology = useMemo(
+    () => ({
+      nodes: resources.map((res) => ({
+        id: res.id,
+        label: res.title,
+        type: (res.type === 'video' ? 'persona' : 'topic') as
+          | 'resource'
+          | 'topic'
+          | 'persona'
+          | 'collection',
+        group: res.subjects?.[0] ?? 'General',
+      })),
+      links: resources
+        .slice(0, -1)
+        .map((res, i) => {
+          const target = resources[i + 1];
+          if (!target) return null;
+          return {
+            source: res.id,
+            target: target.id,
+            relationship: 'related' as const,
+            value: 1,
+          };
+        })
+        .filter((link): link is NonNullable<typeof link> => link !== null),
+      context: { title: t('library.knowledgeConstellation') },
+    }),
+    [resources, t],
+  );
+  const mapLayout = useMemo(() => {
+    const spacing = Math.max(width / Math.max(mapTopology.nodes.length, 1), 120);
+    return {
+      positions: new Map(
+        mapTopology.nodes.map((node, index) => [
+          node.id,
+          {
+            x: 120 + (index % 4) * spacing,
+            y: 120 + Math.floor(index / 4) * 160,
+          },
+        ]),
+      ),
+      bounds: {
+        minX: 0,
+        minY: 0,
+        maxX: Math.max(width, 720),
+        maxY: Math.max(600, Math.ceil(mapTopology.nodes.length / 4) * 180 + 120),
+      },
+    };
+  }, [mapTopology.nodes, width]);
 
   const getYoutubeThumbnail = (url?: string) => {
     if (!url) return undefined;
@@ -774,30 +818,10 @@ export default function LibraryScreenWeb() {
                 {viewMode === 'map' && (
                   <div className="sanctuary-map-stage" style={{ height: '600px' }}>
                     <UniversalPerspective
-                      topology={
-                        {
-                          nodes: resources.map((res) => ({
-                            id: res.id,
-                            label: res.title,
-                            type: res.type === 'video' ? 'persona' : 'topic',
-                            group: res.subjects?.[0] ?? 'General',
-                          })),
-                          links: resources
-                            .slice(0, -1)
-                            .map((res, i) => {
-                              const target = resources[i + 1];
-                              if (!target) return null;
-                              return {
-                                source: res.id,
-                                target: target.id,
-                                relationship: 'related' as const,
-                                value: 1,
-                              };
-                            })
-                            .filter((link): link is any => link !== null),
-                          context: { title: t('library.knowledgeConstellation') },
-                        } as any
-                      }
+                      data={mapTopology as any}
+                      layout={mapLayout as any}
+                      width={Math.max(width, 720)}
+                      height={600}
                       onNodePress={(node) => {
                         const res = resources.find((r) => r.id === node.id);
                         if (res) handleOpenResource(res);
@@ -930,7 +954,7 @@ export default function LibraryScreenWeb() {
       </div>
 
       {can('create', 'LibraryResource') && (
-        <AddResourceModal
+        <AssetCreationModal
           isOpen={showAddResource && !isPastView}
           onClose={() => setShowAddResource(false)}
           onAdd={async (data) => {

@@ -1,6 +1,11 @@
-import { assignmentsAPI } from '@repo/core';
-import { Award, BookMarked, Box, HStack, Icon, SkeletonCard, Text, VStack } from '@repo/ui';
-import React, { useEffect, useMemo, useState } from 'react';
+import { assignmentsAPI } from '@repo/core/api';
+
+import { Award, BookMarked } from '@repo/ui/icons';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Icon, Text, VStack } from '@repo/ui/primitives';
+import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
+
+import { useEffect, useMemo, useState } from 'react';
 
 interface GradeRow {
   id: string;

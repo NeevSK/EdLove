@@ -1,10 +1,9 @@
-import { execSync } from 'child_process';
-import fs from 'fs';
-import path from 'path';
+import { execSync } from 'node:child_process';
+import fs from 'node:fs';
+import path from 'node:path';
 
 const workspaceRoot = process.cwd();
 
-// Use fd for lightning-fast file discovery
 function getSourceFiles() {
   const searchDirs = [
     'apps/gurudevi-mobile/src',
@@ -16,18 +15,56 @@ function getSourceFiles() {
     'packages/community/src',
   ].filter((dir) => fs.existsSync(path.join(workspaceRoot, dir)));
 
-  let allFiles = [];
-  searchDirs.forEach((dir) => {
+  const allFiles = [];
+
+  // Try to use fd first
+  try {
+    let fdCmd = 'fd';
     try {
-      // Find .ts, .tsx, .js, .jsx files, exclude platform-specific ones (.native, .ios, .android)
-      const cmd = `fd -t f -e ts -e tsx -e js -e jsx -E "*.native.*" -E "*.ios.*" -E "*.android.*" . "${path.join(workspaceRoot, dir)}"`;
-      const output = execSync(cmd, { encoding: 'utf-8' });
-      allFiles = allFiles.concat(output.split('\n').filter((f) => f.trim()));
-    } catch (e) {
-      console.error(`Error searching in ${dir}: ${e.message}`);
+      execSync('fd --version', { stdio: 'ignore' });
+    } catch (_e) {
+      // Check common WinGet portable path as extreme fallback
+      const wingetPath =
+        'C:\\Users\\Naween\\AppData\\Local\\Microsoft\\WinGet\\Packages\\sharkdp.fd_Microsoft.Winget.Source_8wekyb3d8bbwe\\fd-v10.4.2-x86_64-pc-windows-msvc\\fd.exe';
+      if (fs.existsSync(wingetPath)) {
+        fdCmd = `"${wingetPath}"`;
+      } else {
+        throw new Error('fd not found');
+      }
     }
-  });
-  return allFiles;
+
+    searchDirs.forEach((dir) => {
+      const cmd = `${fdCmd} -t f -e ts -e tsx -e js -e jsx -E "*.native.*" -E "*.ios.*" -E "*.android.*" . "${path.join(workspaceRoot, dir)}"`;
+      const output = execSync(cmd, { encoding: 'utf-8' });
+      allFiles.push(...output.split('\n').filter((f) => f.trim()));
+    });
+    return allFiles;
+  } catch (_e) {
+    // Fallback: Native Node.js recursive walker
+    console.log('>>> fd not found, falling back to native file walker...');
+
+    function walk(dir) {
+      const files = fs.readdirSync(dir);
+      files.forEach((file) => {
+        const fullPath = path.join(dir, file);
+        if (fs.statSync(fullPath).isDirectory()) {
+          walk(fullPath);
+        } else {
+          if (
+            /\.(ts|tsx|js|jsx)$/.test(file) &&
+            !file.includes('.native.') &&
+            !file.includes('.ios.') &&
+            !file.includes('.android.')
+          ) {
+            allFiles.push(fullPath);
+          }
+        }
+      });
+    }
+
+    searchDirs.forEach((dir) => walk(path.join(workspaceRoot, dir)));
+    return allFiles;
+  }
 }
 
 const sourceFiles = getSourceFiles();

@@ -1,12 +1,15 @@
 import { useNavigation } from '@react-navigation/native';
+import { usePermissions } from '@repo/core';
 import { communityAPI } from '@repo/core/api';
+import { useManifestoHooks, useNotificationHooks } from '@repo/core/api/hooks';
 import { usePendingGateAction } from '@repo/core/hooks';
-import { useStore } from '@repo/core/logic';
-import { setPendingGateAction, usePermissions } from '@repo/core';;
-import { WebScreenHeader } from '@repo/ui/components';
-import { Box, Heading, Icon, PositiveInvitation, Spinner, Text, VStack } from '@repo/ui';;
+import { setPendingGateAction, useStore } from '@repo/core/logic';
+import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
+import { Box } from '@repo/ui/primitives';
+import { Heading, Icon, Spinner, Text, VStack } from '@repo/ui/primitives';
+import { WebScreenHeader } from '@repo/ui/components/WebScreenHeader.web';
 import { Bell, Compass, Info, Plus, Shield, Users2 } from '@repo/ui/icons';
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { CommentSheet } from '../components/CommentSheet';
 import CommunityHearth from '../components/CommunityHearth';
 import CreateGroupModal from '../components/CreateGroupModal';
@@ -14,9 +17,7 @@ import CreatePostModal from '../components/CreatePostModal';
 import PostCard from '../components/PostCard';
 import { useCommunity } from '../hooks/useCommunity';
 import { useCommunityGroups } from '../hooks/useCommunityGroups';
-import { useManifestos } from '../hooks/useManifestos';
-import { useNotifications } from '../hooks/useNotifications';
-import type { AnnouncementWithAuthor, DirectConversation } from '../types';
+import type { AnnouncementWithAuthor, CommunityPost, DirectConversation } from '../types';
 import AnnouncementsScreen from './AnnouncementsScreen';
 import {
   type CommunityWorkspaceMode,
@@ -33,7 +34,7 @@ export default function CommunityScreenWeb() {
   const { user, flags } = useStore();
   const { isCommunityEnabled, isMessagingEnabled, isSocialShieldEnabled } = flags;
   const pending = usePendingGateAction();
-  const { unreadCount } = useNotifications();
+  const { unreadCount } = useNotificationHooks();
 
   const userId = user?.id ?? 'guest';
   const schoolId = user?.school_id ?? undefined;
@@ -56,7 +57,7 @@ export default function CommunityScreenWeb() {
   const [commentPostType, setCommentPostType] = useState<string | undefined>(undefined);
   const [conversations, setConversations] = useState<DirectConversation[]>([]);
   const [loadingMessages, setLoadingMessages] = useState(false);
-  const [announcementCount, setAnnouncementCount] = useState(0);
+  const [_announcementCount, setAnnouncementCount] = useState(0);
 
   const { posts, isLoadingPosts, fetchPosts, fetchGroups } = useCommunity(
     selectedFilter !== 'all' ? selectedFilter : undefined,
@@ -83,12 +84,17 @@ export default function CommunityScreenWeb() {
   }
 
   const { sanctuaryGroups, galaxyGroups } = useCommunityGroups({ schoolId, searchQuery });
-  const { manifestos } = useManifestos(schoolId, user?.id);
+  const { manifestos } = useManifestoHooks(schoolId, user?.id);
 
   const slots = useMemo(() => mapCommunitySurfaceSlots('web', userId), [userId]);
   const pulse = useMemo(
     () =>
-      deriveCommunityPulse(posts, [...sanctuaryGroups, ...galaxyGroups], manifestos, conversations),
+      deriveCommunityPulse(
+        posts as CommunityPost[],
+        [...sanctuaryGroups, ...galaxyGroups],
+        manifestos,
+        conversations,
+      ),
     [conversations, galaxyGroups, manifestos, posts, sanctuaryGroups],
   );
   const filters = useMemo(
@@ -108,11 +114,11 @@ export default function CommunityScreenWeb() {
     const query = searchQuery.trim().toLowerCase();
     if (!query) return posts;
     return posts.filter(
-      (post) =>
+      (post: any) =>
         post.content?.toLowerCase().includes(query) ||
         post.author_name?.toLowerCase().includes(query) ||
         post.group_name?.toLowerCase().includes(query) ||
-        post.tags?.some((tag) => tag.toLowerCase().includes(query)),
+        post.tags?.some((tag: string) => tag.toLowerCase().includes(query)),
     );
   }, [posts, searchQuery]);
 
@@ -215,7 +221,7 @@ export default function CommunityScreenWeb() {
       );
     }
 
-    return filteredPosts.map((post) => (
+    return filteredPosts.map((post: any) => (
       <PostCard
         key={post.id}
         post={post}
@@ -262,7 +268,7 @@ export default function CommunityScreenWeb() {
 
     return (
       <div className="community-circle-grid">
-        {visibleGroups.map((group) => (
+        {visibleGroups.map((group: any) => (
           <button
             key={group.id}
             className="community-circle-card"
@@ -358,7 +364,6 @@ export default function CommunityScreenWeb() {
         return renderMessages();
       case 'announcements':
         return renderAnnouncements();
-      case 'feed':
       default:
         return renderPostStream();
     }

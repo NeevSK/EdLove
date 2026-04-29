@@ -1,6 +1,6 @@
-import { Box, Heading, HStack, Text, VStack } from '@repo/ui';
-import { BookOpen, Clock, Compass, QrCode, Trophy, Users, Zap } from 'lucide-react-native';
-import React from 'react';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Heading, Text, VStack } from '@repo/ui/primitives';
+import { BookOpen, Clock, Compass, QrCode, Users, Zap } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
 interface Achievement {

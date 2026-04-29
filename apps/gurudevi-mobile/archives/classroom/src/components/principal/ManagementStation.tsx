@@ -1,13 +1,8 @@
-﻿import {
-  Box,
-  HStack,
-  hapticLight,
-  Pressable,
-  Text,
-  Theme,
-  useThemedColors,
-  VStack,
-} from '@repo/ui';
+﻿import { Box, HStack, Text, useThemedColors, VStack } from '@repo/ui';
+import { Pressable } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme';
+import { hapticLight } from '@repo/ui/utils/haptics';
+
 import { ArrowRight, LayoutGrid, Milestone, NotebookPen, UserPlus } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 

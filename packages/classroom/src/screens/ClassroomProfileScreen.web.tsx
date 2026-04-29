@@ -1,17 +1,9 @@
 import { useNavigation } from '@react-navigation/native';
 import { AvatarDisplay, EditableItem } from '@repo/profile';
-import {
-  ArrowLeft,
-  BookOpen,
-  Clock,
-  GraduationCap,
-  Hash,
-  Icon,
-  SkeletonCard,
-  User,
-  useThemedColors,
-} from '@repo/ui';
-import React from 'react';
+import { useThemedColors } from '@repo/ui/hooks';
+import { ArrowLeft, BookOpen, Clock, GraduationCap, Hash, User } from '@repo/ui/icons';
+import { Icon } from '@repo/ui/primitives';
+import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { useTranslation } from 'react-i18next';
 import { useClassroomProfile } from '../hooks/useClassroomProfile';
 

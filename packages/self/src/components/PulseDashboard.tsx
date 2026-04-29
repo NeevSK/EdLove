@@ -7,27 +7,18 @@
 
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import {
-  type ClassroomStackParamList,
-  usePendingActions,
-  usePermissions,
-  useStore,
-} from '@repo/core';
-import {
-  Box,
-  BreathAnimation,
-  DailyResonanceCard,
-  GlassCard,
-  Heading,
-  HStack,
-  Icon,
-  Pressable,
-  RefreshControl,
-  ScrollView,
-  SkeletonCard,
-  Text,
-  VStack,
-} from '@repo/ui';
+import type { ClassroomStackParamList } from '@repo/core';
+import { usePendingActions } from '@repo/core/hooks';
+import { useStore } from '@repo/core/logic';
+
+import { BreathAnimation } from '@repo/ui/components/BreathAnimation';
+import { DailyResonanceCard } from '@repo/ui/components/DailyResonanceCard';
+import { GlassCard } from '@repo/ui/components/GlassCard';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Heading, Icon, Text, VStack } from '@repo/ui/primitives';
+import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
+import { Pressable, RefreshControl, ScrollView } from '@repo/ui/primitives';
+
 import {
   BookOpen,
   Calendar,
@@ -36,7 +27,7 @@ import {
   Clock,
   Sparkles,
 } from 'lucide-react-native';
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { dailyContentAPI } from '../api/dailyContent';
 
@@ -69,13 +60,13 @@ export function PulseDashboard({ onEnterDetails }: { onEnterDetails: () => void 
 
   useEffect(() => {
     loadContent();
-  }, []);
+  }, [loadContent]);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
     await Promise.all([loadContent(), refreshActions()]);
     setRefreshing(false);
-  }, [refreshActions]);
+  }, [refreshActions, loadContent]);
 
   const getGreeting = () => {
     const hour = new Date().getHours();

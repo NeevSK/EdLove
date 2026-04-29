@@ -1,34 +1,37 @@
 /**
- * QRShareButton — QR code display + share controls
+ * QRShareButton - QR code display + share controls.
  *
  * Wraps QRCodeGenerator and adds:
- *   - "Share Image" → captures QR as PNG via react-native-view-shot → expo-sharing
- *   - "Copy Link"   → copies the QR URL to clipboard via expo-clipboard
+ * - Share Image: captures the QR as PNG via react-native-view-shot, then uses expo-sharing
+ * - Copy Link: copies the QR URL to the clipboard via expo-clipboard
  *
  * Optional `shortUrl` prop: if provided, the copied/shared URL is the short URL
  * rather than the full gurudevi://qr?... scheme URL.
- *
- * Used in: InviteManager, SchoolCreationScreen (success), IdentityCard.
  */
 
 import { useRef } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import QRCodeGenerator from '../components/QRCodeGenerator';
 
-// Lazy-loaded to avoid hard native deps crashing in environments where
-// they may not be linked (e.g. storybook, web preview).
-// react-native-view-shot is an optional peer dependency.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const loadViewShot = async (): Promise<any> => {
+const optionalImport = async <T = any>(moduleName: string): Promise<T | null> => {
   try {
-    // @ts-expect-error — optional peer dependency; may not be installed
-    return await import('react-native-view-shot');
+    const importer = new Function('moduleName', 'return import(moduleName)') as (
+      name: string,
+    ) => Promise<T>;
+    return await importer(moduleName);
   } catch {
     return null;
   }
 };
-const loadSharing = () => import('expo-sharing');
-const loadClipboard = () => import('expo-clipboard');
+
+// Lazy-load optional native integrations so unsupported environments do not crash.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const loadViewShot = async (): Promise<any> => {
+  return optionalImport('react-native-view-shot');
+};
+
+const loadSharing = () => optionalImport<any>('expo-sharing');
+const loadClipboard = () => optionalImport<any>('expo-clipboard');
 
 interface QRShareButtonProps {
   /** Canonical gurudevi://qr?... URI produced by QRBuilder */
@@ -54,10 +57,7 @@ export default function QRShareButton({
   accentColor = '#f5a623',
 }: QRShareButtonProps) {
   const viewRef = useRef<View>(null);
-
   const shareUrl = shortUrl ?? value;
-
-  // ── Share as image ────────────────────────────────────────────────────────────
 
   const handleShareImage = async () => {
     try {
@@ -66,7 +66,12 @@ export default function QRShareButton({
         console.warn('QRShareButton: react-native-view-shot not available');
         return;
       }
+
       const Sharing = await loadSharing();
+      if (!Sharing) {
+        console.warn('QRShareButton: expo-sharing not available');
+        return;
+      }
       if (!viewRef.current) return;
 
       const uri = await viewShot.captureRef(viewRef, { format: 'png', quality: 1 });
@@ -81,11 +86,13 @@ export default function QRShareButton({
     }
   };
 
-  // ── Copy link ─────────────────────────────────────────────────────────────────
-
   const handleCopyLink = async () => {
     try {
       const Clipboard = await loadClipboard();
+      if (!Clipboard) {
+        console.warn('QRShareButton: expo-clipboard not available');
+        return;
+      }
       await Clipboard.setStringAsync(shareUrl);
     } catch (err) {
       console.warn('QRShareButton: copy link failed', err);
@@ -94,19 +101,17 @@ export default function QRShareButton({
 
   return (
     <View style={[styles.container, { backgroundColor }]}>
-      {/* QR code — captured by ViewShot */}
       <View ref={viewRef} collapsable={false} style={[styles.qrWrapper, { backgroundColor }]}>
         <QRCodeGenerator value={value} size={size} label={label} />
       </View>
 
-      {/* Action buttons */}
       <View style={styles.buttonRow}>
         <TouchableOpacity
           onPress={handleShareImage}
           style={[styles.button, { borderColor: accentColor }]}
           accessibilityLabel="Share QR code as image"
         >
-          <Text style={[styles.buttonText, { color: accentColor }]}>📤 Share Image</Text>
+          <Text style={[styles.buttonText, { color: accentColor }]}>Share Image</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -114,7 +119,7 @@ export default function QRShareButton({
           style={[styles.button, { borderColor: accentColor }]}
           accessibilityLabel="Copy QR link to clipboard"
         >
-          <Text style={[styles.buttonText, { color: accentColor }]}>🔗 Copy Link</Text>
+          <Text style={[styles.buttonText, { color: accentColor }]}>Copy Link</Text>
         </TouchableOpacity>
       </View>
     </View>

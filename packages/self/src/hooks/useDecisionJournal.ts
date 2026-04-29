@@ -1,10 +1,7 @@
-﻿import {
-  getTemporalRange,
-  SafeZustandStorage,
-  supabase,
-  useStore,
-  useTemporalStore,
-} from '@repo/core';
+﻿import { getTemporalRange, SafeZustandStorage } from '@repo/core';
+import { useStore, useTemporalStore } from '@repo/core/logic';
+import { supabase } from '@repo/core/native';
+
 import { useCallback, useEffect, useState } from 'react';
 import type { DecisionLog } from '../types';
 
@@ -85,7 +82,7 @@ export function useDecisionJournal(userId?: string) {
   // Fetch on mount/online change
   useEffect(() => {
     refreshData();
-  }, [refreshData, isOnline]);
+  }, [refreshData]);
 
   return {
     decisions,

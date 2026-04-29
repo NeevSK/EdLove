@@ -4,21 +4,15 @@
  * Standardized to Zero-Legacy: purged raw HTML/inline styles and fixed syntax corruption in style objects.
  */
 
-import { useTemporalStore } from '@repo/core';
-import {
-  Box,
-  Heading,
-  HStack,
-  Icon,
-  Input,
-  InputField,
-  Pressable,
-  SkeletonCard,
-  Text,
-  VStack,
-} from '@repo/ui';
+import { useTemporalStore } from '@repo/core/logic';
+
+import { Box } from '@repo/ui/primitives';
+import { HStack, Heading, Icon, InputField, Text, VStack } from '@repo/ui/primitives';
+import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
+import { Pressable } from '@repo/ui/primitives';
+
 import { Battery, CheckCircle2 } from 'lucide-react-native';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Animated, { FadeIn, SlideInUp } from 'react-native-reanimated';
 import { ENERGY_COLORS } from '../constants/wellbeing';
 import { useEnergyForecast } from '../hooks/useEnergyForecast';

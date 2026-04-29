@@ -245,7 +245,7 @@ export class AnimationController {
       const xTo = gsap.quickTo(button, 'x', { duration: 0.3, ease: 'power2.out' });
       const yTo = gsap.quickTo(button, 'y', { duration: 0.3, ease: 'power2.out' });
 
-      button.addEventListener('mouseenter', (e) => {
+      button.addEventListener('mouseenter', () => {
         gsap.to(button, {
           scale: 1.05,
           duration: 0.3,
@@ -253,7 +253,7 @@ export class AnimationController {
         });
       });
 
-      button.addEventListener('mouseleave', (e) => {
+      button.addEventListener('mouseleave', () => {
         gsap.to(button, {
           scale: 1,
           duration: 0.3,

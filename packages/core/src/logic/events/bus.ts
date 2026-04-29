@@ -1,28 +1,17 @@
-import type { schemas } from './schemas';
+import type { GurudeviEvents } from './schemas';
 
+export * from './producers';
+export * from './runtimeBridge';
 /**
- * Gurudevi Platform Event Logic
+ * Shared event contracts only.
  *
- * 🧱 ARCHITECTURAL BOUNDARY (Sovereign Core):
- * This file no longer instantiates the Inngest client.
- * Client instantiation is now the responsibility of the "Imperative Shell" (apps).
- *
- * We export only the schemas and logic-level helpers.
+ * This module intentionally exports event definitions and lightweight types
+ * while leaving client instantiation to the app shells.
  */
-
 export * from './schemas';
 
 /**
- * Legacy support for PlatformEvents type.
- * Newer code should use the inferred types from schemas.ts
+ * Transitional type kept for repo-wide compatibility while older code is being
+ * moved to direct event-definition imports.
  */
-export type PlatformEvents = {
-  [K in keyof typeof schemas]: {
-    data: (typeof schemas)[K]['data'];
-  };
-};
-
-/**
- * Note: emitEvent should be used from the shell-specific client.
- * This core package remains platform-agnostic and free of environment leaks.
- */
+export type PlatformEvents = GurudeviEvents;

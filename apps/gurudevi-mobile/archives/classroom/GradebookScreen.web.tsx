@@ -7,7 +7,9 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { SortOption } from '@repo/classroom';
 import { useGradebook } from '@repo/classroom';
-import { growthSignalsAPI, useStore } from '@repo/core';
+import { growthSignalsAPI } from '@repo/core';
+import { useStore } from '@repo/core/logic';
+
 import {
   Award,
   Check,

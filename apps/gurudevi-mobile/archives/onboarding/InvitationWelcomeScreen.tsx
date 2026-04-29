@@ -1,18 +1,21 @@
 import { useNavigation } from '@react-navigation/native';
-import { identityAPI, supabase } from '@repo/core';
+import { identityAPI } from '@repo/core/api';
+import { supabase } from '@repo/core/native';
+
 import {
   Box,
   Button,
   ButtonText,
   Heading,
   Text,
-  Theme,
   Toast,
   ToastDescription,
   ToastTitle,
   useToast,
   VStack,
 } from '@repo/ui';
+import { Theme } from '@repo/ui/theme';
+
 import { useTranslation } from 'react-i18next';
 
 interface InvitationWelcomeScreenProps {

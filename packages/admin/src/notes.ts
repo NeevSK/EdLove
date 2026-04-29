@@ -1,4 +1,5 @@
-import { type PrincipalNote, principalNotesAPI } from '@repo/core';
+import type { PrincipalNote } from '@repo/core';
+import { principalNotesAPI } from '@repo/core/api';
 
 export type { PrincipalNote };
 

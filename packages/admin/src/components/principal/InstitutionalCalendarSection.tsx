@@ -6,21 +6,16 @@
  *  - Inline add-event form
  */
 
-import { type CalendarEvent, staffManagementAPI } from '@repo/core';
-import {
-  Box,
-  HStack,
-  hapticLight,
-  Icon,
-  Input,
-  InputField,
-  Pressable,
-  ScrollView,
-  Text,
-  VStack,
-} from '@repo/ui';
+import type { CalendarEvent } from '@repo/core';
+import { staffManagementAPI } from '@repo/core/api';
+
+import { Box, Input } from '@repo/ui/primitives';
+import { HStack, Icon, InputField, Text, VStack } from '@repo/ui/primitives';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+import { hapticLight } from '@repo/ui/utils/haptics';
+
 import { Plus } from 'lucide-react-native';
-import React, { useEffect, useReducer } from 'react';
+import { useEffect, useReducer } from 'react';
 
 interface InstitutionalCalendarSectionProps {
   schoolId: string;
@@ -124,7 +119,7 @@ export default function InstitutionalCalendarSection({
   useEffect(() => {
     dispatch({ type: 'SET_LOADING', isLoading: true });
     fetchEvents();
-  }, [schoolId]);
+  }, [fetchEvents]);
 
   async function handleSave() {
     const { title, selectedType, startDate, endDate } = state.form;
@@ -239,7 +234,7 @@ export default function InstitutionalCalendarSection({
 
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             <HStack className="gap-2.5">
-               {TYPE_OPTIONS.map((t) => {
+              {TYPE_OPTIONS.map((t) => {
                 const isSelected = state.form.selectedType === t;
                 return (
                   <Pressable
@@ -273,7 +268,9 @@ export default function InstitutionalCalendarSection({
                 placeholder="YYYY-MM-DD"
                 placeholderTextColor="rgba(0,0,0,0.2)"
                 value={state.form.startDate}
-                onChangeText={(val) => dispatch({ type: 'UPDATE_FORM', field: 'startDate', value: val })}
+                onChangeText={(val) =>
+                  dispatch({ type: 'UPDATE_FORM', field: 'startDate', value: val })
+                }
                 className="text-[14px] font-bold text-phaseText-primary"
                 accessibilityLabel="Start Date"
                 accessibilityHint="Enter the event start date in ISO format"
@@ -284,7 +281,9 @@ export default function InstitutionalCalendarSection({
                 placeholder="End (Opt)"
                 placeholderTextColor="rgba(0,0,0,0.2)"
                 value={state.form.endDate}
-                onChangeText={(val) => dispatch({ type: 'UPDATE_FORM', field: 'endDate', value: val })}
+                onChangeText={(val) =>
+                  dispatch({ type: 'UPDATE_FORM', field: 'endDate', value: val })
+                }
                 className="text-[14px] font-bold text-phaseText-primary"
                 accessibilityLabel="End Date"
                 accessibilityHint="Enter the optional end date in ISO format"

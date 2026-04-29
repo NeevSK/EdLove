@@ -1,4 +1,5 @@
-import { supabase } from '@repo/core';
+import { supabase } from '@repo/core/native';
+
 import type { RealtimeChannel } from '@supabase/supabase-js';
 import { useCallback, useEffect, useRef, useState } from 'react';
 

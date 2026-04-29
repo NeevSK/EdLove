@@ -9,7 +9,7 @@
 
 import { formatDistanceToNow } from 'date-fns';
 import { Plus, Sparkles } from 'lucide-react-native';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useJoyJar } from '../hooks/useJoyJar';
 import type { JoyMoment } from '../types';
 
@@ -152,7 +152,6 @@ export default function JoyJar({ userId }: JoyJarProps) {
             }}
           />
           <textarea
-            autoFocus
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             onKeyDown={(e) => {

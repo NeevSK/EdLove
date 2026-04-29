@@ -8,7 +8,10 @@
  * Only renders on web (Sovereign Web guard + hook internals).
  */
 
-import { AnimatedView, Box, HStack, Icon, Pressable, Text, useTheme, VStack } from '@repo/ui';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Icon, Text, VStack } from '@repo/ui/primitives';
+import { AnimatedView, Pressable, useTheme } from '@repo/ui/primitives';
+
 import { Download, Share, X } from 'lucide-react-native';
 import { SlideInDown, SlideOutDown } from 'react-native-reanimated';
 import { usePWAInstallPrompt } from '@/utils/usePWAInstallPrompt';

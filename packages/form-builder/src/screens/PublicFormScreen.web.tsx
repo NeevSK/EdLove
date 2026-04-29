@@ -1,7 +1,14 @@
 import { useRoute } from '@react-navigation/native';
-import { api, FormHydrator, type FormTemplate } from '@repo/core';
-import { Box, Heading, LotusLoader, Text, Theme, useThemedColors, VStack } from '@repo/ui';
-import React, { useEffect, useState } from 'react';
+import { FormHydrator, type FormTemplate } from '@repo/core';
+import { api } from '@repo/core/api';
+
+import LotusLoader from '@repo/ui/components/LotusLoader';
+import { useThemedColors } from '@repo/ui/hooks';
+import { Box } from '@repo/ui/primitives';
+import { Heading, Text, VStack } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme';
+
+import { useEffect, useState } from 'react';
 import NativeForm from '../NativeForm';
 
 export default function PublicFormScreenWeb() {
@@ -20,9 +27,9 @@ export default function PublicFormScreenWeb() {
       setError('Form slug is missing.');
       setLoading(false);
     }
-  }, [slug]);
+  }, [slug, loadTemplate]);
 
-  const loadTemplate = async () => {
+  async function loadTemplate() {
     try {
       const data = await api.forms.getBySlug(slug);
       setTemplate(data);
@@ -32,7 +39,7 @@ export default function PublicFormScreenWeb() {
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   if (loading) {
     return (

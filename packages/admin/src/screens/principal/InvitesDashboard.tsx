@@ -1,30 +1,25 @@
-import { invitesAPI, type InviteCode } from '../../invites';
-import {
-  Box,
-  Heading,
-  HStack,
-  Icon,
-  Pressable,
-  Spinner,
-  Text,
-  VStack,
-  useToast,
-} from '@repo/ui';
-import { ArrowLeft, Copy, Plus, X, UserPlus } from 'lucide-react-native';
-import React, { useEffect, useReducer, useCallback } from 'react';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Heading, Icon, Spinner, Text, VStack } from '@repo/ui/primitives';
+import { useToast } from '@repo/ui/providers';
+import { Pressable } from '@repo/ui/primitives';
+import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+
 import { formatDistanceToNow } from 'date-fns';
-import { hapticSuccess, hapticLight } from '@repo/ui';
+import { ArrowLeft, Copy, Plus, UserPlus, X } from 'lucide-react-native';
+import type React from 'react';
+import { useCallback, useEffect, useReducer } from 'react';
 import { Platform } from 'react-native';
+import { type InviteCode, invitesAPI } from '../../invites';
 
 // —————————————————————————————————————————————————————————————————————————————
 // TYPES
 // —————————————————————————————————————————————————————————————————————————————
 
 interface InvitesDashboardProps {
-    schoolId: string;
-    userId: string;
-    isPastView: boolean;
-    onBack: () => void;
+  schoolId: string;
+  userId: string;
+  isPastView: boolean;
+  onBack: () => void;
 }
 
 type State = {
@@ -64,7 +59,7 @@ const invitesReducer = (state: State, action: Action): State => {
       return {
         ...state,
         inviteCodes: state.inviteCodes.map((inv) =>
-          inv.code === action.code ? { ...inv, is_active: false } : inv
+          inv.code === action.code ? { ...inv, is_active: false } : inv,
         ),
       };
     default:
@@ -145,12 +140,15 @@ export const InvitesDashboard: React.FC<InvitesDashboardProps> = ({
   const copyToClipboard = (code: string) => {
     if (Platform.OS === 'web') {
       if (typeof navigator !== 'undefined' && navigator.clipboard) {
-        navigator.clipboard.writeText(code).then(() => {
-          hapticLight();
-          toast.showToast({ message: 'Copied: Code copied to clipboard', type: 'success' });
-        }).catch(err => {
-          console.error('Failed to copy to clipboard:', err);
-        });
+        navigator.clipboard
+          .writeText(code)
+          .then(() => {
+            hapticLight();
+            toast.showToast({ message: 'Copied: Code copied to clipboard', type: 'success' });
+          })
+          .catch((err) => {
+            console.error('Failed to copy to clipboard:', err);
+          });
       }
     } else {
       // In a real native environment we'd use a clipboard module, but for now we'll just toast

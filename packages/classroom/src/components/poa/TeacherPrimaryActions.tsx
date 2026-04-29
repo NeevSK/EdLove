@@ -1,6 +1,8 @@
 import { FeatureGuard } from '@repo/core';
-import { Box, Button, ButtonText, HStack, hapticLight, Icon, Plus, ScanLine } from '@repo/ui';
-import React from 'react';
+import { Plus, ScanLine } from '@repo/ui/icons';
+import { Button } from '@repo/ui/primitives';
+import { ButtonText, HStack, Icon } from '@repo/ui/primitives';
+import { hapticLight } from '@repo/ui/utils/haptics';
 
 export function TeacherPrimaryActions({ onCreateClassroom }: { onCreateClassroom: () => void }) {
   return (

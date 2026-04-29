@@ -5,7 +5,8 @@ import FullProfileScreen from '@repo/profile/screens/FullProfileScreen.web';
 // Direct imports for stability on web, avoiding barrel file bloat
 import ProfileScreenWeb from '@repo/profile/screens/ProfileScreen.web';
 import PrivacyLedgerScreen from '@repo/self/screens/PrivacyLedgerScreen';
-import { useTheme } from '@repo/ui';
+import { useTheme } from '@repo/ui/primitives';
+
 import AppSettingsScreenWeb from '@repo/ui/screens/AppSettingsScreen.web';
 
 const Stack = createNativeStackNavigator<ProfileStackParamList>();

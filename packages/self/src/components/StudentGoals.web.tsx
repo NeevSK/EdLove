@@ -5,8 +5,8 @@
  * Metro resolves this over StudentGoals.tsx on the web platform.
  */
 
-import { CheckCircle2, Circle, Plus, Target } from 'lucide-react-native';
-import React, { useState } from 'react';
+import { CheckCircle2, Circle, Target } from 'lucide-react-native';
+import { useState } from 'react';
 import { useStudentGoals } from '../hooks/useStudentGoals';
 import type { Goal } from '../types';
 
@@ -84,7 +84,6 @@ export default function StudentGoals({ userId }: StudentGoalsProps) {
       {showForm && (
         <div style={{ display: 'flex', gap: '8px' }}>
           <input
-            autoFocus
             value={text}
             onChange={(e) => setText(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleAdd()}

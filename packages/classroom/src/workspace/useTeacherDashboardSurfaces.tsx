@@ -1,25 +1,12 @@
-import {
-  BookOpen,
-  Box,
-  ClipboardList,
-  HStack,
-  Icon,
-  MessageCircle,
-  Plus,
-  PositiveInvitation,
-  Pressable,
-  ScanLine,
-  School,
-  ShieldCheck,
-  TemporalNavigator,
-  Text,
-  Theme,
-  Users,
-  VStack,
-  Wind,
-  type WorkspaceSurfaceDefinition,
-  Zap,
-} from '@repo/ui';
+import type { WorkspaceSurfaceDefinition } from '@repo/core/types';
+import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
+import { BookOpen, ClipboardList, MessageCircle, Plus, ScanLine, School, ShieldCheck, Users, Wind, Zap } from '@repo/ui/icons';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Icon, Text, VStack } from '@repo/ui/primitives';
+import { TemporalNavigator } from '@repo/ui/components/TemporalNavigator';
+import { Pressable } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme';
+
 import type React from 'react';
 import { useMemo } from 'react';
 import { ClassroomList } from '../components';

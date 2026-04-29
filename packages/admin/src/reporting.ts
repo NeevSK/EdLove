@@ -1,4 +1,6 @@
-import { type AttendanceReport, attendanceAPI, supabase, type TenantKind } from '@repo/core';
+import type { AttendanceReport, TenantKind } from '@repo/core';
+import { attendanceAPI } from '@repo/core/api';
+import { supabase } from '@repo/core/native';
 
 export interface ReportDefinition {
   id: string;

@@ -4,25 +4,15 @@
  * Standardized to Zero-Legacy: purified className utilities and ensured tag closure integrity.
  */
 
-import { supabase, useSafeMutation } from '@repo/core';
-import {
-  AnimatedView,
-  Box,
-  Button,
-  ButtonText,
-  Heading,
-  HStack,
-  hapticLight,
-  hapticSuccess,
-  Icon,
-  Input,
-  InputField,
-  Progress,
-  ProgressFilledTrack,
-  SkeletonCard,
-  Text,
-  VStack,
-} from '@repo/ui';
+import { useSafeMutation } from '@repo/core/hooks';
+import { supabase } from '@repo/core/native';
+
+import { Box, Button } from '@repo/ui/primitives';
+import { ButtonText, HStack, Heading, Icon, InputField, Progress, ProgressFilledTrack, Text, VStack } from '@repo/ui/primitives';
+import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
+import { AnimatedView } from '@repo/ui/primitives';
+import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+
 import {
   ChevronRight,
   Flame,
@@ -33,9 +23,9 @@ import {
   Target,
   Trophy,
 } from 'lucide-react-native';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import Animated, { FadeInRight, FadeInUp, Layout } from 'react-native-reanimated';
+import { FadeInRight, FadeInUp, Layout } from 'react-native-reanimated';
 import { useStudentGoals } from '../hooks/useStudentGoals';
 
 interface StudentGoalsProps {
@@ -53,7 +43,7 @@ export default function StudentGoals({ userId }: StudentGoalsProps) {
   useEffect(() => {
     // Mock streak for now
     setStreak(5);
-  }, [userId]);
+  }, []);
 
   const { mutate: saveGoal, isLoading: isSaving } = useSafeMutation(
     async (text: string) => {

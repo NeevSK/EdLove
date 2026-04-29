@@ -4,21 +4,14 @@
  * Standardized to Zero-Legacy: purged raw HTML/inline styles and fixed syntax corruption in style objects.
  */
 
-import {
-  AnimatedView,
-  Box,
-  Button,
-  ButtonText,
-  Heading,
-  HStack,
-  Icon,
-  Text,
-  VStack,
-} from '@repo/ui';
-import { ArrowRight, Sparkles } from 'lucide-react-native';
-import React, { useEffect } from 'react';
+import { Box, Button } from '@repo/ui/primitives';
+import { ButtonText, HStack, Heading, Icon, Text, VStack } from '@repo/ui/primitives';
+import { AnimatedView } from '@repo/ui/primitives';
+
+import { ArrowRight } from 'lucide-react-native';
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import Animated, { FadeIn, SlideInUp } from 'react-native-reanimated';
+import { SlideInUp } from 'react-native-reanimated';
 
 interface WelcomeModalProps {
   isOpen: boolean;

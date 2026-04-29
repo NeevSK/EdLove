@@ -1,46 +1,14 @@
 import { communityAPI } from '@repo/community';
-import {
-  api,
-  growthSignalsAPI,
-  handleAPIError,
-  identityAPI,
-  type School,
-  supabase,
-} from '@repo/core';
-import {
-  Actionsheet,
-  ActionsheetBackdrop,
-  ActionsheetContent,
-  ActionsheetDragIndicator,
-  ActionsheetDragIndicatorWrapper,
-  ActionsheetItem,
-  ActionsheetItemText,
-  Box,
-  Button,
-  ButtonText,
-  ChevronDown,
-  FormControl,
-  FormControlLabel,
-  FormControlLabelText,
-  HStack,
-  hapticLight,
-  hapticSuccess,
-  Icon,
-  Input,
-  InputField,
-  LayoutGrid,
-  Plus,
-  SanctuaryModal,
-  School as SchoolIcon,
-  Spinner,
-  Text,
-  Textarea,
-  TextareaInput,
-  Theme,
-  Users,
-  VStack,
-} from '@repo/ui';
-import React, { useState } from 'react';
+import { growthSignalsAPI, handleAPIError, type School } from '@repo/core';
+import { api, identityAPI } from '@repo/core/api';
+
+import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
+import { ChevronDown, LayoutGrid, School as SchoolIcon, Users } from '@repo/ui/icons';
+import { Actionsheet, ActionsheetBackdrop, ActionsheetContent, ActionsheetDragIndicator, ActionsheetDragIndicatorWrapper, ActionsheetItem, ActionsheetItemText, Box, Button, Input, Textarea } from '@repo/ui/primitives';
+import { ButtonText, FormControl, FormControlLabel, FormControlLabelText, HStack, Icon, InputField, Spinner, Text, TextareaInput, VStack } from '@repo/ui/primitives';
+import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface GlobalCreateModalProps {

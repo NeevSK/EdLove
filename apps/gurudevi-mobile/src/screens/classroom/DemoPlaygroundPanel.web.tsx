@@ -5,7 +5,7 @@
  */
 
 import { DemoPlaygroundPanel as PackageDemoPlaygroundPanel } from '@repo/classroom';
-import { ErrorBoundary } from '@repo/ui';
+import ErrorBoundary from '@repo/ui/components/ErrorBoundary';
 
 const DemoPlaygroundPanel = (props: Record<string, unknown>) => (
   <ErrorBoundary name="Playground Panel">

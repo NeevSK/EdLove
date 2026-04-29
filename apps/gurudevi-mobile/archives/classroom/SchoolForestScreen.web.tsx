@@ -13,8 +13,12 @@
 
 import { useNavigation } from '@react-navigation/native';
 import type { SchoolForestState, TeacherTree } from '@repo/core';
-import { schoolForestAPI, useStore, useUserRole } from '@repo/core';
-import { SkeletonCard } from '@repo/ui';
+import { useUserRole } from '@repo/core';
+import { schoolForestAPI } from '@repo/core/api';
+import { useStore } from '@repo/core/logic';
+
+import { SkeletonCard } from '@repo/ui/components';
+
 import { ArrowLeft, RefreshCw } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 

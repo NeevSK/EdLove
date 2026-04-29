@@ -1,18 +1,10 @@
-import {
-  Box,
-  Heading,
-  HStack,
-  hapticLight,
-  Icon,
-  Pressable,
-  SanctuaryModal,
-  ScrollView,
-  SkeletonCard,
-  Text,
-  VStack,
-  X,
-} from '@repo/ui';
-import React, { useEffect, useState } from 'react';
+import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Text, VStack } from '@repo/ui/primitives';
+import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
+import { ScrollView } from '@repo/ui/primitives';
+
+import { useEffect, useState } from 'react';
 import { type TeacherSentEcho, teacherFeedbackAPI } from '../feedback';
 
 // —————————————————————————————————————————————————————————————————————————————

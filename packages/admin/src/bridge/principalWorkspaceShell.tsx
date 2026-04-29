@@ -1,18 +1,7 @@
-import {
-  Box,
-  Building2,
-  HStack,
-  Heading,
-  MessageSquare,
-  NotebookPen,
-  Pressable,
-  QrCode,
-  ScrollView,
-  Text,
-  VStack,
-  Wind,
-  useTheme,
-} from '@repo/ui';
+import { Building2, MessageSquare, NotebookPen, QrCode, Wind } from '@repo/ui/icons';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Heading, Text, VStack } from '@repo/ui/primitives';
+import { Pressable, ScrollView, useTheme } from '@repo/ui/primitives';
 
 import type React from 'react';
 import { useMemo } from 'react';

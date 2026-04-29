@@ -4,9 +4,9 @@
  * Standardized to Zero-Legacy: purged raw HTML/inline styles and fixed syntax corruption in style objects.
  */
 
-import { Box, HStack, Icon, Text, VStack } from '@repo/ui';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Icon, Text, VStack } from '@repo/ui/primitives';
 import { BookOpen } from 'lucide-react-native';
-import React from 'react';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 
 interface WarmMirrorCardProps {

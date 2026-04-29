@@ -1,4 +1,8 @@
-import { Box, Heading, HStack, openExternalURL, Pressable, Text, VStack } from '@repo/ui';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Heading, Text, VStack } from '@repo/ui/primitives';
+import { openExternalURL } from '@repo/ui/utils';
+import { Pressable } from '@repo/ui/primitives';
+
 import {
   AlertTriangle,
   ChevronRight,
@@ -7,7 +11,6 @@ import {
   MessageCircle,
   Star,
 } from 'lucide-react-native';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 /**

@@ -22,16 +22,19 @@ function fixFile(filePath) {
 
   // 1. Replace const { ... } = useStore() with atomic selectors
   const hooks = ['useStore', 'useTemporalStore', 'useUIStore', 'useFeatureStore', 'useAuthStore'];
-  
-  hooks.forEach(hook => {
+
+  hooks.forEach((hook) => {
     const regex = new RegExp(`const\\s+{\\s*([^}]+)\\s*}\\s*=\\s*${hook}\\(\\);`, 'g');
     if (regex.test(content)) {
-      content = content.replace(regex, (match, props) => {
-        const propList = props.split(',').map(p => p.trim()).filter(Boolean);
+      content = content.replace(regex, (_match, props) => {
+        const propList = props
+          .split(',')
+          .map((p) => p.trim())
+          .filter(Boolean);
         // Handle potential renaming like { user: currentUser }
-        const replacements = propList.map(p => {
+        const replacements = propList.map((p) => {
           if (p.includes(':')) {
-            const [orig, alias] = p.split(':').map(x => x.trim());
+            const [orig, alias] = p.split(':').map((x) => x.trim());
             return `const ${alias} = ${hook}(s => s.${orig});`;
           }
           return `const ${p} = ${hook}(s => s.${p});`;

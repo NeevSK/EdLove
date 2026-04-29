@@ -1,5 +1,5 @@
-import { Card, HStack, Theme, VStack } from '@repo/ui';
-import React from 'react';
+import { Card } from '@repo/ui/components/SanctuaryCard';
+import { Theme } from '@repo/ui/theme';
 import { Dimensions, StyleSheet, Text, View } from 'react-native';
 
 interface SankeyNode {
@@ -101,7 +101,7 @@ export function SankeyDiagram({
   });
 
   // Calculate link paths
-  const getLinkPath = (link: SankeyLink) => {
+  const _getLinkPath = (link: SankeyLink) => {
     const source = nodePositions[link.source];
     const target = nodePositions[link.target];
 
@@ -109,7 +109,7 @@ export function SankeyDiagram({
 
     // Create curved path
     const midX = (source.x + nodeWidth + target.x) / 2;
-    const midY = (source.y + target.y) / 2;
+    const _midY = (source.y + target.y) / 2;
     const controlOffset = Math.abs(target.y - source.y) / 4;
 
     return `M ${source.x + nodeWidth} ${source.y} Q ${midX} ${source.y - controlOffset} ${midX} ${target.y + controlOffset} ${target.x} ${target.y}`;
@@ -146,7 +146,7 @@ export function SankeyDiagram({
         ))}
 
         {/* Nodes */}
-        {nodes.map((node, index) => (
+        {nodes.map((node, _index) => (
           <View
             key={node.id}
             style={[

@@ -5,7 +5,11 @@
  */
 
 import { coreRuntime } from '@repo/core';
-import { Box, HStack, ImageBackground, Pressable, Text, Theme, useTheme, VStack } from '@repo/ui';
+import { Box } from '@repo/ui/primitives';
+import { HStack, ImageBackground, Text, VStack } from '@repo/ui/primitives';
+import { Pressable, useTheme } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme';
+
 import {
   BadgeCheck,
   BarChart2,
@@ -187,7 +191,7 @@ export const LibraryThumbnailCard = React.memo(
                 <Box className="flex-1 items-center justify-center bg-phase-accent/5">
                   <Box
                     className="w-14 h-14 rounded-2xl items-center justify-center"
-                    style={{ backgroundColor: cfg.color + '20' }}
+                    style={{ backgroundColor: `${cfg.color}20` }}
                   >
                     <Icon size={24} color={cfg.color} />
                   </Box>
@@ -198,7 +202,7 @@ export const LibraryThumbnailCard = React.memo(
               <HStack className="absolute top-2 left-2 right-2 justify-between items-start">
                 <Box
                   className="px-2 py-1 rounded-full bg-white/95 border shadow-sm"
-                  style={{ borderColor: cfg.color + '40' }}
+                  style={{ borderColor: `${cfg.color}40` }}
                 >
                   <Text
                     className="text-[9px] font-black uppercase tracking-widest"

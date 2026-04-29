@@ -1,5 +1,5 @@
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 
 const DATA_PATH = path.resolve(process.cwd(), 'src/data/lk-edu-data.json');
 const OUTPUT_DIR = path.resolve(process.cwd(), 'data/seeds');
@@ -19,32 +19,27 @@ async function generate() {
 
   // Provinces
   geoSql += `-- Provinces\nINSERT INTO geo_provinces (id, name, name_si, name_ta) VALUES\n`;
-  geoSql +=
-    provinces
-      .map(
-        (p: any) => `('${p.id}', '${escape(p.name)}', '${p.name_si || ''}', '${p.name_ta || ''}')`,
-      )
-      .join(',\n') + `\nON CONFLICT (id) DO NOTHING;\n\n`;
+  geoSql += `${provinces
+    .map((p: any) => `('${p.id}', '${escape(p.name)}', '${p.name_si || ''}', '${p.name_ta || ''}')`)
+    .join(',\n')}\nON CONFLICT (id) DO NOTHING;\n\n`;
 
   // Districts
   geoSql += `-- Districts\nINSERT INTO geo_districts (id, province_id, name, name_si, name_ta) VALUES\n`;
-  geoSql +=
-    districts
-      .map(
-        (d: any) =>
-          `('${d.id}', '${d.province_id}', '${escape(d.name)}', '${d.name_si || ''}', '${d.name_ta || ''}')`,
-      )
-      .join(',\n') + `\nON CONFLICT (id) DO NOTHING;\n\n`;
+  geoSql += `${districts
+    .map(
+      (d: any) =>
+        `('${d.id}', '${d.province_id}', '${escape(d.name)}', '${d.name_si || ''}', '${d.name_ta || ''}')`,
+    )
+    .join(',\n')}\nON CONFLICT (id) DO NOTHING;\n\n`;
 
   // DS Divisions
   geoSql += `-- DS Divisions\nINSERT INTO geo_ds_divisions (id, district_id, name, name_si, name_ta) VALUES\n`;
-  geoSql +=
-    dsDivisions
-      .map(
-        (ds: any) =>
-          `('${ds.id}', '${ds.district_id}', '${escape(ds.name)}', '${ds.name_si || ''}', '${ds.name_ta || ''}')`,
-      )
-      .join(',\n') + `\nON CONFLICT (id) DO NOTHING;\n\n`;
+  geoSql += `${dsDivisions
+    .map(
+      (ds: any) =>
+        `('${ds.id}', '${ds.district_id}', '${escape(ds.name)}', '${ds.name_si || ''}', '${ds.name_ta || ''}')`,
+    )
+    .join(',\n')}\nON CONFLICT (id) DO NOTHING;\n\n`;
 
   fs.writeFileSync(path.join(OUTPUT_DIR, '01_geo_hierarchy_base.sql'), geoSql);
 
@@ -55,14 +50,13 @@ async function generate() {
     const batch = gnDivisions.slice(i, i + GN_BATCH_SIZE);
     let gnSql = `-- GN Divisions Batch ${Math.floor(i / GN_BATCH_SIZE) + 1}\n`;
     gnSql += `INSERT INTO geo_gn_divisions (id, ds_division_id, district_id, name, name_si, name_ta, gn_code, location) VALUES\n`;
-    gnSql +=
-      batch
-        .map((gn: any) => {
-          const lat = gn.location?.lat || 0;
-          const lng = gn.location?.lng || 0;
-          return `('${gn.id}', '${gn.ds_division_id}', '${gn.district_id}', '${escape(gn.name)}', '${gn.name_si || ''}', '${gn.name_ta || ''}', '${gn.gn_code || ''}', ST_SetSRID(ST_Point(${lng}, ${lat}), 4326))`;
-        })
-        .join(',\n') + `\nON CONFLICT (id) DO NOTHING;\n\n`;
+    gnSql += `${batch
+      .map((gn: any) => {
+        const lat = gn.location?.lat || 0;
+        const lng = gn.location?.lng || 0;
+        return `('${gn.id}', '${gn.ds_division_id}', '${gn.district_id}', '${escape(gn.name)}', '${gn.name_si || ''}', '${gn.name_ta || ''}', '${gn.gn_code || ''}', ST_SetSRID(ST_Point(${lng}, ${lat}), 4326))`;
+      })
+      .join(',\n')}\nON CONFLICT (id) DO NOTHING;\n\n`;
     fs.writeFileSync(
       path.join(
         OUTPUT_DIR,
@@ -75,14 +69,13 @@ async function generate() {
   // 3. POSTAL TOWNS
   console.log('\uD83D\uDCE6 Generating geo_postal_towns seed...');
   let postalSql = `-- Postal Towns\nINSERT INTO geo_postal_towns (id, district_id, city, postal_code, location) VALUES\n`;
-  postalSql +=
-    postalUnits
-      .map((pt: any) => {
-        const lat = pt.location?.lat || 0;
-        const lng = pt.location?.lng || 0;
-        return `('${pt.id}', '${pt.district_id}', '${escape(pt.city)}', '${pt.postal_code}', ST_SetSRID(ST_Point(${lng}, ${lat}), 4326))`;
-      })
-      .join(',\n') + `\nON CONFLICT (id) DO NOTHING;\n`;
+  postalSql += `${postalUnits
+    .map((pt: any) => {
+      const lat = pt.location?.lat || 0;
+      const lng = pt.location?.lng || 0;
+      return `('${pt.id}', '${pt.district_id}', '${escape(pt.city)}', '${pt.postal_code}', ST_SetSRID(ST_Point(${lng}, ${lat}), 4326))`;
+    })
+    .join(',\n')}\nON CONFLICT (id) DO NOTHING;\n`;
   fs.writeFileSync(path.join(OUTPUT_DIR, '03_geo_postal_towns.sql'), postalSql);
 
   // 4. SCHOOLS (Core facts)
@@ -92,19 +85,18 @@ async function generate() {
     const batch = schools.slice(i, i + SCH_BATCH_SIZE);
     let schSql = `-- Schools Core Batch ${Math.floor(i / SCH_BATCH_SIZE) + 1}\n`;
     schSql += `INSERT INTO edu_schools (id, census_no, name, gender, category, type_code, status, religion, website, socio_economic_tier, province_id, district_id, gn_division_id, zone_id, division_id, location) VALUES\n`;
-    schSql +=
-      batch
-        .map((s: any) => {
-          const lat = s.location?.lat || 0;
-          const lng = s.location?.lng || 0;
-          const religion = s.religion || s.properties?.religion || '';
-          const website = s.website || s.contact?.website || s.properties?.website || '';
-          const status = s.status || 'Active';
-          const tier = s.socio_economic_tier || s.properties?.tier || '';
+    schSql += `${batch
+      .map((s: any) => {
+        const lat = s.location?.lat || 0;
+        const lng = s.location?.lng || 0;
+        const religion = s.religion || s.properties?.religion || '';
+        const website = s.website || s.contact?.website || s.properties?.website || '';
+        const status = s.status || 'Active';
+        const tier = s.socio_economic_tier || s.properties?.tier || '';
 
-          return `('${s.id}', '${s.census_no}', '${escape(s.name)}', '${s.gender || 'Mixed'}', '${s.category || ''}', '${s.type || ''}', '${status}', '${escape(religion)}', '${escape(website)}', '${escape(tier)}', '${s.location.province_id}', '${s.location.district_id}', '${s.location.gn_division_id || ''}', '${s.jurisdiction.zone_id}', '${s.jurisdiction.division_id}', ST_SetSRID(ST_Point(${lng}, ${lat}), 4326))`;
-        })
-        .join(',\n') + `\nON CONFLICT (id) DO NOTHING;\n\n`;
+        return `('${s.id}', '${s.census_no}', '${escape(s.name)}', '${s.gender || 'Mixed'}', '${s.category || ''}', '${s.type || ''}', '${status}', '${escape(religion)}', '${escape(website)}', '${escape(tier)}', '${s.location.province_id}', '${s.location.district_id}', '${s.location.gn_division_id || ''}', '${s.jurisdiction.zone_id}', '${s.jurisdiction.division_id}', ST_SetSRID(ST_Point(${lng}, ${lat}), 4326))`;
+      })
+      .join(',\n')}\nON CONFLICT (id) DO NOTHING;\n\n`;
     fs.writeFileSync(
       path.join(
         OUTPUT_DIR,
@@ -116,12 +108,11 @@ async function generate() {
     // 5. STATS & CONTACTS (Volatile/Layered)
     let statsSql = `-- Schools Stats Batch ${Math.floor(i / SCH_BATCH_SIZE) + 1}\n`;
     statsSql += `INSERT INTO edu_school_registry_stats (school_id, academic_year, total_students, students_boys, students_girls, total_teachers, medium, grade_span, difficulty_level) VALUES\n`;
-    statsSql +=
-      batch
-        .map((s: any) => {
-          return `('${s.id}', 2024, ${s.total_students || 0}, ${s.students_boys || 0}, ${s.students_girls || 0}, ${s.total_teachers || 0}, '${escape(s.medium || '')}', '${escape(s.grade_span || '')}', '${escape(s.difficulty_level || '')}')`;
-        })
-        .join(',\n') + `\nON CONFLICT (school_id, academic_year) DO NOTHING;\n\n`;
+    statsSql += `${batch
+      .map((s: any) => {
+        return `('${s.id}', 2024, ${s.total_students || 0}, ${s.students_boys || 0}, ${s.students_girls || 0}, ${s.total_teachers || 0}, '${escape(s.medium || '')}', '${escape(s.grade_span || '')}', '${escape(s.difficulty_level || '')}')`;
+      })
+      .join(',\n')}\nON CONFLICT (school_id, academic_year) DO NOTHING;\n\n`;
     fs.writeFileSync(
       path.join(
         OUTPUT_DIR,
@@ -135,12 +126,11 @@ async function generate() {
     if (contactsBatches.length > 0) {
       let conSql = `-- Schools Contacts Batch ${Math.floor(i / SCH_BATCH_SIZE) + 1}\n`;
       conSql += `INSERT INTO edu_school_contacts (school_id, contact_type, phone, email, is_primary) VALUES\n`;
-      conSql +=
-        contactsBatches
-          .map((s: any) => {
-            return `('${s.id}', 'OFFICIAL', ${s.contact.tel ? `'${s.contact.tel}'` : 'NULL'}, ${s.contact.email ? `'${s.contact.email}'` : 'NULL'}, true)`;
-          })
-          .join(',\n') + `;\n\n`;
+      conSql += `${contactsBatches
+        .map((s: any) => {
+          return `('${s.id}', 'OFFICIAL', ${s.contact.tel ? `'${s.contact.tel}'` : 'NULL'}, ${s.contact.email ? `'${s.contact.email}'` : 'NULL'}, true)`;
+        })
+        .join(',\n')};\n\n`;
       fs.writeFileSync(
         path.join(
           OUTPUT_DIR,

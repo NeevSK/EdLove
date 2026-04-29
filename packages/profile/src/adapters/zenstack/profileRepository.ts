@@ -1,5 +1,9 @@
 import type { SocialLink } from '@repo/core';
-import { APIError, getTemporalRange, supabase, uploadToCloudinary } from '@repo/core';
+import { getTemporalRange } from '@repo/core';
+import { uploadToCloudinary } from '@repo/core/logic';
+import { supabase } from '@repo/core/native';
+import { APIError } from '@repo/core/types';
+
 import type {
   CommunityProfile,
   ProfileHistoryEntry,

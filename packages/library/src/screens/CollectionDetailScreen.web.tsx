@@ -1,19 +1,15 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { useStore } from '@repo/core';
-import {
-  ActivityIndicator,
-  Box,
-  HStack,
-  openExternalURL,
-  SanctuaryButton,
-  showExternalLinkOptions,
-  Text,
-  useTheme,
-  VStack,
-  WebScreenHeader,
-} from '@repo/ui';
+import { useStore } from '@repo/core/logic';
+
+import { ActivityIndicator, Box } from '@repo/ui/primitives';
+import { HStack, Text, VStack } from '@repo/ui/primitives';
+import { openExternalURL, showExternalLinkOptions } from '@repo/ui/utils';
+import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
+import { WebScreenHeader } from '@repo/ui/components/WebScreenHeader.web';
+import { useTheme } from '@repo/ui/primitives';
+
 import { ArrowLeft, Library, RefreshCw } from 'lucide-react-native';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { LibraryThumbnailCard } from '../components/LibraryThumbnailCard';
 import { useCollection } from '../hooks/useLibrary';

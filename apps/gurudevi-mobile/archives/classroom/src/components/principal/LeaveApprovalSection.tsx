@@ -6,17 +6,14 @@
  *  - Approve / Reject buttons per request
  */
 
-import { type StaffLeaveDTO, staffManagementAPI } from '@repo/core';
-import {
-  Box,
-  formatShortDate,
-  HStack,
-  SkeletonCard,
-  Text,
-  Theme,
-  useThemedColors,
-  VStack,
-} from '@repo/ui';
+import type { StaffLeaveDTO } from '@repo/core';
+import { staffManagementAPI } from '@repo/core/api';
+
+import { Box, HStack, Text, useThemedColors, VStack } from '@repo/ui';
+import { SkeletonCard } from '@repo/ui/components';
+import { Theme } from '@repo/ui/theme';
+import { formatShortDate } from '@repo/ui/utils/dateTimeUtils';
+
 import { useEffect, useState } from 'react';
 import { TouchableOpacity } from 'react-native';
 

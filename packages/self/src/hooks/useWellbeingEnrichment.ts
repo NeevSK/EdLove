@@ -1,5 +1,7 @@
 ﻿import type { ImpactRipple } from '@repo/core';
-import { impactRipplesAPI, warmMirrorAPI } from '@repo/core';
+import { impactRipplesAPI } from '@repo/core';
+import { warmMirrorAPI } from '@repo/core/api';
+
 import { useEffect, useState } from 'react';
 
 export interface WellbeingEnrichment {

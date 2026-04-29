@@ -44,7 +44,7 @@ files.forEach((filePath) => {
   let changed = false;
 
   relocationMap.forEach((r) => {
-    content = content.replace(r.old, (match, captured) => {
+    content = content.replace(r.old, (_match, captured) => {
       let dest = r.newBase;
       if (captured) dest = dest.replace('$1', captured);
 
@@ -53,7 +53,7 @@ files.forEach((filePath) => {
 
       const absoluteDest = path.resolve(CORE_SRC, dest);
       let rel = path.relative(path.dirname(filePath), absoluteDest).replace(/\\/g, '/');
-      if (!rel.startsWith('.')) rel = './' + rel;
+      if (!rel.startsWith('.')) rel = `./${rel}`;
 
       changed = true;
       return `from '${rel}'`;

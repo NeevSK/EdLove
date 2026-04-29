@@ -1,19 +1,15 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { coreRuntime, useStore } from '@repo/core';
-import {
-  Box,
-  HStack,
-  openExternalURL,
-  Pressable,
-  Icon as SanctuaryIcon,
-  ScreenWrapper,
-  ScrollView,
-  Spinner,
-  Text,
-  Theme,
-  useThemedColors,
-  VStack,
-} from '@repo/ui';
+import { coreRuntime } from '@repo/core';
+import { useStore } from '@repo/core/logic';
+
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { useThemedColors } from '@repo/ui/hooks';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Icon as SanctuaryIcon, Spinner, Text, VStack } from '@repo/ui/primitives';
+import { openExternalURL } from '@repo/ui/utils';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme';
+
 import { useQuery } from '@tanstack/react-query';
 import {
   ArrowLeft,
@@ -210,6 +206,17 @@ export default function ResourceHubScreen() {
           title: item.title,
           url: item.url,
           creator: item.creator_name,
+        });
+        return;
+      }
+
+      if (hasMainRoute && (item.type === 'doc' || item.format === 'document')) {
+        navigateIntoLibrary('DocumentViewer', {
+          resourceId: item.id,
+          title: item.title,
+          url: item.url,
+          format: item.media?.format || 'docx',
+          size: item.media?.bytes ? `${Math.round(item.media.bytes / 1024)} KB` : 'Unknown',
         });
         return;
       }

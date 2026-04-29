@@ -1,4 +1,5 @@
-import { Box, Text } from '@repo/ui';
+import { Box } from '@repo/ui/primitives';
+import { Text } from '@repo/ui/primitives';
 import type React from 'react';
 import type { StudentOverview } from '../../guardian';
 import { GuardianStudentsGrid } from '../guardian/GuardianStudentsGrid';

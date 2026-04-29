@@ -4,23 +4,16 @@
  * Refactored for Sanctuary Resonance.
  */
 
-import { formatDuration, formatFileSize, useStore } from '@repo/core';
-import {
-  Actionsheet,
-  ActionsheetBackdrop,
-  ActionsheetContent,
-  ActionsheetDragIndicator,
-  ActionsheetDragIndicatorWrapper,
-  Box,
-  Center,
-  HStack,
-  SanctuaryButton,
-  SanctuaryFlashList,
-  Text,
-  Theme,
-  useTheme,
-  VStack,
-} from '@repo/ui';
+import { formatDuration, formatFileSize } from '@repo/core';
+import { useStore } from '@repo/core/logic';
+
+import SanctuaryFlashList from '@repo/ui/components/SanctuaryFlashList';
+import { Actionsheet, ActionsheetBackdrop, ActionsheetContent, ActionsheetDragIndicator, ActionsheetDragIndicatorWrapper, Box } from '@repo/ui/primitives';
+import { HStack, Text, VStack } from '@repo/ui/primitives';
+import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
+import { useTheme } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme';
+
 import { AlertTriangle, ArrowLeftRight, Play, X } from 'lucide-react-native';
 import type React from 'react';
 import { useCallback, useEffect, useState } from 'react';
@@ -75,7 +68,7 @@ export function ResourceList({
         await libraryAPI.reportBrokenLink(resourceId);
         showToast('Thank you. Our curators will check this link.', 'success');
         if (onRefresh) onRefresh();
-      } catch (err: any) {
+      } catch (_err: any) {
         showToast('Failed to report link.', 'error');
       }
     },
@@ -166,7 +159,7 @@ function FlashPlaySheet({
   onOpenAnotherWay,
   onReportBroken,
 }: FlashPlaySheetProps) {
-  const theme = useTheme();
+  const _theme = useTheme();
   const [resonantIslands, setResonantIslands] = useState<any[]>([]);
 
   useEffect(() => {

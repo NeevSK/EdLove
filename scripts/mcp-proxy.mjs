@@ -1,7 +1,7 @@
-import { spawn } from 'child_process';
-import { existsSync, readFileSync } from 'fs';
-import { dirname, join } from 'path';
-import { fileURLToPath } from 'url';
+import { spawn } from 'node:child_process';
+import { existsSync, readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 /**
  * The Sovereign Bridge Proxy: A runtime harness for environment-aware MCP servers.
@@ -53,7 +53,10 @@ const finalArgs = args.map((arg) => {
 const child = spawn(command, finalArgs, {
   stdio: 'inherit',
   shell: true,
-  env: process.env,
+  env: {
+    ...process.env,
+    NODE_NO_WARNINGS: '1',
+  },
 });
 
 // 5. Lifecycle Management

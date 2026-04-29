@@ -15,7 +15,7 @@
  * isolated web fallback, keeping it free of any native theme/token utilities.
  */
 
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
@@ -81,7 +81,7 @@ export default function ScannerModal({
             {/* Icon + message */}
             <View style={styles.iconArea}>
               {/* Lotus / QR icon \u2014 inline SVG-style using text */}
-              <View style={[styles.iconCircle, { backgroundColor: accentColor + '1A' }]}>
+              <View style={[styles.iconCircle, { backgroundColor: `${accentColor}1A` }]}>
                 <Text style={[styles.iconGlyph, { color: accentColor }]}>\u229E</Text>
               </View>
               <Text style={styles.messageText}>{t('scanner.web.cameraMessage')}</Text>

@@ -1,20 +1,12 @@
-import {
-  Box,
-  HStack,
-  HeartPulse,
-  Icon,
-  LivingGlow,
-  SanctuaryCard,
-  SanctuaryChip,
-  SkeletonLoader,
-  Text,
-  TrendingUp,
-  Users,
-  VStack,
-  Zap,
-  Animated,
-  FadeInUp,
-} from '@repo/ui';
+import { HeartPulse, TrendingUp, Users, Zap } from '@repo/ui/icons';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Icon, Text, VStack } from '@repo/ui/primitives';
+import Animated, { FadeInUp } from 'react-native-reanimated';
+import { LivingGlow } from '@repo/ui/components/LivingGlow';
+import { SanctuaryCard } from '@repo/ui/components/SanctuaryCard';
+import { SanctuaryChip } from '@repo/ui/components/SanctuaryChip';
+import SkeletonLoader from '@repo/ui/components/SkeletonLoader';
+
 import { useSchoolPulseQuery } from '../../hooks/useDashboardHooks';
 
 interface PulseDashboardProps {

@@ -1,5 +1,6 @@
-import { Box, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Text, View } from '@repo/ui';
-import React from 'react';
+import { Slider } from '@repo/ui/primitives';
+import { Text } from '@repo/ui/primitives';
+import { View } from '@repo/ui/primitives';
 
 interface FormSliderProps {
   label: string;
@@ -20,9 +21,6 @@ export const FormSlider = ({
   step = 1,
   error,
 }: FormSliderProps) => {
-  // Calculate percentage for styling the filled track if needed
-  const percentage = ((value - min) / (max - min)) * 100;
-
   return (
     <View className="mb-4">
       <View className="flex-row justify-between items-center mb-2">
@@ -32,19 +30,12 @@ export const FormSlider = ({
 
       <Slider
         className="my-2"
-        //@ts-expect-error - Slider logic will be handled by Native's standard slider if available,
-        // or we use our primitive mapping.
-        // For simplicity in this sensing UI, we consolidate the primitives.
-      >
-        <SliderTrack className="h-2 bg-phase-canvas border-phase-interactive/10">
-          <SliderFilledTrack className="bg-phase-accent" style={{ width: `${percentage}%` }} />
-        </SliderTrack>
-        {/* We map the Thumb to the value position via standard RN logic or absolute % */}
-        <SliderThumb
-          className="w-6 h-6 shadow-md border-2 border-white bg-phase-accent"
-          style={{ left: `${percentage}%`, marginLeft: -12 }}
-        />
-      </Slider>
+        value={value}
+        minValue={min}
+        maxValue={max}
+        step={step}
+        onValueChange={onChange}
+      />
 
       <View className="flex-row justify-between mt-1">
         <Text className="text-phaseText-tertiary text-xs">{min}</Text>

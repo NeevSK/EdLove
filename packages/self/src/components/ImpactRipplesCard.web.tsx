@@ -6,9 +6,9 @@
  */
 
 import type { ImpactRipple } from '@repo/core';
-import { Box, Icon, Text, VStack } from '@repo/ui';
+import { Box } from '@repo/ui/primitives';
+import { Icon, Text, VStack } from '@repo/ui/primitives';
 import { Waves } from 'lucide-react-native';
-import React from 'react';
 
 interface ImpactRipplesCardProps {
   ripples: ImpactRipple[];

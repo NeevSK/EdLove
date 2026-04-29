@@ -1,4 +1,4 @@
-import { type InviteCode, invitesAPI } from '@repo/admin';
+import { type InviteCode, invitesAPI } from '@repo/admin/invites';
 import { useCallback, useEffect, useState } from 'react';
 
 export function useSchoolInvites(schoolId: string) {

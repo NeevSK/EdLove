@@ -6,22 +6,14 @@
  *  - Approve / Reject buttons per request
  */
 
-import { type StaffLeaveDTO, staffManagementAPI } from '@repo/core';
-import {
-  Box,
-  Check,
-  Clock,
-  FileText,
-  HStack,
-  Heading,
-  Icon,
-  Pressable,
-  Spinner,
-  Text,
-  VStack,
-  X,
-  hapticLight,
-} from '@repo/ui';
+import type { StaffLeaveDTO } from '@repo/core';
+import { staffManagementAPI } from '@repo/core/api';
+
+import { Check, Clock, FileText, X } from '@repo/ui/icons';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Heading, Icon, Spinner, Text, VStack } from '@repo/ui/primitives';
+import { Pressable } from '@repo/ui/primitives';
+import { hapticLight } from '@repo/ui/utils/haptics';
 
 import { useEffect, useState } from 'react';
 

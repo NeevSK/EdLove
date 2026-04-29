@@ -1,4 +1,6 @@
-﻿import { SafeZustandStorage, useStore, useTemporalStore } from '@repo/core';
+﻿import { SafeZustandStorage } from '@repo/core';
+import { useStore, useTemporalStore } from '@repo/core/logic';
+
 import { useCallback, useEffect, useState } from 'react';
 import { burnFireJournalEntry, fetchFireJournalHistoryForView } from '../api/wellbeingRepository';
 import type { FireJournalEntry } from '../types';
@@ -62,7 +64,7 @@ export function useFireJournal(userId?: string) {
   // Fetch on mount/online change
   useEffect(() => {
     refreshData();
-  }, [refreshData, isOnline]);
+  }, [refreshData]);
 
   const burnEntry = useCallback(
     async (content: string) => {

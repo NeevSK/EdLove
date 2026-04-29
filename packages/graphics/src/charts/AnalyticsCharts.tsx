@@ -1,7 +1,6 @@
-import { Text, Theme, useThemedColors } from '@repo/ui';
-import React from 'react';
+import { useThemedColors } from '@repo/ui/hooks';
+import { Text } from '@repo/ui/primitives';
 import { StyleSheet, View } from 'react-native';
-import { SanctuaryCanvas } from '../components/SanctuaryCanvas';
 
 // —————————————————————————————————————————————————————————————————————————————
 // SIMPLE BAR CHART

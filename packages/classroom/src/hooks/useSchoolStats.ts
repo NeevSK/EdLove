@@ -1,13 +1,8 @@
-import {
-  api,
-  MOCK_SCHOOL_STATS,
-  SafeZustandStorage,
-  type School,
-  type SchoolStats,
-  useFeatureAccess,
-  useStore,
-  useTemporalStore,
-} from '@repo/core';
+import { MOCK_SCHOOL_STATS, SafeZustandStorage, type School, type SchoolStats } from '@repo/core';
+import { api } from '@repo/core/api';
+import { useFeatureAccess } from '@repo/core/hooks';
+import { useStore, useTemporalStore } from '@repo/core/logic';
+
 import { useCallback, useEffect, useState } from 'react';
 
 const SCHOOL_STATS_CACHE_KEY = 'gurudevi-school-stats-cache';
@@ -22,7 +17,7 @@ const SCHOOL_INFO_CACHE_KEY = 'gurudevi-school-info-cache';
  * - Shared across Admin, Principal, and Founder views.
  */
 export function useSchoolStats(schoolId: string) {
-  const isOnline = useStore((state) => state.isOnline);
+  const _isOnline = useStore((state) => state.isOnline);
   const { viewDate } = useTemporalStore();
   const isDemoMode = useStore((state) => state.isDemoMode);
   const { isGuest } = useFeatureAccess();
@@ -53,7 +48,7 @@ export function useSchoolStats(schoolId: string) {
       }
     };
     loadCache();
-  }, [schoolId]);
+  }, [schoolId, viewDate]);
 
   // Refresh from API
   const refreshData = useCallback(async () => {
@@ -109,12 +104,12 @@ export function useSchoolStats(schoolId: string) {
     } finally {
       setIsLoading(false);
     }
-  }, [schoolId, isOnline, isDemoMode, viewDate]);
+  }, [schoolId, isDemoMode, viewDate, isGuest]);
 
   // Fetch on mount/online change
   useEffect(() => {
     refreshData();
-  }, [refreshData, isOnline]);
+  }, [refreshData]);
 
   return {
     school,

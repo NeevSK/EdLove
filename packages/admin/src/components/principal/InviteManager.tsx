@@ -1,38 +1,19 @@
 import {
-  api,
   coreRuntime,
   handleAPIError,
   type InviteCode,
   type PrincipalInviteRole as UserRole,
 } from '@repo/core';
+import { api } from '@repo/core/api';
+
 import { QRBuilder, QRCodeGenerator } from '@repo/scanner-kit';
-import {
-  ArrowLeft,
-  Box,
-  Button,
-  ButtonText,
-  Copy,
-  HStack,
-  Heading,
-  Heading as ModalHeading,
-  Icon,
-  Modal,
-  ModalBackdrop,
-  ModalBody,
-  ModalContent,
-  ModalHeader,
-  Plus,
-  Pressable,
-  QrCode,
-  ScrollView,
-  Shield,
-  Spinner,
-  Text,
-  Users,
-  VStack,
-  hapticLight,
-  useToast,
-} from '@repo/ui';
+import { ArrowLeft, Copy, Plus, QrCode, Shield, Users } from '@repo/ui/icons';
+import { Box, Button } from '@repo/ui/primitives';
+import { ButtonText, HStack, Heading, Heading as ModalHeading, Icon, Modal, ModalBackdrop, ModalBody, ModalContent, ModalHeader, Spinner, Text, VStack } from '@repo/ui/primitives';
+import { useToast } from '@repo/ui/providers';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+import { hapticLight } from '@repo/ui/utils/haptics';
+
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 

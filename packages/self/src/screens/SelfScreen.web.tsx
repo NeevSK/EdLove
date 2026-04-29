@@ -1,6 +1,5 @@
 ﻿import { usePermissions } from '@repo/core';
-import { WebScreenHeader } from '@repo/ui';
-import React from 'react';
+import { WebScreenHeader } from '@repo/ui/components/WebScreenHeader.web';
 
 import {
   AdminSelfView,

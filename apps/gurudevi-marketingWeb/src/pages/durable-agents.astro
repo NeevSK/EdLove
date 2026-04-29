@@ -1,0 +1,686 @@
+---
+---
+
+<Layout
+  title="Durable Agents R&D"
+  description="Bounded, review-first durable agent prototype lane for Gurudevi."
+  noindex={true}
+>
+  <main class="min-h-screen bg-cream-silence px-6 py-20 text-charcoal-truth">
+    <section class="mx-auto max-w-6xl space-y-8">
+      <div class="space-y-4">
+        <div class="inline-flex rounded-full border border-peacock-blue/20 bg-peacock-blue/5 px-4 py-1 text-sm font-semibold text-peacock-blue">
+          Durable Agents R&D
+        </div>
+        <h1 class="text-4xl font-bold md:text-5xl">
+          Functional Demo Lane
+        </h1>
+        <p class="max-w-3xl text-lg leading-8 text-mud-brown">
+          This lane now supports multiple bounded capabilities, durable runs,
+          recent run history, provider-agnostic synthesis, and an explicit
+          review checkpoint that can promote outputs into safe teacher-facing
+          artifacts.
+        </p>
+      </div>
+
+      <div class="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+        <section class="rounded-3xl border border-mud-brown/10 bg-white p-8 shadow-sm">
+          <form id="durable-agent-form" class="space-y-6">
+            <div class="grid gap-4 md:grid-cols-2">
+              <label class="space-y-2">
+                <span class="text-sm font-semibold uppercase tracking-wide text-mud-brown/80">
+                  Capability
+                </span>
+                <select
+                  id="capability"
+                  name="capability"
+                  class="w-full rounded-2xl border border-mud-brown/15 bg-cream-silence px-4 py-3"
+                >
+                  <option value="teacher-summary" selected>
+                    Teacher Summary Draft
+                  </option>
+                  <option value="student-support">
+                    Student Support Snapshot
+                  </option>
+                </select>
+              </label>
+              <label class="space-y-2">
+                <span class="text-sm font-semibold uppercase tracking-wide text-mud-brown/80">
+                  Mode
+                </span>
+                <select
+                  id="mode"
+                  name="mode"
+                  class="w-full rounded-2xl border border-mud-brown/15 bg-cream-silence px-4 py-3"
+                >
+                  <option value="demo" selected>Demo</option>
+                  <option value="live">Live</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="grid gap-4 md:grid-cols-2">
+              <label class="space-y-2">
+                <span class="text-sm font-semibold uppercase tracking-wide text-mud-brown/80">
+                  Demo Scenario
+                </span>
+                <select
+                  id="demoScenario"
+                  name="demoScenario"
+                  class="w-full rounded-2xl border border-mud-brown/15 bg-cream-silence px-4 py-3"
+                ></select>
+              </label>
+              <label class="space-y-2">
+                <span class="text-sm font-semibold uppercase tracking-wide text-mud-brown/80">
+                  Review Mode
+                </span>
+                <input
+                  value="draft_only"
+                  readonly
+                  class="w-full rounded-2xl border border-mud-brown/15 bg-temple-stone/20 px-4 py-3 text-mud-brown/70"
+                />
+              </label>
+            </div>
+
+            <div class="grid gap-4 md:grid-cols-2">
+              <label class="space-y-2">
+                <span class="text-sm font-semibold uppercase tracking-wide text-mud-brown/80">
+                  School ID
+                </span>
+                <input
+                  id="schoolId"
+                  name="schoolId"
+                  value="11111111-1111-1111-1111-111111111111"
+                  class="w-full rounded-2xl border border-mud-brown/15 bg-cream-silence px-4 py-3"
+                />
+              </label>
+              <label class="space-y-2">
+                <span class="text-sm font-semibold uppercase tracking-wide text-mud-brown/80">
+                  Classroom ID
+                </span>
+                <input
+                  id="classroomId"
+                  name="classroomId"
+                  value="22222222-2222-2222-2222-222222222222"
+                  class="w-full rounded-2xl border border-mud-brown/15 bg-cream-silence px-4 py-3"
+                />
+              </label>
+            </div>
+
+            <div class="grid gap-4 md:grid-cols-2">
+              <label class="space-y-2">
+                <span class="text-sm font-semibold uppercase tracking-wide text-mud-brown/80">
+                  Teacher ID
+                </span>
+                <input
+                  id="teacherId"
+                  name="teacherId"
+                  value="33333333-3333-3333-3333-333333333333"
+                  class="w-full rounded-2xl border border-mud-brown/15 bg-cream-silence px-4 py-3"
+                />
+              </label>
+              <label class="space-y-2">
+                <span class="text-sm font-semibold uppercase tracking-wide text-mud-brown/80">
+                  Requested By
+                </span>
+                <input
+                  id="requestedBy"
+                  name="requestedBy"
+                  value="44444444-4444-4444-4444-444444444444"
+                  class="w-full rounded-2xl border border-mud-brown/15 bg-cream-silence px-4 py-3"
+                />
+              </label>
+            </div>
+
+            <div class="grid gap-4 md:grid-cols-2">
+              <label id="student-id-field" class="space-y-2">
+                <span class="text-sm font-semibold uppercase tracking-wide text-mud-brown/80">
+                  Student ID
+                </span>
+                <input
+                  id="studentId"
+                  name="studentId"
+                  value="55555555-5555-5555-5555-555555555555"
+                  class="w-full rounded-2xl border border-mud-brown/15 bg-cream-silence px-4 py-3"
+                />
+              </label>
+              <label id="student-name-field" class="space-y-2">
+                <span class="text-sm font-semibold uppercase tracking-wide text-mud-brown/80">
+                  Student Name
+                </span>
+                <input
+                  id="studentName"
+                  name="studentName"
+                  value="Nethmi Perera"
+                  class="w-full rounded-2xl border border-mud-brown/15 bg-cream-silence px-4 py-3"
+                />
+              </label>
+            </div>
+
+            <label class="space-y-2">
+              <span class="text-sm font-semibold uppercase tracking-wide text-mud-brown/80">
+                Focus Prompt
+              </span>
+              <textarea
+                id="focusPrompt"
+                name="focusPrompt"
+                rows="4"
+                class="w-full rounded-2xl border border-mud-brown/15 bg-cream-silence px-4 py-3"
+              ></textarea>
+            </label>
+
+            <fieldset class="space-y-3">
+              <legend class="text-sm font-semibold uppercase tracking-wide text-mud-brown/80">
+                Evidence Scopes
+              </legend>
+              <div id="evidence-scopes" class="grid gap-3 md:grid-cols-2"></div>
+            </fieldset>
+
+            <div class="space-y-3">
+              <div class="text-sm font-semibold uppercase tracking-wide text-mud-brown/80">
+                Quick Presets
+              </div>
+              <div id="quick-presets" class="flex flex-wrap gap-3"></div>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-4">
+              <button
+                id="submit-button"
+                type="submit"
+                class="rounded-full bg-void-indigo px-8 py-4 font-bold text-sacred-white transition hover:bg-peacock-blue"
+              >
+                Start Durable Draft Run
+              </button>
+              <p class="text-sm text-mud-brown/75">
+                Demo mode works immediately. Live mode expects real IDs and live
+                Supabase data.
+              </p>
+            </div>
+          </form>
+        </section>
+
+        <aside class="space-y-6 rounded-3xl border border-mud-brown/10 bg-white p-8 shadow-sm">
+          <div class="space-y-2">
+            <h2 class="text-2xl font-bold">Governor Rules</h2>
+            <ul class="space-y-2 text-sm leading-7 text-mud-brown">
+              <li>Only allowlisted evidence scopes run.</li>
+              <li>The run stays draft-only and review-first.</li>
+              <li>Run status is auditable and pollable.</li>
+              <li>Synthesis is provider-agnostic and can fall back deterministically.</li>
+              <li>Promotion into a teacher artifact requires explicit human action.</li>
+            </ul>
+          </div>
+
+          <div class="space-y-2 rounded-2xl bg-temple-stone/20 p-5 text-sm leading-7 text-mud-brown">
+            <h3 class="font-bold text-charcoal-truth">Current R&D posture</h3>
+            <p>
+              The demo prefers provider flexibility. If OpenAI or Anthropic keys
+              are present, the synthesis layer can use them without changing the
+              capability code.
+            </p>
+            <p>
+              If no provider keys are available, the run still completes with a
+              deterministic draft so demos stay usable.
+            </p>
+          </div>
+
+          <div class="space-y-3 rounded-2xl border border-mud-brown/10 bg-cream-silence p-5">
+            <div class="flex items-center justify-between gap-4">
+              <h3 class="font-bold text-charcoal-truth">Recent Runs</h3>
+              <button
+                id="refresh-runs"
+                type="button"
+                class="rounded-full border border-mud-brown/15 bg-white px-3 py-1 text-sm font-semibold text-charcoal-truth"
+              >
+                Refresh
+              </button>
+            </div>
+            <div id="recent-runs" class="space-y-3 text-sm text-mud-brown">
+              Loading recent runs...
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <section class="rounded-3xl border border-mud-brown/10 bg-white p-8 shadow-sm">
+        <div class="flex flex-wrap items-center gap-3">
+          <h2 class="text-2xl font-bold">Run Output</h2>
+          <span
+            id="run-status"
+            class="rounded-full bg-temple-stone/30 px-3 py-1 text-sm font-semibold text-mud-brown"
+            >Idle</span
+          >
+        </div>
+        <p id="run-meta" class="mt-3 text-sm text-mud-brown/75">
+          Start a run to see timeline, governor metadata, and the review draft.
+        </p>
+        <div class="mt-4 flex flex-wrap gap-3">
+          <button
+            id="promote-note-button"
+            type="button"
+            disabled
+            class="rounded-full border border-void-indigo/20 bg-void-indigo px-5 py-3 text-sm font-bold text-sacred-white disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Promote Draft To Teacher Note
+          </button>
+          <p class="text-sm text-mud-brown/75">
+            This is the demo's human review checkpoint. The agent drafts; a
+            person explicitly promotes.
+          </p>
+        </div>
+
+        <div class="mt-6 grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+          <div class="space-y-4">
+            <div class="rounded-2xl bg-cream-silence p-5">
+              <h3 class="font-bold">Draft</h3>
+              <pre
+                id="summary-draft"
+                class="mt-3 whitespace-pre-wrap font-sans text-sm leading-7 text-charcoal-truth"
+              >No draft yet.</pre>
+            </div>
+            <div class="rounded-2xl bg-cream-silence p-5">
+              <h3 class="font-bold">Timeline</h3>
+              <pre
+                id="run-timeline"
+                class="mt-3 whitespace-pre-wrap font-sans text-sm leading-7 text-charcoal-truth"
+              >No run timeline yet.</pre>
+            </div>
+          </div>
+
+          <div class="space-y-4">
+            <div class="rounded-2xl bg-cream-silence p-5">
+              <h3 class="font-bold">Governor</h3>
+              <pre
+                id="run-governor"
+                class="mt-3 whitespace-pre-wrap font-sans text-sm leading-7 text-charcoal-truth"
+              >No governor metadata yet.</pre>
+            </div>
+            <div class="rounded-2xl bg-cream-silence p-5">
+              <h3 class="font-bold">Evidence Snapshot</h3>
+              <pre
+                id="run-evidence"
+                class="mt-3 whitespace-pre-wrap font-sans text-sm leading-7 text-charcoal-truth"
+              >No evidence yet.</pre>
+            </div>
+          </div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script is:inline>
+    const form = document.getElementById("durable-agent-form");
+    const runStatus = document.getElementById("run-status");
+    const runMeta = document.getElementById("run-meta");
+    const summaryDraft = document.getElementById("summary-draft");
+    const runTimeline = document.getElementById("run-timeline");
+    const runGovernor = document.getElementById("run-governor");
+    const runEvidence = document.getElementById("run-evidence");
+    const submitButton = document.getElementById("submit-button");
+    const promoteButton = document.getElementById("promote-note-button");
+    const recentRuns = document.getElementById("recent-runs");
+    const refreshRunsButton = document.getElementById("refresh-runs");
+    const capabilityField = document.getElementById("capability");
+    const demoScenario = document.getElementById("demoScenario");
+    const focusPrompt = document.getElementById("focusPrompt");
+    const modeField = document.getElementById("mode");
+    const evidenceScopes = document.getElementById("evidence-scopes");
+    const quickPresets = document.getElementById("quick-presets");
+    const studentIdField = document.getElementById("student-id-field");
+    const studentNameField = document.getElementById("student-name-field");
+
+    let activePoll = null;
+    let activeRunId = null;
+
+    const capabilities = {
+      "teacher-summary": {
+        endpoint: "/api/durable-agents/teacher-summary",
+        title: "Teacher Summary Draft",
+        showStudentFields: false,
+        scenarios: {
+          "attendance-dip": {
+            label: "Attendance Dip",
+            prompt:
+              "Draft a calm teacher-facing summary that balances attendance concerns with encouragement and points to the next best action.",
+            scopes: ["attendance", "grades", "wellbeing", "assignments"],
+          },
+          "steady-growth": {
+            label: "Steady Growth",
+            prompt:
+              "Draft a teacher-facing progress summary that recognizes growth while naming the next area worth nudging.",
+            scopes: ["attendance", "grades", "assignments"],
+          },
+          "wellbeing-watch": {
+            label: "Wellbeing Watch",
+            prompt:
+              "Draft a teacher-facing note that is careful, non-diagnostic, and attentive to soft wellbeing signals.",
+            scopes: ["attendance", "wellbeing", "assignments"],
+          },
+        },
+      },
+      "student-support": {
+        endpoint: "/api/durable-agents/student-support",
+        title: "Student Support Snapshot",
+        showStudentFields: true,
+        scenarios: {
+          "quiet-struggle": {
+            label: "Quiet Struggle",
+            prompt:
+              "Draft a careful teacher-facing snapshot for a student who may need extra support without sounding alarmist.",
+            scopes: ["attendance", "grades", "wellbeing"],
+          },
+          "resilient-improver": {
+            label: "Resilient Improver",
+            prompt:
+              "Draft a teacher-facing snapshot that recognizes steady student improvement and suggests one supportive next move.",
+            scopes: ["attendance", "grades"],
+          },
+          "wellbeing-watch": {
+            label: "Wellbeing Watch",
+            prompt:
+              "Draft a teacher-facing note that stays evidence-bound and invites a gentle check-in for this student.",
+            scopes: ["attendance", "wellbeing"],
+          },
+        },
+      },
+    };
+
+    function formatJson(value) {
+      return JSON.stringify(value, null, 2);
+    }
+
+    function setPromoteState({ enabled, label }) {
+      if (enabled) promoteButton.removeAttribute("disabled");
+      else promoteButton.setAttribute("disabled", "disabled");
+      promoteButton.textContent = label;
+    }
+
+    function renderScenarioOptions(capabilityName) {
+      const capability = capabilities[capabilityName];
+      demoScenario.innerHTML = Object.entries(capability.scenarios)
+        .map(
+          ([key, scenario]) =>
+            `<option value="${key}">${scenario.label}</option>`,
+        )
+        .join("");
+    }
+
+    function renderEvidenceScopes(capabilityName, selectedScopes) {
+      const capability = capabilities[capabilityName];
+      const scopeSet = new Set(selectedScopes);
+      const allScopes = new Set();
+
+      for (const scenario of Object.values(capability.scenarios)) {
+        for (const scope of scenario.scopes) {
+          allScopes.add(scope);
+        }
+      }
+
+      evidenceScopes.innerHTML = [...allScopes]
+        .map(
+          (scope) => `
+            <label class="flex items-center gap-3 rounded-2xl border border-mud-brown/10 bg-cream-silence px-4 py-3">
+              <input
+                type="checkbox"
+                name="evidenceScopes"
+                value="${scope}"
+                ${scopeSet.has(scope) ? "checked" : ""}
+              />
+              <span class="capitalize">${scope}</span>
+            </label>
+          `,
+        )
+        .join("");
+    }
+
+    function renderQuickPresets(capabilityName) {
+      const capability = capabilities[capabilityName];
+      quickPresets.innerHTML = Object.entries(capability.scenarios)
+        .map(
+          ([key, scenario]) => `
+            <button
+              type="button"
+              data-preset="${key}"
+              class="preset-button rounded-full border border-mud-brown/15 bg-cream-silence px-4 py-2 text-sm font-semibold text-charcoal-truth"
+            >
+              ${scenario.label}
+            </button>
+          `,
+        )
+        .join("");
+
+      for (const button of quickPresets.querySelectorAll(".preset-button")) {
+        button.addEventListener("click", () => {
+          applyPreset(capabilityName, button.dataset.preset);
+        });
+      }
+    }
+
+    function applyCapability(capabilityName) {
+      const capability = capabilities[capabilityName];
+      studentIdField.style.display = capability.showStudentFields ? "" : "none";
+      studentNameField.style.display = capability.showStudentFields ? "" : "none";
+      renderScenarioOptions(capabilityName);
+      const firstScenario = Object.keys(capability.scenarios)[0];
+      applyPreset(capabilityName, firstScenario);
+      renderQuickPresets(capabilityName);
+    }
+
+    function applyPreset(capabilityName, scenarioName) {
+      const capability = capabilities[capabilityName];
+      const scenario = capability.scenarios[scenarioName];
+      if (!scenario) return;
+
+      demoScenario.value = scenarioName;
+      focusPrompt.value = scenario.prompt;
+      renderEvidenceScopes(capabilityName, scenario.scopes);
+      modeField.value = "demo";
+    }
+
+    async function loadRecentRuns() {
+      recentRuns.textContent = "Loading recent runs...";
+      const response = await fetch("/api/durable-agents/runs?limit=6");
+      const data = await response.json();
+
+      if (!response.ok) {
+        recentRuns.textContent = "Failed to load recent runs.";
+        return;
+      }
+
+      if (!data.runs?.length) {
+        recentRuns.textContent = "No runs yet.";
+        return;
+      }
+
+      recentRuns.innerHTML = data.runs
+        .map(
+          (run) => `
+            <button
+              type="button"
+              data-run-id="${run.runId}"
+              class="recent-run w-full rounded-2xl border border-mud-brown/10 bg-white px-4 py-3 text-left"
+            >
+              <div class="flex items-center justify-between gap-3">
+                <span class="font-semibold text-charcoal-truth">${run.studentName ?? run.classroomName ?? "Durable Agent Run"}</span>
+                <span class="rounded-full bg-temple-stone/30 px-2 py-1 text-xs font-semibold uppercase">${run.status}</span>
+              </div>
+              <div class="mt-1 text-xs text-mud-brown/70">
+                ${run.runType ?? "run"} · ${run.scenario ?? run.mode ?? "run"} · ${run.updatedAt}
+              </div>
+            </button>
+          `,
+        )
+        .join("");
+    }
+
+    async function pollRun(runId) {
+      const response = await fetch(`/api/durable-agents/runs/${runId}`);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch run ${runId}`);
+      }
+
+      const data = await response.json();
+      activeRunId = runId;
+      runStatus.textContent = data.status;
+      runMeta.textContent = `${data.runType ?? "run"} · ${runId} · status ${data.status}`;
+      runTimeline.textContent = formatJson(data.timeline);
+      runGovernor.textContent = formatJson(data.governor);
+      runEvidence.textContent = formatJson(data.evidence);
+      summaryDraft.textContent = data.summaryDraft || "No draft yet.";
+
+      if (data.error) {
+        summaryDraft.textContent = `Error: ${data.error}`;
+      }
+
+      if (data.promotedTeacherNoteId) {
+        const modeLabel =
+          data.promotionMode === "demo_teacher_note"
+            ? "Demo teacher note created"
+            : "Teacher note created";
+        setPromoteState({
+          enabled: false,
+          label: `${modeLabel} (${data.promotedTeacherNoteId.slice(0, 8)}...)`,
+        });
+      } else if (data.status === "completed" && data.teacherId) {
+        setPromoteState({
+          enabled: true,
+          label: "Promote Draft To Teacher Note",
+        });
+      } else {
+        setPromoteState({
+          enabled: false,
+          label: "Promote Draft To Teacher Note",
+        });
+      }
+
+      if (data.status === "completed" || data.status === "failed") {
+        if (activePoll) {
+          window.clearInterval(activePoll);
+          activePoll = null;
+        }
+        submitButton.removeAttribute("disabled");
+        void loadRecentRuns();
+      }
+    }
+
+    async function promoteRun() {
+      if (!activeRunId) return;
+
+      setPromoteState({ enabled: false, label: "Promoting..." });
+      const actorId = form.querySelector("#requestedBy")?.value ?? null;
+
+      const response = await fetch(
+        `/api/durable-agents/runs/${activeRunId}/promote`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ actorId }),
+        },
+      );
+
+      const data = await response.json();
+      if (!response.ok) {
+        setPromoteState({
+          enabled: true,
+          label: "Retry Promotion To Teacher Note",
+        });
+        summaryDraft.textContent = `Promotion error: ${formatJson(data)}`;
+        return;
+      }
+
+      await pollRun(activeRunId);
+    }
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      if (activePoll) {
+        window.clearInterval(activePoll);
+        activePoll = null;
+      }
+
+      submitButton.setAttribute("disabled", "disabled");
+      runStatus.textContent = "queueing";
+      runMeta.textContent = "Creating durable draft run...";
+      summaryDraft.textContent = "Waiting for worker...";
+      runTimeline.textContent = "[]";
+      runGovernor.textContent = "null";
+      runEvidence.textContent = "null";
+      setPromoteState({ enabled: false, label: "Promote Draft To Teacher Note" });
+
+      const capabilityName = capabilityField.value;
+      const capability = capabilities[capabilityName];
+      const formData = new FormData(form);
+      const payload = {
+        mode: formData.get("mode"),
+        demoScenario: formData.get("demoScenario"),
+        schoolId: formData.get("schoolId"),
+        classroomId: formData.get("classroomId"),
+        teacherId: formData.get("teacherId"),
+        requestedBy: formData.get("requestedBy"),
+        focusPrompt: formData.get("focusPrompt"),
+        evidenceScopes: formData.getAll("evidenceScopes"),
+        reviewMode: "draft_only",
+      };
+
+      if (capabilityName === "student-support") {
+        payload.studentId = formData.get("studentId");
+        payload.studentName = formData.get("studentName");
+      }
+
+      const response = await fetch(capability.endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        runStatus.textContent = "error";
+        runMeta.textContent = "Request validation failed.";
+        summaryDraft.textContent = formatJson(data);
+        submitButton.removeAttribute("disabled");
+        return;
+      }
+
+      runStatus.textContent = data.status;
+      runMeta.textContent = `Run ${data.runId} queued. Polling for completion...`;
+
+      await pollRun(data.runId);
+      activePoll = window.setInterval(() => {
+        void pollRun(data.runId);
+      }, 2000);
+    });
+
+    recentRuns.addEventListener("click", async (event) => {
+      const target = event.target.closest(".recent-run");
+      if (!target?.dataset.runId) return;
+
+      if (activePoll) {
+        window.clearInterval(activePoll);
+        activePoll = null;
+      }
+
+      await pollRun(target.dataset.runId);
+    });
+
+    capabilityField.addEventListener("change", () => {
+      applyCapability(capabilityField.value);
+    });
+
+    promoteButton.addEventListener("click", () => {
+      void promoteRun();
+    });
+
+    refreshRunsButton.addEventListener("click", () => {
+      void loadRecentRuns();
+    });
+
+    applyCapability("teacher-summary");
+    void loadRecentRuns();
+  </script>
+</Layout>

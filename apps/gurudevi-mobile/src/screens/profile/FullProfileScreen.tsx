@@ -5,7 +5,7 @@
  */
 
 import { FullProfileScreen as PackageFullProfileScreen } from '@repo/profile';
-import { ErrorBoundary } from '@repo/ui';
+import ErrorBoundary from '@repo/ui/components/ErrorBoundary';
 
 const FullProfileWrapper = (props: Record<string, unknown>) => (
   <ErrorBoundary name="Detailed Profile">

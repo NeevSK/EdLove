@@ -1,27 +1,19 @@
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { type FounderStackParamList, useFeatureAccess, useStore } from '@repo/core';
-import {
-  Box,
-  Compass,
-  GlobalHeader,
-  Globe,
-  HStack,
-  Heading,
-  Heart,
-  Icon,
-  Plus,
-  PositiveInvitation,
-  Pressable,
-  SandboxBanner,
-  ScreenWrapper,
-  ScrollView,
-  SkeletonCard,
-  Text,
-  VStack,
-  Zap,
-  hapticLight,
-} from '@repo/ui';
+import type { FounderStackParamList } from '@repo/core';
+import { useFeatureAccess } from '@repo/core/hooks';
+import { useStore } from '@repo/core/logic';
+
+import GlobalHeader from '@repo/ui/components/GlobalHeader';
+import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
+import SandboxBanner from '@repo/ui/components/SandboxBanner';
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { Compass, Globe, Heart, Plus, Zap } from '@repo/ui/icons';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Heading, Icon, Text, VStack } from '@repo/ui/primitives';
+import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+import { hapticLight } from '@repo/ui/utils/haptics';
 
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -42,7 +34,7 @@ export default function FounderSchoolDashboard({ schoolId, userId }: FounderScho
   const { school, stats, isLoading, refreshData } = useFounderSchoolStats(schoolId);
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const isDemoMode = useStore(s => s.isDemoMode);
+  const isDemoMode = useStore((s) => s.isDemoMode);
 
   return (
     <ScreenWrapper noTopInset={true}>

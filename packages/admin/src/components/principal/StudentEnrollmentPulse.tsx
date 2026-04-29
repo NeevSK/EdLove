@@ -1,18 +1,8 @@
-import {
-  AlertCircle,
-  Box,
-  ClipboardCheck,
-  HStack,
-  Icon,
-  Pressable,
-  Spinner,
-  Text,
-  TrendingUp,
-  UserPlus,
-  Users,
-  VStack,
-  hapticLight,
-} from '@repo/ui';
+import { AlertCircle, ClipboardCheck, TrendingUp, UserPlus, Users } from '@repo/ui/icons';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Icon, Spinner, Text, VStack } from '@repo/ui/primitives';
+import { Pressable } from '@repo/ui/primitives';
+import { hapticLight } from '@repo/ui/utils/haptics';
 
 import { useEffect, useState } from 'react';
 import { type StudentPrincipalPulse, staffOperationsAPI } from '../../staff';

@@ -59,8 +59,7 @@ export function useCommunityPresence({ userId, userVibe = 'active' }: UseCommuni
   }, [presenceConfig.isCumulative, presenceConfig.targetRoles, userId]);
 
   useEffect(() => {
-    refreshFallbackCount();
-
+    void refreshFallbackCount();
     if (!userId) return;
 
     const cleanupSession = startPresenceSession({
@@ -72,7 +71,9 @@ export function useCommunityPresence({ userId, userVibe = 'active' }: UseCommuni
       onOfflineChange: setIsOffline,
     });
 
-    const heartbeat = setInterval(refreshFallbackCount, 30000);
+    const heartbeat = setInterval(() => {
+      void refreshFallbackCount();
+    }, 30000);
 
     return () => {
       cleanupSession();

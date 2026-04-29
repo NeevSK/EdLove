@@ -1,4 +1,4 @@
-import { observationsAPI, type PrincipalObservation } from '@repo/admin';
+import { observationsAPI, type PrincipalObservation } from '@repo/admin/observations';
 import { useCallback, useEffect, useState } from 'react';
 
 export function usePrincipalObservations(userId: string, schoolId: string, viewDate: string) {

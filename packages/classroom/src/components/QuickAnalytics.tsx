@@ -1,29 +1,11 @@
 import { marksToGPA } from '@repo/analytics';
 import { ProgressRing } from '@repo/graphics';
-import {
-  ArrowRight,
-  Box,
-  CalendarCheck,
-  Card,
-  LineChart as ChartIcon,
-  CircleCheck,
-  FileText,
-  GraduationCap,
-  HStack,
-  Icon,
-  Lightbulb,
-  Minus,
-  Pressable,
-  ScrollView,
-  Text,
-  Theme,
-  TrendingDown,
-  TrendingUp,
-  Trophy,
-  VStack,
-  Zap,
-} from '@repo/ui';
-import React from 'react';
+import { Card } from '@repo/ui/components/SanctuaryCard';
+import { ArrowRight, CircleCheck, FileText, GraduationCap, Lightbulb, LineChart as ChartIcon, Minus, TrendingDown, TrendingUp, Trophy, Zap } from '@repo/ui/icons';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Icon, Text, VStack } from '@repo/ui/primitives';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme';
 
 interface AnalyticsWidgetProps {
   title: string;

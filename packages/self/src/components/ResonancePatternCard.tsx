@@ -6,10 +6,13 @@
 
 import { usePermissions } from '@repo/core';
 import type { OrientationSeeds } from '@repo/profile';
-import { Box, Heading, HStack, Icon, Pressable, SkeletonCard, Text, VStack } from '@repo/ui';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Icon, Text, VStack } from '@repo/ui/primitives';
+import { Pressable } from '@repo/ui/primitives';
+
 import { Canvas, Circle, Group, Line, Path, Skia, vec } from '@shopify/react-native-skia';
 import { Activity, ArrowRight, Sparkles } from 'lucide-react-native';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import Animated, { FadeIn, SlideInRight } from 'react-native-reanimated';
 import { useOrientationInference } from '../hooks/useOrientationInference';
 import type { EnergyForecast, MoodLog } from '../types/Wellbeing';

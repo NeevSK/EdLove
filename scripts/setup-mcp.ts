@@ -1,7 +1,7 @@
-import fs from 'fs';
-import os from 'os';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 // --- Alchemist's Path: Discovery ---
 const __filename = fileURLToPath(import.meta.url);
@@ -40,7 +40,7 @@ async function setupMcpBridge() {
 
   // A. GitHub Migration
   if (config.mcpServers?.github?.env?.GITHUB_PERSONAL_ACCESS_TOKEN) {
-    secrets['GITHUB_PERSONAL_ACCESS_TOKEN'] =
+    secrets.GITHUB_PERSONAL_ACCESS_TOKEN =
       config.mcpServers.github.env.GITHUB_PERSONAL_ACCESS_TOKEN;
     console.log('💎 Found GitHub Token. Migrating...');
   }
@@ -50,7 +50,7 @@ async function setupMcpBridge() {
   if (sb?.args) {
     const tokenIndex = sb.args.indexOf('--access-token') + 1;
     if (tokenIndex > 0 && sb.args[tokenIndex]) {
-      secrets['SUPABASE_ACCESS_TOKEN'] = sb.args[tokenIndex];
+      secrets.SUPABASE_ACCESS_TOKEN = sb.args[tokenIndex];
       console.log('💎 Found Supabase Token. Migrating...');
     }
   }
@@ -61,7 +61,7 @@ async function setupMcpBridge() {
       envContent += `\n${key}=${val}`;
     }
   }
-  fs.writeFileSync(ENV_FILE, envContent.trim() + '\n');
+  fs.writeFileSync(ENV_FILE, `${envContent.trim()}\n`);
   console.log(`✅ Secrets moved to ${path.relative(ROOT_DIR, ENV_FILE)}`);
 
   // 6. Injection: The Absolute Bridge
@@ -78,7 +78,7 @@ async function setupMcpBridge() {
   // 7. Cleanup & Hardening: The Proxy Bridge
   const proxyPath = path.join(ROOT_DIR, 'scripts', 'mcp-proxy.mjs').replace(/\\/g, '\\\\');
 
-  if (secrets['GITHUB_PERSONAL_ACCESS_TOKEN'] && config.mcpServers?.github) {
+  if (secrets.GITHUB_PERSONAL_ACCESS_TOKEN && config.mcpServers?.github) {
     const gh = config.mcpServers.github;
     if (gh.command !== 'node' || !gh.args[0].includes('mcp-proxy.mjs')) {
       gh.args = [proxyPath, gh.command, ...(gh.args || [])];
@@ -91,7 +91,7 @@ async function setupMcpBridge() {
     console.log('🔒 GitHub Instrumented with Proxy.');
   }
 
-  if (secrets['SUPABASE_ACCESS_TOKEN'] && config.mcpServers?.['supabase-mcp-server']) {
+  if (secrets.SUPABASE_ACCESS_TOKEN && config.mcpServers?.['supabase-mcp-server']) {
     const sb = config.mcpServers['supabase-mcp-server'];
 
     // Ensure token placeholder is used

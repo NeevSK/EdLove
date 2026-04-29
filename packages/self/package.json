@@ -5,7 +5,11 @@
   "types": "src/index.ts",
   "exports": {
     ".": "./src/index.ts",
+    "./api": "./src/api/index.ts",
+    "./components": "./src/components/index.ts",
+    "./hooks": "./src/hooks/index.ts",
     "./screens": "./src/screens/index.ts",
+    "./types": "./src/types/index.ts",
     "./screens/SelfScreen.web": "./src/screens/SelfScreen.web.tsx",
     "./screens/PrivacyLedgerScreen": "./src/screens/PrivacyLedgerScreen.tsx",
     "./package.json": "./package.json"

@@ -56,7 +56,7 @@ export class SeedCursor {
   }
 
   animate() {
-    this.seeds.forEach((seed, index) => {
+    this.seeds.forEach((_seed) => {
       // Subtle rotation or movement can be added here
     });
 
@@ -66,18 +66,15 @@ export class SeedCursor {
 
 export class CoherenceMeter {
   private fill: HTMLElement | null;
-  private status: HTMLElement | null;
-
   constructor() {
     this.fill = document.querySelector('.meter-fill');
-    this.status = document.querySelector('.meter-status');
     if (this.fill) this.init();
   }
 
   init() {
     // Initial animation
     setTimeout(() => {
-      const target = parseInt(this.fill?.getAttribute('data-coherence') || '85');
+      const target = parseInt(this.fill?.getAttribute('data-coherence') || '85', 10);
       this.animateTo(target);
     }, 1000);
 
@@ -93,7 +90,7 @@ export class CoherenceMeter {
 
   fluctuate() {
     if (!this.fill) return;
-    const current = parseInt(this.fill.style.width || '85');
+    const current = parseInt(this.fill.style.width || '85', 10);
     const variance = Math.random() * 6 - 3;
     const next = Math.max(70, Math.min(95, current + variance));
     this.animateTo(next);

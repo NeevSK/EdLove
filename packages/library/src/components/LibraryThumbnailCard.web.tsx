@@ -14,7 +14,20 @@ import {
 } from 'lucide-react-native';
 import type React from 'react';
 import { useState } from 'react';
-import type { LibraryThumbnailCardProps } from './LibraryThumbnailCard';
+
+interface LibraryThumbnailCardWebProps {
+  title?: string;
+  type?: string;
+  subject?: string;
+  thumbnailUrl?: string;
+  endorsements?: number;
+  verified?: boolean;
+  isLocked?: boolean;
+  has_bookmarked?: boolean;
+  onPress: () => void;
+  onLongPress?: () => void;
+  onBookmarkToggle?: () => void | Promise<void>;
+}
 
 const TYPE_CONFIG: Record<
   string,
@@ -33,8 +46,8 @@ const TYPE_CONFIG: Record<
   other: { icon: BookOpen, color: '#8a8b95', label: 'File' },
 };
 
-function resolveType(type: string): keyof typeof TYPE_CONFIG {
-  const normalized = type?.toLowerCase();
+function resolveType(type?: string): keyof typeof TYPE_CONFIG {
+  const normalized = type?.toLowerCase() ?? 'other';
   return TYPE_CONFIG[normalized] ? normalized : 'other';
 }
 
@@ -50,7 +63,7 @@ export function LibraryThumbnailCard({
   isLocked = false,
   has_bookmarked = false,
   onBookmarkToggle,
-}: LibraryThumbnailCardProps) {
+}: LibraryThumbnailCardWebProps) {
   const [isHovered, setIsHovered] = useState(false);
   const cfg = TYPE_CONFIG[resolveType(type)]!;
   const Icon = cfg.icon;
@@ -66,7 +79,7 @@ export function LibraryThumbnailCard({
       onContextMenu={(event) => {
         if (!onLongPress) return;
         event.preventDefault();
-        onLongPress();
+        void onLongPress();
       }}
       style={{
         width: '100%',
@@ -168,7 +181,7 @@ export function LibraryThumbnailCard({
                 type="button"
                 onClick={(event) => {
                   event.stopPropagation();
-                  void onBookmarkToggle();
+                  return onBookmarkToggle();
                 }}
                 style={{
                   width: '30px',

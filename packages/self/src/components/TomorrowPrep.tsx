@@ -1,27 +1,16 @@
 import { useNavigation } from '@react-navigation/native';
-import { supabase, useSafeMutation } from '@repo/core';
-import {
-  Box,
-  Button,
-  ButtonText,
-  Checkbox,
-  CheckboxIcon,
-  CheckboxIndicator,
-  Heading,
-  HStack,
-  hapticLight,
-  hapticSuccess,
-  Icon,
-  Input,
-  InputField,
-  PositiveInvitation,
-  Pressable,
-  SkeletonCard,
-  Text,
-  VStack,
-} from '@repo/ui';
+import { useSafeMutation } from '@repo/core/hooks';
+import { supabase } from '@repo/core/native';
+
+import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
+import { Box, Button, Input } from '@repo/ui/primitives';
+import { ButtonText, Checkbox, CheckboxIcon, CheckboxIndicator, HStack, Heading, Icon, InputField, Text, VStack } from '@repo/ui/primitives';
+import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
+import { Pressable } from '@repo/ui/primitives';
+import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+
 import { Calendar, Check, Plus, Trash2 } from 'lucide-react-native';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useTomorrowPrep } from '../hooks/useTomorrowPrep';
 import type { DailyPrepItem } from '../types';
@@ -55,7 +44,7 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
       new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1).getTime() - now.getTime();
     const timer = setTimeout(() => setTomorrowDate(getTomorrowDate()), msUntilMidnight);
     return () => clearTimeout(timer);
-  }, [tomorrowDate]);
+  }, []);
 
   const { mutate: saveItem, isLoading: isSaving } = useSafeMutation(
     async (text: string) => {

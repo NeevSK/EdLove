@@ -1,27 +1,12 @@
-import {
-  ArrowLeft,
-  Box,
-  Button,
-  ButtonIcon,
-  ButtonText,
-  Castle,
-  FormControl,
-  HStack,
-  Heading,
-  Icon,
-  Input,
-  InputField,
-  Plus,
-  Pressable,
-  ScrollView,
-  SkeletonCard,
-  Text,
-  VStack,
-  hapticLight,
-  hapticSuccess,
-} from '@repo/ui';
+import { ArrowLeft, Castle, Plus } from '@repo/ui/icons';
+import { Box, Button, Input } from '@repo/ui/primitives';
+import { ButtonIcon, ButtonText, FormControl, HStack, Heading, Icon, InputField, Text, VStack } from '@repo/ui/primitives';
+import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+
 import type React from 'react';
-import { useReducer, useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useReducer } from 'react';
 import { type SchoolSectionRow, sectionsAPI } from '../../sections';
 
 interface HierarchyDashboardProps {
@@ -65,7 +50,12 @@ function reducer(state: State, action: Action): State {
     case 'UPDATE_FIELD':
       return { ...state, [action.field]: action.value };
     case 'ADD_SECTION':
-      return { ...state, sections: [...state.sections, action.payload], newSectionName: '', newSectionGrade: '' };
+      return {
+        ...state,
+        sections: [...state.sections, action.payload],
+        newSectionName: '',
+        newSectionGrade: '',
+      };
     case 'RESET_FORM':
       return { ...state, newSectionName: '', newSectionGrade: '' };
     default:

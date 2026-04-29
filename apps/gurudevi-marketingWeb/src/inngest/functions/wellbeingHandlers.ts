@@ -1,7 +1,7 @@
-import { initPostHog, trackEvent } from '@repo/analytics';
-import { createDomainServices, generateIdempotencyKey, v7 as uuidv7 } from '@repo/core';
+import { generateIdempotencyKey, v7 as uuidv7, wellbeingMoodLoggedEvent } from '@repo/core';
 import { inngest } from '../../lib/inngest';
 import { supabaseAdmin } from '../../lib/supabase';
+import { insertWorkerAuditLog, trackWorkerAnalytics } from '../lib/workerObservability';
 
 /**
  * Handle Wellbeing Mood Logged Event
@@ -11,14 +11,14 @@ import { supabaseAdmin } from '../../lib/supabase';
  * - Injects 'God Mode' client into pure Core services
  * - Performs manual audit logging within step.run
  */
-export const wellbeingMoodLogged = (inngest as any).createFunction(
-  { id: 'wellbeing-mood-logged-handler', name: 'Process Student Mood Log' },
-  { event: 'wellbeing/mood.logged' },
-  async ({ event, step }: { event: any; step: any }) => {
-    const { studentId, moodScore, schoolId } = event.data;
-
-    // 1. Initialize 'God Mode' services (Imperative Shell)
-    const services = createDomainServices(supabaseAdmin);
+export const wellbeingMoodLogged = inngest.createFunction(
+  {
+    id: 'wellbeing-mood-logged-handler',
+    name: 'Process Student Mood Log',
+    triggers: [wellbeingMoodLoggedEvent],
+  },
+  async ({ event, step }) => {
+    const { studentId, moodScore, schoolId, correlationId, causationId } = event.data;
 
     // 2. Deterministic Idempotency Key
     // We use SHA-256 digest of the intent to ensure background consistency
@@ -38,43 +38,45 @@ export const wellbeingMoodLogged = (inngest as any).createFunction(
 
       // 4. Manual Audit Trail (Durable & Traceable)
       await step.run('log-audit-trail', async () => {
-        const auditId = uuidv7();
-        const { error } = await supabaseAdmin.from('audit_logs').insert({
-          id: auditId,
+        await insertWorkerAuditLog({
+          supabase: supabaseAdmin,
+          id: uuidv7(),
           action: 'wellbeing_intervention_triggered',
-          entity_id: studentId,
-          entity_type: 'student',
-          school_id: schoolId,
+          entityId: studentId,
+          entityType: 'student',
+          schoolId,
+          idempotencyKey: `${idempotencyKey}:audit`,
+          correlationId,
+          causationId: causationId ?? studentId,
           metadata: {
             moodScore,
             trigger: 'inngest_background_worker',
           },
-          idempotency_key: `${idempotencyKey}:audit`,
         });
-
-        if (error) throw error;
       });
     }
 
     // 5. Unified Analytics (God Mode Visibility)
     await step.run('track-posthog-event', async () => {
-      await initPostHog(import.meta.env.POSTHOG_API_KEY!, {
-        host: import.meta.env.POSTHOG_HOST || 'https://eu.i.posthog.com',
-      });
-
-      trackEvent('wellbeing_mood_processed', {
+      await trackWorkerAnalytics({
+        eventName: 'wellbeing_mood_processed',
         distinctId: studentId,
-        student_id: studentId,
-        mood_score: moodScore,
-        intervention_needed: needsIntervention,
-        school_id: schoolId,
-        worker: 'inngest-wellbeing-handler',
+        correlationId,
+        causationId: causationId ?? studentId,
+        properties: {
+          student_id: studentId,
+          mood_score: moodScore,
+          intervention_needed: needsIntervention,
+          school_id: schoolId,
+          worker: 'inngest-wellbeing-handler',
+        },
       });
     });
 
     return {
       processed: true,
       intervention: needsIntervention,
+      correlationId,
     };
   },
 );

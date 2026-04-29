@@ -1,5 +1,5 @@
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
 
 const ROOT_DIR = process.cwd();
 const PACKAGES_DIR = path.join(ROOT_DIR, 'packages');
@@ -48,7 +48,7 @@ allPackageJsons.forEach((pkgPath) => {
 console.log('# Dependency Duplication Report\n');
 
 const duplicates = Object.entries(dependencyMap).filter(
-  ([name, consumers]) => consumers.length > 1,
+  ([_name, consumers]) => consumers.length > 1,
 );
 
 let foundIssues = false;

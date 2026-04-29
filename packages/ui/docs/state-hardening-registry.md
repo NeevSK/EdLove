@@ -5,13 +5,8 @@ This registry serves as the **Sovereign Checklist** for sanitizing the codebase 
 ---
 
 ## 🚀 1. The "State Machine" Migration (Local Logic)
-**Target**: Components with >3 interdependent `useState` hooks.
+**Target**: Components with >2 interdependent `useState` hooks.
 **Goal**: Atomic updates and deterministic transitions.
-
-### 📍 High-Priority Targets
-- [ ] **[CuratorReviewScreen.tsx](../library/src/screens/CuratorReviewScreen.tsx)**: currently uses 5 `useState` hooks for tab, items, and loading.
-- [ ] **[SchoolCreationScreen.tsx](../../apps/gurudevi-mobile/src/screens/SchoolCreationScreen.tsx)**: complex form state needs a schema-driven reducer.
-- [ ] **[AttendanceScreen](../../apps/gurudevi-mobile/src/screens/AttendanceScreen.web.tsx)**: handle multi-student selection logic via reducer.
 
 ### 🛡️ Guidance: Code-to-Cure
 ```tsx
@@ -31,22 +26,26 @@ const [state, dispatch] = useReducer((s, a) => {
 
 ---
 
-## 🧬 2. Referential Stability (Memory Management)
+## 🏎️ 2. The 2026 "Layered" Philosophy
+**Philosophy**: Don't use a hammer for every screw. Choose the right tool for the state lifecycle.
+
+| Layer | Recommended Tool | Rationale |
+| :--- | :--- | :--- |
+| **Server State** | **TanStack Query** | Caching, invalidation, and background sync are handled natively. |
+| **Action Transitions** | **`useActionState`** | Handles "pending" and "result" lifecycles of async actions automatically. |
+| **Optimistic UI** | **`useOptimistic`** | Immediate feedback with automatic rollback on failure. |
+| **Global UI** | **Zustand** | Minimal boilerplate, fine-grained subscription, zero re-render waterfalls. |
+| **Derived State** | **Plain JS** | If it can be calculated from props/state, do it during render. No hooks. |
+
+---
+
+## 🧬 3. Referential Stability (Memory Management)
 **Target**: Anonymous functions and object literals in the render path.
 **Goal**: Zero-Allocation Renders.
 
-### 📍 High-Priority Targets
-- [ ] **[StudentAnalysisModal.tsx](../library/src/components/modals/StudentAnalysisModal.tsx)**: 
-    - Wrap `handleSave`, `handleExport`, and `handleGetAIInsights` in `useCallback`.
-    - Extract dimension slider objects into a `useMemo` block.
-- [ ] **[CollectionPickerModal.tsx](../library/src/components/CollectionPickerModal.tsx)**:
-    - Memoize `renderItem` using `useCallback` or move it outside the component.
-- [ ] **[HistoryTimeline.tsx](./src/components/HistoryTimeline.tsx)**:
-    - Ensure SVG path calculations are 100% stabilized via `useMemo`.
-
 ### 🛡️ Guidance: Code-to-Cure
 ```tsx
-// ❌ Avoid: Anonymous Sinks
+// ❌ Avoid: Anonymous Sinks (triggers re-renders in children)
 <Button onPress={() => dispatch({ type: 'DONE' })} />
 
 // ✅ Cure: Callback Stabilization
@@ -58,29 +57,22 @@ const handleDone = useCallback(() => {
 
 ---
 
-## ⚡ 3. Blast Radius Control (Context API)
+## ⚡ 4. Blast Radius Control (Context API)
 **Target**: "God Providers" that trigger massive re-render waterfalls.
 **Goal**: Domain-Specific Context Nodes.
 
-### 📍 High-Priority Targets
-- [ ] **[EnvironmentContext.tsx](./src/context/EnvironmentContext.tsx)**:
-    - **Split**: Move `reality` (Network/Memory) to `RealityProvider`.
-    - **Split**: Move `language` to `i18nProvider`.
-- [ ] **[SanctuaryProvider.tsx](./src/providers/SanctuaryProvider.tsx)**:
-    - Ensure this only acts as a orchestrator, not a state-holder.
-
 ---
 
-## 🔮 4. The "Zero-Legacy" 2-Minute Audit
+## 🔮 5. The "Zero-Legacy" 2-Minute Audit (2026 Edition)
 *Run this over any file before checking in:*
 
-1.  **Count the useStates**: Is it > 2? **Action**: Refactor to `useReducer`.
-2.  **Hunt functions**: Is there an `async` or handler function without `useCallback`? **Action**: Wrap it.
-3.  **Check the Map**: Are you creating objects inside a `.map()` loop? **Action**: Move to `useMemo`.
-4.  **Zustand Check**: are you using `const { a, b } = useStore()`? **Action**: Convert to `useStore(s => s.a)` and `useStore(s => s.b)`.
-5.  **Action Check**: Could this form state or loading flag be `useActionState` / `useOptimistic`? **Action**: Upgrade to Action primitives for Zero-Lag UX.
-6.  **Effect Sanitization**: Is this `useEffect` being used to sync two pieces of state? **Action**: Refactor to **Derived State** (computed during render).
-7.  **Ref-ability**: Could this variable be a `useRef`? (i.e., does it need to trigger a UI update?). **Action**: Switch to `useRef` if possible to save render cycles.
+1.  **State Density**: Are there > 2 `useState` hooks? **Action**: Refactor to `useReducer`.
+2.  **State Mirroring**: Is this `useEffect` syncing state? **Action**: Delete it. Use **Derived State** (computed during render).
+3.  **Async Mutations**: Is there a manual `loading` flag for a form? **Action**: Upgrade to `useActionState`. (Note: useReducer can also manage this if logic is complex).
+4.  **Referential Check**: Are there objects `{}`, arrays `[]`, or `() => {}` inside the JSX or dependency arrays? **Action**: Move to `useMemo` / `useCallback` or static scope.
+5.  **Zustand Selectors**: Are you using `const { a, b } = useStore()`? **Action**: Convert to `useStore(s => s.a)` to prevent over-subscription.
+6.  **Ref-ability**: Does this value need to trigger a UI update? **Action**: If not, use `useRef` to avoid unnecessary render cycles.
+7.  **Server State Leak**: Is API data sitting in a client-side reducer? **Action**: Move it to TanStack Query/use() cache.
 
 ---
 

@@ -1,17 +1,9 @@
-import {
-  Box,
-  Divider,
-  Heading,
-  HStack,
-  hapticLight,
-  hapticSuccess,
-  Icon,
-  Pressable,
-  Text,
-  type ThemeMode,
-  useTheme,
-  VStack,
-} from '@repo/ui';
+import type { ThemeMode } from '@repo/ui/context';
+import { Box } from '@repo/ui/primitives';
+import { Divider, HStack, Heading, Icon, Text, VStack } from '@repo/ui/primitives';
+import { Pressable, useTheme } from '@repo/ui/primitives';
+import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+
 import {
   Check,
   ChevronRight,
@@ -23,7 +15,7 @@ import {
   X,
   Zap,
 } from 'lucide-react-native';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Modal } from 'react-native';
 

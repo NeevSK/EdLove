@@ -10,8 +10,10 @@
 
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { TimetableScheduler } from '@repo/ai';
-import { usePermissions, useStore } from '@repo/core';
-import React, { useCallback, useEffect, useState } from 'react';
+import { usePermissions } from '@repo/core';
+import { useStore } from '@repo/core/logic';
+
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
@@ -31,7 +33,7 @@ export default function TimetableScreen() {
   const { t } = useTranslation();
   const { user } = useStore();
   const { context } = usePermissions();
-  const role = context.roles[0];
+  const _role = context.roles[0];
 
   const schoolId: string = route.params?.schoolId ?? user?.school_id ?? '';
 
@@ -211,7 +213,7 @@ export default function TimetableScreen() {
                   fontWeight: selectedClassroomId === id ? '700' : '400',
                 }}
               >
-                {draft?.classroom_names?.[id] ?? id.slice(0, 12) + '\u2026'}
+                {draft?.classroom_names?.[id] ?? `${id.slice(0, 12)}\u2026`}
               </button>
             ))}
           </div>

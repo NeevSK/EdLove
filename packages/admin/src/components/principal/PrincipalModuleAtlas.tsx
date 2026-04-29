@@ -1,19 +1,6 @@
-import {
-  ArrowRight,
-  BookCopy,
-  Box,
-  BriefcaseBusiness,
-  ClipboardCheck,
-  FileSpreadsheet,
-  Files,
-  HStack,
-  Heading,
-  Icon,
-  Landmark,
-  Package,
-  Text,
-  VStack,
-} from '@repo/ui';
+import { ArrowRight, BookCopy, BriefcaseBusiness, ClipboardCheck, FileSpreadsheet, Files, Landmark, Package } from '@repo/ui/icons';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Heading, Icon, Text, VStack } from '@repo/ui/primitives';
 
 import {
   PRINCIPAL_CAPABILITY_REGISTRY,

@@ -1,18 +1,10 @@
 import type { ClassroomGradingSettings } from '@repo/core';
-import {
-  Box,
-  Button,
-  ButtonText,
-  Heading,
-  HStack,
-  hapticLight,
-  Pressable,
-  ScrollView,
-  Spinner,
-  Text,
-  VStack,
-} from '@repo/ui';
-import React, { useState } from 'react';
+import { Box, Button } from '@repo/ui/primitives';
+import { ButtonText, HStack, Spinner, Text, VStack } from '@repo/ui/primitives';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+import { hapticLight } from '@repo/ui/utils/haptics';
+
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useGradebook } from '../hooks/useGradebook';
 import GradebookTable from './grading/GradebookTable';

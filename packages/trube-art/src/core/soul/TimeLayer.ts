@@ -37,7 +37,7 @@ export function useTrubeTime(surfaceType: SurfaceType, enabled: boolean = true) 
     if (frameCount.value % skipRate === 0) {
       const driver = driverManager.getNativeDriver();
 
-      if (driver && driver.isEngineReady()) {
+      if (driver?.isEngineReady()) {
         // TIER 1: Use the C++ Entropy Clock (Master Sync)
         time.value = driver.entropyTime;
         // In Tier 1, entropy is baked into the time signal or managed natively.

@@ -1,28 +1,14 @@
-import { classroomGroupsAPI } from '@repo/core';
-import {
-  Box,
-  Button,
-  ButtonText,
-  Check,
-  Edit3,
-  Heading,
-  HStack,
-  hapticLight,
-  Icon,
-  Input,
-  InputField,
-  Layers,
-  Plus,
-  Pressable,
-  SanctuaryModal,
-  ScrollView,
-  Text,
-  Trash2,
-  User,
-  useLotusToast,
-  VStack,
-} from '@repo/ui';
-import React, { useEffect, useMemo, useState } from 'react';
+import { classroomGroupsAPI } from '@repo/core/api';
+
+import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
+import { useLotusToast } from '@repo/ui/hooks';
+import { Check, Edit3, Layers, Plus, Trash2, User } from '@repo/ui/icons';
+import { Box, Input } from '@repo/ui/primitives';
+import { HStack, Heading, Icon, InputField, Text, VStack } from '@repo/ui/primitives';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+import { hapticLight } from '@repo/ui/utils/haptics';
+
+import { useEffect, useState } from 'react';
 
 interface TeacherGroupsModalProps {
   classroomId: string;
@@ -73,7 +59,7 @@ export default function TeacherGroupsModal({
     if (isOpen) {
       loadGroups();
     }
-  }, [classroomId, isOpen]);
+  }, [isOpen, loadGroups]);
 
   const resetEditor = () => {
     setEditingGroupId(null);

@@ -5,6 +5,9 @@
   "types": "src/index.ts",
   "exports": {
     ".": "./src/index.ts",
+    "./api": "./src/api/index.ts",
+    "./hooks": "./src/hooks/index.ts",
+    "./screens": "./src/screens/index.ts",
     "./screens/AIAssistantScreen.web": "./src/screens/AIAssistantScreen.web.tsx",
     "./package.json": "./package.json"
   },

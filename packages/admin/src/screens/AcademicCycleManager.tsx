@@ -1,24 +1,16 @@
-import { type AcademicCycle, api, coreRuntime } from '@repo/core';
-import {
-  Box,
-  Button,
-  ButtonText,
-  GlobalHeader,
-  HStack,
-  hapticLight,
-  hapticSuccess,
-  Icon,
-  Input,
-  InputField,
-  Pressable,
-  ScrollView,
-  SkeletonCard,
-  Text,
-  useToast,
-  VStack,
-} from '@repo/ui';
+import { type AcademicCycle, coreRuntime } from '@repo/core';
+import { api } from '@repo/core/api';
+
+import GlobalHeader from '@repo/ui/components/GlobalHeader';
+import { Box, Button, Input } from '@repo/ui/primitives';
+import { ButtonText, HStack, Icon, InputField, Text, VStack } from '@repo/ui/primitives';
+import { useToast } from '@repo/ui/providers';
+import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+
 import { Calendar, CheckCircle2, Circle, Clock, Plus, Trash2 } from 'lucide-react-native';
-import React, { useEffect, useReducer } from 'react';
+import { useEffect, useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface AcademicCycleManagerProps {
@@ -94,7 +86,7 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
 
   useEffect(() => {
     fetchCycles();
-  }, [schoolId]);
+  }, [fetchCycles]);
 
   const handleCreate = async () => {
     const { name, startDate, endDate, isCurrent } = state.form;
@@ -122,7 +114,7 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
         message: 'Success: Academic cycle created',
         type: 'success',
       });
-    } catch (error) {
+    } catch (_error) {
       toast.showToast({
         message: 'Error: Failed to create academic cycle',
         type: 'error',
@@ -140,7 +132,7 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
         message: 'Cycle Updated: This cycle is now active',
         type: 'success',
       });
-    } catch (error) {
+    } catch (_error) {
       toast.showToast({
         message: 'Error: Failed to update cycle',
         type: 'error',
@@ -176,7 +168,7 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
         message: 'Deleted: Cycle removed successfully',
         type: 'success',
       });
-    } catch (error) {
+    } catch (_error) {
       toast.showToast({
         message: 'Error: Failed to delete cycle',
         type: 'error',
@@ -236,7 +228,9 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
                   <Input className="border-phase-border">
                     <InputField
                       value={state.form.name}
-                      onChangeText={(val) => dispatch({ type: 'UPDATE_FORM', field: 'name', value: val })}
+                      onChangeText={(val) =>
+                        dispatch({ type: 'UPDATE_FORM', field: 'name', value: val })
+                      }
                       placeholder="Cycle Name"
                       className="text-phaseText-primary font-bold"
                       accessibilityLabel="Cycle Name"
@@ -253,7 +247,9 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
                     <Input className="border-phase-border">
                       <InputField
                         value={state.form.startDate}
-                        onChangeText={(val) => dispatch({ type: 'UPDATE_FORM', field: 'startDate', value: val })}
+                        onChangeText={(val) =>
+                          dispatch({ type: 'UPDATE_FORM', field: 'startDate', value: val })
+                        }
                         placeholder="YYYY-MM-DD"
                         className="text-phaseText-primary font-bold"
                         accessibilityLabel="Start Date"
@@ -268,7 +264,9 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
                     <Input className="border-phase-border">
                       <InputField
                         value={state.form.endDate}
-                        onChangeText={(val) => dispatch({ type: 'UPDATE_FORM', field: 'endDate', value: val })}
+                        onChangeText={(val) =>
+                          dispatch({ type: 'UPDATE_FORM', field: 'endDate', value: val })
+                        }
                         placeholder="YYYY-MM-DD"
                         className="text-phaseText-primary font-bold"
                         accessibilityLabel="End Date"
@@ -280,7 +278,13 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
 
                 <HStack className="gap-3 items-center">
                   <Pressable
-                    onPress={() => dispatch({ type: 'UPDATE_FORM', field: 'isCurrent', value: !state.form.isCurrent })}
+                    onPress={() =>
+                      dispatch({
+                        type: 'UPDATE_FORM',
+                        field: 'isCurrent',
+                        value: !state.form.isCurrent,
+                      })
+                    }
                     accessibilityLabel="Toggle Active Status"
                     accessibilityHint="Determines if this cycle should be the globally active one"
                   >
@@ -297,7 +301,7 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
                   </Pressable>
                 </HStack>
 
-                 <Button
+                <Button
                   onPress={handleCreate}
                   isDisabled={state.isSaving}
                   className="bg-phase-interactive rounded-full h-12 shadow-sm mt-2"

@@ -1,24 +1,5 @@
-import {
-  Box,
-  Button,
-  ButtonText,
-  HStack,
-  Icon,
-  SanctuaryModal,
-  Select,
-  SelectBackdrop,
-  SelectContent,
-  SelectIcon,
-  SelectInput,
-  SelectItem,
-  SelectPortal,
-  SelectTrigger,
-  Spinner,
-  Text,
-  Textarea,
-  TextareaInput,
-  VStack,
-} from '@repo/ui';
+import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
+import { Box, Button, ButtonText, HStack, Icon, Select, SelectBackdrop, SelectContent, SelectIcon, SelectInput, SelectItem, SelectPortal, SelectTrigger, Spinner, Text, Textarea, TextareaInput, VStack } from '@repo/ui/primitives';
 import {
   AlertTriangle,
   CheckCircle2,

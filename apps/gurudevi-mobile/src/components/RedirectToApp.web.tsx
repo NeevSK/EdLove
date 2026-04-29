@@ -1,5 +1,9 @@
-import { identityAPI } from '@repo/core';
-import { Box, Button, ButtonText, hapticLight, Text, VStack } from '@repo/ui';
+import { identityAPI } from '@repo/core/api';
+
+import { Box, Button } from '@repo/ui/primitives';
+import { ButtonText, Text, VStack } from '@repo/ui/primitives';
+import { hapticLight } from '@repo/ui/utils/haptics';
+
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 

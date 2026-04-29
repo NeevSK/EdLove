@@ -1,17 +1,11 @@
 import { marksToGPA } from '@repo/core';
-import {
-  Card,
-  HStack,
-  Input,
-  InputField,
-  Pressable,
-  ScrollView,
-  Text,
-  Theme,
-  View,
-  VStack,
-} from '@repo/ui';
-import React, { useCallback, useMemo, useState } from 'react';
+import { Card } from '@repo/ui/components/SanctuaryCard';
+import { Input } from '@repo/ui/primitives';
+import { HStack, InputField, Text, VStack } from '@repo/ui/primitives';
+import { Pressable, ScrollView, View } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme';
+
+import { useCallback, useMemo, useState } from 'react';
 import { StyleSheet } from 'react-native';
 
 interface AnalyticsEngineProps {
@@ -102,7 +96,7 @@ export function AnalyticsEngine({
 
     // In real app, this would save to file or share
     console.log('Exporting analytics:', exportData);
-  }, [analytics, title]);
+  }, [analytics, title, data]);
 
   const filteredData = useMemo(() => {
     if (selectedMetric === 'all') return data;
@@ -234,7 +228,7 @@ export function AnalyticsEngine({
       {/* Data Visualization */}
       <ScrollView style={styles.dataContainer}>
         <VStack space="md">
-          {filteredData.map((item, index) => (
+          {filteredData.map((item, _index) => (
             <View key={item.id} style={styles.dataItem}>
               <HStack className="justify-between">
                 <VStack className="flex-1">

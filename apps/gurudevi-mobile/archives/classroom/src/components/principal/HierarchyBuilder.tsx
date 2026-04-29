@@ -12,7 +12,9 @@
  * Mission 04: Principal's Office
  */
 
-import { api, type Grade, type Section } from '@repo/core';
+import type { Grade, Section } from '@repo/core';
+import { api } from '@repo/core/api';
+
 import {
   Box,
   Button,
@@ -27,13 +29,14 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
-  ScrollView,
   Spinner,
   Text,
-  Theme,
   useThemedColors,
   VStack,
 } from '@repo/ui';
+import { ScrollView } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme';
+
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 

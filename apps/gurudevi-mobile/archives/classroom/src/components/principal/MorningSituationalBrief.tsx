@@ -8,12 +8,13 @@
  *  - Pending leave approvals badge
  */
 
-import {
-  type StaffPresenceSummary,
-  type StudentAttendancePulse,
-  staffManagementAPI,
-} from '@repo/core';
-import { Box, HStack, SkeletonCard, Text, Theme, useThemedColors, VStack } from '@repo/ui';
+import type { StaffPresenceSummary, StudentAttendancePulse } from '@repo/core';
+import { staffManagementAPI } from '@repo/core/api';
+
+import { Box, HStack, Text, useThemedColors, VStack } from '@repo/ui';
+import { SkeletonCard } from '@repo/ui/components';
+import { Theme } from '@repo/ui/theme';
+
 import { useEffect, useState } from 'react';
 import { TouchableOpacity } from 'react-native';
 

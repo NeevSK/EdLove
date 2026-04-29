@@ -20,30 +20,14 @@ import {
   useGlobalUsersQuery,
   usePermissions,
   useSentinelGovernanceQuery,
-  useStore,
-  useTemporalStore,
 } from '@repo/core';
-import {
-  Activity,
-  ArrowUpRight,
-  Building,
-  CloudRain,
-  Cloudy,
-  ExternalLink,
-  FounderGlow,
-  Globe,
-  Icon as SanctuaryIcon,
-  LayoutGrid,
-  Plus,
-  Search,
-  Shield,
-  SkeletonCard,
-  Sun,
-  TemporalNavigator,
-  TrendingUp,
-  Users,
-  Zap,
-} from '@repo/ui';
+import { useStore, useTemporalStore } from '@repo/core/logic';
+
+import { FounderGlow } from '@repo/ui/components/FounderGlow';
+import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
+import { TemporalNavigator } from '@repo/ui/components/TemporalNavigator';
+import { Activity, ArrowUpRight, Building, CloudRain, Cloudy, ExternalLink, Globe, LayoutGrid, Plus, Search, Shield, Sun, TrendingUp, Users, Zap } from '@repo/ui/icons';
+import { Icon as SanctuaryIcon } from '@repo/ui/primitives';
 
 import { useState } from 'react';
 import { GlobalCreateModal } from '../components';
@@ -55,7 +39,7 @@ export default function FounderDashboardWeb() {
   const { ability } = usePermissions();
   // Use user from useStore to get the full user object with full_name, etc.
   const user = useStore((state) => state.user);
-  const isPastView = useTemporalStore(s => s.isPastView);
+  const isPastView = useTemporalStore((s) => s.isPastView);
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');

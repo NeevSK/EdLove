@@ -1,15 +1,12 @@
 import type { BaseResource } from '@repo/core';
 import { formatDuration, formatFileSize } from '@repo/core';
-import {
-  Box,
-  HStack,
-  SanctuaryButton,
-  SanctuaryCard,
-  Text,
-  Theme,
-  useTheme,
-  VStack,
-} from '@repo/ui';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Text, VStack } from '@repo/ui/primitives';
+import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
+import { SanctuaryCard } from '@repo/ui/components/SanctuaryCard';
+import { useTheme } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme';
+
 import {
   ArrowLeftRight,
   BarChart2,
@@ -112,7 +109,7 @@ export function ResourceRow({
   onGenerateQuiz,
   onGenerateGraphic,
 }: ResourceRowProps) {
-  const theme = useTheme();
+  const _theme = useTheme();
   const displayType = resolveResourceDisplayType(resource.type || '');
   const config = RESOURCE_TYPE_CONFIG[displayType];
   const Icon = config.icon;

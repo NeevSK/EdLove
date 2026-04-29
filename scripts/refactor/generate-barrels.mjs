@@ -76,9 +76,9 @@ function generateScreensBarrel(packagePath) {
       const importName = cleanName;
       const exportName = cleanName;
 
-      if (file.startsWith(cleanName + '.web')) {
+      if (file.startsWith(`${cleanName}.web`)) {
         imports.push(`import ${importName}Web from './${cleanName}.web';`);
-        exports.push(exportName + 'Web');
+        exports.push(`${exportName}Web`);
       } else if (files.some((f) => f === `${cleanName}.web.tsx`)) {
       } else {
         imports.push(`import ${importName} from './${cleanName}';`);
@@ -89,9 +89,9 @@ function generateScreensBarrel(packagePath) {
       const importName = cleanName;
       const exportName = cleanName;
 
-      if (file.startsWith(cleanName + '.web')) {
+      if (file.startsWith(`${cleanName}.web`)) {
         imports.push(`import ${importName}Web from './${cleanName}.web';`);
-        exports.push(exportName + 'Web');
+        exports.push(`${exportName}Web`);
       } else if (files.some((f) => f === `${cleanName}.web.tsx`)) {
       } else {
         imports.push(`import ${importName} from './${cleanName}';`);

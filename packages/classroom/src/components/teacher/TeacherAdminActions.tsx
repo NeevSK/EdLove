@@ -1,19 +1,9 @@
-import {
-  BookOpen,
-  Box,
-  ClipboardList,
-  Database,
-  Heading,
-  HStack,
-  Icon,
-  type LucideIcon,
-  Pressable,
-  Settings,
-  Shield,
-  Text,
-  Users,
-  VStack,
-} from '@repo/ui';
+import { BookOpen, ClipboardList, Database, Settings, Shield, Users } from '@repo/ui/icons';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Heading, Icon, Text, VStack } from '@repo/ui/primitives';
+import { LucideIcon } from '@repo/ui/icons';
+import { Pressable } from '@repo/ui/primitives';
+
 import type React from 'react';
 
 const ICON_MAP: Record<string, LucideIcon> = {

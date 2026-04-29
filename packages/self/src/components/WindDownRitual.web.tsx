@@ -6,7 +6,7 @@
  */
 
 import { CheckCircle2 } from 'lucide-react-native';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { saveWindDownRitual } from '../api/selfFeatureRepository';
 
 interface WindDownRitualProps {
@@ -141,7 +141,6 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
         </p>
         {current.hasInput && (
           <textarea
-            autoFocus
             value={values[current.id] ?? ''}
             onChange={(event) =>
               setValues((value) => ({ ...value, [current.id]: event.target.value }))

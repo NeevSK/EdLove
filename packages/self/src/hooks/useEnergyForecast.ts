@@ -1,4 +1,6 @@
-﻿import { SafeZustandStorage, useStore, useTemporalStore } from '@repo/core';
+﻿import { SafeZustandStorage } from '@repo/core';
+import { useStore, useTemporalStore } from '@repo/core/logic';
+
 import { useCallback, useEffect, useState } from 'react';
 import {
   fetchEnergyForecastsForView,
@@ -64,7 +66,7 @@ export function useEnergyForecast(userId?: string) {
   // Fetch on mount/online change
   useEffect(() => {
     refreshData();
-  }, [refreshData, isOnline]);
+  }, [refreshData]);
 
   return {
     forecasts,

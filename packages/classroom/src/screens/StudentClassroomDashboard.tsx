@@ -1,28 +1,18 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { type Assignment, api, type ClassroomStackParamList } from '@repo/core';
-import {
-  BookOpen as BookOpenIcon,
-  Box,
-  ClipboardCheck as ClipboardCheckIcon,
-  FileText as FileTextIcon,
-  GlobalHeader,
-  GraduationCap as GraduationCapIcon,
-  Heading,
-  HStack,
-  hapticLight,
-  Icon,
-  MessageSquare as MessageSquareIcon,
-  NotebookPen as NotebookPenIcon,
-  Pressable,
-  ScreenWrapper,
-  ScrollView,
-  SkeletonCard,
-  Text,
-  TrendingUp as TrendingUpIcon,
-  useBottomTabPadding,
-  VStack,
-} from '@repo/ui';
-import React, { useState } from 'react';
+import type { Assignment, ClassroomStackParamList } from '@repo/core';
+import { api } from '@repo/core/api';
+
+import GlobalHeader from '@repo/ui/components/GlobalHeader';
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { BookOpen as BookOpenIcon, ClipboardCheck as ClipboardCheckIcon, FileText as FileTextIcon, GraduationCap as GraduationCapIcon, MessageSquare as MessageSquareIcon, NotebookPen as NotebookPenIcon, TrendingUp as TrendingUpIcon } from '@repo/ui/icons';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Heading, Icon, Text, VStack } from '@repo/ui/primitives';
+import { useBottomTabPadding } from '@repo/ui/components/ScreenWrapper';
+import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+import { hapticLight } from '@repo/ui/utils/haptics';
+
+import { useState } from 'react';
 import {
   AttendanceView,
   ClassroomEchoSection,

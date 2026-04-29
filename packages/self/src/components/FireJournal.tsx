@@ -4,28 +4,21 @@
  */
 
 import { useNavigation } from '@react-navigation/native';
-import { usePermissions, useTemporalStore } from '@repo/core';
-import {
-  AnimatedView,
-  Box,
-  Button,
-  ButtonText,
-  Heading,
-  HStack,
-  hapticLight,
-  hapticMedium,
-  Icon,
-  Input,
-  InputField,
-  PositiveInvitation,
-  SkeletonCard,
-  Text,
-  VStack,
-} from '@repo/ui';
+import { usePermissions } from '@repo/core';
+import { useTemporalStore } from '@repo/core/logic';
+
+import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
+import { Box, Button, Input } from '@repo/ui/primitives';
+import { ButtonText, HStack, Heading, Icon, InputField, Text, VStack } from '@repo/ui/primitives';
+import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
+import { AnimatedView } from '@repo/ui/primitives';
+import { hapticLight, hapticMedium } from '@repo/ui/utils/haptics';
+
 import { CheckCircle, Flame, Mic } from 'lucide-react-native';
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import Animated, {
+import {
+  type AnimatedStyle,
   Easing,
   FadeIn,
   useAnimatedStyle,
@@ -84,7 +77,7 @@ export default function FireJournal({
     };
   }, []);
 
-  const containerStyle = useAnimatedStyle(() => ({
+  const containerStyle = useAnimatedStyle<AnimatedStyle<any>>(() => ({
     opacity: opacity.value,
     transform: [
       { scale: scale.value },

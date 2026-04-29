@@ -5,8 +5,9 @@
  * boundary for persistence.
  * Metro resolves this over SleepTracker.tsx on the web platform.
  */
-import { useTemporalStore } from '@repo/core';
-import React, { useEffect, useState } from 'react';
+import { useTemporalStore } from '@repo/core/logic';
+
+import { useEffect, useState } from 'react';
 import { useSleepTracker } from '../hooks/useSleepTracker';
 
 interface SleepTrackerProps {
@@ -47,7 +48,7 @@ export default function SleepTracker({ userId }: SleepTrackerProps) {
     if (todayLog) {
       setQuality(todayLog.quality);
     }
-  }, [todayLog?.quality]);
+  }, [todayLog?.quality, todayLog]);
 
   const handleSave = async () => {
     if (!userId) return;

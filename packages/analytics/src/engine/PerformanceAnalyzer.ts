@@ -1,9 +1,4 @@
-import {
-  type ClassAnalytics,
-  PredictionRequest,
-  PredictionResult,
-  type StudentPerformanceMetrics,
-} from '../types/AnalyticsTypes';
+import type { ClassAnalytics, StudentPerformanceMetrics } from '../types/AnalyticsTypes';
 import { GPACalculator } from './GPACalculator';
 
 export interface DatabaseClient {
@@ -25,7 +20,7 @@ export class PerformanceAnalyzer {
   async analyzeStudentPerformance(
     studentId: string,
     classId: string,
-    timeRange?: { startDate: string; endDate: string },
+    _timeRange?: { startDate: string; endDate: string },
   ): Promise<StudentPerformanceMetrics> {
     // Fetch student data
     const { data: grades, error: gradesError } = await this.db
@@ -68,7 +63,7 @@ export class PerformanceAnalyzer {
 
     // Attendance impact
     const attendanceData = attendance || [];
-    const attendanceRate =
+    const _attendanceRate =
       attendanceData.filter((a: any) => a.status === 'present').length / attendanceData.length;
     const attendanceImpact = this.calculateAttendanceCorrelation(grades || [], attendanceData);
 
@@ -180,9 +175,9 @@ export class PerformanceAnalyzer {
   }
 
   private async calculateClassRank(
-    studentId: string,
-    classId: string,
-    studentGPA: number,
+    _studentId: string,
+    _classId: string,
+    _studentGPA: number,
   ): Promise<{ rank: number; totalStudents: number }> {
     // This would need to be implemented based on your data structure
     // For now, return placeholder values
@@ -190,8 +185,8 @@ export class PerformanceAnalyzer {
   }
 
   private async calculateSubjectPerformance(
-    studentId: string,
-    classId: string,
+    _studentId: string,
+    _classId: string,
   ): Promise<{ [subject: string]: number }> {
     // This would need subject-specific data
     return { Math: 85, Science: 78, English: 92 };
@@ -226,12 +221,12 @@ export class PerformanceAnalyzer {
     return gpas;
   }
 
-  private async calculateClassAttendanceCorrelation(classId: string): Promise<number> {
+  private async calculateClassAttendanceCorrelation(_classId: string): Promise<number> {
     // Implementation would calculate correlation between attendance and grades across class
     return 0.75;
   }
 
-  private async calculateClassSubmissionCorrelation(classId: string): Promise<number> {
+  private async calculateClassSubmissionCorrelation(_classId: string): Promise<number> {
     // Implementation would calculate correlation between submission rates and grades
     return 0.82;
   }

@@ -1,22 +1,23 @@
-import { type AcademicCycle, api } from '@repo/core';
+import type { AcademicCycle } from '@repo/core';
+import { api } from '@repo/core/api';
+
 import {
   Box,
   Button,
   ButtonText,
   GlobalHeader,
   HStack,
-  hapticLight,
-  hapticSuccess,
   Input,
   InputField,
-  Pressable,
-  ScrollView,
-  SkeletonCard,
   Text,
-  Theme,
   useThemedColors,
   VStack,
 } from '@repo/ui';
+import { SkeletonCard } from '@repo/ui/components';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme';
+import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+
 import { Calendar, CheckCircle2, Circle, Clock, Plus, Trash2 } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';

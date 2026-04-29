@@ -1,4 +1,6 @@
-﻿import { SafeZustandStorage, useStore } from '@repo/core';
+﻿import { SafeZustandStorage } from '@repo/core';
+import { useStore } from '@repo/core/logic';
+
 import { useCallback, useEffect, useState } from 'react';
 import {
   createTomorrowPrepItem,
@@ -47,7 +49,7 @@ export function useTomorrowPrep(userId?: string) {
 
   useEffect(() => {
     refreshData();
-  }, [refreshData, isOnline]);
+  }, [refreshData]);
 
   const addPrepItem = useCallback(
     async (itemText: string, prepDate: string) => {

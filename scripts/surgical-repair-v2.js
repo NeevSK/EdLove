@@ -1,5 +1,5 @@
-﻿const fs = require('fs');
-const path = require('path');
+﻿const fs = require('node:fs');
+const path = require('node:path');
 
 function repairFile(filePath) {
   let content = fs.readFileSync(filePath, 'utf8');
@@ -8,9 +8,9 @@ function repairFile(filePath) {
   // 1. Fix broken object assignments: const obj: Type => { ... } -> const obj: Type = { ... }
   const objectRegex =
     /(\bconst\s+[a-zA-Z0-9_]+:\s*[a-zA-Z0-9_|[\]<> ,]+)\s*=>\s*(?=\n|\s*async|\s*[a-zA-Z0-9_]+\()/g;
-  content = content.replace(objectRegex, (match, g1) => {
+  content = content.replace(objectRegex, (_match, g1) => {
     changed = true;
-    return g1 + ' = {';
+    return `${g1} = {`;
   });
 
   // 2. Fix broken functional components: const Comp = (props) => ( => const Comp = (props) => (
@@ -23,7 +23,7 @@ function repairFile(filePath) {
 
   if (changed) {
     fs.writeFileSync(filePath, content);
-    console.log('Fixed: ' + filePath);
+    console.log(`Fixed: ${filePath}`);
   }
 }
 

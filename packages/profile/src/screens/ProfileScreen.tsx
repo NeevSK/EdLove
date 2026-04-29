@@ -1,27 +1,19 @@
-import { useAccountDeletion, usePermissions, useStore, useTracking } from '@repo/core';
-import {
-  Box,
-  Button,
-  ButtonText,
-  Center,
-  DeleteAccountModal,
-  DeviceAccountManager,
-  GlobalHeader,
-  Heading,
-  HStack,
-  hapticError,
-  hapticLight,
-  hapticSuccess,
-  Icon,
-  IdentityCard,
-  LogoutModal,
-  Pressable,
-  SanctuaryProgressBar,
-  ScreenWrapper,
-  Text,
-  useBottomTabPadding,
-  VStack,
-} from '@repo/ui';
+import { usePermissions } from '@repo/core';
+import { useAccountDeletion, useTracking } from '@repo/core/hooks';
+import { useStore } from '@repo/core/logic';
+
+import DeleteAccountModal from '@repo/ui/components/DeleteAccountModal';
+import DeviceAccountManager from '@repo/ui/components/DeviceAccountManager';
+import GlobalHeader from '@repo/ui/components/GlobalHeader';
+import IdentityCard from '@repo/ui/components/IdentityCard';
+import LogoutModal from '@repo/ui/components/LogoutModal';
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { Box, Button, ButtonText, Center, HStack, Heading, Icon, Text, VStack } from '@repo/ui/primitives';
+import { SanctuaryProgressBar } from '@repo/ui/components/SanctuaryProgressBar';
+import { useBottomTabPadding } from '@repo/ui/components/ScreenWrapper';
+import { Pressable } from '@repo/ui/primitives';
+import { hapticError, hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+
 import {
   Edit3,
   Eye,
@@ -34,7 +26,7 @@ import {
   Trash2,
   UserPlus,
 } from 'lucide-react-native';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Platform, RefreshControl, ScrollView, useWindowDimensions } from 'react-native';
 import Animated, {
@@ -253,7 +245,7 @@ export const ProfileScreen = () => {
 
   useEffect(() => {
     discoverFeature('section_profile');
-  }, []);
+  }, [discoverFeature]);
 
   const handleLogout = () => {
     hapticLight();
@@ -265,7 +257,7 @@ export const ProfileScreen = () => {
     try {
       await logout();
       setLogoutModalVisible(false);
-    } catch (error) {
+    } catch (_error) {
       hapticError();
     } finally {
       setLoggingOut(false);
@@ -282,7 +274,7 @@ export const ProfileScreen = () => {
       await deleteAccount();
       hapticSuccess();
       setDeleteModalVisible(false);
-    } catch (error) {
+    } catch (_error) {
       hapticError();
       if (Platform.OS === 'web') {
         showToast(t('profile.deleteFailedTitle'), 'error');

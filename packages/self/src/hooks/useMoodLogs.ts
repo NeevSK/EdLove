@@ -1,11 +1,9 @@
-﻿import {
-  authAPI,
-  GuestDataManager,
-  SafeZustandStorage,
-  useStore,
-  useTemporalStore,
-} from '@repo/core';
-import React, { useCallback, useEffect, useState } from 'react';
+﻿import { SafeZustandStorage } from '@repo/core';
+import { authAPI } from '@repo/core/api';
+import { useStore, useTemporalStore } from '@repo/core/logic';
+import { GuestDataManager } from '@repo/core/native';
+
+import { useCallback, useEffect, useState } from 'react';
 import {
   createMoodLog,
   fetchMoodHistoryForView,
@@ -104,7 +102,7 @@ export const useMoodLogs = (userId?: string) => {
 
   useEffect(() => {
     refreshData();
-  }, [refreshData, isOnline]);
+  }, [refreshData]);
 
   const addMoodLog = useCallback(
     async (mood: MoodLog['mood'], note?: string) => {

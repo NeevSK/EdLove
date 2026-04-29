@@ -12,7 +12,6 @@ try {
 
 if (typeof workbox !== 'undefined' && workbox && workbox.core) {
   const { skipWaiting, clientsClaim } = workbox.core;
-  const { precacheAndRoute } = workbox.precaching;
   const { registerRoute } = workbox.routing;
   const { StaleWhileRevalidate, CacheFirst } = workbox.strategies;
   const { ExpirationPlugin } = workbox.expiration;

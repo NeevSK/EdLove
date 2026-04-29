@@ -1,35 +1,30 @@
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { communityAPI } from '@repo/core/api';
 import {
-  type CommunityStackParamList,
-} from '@repo/core/types';
-import {
-  communityAPI,
-} from '@repo/core/api';
-import { usePermissions, setPendingGateAction } from '@repo/core/logic';
-import { useStore, useTemporalStore } from '@repo/core/store';
+  useAnnouncementsQuery,
+  useGroupsInfiniteQuery,
+  useManifestoHooks,
+  usePostsInfiniteQuery,
+} from '@repo/core/api/hooks';
 import { useTracking } from '@repo/core/hooks';
-import {
-  Box,
-  Heading,
-  HStack,
-  Icon,
-  Spinner,
-  Text,
-  VStack,
-  ScrollView,
-} from '@repo/ui/primitives';
-import {
-  GlobalHeader,
-  HorizontalChipRow,
-  PositiveInvitation,
-  SanctuaryButton,
-  SanctuaryFlashList,
-  ScreenWrapper,
-  useBottomTabPadding,
-} from '@repo/ui/components';
+import { setPendingGateAction, usePermissions } from '@repo/core/logic';
+import { useStore, useTemporalStore } from '@repo/core/store';
+import type {
+  CommunityPost,
+  CommunityStackParamList,
+  DirectConversation,
+  SanctuaryGroup,
+} from '@repo/core/types';
+import GlobalHeader from '@repo/ui/components/GlobalHeader';
+import { HorizontalChipRow } from '@repo/ui/components/HorizontalChipRow';
+import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
+import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
+import SanctuaryFlashList from '@repo/ui/components/SanctuaryFlashList';
+import ScreenWrapper, { useBottomTabPadding } from '@repo/ui/components/ScreenWrapper';
 import { useRegisterFAB } from '@repo/ui/context';
 import { Info, Plus } from '@repo/ui/icons';
+import { Box, Heading, HStack, Icon, ScrollView, Spinner, Text, VStack } from '@repo/ui/primitives';
 import React, { useEffect, useMemo, useState } from 'react';
 import { Platform } from 'react-native';
 import { CommentSheet } from '../components/CommentSheet';
@@ -38,10 +33,6 @@ import CreateGroupModal from '../components/CreateGroupModal';
 import CreatePostModal from '../components/CreatePostModal';
 import PostCard from '../components/PostCard';
 import SocialShieldModal from '../components/SocialShieldModal';
-import { useCommunity } from '../hooks/useCommunity';
-import { useCommunityGroups } from '../hooks/useCommunityGroups';
-import { useManifestos } from '../hooks/useManifestos';
-import type { AnnouncementWithAuthor, DirectConversation } from '../types';
 import AnnouncementsScreen from './AnnouncementsScreen';
 import {
   type CommunityWorkspaceMode,
@@ -65,7 +56,7 @@ export default function CommunityScreen() {
 
   const userId = user?.id ?? 'guest';
   const schoolId = user?.school_id ?? undefined;
-  const userAuthority = (user?.authority as any) ?? 'student';
+  const userAuthority = user?.authority ?? 'student';
 
   const canReadFeed = can('read', 'CommunityFeed');
   const canReadGroups = can('read', 'CommunityGroups');
@@ -93,21 +84,32 @@ export default function CommunityScreen() {
   const [showReportModal, setShowReportModal] = useState(false);
   const [conversations, setConversations] = useState<DirectConversation[]>([]);
   const [loadingMessages, setLoadingMessages] = useState(false);
-  const [announcementCount, setAnnouncementCount] = useState(0);
 
   const {
-    posts,
-    groups,
-    loading,
-    fetchPosts,
-    fetchGroups,
-    fetchNextPosts,
-    hasNextPosts,
-    isFetchingNextPosts,
-  } = useCommunity(selectedFilter !== 'all' ? selectedFilter : undefined);
+    data: postsData,
+    isLoading: loadingPosts,
+    refetch: fetchPosts,
+    fetchNextPage: fetchNextPosts,
+    hasNextPage: hasNextPosts,
+    isFetchingNextPage: isFetchingNextPosts,
+  } = usePostsInfiniteQuery(selectedFilter !== 'all' ? selectedFilter : 'all');
 
-  const { sanctuaryGroups = [] } = useCommunityGroups({ schoolId });
-  const { manifestos = [] } = useManifestos(schoolId || 'default', user?.id ?? undefined);
+  const posts = useMemo(() => (postsData?.pages?.flat() as CommunityPost[]) ?? [], [postsData]);
+
+  const {
+    data: groupsData,
+    isLoading: loadingGroups,
+    refetch: fetchGroups,
+  } = useGroupsInfiniteQuery({ schoolId });
+
+  const groups = useMemo(() => (groupsData?.pages?.flat() as SanctuaryGroup[]) ?? [], [groupsData]);
+
+  const { sanctuaryGroups = [] } = { sanctuaryGroups: groups }; // Compatibility alias
+  const { manifestos = [] } = useManifestoHooks(schoolId || 'default', user?.id ?? undefined);
+  const { data: announcements = [] } = useAnnouncementsQuery(schoolId || '');
+  const announcementCount = announcements?.length ?? 0;
+
+  const loading = loadingPosts || loadingGroups;
 
   const pulse = useMemo(
     () => deriveCommunityPulse(posts, groups, manifestos, conversations),
@@ -115,7 +117,7 @@ export default function CommunityScreen() {
   );
   const filters = useMemo(() => getCommunityFilterOptions(groups), [groups]);
   const workspaceSlots = useMemo(
-    () => mapCommunitySurfaceSlots(Platform.OS as any, userId),
+    () => mapCommunitySurfaceSlots(Platform.OS as 'web' | 'android' | 'ios', userId),
     [userId],
   );
   const modeChips = useMemo(
@@ -158,7 +160,6 @@ export default function CommunityScreen() {
     }
 
     let cancelled = false;
-    setLoadingMessages(true);
     communityAPI
       .getDirectConversations()
       .then((data) => {
@@ -180,71 +181,40 @@ export default function CommunityScreen() {
     };
   }, [activeMode, isMessagingEnabled]);
 
-  useEffect(() => {
-    if (!canReadAnnouncements || activeMode !== 'announcements' || !schoolId) {
-      return;
-    }
-
-    let cancelled = false;
-    communityAPI
-      .getAnnouncements(schoolId)
-      .then((data) => {
-        if (!cancelled) {
-          setAnnouncementCount((data as AnnouncementWithAuthor[]).length);
-        }
-      })
-      .catch((error) => {
-        console.error('[CommunityScreen] Failed to load announcements', error);
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [activeMode, canReadAnnouncements, schoolId]);
-
-  if (!isCommunityEnabled) {
-    return (
-      <ScreenWrapper noTopInset={true}>
-        <GlobalHeader title="Community" subtitle="Currently Expanding" />
-        <Box className="flex-1 items-center justify-center p-8 bg-phase-canvas">
-          <VStack space="xl" className="items-center">
-            <Box className="w-16 h-16 bg-phase-warning/10 rounded-full items-center justify-center">
-              <Icon as={Info} size="xl" className="text-phase-warning" />
-            </Box>
-            <Heading className="text-center">Sanctuary Maintenance</Heading>
-            <Text className="text-center text-phase-text-secondary">
-              The community spaces are currently undergoing a structural expansion. Please check
-              back soon for a calmer, more resonant experience.
-            </Text>
-          </VStack>
-        </Box>
-      </ScreenWrapper>
-    );
-  }
-
-  const handleModeChange = React.useCallback((value: string) => {
-    setActiveMode(value as CommunityWorkspaceMode);
-  }, []);
+  const handleModeChange = React.useCallback(
+    (value: string) => {
+      setActiveMode(value as CommunityWorkspaceMode);
+      if (value === 'messages' && isMessagingEnabled) {
+        setLoadingMessages(true);
+      }
+    },
+    [isMessagingEnabled],
+  );
 
   const handleFilterChange = React.useCallback((value: string) => {
     setSelectedFilter(value);
-    fetchPosts(value === 'all' ? undefined : value);
-  }, [fetchPosts]);
+  }, []);
 
-  const handlePostPress = React.useCallback((groupId?: string, groupName?: string) => {
-    if (groupId) {
-      navigation.navigate('GroupDetails', {
-        groupId,
-        groupName: groupName ?? 'Circle',
-      });
-    }
-  }, [navigation]);
+  const handlePostPress = React.useCallback(
+    (groupId?: string, groupName?: string) => {
+      if (groupId) {
+        navigation.navigate('GroupDetails', {
+          groupId,
+          groupName: groupName ?? 'Circle',
+        });
+      }
+    },
+    [navigation],
+  );
 
-  const handlePostLike = React.useCallback((postId: string) => {
-    if (userId !== 'guest') {
-      communityAPI.togglePostReaction(postId, userId).catch(console.error);
-    }
-  }, [userId]);
+  const handlePostLike = React.useCallback(
+    (postId: string) => {
+      if (userId !== 'guest') {
+        communityAPI.togglePostReaction(postId, userId).catch(console.error);
+      }
+    },
+    [userId],
+  );
 
   const handlePostComment = React.useCallback((id: string, authorId?: string, type?: string) => {
     setCommentPostId(id);
@@ -252,21 +222,27 @@ export default function CommunityScreen() {
     setCommentPostType(type);
   }, []);
 
-  const handlePostReport = React.useCallback((id: string, authorId?: string, authorName?: string) => {
-    setReportPostId(id);
-    setReportTargetUserId(authorId);
-    setReportTargetUserName(authorName);
-    setShowReportModal(true);
-  }, []);
+  const handlePostReport = React.useCallback(
+    (id: string, authorId?: string, authorName?: string) => {
+      setReportPostId(id);
+      setReportTargetUserId(authorId);
+      setReportTargetUserName(authorName);
+      setShowReportModal(true);
+    },
+    [],
+  );
 
-  const handleAuthorPress = React.useCallback((authorId?: string, isAnonymous?: boolean) => {
-    if (authorId && !isAnonymous) {
-      navigation.navigate('PublicProfile', {
-        id: authorId,
-        type: 'user',
-      });
-    }
-  }, [navigation]);
+  const handleAuthorPress = React.useCallback(
+    (authorId?: string, isAnonymous?: boolean) => {
+      if (authorId && !isAnonymous) {
+        navigation.navigate('PublicProfile', {
+          id: authorId,
+          type: 'user',
+        });
+      }
+    },
+    [navigation],
+  );
 
   const handleOpenCircle = React.useCallback(() => {
     const mainGroup = sanctuaryGroups[0];
@@ -278,13 +254,16 @@ export default function CommunityScreen() {
     }
   }, [navigation, sanctuaryGroups]);
 
-  const handleNavigateToGroup = React.useCallback((groupId: string) => {
-    const selected = [...sanctuaryGroups].find((group) => group.id === groupId);
-    navigation.navigate('GroupDetails', {
-      groupId,
-      groupName: selected?.name,
-    });
-  }, [navigation, sanctuaryGroups]);
+  const handleNavigateToGroup = React.useCallback(
+    (groupId: string) => {
+      const selected = sanctuaryGroups.find((group) => group.id === groupId);
+      navigation.navigate('GroupDetails', {
+        groupId,
+        groupName: selected?.name,
+      });
+    },
+    [navigation, sanctuaryGroups],
+  );
 
   const openGuestUpgrade = React.useCallback(() => {
     setPendingGateAction({ kind: 'community_open_create_group', createdAt: Date.now() }).catch(
@@ -322,18 +301,41 @@ export default function CommunityScreen() {
     }
   }, [canCreateGroup, openGuestUpgrade]);
 
-  const renderModeGate = React.useCallback((title: string, description: string, actionLabel = 'Create account') => (
-    <Box className="px-4 py-8">
-      <PositiveInvitation
-        title={title}
-        description={description}
-        type="guest"
-        context="community"
-        actionLabel={actionLabel}
-        onAction={openGuestUpgrade}
-      />
-    </Box>
-  ), [openGuestUpgrade]);
+  const renderModeGate = React.useCallback(
+    (title: string, description: string, actionLabel = 'Create account') => (
+      <Box className="px-4 py-8">
+        <PositiveInvitation
+          title={title}
+          description={description}
+          type="guest"
+          context="community"
+          actionLabel={actionLabel}
+          onAction={openGuestUpgrade}
+        />
+      </Box>
+    ),
+    [openGuestUpgrade],
+  );
+
+  if (!isCommunityEnabled) {
+    return (
+      <ScreenWrapper noTopInset={true}>
+        <GlobalHeader title="Community" subtitle="Currently Expanding" />
+        <Box className="flex-1 items-center justify-center p-8 bg-phase-canvas">
+          <VStack space="xl" className="items-center">
+            <Box className="w-16 h-16 bg-phase-warning/10 rounded-full items-center justify-center">
+              <Icon as={Info} size="xl" className="text-phase-warning" />
+            </Box>
+            <Heading className="text-center">Sanctuary Maintenance</Heading>
+            <Text className="text-center text-phase-text-secondary">
+              The community spaces are currently undergoing a structural expansion. Please check
+              back soon for a calmer, more resonant experience.
+            </Text>
+          </VStack>
+        </Box>
+      </ScreenWrapper>
+    );
+  }
 
   const renderHero = () => (
     <Box className="mx-4 mt-3 px-5 py-6 rounded-3xl bg-phase-surface border border-border">
@@ -451,9 +453,9 @@ export default function CommunityScreen() {
     return (
       <SanctuaryFlashList
         data={posts}
-        keyExtractor={(item: any) => item.id}
+        keyExtractor={(item) => item.id}
         estimatedItemSize={260}
-        renderItem={({ item }: { item: any }) => (
+        renderItem={({ item }: { item: CommunityPost }) => (
           <Box className="px-4 pb-4">
             <PostCard
               post={item}
@@ -530,17 +532,10 @@ export default function CommunityScreen() {
             description="Joined circles stay close, while discoverable circles remain one step away."
           >
             <GroupsScreen
-              userId={user?.id ?? undefined}
+              userId={user?.id}
               schoolId={schoolId}
-              onCreatePost={() => setShowCreatePost(true)}
               onCreateGroup={() => setShowCreateGroup(true)}
-              onNavigateToGroup={(groupId: string) => {
-                const selected = [...sanctuaryGroups].find((group) => group.id === groupId);
-                navigation.navigate('GroupDetails', {
-                  groupId,
-                  groupName: selected?.name,
-                });
-              }}
+              onNavigateToGroup={handleNavigateToGroup}
             />
           </SectionCard>
         </Box>
@@ -620,10 +615,7 @@ export default function CommunityScreen() {
           groupId={selectedFilter !== 'all' ? selectedFilter : undefined}
         />
 
-        <CreateGroupModal
-          isOpen={showCreateGroup && !isPastView}
-          onClose={handleCloseGroupModal}
-        />
+        <CreateGroupModal isOpen={showCreateGroup && !isPastView} onClose={handleCloseGroupModal} />
 
         <SocialShieldModal
           isOpen={showReportModal}

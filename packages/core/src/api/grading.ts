@@ -5,6 +5,7 @@ import {
   type GradePublicationSnapshot,
   selectLatestPublishedSnapshots,
 } from '../lib/gradePublication';
+import { emitSchoolGradePublishedFromBridge } from '../logic/events/runtimeBridge';
 import type {
   ClassroomGradingSettings,
   Grade,
@@ -195,13 +196,24 @@ export const gradingAPI = {
       },
     });
 
-    return {
+    const publishedGrade: Grade = {
       ...grade,
       publication_state: 'published',
       published_at: publishedAt,
       published_by: audit?.actorId ?? null,
       publication_action: 'grade_published',
     };
+
+    void emitSchoolGradePublishedFromBridge({
+      ...publishedGrade,
+      correlationId: grade.id,
+      causationId: grade.id,
+      tenantId: undefined,
+    }).catch((error) => {
+      console.warn('Failed to emit school/grade.published event', error);
+    });
+
+    return publishedGrade;
   },
 
   /**

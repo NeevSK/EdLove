@@ -1,22 +1,16 @@
 import { useNavigation } from '@react-navigation/native';
 import { communityAPI } from '@repo/community';
-import { schoolAPI, useSchoolCreation, useStore } from '@repo/core';
+import { schoolAPI } from '@repo/core/api';
+import { useSchoolCreation } from '@repo/core/hooks';
+import { useStore } from '@repo/core/logic';
+
 import { QRBuilder, QRCodeGenerator } from '@repo/scanner-kit';
-import {
-  Box,
-  Check,
-  GlobalHeader,
-  HStack,
-  Heading,
-  Icon,
-  SanctuaryButton,
-  ScreenWrapper,
-  ScrollView,
-  Spinner,
-  StepIndicator,
-  Text,
-  VStack,
-} from '@repo/ui';
+import GlobalHeader from '@repo/ui/components/GlobalHeader';
+import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import StepIndicator from '@repo/ui/components/StepIndicator';
+import { Check } from '@repo/ui/icons';
+import { Box, Heading, HStack, Icon, ScrollView, Spinner, Text, VStack } from '@repo/ui/primitives';
 
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -38,9 +32,9 @@ const STEP_LABELS = [
 export default function SchoolCreationScreen() {
   const { t } = useTranslation();
   const navigation = useNavigation<any>();
-  const user = useStore(s => s.user);
-  const setUser = useStore(s => s.setUser);
-  const setDemoMode = useStore(s => s.setDemoMode);
+  const user = useStore((s) => s.user);
+  const setUser = useStore((s) => s.setUser);
+  const setDemoMode = useStore((s) => s.setDemoMode);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successData, setSuccessData] = useState<{
     schoolId: string;

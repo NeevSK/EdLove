@@ -4,8 +4,12 @@
  * Standardized to Zero-Legacy: purged corrupted StyleSheet and migrated to NativeWind v4.
  */
 
-import { useTemporalStore } from '@repo/core';
-import { Box, Heading, HStack, ScrollView, Spinner, Text, VStack } from '@repo/ui';
+import { useTemporalStore } from '@repo/core/logic';
+
+import { Box } from '@repo/ui/primitives';
+import { Heading, Spinner, Text, VStack } from '@repo/ui/primitives';
+import { ScrollView } from '@repo/ui/primitives';
+
 import type React from 'react';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { useJourneyData } from '../hooks/useJourneyData';

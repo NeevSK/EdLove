@@ -5,27 +5,19 @@
  */
 
 import { useNavigation } from '@react-navigation/native';
-import { supabase, usePermissions, useSafeMutation } from '@repo/core';
-import {
-  Box,
-  Button,
-  ButtonText,
-  Heading,
-  HStack,
-  Icon,
-  Input,
-  InputField,
-  Pressable,
-  ScrollView,
-  Text,
-  VStack,
-} from '@repo/ui';
+import { usePermissions } from '@repo/core';
+import { useSafeMutation } from '@repo/core/hooks';
+import { supabase } from '@repo/core/native';
+
+import { Box, Button, Input } from '@repo/ui/primitives';
+import { ButtonText, HStack, Heading, Icon, InputField, Text, VStack } from '@repo/ui/primitives';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+
 import { ChevronRight, Leaf, Plus, Send, Sprout } from 'lucide-react-native';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Animated, { FadeIn, FadeInDown, Layout } from 'react-native-reanimated';
 import { useWisdom } from '../hooks/useWisdom';
-import type { WisdomNote } from '../types/Wellbeing';
 
 interface WisdomSeedsProps {
   userId?: string;

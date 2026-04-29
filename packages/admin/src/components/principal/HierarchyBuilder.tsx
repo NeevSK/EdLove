@@ -1,33 +1,13 @@
-import { api, type SchoolGrade, type Section } from '@repo/core';
-import {
-  ArrowLeft,
-  Box,
-  Button,
-  ButtonIcon,
-  ButtonText,
-  GraduationCap,
-  HStack,
-  Heading,
-  Icon,
-  Input,
-  InputField,
-  Modal,
-  ModalBackdrop,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  Plus,
-  Pressable,
-  School as SchoolIcon,
-  ScrollView,
-  Spinner,
-  Text,
-  VStack,
-  hapticLight,
-} from '@repo/ui';
+import type { SchoolGrade, Section } from '@repo/core';
+import { api } from '@repo/core/api';
 
-import { useReducer, useCallback, useEffect } from 'react';
+import { ArrowLeft, GraduationCap, Plus, School as SchoolIcon } from '@repo/ui/icons';
+import { Box, Button, Input } from '@repo/ui/primitives';
+import { ButtonIcon, ButtonText, HStack, Heading, Icon, InputField, Modal, ModalBackdrop, ModalBody, ModalContent, ModalFooter, ModalHeader, Spinner, Text, VStack } from '@repo/ui/primitives';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+import { hapticLight } from '@repo/ui/utils/haptics';
+
+import { useCallback, useEffect, useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface HierarchyBuilderProps {
@@ -83,7 +63,11 @@ function reducer(state: State, action: Action): State {
     case 'SET_LOADING':
       return { ...state, isLoading: action.payload };
     case 'TOGGLE_ADD_SECTION':
-      return { ...state, showAddSection: action.payload, error: action.payload ? state.error : null };
+      return {
+        ...state,
+        showAddSection: action.payload,
+        error: action.payload ? state.error : null,
+      };
     case 'TOGGLE_ADD_GRADE':
       return {
         ...state,
@@ -176,7 +160,8 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
     if (Number.isNaN(gradeNum) || gradeNum < 1 || gradeNum > 13) {
       dispatch({
         type: 'SET_ERROR',
-        payload: t('principal.hierarchy.errorGradeLimit') || 'Grade number must be between 1 and 13',
+        payload:
+          t('principal.hierarchy.errorGradeLimit') || 'Grade number must be between 1 and 13',
       });
       return;
     }

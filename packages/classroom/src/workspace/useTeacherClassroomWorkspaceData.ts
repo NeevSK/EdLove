@@ -1,4 +1,6 @@
-import { api, useTeacherClassroom } from '@repo/core';
+import { api } from '@repo/core/api';
+import { useTeacherClassroom } from '@repo/core/hooks';
+
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 type TeacherObservation = Awaited<

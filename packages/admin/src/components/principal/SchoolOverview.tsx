@@ -1,13 +1,7 @@
 import type { School } from '@repo/core';
-import {
-  Box,
-  Building2,
-  HStack,
-  Icon,
-  MapPin,
-  Text,
-  VStack,
-} from '@repo/ui';
+import { Building2, MapPin } from '@repo/ui/icons';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Icon, Text, VStack } from '@repo/ui/primitives';
 
 interface SchoolOverviewProps {
   school: School;
