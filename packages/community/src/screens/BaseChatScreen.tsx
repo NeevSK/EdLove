@@ -8,28 +8,24 @@
 
 import { supabase } from '@repo/core/native';
 import { useStore } from '@repo/core/store';
+import { GlobalHeader, ScreenWrapper, UserAvatar } from '@repo/ui/components';
+import { MessageSquare, Send } from '@repo/ui/icons';
 import {
+  AnimatedView,
   Box,
   HStack,
+  Icon,
   InputField,
   Pressable,
   Spinner,
   Text,
   VStack,
-  Icon,
-  AnimatedView,
 } from '@repo/ui/primitives';
-import {
-  GlobalHeader,
-  ScreenWrapper,
-  UserAvatar,
-} from '@repo/ui/components';
-import { FlatList } from 'react-native';
-import { FadeInDown } from 'react-native-reanimated';
-import { MessageSquare, Send } from '@repo/ui/icons';
 import type React from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { FlatList } from 'react-native';
+import { FadeInDown } from 'react-native-reanimated';
 
 export interface ChatMessage {
   id: string;

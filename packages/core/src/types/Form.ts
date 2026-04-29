@@ -1,14 +1,27 @@
 import type { ValidationResult } from '../logic/utils/validators';
 
-export type FieldType = 'text' | 'email' | 'password' | 'select' | 'textarea' | 'number';
+export type FieldType =
+  | 'text'
+  | 'email'
+  | 'password'
+  | 'select'
+  | 'textarea'
+  | 'number'
+  | 'heading'
+  | 'divider'
+  | 'slider'
+  | 'likert';
 
 export interface FormFieldConfig<T = any> {
-  label: string;
+  label?: string;
   type: FieldType;
   placeholder?: string;
   required?: boolean;
   defaultValue?: T;
   options?: { label: string; value: string }[];
+  min?: number;
+  max?: number;
+  scaleType?: 'emoji' | 'numeric';
   validators?: Array<(value: any) => ValidationResult>;
 }
 

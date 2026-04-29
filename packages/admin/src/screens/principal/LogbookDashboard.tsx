@@ -6,8 +6,11 @@ import {
   ButtonIcon,
   ButtonText,
   Footprints,
-  HStack,
   Heading,
+  HStack,
+  hapticLight,
+  hapticMedium,
+  hapticSuccess,
   Icon,
   LotusDropdown,
   Medal,
@@ -20,9 +23,6 @@ import {
   Textarea,
   TextareaInput,
   VStack,
-  hapticLight,
-  hapticMedium,
-  hapticSuccess,
 } from '@repo/ui';
 import { formatDistanceToNow } from 'date-fns';
 

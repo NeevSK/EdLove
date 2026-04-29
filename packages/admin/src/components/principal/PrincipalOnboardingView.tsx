@@ -4,14 +4,14 @@ import {
   ButtonText,
   Compass,
   DoorOpen,
-  HStack,
   Heading,
+  HStack,
+  hapticLight,
   Icon,
   School,
   Text,
   Users,
   VStack,
-  hapticLight,
 } from '@repo/ui';
 
 interface PrincipalOnboardingViewProps {

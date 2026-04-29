@@ -11,25 +11,12 @@ import { useStore } from '@repo/core/store';
 import type { CommunityStackParamList } from '@repo/core/types';
 import { QRBuilder, QRCodeGenerator } from '@repo/scanner-kit';
 import {
-  Box,
-  Heading as UIHeading,
-  HStack,
-  Image,
-  Pressable,
-  Spinner,
-  Text,
-  VStack,
-  Icon,
-  AnimatedView,
-} from '@repo/ui/primitives';
-import {
   SanctuaryButton,
   SanctuaryCard,
   SanctuaryFlashList,
   SanctuaryModal,
   ScreenWrapper,
 } from '@repo/ui/components';
-import { FadeInDown } from 'react-native-reanimated';
 import { useLotusToast } from '@repo/ui/hooks';
 import {
   ChevronLeft,
@@ -42,8 +29,21 @@ import {
   Users,
   X,
 } from '@repo/ui/icons';
+import {
+  AnimatedView,
+  Box,
+  HStack,
+  Icon,
+  Image,
+  Pressable,
+  Spinner,
+  Text,
+  Heading as UIHeading,
+  VStack,
+} from '@repo/ui/primitives';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { FadeInDown } from 'react-native-reanimated';
 import { communityAPI } from '../api/community';
 import { CommentSheet } from '../components/CommentSheet';
 import GroupMemberManagement from '../components/GroupMemberManagement';
@@ -126,11 +126,14 @@ export default function GroupDetailsScreen() {
     navigation.navigate('GroupChat', { groupId, groupName: group?.name });
   }, [navigation, groupId, group?.name]);
 
-  const handlePostLike = React.useCallback((postId: string) => {
-    if (user?.id) {
-      communityAPI.togglePostReaction(postId, user.id).catch(console.error);
-    }
-  }, [user?.id]);
+  const handlePostLike = React.useCallback(
+    (postId: string) => {
+      if (user?.id) {
+        communityAPI.togglePostReaction(postId, user.id).catch(console.error);
+      }
+    },
+    [user?.id],
+  );
 
   const handlePostComment = React.useCallback((id: string, authorId?: string, type?: string) => {
     setCommentPostId(id);
@@ -387,7 +390,9 @@ export default function GroupDetailsScreen() {
                   onPress={handlePostPressEmpty}
                   onLike={() => handlePostLike(item.id)}
                   onComment={() => handlePostComment(item.id, item.author_id, item.post_type)}
-                  onReport={flags.isSocialShieldEnabled ? () => handlePostReport(item.id) : undefined}
+                  onReport={
+                    flags.isSocialShieldEnabled ? () => handlePostReport(item.id) : undefined
+                  }
                 />
               </Box>
             </AnimatedView>

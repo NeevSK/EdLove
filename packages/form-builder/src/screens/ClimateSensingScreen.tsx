@@ -1,7 +1,7 @@
-import { FormManager } from '@repo/core/forms/form-manager';
+import { FormManager } from '@repo/core';
 import { Box, Center, SanctuaryButton, ScrollView, Text, View } from '@repo/ui';
 import { CheckCircle2, Share2 } from 'lucide-react-native';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   type ClimateSensingData,
   createClimateSensingSchema,
@@ -29,9 +29,10 @@ export const ClimateSensingScreen = ({
     await new Promise((resolve) => setTimeout(resolve, 1500));
 
     setIsFinished(true);
+    onCompleted?.();
   };
 
-  const manager = new FormManager(createClimateSensingSchema(handleSubmit));
+  const manager = useMemo(() => new FormManager(createClimateSensingSchema(handleSubmit)), []);
 
   if (isFinished) {
     return (
@@ -76,11 +77,7 @@ export const ClimateSensingScreen = ({
       </Box>
 
       <Box className="flex-1 px-6 -mt-8 bg-phase-canvas rounded-t-[40px] shadow-xl pt-10">
-        <NativeForm
-          manager={manager}
-          submitLabel="Broadcast Pulse"
-          onSuccess={() => setIsFinished(true)}
-        />
+        <NativeForm manager={manager} submitLabel="Broadcast Pulse" />
       </Box>
     </ScrollView>
   );

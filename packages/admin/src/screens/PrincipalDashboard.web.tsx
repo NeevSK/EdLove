@@ -159,8 +159,8 @@ export default function PrincipalDashboardWeb({
   const user = useAuthStore((state) => state.user) as User | null;
   const { isGuest } = useFeatureAccess();
   const { can } = usePermissions();
-  const viewDate = useTemporalStore(s => s.viewDate);
-  const isPastView = useTemporalStore(s => s.isPastView);
+  const viewDate = useTemporalStore((s) => s.viewDate);
+  const isPastView = useTemporalStore((s) => s.isPastView);
   const navigation = useNavigation<NavigationProp<any>>();
 
   const effectiveSchoolId = schoolId || user?.school_id || '';

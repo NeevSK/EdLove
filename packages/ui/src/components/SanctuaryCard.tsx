@@ -147,4 +147,4 @@ const SanctuaryCard: FC<SanctuaryCardProps> = ({
   return content;
 };
 
-export default SanctuaryCard;
+export { SanctuaryCard };

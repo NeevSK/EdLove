@@ -1,18 +1,9 @@
 import React from 'react';
 import { Animated } from 'react-native';
-import {
-  AnimatedView,
-  Box,
-  HStack,
-  Icon,
-  Pressable,
-  Spinner,
-  Text,
-  VStack,
-} from '../primitives';
-import { useTheme } from '../hooks';
+import { useTheme } from '../hooks/useTheme';
 import { Check, Clock, Lock } from '../icons';
-import { Theme } from '../index';
+import { Theme } from '../theme/Theme';
+import { AnimatedView, Box, HStack, Icon, Pressable, Spinner, Text, VStack } from '../primitives';
 
 export interface PollOption {
   id: string;
@@ -23,7 +14,7 @@ export interface PollData {
   options: PollOption[];
   allow_multiple?: boolean;
   is_anonymous?: boolean;
-  ends_at?: string;
+  ends_at?: string | null;
 }
 
 interface PollWidgetProps {
@@ -62,7 +53,7 @@ export function PollWidget({
   const [isExpired, setIsExpired] = React.useState(false);
 
   const progressAnims = React.useRef<Record<string, Animated.Value>>({});
-  
+
   // Initialize animated values for options
   React.useEffect(() => {
     options.forEach((opt) => {
@@ -166,7 +157,9 @@ export function PollWidget({
               <AnimatedView
                 style={{
                   position: 'absolute',
-                  left: 0, top: 0, bottom: 0,
+                  left: 0,
+                  top: 0,
+                  bottom: 0,
                   width: progressAnims.current[opt.id]!.interpolate({
                     inputRange: [0, 100],
                     outputRange: ['0%', '100%'],
@@ -213,7 +206,7 @@ export function PollWidget({
           {totalVotes} {totalVotes === 1 ? 'vote' : 'votes'}
         </Text>
         {hasVoted && !isExpired && onRefresh && (
-          <Pressable 
+          <Pressable
             onPress={onRefresh}
             accessibilityRole="button"
             accessibilityLabel="Change your vote"

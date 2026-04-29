@@ -78,13 +78,21 @@ import { updateWebPageTitle } from './src/utils/useWebPageTitle';
 
 // Lazy load PublicFormScreen as it's web-only and large
 const PublicFormScreen = React.lazy(() =>
-  import('@repo/form-builder').then((module) => ({ default: module.PublicFormScreenWeb })),
+  import('@repo/form-builder').then((module) => ({
+    default: module.PublicFormScreenWeb,
+  })),
 );
 
 import { sanctuarySaffron } from '@repo/ui';
+import {
+  dispatchQueuedMutationToInngest,
+  installMobileWorkflowEventBridge,
+} from './src/lib/inngestEvents';
 
 // Create a client
 const queryClient = new QueryClient();
+
+installMobileWorkflowEventBridge();
 
 // Root Stack for Modals
 const RootStack = createNativeStackNavigator();
@@ -444,7 +452,11 @@ function AppContent({
   isProfileLoading: boolean;
   showWelcome: boolean;
   setShowWelcome: (show: boolean) => void;
-  toast: { message: string; type: 'success' | 'error' | 'info'; duration?: number } | null;
+  toast: {
+    message: string;
+    type: 'success' | 'error' | 'info';
+    duration?: number;
+  } | null;
   hideToast: () => void;
 }) {
   const handleTabChange = React.useCallback(
@@ -682,7 +694,7 @@ function AppContent({
                 )}
               </RootStack.Navigator>
             </NavigationContainer>
-            <SyncManager />
+            <SyncManager dispatchQueuedMutation={dispatchQueuedMutationToInngest} />
             <NetworkStatusBanner />
             {Platform.OS === 'web' && <CommandPalette />}
             {Platform.OS === 'web' && <PWAInstallBanner />}

@@ -13,9 +13,11 @@ import {
   useTracking,
 } from '@repo/core';
 import {
+  AssetCreationModal,
   AnimatedView,
   Box,
   CollectionCard,
+  CollectionCreationModal,
   FadeInDown,
   FlatList,
   GlobalHeader,
@@ -28,6 +30,7 @@ import {
   openExternalURL,
   Pressable,
   RefreshControl,
+  ResourceActionSheet,
   ScreenWrapper,
   ScrollView,
   SkeletonCard,
@@ -55,11 +58,8 @@ import {
 import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { libraryAPI } from '../api/library';
-import AddCollectionModal from '../components/AddCollectionModal';
-import AddResourceModal from '../components/AddResourceModal';
 import { CollectionPickerModal } from '../components/CollectionPickerModal';
 import { LibraryThumbnailCard } from '../components/LibraryThumbnailCard';
-import { ResourceActionSheet } from '../components/ResourceActionSheet';
 import { ResourceList } from '../components/ResourceList';
 import { getOrderedShelfDefs, SHELF_DEFS } from '../constants/shelf';
 import { useBookmarkedResources, useLibrary } from '../hooks/useLibrary';
@@ -928,12 +928,12 @@ export default function LibraryScreen() {
         </Box>
       )}
 
-      <AddResourceModal
+      <AssetCreationModal
         isOpen={isAddModalOpen && !isPastView}
         onClose={() => dispatch({ type: 'SET_MODAL', name: 'add', isOpen: false })}
         onAdd={handleAddResource}
       />
-      <AddCollectionModal
+      <CollectionCreationModal
         isOpen={isAddCollectionModalOpen && !isPastView}
         onClose={() => dispatch({ type: 'SET_MODAL', name: 'collection', isOpen: false })}
         onSubmit={handleCreateCollection}

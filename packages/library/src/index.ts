@@ -1,19 +1,41 @@
-export * from './api/library';
-export { default as AddCollectionModal } from './components/AddCollectionModal';
-export { default as AddResourceModal } from './components/AddResourceModal';
-export * from './components/ResourceList';
-export * from './components/ResourceRow';
-export * from './constants/shelf';
-export * from './hooks/useLibrary';
+export { libraryAPI } from './api';
+export { CollectionPickerModal } from './components/CollectionPickerModal';
+export { ResourceList, type ResourceListProps } from './components/ResourceList';
+export {
+  type DisplayResourceType,
+  ResourceRow,
+  type ResourceRowProps,
+} from './components/ResourceRow';
+export { getOrderedShelfDefs, SHELF_DEFS, type ShelfDefinition } from './constants/shelf';
+export { LIBRARY_KEYS, useBookmarkedResources, useCollection, useLibrary } from './hooks';
 export { default as CollectionDetailScreenWeb } from './screens/CollectionDetailScreen.web';
 export { default as LibraryScreen } from './screens/LibraryScreen';
 export { default as LibraryScreenWeb } from './screens/LibraryScreen.web';
 export { default as PDFViewerScreen } from './screens/PDFViewerScreen';
 export { default as VideoPlayerScreen } from './screens/VideoPlayerScreen';
-export * from './types';
-export * from './utils/externalLinks';
+export {
+  type CollectionFilters,
+  type CreateCollectionInput,
+  type CreateResourceInput,
+  type KnowledgeLink,
+  type KnowledgeNode,
+  type KnowledgeTopology,
+  LIBRARY_UI_CATEGORIES,
+  type LibraryCollection,
+  type LibraryResource,
+  type ResourceDifficulty,
+  type ResourceFilters,
+  type ResourceLanguage,
+  type ResourceVisibility,
+} from './types';
+export { buildLibraryExternalLinkOptions } from './utils/externalLinks';
+export {
+  AssetCreationModal as AddResourceModal,
+  CollectionCreationModal as AddCollectionModal,
+  UniversalPerspective,
+} from '@repo/ui';
 
-export const LIBRARY_UI_CATEGORIES = [
+export const LIBRARY_UI_CATEGORIES_LOCAL = [
   { id: 'All', en: 'All' },
   { id: 'video', en: 'Videos' },
   { id: 'pdf', en: 'Documents' },
@@ -21,9 +43,12 @@ export const LIBRARY_UI_CATEGORIES = [
   { id: 'reading', en: 'Articles' },
   { id: 'note', en: 'Personal Notes' },
 ];
-export * from './components/LibraryResourceCard';
-export * from './components/LibraryThumbnailCard';
-export * from './components/modals/StudentAnalysisModal';
-export * from './components/perspectives/UniversalPerspective';
+
+export { LibraryResourceCard } from './components/LibraryResourceCard';
+export {
+  LibraryThumbnailCard,
+  type LibraryThumbnailCardProps,
+} from './components/LibraryThumbnailCard';
+export { StudentAnalysisModal } from './components/modals/StudentAnalysisModal';
 export { default as CuratorReviewScreen } from './screens/CuratorReviewScreen';
 export { default as MapScreen } from './screens/MapScreen';

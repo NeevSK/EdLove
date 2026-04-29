@@ -64,13 +64,21 @@ type State = {
 
 type Action =
   | { type: 'LOAD_START' }
-  | { type: 'LOAD_SUCCESS'; timeline: PrincipalGovernanceEventZod[]; snapshot: PrincipalGovernanceEventZod[] }
+  | {
+      type: 'LOAD_SUCCESS';
+      timeline: PrincipalGovernanceEventZod[];
+      snapshot: PrincipalGovernanceEventZod[];
+    }
   | { type: 'LOAD_FAILURE'; error: string }
   | { type: 'SET_FOLLOW_UP_TARGET'; targetId: string | null }
   | { type: 'UPDATE_FOLLOW_UP_CONTENT'; content: string }
   | { type: 'SET_FOLLOW_UP_STATUS'; status: 'noted' | 'escalated' | 'resolved' }
   | { type: 'SAVE_FOLLOW_UP_START' }
-  | { type: 'SAVE_FOLLOW_UP_SUCCESS'; timeline: PrincipalGovernanceEventZod[]; snapshot: PrincipalGovernanceEventZod[] }
+  | {
+      type: 'SAVE_FOLLOW_UP_SUCCESS';
+      timeline: PrincipalGovernanceEventZod[];
+      snapshot: PrincipalGovernanceEventZod[];
+    }
   | { type: 'SAVE_FOLLOW_UP_FAILURE'; error: string };
 
 const timelineReducer = (state: State, action: Action): State => {
@@ -94,7 +102,13 @@ const timelineReducer = (state: State, action: Action): State => {
         ...state,
         events: action.timeline,
         snapshot: action.snapshot,
-        followUp: { ...state.followUp, isSaving: false, targetId: null, content: '', status: 'noted' },
+        followUp: {
+          ...state.followUp,
+          isSaving: false,
+          targetId: null,
+          content: '',
+          status: 'noted',
+        },
       };
     case 'SAVE_FOLLOW_UP_FAILURE':
       return { ...state, followUp: { ...state.followUp, isSaving: false }, error: action.error };
@@ -237,14 +251,14 @@ export default function PrincipalGovernanceTimeline({
                 {(event.snapshot?.content as string) || 'Official observation state is available.'}
               </Text>
               <Pressable
-                 onPress={() => {
-                   hapticLight();
-                   dispatch({ type: 'SET_FOLLOW_UP_TARGET', targetId: event.entity_id });
-                 }}
-                 className="bg-phase-interactive flex-row items-center justify-center gap-2 mt-2 py-3 rounded-[18px] shadow-sm active:scale-95 transition-all"
-                 accessibilityLabel="Add Protocol Follow-up"
-                 accessibilityHint="Opens the protocol form to record an escalation or resolution for this observation"
-               >
+                onPress={() => {
+                  hapticLight();
+                  dispatch({ type: 'SET_FOLLOW_UP_TARGET', targetId: event.entity_id });
+                }}
+                className="bg-phase-interactive flex-row items-center justify-center gap-2 mt-2 py-3 rounded-[18px] shadow-sm active:scale-95 transition-all"
+                accessibilityLabel="Add Protocol Follow-up"
+                accessibilityHint="Opens the protocol form to record an escalation or resolution for this observation"
+              >
                 <Icon as={Plus} size="xs" className="text-white" />
                 <Text className="text-[11px] font-black text-white uppercase tracking-widest">
                   Add Protocol
@@ -255,19 +269,21 @@ export default function PrincipalGovernanceTimeline({
         </Box>
       )}
 
-       {state.isLoading && (
+      {state.isLoading && (
         <Box className="rounded-[32px] p-12 bg-phase-canvas border border-phase-border items-center justify-center">
           <Spinner className="text-phase-interactive" />
         </Box>
       )}
 
-       {!state.isLoading && state.error && (
+      {!state.isLoading && state.error && (
         <Box className="rounded-[24px] p-5 border border-phase-danger/30 bg-phase-danger/5">
-          <Text className="text-[13px] text-phase-danger font-black tracking-tight">{state.error}</Text>
+          <Text className="text-[13px] text-phase-danger font-black tracking-tight">
+            {state.error}
+          </Text>
         </Box>
       )}
 
-       {!state.isLoading && !state.error && state.events.length === 0 && (
+      {!state.isLoading && !state.error && state.events.length === 0 && (
         <Box className="rounded-[32px] p-12 bg-phase-canvas border border-dashed border-phase-border items-center justify-center opacity-60">
           <Icon as={History} size="md" className="text-phaseText-muted mb-4 opacity-20" />
           <Text className="text-[11px] font-bold text-phaseText-muted uppercase tracking-[3px] text-center">
@@ -276,7 +292,7 @@ export default function PrincipalGovernanceTimeline({
         </Box>
       )}
 
-       <VStack className="gap-4">
+      <VStack className="gap-4">
         {!state.isLoading &&
           !state.error &&
           state.events.length > 0 &&
@@ -320,7 +336,7 @@ export default function PrincipalGovernanceTimeline({
           ))}
       </VStack>
 
-       {state.followUp.targetId && (
+      {state.followUp.targetId && (
         <Box className="rounded-[40px] p-2 bg-phase-interactive shadow-2xl mt-4">
           <Box className="p-6 bg-phase-surface rounded-[38px] border border-dashed border-phase-interactive/20 gap-6">
             <VStack className="gap-1.5">
@@ -332,7 +348,7 @@ export default function PrincipalGovernanceTimeline({
               </Text>
             </VStack>
 
-             <Input className="min-h-[140px] bg-phase-canvas border-phase-border rounded-[24px] p-5 shadow-inner">
+            <Input className="min-h-[140px] bg-phase-canvas border-phase-border rounded-[24px] p-5 shadow-inner">
               <InputField
                 value={state.followUp.content}
                 onChangeText={(val) => dispatch({ type: 'UPDATE_FOLLOW_UP_CONTENT', content: val })}
@@ -347,7 +363,7 @@ export default function PrincipalGovernanceTimeline({
             </Input>
 
             <HStack className="gap-2.5 flex-wrap">
-               {(['noted', 'escalated', 'resolved'] as const).map((status) => {
+              {(['noted', 'escalated', 'resolved'] as const).map((status) => {
                 const isActive = state.followUp.status === status;
                 return (
                   <Pressable
@@ -375,7 +391,7 @@ export default function PrincipalGovernanceTimeline({
             </HStack>
 
             <HStack className="gap-4">
-               <Pressable
+              <Pressable
                 onPress={() => {
                   hapticLight();
                   dispatch({ type: 'SET_FOLLOW_UP_TARGET', targetId: null });
@@ -390,7 +406,7 @@ export default function PrincipalGovernanceTimeline({
                   </Text>
                 </Box>
               </Pressable>
-               <Pressable
+              <Pressable
                 onPress={() => {
                   hapticLight();
                   handleSaveFollowUp();

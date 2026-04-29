@@ -1,4 +1,4 @@
-// @ts-expect-error
+// @ts-ignore - package does not ship declarations
 import * as SLPostal from 'srilankan-postalcode-backend';
 
 /**

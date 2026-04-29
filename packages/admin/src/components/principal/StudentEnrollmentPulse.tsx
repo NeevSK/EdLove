@@ -3,6 +3,7 @@ import {
   Box,
   ClipboardCheck,
   HStack,
+  hapticLight,
   Icon,
   Pressable,
   Spinner,
@@ -11,7 +12,6 @@ import {
   UserPlus,
   Users,
   VStack,
-  hapticLight,
 } from '@repo/ui';
 
 import { useEffect, useState } from 'react';

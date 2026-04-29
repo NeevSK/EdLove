@@ -42,6 +42,7 @@ import { naturePathsAPI } from './naturePaths';
 import { onboardingAPI } from './onboarding';
 import { operationsContract } from './operations.contract';
 import { createPOAProxy } from './poaProxy';
+import { presenceAPI } from './presence';
 import { principalNotesAPI } from './principalNotes';
 import { principalWorkspaceAPI as rawPrincipalWorkspaceAPI } from './principalWorkspace';
 import { principalWorkspaceContract } from './principalWorkspace.contract';
@@ -210,6 +211,7 @@ const assignmentsCoverage = assertContractCoverage(
       update: 'updateAssignment',
       delete: 'deleteAssignment',
     },
+    internalMethods: ['getRecentGradesOverviewForStudent'],
   }),
 );
 const assignmentsAPI = createTemporalPOAProxy(
@@ -373,6 +375,16 @@ const communityCoverage = assertContractCoverage(
       sendGroupMessage: 'sendMessage',
       togglePostReaction: 'toggleReaction',
       createGroupWithOwner: 'createGroup',
+      reportContent: 'reportContent',
+      getComments: 'getComments',
+      createComment: 'createComment',
+      deleteComment: 'deleteComment',
+      toggleCommentUpvote: 'toggleCommentUpvote',
+      markOfficialAnswer: 'markOfficialAnswer',
+      getNotifications: 'getNotifications',
+      getUnreadNotificationCount: 'getUnreadNotificationCount',
+      markNotificationRead: 'markNotificationRead',
+      markAllNotificationsRead: 'markAllNotificationsRead',
     },
   }),
 );
@@ -535,6 +547,7 @@ export * from './growthSignals';
 export * from './guardian';
 export * from './guardian.contract';
 export * from './history';
+export * from './hooks';
 export * from './identity.contract';
 export * from './impactRipples';
 export * from './library.contract';
@@ -564,6 +577,7 @@ export * from './temporalProxy';
 export * from './thuthimal'; // Restore types and thuthimalAPI
 export * from './userGrowthState';
 export * from './warmMirror';
+
 // Simplified named exports for direct access
 export {
   academicCyclesAPI,
@@ -595,12 +609,14 @@ export {
   notesAPI,
   notesWithPOA as classroomNotesAPI,
   onboardingAPI,
+  presenceAPI,
   principalNotesAPI,
   principalWorkspaceAPI,
   privacyAPI,
   profileAPI,
   resourcesAPI,
   rewardsAPI,
+  sacredMissionsAPI,
   schoolAPI,
   schoolForestAPI,
   socialAPI,
@@ -649,6 +665,8 @@ export const api = {
   rewards: rewardsAPI,
   tracking: trackingAPI,
   onboarding: onboardingAPI,
+  presence: presenceAPI,
+  sacredMissions: sacredMissionsAPI,
   dailyContent: dailyContentAPI,
   thuthimal: proAPI,
   pro: proAPI,

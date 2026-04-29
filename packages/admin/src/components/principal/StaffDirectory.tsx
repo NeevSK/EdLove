@@ -2,15 +2,15 @@ import {
   Box,
   Briefcase,
   ChevronRight,
-  HStack,
   Heading,
+  HStack,
+  hapticLight,
   Icon,
   Pressable,
   ScrollView,
   Text,
   User,
   VStack,
-  hapticLight,
 } from '@repo/ui';
 
 interface StaffMember {

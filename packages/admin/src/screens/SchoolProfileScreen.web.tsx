@@ -6,8 +6,9 @@ import {
   Box,
   ChevronRight,
   Globe,
-  HStack,
   Heading,
+  HStack,
+  hapticLight,
   Icon,
   Layout,
   Pressable,
@@ -17,7 +18,6 @@ import {
   Text,
   Users,
   VStack,
-  hapticLight,
 } from '@repo/ui';
 
 import { useTranslation } from 'react-i18next';

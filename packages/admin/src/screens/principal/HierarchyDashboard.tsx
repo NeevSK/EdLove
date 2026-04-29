@@ -6,8 +6,10 @@ import {
   ButtonText,
   Castle,
   FormControl,
-  HStack,
   Heading,
+  HStack,
+  hapticLight,
+  hapticSuccess,
   Icon,
   Input,
   InputField,
@@ -17,11 +19,9 @@ import {
   SkeletonCard,
   Text,
   VStack,
-  hapticLight,
-  hapticSuccess,
 } from '@repo/ui';
 import type React from 'react';
-import { useReducer, useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useReducer } from 'react';
 import { type SchoolSectionRow, sectionsAPI } from '../../sections';
 
 interface HierarchyDashboardProps {
@@ -65,7 +65,12 @@ function reducer(state: State, action: Action): State {
     case 'UPDATE_FIELD':
       return { ...state, [action.field]: action.value };
     case 'ADD_SECTION':
-      return { ...state, sections: [...state.sections, action.payload], newSectionName: '', newSectionGrade: '' };
+      return {
+        ...state,
+        sections: [...state.sections, action.payload],
+        newSectionName: '',
+        newSectionGrade: '',
+      };
     case 'RESET_FORM':
       return { ...state, newSectionName: '', newSectionGrade: '' };
     default:

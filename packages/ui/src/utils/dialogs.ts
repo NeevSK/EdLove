@@ -12,7 +12,7 @@ export async function confirmAction(title: string, message: string): Promise<boo
         { text: 'Cancel', style: 'cancel', onPress: () => resolve(false) },
         { text: 'OK', onPress: () => resolve(true) },
       ],
-      { cancelable: true }
+      { cancelable: true },
     );
   });
 }

@@ -1,6 +1,6 @@
-import React from 'react';
 import { usePermissions } from '@repo/core/logic';
-import { ContentComposer } from '@repo/ui';
+import { ContentComposer } from '@repo/ui/components';;
+import React from 'react';
 import { useComposerLogic } from '../hooks/useComposerLogic';
 
 interface CreatePostModalProps {
@@ -20,7 +20,11 @@ const EDUCATION_TAGS = [
   { id: 'wellbeing', label: '\uD83C\uDF31 Wellbeing' },
 ];
 
-export default function CreatePostModal({ isOpen, onClose, groupId = 'general' }: CreatePostModalProps) {
+export default function CreatePostModal({
+  isOpen,
+  onClose,
+  groupId = 'general',
+}: CreatePostModalProps) {
   const { flags } = usePermissions();
   const { state, actions } = useComposerLogic(groupId, onClose);
 
@@ -31,7 +35,6 @@ export default function CreatePostModal({ isOpen, onClose, groupId = 'general' }
       title="Share with the Circle"
       submitLabel="Post Resonance"
       placeholder="What's on your mind?"
-      
       // State
       content={state.content}
       isSubmitting={state.isSubmitting}
@@ -39,7 +42,6 @@ export default function CreatePostModal({ isOpen, onClose, groupId = 'general' }
       selectedImage={state.selectedImage}
       selectedTags={state.selectedTags}
       tags={EDUCATION_TAGS}
-      
       // Poll State
       isPollMode={state.isPollMode}
       pollOptions={state.pollOptions}
@@ -48,12 +50,10 @@ export default function CreatePostModal({ isOpen, onClose, groupId = 'general' }
       pollDurationHours={state.pollDurationHours}
       pollCustomEndsAt={state.pollCustomEndsAt}
       showCustomDate={state.showCustomDate}
-      
       // Features
       allowPolls={flags.isCommunityEnabled}
       allowMedia={true}
       allowTags={true}
-
       // Handlers
       onContentChange={actions.setContent}
       onToggleTag={actions.toggleTag}

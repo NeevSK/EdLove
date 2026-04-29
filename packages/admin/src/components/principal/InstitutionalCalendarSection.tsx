@@ -239,7 +239,7 @@ export default function InstitutionalCalendarSection({
 
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             <HStack className="gap-2.5">
-               {TYPE_OPTIONS.map((t) => {
+              {TYPE_OPTIONS.map((t) => {
                 const isSelected = state.form.selectedType === t;
                 return (
                   <Pressable
@@ -273,7 +273,9 @@ export default function InstitutionalCalendarSection({
                 placeholder="YYYY-MM-DD"
                 placeholderTextColor="rgba(0,0,0,0.2)"
                 value={state.form.startDate}
-                onChangeText={(val) => dispatch({ type: 'UPDATE_FORM', field: 'startDate', value: val })}
+                onChangeText={(val) =>
+                  dispatch({ type: 'UPDATE_FORM', field: 'startDate', value: val })
+                }
                 className="text-[14px] font-bold text-phaseText-primary"
                 accessibilityLabel="Start Date"
                 accessibilityHint="Enter the event start date in ISO format"
@@ -284,7 +286,9 @@ export default function InstitutionalCalendarSection({
                 placeholder="End (Opt)"
                 placeholderTextColor="rgba(0,0,0,0.2)"
                 value={state.form.endDate}
-                onChangeText={(val) => dispatch({ type: 'UPDATE_FORM', field: 'endDate', value: val })}
+                onChangeText={(val) =>
+                  dispatch({ type: 'UPDATE_FORM', field: 'endDate', value: val })
+                }
                 className="text-[14px] font-bold text-phaseText-primary"
                 accessibilityLabel="End Date"
                 accessibilityHint="Enter the optional end date in ISO format"

@@ -6,7 +6,7 @@ import {
   GlobalUserSchema,
   SentinelAuditLogSchema,
 } from '../../logic/schemas/founder.schema';
-import { api } from '../index';
+import { founderAPI } from '../founder';
 
 /**
  * Hook for ecosystem-wide statistics.
@@ -15,7 +15,7 @@ export function useEcosystemStatsQuery() {
   return useQuery({
     queryKey: ['ecosystem-stats'],
     queryFn: async () => {
-      const data = await api.founder.getEcosystemStats();
+      const data = await founderAPI.getEcosystemStats();
       return EcosystemStatsSchema.parse(data);
     },
   });
@@ -28,7 +28,7 @@ export function useEcosystemPulseQuery() {
   return useQuery({
     queryKey: ['ecosystem-pulse'],
     queryFn: async () => {
-      const data = await api.founder.getEcosystemPulse();
+      const data = await founderAPI.getEcosystemPulse();
       return EcosystemPulseSchema.parse(data);
     },
     refetchInterval: 30000,
@@ -42,7 +42,7 @@ export function useSentinelGovernanceQuery() {
   return useQuery({
     queryKey: ['sentinel-governance'],
     queryFn: async () => {
-      const data = await api.founder.getSentinelGovernance();
+      const data = await founderAPI.getSentinelGovernance();
       return z.array(SentinelAuditLogSchema).parse(data);
     },
   });
@@ -55,7 +55,7 @@ export function useGlobalUsersQuery() {
   return useQuery({
     queryKey: ['global-users'],
     queryFn: async () => {
-      const data = await api.founder.listAllUsers();
+      const data = await founderAPI.listAllUsers();
       return z.array(GlobalUserSchema).parse(data);
     },
   });
@@ -68,7 +68,7 @@ export function useAllSchoolsQuery() {
   return useQuery({
     queryKey: ['all-schools'],
     queryFn: async () => {
-      return await api.founder.getAllSchools();
+      return await founderAPI.getAllSchools();
     },
   });
 }

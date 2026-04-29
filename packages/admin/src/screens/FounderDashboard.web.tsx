@@ -32,9 +32,9 @@ import {
   ExternalLink,
   FounderGlow,
   Globe,
-  Icon as SanctuaryIcon,
   LayoutGrid,
   Plus,
+  Icon as SanctuaryIcon,
   Search,
   Shield,
   SkeletonCard,
@@ -55,7 +55,7 @@ export default function FounderDashboardWeb() {
   const { ability } = usePermissions();
   // Use user from useStore to get the full user object with full_name, etc.
   const user = useStore((state) => state.user);
-  const isPastView = useTemporalStore(s => s.isPastView);
+  const isPastView = useTemporalStore((s) => s.isPastView);
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');

@@ -6,8 +6,8 @@ import {
   Box,
   Check,
   GlobalHeader,
-  HStack,
   Heading,
+  HStack,
   Icon,
   SanctuaryButton,
   ScreenWrapper,
@@ -38,9 +38,9 @@ const STEP_LABELS = [
 export default function SchoolCreationScreen() {
   const { t } = useTranslation();
   const navigation = useNavigation<any>();
-  const user = useStore(s => s.user);
-  const setUser = useStore(s => s.setUser);
-  const setDemoMode = useStore(s => s.setDemoMode);
+  const user = useStore((s) => s.user);
+  const setUser = useStore((s) => s.setUser);
+  const setDemoMode = useStore((s) => s.setDemoMode);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successData, setSuccessData] = useState<{
     schoolId: string;

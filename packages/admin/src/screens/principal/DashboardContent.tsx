@@ -5,8 +5,9 @@ import {
   Button,
   ButtonIcon,
   ButtonText,
-  HStack,
   Heading,
+  HStack,
+  hapticLight,
   Icon,
   LayoutGrid,
   NotebookPen,
@@ -15,7 +16,6 @@ import {
   TrendingUp,
   VStack,
   WebScreenHeader,
-  hapticLight,
 } from '@repo/ui';
 
 import type React from 'react';

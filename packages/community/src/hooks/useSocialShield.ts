@@ -1,27 +1,20 @@
+import { useSocialShieldHooks } from '@repo/core/api/hooks';
 import { supabase } from '@repo/core/native';
 import { useStore } from '@repo/core/store';
 import { useCallback, useState } from 'react';
-import { communityAPI } from '../api/community';
 
 export type ReportTarget = 'teacher' | 'principal' | 'platform';
 
 export function useSocialShield() {
-  const { user } = useStore();
+  const user = useStore((state) => state.user);
   const [loading, setLoading] = useState(false);
+  const { reportMutation, blockMutation, unblockMutation } = useSocialShieldHooks();
 
-  /**
-   * Block a user
-   */
   const blockUser = useCallback(
     async (blockedId: string) => {
-      if (!user) return;
       setLoading(true);
       try {
-        const { error } = await supabase
-          .from('user_blocks')
-          .insert([{ blocker_id: user.id, blocked_id: blockedId }]);
-
-        if (error) throw error;
+        await blockMutation.mutateAsync(blockedId);
         return { success: true };
       } catch (error) {
         console.error('[SocialShield] Block Error:', error);
@@ -30,24 +23,14 @@ export function useSocialShield() {
         setLoading(false);
       }
     },
-    [user],
+    [blockMutation],
   );
 
-  /**
-   * Unblock a user
-   */
   const unblockUser = useCallback(
     async (blockedId: string) => {
-      if (!user) return;
       setLoading(true);
       try {
-        const { error } = await supabase
-          .from('user_blocks')
-          .delete()
-          .eq('blocker_id', user.id)
-          .eq('blocked_id', blockedId);
-
-        if (error) throw error;
+        await unblockMutation.mutateAsync(blockedId);
         return { success: true };
       } catch (error) {
         console.error('[SocialShield] Unblock Error:', error);
@@ -56,15 +39,12 @@ export function useSocialShield() {
         setLoading(false);
       }
     },
-    [user],
+    [unblockMutation],
   );
 
-  /**
-   * Mute a conversation or group
-   */
   const toggleMute = useCallback(
     async (params: { conversationId?: string; groupId?: string; isMuted: boolean }) => {
-      if (!user) return;
+      if (!user) return { success: false };
       setLoading(true);
       try {
         const { error } = await supabase.from('conversation_settings').upsert(
@@ -91,9 +71,6 @@ export function useSocialShield() {
     [user],
   );
 
-  /**
-   * Submit a report with specific target
-   */
   const submitReport = useCallback(
     async (params: {
       postId?: string;
@@ -102,20 +79,15 @@ export function useSocialShield() {
       reason: string;
       target: ReportTarget;
     }) => {
-      if (!user) return;
       setLoading(true);
       try {
-        await communityAPI.reportContent(
-          {
-            postId: params.postId,
-            groupId: params.groupId,
-            targetUserId: params.targetUserId,
-            reason: params.reason,
-            report_target: params.target,
-          },
-          user.id,
-        );
-
+        await reportMutation.mutateAsync({
+          postId: params.postId,
+          groupId: params.groupId,
+          targetUserId: params.targetUserId,
+          reason: params.reason,
+          report_target: params.target,
+        });
         return { success: true };
       } catch (error) {
         console.error('[SocialShield] Report Error:', error);
@@ -124,7 +96,7 @@ export function useSocialShield() {
         setLoading(false);
       }
     },
-    [user],
+    [reportMutation],
   );
 
   return {

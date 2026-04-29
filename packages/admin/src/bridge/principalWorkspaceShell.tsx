@@ -1,17 +1,17 @@
 import {
   Box,
   Building2,
-  HStack,
   Heading,
+  HStack,
   MessageSquare,
   NotebookPen,
   Pressable,
   QrCode,
   ScrollView,
   Text,
+  useTheme,
   VStack,
   Wind,
-  useTheme,
 } from '@repo/ui';
 
 import type React from 'react';

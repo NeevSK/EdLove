@@ -236,7 +236,9 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
                   <Input className="border-phase-border">
                     <InputField
                       value={state.form.name}
-                      onChangeText={(val) => dispatch({ type: 'UPDATE_FORM', field: 'name', value: val })}
+                      onChangeText={(val) =>
+                        dispatch({ type: 'UPDATE_FORM', field: 'name', value: val })
+                      }
                       placeholder="Cycle Name"
                       className="text-phaseText-primary font-bold"
                       accessibilityLabel="Cycle Name"
@@ -253,7 +255,9 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
                     <Input className="border-phase-border">
                       <InputField
                         value={state.form.startDate}
-                        onChangeText={(val) => dispatch({ type: 'UPDATE_FORM', field: 'startDate', value: val })}
+                        onChangeText={(val) =>
+                          dispatch({ type: 'UPDATE_FORM', field: 'startDate', value: val })
+                        }
                         placeholder="YYYY-MM-DD"
                         className="text-phaseText-primary font-bold"
                         accessibilityLabel="Start Date"
@@ -268,7 +272,9 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
                     <Input className="border-phase-border">
                       <InputField
                         value={state.form.endDate}
-                        onChangeText={(val) => dispatch({ type: 'UPDATE_FORM', field: 'endDate', value: val })}
+                        onChangeText={(val) =>
+                          dispatch({ type: 'UPDATE_FORM', field: 'endDate', value: val })
+                        }
                         placeholder="YYYY-MM-DD"
                         className="text-phaseText-primary font-bold"
                         accessibilityLabel="End Date"
@@ -280,7 +286,13 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
 
                 <HStack className="gap-3 items-center">
                   <Pressable
-                    onPress={() => dispatch({ type: 'UPDATE_FORM', field: 'isCurrent', value: !state.form.isCurrent })}
+                    onPress={() =>
+                      dispatch({
+                        type: 'UPDATE_FORM',
+                        field: 'isCurrent',
+                        value: !state.form.isCurrent,
+                      })
+                    }
                     accessibilityLabel="Toggle Active Status"
                     accessibilityHint="Determines if this cycle should be the globally active one"
                   >
@@ -297,7 +309,7 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
                   </Pressable>
                 </HStack>
 
-                 <Button
+                <Button
                   onPress={handleCreate}
                   isDisabled={state.isSaving}
                   className="bg-phase-interactive rounded-full h-12 shadow-sm mt-2"

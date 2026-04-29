@@ -6,9 +6,10 @@ import {
   Compass,
   GlobalHeader,
   Globe,
-  HStack,
   Heading,
   Heart,
+  HStack,
+  hapticLight,
   Icon,
   Plus,
   PositiveInvitation,
@@ -20,7 +21,6 @@ import {
   Text,
   VStack,
   Zap,
-  hapticLight,
 } from '@repo/ui';
 
 import { useState } from 'react';
@@ -42,7 +42,7 @@ export default function FounderSchoolDashboard({ schoolId, userId }: FounderScho
   const { school, stats, isLoading, refreshData } = useFounderSchoolStats(schoolId);
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const isDemoMode = useStore(s => s.isDemoMode);
+  const isDemoMode = useStore((s) => s.isDemoMode);
 
   return (
     <ScreenWrapper noTopInset={true}>

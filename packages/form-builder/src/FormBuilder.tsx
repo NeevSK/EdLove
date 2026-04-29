@@ -9,7 +9,7 @@ import {
   FormTemplate,
   formAnalytics,
 } from '@repo/core';
-import { FeatureGuard } from '@repo/core/permissions/guards/FeatureGuard';
+import { FeatureGuard } from '@repo/core';
 import { QRCodeGenerator } from '@repo/scanner-kit';
 import {
   Box,
@@ -21,6 +21,7 @@ import {
   Icon,
   Input,
   InputField,
+  FlatList,
   Pressable,
   SanctuaryToast,
   ScrollView,
@@ -38,23 +39,15 @@ import {
   ChevronUp,
   Clock,
   Download,
-  Edit3,
   Eye,
   GripVertical,
   Layout,
-  Lock,
-  Maximize2,
   Plus,
-  Printer,
-  QrCode,
   Save,
-  Settings,
   Settings2,
-  Share2,
   Trash2,
-  Users,
 } from 'lucide-react-native';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import NativeForm from './NativeForm';
 
 interface FormBuilderProps {

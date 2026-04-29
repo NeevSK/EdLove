@@ -1,33 +1,14 @@
-import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import { ROOT_DIR } from '../utils/constants.js';
-import { executeSovereignTool } from '../utils/execution.js';
-import { findSurgicalReport, normalizeTarget, readReport } from '../utils/pathUtils.js';
-
-function execUtf8(command: string) {
-  try {
-    const stdout = execSync(command, { cwd: ROOT_DIR, encoding: 'utf8', shell: true } as any);
-    return { ok: true as const, stdout };
-  } catch (error: any) {
-    const stdout =
-      typeof error?.stdout === 'string'
-        ? error.stdout
-        : Buffer.isBuffer(error?.stdout)
-          ? error.stdout.toString('utf8')
-          : '';
-    const stderr =
-      typeof error?.stderr === 'string'
-        ? error.stderr
-        : Buffer.isBuffer(error?.stderr)
-          ? error.stderr.toString('utf8')
-          : '';
-
-    const message = typeof error?.message === 'string' ? error.message : String(error);
-    const combined = [message, stderr, stdout].filter(Boolean).join('\n');
-    return { ok: false as const, stdout: combined || message };
-  }
-}
+import {
+  executeSovereignTool,
+  getPlatformDescriptor,
+  runCommand,
+  runPowerShellScript,
+  runShellCommand,
+} from '../utils/execution.js';
+import { describeTarget, normalizeTarget } from '../utils/pathUtils.js';
 
 function toMcpText(stdout: string, isError?: boolean) {
   return { content: [{ type: 'text' as const, text: stdout }], isError: Boolean(isError) };
@@ -40,32 +21,30 @@ export class MaintenanceService {
     const tempMsgPath = path.join(ROOT_DIR, '.checkpoint_msg.txt');
 
     try {
-      if (stageAll) execUtf8('git add .');
+      if (stageAll) runCommand('git', ['add', '.']);
 
-      const staged = execSync('git diff --cached --name-only', {
-        cwd: ROOT_DIR,
-        shell: true,
-        encoding: 'utf8',
-      } as any).trim();
-
+      const stagedResult = runCommand('git', ['diff', '--cached', '--name-only']);
+      const staged = stagedResult.stdout.trim();
       if (!staged) return toMcpText('Nothing to commit.');
 
-    // Try tools, ignore errors as they are non-critical optimizations
-    const msg = args.message || 'chore: maintenance checkpoint';
-    execUtf8(`node scripts/smart-changeset.mjs --staged "${msg.replace(/"/g, '\\"')}"`);
-    execUtf8('git add .changeset/*.md');
+      const msg = String(args.message || 'chore: maintenance checkpoint');
+      runCommand('node', ['scripts/smart-changeset.mjs', '--staged', msg]);
+      runShellCommand('git add .changeset/*.md');
 
-    fs.writeFileSync(tempMsgPath, msg, 'utf-8');
+      fs.writeFileSync(tempMsgPath, msg, 'utf-8');
 
-      execUtf8(
-        `powershell -ExecutionPolicy Bypass -File scripts/commit-ledger.ps1 -CommitMsgFile "${tempMsgPath}"`,
-      );
-
-      const commitResult = execUtf8(`git commit -F "${tempMsgPath}" --no-verify`);
+      const ledgerResult = runPowerShellScript('scripts/commit-ledger.ps1', [
+        '-CommitMsgFile',
+        tempMsgPath,
+      ]);
+      const commitResult = runCommand('git', ['commit', '-F', tempMsgPath, '--no-verify']);
 
       if (fs.existsSync(tempMsgPath)) fs.unlinkSync(tempMsgPath);
 
-      return toMcpText(commitResult.stdout, !commitResult.ok);
+      const finalMessage = [ledgerResult.ok ? '' : ledgerResult.combined, commitResult.combined]
+        .filter(Boolean)
+        .join('\n\n');
+      return toMcpText(finalMessage, !commitResult.ok);
     } catch (error: any) {
       if (fs.existsSync(tempMsgPath)) fs.unlinkSync(tempMsgPath);
       return toMcpText(error?.message ?? String(error), true);
@@ -74,91 +53,102 @@ export class MaintenanceService {
 
   handleHealCodebase(args: { files: string[] }) {
     console.error(`Healing files: ${args.files.join(', ')}`);
-    const fileList = args.files.map((f) => `"${f}"`).join(' ');
-    const result = execUtf8(
-      `powershell -ExecutionPolicy Bypass -File scripts/heal-codebase.ps1 ${fileList}`,
-    );
-    return toMcpText(result.stdout, !result.ok);
+    const result = runPowerShellScript('scripts/heal-codebase.ps1', args.files);
+    return toMcpText(result.combined, !result.ok);
   }
 
   handleHealArchitecture(args: { target?: string; dryRun?: boolean }) {
     const target = normalizeTarget(args.target || '.');
-    const dryRunFlag = args.dryRun ? '--dry-run' : '';
-    console.error(`🏰 Healing architecture for: ${target} ${dryRunFlag}`);
-    const result = execUtf8(`node scripts/heal-architecture.mjs "${target}" ${dryRunFlag}`);
-    return toMcpText(result.stdout, !result.ok);
+    console.error(`Healing architecture for: ${target}`);
+    const result = runCommand('node', [
+      'scripts/heal-architecture.mjs',
+      target,
+      ...(args.dryRun ? ['--dry-run'] : []),
+    ]);
+    return toMcpText(result.combined, !result.ok);
   }
 
   handleNormalizeImports(args: { target?: string }) {
     const target = normalizeTarget(args.target || '.');
-    const result = execUtf8(`node scripts/normalize-imports.mjs "${target}"`);
-    return toMcpText(result.stdout, !result.ok);
+    const result = runCommand('node', ['scripts/normalize-imports.mjs', target]);
+    return toMcpText(result.combined, !result.ok);
   }
 
   handleNormalizeInputs(args: { target: string }) {
-    const normalized = normalizeTarget(args.target);
-    return toMcpText(normalized);
+    const info = describeTarget(args.target);
+    return toMcpText(
+      JSON.stringify(
+        {
+          ...info,
+          platform: getPlatformDescriptor(),
+        },
+        null,
+        2,
+      ),
+    );
   }
 
   handleSyncIdentity() {
-    const result = execUtf8('node scripts/check-identity-alignment.mjs');
-    return toMcpText(result.stdout, !result.ok);
+    const result = runCommand('node', ['scripts/check-identity-alignment.mjs']);
+    return toMcpText(result.combined, !result.ok);
   }
 
   handleAuditDependencyHealth() {
-    const result = execUtf8(
-      'powershell -ExecutionPolicy Bypass -File scripts/audit-dependency-health.ps1',
-    );
-    return toMcpText(result.stdout, !result.ok);
+    const result = runPowerShellScript('scripts/audit-dependency-health.ps1');
+    return toMcpText(result.combined, !result.ok);
   }
 
   handleLintFix(args: { target?: string }) {
     const target = normalizeTarget(args.target || '.');
     console.error(`Sovereign Maintenance: Fixing lint violations in ${target}`);
-    const result = execUtf8(`npx biome check --write "${target}"`);
-    return toMcpText(result.stdout, !result.ok);
+    const result = runCommand('npx', ['biome', 'check', '--write', target], {
+      shell: process.platform === 'win32',
+    });
+    return toMcpText(result.combined, !result.ok);
   }
 
   handleGenerateGrowthSignals() {
-    const result = execUtf8('node scripts/generate-growth-signals.mjs');
-    return toMcpText(result.stdout, !result.ok);
+    const result = runCommand('node', ['scripts/generate-growth-signals.mjs']);
+    return toMcpText(result.combined, !result.ok);
   }
 
   handleBridgeSchemaZod(args: { input: string; output: string }) {
     console.error(`Bridging Schema: ${args.input} to ${args.output}`);
-    const result = execUtf8(`node scripts/bridge-schema-zod.mjs "${args.input}" "${args.output}"`);
-    return toMcpText(result.stdout, !result.ok);
+    const result = runCommand('node', ['scripts/bridge-schema-zod.mjs', args.input, args.output]);
+    return toMcpText(result.combined, !result.ok);
   }
 
   handleTestSleekness() {
     console.error('Testing sleekness...');
-    const result = execUtf8('npx tsx scripts/test-sleekness.ts');
-    return toMcpText(result.stdout, !result.ok);
+    const result = runCommand('npx', ['tsx', 'scripts/test-sleekness.ts'], {
+      shell: process.platform === 'win32',
+    });
+    return toMcpText(result.combined, !result.ok);
   }
 
   handleGenerateReadmeUsage(args: { package_path: string }) {
     console.error(`Generating README usage for: ${args.package_path}`);
-    const result = execUtf8(`node scripts/generate-readme-usage.mjs "${args.package_path}"`);
-    return toMcpText(result.stdout, !result.ok);
+    const result = runCommand('node', ['scripts/generate-readme-usage.mjs', args.package_path]);
+    return toMcpText(result.combined, !result.ok);
   }
 
   handleScaffoldMocks(args: { file_path: string }) {
     console.error(`Scaffolding mocks for: ${args.file_path}`);
-    const result = execUtf8(`node scripts/scaffold-mocks.mjs "${args.file_path}"`);
-    return toMcpText(result.stdout, !result.ok);
+    const result = runCommand('node', ['scripts/scaffold-mocks.mjs', args.file_path]);
+    return toMcpText(result.combined, !result.ok);
   }
 
   handleShieldUnicode(args: { target?: string }) {
-    const target = args.target || '.';
+    const target = normalizeTarget(args.target || '.');
     console.error(`Shielding unicode for: ${target}`);
-    const result = execUtf8(`node scripts/unicode-shield.mjs "${target}"`);
-    return toMcpText(result.stdout, !result.ok);
+    const result = runCommand('node', ['scripts/unicode-shield.mjs', target]);
+    return toMcpText(result.combined, !result.ok);
   }
 
   handleAuditDependencyDuplication() {
     console.error('Auditing dependency duplication...');
-    const result = execUtf8('node scripts/audit-deps.js');
-    return toMcpText(result.stdout, !result.ok);
+    const result = runCommand('node', ['scripts/audit-deps.js']);
+    return toMcpText(result.combined, !result.ok);
   }
 
   handleCheckSchemaDrift() {
@@ -171,17 +161,101 @@ export class MaintenanceService {
 
   handlePurgeStaleArtifacts(args: { ageDays?: number; dryRun?: boolean }) {
     const age = args.ageDays || 7;
-    const dryRun = args.dryRun ? '--dry-run' : '';
-    const result = execUtf8(`node scripts/purge-stale-artifacts.mjs --age=${age} ${dryRun}`);
-    return toMcpText(result.stdout, !result.ok);
+    const result = runCommand('node', [
+      'scripts/purge-stale-artifacts.mjs',
+      `--age=${age}`,
+      ...(args.dryRun ? ['--dry-run'] : []),
+    ]);
+    return toMcpText(result.combined, !result.ok);
   }
 
   handleRefactorReplace(args: { find: string; replace: string; target?: string }) {
-    const target = normalizeTarget(args.target || '.');
+    const targetInfo = describeTarget(args.target || '.');
+    const target = targetInfo.normalized;
     console.error(`Shiny Refactor: ${args.find} -> ${args.replace} in ${target}`);
-    // sd is much safer and faster than sed
-    const command = `fd -t f "${target}" | xargs sd "${args.find}" "${args.replace}"`;
-    const result = execUtf8(command);
-    return toMcpText(result.stdout || 'Replacement completed successfully.', !result.ok);
+
+    if (!targetInfo.exists) {
+      return toMcpText(`Target does not exist: ${target}`, true);
+    }
+
+    const ignoreDirs = new Set([
+      '.git',
+      'node_modules',
+      'dist',
+      'build',
+      '.turbo',
+      '.next',
+      '.expo',
+    ]);
+    const touched: string[] = [];
+    let replacements = 0;
+
+    const walk = (currentPath: string) => {
+      const stats = fs.statSync(currentPath);
+      if (stats.isDirectory()) {
+        for (const entry of fs.readdirSync(currentPath, { withFileTypes: true })) {
+          if (entry.isDirectory() && ignoreDirs.has(entry.name)) continue;
+          walk(path.join(currentPath, entry.name));
+        }
+        return;
+      }
+
+      const original = fs.readFileSync(currentPath, 'utf-8');
+      if (!original.includes(args.find)) return;
+
+      const updated = original.split(args.find).join(args.replace);
+      const count = original.split(args.find).length - 1;
+      fs.writeFileSync(currentPath, updated, 'utf-8');
+      replacements += count;
+      touched.push(path.relative(ROOT_DIR, currentPath));
+    };
+
+    walk(target);
+
+    if (replacements === 0) {
+      return toMcpText(`No matches found for "${args.find}" in ${target}.`);
+    }
+
+    return toMcpText(
+      [
+        `Replaced ${replacements} occurrence(s) of "${args.find}" with "${args.replace}".`,
+        `Files changed (${touched.length}):`,
+        ...touched.map((file) => `- ${file}`),
+      ].join('\n'),
+    );
+  }
+
+  handleGenerateRunbyteConfig(args: {
+    includeFilesystem?: boolean;
+    transport?: 'stdio' | 'http';
+    serverName?: string;
+  }) {
+    const workspace = ROOT_DIR;
+    const serverName = args.serverName?.trim() || 'platform';
+    const includeFilesystem = args.includeFilesystem !== false;
+    const transport = args.transport || 'stdio';
+    const platformCommand = process.platform === 'win32' ? 'pnpm.cmd' : 'pnpm';
+    const npxCommand = process.platform === 'win32' ? 'npx.cmd' : 'npx';
+
+    const config = {
+      mcpServers: {
+        [serverName]: {
+          command: platformCommand,
+          args: ['--filter', '@repo/platform-mcp', 'start'],
+          cwd: workspace,
+        },
+        ...(includeFilesystem
+          ? {
+              filesystem: {
+                command: npxCommand,
+                args: ['-y', '@modelcontextprotocol/server-filesystem', workspace],
+              },
+            }
+          : {}),
+      },
+      ...(transport === 'http' ? { server: { port: 3000, timeout: 30 } } : {}),
+    };
+
+    return toMcpText(JSON.stringify(config, null, 2));
   }
 }

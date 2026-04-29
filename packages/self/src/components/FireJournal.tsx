@@ -26,6 +26,7 @@ import { CheckCircle, Flame, Mic } from 'lucide-react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Animated, {
+  type AnimatedStyle,
   Easing,
   FadeIn,
   useAnimatedStyle,
@@ -84,7 +85,7 @@ export default function FireJournal({
     };
   }, []);
 
-  const containerStyle = useAnimatedStyle(() => ({
+  const containerStyle = useAnimatedStyle<AnimatedStyle<any>>(() => ({
     opacity: opacity.value,
     transform: [
       { scale: scale.value },

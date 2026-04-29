@@ -4,12 +4,12 @@ import {
   Button,
   ButtonText,
   ClipboardList,
-  HStack,
   Heading,
+  HStack,
+  hapticLight,
   Icon,
   Text,
   VStack,
-  hapticLight,
 } from '@repo/ui';
 
 import type React from 'react';

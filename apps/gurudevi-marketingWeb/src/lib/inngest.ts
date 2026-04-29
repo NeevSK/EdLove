@@ -1,17 +1,14 @@
-import { schemas } from '@repo/core';
 import { Inngest } from 'inngest';
 
 /**
  * Gurudevi Inngest Client (Marketing Shell)
  *
- * 🐚 IMPERATIVE SHELL:
- * This is where the actual Inngest instance lives for the marketing site.
- * It uses the 'Sovereign Brain' (schemas from @repo/core) for type safety.
+ * This is the runtime shell for the current Vercel-hosted worker endpoint.
+ * Shared event contracts are imported from @repo/core by the functions that
+ * run on this client.
  */
 export const inngest = new Inngest({
   id: 'gurudevi-marketing-web',
-  schemas: schemas,
-  // Astro uses import.meta.env
   eventKey: import.meta.env.INNGEST_EVENT_KEY,
 });
 

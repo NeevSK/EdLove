@@ -1,6 +1,5 @@
 import { useAIAgent } from '@repo/ai';
 import { useStore } from '@repo/core';
-import React from 'react';
 import {
   AlertCircle,
   Box,
@@ -12,10 +11,11 @@ import {
   ScreenWrapper,
   ScrollView,
   Text,
-  useRegisterFAB,
   Users,
+  useRegisterFAB,
   VStack,
 } from '@repo/ui';
+import React from 'react';
 
 export default function SectionHeadDashboard({
   schoolId,

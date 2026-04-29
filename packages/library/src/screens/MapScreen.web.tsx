@@ -5,32 +5,30 @@ import {
   KnowledgeParser,
 } from '@repo/graphics';
 import {
+  AstroView,
   Box,
+  DharmaView,
   GlobalHeader,
   HStack,
+  JyotiView,
   LotusLoader,
   Pressable,
   Icon as SanctuaryIcon,
   ScreenWrapper,
   ScrollView,
+  TerraView,
   Text,
   Theme,
   useResponsive,
   useTheme,
+  VastuView,
+  VatyaView,
   View,
   VStack,
 } from '@repo/ui';
 import { BarChart3, FileCheck, Globe, Network, Orbit, Route, Wind, X } from 'lucide-react-native';
 import React, { useEffect, useMemo, useState } from 'react';
 import { libraryAPI } from '../api/library';
-import {
-  AstroView,
-  DharmaView,
-  JyotiView,
-  TerraView,
-  VastuView,
-  VatyaView,
-} from '../components/perspectives';
 import { usePerspectiveLayout } from '../hooks/usePerspectiveLayout';
 import type { KnowledgeNode, KnowledgeTopology } from '../types/Library';
 
@@ -147,7 +145,7 @@ export default function MapScreen() {
     if (loading) {
       return (
         <Box className="flex-1 justify-center items-center">
-          <LotusLoader size={60} />
+          <LotusLoader size="lg" />
         </Box>
       );
     }
@@ -204,7 +202,7 @@ export default function MapScreen() {
 
     return (
       <Box className="flex-1 justify-center items-center">
-        <LotusLoader size={40} />
+        <LotusLoader size="md" />
       </Box>
     );
   };

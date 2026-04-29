@@ -3,7 +3,7 @@ import 'react-native-reanimated';
 import 'react-native-worklets';
 import 'react-native-get-random-values';
 import '../../packages/ui/src/global.css';
-import { bootstrapPlatform } from '@repo/core/src/native/bootstrap';
+import { bootstrapPlatform } from '@repo/core/native';
 import { registerRootComponent } from 'expo';
 import App from './App';
 

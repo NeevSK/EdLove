@@ -56,7 +56,7 @@ export class SeedCursor {
   }
 
   animate() {
-    this.seeds.forEach((seed, index) => {
+    this.seeds.forEach((_seed) => {
       // Subtle rotation or movement can be added here
     });
 
@@ -66,11 +66,8 @@ export class SeedCursor {
 
 export class CoherenceMeter {
   private fill: HTMLElement | null;
-  private status: HTMLElement | null;
-
   constructor() {
     this.fill = document.querySelector('.meter-fill');
-    this.status = document.querySelector('.meter-status');
     if (this.fill) this.init();
   }
 

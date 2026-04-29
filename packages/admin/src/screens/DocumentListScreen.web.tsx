@@ -1,8 +1,8 @@
 import { usePermissions } from '@repo/core';
 import {
   Box,
-  HStack,
   Heading,
+  HStack,
   Icon,
   LayoutGrid,
   List,
@@ -10,9 +10,9 @@ import {
   ScreenWrapper,
   ScrollView,
   Text,
-  VStack,
   useTheme,
   useThemedColors,
+  VStack,
 } from '@repo/ui';
 
 import type React from 'react';

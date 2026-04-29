@@ -214,6 +214,17 @@ export default function ResourceHubScreen() {
         return;
       }
 
+      if (hasMainRoute && (item.type === 'doc' || item.format === 'document')) {
+        navigateIntoLibrary('DocumentViewer', {
+          resourceId: item.id,
+          title: item.title,
+          url: item.url,
+          format: item.media?.format || 'docx',
+          size: item.media?.bytes ? `${Math.round(item.media.bytes / 1024)} KB` : 'Unknown',
+        });
+        return;
+      }
+
       openExternalURL(item.url, buildLibraryExternalLinkOptions(item, 'Resource hub')).catch(
         (err) => console.error("Couldn't open resource source", err),
       );

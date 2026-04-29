@@ -12,6 +12,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform } from 'react-native';
 import Animated, {
+  type AnimatedStyle,
   Easing,
   useAnimatedStyle,
   useSharedValue,
@@ -162,7 +163,7 @@ export default function BreathGuide({ onComplete }: BreathGuideProps) {
     petalOpacity.value = withTiming(0.5);
   };
 
-  const petalStyle = useAnimatedStyle(() => ({
+  const petalStyle = useAnimatedStyle<AnimatedStyle<any>>(() => ({
     transform: [{ scale: petalScale.value }, { rotate: `${petalRotation.value}deg` }],
     opacity: petalOpacity.value,
   }));

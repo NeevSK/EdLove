@@ -9,12 +9,14 @@ export {
   useEducational,
   useTeacherInsights,
 } from './useDomainServices';
+export { useEntity } from './useEntity';
 export { useFeatureAccess } from './useFeatureAccess';
 export { useForm } from './useForm';
 export { useGroupCreation } from './useGroupCreation';
 export { useGuardedNavigation } from './useGuardedNavigation';
 export { useJourneyHistory } from './useJourneyHistory';
 export { useManualSnapshot } from './useManualSnapshot';
+export { useMediaDownloader } from './useMediaDownloader';
 export { useNaturePaths } from './useNaturePaths';
 export { type AppNotification, useNotifications } from './useNotifications';
 export { usePendingActions } from './usePendingActions';
@@ -28,4 +30,3 @@ export { useTeacherClassroom } from './useTeacherClassroom';
 export { useTemporalHeatmap } from './useTemporalHeatmap';
 export { useTenantContext } from './useTenantContext';
 export { useTracking } from './useTracking';
-export { useEntity } from './useEntity';

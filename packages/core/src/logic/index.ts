@@ -1,5 +1,6 @@
 // Unified exports for cross-package alignment
 export { api } from '../api';
+export { isDemo } from '../api/demo';
 export { type AuditLogEntry, historyAPI } from '../api/history';
 export { type DeviceAccountRecord, useDeviceAccounts } from '../hooks/useDeviceAccounts';
 export { useManualSnapshot } from '../hooks/useManualSnapshot';
@@ -7,8 +8,12 @@ export { useManualSnapshot } from '../hooks/useManualSnapshot';
 export { type AppNotification, useNotifications } from '../hooks/useNotifications';
 export { useTemporalHeatmap } from '../hooks/useTemporalHeatmap';
 export { accountPin } from '../lib/accountPin';
-export { isDemo } from '../api/demo';
 export { type CloudinaryUploadResponse, uploadToCloudinary } from '../lib/cloudinary';
+export {
+  type InviteCodeData,
+  incrementInviteCodeUsage,
+  validateInviteCode,
+} from '../lib/inviteCodes';
 export {
   clearPendingGateAction,
   getPendingGateAction,
@@ -22,7 +27,6 @@ export { useAuthStore } from '../store/useAuthStore';
 export { useFeatureStore } from '../store/useFeatureStore';
 export { useStore } from '../store/useStore';
 export { useTemporalStore } from '../store/useTemporalStore';
-export { type InviteCodeData, incrementInviteCodeUsage, validateInviteCode } from '../lib/inviteCodes';
 export type { APIError } from '../types/API';
 // Types (Agnostic / logic-layer)
 export type { AuthorityTier } from '../types/Authority';
@@ -38,6 +42,7 @@ export * from './forms';
 export * as ZenModels from './generated';
 export * from './i18n';
 export { default as i18n } from './i18n/config';
+export * from './mediaReducer';
 export * from './permissions/abilities/base';
 // Protocol-Oriented Authority (POA)
 export * from './permissions/composer';

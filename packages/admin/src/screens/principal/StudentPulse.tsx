@@ -3,14 +3,14 @@ import {
   AlertTriangle,
   Box,
   GraduationCap,
-  HStack,
   Heading,
+  HStack,
+  hapticLight,
   Icon,
   Pressable,
   Text,
   TrendingUp,
   VStack,
-  hapticLight,
 } from '@repo/ui';
 
 import type React from 'react';

@@ -12,9 +12,10 @@ import {
   ButtonText,
   CheckCircle2,
   ChevronRight,
-  HStack,
   Heading,
   Heart,
+  HStack,
+  hapticLight,
   Icon,
   Input,
   InputField,
@@ -24,7 +25,6 @@ import {
   Spinner,
   Text,
   VStack,
-  hapticLight,
 } from '@repo/ui';
 
 import { useEffect, useState } from 'react';
@@ -51,7 +51,7 @@ const CATEGORY_ICONS = {
 
 export default function DashboardEcho({ schoolId }: { schoolId: string }) {
   const { t } = useTranslation();
-  const user = useStore(s => s.user);
+  const user = useStore((s) => s.user);
   const [feedback, setFeedback] = useState<FeedbackEcho[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [replyingTo, setReplyingTo] = useState<string | null>(null);

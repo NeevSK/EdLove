@@ -1,3 +1,4 @@
+import { emitSchoolClassroomCreatedFromBridge } from '../logic/events/runtimeBridge';
 import { founderServices } from '../native/runtimes/founder.runtime';
 import type { School } from '../types';
 
@@ -36,7 +37,16 @@ export const founderAPI = {
     grade_number: number;
     created_by: string;
   }): Promise<any> {
-    return founderServices.createClassroom(data);
+    const classroom = await founderServices.createClassroom(data);
+    void emitSchoolClassroomCreatedFromBridge({
+      ...classroom,
+      correlationId: classroom.id,
+      causationId: classroom.id,
+      tenantId: data.school_id,
+    }).catch((error) => {
+      console.warn('Failed to emit school/classroom.created event', error);
+    });
+    return classroom;
   },
 
   /**

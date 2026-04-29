@@ -5,8 +5,8 @@ import {
   communityAPI,
   incrementInviteCodeUsage,
   onboardingAPI,
-  schoolAPI,
   type School,
+  schoolAPI,
   usePermissions,
   useStore,
   validateInviteCode,
@@ -510,7 +510,9 @@ function TeacherJoinSchool({ onJoined }: { onJoined: (schoolId: string) => void 
                 accessibilityHint="Paste or type the 16-character invite code provided by your principal"
               />
             </Input>
-            {state.codeErr && <Text className="mt-1 text-[11px] text-phase-error">{state.codeErr}</Text>}
+            {state.codeErr && (
+              <Text className="mt-1 text-[11px] text-phase-error">{state.codeErr}</Text>
+            )}
           </VStack>
           <SanctuaryButton
             onPress={handleCode}
@@ -817,7 +819,10 @@ type StudentJoinAction =
   | { type: 'JOIN_SUCCESS' }
   | { type: 'JOIN_FAILURE'; error: string };
 
-const studentJoinReducer = (state: StudentJoinState, action: StudentJoinAction): StudentJoinState => {
+const studentJoinReducer = (
+  state: StudentJoinState,
+  action: StudentJoinAction,
+): StudentJoinState => {
   switch (action.type) {
     case 'SET_CODE':
       return { ...state, code: action.code, error: null };
@@ -894,7 +899,9 @@ function StudentJoinClassroom({ onSuccess }: { onSuccess: () => void }) {
             accessibilityHint="8-character code provided by your teacher"
           />
         </Input>
-        {state.error && <Text className="mt-2 text-xs text-phase-error text-center">{state.error}</Text>}
+        {state.error && (
+          <Text className="mt-2 text-xs text-phase-error text-center">{state.error}</Text>
+        )}
       </VStack>
 
       <SanctuaryButton

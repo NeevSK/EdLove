@@ -1,10 +1,9 @@
-import { UniversalPerspective } from '@repo/library';
 import {
   Box,
   GitMerge,
   GlassCard,
-  HStack,
   Heading,
+  HStack,
   Icon,
   Pressable,
   ScrollView,
@@ -61,12 +60,36 @@ export default function FounderVisionScreen() {
         </HStack>
       </Box>
 
-      <Box className="flex-1 rounded-[30px] mx-4 overflow-hidden bg-black/20 border border-white/5">
-        <UniversalPerspective
-          topology={appLogicTopology as any}
-          initialPerspective="vastu" // Start as a Mind-map
-          title="Architecture Pulse"
-        />
+      <Box className="mx-4 flex-1 rounded-[30px] overflow-hidden border border-white/5 bg-black/20 p-6">
+        <VStack className="gap-4">
+          <Heading className="text-xl font-black text-phaseText-primary">
+            Architecture Pulse
+          </Heading>
+          <Text className="text-sm text-phaseText-secondary">
+            The founder topology renderer is being refreshed for the new visualization contract.
+            Until that lands, this screen summarizes the same strategic graph in a build-safe way.
+          </Text>
+          <VStack className="gap-3">
+            {appLogicTopology.nodes.map((node) => (
+              <GlassCard
+                key={node.id}
+                className="rounded-2xl border border-phase-border/10 px-4 py-3"
+              >
+                <HStack className="items-center justify-between gap-3">
+                  <VStack className="flex-1">
+                    <Text className="text-sm font-bold text-phaseText-primary">{node.label}</Text>
+                    <Text className="text-xs uppercase tracking-wide text-phaseText-secondary">
+                      {node.group}
+                    </Text>
+                  </VStack>
+                  <Text className="text-xs font-semibold uppercase text-phaseText-secondary">
+                    {node.type}
+                  </Text>
+                </HStack>
+              </GlassCard>
+            ))}
+          </VStack>
+        </VStack>
       </Box>
 
       <Box className="py-6">

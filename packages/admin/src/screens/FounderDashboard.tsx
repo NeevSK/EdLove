@@ -17,8 +17,8 @@ import {
   ScrollView,
   Spinner,
   Text,
-  useRegisterFAB,
   Users,
+  useRegisterFAB,
   VStack,
   Wind,
   Zap,
@@ -63,13 +63,10 @@ export default function FounderDashboard() {
     [navigation, user?.id],
   );
 
-  const handleOpenInstitute = React.useCallback(
-    () => {
-      const schoolId = user?.school_id;
-      if (schoolId) handleNavigateToSchool(schoolId);
-    },
-    [user?.school_id, handleNavigateToSchool],
-  );
+  const handleOpenInstitute = React.useCallback(() => {
+    const schoolId = user?.school_id;
+    if (schoolId) handleNavigateToSchool(schoolId);
+  }, [user?.school_id, handleNavigateToSchool]);
 
   // Register FAB globally
   useRegisterFAB({

@@ -75,7 +75,7 @@ Input.displayName = 'Input';
 
 export const InputField = React.forwardRef<
   TextInput,
-  TextInputProps & { className?: string; type?: 'text' | 'password' }
+  TextInputProps & { className?: string; type?: 'text' | 'password' | 'number' }
 >(({ className, type, onFocus, onBlur, ...props }, ref) => {
   const { isDisabled, setIsFocused } = useInput();
 
@@ -85,6 +85,7 @@ export const InputField = React.forwardRef<
       ref={ref}
       editable={!isDisabled}
       secureTextEntry={type === 'password'}
+      keyboardType={type === 'number' ? 'numeric' : props.keyboardType}
       placeholderTextColor="#8B8599" // Fallback to theme-safe secondary
       onFocus={(e) => {
         setIsFocused(true);

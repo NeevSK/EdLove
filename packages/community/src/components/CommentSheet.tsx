@@ -1,8 +1,9 @@
-import React from 'react';
+import { useCommentHooks } from '@repo/core/api/hooks';
 import { usePermissions } from '@repo/core/logic';
-import { ConversationSheet, hapticSuccess, hapticError, confirmAction } from '@repo/ui';
-import { useComments } from '../hooks/useComments';
-import { Alert } from 'react-native';
+import { ConversationSheet } from '@repo/ui/components';
+import { hapticError, hapticSuccess } from '@repo/ui/primitives';
+import { confirmAction } from '@repo/ui/utils';
+import React from 'react';
 
 interface CommentSheetProps {
   postId: string | null;
@@ -28,7 +29,7 @@ export function CommentSheet({
     deleteComment,
     toggleUpvote,
     markOfficialAnswer,
-  } = useComments(postId);
+  } = useCommentHooks(postId);
 
   const isPostAuthor = !!currentUserId && currentUserId === postAuthorId;
 
@@ -48,34 +49,50 @@ export function CommentSheet({
     },
   }));
 
-  const handleDelete = React.useCallback(async (id: string) => {
-    const confirmed = await confirmAction(
-      'Delete comment',
-      'Are you sure you want to delete this comment?'
-    );
-    
-    if (confirmed) {
+  const handleDelete = React.useCallback(
+    async (id: string) => {
+      const confirmed = await confirmAction(
+        'Delete comment',
+        'Are you sure you want to delete this comment?',
+      );
+
+      if (confirmed) {
+        try {
+          await deleteComment(id);
+          hapticSuccess();
+        } catch {
+          hapticError();
+        }
+      }
+    },
+    [deleteComment],
+  );
+
+  const handlePost = React.useCallback(
+    async (content: string, isAnonymous: boolean) => {
       try {
-        await deleteComment(id);
+        await createComment({ content, isAnonymous });
         hapticSuccess();
       } catch {
         hapticError();
       }
-    }
-  }, [deleteComment]);
+    },
+    [createComment],
+  );
 
-  const handlePost = React.useCallback(async (content: string, isAnonymous: boolean) => {
-    try {
-      await createComment({ content, isAnonymous });
-      hapticSuccess();
-    } catch {
-      hapticError();
-    }
-  }, [createComment]);
+  const handleMarkOfficial = React.useCallback(
+    (id: string, flag: boolean) => {
+      markOfficialAnswer({ commentId: id, isOfficial: flag });
+    },
+    [markOfficialAnswer],
+  );
 
-  const handleMarkOfficial = React.useCallback((id: string, flag: boolean) => {
-    markOfficialAnswer({ commentId: id, isOfficial: flag });
-  }, [markOfficialAnswer]);
+  const handleUpvote = React.useCallback(
+    (id: string) => {
+      toggleUpvote(id);
+    },
+    [toggleUpvote],
+  );
 
   return (
     <ConversationSheet
@@ -86,19 +103,16 @@ export function CommentSheet({
       comments={uiComments}
       isLoading={isLoading}
       isPosting={isCreatingComment}
-      
       // Feature Flags
       showOfficialBadge={true}
       canMarkOfficial={isPostAuthor && postType === 'question'}
       canDeleteAll={can('delete', 'Comment')}
       allowAnonymous={flags.isCommunityEnabled} // Based on community-wide setting
-      
       // Handlers
       onPost={handlePost}
       onDelete={handleDelete}
-      onUpvote={toggleUpvote}
+      onUpvote={handleUpvote}
       onMarkOfficial={handleMarkOfficial}
-      
       // Localization
       emptyTitle="The Heart is Quiet"
       emptySubtitle="Be the first to seed a reflection into this conversation circle."

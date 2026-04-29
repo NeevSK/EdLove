@@ -24,7 +24,6 @@ import type {
   SearchResult,
   Story,
   Thinker,
-  User,
 } from '@/types';
 
 // ============================================================================

@@ -70,7 +70,13 @@ const ecosystemStatsReducer = (
     case 'REFRESH_START':
       return { ...state, isLoading: true, error: null };
     case 'REFRESH_SUCCESS':
-      return { ...state, stats: action.stats, schools: action.schools, isLoading: false, error: null };
+      return {
+        ...state,
+        stats: action.stats,
+        schools: action.schools,
+        isLoading: false,
+        error: null,
+      };
     case 'SET_MOCK_STATS':
       return { ...state, stats: action.stats, schools: [], isLoading: false, error: null };
     case 'REFRESH_FAILURE':
@@ -180,8 +186,6 @@ export function useFounderEcosystemStats() {
   };
 }
 
-
-
 export async function createFounderSchool(input: {
   name: string;
   type: string;
@@ -223,7 +227,13 @@ const schoolStatsReducer = (
     case 'REFRESH_START':
       return { ...state, isLoading: true, error: null };
     case 'REFRESH_SUCCESS':
-      return { ...state, stats: action.stats, school: action.school, isLoading: false, error: null };
+      return {
+        ...state,
+        stats: action.stats,
+        school: action.school,
+        isLoading: false,
+        error: null,
+      };
     case 'REFRESH_FAILURE':
       return { ...state, isLoading: false, error: action.error };
     case 'SET_LOADING':

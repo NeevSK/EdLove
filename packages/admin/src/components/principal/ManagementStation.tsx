@@ -2,6 +2,7 @@ import {
   ArrowRight,
   Box,
   HStack,
+  hapticLight,
   Icon,
   LayoutGrid,
   Milestone,
@@ -10,7 +11,6 @@ import {
   Text,
   UserPlus,
   VStack,
-  hapticLight,
 } from '@repo/ui';
 
 import { useTranslation } from 'react-i18next';

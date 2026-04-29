@@ -1,9 +1,9 @@
 import { identityAPI } from '@repo/core/api';
 import { usePermissions } from '@repo/core/logic';
 import { supabase } from '@repo/core/native';
-import { Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
-import { Bell, BellOff, MoreVertical, ShieldAlert, UserX } from '@repo/ui/icons';
 import { useLotusToast } from '@repo/ui/hooks';
+import { Bell, BellOff, MoreVertical, ShieldAlert, UserX } from '@repo/ui/icons';
+import { Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { hapticError, hapticSuccess } from '@repo/ui/utils';
 import React, { useEffect, useState } from 'react';
 import { useSocialShield } from '../hooks/useSocialShield';

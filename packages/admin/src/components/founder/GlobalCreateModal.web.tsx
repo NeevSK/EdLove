@@ -17,9 +17,8 @@ import {
   FormControlLabel,
   FormControlLabelText,
   Globe,
-  HStack,
   Heading,
-  Icon as UIIcon,
+  HStack,
   Input,
   InputField,
   LayoutGrid,
@@ -29,6 +28,7 @@ import {
   Text,
   Textarea,
   TextareaInput,
+  Icon as UIIcon,
   Users,
   VStack,
 } from '@repo/ui';

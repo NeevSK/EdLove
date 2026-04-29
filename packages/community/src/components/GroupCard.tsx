@@ -1,12 +1,14 @@
-import { Box, HStack, Icon, SanctuaryCard, Text, VStack } from '@repo/ui';
-import { Globe, Lock, Users } from '@repo/ui/icons';
+import { SanctuaryCard } from '@repo/ui/components';
+import { Box, HStack, Icon, Text, VStack } from '@repo/ui';;
+import { BookOpen, Globe, GraduationCap, Lock, Users } from '@repo/ui/icons';
 import React from 'react';
+import type { GroupType } from '../types';
 
 interface GroupCardProps {
   id: string;
   name: string;
   memberCount: number;
-  type: 'class' | 'interest' | 'staff' | 'public';
+  type: GroupType;
   description?: string;
   onPress: () => void;
 }
@@ -21,10 +23,14 @@ const GroupCard = React.memo(function GroupCard({
 }: GroupCardProps) {
   const getIcon = () => {
     switch (type) {
-      case 'staff':
+      case 'teachers_only':
+      case 'admin_only':
         return <Icon as={Lock} size="xs" className="text-phase-interactive" />;
-      case 'public':
-        return <Icon as={Globe} size="xs" className="text-phase-interactive" />;
+      case 'class':
+      case 'grade':
+        return <Icon as={GraduationCap} size="xs" className="text-phase-interactive" />;
+      case 'subject':
+        return <Icon as={BookOpen} size="xs" className="text-phase-interactive" />;
       default:
         return <Icon as={Users} size="xs" className="text-phase-interactive" />;
     }
@@ -38,7 +44,7 @@ const GroupCard = React.memo(function GroupCard({
       <HStack className="items-center gap-4">
         {/* Avatar with Modern Gradient/Placeholder */}
         <Box
-          className={`w-14 h-14 rounded-2xl justify-center items-center ${type === 'public' ? 'bg-phase-interactive/10' : 'bg-phase-interactive/5'}`}
+          className={`w-14 h-14 rounded-2xl justify-center items-center ${type === 'general' ? 'bg-phase-interactive/10' : 'bg-phase-interactive/5'}`}
         >
           <Text className="text-2xl font-bold text-phase-interactive shadow-sm">
             {(name || 'G').charAt(0).toUpperCase()}

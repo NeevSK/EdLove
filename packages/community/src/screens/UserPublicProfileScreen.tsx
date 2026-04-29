@@ -5,14 +5,6 @@ import { supabase } from '@repo/core/native';
 import { useStore } from '@repo/core/store';
 import type { CommunityStackParamList } from '@repo/core/types';
 import {
-  Box,
-  HStack,
-  Spinner,
-  Text,
-  VStack,
-  Icon,
-} from '@repo/ui/primitives';
-import {
   GlobalHeader,
   SanctuaryButton,
   SanctuaryCard,
@@ -31,6 +23,7 @@ import {
   ShieldAlert,
   ThumbsUp,
 } from '@repo/ui/icons';
+import { Box, HStack, Icon, Spinner, Text, VStack } from '@repo/ui/primitives';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView } from 'react-native';

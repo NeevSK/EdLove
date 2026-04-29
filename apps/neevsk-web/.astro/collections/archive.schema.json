@@ -27,5 +27,8 @@
       "type": "string"
     }
   },
-  "required": ["title", "publishDate"]
+  "required": [
+    "title",
+    "publishDate"
+  ]
 }

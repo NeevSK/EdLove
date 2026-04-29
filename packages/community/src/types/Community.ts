@@ -3,7 +3,7 @@
 // Educational Ecology Support System
 // ============================================================================
 
-import type { Announcement, AuthorityTier } from '@repo/core/types';
+import type { Announcement, AuthorityTier, User } from '@repo/core/types';
 
 export interface AnnouncementWithAuthor extends Announcement {
   author_name?: string;
@@ -399,6 +399,7 @@ export interface GroupMember {
   // Status
   status: 'active' | 'pending' | 'banned';
   joined_at: string;
+  user?: User;
 }
 
 export interface GroupJoinRequest {
@@ -410,6 +411,7 @@ export interface GroupJoinRequest {
   message?: string;
   status: 'pending' | 'approved' | 'rejected';
   created_at: string;
+  user?: User;
   reviewed_at?: string;
   reviewed_by?: string;
 }

@@ -21,8 +21,10 @@ import {
   ChevronLeft,
   ChevronRight,
   Globe,
-  HStack,
   Heading,
+  HStack,
+  hapticLight,
+  hapticSuccess,
   Icon,
   MapPin,
   MessageSquare,
@@ -35,8 +37,6 @@ import {
   Text,
   Users,
   VStack,
-  hapticLight,
-  hapticSuccess,
 } from '@repo/ui';
 
 import { useMemo, useState } from 'react';

@@ -4,9 +4,11 @@ import {
   ActivityIndicator,
   Pressable,
   type PressableProps,
+  type StyleProp,
   Text,
   type TextProps,
   View,
+  type ViewStyle,
 } from 'react-native';
 
 cssInterop(Pressable, { className: 'style' });
@@ -37,6 +39,7 @@ export interface IButtonProps extends PressableProps {
   action?: 'primary' | 'secondary' | 'positive' | 'negative' | 'default';
   isDisabled?: boolean;
   isLoading?: boolean;
+  sx?: StyleProp<ViewStyle>;
 }
 
 const Button = React.forwardRef<View, IButtonProps>(
@@ -48,8 +51,10 @@ const Button = React.forwardRef<View, IButtonProps>(
       size = 'md',
       isDisabled,
       isLoading,
+      sx,
       children,
       onPress,
+      style,
       ...props
     },
     ref,
@@ -111,6 +116,11 @@ const Button = React.forwardRef<View, IButtonProps>(
             busy: !!isLoading,
           }}
           className={`${baseStyle} ${variantStyle} ${sizeStyle} ${isDisabled || isLoading ? 'opacity-40' : ''} ${className || ''}`}
+          style={
+            typeof style === 'function'
+              ? (state) => [sx, style(state)]
+              : [sx, style]
+          }
         >
           {isLoading ? (
             <ButtonSpinner color={variant === 'solid' ? '#FFFFFF' : undefined} />

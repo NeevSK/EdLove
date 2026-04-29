@@ -55,3 +55,10 @@ export interface ResourceNeedSummary {
 }
 
 export type ResourceOwnerContext = 'classroom' | 'institutional';
+
+export interface FieldAnalytics {
+  field_name: string;
+  total_count: number;
+  condition_summary: Record<string, number>;
+  last_updated: string;
+}

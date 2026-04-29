@@ -12,15 +12,15 @@ import {
   Check,
   Clock,
   FileText,
-  HStack,
   Heading,
+  HStack,
+  hapticLight,
   Icon,
   Pressable,
   Spinner,
   Text,
   VStack,
   X,
-  hapticLight,
 } from '@repo/ui';
 
 import { useEffect, useState } from 'react';

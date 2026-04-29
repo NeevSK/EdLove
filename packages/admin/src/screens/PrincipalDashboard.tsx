@@ -5,6 +5,7 @@ import {
   Building2,
   Button,
   ButtonText,
+  hapticLight,
   LayoutGrid,
   NotebookPen,
   QRBuilder,
@@ -12,9 +13,8 @@ import {
   SanctuaryModal,
   ScreenWrapper,
   Text,
-  VStack,
-  hapticLight,
   useRegisterFAB,
+  VStack,
 } from '@repo/ui';
 
 import { useState } from 'react';

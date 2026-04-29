@@ -25,7 +25,7 @@ export interface ClimateSensingData {
 
 export const createClimateSensingSchema = (
   onSubmit: (values: ClimateSensingData) => void,
-): FormConfig<ClimateSensingData> => ({
+): FormConfig<Record<string, any>> => ({
   fields: {
     material_header: {
       type: 'heading',
@@ -137,5 +137,5 @@ export const createClimateSensingSchema = (
       ],
     },
   },
-  onSubmit,
+  onSubmit: (values) => onSubmit(values as ClimateSensingData),
 });

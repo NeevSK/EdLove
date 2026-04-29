@@ -1,5 +1,8 @@
+import { Pressable } from '@repo/ui/primitives';
+import { SanctuaryCard } from '@repo/ui/components';
+import { Box, Heading, HStack, Text, Theme, VStack } from '@repo/ui';;
 import { LivingGlow } from '@repo/ui/components';
-import { Box, Heading, HStack, Pressable, SanctuaryCard, Text, Theme, VStack } from '@repo/ui';;
+
 import { Heart, ShieldCheck, Star, Target } from '@repo/ui/icons';
 import React from 'react';
 import Animated, { LinearTransition } from 'react-native-reanimated';

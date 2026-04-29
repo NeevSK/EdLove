@@ -21,8 +21,12 @@ export * from './hooks';
 
 // Screens
 export { default as AnnouncementsScreen } from './screens/AnnouncementsScreen';
+export type {
+  BaseChatScreenProps,
+  ChatMessage,
+  SubscriptionConfig,
+} from './screens/BaseChatScreen';
 export { default as BaseChatScreen } from './screens/BaseChatScreen';
-export type { BaseChatScreenProps, ChatMessage, SubscriptionConfig } from './screens/BaseChatScreen';
 export { default as CommunityScreen } from './screens/CommunityScreen';
 export { default as CommunityScreenWeb } from './screens/CommunityScreen.web';
 export { default as DirectMessageScreen } from './screens/DirectMessageScreen';

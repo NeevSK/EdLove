@@ -6,17 +6,6 @@ import { useStore } from '@repo/core/store';
 import type { CommunityStackParamList } from '@repo/core/types';
 import { GiveThuthimalModal } from '@repo/profile';
 import {
-  Box,
-  Heading,
-  HStack,
-  Text,
-  VStack,
-  Button,
-  ButtonIcon,
-  ButtonText,
-  Theme,
-} from '@repo/ui/primitives';
-import {
   GlobalHeader,
   LoadingOverlay,
   SanctuaryBackground,
@@ -35,6 +24,17 @@ import {
   Send,
   Shield,
 } from '@repo/ui/icons';
+import {
+  Box,
+  Button,
+  ButtonIcon,
+  ButtonText,
+  Heading,
+  HStack,
+  Text,
+  Theme,
+  VStack,
+} from '@repo/ui/primitives';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, ScrollView } from 'react-native';

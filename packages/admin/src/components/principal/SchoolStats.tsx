@@ -1,14 +1,5 @@
 import type { SchoolStats as ISchoolStats } from '@repo/core';
-import {
-  Box,
-  Building,
-  GraduationCap,
-  HStack,
-  Icon,
-  Text,
-  Users,
-  VStack,
-} from '@repo/ui';
+import { Box, Building, GraduationCap, HStack, Icon, Text, Users, VStack } from '@repo/ui';
 
 interface SchoolStatsProps {
   stats: ISchoolStats;

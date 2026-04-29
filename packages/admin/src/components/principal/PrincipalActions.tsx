@@ -3,15 +3,15 @@ import {
   Box,
   CalendarDays,
   ChevronRight,
-  HStack,
   Heading,
+  HStack,
+  hapticLight,
   Icon,
   Pressable,
   Text,
   TrendingUp,
   UserCheck,
   VStack,
-  hapticLight,
 } from '@repo/ui';
 
 import type React from 'react';

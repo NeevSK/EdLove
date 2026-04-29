@@ -1,32 +1,15 @@
 import { supabase } from '../native/supabase';
-import { growthSignalsAPI } from './growthSignals';
-import { impactRipplesAPI } from './impactRipples';
-// types are defined below
-export type ManifestoVibe = 'visionary' | 'supportive' | 'academic' | 'wellbeing';
-export type ManifestoStatus = 'active' | 'archived' | 'fulfilled';
+import type { ManifestoVibe, SanctuaryManifesto } from '../types/Community';
 
-export interface SanctuaryManifesto {
-  id: string;
-  school_id: string;
-  creator_id: string;
-  title: string;
-  content: string;
-  vibe: ManifestoVibe;
-  status: ManifestoStatus;
-  target_date?: string;
-  metadata: Record<string, any>;
-  created_at: string;
-  updated_at: string;
-  endorsement_count?: number;
-  has_endorsed?: boolean;
-}
-
+/**
+ * Sacred Missions API for managing school-wide manifestos and endorsements.
+ * Promoted to @repo/core.
+ */
 export const sacredMissionsAPI = {
   /**
    * Fetch manifestos for a school
    */
-  async getManifestos(input: { school_id: string; user_id?: string }) {
-    const { school_id: schoolId, user_id: userId } = input;
+  async getManifestos(schoolId: string, userId?: string) {
     const { data, error } = await supabase
       .from('sanctuary_manifestos')
       .select(`
@@ -48,11 +31,11 @@ export const sacredMissionsAPI = {
         .eq('user_id', userId);
 
       if (endData) {
-        userEndorsements = endData.map((e) => e.manifesto_id);
+        userEndorsements = endData.map((e: any) => e.manifesto_id);
       }
     }
 
-    return data.map((m) => ({
+    return (data || []).map((m) => ({
       ...m,
       endorsement_count: m.manifesto_endorsements?.[0]?.count || 0,
       has_endorsed: userEndorsements.includes(m.id),
@@ -83,19 +66,7 @@ export const sacredMissionsAPI = {
   /**
    * Endorse a manifesto
    */
-  async endorseManifesto(input: {
-    manifesto_id: string;
-    user_id: string;
-    commitment_text?: string;
-  }) {
-    const { manifesto_id: manifestoId, user_id: userId, commitment_text: commitmentText } = input;
-    // Fetch the manifesto's creator_id for the Impact Ripple
-    const { data: manifesto } = await supabase
-      .from('sanctuary_manifestos')
-      .select('creator_id')
-      .eq('id', manifestoId)
-      .maybeSingle();
-
+  async endorseManifesto(manifestoId: string, userId: string, commitmentText?: string) {
     const { error } = await supabase.from('manifesto_endorsements').upsert({
       manifesto_id: manifestoId,
       user_id: userId,
@@ -103,39 +74,13 @@ export const sacredMissionsAPI = {
     });
 
     if (error) throw error;
-
-    // Growth signal: teacher actively participated in community alignment (Weaving dimension)
-    void growthSignalsAPI
-      .emitSignal({
-        user_id: userId,
-        event_type: 'manifesto_endorsed',
-        event_metadata: {
-          manifesto_id: manifestoId,
-        },
-      })
-      .catch(() => {});
-
-    // Impact Ripple for the manifesto creator  "a fellow teacher endorsed your vision"
-    if (manifesto?.creator_id && manifesto.creator_id !== userId) {
-      void impactRipplesAPI
-        .createRipple({
-          recipientUserId: manifesto.creator_id,
-          actorUserId: userId,
-          rippleType: 'manifesto_endorsed',
-          sourceEntityType: 'manifesto',
-          sourceEntityId: manifestoId,
-        })
-        .catch(() => {});
-    }
-
     return true;
   },
 
   /**
    * Remove endorsement
    */
-  async unendorseManifesto(input: { manifesto_id: string; user_id: string }) {
-    const { manifesto_id: manifestoId, user_id: userId } = input;
+  async unendorseManifesto(manifestoId: string, userId: string) {
     const { error } = await supabase
       .from('manifesto_endorsements')
       .delete()

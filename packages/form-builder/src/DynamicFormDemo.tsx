@@ -40,12 +40,12 @@ export default function DynamicFormDemo() {
   });
 
   return (
-    <VStack space="xl" padding="$4">
+    <VStack space="xl" className="p-4">
       <Box>
-        <Text size="xl" fontWeight="$bold">
+        <Text size="xl" className="font-bold">
           Dynamic Form Preview
         </Text>
-        <Text size="sm" color="$textSecondary">
+        <Text size="sm" className="text-phase-text-secondary">
           This form was generated entirely from a JSON object.
         </Text>
       </Box>
@@ -53,9 +53,9 @@ export default function DynamicFormDemo() {
       {!submittedData ? (
         <NativeForm manager={manager} submitLabel="Share Resonance" />
       ) : (
-        <Box padding="$4" backgroundColor="$backgroundSecondary" borderRadius="$md">
-          <Text fontWeight="$bold">Thank you for sharing!</Text>
-          <Text size="xs" mt="$2">
+        <Box className="rounded-md bg-phase-surface p-4">
+          <Text className="font-bold">Thank you for sharing!</Text>
+          <Text size="xs" className="mt-2">
             Data received: {JSON.stringify(submittedData, null, 2)}
           </Text>
           <SanctuaryButton

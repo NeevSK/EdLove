@@ -1,10 +1,12 @@
 import React from 'react';
-import { View, type ViewProps } from 'react-native';
+import { View, type StyleProp, type ViewProps, type ViewStyle } from 'react-native';
 
 export interface IHStackProps extends ViewProps {
   className?: string;
   space?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | string;
   reversed?: boolean;
+  children?: React.ReactNode;
+  sx?: StyleProp<ViewStyle>;
 }
 
 const spaceMap: Record<string, string> = {
@@ -16,7 +18,7 @@ const spaceMap: Record<string, string> = {
 };
 
 export const HStack = React.forwardRef<View, IHStackProps>(
-  ({ className, space, reversed, ...props }, ref) => {
+  ({ className, space, reversed, sx, style, ...props }, ref) => {
     const gapClass = space ? spaceMap[space] || `gap-${space}` : '';
     const Component = View as any;
     return (
@@ -24,6 +26,7 @@ export const HStack = React.forwardRef<View, IHStackProps>(
         {...props}
         ref={ref}
         className={`flex-row ${reversed ? 'flex-row-reverse' : ''} ${gapClass} ${className || ''}`}
+        style={[sx, style]}
       />
     );
   },

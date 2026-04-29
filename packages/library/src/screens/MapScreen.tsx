@@ -1,29 +1,39 @@
+import { BlurView } from 'expo-blur';
 import { useNavigation } from '@react-navigation/native';
-import { FeatureGuard, usePermissions, useStore } from '@repo/core';
 import {
   CaptureEngine,
   getAvailablePerspectives as getEnginePerspectives,
   KnowledgeParser,
 } from '@repo/graphics';
 import {
+  FeatureGuard,
+  usePermissions,
+  useStore,
+} from '@repo/core';
+import {
+  AstroView,
   Box,
+  DharmaView,
   GlobalHeader,
   HStack,
+  JyotiView,
   Pressable,
   Icon as SanctuaryIcon,
   ScreenWrapper,
   ScrollView,
   Spinner,
+  TerraView,
   Text,
   Theme,
   useReality,
   useResponsive,
   useTheme,
+  VastuView,
+  VatyaView,
   VStack,
 } from '@repo/ui';
-import { BlurView } from 'expo-blur';
-import { BarChart3, FileCheck, Globe, Network, Orbit, Route, Wind, X } from 'lucide-react-native';
 import { cssInterop } from 'nativewind';
+import { BarChart3, FileCheck, Globe, Network, Orbit, Route, Wind, X } from 'lucide-react-native';
 import React, { useEffect, useMemo, useState } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Animated, {
@@ -33,12 +43,6 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import { libraryAPI } from '../api/library';
-import { AstroView } from '../components/perspectives/AstroView';
-import { DharmaView } from '../components/perspectives/DharmaView';
-import { JyotiView } from '../components/perspectives/JyotiView';
-import { TerraView } from '../components/perspectives/TerraView';
-import { VastuView } from '../components/perspectives/VastuView';
-import { VatyaView } from '../components/perspectives/VatyaView';
 import { usePerspectiveLayout } from '../hooks/usePerspectiveLayout';
 import type { KnowledgeNode, KnowledgeTopology } from '../types/Library';
 

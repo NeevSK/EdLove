@@ -17,15 +17,33 @@ export type {
 export type { Classroom } from './Classroom';
 export type { ClassroomNote } from './ClassroomNote';
 export type {
+  AnnouncementWithAuthor,
+  Comment,
+  CommunityGroup,
+  CommunityPost,
   CommunityReaction,
-  Group as CommunityGroup,
+  DirectConversation,
+  DirectMessage,
+  FeedbackStatus,
   Group,
-  GroupMember as CommunityMember,
+  GroupJoinPolicy,
+  GroupJoinRequest,
   GroupMember,
   GroupMessage,
-  Post as CommunityPost,
+  GroupReport,
+  GroupType,
+  ManifestoStatus,
+  ManifestoVibe,
+  PollData,
+  PollOption,
   Post,
-  ThuthimalGift,
+  PostType,
+  PostVisibility,
+  ReportContentInput,
+  ReportStatus,
+  SanctuaryGroup,
+  SanctuaryManifesto,
+  Urgency,
 } from './Community';
 export type {
   FieldDefinition,
@@ -37,9 +55,7 @@ export type {
 export type { ClassroomGradingSettings, StudentGrade } from './Grade';
 export type { StudentGroup } from './Group';
 export type {
-  ClassroomResourceCategory,
-  ClassroomResourceCondition,
-  ClassroomResourceItem,
+  FieldAnalytics,
   InstitutionalAsset,
   InventoryItem,
   InventoryRequest,
@@ -61,7 +77,6 @@ export type {
 } from './navigation';
 export type {
   ClassroomJoinRequest,
-  GroupReport,
   RequestStatus,
   SchoolJoinRequest,
 } from './Onboarding';
@@ -95,6 +110,7 @@ export type { PrivacyLevel, SocialLink, SocialPlatform } from './Social';
 export type { StaffAttendance, StaffAttendanceStatus } from './StaffAttendance';
 export type { LeaveStatus, LeaveType, StaffLeave } from './StaffLeave';
 export type { BulkStudent, Student } from './Student';
+export type { ThuthimalGift } from './Thuthimal';
 export type { Task } from './Task';
 export type { TeacherNote } from './TeacherNote';
 export type { LongitudinalRecord, TemporalBounds, TemporalPoint } from './Temporal';
@@ -114,6 +130,7 @@ export type {
   PerspectiveId,
 } from './topology';
 export type { AuthSession, LoginData, SignUpData, User } from './User';
+export type { PerspectiveRenderer, PerspectiveViewProps } from './visualization';
 export type {
   ResolvedWorkspaceSurface,
   WorkspaceLayout,

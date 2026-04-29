@@ -18,8 +18,12 @@
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:^",
+    "@types/react": "^19.2.14",
     "typescript": "^5.9.3",
-    "eslint": "^9.38.0",
-    "react": "19.2.0"
+    "eslint": "^9.38.0"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
   }
 }

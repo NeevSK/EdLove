@@ -6,6 +6,19 @@ const fs = require('node:fs');
 const projectRoot = __dirname;
 const workspaceRoot = path.resolve(projectRoot, '../..');
 
+function resolvePnpmPackageRuntime(packageName, runtimeFile) {
+  const pnpmRoot = path.resolve(workspaceRoot, 'node_modules/.pnpm');
+  const pkgDir = fs
+    .readdirSync(pnpmRoot)
+    .find((entry) => entry.startsWith(`${packageName}@`));
+
+  if (!pkgDir) {
+    throw new Error(`Unable to locate ${packageName} in pnpm store at ${pnpmRoot}`);
+  }
+
+  return path.resolve(pnpmRoot, pkgDir, 'node_modules', packageName, runtimeFile);
+}
+
 // Note: babel.config.js sets `unstable_transformImportMeta: true` in
 // babel-preset-expo.  This is required because zustand@5 (and similar
 // packages) ship pre-compiled code that uses `import.meta.env.MODE` for
@@ -43,6 +56,10 @@ config.resolver.blockList = [
   /packages\/.*\/node_modules\/react\/.*/,
   /packages\/.*\/node_modules\/react-native\/.*/,
   /packages\/.*\/node_modules\/@react-native-async-storage\/.*/,
+  // Ignore transient Vite prebundle cache folders in sibling apps. These can be
+  // missing at startup and crash Metro's fallback watcher on Windows.
+  /apps\/.*\/node_modules\/\.vite\/.*/,
+  /apps\\.*\\node_modules\\\.vite\\.*/
 ];
 
 const SINGLETON_OVERRIDES = {
@@ -157,6 +174,15 @@ const UNIVERSAL_SHIMS = {
   vm: path.resolve(projectRoot, 'src/shims/stream-web.js'),
 };
 
+const CSS_INTEROP_RUNTIME_SHIMS = {
+  'react-native-css-interop/jsx-runtime': path.resolve(
+    resolvePnpmPackageRuntime('react-native-css-interop', 'dist/runtime/jsx-runtime.js'),
+  ),
+  'react-native-css-interop/jsx-dev-runtime': path.resolve(
+    resolvePnpmPackageRuntime('react-native-css-interop', 'dist/runtime/jsx-dev-runtime.js'),
+  ),
+};
+
 const defaultResolveRequest = config.resolver.resolveRequest;
 config.resolver.resolveRequest = (context, moduleName, platform) => {
   // A. Asset & Metadata Bypass
@@ -173,6 +199,13 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
     if (moduleName === shimKey || moduleName.startsWith(`${shimKey}/`)) {
       console.log(`[Metro-Firewall] 🛡️ UNIVERSAL Intercept: ${moduleName} -> ${shimKey}`);
       return { filePath: UNIVERSAL_SHIMS[shimKey], type: 'sourceFile' };
+    }
+  }
+
+  for (const shimKey in CSS_INTEROP_RUNTIME_SHIMS) {
+    if (moduleName === shimKey || moduleName.startsWith(`${shimKey}/`)) {
+      console.log(`[Metro-Firewall] 🛡️ CSS Interop Intercept: ${moduleName} -> ${shimKey}`);
+      return { filePath: CSS_INTEROP_RUNTIME_SHIMS[shimKey], type: 'sourceFile' };
     }
   }
 

@@ -1,4 +1,5 @@
-import { Box, HStack, Icon, Pressable, ScrollView, Text, VStack } from '@repo/ui';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+import { Box, HStack, Icon, Text, VStack } from '@repo/ui';;
 import { Bookmark, BookOpen, FileText, Film, Link as LinkIcon } from '@repo/ui/icons';
 import type React from 'react';
 

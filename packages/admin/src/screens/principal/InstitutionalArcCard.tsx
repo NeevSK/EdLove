@@ -2,15 +2,15 @@ import {
   Box,
   Clock,
   HStack,
+  hapticLight,
   Icon,
   Info,
+  type LucideIcon,
   Plus,
   Pressable,
   SanctuaryModal,
   Text,
   VStack,
-  hapticLight,
-  type LucideIcon,
 } from '@repo/ui';
 
 import type React from 'react';

@@ -1,5 +1,6 @@
-import { execSync } from 'child_process';
+import { execSync, spawnSync } from 'child_process';
 import fs from 'fs';
+import os from 'os';
 import path from 'path';
 import { ROOT_DIR } from './constants.js';
 
@@ -12,6 +13,155 @@ interface ExecutionResult {
   metadata?: any;
 }
 
+export interface CommandRunResult {
+  ok: boolean;
+  stdout: string;
+  stderr: string;
+  combined: string;
+  exitCode: number | null;
+  command: string;
+  args: string[];
+}
+
+export interface PowerShellAvailability {
+  available: boolean;
+  binary: string | null;
+  guidance?: string;
+}
+
+function normalizeOutput(value: unknown): string {
+  if (typeof value === 'string') return value;
+  if (Buffer.isBuffer(value)) return value.toString('utf8');
+  return '';
+}
+
+export function quoteShellArg(value: string): string {
+  if (value.length === 0) return '""';
+  return `"${value.replace(/(["\\$`])/g, '\\$1')}"`;
+}
+
+export function commandExists(command: string): boolean {
+  const check = process.platform === 'win32' ? 'where' : 'which';
+  const result = spawnSync(check, [command], {
+    cwd: ROOT_DIR,
+    encoding: 'utf8',
+    shell: false,
+  });
+  return result.status === 0;
+}
+
+export function getPowerShellAvailability(): PowerShellAvailability {
+  if (commandExists('pwsh')) {
+    return { available: true, binary: 'pwsh' };
+  }
+
+  if (process.platform === 'win32' && commandExists('powershell')) {
+    return { available: true, binary: 'powershell' };
+  }
+
+  const guidance =
+    process.platform === 'win32'
+      ? 'PowerShell was not found. Install PowerShell 7 (pwsh) or ensure Windows PowerShell is on PATH.'
+      : 'PowerShell was not found. Install PowerShell 7 (`pwsh`) to run this tool on macOS/Linux.';
+
+  return { available: false, binary: null, guidance };
+}
+
+export function runCommand(
+  command: string,
+  args: string[] = [],
+  options?: { cwd?: string; shell?: boolean; input?: string },
+): CommandRunResult {
+  const result = spawnSync(command, args, {
+    cwd: options?.cwd ?? ROOT_DIR,
+    encoding: 'utf8',
+    shell: options?.shell ?? false,
+    input: options?.input,
+  });
+
+  const stdout = normalizeOutput(result.stdout);
+  const stderr = normalizeOutput(result.stderr);
+  const combined = [stdout, stderr].filter(Boolean).join('\n').trim();
+
+  return {
+    ok: result.status === 0,
+    stdout,
+    stderr,
+    combined,
+    exitCode: result.status,
+    command,
+    args,
+  };
+}
+
+export function runShellCommand(command: string, cwd = ROOT_DIR): CommandRunResult {
+  try {
+    const stdout = execSync(command, {
+      cwd,
+      shell: true,
+      encoding: 'utf8',
+      maxBuffer: 10 * 1024 * 1024,
+    } as any);
+    return {
+      ok: true,
+      stdout,
+      stderr: '',
+      combined: stdout.trim(),
+      exitCode: 0,
+      command,
+      args: [],
+    };
+  } catch (error: any) {
+    const stdout = normalizeOutput(error?.stdout);
+    const stderr = normalizeOutput(error?.stderr);
+    const message = typeof error?.message === 'string' ? error.message : String(error);
+    const combined = [message, stdout, stderr].filter(Boolean).join('\n').trim();
+    return {
+      ok: false,
+      stdout,
+      stderr,
+      combined,
+      exitCode: typeof error?.status === 'number' ? error.status : null,
+      command,
+      args: [],
+    };
+  }
+}
+
+export function runPowerShellScript(
+  scriptPath: string,
+  scriptArgs: string[] = [],
+  options?: { cwd?: string },
+): CommandRunResult {
+  const availability = getPowerShellAvailability();
+  if (!availability.available || !availability.binary) {
+    const message = [
+      `PowerShell script unavailable: ${scriptPath}`,
+      availability.guidance,
+    ]
+      .filter(Boolean)
+      .join('\n');
+
+    return {
+      ok: false,
+      stdout: '',
+      stderr: message,
+      combined: message,
+      exitCode: null,
+      command: availability.binary ?? 'pwsh',
+      args: scriptArgs,
+    };
+  }
+
+  const binary = availability.binary;
+  const args =
+    binary === 'powershell'
+      ? ['-ExecutionPolicy', 'Bypass', '-File', scriptPath, ...scriptArgs]
+      : ['-NoProfile', '-File', scriptPath, ...scriptArgs];
+
+  return runCommand(binary, args, { cwd: options?.cwd ?? ROOT_DIR });
+}
+
 /**
  * Standardized Execution Layer for Sovereign Tools
  */
@@ -22,41 +172,32 @@ export function executeSovereignTool(
 ): ExecutionResult {
   const startTime = Date.now();
   const timestamp = new Date().toISOString();
-  let status: 'success' | 'failure' = 'success';
-  let output = '';
-
-  try {
-    console.error(`[Sovereign] Executing ${toolName}...`);
-    output = execSync(command, {
-      cwd: ROOT_DIR,
-      shell: true,
-      encoding: 'utf8',
-      maxBuffer: 10 * 1024 * 1024,
-    } as any) as unknown as string;
-  } catch (e: any) {
-    status = 'failure';
-    // Capture the detailed output from the subprocess if available
-    const stdout = e.stdout?.toString() || '';
-    const stderr = e.stderr?.toString() || '';
-    output = `${e.message}\n${stdout}\n${stderr}`.trim();
-  }
-
+  const shellResult = runShellCommand(command, ROOT_DIR);
   const durationMs = Date.now() - startTime;
+
   const result: ExecutionResult = {
     tool: toolName,
     timestamp,
     durationMs,
-    status,
-    output,
+    status: shellResult.ok ? 'success' : 'failure',
+    output: shellResult.combined,
     metadata,
   };
 
-  // Persist report
   const reportDir = path.join(ROOT_DIR, 'reports');
-  if (!fs.existsSync(reportDir)) fs.mkdirSync(reportDir);
+  if (!fs.existsSync(reportDir)) fs.mkdirSync(reportDir, { recursive: true });
 
   const reportFileName = `${toolName}_${timestamp.replace(/[:.]/g, '-')}.json`;
   fs.writeFileSync(path.join(reportDir, reportFileName), JSON.stringify(result, null, 2), 'utf-8');
 
   return result;
+}
+
+export function getPlatformDescriptor() {
+  return {
+    os: process.platform,
+    release: os.release(),
+    arch: process.arch,
+    powerShell: getPowerShellAvailability(),
+  };
 }

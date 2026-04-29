@@ -36,8 +36,10 @@ export const ClimateSensingScreenWeb = ({
   initialSchoolName,
 }: ClimateSensingWebProps) => {
   // School Identity State
-  const [selectedSchool, setSelectedSchool] = useState<{ id: string; name: string } | null>(
-    initialSchoolId ? { id: initialSchoolId, name: initialSchoolName || initialSchoolId } : null,
+  const [selectedSchool, setSelectedSchool] = useState<SchoolRegistryItem | null>(
+    initialSchoolId
+      ? { id: initialSchoolId, name: initialSchoolName || initialSchoolId, census_id: null }
+      : null,
   );
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<SchoolRegistryItem[]>([]);

@@ -1,3 +1,5 @@
+import { communityAPI } from '@repo/community';
+import { api, growthSignalsAPI, handleAPIError, identityAPI, type School } from '@repo/core';
 import {
   Actionsheet,
   ActionsheetBackdrop,
@@ -13,6 +15,8 @@ import {
   FormControlLabel,
   FormControlLabelText,
   HStack,
+  hapticLight,
+  hapticSuccess,
   Icon,
   Input,
   InputField,
@@ -22,15 +26,19 @@ import {
   Text,
   Textarea,
   TextareaInput,
-  VStack,
   useToast,
+  useTranslation,
+  VStack,
 } from '@repo/ui';
-import { api, handleAPIError, growthSignalsAPI, identityAPI, type School } from '@repo/core';
-import { createFounderClassroom, createFounderSchool } from '../../bridge/founderWorkspace';
-import { communityAPI } from '@repo/community';
-import { hapticLight, hapticSuccess, useTranslation } from '@repo/ui';
-import { ChevronDown, LayoutGrid, School as SchoolIcon, Users, UserPlus } from 'lucide-react-native';
+import {
+  ChevronDown,
+  LayoutGrid,
+  School as SchoolIcon,
+  UserPlus,
+  Users,
+} from 'lucide-react-native';
 import React, { useReducer, useState } from 'react';
+import { createFounderClassroom, createFounderSchool } from '../../bridge/founderWorkspace';
 
 interface GlobalCreateModalProps {
   isOpen: boolean;
@@ -155,7 +163,7 @@ export default function GlobalCreateModal({
               join_policy: 'open',
               school_id: result.id,
             },
-            userId
+            userId,
           );
         }
       } else if (state.type === 'classroom') {
@@ -176,7 +184,7 @@ export default function GlobalCreateModal({
               school_id: state.selectedSchoolId,
               classroom_id: result.id,
             },
-            userId
+            userId,
           );
         }
       } else if (state.type === 'group') {
@@ -188,7 +196,7 @@ export default function GlobalCreateModal({
             group_type: 'general',
             join_policy: 'open',
           },
-          userId
+          userId,
         );
       }
 

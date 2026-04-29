@@ -9,8 +9,10 @@ import {
   FormControl,
   FormControlLabel,
   FormControlLabelText,
-  HStack,
   Heading,
+  HStack,
+  hapticLight,
+  hapticMedium,
   Icon,
   Input,
   InputField,
@@ -20,8 +22,6 @@ import {
   SkeletonCard,
   Text,
   VStack,
-  hapticLight,
-  hapticMedium,
 } from '@repo/ui';
 
 import type React from 'react';

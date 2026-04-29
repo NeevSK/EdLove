@@ -1,13 +1,4 @@
-import {
-  ArrowLeft,
-  Box,
-  HStack,
-  Icon,
-  Pressable,
-  Text,
-  VStack,
-  hapticLight,
-} from '@repo/ui';
+import { ArrowLeft, Box, HStack, hapticLight, Icon, Pressable, Text, VStack } from '@repo/ui';
 
 import type React from 'react';
 

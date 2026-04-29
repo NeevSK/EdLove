@@ -4,7 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 import { useThemedColors } from '../hooks/useThemedColors';
 import { Theme } from '../theme/Theme';
-import SanctuaryButton from './SanctuaryButton';
+import { SanctuaryButton } from './SanctuaryButton';
 
 interface SanctuaryNudgeProps {
   title: string;

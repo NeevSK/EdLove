@@ -1,8 +1,8 @@
 import {
   Box,
   GraduationCap,
-  HStack,
   Heading,
+  HStack,
   Icon,
   Plus,
   Pressable,

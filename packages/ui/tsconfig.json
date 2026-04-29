@@ -10,7 +10,7 @@
     "paths": {
       "@/*": ["src/*"]
     },
-    "types": ["jest", "node"]
+    "types": ["@repo/types-shim", "jest", "node"]
   },
   "include": ["src/**/*", "nativewind-env.d.ts"],
   "exclude": ["node_modules", "dist"]

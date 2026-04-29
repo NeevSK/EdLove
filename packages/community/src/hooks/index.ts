@@ -1,16 +1,5 @@
-export { useComments } from './useComments';
+export { useComposerLogic } from './useComposerLogic';
 export { useCommunity } from './useCommunity';
-export { useCommunityFilters } from './useCommunityFilters';
 export { useCommunityGroups } from './useCommunityGroups';
 export { useCommunityPresence } from './useCommunityPresence';
-export { useCommunityProfile } from './useCommunityProfile';
-export { useComposerLogic } from './useComposerLogic';
-export { useManifestos } from './useManifestos';
-export { useNotifications } from './useNotifications';
-export { usePollLogic } from './usePollLogic';
-export { usePostLogic } from './usePostLogic';
 export { useSocialShield } from './useSocialShield';
-export { COMMENT_KEYS } from './useComments';
-export { COMMUNITY_KEYS } from './useCommunity';
-export { GROUP_KEYS } from './useCommunityGroups';
-export { MANIFESTO_KEYS } from './useManifestos';

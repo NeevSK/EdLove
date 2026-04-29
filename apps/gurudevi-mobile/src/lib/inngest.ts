@@ -1,4 +1,3 @@
-import { schemas } from '@repo/core';
 import { Inngest } from 'inngest';
 
 /**
@@ -10,7 +9,6 @@ import { Inngest } from 'inngest';
  */
 export const inngest = new Inngest({
   id: 'gurudevi-mobile-app',
-  schemas: schemas,
   // Expo uses process.env with EXPO_PUBLIC_ prefix
   eventKey: process.env.EXPO_PUBLIC_INNGEST_EVENT_KEY,
 });

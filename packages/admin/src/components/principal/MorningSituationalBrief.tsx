@@ -19,13 +19,13 @@ import {
   ChevronRight,
   FileCheck,
   HStack,
+  hapticLight,
   Icon,
   Pressable,
   Text,
   TrendingDown,
   TrendingUp,
   VStack,
-  hapticLight,
 } from '@repo/ui';
 
 import { useEffect, useState } from 'react';

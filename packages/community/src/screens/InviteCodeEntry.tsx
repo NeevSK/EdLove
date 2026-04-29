@@ -1,26 +1,19 @@
-import { validateInviteCode, type InviteCodeData } from '@repo/core/logic';
+import { type InviteCodeData, validateInviteCode } from '@repo/core/logic';
+import { SanctuaryButton, ScreenWrapper } from '@repo/ui/components';
+import { useSanctuaryToast } from '@repo/ui/hooks';
+import { ArrowRight, HelpCircle, Shield } from '@repo/ui/icons';
 import {
   Box,
   Heading,
   HStack,
+  Icon,
+  InputField,
   Pressable,
   Spinner,
   Text,
   VStack,
-  Icon,
-  InputField,
 } from '@repo/ui/primitives';
-import {
-  SanctuaryButton,
-  ScreenWrapper,
-} from '@repo/ui/components';
-import { useSanctuaryToast } from '@repo/ui/hooks';
-import {
-  hapticError,
-  hapticLight,
-  hapticSuccess,
-} from '@repo/ui/utils';
-import { ArrowRight, HelpCircle, Shield } from '@repo/ui/icons';
+import { hapticError, hapticLight, hapticSuccess } from '@repo/ui/utils';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -174,6 +167,11 @@ export default function InviteCodeEntry({ onCodeValidated, onSkip }: InviteCodeE
           {/* Skip / Create School */}
           <VStack className="mt-2 items-center">
             <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={
+                t('invite.createSchool') || 'Principal registration? Create School'
+              }
+              accessibilityHint="Navigates to the school creation screen for principals"
               onPress={() => {
                 hapticLight();
                 onSkip();

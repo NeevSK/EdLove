@@ -107,7 +107,7 @@ export default function ClassroomScreen() {
     actionLabel=
     t('founder.nudges.breathing.action') || 'Mindful Reset'
     onAction=
-    () => setBreathingOpen(true);
+    () => setBreathingOpen(true)
     icon={Wind}
                     /
     </FeatureGuard                <FeatureGuard action="read" subject="StudentPulse"                    <SanctuaryNudge
@@ -119,7 +119,7 @@ export default function ClassroomScreen() {
     actionLabel=
     t('student.nudges.breathing.action') || 'Breathe Now'
     onAction=
-    () => setBreathingOpen(true);
+    () => setBreathingOpen(true)
     icon={Wind}
                     /
     </FeatureGuard            </        )

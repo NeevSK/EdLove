@@ -6,8 +6,9 @@ import {
   ButtonIcon,
   ButtonText,
   GraduationCap,
-  HStack,
   Heading,
+  HStack,
+  hapticLight,
   Icon,
   Input,
   InputField,
@@ -24,10 +25,9 @@ import {
   Spinner,
   Text,
   VStack,
-  hapticLight,
 } from '@repo/ui';
 
-import { useReducer, useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface HierarchyBuilderProps {
@@ -83,7 +83,11 @@ function reducer(state: State, action: Action): State {
     case 'SET_LOADING':
       return { ...state, isLoading: action.payload };
     case 'TOGGLE_ADD_SECTION':
-      return { ...state, showAddSection: action.payload, error: action.payload ? state.error : null };
+      return {
+        ...state,
+        showAddSection: action.payload,
+        error: action.payload ? state.error : null,
+      };
     case 'TOGGLE_ADD_GRADE':
       return {
         ...state,
@@ -176,7 +180,8 @@ export default function HierarchyBuilder({ schoolId, onBack }: HierarchyBuilderP
     if (Number.isNaN(gradeNum) || gradeNum < 1 || gradeNum > 13) {
       dispatch({
         type: 'SET_ERROR',
-        payload: t('principal.hierarchy.errorGradeLimit') || 'Grade number must be between 1 and 13',
+        payload:
+          t('principal.hierarchy.errorGradeLimit') || 'Grade number must be between 1 and 13',
       });
       return;
     }

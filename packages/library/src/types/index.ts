@@ -1,1 +1,17 @@
-export * from './Library';
+export {
+  type CollectionFilters,
+  type CreateCollectionInput,
+  type CreateResourceInput,
+  type KnowledgeLink,
+  type KnowledgeNode,
+  type KnowledgeTopology,
+  LIBRARY_UI_CATEGORIES,
+  type LibraryCollection,
+  type LibraryResource,
+  type ResourceFormat,
+  type ResourceType,
+  type ResourceDifficulty,
+  type ResourceFilters,
+  type ResourceLanguage,
+  type ResourceVisibility,
+} from './Library';

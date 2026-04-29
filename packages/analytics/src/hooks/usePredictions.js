@@ -1,0 +1,1 @@
+export { usePredictions } from './queries';

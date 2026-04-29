@@ -11,12 +11,7 @@
 import { useNavigation } from '@react-navigation/native';
 import type { SchoolForestState, TeacherTree } from '@repo/core';
 import { schoolForestAPI, usePermissions } from '@repo/core';
-import {
-  ArrowLeft,
-  Icon,
-  RefreshCw,
-  SkeletonCard,
-} from '@repo/ui';
+import { ArrowLeft, Icon, RefreshCw, SkeletonCard } from '@repo/ui';
 
 import React, { useEffect, useState } from 'react';
 

@@ -20,17 +20,8 @@ module.exports = (api) => {
           reactCompiler: true,
         },
       ],
+      'nativewind/babel',
     ],
-    plugins: ['nativewind/babel', 'react-native-reanimated/plugin'],
-    // Ensure ESM-first packages are transformed by Babel.
-    // i18next v23+ and react-i18next v14+ ship pre-compiled ESM that Metro
-    // cannot wrap as CJS without this transformation step, leading to the
-    // "Cannot set property default of #<object> which has only a getter" error.
-    overrides: [
-      {
-        test: /node_modules\/(i18next|react-i18next)\//,
-        plugins: ['@babel/plugin-transform-modules-commonjs'],
-      },
-    ],
+    plugins: [require('react-native-reanimated/plugin')],
   };
 };

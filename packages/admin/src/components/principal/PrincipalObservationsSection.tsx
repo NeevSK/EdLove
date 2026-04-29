@@ -165,13 +165,15 @@ export default function PrincipalObservationsSection({
             Institutional Logs
           </Text>
         </VStack>
-         <Pressable
+        <Pressable
           onPress={() => {
             hapticLight();
             dispatch({ type: 'TOGGLE_FORM' });
           }}
           className={`rounded-[18px] px-4 py-2.5 flex-row items-center gap-2 active:scale-95 transition-all shadow-sm ${state.isAddFormVisible ? 'bg-phase-canvas border border-phase-border' : 'bg-phase-interactive'}`}
-          accessibilityLabel={state.isAddFormVisible ? 'Hide observation form' : 'Create new observation'}
+          accessibilityLabel={
+            state.isAddFormVisible ? 'Hide observation form' : 'Create new observation'
+          }
           accessibilityHint="Toggles the form to record a new institutional observation"
         >
           <Icon
@@ -254,7 +256,7 @@ export default function PrincipalObservationsSection({
             </Input>
           </VStack>
 
-           <HStack className="gap-2.5 flex-wrap">
+          <HStack className="gap-2.5 flex-wrap">
             {OBS_TYPE_OPTIONS.map((t) => {
               const isSelected = state.form.obsType === t;
               const styles = getObsStyles(t);
@@ -283,7 +285,7 @@ export default function PrincipalObservationsSection({
             })}
           </HStack>
 
-           <Pressable
+          <Pressable
             onPress={() => {
               hapticLight();
               handleSave();

@@ -14,7 +14,7 @@ const SCHOOL_INFO_CACHE_KEY = 'gurudevi-school-info-cache';
 
 export function useSchoolStats(schoolId: string) {
   const _isOnline = useStore((state) => state.isOnline);
-  const viewDate = useTemporalStore(s => s.viewDate);
+  const viewDate = useTemporalStore((s) => s.viewDate);
   const isDemoMode = useStore((state) => state.isDemoMode);
   const { isGuest } = useFeatureAccess();
   const [stats, setStats] = useState<SchoolStats | null>(null);

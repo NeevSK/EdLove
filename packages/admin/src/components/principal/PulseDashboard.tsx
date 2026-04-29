@@ -1,7 +1,9 @@
 import {
+  Animated,
   Box,
-  HStack,
+  FadeInUp,
   HeartPulse,
+  HStack,
   Icon,
   LivingGlow,
   SanctuaryCard,
@@ -12,8 +14,6 @@ import {
   Users,
   VStack,
   Zap,
-  Animated,
-  FadeInUp,
 } from '@repo/ui';
 import { useSchoolPulseQuery } from '../../hooks/useDashboardHooks';
 

@@ -13,7 +13,7 @@ import {
 import type React from 'react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DeviceAccountManager } from '../components';
+import DeviceAccountManager from '../components/DeviceAccountManager';
 import { useEnvironment } from '../context';
 import {
   Box,
