@@ -14,26 +14,8 @@ import { handleAPIError, type InviteCode, type UserRole } from '@repo/core';
 import { api } from '@repo/core/api';
 
 import { QRBuilder, QRCodeGenerator } from '@repo/scanner-kit';
-import {
-  Box,
-  Button,
-  ButtonText,
-  Heading,
-  HStack,
-  Modal,
-  ModalBackdrop,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalHeader,
-  Heading as ModalHeading,
-  Spinner,
-  Text,
-  Toast,
-  ToastTitle,
-  useToast,
-  VStack,
-} from '@repo/ui';
+import { Spinner } from '@repo/ui/gluestack';
+import { Box, Button, ButtonText, Heading, HStack, Modal, ModalBackdrop, ModalBody, ModalCloseButton, ModalContent, ModalHeader, Heading as ModalHeading, Text, Toast, ToastTitle, useToast, VStack } from '@repo/ui';;
 import { ScrollView } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
 

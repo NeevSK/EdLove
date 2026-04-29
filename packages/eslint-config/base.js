@@ -1,8 +1,8 @@
 import js from '@eslint/js';
 import eslintConfigPrettier from 'eslint-config-prettier';
-import onlyWarn from 'eslint-plugin-only-warn';
 import turboPlugin from 'eslint-plugin-turbo';
 import tseslint from 'typescript-eslint';
+import pluginDeprecation from 'eslint-plugin-deprecation';
 
 /**
  * A shared ESLint configuration for the repository.
@@ -16,14 +16,16 @@ export const config = [
   {
     plugins: {
       turbo: turboPlugin,
+      deprecation: pluginDeprecation,
+    },
+    languageOptions: {
+      parserOptions: {
+        project: true,
+      },
     },
     rules: {
       'turbo/no-undeclared-env-vars': 'warn',
-    },
-  },
-  {
-    plugins: {
-      onlyWarn,
+      'deprecation/deprecation': 'error',
     },
   },
   {

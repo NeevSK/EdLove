@@ -80,8 +80,50 @@ class InputExpression implements TSLExpression {
   }
 }
 
-export const tsl = {
+export interface TSLBuilder {
+  float: (v: number | string) => TSLExpression;
+  vec2: (x: TSLExpression, y: TSLExpression) => TSLExpression;
+  vec3: (x: TSLExpression, y: TSLExpression, z: TSLExpression) => TSLExpression;
+  vec4: (x: TSLExpression, y: TSLExpression, z: TSLExpression, w: TSLExpression) => TSLExpression;
+  add: (a: TSLExpression, b: TSLExpression) => TSLExpression;
+  sub: (a: TSLExpression, b: TSLExpression) => TSLExpression;
+  mul: (a: TSLExpression, b: TSLExpression) => TSLExpression;
+  div: (a: TSLExpression, b: TSLExpression) => TSLExpression;
+  abs: (a: TSLExpression) => TSLExpression;
+  sin: (a: TSLExpression) => TSLExpression;
+  cos: (a: TSLExpression) => TSLExpression;
+  pow: (a: TSLExpression, b: TSLExpression) => TSLExpression;
+  mix: (a: TSLExpression, b: TSLExpression, t: TSLExpression) => TSLExpression;
+  smoothstep: (edge0: TSLExpression, edge1: TSLExpression, x: TSLExpression) => TSLExpression;
+  fbm: (p: TSLExpression, octaves: number) => TSLExpression;
+  warp: (p: TSLExpression, strength: TSLExpression) => TSLExpression;
+  kelvin: (k: TSLExpression) => TSLExpression;
+  length: (a: TSLExpression) => TSLExpression;
+  normalize: (a: TSLExpression) => TSLExpression;
+  dot: (a: TSLExpression, b: TSLExpression) => TSLExpression;
+  clamp: (x: TSLExpression, min: TSLExpression, max: TSLExpression) => TSLExpression;
+  member: (obj: TSLExpression, member: string, type: TSLType) => TSLExpression;
+  env: {
+    uv: () => TSLExpression;
+    time: () => TSLExpression;
+    base: () => TSLExpression;
+    accent: () => TSLExpression;
+    secondary: () => TSLExpression;
+    mist: () => TSLExpression;
+    highlight: () => TSLExpression;
+    shadow: () => TSLExpression;
+    intensity: () => TSLExpression;
+    entropy: () => TSLExpression;
+  };
+}
+
+export const tsl: TSLBuilder = {
   float: (v: number | string) => new LiteralExpression(v, 'float'),
+  vec2: (x: TSLExpression, y: TSLExpression) => new CallExpression('vec2', [x, y], 'vec2'),
+  vec3: (x: TSLExpression, y: TSLExpression, z: TSLExpression) =>
+    new CallExpression('vec3', [x, y, z], 'vec3'),
+  vec4: (x: TSLExpression, y: TSLExpression, z: TSLExpression, w: TSLExpression) =>
+    new CallExpression('vec4', [x, y, z, w], 'vec4'),
   
   add: (a: TSLExpression, b: TSLExpression) => new BinaryExpression(a, '+', b, a.type),
   sub: (a: TSLExpression, b: TSLExpression) => new BinaryExpression(a, '-', b, a.type),
@@ -100,9 +142,10 @@ export const tsl = {
   fbm: (p: TSLExpression, octaves: number) => 
     new CallExpression('fbm', [p, new LiteralExpression(octaves, 'float')], 'float'),
 
-  warp: (_p: TSLExpression, _strength: TSLExpression) =    new CallExpression('domainWarp', [p, strength], 'vec2'),
+  warp: (p: TSLExpression, strength: TSLExpression) =>
+    new CallExpression('domainWarp', [p, strength], 'vec2'),
 
-  kelvin: (_k: TSLExpression) =    new CallExpression('kelvinToRGB', [k], 'vec3'),
+  kelvin: (k: TSLExpression) => new CallExpression('kelvinToRGB', [k], 'vec3'),
 
   length: (a: TSLExpression) => new CallExpression('length', [a], 'float'),
   normalize: (a: TSLExpression) => new CallExpression('normalize', [a], a.type),

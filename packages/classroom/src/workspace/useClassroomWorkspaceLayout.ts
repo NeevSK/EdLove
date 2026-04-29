@@ -1,5 +1,5 @@
 import type { ResolvedWorkspaceSurface } from '@repo/core';
-import { useWorkspaceLayoutSync } from '@repo/core/native';
+import { useWorkspaceLayoutSync } from '@repo/core/native';;
 
 import { useMemo } from 'react';
 import type {

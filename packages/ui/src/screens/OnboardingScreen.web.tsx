@@ -17,7 +17,9 @@
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { AuthorityTier } from '@repo/core/logic';
-import { authAPI, identityAPI, supabase } from '@repo/core/native';
+import { authAPI } from '@repo/core/auth';
+import { identityAPI } from '@repo/core/identity';
+import { supabase } from '@repo/core/supabase';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useWindowDimensions } from 'react-native';

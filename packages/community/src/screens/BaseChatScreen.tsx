@@ -6,7 +6,7 @@
  * Refactored for Sanctuary V3.
  */
 
-import { supabase } from '@repo/core/native';
+import { supabase } from '@repo/core/api';;
 import { useStore } from '@repo/core/store';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';

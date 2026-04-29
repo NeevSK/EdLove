@@ -11,16 +11,8 @@
 import { type RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { identityAPI, thuthimalAPI } from '@repo/core/api';
 
-import {
-  Box,
-  Heading,
-  HStack,
-  ScreenWrapper,
-  Spinner,
-  Text,
-  useThemedColors,
-  VStack,
-} from '@repo/ui';
+import { Spinner } from '@repo/ui/gluestack';
+import { Box, Heading, HStack, ScreenWrapper, Text, useThemedColors, VStack } from '@repo/ui';;
 import { Theme } from '@repo/ui/theme';
 import { hapticError, hapticSuccess } from '@repo/ui/utils/haptics';
 

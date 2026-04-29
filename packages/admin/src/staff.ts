@@ -5,7 +5,7 @@ import type {
   TeacherCarouselItem,
 } from '@repo/core';
 import { staffManagementAPI } from '@repo/core/api';
-import { supabase } from '@repo/core/native';
+import { supabase } from '@repo/core/api';;
 
 export type { StaffLeaveDTO, StaffPresenceSummary, StudentAttendancePulse, TeacherCarouselItem };
 

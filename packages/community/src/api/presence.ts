@@ -1,4 +1,4 @@
-import { supabase } from '@repo/core/native';
+import { supabase } from '@repo/core/api';;
 
 export interface PresenceFallbackCountOptions {
   targetRoles: string[];

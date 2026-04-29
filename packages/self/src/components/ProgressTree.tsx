@@ -5,7 +5,7 @@
  */
 
 import { useNavigation } from '@react-navigation/native';
-import { supabase } from '@repo/core/native';
+import { supabase } from '@repo/core/api';;
 
 import { Box, Button } from '@repo/ui/primitives';
 import { ButtonText, HStack, Heading, Icon, Text, VStack } from '@repo/ui/primitives';

@@ -3,7 +3,7 @@
  * Functional logic for the Agentic Sanctuary assistants.
  */
 
-import { supabase } from '@repo/core/native';
+import { supabase } from '@repo/core/api';;
 
 export interface CoordinationGap {
   id: string;

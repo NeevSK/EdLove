@@ -37,7 +37,7 @@
  *   \u2705 The primary feature succeeds on its own terms; growth observation rides alongside it.
  */
 
-import { supabase } from '../native/supabase';
+import { supabase } from './supabase';
 import { type ChallengeMetric, contextualChallengesAPI } from './contextualChallenges';
 import { naturePathsAPI } from './naturePaths';
 import { userGrowthStateAPI } from './userGrowthState';

@@ -7,19 +7,8 @@
 import { useStore } from '@repo/core/logic';
 import { supabase } from '@repo/core/native';
 
-import {
-  Box,
-  Button,
-  ButtonText,
-  Heading,
-  HStack,
-  Input,
-  InputField,
-  Spinner,
-  Text,
-  useThemedColors,
-  VStack,
-} from '@repo/ui';
+import { Spinner } from '@repo/ui/gluestack';
+import { Box, Button, ButtonText, Heading, HStack, Input, InputField, Text, useThemedColors, VStack } from '@repo/ui';;
 import { Pressable } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
 

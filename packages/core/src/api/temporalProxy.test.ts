@@ -1,4 +1,4 @@
-﻿import { SafeZustandStorage } from '../lib/storageWrapper';
+import { SafeZustandStorage } from '../lib/storageWrapper';
 import { useTemporalStore } from '../store/useTemporalStore';
 import { createTemporalProxy } from './temporalProxy';
 

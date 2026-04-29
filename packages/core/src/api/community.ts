@@ -5,8 +5,8 @@ import {
   GroupMessageSchema,
 } from '../logic/schemas/community.schema';
 import { applyTemporalFilter } from '../logic/utils/temporalUtils';
-import { identityAPI } from '../native/identity';
-import { supabase } from '../native/supabase';
+import { identityAPI } from './identity';
+import { supabase } from './supabase';
 import type { TemporalScale } from '../store/useTemporalStore';
 import type { Group, Post } from '../types';
 import { communityContract } from './community.contract';

@@ -4,18 +4,8 @@ import { type CommunityStackParamList, FeatureGuard } from '@repo/core';
 import { useTracking } from '@repo/core/hooks';
 import { useStore, useTemporalStore } from '@repo/core/logic';
 
-import {
-  Box,
-  FadeInDown,
-  GlobalHeader,
-  Heading,
-  PositiveInvitation,
-  SanctuaryFlashList,
-  ScreenWrapper,
-  Text,
-  useThemedColors,
-  VStack,
-} from '@repo/ui';
+import { SanctuaryFlashList } from '@repo/ui/components/SanctuaryFlashList';
+import { Box, FadeInDown, GlobalHeader, Heading, PositiveInvitation, ScreenWrapper, Text, useThemedColors, VStack } from '@repo/ui';;
 import {
   HorizontalChipRow,
   SanctuaryButton,

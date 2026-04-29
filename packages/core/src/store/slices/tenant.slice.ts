@@ -10,6 +10,8 @@ export interface TenantSlice {
   setSchoolType: (type: string | null) => void;
   realClassCount?: number;
   setRealClassCount: (count: number) => void;
+  academicCycleId: string | null;
+  setAcademicCycleId: (id: string | null) => void;
 }
 
 export const createTenantSlice: StateCreator<TenantSlice, [], [], TenantSlice> = (set) => ({
@@ -22,4 +24,6 @@ export const createTenantSlice: StateCreator<TenantSlice, [], [], TenantSlice> =
   setSchoolType: (schoolType) => set({ schoolType }),
   realClassCount: 0,
   setRealClassCount: (realClassCount) => set({ realClassCount }),
+  academicCycleId: null,
+  setAcademicCycleId: (academicCycleId) => set({ academicCycleId }),
 });

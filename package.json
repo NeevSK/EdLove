@@ -15,7 +15,9 @@
     "audit:mobile:doctor": "powershell -ExecutionPolicy Bypass -File scripts/audit-wrapper.ps1 -Cmd \"pnpm --filter gurudevi-mobile exec pnpm dlx expo-doctor\" -Log \"reports/mobile_doctor_audit.txt\"",
     "format:legacy": "pnpm exec prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "powershell -File scripts/audit-wrapper.ps1 -Cmd \"pnpm turbo run check-types\" -Log \"reports/check-types.txt\"",
-    "check-all": "pnpm run lint && pnpm run check-types && pnpm run check:circular && pnpm run check:unused",
+    "check-all": "pnpm run lint && pnpm run check-types && pnpm run audit:cycles && pnpm run audit:deprecations && pnpm run check:unused && pnpm run audit:security",
+    "audit:security": "pnpm dlx snyk test && pnpm dlx semgrep scan --config auto",
+    "audit:cycles": "node scripts/refactor/sovereign-cycle-checker.mjs",
     "android": "pnpm exec expo run:android",
     "ios": "pnpm exec expo run:ios",
     "i18n:audit": "node scripts/i18n/audit-keys.mjs",
@@ -43,6 +45,7 @@
     "change:smart": "node scripts/smart-changeset.mjs",
     "version:all": "pnpm exec changeset version && pnpm install",
     "mcp:supabase:debug": "node --no-warnings scripts/mcp-proxy.mjs pnpm --silent exec mcp-server-supabase --project-ref ${env.SUPABASE_PROJECT_REF}",
+    "audit:deprecations": "powershell -ExecutionPolicy Bypass -File scripts/audit-deprecations.ps1",
     "preinstall": "node -e \"if(process.env.npm_config_user_agent && !/pnpm/.test(process.env.npm_config_user_agent)) { console.error('\\u001b[31mFATAL: This project requires pnpm. Use \\'pnpm install\\' to continue.\\u001b[0m'); process.exit(1); }\""
   },
   "devDependencies": {

@@ -5,7 +5,7 @@
  * Purged raw Tailwind colors in favor of Sanctuary tokens.
  */
 
-import { supabase } from '@repo/core/native';
+import { supabase } from '@repo/core/api';;
 
 import { Box } from '@repo/ui/primitives';
 import { HStack, Heading, Icon, Text, VStack } from '@repo/ui/primitives';

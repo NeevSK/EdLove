@@ -1,21 +1,7 @@
 import { type InviteCodeData, validateInviteCode } from '@repo/core/logic';
 
-import {
-  Box,
-  Button,
-  ButtonIcon,
-  ButtonText,
-  Heading,
-  HStack,
-  Input,
-  InputField,
-  Spinner,
-  Text,
-  Toast,
-  ToastTitle,
-  useToast,
-  VStack,
-} from '@repo/ui';
+import { Spinner } from '@repo/ui/gluestack';
+import { Box, Button, ButtonIcon, ButtonText, Heading, HStack, Input, InputField, Text, Toast, ToastTitle, useToast, VStack } from '@repo/ui';;
 import { Pressable } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
 import { hapticError, hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';

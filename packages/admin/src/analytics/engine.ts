@@ -1,5 +1,5 @@
 import type { GraphNode } from '@repo/core';
-import { supabase } from '@repo/core/native';
+import { supabase } from '@repo/core/api';;
 
 import { type ForceLayoutOptions, forceLayout } from '@repo/graphics';
 import type {

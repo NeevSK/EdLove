@@ -3,7 +3,7 @@ import type { ClassroomStackParamList } from '@repo/core';
 import { identityAPI } from '@repo/core/api';
 import { useFeatureAccess } from '@repo/core/hooks';
 import { useStore, useTemporalStore } from '@repo/core/logic';
-import { FlowResolver } from '@repo/core/native';
+import { FlowResolver } from '@repo/core/native';;
 
 import { resolveQR } from '@repo/scanner-kit';
 import { Plus } from '@repo/ui/icons';

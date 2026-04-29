@@ -19,7 +19,8 @@ import { identityAPI } from '@repo/core/api';
 import { FlowResolver } from '@repo/core/native';
 
 import type { QRPayload } from '@repo/scanner-kit';
-import { Box, Heading, ScreenWrapper, Spinner, Text, useThemedColors, VStack } from '@repo/ui';
+import { Spinner } from '@repo/ui/gluestack';
+import { Box, Heading, ScreenWrapper, Text, useThemedColors, VStack } from '@repo/ui';;
 import { Theme } from '@repo/ui/theme';
 import { hapticError, hapticSuccess } from '@repo/ui/utils/haptics';
 

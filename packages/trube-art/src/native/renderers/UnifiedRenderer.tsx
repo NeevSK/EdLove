@@ -53,7 +53,7 @@ export function UnifiedRenderer(props: TrubeRendererProps) {
     return <CompatibilityRenderer {...props} />;
   }
 
-  const renderLayer = (layer: any, index: number) => {
+  const Layer = ({ layer, index }: { layer: any; index: number }) => {
     const { resolveSurface } = require('../../core/surface');
     const resolvedSurface = resolveSurface(layer.surface);
     const layerProps = { ...props, surface: resolvedSurface };
@@ -114,11 +114,17 @@ export function UnifiedRenderer(props: TrubeRendererProps) {
         key={index}
         pointerEvents="none"
         style={[StyleSheet.absoluteFill, { opacity: layer.opacity ?? 1 }]}
-              {renderContent()}
-      </View    );
+      >
+        {renderContent()}
+      </View>
+    );
   };
 
   return (
-    <View style={StyleSheet.absoluteFill}      {stage.layers.map((layer, index) => renderLayer(layer, index))}
-    </View  );
+    <View style={StyleSheet.absoluteFill}>
+      {stage.layers.map((layer, index) => (
+        <Layer key={index} layer={layer} index={index} />
+      ))}
+    </View>
+  );
 }

@@ -1,6 +1,6 @@
 import { ClassroomRoleSummarySchema } from '../api/identity.contract';
 import { type User, UserSchema } from '../logic/schemas/user.schema';
-import { APIError } from '../types';
+import { APIError } from '../types/API';
 import { supabase } from './supabase';
 
 // In-memory cache for the current session's internal user ID

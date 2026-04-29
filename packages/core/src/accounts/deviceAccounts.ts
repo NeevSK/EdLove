@@ -9,8 +9,8 @@ import {
   removeStoredSessionForAccount,
   setStoredSessionForAccount,
 } from '../lib/supabaseAuthStorage';
-import { identityAPI } from '../native/identity';
-import { supabase } from '../native/supabase';
+import { identityAPI } from '../api/identity';
+import { supabase } from '../api/supabase';
 import { rehydrateScopedStores, resetScopedStores } from '../store/resetScopedStores';
 
 const ACCOUNTS_REGISTRY_KEY = 'gurudevi-device-accounts';

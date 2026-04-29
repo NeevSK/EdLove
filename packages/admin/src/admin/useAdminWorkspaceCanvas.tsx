@@ -4,7 +4,7 @@ import {
   type WorkspaceSurfaceDefinition,
   type WorkspaceZoneId,
 } from '@repo/core';
-import { useWorkspaceLayoutSync } from '@repo/core/native';
+import { useWorkspaceLayoutSync } from '@repo/core/native';;
 
 import {
   Box,

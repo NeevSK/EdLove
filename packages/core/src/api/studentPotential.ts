@@ -1,12 +1,12 @@
-﻿/**
+/**
  * Student Potential Analysis API
  *
  * Handles multi-perspective analysis for students, focusing on finding potential.
  */
 
-import { identityAPI } from '../native/identity';
-import { supabase } from '../native/supabase';
-import { APIError } from '../types';
+import { identityAPI } from './identity';
+import { supabase } from './supabase';
+import { APIError } from '../types/API';
 import { teacherInsightsAPI } from './teacherInsights';
 
 export interface StudentPotentialAnalysis {

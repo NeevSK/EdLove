@@ -7,7 +7,7 @@
 import { useNavigation } from '@react-navigation/native';
 import { usePermissions } from '@repo/core';
 import { useSafeMutation } from '@repo/core/hooks';
-import { supabase } from '@repo/core/native';
+import { supabase } from '@repo/core/api';;
 
 import { Box, Button, Input } from '@repo/ui/primitives';
 import { ButtonText, HStack, Heading, Icon, InputField, Text, VStack } from '@repo/ui/primitives';

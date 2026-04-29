@@ -4,7 +4,7 @@ import {
   type StaffAttendance,
   type StaffLeave,
 } from '@repo/core';
-import { supabase } from '@repo/core/native';
+import { supabase } from '@repo/core/api';;
 
 import { useCallback, useEffect, useState } from 'react';
 import { staffAPI } from '../staff';

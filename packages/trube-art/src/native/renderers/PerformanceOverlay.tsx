@@ -12,11 +12,31 @@ export function PerformanceOverlay({ plan, surfaceName }: PerformanceOverlayProp
   const targetFps = Math.round(60 / skipRate);
 
   return (
-    <View style={styles.container} pointerEvents="none"      <View style={styles.badge}        <Text style={styles.label}>BACKEND</Text        <Text style={[styles.value, { color: plan.backend === 'native-vulkan' ? '#4ade80' : '#60a5fa' }]}          {plan.backend.toUpperCase()}
-        </Text      </View
-      <View style={styles.badge}        <Text style={styles.label}>SURFACE</Text        <Text style={styles.value}>{surfaceName.toUpperCase()}</Text      </View
-      <View style={styles.badge}        <Text style={styles.label}>TARGET</Text        <Text style={styles.value}>{targetFps} FPS (Skip: {skipRate}f)</Text      </View
-      <View style={styles.badge}        <Text style={styles.label}>SIGNAL</Text        <Text style={styles.value}>ENTROPY_LIVING_TSL</Text      </View    </View  );
+    <View style={styles.container} pointerEvents="none">
+      <View style={styles.badge}>
+        <Text style={styles.label}>BACKEND</Text>
+        <Text
+          style={[styles.value, { color: plan.backend === 'native-vulkan' ? '#4ade80' : '#60a5fa' }]}
+        >
+          {plan.backend.toUpperCase()}
+        </Text>
+      </View>
+      <View style={styles.badge}>
+        <Text style={styles.label}>SURFACE</Text>
+        <Text style={styles.value}>{surfaceName.toUpperCase()}</Text>
+      </View>
+      <View style={styles.badge}>
+        <Text style={styles.label}>TARGET</Text>
+        <Text style={styles.value}>
+          {targetFps} FPS (Skip: {skipRate}f)
+        </Text>
+      </View>
+      <View style={styles.badge}>
+        <Text style={styles.label}>SIGNAL</Text>
+        <Text style={styles.value}>ENTROPY_LIVING_TSL</Text>
+      </View>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({

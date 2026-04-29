@@ -1,4 +1,4 @@
-import { GuestDataSync } from '@repo/core/native';
+import { GuestDataSync } from '@repo/core/native';;
 import { AlertCircle, AlertTriangle, Check } from 'lucide-react-native';
 import { useCallback, useEffect, useReducer } from 'react';
 import { useTranslation } from 'react-i18next';

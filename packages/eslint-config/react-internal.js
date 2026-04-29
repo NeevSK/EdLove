@@ -41,6 +41,8 @@ export const config = [
     rules: {
       // React scope no longer necessary with new JSX transform.
       'react/react-in-jsx-scope': 'off',
+      'react-hooks/rules-of-hooks': 'error',
+      'react-hooks/exhaustive-deps': 'error',
       'no-restricted-syntax': [
         'warn',
         {

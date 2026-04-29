@@ -15,25 +15,8 @@
 import type { Grade, Section } from '@repo/core';
 import { api } from '@repo/core/api';
 
-import {
-  Box,
-  Button,
-  ButtonText,
-  Heading,
-  HStack,
-  Input,
-  InputField,
-  Modal,
-  ModalBackdrop,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  Spinner,
-  Text,
-  useThemedColors,
-  VStack,
-} from '@repo/ui';
+import { Spinner } from '@repo/ui/gluestack';
+import { Box, Button, ButtonText, Heading, HStack, Input, InputField, Modal, ModalBackdrop, ModalBody, ModalContent, ModalFooter, ModalHeader, Text, useThemedColors, VStack } from '@repo/ui';;
 import { ScrollView } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
 

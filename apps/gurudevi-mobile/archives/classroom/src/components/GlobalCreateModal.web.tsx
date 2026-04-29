@@ -2,30 +2,8 @@
 import { growthSignalsAPI, handleAPIError, type School } from '@repo/core';
 import { api, identityAPI } from '@repo/core/api';
 
-import {
-  Actionsheet,
-  ActionsheetBackdrop,
-  ActionsheetContent,
-  ActionsheetDragIndicator,
-  ActionsheetDragIndicatorWrapper,
-  ActionsheetItem,
-  ActionsheetItemText,
-  Box,
-  Button,
-  ButtonText,
-  FormControl,
-  FormControlLabel,
-  FormControlLabelText,
-  HStack,
-  Input,
-  InputField,
-  SanctuaryModal,
-  Spinner,
-  Text,
-  Textarea,
-  useThemedColors,
-  VStack,
-} from '@repo/ui';
+import { Spinner } from '@repo/ui/gluestack';
+import { Actionsheet, ActionsheetBackdrop, ActionsheetContent, ActionsheetDragIndicator, ActionsheetDragIndicatorWrapper, ActionsheetItem, ActionsheetItemText, Box, Button, ButtonText, FormControl, FormControlLabel, FormControlLabelText, HStack, Input, InputField, SanctuaryModal, Text, Textarea, useThemedColors, VStack } from '@repo/ui';;
 import { Theme } from '@repo/ui/theme';
 
 import {

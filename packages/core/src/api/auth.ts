@@ -1,5 +1,5 @@
 import type { Role } from '../logic/schemas/role.schema';
-import { APIError } from '../types';
+import { APIError } from '../types/API';
 import { identityAPI } from './identity';
 import { supabase } from './supabase';
 

@@ -15,18 +15,15 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import DeviceAccountManager from '../components/DeviceAccountManager';
 import { useEnvironment } from '../context';
-import {
-  Box,
-  Button,
-  ButtonText,
-  Heading,
-  HStack,
-  Pressable,
-  ScrollView,
-  Switch,
-  Text,
-  VStack,
-} from '../gluestack';
+import { Box } from '../components/ui/box';
+import { Button, ButtonText } from '../components/ui/button';
+import { Heading } from '../components/ui/text';
+import { HStack } from '../components/ui/hstack';
+import { Pressable } from '../components/ui/pressable';
+import { ScrollView } from '../components/ui/scroll-view';
+import { Switch } from '../components/ui/switch';
+import { Text } from '../components/ui/text';
+import { VStack } from '../components/ui/vstack';
 import { useTheme } from '../hooks/useTheme';
 import { useSanctuaryToast } from '../providers/ToastProvider';
 import { hapticLight, hapticSuccess } from '../utils/haptics';

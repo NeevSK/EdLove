@@ -1,5 +1,5 @@
 import * as SecureStore from 'expo-secure-store';
-import { supabase } from './supabase';
+import { supabase } from '../api/supabase';
 
 export const AppCryptoEngine = {
   /**

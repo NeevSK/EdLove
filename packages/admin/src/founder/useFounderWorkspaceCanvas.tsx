@@ -5,7 +5,7 @@ import {
   type WorkspaceSwitcherTarget,
   type WorkspaceZoneId,
 } from '@repo/core';
-import { useWorkspaceLayoutSync } from '@repo/core/native';
+import { useWorkspaceLayoutSync } from '@repo/core/native';;
 
 import type { WorkspaceSurfaceDefinition } from '@repo/core/types';
 import { WorkspaceCanvas } from '@repo/ui/components/workspace/WorkspaceCanvas';

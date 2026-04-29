@@ -1,4 +1,4 @@
-import { supabase } from '@repo/core/native';
+import { supabase } from '@repo/core/api';;
 
 import { BookOpen, Clock, Zap } from '@repo/ui/icons';
 import { Box } from '@repo/ui/primitives';

@@ -1,8 +1,8 @@
 import { v7 as uuidv7 } from 'uuid';
 import { coreRuntime } from '../logic/runtimeRegistry';
-import { identityAPI } from '../native/identity';
-import { supabase } from '../native/supabase';
-import { APIError } from '../types';
+import { identityAPI } from './identity';
+import { supabase } from './supabase';
+import { APIError } from '../types/API';
 
 const DEVICE_INSTALL_ID_KEY = 'gurudevi-device-install-id';
 const SERVER_DEVICE_ID_KEY = 'gurudevi-server-device-id';

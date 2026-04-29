@@ -13,25 +13,8 @@
 
 import { type AnnouncementWithAuthor, communityAPI as community } from '@repo/community';
 import { ADMIN_ROLES, hasRole, type UserRole } from '@repo/core';
-import {
-  Box,
-  Button,
-  ButtonText,
-  Heading,
-  HStack,
-  Modal,
-  ModalBackdrop,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  Spinner,
-  Switch,
-  Text,
-  Textarea,
-  TextareaInput,
-  VStack,
-} from '@repo/ui';
+import { Spinner } from '@repo/ui/gluestack';
+import { Box, Button, ButtonText, Heading, HStack, Modal, ModalBackdrop, ModalBody, ModalContent, ModalFooter, ModalHeader, Switch, Text, Textarea, TextareaInput, VStack } from '@repo/ui';;
 import { SkeletonCard } from '@repo/ui/components';
 import { ScrollView } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';

@@ -124,15 +124,13 @@ export {
   type TemporalRange,
 } from './logic/utils/temporalUtils';
 export {
-  type FlowIntent,
-  type FlowOutcome,
   FlowResolver,
   type FlowResult,
 } from './native/flows/FlowResolver';
 export { GuestDataManager } from './native/guestDataManager';
 export { GuestDataSync } from './native/guestDataSync';
 export { Runtime } from './native/runtime';
-export { supabase } from './native/supabase';
+export { authAPI, identityAPI, supabase } from './api';
 export {
   invalidateResilience,
   type ResilienceOptions,

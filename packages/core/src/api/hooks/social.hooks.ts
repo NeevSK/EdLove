@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import { supabase } from '../../native/supabase';
+import { supabase } from '../supabase';
 import { useStore } from '../../store/useStore';
 import { communityAPI } from '../community';
 

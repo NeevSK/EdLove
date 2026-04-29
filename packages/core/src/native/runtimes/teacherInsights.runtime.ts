@@ -1,6 +1,6 @@
 import { createSupabaseTeacherInsightsRepository } from '../../adapters/supabase/teacherInsightsRepository';
 import { createTeacherInsightsServices } from '../../logic/domains/teacherInsights/services';
-import { supabase } from '../supabase';
+import { supabase } from '../../api/supabase';
 
 const teacherInsightsRepository = createSupabaseTeacherInsightsRepository(supabase);
 

@@ -1,6 +1,6 @@
 import { createSupabaseAttendanceProjectionRepository } from '../../adapters/supabase/attendanceProjectionRepository';
 import { createAttendanceProjectionServices } from '../../logic/domains/attendanceProjection/services';
-import { supabase } from '../supabase';
+import { supabase } from '../../api/supabase';
 
 const attendanceProjectionRepository = createSupabaseAttendanceProjectionRepository(supabase);
 

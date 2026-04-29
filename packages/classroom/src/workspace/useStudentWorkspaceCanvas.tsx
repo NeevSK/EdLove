@@ -4,7 +4,7 @@ import {
   type WorkspaceLayout,
   type WorkspaceZoneId,
 } from '@repo/core';
-import { useWorkspaceLayoutSync } from '@repo/core/native';
+import { useWorkspaceLayoutSync } from '@repo/core/native';;
 
 import { Box, HStack, Text } from '@repo/ui/primitives';
 import { WorkspaceCanvas } from '@repo/ui/components/workspace';

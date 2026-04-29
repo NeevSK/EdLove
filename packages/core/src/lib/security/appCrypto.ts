@@ -1,5 +1,5 @@
 import { cryptoManager } from '../../logic/managers/CryptoManager';
-import { supabase } from '../../native/supabase';
+import { supabase } from '../../api/supabase';
 
 export const AppCryptoEngine = {
   /**

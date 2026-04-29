@@ -1,6 +1,6 @@
-﻿import { composeUserAbilities } from '../logic/permissions/composer';
-import { identityAPI } from '../native/identity';
-import { supabase } from '../native/supabase';
+import { composeUserAbilities } from '../logic/permissions/composer';
+import { identityAPI } from '../api/identity';
+import { supabase } from '../api/supabase';
 import { APIError } from '../types/API';
 
 /**

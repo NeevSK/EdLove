@@ -1,4 +1,4 @@
-﻿import { supabase } from '@repo/core/native';
+import { supabase } from '@repo/core/api';;
 import { APIError } from '@repo/core/types';
 
 import type { DailyContent } from '../types';

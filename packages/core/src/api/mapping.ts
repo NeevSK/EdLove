@@ -1,5 +1,5 @@
 import { KnowledgeTopologySchema } from '../logic/schemas/dashboard.schema';
-import { supabase } from '../native/supabase';
+import { supabase } from './supabase';
 import type { KnowledgeTopology } from '../types/topology';
 
 export interface MappingTopology extends KnowledgeTopology {

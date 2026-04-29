@@ -1,5 +1,6 @@
-import { authAPI } from '../native/auth';
-import { identityAPI as rawIdentityAPI } from '../native/identity';
+import { authAPI } from './auth';
+import { identityAPI as rawIdentityAPI } from './identity';
+import { supabase } from './supabase';
 import { academicCyclesAPI } from './academicCycles';
 import { assignmentsAPI as rawAssignmentsAPI } from './assignments';
 import { attendanceAPI as rawAttendanceAPI } from './attendance';
@@ -624,6 +625,7 @@ export {
   studentObservationsAPI,
   studentPotentialAPI,
   studentsAPI,
+  supabase,
   tasksAPI,
   teacherInsightsAPI,
   thuthimalAPI,
@@ -640,6 +642,7 @@ export {
 export const api = {
   auth: authAPI,
   identity: identityAPI,
+  supabase,
   tasks: tasksAPI,
   notes: notesAPI,
   lessons: lessonsAPI,

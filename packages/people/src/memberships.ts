@@ -4,7 +4,7 @@ import {
   type Membership,
   type ScopeRef,
 } from '@repo/core';
-import { supabase } from '@repo/core/native';
+import { supabase } from '@repo/core/api';;
 
 interface MembershipSeed {
   id: string;

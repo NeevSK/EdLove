@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import React from 'react';
-import { supabase } from '../../native/supabase';
+import { supabase } from '../supabase';
 import { useStore } from '../../store/useStore';
 import type { Notification } from '../../types/Community';
 import { communityAPI } from '../community';

@@ -1,5 +1,6 @@
 import { coreRuntime, handleAPIError, type Role, validateForm, validators } from '@repo/core/logic';
-import { authAPI, FlowResolver, GuestDataSync, identityAPI } from '@repo/core/native';
+import { authAPI, identityAPI } from '@repo/core/api';
+import { FlowResolver, GuestDataSync } from '@repo/core/native';;
 import { useIdentity } from '@repo/core/hooks';
 import * as AuthSession from 'expo-auth-session';
 import * as WebBrowser from 'expo-web-browser';
@@ -74,7 +75,7 @@ interface AuthScreenProps {
 
 export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: AuthScreenProps) {
   const { t } = useTranslation();
-  const { accent, text, glow } = useTheme();
+  const { scene, accent, text } = useTheme();
   const { showToast } = useSanctuaryToast();
   // --- 1. STATE MACHINE (Mechanism) ---
   interface AuthState {
@@ -159,7 +160,7 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
   const _syncCheckDoneRef = useRef(false);
   const passwordRef = useRef<any>(null);
 
-  const { internalId: myId, profile: myProfile } = useIdentity();
+  const { profile: myProfile } = useIdentity();
 
   // Sync internal profile to reducer state
   useEffect(() => {
@@ -227,15 +228,15 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
   const shouldHideGeneralAuth = isRealUser;
 
   // ─── Native redirect URI (used by expo-auth-session) ───────────────────────
-  const getRedirectUrl = () => {
+  const getRedirectUrl = useCallback(() => {
     if (coreRuntime.device.getMetadata().platform === 'web') {
       return window.location.origin;
     }
     return AuthSession.makeRedirectUri({
       scheme: 'gurudevi',
-      path: 'auth/callback',
+      path: 'auth-callback',
     });
-  };
+  }, []);
 
   const handleOAuthSignIn = useCallback(
     async (provider: 'google') => {
@@ -299,6 +300,7 @@ export default function AuthScreen({ onSuccess, onBack, initialMode, Scanner }: 
         if (authResponse.type === 'success' && (authResponse as any).url) {
           const url = new URL((authResponse as any).url);
           const params = Object.fromEntries(url.searchParams.entries());
+          const _hash = url.hash.substring(1);
           const access_token = params.access_token || url.hash.match(/access_token=([^&]+)/)?.[1];
           const refresh_token = params.refresh_token || url.hash.match(/refresh_token=([^&]+)/)?.[1];
           if (!access_token || !refresh_token) {

@@ -8,19 +8,8 @@ import { identityAPI } from '@repo/core/api';
 import { useTracking } from '@repo/core/hooks';
 import { useStore } from '@repo/core/logic';
 
-import {
-  Box,
-  FadeInDown,
-  GlobalHeader,
-  HStack,
-  openExternalURL,
-  ScreenWrapper,
-  SmartShelf,
-  showExternalLinkOptions,
-  Text,
-  useThemedColors,
-  VStack,
-} from '@repo/ui';
+import { SmartShelf } from '@repo/ui/components/SmartShelf';
+import { Box, FadeInDown, GlobalHeader, HStack, openExternalURL, ScreenWrapper, showExternalLinkOptions, Text, useThemedColors, VStack } from '@repo/ui';;
 import { HorizontalChipRow, SkeletonCard, useBottomTabPadding } from '@repo/ui/components';
 import { useRegisterFAB } from '@repo/ui/context/FABContext';
 import { Theme } from '@repo/ui/theme';

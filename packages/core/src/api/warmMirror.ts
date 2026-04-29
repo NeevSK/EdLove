@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Warm Mirror API \u2014 Competence through personal narrative.
  *
  * The Warm Mirror is a teacher's (or student's) weekly reflection on what they
@@ -19,9 +19,9 @@
  */
 
 import { composeUserAbilities } from '../logic/permissions/composer';
-import { identityAPI } from '../native/identity';
-import { supabase } from '../native/supabase';
-import { APIError } from '../types';
+import { identityAPI } from './identity';
+import { supabase } from './supabase';
+import { APIError } from '../types/API';
 
 // \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 // TYPES

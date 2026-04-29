@@ -1,13 +1,5 @@
-﻿import {
-  Box,
-  Button,
-  ButtonText,
-  GlassCard,
-  HStack,
-  Text,
-  useThemedColors,
-  VStack,
-} from '@repo/ui';
+﻿import { GlassCard } from '@repo/ui/components/GlassCard';
+import { Box, Button, ButtonText, HStack, Text, useThemedColors, VStack } from '@repo/ui';;
 import { format } from 'date-fns';
 import { Calendar, CheckCircle2, Clock, LogIn, LogOut } from 'lucide-react-native';
 import type React from 'react';

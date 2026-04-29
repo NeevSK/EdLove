@@ -3,7 +3,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { ClassroomStackParamList } from '@repo/core';
 import { useFeatureAccess } from '@repo/core/hooks';
 import { useStore, useTemporalStore } from '@repo/core/logic';
-import { useWorkspaceLayoutSync } from '@repo/core/native';
+import { useWorkspaceLayoutSync } from '@repo/core/native';;
 
 import SandboxBanner from '@repo/ui/components/SandboxBanner';
 import { WorkspaceCanvas } from '@repo/ui/components/workspace/WorkspaceCanvas';

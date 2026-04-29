@@ -14,5 +14,10 @@ export function WaterfallRendererSkia({ width, height, surface, plan }: TrubeRen
   const uniforms = skiaDriver.buildUniforms(surface, time.value, entropy.value, width, height);
 
   return (
-    <Canvas style={StyleSheet.absoluteFill}      <Rect x={0} y={0} width={width} height={height}        <RuntimeShader source={effect} uniforms={uniforms} /      </Rect    </Canvas  );
+    <Canvas style={StyleSheet.absoluteFill}>
+      <Rect x={0} y={0} width={width} height={height}>
+        <RuntimeShader source={effect} uniforms={uniforms} />
+      </Rect>
+    </Canvas>
+  );
 }

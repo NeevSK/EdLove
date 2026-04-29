@@ -1,5 +1,5 @@
 import { handleAPIError, LanguageUtils } from '@repo/core/logic';
-import { authAPI } from '@repo/core/native';
+import { authAPI } from '@repo/core/auth';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image } from 'react-native';

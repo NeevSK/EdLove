@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
-import { identityAPI } from '../native/identity';
-import { authAPI } from '../native/auth';
+import { identityAPI } from '../api/identity';
+import { authAPI } from '../api/auth';
 
 /**
  * Sovereign Identity Hook

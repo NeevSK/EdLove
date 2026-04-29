@@ -7,8 +7,8 @@ import { Theme } from '../theme/Theme';
 import EmptyState from './EmptyState';
 
 export interface SanctuaryFlashListProps<T> extends Omit<FlashListProps<T>, 'refreshControl'> {
-  /** Estimated size of a single list item (RECOGNIZED BY RECYCLER) */
-  estimatedItemSize: number;
+  /** Estimated size of a single list item (Optional in v2, Auto-calculated) */
+  estimatedItemSize?: number;
   /** Whether the list is currently refreshing */
   refreshing?: boolean;
   /** Function to call when refreshing */

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * User Growth State API \u2014 All nature path stage management.
  *
  * Manages the `user_growth_state` table which tracks each user's position across
@@ -12,7 +12,7 @@
  * Stages advance naturally when the app notices genuine engagement over time.
  *
  * USAGE:
- *   - Import from '@repo/core' in any downstream package.
+ *   - Import from the core package in any downstream package.
  *   - growthSignalsAPI calls incrementDimension automatically after every signal.
  *   - UI reads getBhumiStage to render the Lotus Life Stage visualization (Self tab only).
  *   - Show only the living lotus visual \u2014 the stage name lives in the database, the lotus speaks for itself.
@@ -20,9 +20,9 @@
 
 import { composeUserAbilities } from '../logic/permissions/composer';
 import { getTemporalRange } from '../logic/utils/temporalUtils';
-import { identityAPI } from '../native/identity';
-import { supabase } from '../native/supabase';
-import { APIError } from '../types';
+import { identityAPI } from './identity';
+import { supabase } from './supabase';
+import { APIError } from '../types/API';
 import type { BanyanStage, CrystalTier, RiverStage } from './naturePaths';
 
 export type BhumiStage = 'bijam' | 'mula' | 'nala' | 'patra' | 'kamala' | 'purna_kamala';

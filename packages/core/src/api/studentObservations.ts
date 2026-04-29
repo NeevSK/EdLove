@@ -1,11 +1,11 @@
-﻿/**
+/**
  * Student Observations API
  *
  * CRUD for qualitative teacher observations about students.
  */
 
-import { identityAPI } from '../native/identity';
-import { APIError } from '../types';
+import { identityAPI } from './identity';
+import { APIError } from '../types/API';
 import { teacherInsightsAPI } from './teacherInsights';
 
 export interface StudentObservation {

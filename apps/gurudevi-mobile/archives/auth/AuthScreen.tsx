@@ -4,26 +4,9 @@ import { identityAPI } from '@repo/core/api';
 import { GuestDataSync, supabase } from '@repo/core/native';
 
 import { resolveQR, ScannerModal } from '@repo/scanner-kit';
-import {
-  Box,
-  BreathAnimation,
-  Button,
-  ButtonText,
-  Center,
-  GlassCard,
-  GuestDataSyncModal,
-  Heading,
-  HStack,
-  Input,
-  InputField,
-  ScreenWrapper,
-  Text,
-  Toast,
-  ToastTitle,
-  useThemedColors,
-  useToast,
-  VStack,
-} from '@repo/ui';
+import { BreathAnimation } from '@repo/ui/components/BreathAnimation';
+import { GlassCard } from '@repo/ui/components/GlassCard';
+import { Box, Button, ButtonText, Center, GuestDataSyncModal, Heading, HStack, Input, InputField, ScreenWrapper, Text, Toast, ToastTitle, useThemedColors, useToast, VStack } from '@repo/ui';;
 import { LivingGlow } from '@repo/ui/components';
 import { Pressable } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';

@@ -6,7 +6,7 @@
  *  - Inline new-observation form
  */
 
-import { supabase } from '@repo/core/native';
+import { supabase } from '@repo/core/api';;
 
 import { Box, Input } from '@repo/ui/primitives';
 import { HStack, Heading, Icon, InputField, Spinner, Text, VStack } from '@repo/ui/primitives';

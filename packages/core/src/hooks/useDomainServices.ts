@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { createDomainServices } from '../logic/domains/factory';
-import { supabase } from '../native/supabase';
+import { supabase } from '../api/supabase';
 import { useStore } from '../store/useStore';
 
 /**

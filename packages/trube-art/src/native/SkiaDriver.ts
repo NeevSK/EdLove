@@ -1,5 +1,6 @@
 import { Skia, type SkRuntimeEffect } from '@shopify/react-native-skia';
 import { soulLibrary } from '../core/soul/SoulLibrary';
+import type { ResolvedTrubeSurface } from '../core/types';
 
 /**
  * SkiaDriver: Tier 3 rendering path (Last Resort).
@@ -31,19 +32,9 @@ export class SkiaDriver {
   }
 
   /**
-   * Renders the soul via Skia RuntimeEffect.
-   * @deprecated Use building uniforms in the component
-   */
-  render(name: string, uniforms: Record<string, any>) {
-    const effect = this.getEffect(name);
-    if (!effect) return null;
-    return { effect, uniforms };
-  }
-
-  /**
    * Helper to build the standard uniform record for Skia.
    */
-  buildUniforms(surface: any, time: number, entropy: number, width: number, height: number) {
+  buildUniforms(surface: ResolvedTrubeSurface, time: number, entropy: number, width: number, height: number) {
     const toRGB = (hex: string) => {
       const color = Skia.Color(hex) as unknown as number;
       return [((color >> 16) & 255) / 255, ((color >> 8) & 255) / 255, (color & 255) / 255];

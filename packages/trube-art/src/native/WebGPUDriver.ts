@@ -182,19 +182,6 @@ export class WebGPUDriver {
     });
   }
 
-  /**
-   * @deprecated Use onFrame
-   */
-  updateUniforms(id: string, uniforms: { time: number; entropy: number; intensity: number }) {
-    const buffer = this.buffers.get(id);
-    if (!buffer || !this.device || !this.root) return;
-
-    this.root.writeBuffer(buffer, {
-      ...uniforms,
-      padding: 0,
-    });
-  }
-
   release(id: string) {
     const pipeline = this.pipelines.get(id);
     const buffer = this.buffers.get(id);

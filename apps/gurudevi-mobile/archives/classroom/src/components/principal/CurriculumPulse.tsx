@@ -11,17 +11,8 @@
 
 import { supabase } from '@repo/core/native';
 
-import {
-  Box,
-  Heading,
-  HStack,
-  Progress,
-  ProgressFilledTrack,
-  Spinner,
-  Text,
-  useThemedColors,
-  VStack,
-} from '@repo/ui';
+import { Spinner } from '@repo/ui/gluestack';
+import { Box, Heading, HStack, Progress, ProgressFilledTrack, Text, useThemedColors, VStack } from '@repo/ui';;
 import { Theme } from '@repo/ui/theme';
 
 import { BookOpen, Clock, Zap } from 'lucide-react-native';

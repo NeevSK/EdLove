@@ -1,5 +1,5 @@
 import { useSocialShieldHooks } from '@repo/core/api/hooks';
-import { supabase } from '@repo/core/native';
+import { supabase } from '@repo/core/api';;
 import { useStore } from '@repo/core/store';
 import { useCallback, useState } from 'react';
 

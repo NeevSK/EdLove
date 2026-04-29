@@ -5,7 +5,7 @@
  */
 
 import { useStore } from '@repo/core/logic';
-import { supabase } from '@repo/core/native';
+import { supabase } from '@repo/core/api';;
 
 import { AlertTriangle, CheckCircle2, ChevronRight, Heart, MessageSquare, Send } from '@repo/ui/icons';
 import { Box, Button, Input } from '@repo/ui/primitives';

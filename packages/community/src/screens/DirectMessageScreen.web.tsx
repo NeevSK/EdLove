@@ -15,7 +15,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { CommunityStackParamList } from '@repo/core';
 import { socialAPI } from '@repo/core/api';
 import { useStore, useTemporalStore } from '@repo/core/logic';
-import { supabase } from '@repo/core/native';
+import { supabase } from '@repo/core/api';;
 
 import { formatTimestamp } from '@repo/ui/utils/dateTimeUtils';
 import { getInitialsFromName } from '@repo/ui/utils/stringUtils';

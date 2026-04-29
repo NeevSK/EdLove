@@ -8,7 +8,9 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import { Box, HStack, Text } from '../gluestack';
+import { Box } from './ui/box';
+import { HStack } from './ui/hstack';
+import { Text } from './ui/text';
 
 export type ToastType = 'success' | 'error' | 'info';
 

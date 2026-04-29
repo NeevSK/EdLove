@@ -149,6 +149,7 @@
     "globals": "^16.5.0",
     "jest-cucumber": "^4.5.0",
     "jest-expo": "~55.0.16",
+    "@babel/runtime": "^7.20.0",
     "react-native-web": "^0.21.2",
     "react-test-renderer": "19.1.0",
     "supabase": "^2.95.3",

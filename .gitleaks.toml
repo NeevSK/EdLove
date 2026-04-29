@@ -1,0 +1,20 @@
+[allowlist]
+description = "Allowlisted files and paths"
+paths = [
+    "package.json",
+    "pnpm-lock.yaml",
+    "node_modules",
+    ".git"
+]
+
+[[rules]]
+description = "Supabase API Key"
+id = "supabase-api-key"
+regex = '''sbp_[a-f0-9]{40}'''
+keywords = ["sbp"]
+
+[[rules]]
+description = "Generic Secret"
+id = "generic-secret"
+regex = '''(?i)secret|password|passwd|api_key|apikey|auth_token|credentials'''
+# Simple generic rule to catch common patterns

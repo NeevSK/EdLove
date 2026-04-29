@@ -1,10 +1,10 @@
-﻿import type { QueryClient } from '@tanstack/react-query';
+import type { QueryClient } from '@tanstack/react-query';
 import { getActiveAccountId, setActiveAccountId } from '../lib/accountScope';
 import { DeviceTrustEngine } from '../lib/security/deviceTrust';
 import { useMutationQueue } from '../lib/sync/useMutationQueue';
 import { resolveFeatureFlags } from '../logic/permissions/feature-engine';
-import { identityAPI } from '../native/identity';
-import { supabase } from '../native/supabase';
+import { identityAPI } from '../api/identity';
+import { supabase } from '../api/supabase';
 import type { UISlice } from './slices/ui.slice';
 import { useAuthStore } from './useAuthStore';
 import { useFeatureStore } from './useFeatureStore';

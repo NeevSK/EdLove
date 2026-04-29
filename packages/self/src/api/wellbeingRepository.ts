@@ -1,5 +1,5 @@
 import { applyTemporalFilter, getTemporalRange } from '@repo/core';
-import { supabase } from '@repo/core/native';
+import { supabase } from '@repo/core/api';;
 
 import type { FireJournalEntry, MoodLog } from '../types';
 import { selfAPI } from './self';

@@ -5,7 +5,7 @@ import {
   type User,
   type WorkRole,
 } from '@repo/core';
-import { supabase } from '@repo/core/native';
+import { supabase } from '@repo/core/api';;
 
 export interface PeopleDirectoryEntry extends User {
   schoolRole: SchoolRole | null;

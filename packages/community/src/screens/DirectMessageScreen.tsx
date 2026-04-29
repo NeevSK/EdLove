@@ -7,7 +7,7 @@
 
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { supabase } from '@repo/core/native';
+import { supabase } from '@repo/core/api';;
 import { useStore, useTemporalStore } from '@repo/core/store';
 import type { CommunityStackParamList } from '@repo/core/types';
 import React from 'react';

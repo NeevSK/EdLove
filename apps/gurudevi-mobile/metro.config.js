@@ -8,7 +8,9 @@ const workspaceRoot = path.resolve(projectRoot, '../..');
 
 function resolvePnpmPackageRuntime(packageName, runtimeFile) {
   const pnpmRoot = path.resolve(workspaceRoot, 'node_modules/.pnpm');
-  const pkgDir = fs.readdirSync(pnpmRoot).find((entry) => entry.startsWith(`${packageName}@`));
+  const pkgDir = fs.readdirSync(pnpmRoot).find((entry) => 
+    entry.startsWith(`${packageName.replace('/', '+')}@`)
+  );
 
   if (!pkgDir) {
     throw new Error(`Unable to locate ${packageName} in pnpm store at ${pnpmRoot}`);
@@ -63,6 +65,7 @@ config.resolver.blockList = [
 const SINGLETON_OVERRIDES = {
   react: path.resolve(projectRoot, 'node_modules/react'),
   'react-dom': path.resolve(projectRoot, 'node_modules/react-dom'),
+  '@babel/runtime': path.resolve(projectRoot, 'node_modules/@babel/runtime'),
   'react-native-web': path.resolve(projectRoot, 'node_modules/react-native-web'),
   '@react-navigation/native': path.resolve(projectRoot, 'node_modules/@react-navigation/native'),
   '@react-navigation/core': path.resolve(projectRoot, 'node_modules/@react-navigation/core'),

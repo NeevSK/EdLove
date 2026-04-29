@@ -10,7 +10,7 @@ import {
   type Role,
 } from '@repo/core';
 import { identityAPI } from '@repo/core/api';
-import { supabase } from '@repo/core/native';
+import { supabase } from '@repo/core/api';;
 import { APIError } from '@repo/core/types';
 
 import type {
