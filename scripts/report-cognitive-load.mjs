@@ -9,15 +9,48 @@ const rootDir = path.resolve(__dirname, '..');
 const targetDir = process.argv[2] || 'packages';
 const absoluteTargetDir = path.isAbsolute(targetDir) ? targetDir : path.join(rootDir, targetDir);
 
-// Use fd for lightning-fast file location
 function getFiles(dir) {
+  // Try to use fd first
   try {
-    const cmd = `fd -t f -e ts -e tsx -e js -e jsx -E node_modules -E dist -E .turbo -E __tests__ -E generated . "${dir}"`;
+    let fdCmd = 'fd';
+    try {
+      execSync('fd --version', { stdio: 'ignore' });
+    } catch (e) {
+      // Check common WinGet portable path as extreme fallback
+      const wingetPath = "C:\\Users\\Naween\\AppData\\Local\\Microsoft\\WinGet\\Packages\\sharkdp.fd_Microsoft.Winget.Source_8wekyb3d8bbwe\\fd-v10.4.2-x86_64-pc-windows-msvc\\fd.exe";
+      if (fs.existsSync(wingetPath)) {
+        fdCmd = `"${wingetPath}"`;
+      } else {
+        throw new Error('fd not found');
+      }
+    }
+
+    const cmd = `${fdCmd} -t f -e ts -e tsx -e js -e jsx -E node_modules -E dist -E .turbo -E __tests__ -E generated . "${dir}"`;
     const output = execSync(cmd, { encoding: 'utf-8' });
-    return output.split('\n').filter((f) => f.trim());
+    return output.split('\n').filter((f) => f.trim()).map(f => path.join(dir, f)); // Map to absolute if fd returned relative
   } catch (e) {
-    console.error(`Error gathering files with fd: ${e.message}`);
-    return [];
+    // Fallback: Native Node.js recursive walker
+    console.log('>>> fd not found, falling back to native file walker...');
+    const allFiles = [];
+    
+    function walk(currentDir) {
+      const files = fs.readdirSync(currentDir);
+      files.forEach((file) => {
+        const fullPath = path.join(currentDir, file);
+        if (fs.statSync(fullPath).isDirectory()) {
+          if (!['node_modules', 'dist', '.turbo', '__tests__', 'generated'].includes(file)) {
+            walk(fullPath);
+          }
+        } else {
+          if (/\.(ts|tsx|js|jsx)$/.test(file)) {
+            allFiles.push(fullPath);
+          }
+        }
+      });
+    }
+
+    walk(dir);
+    return allFiles;
   }
 }
 

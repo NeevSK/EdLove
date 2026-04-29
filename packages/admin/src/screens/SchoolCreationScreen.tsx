@@ -3,20 +3,19 @@ import { communityAPI } from '@repo/community';
 import { schoolAPI, useSchoolCreation, useStore } from '@repo/core';
 import { QRBuilder, QRCodeGenerator } from '@repo/scanner-kit';
 import {
-  Box,
   Check,
   GlobalHeader,
   Heading,
   HStack,
-  Icon,
   SanctuaryButton,
-  ScreenWrapper,
   ScrollView,
   Spinner,
-  StepIndicator,
   Text,
   VStack,
 } from '@repo/ui';
+import { Box, Icon } from '@repo/ui/primitives';
+import { ScreenWrapper } from '@repo/ui/components/ScreenWrapper';
+import { StepIndicator } from '@repo/ui/components/StepIndicator';
 
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';

@@ -1,4 +1,7 @@
-import { type FounderEcosystemStats, useFounderEcosystemStats } from '@repo/admin';
+import {
+  type FounderEcosystemStats,
+  useFounderEcosystemStats,
+} from '@repo/admin/bridge/founderWorkspace';
 import type { School } from '@repo/core';
 
 export type EcosystemStats = FounderEcosystemStats;

@@ -3,22 +3,17 @@ import { AvatarDisplay, ContactLinktree, EditableItem, useSchoolProfile } from '
 import {
   ArrowLeft,
   BookOpen,
-  Box,
   ChevronRight,
   Globe,
-  Heading,
-  HStack,
-  hapticLight,
-  Icon,
   Layout,
   Pressable,
   School as SchoolIcon,
   Shield,
-  SkeletonCard,
-  Text,
   Users,
-  VStack,
-} from '@repo/ui';
+} from '@repo/ui/icons';
+import { Box, Heading, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
+import { hapticLight } from '@repo/ui/utils/haptics';
+import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 
 import { useTranslation } from 'react-i18next';
 

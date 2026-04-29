@@ -8,11 +8,20 @@ if (-not $stagedFilesData) { exit 0 }
 $stagedFiles = $stagedFilesData -split "`n"
 
 # 2. Shiny Dynamic Sector Discovery (Sovereign Architecture)
-$fdPath = Get-Command fd -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source
-if (-not $fdPath) { $fdPath = "C:\Users\Naween\AppData\Local\Microsoft\WinGet\Packages\sharkdp.fd_Microsoft.Winget.Source_8wekyb3d8bbwe\fd-v10.4.2-x86_64-pc-windows-msvc\fd.exe" }
+# Smart discovery with cross-platform fallback
+$apps = @()
+$packages = @()
 
-$apps = & $fdPath -t d -d 1 . apps | ForEach-Object { $_.Split('\/')[1] }
-$packages = & $fdPath -t d -d 1 . packages | ForEach-Object { $_.Split('\/')[1] }
+if (Get-Command fd -ErrorAction SilentlyContinue) {
+    # Preferred: Fast discovery with fd
+    $fd = (Get-Command fd).Source
+    $apps = & $fd -t d -d 1 . apps | ForEach-Object { $_.TrimEnd('\/').Split('\/')[-1] }
+    $packages = & $fd -t d -d 1 . packages | ForEach-Object { $_.TrimEnd('\/').Split('\/')[-1] }
+} else {
+    # Fallback: Native PowerShell discovery
+    $apps = Get-ChildItem -Path apps -Directory | Select-Object -ExpandProperty Name
+    $packages = Get-ChildItem -Path packages -Directory | Select-Object -ExpandProperty Name
+}
 
 $categorized = New-Object 'System.Collections.Generic.Dictionary[string, System.Collections.Generic.List[string]]'
 $otherFiles = New-Object 'System.Collections.Generic.List[string]'

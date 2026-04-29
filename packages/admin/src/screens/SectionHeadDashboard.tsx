@@ -8,13 +8,13 @@ import {
   HStack,
   Icon,
   SanctuaryButton,
-  ScreenWrapper,
   ScrollView,
   Text,
   Users,
   useRegisterFAB,
   VStack,
 } from '@repo/ui';
+import { ScreenWrapper } from '@repo/ui/components/ScreenWrapper';
 import React from 'react';
 
 export default function SectionHeadDashboard({

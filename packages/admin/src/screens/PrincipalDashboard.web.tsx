@@ -16,7 +16,9 @@ import {
   usePermissions,
   useTemporalStore,
 } from '@repo/core';
-import { hapticLight, SandboxBanner, WebScreenHeader } from '@repo/ui';
+import { hapticLight } from '@repo/ui/utils/haptics';
+import { SandboxBanner } from '@repo/ui/components/SandboxBanner';
+import { WebScreenHeader } from '@repo/ui/components/WebScreenHeader.web';
 import { useQuery } from '@tanstack/react-query';
 import type React from 'react';
 import { useEffect, useState } from 'react';

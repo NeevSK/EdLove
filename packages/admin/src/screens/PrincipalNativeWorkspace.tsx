@@ -1,5 +1,5 @@
 import { usePermissions } from '@repo/core';
-import { ScreenWrapper } from '@repo/ui';
+import { ScreenWrapper } from '@repo/ui/components/ScreenWrapper';
 import type React from 'react';
 import { useEffect, useState } from 'react';
 import { HierarchyBuilder, InviteManager } from '../components';

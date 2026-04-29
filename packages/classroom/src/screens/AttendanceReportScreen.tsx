@@ -1,4 +1,4 @@
-import { reportingAPI } from '@repo/admin';
+import { reportingAPI } from '@repo/admin/reporting';
 import { type AcademicCycle, type AttendanceReport, api } from '@repo/core';
 import {
   Activity,

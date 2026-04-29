@@ -6,6 +6,11 @@
   "exports": {
     ".": "./src/index.ts",
     "./founder": "./src/entrypoints/founder.ts",
+    "./reporting": "./src/reporting.ts",
+    "./invites": "./src/invites.ts",
+    "./observations": "./src/observations.ts",
+    "./bridge/founderWorkspace": "./src/bridge/founderWorkspace.ts",
+    "./screens/index": "./src/screens/index.ts",
     "./screens/FounderDashboard": "./src/screens/FounderDashboard.tsx",
     "./screens/FounderDashboard.web": "./src/screens/FounderDashboard.web.tsx",
     "./screens/FounderSchoolDashboard": "./src/screens/FounderSchoolDashboard.tsx",

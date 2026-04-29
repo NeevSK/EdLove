@@ -23,27 +23,11 @@ import {
   useStore,
   useTemporalStore,
 } from '@repo/core';
-import {
-  Activity,
-  ArrowUpRight,
-  Building,
-  CloudRain,
-  Cloudy,
-  ExternalLink,
-  FounderGlow,
-  Globe,
-  LayoutGrid,
-  Plus,
-  Icon as SanctuaryIcon,
-  Search,
-  Shield,
-  SkeletonCard,
-  Sun,
-  TemporalNavigator,
-  TrendingUp,
-  Users,
-  Zap,
-} from '@repo/ui';
+import { Activity, ArrowUpRight, Building, CloudRain, Cloudy, ExternalLink, Globe, LayoutGrid, Plus, Search, Shield, Sun, TrendingUp, Users, Zap } from '@repo/ui/icons';
+import { FounderGlow } from '@repo/ui/components/FounderGlow';
+import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
+import { TemporalNavigator } from '@repo/ui/components/TemporalNavigator';
+import { Icon as SanctuaryIcon } from '@repo/ui/primitives';
 
 import { useState } from 'react';
 import { GlobalCreateModal } from '../components';

@@ -1,21 +1,19 @@
 import { useNavigation } from '@react-navigation/native';
 import { type TotalState, useFeatureAccess, usePermissions, useStore } from '@repo/core';
 import {
-  Box,
   Building2,
   Button,
   ButtonText,
-  hapticLight,
   LayoutGrid,
   NotebookPen,
   QRBuilder,
-  QRCodeGenerator,
   SanctuaryModal,
-  ScreenWrapper,
-  Text,
   useRegisterFAB,
-  VStack,
 } from '@repo/ui';
+import { Box, Text, VStack } from '@repo/ui/primitives';
+import { ScreenWrapper } from '@repo/ui/components/ScreenWrapper';
+import { QRCodeGenerator } from '@repo/ui/components/QRCodeGenerator';
+import { hapticLight } from '@repo/ui/utils/haptics';
 
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';

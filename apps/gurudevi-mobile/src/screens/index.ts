@@ -1,14 +1,12 @@
-﻿export {
-  FounderDashboard,
-  FounderDashboardWeb,
-  FounderSchoolDashboard,
-  FounderVisionScreen,
-  PrincipalDashboardWeb,
-  PrincipalNativeWorkspace,
-  SchoolCreationScreen,
-  SchoolForestScreen,
-  SchoolProfileScreen,
-} from '@repo/admin';
+export { default as FounderDashboard } from '@repo/admin/screens/FounderDashboard';
+export { default as FounderDashboardWeb } from '@repo/admin/screens/FounderDashboard.web';
+export { default as FounderSchoolDashboard } from '@repo/admin/screens/FounderSchoolDashboard';
+export { default as FounderVisionScreen } from '@repo/admin/screens/FounderVisionScreen';
+export { default as PrincipalDashboardWeb } from '@repo/admin/screens/PrincipalDashboard.web';
+export { PrincipalNativeWorkspace } from '@repo/admin/screens/PrincipalNativeWorkspace';
+export { default as SchoolCreationScreen } from '@repo/admin/screens/SchoolCreationScreen';
+export { default as SchoolForestScreen } from '@repo/admin/screens/SchoolForestScreen.web';
+export { default as SchoolProfileScreen } from '@repo/admin/screens/SchoolProfileScreen.web';
 export { AIAssistantScreen, AIAssistantScreenWeb } from '@repo/ai';
 export {
   AttendanceScreen,

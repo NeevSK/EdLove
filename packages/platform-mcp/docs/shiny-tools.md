@@ -89,8 +89,34 @@ Welcome to your new, high-performance terminal experience. These tools are writt
 
 ---
 
+## ⚙️ Installation
+To get this high-performance toolchain on your machine, follow these steps:
+
+### Windows (via Winget)
+Run these commands in an elevated PowerShell:
+```powershell
+winget install sharkdp.fd BurntSushi.ripgrep.MSVC sharkdp.bat ajeetdsouza.zoxide eza-community.eza sharkdp.hyperfine
+```
+**IMPORTANT:** After installation, restart your terminal or run `RefreshEnv` if using Chocolatey.
+
+### macOS (via Homebrew)
+```bash
+brew install fd rg bat zoxide eza tokei sd dust typos
+```
+
+### Linux
+Most distributions have these in their repositories:
+```bash
+# Ubuntu/Debian
+sudo apt install fd-find ripgrep bat zoxide
+# Fedora
+sudo dnf install fd-find ripgrep bat zoxide eza
+```
+
+---
+
 ## 🔒 Security & Integrity
-All tools are installed via **Winget** and verified with **cryptographic hashes**. 
+All tools are installed via **official package managers** (Winget, Brew, etc.) and verified with **cryptographic hashes**. 
 *   **Repo Audit:** As of April 2026, no upstream supply chain attacks have been detected for these repositories.
 *   **Reputation:** These are industry-standard tools used by millions of developers globally.
 
