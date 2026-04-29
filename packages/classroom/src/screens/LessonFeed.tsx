@@ -1,6 +1,7 @@
-import { type Assignment, api, type Lesson, type LessonMaterial } from '@repo/core';
+import type { Assignment, Lesson, LessonMaterial } from '@repo/core';
+import { api } from '@repo/core/api';
+
 import {
-  AnimatedView,
   Box,
   Button,
   ButtonText,
@@ -15,14 +16,14 @@ import {
   Icon,
   Link as LinkIcon,
   Plus,
-  Pressable,
-  ScrollView,
-  SkeletonCard,
   Spinner,
   Text,
   Trash2,
   VStack,
 } from '@repo/ui';
+import { SkeletonCard } from '@repo/ui/components';
+import { AnimatedView, Pressable, ScrollView } from '@repo/ui/primitives';
+
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 

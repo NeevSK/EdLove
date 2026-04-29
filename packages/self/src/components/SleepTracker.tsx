@@ -4,22 +4,15 @@
  * Simple, gentle way to track sleep quality
  */
 
-import { supabase, usePermissions, useSafeMutation } from '@repo/core';
-import {
-  AnimatedView,
-  Box,
-  Button,
-  ButtonText,
-  Heading,
-  HStack,
-  hapticLight,
-  hapticSuccess,
-  Icon,
-  SkeletonCard,
-  Slider,
-  Text,
-  VStack,
-} from '@repo/ui';
+import { usePermissions } from '@repo/core';
+import { useSafeMutation } from '@repo/core/hooks';
+import { supabase } from '@repo/core/native';
+
+import { Box, Button, ButtonText, Heading, HStack, Icon, Slider, Text, VStack } from '@repo/ui';
+import { SkeletonCard } from '@repo/ui/components';
+import { AnimatedView } from '@repo/ui/primitives';
+import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+
 import { Moon, Stars } from 'lucide-react-native';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';

@@ -5,10 +5,7 @@ import {
   GraduationCap,
   Heading,
   HStack,
-  hapticLight,
   Icon,
-  Pressable,
-  ScrollView,
   Search,
   ShieldCheck,
   Text,
@@ -16,6 +13,9 @@ import {
   VStack,
   Zap,
 } from '@repo/ui';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+import { hapticLight } from '@repo/ui/utils/haptics';
+
 import React from 'react';
 
 interface StudentOnboardingViewProps {

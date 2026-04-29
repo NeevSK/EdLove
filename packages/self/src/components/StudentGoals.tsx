@@ -4,25 +4,27 @@
  * Standardized to Zero-Legacy: purified className utilities and ensured tag closure integrity.
  */
 
-import { supabase, useSafeMutation } from '@repo/core';
+import { useSafeMutation } from '@repo/core/hooks';
+import { supabase } from '@repo/core/native';
+
 import {
-  AnimatedView,
   Box,
   Button,
   ButtonText,
   Heading,
   HStack,
-  hapticLight,
-  hapticSuccess,
   Icon,
   Input,
   InputField,
   Progress,
   ProgressFilledTrack,
-  SkeletonCard,
   Text,
   VStack,
 } from '@repo/ui';
+import { SkeletonCard } from '@repo/ui/components';
+import { AnimatedView } from '@repo/ui/primitives';
+import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+
 import {
   ChevronRight,
   Flame,

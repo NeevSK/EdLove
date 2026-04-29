@@ -5,7 +5,9 @@
  */
 
 import type { ImpactRipple } from '@repo/core';
-import { AnimatedView, Box, HStack, Icon, Text, VStack } from '@repo/ui';
+import { Box, HStack, Icon, Text, VStack } from '@repo/ui';
+import { AnimatedView } from '@repo/ui/primitives';
+
 import { Droplet, Heart, Sparkles } from 'lucide-react-native';
 import React from 'react';
 import { FadeInDown } from 'react-native-reanimated';

@@ -10,8 +10,6 @@ import {
   ButtonText,
   Heading,
   HStack,
-  hapticLight,
-  hapticMedium,
   Icon,
   Input,
   InputField,
@@ -22,10 +20,12 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
-  Pressable,
   Text,
   VStack,
 } from '@repo/ui';
+import { Pressable } from '@repo/ui/primitives';
+import { hapticLight, hapticMedium } from '@repo/ui/utils/haptics';
+
 import { Bell, Clock, Droplet, Edit, Plus, Trash2 } from 'lucide-react-native';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';

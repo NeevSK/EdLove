@@ -1,5 +1,7 @@
 import { reportingAPI } from '@repo/admin/reporting';
-import { type AcademicCycle, type AttendanceReport, api } from '@repo/core';
+import type { AcademicCycle, AttendanceReport } from '@repo/core';
+import { api } from '@repo/core/api';
+
 import {
   Activity,
   AlertTriangle,
@@ -9,17 +11,17 @@ import {
   GlobalHeader,
   Heading,
   HStack,
-  hapticLight,
   Icon,
-  Pressable,
-  ScrollView,
-  SkeletonCard,
   Text,
   TrendingDown,
   TrendingUp,
   Users,
   VStack,
 } from '@repo/ui';
+import { SkeletonCard } from '@repo/ui/components';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+import { hapticLight } from '@repo/ui/utils/haptics';
+
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 

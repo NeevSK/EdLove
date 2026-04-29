@@ -1,10 +1,11 @@
 import {
-  api,
   coreRuntime,
   handleAPIError,
   type InviteCode,
   type PrincipalInviteRole as UserRole,
 } from '@repo/core';
+import { api } from '@repo/core/api';
+
 import { QRBuilder, QRCodeGenerator } from '@repo/scanner-kit';
 import {
   ArrowLeft,
@@ -14,7 +15,6 @@ import {
   Copy,
   Heading,
   HStack,
-  hapticLight,
   Icon,
   Modal,
   ModalBackdrop,
@@ -23,9 +23,7 @@ import {
   ModalHeader,
   Heading as ModalHeading,
   Plus,
-  Pressable,
   QrCode,
-  ScrollView,
   Shield,
   Spinner,
   Text,
@@ -33,6 +31,9 @@ import {
   useToast,
   VStack,
 } from '@repo/ui';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+import { hapticLight } from '@repo/ui/utils/haptics';
+
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 

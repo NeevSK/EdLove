@@ -1,4 +1,6 @@
-import { FeatureGuard, usePermissions, useTracking } from '@repo/core';
+import { FeatureGuard, usePermissions } from '@repo/core';
+import { useTracking } from '@repo/core/hooks';
+
 import React from 'react';
 import {
   AdminSelfView,

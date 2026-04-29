@@ -1,4 +1,6 @@
-import { ArrowLeft, Box, HStack, hapticLight, Icon, Pressable, Text, VStack } from '@repo/ui';
+import { ArrowLeft, Box, HStack, Icon, Text, VStack } from '@repo/ui';
+import { Pressable } from '@repo/ui/primitives';
+import { hapticLight } from '@repo/ui/utils/haptics';
 
 import type React from 'react';
 

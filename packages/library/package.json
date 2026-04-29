@@ -5,7 +5,12 @@
   "types": "src/index.ts",
   "exports": {
     ".": "./src/index.ts",
+    "./components": "./src/components/index.ts",
+    "./hooks": "./src/hooks/index.ts",
     "./screens": "./src/screens/index.ts",
+    "./types": "./src/types/index.ts",
+    "./api": "./src/api/index.ts",
+    "./utils": "./src/utils/index.ts",
     "./screens/LibraryScreen.web": "./src/screens/LibraryScreen.web.tsx",
     "./screens/CollectionDetailScreen.web": "./src/screens/CollectionDetailScreen.web.tsx",
     "./screens/PDFViewerScreen.web": "./src/screens/PDFViewerScreen.web.tsx",
@@ -14,6 +19,7 @@
     "./screens/CuratorReviewScreen": "./src/screens/CuratorReviewScreen.tsx",
     "./package.json": "./package.json"
   },
+
   "scripts": {
     "lint": "powershell -File ../../scripts/audit-wrapper.ps1 -Cmd \"pnpm exec eslint .\" -Log \"reports/lint.txt\"",
     "check-types": "powershell -File ../../scripts/audit-wrapper.ps1 -Cmd \"pnpm exec tsc --noEmit\" -Log \"reports/check-types.txt\"",

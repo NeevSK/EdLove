@@ -67,7 +67,8 @@ function getSourceFiles(dirs) {
       execSync('fd --version', { stdio: 'ignore' });
     } catch (e) {
       // Check common WinGet portable path as extreme fallback
-      const wingetPath = "C:\\Users\\Naween\\AppData\\Local\\Microsoft\\WinGet\\Packages\\sharkdp.fd_Microsoft.Winget.Source_8wekyb3d8bbwe\\fd-v10.4.2-x86_64-pc-windows-msvc\\fd.exe";
+      const wingetPath =
+        'C:\\Users\\Naween\\AppData\\Local\\Microsoft\\WinGet\\Packages\\sharkdp.fd_Microsoft.Winget.Source_8wekyb3d8bbwe\\fd-v10.4.2-x86_64-pc-windows-msvc\\fd.exe';
       if (fs.existsSync(wingetPath)) {
         fdCmd = `"${wingetPath}"`;
       } else {
@@ -85,7 +86,7 @@ function getSourceFiles(dirs) {
   } catch (e) {
     // Fallback: Native Node.js recursive walker
     console.log('>>> fd not found, falling back to native file walker...');
-    
+
     function walk(dir) {
       const files = fs.readdirSync(dir);
       files.forEach((file) => {

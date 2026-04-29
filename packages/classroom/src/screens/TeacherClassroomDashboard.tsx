@@ -1,5 +1,7 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { api, type Classroom, type ClassroomStackParamList, usePermissions } from '@repo/core';
+import { type Classroom, type ClassroomStackParamList, usePermissions } from '@repo/core';
+import { api } from '@repo/core/api';
+
 import { StudentAnalysisModal } from '@repo/library';
 import {
   BookOpen,
@@ -13,7 +15,6 @@ import {
   GraduationCap,
   Heading,
   HStack,
-  hapticLight,
   Icon,
   Input,
   InputField,
@@ -22,22 +23,22 @@ import {
   MessageSquare,
   NotebookPen,
   Plus,
-  Pressable,
   SanctuaryModal,
   ScreenWrapper,
-  ScrollView,
-  SkeletonCard,
   Sparkles,
   Spinner,
   Text,
-  Theme,
   TrendingUp,
   Users,
-  useBottomTabPadding,
-  useRegisterFAB,
   useThemedColors,
   VStack,
 } from '@repo/ui';
+import { SkeletonCard, useBottomTabPadding } from '@repo/ui/components';
+import { useRegisterFAB } from '@repo/ui/context/FABContext';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme';
+import { hapticLight } from '@repo/ui/utils/haptics';
+
 import React, { useState } from 'react';
 import {
   AttendanceView,

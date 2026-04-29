@@ -10,10 +10,12 @@
 
 import { useNavigation } from '@react-navigation/native';
 import type { SchoolForestState, TeacherTree } from '@repo/core';
-import { schoolForestAPI, usePermissions } from '@repo/core';
+import { usePermissions } from '@repo/core';
+import { schoolForestAPI } from '@repo/core/api';
+
+import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { ArrowLeft, RefreshCw } from '@repo/ui/icons';
 import { Icon } from '@repo/ui/primitives';
-import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 
 import React, { useEffect, useState } from 'react';
 

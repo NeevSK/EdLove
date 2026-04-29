@@ -5,25 +5,24 @@ import {
   ButtonText,
   Heading,
   HStack,
-  hapticLight,
-  hapticSuccess,
   Icon,
   Input,
   InputField,
   Plus,
-  Pressable,
   SanctuaryToast,
   Save,
-  ScrollView,
   Text,
   Textarea,
   TextareaInput,
-  Theme,
   Trash2,
   useToast,
   VStack,
   X,
 } from '@repo/ui';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme';
+import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 

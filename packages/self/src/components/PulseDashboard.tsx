@@ -7,12 +7,10 @@
 
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import {
-  type ClassroomStackParamList,
-  usePendingActions,
-  usePermissions,
-  useStore,
-} from '@repo/core';
+import { type ClassroomStackParamList, usePermissions } from '@repo/core';
+import { usePendingActions } from '@repo/core/hooks';
+import { useStore } from '@repo/core/logic';
+
 import {
   Box,
   BreathAnimation,
@@ -21,13 +19,12 @@ import {
   Heading,
   HStack,
   Icon,
-  Pressable,
-  RefreshControl,
-  ScrollView,
-  SkeletonCard,
   Text,
   VStack,
 } from '@repo/ui';
+import { SkeletonCard } from '@repo/ui/components';
+import { Pressable, RefreshControl, ScrollView } from '@repo/ui/primitives';
+
 import {
   BookOpen,
   Calendar,

@@ -7,20 +7,10 @@
  */
 
 import { usePermissions } from '@repo/core';
-import {
-  AnimatedView,
-  Box,
-  Button,
-  ButtonText,
-  Heading,
-  HStack,
-  hapticLight,
-  hapticSuccess,
-  Icon,
-  Pressable,
-  Text,
-  VStack,
-} from '@repo/ui';
+import { Box, Button, ButtonText, Heading, HStack, Icon, Text, VStack } from '@repo/ui';
+import { AnimatedView, Pressable } from '@repo/ui/primitives';
+import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+
 import { AlertCircle, Check, Mic, Play, Square, Trash2 } from 'lucide-react-native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';

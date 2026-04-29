@@ -11,7 +11,9 @@
   TeacherCarousel,
   usePrincipalWorkspaceShell,
 } from '@repo/admin';
-import { Theme, VStack } from '@repo/ui';
+import { VStack } from '@repo/ui';
+import { Theme } from '@repo/ui/theme';
+
 import type React from 'react';
 
 type ZoneSurfaceArgs = {

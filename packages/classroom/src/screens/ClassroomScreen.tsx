@@ -1,14 +1,12 @@
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { FeatureGuard, useFeatureAccess, usePermissions, useStore } from '@repo/core';
-import {
-  Box,
-  GlobalHeader,
-  hapticLight,
-  PositiveInvitation,
-  ScreenWrapper,
-  SkeletonCard,
-  VStack,
-} from '@repo/ui';
+import { FeatureGuard, usePermissions } from '@repo/core';
+import { useFeatureAccess } from '@repo/core/hooks';
+import { useStore } from '@repo/core/logic';
+
+import { Box, GlobalHeader, PositiveInvitation, ScreenWrapper, VStack } from '@repo/ui';
+import { SkeletonCard } from '@repo/ui/components';
+import { hapticLight } from '@repo/ui/utils/haptics';
+
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ClaimInviteModal, ClassroomList, CreateClassroomModal } from '../components';

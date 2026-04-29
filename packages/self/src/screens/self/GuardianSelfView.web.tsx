@@ -1,5 +1,8 @@
-﻿import { useJourneyHistory, usePermissions } from '@repo/core';
-import { JourneyHistoryCard, TemporalProvider, TemporalShield } from '@repo/ui';
+﻿import { usePermissions } from '@repo/core';
+import { useJourneyHistory } from '@repo/core/hooks';
+
+import { JourneyHistoryCard, TemporalProvider, TemporalShield } from '@repo/ui/components';
+
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { BaseSelfView } from '../../components/BaseSelfView';

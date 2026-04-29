@@ -1,16 +1,8 @@
 import { marksToGPA } from '@repo/core';
-import {
-  Card,
-  HStack,
-  Input,
-  InputField,
-  Pressable,
-  ScrollView,
-  Text,
-  Theme,
-  View,
-  VStack,
-} from '@repo/ui';
+import { Card, HStack, Input, InputField, Text, VStack } from '@repo/ui';
+import { Pressable, ScrollView, View } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme';
+
 import React, { useCallback, useMemo, useState } from 'react';
 import { StyleSheet } from 'react-native';
 

@@ -8,7 +8,8 @@ import {
   UserPublicProfileScreen,
 } from '@repo/community';
 import type { CommunityStackParamList } from '@repo/core';
-import { useTheme } from '@repo/ui';
+import { useTheme } from '@repo/ui/primitives';
+
 import { CommunityScreen } from '../screens';
 
 const Stack = createNativeStackNavigator<CommunityStackParamList>();

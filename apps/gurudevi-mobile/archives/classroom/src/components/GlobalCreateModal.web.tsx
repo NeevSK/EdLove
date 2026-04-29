@@ -1,5 +1,7 @@
 ﻿import { communityAPI } from '@repo/community';
-import { api, growthSignalsAPI, handleAPIError, identityAPI, type School } from '@repo/core';
+import { growthSignalsAPI, handleAPIError, type School } from '@repo/core';
+import { api, identityAPI } from '@repo/core/api';
+
 import {
   Actionsheet,
   ActionsheetBackdrop,
@@ -21,10 +23,11 @@ import {
   Spinner,
   Text,
   Textarea,
-  Theme,
   useThemedColors,
   VStack,
 } from '@repo/ui';
+import { Theme } from '@repo/ui/theme';
+
 import {
   Activity,
   ChevronDown,

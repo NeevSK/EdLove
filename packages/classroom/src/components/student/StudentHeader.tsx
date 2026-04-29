@@ -1,4 +1,5 @@
-import { useStore } from '@repo/core';
+import { useStore } from '@repo/core/logic';
+
 import { Box, Heading, HStack, Icon, Star, Text, VStack } from '@repo/ui';
 import React from 'react';
 

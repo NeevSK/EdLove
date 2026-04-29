@@ -6,16 +6,10 @@ import {
   Center,
   Heading,
   HStack,
-  hapticError,
-  hapticLight,
-  hapticSuccess,
   Icon,
   Image,
   Input,
   InputField,
-  KeyboardAvoidingView,
-  Pressable,
-  ScrollView,
   Select,
   SelectBackdrop,
   SelectContent,
@@ -29,6 +23,9 @@ import {
   Text,
   VStack,
 } from '@repo/ui';
+import { KeyboardAvoidingView, Pressable, ScrollView } from '@repo/ui/primitives';
+import { hapticError, hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+
 import * as ImagePicker from 'expo-image-picker';
 import { Camera, ChevronDown, Save, X } from 'lucide-react-native';
 import React, { useEffect, useState } from 'react';

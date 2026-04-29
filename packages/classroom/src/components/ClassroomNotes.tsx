@@ -20,26 +20,24 @@
  */
 
 import type { ClassroomNote } from '@repo/core';
-import { api, coreRuntime } from '@repo/core';
+import { coreRuntime } from '@repo/core';
+import { api } from '@repo/core/api';
+
 import {
   Bell,
   BookOpen,
   Box,
   ChevronDown,
-  FlatList,
   Globe,
   HStack,
-  hapticLight,
   Icon,
   Input,
   InputField,
-  KeyboardAvoidingView,
   Lock,
   Megaphone,
   NotebookPen,
   Pin,
   PositiveInvitation,
-  Pressable,
   Spinner,
   StickyNote,
   Text,
@@ -47,6 +45,9 @@ import {
   VStack,
   X,
 } from '@repo/ui';
+import { FlatList, KeyboardAvoidingView, Pressable } from '@repo/ui/primitives';
+import { hapticLight } from '@repo/ui/utils/haptics';
+
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 // ─── Types ──────────────────────────────────────────────────────────────────

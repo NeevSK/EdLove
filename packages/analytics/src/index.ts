@@ -23,17 +23,9 @@ export * from './ml/InsightGenerator';
 
 // ML and prediction exports
 export * from './ml/Predictor';
-export type {
-  CustomReportConfig,
-  GPACalculationOptions,
-  GradingScale,
-  LiveMetrics,
-  StudentPerformanceMetrics,
-  TenantMetrics,
-} from './types/AnalyticsTypes';
+
 // Types and interfaces
-export * from './types/AnalyticsTypes';
-export * from './types/GradingTypes';
+export * from './types';
 
 // Utility functions
 export * from './utils/analyticsHelpers';

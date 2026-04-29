@@ -25,7 +25,17 @@
     "./screens/SchoolForestScreen.web": "./src/screens/SchoolForestScreen.web.tsx",
     "./screens/PrincipalDashboard.web": "./src/screens/PrincipalDashboard.web.tsx",
     "./screens/PrincipalDashboard": "./src/screens/PrincipalDashboard.tsx",
+    "./screens/GradeHeadDashboard": "./src/screens/GradeHeadDashboard.tsx",
+    "./screens/SectionHeadDashboard": "./src/screens/SectionHeadDashboard.tsx",
+    "./screens/GuardianDashboard": "./src/screens/GuardianDashboard.tsx",
+    "./screens/GuardianDashboardScreen": "./src/screens/GuardianDashboardScreen.tsx",
+    "./screens/GuardianStudentsScreen": "./src/screens/guardian/GuardianStudentsScreen.tsx",
+    "./screens/GuardianStudentDetailScreen": "./src/screens/guardian/GuardianStudentDetailScreen.tsx",
+    "./screens/GuardianNotificationsScreen": "./src/screens/guardian/GuardianNotificationsScreen.tsx",
+    "./screens/GuardianEventsScreen": "./src/screens/guardian/GuardianEventsScreen.tsx",
+    "./screens/GuardianCommunicationBridgeScreen": "./src/screens/guardian/GuardianCommunicationBridgeScreen.tsx",
     "./components/CreateSchoolModal": "./src/components/school/CreateSchoolModal.tsx",
+
     "./components/StaffPulse": "./src/components/principal/StaffPulse.tsx",
     "./package.json": "./package.json"
   },

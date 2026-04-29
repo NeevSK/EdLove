@@ -24,19 +24,20 @@ export {
 // TIER 3: COMPOSITIONS (Design System Components)
 // ============================================================================
 export * from './components';
+// Direct media exports stay on the public surface, but bypass the broad components barrel
+// so platform-specific files do not participate in root require cycles.
+export type { VideoPlayerProps } from './components/media/VideoPlayer';
+export { VideoPlayer } from './components/media/VideoPlayer';
 export { SanctuaryGlobalStyles } from './components/SanctuaryGlobalStyles';
-
 // ============================================================================
 // TIER 4: CONTEXT & LOGIC (Providers, Hooks, Contexts)
 // ============================================================================
 export * from './context';
-
 // ============================================================================
 // TIER 2: PRIMITIVES (Base UI Components)
 // ============================================================================
 // We export these through the gluestack abstraction for consistency
 export * from './gluestack';
-
 // Resolve ambiguities by explicitly re-exporting component versions of common names
 export {
   Badge,
@@ -56,13 +57,11 @@ export {
   View,
   VStack,
 } from './gluestack';
-
 export * from './hooks/useAccessibility';
 export * from './hooks/useDemoBridge';
 export * from './hooks/useResponsive';
 export * from './hooks/useTheme';
 export * from './hooks/useThemedColors';
-
 // ============================================================================
 // TIER 8: ICONS & BRANDING
 // ============================================================================
@@ -74,11 +73,6 @@ export {
   useSanctuaryToast as useLotusToast,
   useSanctuaryToast as useToast,
 } from './providers/ToastProvider';
-
-// Direct media exports stay on the public surface, but bypass the broad components barrel
-// so platform-specific files do not participate in root require cycles.
-export type { VideoPlayerProps } from './components/media/VideoPlayer';
-export { VideoPlayer } from './components/media/VideoPlayer';
 
 // ============================================================================
 // TIER 6: SCREENS & COMPOSITIONS

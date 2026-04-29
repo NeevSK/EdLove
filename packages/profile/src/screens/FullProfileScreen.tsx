@@ -1,4 +1,5 @@
-import { useStore } from '@repo/core';
+import { useStore } from '@repo/core/logic';
+
 // Local Package Imports
 import { StaffPresencePulse } from '@repo/people';
 import {
@@ -10,15 +11,15 @@ import {
   GlobalHeader,
   Heading,
   HStack,
-  hapticSuccess,
   IdentityCard,
-  Pressable,
-  SanctuaryProgressBar,
   ScreenWrapper,
   Text,
-  useBottomTabPadding,
   VStack,
 } from '@repo/ui';
+import { SanctuaryProgressBar, useBottomTabPadding } from '@repo/ui/components';
+import { Pressable } from '@repo/ui/primitives';
+import { hapticSuccess } from '@repo/ui/utils/haptics';
+
 import {
   AtSign,
   BookOpen,

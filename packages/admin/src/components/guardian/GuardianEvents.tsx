@@ -1,4 +1,6 @@
-import { Box, Pressable, Text, VStack } from '@repo/ui';
+import { Box, Text, VStack } from '@repo/ui';
+import { Pressable } from '@repo/ui/primitives';
+
 import type React from 'react';
 import { useTranslation } from 'react-i18next';
 

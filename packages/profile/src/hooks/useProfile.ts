@@ -1,11 +1,8 @@
-import {
-  authAPI,
-  handleAPIError,
-  identityAPI,
-  useMutationQueue,
-  useRewards,
-  useTemporalStore,
-} from '@repo/core';
+import { handleAPIError } from '@repo/core';
+import { authAPI, identityAPI } from '@repo/core/api';
+import { useRewards } from '@repo/core/hooks';
+import { useMutationQueue, useTemporalStore } from '@repo/core/logic';
+
 import { useCallback, useEffect, useState } from 'react';
 import { profileAPI } from '../api/profile';
 import { ProfileValidator } from '../lib/validator';

@@ -13,16 +13,10 @@
  */
 
 import { useNavigation } from '@react-navigation/native';
-import {
-  Box,
-  GlobalHeader,
-  HStack,
-  SanctuaryButton,
-  ScreenWrapper,
-  Text,
-  useTheme,
-  VStack,
-} from '@repo/ui';
+import { Box, GlobalHeader, HStack, ScreenWrapper, Text, VStack } from '@repo/ui';
+import { SanctuaryButton } from '@repo/ui/components';
+import { useTheme } from '@repo/ui/primitives';
+
 import { Bookmark, ExternalLink, RefreshCw } from 'lucide-react-native';
 import React, { useState } from 'react';
 
@@ -78,7 +72,6 @@ export default function PDFViewerScreen({ route }: PDFViewerScreenProps) {
 
       {/* Inline iframe viewer */}
       <Box className="flex-1 overflow-hidden">
-        {/* @ts-expect-error - 'iframe' is valid in react-native-web */}
         <iframe
           key={iframeKey}
           src={url}

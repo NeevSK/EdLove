@@ -10,7 +10,9 @@
  * Mission 04: Principal's Office
  */
 
-import { api, handleAPIError, type InviteCode, type UserRole } from '@repo/core';
+import { handleAPIError, type InviteCode, type UserRole } from '@repo/core';
+import { api } from '@repo/core/api';
+
 import { QRBuilder, QRCodeGenerator } from '@repo/scanner-kit';
 import {
   Box,
@@ -25,15 +27,16 @@ import {
   ModalContent,
   ModalHeader,
   Heading as ModalHeading,
-  ScrollView,
   Spinner,
   Text,
-  Theme,
   Toast,
   ToastTitle,
   useToast,
   VStack,
 } from '@repo/ui';
+import { ScrollView } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme';
+
 import * as Clipboard from 'expo-clipboard';
 import { Copy, QrCode } from 'lucide-react-native';
 import { useEffect, useState } from 'react';

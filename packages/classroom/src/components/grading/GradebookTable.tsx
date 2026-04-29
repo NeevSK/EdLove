@@ -10,7 +10,9 @@ import {
   marksToGPA,
   type StudentGrade,
 } from '@repo/analytics';
-import { Box, FlatList, HStack, Text, VStack } from '@repo/ui';
+import { Box, HStack, Text, VStack } from '@repo/ui';
+import { FlatList } from '@repo/ui/primitives';
+
 import React, { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 

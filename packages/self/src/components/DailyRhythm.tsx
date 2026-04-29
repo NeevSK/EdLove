@@ -4,7 +4,8 @@
  * Standardized to Zero-Legacy: purged corrupted imports and migrated to Sanctuary V3 architecture.
  */
 
-import { useFeatureAccess } from '@repo/core';
+import { useFeatureAccess } from '@repo/core/hooks';
+
 import {
   Box,
   Button,
@@ -22,8 +23,6 @@ import {
   ModalContent,
   ModalHeader,
   PositiveInvitation,
-  Pressable,
-  ScrollView,
   Select,
   SelectBackdrop,
   SelectContent,
@@ -32,13 +31,15 @@ import {
   SelectItem,
   SelectPortal,
   SelectTrigger,
-  SkeletonCard,
   Text,
   Toast,
   ToastTitle,
   useToast,
   VStack,
 } from '@repo/ui';
+import { SkeletonCard } from '@repo/ui/components';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+
 import {
   AlertCircle,
   Book,

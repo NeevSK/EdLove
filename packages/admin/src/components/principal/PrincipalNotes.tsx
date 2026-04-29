@@ -1,24 +1,25 @@
 import type { PrincipalNote } from '@repo/core';
-import { api, coreRuntime } from '@repo/core';
+import { coreRuntime } from '@repo/core';
+import { api } from '@repo/core/api';
+
 import {
   ActivityIndicator,
   Box,
-  FlatList,
   GlobalHeader,
   HStack,
-  hapticLight,
   Icon,
   Input,
   InputField,
-  KeyboardAvoidingView,
   PositiveInvitation,
-  Pressable,
-  SanctuaryButton,
   ScreenWrapper,
   Text,
   useToast,
   VStack,
 } from '@repo/ui';
+import { SanctuaryButton } from '@repo/ui/components';
+import { FlatList, KeyboardAvoidingView, Pressable } from '@repo/ui/primitives';
+import { hapticLight } from '@repo/ui/utils/haptics';
+
 import {
   Bell,
   CheckSquare,

@@ -1,16 +1,8 @@
 import { FeatureGuard } from '@repo/core';
-import {
-  Box,
-  History,
-  HStack,
-  hapticLight,
-  Icon,
-  MessageSquare,
-  Plus,
-  Pressable,
-  QrCode,
-  Text,
-} from '@repo/ui';
+import { Box, History, HStack, Icon, MessageSquare, Plus, QrCode, Text } from '@repo/ui';
+import { Pressable } from '@repo/ui/primitives';
+import { hapticLight } from '@repo/ui/utils/haptics';
+
 import type React from 'react';
 
 interface ActionProps {

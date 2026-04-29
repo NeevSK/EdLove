@@ -1,5 +1,7 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { type Assignment, api, type ClassroomStackParamList } from '@repo/core';
+import type { Assignment, ClassroomStackParamList } from '@repo/core';
+import { api } from '@repo/core/api';
+
 import {
   BookOpen as BookOpenIcon,
   Box,
@@ -9,19 +11,18 @@ import {
   GraduationCap as GraduationCapIcon,
   Heading,
   HStack,
-  hapticLight,
   Icon,
   MessageSquare as MessageSquareIcon,
   NotebookPen as NotebookPenIcon,
-  Pressable,
   ScreenWrapper,
-  ScrollView,
-  SkeletonCard,
   Text,
   TrendingUp as TrendingUpIcon,
-  useBottomTabPadding,
   VStack,
 } from '@repo/ui';
+import { SkeletonCard, useBottomTabPadding } from '@repo/ui/components';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+import { hapticLight } from '@repo/ui/utils/haptics';
+
 import React, { useState } from 'react';
 import {
   AttendanceView,

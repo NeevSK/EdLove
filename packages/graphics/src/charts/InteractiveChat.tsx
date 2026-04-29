@@ -1,4 +1,6 @@
-import { Card, HStack, Theme, VStack } from '@repo/ui';
+import { Card, HStack, VStack } from '@repo/ui';
+import { Theme } from '@repo/ui/theme';
+
 import React, { useEffect, useRef, useState } from 'react';
 import { Alert, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 

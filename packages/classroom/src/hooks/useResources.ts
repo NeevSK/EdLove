@@ -1,4 +1,7 @@
-import { api, type ClassroomResource, SafeZustandStorage, useStore } from '@repo/core';
+import { type ClassroomResource, SafeZustandStorage } from '@repo/core';
+import { api } from '@repo/core/api';
+import { useStore } from '@repo/core/logic';
+
 import { useCallback, useEffect, useState } from 'react';
 
 const RESOURCES_CACHE_KEY = 'gurudevi-resources-cache';

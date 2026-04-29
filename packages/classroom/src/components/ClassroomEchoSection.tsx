@@ -1,4 +1,7 @@
-import { echoAPI, supabase, useStore } from '@repo/core';
+import { echoAPI } from '@repo/core/api';
+import { useStore } from '@repo/core/logic';
+import { supabase } from '@repo/core/native';
+
 import {
   AlertTriangle,
   Box,
@@ -10,19 +13,20 @@ import {
   Heading,
   Heart,
   HStack,
-  hapticLight,
   Icon,
   Inbox,
   Input,
   InputField,
   MessageSquare,
-  Pressable,
   Send,
   Spinner,
   Text,
   User,
   VStack,
 } from '@repo/ui';
+import { Pressable } from '@repo/ui/primitives';
+import { hapticLight } from '@repo/ui/utils/haptics';
+
 import { formatDistanceToNow } from 'date-fns';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';

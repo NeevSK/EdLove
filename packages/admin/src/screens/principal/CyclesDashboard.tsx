@@ -1,4 +1,5 @@
-import { api } from '@repo/core';
+import { api } from '@repo/core/api';
+
 import {
   ArrowLeft,
   Box,
@@ -11,18 +12,16 @@ import {
   FormControlLabelText,
   Heading,
   HStack,
-  hapticLight,
-  hapticMedium,
   Icon,
   Input,
   InputField,
   Plus,
-  Pressable,
-  ScrollView,
-  SkeletonCard,
   Text,
   VStack,
 } from '@repo/ui';
+import { SkeletonCard } from '@repo/ui/components';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+import { hapticLight, hapticMedium } from '@repo/ui/utils/haptics';
 
 import type React from 'react';
 import { useEffect, useState } from 'react';

@@ -1,5 +1,8 @@
 import { SimpleBarChart } from '@repo/graphics';
-import { Box, Card, colors, HStack, ScrollView, Text, useThemedColors, VStack } from '@repo/ui';
+import { Box, Card, HStack, Text, useThemedColors, VStack } from '@repo/ui';
+import { ScrollView } from '@repo/ui/primitives';
+import { colors } from '@repo/ui/theme';
+
 import React from 'react';
 import type { StudentPerformanceMetrics } from '../types/AnalyticsTypes';
 import { formatGPA, getGradeColor, getPerformanceLevel } from '../utils/analyticsHelpers';

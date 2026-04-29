@@ -1,4 +1,7 @@
-import { hapticLight, Icon, Plus, Pressable, Text } from '@repo/ui';
+import { Icon, Plus, Text } from '@repo/ui';
+import { Pressable } from '@repo/ui/primitives';
+import { hapticLight } from '@repo/ui/utils/haptics';
+
 import React from 'react';
 
 export function CreateClassroomAction({ onCreateClassroom }: { onCreateClassroom: () => void }) {

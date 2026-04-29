@@ -8,18 +8,17 @@ import {
   FormControl,
   Heading,
   HStack,
-  hapticLight,
-  hapticSuccess,
   Icon,
   Input,
   InputField,
   Plus,
-  Pressable,
-  ScrollView,
-  SkeletonCard,
   Text,
   VStack,
 } from '@repo/ui';
+import { SkeletonCard } from '@repo/ui/components';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+
 import type React from 'react';
 import { useCallback, useEffect, useReducer } from 'react';
 import { type SchoolSectionRow, sectionsAPI } from '../../sections';

@@ -18,16 +18,14 @@
  * Shadow rule: Shadow Violet only, never grey/black.
  */
 
-import { authAPI, handleAPIError } from '@repo/core';
-import {
-  hapticError,
-  hapticLight,
-  hapticSuccess,
-  openExternalURL,
-  Theme,
-  useTheme,
-  VStack,
-} from '@repo/ui';
+import { handleAPIError } from '@repo/core';
+import { authAPI } from '@repo/core/api';
+
+import { openExternalURL, VStack } from '@repo/ui';
+import { useTheme } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme';
+import { hapticError, hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';

@@ -1,11 +1,12 @@
 import {
   type ResolvedWorkspaceSurface,
   type School,
-  useWorkspaceLayoutSync,
   WORKSPACE_CANVAS_ZONES,
   type WorkspaceSwitcherTarget,
   type WorkspaceZoneId,
 } from '@repo/core';
+import { useWorkspaceLayoutSync } from '@repo/core/native';
+
 import {
   ArrowUpRight,
   BookOpen,
@@ -15,13 +16,13 @@ import {
   HStack,
   MessageSquareHeart,
   MoveRight,
-  Pressable,
   School as SchoolIcon,
   Text,
   VStack,
   WorkspaceCanvas,
   type WorkspaceSurfaceDefinition,
 } from '@repo/ui';
+import { Pressable } from '@repo/ui/primitives';
 
 import type React from 'react';
 import { useMemo } from 'react';

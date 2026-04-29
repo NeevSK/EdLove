@@ -1,4 +1,6 @@
-import { Text, Theme, useThemedColors } from '@repo/ui';
+import { Text, useThemedColors } from '@repo/ui';
+import { Theme } from '@repo/ui/theme';
+
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { SanctuaryCanvas } from '../components/SanctuaryCanvas';

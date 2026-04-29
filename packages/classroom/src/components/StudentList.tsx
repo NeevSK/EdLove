@@ -1,5 +1,6 @@
 import type { Student } from '@repo/core';
-import { studentsAPI } from '@repo/core';
+import { studentsAPI } from '@repo/core/api';
+
 import { QRCodeGenerator } from '@repo/scanner-kit';
 import {
   Spinner as ActivityIndicator,
@@ -8,15 +9,11 @@ import {
   ButtonText,
   Center,
   Edit2,
-  FlatList,
   Heading,
   HStack,
-  hapticLight,
-  hapticMedium,
   Icon,
   MoreVertical,
   Plus,
-  Pressable,
   QrCode,
   SanctuaryModal,
   Sparkles,
@@ -25,6 +22,9 @@ import {
   VStack,
   X,
 } from '@repo/ui';
+import { FlatList, Pressable } from '@repo/ui/primitives';
+import { hapticLight, hapticMedium } from '@repo/ui/utils/haptics';
+
 import * as Clipboard from 'expo-clipboard';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';

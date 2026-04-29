@@ -1,13 +1,8 @@
-import {
-  api,
-  MOCK_SCHOOL_STATS,
-  SafeZustandStorage,
-  type School,
-  type SchoolStats,
-  useFeatureAccess,
-  useStore,
-  useTemporalStore,
-} from '@repo/core';
+import { MOCK_SCHOOL_STATS, SafeZustandStorage, type School, type SchoolStats } from '@repo/core';
+import { api } from '@repo/core/api';
+import { useFeatureAccess } from '@repo/core/hooks';
+import { useStore, useTemporalStore } from '@repo/core/logic';
+
 import { useCallback, useEffect, useReducer, useState } from 'react';
 
 const ECOSYSTEM_STATS_CACHE_KEY = 'gurudevi-ecosystem-stats-cache';

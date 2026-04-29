@@ -1,4 +1,6 @@
-﻿import { getTemporalRange, supabase } from '@repo/core';
+﻿import { getTemporalRange } from '@repo/core';
+import { supabase } from '@repo/core/native';
+
 import type { EnergyForecast } from '../types';
 
 export interface PresenceFallbackCountOptions {

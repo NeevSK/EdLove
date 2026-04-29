@@ -6,17 +6,13 @@
  *  - Inline new-observation form
  */
 
-import { supabase } from '@repo/core';
-import {
-  Box,
-  formatShortDate,
-  HStack,
-  SkeletonCard,
-  Text,
-  Theme,
-  useThemedColors,
-  VStack,
-} from '@repo/ui';
+import { supabase } from '@repo/core/native';
+
+import { Box, HStack, Text, useThemedColors, VStack } from '@repo/ui';
+import { SkeletonCard } from '@repo/ui/components';
+import { Theme } from '@repo/ui/theme';
+import { formatShortDate } from '@repo/ui/utils/dateTimeUtils';
+
 import { useEffect, useState } from 'react';
 import { TextInput, TouchableOpacity } from 'react-native';
 

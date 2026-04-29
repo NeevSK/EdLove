@@ -13,11 +13,12 @@ import {
   Icon,
   Input,
   InputField,
-  Pressable,
   Spinner,
   Text,
   VStack,
 } from '@repo/ui';
+import { Pressable } from '@repo/ui/primitives';
+
 import { Bell, Calendar, Clock, Droplets, Plus, Trash2, X } from 'lucide-react-native';
 import React, { useEffect, useState } from 'react';
 import Animated, { FadeIn, FadeInDown, Layout } from 'react-native-reanimated';

@@ -1,17 +1,11 @@
-import { api, type PrincipalGovernanceEventZod, useTemporalStore } from '@repo/core';
-import {
-  Box,
-  Heading,
-  HStack,
-  hapticLight,
-  Icon,
-  Input,
-  InputField,
-  Pressable,
-  Spinner,
-  Text,
-  VStack,
-} from '@repo/ui';
+import type { PrincipalGovernanceEventZod } from '@repo/core';
+import { api } from '@repo/core/api';
+import { useTemporalStore } from '@repo/core/logic';
+
+import { Box, Heading, HStack, Icon, Input, InputField, Spinner, Text, VStack } from '@repo/ui';
+import { Pressable } from '@repo/ui/primitives';
+import { hapticLight } from '@repo/ui/utils/haptics';
+
 import { Activity, Clock, FileText, History, Plus, ShieldCheck } from 'lucide-react-native';
 import React, { useEffect, useMemo, useReducer } from 'react';
 

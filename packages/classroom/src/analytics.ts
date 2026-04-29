@@ -1,4 +1,5 @@
-import { type StudentAttendancePulse, staffManagementAPI } from '@repo/core';
+import type { StudentAttendancePulse } from '@repo/core';
+import { staffManagementAPI } from '@repo/core/api';
 
 export type { StudentAttendancePulse };
 

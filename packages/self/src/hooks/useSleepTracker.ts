@@ -1,4 +1,6 @@
-﻿import { SafeZustandStorage, useStore } from '@repo/core';
+﻿import { SafeZustandStorage } from '@repo/core';
+import { useStore } from '@repo/core/logic';
+
 import { useCallback, useEffect, useState } from 'react';
 import { createSleepLog, fetchSleepLogs } from '../api/selfFeatureRepository';
 import type { SleepLog } from '../types';

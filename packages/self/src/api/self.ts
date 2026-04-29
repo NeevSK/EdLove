@@ -1,12 +1,13 @@
 import {
-  APIError,
   assertContractCoverage,
   createPOAProxy,
   defineContractCoverage,
   growthSignalsAPI,
   selfContract,
-  supabase,
 } from '@repo/core';
+import { supabase } from '@repo/core/native';
+import { APIError } from '@repo/core/types';
+
 import type { FireJournalEntry, MoodLog } from '../types';
 
 // ============================================================================

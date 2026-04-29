@@ -6,11 +6,11 @@ import {
   HStack,
   Icon,
   NotebookPen,
-  Pressable,
   Text,
   Users,
   VStack,
 } from '@repo/ui';
+import { Pressable } from '@repo/ui/primitives';
 
 import type React from 'react';
 import { useTranslation } from 'react-i18next';

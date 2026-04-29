@@ -1,4 +1,6 @@
-import { Box, ScreenWrapper, Text, useTheme, VStack } from '@repo/ui';
+import { Box, ScreenWrapper, Text, VStack } from '@repo/ui';
+import { useTheme } from '@repo/ui/primitives';
+
 import React from 'react';
 
 export default function TrubeLabScreen() {

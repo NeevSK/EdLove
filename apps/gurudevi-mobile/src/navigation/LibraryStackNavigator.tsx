@@ -6,7 +6,7 @@ import {
   PDFViewerScreen,
   VideoPlayerScreen,
 } from '@repo/library';
-import { useTheme } from '@repo/ui';
+import { useTheme } from '@repo/ui/primitives';
 
 const Stack = createNativeStackNavigator();
 

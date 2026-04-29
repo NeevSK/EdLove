@@ -16,19 +16,19 @@ import {
   trackEvent,
 } from '@repo/analytics';
 import {
-  APIError,
   type AuthorityTier,
-  authAPI,
   clearSentryUser,
-  identityAPI,
   initSentry,
   injectPostHog,
   type SchoolType,
   SyncManager,
   setSentryUser,
-  supabase,
-  useStore,
 } from '@repo/core';
+import { authAPI, identityAPI } from '@repo/core/api';
+import { useStore } from '@repo/core/logic';
+import { supabase } from '@repo/core/native';
+import { APIError } from '@repo/core/types';
+
 import { coreRuntime } from '@repo/core/logic';
 import { nativeRuntimeEnvironment } from '@repo/core/native';
 import { useQRDeepLink } from '@repo/scanner-kit';
@@ -38,14 +38,15 @@ import {
   EnvironmentProvider,
   ErrorBoundary,
   ExternalLinkProvider,
-  FABProvider,
   GluestackUIProvider,
   NetworkStatusBanner,
-  SanctuaryGlobalStyles,
   SanctuaryToast,
   Spinner,
   ToastProvider,
 } from '@repo/ui';
+import { SanctuaryGlobalStyles } from '@repo/ui/components';
+import { FABProvider } from '@repo/ui/context/FABContext';
+
 import type { Session } from '@supabase/supabase-js';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import * as Font from 'expo-font';

@@ -1,6 +1,10 @@
 import { useRoute } from '@react-navigation/native';
-import { api, FormHydrator, type FormTemplate } from '@repo/core';
-import { Box, Heading, LotusLoader, Text, Theme, useThemedColors, VStack } from '@repo/ui';
+import { FormHydrator, type FormTemplate } from '@repo/core';
+import { api } from '@repo/core/api';
+
+import { Box, Heading, LotusLoader, Text, useThemedColors, VStack } from '@repo/ui';
+import { Theme } from '@repo/ui/theme';
+
 import React, { useEffect, useState } from 'react';
 import NativeForm from '../NativeForm';
 

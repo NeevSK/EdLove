@@ -1,4 +1,6 @@
-import { handleAPIError, supabase, validateForm, validators } from '@repo/core';
+import { handleAPIError, validateForm, validators } from '@repo/core';
+import { supabase } from '@repo/core/native';
+
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BreathAnimation } from '../components/BreathAnimation';

@@ -6,7 +6,8 @@
  * animations and a temporal-aware interaction count from the self repository.
  * Metro resolves this over ProgressTree.tsx on the web platform.
  */
-import { useTemporalStore } from '@repo/core';
+import { useTemporalStore } from '@repo/core/logic';
+
 import React, { useEffect, useState } from 'react';
 import { fetchInteractionCountForView } from '../api/selfInsightsRepository';
 

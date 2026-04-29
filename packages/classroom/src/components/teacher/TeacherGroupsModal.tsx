@@ -1,4 +1,5 @@
-import { classroomGroupsAPI } from '@repo/core';
+import { classroomGroupsAPI } from '@repo/core/api';
+
 import {
   Box,
   Button,
@@ -7,21 +8,21 @@ import {
   Edit3,
   Heading,
   HStack,
-  hapticLight,
   Icon,
   Input,
   InputField,
   Layers,
   Plus,
-  Pressable,
   SanctuaryModal,
-  ScrollView,
   Text,
   Trash2,
   User,
   useLotusToast,
   VStack,
 } from '@repo/ui';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+import { hapticLight } from '@repo/ui/utils/haptics';
+
 import React, { useEffect, useMemo, useState } from 'react';
 
 interface TeacherGroupsModalProps {

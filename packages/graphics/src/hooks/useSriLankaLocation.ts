@@ -36,7 +36,7 @@ export function useSriLankaLocation(initialState?: Partial<LocationState>) {
         if (inferred) {
           newState.city = inferred.city;
           newState.districtId = inferred.districtId;
-          // In this unified model, the caller is responsible for provincial alignment 
+          // In this unified model, the caller is responsible for provincial alignment
           // or we can add a helper to Drilldown to find province by district.
         }
       }

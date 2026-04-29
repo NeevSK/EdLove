@@ -5,9 +5,8 @@ import { useCallback, useEffect, useReducer, useRef } from 'react';
 import { Pressable } from 'react-native';
 import { Box, HStack, Text, VStack } from '../../gluestack';
 import { useTheme } from '../../hooks/useTheme';
-import { SanctuaryButton } from '../SanctuaryButton';
-
 import { formatTimeMs } from '../../utils/dateTimeUtils';
+import { SanctuaryButton } from '../SanctuaryButton';
 
 export interface VideoPlayerProps {
   url: string;

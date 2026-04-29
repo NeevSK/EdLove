@@ -1,4 +1,6 @@
-import { type AttendanceRecord, api, type StudentGrade, type StudentObservation } from '@repo/core';
+import type { AttendanceRecord, StudentGrade, StudentObservation } from '@repo/core';
+import { api } from '@repo/core/api';
+
 import {
   Activity,
   Spinner as ActivityIndicator,

@@ -1,17 +1,6 @@
-import {
-  Box,
-  Briefcase,
-  ChevronRight,
-  Heading,
-  HStack,
-  hapticLight,
-  Icon,
-  Pressable,
-  ScrollView,
-  Text,
-  User,
-  VStack,
-} from '@repo/ui';
+import { Box, Briefcase, ChevronRight, Heading, HStack, Icon, Text, User, VStack } from '@repo/ui';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+import { hapticLight } from '@repo/ui/utils/haptics';
 
 interface StaffMember {
   id: string;

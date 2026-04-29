@@ -1,27 +1,29 @@
-import { api, type Student } from '@repo/core';
+import type { Student } from '@repo/core';
+import { api } from '@repo/core/api';
+
 import {
   Box,
   Button,
   ButtonText,
   Heading,
   HStack,
-  hapticLight,
   Icon,
   Input,
   InputField,
   MessageCircle,
   Plus,
-  Pressable,
   SanctuaryModal,
-  ScrollView,
   Sparkles,
   Spinner,
   Text,
-  Theme,
   Trash2,
   TriangleAlert,
   VStack,
 } from '@repo/ui';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme';
+import { hapticLight } from '@repo/ui/utils/haptics';
+
 import type React from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 

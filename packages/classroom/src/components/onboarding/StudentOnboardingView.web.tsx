@@ -7,13 +7,14 @@ import {
   HStack,
   Icon,
   Layout,
-  Pressable,
   QrCode,
   Search,
   Sparkles,
   Text,
   VStack,
 } from '@repo/ui';
+import { Pressable } from '@repo/ui/primitives';
+
 import React from 'react';
 
 interface StudentOnboardingViewProps {

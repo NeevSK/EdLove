@@ -1,4 +1,5 @@
-import { identityAPI } from '@repo/core';
+import { identityAPI } from '@repo/core/api';
+
 import { useCallback, useEffect, useState } from 'react';
 import { profileAPI } from '../api/profile';
 import type { ProfileHistoryEntry } from '../domains/profile/ports';

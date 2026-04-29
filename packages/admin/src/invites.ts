@@ -1,4 +1,5 @@
-import { api, type PrincipalInviteRole } from '@repo/core';
+import type { PrincipalInviteRole } from '@repo/core';
+import { api } from '@repo/core/api';
 
 export type InviteCode = Awaited<ReturnType<typeof api.principalWorkspace.listInviteCodes>>[number];
 

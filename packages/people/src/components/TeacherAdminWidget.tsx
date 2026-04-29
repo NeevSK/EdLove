@@ -1,5 +1,8 @@
 import { usePermissions } from '@repo/core';
-import { Box, HStack, hapticLight, Icon, Pressable, Text, VStack } from '@repo/ui';
+import { Box, HStack, Icon, Text, VStack } from '@repo/ui';
+import { Pressable } from '@repo/ui/primitives';
+import { hapticLight } from '@repo/ui/utils/haptics';
+
 import {
   ArrowRightLeft,
   Calendar,

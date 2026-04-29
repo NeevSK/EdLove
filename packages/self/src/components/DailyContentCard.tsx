@@ -4,7 +4,10 @@
  * Standardized to Zero-Legacy: purged corrupted StyleSheet and migrated to NativeWind v4.
  */
 
-import { Box, Heading, HStack, Icon, Pressable, SkeletonCard, Text, VStack } from '@repo/ui';
+import { Box, Heading, HStack, Icon, Text, VStack } from '@repo/ui';
+import { SkeletonCard } from '@repo/ui/components';
+import { Pressable } from '@repo/ui/primitives';
+
 import { ChevronDown, ChevronUp, Lightbulb, Sparkles, User } from 'lucide-react-native';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';

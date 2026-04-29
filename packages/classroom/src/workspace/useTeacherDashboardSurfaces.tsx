@@ -7,19 +7,20 @@ import {
   MessageCircle,
   Plus,
   PositiveInvitation,
-  Pressable,
   ScanLine,
   School,
   ShieldCheck,
-  TemporalNavigator,
   Text,
-  Theme,
   Users,
   VStack,
   Wind,
   type WorkspaceSurfaceDefinition,
   Zap,
 } from '@repo/ui';
+import { TemporalNavigator } from '@repo/ui/components';
+import { Pressable } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme';
+
 import type React from 'react';
 import { useMemo } from 'react';
 import { ClassroomList } from '../components';

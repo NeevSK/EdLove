@@ -1,19 +1,21 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { useStore } from '@repo/core';
+import { useStore } from '@repo/core/logic';
+
 import { StaffPresencePulse } from '@repo/people';
 import {
   Box,
   GlobalHeader,
   Heading,
   HStack,
-  hapticSuccess,
-  SanctuaryButton,
   ScreenWrapper,
   Text,
-  Theme,
   useThemedColors,
   VStack,
 } from '@repo/ui';
+import { SanctuaryButton } from '@repo/ui/components';
+import { Theme } from '@repo/ui/theme';
+import { hapticSuccess } from '@repo/ui/utils/haptics';
+
 import { AtSign, Edit3, User as UserIcon } from 'lucide-react-native';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';

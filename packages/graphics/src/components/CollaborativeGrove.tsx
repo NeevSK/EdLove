@@ -1,4 +1,5 @@
-import { Theme } from '@repo/ui';
+import { Theme } from '@repo/ui/theme';
+
 import { useQuery } from '@tanstack/react-query';
 import type React from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';

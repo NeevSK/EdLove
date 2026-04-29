@@ -1,10 +1,11 @@
 import {
   type ResolvedWorkspaceSurface,
-  useWorkspaceLayoutSync,
   WORKSPACE_CANVAS_ZONES,
   type WorkspaceSwitcherTarget,
   type WorkspaceZoneId,
 } from '@repo/core';
+import { useWorkspaceLayoutSync } from '@repo/core/native';
+
 import {
   Box,
   Building2,
@@ -14,7 +15,6 @@ import {
   LayoutGrid,
   MoveRight,
   NotebookPen,
-  Pressable,
   QrCode,
   Share2,
   Text,
@@ -23,6 +23,7 @@ import {
   WorkspaceCanvas,
   type WorkspaceSurfaceDefinition,
 } from '@repo/ui';
+import { Pressable } from '@repo/ui/primitives';
 
 import type React from 'react';
 import { useMemo } from 'react';

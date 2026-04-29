@@ -5,13 +5,13 @@ import {
   GraduationCap,
   Heading,
   HStack,
-  hapticLight,
   Icon,
-  Pressable,
   Text,
   TrendingUp,
   VStack,
 } from '@repo/ui';
+import { Pressable } from '@repo/ui/primitives';
+import { hapticLight } from '@repo/ui/utils/haptics';
 
 import type React from 'react';
 import { useTranslation } from 'react-i18next';

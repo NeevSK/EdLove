@@ -1,4 +1,6 @@
-import { api, type SchoolGrade, type Section } from '@repo/core';
+import type { SchoolGrade, Section } from '@repo/core';
+import { api } from '@repo/core/api';
+
 import {
   ArrowLeft,
   Box,
@@ -8,7 +10,6 @@ import {
   GraduationCap,
   Heading,
   HStack,
-  hapticLight,
   Icon,
   Input,
   InputField,
@@ -19,13 +20,13 @@ import {
   ModalFooter,
   ModalHeader,
   Plus,
-  Pressable,
   School as SchoolIcon,
-  ScrollView,
   Spinner,
   Text,
   VStack,
 } from '@repo/ui';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+import { hapticLight } from '@repo/ui/utils/haptics';
 
 import { useCallback, useEffect, useReducer } from 'react';
 import { useTranslation } from 'react-i18next';

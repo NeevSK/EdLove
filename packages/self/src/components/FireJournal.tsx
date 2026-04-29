@@ -4,24 +4,26 @@
  */
 
 import { useNavigation } from '@react-navigation/native';
-import { usePermissions, useTemporalStore } from '@repo/core';
+import { usePermissions } from '@repo/core';
+import { useTemporalStore } from '@repo/core/logic';
+
 import {
-  AnimatedView,
   Box,
   Button,
   ButtonText,
   Heading,
   HStack,
-  hapticLight,
-  hapticMedium,
   Icon,
   Input,
   InputField,
   PositiveInvitation,
-  SkeletonCard,
   Text,
   VStack,
 } from '@repo/ui';
+import { SkeletonCard } from '@repo/ui/components';
+import { AnimatedView } from '@repo/ui/primitives';
+import { hapticLight, hapticMedium } from '@repo/ui/utils/haptics';
+
 import { CheckCircle, Flame, Mic } from 'lucide-react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';

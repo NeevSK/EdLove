@@ -1,4 +1,8 @@
-import { authAPI, identityAPI, moonPhaseAPI, supabase, usePermissions, useStore } from '@repo/core';
+import { usePermissions } from '@repo/core';
+import { authAPI, identityAPI, moonPhaseAPI } from '@repo/core/api';
+import { useStore } from '@repo/core/logic';
+import { supabase } from '@repo/core/native';
+
 import { useCallback, useState } from 'react';
 import { type CoordinationGap, TimetableScheduler } from '../api/agents';
 

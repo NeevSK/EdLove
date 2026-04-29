@@ -17,7 +17,8 @@
  */
 
 import type { PrincipalNote } from '@repo/core';
-import { api } from '@repo/core';
+import { api } from '@repo/core/api';
+
 import {
   Box,
   GlobalHeader,
@@ -25,11 +26,12 @@ import {
   PositiveInvitation,
   ScreenWrapper,
   Text,
-  Theme,
   useLotusToast,
   useThemedColors,
   VStack,
 } from '@repo/ui';
+import { Theme } from '@repo/ui/theme';
+
 import {
   Bell,
   BookMarked,

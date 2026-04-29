@@ -13,8 +13,11 @@
  */
 
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { usePermissions, useStore } from '@repo/core';
-import { formatTimestamp } from '@repo/ui';
+import { usePermissions } from '@repo/core';
+import { useStore } from '@repo/core/logic';
+
+import { formatTimestamp } from '@repo/ui/utils/dateTimeUtils';
+
 import type React from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';

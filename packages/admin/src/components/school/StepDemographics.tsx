@@ -4,12 +4,12 @@ import {
   FormControlLabel,
   FormControlLabelText,
   HStack,
-  Pressable,
   SanctuaryInput,
   Text,
   Users,
   VStack,
 } from '@repo/ui';
+import { Pressable } from '@repo/ui/primitives';
 
 import { useTranslation } from 'react-i18next';
 

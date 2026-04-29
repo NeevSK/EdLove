@@ -8,12 +8,13 @@ import {
   Icon,
   Layout,
   Plus,
-  Pressable,
   Settings2,
   Text,
   VStack,
   Zap,
 } from '@repo/ui';
+import { Pressable } from '@repo/ui/primitives';
+
 import React from 'react';
 
 interface PrincipalOnboardingViewProps {

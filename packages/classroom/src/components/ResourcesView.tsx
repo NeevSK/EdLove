@@ -1,10 +1,8 @@
-import {
-  api,
-  CLASSROOM_RESOURCE_SCOPE,
-  type ClassroomResource,
-  useSafeMutation,
-  useStore,
-} from '@repo/core';
+import { CLASSROOM_RESOURCE_SCOPE, type ClassroomResource } from '@repo/core';
+import { api } from '@repo/core/api';
+import { useSafeMutation } from '@repo/core/hooks';
+import { useStore } from '@repo/core/logic';
+
 import {
   Box,
   Button,
@@ -14,8 +12,6 @@ import {
   FileText,
   Heading,
   HStack,
-  hapticLight,
-  hapticSuccess,
   Icon,
   Input,
   InputField,
@@ -24,9 +20,7 @@ import {
   openExternalURL,
   Pin,
   Plus,
-  Pressable,
   SanctuaryModal,
-  ScrollView,
   showExternalLinkOptions,
   Text,
   Textarea,
@@ -34,6 +28,9 @@ import {
   Trash2,
   VStack,
 } from '@repo/ui';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useResources } from '../hooks/useResources';

@@ -1,14 +1,7 @@
 import { FeatureGuard } from '@repo/core';
-import {
-  Box,
-  Button,
-  ButtonText,
-  ClipboardList,
-  HStack,
-  hapticLight,
-  Icon,
-  MessageCircle,
-} from '@repo/ui';
+import { Box, Button, ButtonText, ClipboardList, HStack, Icon, MessageCircle } from '@repo/ui';
+import { hapticLight } from '@repo/ui/utils/haptics';
+
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 

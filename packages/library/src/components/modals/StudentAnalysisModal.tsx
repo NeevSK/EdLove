@@ -1,4 +1,6 @@
-import { type StudentPotentialAnalysis, studentPotentialAPI } from '@repo/core';
+import type { StudentPotentialAnalysis } from '@repo/core';
+import { studentPotentialAPI } from '@repo/core/api';
+
 import { CaptureEngine, radarLayout } from '@repo/graphics';
 import {
   Box,
@@ -11,16 +13,15 @@ import {
   ModalBody,
   ModalContent,
   ModalHeader,
-  Pressable,
-  ScrollView,
   Slider,
   Spinner,
   Text,
-  Theme,
   useResponsive,
-  useTheme,
   VStack,
 } from '@repo/ui';
+import { Pressable, ScrollView, useTheme } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme';
+
 import { BlurView } from 'expo-blur';
 import { FileCheck, Save, Sparkles, X } from 'lucide-react-native';
 import type React from 'react';

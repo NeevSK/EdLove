@@ -10,19 +10,19 @@ import {
   Box,
   Check,
   Clock,
-  FlatList,
   Heading,
   HStack,
-  hapticLight,
   Icon,
   Input,
   InputField,
-  Pressable,
   Search,
   Text,
   VStack,
   X,
 } from '@repo/ui';
+import { FlatList, Pressable } from '@repo/ui/primitives';
+import { hapticLight } from '@repo/ui/utils/haptics';
+
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GestureHandlerRootView, Swipeable } from 'react-native-gesture-handler';

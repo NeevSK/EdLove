@@ -5,7 +5,11 @@
   "types": "src/index.ts",
   "exports": {
     ".": "./src/index.ts",
+    "./components": "./src/components/index.ts",
+    "./hooks": "./src/hooks/index.ts",
     "./screens": "./src/screens/index.ts",
+    "./types": "./src/types/index.ts",
+    "./api": "./src/api/index.ts",
     "./screens/CommunityScreen.web": "./src/screens/CommunityScreen.web.tsx",
     "./screens/UserPublicProfileScreen.web": "./src/screens/UserPublicProfileScreen.web.tsx",
     "./screens/GroupDetailsScreen.web": "./src/screens/GroupDetailsScreen.web.tsx",
@@ -13,9 +17,9 @@
     "./screens/DirectMessagesListScreen": "./src/screens/DirectMessagesListScreen.tsx",
     "./screens/DirectMessageScreen.web": "./src/screens/DirectMessageScreen.web.tsx",
     "./screens/AnnouncementsScreen": "./src/screens/AnnouncementsScreen.tsx",
-    "./api/community": "./src/api/community.ts",
     "./package.json": "./package.json"
   },
+
   "scripts": {
     "lint": "powershell -File ../../scripts/audit-wrapper.ps1 -Cmd \"pnpm exec eslint .\" -Log \"reports/lint.txt\"",
     "check-types": "powershell -File ../../scripts/audit-wrapper.ps1 -Cmd \"pnpm exec tsc --noEmit\" -Log \"reports/check-types.txt\"",

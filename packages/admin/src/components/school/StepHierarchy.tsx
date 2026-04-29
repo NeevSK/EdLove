@@ -1,16 +1,5 @@
-import {
-  Box,
-  GraduationCap,
-  Heading,
-  HStack,
-  Icon,
-  Plus,
-  Pressable,
-  School,
-  Text,
-  VStack,
-  X,
-} from '@repo/ui';
+import { Box, GraduationCap, Heading, HStack, Icon, Plus, School, Text, VStack, X } from '@repo/ui';
+import { Pressable } from '@repo/ui/primitives';
 
 interface StepHierarchyProps {
   data: {

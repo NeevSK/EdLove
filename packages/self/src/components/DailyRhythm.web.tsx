@@ -13,7 +13,6 @@ import {
   Icon,
   Input,
   InputField,
-  Pressable,
   Select,
   SelectBackdrop,
   SelectContent,
@@ -24,6 +23,8 @@ import {
   Text,
   VStack,
 } from '@repo/ui';
+import { Pressable } from '@repo/ui/primitives';
+
 import { Activity, Calendar, ChevronDown, Clock, MapPin, Plus, Trash2 } from 'lucide-react-native';
 import React, { useState } from 'react';
 import { useTimetable } from '../hooks/useTimetable';

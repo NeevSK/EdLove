@@ -13,16 +13,16 @@ import {
   Icon,
   Lightbulb,
   Minus,
-  Pressable,
-  ScrollView,
   Text,
-  Theme,
   TrendingDown,
   TrendingUp,
   Trophy,
   VStack,
   Zap,
 } from '@repo/ui';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme';
+
 import React from 'react';
 
 interface AnalyticsWidgetProps {

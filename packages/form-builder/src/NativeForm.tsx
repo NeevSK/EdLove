@@ -1,5 +1,6 @@
 import type { FormManager } from '@repo/core';
-import { useForm } from '@repo/core';
+import { useForm } from '@repo/core/hooks';
+
 import {
   Box,
   Button,
@@ -10,13 +11,14 @@ import {
   Icon,
   Input,
   InputField,
-  Pressable,
   Spinner,
   Text,
   Textarea,
   TextareaInput,
   VStack,
 } from '@repo/ui';
+import { Pressable } from '@repo/ui/primitives';
+
 import { Info, Star } from 'lucide-react-native';
 import React from 'react';
 

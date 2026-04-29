@@ -6,7 +6,6 @@ import {
   HStack,
   Icon,
   Plus,
-  Pressable,
   School,
   Search,
   Text,
@@ -14,6 +13,8 @@ import {
   VStack,
   Zap,
 } from '@repo/ui';
+import { Pressable } from '@repo/ui/primitives';
+
 import React from 'react';
 
 interface TeacherOnboardingViewProps {

@@ -1,4 +1,5 @@
-import { useTemporalStore } from '@repo/core';
+import { useTemporalStore } from '@repo/core/logic';
+
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useMemo } from 'react';
 import { libraryAPI } from '../api/library';

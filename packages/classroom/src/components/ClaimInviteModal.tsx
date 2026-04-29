@@ -1,4 +1,6 @@
-import { api, identityAPI, useStore } from '@repo/core';
+import { api, identityAPI } from '@repo/core/api';
+import { useStore } from '@repo/core/logic';
+
 import {
   Box,
   Button,
@@ -8,7 +10,6 @@ import {
   FormControlLabel,
   FormControlLabelText,
   HStack,
-  hapticSuccess,
   Icon,
   Input,
   InputField,
@@ -18,6 +19,8 @@ import {
   Text,
   VStack,
 } from '@repo/ui';
+import { hapticSuccess } from '@repo/ui/utils/haptics';
+
 import React, { useState } from 'react';
 
 interface ClaimInviteModalProps {

@@ -11,8 +11,9 @@ import {
   SelectPortal,
   SelectTrigger,
   Text,
-  View,
 } from '@repo/ui';
+import { View } from '@repo/ui/primitives';
+
 import { ChevronDown } from 'lucide-react-native';
 import React from 'react';
 

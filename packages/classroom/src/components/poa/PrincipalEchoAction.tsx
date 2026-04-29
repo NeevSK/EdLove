@@ -1,4 +1,7 @@
-import { hapticLight, Icon, MessageCircle, Pressable, Text } from '@repo/ui';
+import { Icon, MessageCircle, Text } from '@repo/ui';
+import { Pressable } from '@repo/ui/primitives';
+import { hapticLight } from '@repo/ui/utils/haptics';
+
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 

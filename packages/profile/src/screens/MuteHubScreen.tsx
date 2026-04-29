@@ -1,21 +1,22 @@
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { socialAPI } from '@repo/core';
+import { socialAPI } from '@repo/core/api';
+
 import {
   Box,
   Center,
   GlobalHeader,
   Heading,
   HStack,
-  hapticLight,
-  hapticSuccess,
   Icon,
-  Pressable,
   ScreenWrapper,
   Text,
-  UserAvatar,
   VStack,
 } from '@repo/ui';
+import { UserAvatar } from '@repo/ui/components';
+import { Pressable } from '@repo/ui/primitives';
+import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+
 import { Shield, Trash2, XCircle } from 'lucide-react-native';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';

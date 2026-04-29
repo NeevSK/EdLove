@@ -1,4 +1,7 @@
-import { type MappingTopology, mappingAPI, supabase } from '@repo/core';
+import type { MappingTopology } from '@repo/core';
+import { mappingAPI } from '@repo/core/api';
+import { supabase } from '@repo/core/native';
+
 import { useEffect, useState } from 'react';
 
 /**

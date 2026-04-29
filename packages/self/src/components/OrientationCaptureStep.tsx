@@ -5,18 +5,10 @@
  */
 
 import type { OrientationSeeds } from '@repo/profile';
-import {
-  Box,
-  Heading,
-  HStack,
-  hapticLight,
-  hapticSuccess,
-  Icon,
-  Pressable,
-  ScrollView,
-  Text,
-  VStack,
-} from '@repo/ui';
+import { Box, Heading, HStack, Icon, Text, VStack } from '@repo/ui';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+
 import {
   BookOpen,
   Calendar,

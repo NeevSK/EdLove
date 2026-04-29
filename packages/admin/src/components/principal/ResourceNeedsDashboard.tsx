@@ -1,4 +1,5 @@
-import { api } from '@repo/core';
+import { api } from '@repo/core/api';
+
 import {
   ActivityIndicator,
   AlertCircle,

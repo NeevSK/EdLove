@@ -3,8 +3,8 @@ import {
   getWorkRolesForUser,
   type Membership,
   type ScopeRef,
-  supabase,
 } from '@repo/core';
+import { supabase } from '@repo/core/native';
 
 interface MembershipSeed {
   id: string;

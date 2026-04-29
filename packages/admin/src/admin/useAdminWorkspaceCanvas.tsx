@@ -1,9 +1,10 @@
 import {
   type ResolvedWorkspaceSurface,
-  useWorkspaceLayoutSync,
   WORKSPACE_CANVAS_ZONES,
   type WorkspaceZoneId,
 } from '@repo/core';
+import { useWorkspaceLayoutSync } from '@repo/core/native';
+
 import {
   AlertTriangle,
   Box,
@@ -13,7 +14,6 @@ import {
   Database,
   GitBranch,
   HStack,
-  Pressable,
   RefreshCw,
   Search,
   ShieldCheck,
@@ -22,6 +22,7 @@ import {
   WorkspaceCanvas,
   type WorkspaceSurfaceDefinition,
 } from '@repo/ui';
+import { Pressable } from '@repo/ui/primitives';
 
 import type React from 'react';
 import { useMemo } from 'react';

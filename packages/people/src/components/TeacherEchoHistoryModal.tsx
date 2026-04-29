@@ -1,17 +1,8 @@
-import {
-  Box,
-  Heading,
-  HStack,
-  hapticLight,
-  Icon,
-  Pressable,
-  SanctuaryModal,
-  ScrollView,
-  SkeletonCard,
-  Text,
-  VStack,
-  X,
-} from '@repo/ui';
+import { Box, Heading, HStack, Icon, SanctuaryModal, Text, VStack, X } from '@repo/ui';
+import { SkeletonCard } from '@repo/ui/components';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+import { hapticLight } from '@repo/ui/utils/haptics';
+
 import React, { useEffect, useState } from 'react';
 import { type TeacherSentEcho, teacherFeedbackAPI } from '../feedback';
 

@@ -1,11 +1,7 @@
-import {
-  type ClassroomGradingSettings,
-  gradingAPI,
-  growthSignalsAPI,
-  type StudentGrade,
-  studentsAPI,
-  useStore,
-} from '@repo/core';
+import { type ClassroomGradingSettings, growthSignalsAPI, type StudentGrade } from '@repo/core';
+import { gradingAPI, studentsAPI } from '@repo/core/api';
+import { useStore } from '@repo/core/logic';
+
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 export type SortOption = 'name' | 'marks' | 'rank';

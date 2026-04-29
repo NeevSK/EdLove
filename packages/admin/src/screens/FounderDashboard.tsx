@@ -1,28 +1,32 @@
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { type FounderStackParamList, type School, useStore } from '@repo/core';
+import type { FounderStackParamList, School } from '@repo/core';
+import { useStore } from '@repo/core/logic';
+
+import GlobalHeader from '@repo/ui/components/GlobalHeader';
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { useRegisterFAB } from '@repo/ui/context/FABContext';
 import {
-  Box,
   ChevronRight,
-  GlobalHeader,
-  Heading,
   HeartPulse,
-  HStack,
-  Icon,
   LayoutGrid,
   Plus,
-  Pressable,
   School as SchoolIcon,
-  ScreenWrapper,
+  Users,
+  Wind,
+  Zap,
+} from '@repo/ui/icons';
+import {
+  Box,
+  Heading,
+  HStack,
+  Icon,
+  Pressable,
   ScrollView,
   Spinner,
   Text,
-  Users,
-  useRegisterFAB,
   VStack,
-  Wind,
-  Zap,
-} from '@repo/ui';
+} from '@repo/ui/primitives';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useFounderEcosystemStats } from '../bridge/founderWorkspace';

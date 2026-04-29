@@ -1,7 +1,9 @@
 import { useNavigation } from '@react-navigation/native';
-import { usePermissions, useStore } from '@repo/core';
+import { usePermissions } from '@repo/core';
+import { useStore } from '@repo/core/logic';
+
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { Box, Text, VStack } from '@repo/ui/primitives';
-import { ScreenWrapper } from '@repo/ui/components/ScreenWrapper';
 import {
   AdminWorkspaceCanvas,
   useAdminWorkspaceCanvasSurfaces,

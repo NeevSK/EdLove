@@ -17,7 +17,9 @@ import { socialAPI } from '@repo/core/api';
 import { useStore, useTemporalStore } from '@repo/core/logic';
 import { supabase } from '@repo/core/native';
 
-import { formatTimestamp, getInitialsFromName } from '@repo/ui';
+import { formatTimestamp } from '@repo/ui/utils/dateTimeUtils';
+import { getInitialsFromName } from '@repo/ui/utils/stringUtils';
+
 import type React from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { communityAPI } from '../api/community';

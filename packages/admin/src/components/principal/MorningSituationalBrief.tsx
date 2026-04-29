@@ -8,25 +8,23 @@
  *  - Pending leave approvals badge
  */
 
-import {
-  type StaffPresenceSummary,
-  type StudentAttendancePulse,
-  staffManagementAPI,
-} from '@repo/core';
+import type { StaffPresenceSummary, StudentAttendancePulse } from '@repo/core';
+import { staffManagementAPI } from '@repo/core/api';
+
 import {
   AlertCircle,
   Box,
   ChevronRight,
   FileCheck,
   HStack,
-  hapticLight,
   Icon,
-  Pressable,
   Text,
   TrendingDown,
   TrendingUp,
   VStack,
 } from '@repo/ui';
+import { Pressable } from '@repo/ui/primitives';
+import { hapticLight } from '@repo/ui/utils/haptics';
 
 import { useEffect, useState } from 'react';
 

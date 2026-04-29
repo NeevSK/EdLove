@@ -1,27 +1,19 @@
-import {
-  api,
-  identityAPI,
-  MOCK_CLASSROOMS,
-  useFeatureAccess,
-  usePermissions,
-  useStore,
-} from '@repo/core';
+import { MOCK_CLASSROOMS, usePermissions } from '@repo/core';
+import { api, identityAPI } from '@repo/core/api';
+import { useFeatureAccess } from '@repo/core/hooks';
+import { useStore } from '@repo/core/logic';
+
 import {
   BookOpen,
   Box,
   ChevronRight,
   ClipboardCheck,
-  FlatList,
   Heading,
   HStack,
-  hapticLight,
-  hapticSuccess,
   Icon,
   Plus,
   PositiveInvitation,
-  Pressable,
   SanctuaryToast,
-  SkeletonCard,
   Spinner,
   Text,
   Users,
@@ -29,6 +21,10 @@ import {
   VStack,
   Zap,
 } from '@repo/ui';
+import { SkeletonCard } from '@repo/ui/components';
+import { FlatList, Pressable } from '@repo/ui/primitives';
+import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import CreateClassroomModal from './CreateClassroomModal';

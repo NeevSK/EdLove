@@ -1,6 +1,12 @@
 import { useNavigation } from '@react-navigation/native';
-import { FeatureGuard, useStore } from '@repo/core';
-import { Box, HStack, hapticLight, ScreenWrapper, Text, Theme, useTheme, VStack } from '@repo/ui';
+import { FeatureGuard } from '@repo/core';
+import { useStore } from '@repo/core/logic';
+
+import { Box, HStack, ScreenWrapper, Text, VStack } from '@repo/ui';
+import { useTheme } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme';
+import { hapticLight } from '@repo/ui/utils/haptics';
+
 import { ChevronLeft, Send, Sparkles } from 'lucide-react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';

@@ -3,7 +3,9 @@ import {
   WORKSPACE_CANVAS_ZONES,
   type WorkspaceZoneId,
 } from '@repo/core';
-import { Box, HStack, Pressable, Text, WorkspaceCanvas } from '@repo/ui';
+import { Box, HStack, Text, WorkspaceCanvas } from '@repo/ui';
+import { Pressable } from '@repo/ui/primitives';
+
 import React from 'react';
 import type {
   ClassroomWorkspaceCapabilityKey,

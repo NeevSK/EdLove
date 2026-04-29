@@ -1,4 +1,6 @@
-import { FormManager, supabase } from '@repo/core';
+import { FormManager } from '@repo/core';
+import { supabase } from '@repo/core/native';
+
 import {
   ArrowRight,
   Building2,

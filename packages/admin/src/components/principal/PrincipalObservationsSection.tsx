@@ -6,20 +6,12 @@
  *  - Inline new-observation form
  */
 
-import { supabase } from '@repo/core';
-import {
-  Box,
-  Heading,
-  HStack,
-  hapticLight,
-  Icon,
-  Input,
-  InputField,
-  Pressable,
-  Spinner,
-  Text,
-  VStack,
-} from '@repo/ui';
+import { supabase } from '@repo/core/native';
+
+import { Box, Heading, HStack, Icon, Input, InputField, Spinner, Text, VStack } from '@repo/ui';
+import { Pressable } from '@repo/ui/primitives';
+import { hapticLight } from '@repo/ui/utils/haptics';
+
 import { Plus } from 'lucide-react-native';
 import React, { useEffect, useReducer } from 'react';
 

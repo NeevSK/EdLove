@@ -8,12 +8,13 @@ import {
   Icon,
   Layout,
   MessageSquare,
-  Pressable,
   Star,
   Text,
   TrendingUp,
   VStack,
 } from '@repo/ui';
+import { Pressable } from '@repo/ui/primitives';
+
 import React from 'react';
 
 export const StudentStudySuite = () => {

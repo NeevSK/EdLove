@@ -1,5 +1,6 @@
 ﻿import type { DashboardContent as AdminDashboardContent, DashboardContentProps } from '@repo/admin';
-import type { TemporalNavigator } from '@repo/ui';
+import type { TemporalNavigator } from '@repo/ui/components';
+
 import type React from 'react';
 
 export const DashboardContent: React.FC<DashboardContentProps> = (_props) => (

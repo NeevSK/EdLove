@@ -1,4 +1,5 @@
-import { mappingAPI } from '@repo/core';
+import { mappingAPI } from '@repo/core/api';
+
 import type { KnowledgeTopology } from '@repo/graphics';
 import { useEffect, useState } from 'react';
 

@@ -1,4 +1,7 @@
-import { useAccountDeletion, usePermissions, useStore, useTracking } from '@repo/core';
+import { usePermissions } from '@repo/core';
+import { useAccountDeletion, useTracking } from '@repo/core/hooks';
+import { useStore } from '@repo/core/logic';
+
 import {
   Box,
   Button,
@@ -9,19 +12,17 @@ import {
   GlobalHeader,
   Heading,
   HStack,
-  hapticError,
-  hapticLight,
-  hapticSuccess,
   Icon,
   IdentityCard,
   LogoutModal,
-  Pressable,
-  SanctuaryProgressBar,
   ScreenWrapper,
   Text,
-  useBottomTabPadding,
   VStack,
 } from '@repo/ui';
+import { SanctuaryProgressBar, useBottomTabPadding } from '@repo/ui/components';
+import { Pressable } from '@repo/ui/primitives';
+import { hapticError, hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+
 import {
   Edit3,
   Eye,

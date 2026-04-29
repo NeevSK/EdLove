@@ -1,5 +1,6 @@
 import { useAIAgent } from '@repo/ai';
-import { useStore } from '@repo/core';
+import { useStore } from '@repo/core/logic';
+
 import {
   AlertCircle,
   Box,
@@ -7,14 +8,16 @@ import {
   CalendarCheck,
   HStack,
   Icon,
-  SanctuaryButton,
-  ScrollView,
   Text,
   Users,
-  useRegisterFAB,
   VStack,
 } from '@repo/ui';
-import { ScreenWrapper } from '@repo/ui/components/ScreenWrapper';
+import { SanctuaryButton } from '@repo/ui/components';
+import { useRegisterFAB } from '@repo/ui/context/FABContext';
+import { ScrollView } from '@repo/ui/primitives';
+
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+
 import React from 'react';
 
 export default function SectionHeadDashboard({

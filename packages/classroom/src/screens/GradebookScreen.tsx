@@ -2,18 +2,9 @@
  * GRADEBOOK SCREEN
  */
 
-import {
-  Box,
-  Button,
-  ButtonText,
-  Heading,
-  HStack,
-  Pressable,
-  ScrollView,
-  Spinner,
-  Text,
-  VStack,
-} from '@repo/ui';
+import { Box, Button, ButtonText, Heading, HStack, Spinner, Text, VStack } from '@repo/ui';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import GradebookTable from '../components/grading/GradebookTable';

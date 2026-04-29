@@ -7,10 +7,11 @@ import {
   Heading,
   HStack,
   Icon,
-  Pressable,
   Text,
   VStack,
 } from '@repo/ui';
+import { Pressable } from '@repo/ui/primitives';
+
 import type React from 'react';
 
 interface Classroom {

@@ -4,19 +4,10 @@
  * Simple, focused, and intimate interface.
  */
 
-import {
-  AnimatedView,
-  Box,
-  Button,
-  ButtonText,
-  Heading,
-  HStack,
-  hapticLight,
-  hapticSuccess,
-  Icon,
-  Text,
-  VStack,
-} from '@repo/ui';
+import { Box, Button, ButtonText, Heading, HStack, Icon, Text, VStack } from '@repo/ui';
+import { AnimatedView } from '@repo/ui/primitives';
+import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+
 import { Check, Mic, Square, Volume2, X } from 'lucide-react-native';
 import type React from 'react';
 import { useEffect, useState } from 'react';

@@ -1,5 +1,5 @@
-import PrincipalDashboard from '@repo/admin/screens/PrincipalDashboard';
 import GradeHeadDashboard from '@repo/admin/screens/GradeHeadDashboard';
+import PrincipalDashboard from '@repo/admin/screens/PrincipalDashboard';
 import SectionHeadDashboard from '@repo/admin/screens/SectionHeadDashboard';
 import React from 'react';
 import { PrincipalOnboardingView } from '../components';

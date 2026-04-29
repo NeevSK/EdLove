@@ -5,7 +5,10 @@
  */
 
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { api, growthSignalsAPI, type StudentAttendance, useStore } from '@repo/core';
+import { growthSignalsAPI, type StudentAttendance } from '@repo/core';
+import { api } from '@repo/core/api';
+import { useStore } from '@repo/core/logic';
+
 import { Check, ChevronLeft, Clock, Save, X } from 'lucide-react-native';
 import type React from 'react';
 import { useEffect, useState } from 'react';

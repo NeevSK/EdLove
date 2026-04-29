@@ -1,3 +1,3 @@
-export { type KnowledgeNodeIndex, knowledgeDB } from './database';
-export { libraryAPI } from './library';
-export { knowledgeSync } from './sync';
+export * from './database';
+export * from './library';
+export * from './sync';

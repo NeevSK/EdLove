@@ -1,6 +1,12 @@
 import { useNavigation } from '@react-navigation/native';
-import { useJourneyHistory, usePermissions, useStore } from '@repo/core';
-import { Icon, JourneyHistoryCard, TemporalProvider, TemporalShield, useTheme } from '@repo/ui';
+import { usePermissions } from '@repo/core';
+import { useJourneyHistory } from '@repo/core/hooks';
+import { useStore } from '@repo/core/logic';
+
+import { Icon } from '@repo/ui';
+import { JourneyHistoryCard, TemporalProvider, TemporalShield } from '@repo/ui/components';
+import { useTheme } from '@repo/ui/primitives';
+
 import { Activity, BookOpen } from 'lucide-react-native';
 import React from 'react';
 import { useTranslation } from 'react-i18next';

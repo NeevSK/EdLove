@@ -1,6 +1,9 @@
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { type FounderStackParamList, useFeatureAccess, useStore } from '@repo/core';
+import type { FounderStackParamList } from '@repo/core';
+import { useFeatureAccess } from '@repo/core/hooks';
+import { useStore } from '@repo/core/logic';
+
 import {
   Box,
   Compass,
@@ -9,19 +12,18 @@ import {
   Heading,
   Heart,
   HStack,
-  hapticLight,
   Icon,
   Plus,
   PositiveInvitation,
-  Pressable,
   SandboxBanner,
   ScreenWrapper,
-  ScrollView,
-  SkeletonCard,
   Text,
   VStack,
   Zap,
 } from '@repo/ui';
+import { SkeletonCard } from '@repo/ui/components';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+import { hapticLight } from '@repo/ui/utils/haptics';
 
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';

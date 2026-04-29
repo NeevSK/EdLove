@@ -1,5 +1,4 @@
 import {
-  api,
   coreRuntime,
   FeatureGuard,
   type FieldDefinition,
@@ -10,28 +9,28 @@ import {
   FormTemplate,
   formAnalytics,
 } from '@repo/core';
+import { api } from '@repo/core/api';
+
 import { QRCodeGenerator } from '@repo/scanner-kit';
 import {
   Box,
   Button,
   ButtonText,
   Divider,
-  FlatList,
   Heading,
   HStack,
   Icon,
   Input,
   InputField,
-  Pressable,
   SanctuaryToast,
-  ScrollView,
   Spinner,
   Text,
-  Theme,
   useThemedColors,
-  View,
   VStack,
 } from '@repo/ui';
+import { FlatList, Pressable, ScrollView, View } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme';
+
 import {
   ArrowLeft,
   BarChart3,

@@ -12,20 +12,18 @@ import {
   HStack,
   JyotiView,
   LotusLoader,
-  Pressable,
   Icon as SanctuaryIcon,
   ScreenWrapper,
-  ScrollView,
   TerraView,
   Text,
-  Theme,
   useResponsive,
-  useTheme,
   VastuView,
   VatyaView,
-  View,
   VStack,
 } from '@repo/ui';
+import { Pressable, ScrollView, useTheme, View } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme';
+
 import { BarChart3, FileCheck, Globe, Network, Orbit, Route, Wind, X } from 'lucide-react-native';
 import React, { useEffect, useMemo, useState } from 'react';
 import { libraryAPI } from '../api/library';

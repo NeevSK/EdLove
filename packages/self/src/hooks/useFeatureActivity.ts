@@ -1,4 +1,6 @@
-﻿import { storage, usePermissions } from '@repo/core';
+﻿import { usePermissions } from '@repo/core';
+import { storage } from '@repo/core/native';
+
 import { useCallback } from 'react';
 
 const USAGE_STATS_KEY = 'self_feature_usage_stats';

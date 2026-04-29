@@ -5,7 +5,10 @@
  */
 
 import { useNavigation } from '@react-navigation/native';
-import { supabase, usePermissions, useSafeMutation } from '@repo/core';
+import { usePermissions } from '@repo/core';
+import { useSafeMutation } from '@repo/core/hooks';
+import { supabase } from '@repo/core/native';
+
 import {
   Box,
   Button,
@@ -15,11 +18,11 @@ import {
   Icon,
   Input,
   InputField,
-  Pressable,
-  ScrollView,
   Text,
   VStack,
 } from '@repo/ui';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+
 import { ChevronRight, Leaf, Plus, Send, Sprout } from 'lucide-react-native';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';

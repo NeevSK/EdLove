@@ -8,18 +8,14 @@
  *  - Class count
  */
 
-import { staffManagementAPI, type TeacherCarouselItem } from '@repo/core';
-import {
-  Box,
-  getInitialsFromName,
-  HStack,
-  hapticLight,
-  Pressable,
-  ScrollView,
-  Spinner,
-  Text,
-  VStack,
-} from '@repo/ui';
+import type { TeacherCarouselItem } from '@repo/core';
+import { staffManagementAPI } from '@repo/core/api';
+
+import { Box, HStack, Spinner, Text, VStack } from '@repo/ui';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+import { hapticLight } from '@repo/ui/utils/haptics';
+import { getInitialsFromName } from '@repo/ui/utils/stringUtils';
+
 import { useEffect, useState } from 'react';
 
 interface TeacherCarouselProps {

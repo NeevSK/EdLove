@@ -7,13 +7,14 @@ import {
   HStack,
   Icon,
   type LucideIcon,
-  Pressable,
   Settings,
   Shield,
   Text,
   Users,
   VStack,
 } from '@repo/ui';
+import { Pressable } from '@repo/ui/primitives';
+
 import type React from 'react';
 
 const ICON_MAP: Record<string, LucideIcon> = {

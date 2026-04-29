@@ -6,13 +6,13 @@ import {
   DoorOpen,
   Heading,
   HStack,
-  hapticLight,
   Icon,
   School,
   Text,
   Users,
   VStack,
 } from '@repo/ui';
+import { hapticLight } from '@repo/ui/utils/haptics';
 
 interface PrincipalOnboardingViewProps {
   isGuest: boolean;

@@ -1,5 +1,6 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { useStore } from '@repo/core';
+import { useStore } from '@repo/core/logic';
+
 import {
   AddSocialLinkModal,
   AvatarDisplay,
@@ -19,16 +20,15 @@ import {
   GlobalHeader,
   Heading,
   HStack,
-  hapticSuccess,
-  SanctuaryButton,
-  SanctuaryProgressBar,
   ScreenWrapper,
   Text,
-  Theme,
-  useBottomTabPadding,
   useThemedColors,
   VStack,
 } from '@repo/ui';
+import { SanctuaryButton, SanctuaryProgressBar, useBottomTabPadding } from '@repo/ui/components';
+import { Theme } from '@repo/ui/theme';
+import { hapticSuccess } from '@repo/ui/utils/haptics';
+
 import {
   AtSign,
   BookOpen,

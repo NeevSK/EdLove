@@ -1,14 +1,7 @@
-import {
-  ActivityIndicator,
-  Box,
-  Heading,
-  HStack,
-  hapticLight,
-  Icon,
-  Pressable,
-  Text,
-  VStack,
-} from '@repo/ui';
+import { ActivityIndicator, Box, Heading, HStack, Icon, Text, VStack } from '@repo/ui';
+import { Pressable } from '@repo/ui/primitives';
+import { hapticLight } from '@repo/ui/utils/haptics';
+
 import { format } from 'date-fns';
 import { Calendar, CheckCircle2, Clock, LogIn, LogOut } from 'lucide-react-native';
 import type React from 'react';

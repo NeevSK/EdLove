@@ -1,25 +1,20 @@
 import { type NavigationProp, useNavigation } from '@react-navigation/native';
-import {
-  growthSignalsAPI,
-  impactRipplesAPI,
-  setPendingGateAction,
-  supabase,
-  usePendingGateAction,
-  usePermissions,
-  useStore,
-  useTemporalStore,
-} from '@repo/core';
+import { growthSignalsAPI, impactRipplesAPI, usePermissions } from '@repo/core';
+import { usePendingGateAction } from '@repo/core/hooks';
+import { setPendingGateAction, useStore, useTemporalStore } from '@repo/core/logic';
+import { supabase } from '@repo/core/native';
+
 import {
   AssetCreationModal,
   openExternalURL,
   SmartShelf,
   showExternalLinkOptions,
-  TemporalNavigator,
   UniversalPerspective,
-  useRegisterFAB,
   useResponsive,
-  WebScreenHeader,
 } from '@repo/ui';
+import { TemporalNavigator, WebScreenHeader } from '@repo/ui/components';
+import { useRegisterFAB } from '@repo/ui/context/FABContext';
+
 import {
   Bookmark,
   Clock,

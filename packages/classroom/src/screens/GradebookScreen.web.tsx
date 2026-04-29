@@ -1,5 +1,7 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { type ClassroomGradingSettings, growthSignalsAPI, useStore } from '@repo/core';
+import { type ClassroomGradingSettings, growthSignalsAPI } from '@repo/core';
+import { useStore } from '@repo/core/logic';
+
 import {
   Award,
   Box,
@@ -19,9 +21,6 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
-  Pressable,
-  SanctuaryButton,
-  ScrollView,
   Settings2,
   Spinner,
   Text,
@@ -32,6 +31,9 @@ import {
   VStack,
   X,
 } from '@repo/ui';
+import { SanctuaryButton } from '@repo/ui/components';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+
 import type React from 'react';
 import { useState } from 'react';
 import type { SortOption } from '../hooks/useGradebook';

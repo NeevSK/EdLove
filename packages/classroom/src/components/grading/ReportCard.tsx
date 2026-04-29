@@ -5,7 +5,9 @@
  */
 
 import { calculateRanks, marksToGPA, type StudentGrade } from '@repo/analytics';
-import { Box, Heading, HStack, ScrollView, Text, VStack } from '@repo/ui';
+import { Box, Heading, HStack, Text, VStack } from '@repo/ui';
+import { ScrollView } from '@repo/ui/primitives';
+
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 

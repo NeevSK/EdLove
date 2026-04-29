@@ -4,7 +4,9 @@
  * Refactored for Sanctuary Resonance.
  */
 
-import { formatDuration, formatFileSize, useStore } from '@repo/core';
+import { formatDuration, formatFileSize } from '@repo/core';
+import { useStore } from '@repo/core/logic';
+
 import {
   Actionsheet,
   ActionsheetBackdrop,
@@ -14,13 +16,14 @@ import {
   Box,
   Center,
   HStack,
-  SanctuaryButton,
   SanctuaryFlashList,
   Text,
-  Theme,
-  useTheme,
   VStack,
 } from '@repo/ui';
+import { SanctuaryButton } from '@repo/ui/components';
+import { useTheme } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme';
+
 import { AlertTriangle, ArrowLeftRight, Play, X } from 'lucide-react-native';
 import type React from 'react';
 import { useCallback, useEffect, useState } from 'react';

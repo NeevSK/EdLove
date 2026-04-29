@@ -3,8 +3,9 @@
   handleAPIError,
   type StaffAttendance,
   type StaffLeave,
-  supabase,
 } from '@repo/core';
+import { supabase } from '@repo/core/native';
+
 import { useCallback, useEffect, useState } from 'react';
 import { staffAPI } from '../api/staff';
 

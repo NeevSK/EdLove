@@ -1,11 +1,8 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
-import {
-  type AttendanceRecord,
-  api,
-  growthSignalsAPI,
-  type StudentAttendance,
-  useStore,
-} from '@repo/core';
+import { type AttendanceRecord, growthSignalsAPI, type StudentAttendance } from '@repo/core';
+import { api } from '@repo/core/api';
+import { useStore } from '@repo/core/logic';
+
 import { Check, ChevronLeft, Clock, Icon, Save, X } from '@repo/ui';
 import type React from 'react';
 import { useCallback, useEffect, useMemo, useReducer } from 'react';

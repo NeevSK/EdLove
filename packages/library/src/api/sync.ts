@@ -1,4 +1,5 @@
-import { supabase } from '@repo/core';
+import { supabase } from '@repo/core/native';
+
 import { LibraryResource } from '../types';
 import { type KnowledgeNodeIndex, knowledgeDB } from './database';
 

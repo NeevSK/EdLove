@@ -4,11 +4,12 @@ import {
   HStack,
   Icon,
   openExternalURL,
-  Pressable,
   showExternalLinkOptions,
   Text,
   VStack,
 } from '@repo/ui';
+import { Pressable } from '@repo/ui/primitives';
+
 import * as Clipboard from 'expo-clipboard';
 import {
   ExternalLink,

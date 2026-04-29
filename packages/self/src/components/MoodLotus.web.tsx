@@ -4,9 +4,10 @@
  * Standardized to Zero-Legacy: purged raw HTML/inline styles and integrated Sanctuary design tokens.
  */
 
-import { supabase, useTemporalStore } from '@repo/core';
+import { useTemporalStore } from '@repo/core/logic';
+import { supabase } from '@repo/core/native';
+
 import {
-  AnimatedView,
   Box,
   Button,
   ButtonText,
@@ -15,14 +16,15 @@ import {
   Icon,
   Input,
   InputField,
-  Pressable,
   Progress,
   ProgressFilledTrack,
-  SkeletonLoader,
   Spinner,
   Text,
   VStack,
 } from '@repo/ui';
+import { SkeletonLoader } from '@repo/ui/components/SkeletonLoader';
+import { AnimatedView, Pressable } from '@repo/ui/primitives';
+
 import {
   Activity,
   CheckCircle,

@@ -1,13 +1,8 @@
-import {
-  Button,
-  ButtonText,
-  hapticSuccess,
-  SanctuaryModal,
-  Text,
-  Theme,
-  useTheme,
-  VStack,
-} from '@repo/ui';
+import { Button, ButtonText, SanctuaryModal, Text, VStack } from '@repo/ui';
+import { useTheme } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme';
+import { hapticSuccess } from '@repo/ui/utils/haptics';
+
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 

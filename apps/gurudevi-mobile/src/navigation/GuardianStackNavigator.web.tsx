@@ -1,6 +1,7 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import type { GuardianStackParamList } from '@repo/core';
-import { useTheme } from '@repo/ui';
+import { useTheme } from '@repo/ui/primitives';
+
 import React from 'react';
 import { StackFallback } from '../components/web/WebScreenShimmer';
 
@@ -9,21 +10,11 @@ const FounderSchoolDashboard = React.lazy(
   () => import('@repo/admin/screens/FounderSchoolDashboard'),
 );
 const GuardianDashboard = React.lazy(() => import('@repo/admin/screens/GuardianDashboard'));
-const GuardianStudentsScreen = React.lazy(() =>
-  import('@repo/admin').then((m) => ({ default: m.GuardianStudentsScreen })),
-);
-const GuardianStudentDetailScreen = React.lazy(() =>
-  import('@repo/admin').then((m) => ({ default: m.GuardianStudentDetailScreen })),
-);
-const GuardianNotificationsScreen = React.lazy(() =>
-  import('@repo/admin').then((m) => ({ default: m.GuardianNotificationsScreen })),
-);
-const GuardianEventsScreen = React.lazy(() =>
-  import('@repo/admin').then((m) => ({ default: m.GuardianEventsScreen })),
-);
-const GuardianCommunicationBridgeScreen = React.lazy(() =>
-  import('@repo/admin').then((m) => ({ default: m.GuardianCommunicationBridgeScreen })),
-);
+const GuardianStudentsScreen = React.lazy(() => import('@repo/admin/screens/GuardianStudentsScreen'));
+const GuardianStudentDetailScreen = React.lazy(() => import('@repo/admin/screens/GuardianStudentDetailScreen'));
+const GuardianNotificationsScreen = React.lazy(() => import('@repo/admin/screens/GuardianNotificationsScreen'));
+const GuardianEventsScreen = React.lazy(() => import('@repo/admin/screens/GuardianEventsScreen'));
+const GuardianCommunicationBridgeScreen = React.lazy(() => import('@repo/admin/screens/GuardianCommunicationBridgeScreen'));
 const PrincipalDashboardWeb = React.lazy(
   () => import('@repo/admin/screens/PrincipalDashboard.web'),
 );

@@ -3,9 +3,7 @@ import {
   Box,
   ClipboardCheck,
   HStack,
-  hapticLight,
   Icon,
-  Pressable,
   Spinner,
   Text,
   TrendingUp,
@@ -13,6 +11,8 @@ import {
   Users,
   VStack,
 } from '@repo/ui';
+import { Pressable } from '@repo/ui/primitives';
+import { hapticLight } from '@repo/ui/utils/haptics';
 
 import { useEffect, useState } from 'react';
 import { type StudentPrincipalPulse, staffOperationsAPI } from '../../staff';

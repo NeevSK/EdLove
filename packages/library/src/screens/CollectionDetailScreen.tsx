@@ -1,17 +1,10 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { useStore } from '@repo/core';
-import {
-  Box,
-  HStack,
-  Icon,
-  Pressable,
-  ScreenWrapper,
-  ScrollView,
-  Text,
-  Theme,
-  useThemedColors,
-  VStack,
-} from '@repo/ui';
+import { useStore } from '@repo/core/logic';
+
+import { Box, HStack, Icon, ScreenWrapper, Text, useThemedColors, VStack } from '@repo/ui';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme';
+
 import { ArrowLeft } from 'lucide-react-native';
 import React, { useCallback } from 'react';
 import { LibraryThumbnailCard } from '../components/LibraryThumbnailCard';

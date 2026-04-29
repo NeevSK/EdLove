@@ -7,10 +7,11 @@ import {
   GraduationCap,
   Hash,
   Icon,
-  SkeletonCard,
   User,
   useThemedColors,
 } from '@repo/ui';
+import { SkeletonCard } from '@repo/ui/components';
+
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useClassroomProfile } from '../hooks/useClassroomProfile';

@@ -11,7 +11,9 @@
  */
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { type QRPayload, resolveQR } from '@repo/core';
+import { resolveQR } from '@repo/core';
+import type { QRPayload } from '@repo/core/types';
+
 import { useCallback, useEffect, useRef } from 'react';
 import { Linking } from 'react-native';
 

@@ -1,16 +1,9 @@
 ﻿import { useSchoolPulse } from '@repo/profile';
-import {
-  Box,
-  HStack,
-  LivingGlow,
-  SanctuaryCard,
-  SanctuaryChip,
-  SkeletonLoader,
-  Text,
-  Theme,
-  useThemedColors,
-  VStack,
-} from '@repo/ui';
+import { Box, HStack, Text, useThemedColors, VStack } from '@repo/ui';
+import { LivingGlow, SanctuaryCard, SanctuaryChip } from '@repo/ui/components';
+import { SkeletonLoader } from '@repo/ui/components/SkeletonLoader';
+import { Theme } from '@repo/ui/theme';
+
 import { HeartPulse, TrendingUp, Users, Zap } from 'lucide-react-native';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 

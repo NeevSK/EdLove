@@ -3,25 +3,28 @@
  */
 
 import { useNavigation } from '@react-navigation/native';
-import { FeatureGuard, identityAPI, useStore, useTracking } from '@repo/core';
+import { FeatureGuard } from '@repo/core';
+import { identityAPI } from '@repo/core/api';
+import { useTracking } from '@repo/core/hooks';
+import { useStore } from '@repo/core/logic';
+
 import {
   Box,
   FadeInDown,
   GlobalHeader,
-  HorizontalChipRow,
   HStack,
   openExternalURL,
   ScreenWrapper,
-  SkeletonCard,
   SmartShelf,
   showExternalLinkOptions,
   Text,
-  Theme,
-  useBottomTabPadding,
-  useRegisterFAB,
   useThemedColors,
   VStack,
 } from '@repo/ui';
+import { HorizontalChipRow, SkeletonCard, useBottomTabPadding } from '@repo/ui/components';
+import { useRegisterFAB } from '@repo/ui/context/FABContext';
+import { Theme } from '@repo/ui/theme';
+
 import { LinearGradient } from 'expo-linear-gradient';
 import {
   FileText,

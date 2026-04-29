@@ -4,8 +4,12 @@
  * Standardized to Zero-Legacy: purged corrupted syntax and migrated to Sanctuary V3 architecture.
  */
 
-import { supabase } from '@repo/core';
-import { Box, Heading, HStack, Icon, ScrollView, SkeletonCard, Text, VStack } from '@repo/ui';
+import { supabase } from '@repo/core/native';
+
+import { Box, Heading, HStack, Icon, Text, VStack } from '@repo/ui';
+import { SkeletonCard } from '@repo/ui/components';
+import { ScrollView } from '@repo/ui/primitives';
+
 import { Award, BookOpen, ChevronRight, MessageSquare } from 'lucide-react-native';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';

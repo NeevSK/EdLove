@@ -4,11 +4,12 @@ import {
   FormControlLabel,
   FormControlLabelText,
   HStack,
-  Pressable,
   SanctuaryInput,
   Text,
   VStack,
 } from '@repo/ui';
+import { Pressable } from '@repo/ui/primitives';
+
 import { Users } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 

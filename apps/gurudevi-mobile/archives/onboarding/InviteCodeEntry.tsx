@@ -1,4 +1,5 @@
-import { type InviteCodeData, validateInviteCode } from '@repo/core';
+import { type InviteCodeData, validateInviteCode } from '@repo/core/logic';
+
 import {
   Box,
   Button,
@@ -6,20 +7,19 @@ import {
   ButtonText,
   Heading,
   HStack,
-  hapticError,
-  hapticLight,
-  hapticSuccess,
   Input,
   InputField,
-  Pressable,
   Spinner,
   Text,
-  Theme,
   Toast,
   ToastTitle,
   useToast,
   VStack,
 } from '@repo/ui';
+import { Pressable } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme';
+import { hapticError, hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+
 import { ArrowRight, HelpCircle } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';

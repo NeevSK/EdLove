@@ -6,19 +6,13 @@
  *  - Inline add-event form
  */
 
-import { type CalendarEvent, staffManagementAPI } from '@repo/core';
-import {
-  Box,
-  HStack,
-  hapticLight,
-  Icon,
-  Input,
-  InputField,
-  Pressable,
-  ScrollView,
-  Text,
-  VStack,
-} from '@repo/ui';
+import type { CalendarEvent } from '@repo/core';
+import { staffManagementAPI } from '@repo/core/api';
+
+import { Box, HStack, Icon, Input, InputField, Text, VStack } from '@repo/ui';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+import { hapticLight } from '@repo/ui/utils/haptics';
+
 import { Plus } from 'lucide-react-native';
 import React, { useEffect, useReducer } from 'react';
 

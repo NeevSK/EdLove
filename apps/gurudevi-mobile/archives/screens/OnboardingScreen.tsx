@@ -1,6 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
-import { authAPI, identityAPI, type Role, supabase } from '@repo/core';
+import type { Role } from '@repo/core';
+import { authAPI, identityAPI } from '@repo/core/api';
+import { supabase } from '@repo/core/native';
+
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {

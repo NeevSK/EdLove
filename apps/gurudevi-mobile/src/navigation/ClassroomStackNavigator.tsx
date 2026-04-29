@@ -7,7 +7,8 @@ import {
   GradebookScreen,
 } from '@repo/classroom';
 import type { ClassroomStackParamList } from '@repo/core';
-import { useTheme } from '@repo/ui';
+import { useTheme } from '@repo/ui/primitives';
+
 import { ClassroomScreen, SchoolCreationScreen } from '../screens';
 
 const Stack = createNativeStackNavigator<ClassroomStackParamList>();

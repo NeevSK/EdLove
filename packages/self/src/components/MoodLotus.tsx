@@ -1,4 +1,6 @@
-import { AnimatedView, GlassCard, Heading, HStack, Icon, Pressable, Text, VStack } from '@repo/ui';
+import { GlassCard, Heading, HStack, Icon, Text, VStack } from '@repo/ui';
+import { AnimatedView, Pressable } from '@repo/ui/primitives';
+
 import { CloudRain, Flower2, Sun, Wind, Zap } from 'lucide-react-native';
 import type React from 'react';
 import { useState } from 'react';

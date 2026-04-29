@@ -3,13 +3,9 @@ import { useRewards } from '@repo/core/hooks';
 import { usePermissions } from '@repo/core/logic';
 import { useStore } from '@repo/core/store';
 import { BreathGuide } from '@repo/self';
-import {
-  AchievementUnlockOverlay,
-  ErrorBoundary,
-  Modal,
-  ModalContent,
-  SanctuaryBackground,
-} from '@repo/ui';
+import { AchievementUnlockOverlay, ErrorBoundary, Modal, ModalContent } from '@repo/ui';
+import { SanctuaryBackground } from '@repo/ui/components';
+
 import {
   Box,
   HStack,

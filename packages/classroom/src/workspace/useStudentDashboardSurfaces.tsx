@@ -7,15 +7,16 @@ import {
   Layout,
   MessageSquare,
   PositiveInvitation,
-  Pressable,
   Star,
-  TemporalNavigator,
   Text,
   VStack,
   Wind,
   type WorkspaceSurfaceDefinition,
   Zap,
 } from '@repo/ui';
+import { TemporalNavigator } from '@repo/ui/components';
+import { Pressable } from '@repo/ui/primitives';
+
 import type React from 'react';
 import { useMemo } from 'react';
 import { ClassroomList } from '../components';

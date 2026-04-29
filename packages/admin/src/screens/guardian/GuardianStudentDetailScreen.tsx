@@ -1,8 +1,11 @@
 import type { RouteProp } from '@react-navigation/native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { GuardianStackParamList } from '@repo/core';
-import { useStore } from '@repo/core';
-import { Box, ScrollView, Text, VStack } from '@repo/ui';
+import { useStore } from '@repo/core/logic';
+
+import { Box, Text, VStack } from '@repo/ui';
+import { ScrollView } from '@repo/ui/primitives';
+
 import { useMemo } from 'react';
 import { useGuardianWorkspaceData } from '../../guardian';
 import { GuardianRoomShell } from './GuardianRoomShell';

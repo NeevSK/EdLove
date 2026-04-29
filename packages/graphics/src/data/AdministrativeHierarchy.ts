@@ -95,9 +95,36 @@ export const Drilldown = {
    * Synchronous stubs for UI-layer drilling.
    */
   getDSDivisions: (districtId: string): DSDivision[] => {
-    const dId = districtId.length === 2 ? 
-        Object.entries({D_11:'CO',D_12:'GA',D_13:'KL',D_21:'KY',D_22:'MT',D_23:'NE',D_31:'KU',D_32:'PU',D_41:'JA',D_42:'KI',D_43:'MN',D_44:'VA',D_45:'MU',D_51:'AN',D_52:'PO',D_61:'BD',D_62:'MO',D_71:'RG',D_72:'KE',D_81:'GL',D_82:'MA',D_83:'HA',D_53:'BT',D_54:'AM',D_55:'TR'})
-        .find(([_,v])=>v===districtId)?.[0] || districtId : districtId;
+    const dId =
+      districtId.length === 2
+        ? Object.entries({
+            D_11: 'CO',
+            D_12: 'GA',
+            D_13: 'KL',
+            D_21: 'KY',
+            D_22: 'MT',
+            D_23: 'NE',
+            D_31: 'KU',
+            D_32: 'PU',
+            D_41: 'JA',
+            D_42: 'KI',
+            D_43: 'MN',
+            D_44: 'VA',
+            D_45: 'MU',
+            D_51: 'AN',
+            D_52: 'PO',
+            D_61: 'BD',
+            D_62: 'MO',
+            D_71: 'RG',
+            D_72: 'KE',
+            D_81: 'GL',
+            D_82: 'MA',
+            D_83: 'HA',
+            D_53: 'BT',
+            D_54: 'AM',
+            D_55: 'TR',
+          }).find(([_, v]) => v === districtId)?.[0] || districtId
+        : districtId;
     return LKEduGeo.getDSDivisionsByDistrict(dId);
   },
   getGNDivisions: (dsDivisionId: string): GNDivision[] => {

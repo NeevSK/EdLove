@@ -14,11 +14,12 @@ import {
   ModalHeader,
   Sparkles,
   Text,
-  Theme,
   useThemedColors,
   VStack,
   X,
 } from '@repo/ui';
+import { Theme } from '@repo/ui/theme';
+
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 

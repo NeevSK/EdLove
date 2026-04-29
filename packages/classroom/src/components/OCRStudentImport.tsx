@@ -8,7 +8,8 @@
  * Uncertain items (low OCR confidence) are highlighted amber for teacher review.
  */
 
-import { studentsAPI } from '@repo/core';
+import { studentsAPI } from '@repo/core/api';
+
 import type { ScannedStudent } from '@repo/scanner-kit';
 import {
   Box,
@@ -18,15 +19,15 @@ import {
   HStack,
   Icon,
   Info,
-  Pressable,
   RotateCcw,
   SanctuaryToast,
-  ScrollView,
   Text,
   useToast,
   VStack,
   X,
 } from '@repo/ui';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+
 import React, { useState } from 'react';
 import OCRScanner from './OCRScanner';
 

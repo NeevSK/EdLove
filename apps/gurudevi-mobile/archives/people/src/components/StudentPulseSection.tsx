@@ -1,4 +1,7 @@
-﻿import { Box, HStack, SkeletonCard, Text, Theme, useThemedColors, VStack } from '@repo/ui';
+﻿import { Box, HStack, Text, useThemedColors, VStack } from '@repo/ui';
+import { SkeletonCard } from '@repo/ui/components';
+import { Theme } from '@repo/ui/theme';
+
 import { ChevronRight, TrendingUp } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { TouchableOpacity } from 'react-native';

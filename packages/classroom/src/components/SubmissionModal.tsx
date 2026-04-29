@@ -20,7 +20,6 @@ import {
   Icon,
   Image,
   Image as ImageIcon,
-  Pressable,
   SanctuaryModal,
   Send,
   Spinner,
@@ -31,6 +30,8 @@ import {
   VStack,
   X,
 } from '@repo/ui';
+import { Pressable } from '@repo/ui/primitives';
+
 import * as ImagePicker from 'expo-image-picker';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';

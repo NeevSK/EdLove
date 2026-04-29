@@ -1,16 +1,19 @@
 import { AnalyticsProvider } from '@repo/analytics/ui';
-import { SyncManager, useAuth, usePermissions } from '@repo/core';
+import { SyncManager, usePermissions } from '@repo/core';
+import { useAuth } from '@repo/core/logic';
+
 import {
   Box,
   Center,
   EnvironmentProvider,
   ExternalLinkProvider,
-  FABProvider,
   GluestackUIProvider,
-  SanctuaryGlobalStyles,
   Spinner,
   ToastProvider,
 } from '@repo/ui';
+import { SanctuaryGlobalStyles } from '@repo/ui/components';
+import { FABProvider } from '@repo/ui/context/FABContext';
+
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import type React from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';

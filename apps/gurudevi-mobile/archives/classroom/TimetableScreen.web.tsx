@@ -9,7 +9,9 @@
  */
 
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { TimetableScheduler, useStore, useUserRole } from '@repo/core';
+import { TimetableScheduler, useUserRole } from '@repo/core';
+import { useStore } from '@repo/core/logic';
+
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 

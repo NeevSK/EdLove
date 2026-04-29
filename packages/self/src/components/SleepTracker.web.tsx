@@ -5,7 +5,8 @@
  * boundary for persistence.
  * Metro resolves this over SleepTracker.tsx on the web platform.
  */
-import { useTemporalStore } from '@repo/core';
+import { useTemporalStore } from '@repo/core/logic';
+
 import React, { useEffect, useState } from 'react';
 import { useSleepTracker } from '../hooks/useSleepTracker';
 

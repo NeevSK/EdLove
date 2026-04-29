@@ -1,4 +1,5 @@
-import { getTemporalRange, supabase } from '@repo/core';
+import { getTemporalRange } from '@repo/core';
+import { supabase } from '@repo/core/native';
 
 export interface GradeProgress {
   grade: string;

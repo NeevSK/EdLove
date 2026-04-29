@@ -7,10 +7,11 @@ import {
   HStack,
   Input,
   InputField,
-  Pressable,
   Text,
   VStack,
 } from '@repo/ui';
+import { Pressable } from '@repo/ui/primitives';
+
 import {
   Check,
   Globe,

@@ -1,17 +1,20 @@
 import { useNavigation } from '@react-navigation/native';
-import { usePermissions, useStore } from '@repo/core';
+import { usePermissions } from '@repo/core';
+import { useStore } from '@repo/core/logic';
+
 import {
   ArrowRight,
   Box,
   Heading,
   Icon,
   LogIn,
-  Pressable,
   School as SchoolIcon,
   ScreenWrapper,
   Text,
-  WebScreenHeader,
 } from '@repo/ui';
+import { WebScreenHeader } from '@repo/ui/components';
+import { Pressable } from '@repo/ui/primitives';
+
 import React from 'react';
 import CreateClassroomModal from '../components/CreateClassroomModal';
 import PrincipalOnboardingView from '../components/onboarding/PrincipalOnboardingView.web';

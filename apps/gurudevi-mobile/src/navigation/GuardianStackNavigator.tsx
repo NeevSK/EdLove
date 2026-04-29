@@ -1,8 +1,8 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import FounderDashboard from '@repo/admin/screens/FounderDashboard';
 import FounderSchoolDashboard from '@repo/admin/screens/FounderSchoolDashboard';
-import GuardianCommunicationBridgeScreen from '@repo/admin/screens/guardian/GuardianCommunicationBridgeScreen';
 import GuardianDashboard from '@repo/admin/screens/GuardianDashboard';
+import GuardianCommunicationBridgeScreen from '@repo/admin/screens/guardian/GuardianCommunicationBridgeScreen';
 import GuardianEventsScreen from '@repo/admin/screens/guardian/GuardianEventsScreen';
 import GuardianNotificationsScreen from '@repo/admin/screens/guardian/GuardianNotificationsScreen';
 import GuardianStudentDetailScreen from '@repo/admin/screens/guardian/GuardianStudentDetailScreen';
@@ -10,7 +10,7 @@ import GuardianStudentsScreen from '@repo/admin/screens/guardian/GuardianStudent
 import PrincipalDashboard from '@repo/admin/screens/PrincipalDashboard';
 import SchoolCreationScreen from '@repo/admin/screens/SchoolCreationScreen';
 import type { GuardianStackParamList } from '@repo/core';
-import { useTheme } from '@repo/ui';
+import { useTheme } from '@repo/ui/primitives';
 
 const Stack = createNativeStackNavigator<GuardianStackParamList>();
 

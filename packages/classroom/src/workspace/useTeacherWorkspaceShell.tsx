@@ -1,14 +1,16 @@
 import type { NavigationProp } from '@react-navigation/native';
-import {
-  type ClassroomStackParamList,
-  FlowResolver,
-  identityAPI,
-  useFeatureAccess,
-  useStore,
-  useTemporalStore,
-} from '@repo/core';
+import type { ClassroomStackParamList } from '@repo/core';
+import { identityAPI } from '@repo/core/api';
+import { useFeatureAccess } from '@repo/core/hooks';
+import { useStore, useTemporalStore } from '@repo/core/logic';
+import { FlowResolver } from '@repo/core/native';
+
 import { resolveQR } from '@repo/scanner-kit';
-import { hapticLight, Icon, Plus, useRegisterFAB, useSanctuaryToast } from '@repo/ui';
+import { Icon, Plus } from '@repo/ui';
+import { useRegisterFAB } from '@repo/ui/context/FABContext';
+import { useSanctuaryToast } from '@repo/ui/hooks';
+import { hapticLight } from '@repo/ui/utils/haptics';
+
 import { useCallback, useEffect, useState } from 'react';
 
 type WorkspaceClassroom = {

@@ -5,8 +5,6 @@ import {
   ButtonText,
   Heading,
   HStack,
-  hapticLight,
-  hapticSuccess,
   Icon,
   Input,
   InputField,
@@ -16,6 +14,8 @@ import {
   Text,
   VStack,
 } from '@repo/ui';
+import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+
 import { CheckCircle, Moon } from 'lucide-react-native';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';

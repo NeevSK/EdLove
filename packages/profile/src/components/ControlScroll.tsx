@@ -1,17 +1,7 @@
-import {
-  Box,
-  Divider,
-  Heading,
-  HStack,
-  hapticLight,
-  hapticSuccess,
-  Icon,
-  Pressable,
-  Text,
-  type ThemeMode,
-  useTheme,
-  VStack,
-} from '@repo/ui';
+import { Box, Divider, Heading, HStack, Icon, Text, type ThemeMode, VStack } from '@repo/ui';
+import { Pressable, useTheme } from '@repo/ui/primitives';
+import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+
 import {
   Check,
   ChevronRight,

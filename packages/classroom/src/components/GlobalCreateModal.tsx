@@ -1,12 +1,8 @@
 import { communityAPI } from '@repo/community';
-import {
-  api,
-  growthSignalsAPI,
-  handleAPIError,
-  identityAPI,
-  type School,
-  supabase,
-} from '@repo/core';
+import { growthSignalsAPI, handleAPIError, type School } from '@repo/core';
+import { api, identityAPI } from '@repo/core/api';
+import { supabase } from '@repo/core/native';
+
 import {
   Actionsheet,
   ActionsheetBackdrop,
@@ -23,8 +19,6 @@ import {
   FormControlLabel,
   FormControlLabelText,
   HStack,
-  hapticLight,
-  hapticSuccess,
   Icon,
   Input,
   InputField,
@@ -36,10 +30,12 @@ import {
   Text,
   Textarea,
   TextareaInput,
-  Theme,
   Users,
   VStack,
 } from '@repo/ui';
+import { Theme } from '@repo/ui/theme';
+import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 

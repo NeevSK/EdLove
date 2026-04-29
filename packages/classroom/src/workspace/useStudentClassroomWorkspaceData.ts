@@ -1,11 +1,7 @@
-import {
-  type Assignment,
-  api,
-  type Classroom,
-  type Lesson,
-  type LessonMaterial,
-  useAuthStore,
-} from '@repo/core';
+import type { Assignment, Classroom, Lesson, LessonMaterial } from '@repo/core';
+import { api } from '@repo/core/api';
+import { useAuthStore } from '@repo/core/logic';
+
 import { useCallback, useEffect, useState } from 'react';
 
 type StudentSubmissionSummary = Awaited<

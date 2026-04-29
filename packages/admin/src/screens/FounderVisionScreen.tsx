@@ -5,14 +5,13 @@ import {
   Heading,
   HStack,
   Icon,
-  Pressable,
-  ScrollView,
   Share2,
   Shield,
   Text,
   VStack,
   Zap,
 } from '@repo/ui';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
 
 /**
  * FounderVisionScreen - Strategic App-Logic Visualization.

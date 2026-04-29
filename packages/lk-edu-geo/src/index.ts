@@ -95,13 +95,13 @@ export const getGNDivisionsByDSDivision = (dsId: string): GNDivision[] =>
  * Flat Accessors (Optional use)
  */
 export const getDistricts = (provinceId?: string) => {
-  const districts = provinceId 
-    ? data.districts.filter((d) => d.province_id === provinceId) 
+  const districts = provinceId
+    ? data.districts.filter((d) => d.province_id === provinceId)
     : data.districts;
-    
-  return districts.map(d => ({
+
+  return districts.map((d) => ({
     ...d,
-    mnemonic: DISTRICT_ID_TO_MNEMONIC[d.id] || d.id
+    mnemonic: DISTRICT_ID_TO_MNEMONIC[d.id] || d.id,
   }));
 };
 
@@ -187,14 +187,12 @@ export const inferFromPostalCode = (code: string) => {
 /**
  * Maps official district IDs (D_11) to platform mnemonic IDs (CO).
  */
-export const getMnemonicForDistrict = (id: string): string =>
-  DISTRICT_ID_TO_MNEMONIC[id] || id;
+export const getMnemonicForDistrict = (id: string): string => DISTRICT_ID_TO_MNEMONIC[id] || id;
 
 /**
  * Maps official province IDs (P_1) to platform mnemonic IDs (WP).
  */
-export const getMnemonicForProvince = (id: string): string =>
-  PROVINCE_ID_TO_MNEMONIC[id] || id;
+export const getMnemonicForProvince = (id: string): string => PROVINCE_ID_TO_MNEMONIC[id] || id;
 
 /**
  * EDUCATIONAL QUERIES (Layer 2)

@@ -10,15 +10,17 @@ import {
   type BanyanStage,
   type BhumiStage,
   type CrystalTier,
-  communityAPI,
   type MoonPhase,
-  moonPhaseAPI,
   type RiverStage,
   type UserGrowthState,
   usePermissions,
-  useTemporalStore,
 } from '@repo/core';
-import { AnimatedView, Box, Heading, HStack, Spinner, Text, VStack } from '@repo/ui';
+import { communityAPI, moonPhaseAPI } from '@repo/core/api';
+import { useTemporalStore } from '@repo/core/logic';
+
+import { Box, Heading, HStack, Spinner, Text, VStack } from '@repo/ui';
+import { AnimatedView } from '@repo/ui/primitives';
+
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform } from 'react-native';

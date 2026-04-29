@@ -1,4 +1,6 @@
-import { Box, Card, colors, HStack, Text, VStack } from '@repo/ui';
+import { Box, Card, HStack, Text, VStack } from '@repo/ui';
+import { colors } from '@repo/ui/theme';
+
 import React from 'react';
 import { formatGPA, getGradeColor } from '../utils/analyticsHelpers';
 

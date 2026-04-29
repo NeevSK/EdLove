@@ -1,4 +1,6 @@
-import { Box, HStack, Pressable, Text } from '@repo/ui';
+import { Box, HStack, Text } from '@repo/ui';
+import { Pressable } from '@repo/ui/primitives';
+
 import React, { useRef } from 'react';
 import QRCodeGenerator from '../QRCodeGenerator';
 

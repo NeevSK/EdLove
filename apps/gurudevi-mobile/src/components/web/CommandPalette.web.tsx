@@ -5,17 +5,10 @@
  * Includes Sovereign Web decoupling by removing react-native UI dependencies.
  */
 
-import {
-  AnimatedView,
-  Box,
-  colors,
-  HStack,
-  Pressable,
-  ScrollView,
-  Text,
-  useTheme,
-  VStack,
-} from '@repo/ui';
+import { Box, HStack, Text, VStack } from '@repo/ui';
+import { AnimatedView, Pressable, ScrollView, useTheme } from '@repo/ui/primitives';
+import { colors } from '@repo/ui/theme';
+
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 

@@ -7,7 +7,6 @@ import {
   ButtonText,
   Heading,
   HStack,
-  hapticLight,
   Icon,
   LayoutGrid,
   NotebookPen,
@@ -15,8 +14,9 @@ import {
   Text,
   TrendingUp,
   VStack,
-  WebScreenHeader,
 } from '@repo/ui';
+import { WebScreenHeader } from '@repo/ui/components';
+import { hapticLight } from '@repo/ui/utils/haptics';
 
 import type React from 'react';
 import { useTranslation } from 'react-i18next';

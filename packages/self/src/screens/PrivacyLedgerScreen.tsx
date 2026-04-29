@@ -4,20 +4,23 @@
  * Standardized to Zero-Legacy: purged corrupted imports and migrated to Sanctuary V3 architecture.
  */
 
-import { type PrivacyLedgerEntry, privacyAPI } from '@repo/core';
+import type { PrivacyLedgerEntry } from '@repo/core';
+import { privacyAPI } from '@repo/core/api';
+
 import {
   Box,
-  FlatList,
   GlobalHeader,
   Heading,
   HStack,
   Icon,
-  SanctuaryCard,
   ScreenWrapper,
   Spinner,
   Text,
   VStack,
 } from '@repo/ui';
+import { SanctuaryCard } from '@repo/ui/components';
+import { FlatList } from '@repo/ui/primitives';
+
 import { Clock, FileText, Lock, Shield, ShieldCheck } from 'lucide-react-native';
 import React, { useEffect, useState } from 'react';
 import Animated, { FadeInDown } from 'react-native-reanimated';

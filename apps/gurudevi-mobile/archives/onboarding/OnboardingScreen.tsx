@@ -1,6 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
-import { identityAPI, supabase, type UserRole } from '@repo/core';
+import type { UserRole } from '@repo/core';
+import { identityAPI } from '@repo/core/api';
+import { supabase } from '@repo/core/native';
+
 import {
   Box,
   Button,
@@ -8,22 +11,21 @@ import {
   Center,
   Heading,
   HStack,
-  hapticError,
-  hapticLight,
-  hapticSuccess,
   Input,
   InputField,
-  Pressable,
-  ProgressIndicator,
   ScreenWrapper,
   Text,
-  Theme,
   Toast,
   ToastTitle,
   useThemedColors,
   useToast,
   VStack,
 } from '@repo/ui';
+import { ProgressIndicator } from '@repo/ui/components';
+import { Pressable } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme';
+import { hapticError, hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 

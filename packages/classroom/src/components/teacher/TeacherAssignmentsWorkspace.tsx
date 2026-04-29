@@ -1,4 +1,5 @@
-import { assignmentsAPI } from '@repo/core';
+import { assignmentsAPI } from '@repo/core/api';
+
 import {
   Box,
   CalendarDays,
@@ -6,18 +7,19 @@ import {
   Clock3,
   Heading,
   HStack,
-  hapticLight,
   Icon,
   Input,
   InputField,
   Plus,
-  Pressable,
   SanctuaryModal,
   Sparkles,
   Spinner,
   Text,
   VStack,
 } from '@repo/ui';
+import { Pressable } from '@repo/ui/primitives';
+import { hapticLight } from '@repo/ui/utils/haptics';
+
 import type React from 'react';
 import { useCallback, useEffect, useState } from 'react';
 

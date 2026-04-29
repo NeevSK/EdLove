@@ -4,9 +4,10 @@ import {
   type GuardianStackParamList,
   resolveWorkspaceSwitcherTargets,
   usePermissions,
-  useStore,
   type WorkspaceSwitcherTarget,
 } from '@repo/core';
+import { useStore } from '@repo/core/logic';
+
 import { Box, ScreenWrapper, Text } from '@repo/ui';
 import React from 'react';
 import {

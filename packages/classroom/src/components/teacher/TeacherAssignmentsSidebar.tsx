@@ -1,4 +1,6 @@
-import { Box, Heading, HStack, Pressable, Text, VStack } from '@repo/ui';
+import { Box, Heading, HStack, Text, VStack } from '@repo/ui';
+import { Pressable } from '@repo/ui/primitives';
+
 import type React from 'react';
 
 interface Assignment {

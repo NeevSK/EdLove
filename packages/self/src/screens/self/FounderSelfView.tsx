@@ -1,13 +1,11 @@
 ﻿import { useNavigation } from '@react-navigation/native';
-import { useJourneyHistory, usePermissions, useStore } from '@repo/core';
-import {
-  Box,
-  PositiveInvitation,
-  ScreenWrapper,
-  useTheme,
-  useThemedColors,
-  VStack,
-} from '@repo/ui';
+import { usePermissions } from '@repo/core';
+import { useJourneyHistory } from '@repo/core/hooks';
+import { useStore } from '@repo/core/logic';
+
+import { Box, PositiveInvitation, ScreenWrapper, useThemedColors, VStack } from '@repo/ui';
+import { useTheme } from '@repo/ui/primitives';
+
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 // Kernel Imports from @repo/self (Breaking require cycle)

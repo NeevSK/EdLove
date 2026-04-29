@@ -6,14 +6,12 @@ import {
   Icon,
   LayoutGrid,
   List,
-  Pressable,
   ScreenWrapper,
-  ScrollView,
   Text,
-  useTheme,
   useThemedColors,
   VStack,
 } from '@repo/ui';
+import { Pressable, ScrollView, useTheme } from '@repo/ui/primitives';
 
 import type React from 'react';
 import { useCallback, useEffect, useState } from 'react';

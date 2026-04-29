@@ -1,17 +1,17 @@
 import {
   Box,
   Center,
-  FlatList,
   HStack,
   Icon,
   Modal,
   ModalBody,
   ModalContent,
   ModalHeader,
-  Pressable,
   Text,
   VStack,
 } from '@repo/ui';
+import { FlatList, Pressable } from '@repo/ui/primitives';
+
 import { ChevronRight, Folder, Lock, X } from 'lucide-react-native';
 import type React from 'react';
 import type { LibraryCollection } from '../types';

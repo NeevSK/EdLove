@@ -1,26 +1,23 @@
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { ClassroomStackParamList } from '@repo/core';
+import { useFeatureAccess } from '@repo/core/hooks';
+import { useStore, useTemporalStore } from '@repo/core/logic';
+import { useWorkspaceLayoutSync } from '@repo/core/native';
+
 import {
-  type ClassroomStackParamList,
-  useFeatureAccess,
-  useStore,
-  useTemporalStore,
-  useWorkspaceLayoutSync,
-} from '@repo/core';
-import {
-  AnimatedView,
   Box,
   FadeInDown,
   HStack,
-  hapticLight,
-  Pressable,
   SandboxBanner,
-  ScrollView,
   Text,
-  useRegisterFAB,
   useThemedColors,
   WorkspaceCanvas,
 } from '@repo/ui';
+import { useRegisterFAB } from '@repo/ui/context/FABContext';
+import { AnimatedView, Pressable, ScrollView } from '@repo/ui/primitives';
+import { hapticLight } from '@repo/ui/utils/haptics';
+
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useStudentDashboardSurfaces } from '../workspace/useStudentDashboardSurfaces';

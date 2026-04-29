@@ -1,4 +1,5 @@
-import { useStore } from '@repo/core';
+import { useStore } from '@repo/core/logic';
+
 import {
   Activity,
   ArrowRight,
@@ -14,22 +15,23 @@ import {
   Heading,
   Heart,
   HStack,
-  hapticLight,
   Icon,
   LayoutGrid,
   Plus,
-  Pressable,
   School,
   Search,
   Shield,
   Star,
   Text,
-  Theme,
   Users,
   useThemedColors,
   VStack,
   Zap,
 } from '@repo/ui';
+import { Pressable } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme';
+import { hapticLight } from '@repo/ui/utils/haptics';
+
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 

@@ -4,7 +4,9 @@
  * Supports bidirectional loop: principal can mark feedback read and reply inline.
  */
 
-import { supabase, useStore } from '@repo/core';
+import { useStore } from '@repo/core/logic';
+import { supabase } from '@repo/core/native';
+
 import {
   Box,
   Button,
@@ -13,13 +15,14 @@ import {
   HStack,
   Input,
   InputField,
-  Pressable,
   Spinner,
   Text,
-  Theme,
   useThemedColors,
   VStack,
 } from '@repo/ui';
+import { Pressable } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme';
+
 import {
   AlertTriangle,
   CheckCircle2,

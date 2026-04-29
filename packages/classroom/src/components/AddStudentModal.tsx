@@ -5,7 +5,8 @@
  */
 
 import type { Student } from '@repo/core';
-import { studentsAPI } from '@repo/core';
+import { studentsAPI } from '@repo/core/api';
+
 import {
   Box,
   Button,
@@ -13,12 +14,13 @@ import {
   HStack,
   Input,
   InputField,
-  Pressable,
   SanctuaryModal,
   Text,
   useToast,
   VStack,
 } from '@repo/ui';
+import { Pressable } from '@repo/ui/primitives';
+
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import OCRStudentImport from './OCRStudentImport';

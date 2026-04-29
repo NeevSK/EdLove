@@ -1,5 +1,6 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { useMediaDownloader } from '@repo/core';
+import { useMediaDownloader } from '@repo/core/hooks';
+
 import { UniversalDocumentPortal } from '@repo/ui';
 import React, { useCallback, useState } from 'react';
 

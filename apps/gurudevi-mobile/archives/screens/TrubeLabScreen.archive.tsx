@@ -24,7 +24,9 @@ import {
 } from '@repo/trube-art';
 import { TrubeMotif, TrubeOrnament, TrubeStage } from '@repo/trube-art/native';
 import type { TemporalPhase } from '@repo/ui';
-import { Box, HStack, Pressable, ScreenWrapper, Text, useTheme, VStack } from '@repo/ui';
+import { Box, HStack, ScreenWrapper, Text, VStack } from '@repo/ui';
+import { Pressable, useTheme } from '@repo/ui/primitives';
+
 import React from 'react';
 import type { ScrollView } from 'react-native';
 

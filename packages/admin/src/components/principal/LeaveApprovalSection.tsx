@@ -6,7 +6,9 @@
  *  - Approve / Reject buttons per request
  */
 
-import { type StaffLeaveDTO, staffManagementAPI } from '@repo/core';
+import type { StaffLeaveDTO } from '@repo/core';
+import { staffManagementAPI } from '@repo/core/api';
+
 import {
   Box,
   Check,
@@ -14,14 +16,14 @@ import {
   FileText,
   Heading,
   HStack,
-  hapticLight,
   Icon,
-  Pressable,
   Spinner,
   Text,
   VStack,
   X,
 } from '@repo/ui';
+import { Pressable } from '@repo/ui/primitives';
+import { hapticLight } from '@repo/ui/utils/haptics';
 
 import { useEffect, useState } from 'react';
 

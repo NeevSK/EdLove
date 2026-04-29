@@ -1,4 +1,6 @@
-import { supabase, useAuth } from '@repo/core';
+import { useAuth } from '@repo/core/logic';
+import { supabase } from '@repo/core/native';
+
 import { useQRDeepLink } from '@repo/scanner-kit';
 import * as Linking from 'expo-linking';
 import type React from 'react';

@@ -1,5 +1,7 @@
 import { communityAPI } from '@repo/community';
-import { growthSignalsAPI, handleAPIError, identityAPI, type School } from '@repo/core';
+import { growthSignalsAPI, handleAPIError, type School } from '@repo/core';
+import { identityAPI } from '@repo/core/api';
+
 import {
   Actionsheet,
   ActionsheetBackdrop,

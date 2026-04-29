@@ -9,19 +9,21 @@
  */
 
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { FeatureGuard, useStore } from '@repo/core';
+import { FeatureGuard } from '@repo/core';
+import { useStore } from '@repo/core/logic';
+
 import {
   Box,
   GlobalHeader,
-  hapticLight,
   PositiveInvitation,
-  SanctuaryNudge,
   SandboxBanner,
   ScreenWrapper,
-  SkeletonCard,
   useThemedColors,
   VStack,
 } from '@repo/ui';
+import { SanctuaryNudge, SkeletonCard } from '@repo/ui/components';
+import { hapticLight } from '@repo/ui/utils/haptics';
+
 import { Wind } from 'lucide-react-native';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -109,8 +111,8 @@ export default function ClassroomScreen() {
     onAction=
     () => setBreathingOpen(true)
     icon=
-    Wind;
-    /;
+    Wind
+    /;;
     </FeatureGuard                <FeatureGuard action="read" subject="StudentPulse"                    <SanctuaryNudge
     title=
     t('student.nudges.breathing.title') || 'Learning Fuel'
@@ -122,8 +124,8 @@ export default function ClassroomScreen() {
     onAction=
     () => setBreathingOpen(true)
     icon=
-    Wind;
-    /;
+    Wind
+    /;;
     </FeatureGuard            </        )
 
     return null;

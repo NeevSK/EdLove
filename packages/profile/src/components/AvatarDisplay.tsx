@@ -1,4 +1,7 @@
-import { Box, Pressable, Spinner, UserAvatar } from '@repo/ui';
+import { Box, Spinner } from '@repo/ui';
+import { UserAvatar } from '@repo/ui/components';
+import { Pressable } from '@repo/ui/primitives';
+
 import * as ImageManipulator from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
 import { Camera } from 'lucide-react-native';

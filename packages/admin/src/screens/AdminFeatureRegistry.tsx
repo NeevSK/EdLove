@@ -1,6 +1,8 @@
 import { useNavigation } from '@react-navigation/native';
 import { usePermissions } from '@repo/core';
-import { Box, HStack, Pressable, Text, VStack } from '@repo/ui';
+import { Box, HStack, Text, VStack } from '@repo/ui';
+import { Pressable } from '@repo/ui/primitives';
+
 import { useMemo, useState } from 'react';
 import {
   commitFeatureGateChanges,

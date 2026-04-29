@@ -1,12 +1,13 @@
 import {
   Assignment,
-  assignmentsAPI,
-  useAuthStore,
-  useRewards,
   useStudentAssignmentsQuery,
   useStudentClassroomsQuery,
   useStudentStatsQuery,
 } from '@repo/core';
+import { assignmentsAPI } from '@repo/core/api';
+import { useRewards } from '@repo/core/hooks';
+import { useAuthStore } from '@repo/core/logic';
+
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 /**

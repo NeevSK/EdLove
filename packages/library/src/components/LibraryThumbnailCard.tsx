@@ -5,7 +5,10 @@
  */
 
 import { coreRuntime } from '@repo/core';
-import { Box, HStack, ImageBackground, Pressable, Text, Theme, useTheme, VStack } from '@repo/ui';
+import { Box, HStack, ImageBackground, Text, VStack } from '@repo/ui';
+import { Pressable, useTheme } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme';
+
 import {
   BadgeCheck,
   BarChart2,

@@ -18,7 +18,6 @@ import {
   Edit2,
   Heading,
   HStack,
-  hapticLight,
   Icon,
   Input,
   InputField,
@@ -29,14 +28,15 @@ import {
   ModalFooter,
   ModalHeader,
   Plus,
-  Pressable,
   SanctuaryModal,
-  ScrollView,
   Text,
   Trash2,
   Users,
   VStack,
 } from '@repo/ui';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+import { hapticLight } from '@repo/ui/utils/haptics';
+
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 

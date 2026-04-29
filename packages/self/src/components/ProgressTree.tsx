@@ -5,9 +5,9 @@
  */
 
 import { useNavigation } from '@react-navigation/native';
-import { supabase } from '@repo/core';
+import { supabase } from '@repo/core/native';
+
 import {
-  AnimatedView,
   Box,
   Button,
   ButtonText,
@@ -20,6 +20,8 @@ import {
   Text,
   VStack,
 } from '@repo/ui';
+import { AnimatedView } from '@repo/ui/primitives';
+
 import { Flower2, Leaf, Shapes, Sparkles, Sprout, TreePine } from 'lucide-react-native';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';

@@ -4,7 +4,9 @@
  * Standardized to Zero-Legacy: purged corrupted StyleSheet and migrated to NativeWind v4.
  */
 
-import { AnimatedView, Box, HStack, Icon, Text, VStack } from '@repo/ui';
+import { Box, HStack, Icon, Text, VStack } from '@repo/ui';
+import { AnimatedView } from '@repo/ui/primitives';
+
 import { Activity, Zap } from 'lucide-react-native';
 import React from 'react';
 import Animated, { FadeInUp, LinearTransition } from 'react-native-reanimated';

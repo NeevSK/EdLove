@@ -1,4 +1,6 @@
-import { authAPI, handleAPIError } from '@repo/core';
+import { handleAPIError } from '@repo/core';
+import { authAPI } from '@repo/core/api';
+
 import {
   Box,
   Button,
@@ -10,21 +12,20 @@ import {
   CheckIcon,
   Heading,
   HStack,
-  hapticError,
-  hapticLight,
-  hapticSuccess,
   Link,
   LinkText,
-  Pressable,
   ScreenWrapper,
   Text,
-  Theme,
   Toast,
   ToastTitle,
   useThemedColors,
   useToast,
   VStack,
 } from '@repo/ui';
+import { Pressable } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme';
+import { hapticError, hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Dimensions, Image } from 'react-native';

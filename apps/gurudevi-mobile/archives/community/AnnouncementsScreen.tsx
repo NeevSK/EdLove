@@ -25,16 +25,17 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
-  ScrollView,
-  SkeletonCard,
   Spinner,
   Switch,
   Text,
   Textarea,
   TextareaInput,
-  Theme,
   VStack,
 } from '@repo/ui';
+import { SkeletonCard } from '@repo/ui/components';
+import { ScrollView } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme';
+
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 

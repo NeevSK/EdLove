@@ -1,5 +1,10 @@
-﻿import { useJourneyHistory, usePermissions, useStore } from '@repo/core';
-import { Box, JourneyHistoryCard, ScreenWrapper, VStack } from '@repo/ui';
+﻿import { usePermissions } from '@repo/core';
+import { useJourneyHistory } from '@repo/core/hooks';
+import { useStore } from '@repo/core/logic';
+
+import { Box, ScreenWrapper, VStack } from '@repo/ui';
+import { JourneyHistoryCard } from '@repo/ui/components';
+
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 

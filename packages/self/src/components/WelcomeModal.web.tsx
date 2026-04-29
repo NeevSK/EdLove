@@ -4,17 +4,9 @@
  * Standardized to Zero-Legacy: purged raw HTML/inline styles and fixed syntax corruption in style objects.
  */
 
-import {
-  AnimatedView,
-  Box,
-  Button,
-  ButtonText,
-  Heading,
-  HStack,
-  Icon,
-  Text,
-  VStack,
-} from '@repo/ui';
+import { Box, Button, ButtonText, Heading, HStack, Icon, Text, VStack } from '@repo/ui';
+import { AnimatedView } from '@repo/ui/primitives';
+
 import { ArrowRight, Sparkles } from 'lucide-react-native';
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';

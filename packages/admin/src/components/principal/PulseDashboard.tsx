@@ -5,16 +5,15 @@ import {
   HeartPulse,
   HStack,
   Icon,
-  LivingGlow,
-  SanctuaryCard,
-  SanctuaryChip,
-  SkeletonLoader,
   Text,
   TrendingUp,
   Users,
   VStack,
   Zap,
 } from '@repo/ui';
+import { LivingGlow, SanctuaryCard, SanctuaryChip } from '@repo/ui/components';
+import { SkeletonLoader } from '@repo/ui/components/SkeletonLoader';
+
 import { useSchoolPulseQuery } from '../../hooks/useDashboardHooks';
 
 interface PulseDashboardProps {

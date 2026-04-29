@@ -1,16 +1,8 @@
 import { type NavigationProp, useNavigation } from '@react-navigation/native';
-import {
-  api,
-  type ClassroomStackParamList,
-  communityAPI,
-  incrementInviteCodeUsage,
-  onboardingAPI,
-  type School,
-  schoolAPI,
-  usePermissions,
-  useStore,
-  validateInviteCode,
-} from '@repo/core';
+import { type ClassroomStackParamList, type School, usePermissions } from '@repo/core';
+import { api, communityAPI, onboardingAPI, schoolAPI } from '@repo/core/api';
+import { incrementInviteCodeUsage, useStore, validateInviteCode } from '@repo/core/logic';
+
 import {
   ArrowRight,
   BookOpen,
@@ -25,15 +17,15 @@ import {
   Input,
   InputField,
   Key,
-  Pressable,
-  SanctuaryButton,
-  ScrollView,
   Search,
   Spinner,
   Text,
   Users,
   VStack,
 } from '@repo/ui';
+import { SanctuaryButton } from '@repo/ui/components';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+
 import type React from 'react';
 import { useCallback, useReducer, useState } from 'react';
 

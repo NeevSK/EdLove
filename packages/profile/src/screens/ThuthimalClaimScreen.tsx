@@ -6,21 +6,22 @@
  */
 
 import { type RouteProp, useNavigation, useRoute } from '@react-navigation/native';
-import { identityAPI, thuthimalAPI } from '@repo/core';
+import { identityAPI, thuthimalAPI } from '@repo/core/api';
+
 import {
-  AnimatedView,
   Box,
   Button,
   ButtonText,
   Heading,
   HStack,
-  hapticError,
-  hapticSuccess,
   ScreenWrapper,
   Spinner,
   Text,
   VStack,
 } from '@repo/ui';
+import { AnimatedView } from '@repo/ui/primitives';
+import { hapticError, hapticSuccess } from '@repo/ui/utils/haptics';
+
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Animated, {

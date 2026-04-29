@@ -1,15 +1,10 @@
-import { type TemporalScale, useTemporalStore } from '@repo/core';
-import {
-  Box,
-  FeatureInfoIcon,
-  GlobalHeader,
-  HStack,
-  Pressable,
-  ScrollView,
-  TemporalNavigator,
-  Text,
-  VStack,
-} from '@repo/ui';
+import type { TemporalScale } from '@repo/core';
+import { useTemporalStore } from '@repo/core/logic';
+
+import { Box, FeatureInfoIcon, GlobalHeader, HStack, Text, VStack } from '@repo/ui';
+import { TemporalNavigator } from '@repo/ui/components';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+
 import React from 'react';
 import { FEATURE_DISCOVERY_DATA, FEATURE_EMOJIS } from '../constants/selfRegistry';
 import { useDynamicSelfFeatures } from '../hooks/useDynamicSelfFeatures';

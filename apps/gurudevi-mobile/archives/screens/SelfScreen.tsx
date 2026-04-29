@@ -1,4 +1,6 @@
-import { usePermissions, useTracking } from '@repo/core';
+import { usePermissions } from '@repo/core';
+import { useTracking } from '@repo/core/hooks';
+
 import {
   AdminSelfView,
   FounderSelfView,

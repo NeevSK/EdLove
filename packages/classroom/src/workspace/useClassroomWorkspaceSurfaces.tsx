@@ -1,13 +1,7 @@
 import { FeatureGuard } from '@repo/core';
-import {
-  Box,
-  GlobalHeader,
-  Icon,
-  SanctuaryNudge,
-  SandboxBanner,
-  ScreenWrapper,
-  Wind,
-} from '@repo/ui';
+import { Box, GlobalHeader, Icon, SandboxBanner, ScreenWrapper, Wind } from '@repo/ui';
+import { SanctuaryNudge } from '@repo/ui/components';
+
 import React, { useMemo } from 'react';
 import { StudentOnboardingView, TeacherOnboardingView } from '../components';
 import StudentDashboard from '../screens/StudentDashboard';

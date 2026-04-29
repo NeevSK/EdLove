@@ -1,16 +1,7 @@
-import {
-  Box,
-  Heading,
-  HStack,
-  hapticLight,
-  hapticSuccess,
-  Icon,
-  Pressable,
-  Spinner,
-  Text,
-  useToast,
-  VStack,
-} from '@repo/ui';
+import { Box, Heading, HStack, Icon, Spinner, Text, useToast, VStack } from '@repo/ui';
+import { Pressable } from '@repo/ui/primitives';
+import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+
 import { formatDistanceToNow } from 'date-fns';
 import { ArrowLeft, Copy, Plus, UserPlus, X } from 'lucide-react-native';
 import type React from 'react';

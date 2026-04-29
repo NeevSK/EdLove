@@ -4,7 +4,9 @@
  * Supports bidirectional loop: principal can mark feedback read and reply inline.
  */
 
-import { supabase, useStore } from '@repo/core';
+import { useStore } from '@repo/core/logic';
+import { supabase } from '@repo/core/native';
+
 import {
   AlertTriangle,
   Box,
@@ -15,17 +17,17 @@ import {
   Heading,
   Heart,
   HStack,
-  hapticLight,
   Icon,
   Input,
   InputField,
   MessageSquare,
-  Pressable,
   Send,
   Spinner,
   Text,
   VStack,
 } from '@repo/ui';
+import { Pressable } from '@repo/ui/primitives';
+import { hapticLight } from '@repo/ui/utils/haptics';
 
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';

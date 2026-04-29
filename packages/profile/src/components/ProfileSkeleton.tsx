@@ -1,13 +1,7 @@
-import {
-  Box,
-  Center,
-  HStack,
-  SkeletonAvatar,
-  SkeletonCard,
-  SkeletonLoader,
-  SkeletonTextLine,
-  VStack,
-} from '@repo/ui';
+import { Box, Center, HStack, VStack } from '@repo/ui';
+import { SkeletonAvatar, SkeletonCard, SkeletonTextLine } from '@repo/ui/components';
+import { SkeletonLoader } from '@repo/ui/components/SkeletonLoader';
+
 import React from 'react';
 import { useWindowDimensions } from 'react-native';
 

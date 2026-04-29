@@ -8,22 +8,20 @@ import {
   Footprints,
   Heading,
   HStack,
-  hapticLight,
-  hapticMedium,
-  hapticSuccess,
   Icon,
   LotusDropdown,
   Medal,
   Plus,
-  Pressable,
-  ScrollView,
-  SkeletonCard,
   StickyNote,
   Text,
   Textarea,
   TextareaInput,
   VStack,
 } from '@repo/ui';
+import { SkeletonCard } from '@repo/ui/components';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+import { hapticLight, hapticMedium, hapticSuccess } from '@repo/ui/utils/haptics';
+
 import { formatDistanceToNow } from 'date-fns';
 
 import type React from 'react';

@@ -1,15 +1,10 @@
 import type { BaseResource } from '@repo/core';
 import { formatDuration, formatFileSize } from '@repo/core';
-import {
-  Box,
-  HStack,
-  SanctuaryButton,
-  SanctuaryCard,
-  Text,
-  Theme,
-  useTheme,
-  VStack,
-} from '@repo/ui';
+import { Box, HStack, Text, VStack } from '@repo/ui';
+import { SanctuaryButton, SanctuaryCard } from '@repo/ui/components';
+import { useTheme } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme';
+
 import {
   ArrowLeftRight,
   BarChart2,

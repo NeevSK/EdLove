@@ -1,21 +1,16 @@
 import { useNavigation } from '@react-navigation/native';
 import { communityAPI } from '@repo/community';
-import { schoolAPI, useSchoolCreation, useStore } from '@repo/core';
+import { schoolAPI } from '@repo/core/api';
+import { useSchoolCreation } from '@repo/core/hooks';
+import { useStore } from '@repo/core/logic';
+
 import { QRBuilder, QRCodeGenerator } from '@repo/scanner-kit';
-import {
-  Check,
-  GlobalHeader,
-  Heading,
-  HStack,
-  SanctuaryButton,
-  ScrollView,
-  Spinner,
-  Text,
-  VStack,
-} from '@repo/ui';
-import { Box, Icon } from '@repo/ui/primitives';
-import { ScreenWrapper } from '@repo/ui/components/ScreenWrapper';
-import { StepIndicator } from '@repo/ui/components/StepIndicator';
+import GlobalHeader from '@repo/ui/components/GlobalHeader';
+import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import StepIndicator from '@repo/ui/components/StepIndicator';
+import { Check } from '@repo/ui/icons';
+import { Box, Heading, HStack, Icon, ScrollView, Spinner, Text, VStack } from '@repo/ui/primitives';
 
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';

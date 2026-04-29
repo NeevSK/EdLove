@@ -1,19 +1,21 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { coreRuntime, useStore } from '@repo/core';
+import { coreRuntime } from '@repo/core';
+import { useStore } from '@repo/core/logic';
+
 import {
   Box,
   HStack,
   openExternalURL,
-  Pressable,
   Icon as SanctuaryIcon,
   ScreenWrapper,
-  ScrollView,
   Spinner,
   Text,
-  Theme,
   useThemedColors,
   VStack,
 } from '@repo/ui';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme';
+
 import { useQuery } from '@tanstack/react-query';
 import {
   ArrowLeft,

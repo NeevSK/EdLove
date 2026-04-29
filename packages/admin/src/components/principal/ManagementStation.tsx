@@ -2,16 +2,16 @@ import {
   ArrowRight,
   Box,
   HStack,
-  hapticLight,
   Icon,
   LayoutGrid,
   Milestone,
   NotebookPen,
-  Pressable,
   Text,
   UserPlus,
   VStack,
 } from '@repo/ui';
+import { Pressable } from '@repo/ui/primitives';
+import { hapticLight } from '@repo/ui/utils/haptics';
 
 import { useTranslation } from 'react-i18next';
 

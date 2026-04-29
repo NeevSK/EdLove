@@ -1,4 +1,6 @@
-import { usePermissions, useStore } from '@repo/core';
+import { usePermissions } from '@repo/core';
+import { useStore } from '@repo/core/logic';
+
 import { StaffPresencePulse } from '@repo/people';
 import { QRCodeGenerator } from '@repo/scanner-kit';
 import { CitizenGate } from '@repo/ui';

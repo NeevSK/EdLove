@@ -1,13 +1,12 @@
 import {
-  api as coreAPI,
   KnowledgeTopologySchema,
-  mappingAPI,
   type PulseMetricsZod,
   type School,
   type SchoolStats,
-  useStore,
-  useTemporalStore,
 } from '@repo/core';
+import { api as coreAPI, mappingAPI } from '@repo/core/api';
+import { useStore, useTemporalStore } from '@repo/core/logic';
+
 import { useQuery } from '@tanstack/react-query';
 import { approvalsAPI } from '../approvals';
 import { adminCalendarAPI } from '../calendar';

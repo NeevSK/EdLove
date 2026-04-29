@@ -4,7 +4,8 @@
  * Standardized to Zero-Legacy: purged raw HTML styles and integrated @repo/ui primitives.
  */
 
-import { useTemporalStore } from '@repo/core';
+import { useTemporalStore } from '@repo/core/logic';
+
 import {
   Box,
   Button,
@@ -14,13 +15,14 @@ import {
   Icon,
   Input,
   InputField,
-  Pressable,
   Progress,
   ProgressFilledTrack,
   Spinner,
   Text,
   VStack,
 } from '@repo/ui';
+import { Pressable } from '@repo/ui/primitives';
+
 import { Calendar, Check, Moon, Plus, Target, Trash2, X } from 'lucide-react-native';
 import React, { useEffect, useState } from 'react';
 import Animated, { FadeIn, FadeInDown, Layout } from 'react-native-reanimated';

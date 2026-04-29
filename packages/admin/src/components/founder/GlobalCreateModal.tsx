@@ -1,5 +1,7 @@
 import { communityAPI } from '@repo/community';
-import { api, growthSignalsAPI, handleAPIError, identityAPI, type School } from '@repo/core';
+import { growthSignalsAPI, handleAPIError, type School } from '@repo/core';
+import { api, identityAPI } from '@repo/core/api';
+
 import {
   Actionsheet,
   ActionsheetBackdrop,
@@ -15,12 +17,9 @@ import {
   FormControlLabel,
   FormControlLabelText,
   HStack,
-  hapticLight,
-  hapticSuccess,
   Icon,
   Input,
   InputField,
-  Pressable,
   SanctuaryModal,
   Spinner,
   Text,
@@ -30,6 +29,9 @@ import {
   useTranslation,
   VStack,
 } from '@repo/ui';
+import { Pressable } from '@repo/ui/primitives';
+import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+
 import {
   ChevronDown,
   LayoutGrid,

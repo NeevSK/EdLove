@@ -1,15 +1,8 @@
 import { FeatureGuard } from '@repo/core';
-import {
-  Box,
-  GlobalHeader,
-  HStack,
-  Pressable,
-  SandboxBanner,
-  ScrollView,
-  SkeletonCard,
-  Text,
-  VStack,
-} from '@repo/ui';
+import { Box, GlobalHeader, HStack, SandboxBanner, Text, VStack } from '@repo/ui';
+import { SkeletonCard } from '@repo/ui/components';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+
 import type { PrincipalZoneId } from '../principal/workspace';
 
 function ZoneButton({

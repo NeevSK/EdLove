@@ -5,7 +5,9 @@
  * EROI 60:1 (1 min → calm for hour)
  */
 
-import { Box, Button, ButtonText, Icon, Pressable, Text, VStack } from '@repo/ui';
+import { Box, Button, ButtonText, Icon, Text, VStack } from '@repo/ui';
+import { Pressable } from '@repo/ui/primitives';
+
 import * as Haptics from 'expo-haptics';
 import { Wind } from 'lucide-react-native';
 import React, { useCallback, useEffect, useState } from 'react';

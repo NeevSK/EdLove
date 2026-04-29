@@ -8,20 +8,16 @@
  */
 
 import { type RouteProp, useRoute } from '@react-navigation/native';
-import {
-  api,
-  type ClassroomResource,
-  type ClassroomStackParamList,
-  type ResourceType,
-  useSafeMutation,
-  useStore,
-} from '@repo/core';
+import type { ClassroomResource, ClassroomStackParamList, ResourceType } from '@repo/core';
+import { api } from '@repo/core/api';
+import { useSafeMutation } from '@repo/core/hooks';
+import { useStore } from '@repo/core/logic';
+
 import { libraryAPI } from '@repo/library';
 import {
   Box,
   Button,
   ButtonText,
-  CollectionCard,
   Download,
   ExternalLink,
   File,
@@ -29,8 +25,6 @@ import {
   GlobalHeader,
   Heading,
   HStack,
-  hapticLight,
-  hapticSuccess,
   Icon,
   Input,
   InputField,
@@ -44,11 +38,8 @@ import {
   Pin,
   Plus,
   PositiveInvitation,
-  Pressable,
   ScreenWrapper,
-  ScrollView,
   Share2,
-  SkeletonCard,
   SmartShelf,
   Text,
   Textarea,
@@ -58,6 +49,10 @@ import {
   Video,
   VStack,
 } from '@repo/ui';
+import { CollectionCard, SkeletonCard } from '@repo/ui/components';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useResources } from '../hooks';

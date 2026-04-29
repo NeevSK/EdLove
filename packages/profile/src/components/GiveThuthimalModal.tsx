@@ -1,20 +1,21 @@
-import { thuthimalAPI } from '@repo/core';
+import { thuthimalAPI } from '@repo/core/api';
+
 import {
   Box,
   Button,
   ButtonText,
   Heading,
   HStack,
-  hapticError,
-  hapticSuccess,
   Icon,
   Input,
   InputField,
-  Pressable,
   Text,
   useLotusToast,
   VStack,
 } from '@repo/ui';
+import { Pressable } from '@repo/ui/primitives';
+import { hapticError, hapticSuccess } from '@repo/ui/utils/haptics';
+
 import { X } from 'lucide-react-native';
 import React, { useCallback, useState } from 'react';
 import { Modal } from 'react-native';

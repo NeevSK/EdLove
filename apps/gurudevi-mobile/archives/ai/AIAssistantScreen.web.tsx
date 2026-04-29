@@ -14,8 +14,11 @@
 
 import { useNavigation } from '@react-navigation/native';
 import { useAIAgent } from '@repo/ai';
-import { useStore, useUserRole } from '@repo/core';
-import { formatTimestamp } from '@repo/ui';
+import { useUserRole } from '@repo/core';
+import { useStore } from '@repo/core/logic';
+
+import { formatTimestamp } from '@repo/ui/utils/dateTimeUtils';
+
 import type React from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';

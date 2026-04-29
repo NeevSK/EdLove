@@ -1,5 +1,6 @@
 ﻿import { usePermissions } from '@repo/core';
-import { WebScreenHeader } from '@repo/ui';
+import { WebScreenHeader } from '@repo/ui/components';
+
 import React from 'react';
 
 import {

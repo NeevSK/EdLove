@@ -1,5 +1,7 @@
-import { type AppNotification, useNotifications, useStore } from '@repo/core';
-import { WebScreenHeader } from '@repo/ui';
+import { type AppNotification, useNotifications, useStore } from '@repo/core/logic';
+
+import { WebScreenHeader } from '@repo/ui/components';
+
 import { formatDistanceToNow } from 'date-fns';
 import { Bell, CheckCircle2, Inbox, Info, Shield, Sparkles } from 'lucide-react-native';
 import React, { useCallback } from 'react';

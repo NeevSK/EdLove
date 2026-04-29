@@ -1,5 +1,8 @@
 import { FormManager } from '@repo/core';
-import { Box, Center, SanctuaryButton, ScrollView, Text, View } from '@repo/ui';
+import { Box, Center, Text } from '@repo/ui';
+import { SanctuaryButton } from '@repo/ui/components';
+import { ScrollView, View } from '@repo/ui/primitives';
+
 import { CheckCircle2, Share2 } from 'lucide-react-native';
 import React, { useMemo, useState } from 'react';
 import {

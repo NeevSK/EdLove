@@ -2,7 +2,8 @@ import type { TrubeScoreName } from '@repo/trube-art';
 import { getScoreExtras, getScorePreset } from '@repo/trube-art';
 import { TrubeMotif, TrubeOrnament, TrubeStage } from '@repo/trube-art/native';
 import type { TemporalPhase } from '@repo/ui';
-import { useTheme } from '@repo/ui';
+import { useTheme } from '@repo/ui/primitives';
+
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 

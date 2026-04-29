@@ -1,4 +1,6 @@
-import { Box, HStack, Pressable, Text } from '@repo/ui';
+import { Box, HStack, Text } from '@repo/ui';
+import { Pressable } from '@repo/ui/primitives';
+
 import type React from 'react';
 import type { StudentOverview } from '../../guardian';
 

@@ -1,4 +1,5 @@
-import { supabase } from '@repo/core';
+import { supabase } from '@repo/core/native';
+
 import { useQuery } from '@tanstack/react-query';
 import { PerformanceAnalyzer } from '../engine/PerformanceAnalyzer';
 import { InsightGenerator } from '../ml/InsightGenerator';

@@ -1,23 +1,14 @@
 import { useRoute } from '@react-navigation/native';
-import {
-  type AttendanceStatus,
-  api,
-  growthSignalsAPI,
-  type StudentAttendance,
-  useSafeMutation,
-  useStore,
-} from '@repo/core';
-import {
-  Box,
-  Button,
-  ButtonText,
-  hapticSuccess,
-  Pressable,
-  Spinner,
-  Text,
-  Theme,
-  VStack,
-} from '@repo/ui';
+import { type AttendanceStatus, growthSignalsAPI, type StudentAttendance } from '@repo/core';
+import { api } from '@repo/core/api';
+import { useSafeMutation } from '@repo/core/hooks';
+import { useStore } from '@repo/core/logic';
+
+import { Box, Button, ButtonText, Spinner, Text, VStack } from '@repo/ui';
+import { Pressable } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme';
+import { hapticSuccess } from '@repo/ui/utils/haptics';
+
 import React, { useCallback, useEffect, useState } from 'react';
 import AttendanceSheet from '../components/AttendanceSheet';
 

@@ -1,12 +1,13 @@
 import {
-  api,
   CLASSROOM_RESOURCE_SCOPE,
   type InventoryCategory,
   type InventoryCondition,
   type InventoryItem,
-  useSafeMutation,
-  useStore,
 } from '@repo/core';
+import { api } from '@repo/core/api';
+import { useSafeMutation } from '@repo/core/hooks';
+import { useStore } from '@repo/core/logic';
+
 import {
   AlertTriangle,
   Box,
@@ -16,8 +17,6 @@ import {
   Clipboard,
   Heading,
   HStack,
-  hapticLight,
-  hapticSuccess,
   Icon,
   Input,
   InputField,
@@ -33,17 +32,18 @@ import {
   PenTool,
   Plus,
   PositiveInvitation,
-  Pressable,
-  ScrollView,
   Sofa,
   Text,
   Textarea,
   TextareaInput,
-  Theme,
   useThemedColors,
   VStack,
   X,
 } from '@repo/ui';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme';
+import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useInventory } from '../hooks/useInventory';

@@ -10,7 +10,8 @@
  * Strengths: superior printed text, multi-language detection, high throughput.
  */
 
-import { supabase } from '@repo/core';
+import { supabase } from '@repo/core/native';
+
 import type { OCRBlock, OCRProvider, OCRRawResult } from '../types';
 
 export class GoogleVisionProvider implements OCRProvider {

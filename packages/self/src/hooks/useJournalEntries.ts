@@ -1,12 +1,8 @@
-import {
-  applyTemporalFilter,
-  authAPI,
-  GuestDataManager,
-  growthSignalsAPI,
-  identityAPI,
-  supabase,
-  useTemporalStore,
-} from '@repo/core';
+import { applyTemporalFilter, growthSignalsAPI } from '@repo/core';
+import { authAPI, identityAPI } from '@repo/core/api';
+import { useTemporalStore } from '@repo/core/logic';
+import { GuestDataManager, supabase } from '@repo/core/native';
+
 import { useCallback, useEffect, useState } from 'react';
 
 import type { JournalEntry } from '../types';

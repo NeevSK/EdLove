@@ -1,17 +1,18 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { useStore } from '@repo/core';
+import { useStore } from '@repo/core/logic';
+
 import {
   ActivityIndicator,
   Box,
   HStack,
   openExternalURL,
-  SanctuaryButton,
   showExternalLinkOptions,
   Text,
-  useTheme,
   VStack,
-  WebScreenHeader,
 } from '@repo/ui';
+import { SanctuaryButton, WebScreenHeader } from '@repo/ui/components';
+import { useTheme } from '@repo/ui/primitives';
+
 import { ArrowLeft, Library, RefreshCw } from 'lucide-react-native';
 import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';

@@ -1,4 +1,6 @@
-import { api, type Student } from '@repo/core';
+import type { Student } from '@repo/core';
+import { api } from '@repo/core/api';
+
 import { StudentAnalysisModal } from '@repo/library';
 import {
   Activity,
@@ -8,7 +10,6 @@ import {
   Heading,
   HStack,
   Icon,
-  Pressable,
   Sparkles,
   Spinner,
   Text,
@@ -16,6 +17,8 @@ import {
   TriangleAlert,
   VStack,
 } from '@repo/ui';
+import { Pressable } from '@repo/ui/primitives';
+
 import type React from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 

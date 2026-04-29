@@ -1,6 +1,8 @@
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { type ClassroomStackParamList, useWorkspaceLayoutSync } from '@repo/core';
+import type { ClassroomStackParamList } from '@repo/core';
+import { useWorkspaceLayoutSync } from '@repo/core/native';
+
 import {
   TeacherAdminPortalModal,
   TeacherEchoHistoryModal,
@@ -19,12 +21,12 @@ import {
   ModalCloseButton,
   ModalContent,
   ModalHeader,
-  Pressable,
   SandboxBanner,
-  ScrollView,
   useThemedColors,
   X,
 } from '@repo/ui';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import Animated, { FadeInDown } from 'react-native-reanimated';

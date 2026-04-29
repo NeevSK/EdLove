@@ -1,12 +1,13 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
-import {
-  type AttendanceRecord,
-  api,
-  type StudentGrade,
-  type StudentLongitudinalEvent,
-  type StudentObservation,
-  useTemporalStore,
+import type {
+  AttendanceRecord,
+  StudentGrade,
+  StudentLongitudinalEvent,
+  StudentObservation,
 } from '@repo/core';
+import { api } from '@repo/core/api';
+import { useTemporalStore } from '@repo/core/logic';
+
 import {
   ArrowLeft,
   Box,
@@ -16,20 +17,19 @@ import {
   Clock3,
   Heading,
   HStack,
-  hapticMedium,
   Icon,
   Lock,
-  Pressable,
-  RefreshControl,
-  ScrollView,
   ShieldCheck,
   Spinner,
   Text,
-  Theme,
   Trophy,
   useThemedColors,
   VStack,
 } from '@repo/ui';
+import { Pressable, RefreshControl, ScrollView } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme';
+import { hapticMedium } from '@repo/ui/utils/haptics';
+
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 

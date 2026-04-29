@@ -1,4 +1,6 @@
-import { HStack, Pressable, Text, View } from '@repo/ui';
+import { HStack, Text } from '@repo/ui';
+import { Pressable, View } from '@repo/ui/primitives';
+
 import React from 'react';
 
 interface FormLikertProps {

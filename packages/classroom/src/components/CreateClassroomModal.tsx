@@ -1,5 +1,9 @@
 import { useNavigation } from '@react-navigation/native';
-import { api, communityAPI, handleAPIError, identityAPI, useEntity, useStore } from '@repo/core';
+import { handleAPIError } from '@repo/core';
+import { api, communityAPI, identityAPI } from '@repo/core/api';
+import { useEntity } from '@repo/core/hooks';
+import { useStore } from '@repo/core/logic';
+
 import { resolveQR, ScannerModal } from '@repo/scanner-kit';
 import {
   Box,
@@ -11,19 +15,18 @@ import {
   Globe,
   Heading,
   HStack,
-  hapticLight,
-  hapticSuccess,
   Icon,
   Input,
   InputField,
-  Pressable,
   SanctuaryModal,
   ScanLine,
   Spinner,
   Text,
-  useTheme,
   VStack,
 } from '@repo/ui';
+import { Pressable, useTheme } from '@repo/ui/primitives';
+import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import GuestConversionPrompt from '../shared/GuestConversionPrompt';

@@ -1,5 +1,8 @@
 import type { Classroom } from '@repo/core';
-import { classroomsAPI, handleAPIError, useMutationQueue, usePermissions } from '@repo/core';
+import { handleAPIError, usePermissions } from '@repo/core';
+import { classroomsAPI } from '@repo/core/api';
+import { useMutationQueue } from '@repo/core/logic';
+
 import { useCallback, useEffect, useState } from 'react';
 
 export function useClassroomProfile(classroomId: string) {

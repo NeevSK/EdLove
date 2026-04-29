@@ -1,18 +1,20 @@
 import { useNavigation } from '@react-navigation/native';
-import { supabase, usePermissions, useStore } from '@repo/core';
+import { usePermissions } from '@repo/core';
+import { useStore } from '@repo/core/logic';
+import { supabase } from '@repo/core/native';
+
 import {
   Box,
-  FlatList,
   GlobalHeader,
   HStack,
-  Pressable,
   Icon as SanctuaryIcon,
   ScreenWrapper,
   Spinner,
   Text,
-  useTheme,
   VStack,
 } from '@repo/ui';
+import { FlatList, Pressable, useTheme } from '@repo/ui/primitives';
+
 import { Check, RefreshCw, Trash2, X } from 'lucide-react-native';
 import React, { useCallback, useEffect, useMemo, useReducer } from 'react';
 

@@ -1,14 +1,10 @@
-import { usePermissions, useTemporalStore } from '@repo/core';
-import {
-  Box,
-  FeatureInfoIcon,
-  HStack,
-  Pressable,
-  ScrollView,
-  TemporalNavigator,
-  Text,
-  VStack,
-} from '@repo/ui';
+import { usePermissions } from '@repo/core';
+import { useTemporalStore } from '@repo/core/logic';
+
+import { Box, FeatureInfoIcon, HStack, Text, VStack } from '@repo/ui';
+import { TemporalNavigator } from '@repo/ui/components';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+
 import React from 'react';
 import { FEATURE_DISCOVERY_DATA, FEATURE_EMOJIS } from '../constants/selfRegistry';
 import { useDynamicSelfFeatures } from '../hooks/useDynamicSelfFeatures';

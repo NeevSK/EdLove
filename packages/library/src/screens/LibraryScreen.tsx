@@ -3,48 +3,50 @@
  */
 
 import { useNavigation } from '@react-navigation/native';
+import { coreRuntime, FeatureGuard } from '@repo/core';
+import { identityAPI } from '@repo/core/api';
+import { useTracking } from '@repo/core/hooks';
+import { useStore, useTemporalStore } from '@repo/core/logic';
+import { supabase } from '@repo/core/native';
+
 import {
-  coreRuntime,
-  FeatureGuard,
-  identityAPI,
-  supabase,
-  useStore,
-  useTemporalStore,
-  useTracking,
-} from '@repo/core';
-import {
-  AnimatedView,
   AssetCreationModal,
   Box,
-  CollectionCard,
   CollectionCreationModal,
   FadeInDown,
-  FlatList,
   GlobalHeader,
   Heading,
-  HorizontalChipRow,
   HStack,
   Icon,
   ImageBackground,
   LinearGradient,
   openExternalURL,
-  Pressable,
-  RefreshControl,
   ResourceActionSheet,
   ScreenWrapper,
-  ScrollView,
-  SkeletonCard,
   SmartShelf,
   showExternalLinkOptions,
-  TemporalNavigator,
   Text,
-  Theme,
-  useBottomTabPadding,
   useLotusToast,
-  useRegisterFAB,
-  useTheme,
   VStack,
 } from '@repo/ui';
+import {
+  CollectionCard,
+  HorizontalChipRow,
+  SkeletonCard,
+  TemporalNavigator,
+  useBottomTabPadding,
+} from '@repo/ui/components';
+import { useRegisterFAB } from '@repo/ui/context/FABContext';
+import {
+  AnimatedView,
+  FlatList,
+  Pressable,
+  RefreshControl,
+  ScrollView,
+  useTheme,
+} from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme';
+
 import {
   FileText,
   Layers,

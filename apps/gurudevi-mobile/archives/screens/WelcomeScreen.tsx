@@ -1,4 +1,6 @@
-import { authAPI, handleAPIError, LanguageUtils } from '@repo/core';
+import { handleAPIError, LanguageUtils } from '@repo/core';
+import { authAPI } from '@repo/core/api';
+
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Dimensions, Image } from 'react-native';

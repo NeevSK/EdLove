@@ -1,5 +1,7 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { api, usePermissions } from '@repo/core';
+import { usePermissions } from '@repo/core';
+import { api } from '@repo/core/api';
+
 import {
   ArrowLeft,
   BookOpen,
@@ -25,18 +27,18 @@ import {
   ModalFooter,
   ModalHeader,
   NotebookPen,
-  Pressable,
   ScreenWrapper,
-  ScrollView,
-  SkeletonCard,
   Sparkles,
   Text,
-  Theme,
   TrendingUp,
   Users,
   useThemedColors,
   VStack,
 } from '@repo/ui';
+import { SkeletonCard } from '@repo/ui/components';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme';
+
 import React, { useState } from 'react';
 import {
   AttendanceView,

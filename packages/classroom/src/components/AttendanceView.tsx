@@ -1,4 +1,6 @@
-import { type AttendanceStatus, api, type StudentAttendance } from '@repo/core';
+import type { AttendanceStatus, StudentAttendance } from '@repo/core';
+import { api } from '@repo/core/api';
+
 import { Box, Spinner, Text } from '@repo/ui';
 import React, { useCallback, useEffect, useState } from 'react';
 import AttendanceSheet from './AttendanceSheet';

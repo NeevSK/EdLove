@@ -5,7 +5,9 @@
  * Standardized to Zero-Legacy: purged raw HTML/inline styles and migrated to @repo/ui primitives and NativeWind v4.
  */
 
-import { Box, Heading, HStack, Icon, Pressable, Text, VStack } from '@repo/ui';
+import { Box, Heading, HStack, Icon, Text, VStack } from '@repo/ui';
+import { Pressable } from '@repo/ui/primitives';
+
 import { Quote, Sparkles, X, Zap } from 'lucide-react-native';
 import React, { useMemo, useState } from 'react';
 

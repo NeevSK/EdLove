@@ -1,4 +1,7 @@
-import { Box, HStack, hapticLight, Pressable, Text, VStack } from '@repo/ui';
+import { Box, HStack, Text, VStack } from '@repo/ui';
+import { Pressable } from '@repo/ui/primitives';
+import { hapticLight } from '@repo/ui/utils/haptics';
+
 import { ChevronRight, type LucideIcon } from 'lucide-react-native';
 import type React from 'react';
 import { useTranslation } from 'react-i18next';

@@ -1,15 +1,7 @@
 import { usePermissions } from '@repo/core';
-import {
-  Box,
-  Button,
-  ButtonText,
-  Heading,
-  HStack,
-  Pressable,
-  ScrollView,
-  Text,
-  VStack,
-} from '@repo/ui';
+import { Box, Button, ButtonText, Heading, HStack, Text, VStack } from '@repo/ui';
+import { Pressable, ScrollView } from '@repo/ui/primitives';
+
 import type React from 'react';
 import { useCallback, useEffect, useState } from 'react';
 import {

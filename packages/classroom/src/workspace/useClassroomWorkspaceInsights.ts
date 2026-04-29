@@ -1,4 +1,5 @@
-import { api } from '@repo/core';
+import { api } from '@repo/core/api';
+
 import { useEffect, useMemo, useState } from 'react';
 import { useSchoolStats } from '../hooks/useSchoolStats';
 import type { ClassroomWorkspaceSurfaceId } from '../types/workspace';

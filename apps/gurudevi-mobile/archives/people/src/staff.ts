@@ -1,11 +1,11 @@
-﻿import {
-  type StaffLeaveDTO,
-  type StaffPresenceSummary,
-  type StudentAttendancePulse,
-  staffManagementAPI,
-  supabase,
-  type TeacherCarouselItem,
+﻿import type {
+  StaffLeaveDTO,
+  StaffPresenceSummary,
+  StudentAttendancePulse,
+  TeacherCarouselItem,
 } from '@repo/core';
+import { staffManagementAPI } from '@repo/core/api';
+import { supabase } from '@repo/core/native';
 
 export type { StaffLeaveDTO, StaffPresenceSummary, StudentAttendancePulse, TeacherCarouselItem };
 

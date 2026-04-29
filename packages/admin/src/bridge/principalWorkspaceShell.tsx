@@ -5,14 +5,12 @@ import {
   HStack,
   MessageSquare,
   NotebookPen,
-  Pressable,
   QrCode,
-  ScrollView,
   Text,
-  useTheme,
   VStack,
   Wind,
 } from '@repo/ui';
+import { Pressable, ScrollView, useTheme } from '@repo/ui/primitives';
 
 import type React from 'react';
 import { useMemo } from 'react';
