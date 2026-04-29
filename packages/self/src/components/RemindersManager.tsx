@@ -4,30 +4,13 @@
  * Default: "Drink water intermittently while teaching"
  */
 
-import {
-  Box,
-  Button,
-  ButtonText,
-  Heading,
-  HStack,
-  Icon,
-  Input,
-  InputField,
-  Modal,
-  ModalBackdrop,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  Text,
-  VStack,
-} from '@repo/ui';
+import { Box, Button, Input } from '@repo/ui/primitives';
+import { ButtonText, HStack, Heading, Icon, InputField, Modal, ModalBackdrop, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, Text, VStack } from '@repo/ui/primitives';
 import { Pressable } from '@repo/ui/primitives';
 import { hapticLight, hapticMedium } from '@repo/ui/utils/haptics';
 
 import { Bell, Clock, Droplet, Edit, Plus, Trash2 } from 'lucide-react-native';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   createReminder,
@@ -72,9 +55,9 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
     if (userId) {
       fetchReminders();
     }
-  }, [userId]);
+  }, [userId, fetchReminders]);
 
-  const fetchReminders = async () => {
+  async function fetchReminders() {
     try {
       if (!userId) return;
       const data = await fetchReminderRecords(userId);
@@ -89,9 +72,9 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }
 
-  const createDefaultReminder = async () => {
+  async function createDefaultReminder() {
     if (!userId) return;
 
     try {
@@ -103,7 +86,7 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
     } catch (error) {
       console.error('Error creating default reminder:', error);
     }
-  };
+  }
 
   const openCreateModal = () => {
     setEditingReminder(null);

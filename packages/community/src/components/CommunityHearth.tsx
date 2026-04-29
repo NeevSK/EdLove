@@ -1,4 +1,4 @@
-import { GlassCard } from '@repo/ui/components';
+import { GlassCard } from '@repo/ui/components/GlassCard';
 import { Heart, Megaphone, Sparkles, Users } from '@repo/ui/icons';
 import { Box, FlatList, Heading, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
 import React, { useEffect, useRef, useState } from 'react';
@@ -51,14 +51,14 @@ export default function CommunityHearth({
   const SNAP_INTERVAL = CARD_WIDTH + 16;
 
   useEffect(() => {
-    if (!manifestos || !manifestos.length) return;
+    if (!manifestos?.length) return;
     const interval = setInterval(() => {
       const nextIndex = (activeIndex + 1) % manifestos.length;
       flatListRef.current?.scrollToIndex({ index: nextIndex, animated: true });
       setActiveIndex(nextIndex);
     }, AUTO_SWIPE_INTERVAL);
     return () => clearInterval(interval);
-  }, [activeIndex, manifestos?.length]);
+  }, [activeIndex, manifestos?.length, manifestos]);
 
   const renderManifesto = ({ item }: { item: SanctuaryManifesto }) => (
     <GlassCard

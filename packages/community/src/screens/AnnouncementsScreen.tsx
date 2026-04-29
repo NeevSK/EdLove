@@ -7,7 +7,9 @@
 
 import { usePermissions } from '@repo/core/logic';
 import type { AuthorityTier } from '@repo/core/types';
-import { SanctuaryButton, SanctuaryModal, ScreenWrapper } from '@repo/ui/components';
+import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
+import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { Globe, Megaphone, Pin, Plus } from '@repo/ui/icons';
 import {
   Box,

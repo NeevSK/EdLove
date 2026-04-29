@@ -1,7 +1,7 @@
-import { execSync } from 'child_process';
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import { execSync } from 'node:child_process';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -90,7 +90,7 @@ if (fs.existsSync(srcDir)) {
       const cmd = `rg --pcre2 "${pattern}" "." ${includeFlags} ${excludeFlags} -g "**.ts" -g "**.tsx" --with-filename --no-heading --line-number`;
       const output = execSync(cmd, { cwd: srcDir, encoding: 'utf-8' });
       return output.split('\n').filter((l) => l.trim());
-    } catch (e) {
+    } catch (_e) {
       return [];
     }
   };
@@ -153,7 +153,7 @@ if (fs.existsSync(srcDir)) {
     } else if (v4Match > 0) {
       addWarning('Using legacy UUID v4. Consider upgrading to v7 for sortability.');
     }
-  } catch (e) {}
+  } catch (_e) {}
 
   // 4. Zero-Legacy & State Management
   const legacyPrimitives = runAuditRg(
@@ -183,7 +183,7 @@ if (fs.existsSync(srcDir)) {
       const lastColon = countLine.lastIndexOf(':');
       if (lastColon === -1) return;
       const file = countLine.substring(0, lastColon);
-      const count = parseInt(countLine.substring(lastColon + 1).trim());
+      const count = parseInt(countLine.substring(lastColon + 1).trim(), 10);
       if (count > 2) {
         const relFile = path.isAbsolute(file) ? path.relative(srcDir, file) : file;
         addViolation(
@@ -194,7 +194,7 @@ if (fs.existsSync(srcDir)) {
         );
       }
     });
-  } catch (e) {}
+  } catch (_e) {}
 
   // 4c. Store Selector Integrity
   const missingSelectors = runAuditRg('const.*=.*use.*Store\\(\\)', '.');
@@ -239,7 +239,7 @@ if (fs.existsSync(srcDir)) {
         addWarning(`Wildcard export in ${normalize(path.relative(pkgBase, fullPath))}`);
       }
     });
-  } catch (e) {}
+  } catch (_e) {}
 
   // 6. Accessibility Compliance (A11Y)
   const interactiveExpr =
@@ -248,7 +248,7 @@ if (fs.existsSync(srcDir)) {
   interactiveMatches.forEach((line) => {
     if (isIgnored(line)) return;
     const hasLabel = line.includes('accessibilityLabel') || line.includes('alt=');
-    const hasRole = line.includes('accessibilityRole');
+    const _hasRole = line.includes('accessibilityRole');
     const hasHint = line.includes('accessibilityHint');
 
     const parts = normalize(line).split(':');
@@ -356,7 +356,7 @@ if (fs.existsSync(srcDir)) {
         }
       });
     });
-  } catch (e) {
+  } catch (_e) {
     // If find fails, fallback to simple grep for return...useState
     allHooks.forEach((hook) => {
       const lateHooks = runAuditRg(`return.*;\\s*.*${hook}\\(`, '.');
@@ -505,7 +505,7 @@ if (fs.existsSync(srcDir)) {
       if (!content.includes('setTitle') && !content.includes('useDocumentMetadata')) {
         // addViolation('WEB HYGIENE', file, 'Web screen might be missing SEO/Document title management.', 'N/A');
       }
-    } catch (e) {}
+    } catch (_e) {}
   });
 }
 

@@ -8,7 +8,8 @@
  * Only renders on web (Sovereign Web guard + hook internals).
  */
 
-import { Box, HStack, Icon, Text, VStack } from '@repo/ui';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Icon, Text, VStack } from '@repo/ui/primitives';
 import { AnimatedView, Pressable, useTheme } from '@repo/ui/primitives';
 
 import { Download, Share, X } from 'lucide-react-native';

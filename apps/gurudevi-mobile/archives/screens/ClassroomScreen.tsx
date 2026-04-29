@@ -112,7 +112,7 @@ export default function ClassroomScreen() {
     () => setBreathingOpen(true)
     icon=
     Wind
-    /;;
+    /
     </FeatureGuard                <FeatureGuard action="read" subject="StudentPulse"                    <SanctuaryNudge
     title=
     t('student.nudges.breathing.title') || 'Learning Fuel'
@@ -125,7 +125,7 @@ export default function ClassroomScreen() {
     () => setBreathingOpen(true)
     icon=
     Wind
-    /;;
+    /
     </FeatureGuard            </        )
 
     return null;

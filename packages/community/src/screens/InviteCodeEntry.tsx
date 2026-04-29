@@ -1,5 +1,6 @@
 import { type InviteCodeData, validateInviteCode } from '@repo/core/logic';
-import { SanctuaryButton, ScreenWrapper } from '@repo/ui/components';
+import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { useSanctuaryToast } from '@repo/ui/hooks';
 import { ArrowRight, HelpCircle, Shield } from '@repo/ui/icons';
 import {
@@ -14,7 +15,7 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { hapticError, hapticLight, hapticSuccess } from '@repo/ui/utils';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface InviteCodeEntryProps {
@@ -52,7 +53,7 @@ export default function InviteCodeEntry({ onCodeValidated, onSkip }: InviteCodeE
         hapticError();
         notify(result.error || t('invite.error.invalid') || 'Invalid code', 'error');
       }
-    } catch (err) {
+    } catch (_err) {
       hapticError();
       notify('An unexpected error occurred', 'error');
     } finally {

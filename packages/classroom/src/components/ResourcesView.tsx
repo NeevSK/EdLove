@@ -3,35 +3,15 @@ import { api } from '@repo/core/api';
 import { useSafeMutation } from '@repo/core/hooks';
 import { useStore } from '@repo/core/logic';
 
-import {
-  Box,
-  Button,
-  ButtonText,
-  ExternalLink,
-  File,
-  FileText,
-  Heading,
-  HStack,
-  Icon,
-  Input,
-  InputField,
-  Link as LinkIcon,
-  MoreVertical,
-  openExternalURL,
-  Pin,
-  Plus,
-  SanctuaryModal,
-  showExternalLinkOptions,
-  Text,
-  Textarea,
-  TextareaInput,
-  Trash2,
-  VStack,
-} from '@repo/ui';
+import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
+import { File, FileText, Pin, Plus, Trash2 } from '@repo/ui/icons';
+import { Box, Button, Input, Textarea } from '@repo/ui/primitives';
+import { ButtonText, HStack, Icon, InputField, Link as LinkIcon, Text, TextareaInput, VStack } from '@repo/ui/primitives';
+import { openExternalURL, showExternalLinkOptions } from '@repo/ui/utils';
 import { Pressable, ScrollView } from '@repo/ui/primitives';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useResources } from '../hooks/useResources';
 

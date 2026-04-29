@@ -80,11 +80,11 @@ export const useCommunity = (
   });
 
   const groups = useMemo(
-    () => groupsInfiniteQuery.data?.pages.flatMap((page) => page) ?? [],
+    () => groupsInfiniteQuery.data?.pages.flat() ?? [],
     [groupsInfiniteQuery.data],
   );
   const posts = useMemo(
-    () => postsInfiniteQuery.data?.pages.flatMap((page) => page) ?? [],
+    () => postsInfiniteQuery.data?.pages.flat() ?? [],
     [postsInfiniteQuery.data],
   );
 

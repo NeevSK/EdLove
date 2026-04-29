@@ -1,6 +1,6 @@
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -62,7 +62,7 @@ function getTree(dir, depth = 0) {
         totalFiles += 1;
         totalSize += childStats.size;
         return { name: child, type: 'file', size: childStats.size };
-      } catch (e) {
+      } catch (_e) {
         return null;
       }
     })
@@ -82,7 +82,7 @@ function formatSize(bytes) {
   const k = 1024;
   const sizes = ['B', 'KB', 'MB', 'GB'];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / k ** i).toFixed(2)) + ' ' + sizes[i];
+  return `${parseFloat((bytes / k ** i).toFixed(2))} ${sizes[i]}`;
 }
 
 function renderText(node, prefix = '') {
@@ -93,7 +93,7 @@ function renderText(node, prefix = '') {
   children.forEach((child, index) => {
     const isLast = index === children.length - 1;
     const marker = isLast ? '└── ' : '├── ';
-    const newPrefix = prefix + (isLast ? '    ' : '│   ');
+    const _newPrefix = prefix + (isLast ? '    ' : '│   ');
     if (child.type === 'directory') {
       result += renderText(child, prefix + marker);
     } else {
@@ -134,7 +134,7 @@ function renderSmart(node, depth = 0, isSub = false) {
     const files = node.children.filter((c) => c.type === 'file');
 
     if (dirs.length > 0) {
-      result += `${indent}Dirs: ${dirs.map((d) => d.name + '/').join(', ')}\n`;
+      result += `${indent}Dirs: ${dirs.map((d) => `${d.name}/`).join(', ')}\n`;
       // Selective recursion for high-value folders
       if (depth < 2) {
         dirs.forEach((d) => {
@@ -188,7 +188,7 @@ if (!fs.existsSync(targetPath)) {
 const tree = getTree(targetPath);
 
 if (format === 'markdown') {
-  const packages = listPackages();
+  const _packages = listPackages();
   console.log(`# Inventory: ${path.basename(targetPath)}`);
   console.log(`\n## Structure\n${renderMarkdown(tree)}`);
 } else if (format === 'smart') {

@@ -2,27 +2,15 @@ import { reportingAPI } from '@repo/admin/reporting';
 import type { AcademicCycle, AttendanceReport } from '@repo/core';
 import { api } from '@repo/core/api';
 
-import {
-  Activity,
-  AlertTriangle,
-  Box,
-  Calendar,
-  ChevronRight,
-  GlobalHeader,
-  Heading,
-  HStack,
-  Icon,
-  Text,
-  TrendingDown,
-  TrendingUp,
-  Users,
-  VStack,
-} from '@repo/ui';
-import { SkeletonCard } from '@repo/ui/components';
+import GlobalHeader from '@repo/ui/components/GlobalHeader';
+import { Activity, AlertTriangle, TrendingUp } from '@repo/ui/icons';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Heading, Icon, Text, VStack } from '@repo/ui/primitives';
+import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { Pressable, ScrollView } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface AttendanceReportScreenProps {
@@ -71,7 +59,7 @@ export default function AttendanceReportScreen({
 
   useEffect(() => {
     fetchData();
-  }, [schoolId]);
+  }, [fetchData]);
 
   const handleCycleSelect = (id: string) => {
     hapticLight();
@@ -174,7 +162,7 @@ export default function AttendanceReportScreen({
               {report && report.trend.length > 0 ? (
                 <VStack className="gap-4">
                   <HStack className="h-[150px] items-end gap-2">
-                    {report.trend.slice(-10).map((point, i) => (
+                    {report.trend.slice(-10).map((point, _i) => (
                       <VStack key={point.date} className="flex-1 items-center gap-1.5">
                         <Box
                           className={`w-full rounded-t-lg ${

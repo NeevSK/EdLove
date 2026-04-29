@@ -1,8 +1,11 @@
 import type { TemporalScale } from '@repo/core';
 import { useTemporalStore } from '@repo/core/logic';
 
-import { Box, FeatureInfoIcon, GlobalHeader, HStack, Text, VStack } from '@repo/ui';
-import { TemporalNavigator } from '@repo/ui/components';
+import FeatureInfoIcon from '@repo/ui/components/FeatureInfoIcon';
+import GlobalHeader from '@repo/ui/components/GlobalHeader';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Text, VStack } from '@repo/ui/primitives';
+import { TemporalNavigator } from '@repo/ui/components/TemporalNavigator';
 import { Pressable, ScrollView } from '@repo/ui/primitives';
 
 import React from 'react';

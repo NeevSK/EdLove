@@ -1,8 +1,9 @@
 import { FormHydrator } from '@repo/core';
-import { Box, Text, VStack } from '@repo/ui';
-import { SanctuaryButton } from '@repo/ui/components';
+import { Box } from '@repo/ui/primitives';
+import { Text, VStack } from '@repo/ui/primitives';
+import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import NativeForm from './NativeForm';
 
 /**

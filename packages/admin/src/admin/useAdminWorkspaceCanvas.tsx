@@ -1,27 +1,19 @@
 import {
   type ResolvedWorkspaceSurface,
   WORKSPACE_CANVAS_ZONES,
+  type WorkspaceSurfaceDefinition,
   type WorkspaceZoneId,
 } from '@repo/core';
 import { useWorkspaceLayoutSync } from '@repo/core/native';
 
 import {
-  AlertTriangle,
   Box,
-  CheckCircle2,
-  CircleAlert,
-  Clock3,
-  Database,
-  GitBranch,
   HStack,
-  RefreshCw,
-  Search,
-  ShieldCheck,
   Text,
   VStack,
-  WorkspaceCanvas,
-  type WorkspaceSurfaceDefinition,
-} from '@repo/ui';
+} from '@repo/ui/primitives';
+import { AlertTriangle, CheckCircle2, CircleAlert, Clock3, Database, GitBranch, RefreshCw, Search, ShieldCheck } from '@repo/ui/icons';
+import { WorkspaceCanvas } from '@repo/ui/components/workspace';
 import { Pressable } from '@repo/ui/primitives';
 
 import type React from 'react';

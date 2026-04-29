@@ -1,5 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
-import { Box, Text, VStack } from '@repo/ui';
+import { Box } from '@repo/ui/primitives';
+import { Text, VStack } from '@repo/ui/primitives';
 import { useAdminWorkspaceSnapshot } from '../admin/adminRepository';
 import { AdminRoomPanel, AdminRoomShell } from './AdminRoomShell';
 

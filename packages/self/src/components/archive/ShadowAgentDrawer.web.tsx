@@ -9,7 +9,7 @@ import { Box, Heading, HStack, Icon, Text, VStack } from '@repo/ui';
 import { Pressable } from '@repo/ui/primitives';
 
 import { Quote, Sparkles, X, Zap } from 'lucide-react-native';
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 const THOUGHT_SEEDS = [
   "What is weighing on you that you haven't spoken aloud?",
@@ -26,10 +26,7 @@ const THOUGHT_SEEDS = [
 
 export default function ShadowAgentDrawer() {
   const [isOpen, setIsOpen] = useState(false);
-  const seed = useMemo(
-    () => THOUGHT_SEEDS[Math.floor(Math.random() * THOUGHT_SEEDS.length)],
-    [isOpen],
-  );
+  const seed = useMemo(() => THOUGHT_SEEDS[Math.floor(Math.random() * THOUGHT_SEEDS.length)], []);
 
   return (
     <>

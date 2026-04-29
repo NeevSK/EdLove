@@ -9,14 +9,13 @@ import { Pressable } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
 
 import { Coffee, Moon, Sparkles, Sun, X, Zap } from 'lucide-react-native';
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Dimensions, Modal } from 'react-native';
 import Animated, {
   Easing,
   FadeIn,
   FadeInDown,
-  Layout,
   useAnimatedStyle,
   useSharedValue,
   withRepeat,
@@ -42,7 +41,7 @@ export default function ShadowAgentDrawer() {
       t('shadowAgent.prompts.release') || 'What can you release?',
       t('shadowAgent.prompts.joy') || 'Recall a moment of joy.',
     ],
-    [i18n.resolvedLanguage, t],
+    [t],
   );
 
   const CONTEXTUAL_SUGGESTIONS = useMemo(
@@ -63,7 +62,7 @@ export default function ShadowAgentDrawer() {
         icon: Coffee,
       },
     ],
-    [i18n.resolvedLanguage, t],
+    [t],
   );
 
   // Orb breathing animation
@@ -88,7 +87,7 @@ export default function ShadowAgentDrawer() {
       -1,
       true,
     );
-  }, []);
+  }, [orbScale, orbGlow]);
 
   const orbStyle = useAnimatedStyle(() => ({
     transform: [{ scale: orbScale.value }],

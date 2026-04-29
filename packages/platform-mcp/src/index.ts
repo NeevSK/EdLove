@@ -1,9 +1,9 @@
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
 import * as dotenv from 'dotenv';
-import path from 'path';
-import { fileURLToPath } from 'url';
 
 // --- Service Imports: The Modular Sovereignty ---
 import { AuditService } from './services/AuditService.js';
@@ -12,7 +12,6 @@ import { DocumentService } from './services/DocumentService.js';
 import { HelpService } from './services/HelpService.js';
 import { MaintenanceService } from './services/MaintenanceService.js';
 import { ScoutService } from './services/ScoutService.js';
-import { ROOT_DIR } from './utils/constants.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

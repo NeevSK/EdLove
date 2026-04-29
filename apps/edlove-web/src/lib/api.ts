@@ -133,7 +133,7 @@ class HTTPClient {
    * GET request
    */
   async get<T>(endpoint: string, params?: Record<string, any>): Promise<T> {
-    const queryString = params ? '?' + new URLSearchParams(params).toString() : '';
+    const queryString = params ? `?${new URLSearchParams(params).toString()}` : '';
     const response = await this.request<T>(`${endpoint}${queryString}`, {
       method: 'GET',
     });

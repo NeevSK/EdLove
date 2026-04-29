@@ -42,8 +42,8 @@ export const marksToGPA = (marks) => gpaCalculator.marksToGPA(marks);
 export const calculateRanks = (grades) => gpaCalculator.calculateRanks(grades);
 // Mock implementation for multiTenantAnalyticsAPI until full implementation is moved
 export const multiTenantAnalyticsAPI = {
-  aggregateTenantMetrics: async (ids, range) => [],
-  getLiveMetrics: async (id) => ({
+  aggregateTenantMetrics: async (_ids, _range) => [],
+  getLiveMetrics: async (_id) => ({
     active_users: 0,
     api_requests_per_minute: 0,
     error_rate: 0,

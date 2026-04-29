@@ -1,18 +1,11 @@
 import { useAIAgent } from '@repo/ai';
 import { useStore } from '@repo/core/logic';
 
-import {
-  AlertCircle,
-  BookOpen,
-  Box,
-  HStack,
-  Icon,
-  ScreenWrapper,
-  Text,
-  Users,
-  VStack,
-} from '@repo/ui';
-import { SanctuaryButton } from '@repo/ui/components';
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { AlertCircle, BookOpen, Users } from '@repo/ui/icons';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Icon, Text, VStack } from '@repo/ui/primitives';
+import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import { useRegisterFAB } from '@repo/ui/context/FABContext';
 import { ScrollView } from '@repo/ui/primitives';
 

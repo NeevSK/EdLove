@@ -8,43 +8,16 @@ import { api } from '@repo/core/api';
 import { useSafeMutation } from '@repo/core/hooks';
 import { useStore } from '@repo/core/logic';
 
-import {
-  AlertTriangle,
-  Box,
-  Button,
-  ButtonText,
-  CheckCircle,
-  Clipboard,
-  Heading,
-  HStack,
-  Icon,
-  Input,
-  InputField,
-  Modal,
-  ModalBackdrop,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  Monitor,
-  Package,
-  PenTool,
-  Plus,
-  PositiveInvitation,
-  Sofa,
-  Text,
-  Textarea,
-  TextareaInput,
-  useThemedColors,
-  VStack,
-  X,
-} from '@repo/ui';
+import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
+import { useThemedColors } from '@repo/ui/hooks';
+import { Monitor, Package, PenTool, Plus, Sofa, X } from '@repo/ui/icons';
+import { Box, Button, Input, Textarea } from '@repo/ui/primitives';
+import { ButtonText, HStack, Heading, Icon, InputField, Modal, ModalBackdrop, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, Text, TextareaInput, VStack } from '@repo/ui/primitives';
 import { Pressable, ScrollView } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useInventory } from '../hooks/useInventory';
 

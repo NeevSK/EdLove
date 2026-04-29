@@ -3,7 +3,6 @@
  * Web override for social presence shell.
  */
 
-import React from 'react';
 import { Users, WifiOff } from '../../icons';
 
 export interface CommunityPresenceWebProps {

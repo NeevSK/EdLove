@@ -1,4 +1,6 @@
-import { Box, HStack, Icon, MapPin, Text, VStack } from '@repo/ui';
+import { MapPin } from '@repo/ui/icons';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Icon, Text, VStack } from '@repo/ui/primitives';
 import type React from 'react';
 
 interface SnapshotItem {

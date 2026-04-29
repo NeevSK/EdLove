@@ -1,5 +1,6 @@
 import { usePermissions } from '@repo/core';
-import { Box, HStack, Icon, Text, VStack } from '@repo/ui';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Icon, Text, VStack } from '@repo/ui/primitives';
 import { Pressable } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
 

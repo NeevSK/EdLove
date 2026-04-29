@@ -1,34 +1,11 @@
 import { handleAPIError, type Role, usePermissions } from '@repo/core';
-import {
-  Box,
-  Button,
-  ButtonText,
-  Center,
-  Heading,
-  HStack,
-  Icon,
-  Image,
-  Input,
-  InputField,
-  Select,
-  SelectBackdrop,
-  SelectContent,
-  SelectDragIndicator,
-  SelectDragIndicatorWrapper,
-  SelectIcon,
-  SelectInput,
-  SelectItem,
-  SelectPortal,
-  SelectTrigger,
-  Text,
-  VStack,
-} from '@repo/ui';
+import { Box, Button, ButtonText, Center, HStack, Heading, Icon, Image, Input, InputField, Select, SelectBackdrop, SelectContent, SelectDragIndicator, SelectDragIndicatorWrapper, SelectIcon, SelectInput, SelectItem, SelectPortal, SelectTrigger, Text, VStack } from '@repo/ui/primitives';
 import { KeyboardAvoidingView, Pressable, ScrollView } from '@repo/ui/primitives';
 import { hapticError, hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 
 import * as ImagePicker from 'expo-image-picker';
 import { Camera, ChevronDown, Save, X } from 'lucide-react-native';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Keyboard, Modal, Platform, TouchableWithoutFeedback } from 'react-native';
 import { profileAPI } from '../api/profile';
@@ -110,11 +87,11 @@ export default function EditProfileModal({
         index_number: isStudent ? indexNumber : null,
       };
 
-      if (avatarUrl && avatarUrl.startsWith('file://')) {
+      if (avatarUrl?.startsWith('file://')) {
         try {
           const updatedProfile = await profileAPI.uploadAvatar(currentProfile.id, avatarUrl);
           updates.avatar_url = updatedProfile?.avatar_url;
-        } catch (uploadError) {
+        } catch (_uploadError) {
           handleAPIError(
             new Error('Failed to upload profile picture. Using current profile data.'),
           );

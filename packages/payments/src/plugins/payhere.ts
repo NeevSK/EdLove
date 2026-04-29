@@ -21,7 +21,7 @@ export class PayHereProvider implements PaymentProvider {
     };
   }
 
-  async verifyPayment(paymentIntentId: string): Promise<PaymentStatus> {
+  async verifyPayment(_paymentIntentId: string): Promise<PaymentStatus> {
     // Real check against PayHere API or Webhook status.
     return 'succeeded';
   }

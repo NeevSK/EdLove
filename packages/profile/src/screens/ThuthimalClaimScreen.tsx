@@ -8,23 +8,14 @@
 import { type RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { identityAPI, thuthimalAPI } from '@repo/core/api';
 
-import {
-  Box,
-  Button,
-  ButtonText,
-  Heading,
-  HStack,
-  ScreenWrapper,
-  Spinner,
-  Text,
-  VStack,
-} from '@repo/ui';
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { Box, Button, ButtonText, HStack, Heading, Spinner, Text, VStack } from '@repo/ui/primitives';
 import { AnimatedView } from '@repo/ui/primitives';
 import { hapticError, hapticSuccess } from '@repo/ui/utils/haptics';
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import Animated, {
+import {
   FadeInDown,
   useAnimatedStyle,
   useSharedValue,
@@ -58,10 +49,6 @@ export default function ThuthimalClaimScreen() {
     transform: [{ scale: flowerScale.value }],
     opacity: flowerOpacity.value,
   }));
-
-  useEffect(() => {
-    void claimGift();
-  }, []);
 
   const claimGift = async () => {
     const { gift_token } = route.params;
@@ -103,6 +90,10 @@ export default function ThuthimalClaimScreen() {
       hapticError();
     }
   };
+
+  useEffect(() => {
+    void claimGift();
+  }, [claimGift]);
 
   const handleContinue = () => {
     navigation.navigate('Main', { screen: 'Profile' });

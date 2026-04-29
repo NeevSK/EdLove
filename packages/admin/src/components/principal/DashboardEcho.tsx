@@ -7,25 +7,9 @@
 import { useStore } from '@repo/core/logic';
 import { supabase } from '@repo/core/native';
 
-import {
-  AlertTriangle,
-  Box,
-  Button,
-  ButtonText,
-  CheckCircle2,
-  ChevronRight,
-  Heading,
-  Heart,
-  HStack,
-  Icon,
-  Input,
-  InputField,
-  MessageSquare,
-  Send,
-  Spinner,
-  Text,
-  VStack,
-} from '@repo/ui';
+import { AlertTriangle, CheckCircle2, ChevronRight, Heart, MessageSquare, Send } from '@repo/ui/icons';
+import { Box, Button, Input } from '@repo/ui/primitives';
+import { ButtonText, HStack, Heading, Icon, InputField, Spinner, Text, VStack } from '@repo/ui/primitives';
 import { Pressable } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
 

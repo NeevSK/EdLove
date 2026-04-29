@@ -10,29 +10,11 @@ import { communityAPI, identityAPI } from '@repo/core/api';
 import { useEntity, useSchoolCreation } from '@repo/core/hooks';
 import { useStore } from '@repo/core/logic';
 
-import {
-  BookOpen,
-  Box,
-  Building2,
-  Button,
-  ButtonText,
-  CheckCircle,
-  ChevronLeft,
-  ChevronRight,
-  Globe,
-  Heading,
-  HStack,
-  Icon,
-  MapPin,
-  MessageSquare,
-  SanctuaryInput,
-  SanctuaryModal,
-  School as SchoolIcon,
-  Spinner,
-  Text,
-  Users,
-  VStack,
-} from '@repo/ui';
+import SanctuaryInput from '@repo/ui/components/SanctuaryInput';
+import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
+import { BookOpen, Building2, CheckCircle, ChevronLeft, ChevronRight, Globe, MapPin, MessageSquare, School as SchoolIcon, Users } from '@repo/ui/icons';
+import { Box, Button } from '@repo/ui/primitives';
+import { ButtonText, HStack, Heading, Icon, Spinner, Text, VStack } from '@repo/ui/primitives';
 import { Pressable, ScrollView } from '@repo/ui/primitives';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 

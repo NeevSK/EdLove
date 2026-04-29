@@ -1,6 +1,5 @@
 import type { ResourceType } from '@repo/core';
 import { File, FileText, Heart, Info, Link, Map, Plus, Video } from 'lucide-react-native';
-import React from 'react';
 import { Box, HStack, Text, VStack } from '../../primitives';
 import { SanctuaryButton } from '../SanctuaryButton';
 import { SanctuaryCard } from '../SanctuaryCard';
@@ -102,4 +101,5 @@ export function ResourceCard({
   );
 }
 
+export { ResourceCard as SharedResourceCard };
 export default ResourceCard;

@@ -1,16 +1,8 @@
 import * as WebBrowser from 'expo-web-browser';
-import {
-  ChevronLeft,
-  ChevronRight,
-  ExternalLink,
-  LucideIcon,
-  RotateCcw,
-  Share2,
-  X,
-} from 'lucide-react-native';
+import { ChevronLeft, ChevronRight, ExternalLink, RotateCcw, Share2, X } from 'lucide-react-native';
 import type React from 'react';
 import { useCallback, useRef, useState } from 'react';
-import { ActivityIndicator, Linking, Platform, Share, StyleSheet } from 'react-native';
+import { ActivityIndicator, Linking, Share, StyleSheet } from 'react-native';
 import { WebView, type WebViewNavigation } from 'react-native-webview';
 import { Pressable, Text, useTheme, View } from '../primitives';
 
@@ -64,7 +56,7 @@ export const InternalBrowser: React.FC<InternalBrowserProps> = ({
   const handleOpenExternal = async () => {
     try {
       await WebBrowser.openBrowserAsync(currentUrl);
-    } catch (error) {
+    } catch (_error) {
       // Fallback to basic Linking
       Linking.openURL(currentUrl);
     }

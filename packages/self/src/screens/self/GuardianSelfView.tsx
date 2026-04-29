@@ -2,10 +2,9 @@
 import { useJourneyHistory } from '@repo/core/hooks';
 import { useStore } from '@repo/core/logic';
 
-import { Box, ScreenWrapper, VStack } from '@repo/ui';
-import { JourneyHistoryCard } from '@repo/ui/components';
-
-import React, { useState } from 'react';
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { VStack } from '@repo/ui/primitives';
+import { JourneyHistoryCard } from '@repo/ui/components/JourneyHistoryCard';
 import { useTranslation } from 'react-i18next';
 
 import { BaseSelfView } from '../../components/BaseSelfView';

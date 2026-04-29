@@ -7,7 +7,7 @@
  */
 import { useTemporalStore } from '@repo/core/logic';
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSleepTracker } from '../hooks/useSleepTracker';
 
 interface SleepTrackerProps {
@@ -48,7 +48,7 @@ export default function SleepTracker({ userId }: SleepTrackerProps) {
     if (todayLog) {
       setQuality(todayLog.quality);
     }
-  }, [todayLog?.quality]);
+  }, [todayLog?.quality, todayLog]);
 
   const handleSave = async () => {
     if (!userId) return;

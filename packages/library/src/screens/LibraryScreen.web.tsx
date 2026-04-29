@@ -4,15 +4,13 @@ import { usePendingGateAction } from '@repo/core/hooks';
 import { setPendingGateAction, useStore, useTemporalStore } from '@repo/core/logic';
 import { supabase } from '@repo/core/native';
 
-import {
-  AssetCreationModal,
-  openExternalURL,
-  SmartShelf,
-  showExternalLinkOptions,
-  UniversalPerspective,
-  useResponsive,
-} from '@repo/ui';
-import { TemporalNavigator, WebScreenHeader } from '@repo/ui/components';
+import { useResponsive } from '@repo/ui/hooks';
+import { AssetCreationModal } from '@repo/ui/components/media/AssetCreationPortal';
+import { SmartShelf } from '@repo/ui/components/SmartShelf';
+import { UniversalPerspective } from '@repo/ui/components/visualization';
+import { openExternalURL, showExternalLinkOptions } from '@repo/ui/utils';
+import { TemporalNavigator } from '@repo/ui/components/TemporalNavigator';
+import { WebScreenHeader } from '@repo/ui/components/WebScreenHeader.web';
 import { useRegisterFAB } from '@repo/ui/context/FABContext';
 
 import {
@@ -28,7 +26,7 @@ import {
   Plus,
   Search,
 } from 'lucide-react-native';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { libraryAPI } from '../api/library';
 import { LibraryThumbnailCard } from '../components/LibraryThumbnailCard';

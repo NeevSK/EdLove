@@ -1,7 +1,7 @@
-import { Box, HStack, Text } from '@repo/ui';
+import { Box, HStack, Text } from '@repo/ui/primitives';
 import { Pressable } from '@repo/ui/primitives';
 
-import React, { useRef } from 'react';
+import { useRef } from 'react';
 import QRCodeGenerator from '../QRCodeGenerator';
 
 const optionalImport = async <T = any>(moduleName: string): Promise<T | null> => {

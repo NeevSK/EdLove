@@ -1,5 +1,4 @@
-import { AssetShareModal as SharedShareModal } from '@repo/ui';
-import React from 'react';
+import { SharedShareModal } from '@repo/ui/components/media/AssetShareModal';
 import { buildLibraryResourceShareUrl } from '../utils/resourceLinks';
 
 interface ResourceShareQRModalProps {

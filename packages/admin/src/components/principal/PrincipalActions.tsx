@@ -1,16 +1,6 @@
-import {
-  Banknote,
-  Box,
-  CalendarDays,
-  ChevronRight,
-  Heading,
-  HStack,
-  Icon,
-  Text,
-  TrendingUp,
-  UserCheck,
-  VStack,
-} from '@repo/ui';
+import { Banknote, CalendarDays, ChevronRight, TrendingUp, UserCheck } from '@repo/ui/icons';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Heading, Icon, Text, VStack } from '@repo/ui/primitives';
 import { Pressable } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
 

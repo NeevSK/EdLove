@@ -1,8 +1,9 @@
 import type { AttendanceStatus, StudentAttendance } from '@repo/core';
 import { api } from '@repo/core/api';
 
-import { Box, Spinner, Text } from '@repo/ui';
-import React, { useCallback, useEffect, useState } from 'react';
+import { Box } from '@repo/ui/primitives';
+import { Spinner, Text } from '@repo/ui/primitives';
+import { useCallback, useEffect, useState } from 'react';
 import AttendanceSheet from './AttendanceSheet';
 
 interface AttendanceViewProps {
@@ -44,7 +45,7 @@ export default function AttendanceView({ classroomId }: AttendanceViewProps) {
       })) as StudentAttendance[];
 
       setStudents(attendanceData);
-    } catch (Error) {
+    } catch (_Error) {
       console.error('Failed to load student list');
     } finally {
       setIsLoading(false);

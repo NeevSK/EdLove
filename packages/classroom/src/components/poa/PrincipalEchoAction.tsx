@@ -1,8 +1,7 @@
-import { Icon, MessageCircle, Text } from '@repo/ui';
+import { MessageCircle } from '@repo/ui/icons';
+import { Icon, Text } from '@repo/ui/primitives';
 import { Pressable } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
-
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 export function PrincipalEchoAction() {

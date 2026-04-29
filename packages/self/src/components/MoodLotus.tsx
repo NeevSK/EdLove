@@ -1,11 +1,11 @@
-import { GlassCard, Heading, HStack, Icon, Text, VStack } from '@repo/ui';
+import { GlassCard } from '@repo/ui/components/GlassCard';
+import { HStack, Heading, Icon, Text, VStack } from '@repo/ui/primitives';
 import { AnimatedView, Pressable } from '@repo/ui/primitives';
 
 import { CloudRain, Flower2, Sun, Wind, Zap } from 'lucide-react-native';
 import type React from 'react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet } from 'react-native';
 import { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 
 /**

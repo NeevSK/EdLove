@@ -5,7 +5,7 @@ import { useLotusToast } from '@repo/ui/hooks';
 import { Bell, BellOff, MoreVertical, ShieldAlert, UserX } from '@repo/ui/icons';
 import { Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { hapticError, hapticSuccess } from '@repo/ui/utils';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSocialShield } from '../hooks/useSocialShield';
 import SocialShieldModal from './SocialShieldModal';
 
@@ -53,7 +53,7 @@ export default function HeaderMoreMenu({
   const handleToggleMute = async () => {
     const newState = !isMuted;
     const result = await toggleMute({ conversationId, groupId, isMuted: newState });
-    if (result && result.success) {
+    if (result?.success) {
       hapticSuccess();
       showToast({
         message: newState
@@ -72,7 +72,7 @@ export default function HeaderMoreMenu({
   const handleBlock = async () => {
     if (targetUserId) {
       const result = await blockUser(targetUserId);
-      if (result && result.success) {
+      if (result?.success) {
         hapticSuccess();
         showToast({
           message: 'User has been blocked. They can no longer see your content or message you.',

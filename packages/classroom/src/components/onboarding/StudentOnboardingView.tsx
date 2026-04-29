@@ -1,22 +1,8 @@
-import {
-  ArrowRightCircle,
-  Box,
-  ChevronRight,
-  GraduationCap,
-  Heading,
-  HStack,
-  Icon,
-  Search,
-  ShieldCheck,
-  Text,
-  UserPlus,
-  VStack,
-  Zap,
-} from '@repo/ui';
+import { ArrowRightCircle, ChevronRight, GraduationCap, Search, ShieldCheck, UserPlus, Zap } from '@repo/ui/icons';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Heading, Icon, Text, VStack } from '@repo/ui/primitives';
 import { Pressable, ScrollView } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
-
-import React from 'react';
 
 interface StudentOnboardingViewProps {
   onTryDemo: () => void;

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Platform } from 'react-native';
 import { Actionsheet } from '../gluestack';
 import { ChevronDown, EyeOff, Lock, Send, Shield, ThumbsUp, Trash2 } from '../icons';

@@ -11,18 +11,9 @@
 import type { StaffPresenceSummary, StudentAttendancePulse } from '@repo/core';
 import { staffManagementAPI } from '@repo/core/api';
 
-import {
-  AlertCircle,
-  Box,
-  ChevronRight,
-  FileCheck,
-  HStack,
-  Icon,
-  Text,
-  TrendingDown,
-  TrendingUp,
-  VStack,
-} from '@repo/ui';
+import { AlertCircle, ChevronRight, FileCheck, TrendingDown, TrendingUp } from '@repo/ui/icons';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Icon, Text, VStack } from '@repo/ui/primitives';
 import { Pressable } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
 

@@ -1,7 +1,5 @@
 import { usePermissions } from '@repo/core/logic';
-import { ContentComposer } from '@repo/ui/components';
-
-import React from 'react';
+import { ContentComposer } from '@repo/ui/components/ContentComposer';
 import { useComposerLogic } from '../hooks/useComposerLogic';
 
 interface CreatePostModalProps {

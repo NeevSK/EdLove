@@ -4,14 +4,14 @@
  * Standardized to Zero-Legacy: purged sx props and fixed syntax corruption in animations/renders.
  */
 
-import { Box, Heading, HStack, Icon, Spinner, Text, VStack } from '@repo/ui';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Heading, Icon, Spinner, Text, VStack } from '@repo/ui/primitives';
 import { AnimatedView } from '@repo/ui/primitives';
-import { hapticLight } from '@repo/ui/utils/haptics';
 
 import { Globe, Users, WifiOff } from 'lucide-react-native';
-import React, { useEffect, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import Animated, {
+import {
   Easing,
   FadeIn,
   useAnimatedStyle,
@@ -55,7 +55,7 @@ export default function CommunityPresence({
       -1,
       true,
     );
-  }, []);
+  }, [pulseScale, pulseOpacity]);
 
   const pulseStyle = useAnimatedStyle(() => ({
     transform: [{ scale: pulseScale.value }],

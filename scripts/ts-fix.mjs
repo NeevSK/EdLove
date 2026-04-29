@@ -9,7 +9,7 @@ try {
   // Attempt to automatically fix everything it can
   execSync('pnpm run lint -- --fix', { stdio: 'inherit' });
   execSync('pnpm run format', { stdio: 'inherit' });
-} catch (e) {
+} catch (_e) {
   console.log(
     '⚠️ Some lint errors could not be auto-fixed by ESLint, moving on to TypeScript check...',
   );
@@ -48,7 +48,7 @@ try {
   execSync('pnpm dlx ts-migrate-scripts ts-ignore .', { stdio: 'inherit' });
   console.log('✅ All remaining errors have been suppressed with // @ts-expect-error');
   console.log('🚀 You are unblocked to commit!');
-} catch (e) {
+} catch (_e) {
   console.error(
     '⚠️ Failed to run suppression script. You may need to run: pnpm install -D ts-migrate-scripts',
   );

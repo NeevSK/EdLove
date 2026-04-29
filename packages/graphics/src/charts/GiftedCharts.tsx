@@ -1,4 +1,3 @@
-import type React from 'react';
 import * as Gifted from 'react-native-gifted-charts';
 
 // Re-export components with any-casting to bypass TS2724 resolution issues in some contexts

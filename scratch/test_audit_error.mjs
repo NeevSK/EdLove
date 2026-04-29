@@ -1,4 +1,3 @@
-import path from 'path';
 import { AuditService } from './packages/platform-mcp/src/services/AuditService.js';
 import { DocumentService } from './packages/platform-mcp/src/services/DocumentService.js';
 

@@ -2,7 +2,6 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../native/supabase';
 import { useStore } from '../../store/useStore';
 import { communityAPI } from '../community';
-import { communityKeys } from './community.hooks';
 
 export const pollKeys = {
   all: ['community', 'polls'] as const,

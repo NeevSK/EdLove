@@ -1,4 +1,3 @@
-import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { SURFACE_REFRESH_RATES, type SurfaceType } from '../../core/soul/TimeLayer';
 import type { TrubeRenderPlan } from '../../core/types';

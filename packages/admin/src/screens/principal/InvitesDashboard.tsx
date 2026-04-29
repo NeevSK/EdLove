@@ -1,4 +1,6 @@
-import { Box, Heading, HStack, Icon, Spinner, Text, useToast, VStack } from '@repo/ui';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Heading, Icon, Spinner, Text, VStack } from '@repo/ui/primitives';
+import { useToast } from '@repo/ui/providers';
 import { Pressable } from '@repo/ui/primitives';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 

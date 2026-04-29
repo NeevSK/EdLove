@@ -1,30 +1,9 @@
 import type { SchoolGrade, Section } from '@repo/core';
 import { api } from '@repo/core/api';
 
-import {
-  ArrowLeft,
-  Box,
-  Button,
-  ButtonIcon,
-  ButtonText,
-  GraduationCap,
-  Heading,
-  HStack,
-  Icon,
-  Input,
-  InputField,
-  Modal,
-  ModalBackdrop,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  Plus,
-  School as SchoolIcon,
-  Spinner,
-  Text,
-  VStack,
-} from '@repo/ui';
+import { ArrowLeft, GraduationCap, Plus, School as SchoolIcon } from '@repo/ui/icons';
+import { Box, Button, Input } from '@repo/ui/primitives';
+import { ButtonIcon, ButtonText, HStack, Heading, Icon, InputField, Modal, ModalBackdrop, ModalBody, ModalContent, ModalFooter, ModalHeader, Spinner, Text, VStack } from '@repo/ui/primitives';
 import { Pressable, ScrollView } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
 

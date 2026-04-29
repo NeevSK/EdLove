@@ -1,7 +1,7 @@
 import { Ledger } from '@repo/accounting';
 import { supabase } from '@repo/core/native';
 
-import { PaymentIntent, type PaymentStatus } from './types';
+import type { PaymentStatus } from './types';
 
 export class PaymentService {
   /**

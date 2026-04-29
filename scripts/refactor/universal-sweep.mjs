@@ -63,7 +63,7 @@ function processFile(filePath) {
 
     // Match string literals: prop="val"
     const stringRegex = new RegExp(`\\s${prop}=["']([^"']+)["']`, 'g');
-    content = content.replace(stringRegex, (m, val) => {
+    content = content.replace(stringRegex, (_m, val) => {
       const cleanVal = val.trim();
       const className = prop === 'bold' || prop === 'italic' ? mapping : `${mapping}${cleanVal}`;
       return ` className="${className}"`;
@@ -71,7 +71,7 @@ function processFile(filePath) {
 
     // Match simple brace literals: prop={val} where val is just a word/number
     const braceRegex = new RegExp(`\\s${prop}=\\{([\\w\\.\\$]+)\\}`, 'g');
-    content = content.replace(braceRegex, (m, val) => {
+    content = content.replace(braceRegex, (_m, val) => {
       const cleanVal = val.trim();
       const className = prop === 'bold' || prop === 'italic' ? mapping : `${mapping}${cleanVal}`;
       return ` className="${className}"`;
@@ -91,13 +91,13 @@ function processFile(filePath) {
   });
 
   // 3. Handle boolean shorthands (bold, italic)
-  content = content.replace(/\s(bold|italic)(?=\s|>)/g, (m, prop) => {
+  content = content.replace(/\s(bold|italic)(?=\s|>)/g, (_m, prop) => {
     const className = prop === 'bold' ? 'font-bold' : 'italic';
     return ` className="${className}"`;
   });
 
   // 4. Handle SX Prop (The Big One) - Surgical, Safe, and Smart
-  content = content.replace(/\ssx=\{\{\s*([\s\S]*?)\s*\}\}/g, (m, inner) => {
+  content = content.replace(/\ssx=\{\{\s*([\s\S]*?)\s*\}\}/g, (_m, inner) => {
     // Smart split on commas ONLY if not inside parentheses
     const parts = [];
     let currentPart = '';
@@ -154,15 +154,15 @@ function processFile(filePath) {
     prev = content;
     content = content.replace(
       /(<[\w.]+\s+[^>]*?)className="([^"]*)"([^>]*?)className="([^"]*)"/g,
-      (m, tagPrefix, c1, middle, c2) => {
-        const merged = [...new Set((c1 + ' ' + c2).split(/\s+/))].join(' ').trim();
+      (_m, tagPrefix, c1, middle, c2) => {
+        const merged = [...new Set(`${c1} ${c2}`.split(/\s+/))].join(' ').trim();
         return `${tagPrefix}className="${merged}"${middle}`;
       },
     );
   } while (content !== prev);
 
   // Final pass to clean up double spaces inside tags
-  content = content.replace(/<([\w.]+)\s+([^>]+)>/g, (m, tag, attrs) => {
+  content = content.replace(/<([\w.]+)\s+([^>]+)>/g, (_m, tag, attrs) => {
     return `<${tag} ${attrs.replace(/\s+/g, ' ').trim()}>`;
   });
 

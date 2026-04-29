@@ -33,7 +33,7 @@ searchPaths.forEach((sp) => {
         type: path.extname(f),
       })),
     );
-  } catch (e) {
+  } catch (_e) {
     // rg returns 1 if no matches, which is fine
   }
 });

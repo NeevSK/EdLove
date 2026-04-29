@@ -12,7 +12,7 @@ function ensureDir(dirPath) {
 }
 
 function pickSurfaceName(layer) {
-  if (!layer || !layer.surface) {
+  if (!layer?.surface) {
     return 'unknown';
   }
 

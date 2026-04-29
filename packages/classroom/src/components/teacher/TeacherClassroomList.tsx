@@ -1,15 +1,6 @@
-import {
-  Badge,
-  BadgeText,
-  Box,
-  Calendar,
-  ChevronRight,
-  Heading,
-  HStack,
-  Icon,
-  Text,
-  VStack,
-} from '@repo/ui';
+import { Calendar, ChevronRight } from '@repo/ui/icons';
+import { Badge, BadgeText, Box } from '@repo/ui/primitives';
+import { HStack, Heading, Icon, Text, VStack } from '@repo/ui/primitives';
 import { Pressable } from '@repo/ui/primitives';
 
 import type React from 'react';

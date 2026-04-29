@@ -1,19 +1,8 @@
 import { supabase } from '@repo/core/native';
 
-import {
-  BookOpen,
-  Box,
-  Clock,
-  Heading,
-  HStack,
-  Icon,
-  Progress,
-  ProgressFilledTrack,
-  Spinner,
-  Text,
-  VStack,
-  Zap,
-} from '@repo/ui';
+import { BookOpen, Clock, Zap } from '@repo/ui/icons';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Heading, Icon, Progress, ProgressFilledTrack, Spinner, Text, VStack } from '@repo/ui/primitives';
 
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';

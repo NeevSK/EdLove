@@ -1,5 +1,9 @@
 import { SimpleBarChart } from '@repo/graphics';
-import { Box, Card, colors, HStack, ScrollView, Text, useThemedColors, VStack } from '@repo/ui';
+import { Card } from '@repo/ui/components/SanctuaryCard';
+import { useThemedColors } from '@repo/ui/hooks';
+import { Box } from '@repo/ui/primitives';
+import { HStack, ScrollView, Text, VStack } from '@repo/ui/primitives';
+import { colors } from '@repo/ui/theme';
 import { jsx as _jsx, jsxs as _jsxs } from 'react/jsx-runtime';
 import { formatGPA, getGradeColor, getPerformanceLevel } from '../utils/analyticsHelpers';
 export function PerformanceDashboard({ metrics, insights = [], recommendations = [] }) {

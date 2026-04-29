@@ -15,9 +15,9 @@
  *  computed state." \u2014 Architecture v0.3, \u00A74.3
  */
 
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import { NitroModules } from 'react-native-nitro-modules';
-import { runOnUI, useFrameCallback } from 'react-native-reanimated';
+import { useFrameCallback } from 'react-native-reanimated';
 import type { TrubeGPUDriver } from '../native/TrubeDriver.nitro';
 import type { TrubeSurfaceName } from './types';
 
@@ -110,7 +110,7 @@ export function useTrubeFrameLoop(options: TrubeFrameLoopOptions) {
     if (frame % skipCount === 0) {
       // Get Nitro driver \u2014 this is a JSI direct call, zero serialization
       const driver = NitroModules.createHybridObject<TrubeGPUDriver>('TrubeGPUDriver');
-      if (!driver || !driver.isEngineReady()) return;
+      if (!driver?.isEngineReady()) return;
 
       const t = driver.entropyTime;
       // Entropy: three-layer signal from C++ engine (passed as uniform)
@@ -145,7 +145,7 @@ export function useTrubeFrameLoop(options: TrubeFrameLoopOptions) {
       // the GPU already has the linearly extrapolated value from the CPU.
       // Keeping the write here for accuracy but marking as optional optimization.
       const driver = NitroModules.createHybridObject<TrubeGPUDriver>('TrubeGPUDriver');
-      if (!driver || !driver.isEngineReady()) return;
+      if (!driver?.isEngineReady()) return;
       driver.onFrame(
         surfaceName,
         interpolated.time,

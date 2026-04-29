@@ -1,5 +1,6 @@
 import { usePermissions } from '@repo/core';
-import { Box, Button, ButtonText, Heading, HStack, Text, VStack } from '@repo/ui';
+import { Box, Button } from '@repo/ui/primitives';
+import { ButtonText, HStack, Heading, Text, VStack } from '@repo/ui/primitives';
 import { Pressable, ScrollView } from '@repo/ui/primitives';
 
 import type React from 'react';

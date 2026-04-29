@@ -75,7 +75,7 @@ export function useWisdom(userId?: string) {
   // Fetch on mount/online change
   useEffect(() => {
     refreshData();
-  }, [refreshData, isOnline]);
+  }, [refreshData]);
 
   return {
     notes,

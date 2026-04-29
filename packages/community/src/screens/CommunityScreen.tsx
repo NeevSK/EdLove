@@ -11,21 +11,17 @@ import { useTracking } from '@repo/core/hooks';
 import { setPendingGateAction, usePermissions } from '@repo/core/logic';
 import { useStore, useTemporalStore } from '@repo/core/store';
 import type {
-  AnnouncementWithAuthor,
   CommunityPost,
   CommunityStackParamList,
   DirectConversation,
   SanctuaryGroup,
 } from '@repo/core/types';
-import {
-  GlobalHeader,
-  HorizontalChipRow,
-  PositiveInvitation,
-  SanctuaryButton,
-  SanctuaryFlashList,
-  ScreenWrapper,
-  useBottomTabPadding,
-} from '@repo/ui/components';
+import GlobalHeader from '@repo/ui/components/GlobalHeader';
+import { HorizontalChipRow } from '@repo/ui/components/HorizontalChipRow';
+import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
+import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
+import SanctuaryFlashList from '@repo/ui/components/SanctuaryFlashList';
+import ScreenWrapper, { useBottomTabPadding } from '@repo/ui/components/ScreenWrapper';
 import { useRegisterFAB } from '@repo/ui/context';
 import { Info, Plus } from '@repo/ui/icons';
 import { Box, Heading, HStack, Icon, ScrollView, Spinner, Text, VStack } from '@repo/ui/primitives';
@@ -98,10 +94,7 @@ export default function CommunityScreen() {
     isFetchingNextPage: isFetchingNextPosts,
   } = usePostsInfiniteQuery(selectedFilter !== 'all' ? selectedFilter : 'all');
 
-  const posts = useMemo(
-    () => (postsData?.pages?.flatMap((page) => page) as CommunityPost[]) ?? [],
-    [postsData],
-  );
+  const posts = useMemo(() => (postsData?.pages?.flat() as CommunityPost[]) ?? [], [postsData]);
 
   const {
     data: groupsData,
@@ -109,10 +102,7 @@ export default function CommunityScreen() {
     refetch: fetchGroups,
   } = useGroupsInfiniteQuery({ schoolId });
 
-  const groups = useMemo(
-    () => (groupsData?.pages?.flatMap((page) => page) as SanctuaryGroup[]) ?? [],
-    [groupsData],
-  );
+  const groups = useMemo(() => (groupsData?.pages?.flat() as SanctuaryGroup[]) ?? [], [groupsData]);
 
   const { sanctuaryGroups = [] } = { sanctuaryGroups: groups }; // Compatibility alias
   const { manifestos = [] } = useManifestoHooks(schoolId || 'default', user?.id ?? undefined);

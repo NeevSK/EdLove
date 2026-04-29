@@ -3,12 +3,12 @@ import { usePermissions } from '@repo/core';
 import { useBanyanGrowth, useJourneyHistory } from '@repo/core/hooks';
 import { useStore, useTemporalStore } from '@repo/core/logic';
 
-import { Icon } from '@repo/ui';
-import { JourneyHistoryCard, TemporalProvider, TemporalShield } from '@repo/ui/components';
-import { useTheme } from '@repo/ui/primitives';
+import { Icon } from '@repo/ui/primitives';
+import { JourneyHistoryCard } from '@repo/ui/components/JourneyHistoryCard';
+import { TemporalProvider } from '@repo/ui/components/TemporalProvider';
+import { TemporalShield } from '@repo/ui/components/TemporalShield';
 
 import { MessageSquare, Users } from 'lucide-react-native';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { BaseSelfView } from '../../components/BaseSelfView';
 import DailyRhythm from '../../components/DailyRhythm';

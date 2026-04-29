@@ -1,7 +1,6 @@
 import { SRI_LANKAN_DISTRICTS } from '@repo/core';
 import * as Haptics from 'expo-haptics';
-import React from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import Svg, { G, Path } from 'react-native-svg';
 
 // Note: In a real implementation, pathData would contain the SVG paths for all 25 districts.

@@ -1,6 +1,7 @@
-import { Box, Heading, HStack, Icon, SanctuaryModal, Text, VStack, X } from '@repo/ui';
-import { Pressable, ScrollView } from '@repo/ui/primitives';
-import { hapticLight } from '@repo/ui/utils/haptics';
+import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
+import { Box } from '@repo/ui/primitives';
+import { Text } from '@repo/ui/primitives';
+import { ScrollView } from '@repo/ui/primitives';
 
 import TeacherAdminWidget from './TeacherAdminWidget';
 

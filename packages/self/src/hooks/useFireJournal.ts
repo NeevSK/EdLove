@@ -64,7 +64,7 @@ export function useFireJournal(userId?: string) {
   // Fetch on mount/online change
   useEffect(() => {
     refreshData();
-  }, [refreshData, isOnline]);
+  }, [refreshData]);
 
   const burnEntry = useCallback(
     async (content: string) => {

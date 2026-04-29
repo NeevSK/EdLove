@@ -8,7 +8,9 @@
 
 import { supabase } from '@repo/core/native';
 import { useStore } from '@repo/core/store';
-import { GlobalHeader, ScreenWrapper, UserAvatar } from '@repo/ui/components';
+import GlobalHeader from '@repo/ui/components/GlobalHeader';
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { UserAvatar } from '@repo/ui/components/UserAvatar';
 import { MessageSquare, Send } from '@repo/ui/icons';
 import {
   AnimatedView,

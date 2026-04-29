@@ -596,12 +596,12 @@ $;
 {
   labMode === 'study' ? (
             <React.Fragment              <VStack space="sm"                <Text color={text.primary} sx={{ fontSize: '$md' as any, fontWeight: '600' }}                  Instrument
-                </Text                <HStack space="sm" flexWrap="wrap"                  {SURFACES.map((item) => (
-                    <SegmentedOption
-                      key={item}
-                      active={surfaceName === item}
-                      label={item}
-                      onPress={() => setSurfaceName(item)}
+                </Text                <_HStack space="sm" _flexWrap="wrap"                  {_SURFACES._map((_item) => (
+                    <_SegmentedOption
+                      _key={item}
+                      _active={surfaceName === item}
+                      _label={item}
+                      _onPress={() => setSurfaceName(item)}
                     /                  )
   )
 }

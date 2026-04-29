@@ -8,12 +8,13 @@
 
 import { supabase } from '@repo/core/native';
 
-import { Box, Heading, HStack, Icon, Input, InputField, Spinner, Text, VStack } from '@repo/ui';
+import { Box, Input } from '@repo/ui/primitives';
+import { HStack, Heading, Icon, InputField, Spinner, Text, VStack } from '@repo/ui/primitives';
 import { Pressable } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
 
 import { Plus } from 'lucide-react-native';
-import React, { useEffect, useReducer } from 'react';
+import { useEffect, useReducer } from 'react';
 
 interface Observation {
   id: string;
@@ -122,7 +123,7 @@ export default function PrincipalObservationsSection({
   useEffect(() => {
     dispatch({ type: 'SET_LOADING', isLoading: true });
     fetchObservations();
-  }, [principalId]);
+  }, [fetchObservations]);
 
   async function handleSave() {
     const { content, obsType } = state.form;

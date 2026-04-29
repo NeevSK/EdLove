@@ -1,7 +1,6 @@
-import { Slider, Text } from '@repo/ui';
+import { Slider } from '@repo/ui/primitives';
+import { Text } from '@repo/ui/primitives';
 import { View } from '@repo/ui/primitives';
-
-import React from 'react';
 
 interface FormSliderProps {
   label: string;

@@ -64,7 +64,7 @@ export const useJournalEntries = () => {
     };
 
     loadEntries();
-  }, [isAnonymous, viewDate, phase]);
+  }, [isAnonymous]);
 
   const addJournalEntry = useCallback(
     async (content: string) => {
@@ -109,7 +109,7 @@ export const useJournalEntries = () => {
         throw error;
       }
     },
-    [isAnonymous],
+    [isAnonymous, phase],
   );
 
   return {

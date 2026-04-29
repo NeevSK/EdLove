@@ -1,15 +1,6 @@
-import {
-  ArrowRight,
-  Box,
-  HStack,
-  Icon,
-  LayoutGrid,
-  Milestone,
-  NotebookPen,
-  Text,
-  UserPlus,
-  VStack,
-} from '@repo/ui';
+import { ArrowRight, LayoutGrid, Milestone, NotebookPen, UserPlus } from '@repo/ui/icons';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Icon, Text, VStack } from '@repo/ui/primitives';
 import { Pressable } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
 

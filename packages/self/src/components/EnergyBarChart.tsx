@@ -4,13 +4,13 @@
  * Standardized to Zero-Legacy: purged corrupted StyleSheet and migrated to NativeWind v4.
  */
 
-import { Box, HStack, Icon, Text, VStack } from '@repo/ui';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Icon, Text, VStack } from '@repo/ui/primitives';
 import { AnimatedView } from '@repo/ui/primitives';
 
 import { Activity, Zap } from 'lucide-react-native';
-import React from 'react';
-import Animated, { FadeInUp, LinearTransition } from 'react-native-reanimated';
-import { ENERGY_COLORS, MOOD_LABELS } from '../constants/wellbeing';
+import { FadeInUp, LinearTransition } from 'react-native-reanimated';
+import { ENERGY_COLORS } from '../constants/wellbeing';
 
 interface EnergyBarChartProps {
   /** Energy forecast rows, already reversed so oldest→newest left→right. */
@@ -26,7 +26,7 @@ export function EnergyBarChart({
   colors = ENERGY_COLORS,
   height = 100,
 }: EnergyBarChartProps) {
-  if (!bars || !bars.length) {
+  if (!bars?.length) {
     return (
       <VStack className="items-center py-8 gap-3 opacity-30">
         <Icon as={Activity} size={32} className="text-mistGray" />

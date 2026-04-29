@@ -1,9 +1,9 @@
 ﻿import { usePermissions } from '@repo/core';
 import { useJourneyHistory } from '@repo/core/hooks';
 
-import { JourneyHistoryCard, TemporalProvider, TemporalShield } from '@repo/ui/components';
-
-import React from 'react';
+import { JourneyHistoryCard } from '@repo/ui/components/JourneyHistoryCard';
+import { TemporalProvider } from '@repo/ui/components/TemporalProvider';
+import { TemporalShield } from '@repo/ui/components/TemporalShield';
 import { useTranslation } from 'react-i18next';
 import { BaseSelfView } from '../../components/BaseSelfView';
 import DailyRhythm from '../../components/DailyRhythm';

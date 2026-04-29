@@ -1,20 +1,8 @@
 import { api } from '@repo/core/api';
 
-import {
-  ActivityIndicator,
-  AlertCircle,
-  BookOpen,
-  Box,
-  Heading,
-  HStack,
-  Lightbulb,
-  Package,
-  Text,
-  Icon as UIIcon,
-  Users,
-  VStack,
-  Wifi,
-} from '@repo/ui';
+import { AlertCircle, BookOpen, Lightbulb, Package, Users, Wifi } from '@repo/ui/icons';
+import { ActivityIndicator, Box } from '@repo/ui/primitives';
+import { HStack, Heading, Icon as UIIcon, Text, VStack } from '@repo/ui/primitives';
 
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';

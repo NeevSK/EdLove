@@ -3,7 +3,8 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { GuardianStackParamList } from '@repo/core';
 import { useStore } from '@repo/core/logic';
 
-import { Box, Text, VStack } from '@repo/ui';
+import { Box } from '@repo/ui/primitives';
+import { Text, VStack } from '@repo/ui/primitives';
 import { Pressable, ScrollView } from '@repo/ui/primitives';
 
 import { useGuardianWorkspaceData } from '../../guardian';

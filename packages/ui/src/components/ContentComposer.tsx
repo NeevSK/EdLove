@@ -1,8 +1,6 @@
-import React from 'react';
 import { Platform } from 'react-native';
 import { BarChart3, Clock, Image as ImageIcon, Lock, Mic, Plus, Trash2, Users, X } from '../icons';
 import {
-  AnimatedView,
   Box,
   Button,
   ButtonText,

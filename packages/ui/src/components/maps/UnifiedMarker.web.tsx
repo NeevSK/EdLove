@@ -1,6 +1,6 @@
 import type React from 'react';
-import { Box } from '../../primitives';
-import type { UnifiedMarkerProps } from './UnifiedMarker';
+import { Box } from '../../components/ui/box';
+import type { UnifiedMarkerProps } from './UnifiedMarker.types';
 
 /**
  * UnifiedMarker.web - Web-sovereign map marker.

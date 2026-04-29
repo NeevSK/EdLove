@@ -6,7 +6,7 @@
  */
 
 import { AttendanceScreenWeb } from '@repo/classroom';
-import { ErrorBoundary } from '@repo/ui';
+import ErrorBoundary from '@repo/ui/components/ErrorBoundary';
 
 const AttendanceScreen = (props: Record<string, unknown>) => {
   return (

@@ -13,7 +13,7 @@
  *
  * This intentionally does NOT try to solve "type" errors; it focuses on getting the code to parse.
  */
-import { execSync, spawnSync } from 'node:child_process';
+import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -301,7 +301,7 @@ function fixMissingJsxAngles(text, maxOps = Number.POSITIVE_INFINITY) {
 
     if (!nextLooksLikeChild) continue;
 
-    lines[i] = line + '>';
+    lines[i] = `${line}>`;
     changed = true;
     ops++;
   }
@@ -315,7 +315,7 @@ function fixMissingJsxAngles(text, maxOps = Number.POSITIVE_INFINITY) {
     if (trimmed.includes('>')) continue;
     // Avoid touching TS/JS generics like `</` in comments/strings; keep this very conservative.
     if (!/^\s*<\/[A-Za-z][\w.]*\s*$/.test(line)) continue;
-    lines[i] = line + '>';
+    lines[i] = `${line}>`;
     changed = true;
     ops++;
   }
@@ -348,7 +348,7 @@ function fixMissingJsxAngles(text, maxOps = Number.POSITIVE_INFINITY) {
     // If this line clearly closes an object-literal prop (common `sx={{ ... }}` pattern),
     // prefer closing the JSX tag *here*.
     if (/^\s*}}[),]*\s*$/.test(line)) {
-      lines[i] = line + '>';
+      lines[i] = `${line}>`;
       changed = true;
       ops++;
       inTag = false;
@@ -372,7 +372,7 @@ function fixMissingJsxAngles(text, maxOps = Number.POSITIVE_INFINITY) {
 
     // Close the tag on the current line.
     if (!trimmed.endsWith('>') && !trimmed.endsWith('/>')) {
-      lines[i] = line + '>';
+      lines[i] = `${line}>`;
       changed = true;
       ops++;
     }
@@ -598,7 +598,7 @@ function main() {
 
   function shouldConsiderFile(absPath) {
     const rel = path.relative(repoRoot, absPath);
-    if (skipRegex && skipRegex.test(rel)) return false;
+    if (skipRegex?.test(rel)) return false;
     if (onlyWeb && !/\.web\.(t|j)sx?$/.test(rel)) return false;
     if (candidates) return candidates.includes(absPath);
     return true;

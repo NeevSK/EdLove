@@ -50,7 +50,7 @@ export class InsightGenerator {
       insights.push('Class performance is below expectations. Consider curriculum review.');
     }
     // Grade distribution insights
-    const failingStudents = analytics.gradeDistribution['F'] || 0;
+    const failingStudents = analytics.gradeDistribution.F || 0;
     const failingPercentage = (failingStudents / analytics.totalStudents) * 100;
     if (failingPercentage > 20) {
       insights.push(`High failure rate (${failingPercentage.toFixed(1)}%). Intervention needed.`);

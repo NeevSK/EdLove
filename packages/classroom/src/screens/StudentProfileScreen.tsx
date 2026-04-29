@@ -8,29 +8,16 @@ import type {
 import { api } from '@repo/core/api';
 import { useTemporalStore } from '@repo/core/logic';
 
-import {
-  ArrowLeft,
-  Box,
-  Calendar,
-  Card,
-  Center,
-  Clock3,
-  Heading,
-  HStack,
-  Icon,
-  Lock,
-  ShieldCheck,
-  Spinner,
-  Text,
-  Trophy,
-  useThemedColors,
-  VStack,
-} from '@repo/ui';
+import { Card } from '@repo/ui/components/SanctuaryCard';
+import { useThemedColors } from '@repo/ui/hooks';
+import { ArrowLeft, Calendar, Clock3, Lock, ShieldCheck, Trophy } from '@repo/ui/icons';
+import { Box } from '@repo/ui/primitives';
+import { Center, HStack, Heading, Icon, Spinner, Text, VStack } from '@repo/ui/primitives';
 import { Pressable, RefreshControl, ScrollView } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
 import { hapticMedium } from '@repo/ui/utils/haptics';
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 export default function StudentProfileScreen() {
@@ -93,7 +80,7 @@ export default function StudentProfileScreen() {
 
   useEffect(() => {
     fetchData();
-  }, [studentId, classroomId, viewDate]);
+  }, [fetchData]);
 
   const onRefresh = () => {
     setIsRefreshing(true);
@@ -282,7 +269,7 @@ export default function StudentProfileScreen() {
             </HStack>
             <Text className="text-xs text-phase-text-secondary">
               {event.snapshot
-                ? JSON.stringify(event.snapshot).slice(0, 100) + '...'
+                ? `${JSON.stringify(event.snapshot).slice(0, 100)}...`
                 : t('student.detailsInHistory') || 'Details noted in history'}
             </Text>
           </Box>

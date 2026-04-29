@@ -26,7 +26,7 @@ function fixFile(filePath) {
   hooks.forEach((hook) => {
     const regex = new RegExp(`const\\s+{\\s*([^}]+)\\s*}\\s*=\\s*${hook}\\(\\);`, 'g');
     if (regex.test(content)) {
-      content = content.replace(regex, (match, props) => {
+      content = content.replace(regex, (_match, props) => {
         const propList = props
           .split(',')
           .map((p) => p.trim())

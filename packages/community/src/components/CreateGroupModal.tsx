@@ -1,7 +1,9 @@
 import { useNavigation } from '@react-navigation/native';
 import type { EntityDefinition } from '@repo/core/logic';
 import { QRBuilder, QRCodeGenerator } from '@repo/scanner-kit';
-import { EntityModal, SanctuaryButton, SanctuaryModal } from '@repo/ui/components';
+import EntityModal from '@repo/ui/components/EntityModal';
+import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
+import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
 import { CheckCircle } from '@repo/ui/icons';
 import { Box, Heading, Icon, Text, VStack } from '@repo/ui/primitives';
 import { hapticSuccess } from '@repo/ui/utils';

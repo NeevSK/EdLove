@@ -1,30 +1,14 @@
 import type { Assignment, Lesson, LessonMaterial } from '@repo/core';
 import { api } from '@repo/core/api';
 
-import {
-  Box,
-  Button,
-  ButtonText,
-  CheckCircle2,
-  ChevronDown,
-  ChevronUp,
-  Edit2,
-  FadeInDown,
-  FileText,
-  Heading,
-  HStack,
-  Icon,
-  Link as LinkIcon,
-  Plus,
-  Spinner,
-  Text,
-  Trash2,
-  VStack,
-} from '@repo/ui';
-import { SkeletonCard } from '@repo/ui/components';
+import { CheckCircle2, ChevronDown, ChevronUp, Edit2, FileText, Plus, Trash2 } from '@repo/ui/icons';
+import { Box, Button } from '@repo/ui/primitives';
+import { ButtonText, HStack, Heading, Icon, Link as LinkIcon, Text, VStack } from '@repo/ui/primitives';
+import { FadeInDown } from 'react-native-reanimated';
+import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { AnimatedView, Pressable, ScrollView } from '@repo/ui/primitives';
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface LessonFeedProps {
@@ -175,7 +159,7 @@ export default function LessonFeed({
 
   useEffect(() => {
     loadFeed();
-  }, [classroomId, refreshTrigger]);
+  }, [loadFeed]);
 
   const toggleLesson = (monthTitle: string) => {
     setExpandedLessons((prev) => ({

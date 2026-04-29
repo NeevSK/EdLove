@@ -114,7 +114,7 @@ function uniqueDays(timestamps: string[]): number {
  */
 function recencyWeight(entryTime: string, now: number): number {
   const age = now - new Date(entryTime).getTime();
-  if (isNaN(age) || age < 0) return 1;
+  if (Number.isNaN(age) || age < 0) return 1;
   return 2 ** (-age / HALF_LIFE_MS);
 }
 
@@ -355,10 +355,10 @@ function mergeLayers(
     }
   }
 
-  const db = merged['depth_breadth'] ?? authorityDefaults.depth_breadth;
-  const ra = merged['reflect_act'] ?? authorityDefaults.reflect_act;
-  const ss = merged['solo_social'] ?? authorityDefaults.solo_social;
-  const sz = merged['steady_surge'] ?? authorityDefaults.steady_surge;
+  const db = merged.depth_breadth ?? authorityDefaults.depth_breadth;
+  const ra = merged.reflect_act ?? authorityDefaults.reflect_act;
+  const ss = merged.solo_social ?? authorityDefaults.solo_social;
+  const sz = merged.steady_surge ?? authorityDefaults.steady_surge;
 
   const source: OrientationSeeds['source'] = explicit
     ? Object.keys(signals).length > 0

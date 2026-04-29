@@ -2,38 +2,10 @@ import { communityAPI } from '@repo/community';
 import { growthSignalsAPI, handleAPIError, type School } from '@repo/core';
 import { identityAPI } from '@repo/core/api';
 
-import {
-  Actionsheet,
-  ActionsheetBackdrop,
-  ActionsheetContent,
-  ActionsheetDragIndicator,
-  ActionsheetDragIndicatorWrapper,
-  ActionsheetItem,
-  ActionsheetItemText,
-  Activity,
-  Box,
-  Button,
-  ButtonText,
-  ChevronDown,
-  FormControl,
-  FormControlLabel,
-  FormControlLabelText,
-  Globe,
-  Heading,
-  HStack,
-  Input,
-  InputField,
-  LayoutGrid,
-  SanctuaryModal,
-  School as SchoolIcon,
-  Spinner,
-  Text,
-  Textarea,
-  TextareaInput,
-  Icon as UIIcon,
-  Users,
-  VStack,
-} from '@repo/ui';
+import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
+import { Activity, ChevronDown, Globe, LayoutGrid, School as SchoolIcon, Users } from '@repo/ui/icons';
+import { Actionsheet, ActionsheetBackdrop, ActionsheetContent, ActionsheetDragIndicator, ActionsheetDragIndicatorWrapper, ActionsheetItem, ActionsheetItemText, Box, Button, Input, Textarea } from '@repo/ui/primitives';
+import { ButtonText, FormControl, FormControlLabel, FormControlLabelText, HStack, Heading, Icon as UIIcon, InputField, Spinner, Text, TextareaInput, VStack } from '@repo/ui/primitives';
 
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';

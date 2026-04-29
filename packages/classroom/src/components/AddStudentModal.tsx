@@ -7,21 +7,13 @@
 import type { Student } from '@repo/core';
 import { studentsAPI } from '@repo/core/api';
 
-import {
-  Box,
-  Button,
-  ButtonText,
-  HStack,
-  Input,
-  InputField,
-  SanctuaryModal,
-  Text,
-  useToast,
-  VStack,
-} from '@repo/ui';
+import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
+import { Box, Button, Input } from '@repo/ui/primitives';
+import { ButtonText, HStack, InputField, Text, VStack } from '@repo/ui/primitives';
+import { useToast } from '@repo/ui/providers';
 import { Pressable } from '@repo/ui/primitives';
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import OCRStudentImport from './OCRStudentImport';
 
@@ -61,7 +53,7 @@ export const AddStudentModal = ({
       setRollNumber('');
       setNotes('');
     }
-  }, [studentToEdit, isOpen]);
+  }, [studentToEdit]);
 
   const handleSave = async () => {
     if (!fullName.trim()) {

@@ -1,5 +1,5 @@
 import { PostHogProvider as NativePostHogProvider } from 'posthog-react-native';
-import React, { createContext, type ReactNode, useContext } from 'react';
+import { createContext, type ReactNode, useContext } from 'react';
 
 interface AnalyticsContextProps {
   track: (event: string, properties?: any) => void;

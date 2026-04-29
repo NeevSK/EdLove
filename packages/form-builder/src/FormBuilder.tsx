@@ -2,40 +2,21 @@ import {
   coreRuntime,
   FeatureGuard,
   type FieldDefinition,
-  FormFieldConfig,
   FormHydrator,
-  FormManager,
   type FormResponse,
-  FormTemplate,
   formAnalytics,
 } from '@repo/core';
 import { api } from '@repo/core/api';
 
 import { QRCodeGenerator } from '@repo/scanner-kit';
-import {
-  Box,
-  Button,
-  ButtonText,
-  Divider,
-  Heading,
-  HStack,
-  Icon,
-  Input,
-  InputField,
-  SanctuaryToast,
-  Spinner,
-  Text,
-  useThemedColors,
-  VStack,
-} from '@repo/ui';
-import { FlatList, Pressable, ScrollView, View } from '@repo/ui/primitives';
+import { useThemedColors } from '@repo/ui/hooks';
+import { Box, Button, Input } from '@repo/ui/primitives';
+import { ButtonText, HStack, Heading, Icon, InputField, Text, VStack } from '@repo/ui/primitives';
+import { FlatList, Pressable } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
 
 import {
-  ArrowLeft,
   BarChart3,
-  ChevronDown,
-  ChevronUp,
   Clock,
   Download,
   Eye,
@@ -212,9 +193,9 @@ export const FormBuilder = ({
     if (activeTab === 'analytics' && templateId) {
       fetchResponses();
     }
-  }, [activeTab, templateId]);
+  }, [activeTab, templateId, fetchResponses]);
 
-  const fetchResponses = async () => {
+  async function fetchResponses() {
     setIsFetchingResponses(true);
     try {
       const data = await api.forms.getResponses(templateId!);
@@ -224,7 +205,7 @@ export const FormBuilder = ({
     } finally {
       setIsFetchingResponses(false);
     }
-  };
+  }
 
   const handleExportCSV = () => {
     const csv = formAnalytics.toCSV(fields, responses);
@@ -298,7 +279,7 @@ export const FormBuilder = ({
     }
   };
 
-  const handleSave = () => handleAction(false);
+  const _handleSave = () => handleAction(false);
   const handlePublish = () => handleAction(true);
 
   return (

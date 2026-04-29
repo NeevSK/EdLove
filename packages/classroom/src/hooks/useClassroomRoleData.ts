@@ -11,7 +11,7 @@ export interface ClassroomRoleData {
   realClassCount: number;
 }
 
-export function useClassroomRoleData(refreshTrigger: number = 0) {
+export function useClassroomRoleData(_refreshTrigger: number = 0) {
   const { context } = usePermissions();
   const { userId, schoolId } = context;
   const {
@@ -111,7 +111,7 @@ export function useClassroomRoleData(refreshTrigger: number = 0) {
 
   useEffect(() => {
     fetchData();
-  }, [fetchData, refreshTrigger]);
+  }, [fetchData]);
 
   return { data, loading, fetchRoleData: fetchData };
 }

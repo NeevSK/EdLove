@@ -4,10 +4,12 @@ import { communityAPI } from '@repo/core/api';
 import { useManifestoHooks, useNotificationHooks } from '@repo/core/api/hooks';
 import { usePendingGateAction } from '@repo/core/hooks';
 import { setPendingGateAction, useStore } from '@repo/core/logic';
-import { Box, Heading, Icon, PositiveInvitation, Spinner, Text, VStack } from '@repo/ui';
-import { WebScreenHeader } from '@repo/ui/components';
+import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
+import { Box } from '@repo/ui/primitives';
+import { Heading, Icon, Spinner, Text, VStack } from '@repo/ui/primitives';
+import { WebScreenHeader } from '@repo/ui/components/WebScreenHeader.web';
 import { Bell, Compass, Info, Plus, Shield, Users2 } from '@repo/ui/icons';
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { CommentSheet } from '../components/CommentSheet';
 import CommunityHearth from '../components/CommunityHearth';
 import CreateGroupModal from '../components/CreateGroupModal';
@@ -55,7 +57,7 @@ export default function CommunityScreenWeb() {
   const [commentPostType, setCommentPostType] = useState<string | undefined>(undefined);
   const [conversations, setConversations] = useState<DirectConversation[]>([]);
   const [loadingMessages, setLoadingMessages] = useState(false);
-  const [announcementCount, setAnnouncementCount] = useState(0);
+  const [_announcementCount, setAnnouncementCount] = useState(0);
 
   const { posts, isLoadingPosts, fetchPosts, fetchGroups } = useCommunity(
     selectedFilter !== 'all' ? selectedFilter : undefined,
@@ -362,7 +364,6 @@ export default function CommunityScreenWeb() {
         return renderMessages();
       case 'announcements':
         return renderAnnouncements();
-      case 'feed':
       default:
         return renderPostStream();
     }

@@ -1,7 +1,6 @@
-import { Card, HStack, VStack } from '@repo/ui';
+import { Card } from '@repo/ui/components/SanctuaryCard';
+import { HStack, VStack } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
-
-import React from 'react';
 import { Dimensions, StyleSheet, Text, View } from 'react-native';
 
 interface HeatmapData {

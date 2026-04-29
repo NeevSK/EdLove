@@ -1,5 +1,5 @@
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { identityAPI } from '../../native/identity';
 import { useStore, useTemporalStore } from '../../store';
 import { APIError } from '../../types/API';
@@ -79,8 +79,8 @@ export function usePostsInfiniteQuery(groupId: string = 'all', options: Record<s
 export function useCreatePostMutation() {
   const queryClient = useQueryClient();
   const storeUser = useStore((state) => state.user);
-  const viewDate = useTemporalStore((state) => state.viewDate);
-  const viewScale = useTemporalStore((state) => state.viewScale);
+  const _viewDate = useTemporalStore((state) => state.viewDate);
+  const _viewScale = useTemporalStore((state) => state.viewScale);
 
   return useMutation({
     mutationFn: async (input: any) => {
@@ -97,7 +97,7 @@ export function useCreatePostMutation() {
       const authority = storeUser?.authority || 'student';
       return communityAPI.createPost(input, loggedInId, authority as any, schoolId);
     },
-    onSuccess: (data, variables) => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({
         queryKey: communityKeys.posts(variables.group_id || 'all', {}),
       });
@@ -241,7 +241,7 @@ export function usePostLogic(post: Post, userId?: string) {
  */
 export function usePollLogic(postId: string, userId?: string, allowMultiple?: boolean) {
   const voteMutation = usePollVoteMutation();
-  const [userVotes, setUserVotes] = useState<string[]>([]); // This should eventually come from a query
+  const [userVotes, _setUserVotes] = useState<string[]>([]); // This should eventually come from a query
 
   const handleVote = useCallback(
     async (optionId: string) => {

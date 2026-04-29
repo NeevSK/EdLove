@@ -29,7 +29,7 @@ export function useTopologyPulse(schoolId?: string) {
     if (schoolId) {
       refreshPulse();
     }
-  }, [schoolId]);
+  }, [schoolId, refreshPulse]);
 
   return { pulse, loading, error, refreshPulse };
 }

@@ -5,7 +5,7 @@
  */
 
 import SchoolForestScreenWeb from '@repo/admin/screens/SchoolForestScreen.web';
-import { ErrorBoundary } from '@repo/ui';
+import ErrorBoundary from '@repo/ui/components/ErrorBoundary';
 
 const SchoolForestWrapper = (props: Record<string, unknown>) => (
   <ErrorBoundary name="School Forest">

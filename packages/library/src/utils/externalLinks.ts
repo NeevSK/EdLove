@@ -1,4 +1,4 @@
-import type { ExternalLinkOpenOptions } from '@repo/ui';
+import type { ExternalLinkOpenOptions } from '@repo/ui/utils';
 import type { LibraryResource } from '../types';
 
 export function buildLibraryExternalLinkOptions(

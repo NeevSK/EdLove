@@ -1,5 +1,6 @@
 import { isDemo, usePermissions } from '@repo/core/logic';
-import { SanctuaryButton, SanctuaryFlashList } from '@repo/ui/components';
+import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
+import SanctuaryFlashList from '@repo/ui/components/SanctuaryFlashList';
 import { Compass, Globe, Plus, Shield, X } from '@repo/ui/icons';
 import {
   AnimatedView,
@@ -14,7 +15,7 @@ import {
   Text,
   VStack,
 } from '@repo/ui/primitives';
-import React, { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FadeInDown } from 'react-native-reanimated';
 import GroupCard from '../components/GroupCard';
@@ -268,10 +269,7 @@ export default function GroupsScreen({
 
   const keyExtractor = useCallback((item: Group) => item.id, []);
 
-  const ListEmptyComponent = useMemo(
-    () => getEmptyComponent(),
-    [loading, activeSubTab, getEmptyComponent],
-  );
+  const ListEmptyComponent = useMemo(() => getEmptyComponent(), [getEmptyComponent]);
 
   const handleEndReached = useCallback(() => {
     if (hasNextGroups && !isFetchingNextGroups) {

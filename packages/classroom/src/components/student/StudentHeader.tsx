@@ -1,7 +1,8 @@
 import { useStore } from '@repo/core/logic';
 
-import { Box, Heading, HStack, Icon, Star, Text, VStack } from '@repo/ui';
-import React from 'react';
+import { Star } from '@repo/ui/icons';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Heading, Icon, Text, VStack } from '@repo/ui/primitives';
 
 export function StudentHeader({ isDemo }: { isDemo: boolean }) {
   const { user } = useStore();

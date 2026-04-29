@@ -1,25 +1,16 @@
 import { type AcademicCycle, coreRuntime } from '@repo/core';
 import { api } from '@repo/core/api';
 
-import {
-  Box,
-  Button,
-  ButtonText,
-  GlobalHeader,
-  HStack,
-  Icon,
-  Input,
-  InputField,
-  Text,
-  useToast,
-  VStack,
-} from '@repo/ui';
-import { SkeletonCard } from '@repo/ui/components';
+import GlobalHeader from '@repo/ui/components/GlobalHeader';
+import { Box, Button, Input } from '@repo/ui/primitives';
+import { ButtonText, HStack, Icon, InputField, Text, VStack } from '@repo/ui/primitives';
+import { useToast } from '@repo/ui/providers';
+import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { Pressable, ScrollView } from '@repo/ui/primitives';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 
 import { Calendar, CheckCircle2, Circle, Clock, Plus, Trash2 } from 'lucide-react-native';
-import React, { useEffect, useReducer } from 'react';
+import { useEffect, useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface AcademicCycleManagerProps {
@@ -95,7 +86,7 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
 
   useEffect(() => {
     fetchCycles();
-  }, [schoolId]);
+  }, [fetchCycles]);
 
   const handleCreate = async () => {
     const { name, startDate, endDate, isCurrent } = state.form;
@@ -123,7 +114,7 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
         message: 'Success: Academic cycle created',
         type: 'success',
       });
-    } catch (error) {
+    } catch (_error) {
       toast.showToast({
         message: 'Error: Failed to create academic cycle',
         type: 'error',
@@ -141,7 +132,7 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
         message: 'Cycle Updated: This cycle is now active',
         type: 'success',
       });
-    } catch (error) {
+    } catch (_error) {
       toast.showToast({
         message: 'Error: Failed to update cycle',
         type: 'error',
@@ -177,7 +168,7 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
         message: 'Deleted: Cycle removed successfully',
         type: 'success',
       });
-    } catch (error) {
+    } catch (_error) {
       toast.showToast({
         message: 'Error: Failed to delete cycle',
         type: 'error',

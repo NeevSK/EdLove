@@ -1,4 +1,3 @@
-import * as LKEduGeo from '@intuitui-labs/lk-edu-geo';
 import {
   getMnemonicForDistrict,
   inferFromPostalCode as inferInternal,

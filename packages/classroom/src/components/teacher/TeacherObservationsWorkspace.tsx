@@ -1,25 +1,10 @@
 import type { Student } from '@repo/core';
 import { api } from '@repo/core/api';
 
-import {
-  Box,
-  Button,
-  ButtonText,
-  Heading,
-  HStack,
-  Icon,
-  Input,
-  InputField,
-  MessageCircle,
-  Plus,
-  SanctuaryModal,
-  Sparkles,
-  Spinner,
-  Text,
-  Trash2,
-  TriangleAlert,
-  VStack,
-} from '@repo/ui';
+import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
+import { MessageCircle, Plus, Sparkles, Trash2, TriangleAlert } from '@repo/ui/icons';
+import { Box, Input } from '@repo/ui/primitives';
+import { HStack, Heading, Icon, InputField, Spinner, Text, VStack } from '@repo/ui/primitives';
 import { Pressable, ScrollView } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
 import { hapticLight } from '@repo/ui/utils/haptics';

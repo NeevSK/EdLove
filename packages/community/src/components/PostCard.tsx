@@ -1,8 +1,9 @@
 import { usePollLogic, usePostLogic, useSocialShieldHooks } from '@repo/core/api/hooks';
 import { usePermissions } from '@repo/core/logic';
 import type { CommunityPost } from '@repo/core/types';
-import { confirmAction, shareAction, useLotusToast } from '@repo/ui';
-import { PostCard as UIPostCard } from '@repo/ui/components';
+import { useLotusToast } from '@repo/ui/hooks';
+import { confirmAction, shareAction } from '@repo/ui/utils';
+import { PostCard as UIPostCard } from '@repo/ui/components/PostCard';
 import { hapticError, hapticSuccess } from '@repo/ui/primitives';
 
 import React from 'react';
@@ -82,7 +83,7 @@ export const PostCard = React.memo(function PostCard(props: PostCardProps) {
           message: 'User has been blocked.',
           type: 'success',
         });
-      } catch (err) {
+      } catch (_err) {
         hapticError();
         showToast({ message: 'Failed to block user.', type: 'error' });
       }

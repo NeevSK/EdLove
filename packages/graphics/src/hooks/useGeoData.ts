@@ -1,4 +1,3 @@
-import { createClient } from '@supabase/supabase-js';
 import { useEffect, useState } from 'react';
 
 // This would typically come from an environment config

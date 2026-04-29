@@ -1,4 +1,4 @@
-const fs = require('fs');
+const fs = require('node:fs');
 const log = fs.readFileSync('audit-admin.log', 'utf8');
 const lines = log.split('\n');
 const regex = /^(.*?)(?:\(|:)(\d+)(?:[, :]+(\d+))?[)\s\-:]*\s*(error|warning)\s+TS(\d+):\s*(.*)$/;

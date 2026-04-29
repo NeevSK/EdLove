@@ -6,7 +6,8 @@ import { useStore, useTemporalStore } from '@repo/core/logic';
 import { FlowResolver } from '@repo/core/native';
 
 import { resolveQR } from '@repo/scanner-kit';
-import { Icon, Plus } from '@repo/ui';
+import { Plus } from '@repo/ui/icons';
+import { Icon } from '@repo/ui/primitives';
 import { useRegisterFAB } from '@repo/ui/context/FABContext';
 import { useSanctuaryToast } from '@repo/ui/hooks';
 import { hapticLight } from '@repo/ui/utils/haptics';

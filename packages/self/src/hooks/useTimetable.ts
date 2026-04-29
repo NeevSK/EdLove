@@ -98,7 +98,7 @@ export const useTimetable = (activeDay: number) => {
 
   useEffect(() => {
     fetchPeriods();
-  }, [fetchPeriods, isOnline]);
+  }, [fetchPeriods]);
 
   const addPeriod = async (period: Omit<Period, 'id' | 'user_id'>) => {
     // Optimistic Update

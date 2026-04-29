@@ -8,7 +8,9 @@ import {
 } from '@repo/core';
 import { useStore } from '@repo/core/logic';
 
-import { Box, ScreenWrapper, Text } from '@repo/ui';
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { Box } from '@repo/ui/primitives';
+import { Text } from '@repo/ui/primitives';
 import React from 'react';
 import {
   GuardianWorkspaceCanvas,

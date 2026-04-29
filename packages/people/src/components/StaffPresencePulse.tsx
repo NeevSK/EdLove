@@ -1,4 +1,4 @@
-import { ActivityIndicator, Box, Heading, HStack, Icon, Text, VStack } from '@repo/ui';
+import { Box, HStack, Heading, Icon, Spinner, Text, VStack } from '@repo/ui/primitives';
 import { Pressable } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
 
@@ -126,7 +126,7 @@ export const StaffPresencePulse: React.FC<StaffPresencePulseProps> = ({ userId, 
             }`}
           >
             {actionLoading ? (
-              <ActivityIndicator size="small" color="white" />
+              <Spinner size="small" color="white" />
             ) : (
               <>
                 <Icon as={isCheckedIn ? LogOut : LogIn} size="sm" className="text-white" />

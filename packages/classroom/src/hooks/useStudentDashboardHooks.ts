@@ -1,5 +1,4 @@
 import {
-  Assignment,
   useStudentAssignmentsQuery,
   useStudentClassroomsQuery,
   useStudentStatsQuery,
@@ -8,7 +7,7 @@ import { assignmentsAPI } from '@repo/core/api';
 import { useRewards } from '@repo/core/hooks';
 import { useAuthStore } from '@repo/core/logic';
 
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 /**
  * useStudentRegistry: Unified hook for a student's sanctuary landscape.

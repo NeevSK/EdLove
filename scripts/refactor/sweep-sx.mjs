@@ -82,7 +82,7 @@ function healFile(filePath) {
 
   // Regex to match sx prop: sx={{ ... }}
   // Matches globally but respects nested curly braces
-  content = content.replace(/sx=\{\{([\s\S]*?)\}\}/g, (m, sxContent) => {
+  content = content.replace(/sx=\{\{([\s\S]*?)\}\}/g, (_m, sxContent) => {
     const classes = [];
     const styles = [];
     const pairs = splitPairs(sxContent);
@@ -144,14 +144,14 @@ function healFile(filePath) {
     // Search for multiple classNames within a likely tag scope (between < and >)
     content = content.replace(
       /(<[\w.]+\s+[^>]*?)className="([^"]*)"([^>]*?)className="([^"]*)"/g,
-      (m, tagPrefix, c1, middle, c2) => {
+      (_m, tagPrefix, c1, middle, c2) => {
         return `${tagPrefix}className="${c1.trim()} ${c2.trim()}"${middle}`;
       },
     );
   } while (content !== prev);
 
   // Final pass to clean up double spaces inside tags
-  content = content.replace(/<([\w.]+)\s+([^>]+)>/g, (m, tag, attrs) => {
+  content = content.replace(/<([\w.]+)\s+([^>]+)>/g, (_m, tag, attrs) => {
     return `<${tag} ${attrs.replace(/\s+/g, ' ').trim()}>`;
   });
 

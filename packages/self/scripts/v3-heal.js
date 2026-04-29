@@ -1,5 +1,5 @@
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
 
 const targetDir = process.argv[2] || './packages/classroom/src';
 
@@ -43,11 +43,11 @@ function healFile(filePath) {
   // 2. ClassName & Style: Remove hidden commas and sanitize
   content = content.replace(
     /className="([^"]*)"/g,
-    (m, c) => 'className="' + c.replace(/,/g, ' ').replace(/\s+/g, ' ').trim() + '"',
+    (_m, c) => `className="${c.replace(/,/g, ' ').replace(/\s+/g, ' ').trim()}"`,
   );
   content = content.replace(
     /className={`([^`]*)`}/g,
-    (m, c) => 'className={`' + c.replace(/,/g, ' ').replace(/\s+/g, ' ').trim() + '`}',
+    (_m, c) => `className={\`${c.replace(/,/g, ' ').replace(/\s+/g, ' ').trim()}\`}`,
   );
 
   // 3. Theme Purge: Direct hex replacement (Prevents invalid hook calls in StyleSheet)
@@ -108,7 +108,7 @@ function healFile(filePath) {
       'EyeOff',
     ];
     icons.forEach((icon) => {
-      const regex = new RegExp('<' + icon + '([^>]*)/>', 'g');
+      const regex = new RegExp(`<${icon}([^>]*)/>`, 'g');
       if (content.match(regex)) {
         if (!content.includes('import { Icon }')) {
           content = content.replace(
@@ -119,7 +119,7 @@ function healFile(filePath) {
             },
           );
         }
-        content = content.replace(regex, '<Icon as={' + icon + '}$1/>');
+        content = content.replace(regex, `<Icon as={${icon}}$1/>`);
       }
     });
   }
@@ -127,10 +127,17 @@ function healFile(filePath) {
   // 6. Hook Management & useTheme Stabilizer
   if (content.includes('useThemedColors')) {
     if (!content.includes('useTheme')) {
-      content = content.replace(/import\s*\{([\s\S]*?)\}\s*from\s*['"]@repo\/ui['"]/g, (m, pre) => {
-        const cleaned = pre.split('useThemedColors').join('useTheme').replace(/,\s*,/g, ',').trim();
-        return `import { ${cleaned} } from '@repo/ui'`;
-      });
+      content = content.replace(
+        /import\s*\{([\s\S]*?)\}\s*from\s*['"]@repo\/ui['"]/g,
+        (_m, pre) => {
+          const cleaned = pre
+            .split('useThemedColors')
+            .join('useTheme')
+            .replace(/,\s*,/g, ',')
+            .trim();
+          return `import { ${cleaned} } from '@repo/ui'`;
+        },
+      );
     }
     content = content.replace(/useThemedColors\s*\(\s*\)/g, 'useTheme().scene');
   }

@@ -8,7 +8,7 @@
  */
 import { useTemporalStore } from '@repo/core/logic';
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { fetchInteractionCountForView } from '../api/selfInsightsRepository';
 
 interface ProgressTreeProps {

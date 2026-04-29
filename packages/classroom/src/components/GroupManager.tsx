@@ -7,37 +7,14 @@
  * - JSON blob stored in local state (or groups table if available)
  */
 
-import {
-  Box,
-  Button,
-  ButtonText,
-  Checkbox,
-  CheckboxIcon,
-  CheckboxIndicator,
-  Check as CheckIcon,
-  Edit2,
-  Heading,
-  HStack,
-  Icon,
-  Input,
-  InputField,
-  Modal,
-  ModalBackdrop,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  Plus,
-  SanctuaryModal,
-  Text,
-  Trash2,
-  Users,
-  VStack,
-} from '@repo/ui';
+import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
+import { Check as CheckIcon, Edit2, Plus, Trash2, Users } from '@repo/ui/icons';
+import { Box, Button, Input } from '@repo/ui/primitives';
+import { ButtonText, Checkbox, CheckboxIcon, CheckboxIndicator, HStack, Heading, Icon, InputField, Text, VStack } from '@repo/ui/primitives';
 import { Pressable, ScrollView } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // Types
@@ -83,9 +60,9 @@ export default function GroupManager({ classroomId }: GroupManagerProps) {
   useEffect(() => {
     fetchStudents();
     loadGroups();
-  }, [classroomId]);
+  }, [loadGroups, fetchStudents]);
 
-  const fetchStudents = async () => {
+  async function fetchStudents() {
     setIsLoading(true);
     try {
       // TODO: Replace with actual API call
@@ -105,9 +82,9 @@ export default function GroupManager({ classroomId }: GroupManagerProps) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }
 
-  const loadGroups = () => {
+  function loadGroups() {
     // TODO: Load from API or AsyncStorage
     // For now, using local state
     const mockGroups: StudentGroup[] = [
@@ -121,7 +98,7 @@ export default function GroupManager({ classroomId }: GroupManagerProps) {
       },
     ];
     setGroups(mockGroups);
-  };
+  }
 
   const toggleStudentSelection = (studentId: string) => {
     hapticLight();

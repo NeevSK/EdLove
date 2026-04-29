@@ -1,5 +1,3 @@
-import { KnowledgeTopology } from '@repo/core';
-
 export interface RadarPoint {
   attribute: string;
   value: number; // 0 to 1

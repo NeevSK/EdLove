@@ -14,46 +14,20 @@ import { useSafeMutation } from '@repo/core/hooks';
 import { useStore } from '@repo/core/logic';
 
 import { libraryAPI } from '@repo/library';
-import {
-  Box,
-  Button,
-  ButtonText,
-  Download,
-  ExternalLink,
-  File,
-  FileText,
-  GlobalHeader,
-  Heading,
-  HStack,
-  Icon,
-  Input,
-  InputField,
-  Link as LinkIcon,
-  Modal,
-  ModalBackdrop,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  Pin,
-  Plus,
-  PositiveInvitation,
-  ScreenWrapper,
-  Share2,
-  SmartShelf,
-  Text,
-  Textarea,
-  TextareaInput,
-  Trash2,
-  useToast,
-  Video,
-  VStack,
-} from '@repo/ui';
-import { CollectionCard, SkeletonCard } from '@repo/ui/components';
+import GlobalHeader from '@repo/ui/components/GlobalHeader';
+import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { Download, ExternalLink, File, FileText, Pin, Plus, Share2, Trash2, Video } from '@repo/ui/icons';
+import { SmartShelf } from '@repo/ui/components/SmartShelf';
+import { Box, Button, Input, Textarea } from '@repo/ui/primitives';
+import { ButtonText, HStack, Heading, Icon, InputField, Link as LinkIcon, Modal, ModalBackdrop, ModalBody, ModalContent, ModalFooter, ModalHeader, Text, TextareaInput, VStack } from '@repo/ui/primitives';
+import { useToast } from '@repo/ui/providers';
+import { CollectionCard } from '@repo/ui/components/CollectionCard';
+import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { Pressable, ScrollView } from '@repo/ui/primitives';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useResources } from '../hooks';
 
@@ -115,7 +89,7 @@ export default function ContentLibrary() {
   const getResourceConfig = (type: string) => {
     return (
       RESOURCE_TYPE_CONFIG[type] ||
-      RESOURCE_TYPE_CONFIG['note'] || {
+      RESOURCE_TYPE_CONFIG.note || {
         icon: FileText,
         iconClass: 'text-ink',
         label: type,

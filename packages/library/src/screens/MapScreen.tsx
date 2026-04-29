@@ -7,24 +7,20 @@ import {
   getAvailablePerspectives as getEnginePerspectives,
   KnowledgeParser,
 } from '@repo/graphics';
+import GlobalHeader from '@repo/ui/components/GlobalHeader';
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { useReality } from '@repo/ui/context';
+import { useResponsive } from '@repo/ui/hooks';
 import {
   AstroView,
-  Box,
   DharmaView,
-  GlobalHeader,
-  HStack,
   JyotiView,
-  Icon as SanctuaryIcon,
-  ScreenWrapper,
-  Spinner,
   TerraView,
-  Text,
-  useReality,
-  useResponsive,
   VastuView,
   VatyaView,
-  VStack,
-} from '@repo/ui';
+} from '@repo/ui/components/visualization';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Icon as SanctuaryIcon, Spinner, Text, VStack } from '@repo/ui/primitives';
 import { Pressable, ScrollView, useTheme } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
 
@@ -33,12 +29,7 @@ import { BarChart3, FileCheck, Globe, Network, Orbit, Route, Wind, X } from 'luc
 import { cssInterop } from 'nativewind';
 import React, { useEffect, useMemo, useState } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import Animated, {
-  FadeInDown,
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-} from 'react-native-reanimated';
+import { useSharedValue, withSpring } from 'react-native-reanimated';
 import { libraryAPI } from '../api/library';
 import { usePerspectiveLayout } from '../hooks/usePerspectiveLayout';
 import type { KnowledgeNode, KnowledgeTopology } from '../types/Library';
@@ -352,7 +343,7 @@ export default function MapScreen() {
   );
 }
 
-function StatCardNative({
+function _StatCardNative({
   label,
   value,
   icon: IconComponent,

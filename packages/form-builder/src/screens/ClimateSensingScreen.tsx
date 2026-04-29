@@ -1,10 +1,11 @@
 import { FormManager } from '@repo/core';
-import { Box, Center, Text } from '@repo/ui';
-import { SanctuaryButton } from '@repo/ui/components';
+import { Box } from '@repo/ui/primitives';
+import { Center, Text } from '@repo/ui/primitives';
+import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import { ScrollView, View } from '@repo/ui/primitives';
 
 import { CheckCircle2, Share2 } from 'lucide-react-native';
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   type ClimateSensingData,
   createClimateSensingSchema,
@@ -35,7 +36,10 @@ export const ClimateSensingScreen = ({
     onCompleted?.();
   };
 
-  const manager = useMemo(() => new FormManager(createClimateSensingSchema(handleSubmit)), []);
+  const manager = useMemo(
+    () => new FormManager(createClimateSensingSchema(handleSubmit)),
+    [handleSubmit],
+  );
 
   if (isFinished) {
     return (

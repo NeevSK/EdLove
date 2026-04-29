@@ -36,28 +36,28 @@ files.forEach((filePath) => {
   const replacements = [
     {
       from: /from\s+['"].*?\/lib\/supabase['"]/g,
-      to: (match) => {
+      to: (_match) => {
         const absoluteSupabase = path.resolve(CORE_SRC, 'native/supabase');
         let rel = path.relative(path.dirname(filePath), absoluteSupabase).replace(/\\/g, '/');
-        if (!rel.startsWith('.')) rel = './' + rel;
+        if (!rel.startsWith('.')) rel = `./${rel}`;
         return `from '${rel}'`;
       },
     },
     {
       from: /from\s+['"].*?\/api\/auth['"]/g,
-      to: (match) => {
+      to: (_match) => {
         const absolute = path.resolve(CORE_SRC, 'native/auth');
         let rel = path.relative(path.dirname(filePath), absolute).replace(/\\/g, '/');
-        if (!rel.startsWith('.')) rel = './' + rel;
+        if (!rel.startsWith('.')) rel = `./${rel}`;
         return `from '${rel}'`;
       },
     },
     {
       from: /from\s+['"].*?\/api\/identity['"]/g,
-      to: (match) => {
+      to: (_match) => {
         const absolute = path.resolve(CORE_SRC, 'native/identity');
         let rel = path.relative(path.dirname(filePath), absolute).replace(/\\/g, '/');
-        if (!rel.startsWith('.')) rel = './' + rel;
+        if (!rel.startsWith('.')) rel = `./${rel}`;
         return `from '${rel}'`;
       },
     },

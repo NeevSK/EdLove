@@ -1,23 +1,9 @@
-import {
-  BookOpen,
-  Box,
-  ClipboardList,
-  HStack,
-  Icon,
-  MessageCircle,
-  Plus,
-  PositiveInvitation,
-  ScanLine,
-  School,
-  ShieldCheck,
-  Text,
-  Users,
-  VStack,
-  Wind,
-  type WorkspaceSurfaceDefinition,
-  Zap,
-} from '@repo/ui';
-import { TemporalNavigator } from '@repo/ui/components';
+import type { WorkspaceSurfaceDefinition } from '@repo/core/types';
+import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
+import { BookOpen, ClipboardList, MessageCircle, Plus, ScanLine, School, ShieldCheck, Users, Wind, Zap } from '@repo/ui/icons';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Icon, Text, VStack } from '@repo/ui/primitives';
+import { TemporalNavigator } from '@repo/ui/components/TemporalNavigator';
 import { Pressable } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
 

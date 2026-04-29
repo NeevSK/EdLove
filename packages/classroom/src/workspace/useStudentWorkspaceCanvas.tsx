@@ -6,10 +6,11 @@ import {
 } from '@repo/core';
 import { useWorkspaceLayoutSync } from '@repo/core/native';
 
-import { Box, HStack, Text, WorkspaceCanvas } from '@repo/ui';
+import { Box, HStack, Text } from '@repo/ui/primitives';
+import { WorkspaceCanvas } from '@repo/ui/components/workspace';
 import { Pressable } from '@repo/ui/primitives';
 
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import type {
   StudentDashboardCapabilityKey,
   StudentDashboardSurface,

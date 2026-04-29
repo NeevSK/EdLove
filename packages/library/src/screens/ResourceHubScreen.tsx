@@ -2,17 +2,11 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { coreRuntime } from '@repo/core';
 import { useStore } from '@repo/core/logic';
 
-import {
-  Box,
-  HStack,
-  openExternalURL,
-  Icon as SanctuaryIcon,
-  ScreenWrapper,
-  Spinner,
-  Text,
-  useThemedColors,
-  VStack,
-} from '@repo/ui';
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { useThemedColors } from '@repo/ui/hooks';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Icon as SanctuaryIcon, Spinner, Text, VStack } from '@repo/ui/primitives';
+import { openExternalURL } from '@repo/ui/utils';
 import { Pressable, ScrollView } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
 

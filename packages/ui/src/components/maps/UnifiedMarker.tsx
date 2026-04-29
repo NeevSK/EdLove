@@ -1,6 +1,7 @@
 import type React from 'react';
 import { Box, Text } from '../../primitives';
 import { useMap } from './MapProvider';
+import type { UnifiedMarkerProps } from './UnifiedMarker.types';
 
 const MapLibreGL = require('@maplibre/maplibre-react-native') as {
   PointAnnotation: React.ComponentType<any>;
@@ -10,19 +11,6 @@ const ReactNativeMaps = require('react-native-maps') as {
   Marker: React.ComponentType<any>;
 };
 const Marker = ReactNativeMaps.Marker;
-
-export interface UnifiedMarkerProps {
-  id?: string;
-  coordinate: {
-    latitude: number;
-    longitude: number;
-  };
-  title?: string;
-  description?: string;
-  onPress?: () => void;
-  pinColor?: string;
-  children?: React.ReactNode;
-}
 
 export const UnifiedMarker: React.FC<UnifiedMarkerProps> = ({
   id,

@@ -144,7 +144,7 @@ export function motif(
   };
 }
 
-function lotusSDF(random: () => number, density: number): string {
+function lotusSDF(_random: () => number, density: number): string {
   // 2026 Mandate: Kells Principle Jittered SDF
   // This is a string-based representation that the C++/WebGPU drivers will parse.
   const petals = Math.max(5, Math.round(5 + density * 4));

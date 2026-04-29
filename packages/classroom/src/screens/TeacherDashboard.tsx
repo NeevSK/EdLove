@@ -10,21 +10,14 @@ import {
 } from '@repo/people';
 import { ScannerModal } from '@repo/scanner-kit';
 import { BreathGuide } from '@repo/self';
-import {
-  Box,
-  FadeInDown,
-  Heading,
-  HStack,
-  Icon,
-  Modal,
-  SandboxBanner,
-  useThemedColors,
-  X,
-} from '@repo/ui';
+import SandboxBanner from '@repo/ui/components/SandboxBanner';
+import { useThemedColors } from '@repo/ui/hooks';
+import { X } from '@repo/ui/icons';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Heading, Icon, Modal } from '@repo/ui/primitives';
+import { FadeInDown } from 'react-native-reanimated';
 import { AnimatedView, Pressable, ScrollView } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
-
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { CreateClassroomModal } from '../components';
 import { TeacherWorkspaceShell } from '../components/teacher/TeacherWorkspaceShell';

@@ -1,15 +1,7 @@
 import type { StaffLeave as StaffLeaveDTO } from '@repo/core';
-import {
-  Box,
-  Button,
-  ButtonText,
-  ClipboardList,
-  Heading,
-  HStack,
-  Icon,
-  Text,
-  VStack,
-} from '@repo/ui';
+import { ClipboardList } from '@repo/ui/icons';
+import { Box, Button } from '@repo/ui/primitives';
+import { ButtonText, HStack, Heading, Icon, Text, VStack } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
 
 import type React from 'react';

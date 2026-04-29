@@ -1,15 +1,5 @@
-import {
-  Box,
-  Center,
-  HStack,
-  Icon,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalHeader,
-  Text,
-  VStack,
-} from '@repo/ui';
+import { Box } from '@repo/ui/primitives';
+import { Center, HStack, Icon, Modal, ModalBody, ModalContent, ModalHeader, Text, VStack } from '@repo/ui/primitives';
 import { FlatList, Pressable } from '@repo/ui/primitives';
 
 import { ChevronRight, Folder, Lock, X } from 'lucide-react-native';

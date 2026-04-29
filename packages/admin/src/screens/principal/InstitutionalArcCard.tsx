@@ -1,15 +1,8 @@
-import {
-  Box,
-  Clock,
-  HStack,
-  Icon,
-  Info,
-  type LucideIcon,
-  Plus,
-  SanctuaryModal,
-  Text,
-  VStack,
-} from '@repo/ui';
+import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
+import { Clock, Info, Plus } from '@repo/ui/icons';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Icon, Text, VStack } from '@repo/ui/primitives';
+import { LucideIcon } from '@repo/ui/icons';
 import { Pressable } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
 

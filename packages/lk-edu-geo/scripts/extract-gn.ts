@@ -1,7 +1,7 @@
-import fs from 'fs';
-import { createRequire } from 'module';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import fs from 'node:fs';
+import { createRequire } from 'node:module';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -21,7 +21,7 @@ async function extract() {
   }
 
   const workbook = XLSX.readFile(FILE_PATH);
-  const sheet = workbook.Sheets['lka_admin4'];
+  const sheet = workbook.Sheets.lka_admin4;
   const data: any[] = XLSX.utils.sheet_to_json(sheet, { header: 1 });
 
   const headers = data[0];

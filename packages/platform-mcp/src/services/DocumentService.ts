@@ -206,6 +206,6 @@ export class DocumentService {
         const [filePath, count] = line.split(':');
         return { path: filePath, count: parseInt(count, 10) };
       })
-      .filter((h) => !isNaN(h.count));
+      .filter((h) => !Number.isNaN(h.count));
   }
 }

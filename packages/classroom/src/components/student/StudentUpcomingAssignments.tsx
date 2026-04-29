@@ -1,5 +1,6 @@
-import { Box, Button, ButtonText, CheckCircle2, Clock, HStack, Icon, Text, VStack } from '@repo/ui';
-import React from 'react';
+import { CheckCircle2, Clock } from '@repo/ui/icons';
+import { Box, Button } from '@repo/ui/primitives';
+import { ButtonText, HStack, Icon, Text, VStack } from '@repo/ui/primitives';
 
 interface Assignment {
   id: string;

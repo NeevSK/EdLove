@@ -1,21 +1,8 @@
 import { useNavigation } from '@react-navigation/native';
-import {
-  BookOpen,
-  Box,
-  ChevronRight,
-  Heading,
-  HStack,
-  Icon,
-  Layout,
-  MessageSquare,
-  Star,
-  Text,
-  TrendingUp,
-  VStack,
-} from '@repo/ui';
+import { BookOpen, ChevronRight, Layout, MessageSquare, Star, TrendingUp } from '@repo/ui/icons';
+import { Box } from '@repo/ui/primitives';
+import { Heading, Icon, Text, VStack } from '@repo/ui/primitives';
 import { Pressable } from '@repo/ui/primitives';
-
-import React from 'react';
 
 export const StudentStudySuite = () => {
   const navigation = useNavigation<any>();

@@ -1,5 +1,5 @@
-import { Box, HStack, Icon, Text, VStack } from '@repo/ui';
-import React from 'react';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Icon, Text, VStack } from '@repo/ui/primitives';
 
 export const StudentStatCard = ({ stat, isDemo }: { stat: any; isDemo: boolean }) => {
   if (!stat) return null;

@@ -9,12 +9,13 @@
 import type { CalendarEvent } from '@repo/core';
 import { staffManagementAPI } from '@repo/core/api';
 
-import { Box, HStack, Icon, Input, InputField, Text, VStack } from '@repo/ui';
+import { Box, Input } from '@repo/ui/primitives';
+import { HStack, Icon, InputField, Text, VStack } from '@repo/ui/primitives';
 import { Pressable, ScrollView } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
 
 import { Plus } from 'lucide-react-native';
-import React, { useEffect, useReducer } from 'react';
+import { useEffect, useReducer } from 'react';
 
 interface InstitutionalCalendarSectionProps {
   schoolId: string;
@@ -118,7 +119,7 @@ export default function InstitutionalCalendarSection({
   useEffect(() => {
     dispatch({ type: 'SET_LOADING', isLoading: true });
     fetchEvents();
-  }, [schoolId]);
+  }, [fetchEvents]);
 
   async function handleSave() {
     const { title, selectedType, startDate, endDate } = state.form;

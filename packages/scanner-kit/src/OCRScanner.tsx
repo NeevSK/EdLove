@@ -3,7 +3,7 @@
 // Provider-agnostic: uses OCRPipeline (MLKit by default, cloud for Pro users)
 
 import * as ImagePicker from 'expo-image-picker';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,

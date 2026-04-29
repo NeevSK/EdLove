@@ -1,5 +1,6 @@
 import { FeatureGuard } from '@repo/core';
-import { Box, History, HStack, Icon, MessageSquare, Plus, QrCode, Text } from '@repo/ui';
+import { History, MessageSquare, Plus, QrCode } from '@repo/ui/icons';
+import { Icon, Text } from '@repo/ui/primitives';
 import { Pressable } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
 

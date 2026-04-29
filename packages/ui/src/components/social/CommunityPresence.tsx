@@ -5,7 +5,7 @@
  * Promoted to @repo/ui/components/social
  */
 
-import React, { useEffect, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import Animated, {
   Easing,
@@ -54,7 +54,7 @@ export default function CommunityPresence({
       -1,
       true,
     );
-  }, []);
+  }, [pulseOpacity, pulseScale]);
 
   const pulseStyle = useAnimatedStyle(() => ({
     transform: [{ scale: pulseScale.value }],
@@ -80,7 +80,7 @@ export default function CommunityPresence({
 
   const vibeClass = useMemo(
     () => (isOffline ? 'text-ink/40' : getVibeClass(dominantVibe)),
-    [isOffline, dominantVibe],
+    [isOffline, dominantVibe, getVibeClass],
   );
 
   const roleLabel = useMemo(() => {

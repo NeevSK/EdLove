@@ -1,8 +1,7 @@
-import { ClipboardList, Icon, Text } from '@repo/ui';
+import { ClipboardList } from '@repo/ui/icons';
+import { Icon, Text } from '@repo/ui/primitives';
 import { Pressable } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
-
-import React from 'react';
 
 export function MyEchoesAction() {
   return (

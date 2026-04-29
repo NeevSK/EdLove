@@ -1,5 +1,4 @@
-import { CommunityPresence as UICommunityPresence } from '@repo/ui/components';
-import React from 'react';
+import UICommunityPresence from '@repo/ui/components/social/CommunityPresence';
 import { useCommunityPresence } from '../hooks/useCommunityPresence';
 
 interface CommunityPresenceProps {

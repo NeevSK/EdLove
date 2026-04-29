@@ -2,10 +2,11 @@ import { useNavigation } from '@react-navigation/native';
 import { usePermissions } from '@repo/core';
 import { useStore } from '@repo/core/logic';
 
-import { Box, ScreenWrapper, VStack } from '@repo/ui';
-import { useTheme } from '@repo/ui/primitives';
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { Box } from '@repo/ui/primitives';
+import { VStack } from '@repo/ui/primitives';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // Kernel Imports from @repo/self (Breaking require cycle)
@@ -26,7 +27,7 @@ import { useWellbeingEnrichment } from '../../hooks/useWellbeingEnrichment';
 
 export default function AdminSelfView() {
   const { t } = useTranslation();
-  const navigation = useNavigation<any>();
+  const _navigation = useNavigation<any>();
 
   // State & Kernel Hooks
   const { context } = usePermissions();

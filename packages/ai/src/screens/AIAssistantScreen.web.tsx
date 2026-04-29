@@ -58,7 +58,7 @@ export default function AIAssistantScreen() {
     setTimeout(() => {
       bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, 60);
-  }, [messages, isThinking]);
+  }, []);
 
   const handleSend = useCallback(async () => {
     const content = draft.trim();

@@ -1,4 +1,5 @@
-import { Box, Text, VStack } from '@repo/ui';
+import { Box } from '@repo/ui/primitives';
+import { Text, VStack } from '@repo/ui/primitives';
 import { ScrollView } from '@repo/ui/primitives';
 
 import type React from 'react';

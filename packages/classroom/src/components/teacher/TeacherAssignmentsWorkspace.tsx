@@ -1,22 +1,9 @@
 import { assignmentsAPI } from '@repo/core/api';
 
-import {
-  Box,
-  CalendarDays,
-  ClipboardList,
-  Clock3,
-  Heading,
-  HStack,
-  Icon,
-  Input,
-  InputField,
-  Plus,
-  SanctuaryModal,
-  Sparkles,
-  Spinner,
-  Text,
-  VStack,
-} from '@repo/ui';
+import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
+import { CalendarDays, ClipboardList, Clock3, Plus, Sparkles } from '@repo/ui/icons';
+import { Box, Input } from '@repo/ui/primitives';
+import { HStack, Heading, Icon, InputField, Spinner, Text, VStack } from '@repo/ui/primitives';
 import { Pressable } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
 

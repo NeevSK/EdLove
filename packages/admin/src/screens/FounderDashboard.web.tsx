@@ -26,23 +26,7 @@ import { useStore, useTemporalStore } from '@repo/core/logic';
 import { FounderGlow } from '@repo/ui/components/FounderGlow';
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { TemporalNavigator } from '@repo/ui/components/TemporalNavigator';
-import {
-  Activity,
-  ArrowUpRight,
-  Building,
-  CloudRain,
-  Cloudy,
-  ExternalLink,
-  Globe,
-  LayoutGrid,
-  Plus,
-  Search,
-  Shield,
-  Sun,
-  TrendingUp,
-  Users,
-  Zap,
-} from '@repo/ui/icons';
+import { Activity, ArrowUpRight, Building, CloudRain, Cloudy, ExternalLink, Globe, LayoutGrid, Plus, Search, Shield, Sun, TrendingUp, Users, Zap } from '@repo/ui/icons';
 import { Icon as SanctuaryIcon } from '@repo/ui/primitives';
 
 import { useState } from 'react';

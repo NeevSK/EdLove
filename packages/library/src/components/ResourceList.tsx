@@ -7,20 +7,10 @@
 import { formatDuration, formatFileSize } from '@repo/core';
 import { useStore } from '@repo/core/logic';
 
-import {
-  Actionsheet,
-  ActionsheetBackdrop,
-  ActionsheetContent,
-  ActionsheetDragIndicator,
-  ActionsheetDragIndicatorWrapper,
-  Box,
-  Center,
-  HStack,
-  SanctuaryFlashList,
-  Text,
-  VStack,
-} from '@repo/ui';
-import { SanctuaryButton } from '@repo/ui/components';
+import SanctuaryFlashList from '@repo/ui/components/SanctuaryFlashList';
+import { Actionsheet, ActionsheetBackdrop, ActionsheetContent, ActionsheetDragIndicator, ActionsheetDragIndicatorWrapper, Box } from '@repo/ui/primitives';
+import { HStack, Text, VStack } from '@repo/ui/primitives';
+import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import { useTheme } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
 
@@ -78,7 +68,7 @@ export function ResourceList({
         await libraryAPI.reportBrokenLink(resourceId);
         showToast('Thank you. Our curators will check this link.', 'success');
         if (onRefresh) onRefresh();
-      } catch (err: any) {
+      } catch (_err: any) {
         showToast('Failed to report link.', 'error');
       }
     },
@@ -169,7 +159,7 @@ function FlashPlaySheet({
   onOpenAnotherWay,
   onReportBroken,
 }: FlashPlaySheetProps) {
-  const theme = useTheme();
+  const _theme = useTheme();
   const [resonantIslands, setResonantIslands] = useState<any[]>([]);
 
   useEffect(() => {

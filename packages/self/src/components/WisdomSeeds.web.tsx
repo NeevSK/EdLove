@@ -8,7 +8,7 @@
 import { supabase } from '@repo/core/native';
 
 import { Lightbulb } from 'lucide-react-native';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useWisdom } from '../hooks/useWisdom';
 
 interface WisdomSeedsProps {
@@ -83,7 +83,6 @@ export default function WisdomSeeds({ userId }: WisdomSeedsProps) {
       {showForm && (
         <div style={{ display: 'flex', gap: '8px' }}>
           <input
-            autoFocus
             value={insight}
             onChange={(e) => setInsight(e.target.value)}
             onKeyDown={(e) => {

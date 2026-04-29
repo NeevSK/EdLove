@@ -52,7 +52,7 @@ export function useStudentGoals(userId?: string) {
 
   useEffect(() => {
     refreshData();
-  }, [refreshData, isOnline]);
+  }, [refreshData]);
 
   const addGoal = useCallback(
     async (text: string) => {

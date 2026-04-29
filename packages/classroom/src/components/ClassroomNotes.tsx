@@ -23,32 +23,15 @@ import type { ClassroomNote } from '@repo/core';
 import { coreRuntime } from '@repo/core';
 import { api } from '@repo/core/api';
 
-import {
-  Bell,
-  BookOpen,
-  Box,
-  ChevronDown,
-  Globe,
-  HStack,
-  Icon,
-  Input,
-  InputField,
-  Lock,
-  Megaphone,
-  NotebookPen,
-  Pin,
-  PositiveInvitation,
-  Spinner,
-  StickyNote,
-  Text,
-  useLotusToast,
-  VStack,
-  X,
-} from '@repo/ui';
+import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
+import { useLotusToast } from '@repo/ui/hooks';
+import { Bell, BookOpen, ChevronDown, Globe, Lock, Megaphone, NotebookPen, Pin, StickyNote, X } from '@repo/ui/icons';
+import { Box, Input } from '@repo/ui/primitives';
+import { HStack, Icon, InputField, Spinner, Text, VStack } from '@repo/ui/primitives';
 import { FlatList, KeyboardAvoidingView, Pressable } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -81,7 +64,7 @@ function getRelativeDateLabel(dateStr: string): string {
 
 function groupNotesByDate(notes: ClassroomNote[]): NoteGroup[] {
   const safeNotes = notes || [];
-  const pinned = safeNotes.filter((n) => n && n.is_pinned);
+  const pinned = safeNotes.filter((n) => n?.is_pinned);
   const unpinned = safeNotes.filter((n) => n && !n.is_pinned);
 
   const groups: Record<string, ClassroomNote[]> = {};
@@ -187,7 +170,7 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
       setDraft('');
       setComposing(false);
       hapticLight();
-    } catch (err) {
+    } catch (_err) {
       showToast({ message: 'Could not save note. Please try again.', type: 'error' });
     } finally {
       setSaving(false);

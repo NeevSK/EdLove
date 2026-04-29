@@ -1,4 +1,4 @@
-import path from 'path';
+import path from 'node:path';
 import { runCommand, runPowerShellScript } from '../utils/execution.js';
 import { normalizeTarget } from '../utils/pathUtils.js';
 import type { DocumentService, ReportData } from './DocumentService.js';

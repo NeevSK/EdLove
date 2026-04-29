@@ -6,7 +6,8 @@
 
 import { useTemporalStore } from '@repo/core/logic';
 
-import { Box, Heading, HStack, Spinner, Text, VStack } from '@repo/ui';
+import { Box } from '@repo/ui/primitives';
+import { Heading, Spinner, Text, VStack } from '@repo/ui/primitives';
 import { ScrollView } from '@repo/ui/primitives';
 
 import type React from 'react';

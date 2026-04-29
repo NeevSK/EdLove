@@ -1,4 +1,3 @@
-import { execSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -111,7 +110,7 @@ walk(targetPath, (filePath) => {
       const name = s.split(/\s+as\s+/)[0].trim();
       const subPath = symbolMap.get(name);
 
-      if (subPath && subPath.startsWith(alias)) {
+      if (subPath?.startsWith(alias)) {
         if (!remapped.has(subPath)) remapped.set(subPath, new Set());
         remapped.get(subPath).add(s);
       } else {

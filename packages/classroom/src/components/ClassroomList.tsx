@@ -3,29 +3,16 @@ import { api, identityAPI } from '@repo/core/api';
 import { useFeatureAccess } from '@repo/core/hooks';
 import { useStore } from '@repo/core/logic';
 
-import {
-  BookOpen,
-  Box,
-  ChevronRight,
-  ClipboardCheck,
-  Heading,
-  HStack,
-  Icon,
-  Plus,
-  PositiveInvitation,
-  SanctuaryToast,
-  Spinner,
-  Text,
-  Users,
-  useToast,
-  VStack,
-  Zap,
-} from '@repo/ui';
-import { SkeletonCard } from '@repo/ui/components';
+import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
+import { BookOpen, ChevronRight, ClipboardCheck, Plus, Users, Zap } from '@repo/ui/icons';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Heading, Icon, Spinner, Text, VStack } from '@repo/ui/primitives';
+import { useToast } from '@repo/ui/providers';
+import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { FlatList, Pressable } from '@repo/ui/primitives';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import CreateClassroomModal from './CreateClassroomModal';
 
@@ -68,7 +55,7 @@ export default function ClassroomList({
   const [loading, setLoading] = useState(true);
   const { t } = useTranslation();
   const [error, setError] = useState<string | null>(null);
-  const [internalRefreshTrigger, setInternalRefreshTrigger] = useState(0);
+  const [_internalRefreshTrigger, setInternalRefreshTrigger] = useState(0);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [pendingInitialData, setPendingInitialData] = useState<any>(null);
   const [page, setPage] = useState(0);
@@ -174,7 +161,7 @@ export default function ClassroomList({
     return () => {
       isMounted = false;
     };
-  }, [role, internalRefreshTrigger, externalRefreshTrigger, isGuest, dismissedSampleIds]);
+  }, [role, isGuest, dismissedSampleIds, onDataLoaded, can]);
 
   const handleRetry = () => {
     setInternalRefreshTrigger((prev) => prev + 1);

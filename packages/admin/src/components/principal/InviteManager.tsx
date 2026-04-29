@@ -7,30 +7,10 @@ import {
 import { api } from '@repo/core/api';
 
 import { QRBuilder, QRCodeGenerator } from '@repo/scanner-kit';
-import {
-  ArrowLeft,
-  Box,
-  Button,
-  ButtonText,
-  Copy,
-  Heading,
-  HStack,
-  Icon,
-  Modal,
-  ModalBackdrop,
-  ModalBody,
-  ModalContent,
-  ModalHeader,
-  Heading as ModalHeading,
-  Plus,
-  QrCode,
-  Shield,
-  Spinner,
-  Text,
-  Users,
-  useToast,
-  VStack,
-} from '@repo/ui';
+import { ArrowLeft, Copy, Plus, QrCode, Shield, Users } from '@repo/ui/icons';
+import { Box, Button } from '@repo/ui/primitives';
+import { ButtonText, HStack, Heading, Heading as ModalHeading, Icon, Modal, ModalBackdrop, ModalBody, ModalContent, ModalHeader, Spinner, Text, VStack } from '@repo/ui/primitives';
+import { useToast } from '@repo/ui/providers';
 import { Pressable, ScrollView } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
 

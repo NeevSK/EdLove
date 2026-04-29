@@ -1,6 +1,6 @@
-import { Box, HStack, Text, VStack } from '@repo/ui';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Text, VStack } from '@repo/ui/primitives';
 import { Flower2 } from 'lucide-react-native';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface ThuthimalBadgeProps {

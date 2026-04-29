@@ -5,29 +5,14 @@ import { useEntity } from '@repo/core/hooks';
 import { useStore } from '@repo/core/logic';
 
 import { resolveQR, ScannerModal } from '@repo/scanner-kit';
-import {
-  Box,
-  Button,
-  ButtonText,
-  FormControl,
-  FormControlLabel,
-  FormControlLabelText,
-  Globe,
-  Heading,
-  HStack,
-  Icon,
-  Input,
-  InputField,
-  SanctuaryModal,
-  ScanLine,
-  Spinner,
-  Text,
-  VStack,
-} from '@repo/ui';
+import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
+import { Globe, ScanLine } from '@repo/ui/icons';
+import { Box, Button, Input } from '@repo/ui/primitives';
+import { ButtonText, FormControl, FormControlLabel, FormControlLabelText, HStack, Heading, Icon, InputField, Spinner, Text, VStack } from '@repo/ui/primitives';
 import { Pressable, useTheme } from '@repo/ui/primitives';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import GuestConversionPrompt from '../shared/GuestConversionPrompt';
 
@@ -142,7 +127,7 @@ export default function CreateClassroomModal({
   const [sections, setSections] = useState<any[]>([]);
   const [grades, setGrades] = useState<any[]>([]);
   const [availableSubjects, setAvailableSubjects] = useState<any[]>([]);
-  const [availableClassrooms, setAvailableClassrooms] = useState<any[]>([]);
+  const [_availableClassrooms, setAvailableClassrooms] = useState<any[]>([]);
   const [selectedClassroomId, setSelectedClassroomId] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -160,16 +145,16 @@ export default function CreateClassroomModal({
     if (isOpen && schoolId) {
       fetchSections();
     }
-  }, [isOpen, schoolId]);
+  }, [isOpen, schoolId, fetchSections]);
 
-  const fetchSections = async () => {
+  async function fetchSections() {
     try {
       const fetchedSections = await api.school.getSections(schoolId!);
       setSections(fetchedSections);
     } catch (err) {
       console.error('Error fetching sections:', err);
     }
-  };
+  }
 
   const updateDetails = (updates: Partial<typeof state.details>) => {
     setState((prev) => ({ ...prev, details: { ...prev.details, ...updates } }));
@@ -218,7 +203,7 @@ export default function CreateClassroomModal({
     setSelectedClassroomId('');
 
     if (grade) {
-      const num = parseInt(grade.number);
+      const num = parseInt(grade.number, 10);
       let subjects: any[] = [];
       if (num >= 1 && num <= 5) subjects = SRI_LANKAN_SUBJECTS_BY_LEVEL.primary;
       else if (num >= 6 && num <= 9) subjects = SRI_LANKAN_SUBJECTS_BY_LEVEL.junior;

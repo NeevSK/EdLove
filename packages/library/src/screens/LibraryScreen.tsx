@@ -7,44 +7,23 @@ import { coreRuntime, FeatureGuard } from '@repo/core';
 import { identityAPI } from '@repo/core/api';
 import { useTracking } from '@repo/core/hooks';
 import { useStore, useTemporalStore } from '@repo/core/logic';
-import { supabase } from '@repo/core/native';
 
-import {
-  AssetCreationModal,
-  Box,
-  CollectionCreationModal,
-  FadeInDown,
-  GlobalHeader,
-  Heading,
-  HStack,
-  Icon,
-  ImageBackground,
-  LinearGradient,
-  openExternalURL,
-  ResourceActionSheet,
-  ScreenWrapper,
-  SmartShelf,
-  showExternalLinkOptions,
-  Text,
-  useLotusToast,
-  VStack,
-} from '@repo/ui';
-import {
-  CollectionCard,
-  HorizontalChipRow,
-  SkeletonCard,
-  TemporalNavigator,
-  useBottomTabPadding,
-} from '@repo/ui/components';
+import GlobalHeader from '@repo/ui/components/GlobalHeader';
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { AssetCreationModal, CollectionCreationModal } from '@repo/ui/components/media/AssetCreationPortal';
+import { ResourceActionSheet } from '@repo/ui/components/media/ResourceActionSheet';
+import { SmartShelf } from '@repo/ui/components/SmartShelf';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Icon, ImageBackground, LinearGradient, Text, VStack } from '@repo/ui/primitives';
+import { openExternalURL, showExternalLinkOptions } from '@repo/ui/utils';
+import { FadeInDown } from 'react-native-reanimated';
+import { CollectionCard } from '@repo/ui/components/CollectionCard';
+import { HorizontalChipRow } from '@repo/ui/components/HorizontalChipRow';
+import { useBottomTabPadding } from '@repo/ui/components/ScreenWrapper';
+import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
+import { TemporalNavigator } from '@repo/ui/components/TemporalNavigator';
 import { useRegisterFAB } from '@repo/ui/context/FABContext';
-import {
-  AnimatedView,
-  FlatList,
-  Pressable,
-  RefreshControl,
-  ScrollView,
-  useTheme,
-} from '@repo/ui/primitives';
+import { AnimatedView, FlatList, Pressable, RefreshControl, useTheme } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
 
 import {
@@ -57,15 +36,15 @@ import {
   Play,
   Plus,
 } from 'lucide-react-native';
-import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useReducer, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { libraryAPI } from '../api/library';
 import { CollectionPickerModal } from '../components/CollectionPickerModal';
 import { LibraryThumbnailCard } from '../components/LibraryThumbnailCard';
 import { ResourceList } from '../components/ResourceList';
-import { getOrderedShelfDefs, SHELF_DEFS } from '../constants/shelf';
+import { getOrderedShelfDefs } from '../constants/shelf';
 import { useBookmarkedResources, useLibrary } from '../hooks/useLibrary';
-import { LibraryCollection, type LibraryResource } from '../types';
+import type { LibraryResource } from '../types';
 import { buildLibraryExternalLinkOptions } from '../utils/externalLinks';
 
 const LIBRARY_UI_CATEGORIES = [
@@ -272,7 +251,7 @@ export default function LibraryScreen() {
   const viewScale = useTemporalStore((state) => state.viewScale);
   const deskItems = useStore((state) => state.deskItems);
   const user = useStore((state) => state.user);
-  const showToast = useStore((state) => state.showToast);
+  const _showToast = useStore((state) => state.showToast);
 
   // Search Debouncing (Orchestrated by Reducer)
   React.useEffect(() => {
@@ -337,7 +316,7 @@ export default function LibraryScreen() {
     syncLibrary()
       .catch((err) => console.error('Library sync failed:', err))
       .finally(() => dispatch({ type: 'SET_SYNCING', isSyncing: false }));
-  }, []);
+  }, [syncLibrary, discoverFeature]);
 
   React.useEffect(() => {
     if (
@@ -356,7 +335,7 @@ export default function LibraryScreen() {
           dispatch({ type: 'SET_PUBLIC_COLLECTIONS', collections: cols });
           dispatch({ type: 'MARK_FALLBACK_ATTEMPTED' });
         })
-        .catch((err) => {
+        .catch((_err) => {
           dispatch({ type: 'MARK_FALLBACK_ATTEMPTED' });
         })
         .finally(() => {
@@ -967,7 +946,7 @@ interface HeroBannerProps {
   onPress: () => void;
 }
 
-const HERO_HEIGHT = 220;
+const _HERO_HEIGHT = 220;
 
 const SanctuaryPulse = React.memo(
   ({

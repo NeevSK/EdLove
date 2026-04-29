@@ -7,7 +7,7 @@ import {
   pathLayout,
   treeLayout,
 } from '@repo/graphics';
-import { useReality } from '@repo/ui';
+import { useReality } from '@repo/ui/context';
 import { useMemo } from 'react';
 
 interface LayoutOptions {

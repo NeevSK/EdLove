@@ -1,6 +1,6 @@
+import fs from 'node:fs';
+import path from 'node:path';
 import * as SLGeo from '@nishansanjuka/srilanka_geographics';
-import fs from 'fs';
-import path from 'path';
 import * as SLPostal from 'srilankan-postalcode-backend';
 
 async function main() {

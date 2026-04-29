@@ -6,38 +6,12 @@
 
 import { useFeatureAccess } from '@repo/core/hooks';
 
-import {
-  Box,
-  Button,
-  ButtonText,
-  ErrorBoundary,
-  Heading,
-  HStack,
-  Icon,
-  Input,
-  InputField,
-  Modal,
-  ModalBackdrop,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalHeader,
-  PositiveInvitation,
-  Select,
-  SelectBackdrop,
-  SelectContent,
-  SelectIcon,
-  SelectInput,
-  SelectItem,
-  SelectPortal,
-  SelectTrigger,
-  Text,
-  Toast,
-  ToastTitle,
-  useToast,
-  VStack,
-} from '@repo/ui';
-import { SkeletonCard } from '@repo/ui/components';
+import ErrorBoundary from '@repo/ui/components/ErrorBoundary';
+import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
+import { Box, Input, Toast, ToastTitle } from '@repo/ui/primitives';
+import { HStack, Heading, Icon, InputField, Modal, ModalBackdrop, ModalBody, ModalCloseButton, ModalContent, ModalHeader, Select, SelectBackdrop, SelectContent, SelectIcon, SelectInput, SelectItem, SelectPortal, SelectTrigger, Text, VStack } from '@repo/ui/primitives';
+import { useToast } from '@repo/ui/providers';
+import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { Pressable, ScrollView } from '@repo/ui/primitives';
 
 import {
@@ -47,12 +21,11 @@ import {
   Clock,
   Cloud,
   Coffee,
-  Maximize2,
   Plus,
   Trash,
   X,
 } from 'lucide-react-native';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Animated, { FadeInDown, FadeInRight, Layout } from 'react-native-reanimated';
 import { useTimetable } from '../hooks/useTimetable';
@@ -76,7 +49,7 @@ function DailyRhythmContent() {
 
   const { periods, loading, addPeriod, updatePeriod, deletePeriod } = useTimetable(activeDay);
 
-  const [showFullWeek, setShowFullWeek] = useState(false);
+  const [_showFullWeek, _setShowFullWeek] = useState(false);
   const [showEditor, setShowEditor] = useState(false);
   const [editingPeriod, setEditingPeriod] = useState<Partial<Period> | null>(null);
   const [currentTime, setCurrentTime] = useState(new Date());

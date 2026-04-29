@@ -1,9 +1,10 @@
 import { useNavigation } from '@react-navigation/native';
-import { BookOpen, Box, HStack, Icon, PositiveInvitation, Text, VStack } from '@repo/ui';
-import { SkeletonCard } from '@repo/ui/components';
+import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
+import { BookOpen } from '@repo/ui/icons';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Icon, Text, VStack } from '@repo/ui/primitives';
+import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { Pressable } from '@repo/ui/primitives';
-
-import React from 'react';
 
 interface Classroom {
   id: string;

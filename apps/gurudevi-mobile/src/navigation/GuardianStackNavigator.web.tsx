@@ -10,11 +10,19 @@ const FounderSchoolDashboard = React.lazy(
   () => import('@repo/admin/screens/FounderSchoolDashboard'),
 );
 const GuardianDashboard = React.lazy(() => import('@repo/admin/screens/GuardianDashboard'));
-const GuardianStudentsScreen = React.lazy(() => import('@repo/admin/screens/GuardianStudentsScreen'));
-const GuardianStudentDetailScreen = React.lazy(() => import('@repo/admin/screens/GuardianStudentDetailScreen'));
-const GuardianNotificationsScreen = React.lazy(() => import('@repo/admin/screens/GuardianNotificationsScreen'));
+const GuardianStudentsScreen = React.lazy(
+  () => import('@repo/admin/screens/GuardianStudentsScreen'),
+);
+const GuardianStudentDetailScreen = React.lazy(
+  () => import('@repo/admin/screens/GuardianStudentDetailScreen'),
+);
+const GuardianNotificationsScreen = React.lazy(
+  () => import('@repo/admin/screens/GuardianNotificationsScreen'),
+);
 const GuardianEventsScreen = React.lazy(() => import('@repo/admin/screens/GuardianEventsScreen'));
-const GuardianCommunicationBridgeScreen = React.lazy(() => import('@repo/admin/screens/GuardianCommunicationBridgeScreen'));
+const GuardianCommunicationBridgeScreen = React.lazy(
+  () => import('@repo/admin/screens/GuardianCommunicationBridgeScreen'),
+);
 const PrincipalDashboardWeb = React.lazy(
   () => import('@repo/admin/screens/PrincipalDashboard.web'),
 );

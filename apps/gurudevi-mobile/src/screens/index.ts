@@ -52,17 +52,15 @@ export {
 } from '@repo/profile';
 export { QRHandlerScreen } from '@repo/scanner-kit';
 export { PrivacyLedgerScreen, SelfScreen, SelfScreenWeb } from '@repo/self';
-export {
-  AppSettingsScreen,
-  AppSettingsScreenWeb,
-  AuthScreenWeb,
-  ErrorMessageDemo,
-  NotificationsScreen,
-  NotificationsScreenWeb,
-  OnboardingScreen,
-  OnboardingScreenWeb,
-  OnboardingWrapper,
-  WelcomeScreen,
-  WelcomeScreenWeb,
-} from '@repo/ui/screens';
+export { default as AppSettingsScreen } from '@repo/ui/screens/AppSettingsScreen';
+export { default as AppSettingsScreenWeb } from '@repo/ui/screens/AppSettingsScreen.web';
+export { AuthScreenWeb } from '@repo/ui/screens/AuthScreen.web';
+export { default as ErrorMessageDemo } from '@repo/ui/screens/ErrorMessageDemo';
+export { default as NotificationsScreen } from '@repo/ui/screens/NotificationsScreen';
+export { default as NotificationsScreenWeb } from '@repo/ui/screens/NotificationsScreen.web';
+export { default as OnboardingScreen } from '@repo/ui/screens/OnboardingScreen';
+export { default as OnboardingScreenWeb } from '@repo/ui/screens/OnboardingScreen.web';
+export { OnboardingWrapper } from '@repo/ui/screens/OnboardingWrapper';
+export { default as WelcomeScreen } from '@repo/ui/screens/WelcomeScreen';
+export { default as WelcomeScreenWeb } from '@repo/ui/screens/WelcomeScreen.web';
 export { default as AuthScreen } from './AuthScreen';

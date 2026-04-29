@@ -3,7 +3,8 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import type { GuardianStackParamList } from '@repo/core';
 import { useStore } from '@repo/core/logic';
 
-import { Box, Text, VStack } from '@repo/ui';
+import { Box } from '@repo/ui/primitives';
+import { Text, VStack } from '@repo/ui/primitives';
 import { ScrollView } from '@repo/ui/primitives';
 
 import { useMemo } from 'react';

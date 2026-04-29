@@ -1,13 +1,7 @@
 import type { SocialLink, SocialPlatform } from '@repo/core';
-import {
-  Box,
-  HStack,
-  Icon,
-  openExternalURL,
-  showExternalLinkOptions,
-  Text,
-  VStack,
-} from '@repo/ui';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Icon, Text, VStack } from '@repo/ui/primitives';
+import { openExternalURL, showExternalLinkOptions } from '@repo/ui/utils';
 import { Pressable } from '@repo/ui/primitives';
 
 import * as Clipboard from 'expo-clipboard';

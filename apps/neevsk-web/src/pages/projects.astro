@@ -1,14 +1,11 @@
 ---
 import { getCollection } from 'astro:content';
-import Navigation from '../components/Navigation.astro';
-import RealitySwitch from '../components/RealitySwitch.astro';
-import BaseLayout from '../layouts/BaseLayout.astro';
 import { absoluteUrl } from '../lib/site';
 
 const projectEntries = await getCollection('projects', ({ data }) => !data.draft);
 projectEntries.sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
 
-const structuredData = {
+const _structuredData = {
   '@context': 'https://schema.org',
   '@type': 'CollectionPage',
   name: 'Projects',

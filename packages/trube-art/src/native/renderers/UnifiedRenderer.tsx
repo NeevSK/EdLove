@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { driverManager } from '../DriverManager';
 import { AuroraRendererSkia } from './AuroraRenderer.skia';
@@ -41,7 +41,7 @@ export function UnifiedRenderer(props: TrubeRendererProps) {
     }, 500);
 
     return () => clearTimeout(timeoutId);
-  }, [stage.kind]); // Reset watchdog on stage change
+  }, []); // Reset watchdog on stage change
 
   // Determine the best available Tier at runtime
   const bestBackend = driverManager.getBestBackend();

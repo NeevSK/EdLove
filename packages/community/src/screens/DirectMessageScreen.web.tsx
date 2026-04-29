@@ -97,7 +97,7 @@ export default function DirectMessageScreen() {
 
   useEffect(() => {
     if (!loading) scrollToBottom(false);
-  }, [loading]);
+  }, [loading, scrollToBottom]);
 
   // \u2500\u2500 Real-time subscription \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
   useEffect(() => {

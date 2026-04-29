@@ -1,13 +1,13 @@
 import { useNavigation } from '@react-navigation/native';
 import { usePermissions } from '@repo/core';
-import { useJourneyHistory } from '@repo/core/hooks';
 import { useStore } from '@repo/core/logic';
 
-import { Box, PositiveInvitation, ScreenWrapper, VStack } from '@repo/ui';
-import { useTheme } from '@repo/ui/primitives';
-import { hapticLight } from '@repo/ui/utils/haptics';
+import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { Box } from '@repo/ui/primitives';
+import { VStack } from '@repo/ui/primitives';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 // Kernel Imports from @repo/self (Breaking require cycle)
 import { BaseSelfView } from '../../components/BaseSelfView';
@@ -33,7 +33,7 @@ import { DecisionSection, JournalSection, MoodSection, PrincipalPulse } from '..
 
 export default function PrincipalSelfView() {
   const { t } = useTranslation();
-  const navigation = useNavigation<any>();
+  const _navigation = useNavigation<any>();
 
   // State & Kernel Hooks
   const { context } = usePermissions();

@@ -39,7 +39,7 @@ export const ProfileValidator = {
 
       case 'experience_years': {
         const years = parseInt(stringValue, 10);
-        if (isNaN(years) || years < 0 || years > 60) {
+        if (Number.isNaN(years) || years < 0 || years > 60) {
           return { isValid: false, error: 'Please enter valid years of experience (0-60)' };
         }
         break;

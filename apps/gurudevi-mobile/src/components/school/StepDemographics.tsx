@@ -1,13 +1,6 @@
 import { RELIGIOUS_AFFILIATIONS, STUDENT_TYPES } from '@repo/core';
-import {
-  FormControl,
-  FormControlLabel,
-  FormControlLabelText,
-  HStack,
-  SanctuaryInput,
-  Text,
-  VStack,
-} from '@repo/ui';
+import SanctuaryInput from '@repo/ui/components/SanctuaryInput';
+import { FormControl, FormControlLabel, FormControlLabelText, HStack, Text, VStack } from '@repo/ui/primitives';
 import { Pressable } from '@repo/ui/primitives';
 
 import { Users } from 'lucide-react-native';

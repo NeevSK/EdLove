@@ -1,8 +1,5 @@
 ---
 import { getCollection } from 'astro:content';
-import Navigation from '../components/Navigation.astro';
-import RealitySwitch from '../components/RealitySwitch.astro';
-import BaseLayout from '../layouts/BaseLayout.astro';
 import { absoluteUrl } from '../lib/site';
 
 const archiveEntries = await getCollection('archive', ({ data }) => !data.draft);
@@ -10,7 +7,7 @@ archiveEntries.sort((a, b) => b.data.publishDate.getTime() - a.data.publishDate.
 
 const getArchiveSlug = (id: string) => id.replace(/\.(md|mdx)$/, '');
 
-const formatDate = (date: Date) => {
+const _formatDate = (date: Date) => {
   return date
     .toLocaleDateString('en-CA', {
       year: 'numeric',
@@ -20,7 +17,7 @@ const formatDate = (date: Date) => {
     .replace(/-/g, '.');
 };
 
-const structuredData = {
+const _structuredData = {
   '@context': 'https://schema.org',
   '@type': 'CollectionPage',
   name: 'Archive',

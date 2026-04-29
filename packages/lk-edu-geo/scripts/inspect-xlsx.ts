@@ -1,9 +1,7 @@
-import { createRequire } from 'module';
+import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
 const XLSX = require('xlsx');
-
-import fs from 'fs';
 
 const filePath = 'c:\\Users\\Naween\\projects\\polymath-platform\\lka_admin_boundaries.xlsx';
 
@@ -11,7 +9,7 @@ async function inspect() {
   try {
     console.log(`\uD83E\uDDD0 Detailed Inspection: lka_admin4`);
     const partialWorkbook = XLSX.readFile(filePath, { sheetRows: 5, sheets: ['lka_admin4'] });
-    const worksheet = partialWorkbook.Sheets['lka_admin4'];
+    const worksheet = partialWorkbook.Sheets.lka_admin4;
     const json = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
 
     if (json.length > 0) {

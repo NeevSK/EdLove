@@ -1,6 +1,6 @@
-import { execSync } from 'child_process';
-import fs from 'fs';
-import path from 'path';
+import { execSync } from 'node:child_process';
+import fs from 'node:fs';
+import path from 'node:path';
 
 // Known native-only packages across our monorepo that require shims for web
 const KNOWN_NATIVE_PACKAGES = [
@@ -65,7 +65,7 @@ function getSourceFiles(dirs) {
     let fdCmd = 'fd';
     try {
       execSync('fd --version', { stdio: 'ignore' });
-    } catch (e) {
+    } catch (_e) {
       // Check common WinGet portable path as extreme fallback
       const wingetPath =
         'C:\\Users\\Naween\\AppData\\Local\\Microsoft\\WinGet\\Packages\\sharkdp.fd_Microsoft.Winget.Source_8wekyb3d8bbwe\\fd-v10.4.2-x86_64-pc-windows-msvc\\fd.exe';
@@ -83,7 +83,7 @@ function getSourceFiles(dirs) {
       allFiles.push(...output.split('\n').filter((f) => f.trim()));
     });
     return allFiles;
-  } catch (e) {
+  } catch (_e) {
     // Fallback: Native Node.js recursive walker
     console.log('>>> fd not found, falling back to native file walker...');
 

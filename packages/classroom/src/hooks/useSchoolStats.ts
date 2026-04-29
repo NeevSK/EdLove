@@ -17,7 +17,7 @@ const SCHOOL_INFO_CACHE_KEY = 'gurudevi-school-info-cache';
  * - Shared across Admin, Principal, and Founder views.
  */
 export function useSchoolStats(schoolId: string) {
-  const isOnline = useStore((state) => state.isOnline);
+  const _isOnline = useStore((state) => state.isOnline);
   const { viewDate } = useTemporalStore();
   const isDemoMode = useStore((state) => state.isDemoMode);
   const { isGuest } = useFeatureAccess();
@@ -48,7 +48,7 @@ export function useSchoolStats(schoolId: string) {
       }
     };
     loadCache();
-  }, [schoolId]);
+  }, [schoolId, viewDate]);
 
   // Refresh from API
   const refreshData = useCallback(async () => {
@@ -104,12 +104,12 @@ export function useSchoolStats(schoolId: string) {
     } finally {
       setIsLoading(false);
     }
-  }, [schoolId, isOnline, isDemoMode, viewDate]);
+  }, [schoolId, isDemoMode, viewDate, isGuest]);
 
   // Fetch on mount/online change
   useEffect(() => {
     refreshData();
-  }, [refreshData, isOnline]);
+  }, [refreshData]);
 
   return {
     school,

@@ -1,22 +1,8 @@
-import {
-  ArrowRightCircle,
-  Box,
-  ChevronRight,
-  Heading,
-  HStack,
-  Icon,
-  Plus,
-  School,
-  Search,
-  ShieldCheck,
-  Text,
-  VStack,
-  Zap,
-} from '@repo/ui';
+import { ArrowRightCircle, ChevronRight, Plus, School, Search, ShieldCheck, Zap } from '@repo/ui/icons';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Heading, Icon, Text, VStack } from '@repo/ui/primitives';
 import { Pressable, ScrollView } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
-
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface TeacherOnboardingViewProps {

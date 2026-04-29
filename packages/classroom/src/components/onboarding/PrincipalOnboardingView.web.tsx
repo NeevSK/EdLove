@@ -1,21 +1,7 @@
-import {
-  ArrowRightCircle,
-  Box,
-  Building,
-  Building2,
-  Heading,
-  HStack,
-  Icon,
-  Layout,
-  Plus,
-  Settings2,
-  Text,
-  VStack,
-  Zap,
-} from '@repo/ui';
+import { ArrowRightCircle, Building2, Layout, Plus, Settings2, Zap } from '@repo/ui/icons';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Heading, Icon, Text, VStack } from '@repo/ui/primitives';
 import { Pressable } from '@repo/ui/primitives';
-
-import React from 'react';
 
 interface PrincipalOnboardingViewProps {
   onTryDemo: () => void;

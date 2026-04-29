@@ -1,6 +1,6 @@
 import { useCommentHooks } from '@repo/core/api/hooks';
 import { usePermissions } from '@repo/core/logic';
-import { ConversationSheet } from '@repo/ui/components';
+import { ConversationSheet } from '@repo/ui/components/ConversationSheet';
 import { hapticError, hapticSuccess } from '@repo/ui/primitives';
 import { confirmAction } from '@repo/ui/utils';
 import React from 'react';

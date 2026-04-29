@@ -129,7 +129,7 @@ export const AstroView: React.FC<PerspectiveViewProps> = ({
   );
 
   const renderLinks = useMemo(() => {
-    return data.links.map((link, i) => {
+    return data.links.map((link, _i) => {
       const sourceId =
         typeof link.source === 'string' ? link.source : (link.source as GraphNode).id;
       const targetId =

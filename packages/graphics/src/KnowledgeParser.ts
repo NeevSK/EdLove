@@ -30,7 +30,7 @@ export class KnowledgeParser {
         /(\w+)(\[[^\]]+\]|{[^}]+})?\s*(-{2,}|-+\w+-+>)\s*(\w+)(\[[^\]]+\]|{[^}]+})?/,
       );
 
-      if (arrowMatch && arrowMatch[1] && arrowMatch[4]) {
+      if (arrowMatch?.[1] && arrowMatch[4]) {
         const id1 = arrowMatch[1];
         const label1 = arrowMatch[2];
         const id2 = arrowMatch[4];
@@ -48,7 +48,7 @@ export class KnowledgeParser {
       } else {
         // Try single node definition: A[Label]
         const nodeMatch = trimmed.match(/(\w+)(\[[^\]]+\]|{[^}]+})/);
-        if (nodeMatch && nodeMatch[1] && nodeMatch[2]) {
+        if (nodeMatch?.[1] && nodeMatch[2]) {
           const id = nodeMatch[1];
           const label = nodeMatch[2];
           KnowledgeParser.ensureNode(nodes, id, label);

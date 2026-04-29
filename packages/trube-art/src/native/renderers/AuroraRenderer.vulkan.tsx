@@ -1,4 +1,3 @@
-import React from 'react';
 import { AURORA_SOUL } from '../../core/soul/AuroraSoul';
 import type { TrubeRendererProps } from '../renderers/types';
 import { NativeSubstrateRenderer } from './NativeSubstrateRenderer';

@@ -1,45 +1,17 @@
 import { communityAPI } from '@repo/community';
 import { growthSignalsAPI, handleAPIError, type School } from '@repo/core';
-import { api, identityAPI } from '@repo/core/api';
+import { identityAPI } from '@repo/core/api';
 
-import {
-  Actionsheet,
-  ActionsheetBackdrop,
-  ActionsheetContent,
-  ActionsheetDragIndicator,
-  ActionsheetDragIndicatorWrapper,
-  ActionsheetItem,
-  ActionsheetItemText,
-  Box,
-  Button,
-  ButtonText,
-  FormControl,
-  FormControlLabel,
-  FormControlLabelText,
-  HStack,
-  Icon,
-  Input,
-  InputField,
-  SanctuaryModal,
-  Spinner,
-  Text,
-  Textarea,
-  TextareaInput,
-  useToast,
-  useTranslation,
-  VStack,
-} from '@repo/ui';
+import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
+import { Actionsheet, ActionsheetBackdrop, ActionsheetContent, ActionsheetDragIndicator, ActionsheetDragIndicatorWrapper, ActionsheetItem, ActionsheetItemText, Box, Button, Input, Textarea } from '@repo/ui/primitives';
+import { ButtonText, FormControl, FormControlLabel, FormControlLabelText, HStack, Icon, InputField, Spinner, Text, TextareaInput, VStack } from '@repo/ui/primitives';
+import { useToast } from '@repo/ui/providers';
+import { useTranslation } from 'react-i18next';
 import { Pressable } from '@repo/ui/primitives';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 
-import {
-  ChevronDown,
-  LayoutGrid,
-  School as SchoolIcon,
-  UserPlus,
-  Users,
-} from 'lucide-react-native';
-import React, { useReducer, useState } from 'react';
+import { ChevronDown, LayoutGrid, School as SchoolIcon, Users } from 'lucide-react-native';
+import React, { useReducer } from 'react';
 import { createFounderClassroom, createFounderSchool } from '../../bridge/founderWorkspace';
 
 interface GlobalCreateModalProps {

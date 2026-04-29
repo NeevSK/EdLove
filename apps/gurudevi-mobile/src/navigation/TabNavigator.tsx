@@ -3,8 +3,10 @@ import { useRewards } from '@repo/core/hooks';
 import { usePermissions } from '@repo/core/logic';
 import { useStore } from '@repo/core/store';
 import { BreathGuide } from '@repo/self';
-import { AchievementUnlockOverlay, ErrorBoundary, Modal, ModalContent } from '@repo/ui';
-import { SanctuaryBackground } from '@repo/ui/components';
+import AchievementUnlockOverlay from '@repo/ui/components/AchievementUnlockOverlay';
+import ErrorBoundary from '@repo/ui/components/ErrorBoundary';
+import { Modal, ModalContent } from '@repo/ui/primitives';
+import { SanctuaryBackground } from '@repo/ui/components/SanctuaryBackground';
 
 import {
   Box,

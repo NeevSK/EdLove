@@ -57,7 +57,7 @@ function fixFile(filePath) {
           (m) => `${m}\nimport {\n  ${allIcons.sort().join(',\n  ')},\n} from '@repo/ui';`,
         );
       } else {
-        content = `import {\n  ${allIcons.sort().join(',\n  ')},\n} from '@repo/ui';\n` + content;
+        content = `import {\n  ${allIcons.sort().join(',\n  ')},\n} from '@repo/ui';\n${content}`;
       }
     }
     changed = true;
@@ -67,7 +67,7 @@ function fixFile(filePath) {
   content = content.replace(/\n{3,}/g, '\n\n');
 
   if (changed) {
-    fs.writeFileSync(filePath, content.trim() + '\n', 'utf8');
+    fs.writeFileSync(filePath, `${content.trim()}\n`, 'utf8');
     console.log(`Healed icons: ${path.relative(ROOT, filePath)}`);
   }
 }

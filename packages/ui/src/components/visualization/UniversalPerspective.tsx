@@ -2,7 +2,7 @@ import type { PerspectiveViewProps } from '@repo/core';
 import type React from 'react';
 import { useState } from 'react';
 import { useTheme } from '../../hooks/useTheme';
-import { Box, HStack, Pressable, Text, VStack } from '../../primitives';
+import { Box, HStack, Pressable, Text } from '../../primitives';
 import { AstroView } from './AstroView';
 import { DharmaView } from './DharmaView';
 import { JyotiView } from './JyotiView';
@@ -18,7 +18,7 @@ type PerspectiveType = 'Astro' | 'Dharma' | 'Terra' | 'Vastu' | 'Vatya' | 'Jyoti
  */
 export const UniversalPerspective: React.FC<PerspectiveViewProps> = (props) => {
   const [activeTab, setActiveTab] = useState<PerspectiveType>('Astro');
-  const theme = useTheme();
+  const _theme = useTheme();
 
   const tabs: PerspectiveType[] = ['Astro', 'Dharma', 'Terra', 'Vastu', 'Vatya', 'Jyoti'];
 

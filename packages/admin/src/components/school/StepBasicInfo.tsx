@@ -1,4 +1,6 @@
-import { Globe, Mail, Phone, SanctuaryInput, School, VStack } from '@repo/ui';
+import SanctuaryInput from '@repo/ui/components/SanctuaryInput';
+import { Globe, Mail, Phone, School } from '@repo/ui/icons';
+import { VStack } from '@repo/ui/primitives';
 
 import { useTranslation } from 'react-i18next';
 

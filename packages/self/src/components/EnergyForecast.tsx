@@ -9,13 +9,15 @@ import { usePermissions } from '@repo/core';
 import { useSafeMutation } from '@repo/core/hooks';
 import { supabase } from '@repo/core/native';
 
-import { Box, Heading, HStack, Icon, PositiveInvitation, Text, VStack } from '@repo/ui';
-import { SkeletonCard } from '@repo/ui/components';
+import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Heading, Icon, Text, VStack } from '@repo/ui/primitives';
+import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { Pressable } from '@repo/ui/primitives';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 
-import { Battery, BatteryLow, BatteryMedium, Cloud, Sun, Zap } from 'lucide-react-native';
-import React, { useEffect, useState } from 'react';
+import { Battery, BatteryLow, BatteryMedium, Zap } from 'lucide-react-native';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Animated, { FadeIn, FadeInUp } from 'react-native-reanimated';
 import { useEnergyForecast } from '../hooks/useEnergyForecast';

@@ -9,7 +9,7 @@ export class PerformanceAnalyzer {
   /**
    * Analyze student performance across all metrics
    */
-  async analyzeStudentPerformance(studentId, classId, timeRange) {
+  async analyzeStudentPerformance(studentId, classId, _timeRange) {
     // Fetch student data
     const { data: grades, error: gradesError } = await this.db
       .from('grades')
@@ -40,7 +40,7 @@ export class PerformanceAnalyzer {
     const subjectPerformance = await this.calculateSubjectPerformance(studentId, classId);
     // Attendance impact
     const attendanceData = attendance || [];
-    const attendanceRate =
+    const _attendanceRate =
       attendanceData.filter((a) => a.status === 'present').length / attendanceData.length;
     const attendanceImpact = this.calculateAttendanceCorrelation(grades || [], attendanceData);
     // Submission rate
@@ -128,12 +128,12 @@ export class PerformanceAnalyzer {
     if (difference < -5) return 'declining';
     return 'stable';
   }
-  async calculateClassRank(studentId, classId, studentGPA) {
+  async calculateClassRank(_studentId, _classId, _studentGPA) {
     // This would need to be implemented based on your data structure
     // For now, return placeholder values
     return { rank: 1, totalStudents: 30 };
   }
-  async calculateSubjectPerformance(studentId, classId) {
+  async calculateSubjectPerformance(_studentId, _classId) {
     // This would need subject-specific data
     return { Math: 85, Science: 78, English: 92 };
   }
@@ -160,11 +160,11 @@ export class PerformanceAnalyzer {
     );
     return gpas;
   }
-  async calculateClassAttendanceCorrelation(classId) {
+  async calculateClassAttendanceCorrelation(_classId) {
     // Implementation would calculate correlation between attendance and grades across class
     return 0.75;
   }
-  async calculateClassSubmissionCorrelation(classId) {
+  async calculateClassSubmissionCorrelation(_classId) {
     // Implementation would calculate correlation between submission rates and grades
     return 0.82;
   }

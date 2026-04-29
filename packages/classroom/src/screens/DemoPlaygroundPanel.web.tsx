@@ -1,4 +1,5 @@
-import { Icon, X, Zap } from '@repo/ui';
+import { X, Zap } from '@repo/ui/icons';
+import { Icon } from '@repo/ui/primitives';
 /**
  * DemoPlaygroundPanel.web.tsx
  *
@@ -12,7 +13,7 @@ import { Icon, X, Zap } from '@repo/ui';
  *   left: var(--sidebar-w)   = 240px desktop / 0px mobile
  */
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import StudentDashboard from './StudentDashboard';
 import TeacherDashboard from './TeacherDashboard';
 

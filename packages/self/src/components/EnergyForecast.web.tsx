@@ -6,12 +6,13 @@
 
 import { useTemporalStore } from '@repo/core/logic';
 
-import { Box, Heading, HStack, Icon, Input, InputField, Text, VStack } from '@repo/ui';
-import { SkeletonCard } from '@repo/ui/components';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Heading, Icon, InputField, Text, VStack } from '@repo/ui/primitives';
+import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { Pressable } from '@repo/ui/primitives';
 
 import { Battery, CheckCircle2 } from 'lucide-react-native';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Animated, { FadeIn, SlideInUp } from 'react-native-reanimated';
 import { ENERGY_COLORS } from '../constants/wellbeing';
 import { useEnergyForecast } from '../hooks/useEnergyForecast';

@@ -6,12 +6,13 @@
 
 import { supabase } from '@repo/core/native';
 
-import { Box, Heading, HStack, Icon, Text, VStack } from '@repo/ui';
-import { SkeletonCard } from '@repo/ui/components';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Icon, Text, VStack } from '@repo/ui/primitives';
+import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { ScrollView } from '@repo/ui/primitives';
 
-import { Award, BookOpen, ChevronRight, MessageSquare } from 'lucide-react-native';
-import React, { useEffect, useState } from 'react';
+import { BookOpen, MessageSquare } from 'lucide-react-native';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
@@ -56,9 +57,9 @@ export default function MyGradesView({ userId }: MyGradesViewProps) {
       return;
     }
     fetchGrades();
-  }, [userId]);
+  }, [userId, fetchGrades]);
 
-  const fetchGrades = async () => {
+  async function fetchGrades() {
     setIsLoading(true);
     try {
       const { data } = await supabase
@@ -80,7 +81,7 @@ export default function MyGradesView({ userId }: MyGradesViewProps) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }
 
   if (isLoading) {
     return (

@@ -1,23 +1,20 @@
 ---
-import { getCollection, render } from 'astro:content';
-import CinematicBackground from '../../components/CinematicBackground.astro';
-import ExpandableContent from '../../components/ExpandableContent.astro';
-import Layout from '../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
 import { absoluteUrl } from '../../lib/site';
 
 const libraryEntries = await getCollection('library', ({ data }) => !data.draft);
 
-const thinkers = libraryEntries
+const _thinkers = libraryEntries
   .filter((e) => e.data.category === 'thinker')
   .sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
-const frameworks = libraryEntries
+const _frameworks = libraryEntries
   .filter((e) => e.data.category === 'framework')
   .sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
-const stories = libraryEntries
+const _stories = libraryEntries
   .filter((e) => e.data.category === 'story')
   .sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
 
-const structuredData = {
+const _structuredData = {
   '@context': 'https://schema.org',
   '@type': 'CollectionPage',
   name: 'The Epistemic Core | EdLove',

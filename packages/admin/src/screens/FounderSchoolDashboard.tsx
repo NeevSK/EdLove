@@ -4,24 +4,14 @@ import type { FounderStackParamList } from '@repo/core';
 import { useFeatureAccess } from '@repo/core/hooks';
 import { useStore } from '@repo/core/logic';
 
-import {
-  Box,
-  Compass,
-  GlobalHeader,
-  Globe,
-  Heading,
-  Heart,
-  HStack,
-  Icon,
-  Plus,
-  PositiveInvitation,
-  SandboxBanner,
-  ScreenWrapper,
-  Text,
-  VStack,
-  Zap,
-} from '@repo/ui';
-import { SkeletonCard } from '@repo/ui/components';
+import GlobalHeader from '@repo/ui/components/GlobalHeader';
+import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
+import SandboxBanner from '@repo/ui/components/SandboxBanner';
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { Compass, Globe, Heart, Plus, Zap } from '@repo/ui/icons';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Heading, Icon, Text, VStack } from '@repo/ui/primitives';
+import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { Pressable, ScrollView } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
 

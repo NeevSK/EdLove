@@ -6,5 +6,6 @@ export * from './dialogs';
 export * from './haptics';
 export * from './linking';
 export * from './SanctuaryLocation';
+export * from './shareAction';
 export * from './stringUtils';
 export * from './themeColors';

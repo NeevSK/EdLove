@@ -1,17 +1,6 @@
-import {
-  Box,
-  Button,
-  ButtonText,
-  Compass,
-  DoorOpen,
-  Heading,
-  HStack,
-  Icon,
-  School,
-  Text,
-  Users,
-  VStack,
-} from '@repo/ui';
+import { Compass, DoorOpen, School, Users } from '@repo/ui/icons';
+import { Box, Button } from '@repo/ui/primitives';
+import { ButtonText, HStack, Heading, Icon, Text, VStack } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
 
 interface PrincipalOnboardingViewProps {

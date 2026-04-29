@@ -9,7 +9,7 @@ const FounderDashboard = React.lazy(() => import('@repo/admin/screens/FounderDas
 const FounderSchoolDashboard = React.lazy(
   () => import('@repo/admin/screens/FounderSchoolDashboard'),
 );
-const AdminDashboard = React.lazy(() => import('@repo/admin/screens/AdminDashboard'));
+const AdminDashboard = React.lazy(() => import('@repo/admin/screens/AdminDashboard.web'));
 const AdminIncidentQueue = React.lazy(() => import('@repo/admin/screens/AdminIncidentQueue'));
 const AdminTenantDetail = React.lazy(() => import('@repo/admin/screens/AdminTenantDetail'));
 const AdminAuthorityRepair = React.lazy(() => import('@repo/admin/screens/AdminAuthorityRepair'));

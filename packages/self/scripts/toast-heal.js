@@ -1,7 +1,7 @@
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
 
-const UI_PRIMITIVES = ['useToast', 'SanctuaryToast', 'useSanctuaryToast'];
+const _UI_PRIMITIVES = ['useToast', 'SanctuaryToast', 'useSanctuaryToast'];
 
 function healToast(filePath) {
   if (!filePath.endsWith('.tsx') && !filePath.endsWith('.ts')) return;
@@ -30,14 +30,14 @@ function healToast(filePath) {
   // Complex regex to capture the message and type from SanctuaryToast inside render
   const toastRegex =
     /toast\.show\(\{\s*placement:.*?\s*render:.*?\((.*?)\).*?<SanctuaryToast\s+message=\{(.*?)\}\s+type="(.*?)"\s+.*?\/>\s+\)\s*\}\)/gs;
-  content = content.replace(toastRegex, (match, idParam, message, type) => {
+  content = content.replace(toastRegex, (_match, _idParam, message, type) => {
     return `showToast({ message: ${message}, type: "${type}" })`;
   });
 
   // Handle string literal messages: message="msg"
   const toastStringLimitRegex =
     /toast\.show\(\{\s*placement:.*?\s*render:.*?\((.*?)\).*?<SanctuaryToast\s+message="(.*?)"\s+type="(.*?)"\s+.*?\/>\s+\)\s*\}\)/gs;
-  content = content.replace(toastStringLimitRegex, (match, idParam, message, type) => {
+  content = content.replace(toastStringLimitRegex, (_match, _idParam, message, type) => {
     return `showToast({ message: "${message}", type: "${type}" })`;
   });
 

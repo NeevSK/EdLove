@@ -4,9 +4,10 @@
  * Standardized to Zero-Legacy: purged raw HTML/inline styles and fixed syntax corruption.
  */
 
-import { Box, Button, ButtonText, Heading, HStack, Icon, Text, VStack } from '@repo/ui';
-import { Activity, Pause, Play, RotateCcw, ShieldCheck, Sparkles, Wind } from 'lucide-react-native';
-import React, { useEffect, useRef, useState } from 'react';
+import { Box, Button } from '@repo/ui/primitives';
+import { ButtonText, HStack, Heading, Icon, Text, VStack } from '@repo/ui/primitives';
+import { Activity, Pause, Play, RotateCcw, ShieldCheck, Wind } from 'lucide-react-native';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface BreathGuideProps {

@@ -25,7 +25,6 @@ import type {
   ResourceFilters,
 } from '../types';
 import { knowledgeDB } from './database';
-import { knowledgeSync } from './sync';
 
 // ============================================================================
 // HELPERS

@@ -10,27 +10,10 @@
  */
 
 import { handleAPIError } from '@repo/core';
-import {
-  Box,
-  Button,
-  ButtonText,
-  Camera,
-  CheckCircle2,
-  Heading,
-  HStack,
-  Icon,
-  Image as ImageIcon,
-  Modal,
-  ModalBackdrop,
-  ModalContent,
-  SanctuaryModal,
-  Send,
-  Spinner,
-  Text,
-  Trash2,
-  VStack,
-  X,
-} from '@repo/ui';
+import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
+import { CheckCircle2, Send, X } from '@repo/ui/icons';
+import { Box, Button } from '@repo/ui/primitives';
+import { ButtonText, HStack, Icon, Image as ImageIcon, Spinner, Text, VStack } from '@repo/ui/primitives';
 import type React from 'react';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';

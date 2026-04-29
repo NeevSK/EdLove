@@ -1,16 +1,6 @@
-import {
-  AlertCircle,
-  Box,
-  ClipboardCheck,
-  HStack,
-  Icon,
-  Spinner,
-  Text,
-  TrendingUp,
-  UserPlus,
-  Users,
-  VStack,
-} from '@repo/ui';
+import { AlertCircle, ClipboardCheck, TrendingUp, UserPlus, Users } from '@repo/ui/icons';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Icon, Spinner, Text, VStack } from '@repo/ui/primitives';
 import { Pressable } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
 

@@ -6,16 +6,7 @@ import { useStore } from '@repo/core/logic';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { useRegisterFAB } from '@repo/ui/context/FABContext';
-import {
-  ChevronRight,
-  HeartPulse,
-  LayoutGrid,
-  Plus,
-  School as SchoolIcon,
-  Users,
-  Wind,
-  Zap,
-} from '@repo/ui/icons';
+import { ChevronRight, HeartPulse, LayoutGrid, Plus, School as SchoolIcon, Users, Wind, Zap } from '@repo/ui/icons';
 import {
   Box,
   Heading,
@@ -36,7 +27,7 @@ export default function FounderDashboard() {
   const { t } = useTranslation();
   const user = useStore((s) => s.user);
   const setBreathingOpen = useStore((s) => s.setBreathingOpen);
-  const isDemoMode = useStore((s) => s.isDemoMode);
+  const _isDemoMode = useStore((s) => s.isDemoMode);
   const navigation = useNavigation<NativeStackNavigationProp<FounderStackParamList>>();
 
   const { stats, schools, isLoading, refreshData } = useFounderEcosystemStats();

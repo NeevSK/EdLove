@@ -1,5 +1,4 @@
 import type { DSDivision, GNDivision } from '@intuitui-labs/lk-edu-geo';
-import * as LKEduGeo from '@intuitui-labs/lk-edu-geo';
 import * as Location from 'expo-location';
 import { useCallback, useMemo, useState } from 'react';
 import { Drilldown } from '../data/AdministrativeHierarchy';
@@ -74,7 +73,7 @@ export function useSriLankaLocation(initialState?: Partial<LocationState>) {
 
       if (address) {
         // Heuristic: Match city/district from reverse geocode
-        const provinces = Drilldown.getProvinces();
+        const _provinces = Drilldown.getProvinces();
         const districts = Drilldown.getDistricts('');
         const district = districts.find(
           (d) =>

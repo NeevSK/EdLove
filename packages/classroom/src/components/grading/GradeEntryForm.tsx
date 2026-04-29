@@ -5,20 +5,9 @@
  */
 
 import { marksToGPA } from '@repo/analytics';
-import {
-  Box,
-  Button,
-  ButtonText,
-  Heading,
-  HStack,
-  Input,
-  InputField,
-  Text,
-  Textarea,
-  TextareaInput,
-  VStack,
-} from '@repo/ui';
-import React, { useState } from 'react';
+import { Box, Button, Input, Textarea } from '@repo/ui/primitives';
+import { ButtonText, HStack, Heading, InputField, Text, TextareaInput, VStack } from '@repo/ui/primitives';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface GradeEntryFormProps {
@@ -50,7 +39,7 @@ export default function GradeEntryForm({
     const marksValue = parseFloat(marks);
 
     // Validation
-    if (isNaN(marksValue) || marksValue < 0 || marksValue > 100) {
+    if (Number.isNaN(marksValue) || marksValue < 0 || marksValue > 100) {
       setError(t('grades.invalidMarks') || 'Invalid marks');
       return;
     }

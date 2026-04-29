@@ -1,7 +1,7 @@
 import { coreRuntime, mediaInitialState, mediaReducer } from '@repo/core';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { Pause, Play, RotateCcw, RotateCw, X } from 'lucide-react-native';
-import React, { useCallback, useEffect, useReducer, useRef } from 'react';
+import { useCallback, useEffect, useReducer, useRef } from 'react';
 import { Pressable } from 'react-native';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 import { useTheme } from '../../hooks/useTheme';

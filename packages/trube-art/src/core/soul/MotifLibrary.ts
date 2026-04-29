@@ -5,10 +5,10 @@ export const MotifLibrary = {
    * LotusSketch  A central focal geometry for spiritual clarity.
    * Implementation: Procedural petals using polar coordinates and jittered SDF.
    */
-  lotus: (uv: TSLExpression, time: TSLExpression, style: 'draft' | 'ink' | 'luminous') => {
+  lotus: (uv: TSLExpression, time: TSLExpression, _style: 'draft' | 'ink' | 'luminous') => {
     const centered = tsl.sub(uv, tsl.vec2(tsl.float(0.5), tsl.float(0.5)));
     const dist = tsl.length(centered);
-    const angle = tsl.sin(tsl.mul(dist, tsl.float(10.0))); // Rough petal base
+    const _angle = tsl.sin(tsl.mul(dist, tsl.float(10.0))); // Rough petal base
 
     // Petal shape based on distance and angle
     const petal = tsl.smoothstep(tsl.float(0.35), tsl.float(0.3), dist);
@@ -37,7 +37,7 @@ export const MotifLibrary = {
   /**
    * BranchFlow  Directional, organic structure for peripheral air.
    */
-  branch: (uv: TSLExpression, time: TSLExpression) => {
+  branch: (uv: TSLExpression, _time: TSLExpression) => {
     const noise = tsl.fbm(tsl.mul(uv, tsl.float(5.0)), 4);
     const structure = tsl.smoothstep(tsl.float(0.45), tsl.float(0.5), noise);
     return tsl.mul(tsl.env.shadow(), structure);

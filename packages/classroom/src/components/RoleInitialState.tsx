@@ -1,38 +1,12 @@
 import { useStore } from '@repo/core/logic';
 
-import {
-  Activity,
-  ArrowRight,
-  BookOpen,
-  Box,
-  Button,
-  ButtonText,
-  Center,
-  ChevronDown,
-  Compass,
-  Flower,
-  Globe,
-  Heading,
-  Heart,
-  HStack,
-  Icon,
-  LayoutGrid,
-  Plus,
-  School,
-  Search,
-  Shield,
-  Star,
-  Text,
-  Users,
-  useThemedColors,
-  VStack,
-  Zap,
-} from '@repo/ui';
+import { useThemedColors } from '@repo/ui/hooks';
+import { Activity, ArrowRight, BookOpen, Compass, Flower, Heart, LayoutGrid, Plus, School, Shield, Star, Users, Zap } from '@repo/ui/icons';
+import { Box, Button } from '@repo/ui/primitives';
+import { ButtonText, Center, HStack, Heading, Icon, Text, VStack } from '@repo/ui/primitives';
 import { Pressable } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
 import { hapticLight } from '@repo/ui/utils/haptics';
-
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface SampleItem {

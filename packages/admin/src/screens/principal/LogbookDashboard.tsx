@@ -1,24 +1,8 @@
-import {
-  AlertTriangle,
-  ArrowLeft,
-  Box,
-  Button,
-  ButtonIcon,
-  ButtonText,
-  Footprints,
-  Heading,
-  HStack,
-  Icon,
-  LotusDropdown,
-  Medal,
-  Plus,
-  StickyNote,
-  Text,
-  Textarea,
-  TextareaInput,
-  VStack,
-} from '@repo/ui';
-import { SkeletonCard } from '@repo/ui/components';
+import LotusDropdown from '@repo/ui/components/LotusDropdown';
+import { AlertTriangle, ArrowLeft, Footprints, Medal, Plus, StickyNote } from '@repo/ui/icons';
+import { Box, Button, Textarea } from '@repo/ui/primitives';
+import { ButtonIcon, ButtonText, HStack, Heading, Icon, Text, TextareaInput, VStack } from '@repo/ui/primitives';
+import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { Pressable, ScrollView } from '@repo/ui/primitives';
 import { hapticLight, hapticMedium, hapticSuccess } from '@repo/ui/utils/haptics';
 

@@ -1,4 +1,6 @@
-import { ArrowLeft, Box, HStack, Icon, ScreenWrapper, ShieldAlert, Text, VStack } from '@repo/ui';
+import { ArrowLeft, ShieldAlert } from '@repo/ui/icons';
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { Box, HStack, Icon, Text, VStack } from '@repo/ui/primitives';
 import { Pressable } from '@repo/ui/primitives';
 
 import type React from 'react';

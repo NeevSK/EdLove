@@ -13,12 +13,15 @@
  */
 
 import { useNavigation } from '@react-navigation/native';
-import { Box, GlobalHeader, HStack, ScreenWrapper, Text, VStack } from '@repo/ui';
-import { SanctuaryButton } from '@repo/ui/components';
+import GlobalHeader from '@repo/ui/components/GlobalHeader';
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { Box } from '@repo/ui/primitives';
+import { HStack } from '@repo/ui/primitives';
+import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import { useTheme } from '@repo/ui/primitives';
 
 import { Bookmark, ExternalLink, RefreshCw } from 'lucide-react-native';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 interface PDFViewerScreenProps {
   route: {

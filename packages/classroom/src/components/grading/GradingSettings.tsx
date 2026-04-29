@@ -4,22 +4,10 @@
  * Modal/Bottom Sheet for configuring classroom grading preferences.
  */
 
-import {
-  Box,
-  Button,
-  ButtonText,
-  Heading,
-  HStack,
-  Radio,
-  RadioGroup,
-  RadioIcon,
-  RadioIndicator,
-  RadioLabel,
-  Switch,
-  Text,
-  VStack,
-} from '@repo/ui';
-import React, { useState } from 'react';
+import { RadioIcon } from '@repo/ui/icons';
+import { Box, Button, Radio, RadioGroup, RadioIndicator, RadioLabel } from '@repo/ui/primitives';
+import { ButtonText, HStack, Heading, Switch, Text, VStack } from '@repo/ui/primitives';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface GradingSettingsProps {

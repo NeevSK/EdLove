@@ -1,7 +1,7 @@
 import { useNavigation } from '@react-navigation/native';
-import { VideoPlayer } from '@repo/ui/components';
+import { VideoPlayer } from '@repo/ui/components/media/VideoPlayer';
 
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 
 interface VideoPlayerScreenProps {
   route: {

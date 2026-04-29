@@ -1,4 +1,5 @@
-import { Box, Heading, HStack, Icon, Text, VStack } from '@repo/ui';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Heading, Icon, Text, VStack } from '@repo/ui/primitives';
 import { Pressable } from '@repo/ui/primitives';
 
 import { Plus } from 'lucide-react-native';

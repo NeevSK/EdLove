@@ -3,7 +3,6 @@
  * Functional logic for the Agentic Sanctuary assistants.
  */
 
-import { AuthorityTier } from '@repo/core';
 import { supabase } from '@repo/core/native';
 
 export interface CoordinationGap {
@@ -111,7 +110,7 @@ export const ReliefCoordinator = {
   /**
    * Validates if a proposed action aligns with school policies.
    */
-  applySchoolPolicies: (action: any, manifesto: any): boolean => {
+  applySchoolPolicies: (_action: any, _manifesto: any): boolean => {
     return true;
   },
 };

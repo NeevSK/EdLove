@@ -4,27 +4,15 @@ import { usePermissions } from '@repo/core/logic';
 import { supabase } from '@repo/core/native';
 import { useStore } from '@repo/core/store';
 import type { CommunityStackParamList } from '@repo/core/types';
-import {
-  GlobalHeader,
-  SanctuaryButton,
-  SanctuaryCard,
-  ScreenWrapper,
-  UserAvatar,
-} from '@repo/ui/components';
+import GlobalHeader from '@repo/ui/components/GlobalHeader';
+import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
+import { SanctuaryCard } from '@repo/ui/components/SanctuaryCard';
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { UserAvatar } from '@repo/ui/components/UserAvatar';
 import { useRegisterFAB } from '@repo/ui/context';
-import {
-  BadgeCheck,
-  BookOpen,
-  Info,
-  MessageSquare,
-  School,
-  Send,
-  Shield,
-  ShieldAlert,
-  ThumbsUp,
-} from '@repo/ui/icons';
+import { BadgeCheck, BookOpen, Info, MessageSquare, School, Send, Shield, ShieldAlert, ThumbsUp } from '@repo/ui/icons';
 import { Box, HStack, Icon, Spinner, Text, VStack } from '@repo/ui/primitives';
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView } from 'react-native';
 import { communityAPI } from '../api/community';

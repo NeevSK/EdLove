@@ -101,7 +101,7 @@ walk(targetPath, (filePath) => {
         changed = true;
         return `from '${finalImport}'`;
       }
-    } catch (e) {
+    } catch (_e) {
       // Ignore errors for invalid paths
     }
     return match;
@@ -109,12 +109,12 @@ walk(targetPath, (filePath) => {
 
   // Special Rule: Prevent a package from importing its own barrel
   // Example: in packages/core/src/logic/foo.ts, "import { x } from '@repo/core'" is circular at runtime if not careful
-  if (currentPkg && currentPkg.alias) {
+  if (currentPkg?.alias) {
     const selfImportRegex = new RegExp(`from\\s+['"]${currentPkg.alias}(/[^'"]*)?['"]`, 'g');
     if (selfImportRegex.test(content)) {
       // Check if this file IS the index. If it is, self-barrel import is a definite no-no for internal files.
       // If it's NOT the index, it should use relative paths to siblings to avoid cycles.
-      content = content.replace(selfImportRegex, (match, subPath) => {
+      content = content.replace(selfImportRegex, (match, _subPath) => {
         const isIndex = filePath.endsWith('index.ts') || filePath.endsWith('index.tsx');
         if (!isIndex) {
           console.error(

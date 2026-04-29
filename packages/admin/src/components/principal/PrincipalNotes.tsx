@@ -2,21 +2,12 @@ import type { PrincipalNote } from '@repo/core';
 import { coreRuntime } from '@repo/core';
 import { api } from '@repo/core/api';
 
-import {
-  ActivityIndicator,
-  Box,
-  GlobalHeader,
-  HStack,
-  Icon,
-  Input,
-  InputField,
-  PositiveInvitation,
-  ScreenWrapper,
-  Text,
-  useToast,
-  VStack,
-} from '@repo/ui';
-import { SanctuaryButton } from '@repo/ui/components';
+import GlobalHeader from '@repo/ui/components/GlobalHeader';
+import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { ActivityIndicator, Box, Input } from '@repo/ui/primitives';
+import { HStack, Icon, InputField, Text, VStack } from '@repo/ui/primitives';
+import { useToast } from '@repo/ui/providers';
 import { FlatList, KeyboardAvoidingView, Pressable } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
 
@@ -165,9 +156,9 @@ function getRelativeDateLabel(dateStr: string | undefined): string {
 
 function groupNotes(notes: PrincipalNote[]): NoteGroup[] {
   const safeNotes = notes || [];
-  const pinned = safeNotes.filter((n) => n && n.is_pinned && !n.is_done);
+  const pinned = safeNotes.filter((n) => n?.is_pinned && !n.is_done);
   const active = safeNotes.filter((n) => n && !n.is_pinned && !n.is_done);
-  const done = safeNotes.filter((n) => n && n.is_done);
+  const done = safeNotes.filter((n) => n?.is_done);
 
   const grouped: Record<string, PrincipalNote[]> = {};
   for (const note of active) {
@@ -400,7 +391,7 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
         </Box>
       );
     },
-    [handleToggleDone, handleTogglePin, handleDelete],
+    [handleToggleDone, handleTogglePin, handleDelete, NoteCard],
   );
 
   return (

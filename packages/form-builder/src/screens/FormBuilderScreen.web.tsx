@@ -1,5 +1,5 @@
-import { Box, ScreenWrapper } from '@repo/ui';
-import React from 'react';
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { Box } from '@repo/ui/primitives';
 import { useTranslation } from 'react-i18next';
 import { FormBuilder } from '../FormBuilder';
 

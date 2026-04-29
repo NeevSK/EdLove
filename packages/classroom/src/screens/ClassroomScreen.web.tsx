@@ -2,20 +2,12 @@ import { useNavigation } from '@react-navigation/native';
 import { usePermissions } from '@repo/core';
 import { useStore } from '@repo/core/logic';
 
-import {
-  ArrowRight,
-  Box,
-  Heading,
-  Icon,
-  LogIn,
-  School as SchoolIcon,
-  ScreenWrapper,
-  Text,
-} from '@repo/ui';
-import { WebScreenHeader } from '@repo/ui/components';
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { ArrowRight } from '@repo/ui/icons';
+import { Box } from '@repo/ui/primitives';
+import { Heading, Icon, Text } from '@repo/ui/primitives';
+import { WebScreenHeader } from '@repo/ui/components/WebScreenHeader.web';
 import { Pressable } from '@repo/ui/primitives';
-
-import React from 'react';
 import CreateClassroomModal from '../components/CreateClassroomModal';
 import PrincipalOnboardingView from '../components/onboarding/PrincipalOnboardingView.web';
 import PrincipalDashboardWebSurface from './PrincipalDashboard.web';
@@ -35,7 +27,7 @@ export default function ClassroomScreenWeb() {
   const navigation = useNavigation<any>();
 
   const isWanderer = context.isAnonymous;
-  const hasContext = true; // Simplified for restoration context
+  const _hasContext = true; // Simplified for restoration context
   const hasSchoolId = !!user?.school_id && user.school_id !== 'mock-school';
 
   const isTeacherLike = can('manage', 'TeacherDashboard');

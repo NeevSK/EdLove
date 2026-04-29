@@ -2,16 +2,12 @@ import { AnalyticsProvider } from '@repo/analytics/ui';
 import { SyncManager, usePermissions } from '@repo/core';
 import { useAuth } from '@repo/core/logic';
 
-import {
-  Box,
-  Center,
-  EnvironmentProvider,
-  ExternalLinkProvider,
-  GluestackUIProvider,
-  Spinner,
-  ToastProvider,
-} from '@repo/ui';
-import { SanctuaryGlobalStyles } from '@repo/ui/components';
+import { EnvironmentProvider, ExternalLinkProvider } from '@repo/ui/context';
+import { GluestackUIProvider } from '@repo/ui/gluestack';
+import { Box } from '@repo/ui/primitives';
+import { Center, Spinner } from '@repo/ui/primitives';
+import { ToastProvider } from '@repo/ui/providers';
+import { SanctuaryGlobalStyles } from '@repo/ui/components/SanctuaryGlobalStyles';
 import { FABProvider } from '@repo/ui/context/FABContext';
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';

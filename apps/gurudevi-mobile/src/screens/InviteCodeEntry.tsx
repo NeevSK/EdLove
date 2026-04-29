@@ -5,7 +5,7 @@
  */
 
 import { InviteCodeEntry as PackageInviteCodeEntry } from '@repo/community';
-import { ErrorBoundary } from '@repo/ui';
+import ErrorBoundary from '@repo/ui/components/ErrorBoundary';
 
 const InviteCodeWrapper = (props: Record<string, unknown>) => (
   <ErrorBoundary name="Enter Invitation Code">

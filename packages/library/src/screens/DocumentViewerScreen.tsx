@@ -1,8 +1,8 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useMediaDownloader } from '@repo/core/hooks';
 
-import { UniversalDocumentPortal } from '@repo/ui';
-import React, { useCallback, useState } from 'react';
+import { UniversalDocumentPortal } from '@repo/ui/components/media/UniversalDocumentPortal';
+import { useCallback, useState } from 'react';
 
 function resolveDocumentMimeType(format?: string) {
   switch (format?.toLowerCase()) {

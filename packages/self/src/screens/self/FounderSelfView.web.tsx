@@ -2,13 +2,12 @@
 import { usePermissions } from '@repo/core';
 import { useJourneyHistory } from '@repo/core/hooks';
 import { useStore } from '@repo/core/logic';
-
-import { ink, useThemedColors } from '@repo/ui';
-import { JourneyHistoryCard, TemporalProvider, TemporalShield } from '@repo/ui/components';
+import { JourneyHistoryCard } from '@repo/ui/components/JourneyHistoryCard';
+import { TemporalProvider } from '@repo/ui/components/TemporalProvider';
+import { TemporalShield } from '@repo/ui/components/TemporalShield';
 import { useTheme } from '@repo/ui/primitives';
 
 import { Lightbulb, Sparkles } from 'lucide-react-native';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { BaseSelfView } from '../../components/BaseSelfView';
 import { ImpactRipplesCard } from '../../components/ImpactRipplesCard';
@@ -28,10 +27,10 @@ import { MoodSection, PhilosophySection, VisionSection } from '../../views/secti
 
 export default function FounderSelfView() {
   const { t } = useTranslation();
-  const navigation = useNavigation<any>();
+  const _navigation = useNavigation<any>();
   const { context } = usePermissions();
   const { userId } = context;
-  const colors = useTheme().scene;
+  const _colors = useTheme().scene;
   const justFinishedOnboarding = useStore((s) => s.justFinishedOnboarding);
   const setJustFinishedOnboarding = useStore((s) => s.setJustFinishedOnboarding);
   const { warmMirrorText, ripples } = useWellbeingEnrichment(userId);

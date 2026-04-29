@@ -1,16 +1,7 @@
-import {
-  Box,
-  GitMerge,
-  GlassCard,
-  Heading,
-  HStack,
-  Icon,
-  Share2,
-  Shield,
-  Text,
-  VStack,
-  Zap,
-} from '@repo/ui';
+import { GitMerge, Share2, Shield, Zap } from '@repo/ui/icons';
+import { GlassCard } from '@repo/ui/components/GlassCard';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Heading, Icon, Text, VStack } from '@repo/ui/primitives';
 import { Pressable, ScrollView } from '@repo/ui/primitives';
 
 /**

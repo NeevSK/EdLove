@@ -5,7 +5,7 @@
  */
 
 import SchoolCreationScreen from '@repo/admin/screens/SchoolCreationScreen';
-import { ErrorBoundary } from '@repo/ui';
+import ErrorBoundary from '@repo/ui/components/ErrorBoundary';
 
 const SchoolCreationWrapper = (props: Record<string, unknown>) => (
   <ErrorBoundary name="School Creation">

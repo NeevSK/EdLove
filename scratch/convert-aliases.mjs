@@ -25,12 +25,12 @@ files.forEach((filePath) => {
   const content = fs.readFileSync(filePath, 'utf8');
   const dir = path.dirname(filePath);
 
-  const newContent = content.replace(/from\s+['"]@\/(.*?)['"]/g, (match, importPath) => {
+  const newContent = content.replace(/from\s+['"]@\/(.*?)['"]/g, (_match, importPath) => {
     const absoluteImportPath = path.resolve(CORE_SRC, importPath);
     let relativePath = path.relative(dir, absoluteImportPath).replace(/\\/g, '/');
 
     if (!relativePath.startsWith('.')) {
-      relativePath = './' + relativePath;
+      relativePath = `./${relativePath}`;
     }
 
     return `from '${relativePath}'`;

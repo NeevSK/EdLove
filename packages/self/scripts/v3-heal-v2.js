@@ -1,5 +1,5 @@
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
 
 const targetDir = process.argv[2] || './packages/self/src';
 
@@ -26,7 +26,7 @@ const colorMap = {
   'Theme.colors.amberGlow': 'amberGlow',
 };
 
-const spacingTokens = {
+const _spacingTokens = {
   'Theme.spacing.xs': '1',
   'Theme.spacing.sm': '2',
   'Theme.spacing.md': '4',
@@ -39,7 +39,7 @@ const spacingTokens = {
   'Theme.corners.full': 'full',
 };
 
-const spacingPropMap = {
+const _spacingPropMap = {
   padding: 'p',
   paddingTop: 'pt',
   paddingBottom: 'pb',
@@ -71,7 +71,7 @@ const spacingPropMap = {
   my: 'my',
 };
 
-function splitPairs(content) {
+function _splitPairs(content) {
   const pairs = [];
   let current = '';
   let depth = 0;
@@ -102,7 +102,7 @@ function healFile(filePath) {
   const originalContent = content;
 
   // 1. Convert bold, italic, textAlign, color props on Text/Heading
-  content = content.replace(/<(Text|Heading)([\s\S]*?)>/g, (fullMatch, tag, props) => {
+  content = content.replace(/<(Text|Heading)([\s\S]*?)>/g, (_fullMatch, tag, props) => {
     let newProps = props;
     const classes = [];
 
@@ -125,13 +125,13 @@ function healFile(filePath) {
     }
 
     // textAlign prop
-    newProps = newProps.replace(/textAlign="([^"]+)"/g, (m, align) => {
+    newProps = newProps.replace(/textAlign="([^"]+)"/g, (_m, align) => {
       classes.push(`text-${align}`);
       return ' ';
     });
 
     // color prop (static string)
-    newProps = newProps.replace(/color="([^"]+)"/g, (m, color) => {
+    newProps = newProps.replace(/color="([^"]+)"/g, (_m, color) => {
       if (color.startsWith('#')) classes.push(`text-[${color}]`);
       else if (!color.startsWith('var(')) classes.push(`text-${color}`);
       return ' ';
@@ -139,11 +139,11 @@ function healFile(filePath) {
 
     if (classes.length > 0) {
       if (/className="([^"]*)"/.test(newProps)) {
-        newProps = newProps.replace(/className="([^"]*)"/, (m, existing) => {
+        newProps = newProps.replace(/className="([^"]*)"/, (_m, existing) => {
           return `className="${existing} ${classes.join(' ')}"`;
         });
       } else if (/className=\{`([^`]*)`\}/.test(newProps)) {
-        newProps = newProps.replace(/className=\{`([^`]*)`\}/, (m, existing) => {
+        newProps = newProps.replace(/className=\{`([^`]*)`\}/, (_m, existing) => {
           return `className={\`${existing} ${classes.join(' ')}\`}`;
         });
       } else {
@@ -157,7 +157,7 @@ function healFile(filePath) {
   // 2. Resolve color props on primitives (dynamic ones)
   content = content.replace(
     /(<(?:Text|Heading|Box|HStack|VStack))([^>]*?)color=\{([\s\S]*?)\}([^>]*?>)/g,
-    (m, tag, pre, colorVal, post) => {
+    (_m, tag, pre, colorVal, post) => {
       const val = colorVal.trim();
       if (colorMap[val]) return `${tag}${pre}className="text-${colorMap[val]}" ${post}`;
       return `${tag}${pre}style={{ color: ${val} }} ${post}`;
@@ -172,7 +172,7 @@ function healFile(filePath) {
     // Extract all classNames
     let cleanAttrs = attrContent.replace(
       /className=(?:"([^"]*)"|\{`?([^`"}]*)`?\})/g,
-      (m, qVal, bVal) => {
+      (_m, qVal, bVal) => {
         const val = qVal || bVal;
         if (val.includes('${')) hasExpression = true;
         classNames.push(val.trim());
@@ -182,7 +182,7 @@ function healFile(filePath) {
 
     // Extract all styles
     const styles = [];
-    cleanAttrs = cleanAttrs.replace(/style=\{\{([\s\S]*?)\}\}/g, (m, styleObj) => {
+    cleanAttrs = cleanAttrs.replace(/style=\{\{([\s\S]*?)\}\}/g, (_m, styleObj) => {
       styles.push(styleObj.trim());
       return ' ';
     });

@@ -1,6 +1,9 @@
 import { FeatureGuard } from '@repo/core';
-import { Box, GlobalHeader, HStack, SandboxBanner, Text, VStack } from '@repo/ui';
-import { SkeletonCard } from '@repo/ui/components';
+import GlobalHeader from '@repo/ui/components/GlobalHeader';
+import SandboxBanner from '@repo/ui/components/SandboxBanner';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Text, VStack } from '@repo/ui/primitives';
+import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { Pressable, ScrollView } from '@repo/ui/primitives';
 
 import type { PrincipalZoneId } from '../principal/workspace';

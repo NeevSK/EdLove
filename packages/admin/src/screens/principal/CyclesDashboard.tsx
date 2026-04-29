@@ -1,25 +1,9 @@
 import { api } from '@repo/core/api';
 
-import {
-  ArrowLeft,
-  Box,
-  Button,
-  ButtonIcon,
-  ButtonText,
-  Calendar,
-  FormControl,
-  FormControlLabel,
-  FormControlLabelText,
-  Heading,
-  HStack,
-  Icon,
-  Input,
-  InputField,
-  Plus,
-  Text,
-  VStack,
-} from '@repo/ui';
-import { SkeletonCard } from '@repo/ui/components';
+import { ArrowLeft, Calendar, Plus } from '@repo/ui/icons';
+import { Box, Button, Input } from '@repo/ui/primitives';
+import { ButtonIcon, ButtonText, FormControl, FormControlLabel, FormControlLabelText, HStack, Heading, Icon, InputField, Text, VStack } from '@repo/ui/primitives';
+import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { Pressable, ScrollView } from '@repo/ui/primitives';
 import { hapticLight, hapticMedium } from '@repo/ui/utils/haptics';
 

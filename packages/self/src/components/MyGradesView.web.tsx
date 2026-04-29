@@ -7,12 +7,13 @@
 
 import { supabase } from '@repo/core/native';
 
-import { Box, Heading, HStack, Icon, Text, VStack } from '@repo/ui';
-import { SkeletonCard } from '@repo/ui/components';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Heading, Icon, Text, VStack } from '@repo/ui/primitives';
+import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 
 import { formatDistanceToNow } from 'date-fns';
 import { Award, BookOpen, Clock } from 'lucide-react-native';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface GradeRow {

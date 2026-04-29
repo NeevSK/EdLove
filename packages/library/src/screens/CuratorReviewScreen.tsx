@@ -3,20 +3,14 @@ import { usePermissions } from '@repo/core';
 import { useStore } from '@repo/core/logic';
 import { supabase } from '@repo/core/native';
 
-import {
-  Box,
-  GlobalHeader,
-  HStack,
-  Icon as SanctuaryIcon,
-  ScreenWrapper,
-  Spinner,
-  Text,
-  VStack,
-} from '@repo/ui';
+import GlobalHeader from '@repo/ui/components/GlobalHeader';
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Icon as SanctuaryIcon, Spinner, Text, VStack } from '@repo/ui/primitives';
 import { FlatList, Pressable, useTheme } from '@repo/ui/primitives';
 
 import { Check, RefreshCw, Trash2, X } from 'lucide-react-native';
-import React, { useCallback, useEffect, useMemo, useReducer } from 'react';
+import { useCallback, useEffect, useMemo, useReducer } from 'react';
 
 // --- Types & State Machine (Pillar 2: Reducer Pattern) ---
 
@@ -127,7 +121,7 @@ export default function CuratorReviewScreen() {
   );
 
   const handleRepair = useCallback(
-    (id: string) => {
+    (_id: string) => {
       showToast('Repair Link feature (Input) will be integrated in the next UI pass.', 'info');
     },
     [showToast],

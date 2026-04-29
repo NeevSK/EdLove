@@ -1,5 +1,5 @@
 import type { PrivacyLevel, SocialLink, SocialPlatform } from '@repo/core';
-import { Box, HStack, Icon, Input, InputField, Text, VStack } from '@repo/ui';
+import { Box, HStack, Icon, Input, InputField, Text, VStack } from '@repo/ui/primitives';
 import { Pressable } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
 
@@ -14,8 +14,7 @@ import {
   Users,
   X,
 } from 'lucide-react-native';
-import React, { useState } from 'react';
-import { Platform } from 'react-native';
+import { useState } from 'react';
 
 interface InlineSocialLinkEditorProps {
   link?: Partial<SocialLink>;

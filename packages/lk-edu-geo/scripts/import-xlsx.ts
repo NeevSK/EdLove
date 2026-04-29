@@ -1,7 +1,7 @@
-import fs from 'fs';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { glob } from 'glob';
-import path from 'path';
-import { fileURLToPath } from 'url';
 import type {
   District,
   Division,
@@ -139,7 +139,7 @@ async function importData() {
         postal_code: '',
         medium,
         grade_span,
-        total_students: parseInt(students) || 0,
+        total_students: parseInt(students, 10) || 0,
         difficulty_level: difficulty,
         contact: {
           tel: tel !== 'None' ? tel : undefined,

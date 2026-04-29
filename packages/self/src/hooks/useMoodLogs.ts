@@ -3,7 +3,7 @@ import { authAPI } from '@repo/core/api';
 import { useStore, useTemporalStore } from '@repo/core/logic';
 import { GuestDataManager } from '@repo/core/native';
 
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   createMoodLog,
   fetchMoodHistoryForView,
@@ -102,7 +102,7 @@ export const useMoodLogs = (userId?: string) => {
 
   useEffect(() => {
     refreshData();
-  }, [refreshData, isOnline]);
+  }, [refreshData]);
 
   const addMoodLog = useCallback(
     async (mood: MoodLog['mood'], note?: string) => {

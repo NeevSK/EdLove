@@ -9,25 +9,15 @@ import { usePermissions } from '@repo/core';
 import { useSafeMutation } from '@repo/core/hooks';
 import { supabase } from '@repo/core/native';
 
-import {
-  Box,
-  Button,
-  ButtonText,
-  Heading,
-  HStack,
-  Icon,
-  Input,
-  InputField,
-  PositiveInvitation,
-  Text,
-  VStack,
-} from '@repo/ui';
-import { SkeletonCard } from '@repo/ui/components';
+import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
+import { Box, Button } from '@repo/ui/primitives';
+import { ButtonText, HStack, Heading, Icon, InputField, Text, VStack } from '@repo/ui/primitives';
+import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { Pressable, ScrollView } from '@repo/ui/primitives';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 
 import { ChevronLeft, Heart, MessageCircle, Plus, Save, Sparkles, User } from 'lucide-react-native';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Animated, { FadeInRight, FadeInUp } from 'react-native-reanimated';
 import { useGratitude } from '../hooks/useGratitude';

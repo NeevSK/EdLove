@@ -102,7 +102,7 @@ function healFile(filePath) {
   const originalContent = content;
 
   // 1. Remove sx props and convert to className/style
-  content = content.replace(/sx=\{\{([\s\S]*?)\}\}/g, (m, sxContent) => {
+  content = content.replace(/sx=\{\{([\s\S]*?)\}\}/g, (_m, sxContent) => {
     const classes = [];
     const styles = [];
     const pairs = splitPairs(sxContent);
@@ -193,7 +193,7 @@ function healFile(filePath) {
   // 5. Clean up redundant spaces in tags
   content = content.replace(/\s+/g, ' ');
   // Wait, the above is too aggressive for code. Let's only do it inside tags.
-  content = content.replace(/<(\w+)([^>]+)>/g, (m, tag, attrs) => {
+  content = content.replace(/<(\w+)([^>]+)>/g, (_m, tag, attrs) => {
     return `<${tag} ${attrs.trim().replace(/\s+/g, ' ')}>`;
   });
 

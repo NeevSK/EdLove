@@ -765,7 +765,6 @@ export function getScoreExtras(name: TrubeScoreName) {
         ornament: ornament('filigree', { seed: 79, density: 0.38, opacity: 0.26 }),
         motif: motif('lotus-sketch', { seed: 83, density: 0.48, opacity: 0.24, style: 'draft' }),
       };
-    case 'tidal-memory':
     default:
       return {
         ornament: ornament('constellation', { seed: 37, density: 0.24, opacity: 0.18 }),

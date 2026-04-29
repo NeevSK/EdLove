@@ -1,16 +1,7 @@
 import { useNavigation } from '@react-navigation/native';
 import { AvatarDisplay, ContactLinktree, EditableItem, useSchoolProfile } from '@repo/profile';
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
-import {
-  ArrowLeft,
-  BookOpen,
-  ChevronRight,
-  Globe,
-  Layout,
-  School as SchoolIcon,
-  Shield,
-  Users,
-} from '@repo/ui/icons';
+import { ArrowLeft, BookOpen, ChevronRight, Globe, Layout, School as SchoolIcon, Shield, Users } from '@repo/ui/icons';
 import { Box, Heading, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
 

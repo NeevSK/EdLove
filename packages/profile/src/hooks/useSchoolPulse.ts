@@ -16,7 +16,7 @@ export function useSchoolPulse(schoolId?: string) {
   const [pulse, setPulse] = useState<PulseMetrics | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [refreshToken, setRefreshToken] = useState(0);
+  const [_refreshToken, setRefreshToken] = useState(0);
   const viewDate = useTemporalStore((state) => state.viewDate);
   const viewScale = useTemporalStore((state) => state.viewScale);
 
@@ -52,7 +52,7 @@ export function useSchoolPulse(schoolId?: string) {
     return () => {
       signal.cancelled = true;
     };
-  }, [schoolId, refreshToken, fetchPulse, viewDate, viewScale]);
+  }, [schoolId, fetchPulse, viewDate, viewScale]);
 
   return { pulse, loading, error, refresh: () => setRefreshToken((t) => t + 1) };
 }

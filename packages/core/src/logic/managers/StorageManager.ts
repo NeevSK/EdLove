@@ -8,7 +8,6 @@ import type { IStorage } from '../interfaces/storage.port';
  */
 class StorageManager implements IStorage {
   private adapter: IStorage | null = null;
-  private pendingInit: Promise<void> | null = null;
 
   /**
    * Registers the platform-specific adapter.

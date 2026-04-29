@@ -49,7 +49,7 @@ export function useTomorrowPrep(userId?: string) {
 
   useEffect(() => {
     refreshData();
-  }, [refreshData, isOnline]);
+  }, [refreshData]);
 
   const addPrepItem = useCallback(
     async (itemText: string, prepDate: string) => {

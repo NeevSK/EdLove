@@ -3,27 +3,10 @@ import { type ClassroomStackParamList, type School, usePermissions } from '@repo
 import { api, communityAPI, onboardingAPI, schoolAPI } from '@repo/core/api';
 import { incrementInviteCodeUsage, useStore, validateInviteCode } from '@repo/core/logic';
 
-import {
-  ArrowRight,
-  BookOpen,
-  Box,
-  Building2,
-  Center,
-  CheckCircle2,
-  ChevronRight,
-  Heading,
-  HStack,
-  Icon,
-  Input,
-  InputField,
-  Key,
-  Search,
-  Spinner,
-  Text,
-  Users,
-  VStack,
-} from '@repo/ui';
-import { SanctuaryButton } from '@repo/ui/components';
+import { ArrowRight, BookOpen, Building2, CheckCircle2, ChevronRight, Key, Search, Users } from '@repo/ui/icons';
+import { Box, Input } from '@repo/ui/primitives';
+import { Center, HStack, Heading, Icon, InputField, Spinner, Text, VStack } from '@repo/ui/primitives';
+import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import { Pressable, ScrollView } from '@repo/ui/primitives';
 
 import type React from 'react';

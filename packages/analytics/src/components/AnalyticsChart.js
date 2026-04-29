@@ -1,5 +1,7 @@
 import { ProgressRing, SimpleBarChart, SimpleLineChart, SimplePieChart } from '@repo/graphics';
-import { Box, colors, HStack, Text } from '@repo/ui';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Text } from '@repo/ui/primitives';
+import { colors } from '@repo/ui/theme';
 import { jsx as _jsx, jsxs as _jsxs } from 'react/jsx-runtime';
 export function AnalyticsChart({
   title,

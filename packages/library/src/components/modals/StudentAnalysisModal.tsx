@@ -2,27 +2,12 @@ import type { StudentPotentialAnalysis } from '@repo/core';
 import { studentPotentialAPI } from '@repo/core/api';
 
 import { CaptureEngine, radarLayout } from '@repo/graphics';
-import {
-  Box,
-  GlassCard,
-  HStack,
-  Input,
-  InputField,
-  Modal,
-  ModalBackdrop,
-  ModalBody,
-  ModalContent,
-  ModalHeader,
-  Slider,
-  Spinner,
-  Text,
-  useResponsive,
-  VStack,
-} from '@repo/ui';
+import { useResponsive } from '@repo/ui/hooks';
+import { GlassCard } from '@repo/ui/components/GlassCard';
+import { Box, Input, Slider } from '@repo/ui/primitives';
+import { HStack, InputField, Modal, ModalBackdrop, ModalBody, ModalContent, ModalHeader, Spinner, Text, VStack } from '@repo/ui/primitives';
 import { Pressable, ScrollView, useTheme } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
-
-import { BlurView } from 'expo-blur';
 import { FileCheck, Save, Sparkles, X } from 'lucide-react-native';
 import type React from 'react';
 import { useCallback, useEffect, useMemo, useReducer } from 'react';

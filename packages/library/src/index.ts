@@ -1,8 +1,5 @@
-export {
-  AssetCreationModal as AddResourceModal,
-  CollectionCreationModal as AddCollectionModal,
-  UniversalPerspective,
-} from '@repo/ui';
+export { AssetCreationModal as AddResourceModal, CollectionCreationModal as AddCollectionModal } from '@repo/ui/components/media/AssetCreationPortal';
+export { UniversalPerspective } from '@repo/ui/components/visualization/UniversalPerspective';
 
 export * from './api';
 export * from './components';

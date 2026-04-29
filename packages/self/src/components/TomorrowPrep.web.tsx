@@ -6,26 +6,13 @@
 
 import { useTemporalStore } from '@repo/core/logic';
 
-import {
-  Box,
-  Button,
-  ButtonText,
-  Heading,
-  HStack,
-  Icon,
-  Input,
-  InputField,
-  Progress,
-  ProgressFilledTrack,
-  Spinner,
-  Text,
-  VStack,
-} from '@repo/ui';
+import { Box, Button, Input } from '@repo/ui/primitives';
+import { HStack, Heading, Icon, InputField, Progress, ProgressFilledTrack, Spinner, Text, VStack } from '@repo/ui/primitives';
 import { Pressable } from '@repo/ui/primitives';
 
-import { Calendar, Check, Moon, Plus, Target, Trash2, X } from 'lucide-react-native';
-import React, { useEffect, useState } from 'react';
-import Animated, { FadeIn, FadeInDown, Layout } from 'react-native-reanimated';
+import { Check, Moon, Plus, Target, Trash2, X } from 'lucide-react-native';
+import { useEffect, useState } from 'react';
+import Animated, { FadeInDown, Layout } from 'react-native-reanimated';
 import { useTomorrowPrep } from '../hooks/useTomorrowPrep';
 import type { DailyPrepItem } from '../types';
 
@@ -57,7 +44,7 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
       new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1).getTime() - now.getTime();
     const timer = setTimeout(() => setTomorrow(getTomorrow()), msUntilMidnight);
     return () => clearTimeout(timer);
-  }, [tomorrow]);
+  }, []);
 
   const tomorrowItems = prepItems.filter((i) => i.prep_date === tomorrow);
   const completedCount = tomorrowItems.filter((i) => i.is_completed).length;

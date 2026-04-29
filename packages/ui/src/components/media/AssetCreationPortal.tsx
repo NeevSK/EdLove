@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { HStack, Input, InputField, Text, VStack } from '../../primitives';
+import { useState } from 'react';
+import { HStack, Input, InputField, VStack } from '../../primitives';
 import { SanctuaryButton } from '../SanctuaryButton';
 import SanctuaryModal from '../SanctuaryModal';
 

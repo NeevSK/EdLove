@@ -15,7 +15,7 @@ type StatsRow = {
 const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL as string | undefined;
 const supabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY as string | undefined;
 
-const statDefs = [
+const _statDefs = [
   {
     key: 'teachers_count' as const,
     deltaKey: 'teachers_delta_30d' as const,
@@ -42,7 +42,7 @@ const statDefs = [
   },
 ];
 
-let stats: StatsRow = {
+let _stats: StatsRow = {
   teachers_count: 0,
   students_count: 0,
   schools_count: 0,
@@ -53,14 +53,14 @@ let stats: StatsRow = {
   lessons_shared_delta_30d: null,
 };
 
-let hydrated = false;
+let _hydrated = false;
 
-function formatCount(value: number): string {
+function _formatCount(value: number): string {
   if (!Number.isFinite(value)) return '0';
   return new Intl.NumberFormat(undefined).format(value);
 }
 
-function formatDelta(value: number | null): { text: string; tone: 'up' | 'down' | 'flat' } | null {
+function _formatDelta(value: number | null): { text: string; tone: 'up' | 'down' | 'flat' } | null {
   if (value === null || value === undefined) return null;
   if (!Number.isFinite(value) || value === 0) return { text: '0', tone: 'flat' };
   return value > 0 ? { text: `+${value}`, tone: 'up' } : { text: `${value}`, tone: 'down' };
@@ -98,7 +98,7 @@ async function fetchStats() {
   const row = json?.[0];
   if (!row) return;
 
-  stats = {
+  _stats = {
     teachers_count: Number(row.teachers_count) || 0,
     students_count: Number(row.students_count) || 0,
     schools_count: Number(row.schools_count) || 0,
@@ -108,7 +108,7 @@ async function fetchStats() {
     schools_delta_30d: row.schools_delta_30d ?? null,
     lessons_shared_delta_30d: row.lessons_shared_delta_30d ?? null,
   };
-  hydrated = true;
+  _hydrated = true;
 }
 
 onMount(() => {

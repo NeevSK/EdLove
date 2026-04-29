@@ -5,13 +5,15 @@ import { useFeatureAccess } from '@repo/core/hooks';
 import { useStore, useTemporalStore } from '@repo/core/logic';
 import { useWorkspaceLayoutSync } from '@repo/core/native';
 
-import { Box, HStack, SandboxBanner, Text, useThemedColors, WorkspaceCanvas } from '@repo/ui';
+import SandboxBanner from '@repo/ui/components/SandboxBanner';
+import { WorkspaceCanvas } from '@repo/ui/components/workspace/WorkspaceCanvas';
+import { useThemedColors } from '@repo/ui/hooks';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Text } from '@repo/ui/primitives';
 import { useRegisterFAB } from '@repo/ui/context/FABContext';
 import { Pressable, ScrollView } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
 import { hapticLight } from '@repo/ui/utils/haptics';
-
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useStudentDashboardSurfaces } from '../workspace/useStudentDashboardSurfaces';

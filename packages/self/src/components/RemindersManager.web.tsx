@@ -4,24 +4,13 @@
  * Standardized to Zero-Legacy: purged raw HTML styles and integrated @repo/ui primitives.
  */
 
-import {
-  Box,
-  Button,
-  ButtonText,
-  Heading,
-  HStack,
-  Icon,
-  Input,
-  InputField,
-  Spinner,
-  Text,
-  VStack,
-} from '@repo/ui';
+import { Box, Button, Input } from '@repo/ui/primitives';
+import { ButtonText, HStack, Heading, Icon, InputField, Spinner, Text, VStack } from '@repo/ui/primitives';
 import { Pressable } from '@repo/ui/primitives';
 
-import { Bell, Calendar, Clock, Droplets, Plus, Trash2, X } from 'lucide-react-native';
-import React, { useEffect, useState } from 'react';
-import Animated, { FadeIn, FadeInDown, Layout } from 'react-native-reanimated';
+import { Bell, Droplets, Plus, Trash2, X } from 'lucide-react-native';
+import { useEffect, useState } from 'react';
+import Animated, { FadeInDown, Layout } from 'react-native-reanimated';
 import {
   createReminder,
   deleteReminder,
@@ -65,9 +54,9 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
       })
       .catch(() => {})
       .finally(() => setIsLoading(false));
-  }, [userId]);
+  }, [userId, createDefault]);
 
-  const createDefault = async () => {
+  async function createDefault() {
     if (!userId) return;
     const data = await createReminder(userId, {
       ...DEFAULT_REMINDER,
@@ -75,7 +64,7 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
       icon_type: DEFAULT_REMINDER.icon_type,
     });
     if (data) setReminders([data]);
-  };
+  }
 
   const handleAdd = async () => {
     if (!title.trim() || !userId) return;

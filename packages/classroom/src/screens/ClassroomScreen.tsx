@@ -3,8 +3,12 @@ import { FeatureGuard, usePermissions } from '@repo/core';
 import { useFeatureAccess } from '@repo/core/hooks';
 import { useStore } from '@repo/core/logic';
 
-import { Box, GlobalHeader, PositiveInvitation, ScreenWrapper, VStack } from '@repo/ui';
-import { SkeletonCard } from '@repo/ui/components';
+import GlobalHeader from '@repo/ui/components/GlobalHeader';
+import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { Box } from '@repo/ui/primitives';
+import { VStack } from '@repo/ui/primitives';
+import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { hapticLight } from '@repo/ui/utils/haptics';
 
 import React, { useEffect, useState } from 'react';
@@ -29,7 +33,7 @@ export default function ClassroomScreen() {
     userId: state.user?.id,
   }));
   const { setBreathingOpen } = useStore();
-  const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [refreshTrigger, _setRefreshTrigger] = useState(0);
   const { data: classroomData, loading, fetchRoleData } = useClassroomRoleData(refreshTrigger);
   const [isCreateSchoolOpen, setIsCreateSchoolOpen] = useState(false);
   const [isCreateClassroomOpen, setIsCreateClassroomOpen] = useState(false);
@@ -43,7 +47,7 @@ export default function ClassroomScreen() {
 
   useEffect(() => {
     fetchRoleData();
-  }, [storeSchoolId, storeUserId]);
+  }, [fetchRoleData]);
 
   useFocusEffect(
     React.useCallback(() => {

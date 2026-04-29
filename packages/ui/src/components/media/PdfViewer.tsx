@@ -1,6 +1,5 @@
 import type { DownloadState } from '@repo/core';
 import { Bookmark, Download, ExternalLink, XCircle } from 'lucide-react-native';
-import React from 'react';
 import { useTheme } from '../../hooks/useTheme';
 import { Box, HStack, Text, VStack } from '../../primitives';
 import GlobalHeader from '../GlobalHeader';

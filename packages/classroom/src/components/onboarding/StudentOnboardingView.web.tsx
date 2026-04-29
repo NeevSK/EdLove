@@ -1,21 +1,7 @@
-import {
-  ArrowRightCircle,
-  BookOpen,
-  Box,
-  GraduationCap,
-  Heading,
-  HStack,
-  Icon,
-  Layout,
-  QrCode,
-  Search,
-  Sparkles,
-  Text,
-  VStack,
-} from '@repo/ui';
+import { ArrowRightCircle, BookOpen, GraduationCap, Layout, QrCode, Search, Sparkles } from '@repo/ui/icons';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Heading, Icon, Text, VStack } from '@repo/ui/primitives';
 import { Pressable } from '@repo/ui/primitives';
-
-import React from 'react';
 
 interface StudentOnboardingViewProps {
   onTryDemo: () => void;

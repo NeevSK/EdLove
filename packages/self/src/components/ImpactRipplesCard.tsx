@@ -5,11 +5,11 @@
  */
 
 import type { ImpactRipple } from '@repo/core';
-import { Box, HStack, Icon, Text, VStack } from '@repo/ui';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Icon, Text, VStack } from '@repo/ui/primitives';
 import { AnimatedView } from '@repo/ui/primitives';
 
 import { Droplet, Heart, Sparkles } from 'lucide-react-native';
-import React from 'react';
 import { FadeInDown } from 'react-native-reanimated';
 
 interface ImpactRipplesCardProps {
@@ -17,7 +17,7 @@ interface ImpactRipplesCardProps {
 }
 
 export function ImpactRipplesCard({ ripples }: ImpactRipplesCardProps) {
-  if (!ripples || !ripples.length) return null;
+  if (!ripples?.length) return null;
 
   return (
     <AnimatedView entering={FadeInDown.duration(800)}>

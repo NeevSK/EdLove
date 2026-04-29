@@ -1,27 +1,13 @@
 import { api, identityAPI } from '@repo/core/api';
 import { useStore } from '@repo/core/logic';
 
-import {
-  Box,
-  Button,
-  ButtonText,
-  CheckCircle2,
-  FormControl,
-  FormControlLabel,
-  FormControlLabelText,
-  HStack,
-  Icon,
-  Input,
-  InputField,
-  QrCode,
-  SanctuaryModal,
-  Spinner,
-  Text,
-  VStack,
-} from '@repo/ui';
+import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
+import { CheckCircle2, QrCode } from '@repo/ui/icons';
+import { Box, Button, Input } from '@repo/ui/primitives';
+import { ButtonText, FormControl, FormControlLabel, FormControlLabelText, HStack, Icon, InputField, Spinner, Text, VStack } from '@repo/ui/primitives';
 import { hapticSuccess } from '@repo/ui/utils/haptics';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 interface ClaimInviteModalProps {
   isOpen: boolean;

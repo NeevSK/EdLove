@@ -1,7 +1,6 @@
 import { FeatureGuard } from '@repo/core/logic';
 import { Box, Heading, Icon, Text, Theme, VStack } from '@repo/ui/primitives';
 import { Hammer, Users2 } from 'lucide-react-native';
-import React from 'react';
 
 export default function WorkforceShell() {
   return (

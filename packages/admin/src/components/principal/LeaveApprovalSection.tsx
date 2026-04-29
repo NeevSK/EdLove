@@ -9,19 +9,9 @@
 import type { StaffLeaveDTO } from '@repo/core';
 import { staffManagementAPI } from '@repo/core/api';
 
-import {
-  Box,
-  Check,
-  Clock,
-  FileText,
-  Heading,
-  HStack,
-  Icon,
-  Spinner,
-  Text,
-  VStack,
-  X,
-} from '@repo/ui';
+import { Check, Clock, FileText, X } from '@repo/ui/icons';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Heading, Icon, Spinner, Text, VStack } from '@repo/ui/primitives';
 import { Pressable } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
 

@@ -1,7 +1,8 @@
-import { Card, HStack, VStack } from '@repo/ui';
+import { Card } from '@repo/ui/components/SanctuaryCard';
+import { HStack } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
 
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Alert, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 
 interface ChatMessage {

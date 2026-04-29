@@ -2,12 +2,13 @@ import type { PrincipalGovernanceEventZod } from '@repo/core';
 import { api } from '@repo/core/api';
 import { useTemporalStore } from '@repo/core/logic';
 
-import { Box, Heading, HStack, Icon, Input, InputField, Spinner, Text, VStack } from '@repo/ui';
+import { Box, Input } from '@repo/ui/primitives';
+import { HStack, Heading, Icon, InputField, Spinner, Text, VStack } from '@repo/ui/primitives';
 import { Pressable } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
 
 import { Activity, Clock, FileText, History, Plus, ShieldCheck } from 'lucide-react-native';
-import React, { useEffect, useMemo, useReducer } from 'react';
+import { useEffect, useMemo, useReducer } from 'react';
 
 interface PrincipalGovernanceTimelineProps {
   schoolId: string;

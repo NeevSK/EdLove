@@ -8,10 +8,11 @@
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { CommunityStackParamList } from '@repo/core/types';
-import { SanctuaryFlashList, UserAvatar } from '@repo/ui/components';
+import SanctuaryFlashList from '@repo/ui/components/SanctuaryFlashList';
+import { UserAvatar } from '@repo/ui/components/UserAvatar';
 import { ChevronRight, MessageSquare } from '@repo/ui/icons';
 import { Box, HStack, Icon, Pressable, Spinner, Text, VStack } from '@repo/ui/primitives';
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { communityAPI } from '../api/community';

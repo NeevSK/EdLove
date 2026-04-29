@@ -2,7 +2,7 @@
  * Dagger CI/CD Pipeline for Polymath Platform
  * Written in TypeScript for 2026 Sovereign Architecture
  */
-import { Container, type Directory, dag, func, object } from '@dagger.io/dagger';
+import { type Directory, dag, func, object } from '@dagger.io/dagger';
 
 @object()
 class PolymathCI {

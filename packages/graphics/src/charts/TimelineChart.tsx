@@ -1,7 +1,6 @@
-import { Card, HStack, VStack } from '@repo/ui';
+import { Card } from '@repo/ui/components/SanctuaryCard';
+import { VStack } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
-
-import React from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 interface TimelineEvent {
@@ -43,7 +42,7 @@ export function TimelineChart({
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-    const diffWeeks = Math.floor(diffDays / 7);
+    const _diffWeeks = Math.floor(diffDays / 7);
     const diffMonths = Math.floor(diffDays / 30);
 
     if (diffDays === 0) return 'Today';

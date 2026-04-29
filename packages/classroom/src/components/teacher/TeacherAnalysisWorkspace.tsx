@@ -2,21 +2,9 @@ import type { Student } from '@repo/core';
 import { api } from '@repo/core/api';
 
 import { StudentAnalysisModal } from '@repo/library';
-import {
-  Activity,
-  Box,
-  Button,
-  ButtonText,
-  Heading,
-  HStack,
-  Icon,
-  Sparkles,
-  Spinner,
-  Text,
-  TrendingUp,
-  TriangleAlert,
-  VStack,
-} from '@repo/ui';
+import { Activity, Sparkles, TrendingUp, TriangleAlert } from '@repo/ui/icons';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Heading, Icon, Spinner, Text, VStack } from '@repo/ui/primitives';
 import { Pressable } from '@repo/ui/primitives';
 
 import type React from 'react';

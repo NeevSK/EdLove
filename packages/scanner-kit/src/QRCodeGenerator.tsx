@@ -11,7 +11,7 @@
 // need smaller codes.
 
 import QRCode from 'qrcode';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Svg, { Rect } from 'react-native-svg';
 

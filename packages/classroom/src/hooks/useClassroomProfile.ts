@@ -50,7 +50,7 @@ export function useClassroomProfile(classroomId: string) {
     try {
       await classroomsAPI.update(classroom.id, { [field]: value });
       return { success: true };
-    } catch (error) {
+    } catch (_error) {
       console.log('= Sync pending for classroom:', field);
       return { success: true, pending: true };
     }

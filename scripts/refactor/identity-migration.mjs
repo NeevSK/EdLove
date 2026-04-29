@@ -4,9 +4,9 @@
  * Automatically migrates legacy Supabase Auth usage to identityAPI.
  */
 
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(__dirname, '../..');
@@ -68,7 +68,7 @@ function migrateFile(filePath) {
 
       // Phase 2: Handle user_metadata -> users table mappings
       // e.g. user?.user_metadata?.school_id -> user?.school_id
-      content = content.replace(/user\??\.user_metadata\??\.(\w+)/g, (match, field) => {
+      content = content.replace(/user\??\.user_metadata\??\.(\w+)/g, (_match, field) => {
         // If we've replaced 'user' with 'userId' via destructuring, we need to be careful.
         // However, most components still expect a 'user' object from useUserRole/useStore.
         // For direct table checks, we keep it simple.
@@ -124,9 +124,9 @@ function migrateFile(filePath) {
     } else {
       // If it's a file using relative lib imports or needs @repo/core for identityAPI
       if (content.includes('../lib/supabase') && !content.includes('@repo/core')) {
-        content = "import { identityAPI } from '@repo/core';\n" + content;
+        content = `import { identityAPI } from '@repo/core';\n${content}`;
       } else if (!content.includes('identityAPI')) {
-        content = "import { identityAPI } from '@repo/core';\n" + content;
+        content = `import { identityAPI } from '@repo/core';\n${content}`;
       }
     }
 

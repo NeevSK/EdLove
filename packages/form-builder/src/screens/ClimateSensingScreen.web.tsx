@@ -15,7 +15,7 @@ import {
   Users,
   Wifi,
 } from 'lucide-react';
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   type ClimateSensingData,
   createClimateSensingSchema,
@@ -146,7 +146,7 @@ export const ClimateSensingScreenWeb = ({
 
   const manager = useMemo(
     () => new FormManager(createClimateSensingSchema(handleSubmit)),
-    [selectedSchool],
+    [handleSubmit],
   );
 
   // View: Success Screen

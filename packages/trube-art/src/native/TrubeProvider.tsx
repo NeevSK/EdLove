@@ -68,13 +68,13 @@ export function TrubeProvider({
     return () => {
       subscription.remove();
     };
-  }, []);
+  }, [telemetry?.onFailover, setEnvironment]);
 
   useEffect(() => {
     if (environment.thermalState) {
       telemetry?.onThermalChange?.(environment.thermalState);
     }
-  }, [environment.thermalState]);
+  }, [environment.thermalState, telemetry?.onThermalChange]);
 
   const value = useMemo(
     () => ({
@@ -82,7 +82,7 @@ export function TrubeProvider({
       setEnvironment,
       telemetry,
     }),
-    [environment, telemetry],
+    [environment, telemetry, setEnvironment],
   );
 
   return (

@@ -1,6 +1,8 @@
 import type { Assignment } from '@repo/core';
-import { Box, CheckCircle2, HStack, Icon, Sparkles, Target, Text, VStack } from '@repo/ui';
-import React, { useMemo } from 'react';
+import { CheckCircle2, Sparkles, Target } from '@repo/ui/icons';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Icon, Text, VStack } from '@repo/ui/primitives';
+import { useMemo } from 'react';
 
 type GoalCard = {
   id: string;

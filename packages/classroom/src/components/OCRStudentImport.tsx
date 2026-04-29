@@ -11,24 +11,13 @@
 import { studentsAPI } from '@repo/core/api';
 
 import type { ScannedStudent } from '@repo/scanner-kit';
-import {
-  Box,
-  Camera,
-  Check,
-  Heading,
-  HStack,
-  Icon,
-  Info,
-  RotateCcw,
-  SanctuaryToast,
-  Text,
-  useToast,
-  VStack,
-  X,
-} from '@repo/ui';
+import { Camera, Check, Info, RotateCcw, X } from '@repo/ui/icons';
+import { Box } from '@repo/ui/primitives';
+import { HStack, Heading, Icon, Text, VStack } from '@repo/ui/primitives';
+import { useToast } from '@repo/ui/providers';
 import { Pressable, ScrollView } from '@repo/ui/primitives';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import OCRScanner from './OCRScanner';
 
 interface OCRStudentImportProps {

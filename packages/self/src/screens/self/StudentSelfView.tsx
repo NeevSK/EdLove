@@ -3,10 +3,12 @@ import { usePermissions } from '@repo/core';
 import { useJourneyHistory } from '@repo/core/hooks';
 import { useStore } from '@repo/core/logic';
 
-import { Box, ScreenWrapper, useThemedColors, VStack } from '@repo/ui';
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { Box } from '@repo/ui/primitives';
+import { VStack } from '@repo/ui/primitives';
 import { useTheme } from '@repo/ui/primitives';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 // Kernel Imports from @repo/self (Breaking require cycle)
 import { BaseSelfView } from '../../components/BaseSelfView';
@@ -46,8 +48,8 @@ import {
 
 export default function StudentSelfView() {
   const { t } = useTranslation();
-  const navigation = useNavigation<any>();
-  const colors = useTheme().scene;
+  const _navigation = useNavigation<any>();
+  const _colors = useTheme().scene;
 
   // State & Kernel Hooks
   const { context } = usePermissions();

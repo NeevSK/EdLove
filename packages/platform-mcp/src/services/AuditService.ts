@@ -1,12 +1,7 @@
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 import { ROOT_DIR } from '../utils/constants.js';
-import {
-  executeSovereignTool,
-  quoteShellArg,
-  runCommand,
-  runPowerShellScript,
-} from '../utils/execution.js';
+import { executeSovereignTool, runCommand, runPowerShellScript } from '../utils/execution.js';
 import { findSurgicalReport, normalizeTarget, readReport } from '../utils/pathUtils.js';
 import type { AnalysisIssue, DocumentService } from './DocumentService.js';
 

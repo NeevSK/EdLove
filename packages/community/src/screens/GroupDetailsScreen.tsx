@@ -10,25 +10,13 @@ import { supabase } from '@repo/core/native';
 import { useStore } from '@repo/core/store';
 import type { CommunityStackParamList } from '@repo/core/types';
 import { QRBuilder, QRCodeGenerator } from '@repo/scanner-kit';
-import {
-  SanctuaryButton,
-  SanctuaryCard,
-  SanctuaryFlashList,
-  SanctuaryModal,
-  ScreenWrapper,
-} from '@repo/ui/components';
+import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
+import { SanctuaryCard } from '@repo/ui/components/SanctuaryCard';
+import SanctuaryFlashList from '@repo/ui/components/SanctuaryFlashList';
+import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { useLotusToast } from '@repo/ui/hooks';
-import {
-  ChevronLeft,
-  MessageSquare,
-  MoreVertical,
-  QrCode,
-  Settings,
-  Shield,
-  UserPlus,
-  Users,
-  X,
-} from '@repo/ui/icons';
+import { ChevronLeft, MessageSquare, MoreVertical, QrCode, Settings, UserPlus, Users } from '@repo/ui/icons';
 import {
   AnimatedView,
   Box,
@@ -38,7 +26,6 @@ import {
   Pressable,
   Spinner,
   Text,
-  Heading as UIHeading,
   VStack,
 } from '@repo/ui/primitives';
 import React, { useEffect, useState } from 'react';
@@ -180,7 +167,7 @@ export default function GroupDetailsScreen() {
           type: 'success',
         });
       }
-    } catch (err) {
+    } catch (_err) {
       showToast({
         message: t('common.error'),
         type: 'error',
@@ -205,7 +192,7 @@ export default function GroupDetailsScreen() {
     return () => {
       cancelled = true;
     };
-  }, [canJoinGroup, groupId, user?.id, isMember, group?.join_policy]);
+  }, [canJoinGroup, groupId, user?.id, isMember, handleJoin]);
 
   if (loading) {
     return (

@@ -49,7 +49,7 @@ function checkPackage(pkg) {
               provider: `packages/${pkg}`,
               target: match[1],
               file: path.relative(ROOT, fullPath),
-              reason: 'Deep import bypassing public barrel file (@repo/' + pkg + ')',
+              reason: `Deep import bypassing public barrel file (@repo/${pkg})`,
             });
           }
         }

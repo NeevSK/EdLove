@@ -1,6 +1,5 @@
-import { execSync } from 'child_process';
-import fs from 'fs';
-import path from 'path';
+import { execSync } from 'node:child_process';
+import path from 'node:path';
 
 const ROOT_DIR = 'C:\\Users\\Naween\\projects\\polymath-platform';
 const PROXY_PATH = path.join(ROOT_DIR, 'scripts', 'mcp-proxy.mjs');
