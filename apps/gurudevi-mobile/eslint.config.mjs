@@ -14,6 +14,7 @@ export default [
       'node_modules/**',
       'web-build/**',
       'coverage/**',
+      'public/sw.js',
     ],
   },
   {

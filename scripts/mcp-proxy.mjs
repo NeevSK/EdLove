@@ -50,9 +50,20 @@ const finalArgs = args.map((arg) => {
 });
 
 // 4. Execution: Launch the Sovereign Child
-const child = spawn(command, finalArgs, {
+const isWin = process.platform === 'win32';
+
+// On Windows, use ComSpec (cmd.exe) to avoid DEP0190 security warning while still supporting batch files
+const spawnArgs = isWin
+  ? [process.env.ComSpec || 'cmd.exe', ['/c', command, ...finalArgs]]
+  : [command, finalArgs];
+
+if (process.env.DEBUG_MCP_PROXY) {
+  process.stderr.write(`[MCP-PROXY] Spawning: ${command} ${finalArgs.join(' ')}\n`);
+}
+
+const child = spawn(...spawnArgs, {
   stdio: 'inherit',
-  shell: true,
+  shell: false,
   env: {
     ...process.env,
     NODE_NO_WARNINGS: '1',

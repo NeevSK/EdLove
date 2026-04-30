@@ -1,6 +1,7 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import {
   AnnouncementsScreen,
+  CommunityScreen,
   DirectMessageScreen,
   DirectMessagesListScreen,
   GroupChatScreen,
@@ -9,9 +10,6 @@ import {
 } from '@repo/community';
 import type { CommunityStackParamList } from '@repo/core';
 import { useTheme } from '@repo/ui/primitives';
-
-import { CommunityScreen } from '../screens';
-
 const Stack = createNativeStackNavigator<CommunityStackParamList>();
 
 export default function CommunityStackNavigator() {

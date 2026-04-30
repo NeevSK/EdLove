@@ -1,0 +1,16 @@
+# Pre-push sentinel for VS Code and CLI
+Write-Host ">>> Sovereign Sentinel: Validating Push Integrity..." -ForegroundColor Cyan
+
+$AuditCmd = "pnpm exec commitlint --from=HEAD~1 --to=HEAD; pnpm run check-types; pnpm run check:hygiene; pnpm run identity:check; pnpm dlx gitleaks detect --source . --verbose"
+
+powershell -ExecutionPolicy Bypass -File scripts/audit-wrapper.ps1 -Cmd "$AuditCmd" -Log "reports/push_audit.md"
+
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "`n❌ PUSH REJECTED: Architectural or Quality Violations Detected." -ForegroundColor Red
+    Write-Host "📍 ACCESSIBLE REPORT: reports/push_audit.md" -ForegroundColor Yellow
+    Write-Host "💡 TIP: Review the report to see exact errors or run 'pnpm run check-all' to debug locally." -ForegroundColor Gray
+    exit 1
+}
+
+Write-Host "`n✅ PUSH APPROVED: Integrity Verified." -ForegroundColor Green
+exit 0

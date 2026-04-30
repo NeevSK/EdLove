@@ -2,7 +2,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { PrivacyLedgerScreen } from '@repo/self';
 import { useTheme } from '@repo/ui/primitives';
 
-import { FullProfileScreen, ProfileScreen } from '../screens';
+import { FullProfileScreen, ProfileScreen } from '@repo/profile';
 
 const Stack = createNativeStackNavigator();
 

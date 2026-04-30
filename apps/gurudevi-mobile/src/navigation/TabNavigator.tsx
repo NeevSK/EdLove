@@ -15,16 +15,18 @@ import {
   Icon,
   Pressable,
   Text,
+  Center,
+  Spinner,
   useTheme,
   VStack,
 } from '@repo/ui/primitives';
 import { WorkforceShell } from '@repo/workforce';
 import { Hammer, Heart, Library, School, User, Users, X } from 'lucide-react-native';
-import React from 'react';
+import React, { Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 // Screens
-import { SelfScreen } from '../screens';
+const SelfScreen = React.lazy(() => import('@repo/self').then(m => ({ default: m.SelfScreen })));
 import ClassroomStackNavigator from './ClassroomStackNavigator';
 import CommunityStackNavigator from './CommunityStackNavigator';
 import LibraryStackNavigator from './LibraryStackNavigator';
@@ -187,7 +189,9 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
         >
           {() => (
             <ErrorBoundary name="Self Screen">
-              <SelfScreen />
+              <Suspense fallback={<Center className="flex-1"><Spinner /></Center>}>
+                <SelfScreen />
+              </Suspense>
             </ErrorBoundary>
           )}
         </Tab.Screen>

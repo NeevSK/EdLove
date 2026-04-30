@@ -1,4 +1,4 @@
-﻿import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import FounderDashboard from '@repo/admin/screens/FounderDashboard';
 import FounderSchoolDashboard from '@repo/admin/screens/FounderSchoolDashboard';
 import {
@@ -9,7 +9,8 @@ import {
 import type { ClassroomStackParamList } from '@repo/core';
 import { useTheme } from '@repo/ui/primitives';
 
-import { ClassroomScreen, SchoolCreationScreen } from '../screens';
+import { ClassroomScreen } from '@repo/classroom';
+import SchoolCreationScreen from '@repo/admin/screens/SchoolCreationScreen';
 
 const Stack = createNativeStackNavigator<ClassroomStackParamList>();
 

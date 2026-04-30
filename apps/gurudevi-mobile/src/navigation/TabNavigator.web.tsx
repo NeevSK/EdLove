@@ -26,49 +26,48 @@ import { useTranslation } from 'react-i18next';
 import { StackFallback } from '../components/web/WebScreenShimmer';
 
 // ── Preload helper ──────────────────────────────────────────────────────────
-// Kicks off the dynamic import for each chunk immediately after the main
-// bundle executes (i.e. before the user taps any tab).  Uses
-// requestIdleCallback so it doesn't compete with first-paint work.
-// The promises are thrown away — React.lazy() caches the result internally
-// once the import resolves, so Suspense renders instantly on first navigation.
-const schedulePreload = (importFn: () => Promise<unknown>) => {
-  if (typeof requestIdleCallback !== 'undefined') {
-    requestIdleCallback(
-      () => {
-        importFn().catch(() => {});
-      },
-      { timeout: 2000 },
-    );
-  } else {
-    setTimeout(() => {
+// Kicks off the dynamic import for each chunk with a staggered delay to
+// avoid overwhelming the Metro bundler or the browser's main thread.
+// Uses requestIdleCallback for low-priority background loading.
+const schedulePreload = (importFn: () => Promise<unknown>, delay = 1000) => {
+  setTimeout(() => {
+    if (typeof requestIdleCallback !== 'undefined') {
+      requestIdleCallback(
+        () => {
+          importFn().catch(() => {});
+        },
+        { timeout: 5000 },
+      );
+    } else {
       importFn().catch(() => {});
-    }, 500);
-  }
+    }
+  }, delay);
 };
 
 // Screens / stacks
 // Tab stacks — lazy loaded (major code split boundary)
+// We stagger these to prevent "bundling storms" that crash Metro on web
 const ClassroomStackNavigatorWeb = React.lazy(() => import('./ClassroomStackNavigator.web'));
-schedulePreload(() => import('./ClassroomStackNavigator.web'));
+schedulePreload(() => import('./ClassroomStackNavigator.web'), 1500);
 
 const ProfileStackNavigatorWeb = React.lazy(() => import('./ProfileStackNavigator.web'));
-schedulePreload(() => import('./ProfileStackNavigator.web'));
+schedulePreload(() => import('./ProfileStackNavigator.web'), 3000);
 
 const CommunityStackNavigatorWeb = React.lazy(() => import('./CommunityStackNavigator.web'));
-schedulePreload(() => import('./CommunityStackNavigator.web'));
+schedulePreload(() => import('./CommunityStackNavigator.web'), 4500);
 
 const SelfStackNavigatorWeb = React.lazy(() => import('./SelfStackNavigator.web'));
-schedulePreload(() => import('./SelfStackNavigator.web'));
+schedulePreload(() => import('./SelfStackNavigator.web'), 6000);
 
 const LibraryStackNavigatorWeb = React.lazy(() => import('./LibraryStackNavigator.web'));
-schedulePreload(() => import('./LibraryStackNavigator.web'));
+schedulePreload(() => import('./LibraryStackNavigator.web'), 7500);
 
-// In-shell panel screens — lazy loaded (rendered as Tab.Screen for URL-native navigation)
+// In-shell panel screens — lazy loaded
 const NotificationsScreenWeb = React.lazy(() => import('@repo/ui/screens/NotificationsScreen.web'));
-schedulePreload(() => import('@repo/ui/screens/NotificationsScreen.web'));
+schedulePreload(() => import('@repo/ui/screens/NotificationsScreen.web'), 9000);
 
 const AppSettingsScreenWeb = React.lazy(() => import('@repo/ui/screens/AppSettingsScreen.web'));
-schedulePreload(() => import('@repo/ui/screens/AppSettingsScreen.web'));
+schedulePreload(() => import('@repo/ui/screens/AppSettingsScreen.web'), 10500);
 
 // ── Tab navigator ────────────────────────────────────────────────────────────
 

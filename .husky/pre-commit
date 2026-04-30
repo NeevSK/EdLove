@@ -1,3 +1,2 @@
 pnpm exec lint-staged
-pnpm dlx gitleaks detect --source . --staged --verbose
-pnpm run check:hygiene
+
