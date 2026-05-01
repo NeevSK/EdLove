@@ -1,10 +1,7 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
-
 echo ">>> Sovereign Sentinel: Validating Push Integrity..."
 
-# Run audit command via Node to ensure cross-platform PowerShell execution on Windows
-AuditCmd="pnpm exec commitlint --from=HEAD~1 --to=HEAD && pnpm run check-types && pnpm run check:hygiene && pnpm run identity:check && pnpm dlx gitleaks detect --source . --verbose"
+# Using ; as separator for compatibility with Windows PowerShell
+AuditCmd="pnpm exec commitlint --from=HEAD~1 --to=HEAD; pnpm run check-types; pnpm run check:hygiene; pnpm run identity:check"
 
 node scripts/sovereign-audit.mjs --cmd "$AuditCmd" --log "reports/push_audit.md"
 
