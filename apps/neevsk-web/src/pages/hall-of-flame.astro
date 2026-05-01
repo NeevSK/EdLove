@@ -1,6 +1,9 @@
 ---
 import { getCollection } from 'astro:content';
 import { absoluteUrl } from '../lib/site';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Navigation from '../components/Navigation.astro';
+import RealitySwitch from '../components/RealitySwitch.astro';
 
 const flameEntries = await getCollection('hall-of-flame', ({ data }) => !data.draft);
 
@@ -65,7 +68,7 @@ const _structuredData = {
 };
 ---
 
-<BaseLayout title="Hall of Flame | NeevSK" description="A chambered archive of people, lighthouses, and lineages that shaped the work." structuredData={structuredData}>
+<BaseLayout title="Hall of Flame | NeevSK" description="A chambered archive of people, lighthouses, and lineages that shaped the work." structuredData={_structuredData}>
 	<RealitySwitch />
 	
 	<main class="max-w-6xl mx-auto px-6 pb-24">
@@ -81,7 +84,7 @@ const _structuredData = {
 		</header>
 
 		<div class="space-y-48">
-			{groupedEntries.map(chamber => (
+			{_groupedEntries.map((chamber: any) => (
 				<section class="scroll-mt-32">
 					<div class="max-w-2xl mb-16">
 						<h2 class={`text-4xl font-serif dark:font-mono mb-4 text-[var(--accent-secondary)]`}>
@@ -93,7 +96,7 @@ const _structuredData = {
 					</div>
 
 					<div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-						{chamber.entries.map(entry => (
+						{chamber.entries.map((entry: any) => (
 							<div class="group p-8 border border-[var(--text-main)]/10 bg-[var(--text-main)]/[0.02] transition-all duration-500 hover:border-[var(--accent-secondary)]/30 hover:bg-[var(--text-main)]/[0.04]">
                                 <h3 class="text-xl font-serif dark:font-mono mb-2 group-hover:text-[var(--accent-secondary)] transition-colors">
                                     {entry.data.name}

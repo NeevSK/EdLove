@@ -1,5 +1,5 @@
-import type { SchoolGrade, Section } from '@repo/core';
-import { supabase } from '@repo/core/native';
+import { SchoolGrade, Section } from '@repo/core/types';
+import { supabase } from '@repo/core/api';;
 
 export interface StructureOverview {
   sections: Section[];

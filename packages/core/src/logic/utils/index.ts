@@ -5,3 +5,4 @@ export * from './QRBuilder';
 export * from './QRResolver';
 export * from './temporalUtils';
 export * from './validators';
+export * from './uuid';

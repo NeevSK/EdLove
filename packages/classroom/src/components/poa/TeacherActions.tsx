@@ -1,4 +1,4 @@
-import { FeatureGuard } from '@repo/core';
+import { FeatureGuard } from '@repo/core/logic';
 import { History, MessageSquare, Plus, QrCode } from '@repo/ui/icons';
 import { Icon, Text } from '@repo/ui/primitives';
 import { Pressable } from '@repo/ui/primitives';

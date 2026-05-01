@@ -1,6 +1,6 @@
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useState } from 'react';
-import { identityAPI } from '../../native/identity';
+import { identityAPI } from '../identity';
 import { useStore, useTemporalStore } from '../../store';
 import { APIError } from '../../types/API';
 import type { Post } from '../../types/Community';

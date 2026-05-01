@@ -1,4 +1,4 @@
-import { usePermissions } from '@repo/core';
+import { usePermissions } from '@repo/core/logic';
 import { useAccountDeletion, useTracking } from '@repo/core/hooks';
 import { useStore } from '@repo/core/logic';
 

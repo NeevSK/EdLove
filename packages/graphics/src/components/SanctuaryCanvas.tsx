@@ -1,4 +1,4 @@
-import { FeatureGuard } from '@repo/core';
+import { FeatureGuard } from '@repo/core/logic';
 import type React from 'react';
 import { Platform, View, type ViewStyle } from 'react-native';
 

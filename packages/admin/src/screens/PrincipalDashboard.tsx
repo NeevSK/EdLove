@@ -1,5 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
-import { type TotalState, usePermissions } from '@repo/core';
+import { usePermissions } from '@repo/core/logic';
+import { TotalState } from '@repo/core/store';
 import { useFeatureAccess } from '@repo/core/hooks';
 import { useStore } from '@repo/core/logic';
 

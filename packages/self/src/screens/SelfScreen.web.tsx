@@ -1,4 +1,4 @@
-﻿import { usePermissions } from '@repo/core';
+﻿import { usePermissions } from '@repo/core/logic';
 import { WebScreenHeader } from '@repo/ui/components/WebScreenHeader.web';
 
 import {

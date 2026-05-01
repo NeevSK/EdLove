@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import type { Role } from '@repo/core/logic';
-import { authAPI, identityAPI, supabase } from '@repo/core/native';
+import { authAPI, identityAPI, supabase } from '@repo/core/api';;
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ProgressIndicator } from '../components/ProgressIndicator';
@@ -38,7 +38,6 @@ export default function OnboardingScreen({
   const { t } = useTranslation();
   const navigation = useNavigation<any>();
   const theme = useTheme();
-  const { accent, text, isDark } = theme;
   const [currentStep, setCurrentStep] = useState(0); // 0: Name, 1: Role, 2-6: Tour
   const [name, setName] = useState('');
   const [role, setRole] = useState<Role>('teacher');
@@ -142,7 +141,7 @@ export default function OnboardingScreen({
 
       const PLACEHOLDER_NAMES = ['Guest User', 'Gurudevi User', 'Sanctuary User'];
       if (
-        !profile.is_anonymous &&
+        !isAnonymous &&
         profile.full_name &&
         !PLACEHOLDER_NAMES.includes(profile.full_name)
       ) {

@@ -1,6 +1,6 @@
-import { authAPI } from './auth';
+import { authAPI } from '../api/auth';
 import { GuestDataManager } from './guestDataManager';
-import { supabase } from './supabase';
+import { supabase } from '../api/supabase';
 
 export interface SyncProgress {
   total: number;

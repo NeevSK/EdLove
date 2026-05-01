@@ -1,6 +1,6 @@
 import type { RouteProp } from '@react-navigation/native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import type { GuardianStackParamList } from '@repo/core';
+import { GuardianStackParamList } from '@repo/core/types';
 import { useStore } from '@repo/core/logic';
 
 import { Box } from '@repo/ui/primitives';

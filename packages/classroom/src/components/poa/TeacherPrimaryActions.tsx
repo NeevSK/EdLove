@@ -1,4 +1,4 @@
-import { FeatureGuard } from '@repo/core';
+import { FeatureGuard } from '@repo/core/logic';
 import { Plus, ScanLine } from '@repo/ui/icons';
 import { Button } from '@repo/ui/primitives';
 import { ButtonText, HStack, Icon } from '@repo/ui/primitives';

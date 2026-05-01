@@ -1,8 +1,12 @@
 import { useRoute } from '@react-navigation/native';
-import { type AttendanceStatus, growthSignalsAPI, type StudentAttendance } from '@repo/core';
+import { growthSignalsAPI } from '@repo/core/api';
+import { AttendanceStatus, StudentAttendance } from '@repo/core/logic';
 import { api } from '@repo/core/api';
+import { academicCyclesAPI } from '@repo/core/api/academicCycles';
 import { useSafeMutation } from '@repo/core/hooks';
 import { useStore } from '@repo/core/logic';
+import { getCurrentTimestamp } from '@repo/core/utils/temporal';
+import { generateIdempotencyKey } from '@repo/core/utils/idempotency';
 
 import { Box, Button } from '@repo/ui/primitives';
 import { ButtonText, Spinner, Text, VStack } from '@repo/ui/primitives';
@@ -66,25 +70,43 @@ export default function AttendanceScreen() {
     }
   }, [classroomId]);
 
+  const schoolId = useStore((state) => state.schoolId);
+  const academicCycleId = useStore((state) => state.academicCycleId);
+  const setAcademicCycleId = useStore((state) => state.setAcademicCycleId);
+
   useEffect(() => {
     fetchStudents();
   }, [fetchStudents]);
+
+  useEffect(() => {
+    const syncCycle = async () => {
+      if (schoolId && !academicCycleId) {
+        const cycle = await academicCyclesAPI.getCurrent(schoolId);
+        if (cycle) setAcademicCycleId(cycle.id);
+      }
+    };
+    syncCycle();
+  }, [schoolId, academicCycleId, setAcademicCycleId]);
 
   const showToast = useStore((state) => state.showToast);
   const currentUser = useStore((state) => state.user);
 
   const saveMutation = useSafeMutation(
     async (updatedAttendance: StudentAttendance[]) => {
+      const now = getCurrentTimestamp();
       const records = updatedAttendance.map((s) => ({
         classroom_id: classroomId,
-        student_id: s.student_id, // Use student_id from StudentAttendance
+        student_id: s.student_id,
         status: s.status,
         date: new Date().toISOString().split('T')[0] || '',
+        occurred_at: now,
+        academic_cycle_id: academicCycleId, // Tagging with academic cycle
       }));
       return api.attendance.batchRecord(records, {
         actorId: currentUser?.id,
         reason: 'daily_roll_call',
         accessKind: 'teacher_marking',
+        idempotencyKey: generateIdempotencyKey('attendance'), // Idempotency protection
       });
     },
     {

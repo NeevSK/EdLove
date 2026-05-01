@@ -1,5 +1,5 @@
 import { type RouteProp, useRoute } from '@react-navigation/native';
-import type { EntityType } from '@repo/core';
+import { EntityType } from '@repo/core/logic';
 import { useEntity } from '@repo/core/hooks';
 
 import IdentityCard from '@repo/ui/components/IdentityCard';

@@ -1,4 +1,5 @@
-import { handleAPIError, type SocialLink } from '@repo/core';
+import { handleAPIError } from '@repo/core/logic';
+import { SocialLink } from '@repo/core/types';
 import { useCallback, useEffect, useState } from 'react';
 import { socialAPI } from '../api/social';
 

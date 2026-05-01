@@ -1,4 +1,4 @@
-﻿import type { StudentAttendancePulse } from '@repo/core';
+﻿import { StudentAttendancePulse } from '@repo/core/api';
 import { AlertTriangle, GraduationCap, TrendingUp } from 'lucide-react-native';
 import type React from 'react';
 import { useTranslation } from 'react-i18next';

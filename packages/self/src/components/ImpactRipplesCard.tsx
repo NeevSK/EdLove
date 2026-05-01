@@ -4,7 +4,7 @@
  * Standardized to Zero-Legacy: purged corrupted StyleSheet and migrated to NativeWind v4.
  */
 
-import type { ImpactRipple } from '@repo/core';
+import { ImpactRipple } from '@repo/core/api';
 import { Box } from '@repo/ui/primitives';
 import { HStack, Icon, Text, VStack } from '@repo/ui/primitives';
 import { AnimatedView } from '@repo/ui/primitives';

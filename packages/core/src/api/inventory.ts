@@ -4,9 +4,9 @@
 
 import { z } from 'zod';
 import { InventoryItemSchema } from '../logic/schemas/inventory_item.schema';
-import { supabase } from '../native/supabase';
+import { supabase } from './supabase';
 import type { InventoryItem } from '../types';
-import { APIError } from '../types';
+import { APIError } from '../types/API';
 import { operationsContract } from './operations.contract';
 
 /**

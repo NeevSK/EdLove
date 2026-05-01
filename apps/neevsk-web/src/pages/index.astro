@@ -1,4 +1,8 @@
 ---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import HeroHome from '../components/sections/HeroHome.astro';
+import FiveDoors from '../components/sections/FiveDoors.astro';
+import CurrentFocus from '../components/sections/CurrentFocus.astro';
 import { absoluteUrl } from '../lib/site';
 
 const _structuredData = {
@@ -14,7 +18,7 @@ const _structuredData = {
   title="NeevSK | Existential Cyberneticist"
   description="Building the soul behind the machines"
   theme="home"
-  structuredData={structuredData}
+  structuredData={_structuredData}
 >
   <HeroHome />
   <FiveDoors />

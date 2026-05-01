@@ -1,5 +1,6 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import type { Assignment, ClassroomStackParamList } from '@repo/core';
+import { Assignment } from '@repo/core/logic';
+import { ClassroomStackParamList } from '@repo/core/types';
 import { api } from '@repo/core/api';
 
 import GlobalHeader from '@repo/ui/components/GlobalHeader';

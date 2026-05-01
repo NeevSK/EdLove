@@ -1,4 +1,4 @@
-import type { PerspectiveViewProps } from '@repo/core';
+import { PerspectiveViewProps } from '@repo/core/types';
 import { Layers, Network, Orbit, TrendingUp } from 'lucide-react-native';
 import type React from 'react';
 import { useMemo } from 'react';

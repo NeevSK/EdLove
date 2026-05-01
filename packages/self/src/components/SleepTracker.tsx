@@ -4,9 +4,9 @@
  * Simple, gentle way to track sleep quality
  */
 
-import { usePermissions } from '@repo/core';
+import { usePermissions } from '@repo/core/logic';
 import { useSafeMutation } from '@repo/core/hooks';
-import { supabase } from '@repo/core/native';
+import { supabase } from '@repo/core/api';;
 
 import { Box, Button, Slider } from '@repo/ui/primitives';
 import { ButtonText, HStack, Heading, Icon, Text, VStack } from '@repo/ui/primitives';

@@ -1,4 +1,4 @@
-﻿import { usePermissions } from '@repo/core';
+﻿import { usePermissions } from '@repo/core/logic';
 import { useJourneyHistory } from '@repo/core/hooks';
 
 import { JourneyHistoryCard } from '@repo/ui/components/JourneyHistoryCard';

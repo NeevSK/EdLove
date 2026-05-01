@@ -6,7 +6,7 @@
  * Purged raw HTML fragments and fixed severe syntax corruption in style objects.
  */
 
-import { usePermissions } from '@repo/core';
+import { usePermissions } from '@repo/core/logic';
 import { Box, Button } from '@repo/ui/primitives';
 import { ButtonText, HStack, Heading, Icon, Text, VStack } from '@repo/ui/primitives';
 import { AnimatedView, Pressable } from '@repo/ui/primitives';

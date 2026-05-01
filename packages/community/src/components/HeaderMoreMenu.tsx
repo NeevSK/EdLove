@@ -1,6 +1,6 @@
 import { identityAPI } from '@repo/core/api';
 import { usePermissions } from '@repo/core/logic';
-import { supabase } from '@repo/core/native';
+import { supabase } from '@repo/core/api';;
 import { useLotusToast } from '@repo/ui/hooks';
 import { Bell, BellOff, MoreVertical, ShieldAlert, UserX } from '@repo/ui/icons';
 import { Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';

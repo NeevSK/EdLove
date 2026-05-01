@@ -4,7 +4,7 @@
  * Standardized to Zero-Legacy: purged raw HTML/inline styles and fixed syntax corruption in style objects.
  */
 
-import { usePermissions } from '@repo/core';
+import { usePermissions } from '@repo/core/logic';
 import type { OrientationSeeds } from '@repo/profile';
 import { Box } from '@repo/ui/primitives';
 import { HStack, Icon, Text, VStack } from '@repo/ui/primitives';

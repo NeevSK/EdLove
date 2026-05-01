@@ -1,4 +1,5 @@
-import { resolveWorkspaceSurfaceLayout, type WorkspaceLayout } from '@repo/core';
+import { resolveWorkspaceSurfaceLayout } from '@repo/core/logic';
+import { WorkspaceLayout } from '@repo/core/types';
 import { useResponsive } from '@repo/ui/hooks';
 import { Box } from '@repo/ui/primitives';
 import { HStack, Heading, Text, VStack } from '@repo/ui/primitives';

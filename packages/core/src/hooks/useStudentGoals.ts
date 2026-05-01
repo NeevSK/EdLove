@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '../native/supabase';
+import { supabase } from '../api/supabase';
 
 export interface StudentGoal {
   id: string;

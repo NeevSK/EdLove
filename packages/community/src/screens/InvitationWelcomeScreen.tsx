@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import { identityAPI } from '@repo/core/api';
-import { supabase } from '@repo/core/native';
+import { supabase } from '@repo/core/api';;
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { useSanctuaryToast } from '@repo/ui/hooks';

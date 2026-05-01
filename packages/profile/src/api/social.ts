@@ -1,10 +1,5 @@
-import {
-  assertContractCoverage,
-  createTemporalPOAProxy,
-  defineContractCoverage,
-  profileContract,
-  type SocialLink,
-} from '@repo/core';
+import { assertContractCoverage, createTemporalPOAProxy, defineContractCoverage, profileContract } from '@repo/core/api';
+import { SocialLink } from '@repo/core/types';
 import { profileServices } from '../domains/profile/runtime';
 
 const rawSocialAPI = {

@@ -8,7 +8,9 @@ const workspaceRoot = path.resolve(projectRoot, '../..');
 
 function resolvePnpmPackageRuntime(packageName, runtimeFile) {
   const pnpmRoot = path.resolve(workspaceRoot, 'node_modules/.pnpm');
-  const pkgDir = fs.readdirSync(pnpmRoot).find((entry) => entry.startsWith(`${packageName}@`));
+  const pkgDir = fs.readdirSync(pnpmRoot).find((entry) => 
+    entry.startsWith(`${packageName.replace('/', '+')}@`)
+  );
 
   if (!pkgDir) {
     throw new Error(`Unable to locate ${packageName} in pnpm store at ${pnpmRoot}`);
@@ -51,18 +53,18 @@ config.resolver.disableHierarchicalLookup = true;
 
 // 4. Aggressive blockList to ensure Metro NEVER follows paths into package-level React.
 config.resolver.blockList = [
-  /packages\/.*\/node_modules\/react\/.*/,
-  /packages\/.*\/node_modules\/react-native\/.*/,
-  /packages\/.*\/node_modules\/@react-native-async-storage\/.*/,
-  // Ignore transient Vite prebundle cache folders in sibling apps. These can be
-  // missing at startup and crash Metro's fallback watcher on Windows.
-  /apps\/.*\/node_modules\/\.vite\/.*/,
-  /apps\\.*\\node_modules\\\.vite\\.*/,
+  /packages[/\\].*[/\\]node_modules[/\\]react[/\\].*/,
+  /packages[/\\].*[/\\]node_modules[/\\]react-native[/\\].*/,
+  /packages[/\\].*[/\\]node_modules[/\\]@react-native-async-storage[/\\].*/,
+  /apps[/\\].*[/\\]node_modules[/\\]\.vite[/\\].*/,
+  /apps[/\\].*[/\\]\.expo[/\\]cache[/\\].*/,
+  /apps[/\\].*[/\\]\.expo[/\\]packager-info[/\\].*/,
 ];
 
 const SINGLETON_OVERRIDES = {
   react: path.resolve(projectRoot, 'node_modules/react'),
   'react-dom': path.resolve(projectRoot, 'node_modules/react-dom'),
+  '@babel/runtime': path.resolve(projectRoot, 'node_modules/@babel/runtime'),
   'react-native-web': path.resolve(projectRoot, 'node_modules/react-native-web'),
   '@react-navigation/native': path.resolve(projectRoot, 'node_modules/@react-navigation/native'),
   '@react-navigation/core': path.resolve(projectRoot, 'node_modules/@react-navigation/core'),
@@ -70,11 +72,27 @@ const SINGLETON_OVERRIDES = {
     projectRoot,
     'node_modules/@react-native-async-storage/async-storage',
   ),
+  effect: path.resolve(projectRoot, 'node_modules/effect'),
+  '@effect/platform': path.resolve(projectRoot, 'node_modules/@effect/platform'),
+  styleq: path.resolve(projectRoot, 'node_modules/styleq'),
+  '@react-native-community/slider': path.resolve(projectRoot, 'node_modules/@react-native-community/slider'),
+  'react-native-webview': path.resolve(projectRoot, 'node_modules/react-native-webview'),
+  '@expo/vector-icons': path.resolve(projectRoot, 'node_modules/@expo/vector-icons'),
+  'react-native-maps': path.resolve(projectRoot, 'node_modules/react-native-maps'),
+  'react-native-linear-gradient': path.resolve(projectRoot, 'node_modules/react-native-linear-gradient'),
+  xstate: path.resolve(projectRoot, 'node_modules/xstate'),
+  '@casl/react': path.resolve(projectRoot, 'node_modules/@casl/react'),
+  'fast-deep-equal': path.resolve(projectRoot, 'node_modules/fast-deep-equal'),
+  'hoist-non-react-statics': path.resolve(projectRoot, 'node_modules/hoist-non-react-statics'),
+  scheduler: path.resolve(projectRoot, 'node_modules/scheduler'),
+  'color-name': path.resolve(projectRoot, 'node_modules/color-name'),
+  'react-is': path.resolve(projectRoot, 'node_modules/react-is'),
 };
 
-// 5. Dynamic Internal Package Discovery
-// We scan the packages/ directory at startup to map all internal names (from package.json)
-// to their physical paths. This ensures 100% coverage and native 'exports' support.
+// 5. Dynamic Package Discovery (Internal & Pnpm Transitives)
+// We scan the packages/ directory and the pnpm virtual store to proactively
+// map all dependencies to their physical paths. This eliminates the need for
+// manual elevation of transitive dependencies in package.json.
 const INTERNAL_PACKAGE_MAPPINGS = {};
 const packagesDir = path.resolve(workspaceRoot, 'packages');
 if (fs.existsSync(packagesDir)) {
@@ -93,6 +111,38 @@ if (fs.existsSync(packagesDir)) {
   });
 }
 
+const PNPM_FALLBACK_MAPPINGS = {};
+const pnpmRoot = path.resolve(workspaceRoot, 'node_modules/.pnpm');
+if (fs.existsSync(pnpmRoot)) {
+  // We scan the virtual store for every package it contains.
+  // This is the "Sovereign Proactive Resolver": it handles truncated directory names
+  // and ensures Metro can find every transitive dependency without hierarchical lookup.
+  fs.readdirSync(pnpmRoot).forEach((dir) => {
+    const virtualNodeModules = path.resolve(pnpmRoot, dir, 'node_modules');
+    if (fs.existsSync(virtualNodeModules)) {
+      try {
+        fs.readdirSync(virtualNodeModules).forEach((pkgName) => {
+          if (pkgName.startsWith('@')) {
+            const scopePath = path.resolve(virtualNodeModules, pkgName);
+            fs.readdirSync(scopePath).forEach((subPkg) => {
+              const fullName = `${pkgName}/${subPkg}`;
+              if (!SINGLETON_OVERRIDES[fullName] && !INTERNAL_PACKAGE_MAPPINGS[fullName]) {
+                PNPM_FALLBACK_MAPPINGS[fullName] = path.resolve(scopePath, subPkg);
+              }
+            });
+          } else {
+            if (!SINGLETON_OVERRIDES[pkgName] && !INTERNAL_PACKAGE_MAPPINGS[pkgName]) {
+              PNPM_FALLBACK_MAPPINGS[pkgName] = path.resolve(virtualNodeModules, pkgName);
+            }
+          }
+        });
+      } catch (e) {
+        // Skip inaccessible or non-directory entries
+      }
+    }
+  });
+}
+
 // Ensure react-native is a singleton on native platforms
 const isWeb = process.argv.find((arg) => arg.includes('platform=web'));
 if (!isWeb) {
@@ -100,6 +150,7 @@ if (!isWeb) {
 }
 
 config.resolver.extraNodeModules = {
+  ...PNPM_FALLBACK_MAPPINGS,
   ...SINGLETON_OVERRIDES,
   ...INTERNAL_PACKAGE_MAPPINGS,
 };

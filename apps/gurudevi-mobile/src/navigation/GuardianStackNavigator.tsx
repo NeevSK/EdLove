@@ -9,7 +9,7 @@ import GuardianStudentDetailScreen from '@repo/admin/screens/guardian/GuardianSt
 import GuardianStudentsScreen from '@repo/admin/screens/guardian/GuardianStudentsScreen';
 import PrincipalDashboard from '@repo/admin/screens/PrincipalDashboard';
 import SchoolCreationScreen from '@repo/admin/screens/SchoolCreationScreen';
-import type { GuardianStackParamList } from '@repo/core';
+import { GuardianStackParamList } from '@repo/core/types';
 import { useTheme } from '@repo/ui/primitives';
 
 const Stack = createNativeStackNavigator<GuardianStackParamList>();

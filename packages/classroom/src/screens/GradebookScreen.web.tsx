@@ -1,5 +1,6 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { type ClassroomGradingSettings, growthSignalsAPI } from '@repo/core';
+import { growthSignalsAPI } from '@repo/core/api';
+import { ClassroomGradingSettings } from '@repo/core/logic';
 import { useStore } from '@repo/core/logic';
 
 import { Award, Check, ChevronLeft, Edit3, Settings2, TrendingUp, Users } from '@repo/ui/icons';

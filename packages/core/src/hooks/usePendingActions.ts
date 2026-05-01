@@ -11,7 +11,7 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
-import { supabase } from '../native/supabase';
+import { supabase } from '../api/supabase';
 
 export interface PendingAttendanceItem {
   classroomId: string;

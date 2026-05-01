@@ -19,7 +19,7 @@
  */
 
 import { handleAPIError } from '@repo/core/logic';
-import { authAPI } from '@repo/core/native';
+import { authAPI } from '@repo/core/auth';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';

@@ -16,7 +16,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { type RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { identityAPI } from '@repo/core/api';
-import { FlowResolver } from '@repo/core/native';
+import { FlowResolver } from '@repo/core/native';;
 import type { QRPayload } from '@repo/core/types';
 
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';

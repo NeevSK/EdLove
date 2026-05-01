@@ -1,5 +1,5 @@
 import { historyAPI } from '@repo/core/api';
-import { supabase } from '@repo/core/native';
+import { supabase } from '@repo/core/api';;
 
 import { useEffect, useState } from 'react';
 import { getAdminAuditEntries } from './adminControl';

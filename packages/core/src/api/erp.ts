@@ -7,8 +7,8 @@
 import { z } from 'zod';
 import { AccountSchema, FinancialTransactionSchema } from '../logic/schemas/accounting.schema';
 import { InvoiceSchema, PaymentIntentSchema } from '../logic/schemas/payments.schema';
-import { supabase } from '../native/supabase';
-import { APIError } from '../types';
+import { supabase } from './supabase';
+import { APIError } from '../types/API';
 import { erpContract } from './erp.contract';
 
 export const accountingAPI = {

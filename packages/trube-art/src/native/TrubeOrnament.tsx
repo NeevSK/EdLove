@@ -25,9 +25,8 @@ export function TrubeOrnament({ ornament, color, style, cornerRadius = 0 }: Trub
 
   const onLayout = React.useCallback((event: LayoutChangeEvent) => {
     const { width, height } = event.nativeEvent.layout;
-    setBounds(
-      (current =
-        current.width === width && current.height === height ? current : { width, height }),
+    setBounds((current) =>
+      current.width === width && current.height === height ? current : { width, height },
     );
   }, []);
 
@@ -42,11 +41,14 @@ export function TrubeOrnament({ ornament, color, style, cornerRadius = 0 }: Trub
         },
         style,
       ]}
-          {bounds.width > 0 && bounds.height > 0 ? (
-        <Canvas style={{ flex: 1 }}          <Group 
+    >
+      {bounds.width > 0 && bounds.height > 0 ? (
+        <Canvas style={{ flex: 1 }}>
+          <Group
             opacity={breathingOpacity}
             transform={[{ translateX: driftX as any }, { translateY: driftY as any }]}
-                      {resolved.edges.map((edge, index) => {
+          >
+            {resolved.edges.map((edge, index) => {
               const from = resolved.nodes[edge.from];
               const to = resolved.nodes[edge.to];
               if (!from || !to) {
@@ -61,7 +63,8 @@ export function TrubeOrnament({ ornament, color, style, cornerRadius = 0 }: Trub
                   p1={vec(from.x * bounds.width, from.y * bounds.height)}
                   p2={vec(to.x * bounds.width, to.y * bounds.height)}
                   strokeWidth={edge.width}
-                /              );
+                />
+              );
             })}
             {resolved.nodes.map((node, index) => (
               <Circle
@@ -71,7 +74,11 @@ export function TrubeOrnament({ ornament, color, style, cornerRadius = 0 }: Trub
                 cy={node.y * bounds.height}
                 opacity={node.alpha}
                 r={node.r}
-              /            ))}
-          </Group        </Canvas      ) : null}
-    </View  );
+              />
+            ))}
+          </Group>
+        </Canvas>
+      ) : null}
+    </View>
+  );
 }

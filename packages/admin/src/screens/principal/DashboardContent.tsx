@@ -1,4 +1,4 @@
-import type { PublishedSchoolGradingCompletion } from '@repo/core';
+import { PublishedSchoolGradingCompletion } from '@repo/core/logic';
 import { Building2, LayoutGrid, NotebookPen, Share2, TrendingUp } from '@repo/ui/icons';
 import { Box, Button } from '@repo/ui/primitives';
 import { ButtonIcon, ButtonText, HStack, Heading, Icon, Text, VStack } from '@repo/ui/primitives';

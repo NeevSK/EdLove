@@ -105,10 +105,14 @@ async function staleWhileRevalidate(cacheName, request) {
   const cache = await caches.open(cacheName);
   const cached = await cache.match(request);
   const networkFetch = fetch(request)
-    .then((response) => {
+    .then(async (response) => {
       const url = new URL(request.url);
-      if (response.ok && (url.protocol === 'http:' || url.protocol === 'https:')) {
-        cache.put(request, response.clone());
+      try {
+        if (response.ok && (url.protocol === 'http:' || url.protocol === 'https:')) {
+          await cache.put(request, response.clone());
+        }
+      } catch (err) {
+        console.warn('[SW] Failed to cache:', url.pathname, err);
       }
       return response;
     })

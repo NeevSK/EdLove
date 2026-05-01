@@ -34,6 +34,9 @@ module.exports = {
         pathNot: [
           '\\.config\\.(js|cjs|mjs|ts)$',
           '\\.d\\.ts$',
+          '\\.test\\.ts$',
+          '\\.spec\\.ts$',
+          '__tests__/',
           'archives/',
           'shims/',
           'jest-native-setup\\.js$',

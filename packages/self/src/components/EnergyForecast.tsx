@@ -5,9 +5,9 @@
  */
 
 import { useNavigation } from '@react-navigation/native';
-import { usePermissions } from '@repo/core';
+import { usePermissions } from '@repo/core/logic';
 import { useSafeMutation } from '@repo/core/hooks';
-import { supabase } from '@repo/core/native';
+import { supabase } from '@repo/core/api';;
 
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
 import { Box } from '@repo/ui/primitives';

@@ -1,4 +1,4 @@
-import type { Assignment } from '@repo/core';
+import { Assignment } from '@repo/core/logic';
 import { CheckCircle2, Sparkles, Target } from '@repo/ui/icons';
 import { Box } from '@repo/ui/primitives';
 import { HStack, Icon, Text, VStack } from '@repo/ui/primitives';

@@ -1,5 +1,5 @@
-import type { School, SchoolStats } from '@repo/core';
-import { handleAPIError, usePermissions } from '@repo/core';
+import { School, SchoolStats } from '@repo/core/types';
+import { handleAPIError, usePermissions } from '@repo/core/logic';
 import { schoolAPI } from '@repo/core/api';
 import { useMutationQueue } from '@repo/core/logic';
 

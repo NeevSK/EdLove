@@ -1,9 +1,5 @@
-import {
-  KnowledgeTopologySchema,
-  type PulseMetricsZod,
-  type School,
-  type SchoolStats,
-} from '@repo/core';
+import { KnowledgeTopologySchema, PulseMetricsZod } from '@repo/core/logic';
+import { School, SchoolStats } from '@repo/core/types';
 import { api as coreAPI, mappingAPI } from '@repo/core/api';
 import { useStore, useTemporalStore } from '@repo/core/logic';
 

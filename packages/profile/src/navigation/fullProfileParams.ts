@@ -1,4 +1,4 @@
-import type { FullProfileParams } from '@repo/core';
+import { FullProfileParams } from '@repo/core/types';
 
 export function toFullProfileParams(profile: Record<string, any>): FullProfileParams {
   return {

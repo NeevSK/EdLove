@@ -1,4 +1,4 @@
-import type { FormManager } from '@repo/core';
+import { FormManager } from '@repo/core/logic';
 import { useForm } from '@repo/core/hooks';
 
 import { Box, Button, Input, Textarea } from '@repo/ui/primitives';

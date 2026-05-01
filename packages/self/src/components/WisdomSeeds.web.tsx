@@ -1,11 +1,11 @@
-﻿/**
+/**
  * WisdomSeeds.web.tsx
  *
  * Web override. The native version uses expo-haptics + useSafeMutation.
  * On web we use a direct Supabase insert with optimistic local update
  * and a clean HTML form. Metro resolves this over WisdomSeeds.tsx on web.
  */
-import { supabase } from '@repo/core/native';
+import { supabase } from '@repo/core/api';;
 
 import { Lightbulb } from 'lucide-react-native';
 import { useState } from 'react';

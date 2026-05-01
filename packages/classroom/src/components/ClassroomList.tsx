@@ -1,4 +1,5 @@
-import { MOCK_CLASSROOMS, usePermissions } from '@repo/core';
+import { MOCK_CLASSROOMS } from '@repo/core/api';
+import { usePermissions } from '@repo/core/logic';
 import { api, identityAPI } from '@repo/core/api';
 import { useFeatureAccess } from '@repo/core/hooks';
 import { useStore } from '@repo/core/logic';

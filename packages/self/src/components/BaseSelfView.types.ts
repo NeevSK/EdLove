@@ -1,4 +1,4 @@
-﻿import type { TemporalScale } from '@repo/core';
+﻿import { TemporalScale } from '@repo/core/store';
 import type React from 'react';
 
 export interface SelfViewFeature {

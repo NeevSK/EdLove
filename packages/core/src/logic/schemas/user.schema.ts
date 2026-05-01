@@ -11,7 +11,11 @@ export const UserSchema = z.object({
   email: z.string().email().nullable().optional(),
   avatar_url: z.string().nullable().optional(),
   authority: z.string().nullable().optional(), // POA Role
-  roles: z.array(z.string()).default([]),
+  role: z.string().nullable().optional(), // Legacy singular role
+  roles: z.array(z.string()).default([]), // Modern multiple roles
+  is_anonymous: z.boolean().default(false),
+  onboarding_completed: z.boolean().default(false),
+  onboarding_completed_at: z.string().nullable().optional(),
   school_id: z.string().uuid().nullable().optional(), // Added for tenancy healing
   created_at: z.string(),
   updated_at: z.string(),

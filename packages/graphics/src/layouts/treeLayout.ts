@@ -1,4 +1,4 @@
-import type { GraphNode, KnowledgeTopology, LayoutResult } from '@repo/core';
+import { GraphNode, KnowledgeTopology, LayoutResult } from '@repo/core/types';
 import { type HierarchyNode, hierarchy, tree } from 'd3-hierarchy';
 
 export interface TreeLayoutOptions {

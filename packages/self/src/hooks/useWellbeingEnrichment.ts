@@ -1,5 +1,5 @@
-﻿import type { ImpactRipple } from '@repo/core';
-import { impactRipplesAPI } from '@repo/core';
+﻿import { ImpactRipple } from '@repo/core/api';
+import { impactRipplesAPI } from '@repo/core/api';
 import { warmMirrorAPI } from '@repo/core/api';
 
 import { useEffect, useState } from 'react';

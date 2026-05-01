@@ -1,4 +1,4 @@
-import type { GraphNode, KnowledgeTopology } from '@repo/core';
+import { GraphNode, KnowledgeTopology } from '@repo/core/types';
 
 /**
  * CaptureEngine  Prepares and optimizes visualizations for static export.

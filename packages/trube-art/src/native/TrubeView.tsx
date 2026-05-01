@@ -40,15 +40,18 @@ export function TrubeView({
         },
         style,
       ]}
-          <TrubeCanvas
+    >
+      <TrubeCanvas
         cornerRadius={cornerRadius}
         environment={environment}
         paused={paused}
         quality={quality}
         style={StyleSheet.absoluteFill}
         surface={surface}
-      /      <View style={[styles.content, contentStyle]}        {children}
-      </View    </View  );
+      />
+      <View style={[styles.content, contentStyle]}>{children}</View>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({

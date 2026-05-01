@@ -1,4 +1,4 @@
-import type { SocialLink, SocialPlatform } from '@repo/core';
+import { SocialLink, SocialPlatform } from '@repo/core/types';
 import { Box } from '@repo/ui/primitives';
 import { HStack, Icon, Text, VStack } from '@repo/ui/primitives';
 import { openExternalURL, showExternalLinkOptions } from '@repo/ui/utils';

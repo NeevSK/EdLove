@@ -189,22 +189,34 @@ if (fs.existsSync(srcDir)) {
         addViolation(
           'STATE DENSITY',
           normalize(relFile),
-          `Has ${count} useState hooks.`,
-          'packages/ui/docs/state-management-guide.md',
+          `Has ${count} useState hooks. Maximum recommended is 2. Refactor to useReducer or a state machine.`,
+          'packages/ui/docs/state-management-guide.md#21-complex-local-state',
         );
       }
     });
   } catch (_e) {}
 
-  // 4c. Store Selector Integrity
-  const missingSelectors = runAuditRg('const.*=.*use.*Store\\(\\)', '.');
+  // 4c. Store Selector Integrity (The Facade Trap)
+  const destructuredStores = runAuditRg('const\\s+\\{.*\\}\\s*=\\s*use.*Store\\(', '.');
+  destructuredStores.forEach((line) => {
+    if (isIgnored(line)) return;
+    const parts = normalize(line).split(':');
+    addViolation(
+      'STORE DESTRUCTURING',
+      parts[0],
+      'Destructuring store state detected. Use atomic selectors to prevent over-subscription.',
+      'packages/ui/docs/state-management-guide.md#iii-the-facade-trap',
+    );
+  });
+
+  const missingSelectors = runAuditRg('const\\s+.*\\s*=\\s*use.*Store\\(\\)', '.');
   missingSelectors.forEach((line) => {
     if (isIgnored(line)) return;
     const parts = normalize(line).split(':');
     addViolation(
       'SUBSCRIPTION',
       parts[0],
-      'Missing atomic selector.',
+      'Missing atomic selector in store hook call.',
       'packages/ui/docs/state-management-guide.md#iii-the-facade-trap',
     );
   });
@@ -296,7 +308,17 @@ if (fs.existsSync(srcDir)) {
     }
   });
 
-  // 7b. Action-Based Opportunity
+  // 7e. Async Mutation Opportunity (useActionState)
+  const manualLoading = runAuditRg('const\\s+\\[(loading|pending),\\s*set(Loading|Pending)\\]\\s*=\\s*useState\\(false\\)', '.');
+  manualLoading.forEach((line) => {
+    if (isIgnored(line)) return;
+    const parts = normalize(line).split(':');
+    addWarning(
+      `Manual loading state detected in ${parts[0]}. Consider upgrading to useActionState for automatic lifecycle management.`
+    );
+  });
+
+  // 7f. Action-Based Opportunity
   const manualFormStates = runAuditRg('useState\\(false\\).*\\bloading\\b', '.');
   manualFormStates.forEach((line) => {
     if (isIgnored(line)) return;
@@ -306,10 +328,23 @@ if (fs.existsSync(srcDir)) {
     );
   });
 
-  // 7c. Effect Sync Detection
+  // 7c. State Mirroring (Derived State Opportunity)
+  const mirroringEffects = runAuditRg('useEffect\\(\\(.*\\) => \\{\\s*set[A-Z].*\\(.*\\);?\\s*\\},', '.');
+  mirroringEffects.forEach((line) => {
+    if (isIgnored(line)) return;
+    const parts = normalize(line).split(':');
+    addViolation(
+      'STATE MIRRORING',
+      parts[0],
+      'useEffect used to synchronize state. Use Derived State (computed during render) instead.',
+      'packages/ui/docs/state-hardening-registry.md#5-the-zero-legacy-2-minute-audit-2026-edition',
+    );
+  });
+
+  // 7d. Effect Sync Detection
   const syncEffects = runAuditRg('useEffect\\(\\(.*\\) => \\{\\s+set', '.');
   syncEffects.forEach((line) => {
-    if (isIgnored(line) || line.includes('setLoading(false)')) return; // Ignore final cleanup
+    if (isIgnored(line) || line.includes('setLoading(false)') || line.includes('setPending(false)')) return; // Ignore final cleanup
     const parts = normalize(line).split(':');
     addViolation(
       'SYNC EFFECT',

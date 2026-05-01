@@ -1,6 +1,9 @@
 ---
+import Layout from '../../layouts/Layout.astro';
+import CinematicBackground from '../../components/CinematicBackground.astro';
+
 // Data from 13_GLOBAL_INNOVATION_GALLERY.md
-const _globalOpenSource = {
+const globalOpenSource = {
   name: 'Global Open Source',
   subtitle: 'The Foundation of Free Knowledge',
   focus: 'Universal Access, collaborative Development, Zero Cost',
@@ -43,7 +46,7 @@ const _globalOpenSource = {
   ],
 };
 
-const _regions = [
+const regions = [
   {
     name: 'Africa',
     subtitle: 'The Mobile Renaissance',
@@ -247,7 +250,7 @@ const _regions = [
   },
 ];
 
-const _specializedInnovations = [
+const specializedInnovations = [
   {
     title: 'QTRobot',
     category: 'Autism (ASD)',
@@ -287,7 +290,7 @@ const regionColors = {
 type RegionName = keyof typeof regionColors;
 
 // Card style variants
-const _getCardStyle = (index: number) => {
+const getCardStyle = (index: number) => {
   const styles = ['exhibition', 'artifact', 'catalog'];
   return styles[index % 3];
 };

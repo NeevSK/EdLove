@@ -1,11 +1,5 @@
-import {
-  assertContractCoverage,
-  createPOAProxy,
-  defineContractCoverage,
-  growthSignalsAPI,
-  selfContract,
-} from '@repo/core';
-import { supabase } from '@repo/core/native';
+import { assertContractCoverage, createPOAProxy, defineContractCoverage, growthSignalsAPI, selfContract } from '@repo/core/api';
+import { supabase } from '@repo/core/api';;
 import { APIError } from '@repo/core/types';
 
 import type { FireJournalEntry, MoodLog } from '../types';

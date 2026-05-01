@@ -1,6 +1,6 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import { usePermissions } from '../logic/permissions/hooks/usePermissions';
-import { supabase } from '../native/supabase';
+import { supabase } from '../api/supabase';
 import { useTemporalStore } from '../store/useTemporalStore';
 import { useTracking } from './useTracking';
 

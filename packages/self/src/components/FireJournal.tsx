@@ -4,7 +4,7 @@
  */
 
 import { useNavigation } from '@react-navigation/native';
-import { usePermissions } from '@repo/core';
+import { usePermissions } from '@repo/core/logic';
 import { useTemporalStore } from '@repo/core/logic';
 
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';

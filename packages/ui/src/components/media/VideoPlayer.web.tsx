@@ -1,4 +1,4 @@
-import { mediaInitialState, mediaReducer } from '@repo/core';
+import { mediaInitialState, mediaReducer } from '@repo/core/logic';
 import { Pause, Play, RotateCcw, RotateCw, X } from 'lucide-react-native';
 import type React from 'react';
 import { useCallback, useEffect, useReducer, useRef } from 'react';

@@ -5,7 +5,7 @@
  * Purged raw HTML fragments and malformed inline styles in favor of @repo/ui primitives and Sanctuary design tokens.
  */
 
-import type { ImpactRipple } from '@repo/core';
+import { ImpactRipple } from '@repo/core/api';
 import { Box } from '@repo/ui/primitives';
 import { Icon, Text, VStack } from '@repo/ui/primitives';
 import { Waves } from 'lucide-react-native';

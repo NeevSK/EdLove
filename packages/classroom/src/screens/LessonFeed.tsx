@@ -1,4 +1,4 @@
-import type { Assignment, Lesson, LessonMaterial } from '@repo/core';
+import { Assignment, Lesson, LessonMaterial } from '@repo/core/logic';
 import { api } from '@repo/core/api';
 
 import { CheckCircle2, ChevronDown, ChevronUp, Edit2, FileText, Plus, Trash2 } from '@repo/ui/icons';

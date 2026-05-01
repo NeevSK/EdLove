@@ -8,9 +8,10 @@ import type {
   TrubeSurfaceSpec,
 } from './types';
 
-const QUALITY_PRESETS: Record;
-TrubeResolvedQuality,
-  (Omit<TrubeRenderPlan, 'capabilityTier' | 'quality' | 'backend' | 'timeDriver'> = {
+const QUALITY_PRESETS: Record<
+  TrubeResolvedQuality,
+  Omit<TrubeRenderPlan, 'capabilityTier' | 'quality' | 'backend' | 'timeDriver'>
+> = {
     cinematic: {
       architectureVersion: 'v1',
       animationEnabled: true,
@@ -46,8 +47,8 @@ TrubeResolvedQuality,
       detail: 0,
       grainOpacity: 0.025,
       layerOpacity: 0.18,
-    },
-  });
+  },
+};
 
 function resolveCapabilityTier(
   environment: TrubeEnvironment = {},

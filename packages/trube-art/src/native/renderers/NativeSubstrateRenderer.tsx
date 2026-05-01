@@ -115,5 +115,6 @@ export function NativeSubstrateRenderer({
     <Canvas 
       ref={canvasRef}
       style={StyleSheet.absoluteFill}
-    /  );
+    />
+  );
 }

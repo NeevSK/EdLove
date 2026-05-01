@@ -1,4 +1,4 @@
-import { usePermissions } from '@repo/core';
+import { usePermissions } from '@repo/core/logic';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 
 import type React from 'react';

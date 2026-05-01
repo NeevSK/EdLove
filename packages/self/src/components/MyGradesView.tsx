@@ -4,7 +4,7 @@
  * Standardized to Zero-Legacy: purged corrupted syntax and migrated to Sanctuary V3 architecture.
  */
 
-import { supabase } from '@repo/core/native';
+import { supabase } from '@repo/core/api';;
 
 import { Box } from '@repo/ui/primitives';
 import { HStack, Icon, Text, VStack } from '@repo/ui/primitives';

@@ -1,4 +1,4 @@
-import { handleAPIError, LanguageUtils } from '@repo/core';
+import { LanguageUtils, handleAPIError } from '@repo/core/logic';
 import { authAPI } from '@repo/core/api';
 
 import { useState } from 'react';

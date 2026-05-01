@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
-import { FeatureGuard } from '@repo/core';
+import { FeatureGuard } from '@repo/core/logic';
 import { useStore } from '@repo/core/logic';
 
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';

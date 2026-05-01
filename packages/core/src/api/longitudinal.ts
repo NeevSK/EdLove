@@ -6,8 +6,8 @@ import type {
   StudentLongitudinalTimeline,
 } from '../logic/schemas/temporal.schema';
 import { StudentLongitudinalEventSchema } from '../logic/schemas/temporal.schema';
-import { supabase } from '../native/supabase';
-import { APIError } from '../types';
+import { supabase } from './supabase';
+import { APIError } from '../types/API';
 import { longitudinalContract } from './longitudinal.contract';
 
 async function listEvents(

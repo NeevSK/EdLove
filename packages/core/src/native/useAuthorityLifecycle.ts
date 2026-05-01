@@ -8,9 +8,9 @@ import type { Role } from '../logic/schemas/role.schema';
 import { useStore } from '../store/useStore';
 import type { User } from '../types';
 import { APIError } from '../types/API';
-import { authAPI } from './auth';
-import { identityAPI } from './identity';
-import { supabase } from './supabase';
+import { authAPI } from '../api/auth';
+import { identityAPI } from '../api/identity';
+import { supabase } from '../api/supabase';
 
 /**
  * useAuthorityLifecycle

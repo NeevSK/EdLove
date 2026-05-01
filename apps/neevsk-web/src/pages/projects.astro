@@ -1,6 +1,9 @@
 ---
 import { getCollection } from 'astro:content';
 import { absoluteUrl } from '../lib/site';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Navigation from '../components/Navigation.astro';
+import RealitySwitch from '../components/RealitySwitch.astro';
 
 const projectEntries = await getCollection('projects', ({ data }) => !data.draft);
 projectEntries.sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
@@ -21,7 +24,7 @@ const _structuredData = {
 };
 ---
 
-<BaseLayout title="Projects | NeevSK" description="A collection of digital artifacts, philosophical experiments, and cybernetic systems." structuredData={structuredData}>
+<BaseLayout title="Projects | NeevSK" description="A collection of digital artifacts, philosophical experiments, and cybernetic systems." structuredData={_structuredData}>
 	<RealitySwitch />
 	
 	<main class="max-w-4xl mx-auto px-6 pb-24">
@@ -35,7 +38,7 @@ const _structuredData = {
 		</header>
 
 		<div class="space-y-24">
-			{projectEntries.map(project => (
+			{projectEntries.map((project: any) => (
 				<article class="group border-l border-[var(--text-main)]/10 dark:border-[var(--text-main)]/10 pl-12 hover:border-[var(--accent-secondary)] transition-all duration-500">
 					<div class="flex flex-col md:flex-row justify-between items-baseline mb-4 gap-2">
 						<h2 class="text-3xl md:text-4xl font-serif dark:font-mono group-hover:text-[var(--accent-secondary)] transition-colors">
@@ -47,7 +50,7 @@ const _structuredData = {
 						{project.data.description}
 					</p>
 					<div class="flex flex-wrap gap-6">
-						{project.data.tech.map(tag => (
+						{project.data.tech.map((tag: any) => (
 							<span class="text-[10px] uppercase tracking-widest font-mono opacity-40 group-hover:opacity-100 transition-opacity">//{tag}</span>
 						))}
 					</div>

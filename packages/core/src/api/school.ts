@@ -8,9 +8,9 @@ import {
   SchoolStatsSchema,
   SectionSchema,
 } from '../logic/schemas/school.schema';
-import { supabase } from '../native/supabase';
+import { supabase } from './supabase';
 import type { SchoolGrade as Grade, School, SchoolStats, Section } from '../types';
-import { APIError } from '../types';
+import { APIError } from '../types/API';
 import { operationsContract } from './operations.contract';
 
 /**

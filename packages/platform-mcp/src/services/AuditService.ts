@@ -364,4 +364,50 @@ export class AuditService {
       !reportFound || !result.ok,
     );
   }
+
+  handlePushAudit() {
+    const auditCmd =
+      'pnpm exec commitlint --from=HEAD~1 --to=HEAD; pnpm run check-types; pnpm run check:hygiene; pnpm run identity:check; pnpm dlx gitleaks detect --source . --verbose';
+    console.error('Running Sovereign Push Audit...');
+
+    const result = runCommand('node', [
+      'scripts/sovereign-audit.mjs',
+      '--cmd',
+      auditCmd,
+      '--log',
+      'reports/push_audit.md',
+    ]);
+
+    const report = readReport('push_audit.md');
+    const reportFound = report && report !== 'Report not found.';
+
+    return toText(
+      [
+        reportFound
+          ? 'Sovereign Push Audit Report:'
+          : 'Push audit completed, but no report was found.',
+        result.combined,
+        reportFound ? report : '',
+      ]
+        .filter(Boolean)
+        .join('\n\n'),
+      !result.ok,
+    );
+  }
+  handleAuditDeprecations(args: { target?: string }) {
+    const target = normalizeTarget(args.target || 'packages apps');
+    console.error(`Auditing deprecations for: ${target}`);
+    const result = runPowerShellScript('scripts/audit-deprecations.ps1', [
+      '-Path',
+      target,
+      '-JSON',
+    ]);
+    return toText(result.combined, !result.ok);
+  }
+
+  handleCheckMemorySinks() {
+    console.error('Auditing memory sinks...');
+    const result = runPowerShellScript('scripts/check-memory-sinks.ps1');
+    return toText(result.combined, !result.ok);
+  }
 }

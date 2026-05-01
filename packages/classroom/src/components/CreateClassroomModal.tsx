@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
-import { handleAPIError } from '@repo/core';
+import { handleAPIError } from '@repo/core/logic';
 import { api, communityAPI, identityAPI } from '@repo/core/api';
 import { useEntity } from '@repo/core/hooks';
 import { useStore } from '@repo/core/logic';

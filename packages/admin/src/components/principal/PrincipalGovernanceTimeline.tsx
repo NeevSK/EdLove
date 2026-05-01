@@ -1,4 +1,4 @@
-import type { PrincipalGovernanceEventZod } from '@repo/core';
+import { PrincipalGovernanceEventZod } from '@repo/core/api';
 import { api } from '@repo/core/api';
 import { useTemporalStore } from '@repo/core/logic';
 

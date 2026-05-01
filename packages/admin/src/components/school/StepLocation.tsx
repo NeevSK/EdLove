@@ -1,4 +1,4 @@
-import { SRI_LANKAN_DISTRICTS, SRI_LANKAN_PROVINCES } from '@repo/core';
+import { SRI_LANKAN_DISTRICTS, SRI_LANKAN_PROVINCES } from '@repo/core/constants';
 import SanctuaryInput from '@repo/ui/components/SanctuaryInput';
 import { ChevronDown, Flag, MapPin } from '@repo/ui/icons';
 import { FormControl, FormControlLabel, FormControlLabelText, Icon, Select, SelectBackdrop, SelectContent, SelectDragIndicator, SelectDragIndicatorWrapper, SelectIcon, SelectInput, SelectItem, SelectPortal, SelectTrigger, VStack } from '@repo/ui/primitives';

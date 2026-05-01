@@ -1,4 +1,4 @@
-import { useActivityPulse } from '@repo/core';
+import { useActivityPulse } from '@repo/core/logic';
 import { usePostHog } from 'posthog-react-native';
 import { Platform } from 'react-native';
 import { posthogAnalytics } from '../engine/PostHogAnalytics';

@@ -7,7 +7,7 @@
 
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import type { ClassroomStackParamList } from '@repo/core';
+import { ClassroomStackParamList } from '@repo/core/types';
 import { usePendingActions } from '@repo/core/hooks';
 import { useStore } from '@repo/core/logic';
 

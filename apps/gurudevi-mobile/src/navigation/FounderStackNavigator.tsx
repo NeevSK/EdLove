@@ -10,7 +10,7 @@ import FounderDashboard from '@repo/admin/screens/FounderDashboard';
 import FounderSchoolDashboard from '@repo/admin/screens/FounderSchoolDashboard';
 import PrincipalDashboard from '@repo/admin/screens/PrincipalDashboard';
 import SchoolCreationScreen from '@repo/admin/screens/SchoolCreationScreen';
-import type { FounderStackParamList } from '@repo/core';
+import { FounderStackParamList } from '@repo/core/types';
 import { useTheme } from '@repo/ui/primitives';
 
 const Stack = createNativeStackNavigator<FounderStackParamList>();

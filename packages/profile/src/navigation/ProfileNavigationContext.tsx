@@ -1,5 +1,5 @@
 import { type NavigationProp, useNavigation } from '@react-navigation/native';
-import type { FullProfileParams, ProfileStackParamList } from '@repo/core';
+import { FullProfileParams, ProfileStackParamList } from '@repo/core/types';
 import type React from 'react';
 import { createContext, useContext } from 'react';
 

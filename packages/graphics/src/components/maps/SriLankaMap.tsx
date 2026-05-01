@@ -1,4 +1,4 @@
-import { SRI_LANKAN_DISTRICTS } from '@repo/core';
+import { SRI_LANKAN_DISTRICTS } from '@repo/core/constants';
 import * as Haptics from 'expo-haptics';
 import { StyleSheet, View } from 'react-native';
 import Svg, { G, Path } from 'react-native-svg';

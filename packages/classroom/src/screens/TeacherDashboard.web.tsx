@@ -1,7 +1,7 @@
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import type { ClassroomStackParamList } from '@repo/core';
-import { useWorkspaceLayoutSync } from '@repo/core/native';
+import { ClassroomStackParamList } from '@repo/core/types';
+import { useWorkspaceLayoutSync } from '@repo/core/native';;
 
 import {
   TeacherAdminPortalModal,

@@ -8,7 +8,7 @@
  *  - Class count
  */
 
-import type { TeacherCarouselItem } from '@repo/core';
+import { TeacherCarouselItem } from '@repo/core/api';
 import { staffManagementAPI } from '@repo/core/api';
 
 import { Box } from '@repo/ui/primitives';

@@ -1,6 +1,6 @@
 import { echoAPI } from '@repo/core/api';
 import { useStore } from '@repo/core/logic';
-import { supabase } from '@repo/core/native';
+import { supabase } from '@repo/core/api';;
 
 import { EyeOff, Inbox, User } from '@repo/ui/icons';
 import { Box, Button, Input } from '@repo/ui/primitives';

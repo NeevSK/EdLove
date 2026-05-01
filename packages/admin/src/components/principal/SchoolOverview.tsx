@@ -1,4 +1,4 @@
-import type { School } from '@repo/core';
+import { School } from '@repo/core/types';
 import { Building2, MapPin } from '@repo/ui/icons';
 import { Box } from '@repo/ui/primitives';
 import { HStack, Icon, Text, VStack } from '@repo/ui/primitives';

@@ -5,7 +5,7 @@
  */
 
 import { useSafeMutation } from '@repo/core/hooks';
-import { supabase } from '@repo/core/native';
+import { supabase } from '@repo/core/api';;
 
 import { Box, Button } from '@repo/ui/primitives';
 import { ButtonText, HStack, Heading, Icon, InputField, Progress, ProgressFilledTrack, Text, VStack } from '@repo/ui/primitives';

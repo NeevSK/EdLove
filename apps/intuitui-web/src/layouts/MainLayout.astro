@@ -7,7 +7,9 @@ import {
   SITE_NAME,
   SITE_TITLE,
   SITE_URL,
+  SITE_KEYWORDS,
 } from '../lib/site';
+import StructuredData from '../components/StructuredData.astro';
 
 interface Props {
   title?: string;
@@ -135,7 +137,7 @@ const _currentBackground = themes[theme] || themes.default;
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
 		<meta name="description" content={description} />
-		<meta name="robots" content={robotsContent} />
+		<meta name="robots" content={_robotsContent} />
 		<meta name="keywords" content={SITE_KEYWORDS.join(', ')} />
 		<link rel="canonical" href={canonical} />
 		<meta property="og:type" content="website" />
@@ -143,20 +145,20 @@ const _currentBackground = themes[theme] || themes.default;
 		<meta property="og:title" content={title} />
 		<meta property="og:description" content={description} />
 		<meta property="og:url" content={canonical} />
-		<meta property="og:image" content={ogImage} />
+		<meta property="og:image" content={_ogImage} />
 		<meta name="twitter:card" content="summary_large_image" />
 		<meta name="twitter:title" content={title} />
 		<meta name="twitter:description" content={description} />
-		<meta name="twitter:image" content={ogImage} />
+		<meta name="twitter:image" content={_ogImage} />
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 		<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
-		<StructuredData data={baseStructuredData} />
+		<StructuredData data={_baseStructuredData} />
 	</head>
 	<body class="min-h-screen relative overflow-x-hidden selection:bg-brand-primary selection:text-white">
 		<!-- Dynamic Background Zones -->
 		<div class="fixed inset-0 -z-20 pointer-events-none" id="bg-container">
-			{currentBackground.map(zone => (
+			{_currentBackground.map((zone: any) => (
 				<div 
 					class={`absolute transform-gpu transition-transform duration-700 ease-out ${zone.color} ${zone.shape}`}
 					style={`--parallax: ${zone.parallax}; transform: translateY(calc(var(--scroll-y, 0) * var(--parallax) * 1px)) rotate(var(--tw-rotate, 0deg));`}

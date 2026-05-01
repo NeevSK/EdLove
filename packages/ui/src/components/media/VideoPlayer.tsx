@@ -1,4 +1,4 @@
-import { coreRuntime, mediaInitialState, mediaReducer } from '@repo/core';
+import { coreRuntime, mediaInitialState, mediaReducer } from '@repo/core/logic';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { Pause, Play, RotateCcw, RotateCw, X } from 'lucide-react-native';
 import { useCallback, useEffect, useReducer, useRef } from 'react';

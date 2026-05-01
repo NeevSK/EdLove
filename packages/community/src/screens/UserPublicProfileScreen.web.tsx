@@ -1,7 +1,7 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { usePermissions } from '@repo/core/logic';
-import { supabase } from '@repo/core/native';
+import { supabase } from '@repo/core/api';;
 import { useStore } from '@repo/core/store';
 import type { CommunityStackParamList } from '@repo/core/types';
 import { GiveThuthimalModal } from '@repo/profile';

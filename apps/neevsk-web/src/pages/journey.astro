@@ -1,4 +1,7 @@
 ---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Navigation from '../components/Navigation.astro';
+import RealitySwitch from '../components/RealitySwitch.astro';
 const _milestones = [
   {
     year: '199X',
@@ -41,7 +44,7 @@ const _milestones = [
 			<div class="absolute left-[3px] top-0 bottom-0 w-px bg-[var(--text-main)]/5"></div>
 			
 			<div class="space-y-32">
-				{milestones.map(m => (
+				{_milestones.map((m: any) => (
 					<div class="relative pl-12 group">
 						<div class="absolute left-0 top-2 w-2 h-2 rounded-full bg-[var(--text-main)]/10 group-hover:bg-[var(--accent-secondary)] transition-colors duration-500"></div>
 						

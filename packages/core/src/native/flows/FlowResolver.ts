@@ -1,4 +1,4 @@
-import { supabase } from '../../native/supabase';
+import { supabase } from '../../api/supabase';
 // Note: We'll use dynamic imports or passing refs for communityAPI to avoid circular deps if necessary,
 // but for now let's assume core is the base.
 import type { AuthorityTier, QRPayload } from '../../types';

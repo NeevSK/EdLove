@@ -1,4 +1,6 @@
-import type { SocialLink, TemporalScale, UserGrowthState } from '@repo/core';
+import { UserGrowthState } from '@repo/core/api';
+import { TemporalScale } from '@repo/core/store';
+import { SocialLink } from '@repo/core/types';
 
 export interface CommunityProfile {
   id: string;

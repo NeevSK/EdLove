@@ -8,7 +8,7 @@
  *  - Pending leave approvals badge
  */
 
-import type { StaffPresenceSummary, StudentAttendancePulse } from '@repo/core';
+import { StaffPresenceSummary, StudentAttendancePulse } from '@repo/core/api';
 import { staffManagementAPI } from '@repo/core/api';
 
 import { AlertCircle, ChevronRight, FileCheck, TrendingDown, TrendingUp } from '@repo/ui/icons';

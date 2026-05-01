@@ -1,4 +1,4 @@
-import type { Student } from '@repo/core';
+import { Student } from '@repo/core/types';
 import { api } from '@repo/core/api';
 
 import { StudentAnalysisModal } from '@repo/library';

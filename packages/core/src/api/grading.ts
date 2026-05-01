@@ -16,7 +16,7 @@ import type {
 } from '../logic/schemas/grading.schema';
 import { educationalServices } from '../native/runtimes/educational.runtime';
 import { gradingProjectionServices } from '../native/runtimes/gradingProjection.runtime';
-import { supabase } from '../native/supabase';
+import { supabase } from './supabase';
 import { gradingContract } from './grading.contract';
 
 type GradingAuditContext = {

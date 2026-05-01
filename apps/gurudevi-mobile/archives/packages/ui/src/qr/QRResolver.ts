@@ -11,7 +11,7 @@
  * ad-hoc in screens.
  */
 
-import type { QRAction, QRPayload } from '@repo/core';
+import { QRAction, QRPayload } from '@repo/core/types';
 import { QR_VERSION } from '@repo/core/types';
 
 export type QRResolveResult =

@@ -1,5 +1,6 @@
 import { useRoute } from '@react-navigation/native';
-import { FormHydrator, type FormTemplate } from '@repo/core';
+import { FormHydrator } from '@repo/core/logic';
+import { FormTemplate } from '@repo/core/types';
 import { api } from '@repo/core/api';
 
 import LotusLoader from '@repo/ui/components/LotusLoader';

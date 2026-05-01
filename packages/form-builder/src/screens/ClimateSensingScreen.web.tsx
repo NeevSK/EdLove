@@ -1,5 +1,5 @@
-import { FormManager } from '@repo/core';
-import { supabase } from '@repo/core/native';
+import { FormManager } from '@repo/core/logic';
+import { supabase } from '@repo/core/api';;
 
 import {
   ArrowRight,

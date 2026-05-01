@@ -1,4 +1,4 @@
-import type { TemporalScale } from '@repo/core';
+import { TemporalScale } from '@repo/core/store';
 import { useTemporalStore } from '@repo/core/logic';
 
 import FeatureInfoIcon from '@repo/ui/components/FeatureInfoIcon';

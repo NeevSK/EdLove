@@ -1,6 +1,6 @@
-import { supabase } from '../native/supabase';
+import { supabase } from './supabase';
 import { withResilience } from '../offline/resilience';
-import { APIError } from '../types';
+import { APIError } from '../types/API';
 
 // ============================================================================
 // DAILY CONTENT API (Motivation & "Did You Know?")

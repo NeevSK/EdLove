@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
-import { usePermissions } from '@repo/core';
+import { usePermissions } from '@repo/core/logic';
 import { Box } from '@repo/ui/primitives';
 import { HStack, Text, VStack } from '@repo/ui/primitives';
 import { Pressable } from '@repo/ui/primitives';

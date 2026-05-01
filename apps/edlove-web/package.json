@@ -7,8 +7,8 @@
     "build": "pnpm exec astro build",
     "preview": "pnpm exec astro preview",
     "astro": "pnpm exec astro",
-    "lint": "powershell -File ../../scripts/audit-wrapper.ps1 -Cmd \"pnpm exec eslint .\" -Log \"reports/lint.txt\"",
-    "check-types": "powershell -File ../../scripts/audit-wrapper.ps1 -Cmd \"pnpm exec astro check\" -Log \"reports/check-types.txt\""
+    "lint": "pnpm exec eslint .",
+    "check-types": "pnpm exec astro check"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.8",

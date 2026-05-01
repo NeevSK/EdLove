@@ -1,16 +1,5 @@
-import {
-  injectWorkflowEventBridge,
-  type QueuedMutation,
-  type QueuedMutationDispatchResult,
-  type SchoolClassroomCreatedPayload,
-  type SchoolGradePublishedPayload,
-  type SyncMutationQueuedPayload,
-  sendSchoolClassroomCreated,
-  sendSchoolGradePublished,
-  sendSyncMutationQueued,
-  sendWellbeingMoodLogged,
-  type WellbeingMoodLoggedPayload,
-} from '@repo/core';
+import { QueuedMutation, QueuedMutationDispatchResult } from '@repo/core/sync';
+import { SchoolClassroomCreatedPayload, SchoolGradePublishedPayload, SyncMutationQueuedPayload, WellbeingMoodLoggedPayload, injectWorkflowEventBridge, sendSchoolClassroomCreated, sendSchoolGradePublished, sendSyncMutationQueued, sendWellbeingMoodLogged } from '@repo/core/logic';
 import { inngest } from './inngest';
 
 const REMOTE_SYNC_MUTATIONS = new Set(['saveJournalEntry', 'saveDecision', 'updateAttendance']);

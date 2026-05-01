@@ -2,7 +2,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { trackingAPI } from '../api/tracking';
 import { trackEvent } from '../lib/monitoring/posthog';
-import { identityAPI } from '../native/identity';
+import { identityAPI } from '../api/identity';
 
 /**
  * Hook for tracking feature discovery and exploration status.

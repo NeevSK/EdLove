@@ -1,7 +1,6 @@
-import 'react-native-url-polyfill/auto';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createClient } from '@supabase/supabase-js';
 import { Platform } from 'react-native';
+import { storage } from '../lib/storage';
 
 // Configuration from environment variables
 const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
@@ -16,14 +15,20 @@ if (!supabaseUrl || !supabaseAnonKey) {
   );
 }
 
+/**
+ * Standard Supabase client for the Sanctuary platform.
+ * Uses the Sovereign StorageManager to ensure platform-agnostic persistence.
+ */
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
-    storage: AsyncStorage,
+    // Wrap StorageManager to satisfy Supabase's GoTrue storage interface
+    storage: {
+      getItem: (key: string) => storage.getString(key) ?? null,
+      setItem: (key: string, value: string) => storage.set(key, value),
+      removeItem: (key: string) => storage.delete(key),
+    },
     autoRefreshToken: true,
     persistSession: true,
-    // On web, Supabase must parse the OAuth callback fragment/query string from
-    // the URL after the provider redirects back.  On native the deep-link handler
-    // manages this so detection must be disabled to avoid false positives.
     detectSessionInUrl: Platform.OS === 'web',
   },
 });

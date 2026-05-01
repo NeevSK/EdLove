@@ -55,8 +55,8 @@ const EXCLUDES = [
   'scripts',
   'docs',
   'supabase/migrations',
-  'packages/core/src/native/identity.ts', // Exclude the API definition itself
-  'packages/core/src/native/auth.ts', // Exclude the low-level auth wrapper
+  'packages/core/src/api/identity.ts', // Exclude the API definition itself
+  'packages/core/src/api/auth.ts', // Exclude the low-level auth wrapper
 ];
 
 function scanDirectory(dir, results = []) {

@@ -5,7 +5,7 @@ import {
   StudentStatsSchema,
   TeacherStatsSchema,
 } from '../../logic/schemas/classroom.schema';
-import { supabase } from '../../native/supabase';
+import { supabase } from '../supabase';
 import { assignmentsAPI } from '../assignments';
 import { classroomsAPI } from '../classrooms';
 

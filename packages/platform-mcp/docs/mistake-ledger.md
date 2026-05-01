@@ -1,0 +1,33 @@
+# 📓 The Sovereign Mistake Ledger
+### "Errors are the portals of discovery." — James Joyce
+
+This ledger tracks architectural dead-ends, failed patterns, and "hard-won" lessons to ensure future agents (and humans) do not repeat them.
+
+---
+
+## 🚫 1. Relative Import Chaos
+- **Mistake**: Using deep relative paths (e.g., `../../../components`) in a monorepo.
+- **Consequence**: Moving a file breaks everything; opaque dependency graph.
+- **The Sovereign Way**: Use workspace-level aliases or canonical package names (e.g., `@repo/ui`).
+- **Learning**: \`sovereign_maintenance(action: 'normalize')\` is your best friend.
+
+## 🚫 2. The "UI in Core" Pollution
+- **Mistake**: Importing React components or hooks into "Headless Core" services.
+- **Consequence**: Breaking SSR, breaking CI/CD, and making services non-portable.
+- **The Sovereign Way**: Core should be pure logic. UI should depend on Core, never the reverse.
+- **Learning**: Use \`sovereign_discovery(action: 'lens')\` (Skeleton Lens) to flag these early.
+
+## 🚫 3. Ghost State Leakage
+- **Mistake**: Creating `setInterval` or `addEventListener` in components without cleanup.
+- **Consequence**: Massive memory sinks and battery drain on mobile.
+- **The Sovereign Way**: Every side effect must have a termination logic.
+- **Learning**: \`sovereign_audit(action: 'memory_sinks')\` tracks these.
+
+## 🚫 4. The "God File" Anti-pattern
+- **Mistake**: Creating files larger than 1000 lines that handle everything.
+- **Consequence**: High cognitive load, impossible to unit test, and LLM context saturation.
+- **The Sovereign Way**: Atomic, single-responsibility files.
+- **Learning**: Monitor \`sovereign_audit(action: 'cognitive_load')\` scores.
+
+---
+*Add your own mistakes here. Every failure documented is a step towards Absolute God Mode.*

@@ -1,7 +1,7 @@
-﻿import type { ClassroomNoteLifecycleEvent } from '../logic/schemas/classroom-note.schema';
-import { identityAPI } from '../native/identity';
+import type { ClassroomNoteLifecycleEvent } from '../logic/schemas/classroom-note.schema';
+import { identityAPI } from './identity';
 import { classroomNotesServices } from '../native/runtimes/classroomNotes.runtime';
-import { APIError } from '../types';
+import { APIError } from '../types/API';
 import type { ClassroomNote } from '../types/ClassroomNote';
 import { classroomNotesContract } from './classroomNotes.contract';
 

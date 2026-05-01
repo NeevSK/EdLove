@@ -1,5 +1,5 @@
 import { getTemporalRange } from '../logic/utils/temporalUtils';
-import { supabase } from '../native/supabase';
+import { supabase } from './supabase';
 
 /**
  * Growth Signals API \u2014 internal tracking of aliveness dimensions.

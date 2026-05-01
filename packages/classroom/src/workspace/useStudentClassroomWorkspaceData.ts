@@ -1,4 +1,5 @@
-import type { Assignment, Classroom, Lesson, LessonMaterial } from '@repo/core';
+import { Assignment, Lesson, LessonMaterial } from '@repo/core/logic';
+import { Classroom } from '@repo/core/types';
 import { api } from '@repo/core/api';
 import { useAuthStore } from '@repo/core/logic';
 

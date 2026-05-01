@@ -1,4 +1,4 @@
-import { usePermissions } from '@repo/core';
+import { usePermissions } from '@repo/core/logic';
 import { useStore } from '@repo/core/logic';
 
 import { StaffPresencePulse } from '@repo/people';

@@ -1,4 +1,4 @@
-import { supabase } from '../native/supabase';
+import { supabase } from '../api/supabase';
 
 /**
  * Invite Code Validation and Management

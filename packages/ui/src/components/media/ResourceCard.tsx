@@ -1,4 +1,4 @@
-import type { ResourceType } from '@repo/core';
+import { ResourceType } from '@repo/core/types';
 import { File, FileText, Heart, Info, Link, Map, Plus, Video } from 'lucide-react-native';
 import { Box, HStack, Text, VStack } from '../../primitives';
 import { SanctuaryButton } from '../SanctuaryButton';

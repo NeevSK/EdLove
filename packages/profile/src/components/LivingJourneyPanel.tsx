@@ -6,15 +6,8 @@
  * Whispered Moments.
  */
 
-import {
-  type BanyanStage,
-  type BhumiStage,
-  type CrystalTier,
-  type MoonPhase,
-  type RiverStage,
-  type UserGrowthState,
-  usePermissions,
-} from '@repo/core';
+import { BanyanStage, BhumiStage, CrystalTier, MoonPhase, RiverStage, UserGrowthState } from '@repo/core/api';
+import { usePermissions } from '@repo/core/logic';
 import { communityAPI, moonPhaseAPI } from '@repo/core/api';
 import { useTemporalStore } from '@repo/core/logic';
 

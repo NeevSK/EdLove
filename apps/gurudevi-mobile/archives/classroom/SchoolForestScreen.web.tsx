@@ -12,7 +12,7 @@
  */
 
 import { useNavigation } from '@react-navigation/native';
-import type { SchoolForestState, TeacherTree } from '@repo/core';
+import { SchoolForestState, TeacherTree } from '@repo/core/api';
 import { useUserRole } from '@repo/core';
 import { schoolForestAPI } from '@repo/core/api';
 import { useStore } from '@repo/core/logic';

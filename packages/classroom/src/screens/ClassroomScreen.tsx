@@ -1,5 +1,5 @@
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { FeatureGuard, usePermissions } from '@repo/core';
+import { FeatureGuard, usePermissions } from '@repo/core/logic';
 import { useFeatureAccess } from '@repo/core/hooks';
 import { useStore } from '@repo/core/logic';
 

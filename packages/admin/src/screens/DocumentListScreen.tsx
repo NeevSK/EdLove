@@ -1,4 +1,4 @@
-import { usePermissions } from '@repo/core';
+import { usePermissions } from '@repo/core/logic';
 import { Box, Button } from '@repo/ui/primitives';
 import { ButtonText, HStack, Heading, Text, VStack } from '@repo/ui/primitives';
 import { Pressable, ScrollView } from '@repo/ui/primitives';

@@ -5,11 +5,12 @@
  */
 
 // Types
-import type { AttendanceStatus, StudentAttendance } from '@repo/core';
+import { AttendanceStatus, StudentAttendance } from '@repo/core/logic';
 import { Check, Clock, Search, X } from '@repo/ui/icons';
 import { Box, Input } from '@repo/ui/primitives';
 import { HStack, Heading, Icon, InputField, Text, VStack } from '@repo/ui/primitives';
-import { FlatList, Pressable } from '@repo/ui/primitives';
+import { SanctuaryFlashList } from '@repo/ui/components/SanctuaryFlashList';
+import { Pressable } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
 
 import { useEffect } from 'react';
@@ -221,13 +222,13 @@ export default function AttendanceSheet({
                 </Text>
               </Box>
             ) : (
-              <FlatList
-                data={filteredStudents}
-                renderItem={renderStudentRow}
-                keyExtractor={(item: any) => item.id}
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={{ paddingBottom: 20 }}
-              />
+            <SanctuaryFlashList
+              data={filteredStudents}
+              renderItem={renderStudentRow}
+              keyExtractor={(item: any) => item.id}
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={{ paddingBottom: 20 }}
+            />
             )}
           </Box>
 

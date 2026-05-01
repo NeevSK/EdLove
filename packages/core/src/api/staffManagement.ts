@@ -20,7 +20,7 @@ import {
   TeacherCarouselItemSchema,
 } from '../logic/schemas/staff.schema';
 import { attendanceProjectionServices } from '../native/runtimes/attendanceProjection.runtime';
-import { supabase } from '../native/supabase';
+import { supabase } from './supabase';
 import type { AttendanceReport } from '../types/Attendance';
 
 export type {

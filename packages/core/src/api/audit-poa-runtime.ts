@@ -1,4 +1,4 @@
-﻿import { identityAPI } from '../native/identity';
+import { identityAPI } from './identity';
 import { assignmentsAPI } from './assignments';
 import { classroomGroupsAPI } from './classroomGroups';
 import { classroomNotesAPI } from './classroomNotes';

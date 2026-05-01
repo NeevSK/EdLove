@@ -1,4 +1,4 @@
-import { RELIGIOUS_AFFILIATIONS, STUDENT_TYPES } from '@repo/core';
+import { RELIGIOUS_AFFILIATIONS, STUDENT_TYPES } from '@repo/core/constants';
 import SanctuaryInput from '@repo/ui/components/SanctuaryInput';
 import { Users } from '@repo/ui/icons';
 import { FormControl, FormControlLabel, FormControlLabelText, HStack, Text, VStack } from '@repo/ui/primitives';

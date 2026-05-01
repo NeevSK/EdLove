@@ -1,4 +1,4 @@
-import type { PerspectiveViewProps } from '@repo/core';
+import { PerspectiveViewProps } from '@repo/core/types';
 import { Canvas, Circle, Line } from '@shopify/react-native-skia';
 import type React from 'react';
 import { useTheme } from '../../hooks/useTheme';

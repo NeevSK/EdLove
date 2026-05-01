@@ -1,6 +1,6 @@
-﻿import { composeUserAbilities } from '../logic/permissions/composer';
+import { composeUserAbilities } from '../logic/permissions/composer';
 import type { Role } from '../logic/schemas/role.schema';
-import { supabase } from '../native/supabase';
+import { supabase } from './supabase';
 import type { ClassroomJoinRequest, RequestStatus, SchoolJoinRequest } from '../types/Onboarding';
 
 /**

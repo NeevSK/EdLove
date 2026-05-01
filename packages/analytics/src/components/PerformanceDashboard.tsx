@@ -1,4 +1,4 @@
-import { SimpleBarChart } from '@repo/graphics';
+import { SimpleBarChart } from "@repo/graphics/charts";
 import { Card } from '@repo/ui/components/SanctuaryCard';
 import { useThemedColors } from '@repo/ui/hooks';
 import { Box } from '@repo/ui/primitives';
@@ -7,33 +7,20 @@ import { ScrollView } from '@repo/ui/primitives';
 import { colors } from '@repo/ui/theme';
 import type { StudentPerformanceMetrics } from '../types/AnalyticsTypes';
 import { formatGPA, getGradeColor, getPerformanceLevel } from '../utils/analyticsHelpers';
-
 interface PerformanceDashboardProps {
-  metrics: StudentPerformanceMetrics;
-  insights?: string[];
-  recommendations?: string[];
+    metrics: StudentPerformanceMetrics;
+    insights?: string[];
+    recommendations?: string[];
 }
-
-export function PerformanceDashboard({
-  metrics,
-  insights = [],
-  recommendations = [],
-}: PerformanceDashboardProps) {
-  const themeColors = useThemedColors();
-  const performanceLevel = getPerformanceLevel(metrics.averageMarks);
-
-  const subjectData = Object.entries(metrics.subjectPerformance).map(([subject, score]) => ({
-    label: subject,
-    value: score as number,
-    color: getGradeColor((score as number) >= 80 ? 'A' : (score as number) >= 70 ? 'B' : 'C'),
-  }));
-
-  return (
-    <ScrollView
-      className="flex-1"
-      contentContainerStyle={{ padding: 16 }}
-      style={{ backgroundColor: colors.silk }}
-    >
+export function PerformanceDashboard({ metrics, insights = [], recommendations = [], }: PerformanceDashboardProps) {
+    const themeColors = useThemedColors();
+    const performanceLevel = getPerformanceLevel(metrics.averageMarks);
+    const subjectData = Object.entries(metrics.subjectPerformance).map(([subject, score]) => ({
+        label: subject,
+        value: score as number,
+        color: getGradeColor((score as number) >= 80 ? 'A' : (score as number) >= 70 ? 'B' : 'C'),
+    }));
+    return (<ScrollView className="flex-1" contentContainerStyle={{ padding: 16 }} style={{ backgroundColor: colors.silk }}>
       <VStack className="gap-4">
         <Card className="rounded-3xl bg-white/75 px-6 py-6">
           <Text className="text-xl font-bold" style={{ color: themeColors.text }}>
@@ -70,21 +57,14 @@ export function PerformanceDashboard({
             </VStack>
           </HStack>
 
-          <Box
-            className="items-center border-t pt-3"
-            style={{ borderTopColor: 'rgba(42,35,24,0.08)' }}
-          >
-            <Text
-              className="text-sm font-semibold"
-              style={{
-                color:
-                  metrics.trendDirection === 'improving'
-                    ? themeColors.success
-                    : metrics.trendDirection === 'declining'
-                      ? themeColors.error
-                      : themeColors.warning,
-              }}
-            >
+          <Box className="items-center border-t pt-3" style={{ borderTopColor: 'rgba(42,35,24,0.08)' }}>
+            <Text className="text-sm font-semibold" style={{
+            color: metrics.trendDirection === 'improving'
+                ? themeColors.success
+                : metrics.trendDirection === 'declining'
+                    ? themeColors.error
+                    : themeColors.warning,
+        }}>
               Trend:{' '}
               {metrics.trendDirection.charAt(0).toUpperCase() + metrics.trendDirection.slice(1)} (
               {performanceLevel})
@@ -93,51 +73,38 @@ export function PerformanceDashboard({
         </Card>
 
         <Card className="rounded-3xl bg-white/70 px-4 py-4">
-          <SimpleBarChart
-            title="Performance Overview"
-            data={[
-              { label: 'GPA', value: metrics.currentGPA, color: themeColors.primary },
-              { label: 'Avg Marks', value: metrics.averageMarks, color: themeColors.secondary },
-              { label: 'Rank', value: metrics.rankInClass, color: themeColors.action },
-            ]}
-            height={180}
-          />
+          <SimpleBarChart title="Performance Overview" data={[
+            { label: 'GPA', value: metrics.currentGPA, color: themeColors.primary },
+            { label: 'Avg Marks', value: metrics.averageMarks, color: themeColors.secondary },
+            { label: 'Rank', value: metrics.rankInClass, color: themeColors.action },
+        ]} height={180}/>
         </Card>
 
         <Card className="rounded-3xl bg-white/70 px-4 py-4">
-          <SimpleBarChart title="Subject Performance" data={subjectData} height={150} />
+          <SimpleBarChart title="Subject Performance" data={subjectData} height={150}/>
         </Card>
 
-        {insights.length > 0 ? (
-          <Card className="rounded-3xl bg-white/70 px-4 py-4">
+        {insights.length > 0 ? (<Card className="rounded-3xl bg-white/70 px-4 py-4">
             <Text className="mb-2 text-base font-semibold" style={{ color: themeColors.text }}>
               Insights
             </Text>
             <VStack className="gap-2">
-              {insights.map((insight, index) => (
-                <Text key={index} className="text-sm leading-5" style={{ color: themeColors.text }}>
+              {insights.map((insight, index) => (<Text key={index} className="text-sm leading-5" style={{ color: themeColors.text }}>
                   • {insight}
-                </Text>
-              ))}
+                </Text>))}
             </VStack>
-          </Card>
-        ) : null}
+          </Card>) : null}
 
-        {recommendations.length > 0 ? (
-          <Card className="rounded-3xl bg-white/70 px-4 py-4">
+        {recommendations.length > 0 ? (<Card className="rounded-3xl bg-white/70 px-4 py-4">
             <Text className="mb-2 text-base font-semibold" style={{ color: themeColors.text }}>
               Recommendations
             </Text>
             <VStack className="gap-2">
-              {recommendations.map((recommendation, index) => (
-                <Text key={index} className="text-sm leading-5" style={{ color: themeColors.text }}>
+              {recommendations.map((recommendation, index) => (<Text key={index} className="text-sm leading-5" style={{ color: themeColors.text }}>
                   {index + 1}. {recommendation}
-                </Text>
-              ))}
+                </Text>))}
             </VStack>
-          </Card>
-        ) : null}
+          </Card>) : null}
       </VStack>
-    </ScrollView>
-  );
+    </ScrollView>);
 }

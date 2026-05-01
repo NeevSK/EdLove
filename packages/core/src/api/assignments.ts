@@ -4,7 +4,7 @@ import type {
   StudentSubmissionSummary,
 } from '../logic/schemas/classroom.schema';
 import { educationalServices } from '../native/runtimes/educational.runtime';
-import { supabase } from '../native/supabase';
+import { supabase } from './supabase';
 import type { Assignment } from '../types';
 import { educationalContract } from './educational.contract';
 

@@ -1,4 +1,4 @@
-import { FeatureGuard, usePermissions } from '@repo/core';
+import { FeatureGuard, usePermissions } from '@repo/core/logic';
 import { useTracking } from '@repo/core/hooks';
 
 import React from 'react';

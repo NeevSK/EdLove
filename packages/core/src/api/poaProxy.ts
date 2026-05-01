@@ -1,4 +1,4 @@
-﻿import { AuthorityInterceptor } from '../logic/permissions/AuthorityInterceptor';
+import { AuthorityInterceptor } from '../logic/permissions/AuthorityInterceptor';
 import { composeUserAbilities } from '../logic/permissions/composer';
 import type { Role } from '../logic/schemas/role.schema';
 import { type TenantKind, UserContextSchema } from '../logic/schemas/user.schema';

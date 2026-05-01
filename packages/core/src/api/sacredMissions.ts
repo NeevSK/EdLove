@@ -1,4 +1,4 @@
-import { supabase } from '../native/supabase';
+import { supabase } from './supabase';
 import type { ManifestoVibe, SanctuaryManifesto } from '../types/Community';
 
 /**

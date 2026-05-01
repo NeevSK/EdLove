@@ -1,4 +1,4 @@
-﻿/**
+/**
  * School Forest API \u2014 Vana (\u0935\u0928) \u2014 The Principal's Ecosystem View.
  *
  * The principal is the banyan \u2014 the one whose roots create the conditions for an
@@ -23,9 +23,9 @@
  */
 
 import { composeUserAbilities } from '../logic/permissions/composer';
-import { identityAPI } from '../native/identity';
-import { supabase } from '../native/supabase';
-import { APIError } from '../types';
+import { identityAPI } from './identity';
+import { supabase } from './supabase';
+import { APIError } from '../types/API';
 import { impactRipplesAPI } from './impactRipples';
 
 // \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500

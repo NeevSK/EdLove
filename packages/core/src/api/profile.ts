@@ -4,8 +4,8 @@
 
 import type { z } from 'zod';
 import { PulseMetricsSchema } from '../logic/schemas/dashboard.schema';
-import { supabase } from '../native/supabase';
-import { APIError } from '../types';
+import { supabase } from './supabase';
+import { APIError } from '../types/API';
 
 type PulseMetrics = z.infer<typeof PulseMetricsSchema>;
 

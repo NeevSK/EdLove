@@ -10,7 +10,7 @@
  * Pro-gated: same as GoogleVisionProvider.
  */
 
-import { supabase } from '@repo/core/native';
+import { supabase } from '@repo/core/api';;
 
 import type { OCRProvider, OCRRawResult } from '../types';
 

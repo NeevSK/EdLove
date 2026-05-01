@@ -1,4 +1,4 @@
-import { type MutationOutcome, useMutationAuditLog } from '@repo/core';
+import { MutationOutcome, useMutationAuditLog } from '@repo/core/sync';
 import { useFeatureStore } from '@repo/core/logic';
 
 export interface AdminFeatureGateChange {

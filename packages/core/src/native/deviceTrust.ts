@@ -1,9 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
 import { v7 as uuidv7 } from 'uuid';
-import { APIError } from '../types';
-import { identityAPI } from './identity';
-import { supabase } from './supabase';
+import { APIError } from '../types/API';
+import { identityAPI } from '../api/identity';
+import { supabase } from '../api/supabase';
 
 const DEVICE_INSTALL_ID_KEY = 'gurudevi-device-install-id';
 const SERVER_DEVICE_ID_KEY = 'gurudevi-server-device-id';

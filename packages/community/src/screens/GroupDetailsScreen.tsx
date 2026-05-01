@@ -6,7 +6,7 @@ import {
   setPendingGateAction,
   usePermissions,
 } from '@repo/core/logic';
-import { supabase } from '@repo/core/native';
+import { supabase } from '@repo/core/api';;
 import { useStore } from '@repo/core/store';
 import type { CommunityStackParamList } from '@repo/core/types';
 import { QRBuilder, QRCodeGenerator } from '@repo/scanner-kit';

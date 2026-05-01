@@ -1,23 +1,18 @@
-import { handleAPIError, validateForm, validators } from '@repo/core';
-import { authAPI } from '@repo/core/native';
+import { handleAPIError, validateForm, validators } from '@repo/core/logic';
+import { authAPI } from '@repo/core/auth';
 
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BreathAnimation } from '../components/BreathAnimation';
 import { LivingGlow } from '../components/LivingGlow';
 import { SanctuaryBackground } from '../components/SanctuaryBackground';
-import {
-  Box,
-  Button,
-  ButtonSpinner,
-  ButtonText,
-  Heading,
-  HStack,
-  Input,
-  InputField,
-  Text,
-  VStack,
-} from '../gluestack';
+import { Box } from '../components/ui/box';
+import { Button, ButtonSpinner, ButtonText } from '../components/ui/button';
+import { Heading } from '../components/ui/text';
+import { HStack } from '../components/ui/hstack';
+import { Input, InputField } from '../components/ui/input';
+import { Text } from '../components/ui/text';
+import { VStack } from '../components/ui/vstack';
 import { useTheme } from '../hooks/useTheme';
 import { useSanctuaryToast } from '../providers/ToastProvider';
 
@@ -76,7 +71,6 @@ export function AuthScreenWeb({
     setErrors({});
     try {
       await authAPI.signInWithOAuth('google', window.location.origin);
-    } catch (err: any) {
     } catch (err: any) {
       const apiError = handleAPIError(err);
       showToast({

@@ -9,7 +9,7 @@
  * bundled locally. This shim provides the same API shape for compatibility.
  */
 
-import { SRI_LANKAN_DISTRICTS, SRI_LANKAN_PROVINCES } from '@repo/core';
+import { SRI_LANKAN_DISTRICTS, SRI_LANKAN_PROVINCES } from '@repo/core/constants';
 
 export const getProvinces = () => SRI_LANKAN_PROVINCES;
 

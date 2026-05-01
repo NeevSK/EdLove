@@ -1,4 +1,4 @@
-import { Runtime } from '@repo/core/native';
+import { Runtime } from '@repo/core/native';;
 import React, { useEffect } from 'react';
 import { View } from 'react-native';
 import Animated, {

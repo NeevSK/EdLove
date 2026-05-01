@@ -11,16 +11,9 @@
 
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import {
-  type FounderStackParamList,
-  type School,
-  useAllSchoolsQuery,
-  useEcosystemPulseQuery,
-  useEcosystemStatsQuery,
-  useGlobalUsersQuery,
-  usePermissions,
-  useSentinelGovernanceQuery,
-} from '@repo/core';
+import { useAllSchoolsQuery, useEcosystemPulseQuery, useEcosystemStatsQuery, useGlobalUsersQuery, useSentinelGovernanceQuery } from '@repo/core/api';
+import { usePermissions } from '@repo/core/logic';
+import { FounderStackParamList, School } from '@repo/core/types';
 import { useStore, useTemporalStore } from '@repo/core/logic';
 
 import { FounderGlow } from '@repo/ui/components/FounderGlow';

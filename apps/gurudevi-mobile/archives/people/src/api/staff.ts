@@ -1,4 +1,4 @@
-﻿import type { StaffAttendance, StaffLeave } from '@repo/core';
+﻿import { StaffAttendance, StaffLeave } from '@repo/core/types';
 import { supabase } from '@repo/core/native';
 import { APIError } from '@repo/core/types';
 

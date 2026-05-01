@@ -1,7 +1,7 @@
 import { resolveResourceOwnerContext } from '../lib/inventoryScope';
-import { supabase } from '../native/supabase';
+import { supabase } from './supabase';
 import type { ClassroomResource, ResourceOwnerContext } from '../types';
-import { APIError } from '../types';
+import { APIError } from '../types/API';
 import { educationalContract } from './educational.contract';
 
 export const resourcesAPI = {

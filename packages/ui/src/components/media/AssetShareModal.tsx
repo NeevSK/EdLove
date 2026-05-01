@@ -1,4 +1,4 @@
-import { coreRuntime, QRBuilder } from '@repo/core';
+import { QRBuilder, coreRuntime } from '@repo/core/logic';
 import { Share2 } from 'lucide-react-native';
 import { useCallback } from 'react';
 import { Box, Text, VStack } from '../../primitives';

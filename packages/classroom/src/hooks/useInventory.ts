@@ -1,4 +1,4 @@
-import type { InventoryItem } from '@repo/core';
+import { InventoryItem } from '@repo/core/types';
 import { api } from '@repo/core/api';
 
 import { useQuery } from '@tanstack/react-query';

@@ -1,5 +1,6 @@
 import { type NavigationProp, useNavigation } from '@react-navigation/native';
-import { type ClassroomStackParamList, type School, usePermissions } from '@repo/core';
+import { usePermissions } from '@repo/core/logic';
+import { ClassroomStackParamList, School } from '@repo/core/types';
 import { api, communityAPI, onboardingAPI, schoolAPI } from '@repo/core/api';
 import { incrementInviteCodeUsage, useStore, validateInviteCode } from '@repo/core/logic';
 

@@ -1,5 +1,5 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import type { ProfileStackParamList } from '@repo/core';
+import { ProfileStackParamList } from '@repo/core/types';
 import FullProfileScreen from '@repo/profile/screens/FullProfileScreen.web';
 // Static imports instead of React.lazy for stability on web
 // Direct imports for stability on web, avoiding barrel file bloat

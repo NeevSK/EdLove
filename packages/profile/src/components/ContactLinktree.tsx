@@ -5,7 +5,7 @@
  * Supports elective sharing of social links with glassmorphism aesthetics.
  */
 
-import type { SocialLink } from '@repo/core';
+import { SocialLink } from '@repo/core/types';
 import { Box, Button, ButtonText, HStack, Text, VStack } from '@repo/ui/primitives';
 import { openExternalURL, showExternalLinkOptions } from '@repo/ui/utils';
 import { FadeInDown } from 'react-native-reanimated';

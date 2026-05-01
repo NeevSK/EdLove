@@ -2,28 +2,24 @@ import 'react-native-url-polyfill/auto';
 import './src/i18n/config'; // Initialize i18n
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import AdminAuditLog from '@repo/admin/screens/AdminAuditLog';
-import AdminAuthorityRepair from '@repo/admin/screens/AdminAuthorityRepair';
-import AdminDashboard from '@repo/admin/screens/AdminDashboard';
-import AdminIncidentQueue from '@repo/admin/screens/AdminIncidentQueue';
-import AdminJobControl from '@repo/admin/screens/AdminJobControl';
-import AdminReleaseControl from '@repo/admin/screens/AdminReleaseControl';
-import AdminTenantDetail from '@repo/admin/screens/AdminTenantDetail';
+// Lazy load Admin screens to break circularity and improve startup
+const AdminAuditLog = React.lazy(() => import('@repo/admin/screens/AdminAuditLog'));
+const AdminAuthorityRepair = React.lazy(() => import('@repo/admin/screens/AdminAuthorityRepair'));
+const AdminDashboard = React.lazy(() => import('@repo/admin/screens/AdminDashboard'));
+const AdminIncidentQueue = React.lazy(() => import('@repo/admin/screens/AdminIncidentQueue'));
+const AdminJobControl = React.lazy(() => import('@repo/admin/screens/AdminJobControl'));
+const AdminReleaseControl = React.lazy(() => import('@repo/admin/screens/AdminReleaseControl'));
+const AdminTenantDetail = React.lazy(() => import('@repo/admin/screens/AdminTenantDetail'));
 import {
   identifyUser,
   initPostHog,
   posthogAnalytics as initTracker,
   trackEvent,
 } from '@repo/analytics';
-import {
-  type AuthorityTier,
-  clearSentryUser,
-  initSentry,
-  injectPostHog,
-  type SchoolType,
-  SyncManager,
-  setSentryUser,
-} from '@repo/core';
+import { SchoolType } from '@repo/core/constants';
+import { clearSentryUser, initSentry, injectPostHog, setSentryUser } from '@repo/core/monitoring';
+import { SyncManager } from '@repo/core/sync';
+import { AuthorityTier } from '@repo/core/types';
 import { authAPI, identityAPI } from '@repo/core/api';
 import { coreRuntime, useStore } from '@repo/core/logic';
 import { nativeRuntimeEnvironment, supabase } from '@repo/core/native';
@@ -55,17 +51,16 @@ import { navigationRef } from './src/navigation/navigationRef';
 // Import screens and navigation
 import TabNavigator from './src/navigation/TabNavigator';
 // Import screens and navigation from the local authoritative index
-import {
-  AIAssistantScreen,
-  AppSettingsScreen,
-  AuthScreen,
-  InvitationWelcomeScreen,
-  NotificationsScreen,
-  OnboardingScreen,
-  QRHandlerScreen,
-  ThuthimalClaimScreen,
-  WelcomeScreen,
-} from './src/screens';
+// Lazy load app-level screens from direct paths (No Barrel Exports)
+const AIAssistantScreen = React.lazy(() => import('@repo/ai').then(m => ({ default: m.AIAssistantScreen })));
+const AppSettingsScreen = React.lazy(() => import('@repo/ui/screens/AppSettingsScreen'));
+const AuthScreen = React.lazy(() => import('./src/screens/AuthScreen'));
+const InvitationWelcomeScreen = React.lazy(() => import('@repo/community').then(m => ({ default: m.InvitationWelcomeScreen })));
+const NotificationsScreen = React.lazy(() => import('@repo/ui/screens/NotificationsScreen'));
+const OnboardingScreen = React.lazy(() => import('@repo/ui/screens/OnboardingScreen'));
+const QRHandlerScreen = React.lazy(() => import('@repo/scanner-kit').then(m => ({ default: m.QRHandlerScreen })));
+const ThuthimalClaimScreen = React.lazy(() => import('@repo/profile').then(m => ({ default: m.ThuthimalClaimScreen })));
+const WelcomeScreen = React.lazy(() => import('@repo/ui/screens/WelcomeScreen'));
 import { LanguageUtils } from './src/utils/LanguageUtils';
 import { updateWebPageTitle } from './src/utils/useWebPageTitle';
 
@@ -555,44 +550,52 @@ function AppContent({
                     <RootStack.Screen name="Welcome">
                       {() => (
                         <ErrorBoundary name="Welcome Screen">
-                          <WelcomeScreen
-                            onLogin={() =>
-                              navigationRef.isReady() && navigationRef.navigate('Auth' as never)
-                            }
-                            onGuest={() =>
-                              navigationRef.isReady() &&
-                              navigationRef.navigate('Onboarding' as never)
-                            }
-                          />
+                          <Suspense fallback={<Center className="flex-1 bg-obsidian"><Spinner color={sanctuarySaffron} /></Center>}>
+                            <WelcomeScreen
+                              onLogin={() =>
+                                navigationRef.isReady() && navigationRef.navigate('Auth' as never)
+                              }
+                              onGuest={() =>
+                                navigationRef.isReady() &&
+                                navigationRef.navigate('Onboarding' as never)
+                              }
+                            />
+                          </Suspense>
                         </ErrorBoundary>
                       )}
                     </RootStack.Screen>
                     <RootStack.Screen name="Auth" options={{ presentation: 'card' }}>
                       {(props: any) => (
-                        <AuthScreen
-                          onSuccess={() => {
-                            identityAPI.getMyInternalId().then((id) => {
-                              if (id) fetchAndSetUserProfile(id);
-                            });
-                            if (navigationRef.isReady())
-                              navigationRef.navigate('Onboarding' as never);
-                          }}
-                          onBack={() => props.navigation.goBack()}
-                        />
+                        <Suspense fallback={<Center className="flex-1 bg-obsidian"><Spinner color={sanctuarySaffron} /></Center>}>
+                          <AuthScreen
+                            onSuccess={() => {
+                              identityAPI.getMyInternalId().then((id) => {
+                                if (id) fetchAndSetUserProfile(id);
+                              });
+                              if (navigationRef.isReady())
+                                navigationRef.navigate('Onboarding' as never);
+                            }}
+                            onBack={() => props.navigation.goBack()}
+                          />
+                        </Suspense>
                       )}
                     </RootStack.Screen>
                     <RootStack.Screen name="Onboarding">
                       {() => (
                         <ErrorBoundary name="Onboarding Screen">
-                          <OnboardingWrapper session={session} />
+                          <Suspense fallback={<Center className="flex-1 bg-obsidian"><Spinner color={sanctuarySaffron} /></Center>}>
+                            <OnboardingWrapper session={session} />
+                          </Suspense>
                         </ErrorBoundary>
                       )}
                     </RootStack.Screen>
-                    <RootStack.Screen
-                      name="InvitationWelcome"
-                      component={InvitationWelcomeScreen}
-                      options={{ presentation: 'modal' }}
-                    />
+                    <RootStack.Screen name="InvitationWelcome" options={{ presentation: 'modal' }}>
+                      {() => (
+                        <Suspense fallback={<Center className="flex-1 bg-obsidian"><Spinner color={sanctuarySaffron} /></Center>}>
+                          <InvitationWelcomeScreen />
+                        </Suspense>
+                      )}
+                    </RootStack.Screen>
                     <RootStack.Screen name="PublicForm" options={{ headerShown: false }}>
                       {() => (
                         <Suspense
@@ -616,59 +619,60 @@ function AppContent({
                         </ErrorBoundary>
                       )}
                     </RootStack.Screen>
-                    <RootStack.Screen name="AdminDashboard" component={AdminDashboard} />
-                    <RootStack.Screen name="AdminIncidentQueue" component={AdminIncidentQueue} />
-                    <RootStack.Screen name="AdminTenantDetail" component={AdminTenantDetail} />
-                    <RootStack.Screen
-                      name="AdminAuthorityRepair"
-                      component={AdminAuthorityRepair}
-                    />
-                    <RootStack.Screen name="AdminJobControl" component={AdminJobControl} />
-                    <RootStack.Screen name="AdminAuditLog" component={AdminAuditLog} />
-                    <RootStack.Screen name="AdminReleaseControl" component={AdminReleaseControl} />
-                    <RootStack.Screen
-                      name="AIAssistant"
-                      component={AIAssistantScreen}
-                      options={{ presentation: 'modal' }}
-                    />
+                    <RootStack.Screen name="AdminDashboard">
+                      {() => <Suspense fallback={<Center className="flex-1 bg-obsidian"><Spinner /></Center>}><AdminDashboard /></Suspense>}
+                    </RootStack.Screen>
+                    <RootStack.Screen name="AdminIncidentQueue">
+                      {() => <Suspense fallback={<Center className="flex-1 bg-obsidian"><Spinner /></Center>}><AdminIncidentQueue /></Suspense>}
+                    </RootStack.Screen>
+                    <RootStack.Screen name="AdminTenantDetail">
+                      {() => <Suspense fallback={<Center className="flex-1 bg-obsidian"><Spinner /></Center>}><AdminTenantDetail /></Suspense>}
+                    </RootStack.Screen>
+                    <RootStack.Screen name="AdminAuthorityRepair">
+                      {() => <Suspense fallback={<Center className="flex-1 bg-obsidian"><Spinner /></Center>}><AdminAuthorityRepair /></Suspense>}
+                    </RootStack.Screen>
+                    <RootStack.Screen name="AdminJobControl">
+                      {() => <Suspense fallback={<Center className="flex-1 bg-obsidian"><Spinner /></Center>}><AdminJobControl /></Suspense>}
+                    </RootStack.Screen>
+                    <RootStack.Screen name="AdminAuditLog">
+                      {() => <Suspense fallback={<Center className="flex-1 bg-obsidian"><Spinner /></Center>}><AdminAuditLog /></Suspense>}
+                    </RootStack.Screen>
+                    <RootStack.Screen name="AdminReleaseControl">
+                      {() => <Suspense fallback={<Center className="flex-1 bg-obsidian"><Spinner /></Center>}><AdminReleaseControl /></Suspense>}
+                    </RootStack.Screen>
+                    <RootStack.Screen name="AIAssistant" options={{ presentation: 'modal' }}>
+                      {() => <Suspense fallback={<Center className="flex-1 bg-obsidian"><Spinner /></Center>}><AIAssistantScreen /></Suspense>}
+                    </RootStack.Screen>
                     <RootStack.Screen name="Auth" options={{ presentation: 'modal' }}>
                       {(props: any) => (
-                        <AuthScreen
-                          onSuccess={() => {
-                            identityAPI.getMyInternalId().then((id) => {
-                              if (id) fetchAndSetUserProfile(id);
-                            });
-                            props.navigation.goBack();
-                          }}
-                          onBack={() => props.navigation.goBack()}
-                        />
+                        <Suspense fallback={<Center className="flex-1 bg-obsidian"><Spinner /></Center>}>
+                          <AuthScreen
+                            onSuccess={() => {
+                              identityAPI.getMyInternalId().then((id) => {
+                                if (id) fetchAndSetUserProfile(id);
+                              });
+                              props.navigation.goBack();
+                            }}
+                            onBack={() => props.navigation.goBack()}
+                          />
+                        </Suspense>
                       )}
                     </RootStack.Screen>
-                    <RootStack.Screen
-                      name="QRHandler"
-                      component={QRHandlerScreen}
-                      options={{ presentation: 'modal' }}
-                    />
-                    <RootStack.Screen
-                      name="AppSettings"
-                      component={AppSettingsScreen}
-                      options={{ presentation: 'modal' }}
-                    />
-                    <RootStack.Screen
-                      name="Notifications"
-                      component={NotificationsScreen}
-                      options={{ presentation: 'modal' }}
-                    />
-                    <RootStack.Screen
-                      name="ThuthimalClaim"
-                      component={ThuthimalClaimScreen}
-                      options={{ presentation: 'modal' }}
-                    />
-                    <RootStack.Screen
-                      name="InvitationWelcome"
-                      component={InvitationWelcomeScreen}
-                      options={{ presentation: 'modal' }}
-                    />
+                    <RootStack.Screen name="QRHandler" options={{ presentation: 'modal' }}>
+                      {() => <Suspense fallback={<Center className="flex-1 bg-obsidian"><Spinner /></Center>}><QRHandlerScreen /></Suspense>}
+                    </RootStack.Screen>
+                    <RootStack.Screen name="AppSettings" options={{ presentation: 'modal' }}>
+                      {() => <Suspense fallback={<Center className="flex-1 bg-obsidian"><Spinner /></Center>}><AppSettingsScreen /></Suspense>}
+                    </RootStack.Screen>
+                    <RootStack.Screen name="Notifications" options={{ presentation: 'modal' }}>
+                      {() => <Suspense fallback={<Center className="flex-1 bg-obsidian"><Spinner /></Center>}><NotificationsScreen /></Suspense>}
+                    </RootStack.Screen>
+                    <RootStack.Screen name="ThuthimalClaim" options={{ presentation: 'modal' }}>
+                      {() => <Suspense fallback={<Center className="flex-1 bg-obsidian"><Spinner /></Center>}><ThuthimalClaimScreen /></Suspense>}
+                    </RootStack.Screen>
+                    <RootStack.Screen name="InvitationWelcome" options={{ presentation: 'modal' }}>
+                      {() => <Suspense fallback={<Center className="flex-1 bg-obsidian"><Spinner /></Center>}><InvitationWelcomeScreen /></Suspense>}
+                    </RootStack.Screen>
                     <RootStack.Screen name="PublicForm" options={{ headerShown: false }}>
                       {() => (
                         <Suspense

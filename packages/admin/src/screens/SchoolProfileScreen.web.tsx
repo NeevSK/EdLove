@@ -2,7 +2,13 @@ import { useNavigation } from '@react-navigation/native';
 import { AvatarDisplay, ContactLinktree, EditableItem, useSchoolProfile } from '@repo/profile';
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { ArrowLeft, BookOpen, ChevronRight, Globe, Layout, School as SchoolIcon, Shield, Users } from '@repo/ui/icons';
-import { Box, Heading, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
+import { Box } from '@repo/ui/components/ui/box';
+import { Heading } from '@repo/ui/components/ui/text';
+import { HStack } from '@repo/ui/components/ui/hstack';
+import { Icon } from '@repo/ui/components/ui/icon';
+import { Pressable } from '@repo/ui/components/ui/pressable';
+import { Text } from '@repo/ui/components/ui/text';
+import { VStack } from '@repo/ui/components/ui/vstack';
 import { hapticLight } from '@repo/ui/utils/haptics';
 
 import { useTranslation } from 'react-i18next';

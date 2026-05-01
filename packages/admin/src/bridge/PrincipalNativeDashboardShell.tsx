@@ -1,4 +1,4 @@
-import { FeatureGuard } from '@repo/core';
+import { FeatureGuard } from '@repo/core/logic';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import SandboxBanner from '@repo/ui/components/SandboxBanner';
 import { Box } from '@repo/ui/primitives';

@@ -1,4 +1,4 @@
-import type { GraphNode, KnowledgeTopology, LayoutResult } from '@repo/core';
+import { GraphNode, KnowledgeTopology, LayoutResult } from '@repo/core/types';
 
 export interface PathLayoutOptions {
   orchardWidth?: number; // Total horizontal space for the path

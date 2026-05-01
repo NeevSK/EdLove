@@ -1,4 +1,4 @@
-import type { Assignment, Echo, TeacherStats } from '@repo/core';
+import { Assignment, Echo, TeacherStats } from '@repo/core/logic';
 import { assignmentsAPI, classroomsAPI } from '@repo/core/api';
 import { useAuthStore } from '@repo/core/logic';
 

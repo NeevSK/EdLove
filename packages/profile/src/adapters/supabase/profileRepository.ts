@@ -1,7 +1,7 @@
-import type { SocialLink } from '@repo/core';
-import { getTemporalRange } from '@repo/core';
+import { SocialLink } from '@repo/core/types';
+import { getTemporalRange } from '@repo/core/logic';
 import { uploadToCloudinary } from '@repo/core/logic';
-import { supabase } from '@repo/core/native';
+import { supabase } from '@repo/core/api';;
 import { APIError } from '@repo/core/types';
 
 import type {

@@ -1,9 +1,10 @@
-export { authAPI } from './auth';
+export { authAPI } from '../api/auth';
+export { bootstrapPlatform } from './bootstrap';
 export { deviceTrustAPI } from './deviceTrust';
 export { FlowResolver } from './flows/FlowResolver';
 export { GuestDataManager } from './guestDataManager';
 export { GuestDataSync } from './guestDataSync';
-export { identityAPI } from './identity';
+export { identityAPI } from '../api/identity';
 export { Runtime } from './runtime';
 export {
   nativeDeviceProvider,
@@ -17,7 +18,7 @@ export {
   nativeUIProvider,
 } from './runtimeAdapter';
 export { StorageKeys, storage } from './storage';
-export { supabase } from './supabase';
+export { supabase } from '../api/supabase';
 export { supabaseAuthStorage } from './supabaseAuthStorage';
 export { useAuthorityLifecycle } from './useAuthorityLifecycle';
 export { useWorkspaceLayoutSync } from './useWorkspaceLayoutSync';
