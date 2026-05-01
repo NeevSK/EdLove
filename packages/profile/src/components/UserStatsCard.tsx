@@ -1,4 +1,4 @@
-import type { AuthorityTier } from '@repo/core';
+import { AuthorityTier } from '@repo/core/types';
 import { Box } from '@repo/ui/primitives';
 import { HStack, Heading, Progress, ProgressFilledTrack, Text, VStack } from '@repo/ui/primitives';
 import { Activity, BookOpen, Clock, Database, Globe, Star, Users } from 'lucide-react-native';

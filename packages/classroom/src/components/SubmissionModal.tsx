@@ -8,7 +8,7 @@
  * - Turn In button with success animation
  */
 
-import { coreRuntime, handleAPIError } from '@repo/core';
+import { coreRuntime, handleAPIError } from '@repo/core/logic';
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
 import { Camera, CheckCircle2, Send, Trash2, X } from '@repo/ui/icons';
 import { Box, Button, Textarea } from '@repo/ui/primitives';

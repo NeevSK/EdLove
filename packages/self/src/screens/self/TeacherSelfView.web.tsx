@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
-import { usePermissions } from '@repo/core';
+import { usePermissions } from '@repo/core/logic';
 import { useBanyanGrowth, useJourneyHistory } from '@repo/core/hooks';
 import { useStore, useTemporalStore } from '@repo/core/logic';
 

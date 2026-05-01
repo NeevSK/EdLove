@@ -1,4 +1,4 @@
-import type { AuthorityTier } from '@repo/core';
+import { AuthorityTier } from '@repo/core/types';
 import type { UserProfile } from '../types';
 
 export interface ProfileFieldConfig {

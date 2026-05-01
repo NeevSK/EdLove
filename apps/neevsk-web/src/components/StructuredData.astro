@@ -7,6 +7,6 @@ const { data } = Astro.props;
 const _normalized = Array.isArray(data) ? data : [data];
 ---
 
-{normalized.map((entry) => (
+{_normalized.map((entry: any) => (
   <script is:inline type="application/ld+json" set:html={JSON.stringify(entry)} />
 ))}

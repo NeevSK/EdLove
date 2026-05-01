@@ -13,7 +13,7 @@
  */
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { handleAPIError } from '@repo/core';
+import { handleAPIError } from '@repo/core/logic';
 import { identityAPI } from '@repo/core/api';
 import { GuestDataSync, supabase } from '@repo/core/native';
 

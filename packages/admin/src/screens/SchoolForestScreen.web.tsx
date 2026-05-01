@@ -9,8 +9,8 @@
  */
 
 import { useNavigation } from '@react-navigation/native';
-import type { SchoolForestState, TeacherTree } from '@repo/core';
-import { usePermissions } from '@repo/core';
+import { SchoolForestState, TeacherTree } from '@repo/core/api';
+import { usePermissions } from '@repo/core/logic';
 import { schoolForestAPI } from '@repo/core/api';
 
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';

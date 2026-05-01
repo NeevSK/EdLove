@@ -4,7 +4,7 @@
  * Sanctuary V3: Migrated to useTheme, @repo/ui primitives, and NativeWind className utilities.
  */
 
-import { coreRuntime } from '@repo/core';
+import { coreRuntime } from '@repo/core/logic';
 import { Box } from '@repo/ui/primitives';
 import { HStack, ImageBackground, Text, VStack } from '@repo/ui/primitives';
 import { Pressable, useTheme } from '@repo/ui/primitives';

@@ -1,4 +1,4 @@
-import type { GraphNode, KnowledgeTopology, PerspectiveId } from '@repo/core';
+import { GraphNode, KnowledgeTopology, PerspectiveId } from '@repo/core/types';
 
 /**
  * getAvailablePerspectives  Data-driven perspective enablement.

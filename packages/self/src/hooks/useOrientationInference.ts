@@ -51,7 +51,7 @@
  * \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501
  */
 
-import type { AuthorityTier } from '@repo/core';
+import { AuthorityTier } from '@repo/core/types';
 import type { OrientationSeeds } from '@repo/profile';
 import { useMemo } from 'react';
 import type { EnergyForecast, MoodLog } from '../types';

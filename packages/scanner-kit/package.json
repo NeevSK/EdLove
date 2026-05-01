@@ -11,8 +11,8 @@
     "./package.json": "./package.json"
   },
   "scripts": {
-    "check-types": "powershell -File ../../scripts/audit-wrapper.ps1 -Cmd \"pnpm exec tsc --noEmit\" -Log \"reports/check-types.txt\"",
-    "lint": "powershell -File ../../scripts/audit-wrapper.ps1 -Cmd \"pnpm exec eslint .\" -Log \"reports/lint.txt\""
+    "check-types": "pnpm exec tsc --noEmit",
+    "lint": "pnpm exec eslint ."
   },
   "dependencies": {
     "@repo/core": "workspace:*",

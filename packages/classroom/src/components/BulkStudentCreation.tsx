@@ -1,4 +1,4 @@
-import type { BulkStudent } from '@repo/core';
+import { BulkStudent } from '@repo/core/types';
 import { Plus, Save, Trash2, X } from '@repo/ui/icons';
 import { Box, Button, Input, Textarea } from '@repo/ui/primitives';
 import { ButtonText, HStack, Heading, Icon, InputField, Text, TextareaInput, VStack } from '@repo/ui/primitives';

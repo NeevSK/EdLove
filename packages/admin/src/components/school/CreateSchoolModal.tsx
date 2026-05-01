@@ -1,11 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
-import {
-  RELIGIOUS_AFFILIATIONS,
-  SRI_LANKAN_DISTRICTS,
-  SRI_LANKAN_PROVINCES,
-  SRI_LANKAN_SCHOOL_TYPES,
-  STUDENT_TYPES,
-} from '@repo/core';
+import { RELIGIOUS_AFFILIATIONS, SRI_LANKAN_DISTRICTS, SRI_LANKAN_PROVINCES, SRI_LANKAN_SCHOOL_TYPES, STUDENT_TYPES } from '@repo/core/constants';
 import { communityAPI, identityAPI } from '@repo/core/api';
 import { useEntity, useSchoolCreation } from '@repo/core/hooks';
 import { useStore } from '@repo/core/logic';

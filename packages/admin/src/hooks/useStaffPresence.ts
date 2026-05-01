@@ -1,9 +1,6 @@
-import {
-  growthSignalsAPI,
-  handleAPIError,
-  type StaffAttendance,
-  type StaffLeave,
-} from '@repo/core';
+import { growthSignalsAPI } from '@repo/core/api';
+import { handleAPIError } from '@repo/core/logic';
+import { StaffAttendance, StaffLeave } from '@repo/core/types';
 import { supabase } from '@repo/core/api';;
 
 import { useCallback, useEffect, useState } from 'react';

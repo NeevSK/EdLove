@@ -8,7 +8,7 @@
  */
 
 import { type RouteProp, useRoute } from '@react-navigation/native';
-import type { ClassroomResource, ClassroomStackParamList, ResourceType } from '@repo/core';
+import { ClassroomResource, ClassroomStackParamList, ResourceType } from '@repo/core/types';
 import { api } from '@repo/core/api';
 import { useSafeMutation } from '@repo/core/hooks';
 import { useStore } from '@repo/core/logic';

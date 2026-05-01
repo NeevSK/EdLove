@@ -12,7 +12,7 @@
 
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import type { CommunityStackParamList } from '@repo/core';
+import { CommunityStackParamList } from '@repo/core/types';
 import { socialAPI } from '@repo/core/api';
 import { useStore, useTemporalStore } from '@repo/core/logic';
 import { supabase } from '@repo/core/api';;

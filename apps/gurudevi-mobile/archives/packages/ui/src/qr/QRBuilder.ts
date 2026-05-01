@@ -8,7 +8,7 @@
  *   QRBuilder.thuthimal(token, gifterName)    \u2192 'gurudevi://qr?v=1&action=thuthimal_gift&...'
  */
 
-import type { QRPayload } from '@repo/core';
+import { QRPayload } from '@repo/core/types';
 
 const SCHEME = 'https://platform.gurudevi.edlove.org/qr';
 

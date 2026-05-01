@@ -1,4 +1,4 @@
-import type { ClassroomGradingSettings } from '@repo/core';
+import { ClassroomGradingSettings } from '@repo/core/logic';
 import { Box, Button } from '@repo/ui/primitives';
 import { ButtonText, HStack, Spinner, Text, VStack } from '@repo/ui/primitives';
 import { Pressable, ScrollView } from '@repo/ui/primitives';

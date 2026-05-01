@@ -1,5 +1,5 @@
-import type { Classroom } from '@repo/core';
-import { handleAPIError, usePermissions } from '@repo/core';
+import { Classroom } from '@repo/core/types';
+import { handleAPIError, usePermissions } from '@repo/core/logic';
 import { classroomsAPI } from '@repo/core/api';
 import { useMutationQueue } from '@repo/core/logic';
 

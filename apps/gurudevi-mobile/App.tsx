@@ -16,15 +16,10 @@ import {
   posthogAnalytics as initTracker,
   trackEvent,
 } from '@repo/analytics';
-import {
-  type AuthorityTier,
-  clearSentryUser,
-  initSentry,
-  injectPostHog,
-  type SchoolType,
-  SyncManager,
-  setSentryUser,
-} from '@repo/core';
+import { SchoolType } from '@repo/core/constants';
+import { clearSentryUser, initSentry, injectPostHog, setSentryUser } from '@repo/core/monitoring';
+import { SyncManager } from '@repo/core/sync';
+import { AuthorityTier } from '@repo/core/types';
 import { authAPI, identityAPI } from '@repo/core/api';
 import { coreRuntime, useStore } from '@repo/core/logic';
 import { nativeRuntimeEnvironment, supabase } from '@repo/core/native';

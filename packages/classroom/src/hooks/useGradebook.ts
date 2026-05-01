@@ -1,4 +1,5 @@
-import { type ClassroomGradingSettings, growthSignalsAPI, type StudentGrade } from '@repo/core';
+import { growthSignalsAPI } from '@repo/core/api';
+import { ClassroomGradingSettings, StudentGrade } from '@repo/core/logic';
 import { gradingAPI, studentsAPI } from '@repo/core/api';
 import { useStore } from '@repo/core/logic';
 

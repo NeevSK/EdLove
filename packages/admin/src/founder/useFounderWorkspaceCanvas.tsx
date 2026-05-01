@@ -1,10 +1,5 @@
-import {
-  type ResolvedWorkspaceSurface,
-  type School,
-  WORKSPACE_CANVAS_ZONES,
-  type WorkspaceSwitcherTarget,
-  type WorkspaceZoneId,
-} from '@repo/core';
+import { WORKSPACE_CANVAS_ZONES, WorkspaceSwitcherTarget } from '@repo/core/logic';
+import { ResolvedWorkspaceSurface, School, WorkspaceZoneId } from '@repo/core/types';
 import { useWorkspaceLayoutSync } from '@repo/core/native';;
 
 import type { WorkspaceSurfaceDefinition } from '@repo/core/types';

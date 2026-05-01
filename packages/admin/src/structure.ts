@@ -1,4 +1,4 @@
-import type { SchoolGrade, Section } from '@repo/core';
+import { SchoolGrade, Section } from '@repo/core/types';
 import { supabase } from '@repo/core/api';;
 
 export interface StructureOverview {

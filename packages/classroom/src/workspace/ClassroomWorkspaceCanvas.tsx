@@ -1,8 +1,5 @@
-import {
-  type ResolvedWorkspaceSurface,
-  WORKSPACE_CANVAS_ZONES,
-  type WorkspaceZoneId,
-} from '@repo/core';
+import { WORKSPACE_CANVAS_ZONES } from '@repo/core/logic';
+import { ResolvedWorkspaceSurface, WorkspaceZoneId } from '@repo/core/types';
 import { Box, HStack, Text } from '@repo/ui/primitives';
 import { WorkspaceCanvas } from '@repo/ui/components/workspace';
 import { Pressable } from '@repo/ui/primitives';

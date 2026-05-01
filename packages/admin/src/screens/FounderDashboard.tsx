@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import type { FounderStackParamList, School } from '@repo/core';
+import { FounderStackParamList, School } from '@repo/core/types';
 import { useStore } from '@repo/core/logic';
 
 import GlobalHeader from '@repo/ui/components/GlobalHeader';

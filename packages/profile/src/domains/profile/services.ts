@@ -1,4 +1,4 @@
-import type { SocialLink } from '@repo/core';
+import { SocialLink } from '@repo/core/types';
 import type {
   CommunityProfile,
   ProfileHistoryEntry,

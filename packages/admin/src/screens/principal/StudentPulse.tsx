@@ -1,4 +1,4 @@
-import type { StudentAttendancePulse } from '@repo/core';
+import { StudentAttendancePulse } from '@repo/core/api';
 import { AlertTriangle, GraduationCap, TrendingUp } from '@repo/ui/icons';
 import { Box } from '@repo/ui/primitives';
 import { HStack, Heading, Icon, Text, VStack } from '@repo/ui/primitives';

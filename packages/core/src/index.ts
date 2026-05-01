@@ -1,5 +1,5 @@
 // 1. Foundation (No relative dependencies)
-import { v7 } from 'uuid';
+
 
 export {
   type DeviceAccountProfile,
@@ -150,7 +150,7 @@ export { type TemporalScale, useTemporalStore } from './store/useTemporalStore';
 export { useTenantStore } from './store/useTenantStore';
 export { useUIStore } from './store/useUIStore';
 export * from './types';
-export { v7, v7 as uuidv7 };
+export { v4, v7, v7 as uuidv7 } from './logic/utils/uuid';
 
 import { z } from 'zod';
 

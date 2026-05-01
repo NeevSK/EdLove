@@ -1,4 +1,4 @@
-import type { MappingTopology } from '@repo/core';
+import { MappingTopology } from '@repo/core/api';
 import { mappingAPI } from '@repo/core/api';
 import { supabase } from '@repo/core/api';;
 

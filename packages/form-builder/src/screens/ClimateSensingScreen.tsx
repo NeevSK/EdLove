@@ -1,4 +1,4 @@
-import { FormManager } from '@repo/core';
+import { FormManager } from '@repo/core/logic';
 import { Box } from '@repo/ui/primitives';
 import { Center, Text } from '@repo/ui/primitives';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';

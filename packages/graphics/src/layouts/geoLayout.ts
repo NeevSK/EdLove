@@ -1,4 +1,4 @@
-import type { GraphNode, KnowledgeTopology, LayoutResult } from '@repo/core';
+import { GraphNode, KnowledgeTopology, LayoutResult } from '@repo/core/types';
 
 /**
  * geoLayout \u2014 Converts lat/lng geo coordinates to { x, y } canvas positions.

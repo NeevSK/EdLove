@@ -1,4 +1,4 @@
-import type { TotalState } from '@repo/core';
+import { TotalState } from '@repo/core/store';
 import { classroomsAPI } from '@repo/core/api';
 import { useStore } from '@repo/core/logic';
 import { supabase } from '@repo/core/native';

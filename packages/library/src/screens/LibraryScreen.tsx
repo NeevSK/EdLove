@@ -3,7 +3,7 @@
  */
 
 import { useNavigation } from '@react-navigation/native';
-import { coreRuntime, FeatureGuard } from '@repo/core';
+import { FeatureGuard, coreRuntime } from '@repo/core/logic';
 import { identityAPI } from '@repo/core/api';
 import { useTracking } from '@repo/core/hooks';
 import { useStore, useTemporalStore } from '@repo/core/logic';

@@ -1,10 +1,5 @@
-import {
-  assertContractCoverage,
-  createTemporalPOAProxy,
-  defineContractCoverage,
-  profileContract,
-  type TemporalScale,
-} from '@repo/core';
+import { assertContractCoverage, createTemporalPOAProxy, defineContractCoverage, profileContract } from '@repo/core/api';
+import { TemporalScale } from '@repo/core/store';
 import { profileServices } from '../domains/profile/runtime';
 
 const rawProfileAPI = {

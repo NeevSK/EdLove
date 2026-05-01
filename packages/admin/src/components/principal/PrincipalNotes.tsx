@@ -1,5 +1,5 @@
-import type { PrincipalNote } from '@repo/core';
-import { coreRuntime } from '@repo/core';
+import { PrincipalNote } from '@repo/core/api';
+import { coreRuntime } from '@repo/core/logic';
 import { api } from '@repo/core/api';
 
 import GlobalHeader from '@repo/ui/components/GlobalHeader';

@@ -1,5 +1,5 @@
 ﻿import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import type { SelfStackParamList } from '@repo/core';
+import { SelfStackParamList } from '@repo/core/types';
 import { useTheme } from '@repo/ui/primitives';
 
 import React from 'react';

@@ -1,4 +1,4 @@
-﻿import { usePermissions } from '@repo/core';
+﻿import { usePermissions } from '@repo/core/logic';
 import { useBanyanGrowth, useNaturePaths } from '@repo/core/hooks';
 import { useTemporalStore } from '@repo/core/logic';
 

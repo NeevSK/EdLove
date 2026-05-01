@@ -1,11 +1,5 @@
-import {
-  createDefaultWorkspaceLayout,
-  type ResolvedWorkspaceSurface,
-  resolveWorkspaceSurfaceLayout,
-  type WorkspaceLayout,
-  type WorkspaceRuntimePlatform,
-  type WorkspaceSurfaceDefinition,
-} from '@repo/core';
+import { createDefaultWorkspaceLayout, resolveWorkspaceSurfaceLayout } from '@repo/core/logic';
+import { ResolvedWorkspaceSurface, WorkspaceLayout, WorkspaceRuntimePlatform, WorkspaceSurfaceDefinition } from '@repo/core/types';
 import type {
   CommunityGroup,
   CommunityPost,

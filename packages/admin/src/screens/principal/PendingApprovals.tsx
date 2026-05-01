@@ -1,4 +1,4 @@
-import type { StaffLeave as StaffLeaveDTO } from '@repo/core';
+import { StaffLeave as StaffLeaveDTO } from '@repo/core/api';
 import { ClipboardList } from '@repo/ui/icons';
 import { Box, Button } from '@repo/ui/primitives';
 import { ButtonText, HStack, Heading, Icon, Text, VStack } from '@repo/ui/primitives';

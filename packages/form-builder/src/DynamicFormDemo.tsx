@@ -1,4 +1,4 @@
-import { FormHydrator } from '@repo/core';
+import { FormHydrator } from '@repo/core/logic';
 import { Box } from '@repo/ui/primitives';
 import { Text, VStack } from '@repo/ui/primitives';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';

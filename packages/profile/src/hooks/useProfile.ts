@@ -1,4 +1,4 @@
-import { handleAPIError } from '@repo/core';
+import { handleAPIError } from '@repo/core/logic';
 import { authAPI, identityAPI } from '@repo/core/api';
 import { useRewards } from '@repo/core/hooks';
 import { useMutationQueue, useTemporalStore } from '@repo/core/logic';

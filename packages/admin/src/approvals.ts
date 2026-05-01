@@ -1,4 +1,4 @@
-import type { StaffLeaveDTO } from '@repo/core';
+import { StaffLeaveDTO } from '@repo/core/api';
 import { staffManagementAPI } from '@repo/core/api';
 
 export type { StaffLeaveDTO };

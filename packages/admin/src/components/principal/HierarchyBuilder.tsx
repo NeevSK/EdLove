@@ -1,4 +1,4 @@
-import type { SchoolGrade, Section } from '@repo/core';
+import { SchoolGrade, Section } from '@repo/core/types';
 import { api } from '@repo/core/api';
 
 import { ArrowLeft, GraduationCap, Plus, School as SchoolIcon } from '@repo/ui/icons';

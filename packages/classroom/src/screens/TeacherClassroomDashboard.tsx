@@ -1,5 +1,6 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { type Classroom, type ClassroomStackParamList, usePermissions } from '@repo/core';
+import { usePermissions } from '@repo/core/logic';
+import { Classroom, ClassroomStackParamList } from '@repo/core/types';
 import { api } from '@repo/core/api';
 
 import { StudentAnalysisModal } from '@repo/library';

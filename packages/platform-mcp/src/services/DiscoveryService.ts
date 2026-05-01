@@ -307,10 +307,29 @@ export class DiscoveryService {
     return toText(output.combined, !output.ok);
   }
 
-  handleMapArchitecture(args: { target?: string }) {
+  handleGetLens(args: { type: 'skeleton' | 'debt'; target?: string }) {
     const target = normalizeTarget(args.target || '.');
-    console.error(`Mapping Architecture: ${target}`);
-    const output = runCommand('node', ['scripts/architect-mapper.mjs', target]);
+    if (args.type === 'skeleton') {
+      console.error(`Generating Skeleton Lens...`);
+      const output = runCommand('node', ['scripts/generate-skeleton-lens.mjs']);
+      return toText(output.combined, !output.ok);
+    }
+    if (args.type === 'debt') {
+      console.error(`Generating Debt Lens...`);
+      const output = runCommand('node', ['scripts/generate-debt-lens.mjs']);
+      return toText(output.combined, !output.ok);
+    }
+    if (args.type === 'luminosity') {
+      console.error(`Generating Luminosity Lens...`);
+      const output = runCommand('node', ['scripts/generate-luminosity-lens.mjs', target]);
+      return toText(output.combined, !output.ok);
+    }
+    return toText(`Unknown lens type: ${args.type || 'none'}. Use 'skeleton', 'debt', or 'luminosity'.`, true);
+  }
+
+  handleSimulateImpact(args: { symbol: string }) {
+    console.error(`Simulating Impact for: ${args.symbol}`);
+    const output = runCommand('node', ['scripts/simulate-impact.mjs', args.symbol]);
     return toText(output.combined, !output.ok);
   }
 

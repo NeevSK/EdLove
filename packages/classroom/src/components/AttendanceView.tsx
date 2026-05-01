@@ -1,4 +1,4 @@
-import type { AttendanceStatus, StudentAttendance } from '@repo/core';
+import { AttendanceStatus, StudentAttendance } from '@repo/core/logic';
 import { api } from '@repo/core/api';
 
 import { Box } from '@repo/ui/primitives';

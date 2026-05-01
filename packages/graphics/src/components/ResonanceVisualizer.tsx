@@ -8,7 +8,7 @@ interface ResonanceVisualizerProps {
   size?: number;
 }
 
-import { useActivityPulse } from '@repo/core';
+import { useActivityPulse } from '@repo/core/logic';
 
 export const ResonanceVisualizer: React.FC<ResonanceVisualizerProps> = ({ score, size = 200 }) => {
   const { state } = useActivityPulse();

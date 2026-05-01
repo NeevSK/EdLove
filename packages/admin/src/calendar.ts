@@ -1,4 +1,4 @@
-import type { CalendarEvent } from '@repo/core';
+import { CalendarEvent } from '@repo/core/api';
 import { staffManagementAPI } from '@repo/core/api';
 
 export type { CalendarEvent };

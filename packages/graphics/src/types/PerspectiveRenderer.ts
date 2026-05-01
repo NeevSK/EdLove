@@ -1,4 +1,4 @@
-import type { GraphNode, KnowledgeTopology, LayoutResult, PerspectiveId } from '@repo/core';
+import { GraphNode, KnowledgeTopology, LayoutResult, PerspectiveId } from '@repo/core/types';
 import type React from 'react';
 
 /**

@@ -553,6 +553,10 @@ class PolymathPlatformServer {
                   'syncpack_fix',
                   'types',
                   'hooks',
+                  'push_audit',
+                  'deprecations',
+                  'memory_sinks',
+                  'cognitive_load',
                 ],
               },
               params: {
@@ -576,8 +580,9 @@ class PolymathPlatformServer {
                   'scout',
                   'docs',
                   'inventory',
-                  'view',
                   'find',
+                  'lens',
+                  'simulate',
                   'structural',
                   'stats',
                   'component_api',
@@ -587,6 +592,8 @@ class PolymathPlatformServer {
                   'metro_debug',
                   'impact',
                   'jina',
+                  'spellcheck',
+                  'disk_usage',
                 ],
               },
               params: {
@@ -642,7 +649,7 @@ class PolymathPlatformServer {
             properties: {
               action: {
                 type: 'string',
-                enum: ['architecture', 'inventory', 'philosophy', 'runbyte'],
+                enum: ['architecture', 'inventory', 'philosophy', 'runbyte', 'soul', 'recent_evolutions', 'mistakes', 'refusal'],
               },
             },
             required: ['action'],
@@ -735,6 +742,14 @@ class PolymathPlatformServer {
               return this.audit.handleCheckTypes(params);
             case 'hooks':
               return this.audit.handleAuditHookViolations(params);
+            case 'deprecations':
+              return this.audit.handleAuditDeprecations(params);
+            case 'memory_sinks':
+              return this.audit.handleCheckMemorySinks();
+            case 'cognitive_load':
+              return this.audit.handleReportCognitiveLoad(params);
+            case 'push_audit':
+              return this.audit.handlePushAudit();
             default:
               throw new Error(`Unknown audit action: ${action}`);
           }
@@ -755,6 +770,10 @@ class PolymathPlatformServer {
               return this.discovery.handleShinyView(params);
             case 'find':
               return this.discovery.handleShinyFind(params);
+            case 'lens':
+              return this.discovery.handleGetLens(params);
+            case 'simulate':
+              return this.discovery.handleSimulateImpact(params);
             case 'structural':
               return this.discovery.handleStructuralSearch(params);
             case 'stats':
@@ -773,6 +792,10 @@ class PolymathPlatformServer {
               return this.discovery.handleTraceDeletionImpact(params);
             case 'jina':
               return this.discovery.handleJinaReader(params);
+            case 'spellcheck':
+              return this.discovery.handleCheckSpelling(params);
+            case 'disk_usage':
+              return this.discovery.handleDiskUsage(params);
             default:
               throw new Error(`Unknown discovery action: ${action}`);
           }
@@ -831,6 +854,14 @@ class PolymathPlatformServer {
               return this.help.handleGetToolInventory();
             case 'philosophy':
               return this.help.handleGetPhilosophy();
+            case 'soul':
+              return this.help.handleGetSoul();
+            case 'mistakes':
+              return this.help.handleGetMistakeLedger();
+            case 'refusal':
+              return this.help.handleGetSeniorRefusal();
+            case 'recent_evolutions':
+              return this.help.handleGetRecentEvolutions();
             case 'runbyte':
               return this.help.handleGetRunbyteGuide();
             default:
@@ -946,7 +977,7 @@ class PolymathPlatformServer {
           case 'shiny_refactor':
             return this.maintenance.handleRefactorReplace(args as any);
           case 'map_architecture':
-            return this.discovery.handleMapArchitecture(args as any);
+            return this.discovery.handleGetLens({ type: 'debt', ...args } as any);
 
           default:
             throw new Error(`Unknown tool: ${name}`);

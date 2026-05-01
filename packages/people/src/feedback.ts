@@ -1,4 +1,4 @@
-import { handleAPIError } from '@repo/core';
+import { handleAPIError } from '@repo/core/logic';
 import { supabase } from '@repo/core/api';;
 
 export interface TeacherSentEcho {

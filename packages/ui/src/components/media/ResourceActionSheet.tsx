@@ -1,4 +1,4 @@
-import type { BaseResource } from '@repo/core';
+import { BaseResource } from '@repo/core/types';
 import { Bookmark, FileText, FolderPlus, Info, PlayCircle, Share2 } from 'lucide-react-native';
 import type React from 'react';
 import {

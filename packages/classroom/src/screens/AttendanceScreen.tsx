@@ -1,5 +1,6 @@
 import { useRoute } from '@react-navigation/native';
-import { type AttendanceStatus, growthSignalsAPI, type StudentAttendance } from '@repo/core';
+import { growthSignalsAPI } from '@repo/core/api';
+import { AttendanceStatus, StudentAttendance } from '@repo/core/logic';
 import { api } from '@repo/core/api';
 import { academicCyclesAPI } from '@repo/core/api/academicCycles';
 import { useSafeMutation } from '@repo/core/hooks';

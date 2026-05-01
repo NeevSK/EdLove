@@ -1,4 +1,4 @@
-import { applyTemporalFilter, getTemporalRange } from '@repo/core';
+import { applyTemporalFilter, getTemporalRange } from '@repo/core/logic';
 import { supabase } from '@repo/core/api';;
 
 import type { FireJournalEntry, MoodLog } from '../types';

@@ -1,6 +1,9 @@
 ---
 import { getCollection } from 'astro:content';
 import { absoluteUrl } from '../lib/site';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Navigation from '../components/Navigation.astro';
+import RealitySwitch from '../components/RealitySwitch.astro';
 
 const archiveEntries = await getCollection('archive', ({ data }) => !data.draft);
 archiveEntries.sort((a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime());
@@ -32,7 +35,7 @@ const _structuredData = {
 };
 ---
 
-<BaseLayout title="Archive | NeevSK" description="A collection of uncollapsed thoughts and epistemic artifacts." structuredData={structuredData}>
+<BaseLayout title="Archive | NeevSK" description="A collection of uncollapsed thoughts and epistemic artifacts." structuredData={_structuredData}>
 	<RealitySwitch />
 	
 	<main class="max-w-4xl mx-auto px-6 pb-24">
@@ -46,16 +49,16 @@ const _structuredData = {
 		</header>
 
 		<div class="space-y-4">
-			{archiveEntries.map(entry => (
+			{archiveEntries.map((entry: any) => (
 				<a href={`/archive/${getArchiveSlug(entry.id)}`} class="group flex gap-8 py-8 border-b border-[var(--text-main)]/5 hover:bg-[var(--text-main)]/[0.01] transition-all duration-300">
-					<span class="text-[10px] font-mono opacity-30 mt-2">{formatDate(entry.data.publishDate)}</span>
+					<span class="text-[10px] font-mono opacity-30 mt-2">{_formatDate(entry.data.publishDate)}</span>
 					<div class="flex-1">
 						<h2 class="text-2xl font-serif dark:font-mono group-hover:text-[var(--accent-secondary)] transition-colors">
 							{entry.data.title}
 						</h2>
 						<div class="flex gap-4 items-center mt-2">
 							<span class="text-[10px] uppercase tracking-widest font-mono opacity-40">//{entry.data.subtitle || 'Fragment'}</span>
-							{entry.data.tags.map(tag => (
+							{entry.data.tags.map((tag: any) => (
 								<span class="text-[8px] uppercase tracking-widest font-mono bg-[var(--text-main)]/5 px-2 py-0.5 rounded-full opacity-30 group-hover:opacity-60 transition-opacity">
 									{tag}
 								</span>

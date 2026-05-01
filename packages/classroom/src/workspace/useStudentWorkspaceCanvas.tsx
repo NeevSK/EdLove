@@ -1,9 +1,5 @@
-import {
-  type ResolvedWorkspaceSurface,
-  WORKSPACE_CANVAS_ZONES,
-  type WorkspaceLayout,
-  type WorkspaceZoneId,
-} from '@repo/core';
+import { WORKSPACE_CANVAS_ZONES } from '@repo/core/logic';
+import { ResolvedWorkspaceSurface, WorkspaceLayout, WorkspaceZoneId } from '@repo/core/types';
 import { useWorkspaceLayoutSync } from '@repo/core/native';;
 
 import { Box, HStack, Text } from '@repo/ui/primitives';

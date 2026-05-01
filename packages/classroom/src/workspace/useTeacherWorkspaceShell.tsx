@@ -1,5 +1,5 @@
 import type { NavigationProp } from '@react-navigation/native';
-import type { ClassroomStackParamList } from '@repo/core';
+import { ClassroomStackParamList } from '@repo/core/types';
 import { identityAPI } from '@repo/core/api';
 import { useFeatureAccess } from '@repo/core/hooks';
 import { useStore, useTemporalStore } from '@repo/core/logic';

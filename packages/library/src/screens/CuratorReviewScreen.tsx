@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
-import { usePermissions } from '@repo/core';
+import { usePermissions } from '@repo/core/logic';
 import { useStore } from '@repo/core/logic';
 import { supabase } from '@repo/core/api';;
 

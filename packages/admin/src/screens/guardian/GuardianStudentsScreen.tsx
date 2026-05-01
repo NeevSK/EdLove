@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import type { GuardianStackParamList } from '@repo/core';
+import { GuardianStackParamList } from '@repo/core/types';
 import { useStore } from '@repo/core/logic';
 
 import { Box } from '@repo/ui/primitives';

@@ -3,7 +3,7 @@ Write-Host ">>> Sovereign Sentinel: Validating Push Integrity..." -ForegroundCol
 
 $AuditCmd = "pnpm exec commitlint --from=HEAD~1 --to=HEAD; pnpm run check-types; pnpm run check:hygiene; pnpm run identity:check; pnpm dlx gitleaks detect --source . --verbose"
 
-powershell -ExecutionPolicy Bypass -File scripts/audit-wrapper.ps1 -Cmd "$AuditCmd" -Log "reports/push_audit.md"
+node scripts/sovereign-audit.mjs --cmd "$AuditCmd" --log "reports/push_audit.md"
 
 if ($LASTEXITCODE -ne 0) {
     Write-Host "`n❌ PUSH REJECTED: Architectural or Quality Violations Detected." -ForegroundColor Red

@@ -22,10 +22,10 @@
   },
   "scripts": {
     "build": "pnpm exec tsc -p tsconfig.json && pnpm exec node --experimental-specifier-resolution=node ./scripts/generate-approval-artifacts.mjs",
-    "check-types": "powershell -File ../../scripts/audit-wrapper.ps1 -Cmd \"pnpm exec tsc --noEmit\" -Log \"reports/check-types.txt\"",
+    "check-types": "pnpm exec tsc --noEmit",
     "clean": "pnpm exec rimraf dist artifacts",
     "export:artifacts": "pnpm exec node --experimental-specifier-resolution=node ./scripts/generate-approval-artifacts.mjs",
-    "lint": "powershell -File ../../scripts/audit-wrapper.ps1 -Cmd \"pnpm exec eslint .\" -Log \"reports/lint.txt\"",
+    "lint": "pnpm exec eslint .",
     "prepack": "pnpm run clean && pnpm run build"
   },
   "keywords": [

@@ -1,4 +1,4 @@
-import { getTemporalRange } from '@repo/core';
+import { getTemporalRange } from '@repo/core/logic';
 import { supabase } from '@repo/core/api';;
 
 import type { DailyPrepItem, Goal, GratitudeEntry, JoyMoment, SleepLog } from '../types';

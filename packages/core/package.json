@@ -61,6 +61,46 @@
       "types": "./src/api/supabase.ts",
       "import": "./src/api/supabase.ts"
     },
+    "./monitoring": {
+      "types": "./src/lib/monitoring/index.ts",
+      "import": "./src/lib/monitoring/index.ts"
+    },
+    "./sync": {
+      "types": "./src/lib/sync/index.ts",
+      "import": "./src/lib/sync/index.ts"
+    },
+    "./utils": {
+      "types": "./src/logic/utils/index.ts",
+      "import": "./src/logic/utils/index.ts"
+    },
+    "./constants": {
+      "types": "./src/constants/index.ts",
+      "import": "./src/constants/index.ts"
+    },
+    "./grading": {
+      "types": "./src/logic/grading/index.ts",
+      "import": "./src/logic/grading/index.ts"
+    },
+    "./events": {
+      "types": "./src/logic/events/bus.ts",
+      "import": "./src/logic/events/bus.ts"
+    },
+    "./hooks": {
+      "types": "./src/hooks/index.ts",
+      "import": "./src/hooks/index.ts"
+    },
+    "./offline": {
+      "types": "./src/offline/resilience.ts",
+      "import": "./src/offline/resilience.ts"
+    },
+    "./storage-wrapper": {
+      "types": "./src/lib/storageWrapper.ts",
+      "import": "./src/lib/storageWrapper.ts"
+    },
+    "./lib": {
+      "types": "./src/lib/index.ts",
+      "import": "./src/lib/index.ts"
+    },
     "./package.json": "./package.json"
   },
   "scripts": {
@@ -68,8 +108,8 @@
     "lint:biome": "biome check .",
     "lint:eslint": "eslint .",
     "format": "biome format --write .",
-    "check-cycles": "powershell -File ../../scripts/audit-wrapper.ps1 -Cmd \"node ../../scripts/refactor/sovereign-cycle-checker.mjs\" -Log \"reports/check-cycles.txt\"",
-    "check-types": "powershell -File ../../scripts/audit-wrapper.ps1 -Cmd \"pnpm exec tsc --noEmit\" -Log \"reports/check-types.txt\"",
+    "check-cycles": "node ../../scripts/refactor/sovereign-cycle-checker.mjs",
+    "check-types": "pnpm exec tsc --noEmit",
     "test:logic": "vitest run src/logic",
     "clean": "rm -rf .turbo node_modules"
   },

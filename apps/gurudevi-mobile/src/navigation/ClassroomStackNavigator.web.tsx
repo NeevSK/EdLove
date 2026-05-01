@@ -1,5 +1,5 @@
 ﻿import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import type { ClassroomStackParamList } from '@repo/core';
+import { ClassroomStackParamList } from '@repo/core/types';
 import { useTheme } from '@repo/ui/primitives';
 
 import React from 'react';

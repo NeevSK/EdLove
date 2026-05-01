@@ -1,4 +1,4 @@
-import type { PerspectiveViewProps } from '@repo/core';
+import { PerspectiveViewProps } from '@repo/core/types';
 import { CheckCircle2, Circle as CircleIcon, Lock } from 'lucide-react-native';
 import type React from 'react';
 import { useTheme } from '../../hooks/useTheme';

@@ -1,9 +1,4 @@
-import {
-  type SyncMutationQueuedPayload,
-  sendSyncMutationQueued,
-  sendWellbeingMoodLogged,
-  type WellbeingMoodLoggedPayload,
-} from '@repo/core';
+import { SyncMutationQueuedPayload, WellbeingMoodLoggedPayload, sendSyncMutationQueued, sendWellbeingMoodLogged } from '@repo/core/logic';
 import { inngest } from './inngest';
 
 export function emitWellbeingMoodLogged(payload: WellbeingMoodLoggedPayload) {

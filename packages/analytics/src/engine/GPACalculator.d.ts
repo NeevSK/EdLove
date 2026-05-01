@@ -1,4 +1,4 @@
-import type { StudentGrade } from '@repo/core';
+import { StudentGrade } from '@repo/core/logic';
 import type { GPACalculationOptions } from '../types/AnalyticsTypes';
 import { type GradebookEntry } from '../types/GradingTypes';
 export declare class GPACalculator {

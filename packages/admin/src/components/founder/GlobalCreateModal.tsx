@@ -1,5 +1,7 @@
 import { communityAPI } from '@repo/community';
-import { growthSignalsAPI, handleAPIError, type School } from '@repo/core';
+import { growthSignalsAPI } from '@repo/core/api';
+import { handleAPIError } from '@repo/core/logic';
+import { School } from '@repo/core/types';
 import { identityAPI } from '@repo/core/api';
 
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';

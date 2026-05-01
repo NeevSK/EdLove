@@ -19,8 +19,8 @@
  *   - Infinite scroll backward in time — old notes are never deleted
  */
 
-import type { ClassroomNote } from '@repo/core';
-import { coreRuntime } from '@repo/core';
+import { ClassroomNote } from '@repo/core/api';
+import { coreRuntime } from '@repo/core/logic';
 import { api } from '@repo/core/api';
 
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';

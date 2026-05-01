@@ -6,7 +6,7 @@ import {
   TeacherClassroomDashboard as ClassroomDashboard,
   GradebookScreen,
 } from '@repo/classroom';
-import type { ClassroomStackParamList } from '@repo/core';
+import { ClassroomStackParamList } from '@repo/core/types';
 import { useTheme } from '@repo/ui/primitives';
 
 import { ClassroomScreen } from '@repo/classroom';

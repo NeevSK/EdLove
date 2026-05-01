@@ -1,5 +1,6 @@
 import { type NavigationProp, useNavigation } from '@react-navigation/native';
-import { growthSignalsAPI, impactRipplesAPI, usePermissions } from '@repo/core';
+import { growthSignalsAPI, impactRipplesAPI } from '@repo/core/api';
+import { usePermissions } from '@repo/core/logic';
 import { usePendingGateAction } from '@repo/core/hooks';
 import { setPendingGateAction, useStore, useTemporalStore } from '@repo/core/logic';
 import { supabase } from '@repo/core/api';;

@@ -1,4 +1,5 @@
-import { type AcademicCycle, coreRuntime } from '@repo/core';
+import { coreRuntime } from '@repo/core/logic';
+import { AcademicCycle } from '@repo/core/types';
 import { api } from '@repo/core/api';
 
 import GlobalHeader from '@repo/ui/components/GlobalHeader';

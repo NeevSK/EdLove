@@ -1,6 +1,9 @@
 ---
 import { getCollection, render } from 'astro:content';
 import { absoluteUrl } from '../../lib/site';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Navigation from '../../components/Navigation.astro';
+import RealitySwitch from '../../components/RealitySwitch.astro';
 
 export async function getStaticPaths() {
   const archiveEntries = await getCollection('archive');
@@ -40,7 +43,7 @@ const _structuredData = {
 };
 ---
 
-<BaseLayout title={`${entry.data.title} | NeevSK`} description={entry.data.subtitle ?? entry.data.title} structuredData={structuredData}>
+<BaseLayout title={`${entry.data.title} | NeevSK`} description={entry.data.subtitle ?? entry.data.title} structuredData={_structuredData}>
 	<RealitySwitch />
 	
 	<main class="max-w-3xl mx-auto px-6 pb-24">
@@ -49,7 +52,7 @@ const _structuredData = {
 		<article class="mt-24">
 			<header class="mb-16">
 				<div class="flex items-center gap-4 mb-8">
-					<span class="text-[10px] font-mono opacity-40">{formatDate(entry.data.publishDate)}</span>
+					<span class="text-[10px] font-mono opacity-40">{_formatDate(entry.data.publishDate)}</span>
 					<div class="h-px flex-1 bg-[var(--text-main)]/5"></div>
 				</div>
 				
@@ -70,7 +73,7 @@ const _structuredData = {
 
 			<footer class="mt-32 pt-12 border-t border-[var(--text-main)]/10">
 				<div class="flex flex-wrap gap-4">
-					{entry.data.tags.map(tag => (
+					{entry.data.tags.map((tag: any) => (
 						<span class="text-[10px] uppercase tracking-widest font-mono bg-[var(--text-main)]/5 px-3 py-1 rounded-full opacity-40">
 							#{tag}
 						</span>

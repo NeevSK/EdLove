@@ -1,8 +1,4 @@
-import {
-  useStudentAssignmentsQuery,
-  useStudentClassroomsQuery,
-  useStudentStatsQuery,
-} from '@repo/core';
+import { useStudentAssignmentsQuery, useStudentClassroomsQuery, useStudentStatsQuery } from '@repo/core/api';
 import { assignmentsAPI } from '@repo/core/api';
 import { useRewards } from '@repo/core/hooks';
 import { useAuthStore } from '@repo/core/logic';

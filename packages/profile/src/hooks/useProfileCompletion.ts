@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import type { AuthorityTier } from '@repo/core';
+import { AuthorityTier } from '@repo/core/types';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { PROFILE_SECTIONS } from '../config/profileSections';
 import { isFieldFilled } from '../lib/isFieldFilled';

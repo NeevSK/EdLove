@@ -32,10 +32,10 @@
   "packageManager": "pnpm@10.30.2",
   "scripts": {
     "build": "pnpm exec tsup src/index.ts --format esm,cjs --dts --clean",
-    "test": "powershell -File ../../scripts/audit-wrapper.ps1 -Cmd \"pnpm exec vitest run\" -Log \"reports/test.txt\"",
-    "validate": "powershell -File ../../scripts/audit-wrapper.ps1 -Cmd \"pnpm exec tsx scripts/validate.ts\" -Log \"reports/validate.txt\"",
-    "lint": "powershell -File ../../scripts/audit-wrapper.ps1 -Cmd \"pnpm exec eslint .\" -Log \"reports/lint.txt\"",
-    "check-types": "powershell -File ../../scripts/audit-wrapper.ps1 -Cmd \"pnpm exec tsc --noEmit\" -Log \"reports/check-types.txt\"",
+    "test": "pnpm exec vitest run",
+    "validate": "pnpm exec tsx scripts/validate.ts",
+    "lint": "pnpm exec eslint .",
+    "check-types": "pnpm exec tsc --noEmit",
     "import:xlsx": "pnpm exec tsx scripts/import-xlsx.ts",
     "import:pdf": "pnpm exec tsx scripts/import-pdf.ts"
   },

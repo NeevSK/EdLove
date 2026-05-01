@@ -1,5 +1,6 @@
 import { reportingAPI } from '@repo/admin/reporting';
-import type { AcademicCycle, AttendanceReport } from '@repo/core';
+import { AttendanceReport } from '@repo/core/logic';
+import { AcademicCycle } from '@repo/core/types';
 import { api } from '@repo/core/api';
 
 import GlobalHeader from '@repo/ui/components/GlobalHeader';

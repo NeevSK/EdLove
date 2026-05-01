@@ -6,7 +6,7 @@
  *  - Inline add-event form
  */
 
-import type { CalendarEvent } from '@repo/core';
+import { CalendarEvent } from '@repo/core/api';
 import { staffManagementAPI } from '@repo/core/api';
 
 import { Box, Input } from '@repo/ui/primitives';

@@ -5,7 +5,7 @@
  */
 
 import { useNavigation } from '@react-navigation/native';
-import { usePermissions } from '@repo/core';
+import { usePermissions } from '@repo/core/logic';
 import { useSafeMutation } from '@repo/core/hooks';
 import { supabase } from '@repo/core/api';;
 

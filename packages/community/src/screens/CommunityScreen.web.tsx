@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
-import { usePermissions } from '@repo/core';
+import { usePermissions } from '@repo/core/logic';
 import { communityAPI } from '@repo/core/api';
 import { useManifestoHooks, useNotificationHooks } from '@repo/core/api/hooks';
 import { usePendingGateAction } from '@repo/core/hooks';

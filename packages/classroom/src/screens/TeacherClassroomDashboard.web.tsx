@@ -1,5 +1,5 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { usePermissions } from '@repo/core';
+import { usePermissions } from '@repo/core/logic';
 import { api } from '@repo/core/api';
 
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';

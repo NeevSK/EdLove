@@ -1,4 +1,4 @@
-import { FormManager } from '@repo/core';
+import { FormManager } from '@repo/core/logic';
 import { supabase } from '@repo/core/api';;
 
 import {

@@ -1,4 +1,4 @@
-import type { PrivacyLevel, SocialLink, SocialPlatform } from '@repo/core';
+import { PrivacyLevel, SocialLink, SocialPlatform } from '@repo/core/types';
 import { Box, Button, ButtonText, HStack, Heading, Input, InputField, Text, VStack } from '@repo/ui/primitives';
 import { Pressable } from '@repo/ui/primitives';
 

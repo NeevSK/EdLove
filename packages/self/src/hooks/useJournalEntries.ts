@@ -1,4 +1,5 @@
-import { applyTemporalFilter, growthSignalsAPI } from '@repo/core';
+import { growthSignalsAPI } from '@repo/core/api';
+import { applyTemporalFilter } from '@repo/core/logic';
 import { authAPI, identityAPI } from '@repo/core/api';
 import { useTemporalStore } from '@repo/core/logic';
 import { GuestDataManager } from '@repo/core/native';

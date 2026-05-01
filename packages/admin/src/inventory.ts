@@ -1,4 +1,4 @@
-import type { InstitutionalAsset, InventoryRequest, ResourceNeedSummary } from '@repo/core';
+import { InstitutionalAsset, InventoryRequest, ResourceNeedSummary } from '@repo/core/types';
 import { inventoryAPI } from '@repo/core/api';
 import { supabase } from '@repo/core/api';;
 

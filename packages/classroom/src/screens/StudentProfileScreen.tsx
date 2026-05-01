@@ -1,10 +1,7 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
-import type {
-  AttendanceRecord,
-  StudentGrade,
-  StudentLongitudinalEvent,
-  StudentObservation,
-} from '@repo/core';
+import { StudentObservation } from '@repo/core/api';
+import { StudentGrade, StudentLongitudinalEvent } from '@repo/core/logic';
+import { AttendanceRecord } from '@repo/core/types';
 import { api } from '@repo/core/api';
 import { useTemporalStore } from '@repo/core/logic';
 

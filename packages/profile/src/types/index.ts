@@ -1,4 +1,4 @@
-import type { AuthorityTier, SocialLink } from '@repo/core';
+import { AuthorityTier, SocialLink } from '@repo/core/types';
 
 export interface ProfileStats {
   classes_taught?: number;

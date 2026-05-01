@@ -9,7 +9,7 @@
  * Metro resolves this file for web builds automatically.
  */
 
-import { handleAPIError } from '@repo/core';
+import { handleAPIError } from '@repo/core/logic';
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
 import { CheckCircle2, Send, X } from '@repo/ui/icons';
 import { Box, Button } from '@repo/ui/primitives';

@@ -1,5 +1,6 @@
 import { AnalyticsProvider } from '@repo/analytics/ui';
-import { SyncManager, usePermissions } from '@repo/core';
+import { SyncManager } from '@repo/core/sync';
+import { usePermissions } from '@repo/core/logic';
 import { useAuth } from '@repo/core/logic';
 
 import { EnvironmentProvider, ExternalLinkProvider } from '@repo/ui/context';

@@ -1,4 +1,4 @@
-import type { WorkspaceSurfaceDefinition } from '@repo/core';
+import { WorkspaceSurfaceDefinition } from '@repo/core/types';
 
 export type ClassroomWorkspaceSurfaceId =
   | 'principal'

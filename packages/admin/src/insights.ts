@@ -1,4 +1,4 @@
-import { getTemporalRange } from '@repo/core';
+import { getTemporalRange } from '@repo/core/logic';
 import { supabase } from '@repo/core/api';;
 
 export interface GradeProgress {

@@ -2,7 +2,7 @@ import {
   type FounderEcosystemStats,
   useFounderEcosystemStats,
 } from '@repo/admin/bridge/founderWorkspace';
-import type { School } from '@repo/core';
+import { School } from '@repo/core/types';
 
 export type EcosystemStats = FounderEcosystemStats;
 

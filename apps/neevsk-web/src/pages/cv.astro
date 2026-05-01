@@ -1,4 +1,7 @@
 ---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Navigation from '../components/Navigation.astro';
+import RealitySwitch from '../components/RealitySwitch.astro';
 const _experience = [
   {
     role: 'Founder & Lead Architect',
@@ -40,7 +43,7 @@ const _skills = [
 		<section class="mb-32">
 			<h2 class="text-xs uppercase tracking-[0.5em] font-mono text-[var(--accent-secondary)] mb-12">Experience</h2>
 			<div class="space-y-16">
-				{experience.map(job => (
+				{_experience.map((job: any) => (
 					<div>
 						<div class="flex flex-col md:flex-row justify-between items-baseline mb-4 gap-2">
 							<h3 class="text-3xl font-serif dark:font-mono">{job.role}</h3>
@@ -58,7 +61,7 @@ const _skills = [
 		<section>
 			<h2 class="text-xs uppercase tracking-[0.5em] font-mono text-[var(--accent-secondary)] mb-12">Epistemic Tools</h2>
 			<div class="flex flex-wrap gap-x-12 gap-y-8">
-				{skills.map(skill => (
+				{_skills.map((skill: any) => (
 					<div class="group">
 						<span class="text-lg font-mono opacity-40 group-hover:opacity-100 transition-opacity">//{skill}</span>
 					</div>

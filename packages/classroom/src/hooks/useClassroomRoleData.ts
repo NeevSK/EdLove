@@ -1,4 +1,4 @@
-import { usePermissions } from '@repo/core';
+import { usePermissions } from '@repo/core/logic';
 import { api } from '@repo/core/api';
 import { useStore } from '@repo/core/logic';
 

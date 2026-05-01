@@ -5,7 +5,8 @@
  */
 
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { growthSignalsAPI, type StudentAttendance } from '@repo/core';
+import { growthSignalsAPI } from '@repo/core/api';
+import { StudentAttendance } from '@repo/core/logic';
 import { api } from '@repo/core/api';
 import { useStore } from '@repo/core/logic';
 

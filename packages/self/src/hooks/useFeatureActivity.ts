@@ -1,4 +1,4 @@
-import { usePermissions } from '@repo/core';
+import { usePermissions } from '@repo/core/logic';
 import { storage } from '@repo/core/native';;
 
 import { useCallback } from 'react';

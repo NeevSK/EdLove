@@ -5,7 +5,7 @@
  */
 
 // Types
-import type { AttendanceStatus, StudentAttendance } from '@repo/core';
+import { AttendanceStatus, StudentAttendance } from '@repo/core/logic';
 import { Check, Clock, Search, X } from '@repo/ui/icons';
 import { Box, Input } from '@repo/ui/primitives';
 import { HStack, Heading, Icon, InputField, Text, VStack } from '@repo/ui/primitives';
