@@ -17,7 +17,7 @@ export { useGroupCreation } from './useGroupCreation';
 export { useGuardedNavigation } from './useGuardedNavigation';
 export { useJourneyHistory } from './useJourneyHistory';
 export { useManualSnapshot } from './useManualSnapshot';
-export { useMediaDownloader } from './useMediaDownloader';
+export { useMediaDownloader, type DownloadState } from './useMediaDownloader';
 export { useNaturePaths } from './useNaturePaths';
 export { type AppNotification, useNotifications } from './useNotifications';
 export { usePendingActions } from './usePendingActions';

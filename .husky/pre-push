@@ -1,16 +1,21 @@
-# Pre-push sentinel for VS Code and CLI
-Write-Host ">>> Sovereign Sentinel: Validating Push Integrity..." -ForegroundColor Cyan
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
 
-$AuditCmd = "pnpm exec commitlint --from=HEAD~1 --to=HEAD; pnpm run check-types; pnpm run check:hygiene; pnpm run identity:check; pnpm dlx gitleaks detect --source . --verbose"
+echo ">>> Sovereign Sentinel: Validating Push Integrity..."
+
+# Run audit command via Node to ensure cross-platform PowerShell execution on Windows
+AuditCmd="pnpm exec commitlint --from=HEAD~1 --to=HEAD && pnpm run check-types && pnpm run check:hygiene && pnpm run identity:check && pnpm dlx gitleaks detect --source . --verbose"
 
 node scripts/sovereign-audit.mjs --cmd "$AuditCmd" --log "reports/push_audit.md"
 
-if ($LASTEXITCODE -ne 0) {
-    Write-Host "`n❌ PUSH REJECTED: Architectural or Quality Violations Detected." -ForegroundColor Red
-    Write-Host "📍 ACCESSIBLE REPORT: reports/push_audit.md" -ForegroundColor Yellow
-    Write-Host "💡 TIP: Review the report to see exact errors or run 'pnpm run check-all' to debug locally." -ForegroundColor Gray
+if [ $? -ne 0 ]; then
+    echo ""
+    echo "❌ PUSH REJECTED: Architectural or Quality Violations Detected."
+    echo "📍 ACCESSIBLE REPORT: reports/push_audit.md"
+    echo "💡 TIP: Review the report to see exact errors or run 'pnpm run check-all' to debug locally."
     exit 1
-}
+fi
 
-Write-Host "`n✅ PUSH APPROVED: Integrity Verified." -ForegroundColor Green
+echo ""
+echo "✅ PUSH APPROVED: Integrity Verified."
 exit 0
