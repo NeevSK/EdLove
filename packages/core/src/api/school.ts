@@ -8,10 +8,10 @@ import {
   SchoolStatsSchema,
   SectionSchema,
 } from '../logic/schemas/school.schema';
-import { supabase } from './supabase';
 import type { SchoolGrade as Grade, School, SchoolStats, Section } from '../types';
 import { APIError } from '../types/API';
 import { operationsContract } from './operations.contract';
+import { supabase } from './supabase';
 
 /**
  * API methods for Managing School Institutions.
@@ -24,8 +24,8 @@ export const schoolAPI = {
    */
   async create(data: {
     name: string;
-    handle: string;
-    type: 'primary' | 'secondary' | 'mixed';
+    handle?: string | null;
+    type: string;
     created_by: string;
   }): Promise<School> {
     try {
@@ -34,7 +34,7 @@ export const schoolAPI = {
         .insert([
           {
             name: data.name,
-            handle: data.handle,
+            handle: data.handle ?? null,
             type: data.type,
             created_by: data.created_by,
             is_sample: false,
@@ -59,6 +59,30 @@ export const schoolAPI = {
     } catch (error: any) {
       throw new APIError('Failed to create school', 'CREATE_FAILED', error);
     }
+  },
+
+  /**
+   * Initializes a personal workspace for a user.
+   */
+  async initializePersonalWorkspace(userId: string, name: string): Promise<string | null> {
+    const schoolName = `${name}'s Workspace`;
+    
+    const { data: schoolData, error: schoolError } = await supabase
+      .from('schools')
+      .insert({
+        name: schoolName,
+        type: 'personal_workspace',
+        created_by: userId,
+      })
+      .select()
+      .single();
+
+    if (schoolError) {
+      console.warn('⚠️ [SchoolAPI] Workspace creation failed:', schoolError.message);
+      return null;
+    }
+
+    return schoolData?.id || null;
   },
 
   /**

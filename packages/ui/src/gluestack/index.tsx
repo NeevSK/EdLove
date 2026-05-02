@@ -51,7 +51,10 @@ export * from '../components/ui/linear-gradient';
 export * from '../components/ui/modal';
 export * from '../components/ui/overlay';
 export * from '../components/ui/portal';
-export { Spinner, Spinner as ActivityIndicator } from '../components/ui/spinner';
+export {
+  Spinner,
+  Spinner as ActivityIndicator,
+} from '../components/ui/spinner';
 export * from '../components/ui/toast';
 
 // Hooks

@@ -1,16 +1,16 @@
 {
-  "compilerOptions": {
-    "target": "ESNext",
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
-    "lib": ["ESNext"],
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "baseUrl": ".",
-    "paths": {
-      "zenstack/*": ["./zenstack/*"]
-    }
-  },
-  "include": ["src/**/*", "zenstack/**/*"]
+	"compilerOptions": {
+		"target": "ESNext",
+		"module": "ESNext",
+		"moduleResolution": "Bundler",
+		"lib": ["ESNext"],
+		"strict": true,
+		"esModuleInterop": true,
+		"skipLibCheck": true,
+		"baseUrl": ".",
+		"paths": {
+			"zenstack/*": ["./zenstack/*"]
+		}
+	},
+	"include": ["src/**/*", "zenstack/**/*"]
 }

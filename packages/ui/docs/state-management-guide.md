@@ -17,7 +17,7 @@ To achieve peak architectural elegance, you must choose the right tool for the e
 
 | State Type | Primary Tool | Example Use Case | Rule of Thumb |
 | :--- | :--- | :--- | :--- |
-| **Trivial Local** | `useState` | Simple toggles, single input controlled text. | Max 2 per component. If you need 3, upgrade to `useReducer`. |
+| **Trivial Local** | `useState` | Simple toggles, single input controlled text. | Max 3 per component (**Strictly Enforced**). If you need 4+, upgrade to `useReducer`. |
 | **Complex Local** | `useReducer` | Multi-step modals (`StudentAnalysisModal`), dependent loading states. | The foundation of the "10 Pillars" component architecture. |
 | **Shared / Global** | `Zustand` | User Identity (`useAuthStore`), Application Lifecycle. | Use Sovereign Slices. Always consume with atomic selectors. |
 | **Dependency Injection** | `Context API` | Theming (`CircadianProvider`), static config, translations. | Never use for rapidly changing data (>1Hz frequency). |
@@ -149,7 +149,7 @@ Upgrade legacy `useState` + `useEffect` chains to the **Action Suite** for bette
 
 ### The "April 2026" Check
 *   **Is it Deterministic?** Can you predict every re-render?
-*   **Is it Minimal?** Are you using `useReducer` or `useActionState` for interdependent state?
+*   **Is it Minimal?** Are you using `useReducer` or `useActionState` for interdependent state? (Max 3 `useState` calls enforced by `local/max-use-state`).
 *   **Is it Isolated?** Does a change in this hook trigger re-renders in distant, unrelated nodes?
 *   **Is it an Effect?** If you're using `useEffect` to synchronize data, can it be **Derived State** instead?
 

@@ -1,4 +1,4 @@
-import * as Gifted from 'react-native-gifted-charts';
+import * as Gifted from "react-native-gifted-charts";
 
 // Re-export components with any-casting to bypass TS2724 resolution issues in some contexts
 // The library definitely exports these (verified in node_modules), but TSC sometimes trips up

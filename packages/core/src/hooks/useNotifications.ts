@@ -6,7 +6,7 @@
  * Gracefully degrades on DB error (returns empty array).
  */
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { supabase } from '../api/supabase';
 
 export interface AppNotification {
@@ -74,7 +74,9 @@ export function useNotifications(userId: string | null | undefined): UseNotifica
   }, [userId, loadUnreadCount]);
 
   useEffect(() => {
-    load();
+    load().catch((e) => {
+      console.error('Notifications: Failed to load on mount', e);
+    });
   }, [load]);
 
   // Real-time subscription  new notifications arrive instantly without polling
@@ -125,7 +127,9 @@ export function useNotifications(userId: string | null | undefined): UseNotifica
       .subscribe();
 
     return () => {
-      supabase.removeChannel(channel);
+      supabase.removeChannel(channel).catch((e) => {
+        console.error('Notifications: Failed to remove channel during cleanup', e);
+      });
     };
   }, [userId, loadUnreadCount]);
 
@@ -156,5 +160,15 @@ export function useNotifications(userId: string | null | undefined): UseNotifica
     setUnreadCount(0);
   }, [userId]);
 
-  return { notifications, unreadCount, isLoading, markAsRead, markAllRead, refresh: load };
+  return useMemo(
+    () => ({
+      notifications,
+      unreadCount,
+      isLoading,
+      markAsRead,
+      markAllRead,
+      refresh: load,
+    }),
+    [notifications, unreadCount, isLoading, markAsRead, markAllRead, load],
+  );
 }

@@ -1,6 +1,6 @@
 import { createSupabaseWorkspaceLayoutRepository } from '../../adapters/supabase/workspaceLayoutRepository';
+import { supabase } from '../supabase';
 import { createWorkspaceLayoutServices } from '../../logic/domains/workspaceLayout/services';
-import { supabase } from '../../api/supabase';
 
 const workspaceLayoutRepository = createSupabaseWorkspaceLayoutRepository(supabase);
 

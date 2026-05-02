@@ -1,97 +1,133 @@
-import { api } from '@repo/core/api';
-import { useTeacherClassroom } from '@repo/core/hooks';
+import { api } from "@repo/core/api";
+import { useTeacherClassroom } from "@repo/core/hooks";
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { workspaceLayoutServices } from "@repo/core/api/runtimes/workspaceLayout.runtime";
+import type { WorkspaceLayoutRecord } from "@repo/core/logic/schemas/workspace-layout.schema";
+import { Platform } from "react-native";
 
 type TeacherObservation = Awaited<
-  ReturnType<typeof api.teacherInsights.listStudentObservations>
+	ReturnType<typeof api.teacherInsights.listStudentObservations>
 >[number];
 
 export function useTeacherClassroomWorkspaceData(classroomId: string) {
-  const classroomState = useTeacherClassroom(classroomId);
-  const [assignments, setAssignments] = useState<any[]>([]);
-  const [lessons, setLessons] = useState<any[]>([]);
-  const [materials, setMaterials] = useState<any[]>([]);
-  const [observations, setObservations] = useState<TeacherObservation[]>([]);
-  const [noteCount, setNoteCount] = useState(0);
-  const [isWorkspaceLoading, setIsWorkspaceLoading] = useState(true);
-  const [workspaceError, setWorkspaceError] = useState<Error | null>(null);
+	const classroomState = useTeacherClassroom(classroomId);
+	const [assignments, setAssignments] = useState<any[]>([]);
+	const [lessons, setLessons] = useState<any[]>([]);
+	const [materials, setMaterials] = useState<any[]>([]);
+	const [observations, setObservations] = useState<TeacherObservation[]>([]);
+	const [noteCount, setNoteCount] = useState(0);
+	const [isWorkspaceLoading, setIsWorkspaceLoading] = useState(true);
+	const [workspaceError, setWorkspaceError] = useState<Error | null>(null);
+	const [layout, setLayout] = useState<WorkspaceLayoutRecord | null>(null);
 
-  const refreshWorkspace = useCallback(async () => {
-    if (!classroomId) {
-      setAssignments([]);
-      setLessons([]);
-      setMaterials([]);
-      setObservations([]);
-      setNoteCount(0);
-      setIsWorkspaceLoading(false);
-      return;
-    }
+	const layoutTarget = Platform.OS === 'web' ? 'web' : 'mobile';
 
-    setIsWorkspaceLoading(true);
-    setWorkspaceError(null);
+	const refreshWorkspace = useCallback(async () => {
+		if (!classroomId) {
+			setAssignments([]);
+			setLessons([]);
+			setMaterials([]);
+			setObservations([]);
+			setNoteCount(0);
+			setIsWorkspaceLoading(false);
+			return;
+		}
 
-    try {
-      const [assignmentData, lessonData, materialData, observationData, notes] = await Promise.all([
-        api.assignments.getAll(classroomId),
-        api.lessons.getAll(classroomId),
-        api.lessonMaterials.getAll(classroomId),
-        api.teacherInsights.listStudentObservations(classroomId),
-        api.classroomNotes.getAll(classroomId),
-      ]);
+		setIsWorkspaceLoading(true);
+		setWorkspaceError(null);
 
-      setAssignments(assignmentData || []);
-      setLessons(lessonData || []);
-      setMaterials(materialData || []);
-      setObservations(observationData || []);
-      setNoteCount(notes.length);
-    } catch (error) {
-      console.error('[useTeacherClassroomWorkspaceData] Failed to load workspace data:', error);
-      setWorkspaceError(error instanceof Error ? error : new Error(String(error)));
-    } finally {
-      setIsWorkspaceLoading(false);
-    }
-  }, [classroomId]);
+		try {
+			const [assignmentData, lessonData, materialData, observationData, notes] =
+				await Promise.all([
+					api.assignments.getAll(classroomId),
+					api.lessons.getAll(classroomId),
+					api.lessonMaterials.getAll(classroomId),
+					api.teacherInsights.listStudentObservations(classroomId),
+					api.classroomNotes.getAll(classroomId),
+					workspaceLayoutServices.getLayout(context.userId || "", classroomId, layoutTarget),
+				]);
 
-  useEffect(() => {
-    void refreshWorkspace();
-  }, [refreshWorkspace]);
+			setAssignments(assignmentData || []);
+			setLessons(lessonData || []);
+			setMaterials(materialData || []);
+			setObservations(observationData || []);
+			setNoteCount(notes.length);
+			setLayout(layoutData);
+		} catch (error) {
+			console.error(
+				"[useTeacherClassroomWorkspaceData] Failed to load workspace data:",
+				error,
+			);
+			setWorkspaceError(
+				error instanceof Error ? error : new Error(String(error)),
+			);
+		} finally {
+			setIsWorkspaceLoading(false);
+		}
+	}, [classroomId, layoutTarget, classroomState.context.userId]);
 
-  const summary = useMemo(() => {
-    const concernCount = observations.filter((item) => item.observation_type === 'concern').length;
-    const positiveCount = observations.filter(
-      (item) => item.observation_type === 'positive',
-    ).length;
+	const updateLayout = useCallback(async (newOrder: string[]) => {
+		if (!layout || !classroomState.context.userId) return;
 
-    return {
-      studentCount: classroomState.students.length,
-      assignmentCount: assignments.length,
-      lessonCount: lessons.length,
-      materialCount: materials.length,
-      observationCount: observations.length,
-      concernCount,
-      positiveCount,
-      noteCount,
-    };
-  }, [
-    assignments.length,
-    classroomState.students.length,
-    lessons.length,
-    materials.length,
-    noteCount,
-    observations,
-  ]);
+		const updated = await workspaceLayoutServices.upsertLayout({
+			userId: classroomState.context.userId,
+			workspaceId: classroomId,
+			layoutTarget,
+			order: newOrder,
+			hidden: layout.hidden,
+			pinned: layout.pinned,
+			zoneBySurface: layout.zone_by_surface,
+			layoutVersion: layout.layout_version,
+			updatedAt: new Date().toISOString(),
+		});
 
-  return {
-    ...classroomState,
-    assignments,
-    lessons,
-    materials,
-    noteCount,
-    observations,
-    summary,
-    workspaceError,
-    isLoading: classroomState.loading || isWorkspaceLoading,
-    refreshWorkspace,
-  };
+		setLayout(updated);
+	}, [layout, classroomId, layoutTarget, classroomState.context.userId]);
+
+	useEffect(() => {
+		void refreshWorkspace();
+	}, [refreshWorkspace]);
+
+	const summary = useMemo(() => {
+		const concernCount = observations.filter(
+			(item) => item.observation_type === "concern",
+		).length;
+		const positiveCount = observations.filter(
+			(item) => item.observation_type === "positive",
+		).length;
+
+		return {
+			studentCount: classroomState.students.length,
+			assignmentCount: assignments.length,
+			lessonCount: lessons.length,
+			materialCount: materials.length,
+			observationCount: observations.length,
+			concernCount,
+			positiveCount,
+			noteCount,
+		};
+	}, [
+		assignments.length,
+		classroomState.students.length,
+		lessons.length,
+		materials.length,
+		noteCount,
+		observations,
+	]);
+
+	return {
+		...classroomState,
+		assignments,
+		lessons,
+		materials,
+		noteCount,
+		observations,
+		summary,
+		workspaceError,
+		layout,
+		isLoading: classroomState.loading || isWorkspaceLoading,
+		refreshWorkspace,
+		updateLayout,
+	};
 }

@@ -1,5 +1,5 @@
 import type { ClassroomGroup as ClassroomGroupRecord } from '../logic/schemas/classroom.schema';
-import { educationalServices } from '../native/runtimes/educational.runtime';
+import { educationalServices } from './runtimes/educational.runtime';
 import { educationalContract } from './educational.contract';
 
 export type ClassroomGroup = ClassroomGroupRecord;

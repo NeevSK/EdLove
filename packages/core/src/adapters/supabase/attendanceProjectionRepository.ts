@@ -39,7 +39,11 @@ export const createSupabaseAttendanceProjectionRepository = (
     classroomId?: string,
     viewDate?: string,
   ): Promise<SchoolAttendancePulse> {
-    const empty: SchoolAttendancePulse = { todayRate: 0, yesterdayRate: 0, atRiskCount: 0 };
+    const empty: SchoolAttendancePulse = {
+      todayRate: 0,
+      yesterdayRate: 0,
+      atRiskCount: 0,
+    };
 
     try {
       const targetDate = viewDate || todayISO();
@@ -97,7 +101,11 @@ export const createSupabaseAttendanceProjectionRepository = (
     endDate: string,
     classroomId?: string,
   ): Promise<AttendanceReport> {
-    const empty: AttendanceReport = { trend: [], overallRate: 0, totalAbsences: 0 };
+    const empty: AttendanceReport = {
+      trend: [],
+      overallRate: 0,
+      totalAbsences: 0,
+    };
 
     try {
       const classroomIds = await resolveClassroomIds(supabase, schoolId, classroomId);

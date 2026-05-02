@@ -1,6 +1,6 @@
 import { X } from 'lucide-react-native';
 import type React from 'react';
-import { Pressable } from 'react-native';
+import { Pressable } from '../primitives';
 import {
   HStack,
   Modal,

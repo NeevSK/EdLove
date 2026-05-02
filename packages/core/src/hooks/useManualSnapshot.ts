@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { usePermissions } from '../logic/permissions/hooks/usePermissions';
+import { useMemo, useState } from 'react';
 import { supabase } from '../api/supabase';
+import { usePermissions } from '../logic/permissions/hooks/usePermissions';
 import { useTemporalStore } from '../store/useTemporalStore';
 import { useTracking } from './useTracking';
 
@@ -56,7 +56,9 @@ export function useManualSnapshot() {
       if (error) throw error;
 
       // Analytics
-      trackSnapshot(label, viewDate);
+      trackSnapshot(label, viewDate).catch((e) => {
+        console.error('Snapshot: Failed to track analytics', e);
+      });
 
       if (!data) return null;
 
@@ -72,8 +74,11 @@ export function useManualSnapshot() {
     }
   };
 
-  return {
-    takeSnapshot,
-    isSaving,
-  };
+  return useMemo(
+    () => ({
+      takeSnapshot,
+      isSaving,
+    }),
+    [takeSnapshot, isSaving],
+  );
 }

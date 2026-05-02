@@ -51,14 +51,26 @@ export const QRBuilder = {
    * Scanning pre-fills or auto-applies the invite code during onboarding.
    */
   invite: (invite_code: string, school_id: string, authority: string): string =>
-    buildQRString({ v: 1, action: 'claim_invite', invite_code, school_id, authority }),
+    buildQRString({
+      v: 1,
+      action: 'claim_invite',
+      invite_code,
+      school_id,
+      authority,
+    }),
 
   /**
    * Personal referral QR shown on back of user identity card.
    * Scanning tracks inviter attribution; recipient gets onboarding context.
    */
   userInvite: (inviter_id: string, inviter_authority: string, username?: string): string =>
-    buildQRString({ v: 1, action: 'user_invite', inviter_id, inviter_authority, username }),
+    buildQRString({
+      v: 1,
+      action: 'user_invite',
+      inviter_id,
+      inviter_authority,
+      username,
+    }),
 
   /**
    * One-time Thuthimal (Flower of Gratitude) Pro gift QR.
@@ -73,5 +85,12 @@ export const QRBuilder = {
    * Used for sharing documents, videos, and collections.
    */
   resource: (resource_id: string, resource_type: string, title: string, url?: string): string =>
-    buildQRString({ v: 1, action: 'share_resource', resource_id, resource_type, title, url }),
+    buildQRString({
+      v: 1,
+      action: 'share_resource',
+      resource_id,
+      resource_type,
+      title,
+      url,
+    }),
 };

@@ -1,6 +1,6 @@
 import { Flower } from 'lucide-react-native';
 import { useEffect } from 'react';
-import { ActivityIndicator } from 'react-native';
+import { ActivityIndicator } from '../primitives';
 import Animated, {
   Easing,
   useAnimatedStyle,

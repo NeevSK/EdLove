@@ -16,11 +16,11 @@
     "FacetedProfile": {
       "type": "object",
       "properties": {
-        "school_id": { "type": ["string", "null"] },
+        "school_id": { "type": ["string", "null"], "format": "uuid" },
         "profile_completed": { "type": "boolean" },
         "role": { "type": "string" },
         "full_name": { "type": "string" },
-        "email": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
         "platform_roles": { "type": "array", "items": { "type": "string" } },
         "school_role": { "type": "string" },
         "work_roles": { "type": "array", "items": { "type": "string" } },

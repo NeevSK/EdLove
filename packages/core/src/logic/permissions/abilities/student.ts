@@ -6,7 +6,9 @@ export const defineStudentAbilities = (user: UserContext, { can }: AbilityBuilde
   if (!user.schoolId) return; // 2nd class citizen - handled in composer.ts
 
   can('read', 'School', { id: user.schoolId } as any);
-  can('read', 'Classroom', { members: { $elemMatch: { user_id: user.userId } } } as any);
+  can('read', 'Classroom', {
+    members: { $elemMatch: { user_id: user.userId } },
+  } as any);
   can('read', 'StudentProfile', { user_id: user.userId } as any);
   can('update', 'StudentProfile', { user_id: user.userId } as any);
   can('read', 'StudentPulse');

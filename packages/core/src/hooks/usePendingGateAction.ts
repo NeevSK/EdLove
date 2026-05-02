@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { PendingGateAction } from '../lib/pendingGateAction';
 import {
   clearPendingGateAction,
@@ -36,8 +36,13 @@ export function usePendingGateAction(): UsePendingGateActionResult {
   }, []);
 
   useEffect(() => {
-    refresh();
+    refresh().catch((e) => {
+      console.error('PendingGateAction: Failed to load on mount', e);
+    });
   }, [refresh]);
 
-  return { action, isLoading, refresh, set, clear };
+  return useMemo(
+    () => ({ action, isLoading, refresh, set, clear }),
+    [action, isLoading, refresh, set, clear],
+  );
 }

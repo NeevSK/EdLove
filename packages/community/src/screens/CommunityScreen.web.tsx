@@ -1,623 +1,718 @@
-import { useNavigation } from '@react-navigation/native';
-import { usePermissions } from '@repo/core/logic';
-import { communityAPI } from '@repo/core/api';
-import { useManifestoHooks, useNotificationHooks } from '@repo/core/api/hooks';
-import { usePendingGateAction } from '@repo/core/hooks';
-import { setPendingGateAction, useStore } from '@repo/core/logic';
-import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
-import { Box } from '@repo/ui/primitives';
-import { Heading, Icon, Spinner, Text, VStack } from '@repo/ui/primitives';
-import { WebScreenHeader } from '@repo/ui/components/WebScreenHeader.web';
-import { Bell, Compass, Info, Plus, Shield, Users2 } from '@repo/ui/icons';
-import { useEffect, useMemo, useState } from 'react';
-import { CommentSheet } from '../components/CommentSheet';
-import CommunityHearth from '../components/CommunityHearth';
-import CreateGroupModal from '../components/CreateGroupModal';
-import CreatePostModal from '../components/CreatePostModal';
-import PostCard from '../components/PostCard';
-import { useCommunity } from '../hooks/useCommunity';
-import { useCommunityGroups } from '../hooks/useCommunityGroups';
-import type { AnnouncementWithAuthor, CommunityPost, DirectConversation } from '../types';
-import AnnouncementsScreen from './AnnouncementsScreen';
+import { useNavigation } from "@react-navigation/native";
+import { communityAPI } from "@repo/core/api";
+import { useManifestoHooks, useNotificationHooks } from "@repo/core/api/hooks";
+import { usePendingGateAction } from "@repo/core/hooks";
 import {
-  type CommunityWorkspaceMode,
-  deriveCommunityPulse,
-  getCommunityFilterOptions,
-  getCommunityModeOptions,
-  getCommunityQuickPaths,
-  mapCommunitySurfaceSlots,
-} from './communityWorkspace.shared';
+	setPendingGateAction,
+	usePermissions,
+	useStore,
+} from "@repo/core/logic";
+import PositiveInvitation from "@repo/ui/components/PositiveInvitation";
+import { WebScreenHeader } from "@repo/ui/components/WebScreenHeader.web";
+import { Bell, Compass, Info, Plus, Shield, Users2 } from "@repo/ui/icons";
+import { Box, Heading, Icon, Spinner, Text, VStack } from "@repo/ui/primitives";
+import { useEffect, useMemo, useState } from "react";
+import { CommentSheet } from "../components/CommentSheet";
+import CommunityHearth from "../components/CommunityHearth";
+import CreateGroupModal from "../components/CreateGroupModal";
+import CreatePostModal from "../components/CreatePostModal";
+import PostCard from "../components/PostCard";
+import { useCommunity } from "../hooks/useCommunity";
+import { useCommunityGroups } from "../hooks/useCommunityGroups";
+import type {
+	AnnouncementWithAuthor,
+	CommunityPost,
+	DirectConversation,
+} from "../types";
+import AnnouncementsScreen from "./AnnouncementsScreen";
+import {
+	type CommunityWorkspaceMode,
+	deriveCommunityPulse,
+	getCommunityFilterOptions,
+	getCommunityModeOptions,
+	getCommunityQuickPaths,
+	mapCommunitySurfaceSlots,
+} from "./communityWorkspace.shared";
 
 export default function CommunityScreenWeb() {
-  const navigation = useNavigation<any>();
-  const { can } = usePermissions();
-  const { user, flags } = useStore();
-  const { isCommunityEnabled, isMessagingEnabled, isSocialShieldEnabled } = flags;
-  const pending = usePendingGateAction();
-  const { unreadCount } = useNotificationHooks();
+	const navigation = useNavigation<any>();
+	const { can } = usePermissions();
+	const { user, flags } = useStore();
+	const { isCommunityEnabled, isMessagingEnabled, isSocialShieldEnabled } =
+		flags;
+	const pending = usePendingGateAction();
+	const { unreadCount } = useNotificationHooks();
 
-  const userId = user?.id ?? 'guest';
-  const schoolId = user?.school_id ?? undefined;
-  const userAuthority = (user?.authority as any) ?? 'student';
+	const userId = user?.id ?? "guest";
+	const schoolId = user?.school_id ?? undefined;
+	const userAuthority = (user?.authority as any) ?? "student";
 
-  const canReadFeed = can('read', 'CommunityFeed');
-  const canReadGroups = can('read', 'CommunityGroups');
-  const canReadMessages = can('read', 'DirectMessages');
-  const canCreatePost = can('create', 'Post');
-  const canCreateGroup = can('create', 'Group');
-  const canReadAnnouncements = Boolean(schoolId) && can('read', 'Group');
+	const canReadFeed = can("read", "CommunityFeed");
+	const canReadGroups = can("read", "CommunityGroups");
+	const canReadMessages = can("read", "DirectMessages");
+	const canCreatePost = can("create", "Post");
+	const canCreateGroup = can("create", "Group");
+	const canReadAnnouncements = Boolean(schoolId) && can("read", "Group");
 
-  const [activeMode, setActiveMode] = useState<CommunityWorkspaceMode>('feed');
-  const [selectedFilter, setSelectedFilter] = useState<string>('all');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [showCreatePost, setShowCreatePost] = useState(false);
-  const [showCreateGroup, setShowCreateGroup] = useState(false);
-  const [commentPostId, setCommentPostId] = useState<string | null>(null);
-  const [commentPostAuthorId, setCommentPostAuthorId] = useState<string | undefined>(undefined);
-  const [commentPostType, setCommentPostType] = useState<string | undefined>(undefined);
-  const [conversations, setConversations] = useState<DirectConversation[]>([]);
-  const [loadingMessages, setLoadingMessages] = useState(false);
-  const [_announcementCount, setAnnouncementCount] = useState(0);
+	const [activeMode, setActiveMode] = useState<CommunityWorkspaceMode>("feed");
+	const [selectedFilter, setSelectedFilter] = useState<string>("all");
+	const [searchQuery, setSearchQuery] = useState("");
+	const [showCreatePost, setShowCreatePost] = useState(false);
+	const [showCreateGroup, setShowCreateGroup] = useState(false);
+	const [commentPostId, setCommentPostId] = useState<string | null>(null);
+	const [commentPostAuthorId, setCommentPostAuthorId] = useState<
+		string | undefined
+	>(undefined);
+	const [commentPostType, setCommentPostType] = useState<string | undefined>(
+		undefined,
+	);
+	const [conversations, setConversations] = useState<DirectConversation[]>([]);
+	const [loadingMessages, setLoadingMessages] = useState(false);
+	const [_announcementCount, setAnnouncementCount] = useState(0);
 
-  const { posts, isLoadingPosts, fetchPosts, fetchGroups } = useCommunity(
-    selectedFilter !== 'all' ? selectedFilter : undefined,
-  );
+	const { posts, isLoadingPosts, fetchPosts, fetchGroups } = useCommunity(
+		selectedFilter !== "all" ? selectedFilter : undefined,
+	);
 
-  if (!isCommunityEnabled) {
-    return (
-      <Box className="flex-1 bg-phase-canvas">
-        <WebScreenHeader title="Community" />
-        <Box className="flex-1 items-center justify-center p-12">
-          <VStack space="xl" className="items-center max-w-md">
-            <Box className="w-16 h-16 bg-phase-warning/10 rounded-full items-center justify-center">
-              <Icon as={Info} size="xl" className="text-phase-warning" />
-            </Box>
-            <Heading className="text-center">Sanctuary Maintenance</Heading>
-            <Text className="text-center text-phase-text-secondary">
-              The community spaces are currently undergoing a structural expansion. Please check
-              back soon for a calmer, more resonant experience.
-            </Text>
-          </VStack>
-        </Box>
-      </Box>
-    );
-  }
+	if (!isCommunityEnabled) {
+		return (
+			<Box className="flex-1 bg-phase-canvas">
+				<WebScreenHeader title="Community" />
+				<Box className="flex-1 items-center justify-center p-12">
+					<VStack space="xl" className="items-center max-w-md">
+						<Box className="w-16 h-16 bg-phase-warning/10 rounded-full items-center justify-center">
+							<Icon as={Info} size="xl" className="text-phase-warning" />
+						</Box>
+						<Heading className="text-center">Sanctuary Maintenance</Heading>
+						<Text className="text-center text-phase-text-secondary">
+							The community spaces are currently undergoing a structural
+							expansion. Please check back soon for a calmer, more resonant
+							experience.
+						</Text>
+					</VStack>
+				</Box>
+			</Box>
+		);
+	}
 
-  const { sanctuaryGroups, galaxyGroups } = useCommunityGroups({ schoolId, searchQuery });
-  const { manifestos } = useManifestoHooks(schoolId, user?.id);
+	const { sanctuaryGroups, galaxyGroups } = useCommunityGroups({
+		schoolId,
+		searchQuery,
+	});
+	const { manifestos } = useManifestoHooks(schoolId, user?.id);
 
-  const slots = useMemo(() => mapCommunitySurfaceSlots('web', userId), [userId]);
-  const pulse = useMemo(
-    () =>
-      deriveCommunityPulse(
-        posts as CommunityPost[],
-        [...sanctuaryGroups, ...galaxyGroups],
-        manifestos,
-        conversations,
-      ),
-    [conversations, galaxyGroups, manifestos, posts, sanctuaryGroups],
-  );
-  const filters = useMemo(
-    () => getCommunityFilterOptions([...sanctuaryGroups, ...galaxyGroups]),
-    [galaxyGroups, sanctuaryGroups],
-  );
-  const modeOptions = useMemo(
-    () => getCommunityModeOptions(canReadAnnouncements, isMessagingEnabled),
-    [canReadAnnouncements, isMessagingEnabled],
-  );
-  const quickPaths = useMemo(
-    () => getCommunityQuickPaths(canReadAnnouncements),
-    [canReadAnnouncements],
-  );
+	const slots = useMemo(
+		() => mapCommunitySurfaceSlots("web", userId),
+		[userId],
+	);
+	const pulse = useMemo(
+		() =>
+			deriveCommunityPulse(
+				posts as unknown as CommunityPost[],
+				[...sanctuaryGroups, ...galaxyGroups],
+				manifestos,
+				conversations,
+			),
+		[conversations, galaxyGroups, manifestos, posts, sanctuaryGroups],
+	);
+	const filters = useMemo(
+		() => getCommunityFilterOptions([...sanctuaryGroups, ...galaxyGroups]),
+		[galaxyGroups, sanctuaryGroups],
+	);
+	const modeOptions = useMemo(
+		() => getCommunityModeOptions(canReadAnnouncements, isMessagingEnabled),
+		[canReadAnnouncements, isMessagingEnabled],
+	);
+	const quickPaths = useMemo(
+		() => getCommunityQuickPaths(canReadAnnouncements),
+		[canReadAnnouncements],
+	);
 
-  const filteredPosts = useMemo(() => {
-    const query = searchQuery.trim().toLowerCase();
-    if (!query) return posts;
-    return posts.filter(
-      (post: any) =>
-        post.content?.toLowerCase().includes(query) ||
-        post.author_name?.toLowerCase().includes(query) ||
-        post.group_name?.toLowerCase().includes(query) ||
-        post.tags?.some((tag: string) => tag.toLowerCase().includes(query)),
-    );
-  }, [posts, searchQuery]);
+	const filteredPosts = useMemo(() => {
+		const query = searchQuery.trim().toLowerCase();
+		if (!query) return posts;
+		return posts.filter(
+			(post: any) =>
+				post.content?.toLowerCase().includes(query) ||
+				post.author_name?.toLowerCase().includes(query) ||
+				post.group_name?.toLowerCase().includes(query) ||
+				post.tags?.some((tag: string) => tag.toLowerCase().includes(query)),
+		);
+	}, [posts, searchQuery]);
 
-  useEffect(() => {
-    if (!pending.action) return;
-    if (pending.action.kind === 'community_open_create_group' && canCreateGroup) {
-      setShowCreateGroup(true);
-      pending.clear().catch(() => {});
-    }
-  }, [canCreateGroup, pending]);
+	useEffect(() => {
+		if (!pending.action) return;
+		if (
+			pending.action.kind === "community_open_create_group" &&
+			canCreateGroup
+		) {
+			setShowCreateGroup(true);
+			pending.clear().catch(() => {});
+		}
+	}, [canCreateGroup, pending]);
 
-  useEffect(() => {
-    if (activeMode !== 'messages' || !canReadMessages) return;
-    let cancelled = false;
-    setLoadingMessages(true);
-    communityAPI
-      .getDirectConversations()
-      .then((data) => {
-        if (!cancelled) setConversations(data as DirectConversation[]);
-      })
-      .catch((error) => {
-        console.error('[CommunityScreen.web] Failed to load direct conversations', error);
-      })
-      .finally(() => {
-        if (!cancelled) setLoadingMessages(false);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [activeMode, canReadMessages]);
+	useEffect(() => {
+		if (activeMode !== "messages" || !canReadMessages) return;
+		let cancelled = false;
+		setLoadingMessages(true);
+		communityAPI
+			.getDirectConversations()
+			.then((data) => {
+				if (!cancelled) setConversations(data as DirectConversation[]);
+			})
+			.catch((error) => {
+				console.error(
+					"[CommunityScreen.web] Failed to load direct conversations",
+					error,
+				);
+			})
+			.finally(() => {
+				if (!cancelled) setLoadingMessages(false);
+			});
+		return () => {
+			cancelled = true;
+		};
+	}, [activeMode, canReadMessages]);
 
-  useEffect(() => {
-    if (!canReadAnnouncements || !schoolId) return;
-    let cancelled = false;
-    communityAPI
-      .getAnnouncements(schoolId)
-      .then((data) => {
-        if (!cancelled) setAnnouncementCount((data as AnnouncementWithAuthor[]).length);
-      })
-      .catch((error) => {
-        console.error('[CommunityScreen.web] Failed to load announcements', error);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [canReadAnnouncements, schoolId]);
+	useEffect(() => {
+		if (!canReadAnnouncements || !schoolId) return;
+		let cancelled = false;
+		communityAPI
+			.getAnnouncements(schoolId)
+			.then((data) => {
+				if (!cancelled)
+					setAnnouncementCount((data as AnnouncementWithAuthor[]).length);
+			})
+			.catch((error) => {
+				console.error(
+					"[CommunityScreen.web] Failed to load announcements",
+					error,
+				);
+			});
+		return () => {
+			cancelled = true;
+		};
+	}, [canReadAnnouncements, schoolId]);
 
-  const openAuthFlow = () => {
-    setPendingGateAction({ kind: 'community_open_create_group', createdAt: Date.now() }).catch(
-      () => {},
-    );
-    navigation.navigate('Auth');
-  };
+	const openAuthFlow = () => {
+		setPendingGateAction({
+			kind: "community_open_create_group",
+			createdAt: Date.now(),
+		}).catch(() => {});
+		navigation.navigate("Auth");
+	};
 
-  const handleOpenGroup = (groupId: string, groupName?: string) => {
-    navigation.navigate('GroupDetails', { groupId, groupName });
-  };
+	const handleOpenGroup = (groupId: string, groupName?: string) => {
+		navigation.navigate("GroupDetails", { groupId, groupName });
+	};
 
-  const renderGuestGate = (title: string, description: string) => (
-    <div className="community-empty-card">
-      <PositiveInvitation
-        title={title}
-        description={description}
-        type="guest"
-        context="community"
-        actionLabel="Create account"
-        onAction={openAuthFlow}
-      />
-    </div>
-  );
+	const renderGuestGate = (title: string, description: string) => (
+		<div className="community-empty-card">
+			<PositiveInvitation
+				title={title}
+				description={description}
+				type="guest"
+				context="community"
+				actionLabel="Create account"
+				onAction={openAuthFlow}
+			/>
+		</div>
+	);
 
-  const renderPostStream = () => {
-    if (!canReadFeed) {
-      return renderGuestGate(
-        'The hearth opens with citizenship',
-        'Create an account to join circles, post with intention, and let your community feed emerge.',
-      );
-    }
+	const renderPostStream = () => {
+		if (!canReadFeed) {
+			return renderGuestGate(
+				"The hearth opens with citizenship",
+				"Create an account to join circles, post with intention, and let your community feed emerge.",
+			);
+		}
 
-    if (isLoadingPosts) {
-      return (
-        <div className="community-empty-card" style={{ textAlign: 'center', padding: '48px 24px' }}>
-          <Spinner />
-        </div>
-      );
-    }
+		if (isLoadingPosts) {
+			return (
+				<div
+					className="community-empty-card"
+					style={{ textAlign: "center", padding: "48px 24px" }}
+				>
+					<Spinner />
+				</div>
+			);
+		}
 
-    if (filteredPosts.length === 0) {
-      return (
-        <div className="community-empty-card">
-          <h3>Start the next note</h3>
-          <p>Your circles are ready for a first post, question, or shared resource.</p>
-          <button
-            className="premium-button"
-            onClick={() => (canCreatePost ? setShowCreatePost(true) : openAuthFlow())}
-          >
-            {canCreatePost ? 'New Post' : 'Create account'}
-          </button>
-        </div>
-      );
-    }
+		if (filteredPosts.length === 0) {
+			return (
+				<div className="community-empty-card">
+					<h3>Start the next note</h3>
+					<p>
+						Your circles are ready for a first post, question, or shared
+						resource.
+					</p>
+					<button
+						className="premium-button"
+						onClick={() =>
+							canCreatePost ? setShowCreatePost(true) : openAuthFlow()
+						}
+					>
+						{canCreatePost ? "New Post" : "Create account"}
+					</button>
+				</div>
+			);
+		}
 
-    return filteredPosts.map((post: any) => (
-      <PostCard
-        key={post.id}
-        post={post}
-        currentUserId={user?.id}
-        isSocialShieldEnabled={isSocialShieldEnabled}
-        onPress={() => {
-          if (post.group_id) handleOpenGroup(post.group_id, post.group_name ?? 'Circle');
-        }}
-        onLike={() => {
-          if (user?.id) communityAPI.togglePostReaction(post.id, user.id).catch(console.error);
-        }}
-        onComment={() => {
-          setCommentPostId(post.id);
-          setCommentPostAuthorId(post.author_id ?? undefined);
-          setCommentPostType(post.post_type);
-        }}
-        onAuthorPress={() => {
-          if (post.author_id && !post.is_anonymous && navigation?.navigate) {
-            navigation.navigate('PublicProfile', {
-              id: post.author_id,
-              type: 'user',
-            });
-          }
-        }}
-      />
-    ));
-  };
+		return filteredPosts.map((post: any) => (
+			<PostCard
+				key={post.id}
+				post={post}
+				currentUserId={user?.id}
+				isSocialShieldEnabled={isSocialShieldEnabled}
+				onPress={() => {
+					if (post.group_id)
+						handleOpenGroup(post.group_id, post.group_name ?? "Circle");
+				}}
+				onLike={() => {
+					if (user?.id)
+						communityAPI
+							.togglePostReaction(post.id, user.id)
+							.catch(console.error);
+				}}
+				onComment={() => {
+					setCommentPostId(post.id);
+					setCommentPostAuthorId(post.author_id ?? undefined);
+					setCommentPostType(post.post_type);
+				}}
+				onAuthorPress={() => {
+					if (post.author_id && !post.is_anonymous && navigation?.navigate) {
+						navigation.navigate("PublicProfile", {
+							id: post.author_id,
+							type: "user",
+						});
+					}
+				}}
+			/>
+		));
+	};
 
-  const renderCircles = () => {
-    if (!canReadGroups) {
-      return renderGuestGate(
-        'Circles are part of belonging',
-        'Create an account to discover groups, join your sanctuary circles, and contribute to shared resonance.',
-      );
-    }
+	const renderCircles = () => {
+		if (!canReadGroups) {
+			return renderGuestGate(
+				"Circles are part of belonging",
+				"Create an account to discover groups, join your sanctuary circles, and contribute to shared resonance.",
+			);
+		}
 
-    const visibleGroups = searchQuery
-      ? [...sanctuaryGroups, ...galaxyGroups].filter(
-          (group) =>
-            group.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            group.description?.toLowerCase().includes(searchQuery.toLowerCase()),
-        )
-      : [...sanctuaryGroups, ...galaxyGroups];
+		const visibleGroups = searchQuery
+			? [...sanctuaryGroups, ...galaxyGroups].filter(
+					(group) =>
+						group.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+						group.description
+							?.toLowerCase()
+							.includes(searchQuery.toLowerCase()),
+				)
+			: [...sanctuaryGroups, ...galaxyGroups];
 
-    return (
-      <div className="community-circle-grid">
-        {visibleGroups.map((group: any) => (
-          <button
-            key={group.id}
-            className="community-circle-card"
-            onClick={() => handleOpenGroup(group.id, group.name)}
-          >
-            <div className="community-circle-avatar">{group.name.charAt(0).toUpperCase()}</div>
-            <div className="community-circle-copy">
-              <strong>{group.name}</strong>
-              <span>{group.description || 'Shared resonance and practical conversation.'}</span>
-              <small>{group.member_count} members</small>
-            </div>
-          </button>
-        ))}
-      </div>
-    );
-  };
+		return (
+			<div className="community-circle-grid">
+				{visibleGroups.map((group: any) => (
+					<button
+						key={group.id}
+						className="community-circle-card"
+						onClick={() => handleOpenGroup(group.id, group.name)}
+					>
+						<div className="community-circle-avatar">
+							{group.name.charAt(0).toUpperCase()}
+						</div>
+						<div className="community-circle-copy">
+							<strong>{group.name}</strong>
+							<span>
+								{group.description ||
+									"Shared resonance and practical conversation."}
+							</span>
+							<small>{group.member_count} members</small>
+						</div>
+					</button>
+				))}
+			</div>
+		);
+	};
 
-  const renderMessages = () => {
-    if (!canReadMessages) {
-      return renderGuestGate(
-        'Messages become available with citizenship',
-        'Create an account to continue 1:1 conversations from within the community shell.',
-      );
-    }
+	const renderMessages = () => {
+		if (!canReadMessages) {
+			return renderGuestGate(
+				"Messages become available with citizenship",
+				"Create an account to continue 1:1 conversations from within the community shell.",
+			);
+		}
 
-    if (loadingMessages) {
-      return (
-        <div className="community-empty-card" style={{ textAlign: 'center', padding: '48px 24px' }}>
-          <Spinner />
-        </div>
-      );
-    }
+		if (loadingMessages) {
+			return (
+				<div
+					className="community-empty-card"
+					style={{ textAlign: "center", padding: "48px 24px" }}
+				>
+					<Spinner />
+				</div>
+			);
+		}
 
-    if (conversations.length === 0) {
-      return (
-        <div className="community-empty-card">
-          <h3>No direct conversations yet</h3>
-          <p>Messages stay close by, but they only appear once you begin a 1:1 thread.</p>
-        </div>
-      );
-    }
+		if (conversations.length === 0) {
+			return (
+				<div className="community-empty-card">
+					<h3>No direct conversations yet</h3>
+					<p>
+						Messages stay close by, but they only appear once you begin a 1:1
+						thread.
+					</p>
+				</div>
+			);
+		}
 
-    return (
-      <div className="community-message-list">
-        {conversations.map((conversation) => (
-          <button
-            key={conversation.id}
-            className="community-message-row"
-            onClick={() => {
-              navigation.navigate('DirectMessage', {
-                conversationId: conversation.id,
-                userName: conversation.other_user_name,
-              });
-            }}
-          >
-            <div className="community-message-avatar">
-              {conversation.other_user_name
-                .split(' ')
-                .map((word) => word[0])
-                .join('')
-                .slice(0, 2)
-                .toUpperCase()}
-            </div>
-            <div className="community-message-copy">
-              <strong>{conversation.other_user_name}</strong>
-              <span>Continue the conversation from the hearth.</span>
-            </div>
-            <small>{new Date(conversation.updated_at).toLocaleDateString()}</small>
-          </button>
-        ))}
-      </div>
-    );
-  };
+		return (
+			<div className="community-message-list">
+				{conversations.map((conversation) => (
+					<button
+						key={conversation.id}
+						className="community-message-row"
+						onClick={() => {
+							navigation.navigate("DirectMessage", {
+								conversationId: conversation.id,
+								userName: conversation.other_user_name,
+							});
+						}}
+					>
+						<div className="community-message-avatar">
+							{conversation.other_user_name
+								.split(" ")
+								.map((word) => word[0])
+								.join("")
+								.slice(0, 2)
+								.toUpperCase()}
+						</div>
+						<div className="community-message-copy">
+							<strong>{conversation.other_user_name}</strong>
+							<span>Continue the conversation from the hearth.</span>
+						</div>
+						<small>
+							{new Date(conversation.updated_at).toLocaleDateString()}
+						</small>
+					</button>
+				))}
+			</div>
+		);
+	};
 
-  const renderAnnouncements = () => {
-    if (!canReadAnnouncements || !schoolId || !user?.id) {
-      return renderGuestGate(
-        'Announcements require school attachment',
-        'Attach to a sanctuary and accept your invitation to receive school-wide guidance here.',
-      );
-    }
+	const renderAnnouncements = () => {
+		if (!canReadAnnouncements || !schoolId || !user?.id) {
+			return renderGuestGate(
+				"Announcements require school attachment",
+				"Attach to a sanctuary and accept your invitation to receive school-wide guidance here.",
+			);
+		}
 
-    return (
-      <AnnouncementsScreen schoolId={schoolId} userId={user.id} userAuthority={userAuthority} />
-    );
-  };
+		return (
+			<AnnouncementsScreen
+				schoolId={schoolId}
+				userId={user.id}
+				userAuthority={userAuthority}
+			/>
+		);
+	};
 
-  const renderActiveSurface = () => {
-    switch (activeMode) {
-      case 'circles':
-        return renderCircles();
-      case 'messages':
-        return renderMessages();
-      case 'announcements':
-        return renderAnnouncements();
-      default:
-        return renderPostStream();
-    }
-  };
+	const renderActiveSurface = () => {
+		switch (activeMode) {
+			case "circles":
+				return renderCircles();
+			case "messages":
+				return renderMessages();
+			case "announcements":
+				return renderAnnouncements();
+			default:
+				return renderPostStream();
+		}
+	};
 
-  return (
-    <div className="sanctuary-screen community-screen">
-      <div className="sanctuary-container">
-        <WebScreenHeader
-          title="The Heart becomes the center of community."
-          note="Same capabilities, wiser order: pulse first, conversation second, circles and messages close by, trust visible but quiet."
-          timeText="Community workspace"
-          actions={
-            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-              <button
-                className="premium-button"
-                onClick={() => (canCreatePost ? setShowCreatePost(true) : openAuthFlow())}
-              >
-                <Plus size={15} />
-                New Post
-              </button>
-              <button
-                className="secondary-button"
-                onClick={() => (canCreateGroup ? setShowCreateGroup(true) : openAuthFlow())}
-              >
-                <Users2 size={15} />
-                New Group
-              </button>
-              <button className="secondary-button" aria-label="Notifications">
-                <Bell size={15} />
-                {unreadCount > 0 ? `${unreadCount}` : '0'}
-              </button>
-            </div>
-          }
-        />
+	return (
+		<div className="sanctuary-screen community-screen">
+			<div className="sanctuary-container">
+				<WebScreenHeader
+					title="The Heart becomes the center of community."
+					note="Same capabilities, wiser order: pulse first, conversation second, circles and messages close by, trust visible but quiet."
+					timeText="Community workspace"
+					actions={
+						<div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+							<button
+								className="premium-button"
+								onClick={() =>
+									canCreatePost ? setShowCreatePost(true) : openAuthFlow()
+								}
+							>
+								<Plus size={15} />
+								New Post
+							</button>
+							<button
+								className="secondary-button"
+								onClick={() =>
+									canCreateGroup ? setShowCreateGroup(true) : openAuthFlow()
+								}
+							>
+								<Users2 size={15} />
+								New Group
+							</button>
+							<button className="secondary-button" aria-label="Notifications">
+								<Bell size={15} />
+								{unreadCount > 0 ? `${unreadCount}` : "0"}
+							</button>
+						</div>
+					}
+				/>
 
-        <div className="community-layout">
-          <aside className="community-left-rail">
-            <section className="community-rail-card">
-              <span className="community-section-eyebrow">
-                {slots.modes ? 'Modes' : 'Community'}
-              </span>
-              <div className="community-mode-stack">
-                {modeOptions.map((mode) => (
-                  <button
-                    key={mode.key}
-                    className={`community-mode-button ${activeMode === mode.key ? 'active' : ''}`}
-                    onClick={() => setActiveMode(mode.key)}
-                  >
-                    {mode.label}
-                  </button>
-                ))}
-              </div>
-            </section>
+				<div className="community-layout">
+					<aside className="community-left-rail">
+						<section className="community-rail-card">
+							<span className="community-section-eyebrow">
+								{slots.modes ? "Modes" : "Community"}
+							</span>
+							<div className="community-mode-stack">
+								{modeOptions.map((mode) => (
+									<button
+										key={mode.key}
+										className={`community-mode-button ${activeMode === mode.key ? "active" : ""}`}
+										onClick={() => setActiveMode(mode.key)}
+									>
+										{mode.label}
+									</button>
+								))}
+							</div>
+						</section>
 
-            <section className="community-rail-card">
-              <span className="community-section-eyebrow">Joined circles</span>
-              <div className="community-chip-stack">
-                {sanctuaryGroups.slice(0, 4).map((group) => (
-                  <button
-                    key={group.id}
-                    className={`community-chip ${selectedFilter === group.id ? 'active' : ''}`}
-                    onClick={() => {
-                      setSelectedFilter(group.id);
-                      setActiveMode('feed');
-                      fetchPosts(group.id);
-                    }}
-                  >
-                    {group.name}
-                  </button>
-                ))}
-              </div>
-            </section>
+						<section className="community-rail-card">
+							<span className="community-section-eyebrow">Joined circles</span>
+							<div className="community-chip-stack">
+								{sanctuaryGroups.slice(0, 4).map((group) => (
+									<button
+										key={group.id}
+										className={`community-chip ${selectedFilter === group.id ? "active" : ""}`}
+										onClick={() => {
+											setSelectedFilter(group.id);
+											setActiveMode("feed");
+											fetchPosts(group.id);
+										}}
+									>
+										{group.name}
+									</button>
+								))}
+							</div>
+						</section>
 
-            <section className="community-rail-card">
-              <span className="community-section-eyebrow">Trust</span>
-              <p>Social shield and positive safety cues stay visible in the shell.</p>
-              <div className="community-icon-row">
-                <Shield size={16} />
-                <span>Safety and reporting remain one step away.</span>
-              </div>
-            </section>
+						<section className="community-rail-card">
+							<span className="community-section-eyebrow">Trust</span>
+							<p>
+								Social shield and positive safety cues stay visible in the
+								shell.
+							</p>
+							<div className="community-icon-row">
+								<Shield size={16} />
+								<span>Safety and reporting remain one step away.</span>
+							</div>
+						</section>
 
-            <section className="community-rail-card">
-              <span className="community-section-eyebrow">Quick path</span>
-              <div className="community-quick-paths">
-                {quickPaths.map((path) => (
-                  <button
-                    key={path.key}
-                    className="community-quick-path"
-                    onClick={() => setActiveMode(path.key as CommunityWorkspaceMode)}
-                  >
-                    <strong>{path.title}</strong>
-                    <span>{path.description}</span>
-                  </button>
-                ))}
-              </div>
-            </section>
-          </aside>
+						<section className="community-rail-card">
+							<span className="community-section-eyebrow">Quick path</span>
+							<div className="community-quick-paths">
+								{quickPaths.map((path) => (
+									<button
+										key={path.key}
+										className="community-quick-path"
+										onClick={() =>
+											setActiveMode(path.key as CommunityWorkspaceMode)
+										}
+									>
+										<strong>{path.title}</strong>
+										<span>{path.description}</span>
+									</button>
+								))}
+							</div>
+						</section>
+					</aside>
 
-          <main className="community-center-column">
-            <section className="community-hearth-card">
-              <div className="community-hearth-copy">
-                <div>
-                  <span className="community-section-eyebrow">The Community Hearth</span>
-                  <h2>Presence, welcome, manifestos, and spotlight belong together.</h2>
-                  <p>
-                    The school should feel emotionally alive before it feels operational. That is
-                    why the hearth remains first.
-                  </p>
-                </div>
+					<main className="community-center-column">
+						<section className="community-hearth-card">
+							<div className="community-hearth-copy">
+								<div>
+									<span className="community-section-eyebrow">
+										The Community Hearth
+									</span>
+									<h2>
+										Presence, welcome, manifestos, and spotlight belong
+										together.
+									</h2>
+									<p>
+										The school should feel emotionally alive before it feels
+										operational. That is why the hearth remains first.
+									</p>
+								</div>
 
-                <div className="community-pulse-box">
-                  <span className="community-section-eyebrow">Community pulse</span>
-                  <strong>{pulse.membersSeen} school members seen this cycle</strong>
-                  <span>{pulse.circlesActive} circles active</span>
-                  <span>{pulse.newPostsToday} new posts today</span>
-                </div>
-              </div>
-              <CommunityHearth manifestos={manifestos} userId={userId} />
-            </section>
+								<div className="community-pulse-box">
+									<span className="community-section-eyebrow">
+										Community pulse
+									</span>
+									<strong>
+										{pulse.membersSeen} school members seen this cycle
+									</strong>
+									<span>{pulse.circlesActive} circles active</span>
+									<span>{pulse.newPostsToday} new posts today</span>
+								</div>
+							</div>
+							<CommunityHearth manifestos={manifestos} userId={userId} />
+						</section>
 
-            <section className="community-search-row">
-              <div className="community-search-shell">
-                <Compass size={16} />
-                <input
-                  value={searchQuery}
-                  onChange={(event) => setSearchQuery(event.target.value)}
-                  placeholder="Search posts, circles, members, announcements..."
-                  aria-label="Search community"
-                />
-              </div>
-              <div className="community-mode-inline">
-                {modeOptions.map((mode) => (
-                  <button
-                    key={mode.key}
-                    className={`community-inline-chip ${activeMode === mode.key ? 'active' : ''}`}
-                    onClick={() => setActiveMode(mode.key)}
-                  >
-                    {mode.label}
-                  </button>
-                ))}
-              </div>
-            </section>
+						<section className="community-search-row">
+							<div className="community-search-shell">
+								<Compass size={16} />
+								<input
+									value={searchQuery}
+									onChange={(event) => setSearchQuery(event.target.value)}
+									placeholder="Search posts, circles, members, announcements..."
+									aria-label="Search community"
+								/>
+							</div>
+							<div className="community-mode-inline">
+								{modeOptions.map((mode) => (
+									<button
+										key={mode.key}
+										className={`community-inline-chip ${activeMode === mode.key ? "active" : ""}`}
+										onClick={() => setActiveMode(mode.key)}
+									>
+										{mode.label}
+									</button>
+								))}
+							</div>
+						</section>
 
-            {(activeMode === 'feed' || activeMode === 'circles') && (
-              <section className="community-compose-card">
-                <div>
-                  <span className="community-section-eyebrow">Compose into the right circle</span>
-                  <h3>Contribution before utility.</h3>
-                  <p>
-                    New Post and New Group stay visible, but composition is framed as contribution
-                    to shared resonance rather than just pressing a tool button.
-                  </p>
-                </div>
-                <div className="community-action-row">
-                  <button
-                    className="premium-button"
-                    onClick={() => (canCreatePost ? setShowCreatePost(true) : openAuthFlow())}
-                  >
-                    New Post
-                  </button>
-                  <button
-                    className="secondary-button"
-                    onClick={() => (canCreateGroup ? setShowCreateGroup(true) : openAuthFlow())}
-                  >
-                    New Group
-                  </button>
-                  {sanctuaryGroups[0] && (
-                    <button
-                      className="secondary-button"
-                      onClick={() => {
-                        const mainGroup = sanctuaryGroups[0];
-                        if (mainGroup) {
-                          handleOpenGroup(mainGroup.id, mainGroup.name);
-                        }
-                      }}
-                    >
-                      Open Circle
-                    </button>
-                  )}
-                </div>
-                <div className="community-filter-row">
-                  {filters.map((filter) => (
-                    <button
-                      key={filter.value}
-                      className={`community-inline-chip ${selectedFilter === filter.value ? 'active' : ''}`}
-                      onClick={() => {
-                        setSelectedFilter(filter.value);
-                        fetchPosts(filter.value === 'all' ? undefined : filter.value);
-                      }}
-                    >
-                      {filter.label}
-                    </button>
-                  ))}
-                </div>
-              </section>
-            )}
+						{(activeMode === "feed" || activeMode === "circles") && (
+							<section className="community-compose-card">
+								<div>
+									<span className="community-section-eyebrow">
+										Compose into the right circle
+									</span>
+									<h3>Contribution before utility.</h3>
+									<p>
+										New Post and New Group stay visible, but composition is
+										framed as contribution to shared resonance rather than just
+										pressing a tool button.
+									</p>
+								</div>
+								<div className="community-action-row">
+									<button
+										className="premium-button"
+										onClick={() =>
+											canCreatePost ? setShowCreatePost(true) : openAuthFlow()
+										}
+									>
+										New Post
+									</button>
+									<button
+										className="secondary-button"
+										onClick={() =>
+											canCreateGroup ? setShowCreateGroup(true) : openAuthFlow()
+										}
+									>
+										New Group
+									</button>
+									{sanctuaryGroups[0] && (
+										<button
+											className="secondary-button"
+											onClick={() => {
+												const mainGroup = sanctuaryGroups[0];
+												if (mainGroup) {
+													handleOpenGroup(mainGroup.id, mainGroup.name);
+												}
+											}}
+										>
+											Open Circle
+										</button>
+									)}
+								</div>
+								<div className="community-filter-row">
+									{filters.map((filter) => (
+										<button
+											key={filter.value}
+											className={`community-inline-chip ${selectedFilter === filter.value ? "active" : ""}`}
+											onClick={() => {
+												setSelectedFilter(filter.value);
+												fetchPosts(
+													filter.value === "all" ? undefined : filter.value,
+												);
+											}}
+										>
+											{filter.label}
+										</button>
+									))}
+								</div>
+							</section>
+						)}
 
-            <section className="community-main-stream">{renderActiveSurface()}</section>
-          </main>
+						<section className="community-main-stream">
+							{renderActiveSurface()}
+						</section>
+					</main>
 
-          <aside className="community-right-rail">
-            <section className="community-rail-card">
-              <span className="community-section-eyebrow">Context</span>
-            </section>
-            <section className="community-rail-card">
-              <strong>Community pulse</strong>
-              <p>Live presence and school energy remain visible without stealing the page.</p>
-            </section>
-            <section className="community-rail-card">
-              <strong>Joined circles</strong>
-              <p>Fast routes into the groups you already belong to.</p>
-            </section>
-            <section className="community-rail-card">
-              <strong>Trust + safety</strong>
-              <p>Shielding, reporting, and guest/citizen gating stay easy to reach.</p>
-            </section>
-            <section className="community-rail-card">
-              <strong>Messages</strong>
-              <p>Direct conversations remain one step away from the hearth.</p>
-            </section>
-          </aside>
-        </div>
-      </div>
+					<aside className="community-right-rail">
+						<section className="community-rail-card">
+							<span className="community-section-eyebrow">Context</span>
+						</section>
+						<section className="community-rail-card">
+							<strong>Community pulse</strong>
+							<p>
+								Live presence and school energy remain visible without stealing
+								the page.
+							</p>
+						</section>
+						<section className="community-rail-card">
+							<strong>Joined circles</strong>
+							<p>Fast routes into the groups you already belong to.</p>
+						</section>
+						<section className="community-rail-card">
+							<strong>Trust + safety</strong>
+							<p>
+								Shielding, reporting, and guest/citizen gating stay easy to
+								reach.
+							</p>
+						</section>
+						<section className="community-rail-card">
+							<strong>Messages</strong>
+							<p>Direct conversations remain one step away from the hearth.</p>
+						</section>
+					</aside>
+				</div>
+			</div>
 
-      <CreatePostModal
-        isOpen={showCreatePost}
-        onClose={() => {
-          setShowCreatePost(false);
-          fetchPosts(selectedFilter === 'all' ? undefined : selectedFilter);
-        }}
-        groupId={selectedFilter !== 'all' ? selectedFilter : undefined}
-      />
+			<CreatePostModal
+				isOpen={showCreatePost}
+				onClose={() => {
+					setShowCreatePost(false);
+					fetchPosts(selectedFilter === "all" ? undefined : selectedFilter);
+				}}
+				groupId={selectedFilter !== "all" ? selectedFilter : undefined}
+			/>
 
-      <CreateGroupModal
-        isOpen={showCreateGroup}
-        onClose={() => {
-          setShowCreateGroup(false);
-          fetchGroups?.();
-        }}
-      />
+			<CreateGroupModal
+				isOpen={showCreateGroup}
+				onClose={() => {
+					setShowCreateGroup(false);
+					fetchGroups?.();
+				}}
+			/>
 
-      <CommentSheet
-        postId={commentPostId}
-        postAuthorId={commentPostAuthorId}
-        currentUserId={user?.id}
-        postType={commentPostType}
-        onClose={() => setCommentPostId(null)}
-      />
+			<CommentSheet
+				postId={commentPostId}
+				postAuthorId={commentPostAuthorId}
+				currentUserId={user?.id}
+				postType={commentPostType}
+				onClose={() => setCommentPostId(null)}
+			/>
 
-      <style
-        dangerouslySetInnerHTML={{
-          __html: `
+			<style
+				dangerouslySetInnerHTML={{
+					__html: `
                 .community-screen .sanctuary-container {
                     display: flex;
                     flex-direction: column;
@@ -841,8 +936,8 @@ export default function CommunityScreenWeb() {
                     }
                 }
             `,
-        }}
-      />
-    </div>
-  );
+				}}
+			/>
+		</div>
+	);
 }

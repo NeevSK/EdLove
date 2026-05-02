@@ -5,7 +5,8 @@ import {
 } from '@repo/core/logic';
 import { LayoutGrid, Pin } from 'lucide-react-native';
 import { useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
+import { View } from '../../primitives';
 import { Text } from '../../gluestack';
 import { useThemedColors } from '../../hooks/useThemedColors';
 import { Theme } from '../../theme/Theme';

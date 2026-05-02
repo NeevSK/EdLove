@@ -1,5 +1,5 @@
-import { ScannerModal } from '@repo/scanner-kit';
-import UIAuthScreen from '@repo/ui/screens/AuthScreen';
+import { ScannerModal } from "@repo/scanner-kit";
+import UIAuthScreen from "@repo/ui/screens/AuthScreen";
 
 /**
  * High-End "Assembled" Screen
@@ -8,5 +8,5 @@ import UIAuthScreen from '@repo/ui/screens/AuthScreen';
  * By assembling it here, we keep the packages clean and avoid circular dependencies.
  */
 export default function AuthScreen(props: Record<string, unknown>) {
-  return <UIAuthScreen {...props} Scanner={ScannerModal} />;
+	return <UIAuthScreen {...props} Scanner={ScannerModal} />;
 }

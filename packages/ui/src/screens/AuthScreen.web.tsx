@@ -1,17 +1,16 @@
-import { handleAPIError, validateForm, validators } from '@repo/core/logic';
 import { authAPI } from '@repo/core/auth';
+import { handleAPIError, validateForm, validators } from '@repo/core/logic';
 
-import { useState } from 'react';
+import { useReducer, useCallback, memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BreathAnimation } from '../components/BreathAnimation';
 import { LivingGlow } from '../components/LivingGlow';
 import { SanctuaryBackground } from '../components/SanctuaryBackground';
 import { Box } from '../components/ui/box';
 import { Button, ButtonSpinner, ButtonText } from '../components/ui/button';
-import { Heading } from '../components/ui/text';
 import { HStack } from '../components/ui/hstack';
 import { Input, InputField } from '../components/ui/input';
-import { Text } from '../components/ui/text';
+import { Heading, Text } from '../components/ui/text';
 import { VStack } from '../components/ui/vstack';
 import { useTheme } from '../hooks/useTheme';
 import { useSanctuaryToast } from '../providers/ToastProvider';
@@ -23,29 +22,77 @@ interface AuthScreenProps {
   initialMode?: 'login' | 'signup';
 }
 
-const ENTRY_PILLARS = ['Self', 'Classroom', 'Community', 'Library'];
+const ENTRY_PILLARS = ['Self', 'Classroom', 'Community', 'Library'] as const;
 
-export function AuthScreenWeb({
+
+// ============================================================================
+// TYPES & REDUCER
+// ============================================================================
+
+interface AuthState {
+  mode: 'signup' | 'login';
+  showEmailForm: boolean;
+  email: string;
+  password: string;
+  loading: boolean;
+  errors: Record<string, string>;
+}
+
+type AuthAction =
+  | { type: 'SET_MODE'; mode: 'signup' | 'login' }
+  | { type: 'SET_EMAIL'; email: string }
+  | { type: 'SET_PASSWORD'; password: string }
+  | { type: 'SET_LOADING'; loading: boolean }
+  | { type: 'SET_ERRORS'; errors: Record<string, string> }
+  | { type: 'TOGGLE_EMAIL_FORM'; show: boolean };
+
+function authReducer(state: AuthState, action: AuthAction): AuthState {
+  switch (action.type) {
+    case 'SET_MODE':
+      return { ...state, mode: action.mode, showEmailForm: action.mode === 'login', errors: {} };
+    case 'SET_EMAIL':
+      return { ...state, email: action.email };
+    case 'SET_PASSWORD':
+      return { ...state, password: action.password };
+    case 'SET_LOADING':
+      return { ...state, loading: action.loading };
+    case 'SET_ERRORS':
+      return { ...state, errors: action.errors };
+    case 'TOGGLE_EMAIL_FORM':
+      return { ...state, showEmailForm: action.show, errors: {} };
+    default:
+      return state;
+  }
+}
+
+// ============================================================================
+// MAIN COMPONENT
+// ============================================================================
+
+export const AuthScreenWeb = memo(({
   onContinueAsGuest,
   onSuccess,
   onBack,
   initialMode,
-}: AuthScreenProps) {
+}: AuthScreenProps) => {
   const { t } = useTranslation();
   const { scene, accent, text } = useTheme();
   const _surfaceToken = scene.surface;
   const { showToast } = useSanctuaryToast();
 
-  const [mode, setMode] = useState<'signup' | 'login'>(
-    initialMode === 'login' ? 'login' : 'signup',
-  );
-  const [showEmailForm, setShowEmailForm] = useState(initialMode === 'login');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [state, dispatch] = useReducer(authReducer, {
+    mode: initialMode === 'login' ? 'login' : 'signup',
+    showEmailForm: initialMode === 'login',
+    email: '',
+    password: '',
+    loading: false,
+    errors: {},
+  });
 
-  const modeCopy =
+  const { mode, showEmailForm, email, password, loading, errors } = state;
+
+
+  const modeCopy = useMemo(() => 
     mode === 'signup'
       ? {
           eyebrow: 'Create your sanctuary identity',
@@ -64,11 +111,11 @@ export function AuthScreenWeb({
           primary: 'Log In',
           google: 'Sign in with Google',
           email: 'Sign in with Email',
-        };
+        }, [mode]);
 
-  const handleGoogleAuth = async () => {
-    setLoading(true);
-    setErrors({});
+  const handleGoogleAuth = useCallback(async () => {
+    dispatch({ type: 'SET_LOADING', loading: true });
+    dispatch({ type: 'SET_ERRORS', errors: {} });
     try {
       await authAPI.signInWithOAuth('google', window.location.origin);
     } catch (err: any) {
@@ -81,22 +128,25 @@ export function AuthScreenWeb({
         type: 'error',
       });
     } finally {
-      setLoading(false);
+      dispatch({ type: 'SET_LOADING', loading: false });
     }
-  };
+  }, [showToast]);
 
-  const handleEmailAuth = async () => {
-    setLoading(true);
-    setErrors({});
+  const handleEmailAuth = useCallback(async () => {
+    dispatch({ type: 'SET_LOADING', loading: true });
+    dispatch({ type: 'SET_ERRORS', errors: {} });
 
     const validation = validateForm(
       { email, password },
-      { email: validators.email, password: (val) => validators.nonEmpty(val, 'Password') },
+      {
+        email: validators.email,
+        password: (val) => validators.nonEmpty(val, 'Password'),
+      },
     );
 
     if (!validation.isValid) {
-      setErrors(validation.errors);
-      setLoading(false);
+      dispatch({ type: 'SET_ERRORS', errors: validation.errors });
+      dispatch({ type: 'SET_LOADING', loading: false });
       return;
     }
 
@@ -121,12 +171,12 @@ export function AuthScreenWeb({
         type: 'error',
       });
     } finally {
-      setLoading(false);
+      dispatch({ type: 'SET_LOADING', loading: false });
     }
-  };
+  }, [email, password, mode, t, showToast, onSuccess]);
 
-  const handleGuest = async () => {
-    setLoading(true);
+  const handleGuest = useCallback(async () => {
+    dispatch({ type: 'SET_LOADING', loading: true });
     try {
       onContinueAsGuest?.();
     } catch (err: any) {
@@ -135,9 +185,46 @@ export function AuthScreenWeb({
         type: 'error',
       });
     } finally {
-      setLoading(false);
+      dispatch({ type: 'SET_LOADING', loading: false });
     }
-  };
+  }, [onContinueAsGuest, showToast]);
+
+  const switchToSignup = useCallback(() => {
+    dispatch({ type: 'SET_MODE', mode: 'signup' });
+  }, []);
+
+  const switchToLogin = useCallback(() => {
+    dispatch({ type: 'SET_MODE', mode: 'login' });
+  }, []);
+
+  const toggleEmailForm = useCallback(() => {
+    dispatch({ type: 'TOGGLE_EMAIL_FORM', show: true });
+  }, []);
+
+  const backToGoogle = useCallback(() => {
+    dispatch({ type: 'TOGGLE_EMAIL_FORM', show: false });
+  }, []);
+
+  const handleEmailChange = useCallback((val: string) => {
+    dispatch({ type: 'SET_EMAIL', email: val });
+  }, []);
+
+  const handlePasswordChange = useCallback((val: string) => {
+    dispatch({ type: 'SET_PASSWORD', password: val });
+  }, []);
+
+  const renderedPillars = useMemo(() => (
+    ENTRY_PILLARS.map((pillar) => (
+      <Box
+        key={pillar}
+        className="px-4 py-2 rounded-full border border-phase-border bg-phase-surface/60"
+      >
+        <Text className="text-[12px] font-bold tracking-wider text-phase-secondary">
+          {pillar}
+        </Text>
+      </Box>
+    ))
+  ), []);
 
   return (
     <Box className="flex-1 min-h-screen relative overflow-hidden bg-phase-world">
@@ -176,16 +263,7 @@ export function AuthScreenWeb({
                 </VStack>
 
                 <HStack className="gap-2 flex-wrap">
-                  {ENTRY_PILLARS.map((pillar) => (
-                    <Box
-                      key={pillar}
-                      className="px-4 py-2 rounded-full border border-phase-border bg-phase-surface/60"
-                    >
-                      <Text className="text-[12px] font-bold tracking-wider text-phase-secondary">
-                        {pillar}
-                      </Text>
-                    </Box>
-                  ))}
+                  {renderedPillars}
                 </HStack>
               </VStack>
 
@@ -241,11 +319,7 @@ export function AuthScreenWeb({
                     <Button
                       variant="ghost"
                       className={`px-6 py-2 rounded-full h-auto ${mode === 'signup' ? 'bg-phase-world' : ''}`}
-                      onPress={() => {
-                        setMode('signup');
-                        setShowEmailForm(false);
-                        setErrors({});
-                      }}
+                      onPress={switchToSignup}
                     >
                       <ButtonText
                         className={`text-sm font-bold ${mode === 'signup' ? 'text-phase-primary' : 'text-phase-secondary'}`}
@@ -256,11 +330,7 @@ export function AuthScreenWeb({
                     <Button
                       variant="ghost"
                       className={`px-6 py-2 rounded-full h-auto ${mode === 'login' ? 'bg-phase-world' : ''}`}
-                      onPress={() => {
-                        setMode('login');
-                        setShowEmailForm(true);
-                        setErrors({});
-                      }}
+                      onPress={switchToLogin}
                     >
                       <ButtonText
                         className={`text-sm font-bold ${mode === 'login' ? 'text-phase-primary' : 'text-phase-secondary'}`}
@@ -304,7 +374,7 @@ export function AuthScreenWeb({
                   <Button
                     size="lg"
                     variant="outline"
-                    onPress={() => setShowEmailForm(true)}
+                    onPress={toggleEmailForm}
                     className="h-[60px] rounded-2xl border-phase-border bg-phase-surface/50"
                   >
                     <ButtonText className="text-phase-primary">{modeCopy.email}</ButtonText>
@@ -330,13 +400,13 @@ export function AuthScreenWeb({
                             <InputField
                               placeholder="you@example.com"
                               value={email}
-                              onChangeText={setEmail}
+                              onChangeText={handleEmailChange}
                               className="text-phase-primary"
                               autoComplete="email"
                             />
                           </Input>
-                          {errors.email && (
-                            <Text className="text-xs text-phase-error ml-1">{errors.email}</Text>
+                          {errors['email'] && (
+                            <Text className="text-xs text-phase-error ml-1">{errors['email']}</Text>
                           )}
                         </VStack>
 
@@ -348,13 +418,13 @@ export function AuthScreenWeb({
                             <InputField
                               placeholder="Your password"
                               value={password}
-                              onChangeText={setPassword}
+                              onChangeText={handlePasswordChange}
                               secureTextEntry
                               className="text-phase-primary"
                             />
                           </Input>
-                          {errors.password && (
-                            <Text className="text-xs text-phase-error ml-1">{errors.password}</Text>
+                          {errors['password'] && (
+                            <Text className="text-xs text-phase-error ml-1">{errors['password']}</Text>
                           )}
                         </VStack>
 
@@ -375,7 +445,7 @@ export function AuthScreenWeb({
 
                         <Button
                           variant="ghost"
-                          onPress={() => setShowEmailForm(false)}
+                          onPress={backToGoogle}
                           className="self-center"
                         >
                           <ButtonText className="text-phase-secondary text-sm underline">
@@ -396,9 +466,9 @@ export function AuthScreenWeb({
                 )}
               </VStack>
 
-              {errors._form && (
+              {errors['_form'] && (
                 <Box className="p-4 rounded-xl border border-phase-error/20 bg-phase-error/5">
-                  <Text className="text-phase-error text-center text-sm">{errors._form}</Text>
+                  <Text className="text-phase-error text-center text-sm">{errors['_form']}</Text>
                 </Box>
               )}
             </VStack>
@@ -407,6 +477,6 @@ export function AuthScreenWeb({
       </Box>
     </Box>
   );
-}
+});
 
 export default AuthScreenWeb;

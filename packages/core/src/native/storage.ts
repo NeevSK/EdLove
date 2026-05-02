@@ -75,12 +75,16 @@ class RobustAsyncStorage implements StorageInterface {
 
   delete(key: string) {
     this.cache.delete(key);
-    AsyncStorage.removeItem(key);
+    AsyncStorage.removeItem(key).catch((e) => {
+      console.error(`📦 Storage: Failed to delete ${key}`, e);
+    });
   }
 
   clearAll() {
     this.cache.clear();
-    AsyncStorage.clear();
+    AsyncStorage.clear().catch((e) => {
+      console.error('📦 Storage: Failed to clear all', e);
+    });
   }
 
   contains(key: string) {
@@ -108,7 +112,7 @@ import { Platform } from 'react-native';
  *
  * MMKV BUILD REQUIREMENTS (dev build must have these):
  *   1. react-native-mmkv and react-native-nitro-modules in package.json  \u2713
- *   2. newArchEnabled=true in android/gradle.properties                  \u2713
+ *   2. React Native New Architecture (mandatory in Expo 55+)                  \u2713
  *   3. expo prebuild + expo run:android (NOT just expo start)
  *      The native module must be compiled into the dev client APK.
  *      Running `expo start --dev-client` against an OLD APK that predates
@@ -167,7 +171,7 @@ function createStorage(): StorageInterface {
         '\uD83D\uDCE6 Storage: MMKV init failed \u2014 falling back to AsyncStorage.\n' +
           '  If this is unexpected, check:\n' +
           '    1. expo prebuild && expo run:android was run after adding MMKV\n' +
-          '    2. newArchEnabled=true in android/gradle.properties\n' +
+          '    2. New Architecture is enabled (Mandatory in Expo 55)\n' +
           '    3. react-native-nitro-modules version compatibility\n' +
           '  Error:',
         e,

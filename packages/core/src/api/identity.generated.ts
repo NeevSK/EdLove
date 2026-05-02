@@ -6,8 +6,8 @@
 import { z } from 'zod';
 
 export const IdentitySchema = z.object({
-  id: z.string().uuid(),
-  email: z.string().email(),
+  id: z.uuid(),
+  email: z.email(),
   role: z.string(),
   name: z.string().optional(),
 });
@@ -15,11 +15,11 @@ export const IdentitySchema = z.object({
 export type Identity = z.infer<typeof IdentitySchema>;
 
 export const FacetedProfileSchema = z.object({
-  school_id: z.string().nullable().optional(),
+  school_id: z.uuid().nullable().optional(),
   profile_completed: z.boolean().optional(),
   role: z.string().optional(),
   full_name: z.string().optional(),
-  email: z.string().optional(),
+  email: z.email().optional(),
   platform_roles: z.array(z.string()).optional(),
   school_role: z.string().optional(),
   work_roles: z.array(z.string()).optional(),
@@ -27,3 +27,4 @@ export const FacetedProfileSchema = z.object({
 });
 
 export type FacetedProfile = z.infer<typeof FacetedProfileSchema>;
+

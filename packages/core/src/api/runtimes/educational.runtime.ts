@@ -1,7 +1,7 @@
 import { createSupabaseEducationalRepository } from '../../adapters/supabase/educationalRepository';
+import { supabase } from '../supabase';
 import { createEducationalServices } from '../../logic/domains/educational/services';
 import { useStore } from '../../store/useStore';
-import { supabase } from '../../api/supabase';
 
 const educationalRepository = createSupabaseEducationalRepository(supabase);
 

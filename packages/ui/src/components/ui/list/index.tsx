@@ -7,7 +7,10 @@ import {
   type SectionListProps,
 } from 'react-native';
 
-cssInterop(RNFlatList, { className: 'style', contentContainerClassName: 'contentContainerStyle' });
+cssInterop(RNFlatList, {
+  className: 'style',
+  contentContainerClassName: 'contentContainerStyle',
+});
 cssInterop(RNSectionList, {
   className: 'style',
   contentContainerClassName: 'contentContainerStyle',
@@ -15,14 +18,20 @@ cssInterop(RNSectionList, {
 
 export const FlatList = React.forwardRef<
   RNFlatList,
-  FlatListProps<any> & { className?: string; contentContainerClassName?: string }
+  FlatListProps<any> & {
+    className?: string;
+    contentContainerClassName?: string;
+  }
 >(({ className, contentContainerClassName, ...props }, ref) => (
   <RNFlatList {...(props as any)} ref={ref} className={className} />
 ));
 
 export const SectionList = React.forwardRef<
   RNSectionList,
-  SectionListProps<any> & { className?: string; contentContainerClassName?: string }
+  SectionListProps<any> & {
+    className?: string;
+    contentContainerClassName?: string;
+  }
 >(({ className, contentContainerClassName, ...props }, ref) => (
   <RNSectionList
     {...(props as any)}

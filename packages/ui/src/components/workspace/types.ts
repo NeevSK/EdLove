@@ -42,4 +42,5 @@ export interface WorkspaceCanvasProps<
   onSurfacePress?: (surface: ResolvedWorkspaceSurface<TSurfaceId, TCapabilityKey>) => void;
   onPressSurfaceInfo?: (surface: ResolvedWorkspaceSurface<TSurfaceId, TCapabilityKey>) => void;
   onToggleHidden?: (surface: ResolvedWorkspaceSurface<TSurfaceId, TCapabilityKey>) => void;
+  onReorder?: (surfaceId: TSurfaceId, newIndex: number) => void;
 }

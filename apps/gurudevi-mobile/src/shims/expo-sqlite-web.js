@@ -12,27 +12,27 @@
  */
 
 const SQLite = {
-  openDatabaseAsync: async () => ({
-    execAsync: async () => {},
-    prepareAsync: async () => ({
-      executeAsync: async () => {},
-      finalizeAsync: async () => {},
-    }),
-    getAllAsync: async () => [],
-    getFirstAsync: async () => null,
-    runAsync: async () => {},
-    withTransactionAsync: async (callback) => {
-      if (typeof callback === 'function') await callback();
-    },
-    closeAsync: async () => {},
-  }),
-  deleteDatabaseAsync: async () => {},
-  // Legacy support if needed
-  openDatabase: () => ({
-    transaction: (callback) => {
-      if (typeof callback === 'function') callback({ executeSql: () => {} });
-    },
-  }),
+	openDatabaseAsync: async () => ({
+		execAsync: async () => {},
+		prepareAsync: async () => ({
+			executeAsync: async () => {},
+			finalizeAsync: async () => {},
+		}),
+		getAllAsync: async () => [],
+		getFirstAsync: async () => null,
+		runAsync: async () => {},
+		withTransactionAsync: async (callback) => {
+			if (typeof callback === "function") await callback();
+		},
+		closeAsync: async () => {},
+	}),
+	deleteDatabaseAsync: async () => {},
+	// Legacy support if needed
+	openDatabase: () => ({
+		transaction: (callback) => {
+			if (typeof callback === "function") callback({ executeSql: () => {} });
+		},
+	}),
 };
 
 module.exports = SQLite;

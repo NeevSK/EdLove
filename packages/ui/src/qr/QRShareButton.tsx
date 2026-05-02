@@ -10,7 +10,8 @@
  */
 
 import { useRef } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, type View } from 'react-native';
+import { Text, View as PrimitiveView } from '../primitives';
 import QRCodeGenerator from '../components/QRCodeGenerator';
 
 const optionalImport = async <T = any>(moduleName: string): Promise<T | null> => {
@@ -74,7 +75,10 @@ export default function QRShareButton({
       }
       if (!viewRef.current) return;
 
-      const uri = await viewShot.captureRef(viewRef, { format: 'png', quality: 1 });
+      const uri = await viewShot.captureRef(viewRef, {
+        format: 'png',
+        quality: 1,
+      });
       if (await Sharing.isAvailableAsync()) {
         await Sharing.shareAsync(uri, {
           mimeType: 'image/png',
@@ -100,12 +104,12 @@ export default function QRShareButton({
   };
 
   return (
-    <View style={[styles.container, { backgroundColor }]}>
-      <View ref={viewRef} collapsable={false} style={[styles.qrWrapper, { backgroundColor }]}>
+    <PrimitiveView style={[styles.container, { backgroundColor }]}>
+      <PrimitiveView ref={viewRef} collapsable={false} style={[styles.qrWrapper, { backgroundColor }]}>
         <QRCodeGenerator value={value} size={size} label={label} />
-      </View>
+      </PrimitiveView>
 
-      <View style={styles.buttonRow}>
+      <PrimitiveView style={styles.buttonRow}>
         <TouchableOpacity
           onPress={handleShareImage}
           style={[styles.button, { borderColor: accentColor }]}
@@ -121,8 +125,8 @@ export default function QRShareButton({
         >
           <Text style={[styles.buttonText, { color: accentColor }]}>Copy Link</Text>
         </TouchableOpacity>
-      </View>
-    </View>
+      </PrimitiveView>
+    </PrimitiveView>
   );
 }
 

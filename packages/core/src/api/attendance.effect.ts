@@ -1,23 +1,23 @@
-import { Effect, Data, pipe } from "effect";
-import { supabase } from './supabase';
-import { educationalServices } from '../native/runtimes/educational.runtime';
-import { attendanceProjectionServices } from '../native/runtimes/attendanceProjection.runtime';
-import type { AttendanceRecord } from '../types';
-import type { 
-  AttendanceSnapshot, 
-  SchoolAttendancePulse, 
-  AttendanceReport 
+import { Data, Effect, pipe } from 'effect';
+import type {
+  AttendanceReport,
+  AttendanceSnapshot,
+  SchoolAttendancePulse,
 } from '../logic/schemas/attendance.schema';
+import { attendanceProjectionServices } from './runtimes/attendanceProjection.runtime';
+import { educationalServices } from './runtimes/educational.runtime';
+import type { AttendanceRecord } from '../types';
+import { supabase } from './supabase';
 
 /**
  * Custom Error Types for Domain-Specific Failures
  */
-export class AttendanceError extends Data.TaggedError("AttendanceError")<{
+export class AttendanceError extends Data.TaggedError('AttendanceError')<{
   readonly message: string;
   readonly cause?: unknown;
 }> {}
 
-export class AuditError extends Data.TaggedError("AuditError")<{
+export class AuditError extends Data.TaggedError('AuditError')<{
   readonly message: string;
   readonly cause?: unknown;
 }> {}
@@ -29,7 +29,7 @@ type AttendanceAuditContext = {
   idempotencyKey?: string;
 };
 
-const buildAttendanceKey = (classroomId: string, studentId: string, date: string) =>
+const _buildAttendanceKey = (classroomId: string, studentId: string, date: string) =>
   `${classroomId}:${studentId}:${date}`;
 
 /**
@@ -44,7 +44,7 @@ const logAttendanceAudit = (params: {
   if (!params.executorId) return Effect.void;
 
   return pipe(
-    Effect.promise(() => 
+    Effect.promise(() =>
       supabase.from('audit_logs').insert({
         action: params.action,
         entity_id: params.entityId,
@@ -52,15 +52,15 @@ const logAttendanceAudit = (params: {
         entity_type: 'attendance',
         executor_id: params.executorId!,
         metadata: params.metadata ?? {},
-      })
+      }),
     ),
-    Effect.flatMap(({ error }) => 
-      error 
-        ? Effect.logWarning(`Failed to record attendance audit event: ${error.message}`) 
-        : Effect.void
+    Effect.flatMap(({ error }) =>
+      error
+        ? Effect.logWarning(`Failed to record attendance audit event: ${error.message}`)
+        : Effect.void,
     ),
-    Effect.catchAll(e => Effect.logError(`Audit logging crashed: ${e}`)),
-    Effect.asVoid
+    Effect.catchAll((e) => Effect.logError(`Audit logging crashed: ${e}`)),
+    Effect.asVoid,
   );
 };
 
@@ -76,25 +76,41 @@ export const attendanceAPI = {
     studentId: string,
     status: string,
     date: string,
-    audit?: AttendanceAuditContext
-  ): Effect.Effect<AttendanceRecord, AttendanceError | unknown, never> => 
+    audit?: AttendanceAuditContext,
+  ): Effect.Effect<AttendanceRecord, AttendanceError | unknown, never> =>
     Effect.gen(function* () {
       // 1. Check for existing record to determine audit action
-      const existing = yield* Effect.promise(() => 
-        educationalServices.attendance.getByDate(classroomId, date)
-          .then(records => (records as unknown as AttendanceRecord[]).find(r => r.student_id === studentId))
+      const existing = yield* Effect.promise(() =>
+        educationalServices.attendance
+          .getByDate(classroomId, date)
+          .then((records) =>
+            (records as unknown as AttendanceRecord[]).find((r) => r.student_id === studentId),
+          ),
       );
 
       // 2. Perform the record operation
       const result = yield* Effect.tryPromise({
-        try: () => educationalServices.attendance.record(classroomId, studentId, status, date) as Promise<AttendanceRecord>,
-        catch: (e) => new AttendanceError({ message: "Failed to record attendance", cause: e })
+        try: () =>
+          educationalServices.attendance.record(
+            classroomId,
+            studentId,
+            status,
+            date,
+          ) as Promise<AttendanceRecord>,
+        catch: (e) =>
+          new AttendanceError({
+            message: 'Failed to record attendance',
+            cause: e,
+          }),
       });
 
       // 3. Log Audit (Fire and Forget)
       yield* Effect.forkDaemon(
         logAttendanceAudit({
-          action: existing && existing.status !== status ? 'attendance_overridden' : 'attendance_recorded',
+          action:
+            existing && existing.status !== status
+              ? 'attendance_overridden'
+              : 'attendance_recorded',
           entityId: result.id,
           executorId: audit?.actorId,
           metadata: {
@@ -106,7 +122,7 @@ export const attendanceAPI = {
             reason: audit?.reason ?? null,
             accessKind: audit?.accessKind ?? 'teacher_marking',
           },
-        })
+        }),
       );
 
       return result;
@@ -124,13 +140,18 @@ export const attendanceAPI = {
       occurred_at?: string;
       academic_cycle_id?: string | null;
     }>,
-    audit?: AttendanceAuditContext
+    audit?: AttendanceAuditContext,
   ): Effect.Effect<AttendanceRecord[], AttendanceError | unknown, never> =>
     Effect.gen(function* () {
       // 1. Perform batch operation
       const result = yield* Effect.tryPromise({
-        try: () => educationalServices.attendance.batchRecord(records) as Promise<AttendanceRecord[]>,
-        catch: (e) => new AttendanceError({ message: "Failed batch attendance recording", cause: e })
+        try: () =>
+          educationalServices.attendance.batchRecord(records) as Promise<AttendanceRecord[]>,
+        catch: (e) =>
+          new AttendanceError({
+            message: 'Failed batch attendance recording',
+            cause: e,
+          }),
       });
 
       // 2. Log Batch Audit
@@ -146,9 +167,9 @@ export const attendanceAPI = {
               count: records.length,
               reason: audit.reason ?? null,
               accessKind: audit.accessKind ?? 'teacher_marking',
-              idempotencyKey: audit.idempotencyKey
+              idempotencyKey: audit.idempotencyKey,
             },
-          })
+          }),
         );
       }
 
@@ -161,8 +182,15 @@ export const attendanceAPI = {
   getClassroomAttendanceSnapshot: (classroomId: string, viewDate: string) =>
     Effect.gen(function* () {
       const records = yield* Effect.tryPromise({
-        try: () => educationalServices.attendance.getByDate(classroomId, viewDate) as Promise<AttendanceRecord[]>,
-        catch: (e) => new AttendanceError({ message: "Failed to fetch snapshot", cause: e })
+        try: () =>
+          educationalServices.attendance.getByDate(classroomId, viewDate) as Promise<
+            AttendanceRecord[]
+          >,
+        catch: (e) =>
+          new AttendanceError({
+            message: 'Failed to fetch snapshot',
+            cause: e,
+          }),
       });
 
       return {
@@ -177,17 +205,24 @@ export const attendanceAPI = {
    */
   getStudentAttendanceTimeline: (
     studentId: string,
-    options?: { classroomId?: string; fromDate?: string; toDate?: string }
+    options?: { classroomId?: string; fromDate?: string; toDate?: string },
   ) =>
     Effect.gen(function* () {
       const records = yield* Effect.tryPromise({
-        try: () => educationalServices.attendance.getForStudent(studentId, options?.classroomId) as Promise<AttendanceRecord[]>,
-        catch: (e) => new AttendanceError({ message: "Failed to fetch timeline", cause: e })
+        try: () =>
+          educationalServices.attendance.getForStudent(studentId, options?.classroomId) as Promise<
+            AttendanceRecord[]
+          >,
+        catch: (e) =>
+          new AttendanceError({
+            message: 'Failed to fetch timeline',
+            cause: e,
+          }),
       });
 
       return records.filter((record) => {
-        if (options?.fromDate && record.date < options.fromDate) return false;
-        if (options?.toDate && record.date > options.toDate) return false;
+        if (options?.fromDate && record.date < new Date(options.fromDate)) return false;
+        if (options?.toDate && record.date > new Date(options.toDate)) return false;
         return true;
       });
     }),
@@ -199,12 +234,17 @@ export const attendanceAPI = {
     schoolId: string,
     classroomId?: string,
     viewDate?: string,
-    audit?: AttendanceAuditContext
+    audit?: AttendanceAuditContext,
   ): Effect.Effect<SchoolAttendancePulse, AttendanceError | unknown, never> =>
     Effect.gen(function* () {
       const pulse = yield* Effect.tryPromise({
-        try: () => attendanceProjectionServices.getSchoolAttendancePulse(schoolId, classroomId, viewDate) as Promise<SchoolAttendancePulse>,
-        catch: (e) => new AttendanceError({ message: "Failed to fetch pulse", cause: e })
+        try: () =>
+          attendanceProjectionServices.getSchoolAttendancePulse(
+            schoolId,
+            classroomId,
+            viewDate,
+          ) as Promise<SchoolAttendancePulse>,
+        catch: (e) => new AttendanceError({ message: 'Failed to fetch pulse', cause: e }),
       });
 
       yield* Effect.forkDaemon(
@@ -218,7 +258,7 @@ export const attendanceAPI = {
             viewDate: viewDate ?? null,
             accessKind: audit?.accessKind ?? 'institutional_read',
           },
-        })
+        }),
       );
 
       return pulse;
@@ -232,12 +272,18 @@ export const attendanceAPI = {
     startDate: string,
     endDate: string,
     classroomId?: string,
-    audit?: AttendanceAuditContext
+    audit?: AttendanceAuditContext,
   ): Effect.Effect<AttendanceReport, AttendanceError | unknown, never> =>
     Effect.gen(function* () {
       const report = yield* Effect.tryPromise({
-        try: () => attendanceProjectionServices.getAttendanceReport(schoolId, startDate, endDate, classroomId) as Promise<AttendanceReport>,
-        catch: (e) => new AttendanceError({ message: "Failed to fetch report", cause: e })
+        try: () =>
+          attendanceProjectionServices.getAttendanceReport(
+            schoolId,
+            startDate,
+            endDate,
+            classroomId,
+          ) as Promise<AttendanceReport>,
+        catch: (e) => new AttendanceError({ message: 'Failed to fetch report', cause: e }),
       });
 
       yield* Effect.forkDaemon(
@@ -252,7 +298,7 @@ export const attendanceAPI = {
             endDate,
             accessKind: audit?.accessKind ?? 'institutional_export',
           },
-        })
+        }),
       );
 
       return report;

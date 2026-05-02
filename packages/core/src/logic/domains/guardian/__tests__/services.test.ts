@@ -89,16 +89,16 @@ describe('guardian temporal policy', () => {
     repository.getGuardianRelationships.mockResolvedValue([
       {
         id: 'relationship-1',
-        studentId: 'student-1',
-        guardianId: 'guardian-1',
-        relationshipType: 'parent',
+        student_id: 'student-1',
+        guardian_id: 'guardian-1',
+        relationship_type: 'parent',
         permissions: [],
-        custodyLevel: 'full',
-        effectiveDate: '2026-01-01T00:00:00.000Z',
-        isActive: true,
-        createdAt: '2026-01-01T00:00:00.000Z',
-        updatedAt: '2026-01-01T00:00:00.000Z',
-        schoolId: 'school-1',
+        custody_level: 'full',
+        effective_date: '2026-01-01T00:00:00.000Z',
+        is_active: true,
+        created_at: '2026-01-01T00:00:00.000Z',
+        updated_at: '2026-01-01T00:00:00.000Z',
+        school_id: 'school-1',
       },
     ]);
     const services = createGuardianServices(repository);
@@ -151,16 +151,16 @@ describe('guardian temporal policy', () => {
     repository.getGuardianRelationships.mockResolvedValue([
       {
         id: 'relationship-1',
-        studentId: 'student-1',
-        guardianId: 'guardian-1',
-        relationshipType: 'parent',
+        student_id: 'student-1',
+        guardian_id: 'guardian-1',
+        relationship_type: 'parent',
         permissions: [],
-        custodyLevel: 'full',
-        effectiveDate: '2026-01-01T00:00:00.000Z',
-        isActive: true,
-        createdAt: '2026-01-01T00:00:00.000Z',
-        updatedAt: '2026-01-01T00:00:00.000Z',
-        schoolId: 'school-1',
+        custody_level: 'full',
+        effective_date: '2026-01-01T00:00:00.000Z',
+        is_active: true,
+        created_at: '2026-01-01T00:00:00.000Z',
+        updated_at: '2026-01-01T00:00:00.000Z',
+        school_id: 'school-1',
       },
     ]);
     const services = createGuardianServices(repository);
@@ -180,9 +180,9 @@ describe('guardian temporal policy', () => {
     repository.getGuardianRelationships.mockResolvedValue([
       {
         id: 'relationship-1',
-        studentId: 'student-1',
-        guardianId: 'guardian-1',
-        relationshipType: 'guardian',
+        student_id: 'student-1',
+        guardian_id: 'guardian-1',
+        relationship_type: 'guardian',
         permissions: [
           {
             category: 'attendance',
@@ -200,12 +200,12 @@ describe('guardian temporal policy', () => {
             scope: 'assigned_students',
           },
         ],
-        custodyLevel: 'partial',
-        effectiveDate: '2026-01-01T00:00:00.000Z',
-        isActive: true,
-        createdAt: '2026-01-01T00:00:00.000Z',
-        updatedAt: '2026-01-01T00:00:00.000Z',
-        schoolId: 'school-1',
+        custody_level: 'partial',
+        effective_date: '2026-01-01T00:00:00.000Z',
+        is_active: true,
+        created_at: '2026-01-01T00:00:00.000Z',
+        updated_at: '2026-01-01T00:00:00.000Z',
+        school_id: 'school-1',
       },
     ]);
     const services = createGuardianServices(repository);

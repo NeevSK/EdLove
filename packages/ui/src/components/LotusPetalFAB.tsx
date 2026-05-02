@@ -1,7 +1,6 @@
 import { Wind } from 'lucide-react-native';
 import type React from 'react';
-import { type FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Dimensions, PanResponder, Platform, Pressable } from 'react-native';
+import { type FC, useCallback, useEffect, useMemo, useRef, useState, memo } from 'react';
 import Animated, {
   Easing,
   type SharedValue,
@@ -12,8 +11,9 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
+import { Dimensions, PanResponder, Platform } from '../primitives';
 import { useFAB } from '../context/FABContext';
-import { Box, HStack, Text, VStack } from '../gluestack';
+import { Box, HStack, Pressable, Text, VStack } from '../gluestack';
 import { useAccessibility } from '../hooks/useAccessibility';
 import { hapticLight } from '../utils/haptics';
 import { useBottomTabPadding } from './ScreenWrapper';
@@ -45,7 +45,6 @@ interface LotusPetalFABProps {
 // ============================================================================
 
 const FAB_SIZE = 56;
-const _ACTION_DRAWER_HEIGHT = Dimensions.get('window').height * 0.4;
 const FAB_EDGE_MARGIN = 24; // Equivalent to Theme.spacing.lg
 const FAB_DRAG_THRESHOLD = 8;
 const FAB_WEB_STORAGE_KEY = 'gurudevi_lotus_fab_position_v1';
@@ -63,29 +62,53 @@ const fabConfig: Record<TabType, { emoji: string; label: string }> = {
 };
 
 // ============================================================================
+// ACTION ITEM COMPONENT (FOR MEMOIZATION)
+// ============================================================================
+
+const FABActionItem: FC<{ action: ActionItem; onPress: (a: ActionItem) => void }> = ({
+  action,
+  onPress,
+}) => {
+  const handlePress = useCallback(() => onPress(action), [action, onPress]);
+
+  return (
+    <Pressable
+      onPress={handlePress}
+      accessible={true}
+      accessibilityRole="button"
+      accessibilityLabel={action.label}
+      className="p-4 rounded-xl hover:bg-white/5 active:bg-white/10"
+    >
+      <HStack className="items-center gap-3">
+        {action.icon && <action.icon size={20} color="#F6BF8C" strokeWidth={2} />}
+        <Text className="text-phase-text-primary">{action.label}</Text>
+      </HStack>
+    </Pressable>
+  );
+};
+
+// ============================================================================
 // MAIN COMPONENT
 // ============================================================================
 
-export const LotusPetalFAB: FC<LotusPetalFABProps> = ({
+export const LotusPetalFAB: FC<LotusPetalFABProps> = memo(({
   currentTab: propTab,
   onPress: propPress,
   icon: customIcon,
   actions: propActions,
-  scrollY,
   disabled = false,
   bottomInset = 24,
   hasActiveGaps: propGaps,
-  gapPriority: propPriority,
   onBreathingReset: propReset,
   useGlobal = true,
   className,
-}) => {
+}: LotusPetalFABProps) => {
   const { state: globalState } = useFAB();
   const { isReduceMotionEnabled } = useAccessibility();
   const bottomTabPadding = useBottomTabPadding();
 
   // Reconcile props with global state
-  const currentTab = propTab || globalState.tabType;
+  const currentTab = (propTab || globalState.tabType) as TabType;
   const actions = propActions || globalState.actions;
   const hasActiveGaps = propGaps ?? globalState.hasActiveGaps;
   const onPress = propPress || globalState.onPress;
@@ -143,6 +166,21 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = ({
     positionX.value = next.x;
     positionY.value = next.y;
   }, [bottomInset, bottomTabPadding, clampFabToViewport, positionX, positionY]);
+
+  const handlePress = useCallback(() => {
+    if (disabled) return;
+    hapticLight();
+
+    if (actions && actions.length > 0) {
+      setIsDrawerVisible(true);
+      return;
+    }
+
+    if (onPress) {
+      pressScale.value = withSequence(withTiming(0.9, { duration: 100 }), withSpring(1));
+      onPress();
+    }
+  }, [disabled, onPress, actions, pressScale]);
 
   useEffect(() => {
     let initialized = false;
@@ -250,20 +288,17 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = ({
     opacity: pulseOpacity.value,
   }));
 
-  const handlePress = useCallback(() => {
-    if (disabled) return;
-    hapticLight();
+  const closeDrawer = useCallback(() => setIsDrawerVisible(false), []);
 
-    if (actions && actions.length > 0) {
-      setIsDrawerVisible(true);
-      return;
-    }
+  const handleBreathingReset = useCallback(() => {
+    setIsDrawerVisible(false);
+    onBreathingReset?.();
+  }, [onBreathingReset]);
 
-    if (onPress) {
-      pressScale.value = withSequence(withTiming(0.9, { duration: 100 }), withSpring(1));
-      onPress();
-    }
-  }, [disabled, onPress, actions, pressScale]);
+  const handleActionPress = useCallback((action: ActionItem) => {
+    setIsDrawerVisible(false);
+    action.onPress();
+  }, []);
 
   if (!isVisible) return null;
 
@@ -302,11 +337,11 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = ({
       </Animated.View>
 
       {/* Action Drawer */}
-      <UniversalModal isOpen={isDrawerVisible} onClose={() => setIsDrawerVisible(false)}>
+      <UniversalModal isOpen={isDrawerVisible} onClose={closeDrawer}>
         <Pressable
           accessibilityRole="button"
           className="flex-1 bg-black/50 justify-end"
-          onPress={() => setIsDrawerVisible(false)}
+          onPress={closeDrawer}
         >
           <Box className="bg-phase-surface rounded-t-[32px] p-8 min-h-[40vh] w-full mt-auto">
             <Box className="w-10 h-1 bg-phase-text-secondary/30 rounded-full self-center mb-6" />
@@ -319,10 +354,7 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = ({
               {onBreathingReset && (
                 <Pressable
                   accessibilityRole="button"
-                  onPress={() => {
-                    setIsDrawerVisible(false);
-                    onBreathingReset();
-                  }}
+                  onPress={handleBreathingReset}
                   className="p-4 rounded-xl bg-phase-success/10 active:bg-phase-success/20"
                 >
                   <HStack className="items-center gap-3">
@@ -332,23 +364,8 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = ({
                 </Pressable>
               )}
 
-              {actions?.map((action, idx) => (
-                <Pressable
-                  key={idx}
-                  onPress={() => {
-                    setIsDrawerVisible(false);
-                    action.onPress();
-                  }}
-                  accessible={true}
-                  accessibilityRole="button"
-                  accessibilityLabel={action.label}
-                  className="p-4 rounded-xl hover:bg-white/5 active:bg-white/10"
-                >
-                  <HStack className="items-center gap-3">
-                    {action.icon && <action.icon size={20} color="#F6BF8C" strokeWidth={2} />}
-                    <Text className="text-phase-text-primary">{action.label}</Text>
-                  </HStack>
-                </Pressable>
+              {actions?.map((action: ActionItem, idx: number) => (
+                <FABActionItem key={idx} action={action} onPress={handleActionPress} />
               ))}
             </VStack>
           </Box>
@@ -356,6 +373,6 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = ({
       </UniversalModal>
     </Box>
   );
-};
+});
 
 export default LotusPetalFAB;

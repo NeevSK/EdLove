@@ -1,8 +1,9 @@
 import { createSchemaFactory } from '@zenstackhq/zod';
+import type Decimal from 'decimal.js';
 
 import { schema } from '../schema';
 
-export const zodSchemaFactory = createSchemaFactory(schema);
+const zodSchemaFactory = createSchemaFactory(schema);
 
 export const makeModelSchema = zodSchemaFactory.makeModelSchema.bind(zodSchemaFactory);
 export const makeModelCreateSchema = zodSchemaFactory.makeModelCreateSchema.bind(zodSchemaFactory);

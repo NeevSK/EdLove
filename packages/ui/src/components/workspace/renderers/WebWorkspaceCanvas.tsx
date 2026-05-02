@@ -1,5 +1,6 @@
 import type { WorkspaceRendererConfig } from '@repo/core/logic';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
+import { ScrollView, View } from '../../../primitives';
 import { Theme } from '../../../theme/Theme';
 import { CanvasZoneColumn } from '../CanvasZoneColumn';
 import { useWorkspaceCanvasData, WorkspaceCanvasEmptyState, WorkspaceCanvasHero } from '../shared';
@@ -57,6 +58,7 @@ export function WebWorkspaceCanvas<
               onSurfacePress={props.onSurfacePress}
               onPressSurfaceInfo={props.onPressSurfaceInfo}
               onToggleHidden={props.onToggleHidden}
+              onReorder={props.onReorder}
             />
           ))}
         </ScrollView>

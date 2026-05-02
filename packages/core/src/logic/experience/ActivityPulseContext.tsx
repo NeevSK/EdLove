@@ -1,5 +1,4 @@
-import type React from 'react';
-import { createContext, useContext, useEffect, useRef, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 
 interface ActivityPulseState {
   pulse: number; // 0 to 1, representing recent activity intensity
@@ -17,22 +16,28 @@ const ActivityPulseContext = createContext<ActivityPulseContextType | undefined>
 export const ActivityPulseProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [state, setState] = useState<ActivityPulseState>({
     pulse: 0,
-    lastEventTime: Date.now(),
+    lastEventTime: 0, // DETERMINISTIC: Start at 0 for hydration parity
     intensity: 0,
   });
 
   const decayRef = useRef<number | null>(null);
 
-  const registerPulse = (strength: number = 0.2) => {
+  const registerPulse = useCallback((strength: number = 0.2) => {
     setState((prev) => ({
       ...prev,
       pulse: Math.min(1, prev.pulse + strength),
+      // DETERMINISTIC_OK: This runs in an interactive event callback, not during hydration.
+      // eslint-disable-next-line no-restricted-syntax
       lastEventTime: Date.now(),
       intensity: prev.intensity + strength,
     }));
-  };
+  }, []);
 
   useEffect(() => {
+    // DETERMINISTIC_OK: Setting real time once hydrated ensures server/client parity on first render.
+    // eslint-disable-next-line no-restricted-syntax
+    setState(prev => ({ ...prev, lastEventTime: Date.now() }));
+
     // Decay function to make the pulse fade over time
     const decay = () => {
       setState((prev) => {
@@ -51,8 +56,10 @@ export const ActivityPulseProvider: React.FC<{ children: React.ReactNode }> = ({
     };
   }, []);
 
+  const value = useMemo(() => ({ state, registerPulse }), [state, registerPulse]);
+
   return (
-    <ActivityPulseContext.Provider value={{ state, registerPulse }}>
+    <ActivityPulseContext.Provider value={value}>
       {children}
     </ActivityPulseContext.Provider>
   );

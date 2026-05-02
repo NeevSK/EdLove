@@ -13,7 +13,8 @@
 
 import { ChevronRight } from 'lucide-react-native';
 import type React from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet } from 'react-native';
+import { Pressable, ScrollView, Text, View } from '../primitives';
 import { useThemedColors } from '../hooks/useThemedColors';
 import { Theme } from '../theme/Theme';
 

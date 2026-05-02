@@ -1,21 +1,14 @@
-﻿import { z } from 'zod';
+import { z } from 'zod';
+import { makeModelSchema } from '../generated/zod';
 
 /**
- * SentinelAuditLogSchema  Non-repudiable audit logs for critical actions.
+ * SentinelAuditLogSchema - Non-repudiable audit logs for critical actions.
+ * Derived from ZenStack SentinelAuditLog model.
  */
-export const SentinelAuditLogSchema = z.object({
-  id: z.string().uuid(),
-  action: z.string(),
-  entity_id: z.string().uuid().nullable().optional(),
-  target_id: z.string().uuid().nullable().optional(), // UI uses target_id
-  entity_type: z.string().nullable().optional(),
-  executor_id: z.string().uuid().nullable().optional(),
-  metadata: z.record(z.string(), z.any()).nullable().optional(),
-  created_at: z.string(),
-});
+export const SentinelAuditLogSchema = makeModelSchema('SentinelAuditLog');
 
 /**
- * EcosystemStatsSchema  Aggregate ecosystem statistics.
+ * EcosystemStatsSchema - Aggregate ecosystem statistics.
  */
 export const EcosystemStatsSchema = z.object({
   total_schools: z.number().default(0),
@@ -50,7 +43,7 @@ export const EcosystemStatsSchema = z.object({
 });
 
 /**
- * EcosystemPulseSchema  Aggregate "weather" across all institutions.
+ * EcosystemPulseSchema - Aggregate "weather" across all institutions.
  */
 export const EcosystemPulseSchema = z.object({
   weather: z.enum(['radiant', 'lush', 'steady', 'resting', 'quiet']),
@@ -66,7 +59,7 @@ export const EcosystemPulseSchema = z.object({
 });
 
 /**
- * GlobalUserSchema  User representation for ecosystem-wide listing.
+ * GlobalUserSchema - User representation for ecosystem-wide listing.
  */
 export const GlobalUserSchema = z.object({
   id: z.string().uuid(),

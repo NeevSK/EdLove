@@ -1,87 +1,92 @@
-import { AttendanceStatus, StudentAttendance } from '@repo/core/logic';
-import { api } from '@repo/core/api';
-
-import { Box } from '@repo/ui/primitives';
-import { Spinner, Text } from '@repo/ui/primitives';
-import { useCallback, useEffect, useState } from 'react';
-import AttendanceSheet from './AttendanceSheet';
+import { api } from "@repo/core/api";
+import type { AttendanceStatus, StudentAttendance } from "@repo/core/logic";
+import { Box, Spinner, Text } from "@repo/ui/primitives";
+import { useCallback, useEffect, useState } from "react";
+import AttendanceSheet from "./AttendanceSheet";
 
 interface AttendanceViewProps {
-  classroomId: string;
+	classroomId: string;
 }
 
 export default function AttendanceView({ classroomId }: AttendanceViewProps) {
-  const [students, setStudents] = useState<StudentAttendance[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+	const [students, setStudents] = useState<StudentAttendance[]>([]);
+	const [isLoading, setIsLoading] = useState(true);
 
-  const fetchStudents = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const today = new Date().toISOString().split('T')[0];
+	const fetchStudents = useCallback(async () => {
+		setIsLoading(true);
+		try {
+			const today = new Date().toISOString().split("T")[0];
 
-      // Load student roster and any already-saved attendance for today in parallel
-      const [roster, snapshot] = await Promise.all([
-        api.classroomStudents.getAll(classroomId),
-        api.attendance
-          .getClassroomAttendanceSnapshot(classroomId, today || '')
-          .catch(() => ({ records: [] as { student_id: string; status: AttendanceStatus }[] })),
-      ]);
+			// Load student roster and any already-saved attendance for today in parallel
+			const [roster, snapshot] = await Promise.all([
+				api.classroomStudents.getAll(classroomId),
+				api.attendance
+					.getClassroomAttendanceSnapshot(classroomId, today || "")
+					.catch(() => ({
+						records: [] as { student_id: string; status: AttendanceStatus }[],
+					})),
+			]);
 
-      // Build a lookup map: student_id → saved status
-      const savedStatus = new Map<string, AttendanceStatus>(
-        (snapshot.records as { student_id: string; status: AttendanceStatus }[]).map((r) => [
-          r.student_id,
-          r.status,
-        ]),
-      );
+			// Build a lookup map: student_id → saved status
+			const savedStatus = new Map<string, AttendanceStatus>(
+				(
+					snapshot.records as { student_id: string; status: AttendanceStatus }[]
+				).map((r) => [r.student_id, r.status]),
+			);
 
-      const attendanceData: StudentAttendance[] = (roster as any[]).map((student) => ({
-        id: student.id,
-        student_id: student.student_id || student.id,
-        full_name: student.full_name || 'Unknown Student',
-        roll_number: student.roll_number || null,
-        // Restore saved status; default to 'present' for unmarked students
-        status: (savedStatus.get(student.student_id || student.id) as any) ?? 'present',
-      })) as StudentAttendance[];
+			const attendanceData: StudentAttendance[] = (roster as any[]).map(
+				(student) => ({
+					id: student.id,
+					student_id: student.student_id || student.id,
+					full_name: student.full_name || "Unknown Student",
+					roll_number: student.roll_number || null,
+					// Restore saved status; default to 'present' for unmarked students
+					status:
+						(savedStatus.get(student.student_id || student.id) as any) ??
+						"present",
+				}),
+			) as StudentAttendance[];
 
-      setStudents(attendanceData);
-    } catch (_Error) {
-      console.error('Failed to load student list');
-    } finally {
-      setIsLoading(false);
-    }
-  }, [classroomId]);
+			setStudents(attendanceData);
+		} catch (_Error) {
+			console.error("Failed to load student list");
+		} finally {
+			setIsLoading(false);
+		}
+	}, [classroomId]);
 
-  useEffect(() => {
-    fetchStudents();
-  }, [fetchStudents]);
+	useEffect(() => {
+		fetchStudents();
+	}, [fetchStudents]);
 
-  const handleAttendanceChange = (updatedAttendance: StudentAttendance[]) => {
-    setStudents(updatedAttendance);
-  };
+	const handleAttendanceChange = (updatedAttendance: StudentAttendance[]) => {
+		setStudents(updatedAttendance);
+	};
 
-  if (isLoading) {
-    return (
-      <Box className="flex-1 p-8 items-center">
-        <Spinner color="#F6BF8C" />
-        <Text className="text-typography-500 mt-4">Loading class list...</Text>
-      </Box>
-    );
-  }
+	if (isLoading) {
+		return (
+			<Box className="flex-1 p-8 items-center">
+				<Spinner color="#F6BF8C" />
+				<Text className="text-typography-500 mt-4">Loading class list...</Text>
+			</Box>
+		);
+	}
 
-  if (students.length === 0 && !isLoading) {
-    return (
-      <Box className="flex-1 p-8 items-center">
-        <Text className="text-typography-500">No students found in this classroom.</Text>
-      </Box>
-    );
-  }
+	if (students.length === 0 && !isLoading) {
+		return (
+			<Box className="flex-1 p-8 items-center">
+				<Text className="text-typography-500">
+					No students found in this classroom.
+				</Text>
+			</Box>
+		);
+	}
 
-  return (
-    <AttendanceSheet
-      classroomId={classroomId}
-      initialStudents={students}
-      onAttendanceChange={handleAttendanceChange}
-    />
-  );
+	return (
+		<AttendanceSheet
+			classroomId={classroomId}
+			initialStudents={students}
+			onAttendanceChange={handleAttendanceChange}
+		/>
+	);
 }

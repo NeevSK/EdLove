@@ -1,5 +1,5 @@
-import { createSupabaseProfileRepository } from '../../adapters/supabase/profileRepository';
-import { createProfileServices } from './services';
+import { createSupabaseProfileRepository } from "../../adapters/supabase/profileRepository";
+import { createProfileServices } from "./services";
 
 /**
  * Native Runtime for Profile Domain.

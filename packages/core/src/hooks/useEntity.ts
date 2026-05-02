@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { api } from '../api'; // Use common API
 import type { EntityInstance, EntityMode, EntityType } from '../logic/entities/entity-protocol';
 
@@ -42,8 +42,10 @@ export function useEntity<T = any>(options: UseEntityOptions | EntityType, legac
   }, [type, id, mode]);
 
   useEffect(() => {
-    refresh();
-  }, [refresh]);
+    refresh().catch((err) => {
+      console.error(`Entity: Failed to load ${type}:${id}`, err);
+    });
+  }, [refresh, type, id]);
 
   const create = useCallback(
     async (data: T) => {
@@ -79,12 +81,15 @@ export function useEntity<T = any>(options: UseEntityOptions | EntityType, legac
     [type, id],
   );
 
-  return {
-    instance,
-    updateInstance,
-    create,
-    isLoading,
-    error,
-    refresh,
-  };
+  return useMemo(
+    () => ({
+      instance,
+      updateInstance,
+      create,
+      isLoading,
+      error,
+      refresh,
+    }),
+    [instance, updateInstance, create, isLoading, error, refresh],
+  );
 }

@@ -1,6 +1,6 @@
 import { createSupabaseFounderRepository } from '../../adapters/supabase/founderRepository';
+import { supabase } from '../supabase';
 import { createFounderServices } from '../../logic/domains/founder/services';
-import { supabase } from '../../api/supabase';
 
 const founderRepository = createSupabaseFounderRepository(supabase);
 

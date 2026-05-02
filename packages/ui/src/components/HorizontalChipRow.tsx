@@ -1,5 +1,6 @@
 import type React from 'react';
-import { FlatList, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
+import { FlatList } from '../primitives';
 import { Theme } from '../theme/Theme';
 import { SanctuaryChip, type SanctuaryChipProps } from './SanctuaryChip';
 

@@ -1,6 +1,6 @@
-import { supabase } from './supabase';
 import type { AcademicCycle } from '../types';
 import { APIError } from '../types/API';
+import { supabase } from './supabase';
 
 /**
  * Academic Cycles API

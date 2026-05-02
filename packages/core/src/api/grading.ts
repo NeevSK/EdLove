@@ -14,10 +14,10 @@ import type {
   PublishedStudentGradesSnapshot,
   SchoolGradingCompletion,
 } from '../logic/schemas/grading.schema';
-import { educationalServices } from '../native/runtimes/educational.runtime';
-import { gradingProjectionServices } from '../native/runtimes/gradingProjection.runtime';
-import { supabase } from './supabase';
+import { educationalServices } from './runtimes/educational.runtime';
+import { gradingProjectionServices } from './runtimes/gradingProjection.runtime';
 import { gradingContract } from './grading.contract';
+import { supabase } from './supabase';
 
 type GradingAuditContext = {
   actorId?: string;
@@ -82,7 +82,7 @@ const buildPublicationSnapshot = ({
   action,
 }: {
   grade: Grade;
-  publishedAt: string;
+  publishedAt: Date | string;
   publishedBy?: string;
   action: 'grade_published' | 'grade_revised' | 'grade_overridden';
 }) => ({
@@ -98,7 +98,6 @@ const getCurrentViewDate = () => new Date().toISOString().slice(0, 10);
 export const gradingAPI = {
   /**
    * @authority create Grade
-   * @deprecated Prefer saveGradeDraft for explicit temporal authoring semantics.
    */
   async saveGradeDraft(
     studentId: string,
@@ -153,26 +152,13 @@ export const gradingAPI = {
     };
   },
 
-  /**
-   * @authority create Grade
-   */
-  async submitGrade(
-    studentId: string,
-    classroomId: string,
-    marks: number,
-    assignmentId?: string,
-    feedback?: string,
-    audit?: GradingAuditContext,
-  ): Promise<Grade> {
-    return gradingAPI.saveGradeDraft(studentId, classroomId, marks, assignmentId, feedback, audit);
-  },
 
   /**
    * @authority publish Grade
    */
   async publishGrade(gradeId: string, audit?: GradingAuditContext): Promise<Grade> {
     const grade = await educationalServices.grading.getById(gradeId);
-    const publishedAt = new Date().toISOString();
+    const publishedAt = new Date();
 
     await logGradingAudit({
       action: 'grade_published',
@@ -227,7 +213,7 @@ export const gradingAPI = {
   ): Promise<Grade> {
     const previous = await educationalServices.grading.getById(gradeId);
     const revised = await educationalServices.grading.reviseGrade(gradeId, marks, feedback);
-    const publishedAt = new Date().toISOString();
+    const publishedAt = new Date();
 
     await logGradingAudit({
       action: 'grade_revised',
@@ -273,7 +259,7 @@ export const gradingAPI = {
   ): Promise<Grade> {
     const previous = await educationalServices.grading.getById(gradeId);
     const overridden = await educationalServices.grading.reviseGrade(gradeId, marks, feedback);
-    const publishedAt = new Date().toISOString();
+    const publishedAt = new Date();
 
     await logGradingAudit({
       action: 'grade_overridden',
@@ -308,22 +294,6 @@ export const gradingAPI = {
     };
   },
 
-  /**
-   * @authority read Grade
-   * @deprecated Prefer getPublishedStudentGrades or getStudentGradeTimeline depending on consumer.
-   */
-  async getReportCard(studentId: string): Promise<Grade[]> {
-    return gradingAPI.getStudentGradeTimeline(studentId);
-  },
-
-  /**
-   * @authority read Grade
-   * @deprecated Prefer getGradebookSnapshot for temporal classroom reads.
-   */
-  async getClassroomGrades(classroomId: string): Promise<Grade[]> {
-    const snapshot = await gradingAPI.getGradebookSnapshot(classroomId, getCurrentViewDate());
-    return snapshot.grades;
-  },
 
   /**
    * @authority read Grade
@@ -338,7 +308,7 @@ export const gradingAPI = {
     return {
       classroomId,
       viewDate,
-      grades: annotated.filter((grade) => grade.updated_at <= `${viewDate}T23:59:59.999Z`),
+      grades: annotated.filter((grade) => grade.updated_at <= new Date(`${viewDate}T23:59:59.999Z`)),
       gradingSettings,
     };
   },
@@ -359,8 +329,8 @@ export const gradingAPI = {
     );
     return grades.filter((grade) => {
       if (options?.classroomId && grade.classroom_id !== options.classroomId) return false;
-      if (options?.fromDate && grade.updated_at < `${options.fromDate}T00:00:00.000Z`) return false;
-      if (options?.toDate && grade.updated_at > `${options.toDate}T23:59:59.999Z`) return false;
+      if (options?.fromDate && grade.updated_at < new Date(`${options.fromDate}T00:00:00.000Z`)) return false;
+      if (options?.toDate && grade.updated_at > new Date(`${options.toDate}T23:59:59.999Z`)) return false;
       return true;
     });
   },
@@ -379,7 +349,7 @@ export const gradingAPI = {
       if (grade.student_id !== studentId) return false;
       if (options?.classroomId && grade.classroom_id !== options.classroomId) return false;
       const publishedAt = grade.published_at ?? grade.updated_at;
-      return publishedAt <= `${viewDate}T23:59:59.999Z`;
+      return publishedAt <= new Date(`${viewDate}T23:59:59.999Z`);
     });
 
     return {
@@ -471,4 +441,3 @@ export const gradingAPI = {
   },
 };
 
-void gradingContract;

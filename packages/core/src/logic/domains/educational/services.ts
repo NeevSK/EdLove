@@ -1,4 +1,4 @@
-﻿import { marksToGPA } from '../../../lib/grading';
+import { marksToGPA } from '../../../lib/grading';
 import { APIError } from '../../../types/API';
 import type { Attendance as AttendanceRecord } from '../../schemas/attendance.schema';
 import type {
@@ -151,7 +151,12 @@ export interface EducationalServices {
       date: string,
     ): Promise<AttendanceRecord>;
     batchRecord(
-      records: Array<{ classroom_id: string; student_id: string; status: string; date: string }>,
+      records: Array<{
+        classroom_id: string;
+        student_id: string;
+        status: string;
+        date: string;
+      }>,
     ): Promise<AttendanceRecord[]>;
     getForStudent(studentId: string, classroomId?: string): Promise<AttendanceRecord[]>;
   };
@@ -202,6 +207,8 @@ export const createEducationalServices = (
         student_id: myId,
         content: content?.trim() || null,
         photo_url: photoUrl ?? null,
+        // SAFE_SIDE_EFFECT: Mutation payload generated in action handler, not during hydration.
+        // eslint-disable-next-line no-restricted-syntax
         submitted_at: new Date().toISOString(),
       });
 
@@ -292,7 +299,10 @@ export const createEducationalServices = (
         gpa,
         feedback,
         graded_by: myId,
+        // SAFE_SIDE_EFFECT: Mutation payload generated in action handler.
+        // eslint-disable-next-line no-restricted-syntax
         created_at: new Date().toISOString(),
+        // eslint-disable-next-line no-restricted-syntax
         updated_at: new Date().toISOString(),
       });
 
@@ -322,6 +332,8 @@ export const createEducationalServices = (
         grade,
         gpa,
         feedback: feedback ?? null,
+        // SAFE_SIDE_EFFECT: Mutation payload generated in action handler.
+        // eslint-disable-next-line no-restricted-syntax
         updated_at: new Date().toISOString(),
       });
     },

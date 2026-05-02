@@ -37,9 +37,9 @@
  *   \u2705 The primary feature succeeds on its own terms; growth observation rides alongside it.
  */
 
-import { supabase } from './supabase';
 import { type ChallengeMetric, contextualChallengesAPI } from './contextualChallenges';
 import { naturePathsAPI } from './naturePaths';
+import { supabase } from './supabase';
 import { userGrowthStateAPI } from './userGrowthState';
 
 // \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
@@ -259,8 +259,8 @@ export const growthSignalsAPI = {
     if (CRYSTAL_SIGNALS.has(signalType)) {
       const isFractal = signalType === 'fractal_moment';
       const subjectArea =
-        (metadata.subject_area as string | undefined) ??
-        (metadata.section as string | undefined) ??
+        (metadata['subject_area'] as string | undefined) ??
+        (metadata['section'] as string | undefined) ??
         'general';
       void naturePathsAPI
         .recordCrystalDiscovery(
@@ -272,7 +272,7 @@ export const growthSignalsAPI = {
             ? 'You connected ideas across domains \u2014 the crystal found its fractal.'
             : 'Something clicked \u2014 a new crystal formed in your collection.',
           isFractal,
-          metadata.entity_id as string | undefined,
+          metadata['entity_id'] as string | undefined,
         )
         .catch(() => {});
     }
@@ -284,8 +284,8 @@ export const growthSignalsAPI = {
         .recordContribution(
           userId,
           challengeMetric,
-          metadata.classroom_id as string | undefined,
-          metadata.school_id as string | undefined,
+          metadata['classroom_id'] as string | undefined,
+          metadata['school_id'] as string | undefined,
         )
         .catch(() => {});
     }
@@ -414,7 +414,7 @@ async function evaluateMomentCondition(
 
       const visitedSections = new Set<string>(
         (data ?? [])
-          .map((e) => (e.event_metadata as Record<string, unknown>)?.section as string)
+          .map((e) => (e.event_metadata as Record<string, unknown> | null)?.['section'] as string)
           .filter(Boolean),
       );
 

@@ -1,4 +1,4 @@
-﻿import { APIError } from '../../../types/API';
+import { APIError } from '../../../types/API';
 import type {
   GuardianDashboard,
   GuardianIdentity,
@@ -58,8 +58,8 @@ function applyGuardianRelationshipPolicy(
 ): GuardianDashboard {
   const relationshipByStudentId = new Map(
     relationships
-      .filter((relationship) => relationship.isActive)
-      .map((relationship) => [relationship.studentId, relationship] as const),
+      .filter((relationship) => relationship.is_active)
+      .map((relationship) => [relationship.student_id, relationship] as const),
   );
 
   return {
@@ -71,7 +71,7 @@ function applyGuardianRelationshipPolicy(
         return [];
       }
 
-      const permissions = relationship.permissions ?? [];
+      const permissions = (relationship.permissions as unknown as GuardianPermissionConfig[]) ?? [];
       const sectionVisibility = {
         attendance: canReadGuardianCategory(permissions, 'attendance'),
         grades: canReadGuardianCategory(permissions, 'grades'),
@@ -174,7 +174,7 @@ export interface GuardianServices {
   linkGuardianToStudent(
     guardianId: string,
     studentId: string,
-    relationshipType: GuardianIdentity['relationshipType'],
+    relationshipType: GuardianIdentity['relationship_type'],
     schoolId?: string,
   ): Promise<StudentGuardianRelationship>;
   updatePermissions(

@@ -132,7 +132,10 @@ export const communityContract = c.router({
   voteInPoll: {
     method: 'POST',
     path: '/community/posts/:postId/poll/vote',
-    body: z.object({ optionId: z.string(), allowMultiple: z.boolean().optional() }),
+    body: z.object({
+      optionId: z.string(),
+      allowMultiple: z.boolean().optional(),
+    }),
     responses: { 200: z.array(z.string()) },
     metadata: authority('create', 'Post'),
   },

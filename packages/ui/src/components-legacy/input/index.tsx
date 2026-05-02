@@ -1,17 +1,11 @@
 import { cssInterop } from 'nativewind';
 import React from 'react';
-import {
-  Pressable,
-  type PressableProps,
-  TextInput,
-  type TextInputProps,
-  View,
-  type ViewProps,
-} from 'react-native';
+import { type PressableProps, type TextInputProps, type ViewProps, type View, type TextInput } from 'react-native';
+import { Pressable, TextInput as PrimitiveTextInput, View as PrimitiveView } from '../../primitives';
 import { useFormControl } from '../form-control';
 
-cssInterop(View, { className: 'style' });
-cssInterop(TextInput, { className: 'style' });
+cssInterop(PrimitiveView, { className: 'style' });
+cssInterop(PrimitiveTextInput, { className: 'style' });
 cssInterop(Pressable, { className: 'style' });
 
 export interface IInputProps extends ViewProps {
@@ -27,7 +21,7 @@ export const Input = React.forwardRef<View, IInputProps>(
     const isDisabled = isDisabledProp ?? isDisabledContext;
 
     return (
-      <View
+      <PrimitiveView
         {...props}
         ref={ref}
         className={`flex-row items-center border rounded-lg px-3 min-h-[48px] 
@@ -45,7 +39,7 @@ export const InputField = React.forwardRef<
 >(({ className, type, ...props }, ref) => {
   const { isDisabled } = useFormControl();
   return (
-    <TextInput
+    <PrimitiveTextInput
       {...props}
       ref={ref}
       editable={!isDisabled}

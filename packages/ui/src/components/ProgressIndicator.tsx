@@ -28,7 +28,7 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
 
           return (
             <Box
-              key={index}
+              key={`dot-${index}`}
               testID={`progress-dot-${index}`}
               className={`
                                 h-2 rounded-full

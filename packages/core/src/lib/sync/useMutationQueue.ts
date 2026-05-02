@@ -3,7 +3,6 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 import { SafeZustandStorage } from '../../lib/storageWrapper';
 import { generateIdempotencyKey } from './idempotency';
 import type { MutationQueueState, QueuedMutation } from './types';
-import 'react-native-get-random-values';
 import { v7 as uuidv7 } from 'uuid';
 
 /**

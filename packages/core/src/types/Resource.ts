@@ -33,8 +33,8 @@ export interface BaseResource {
   format: ResourceFormat;
   url?: string;
   file_path?: string;
-  created_at?: string;
-  updated_at?: string;
+  created_at?: Date;
+  updated_at?: Date;
   metadata?: Record<string, any>;
 }
 
@@ -48,7 +48,7 @@ export interface ClassroomResource {
   url?: string;
   content?: string;
   is_pinned: boolean;
-  created_at: string;
-  updated_at: string;
+  created_at: Date;
+  updated_at: Date;
   owner_context?: 'classroom' | 'institutional';
 }

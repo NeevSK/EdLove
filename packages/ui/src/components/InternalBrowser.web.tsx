@@ -1,6 +1,7 @@
 import { ChevronLeft, ChevronRight, ExternalLink, RotateCcw, Share2, X } from 'lucide-react-native';
 import type React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
+import { View } from '../primitives';
 import { useTheme } from '../hooks/useTheme';
 import { Text } from './ui/text';
 import { Pressable } from './ui/view';
@@ -93,7 +94,13 @@ export const InternalBrowser: React.FC<InternalBrowserProps> = ({
 
         {/* Web Fallback Overlay (since many sites block iframes) */}
         <View style={styles.webWarning}>
-          <Text style={{ color: scene.text.secondary, textAlign: 'center', fontSize: 12 }}>
+          <Text
+            style={{
+              color: scene.text.secondary,
+              textAlign: 'center',
+              fontSize: 12,
+            }}
+          >
             If content doesn't load, use External Link button.
           </Text>
         </View>

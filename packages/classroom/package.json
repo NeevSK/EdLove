@@ -1,67 +1,67 @@
 {
-  "name": "@repo/classroom",
-  "version": "0.0.1",
-  "main": "src/index.ts",
-  "types": "src/index.ts",
-  "exports": {
-    ".": "./src/index.ts",
-    "./components": "./src/components/index.ts",
-    "./hooks": "./src/hooks/index.ts",
-    "./screens": "./src/screens/index.ts",
-    "./types": "./src/types/index.ts",
-    "./core": "./src/entrypoints/core.ts",
-    "./teacher": "./src/entrypoints/teacher.ts",
-    "./student": "./src/entrypoints/student.ts",
-    "./screens/ClassroomScreen.web": "./src/screens/ClassroomScreen.web.tsx",
-    "./screens/TeacherClassroomDashboard.web": "./src/screens/TeacherClassroomDashboard.web.tsx",
-    "./screens/StudentClassroomDashboard": "./src/screens/StudentClassroomDashboard.tsx",
-    "./screens/AttendanceScreen.web": "./src/screens/AttendanceScreen.web.tsx",
-    "./screens/GradebookScreen.web": "./src/screens/GradebookScreen.web.tsx",
-    "./screens/StudentProfileScreen": "./src/screens/StudentProfileScreen.tsx",
-    "./screens/TimetableScreen.web": "./src/screens/TimetableScreen.web.tsx",
-    "./package.json": "./package.json"
-  },
+	"name": "@repo/classroom",
+	"version": "0.0.1",
+	"main": "src/index.ts",
+	"types": "src/index.ts",
+	"exports": {
+		".": "./src/index.ts",
+		"./components": "./src/components/index.ts",
+		"./hooks": "./src/hooks/index.ts",
+		"./screens": "./src/screens/index.ts",
+		"./types": "./src/types/index.ts",
+		"./core": "./src/entrypoints/core.ts",
+		"./teacher": "./src/entrypoints/teacher.ts",
+		"./student": "./src/entrypoints/student.ts",
+		"./screens/ClassroomScreen.web": "./src/screens/ClassroomScreen.web.tsx",
+		"./screens/TeacherClassroomDashboard.web": "./src/screens/TeacherClassroomDashboard.web.tsx",
+		"./screens/StudentClassroomDashboard": "./src/screens/StudentClassroomDashboard.tsx",
+		"./screens/AttendanceScreen.web": "./src/screens/AttendanceScreen.web.tsx",
+		"./screens/GradebookScreen.web": "./src/screens/GradebookScreen.web.tsx",
+		"./screens/StudentProfileScreen": "./src/screens/StudentProfileScreen.tsx",
+		"./screens/TimetableScreen.web": "./src/screens/TimetableScreen.web.tsx",
+		"./package.json": "./package.json"
+	},
 
-  "scripts": {
-    "check-types": "pnpm exec tsc --noEmit",
-    "lint": "pnpm exec eslint .",
-    "clean": "rm -rf .turbo node_modules dist"
-  },
-  "dependencies": {
-    "@repo/admin": "workspace:*",
-    "@repo/ai": "workspace:*",
-    "@repo/analytics": "workspace:*",
-    "@repo/community": "workspace:*",
-    "@repo/core": "workspace:*",
-    "@repo/graphics": "workspace:*",
-    "@repo/library": "workspace:*",
-    "@repo/profile": "workspace:*",
-    "@repo/people": "workspace:*",
-    "@repo/self": "workspace:*",
-    "@repo/scanner-kit": "workspace:*",
-    "@repo/ui": "workspace:*",
-    "@tanstack/react-query": "^5.90.20",
-    "date-fns": "^4.1.0",
-    "expo-clipboard": "~55.0.13",
-    "expo-image-picker": "~55.0.19",
-    "lucide-react-native": "^0.563.0",
-    "react-i18next": "^16.5.4",
-    "react-native-reanimated": "^4.2.1"
-  },
-  "devDependencies": {
-    "@repo/eslint-config": "workspace:^",
-    "@repo/typescript-config": "workspace:*",
-    "@types/react": "^19.2.14",
-    "@types/react-native": "workspace:*",
-    "eslint": "^9.38.0",
-    "tailwindcss": "^4.1.18",
-    "typescript": "^5.9.3"
-  },
-  "peerDependencies": {
-    "@react-navigation/native": "*",
-    "lucide-react-native": "*",
-    "react": "*",
-    "react-i18next": "*",
-    "react-native": "*"
-  }
+	"scripts": {
+		"check-types": "pnpm exec tsc --noEmit",
+		"lint": "pnpm exec eslint .",
+		"clean": "rm -rf .turbo node_modules dist"
+	},
+	"dependencies": {
+		"@repo/admin": "workspace:*",
+		"@repo/ai": "workspace:*",
+		"@repo/analytics": "workspace:*",
+		"@repo/community": "workspace:*",
+		"@repo/core": "workspace:*",
+		"@repo/graphics": "workspace:*",
+		"@repo/library": "workspace:*",
+		"@repo/profile": "workspace:*",
+		"@repo/people": "workspace:*",
+		"@repo/self": "workspace:*",
+		"@repo/scanner-kit": "workspace:*",
+		"@repo/ui": "workspace:*",
+		"@tanstack/react-query": "^5.90.20",
+		"date-fns": "^4.1.0",
+		"expo-clipboard": "~55.0.13",
+		"expo-image-picker": "~55.0.19",
+		"lucide-react-native": "^0.563.0",
+		"react-i18next": "^16.5.4",
+		"react-native-reanimated": "^4.2.1"
+	},
+	"devDependencies": {
+		"@repo/eslint-config": "workspace:^",
+		"@repo/typescript-config": "workspace:*",
+		"@types/react": "^19.2.14",
+		"@types/react-native": "workspace:*",
+		"eslint": "^9.38.0",
+		"tailwindcss": "^4.1.18",
+		"typescript": "^5.9.3"
+	},
+	"peerDependencies": {
+		"@react-navigation/native": "*",
+		"lucide-react-native": "*",
+		"react": "*",
+		"react-i18next": "*",
+		"react-native": "*"
+	}
 }

@@ -278,7 +278,9 @@ export default function WorkspaceCanvasDemo() {
                 <Text
                   size="xs"
                   className="font-medium"
-                  style={{ color: role === candidate ? scene.surface.bg : text.primary }}
+                  style={{
+                    color: role === candidate ? scene.surface.bg : text.primary,
+                  }}
                 >
                   {ROLE_LABELS[candidate]}
                 </Text>
@@ -288,7 +290,10 @@ export default function WorkspaceCanvasDemo() {
 
           <VStack
             className="rounded-xl border p-4 gap-1"
-            style={{ backgroundColor: scene.surface.bg, borderColor: scene.border.base }}
+            style={{
+              backgroundColor: scene.surface.bg,
+              borderColor: scene.border.base,
+            }}
           >
             <Text size="xs" className="font-bold tracking-widest text-[#SaffronMuted] uppercase">
               Demo note

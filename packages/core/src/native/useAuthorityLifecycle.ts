@@ -1,6 +1,9 @@
 import type { Session } from '@supabase/supabase-js';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Platform } from 'react-native';
+import { authAPI } from '../api/auth';
+import { identityAPI } from '../api/identity';
+import { supabase } from '../api/supabase';
 import type { SchoolType } from '../constants/SriLankanSchools';
 import { identifyUser, initPostHog, trackEvent } from '../lib/monitoring/posthog';
 import { clearSentryUser, initSentry, setSentryUser } from '../lib/monitoring/sentry';
@@ -8,9 +11,6 @@ import type { Role } from '../logic/schemas/role.schema';
 import { useStore } from '../store/useStore';
 import type { User } from '../types';
 import { APIError } from '../types/API';
-import { authAPI } from '../api/auth';
-import { identityAPI } from '../api/identity';
-import { supabase } from '../api/supabase';
 
 /**
  * useAuthorityLifecycle
@@ -108,14 +108,18 @@ export function useAuthorityLifecycle() {
   useEffect(() => {
     // 1. Initialize Monitoring
     initSentry();
-    initPostHog().then(() => {
-      trackEvent('app_initialized', { platform: Platform.OS });
-    });
+    initPostHog()
+      .then(() => {
+        trackEvent('app_initialized', { platform: Platform.OS });
+      })
+      .catch((e) => {
+        console.error('Monitoring: PostHog initialization failed', e);
+      });
 
     // 2. Initial Session Check
     const checkSession = async () => {
       try {
-        const initialSession = await authAPI.getSession();
+        const initialSession = await authAPI.getAuthSession();
         setSession(initialSession);
         setAuthSession(initialSession);
 
@@ -142,7 +146,9 @@ export function useAuthorityLifecycle() {
       }
     };
 
-    checkSession();
+    checkSession().catch((e) => {
+      console.error('Auth: Critical session check failed', e);
+    });
 
     // 3. Auth State Change Listener
     const {
@@ -202,15 +208,22 @@ export function useAuthorityLifecycle() {
             console.log('\uD83C\uDF38 Auth: Profile update received:', payload.new);
           }
           // Force a profile refresh on remote change
-          refreshProfile();
+          refreshProfile().catch((e) => {
+            console.error('Auth: Profile refresh failed after remote update', e);
+          });
         },
       )
       .subscribe();
 
     return () => {
-      supabase.removeChannel(channel);
+      supabase.removeChannel(channel).catch((e) => {
+        console.error('Auth: Failed to remove channel during cleanup', e);
+      });
     };
   }, [currentUser?.id, refreshProfile]);
 
-  return { session, loading, isProfileLoading, refreshProfile };
+  return useMemo(
+    () => ({ session, loading, isProfileLoading, refreshProfile }),
+    [session, loading, isProfileLoading, refreshProfile],
+  );
 }

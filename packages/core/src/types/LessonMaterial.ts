@@ -14,6 +14,6 @@ export interface LessonMaterial {
   content?: string;
   url?: string;
   is_pinned: boolean;
-  created_at: string;
-  updated_at?: string;
+  created_at: Date;
+  updated_at?: Date;
 }

@@ -2,7 +2,7 @@ import { mediaInitialState, mediaReducer } from '@repo/core/logic';
 import { Pause, Play, RotateCcw, RotateCw, X } from 'lucide-react-native';
 import type React from 'react';
 import { useCallback, useEffect, useReducer, useRef } from 'react';
-import { Pressable } from 'react-native';
+import { Pressable } from '../../primitives';
 import { Box } from '../../components/ui/box';
 import { HStack } from '../../components/ui/hstack';
 import { Text } from '../../components/ui/text';
@@ -64,7 +64,10 @@ export function VideoPlayer({ url, title, creator, onClose }: VideoPlayerProps) 
     if (isPlaying) {
       video.pause();
     } else {
-      video.play();
+      video.play().catch(() => {
+        // Handle play promise rejection (e.g. user hasn't interacted yet)
+        dispatch({ type: 'SET_PLAYING', payload: false });
+      });
     }
   }, [isPlaying]);
 
@@ -114,7 +117,9 @@ export function VideoPlayer({ url, title, creator, onClose }: VideoPlayerProps) 
         className="w-full h-full object-contain"
         onClick={handleToggleControls}
         autoPlay
-      />
+      >
+        <track kind="captions" />
+      </video>
 
       {showControls && (
         <Box className="absolute inset-0 bg-black/40 p-4 transition-opacity duration-300 pointer-events-none">
@@ -178,7 +183,18 @@ export function VideoPlayer({ url, title, creator, onClose }: VideoPlayerProps) 
               <div
                 ref={progressBarRef}
                 onClick={handleProgressBarClick}
-                className="h-1.5 w-full bg-white/20 rounded-full overflow-hidden cursor-pointer group/progress"
+                onKeyDown={(e) => {
+                  if (e.key === 'ArrowRight') handleSeekBy(5000);
+                  if (e.key === 'ArrowLeft') handleSeekBy(-5000);
+                  if (e.key === 'Enter' || e.key === ' ') handlePlayPause();
+                }}
+                role="slider"
+                aria-label="Video progress"
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-valuenow={Math.round(progressPercentage)}
+                tabIndex={0}
+                className="h-1.5 w-full bg-white/20 rounded-full overflow-hidden cursor-pointer group/progress focus:outline-none focus:ring-2 focus:ring-phase-accent"
               >
                 <div
                   className="h-full bg-phase-accent transition-all duration-100"

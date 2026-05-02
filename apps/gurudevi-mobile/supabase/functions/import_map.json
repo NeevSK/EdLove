@@ -1,7 +1,7 @@
 {
-  "imports": {
-    "functions-js/edge-runtime.d.ts": "https://raw.githubusercontent.com/supabase/functions-js/main/src/edge-runtime.d.ts",
-    "supabase-js": "https://esm.sh/@supabase/supabase-js@2",
-    "@supabase/": "https://esm.sh/@supabase/"
-  }
+	"imports": {
+		"functions-js/edge-runtime.d.ts": "https://raw.githubusercontent.com/supabase/functions-js/main/src/edge-runtime.d.ts",
+		"supabase-js": "https://esm.sh/@supabase/supabase-js@2",
+		"@supabase/": "https://esm.sh/@supabase/"
+	}
 }

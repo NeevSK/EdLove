@@ -13,7 +13,8 @@
 
 import { LinearGradient } from 'expo-linear-gradient';
 import { BadgeCheck, Bookmark, BookOpen } from 'lucide-react-native';
-import { ImageBackground, Pressable } from 'react-native';
+import { ImageBackground } from 'react-native';
+import { Pressable } from '../primitives';
 import { Box, HStack, Text, VStack } from '../gluestack';
 
 // ============================================================================

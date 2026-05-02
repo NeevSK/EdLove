@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { api } from '../api';
 import type { Classroom, Student } from '../types';
 
@@ -35,7 +35,9 @@ export function useTeacherClassroom(classroomId: string) {
   }, [classroomId]);
 
   useEffect(() => {
-    loadData();
+    loadData().catch((e) => {
+      console.error('TeacherClassroom: Failed to load on mount', e);
+    });
   }, [loadData]);
 
   const refreshStudents = useCallback(async () => {
@@ -47,12 +49,15 @@ export function useTeacherClassroom(classroomId: string) {
     }
   }, [classroomId]);
 
-  return {
-    classroom,
-    students,
-    loading,
-    error,
-    refresh: loadData,
-    refreshStudents,
-  };
+  return useMemo(
+    () => ({
+      classroom,
+      students,
+      loading,
+      error,
+      refresh: loadData,
+      refreshStudents,
+    }),
+    [classroom, students, loading, error, loadData, refreshStudents],
+  );
 }

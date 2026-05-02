@@ -1,13 +1,11 @@
 // 1. Foundation (No relative dependencies)
 
-
 export {
   type DeviceAccountProfile,
   type DeviceAccountRecord,
   deviceAccounts,
 } from './accounts/deviceAccounts';
 export { isDemo } from './api/demo';
-
 // 4. API & Business Logic (Named exports for better tree-shaking)
 export { deviceTrustAPI } from './api/deviceTrust';
 export * from './constants/SriLankanSchools';
@@ -123,6 +121,7 @@ export {
   getTransactionRange,
   type TemporalRange,
 } from './logic/utils/temporalUtils';
+export { v4, v7, v7 as uuidv7 } from './logic/utils/uuid';
 export {
   FlowResolver,
   type FlowResult,
@@ -130,7 +129,6 @@ export {
 export { GuestDataManager } from './native/guestDataManager';
 export { GuestDataSync } from './native/guestDataSync';
 export { Runtime } from './native/runtime';
-export { authAPI, identityAPI, supabase } from './api';
 export {
   invalidateResilience,
   type ResilienceOptions,
@@ -150,7 +148,6 @@ export { type TemporalScale, useTemporalStore } from './store/useTemporalStore';
 export { useTenantStore } from './store/useTenantStore';
 export { useUIStore } from './store/useUIStore';
 export * from './types';
-export { v4, v7, v7 as uuidv7 } from './logic/utils/uuid';
 
 import { z } from 'zod';
 

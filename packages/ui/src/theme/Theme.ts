@@ -591,11 +591,23 @@ function createSceneTokens(tokens: PhaseTokens): SceneTokens {
 
   return {
     world: { bg: tokens.gradientNodes[0], border: 'transparent' },
-    chrome: { bg: tokens.glass.surface.bg, border: tokens.glass.surface.border },
-    canvas: { bg: tokens.gradientNodes[1], border: tokens.glass.surface.border },
-    surface: { bg: tokens.glass.surface.bg, border: tokens.glass.surface.border },
+    chrome: {
+      bg: tokens.glass.surface.bg,
+      border: tokens.glass.surface.border,
+    },
+    canvas: {
+      bg: tokens.gradientNodes[1],
+      border: tokens.glass.surface.border,
+    },
+    surface: {
+      bg: tokens.glass.surface.bg,
+      border: tokens.glass.surface.border,
+    },
     elevated: { bg: tokens.glass.modal.bg, border: tokens.glass.modal.border },
-    interactive: { bg: tokens.glass.interact.bg, border: tokens.glass.interact.border },
+    interactive: {
+      bg: tokens.glass.interact.bg,
+      border: tokens.glass.interact.border,
+    },
 
     // Semantic Mapping
     primary: {
@@ -714,7 +726,12 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
         templeGold: '#FDD925',
         sageGreen: '#8BBF7A',
       },
-      text: { primary: '#FCF9F2', secondary: '#D3D8E3', inverse: '#11141B', muted: '#9AA3B5' },
+      text: {
+        primary: '#FCF9F2',
+        secondary: '#D3D8E3',
+        inverse: '#11141B',
+        muted: '#9AA3B5',
+      },
     },
     light: {
       gradientNodes: ['#F5EDD6', '#FAF7ED', '#E8E2CF'], // Vellum \u2192 Silk \u2192 Linen
@@ -752,7 +769,12 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
         templeGold: '#FDD925',
         sageGreen: '#8BBF7A',
       },
-      text: { primary: '#2A2318', secondary: '#544A3D', inverse: '#1A1610', muted: '#72695E' },
+      text: {
+        primary: '#2A2318',
+        secondary: '#544A3D',
+        inverse: '#1A1610',
+        muted: '#72695E',
+      },
     },
   },
 
@@ -793,7 +815,12 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
         templeGold: '#FDD925',
         sageGreen: '#8BBF7A',
       },
-      text: { primary: '#FCF9F2', secondary: '#D3D8E3', inverse: '#151922', muted: '#9AA3B5' },
+      text: {
+        primary: '#FCF9F2',
+        secondary: '#D3D8E3',
+        inverse: '#151922',
+        muted: '#9AA3B5',
+      },
     },
     light: {
       gradientNodes: ['#F5EDD6', '#FFFBF5', '#FAF7ED'], // Vellum -> Silk -> Silk (Warm light)
@@ -831,7 +858,12 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
         templeGold: '#FDD925',
         sageGreen: '#8BBF7A',
       },
-      text: { primary: '#2A2318', secondary: '#544A3D', inverse: '#1A1610', muted: '#72695E' },
+      text: {
+        primary: '#2A2318',
+        secondary: '#544A3D',
+        inverse: '#1A1610',
+        muted: '#72695E',
+      },
     },
   },
 
@@ -872,7 +904,12 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
         templeGold: '#FDD925',
         sageGreen: '#8BBF7A',
       },
-      text: { primary: '#FCF9F2', secondary: '#D4DAE5', inverse: '#171C25', muted: '#A0A9BC' },
+      text: {
+        primary: '#FCF9F2',
+        secondary: '#D4DAE5',
+        inverse: '#171C25',
+        muted: '#A0A9BC',
+      },
     },
     light: {
       gradientNodes: ['#F5EDD6', '#DCFCE7', '#FAF7ED'],
@@ -910,7 +947,12 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
         templeGold: '#FDD925',
         sageGreen: '#8BBF7A',
       },
-      text: { primary: '#2A2318', secondary: '#544A3D', inverse: '#2A2318', muted: '#72695E' },
+      text: {
+        primary: '#2A2318',
+        secondary: '#544A3D',
+        inverse: '#2A2318',
+        muted: '#72695E',
+      },
     },
   },
 
@@ -951,7 +993,12 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
         templeGold: '#FDD925',
         sageGreen: '#8BBF7A',
       },
-      text: { primary: '#FCF9F2', secondary: '#D4DAE5', inverse: '#151B26', muted: '#9FAABD' },
+      text: {
+        primary: '#FCF9F2',
+        secondary: '#D4DAE5',
+        inverse: '#151B26',
+        muted: '#9FAABD',
+      },
     },
     light: {
       gradientNodes: ['#F5EDD6', '#E0F2FE', '#F5EDD6'],
@@ -989,7 +1036,12 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
         templeGold: '#FDD925',
         sageGreen: '#8BBF7A',
       },
-      text: { primary: '#2A2318', secondary: '#544A3D', inverse: '#1A1610', muted: '#72695E' },
+      text: {
+        primary: '#2A2318',
+        secondary: '#544A3D',
+        inverse: '#1A1610',
+        muted: '#72695E',
+      },
     },
   },
 
@@ -1030,7 +1082,12 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
         templeGold: '#FDD925',
         sageGreen: '#8BBF7A',
       },
-      text: { primary: '#FCF9F2', secondary: '#D7DBE8', inverse: '#151822', muted: '#A39DBB' },
+      text: {
+        primary: '#FCF9F2',
+        secondary: '#D7DBE8',
+        inverse: '#151822',
+        muted: '#A39DBB',
+      },
     },
     light: {
       gradientNodes: ['#F5EDD6', '#FFF7ED', '#FAF7ED'],
@@ -1068,7 +1125,12 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
         templeGold: '#FDD925',
         sageGreen: '#8BBF7A',
       },
-      text: { primary: '#2A2318', secondary: '#544A3D', inverse: '#1A1610', muted: '#72695E' },
+      text: {
+        primary: '#2A2318',
+        secondary: '#544A3D',
+        inverse: '#1A1610',
+        muted: '#72695E',
+      },
     },
   },
 
@@ -1109,7 +1171,12 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
         templeGold: '#FDD925',
         sageGreen: '#8BBF7A',
       },
-      text: { primary: '#FCF9F2', secondary: '#D8DDE9', inverse: '#0F131C', muted: '#A0A9BE' },
+      text: {
+        primary: '#FCF9F2',
+        secondary: '#D8DDE9',
+        inverse: '#0F131C',
+        muted: '#A0A9BE',
+      },
     },
     light: {
       gradientNodes: ['#F5EDD6', '#FAF7ED', '#E8E2CF'], // Night Light: Vellum -> Silk -> Linen (Never black)
@@ -1147,7 +1214,12 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
         templeGold: '#FDD925',
         sageGreen: '#8BBF7A',
       },
-      text: { primary: '#2A2318', secondary: '#544A3D', inverse: '#1A1610', muted: '#72695E' },
+      text: {
+        primary: '#2A2318',
+        secondary: '#544A3D',
+        inverse: '#1A1610',
+        muted: '#72695E',
+      },
     },
   },
 };
@@ -1202,7 +1274,12 @@ const CLASSIC_BASE_TOKENS = {
     templeGold: '#FDD925',
     sageGreen: '#8BBF7A',
   },
-  text: { primary: '#2A2318', secondary: '#544A3D', inverse: '#1A1610', muted: '#72695E' },
+  text: {
+    primary: '#2A2318',
+    secondary: '#544A3D',
+    inverse: '#1A1610',
+    muted: '#72695E',
+  },
 } as const satisfies PhaseTokens;
 
 export const CLASSIC_TOKENS = enrichThemeTokens(CLASSIC_BASE_TOKENS);

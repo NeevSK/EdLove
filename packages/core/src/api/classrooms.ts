@@ -1,5 +1,5 @@
 import type { Classroom, TeacherStats } from '../logic/schemas/classroom.schema';
-import { educationalServices } from '../native/runtimes/educational.runtime';
+import { educationalServices } from './runtimes/educational.runtime';
 import type { PaginationParams } from '../types';
 import { educationalContract } from './educational.contract';
 

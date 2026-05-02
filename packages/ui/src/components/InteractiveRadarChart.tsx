@@ -1,6 +1,7 @@
 import type React from 'react';
 import { useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
+import { View } from '../primitives';
 import Svg, { Circle, G, Line, Polygon, Text as SvgText } from 'react-native-svg';
 import { Theme } from '../theme/Theme';
 
@@ -25,7 +26,6 @@ export const InteractiveRadarChart: React.FC<InteractiveRadarChartProps> = ({
   dimensions,
   size = 300,
   editable = false,
-  onChange,
 }) => {
   const centerX = size / 2;
   const centerY = size / 2;

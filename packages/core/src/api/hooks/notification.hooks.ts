@@ -1,9 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import React from 'react';
-import { supabase } from '../supabase';
+import { useEffect, useMemo } from 'react';
 import { useStore } from '../../store/useStore';
 import type { Notification } from '../../types/Community';
-import { communityAPI } from '../community';
+import { socialAPI } from '../social';
+import { supabase } from '../supabase';
 
 export const notificationKeys = {
   all: ['notifications'] as const,
@@ -21,7 +21,7 @@ export function useNotificationHooks() {
   // Fetch list
   const listQuery = useQuery({
     queryKey: notificationKeys.list(userId),
-    queryFn: () => communityAPI.getNotifications(40),
+    queryFn: () => socialAPI.getNotifications(40),
     enabled: !!userId,
     staleTime: 60_000,
   });
@@ -29,27 +29,27 @@ export function useNotificationHooks() {
   // Unread badge count
   const countQuery = useQuery({
     queryKey: notificationKeys.count(userId),
-    queryFn: communityAPI.getUnreadNotificationCount,
+    queryFn: socialAPI.getUnreadNotificationCount,
     enabled: !!userId,
     staleTime: 30_000,
     refetchInterval: 60_000,
   });
 
   // Real-time subscription
-  React.useEffect(() => {
+  useEffect(() => {
     if (!userId) return;
 
     const channel = supabase
       .channel(`notifications-${userId}`)
       .on(
-        'postgres_changes' as any,
+        'postgres_changes',
         {
           event: 'INSERT',
           schema: 'public',
           table: 'notifications',
           filter: `user_id=eq.${userId}`,
         },
-        (payload: any) => {
+        (payload: { new: Notification }) => {
           queryClient.setQueryData<Notification[]>(notificationKeys.list(userId), (prev) => [
             payload.new as Notification,
             ...(prev ?? []),
@@ -61,45 +61,64 @@ export function useNotificationHooks() {
         },
       )
       .on(
-        'postgres_changes' as any,
+        'postgres_changes',
         {
           event: 'UPDATE',
           schema: 'public',
           table: 'notifications',
           filter: `user_id=eq.${userId}`,
         },
-        () => {
-          queryClient.invalidateQueries({ queryKey: notificationKeys.list(userId) });
-          queryClient.invalidateQueries({ queryKey: notificationKeys.count(userId) });
+        async () => {
+          await Promise.all([
+            queryClient.invalidateQueries({
+              queryKey: notificationKeys.list(userId),
+            }),
+            queryClient.invalidateQueries({
+              queryKey: notificationKeys.count(userId),
+            }),
+          ]);
         },
       )
       .subscribe();
 
     return () => {
-      supabase.removeChannel(channel);
+      supabase.removeChannel(channel).catch((e) => {
+        console.error('Notifications: Failed to remove channel during cleanup', e);
+      });
     };
   }, [userId, queryClient]);
 
   const markReadMutation = useMutation({
-    mutationFn: (notifId: string) => communityAPI.markNotificationRead(notifId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: notificationKeys.all });
+    mutationFn: (notifId: string) => socialAPI.markNotificationRead(notifId),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: notificationKeys.all });
     },
   });
 
   const markAllReadMutation = useMutation({
-    mutationFn: communityAPI.markAllNotificationsRead,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: notificationKeys.all });
+    mutationFn: socialAPI.markAllNotificationsRead,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: notificationKeys.all });
     },
   });
 
-  return {
-    notifications: listQuery.data ?? [],
-    isLoading: listQuery.isLoading,
-    unreadCount: countQuery.data ?? 0,
-    markRead: markReadMutation.mutateAsync,
-    markAllRead: markAllReadMutation.mutateAsync,
-    isMarkingRead: markReadMutation.isPending || markAllReadMutation.isPending,
-  };
+  return useMemo(
+    () => ({
+      notifications: listQuery.data ?? [],
+      isLoading: listQuery.isLoading,
+      unreadCount: countQuery.data ?? 0,
+      markRead: markReadMutation.mutateAsync,
+      markAllRead: markAllReadMutation.mutateAsync,
+      isMarkingRead: markReadMutation.isPending || markAllReadMutation.isPending,
+    }),
+    [
+      listQuery.data,
+      listQuery.isLoading,
+      countQuery.data,
+      markReadMutation.mutateAsync,
+      markAllReadMutation.mutateAsync,
+      markReadMutation.isPending,
+      markAllReadMutation.isPending,
+    ],
+  );
 }

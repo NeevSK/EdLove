@@ -1,7 +1,9 @@
 import type { ResolvedWorkspaceSurface } from '@repo/core/logic';
 import { EyeOff, Info, MoveDiagonal2, Pin, Sparkles } from 'lucide-react-native';
+import { useCallback } from 'react';
 import type React from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
+import { Pressable, View } from '../../primitives';
 import { Text } from '../../gluestack';
 import { useThemedColors } from '../../hooks/useThemedColors';
 import { Theme } from '../../theme/Theme';
@@ -56,11 +58,23 @@ export function CanvasSurfaceCard<
   const ownerLabel = OWNER_LABELS[surface.ownerPackage] ?? surface.ownerPackage;
   const cardStyles = createStyles(colors);
 
+  const handlePress = useCallback(() => {
+    onPress?.(surface);
+  }, [onPress, surface]);
+
+  const handlePressInfo = useCallback(() => {
+    onPressInfo?.(surface);
+  }, [onPressInfo, surface]);
+
+  const handleToggleHidden = useCallback(() => {
+    onToggleHidden?.(surface);
+  }, [onToggleHidden, surface]);
+
   return (
     <Pressable
       accessibilityRole={onPress ? 'button' : undefined}
       disabled={!onPress}
-      onPress={onPress ? () => onPress(surface) : undefined}
+      onPress={onPress ? handlePress : undefined}
       style={({ pressed }) => [
         cardStyles.card,
         pressed && onPress ? cardStyles.cardPressed : null,
@@ -137,7 +151,7 @@ export function CanvasSurfaceCard<
           {onPressInfo ? (
             <Pressable
               accessibilityRole="button"
-              onPress={() => onPressInfo?.(surface)}
+              onPress={handlePressInfo}
               style={({ pressed }) => [
                 cardStyles.iconButton,
                 pressed ? cardStyles.toggleButtonPressed : null,
@@ -149,7 +163,7 @@ export function CanvasSurfaceCard<
           {onToggleHidden ? (
             <Pressable
               accessibilityRole="button"
-              onPress={() => onToggleHidden?.(surface)}
+              onPress={handleToggleHidden}
               style={({ pressed }) => [
                 cardStyles.toggleButton,
                 pressed ? cardStyles.toggleButtonPressed : null,

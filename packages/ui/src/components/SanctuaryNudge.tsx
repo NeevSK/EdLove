@@ -1,6 +1,7 @@
 import { BlurView } from 'expo-blur';
 import type React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet } from 'react-native';
+import { Text, View } from '../primitives';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 import { useThemedColors } from '../hooks/useThemedColors';
 import { Theme } from '../theme/Theme';

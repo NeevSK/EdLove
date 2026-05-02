@@ -1,13 +1,20 @@
 import { type AppNotification, useNotifications, useStore } from '@repo/core/logic';
 import { formatDistanceToNow } from 'date-fns';
 import { Bell, CheckCircle2, Inbox, Info, Shield, Sparkles } from 'lucide-react-native';
-import React, { useCallback } from 'react';
+import React, { useCallback, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { WebScreenHeader } from '../components/WebScreenHeader.web';
 
 // Local fallback since WebScreenShimmer doesn't exist
-const StackFallback = ({ variant }: { variant?: string }) => (
-  <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+const StackFallback = memo(({ variant }: { variant?: string }) => (
+  <div
+    style={{
+      padding: '20px',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '16px',
+    }}
+  >
     {[1, 2, 3].map((i) => (
       <div
         key={i}
@@ -20,7 +27,7 @@ const StackFallback = ({ variant }: { variant?: string }) => (
       />
     ))}
   </div>
-);
+));
 
 const ICON_MAP: Record<string, React.ReactNode> = {
   resonance: <Bell size={18} color="var(--action)" />,
@@ -38,105 +45,14 @@ function timeAgo(ts: string): string {
   }
 }
 
-export default function NotificationsScreenWeb() {
-  const { t } = useTranslation();
-  const { user } = useStore();
-  const { notifications, unreadCount, isLoading, markAsRead, markAllRead } = useNotifications(
-    user?.id,
-  );
-
-  // Automatically mark all as read when visiting this screen
-  React.useEffect(() => {
-    if (!isLoading && unreadCount > 0) {
-      markAllRead();
-    }
-  }, [isLoading, unreadCount, markAllRead]);
-
-  return (
-    <div className="sanctuary-screen">
-      <div className="sanctuary-container">
-        {/* GREETING */}
-        <WebScreenHeader
-          title={t('notifications.title')}
-          timeText={t('notifications.stream')}
-          note={unreadCount > 0 ? t('notifications.unread', { count: unreadCount }) : ''}
-        />
-
-        {/* CONTENT */}
-        <div style={{ maxWidth: '800px' }}>
-          {/* Actions bar */}
-          {notifications.length > 0 && unreadCount > 0 && (
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '24px' }}>
-              <button className="sanctuary-button-ghost" onClick={() => markAllRead()}>
-                <CheckCircle2 size={14} />
-                {t('notifications.markAllRead')}
-              </button>
-            </div>
-          )}
-
-          {/* Loading */}
-          {isLoading && <StackFallback variant="list" />}
-
-          {/* Empty state */}
-          {!isLoading && notifications.length === 0 && (
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: '16px',
-                padding: '80px 40px',
-                textAlign: 'center',
-              }}
-            >
-              <div
-                style={{
-                  width: '64px',
-                  height: '64px',
-                  borderRadius: '20px',
-                  background: 'var(--action-soft)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <Inbox size={28} color="var(--action)" />
-              </div>
-              <p
-                style={{
-                  color: 'var(--ink-ghost)',
-                  fontStyle: 'italic',
-                  maxWidth: '320px',
-                  lineHeight: 1.6,
-                }}
-              >
-                {t('notifications.empty')}
-              </p>
-            </div>
-          )}
-
-          {/* Notification list */}
-          {!isLoading && notifications.length > 0 && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              {notifications.map((notif: AppNotification) => (
-                <NotificationRow key={notif.id} notif={notif} onRead={markAsRead} />
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function NotificationRow({
+const NotificationRow = memo(({
   notif,
   onRead,
 }: {
   notif: AppNotification;
   onRead: (id: string) => Promise<void>;
-}) {
-  const icon = ICON_MAP[notif.type] ?? ICON_MAP.system;
+}) => {
+  const icon = ICON_MAP[notif.type] ?? ICON_MAP['system'];
 
   const handleClick = useCallback(() => {
     if (!notif.is_read) onRead(notif.id);
@@ -203,12 +119,25 @@ function NotificationRow({
             >
               {notif.title}
             </h3>
-            <span style={{ fontSize: '11px', color: 'var(--ink-ghost)', flexShrink: 0 }}>
+            <span
+              style={{
+                fontSize: '11px',
+                color: 'var(--ink-ghost)',
+                flexShrink: 0,
+              }}
+            >
               {timeAgo(notif.created_at)}
             </span>
           </div>
           {notif.body && (
-            <p style={{ margin: 0, fontSize: '13px', color: 'var(--ink-soft)', lineHeight: 1.5 }}>
+            <p
+              style={{
+                margin: 0,
+                fontSize: '13px',
+                color: 'var(--ink-soft)',
+                lineHeight: 1.5,
+              }}
+            >
               {notif.body}
             </p>
           )}
@@ -230,4 +159,103 @@ function NotificationRow({
       </div>
     </div>
   );
-}
+});
+
+export default memo(function NotificationsScreenWeb() {
+  const { t } = useTranslation();
+  const { user } = useStore();
+  const { notifications, unreadCount, isLoading, markAsRead, markAllRead } = useNotifications(
+    user?.id,
+  );
+
+  // Automatically mark all as read when visiting this screen
+  React.useEffect(() => {
+    if (!isLoading && unreadCount > 0) {
+      markAllRead();
+    }
+  }, [isLoading, unreadCount, markAllRead]);
+
+  const handleMarkAllRead = useCallback(() => markAllRead(), [markAllRead]);
+
+  return (
+    <div className="sanctuary-screen">
+      <div className="sanctuary-container">
+        {/* GREETING */}
+        <WebScreenHeader
+          title={t('notifications.title')}
+          timeText={t('notifications.stream')}
+          note={unreadCount > 0 ? t('notifications.unread', { count: unreadCount }) : ''}
+        />
+
+        {/* CONTENT */}
+        <div style={{ maxWidth: '800px' }}>
+          {/* Actions bar */}
+          {notifications.length > 0 && unreadCount > 0 && (
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'flex-end',
+                marginBottom: '24px',
+              }}
+            >
+              <button className="sanctuary-button-ghost" onClick={handleMarkAllRead}>
+                <CheckCircle2 size={14} />
+                {t('notifications.markAllRead')}
+              </button>
+            </div>
+          )}
+
+          {/* Loading */}
+          {isLoading && <StackFallback variant="list" />}
+
+          {/* Empty state */}
+          {!isLoading && notifications.length === 0 && (
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '16px',
+                padding: '80px 40px',
+                textAlign: 'center',
+              }}
+            >
+              <div
+                style={{
+                  width: '64px',
+                  height: '64px',
+                  borderRadius: '20px',
+                  background: 'var(--action-soft)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <Inbox size={28} color="var(--action)" />
+              </div>
+              <p
+                style={{
+                  color: 'var(--ink-ghost)',
+                  fontStyle: 'italic',
+                  maxWidth: '320px',
+                  lineHeight: 1.6,
+                }}
+              >
+                {t('notifications.empty')}
+              </p>
+            </div>
+          )}
+
+          {/* Notification list */}
+          {!isLoading && notifications.length > 0 && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {notifications.map((notif: AppNotification) => (
+                <NotificationRow key={notif.id} notif={notif} onRead={markAsRead} />
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+});

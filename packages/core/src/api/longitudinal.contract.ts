@@ -17,7 +17,7 @@ export const longitudinalContract = c.router({
       200: StudentLongitudinalTimelineSchema,
     },
     query: z.object({
-      studentId: z.string().uuid(),
+      studentId: z.uuid(),
       viewDate: z.string(),
       entityTypes: z.array(LongitudinalEntityTypeSchema).optional(),
     }),
@@ -36,7 +36,7 @@ export const longitudinalContract = c.router({
       200: StudentLongitudinalSnapshotSchema,
     },
     query: z.object({
-      studentId: z.string().uuid(),
+      studentId: z.uuid(),
       viewDate: z.string(),
       entityTypes: z.array(LongitudinalEntityTypeSchema).optional(),
     }),

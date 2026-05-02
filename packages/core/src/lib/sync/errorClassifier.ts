@@ -1,4 +1,4 @@
-export type ErrorCategory = 'TRANSIENT' | 'PERMANENT';
+export type ErrorCategory = 'TRANSIENT' | 'PERMANENT' | 'CONFLICT';
 
 /**
  * classifyError
@@ -23,6 +23,16 @@ export function classifyError(error: any): ErrorCategory {
     msg.includes('not found')
   ) {
     return 'PERMANENT';
+  }
+
+  // Conflict: Data fork detected (Version mismatch, 409 Conflict)
+  if (
+    code === '409' ||
+    msg.includes('conflict') ||
+    msg.includes('version mismatch') ||
+    msg.includes('stale data')
+  ) {
+    return 'CONFLICT';
   }
 
   // Transient: Network, timeout, rate limit, server 5xx

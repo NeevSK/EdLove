@@ -11,147 +11,173 @@
  * ad-hoc in screens.
  */
 
-import { QRAction, QRPayload } from '@repo/core/types';
-import { QR_VERSION } from '@repo/core/types';
+import { QR_VERSION, type QRAction, type QRPayload } from "@repo/core/types";
 
 export type QRResolveResult =
-  | { ok: true; payload: QRPayload }
-  | { ok: false; error: 'invalid' | 'version_mismatch' | 'unknown_action'; raw: string };
+	| { ok: true; payload: QRPayload }
+	| {
+			ok: false;
+			error: "invalid" | "version_mismatch" | "unknown_action";
+			raw: string;
+	  };
 
 /** UUID v4 pattern for legacy bare-UUID identity card QRs */
-const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const UUID_REGEX =
+	/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 /**
  * Parse any scanned QR string into a typed QRPayload.
  * Returns { ok: false } on parse failure \u2014 never throws.
  */
 export function resolveQR(raw: string): QRResolveResult {
-  if (!raw || typeof raw !== 'string') {
-    return { ok: false, error: 'invalid', raw: String(raw ?? '') };
-  }
+	if (!raw || typeof raw !== "string") {
+		return { ok: false, error: "invalid", raw: String(raw ?? "") };
+	}
 
-  const trimmed = raw.trim();
+	const trimmed = raw.trim();
 
-  // \u2500\u2500 Legacy: join-class:<uuid> \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
-  if (trimmed.startsWith('join-class:')) {
-    const classroom_id = trimmed.slice('join-class:'.length).trim();
-    if (!classroom_id) return { ok: false, error: 'invalid', raw };
-    return { ok: true, payload: { v: 1, action: 'join_class', classroom_id } };
-  }
+	// \u2500\u2500 Legacy: join-class:<uuid> \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+	if (trimmed.startsWith("join-class:")) {
+		const classroom_id = trimmed.slice("join-class:".length).trim();
+		if (!classroom_id) return { ok: false, error: "invalid", raw };
+		return { ok: true, payload: { v: 1, action: "join_class", classroom_id } };
+	}
 
-  // \u2500\u2500 Legacy: join-group:<uuid> \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
-  if (trimmed.startsWith('join-group:')) {
-    const group_id = trimmed.slice('join-group:'.length).trim();
-    if (!group_id) return { ok: false, error: 'invalid', raw };
-    return { ok: true, payload: { v: 1, action: 'join_group', group_id } };
-  }
+	// \u2500\u2500 Legacy: join-group:<uuid> \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+	if (trimmed.startsWith("join-group:")) {
+		const group_id = trimmed.slice("join-group:".length).trim();
+		if (!group_id) return { ok: false, error: "invalid", raw };
+		return { ok: true, payload: { v: 1, action: "join_group", group_id } };
+	}
 
-  // \u2500\u2500 Legacy bare UUID (old user identity card QRs) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
-  if (UUID_REGEX.test(trimmed)) {
-    return {
-      ok: true,
-      payload: { v: 1, action: 'user_invite', inviter_id: trimmed, inviter_authority: 'unknown' },
-    };
-  }
+	// \u2500\u2500 Legacy bare UUID (old user identity card QRs) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+	if (UUID_REGEX.test(trimmed)) {
+		return {
+			ok: true,
+			payload: {
+				v: 1,
+				action: "user_invite",
+				inviter_id: trimmed,
+				inviter_authority: "unknown",
+			},
+		};
+	}
 
-  // \u2500\u2500 Canonical: gurudevi://qr or https://platform.gurudevi.edlove.org/qr \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
-  if (
-    trimmed.startsWith('gurudevi://qr') ||
-    trimmed.startsWith('https://platform.gurudevi.edlove.org/qr')
-  ) {
-    try {
-      const queryStart = trimmed.indexOf('?');
-      if (queryStart === -1) return { ok: false, error: 'invalid', raw };
-      const queryString = trimmed.substring(queryStart + 1);
-      const params = parseQueryString(queryString);
+	// \u2500\u2500 Canonical: gurudevi://qr or https://platform.gurudevi.edlove.org/qr \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+	if (
+		trimmed.startsWith("gurudevi://qr") ||
+		trimmed.startsWith("https://platform.gurudevi.edlove.org/qr")
+	) {
+		try {
+			const queryStart = trimmed.indexOf("?");
+			if (queryStart === -1) return { ok: false, error: "invalid", raw };
+			const queryString = trimmed.substring(queryStart + 1);
+			const params = parseQueryString(queryString);
 
-      const v = parseInt(params.v ?? '', 10);
-      if (Number.isNaN(v) || v !== QR_VERSION) {
-        return { ok: false, error: 'version_mismatch', raw };
-      }
+			const v = parseInt(params.v ?? "", 10);
+			if (Number.isNaN(v) || v !== QR_VERSION) {
+				return { ok: false, error: "version_mismatch", raw };
+			}
 
-      const action = params.action as QRAction | undefined;
-      if (!action) return { ok: false, error: 'invalid', raw };
+			const action = params.action as QRAction | undefined;
+			if (!action) return { ok: false, error: "invalid", raw };
 
-      return buildPayloadFromParams(action, params, raw);
-    } catch {
-      return { ok: false, error: 'invalid', raw };
-    }
-  }
+			return buildPayloadFromParams(action, params, raw);
+		} catch {
+			return { ok: false, error: "invalid", raw };
+		}
+	}
 
-  return { ok: false, error: 'invalid', raw };
+	return { ok: false, error: "invalid", raw };
 }
 
 // \u2500\u2500 Helpers \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 
 function parseQueryString(query: string): Record<string, string> {
-  const result: Record<string, string> = {};
-  for (const part of query.split('&')) {
-    const eq = part.indexOf('=');
-    if (eq === -1) continue;
-    try {
-      const key = decodeURIComponent(part.substring(0, eq));
-      const value = decodeURIComponent(part.substring(eq + 1));
-      result[key] = value;
-    } catch {
-      // skip malformed segment
-    }
-  }
-  return result;
+	const result: Record<string, string> = {};
+	for (const part of query.split("&")) {
+		const eq = part.indexOf("=");
+		if (eq === -1) continue;
+		try {
+			const key = decodeURIComponent(part.substring(0, eq));
+			const value = decodeURIComponent(part.substring(eq + 1));
+			result[key] = value;
+		} catch {
+			// skip malformed segment
+		}
+	}
+	return result;
 }
 
 function buildPayloadFromParams(
-  action: QRAction,
-  params: Record<string, string>,
-  raw: string,
+	action: QRAction,
+	params: Record<string, string>,
+	raw: string,
 ): QRResolveResult {
-  switch (action) {
-    case 'join_school': {
-      const { school_id, group_id, handle } = params;
-      if (!school_id || !group_id) return { ok: false, error: 'invalid', raw };
-      return { ok: true, payload: { v: 1, action, school_id, group_id, handle } };
-    }
+	switch (action) {
+		case "join_school": {
+			const { school_id, group_id, handle } = params;
+			if (!school_id || !group_id) return { ok: false, error: "invalid", raw };
+			return {
+				ok: true,
+				payload: { v: 1, action, school_id, group_id, handle },
+			};
+		}
 
-    case 'join_class': {
-      const { classroom_id, handle } = params;
-      if (!classroom_id) return { ok: false, error: 'invalid', raw };
-      return { ok: true, payload: { v: 1, action, classroom_id, handle } };
-    }
+		case "join_class": {
+			const { classroom_id, handle } = params;
+			if (!classroom_id) return { ok: false, error: "invalid", raw };
+			return { ok: true, payload: { v: 1, action, classroom_id, handle } };
+		}
 
-    case 'join_group': {
-      const { group_id, handle } = params;
-      if (!group_id) return { ok: false, error: 'invalid', raw };
-      return { ok: true, payload: { v: 1, action, group_id, handle } };
-    }
+		case "join_group": {
+			const { group_id, handle } = params;
+			if (!group_id) return { ok: false, error: "invalid", raw };
+			return { ok: true, payload: { v: 1, action, group_id, handle } };
+		}
 
-    case 'claim_invite': {
-      const { invite_code, school_id, role, authority } = params;
-      const finalAuthority = authority || role;
-      if (!invite_code || !school_id || !finalAuthority)
-        return { ok: false, error: 'invalid', raw };
-      return {
-        ok: true,
-        payload: { v: 1, action, invite_code, school_id, authority: finalAuthority },
-      };
-    }
+		case "claim_invite": {
+			const { invite_code, school_id, role, authority } = params;
+			const finalAuthority = authority || role;
+			if (!invite_code || !school_id || !finalAuthority)
+				return { ok: false, error: "invalid", raw };
+			return {
+				ok: true,
+				payload: {
+					v: 1,
+					action,
+					invite_code,
+					school_id,
+					authority: finalAuthority,
+				},
+			};
+		}
 
-    case 'user_invite': {
-      const { inviter_id, inviter_role, inviter_authority, username } = params;
-      const finalInviterAuthority = inviter_authority || inviter_role || 'unknown';
-      if (!inviter_id) return { ok: false, error: 'invalid', raw };
-      return {
-        ok: true,
-        payload: { v: 1, action, inviter_id, inviter_authority: finalInviterAuthority, username },
-      };
-    }
+		case "user_invite": {
+			const { inviter_id, inviter_role, inviter_authority, username } = params;
+			const finalInviterAuthority =
+				inviter_authority || inviter_role || "unknown";
+			if (!inviter_id) return { ok: false, error: "invalid", raw };
+			return {
+				ok: true,
+				payload: {
+					v: 1,
+					action,
+					inviter_id,
+					inviter_authority: finalInviterAuthority,
+					username,
+				},
+			};
+		}
 
-    case 'thuthimal_gift': {
-      const { gift_token, gifter_name } = params;
-      if (!gift_token || !gifter_name) return { ok: false, error: 'invalid', raw };
-      return { ok: true, payload: { v: 1, action, gift_token, gifter_name } };
-    }
+		case "thuthimal_gift": {
+			const { gift_token, gifter_name } = params;
+			if (!gift_token || !gifter_name)
+				return { ok: false, error: "invalid", raw };
+			return { ok: true, payload: { v: 1, action, gift_token, gifter_name } };
+		}
 
-    default:
-      return { ok: false, error: 'unknown_action', raw };
-  }
+		default:
+			return { ok: false, error: "unknown_action", raw };
+	}
 }

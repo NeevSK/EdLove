@@ -4,10 +4,10 @@
  * API methods for managing student groups with POA markers.
  */
 
-import { supabase } from './supabase';
 import type { StudentGroup } from '../types';
 import { APIError } from '../types/API';
 import { communityContract } from './community.contract';
+import { supabase } from './supabase';
 
 export const groupsAPI = {
   /**

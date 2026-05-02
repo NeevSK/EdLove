@@ -25,6 +25,7 @@
     "./components/DailyResonanceCard": "./src/components/DailyResonanceCard.tsx",
     "./components/DeleteAccountModal": "./src/components/DeleteAccountModal.tsx",
     "./components/DeviceAccountManager": "./src/components/DeviceAccountManager.tsx",
+    "./components/DeviceSecurityCenter": "./src/components/DeviceSecurityCenter.tsx",
     "./components/EmptyState": "./src/components/EmptyState.tsx",
     "./components/EntityModal": "./src/components/EntityModal.tsx",
     "./components/EntityModal.web": "./src/components/EntityModal.web.tsx",

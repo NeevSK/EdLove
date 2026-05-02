@@ -1,4 +1,5 @@
-import { GuestDataSync } from '@repo/core/native';;
+import { GuestDataSync } from '@repo/core/native';
+
 import { AlertCircle, AlertTriangle, Check } from 'lucide-react-native';
 import { useCallback, useEffect, useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -47,7 +48,13 @@ type Action =
 
 const initialState: State = {
   status: 'idle',
-  summary: { timetablePeriods: 0, moodLogs: 0, journalEntries: 0, students: 0, total: 0 },
+  summary: {
+    timetablePeriods: 0,
+    moodLogs: 0,
+    journalEntries: 0,
+    students: 0,
+    total: 0,
+  },
   progress: { current: 0, total: 0, step: '' },
   error: null,
 };
@@ -63,7 +70,11 @@ function syncReducer(state: State, action: Action): State {
     case 'UPDATE_PROGRESS':
       return {
         ...state,
-        progress: { current: action.current, total: action.total, step: action.step },
+        progress: {
+          current: action.current,
+          total: action.total,
+          step: action.step,
+        },
       };
     case 'SET_COMPLETED':
       return { ...state, status: 'completed' };
@@ -97,8 +108,9 @@ export default function GuestDataSyncModal({
     try {
       const dataSummary = await GuestDataSync.getGuestDataSummary();
       dispatch({ type: 'SET_SUMMARY', summary: dataSummary });
-    } catch (err: any) {
-      dispatch({ type: 'SET_ERROR', message: err.message });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      dispatch({ type: 'SET_ERROR', message });
     }
   }, []);
 
@@ -129,8 +141,9 @@ export default function GuestDataSyncModal({
       } else {
         dispatch({ type: 'SET_ERROR', message: result.errors.join(', ') });
       }
-    } catch (err: any) {
-      dispatch({ type: 'SET_ERROR', message: err.message });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      dispatch({ type: 'SET_ERROR', message });
     }
   }, [userId, onSyncComplete]);
 

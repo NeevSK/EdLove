@@ -6,9 +6,9 @@ import type {
   StudentLongitudinalTimeline,
 } from '../logic/schemas/temporal.schema';
 import { StudentLongitudinalEventSchema } from '../logic/schemas/temporal.schema';
-import { supabase } from './supabase';
 import { APIError } from '../types/API';
 import { longitudinalContract } from './longitudinal.contract';
+import { supabase } from './supabase';
 
 async function listEvents(
   studentId: string,
@@ -32,7 +32,13 @@ async function listEvents(
     throw new APIError('Failed to fetch student longitudinal timeline', error.code, error);
   }
 
-  return (data ?? []).map((row) => StudentLongitudinalEventSchema.parse(row));
+  return (data ?? []).map((row) => {
+    const parsed = StudentLongitudinalEventSchema.parse(row);
+    return {
+      ...parsed,
+      snapshot: parsed.metadata,
+    };
+  }) as StudentLongitudinalEvent[];
 }
 
 export const longitudinalAPI = {

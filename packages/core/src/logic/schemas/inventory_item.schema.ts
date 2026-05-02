@@ -1,17 +1,10 @@
-﻿import { z } from 'zod';
+import { z } from 'zod';
+import { makeModelSchema } from '../generated/zod';
 
 /**
- * InventoryItemSchema  A tangible asset within the sanctuary.
+ * InventoryItemSchema - A tangible asset within the sanctuary.
+ * Derived from ZenStack InventoryItem model.
  */
-export const InventoryItemSchema = z.object({
-  id: z.string().uuid(),
-  classroom_id: z.string().uuid(),
-  name: z.string().min(1),
-  category: z.string(),
-  quantity: z.number().int().nonnegative(),
-  condition: z.enum(['good', 'fair', 'poor', 'broken']),
-  created_at: z.string().datetime().optional(),
-  updated_at: z.string().datetime().optional(),
-});
+export const InventoryItemSchema = makeModelSchema('InventoryItem');
 
 export type InventoryItemZod = z.infer<typeof InventoryItemSchema>;

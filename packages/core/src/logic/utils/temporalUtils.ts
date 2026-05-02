@@ -1,4 +1,4 @@
-﻿import type { PostgrestFilterBuilder } from '@supabase/postgrest-js';
+import type { PostgrestFilterBuilder } from '@supabase/postgrest-js';
 import {
   endOfDay,
   endOfMonth,
@@ -12,9 +12,9 @@ import {
   startOfYear,
 } from 'date-fns';
 import {
+  useTemporalStore,
   type TemporalCapability,
   type TemporalScale,
-  useTemporalStore,
 } from '../../store/useTemporalStore';
 
 export interface TemporalRange {
@@ -106,4 +106,8 @@ export const getTransactionRange = (validDate: string): TemporalRange => {
   // In a true bi-temporal system, we might look for the state recorded
   // nearest to the valid date. For now, we align with Valid Time.
   return getTemporalRange(validDate);
+};
+
+export const getCurrentTimestamp = () => {
+	return formatISO(new Date());
 };

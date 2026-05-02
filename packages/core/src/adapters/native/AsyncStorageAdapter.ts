@@ -62,12 +62,16 @@ export class AsyncStorageAdapter implements IStorage {
 
   delete(key: string) {
     this.cache.delete(key);
-    AsyncStorage.removeItem(key);
+    AsyncStorage.removeItem(key).catch((e) => {
+      console.error(`📦 Storage: Failed to remove ${key}`, e);
+    });
   }
 
   clearAll() {
     this.cache.clear();
-    AsyncStorage.clear();
+    AsyncStorage.clear().catch((e) => {
+      console.error('📦 Storage: Failed to clear all keys', e);
+    });
   }
 
   contains(key: string) {

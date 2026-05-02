@@ -13,9 +13,12 @@ describe('workspace renderer resolution', () => {
   });
 
   test('native platforms stay in mobile or tablet lanes', () => {
-    expect(resolveWorkspaceRendererPlatform({ runtimePlatform: 'android', width: 430 })).toBe(
-      'mobile',
-    );
+    expect(
+      resolveWorkspaceRendererPlatform({
+        runtimePlatform: 'android',
+        width: 430,
+      }),
+    ).toBe('mobile');
     expect(resolveWorkspaceRendererPlatform({ runtimePlatform: 'ios', width: 1024 })).toBe(
       'tablet',
     );

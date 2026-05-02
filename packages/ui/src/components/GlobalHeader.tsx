@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
-import { useNotifications, usePermissions, useStore } from '@repo/core/logic';
+import { type TotalState, useNotifications, usePermissions, useStore } from '@repo/core/logic';
 import {
   Bell,
   ChevronLeft,
@@ -11,15 +11,20 @@ import {
   X,
 } from 'lucide-react-native';
 import type React from 'react';
-import { useState } from 'react';
+import { useCallback, useMemo, useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, TouchableOpacity } from 'react-native';
+import { TouchableOpacity } from 'react-native';
+import { Pressable } from '../primitives';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Box, HStack, Text, VStack } from '../gluestack';
 import { hapticLight } from '../utils/haptics';
 import NotificationDrawer from './NotificationDrawer';
 import SanctuaryInput from './SanctuaryInput';
 import { UserAvatar } from './UserAvatar';
+
+// ──────────────────────────────────────────────────────────
+// TYPES & REDUCER
+// ──────────────────────────────────────────────────────────
 
 export interface GlobalHeaderProps {
   title?: string;
@@ -31,18 +36,45 @@ export interface GlobalHeaderProps {
   rightAction?: React.ReactNode;
   userName?: string;
   searchProps?: {
-    value: string;
-    onChangeText: (text: string) => void;
+    value?: string;
+    onChangeText?: (text: string) => void;
     placeholder?: string;
   };
   isSelfView?: boolean;
   avatarUrl?: string;
 }
 
-/**
- * GlobalHeader - Core navigation and brand identity component.
- * Hardened v3 implementation.
- */
+interface HeaderState {
+  showNotifications: boolean;
+  isSearchActive: boolean;
+  internalSearchQuery: string;
+}
+
+type HeaderAction =
+  | { type: 'SET_NOTIFICATIONS'; show: boolean }
+  | { type: 'SET_SEARCH_ACTIVE'; active: boolean }
+  | { type: 'SET_SEARCH_QUERY'; query: string }
+  | { type: 'TOGGLE_SEARCH' };
+
+function headerReducer(state: HeaderState, action: HeaderAction): HeaderState {
+  switch (action.type) {
+    case 'SET_NOTIFICATIONS':
+      return { ...state, showNotifications: action.show };
+    case 'SET_SEARCH_ACTIVE':
+      return { ...state, isSearchActive: action.active };
+    case 'SET_SEARCH_QUERY':
+      return { ...state, internalSearchQuery: action.query };
+    case 'TOGGLE_SEARCH':
+      return { ...state, isSearchActive: !state.isSearchActive };
+    default:
+      return state;
+  }
+}
+
+// ──────────────────────────────────────────────────────────
+// MAIN COMPONENT
+// ──────────────────────────────────────────────────────────
+
 export default function GlobalHeader({
   title,
   subtitle,
@@ -59,11 +91,18 @@ export default function GlobalHeader({
   const { t } = useTranslation();
   const { can } = usePermissions();
 
-  const user = useStore((state: any) => state.user);
-  const navigation = useNavigation<any>();
+  const user = useStore((state: TotalState) => state.user);
+  const navigation = useNavigation();
   const insets = useSafeAreaInsets();
 
-  const [showNotifications, setShowNotifications] = useState(false);
+  const [state, dispatch] = useReducer(headerReducer, {
+    showNotifications: false,
+    isSearchActive: false,
+    internalSearchQuery: '',
+  });
+
+  const { showNotifications, isSearchActive, internalSearchQuery } = state;
+
   const {
     notifications,
     unreadCount,
@@ -72,25 +111,28 @@ export default function GlobalHeader({
     markAllRead,
   } = useNotifications(user?.id);
 
-  const [isSearchActive, setIsSearchActive] = useState(false);
-  const [internalSearchQuery, setInternalSearchQuery] = useState('');
-
   const searchQuery = searchProps?.value ?? internalSearchQuery;
-  const setSearchQuery = searchProps?.onChangeText ?? setInternalSearchQuery;
 
-  const displayName = userName || user?.user_metadata?.full_name?.split(' ')[0] || '';
-  const userFullName = userName || user?.user_metadata?.full_name || '';
+  const setSearchQuery = useCallback(
+    (text: string) => {
+      if (searchProps?.onChangeText) {
+        searchProps.onChangeText(text);
+      } else {
+        dispatch({ type: 'SET_SEARCH_QUERY', query: text });
+      }
+    },
+    [searchProps]
+  );
 
-  const getRoleContext = () => {
+  const displayName = userName || user?.full_name?.split(' ')[0] || '';
+  const userFullName = userName || user?.full_name || '';
+
+  const roleContext = useMemo(() => {
     if (can('manage', 'AdminDashboard')) {
       return { icon: Crown, emoji: '\u26A1', label: t('roles.admin') || 'Admin' };
     }
     if (can('manage', 'PrincipalDashboard')) {
-      return {
-        icon: Crown,
-        emoji: '\uD83C\uDFDB\uFE0F',
-        label: t('roles.principal') || 'Principal',
-      };
+      return { icon: Crown, emoji: '\uD83C\uDFDB\uFE0F', label: t('roles.principal') || 'Principal' };
     }
     if (can('manage', 'SectionHeadDashboard')) {
       return {
@@ -100,11 +142,7 @@ export default function GlobalHeader({
       };
     }
     if (can('manage', 'GradeHeadDashboard')) {
-      return {
-        icon: GraduationCap,
-        emoji: '\uD83C\uDF32',
-        label: t('roles.gradeHead') || 'Grade Head',
-      };
+      return { icon: GraduationCap, emoji: '\uD83C\uDF32', label: t('roles.gradeHead') || 'Grade Head' };
     }
     if (can('manage', 'TeacherDashboard')) {
       return { icon: GraduationCap, emoji: '\uD83C\uDF31', label: t('roles.teacher') || 'Teacher' };
@@ -113,25 +151,50 @@ export default function GlobalHeader({
       return { icon: School, emoji: '\uD83D\uDCDA', label: t('roles.student') || 'Student' };
     }
     return { icon: School, emoji: '\uD83C\uDF3F', label: t('roles.member') || 'Member' };
-  };
+  }, [can, t]);
 
-  const { icon: RoleIcon, emoji: RoleEmoji, label: RoleLabel } = getRoleContext();
-
-  const getGreetingDetails = () => {
+  const greetingDetails = useMemo(() => {
     const hour = new Date().getHours();
     if (hour < 12) return { text: t('goodMorning'), emoji: '\uD83C\uDF05' };
     if (hour < 18) return { text: t('goodAfternoon'), emoji: '\u2600\uFE0F' };
     return { text: t('goodEvening'), emoji: '\uD83C\uDFEE' };
-  };
+  }, [t]);
 
-  const { text: greetingText, emoji: GreetingEmoji } = getGreetingDetails();
+  const handleToggleSearch = useCallback(() => {
+    hapticLight();
+    dispatch({ type: 'TOGGLE_SEARCH' });
+  }, []);
+
+  const handleOpenNotifications = useCallback(() => {
+    hapticLight();
+    dispatch({ type: 'SET_NOTIFICATIONS', show: true });
+  }, []);
+
+  const handleCloseNotifications = useCallback(() => {
+    dispatch({ type: 'SET_NOTIFICATIONS', show: false });
+  }, []);
+
+  const handleBack = useCallback(() => {
+    if (onBack) {
+      onBack();
+    } else {
+      navigation.goBack();
+    }
+  }, [onBack, navigation]);
+
+  const handleOpenDrawer = useCallback(() => {
+    (navigation as any).openDrawer?.();
+  }, [navigation]);
+
+  const handleNavigateProfile = useCallback(() => {
+    (navigation as any).navigate('Profile');
+  }, [navigation]);
 
   const headerHeight = insets.top + (isSearchActive ? 120 : 80);
   const showFullNameAsPrimary = can('manage', 'StudentDashboard');
 
   return (
     <Box className="w-full relative" style={{ height: headerHeight }}>
-      {/* SOLID BACKDROP (REPLACED GLASS) */}
       <Box
         className="absolute inset-0 bg-phase-canvas border-b border-white/5"
         style={{ opacity: 0.95 }}
@@ -146,29 +209,28 @@ export default function GlobalHeader({
         }}
       >
         <HStack className="items-center justify-between gap-2">
-          {/* LEFT: Greeting or Title */}
           <HStack className="items-center gap-2">
             {showBack ? (
-              <Pressable accessibilityRole="button" onPress={onBack || (() => navigation.goBack())}>
+              <Pressable accessibilityRole="button" onPress={handleBack}>
                 <Box className="p-2 rounded-xl bg-phase-surface">
                   <ChevronLeft size={24} className="text-phase-text-primary" />
                 </Box>
               </Pressable>
             ) : (
               showMenu && (
-                <Pressable accessibilityRole="button" onPress={() => navigation.openDrawer?.()}>
+                <Pressable accessibilityRole="button" onPress={handleOpenDrawer}>
                   <Menu className="text-phase-text-primary" size={24} />
                 </Pressable>
               )
             )}
 
             {isSelfView && (
-              <Pressable accessibilityRole="button" onPress={() => navigation.navigate('Profile')}>
+              <Pressable accessibilityRole="button" onPress={handleNavigateProfile}>
                 <Box className="mr-2">
                   <UserAvatar
-                    avatarUrl={avatarUrl || user?.user_metadata?.avatar_url}
+                    avatarUrl={avatarUrl || user?.avatar_url}
                     fullName={userFullName}
-                    fallbackEmoji={RoleEmoji}
+                    fallbackEmoji={roleContext.emoji}
                     size={32}
                     borderRadius={12}
                   />
@@ -177,12 +239,12 @@ export default function GlobalHeader({
             )}
 
             <VStack className="gap-0.5">
-              {(subtitle || (!title && greetingText)) && (
+              {(subtitle || (!title && greetingDetails.text)) && (
                 <HStack className="items-center gap-1">
                   <Text className="text-[10px] font-bold tracking-widest uppercase text-phase-text-secondary">
-                    {title ? subtitle : greetingText}
+                    {title ? subtitle : greetingDetails.text}
                   </Text>
-                  {!title && <Text className="text-sm -mt-0.5">{GreetingEmoji}</Text>}
+                  {!title && <Text className="text-sm -mt-0.5">{greetingDetails.emoji}</Text>}
                 </HStack>
               )}
               <Text className="text-lg font-bold text-phase-text-primary">
@@ -191,22 +253,15 @@ export default function GlobalHeader({
                   : isSelfView
                     ? showFullNameAsPrimary
                       ? userFullName
-                      : RoleLabel
+                      : roleContext.label
                     : displayName}
               </Text>
             </VStack>
           </HStack>
 
-          {/* RIGHT: Actions */}
           <HStack className="items-center gap-4">
             {showSearch && (
-              <TouchableOpacity
-                accessibilityRole="button"
-                onPress={() => {
-                  hapticLight();
-                  setIsSearchActive(!isSearchActive);
-                }}
-              >
+              <TouchableOpacity accessibilityRole="button" onPress={handleToggleSearch}>
                 <Box
                   className={`p-2 rounded-full ${isSearchActive ? 'bg-phase-accent/20' : 'bg-transparent'}`}
                 >
@@ -225,16 +280,9 @@ export default function GlobalHeader({
             {rightAction ? (
               rightAction
             ) : (
-              <TouchableOpacity
-                accessibilityRole="button"
-                onPress={() => {
-                  hapticLight();
-                  setShowNotifications(true);
-                }}
-              >
+              <TouchableOpacity accessibilityRole="button" onPress={handleOpenNotifications}>
                 <Box className="relative">
                   <Bell size={24} className="text-phase-text-primary" />
-                  {/* Notification Dot */}
                   {unreadCount > 0 && (
                     <Box className="absolute top-0 right-0.5 w-2.5 h-2.5 rounded-full border-2 bg-phase-accent border-phase-canvas" />
                   )}
@@ -244,7 +292,6 @@ export default function GlobalHeader({
           </HStack>
         </HStack>
 
-        {/* EXPANDABLE SEARCH BAR */}
         {isSearchActive && (
           <Box className="mt-2">
             <SanctuaryInput
@@ -252,14 +299,13 @@ export default function GlobalHeader({
               onChangeText={setSearchQuery}
               placeholder={searchProps?.placeholder ?? t('searchPlaceholder')}
               leftIcon={Search}
-              autoFocus
             />
           </Box>
         )}
 
         <NotificationDrawer
           isVisible={showNotifications}
-          onClose={() => setShowNotifications(false)}
+          onClose={handleCloseNotifications}
           notifications={notifications}
           unreadCount={unreadCount}
           isLoading={notifLoading}

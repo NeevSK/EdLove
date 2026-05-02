@@ -26,8 +26,8 @@ float fbm(vec2 p, int octaves) {
 `;
 
 export const SOUL_LIBRARY = {
-  core: SHADER_CORE,
-  utils: `
+	core: SHADER_CORE,
+	utils: `
     float circle(vec2 uv, vec2 center, float radius) {
       return smoothstep(radius, 0.0, length(uv - center));
     }

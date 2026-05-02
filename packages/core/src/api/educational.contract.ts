@@ -28,7 +28,9 @@ const lessonAuthority = (action: 'create' | 'read' | 'update' | 'delete') =>
 const assignmentAuthority = (action: 'create' | 'read' | 'update' | 'delete') =>
   POAMetadataSchema.parse({ authority: { action, subject: 'Assignment' } });
 const assignmentSubmissionAuthority = (action: 'create' | 'read' | 'update' | 'delete') =>
-  POAMetadataSchema.parse({ authority: { action, subject: 'AssignmentSubmission' } });
+  POAMetadataSchema.parse({
+    authority: { action, subject: 'AssignmentSubmission' },
+  });
 const classroomGroupAuthority = (action: 'create' | 'read' | 'update' | 'delete') =>
   POAMetadataSchema.parse({ authority: { action, subject: 'ClassroomGroup' } });
 const materialAuthority = (action: 'create' | 'read' | 'update' | 'delete') =>
@@ -86,7 +88,11 @@ export const educationalContract = c.router({
   create: {
     method: 'POST',
     path: '/educational/classrooms',
-    body: ClassroomSchema.omit({ id: true, created_at: true, updated_at: true }),
+    body: ClassroomSchema.omit({
+      id: true,
+      created_at: true,
+      updated_at: true,
+    }),
     responses: { 201: ClassroomSchema },
     metadata: classroomAuthority('create'),
   },
@@ -195,7 +201,11 @@ export const educationalContract = c.router({
   createAssignment: {
     method: 'POST',
     path: '/educational/assignments',
-    body: AssignmentSchema.omit({ id: true, created_at: true, updated_at: true }),
+    body: AssignmentSchema.omit({
+      id: true,
+      created_at: true,
+      updated_at: true,
+    }),
     responses: { 201: AssignmentSchema },
     metadata: assignmentAuthority('create'),
   },
@@ -311,7 +321,10 @@ export const educationalContract = c.router({
   updateById: {
     method: 'PATCH',
     path: '/educational/enrollments/:id',
-    body: z.object({ roll_number: z.string().optional(), notes: z.string().optional() }),
+    body: z.object({
+      roll_number: z.string().optional(),
+      notes: z.string().optional(),
+    }),
     responses: { 200: StudentSchema },
     metadata: classroomAuthority('update'),
   },
@@ -321,7 +334,10 @@ export const educationalContract = c.router({
     body: z.object({
       classroom_id: z.string(),
       student_id: z.string(),
-      updates: z.object({ roll_number: z.string().optional(), notes: z.string().optional() }),
+      updates: z.object({
+        roll_number: z.string().optional(),
+        notes: z.string().optional(),
+      }),
     }),
     responses: { 200: StudentSchema },
     metadata: classroomAuthority('update'),

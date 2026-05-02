@@ -1,6 +1,7 @@
 import { AlertTriangle, RefreshCw } from 'lucide-react-native';
 import { Component, type ErrorInfo, type ReactNode } from 'react';
-import { Platform, Text as RNText, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Platform, Text as RNText, StyleSheet, TouchableOpacity } from 'react-native';
+import { View } from '../primitives';
 import { Box, Button, ButtonIcon, ButtonText, Center, Heading, Text, VStack } from '../gluestack';
 
 interface Props {
@@ -23,7 +24,7 @@ if (__DEV__ && !Component) {
 }
 
 export default class ErrorBoundary extends Component<Props, State> {
-  public state: State = {
+  public override state: State = {
     hasError: false,
     error: null,
     isRecovering: false,
@@ -33,7 +34,7 @@ export default class ErrorBoundary extends Component<Props, State> {
     return { hasError: true, error, isRecovering: false };
   }
 
-  public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+  public override componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error(`Error in ${this.props.name}:`, error, errorInfo);
 
     // Recursive protection: If we are already recovering and hit another error, something is fundamentally broken
@@ -73,7 +74,7 @@ export default class ErrorBoundary extends Component<Props, State> {
     );
   }
 
-  public render() {
+  public override render() {
     if (this.state.hasError) {
       if (this.props.fallback) {
         return this.props.fallback;

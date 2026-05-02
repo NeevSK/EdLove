@@ -1,37 +1,39 @@
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import FounderDashboard from '@repo/admin/screens/FounderDashboard';
-import FounderSchoolDashboard from '@repo/admin/screens/FounderSchoolDashboard';
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import FounderDashboard from "@repo/admin/screens/FounderDashboard";
+import FounderSchoolDashboard from "@repo/admin/screens/FounderSchoolDashboard";
+import SchoolCreationScreen from "@repo/admin/screens/SchoolCreationScreen";
 import {
-  AttendanceScreen,
-  TeacherClassroomDashboard as ClassroomDashboard,
-  GradebookScreen,
-} from '@repo/classroom';
-import { ClassroomStackParamList } from '@repo/core/types';
-import { useTheme } from '@repo/ui/primitives';
-
-import { ClassroomScreen } from '@repo/classroom';
-import SchoolCreationScreen from '@repo/admin/screens/SchoolCreationScreen';
+	AttendanceScreen,
+	TeacherClassroomDashboard as ClassroomDashboard,
+	ClassroomScreen,
+	GradebookScreen,
+} from "@repo/classroom";
+import type { ClassroomStackParamList } from "@repo/core/types";
+import { useTheme } from "@repo/ui/primitives";
 
 const Stack = createNativeStackNavigator<ClassroomStackParamList>();
 
 export default function ClassroomStackNavigator() {
-  const { gradientNodes } = useTheme();
+	const { gradientNodes } = useTheme();
 
-  return (
-    <Stack.Navigator
-      id="ClassroomStack"
-      screenOptions={{
-        headerShown: false,
-        contentStyle: { backgroundColor: gradientNodes[0] },
-      }}
-    >
-      <Stack.Screen name="ClassroomList" component={ClassroomScreen} />
-      <Stack.Screen name="ClassroomDetails" component={ClassroomDashboard} />
-      <Stack.Screen name="Attendance" component={AttendanceScreen} />
-      <Stack.Screen name="Gradebook" component={GradebookScreen} />
-      <Stack.Screen name="SchoolCreation" component={SchoolCreationScreen} />
-      <Stack.Screen name="FounderDashboard" component={FounderDashboard} />
-      <Stack.Screen name="FounderSchoolView" component={FounderSchoolDashboard} />
-    </Stack.Navigator>
-  );
+	return (
+		<Stack.Navigator
+			id="ClassroomStack"
+			screenOptions={{
+				headerShown: false,
+				contentStyle: { backgroundColor: gradientNodes[0] },
+			}}
+		>
+			<Stack.Screen name="ClassroomList" component={ClassroomScreen} />
+			<Stack.Screen name="ClassroomDetails" component={ClassroomDashboard} />
+			<Stack.Screen name="Attendance" component={AttendanceScreen} />
+			<Stack.Screen name="Gradebook" component={GradebookScreen} />
+			<Stack.Screen name="SchoolCreation" component={SchoolCreationScreen} />
+			<Stack.Screen name="FounderDashboard" component={FounderDashboard} />
+			<Stack.Screen
+				name="FounderSchoolView"
+				component={FounderSchoolDashboard}
+			/>
+		</Stack.Navigator>
+	);
 }

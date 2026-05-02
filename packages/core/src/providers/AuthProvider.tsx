@@ -13,10 +13,10 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const { session, loading, isProfileLoading, refreshProfile } = useAuthorityLifecycle();
+  const authLifecycle = useAuthorityLifecycle();
 
   return (
-    <AuthContext.Provider value={{ session, loading, isProfileLoading, refreshProfile }}>
+    <AuthContext.Provider value={authLifecycle}>
       {children}
     </AuthContext.Provider>
   );

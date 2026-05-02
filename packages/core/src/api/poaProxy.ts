@@ -56,12 +56,13 @@ export function createPOAProxy<T extends object>(
           // Try mapping, then exact match, or fallback to the method name itself in the contract router
           const contractKey = methodMapping[prop] || prop;
           const contractEntry = contract?.[contractKey] as Record<string, unknown> | undefined;
-          const metadata = contractEntry?.metadata;
+          const metadata = contractEntry?.['metadata'];
 
           if (metadata && typeof metadata === 'object' && 'authority' in metadata) {
             if (__DEV__) {
-              console.log(`[POA Interceptor] Verifying authority for ${moduleName}.${prop}...`);
+              console.log(`[POA] Dispatching ${moduleName}.${prop}`);
             }
+            // POA validation
             await AuthorityInterceptor.enforce(ability, metadata);
           } else {
             if (options.strictUnmappedMethods) {

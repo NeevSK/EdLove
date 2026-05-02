@@ -152,7 +152,12 @@ export const SRI_LANKAN_PROVINCES = [
     si: '\u0D8B\u0DAD\u0DD4\u0DBB\u0DD4 \u0DB8\u0DD0\u0DAF',
     ta: '\u0BB5\u0B9F \u0BAE\u0BA4\u0BCD\u0BA4\u0BBF\u0BAF',
   },
-  { id: 'NP', en: 'Northern', si: '\u0D8B\u0DAD\u0DD4\u0DBB\u0DD4', ta: '\u0BB5\u0B9F' },
+  {
+    id: 'NP',
+    en: 'Northern',
+    si: '\u0D8B\u0DAD\u0DD4\u0DBB\u0DD4',
+    ta: '\u0BB5\u0B9F',
+  },
 ] as const;
 
 export type ProvinceID = (typeof SRI_LANKAN_PROVINCES)[number]['id'];
@@ -458,7 +463,12 @@ export const SRI_LANKAN_SUBJECTS_BY_LEVEL = {
       si: '\u0DB4\u0DBB\u0DD2\u0DC3\u0DBB\u0DBA',
       ta: '\u0B9A\u0BC1\u0BB1\u0BCD\u0BB1\u0BC1\u0B9A\u0BCD\u0B9A\u0BC2\u0BB4\u0BB2\u0BCD',
     },
-    { id: 'rel', en: 'Religion', si: '\u0D86\u0D9C\u0DB8', ta: '\u0B9A\u0BAE\u0BAF\u0BAE\u0BCD' },
+    {
+      id: 'rel',
+      en: 'Religion',
+      si: '\u0D86\u0D9C\u0DB8',
+      ta: '\u0B9A\u0BAE\u0BAF\u0BAE\u0BCD',
+    },
     {
       id: 'lang',
       en: 'Mother Tongue',
@@ -559,7 +569,12 @@ export const SRI_LANKAN_SUBJECTS_BY_LEVEL = {
       si: '\u0DB8\u0DC0\u0DCA \u0DB7\u0DCF\u0DC2\u0DCF\u0DC0',
       ta: '\u0BA4\u0BBE\u0BAF\u0BCD\u0BAE\u0BCA\u0BB4\u0BBF',
     },
-    { id: 'rel', en: 'Religion', si: '\u0D86\u0D9C\u0DB8', ta: '\u0B9A\u0BAE\u0BAF\u0BAE\u0BCD' },
+    {
+      id: 'rel',
+      en: 'Religion',
+      si: '\u0D86\u0D9C\u0DB8',
+      ta: '\u0B9A\u0BAE\u0BAF\u0BAE\u0BCD',
+    },
     // Basket 1
     {
       id: 'bus',

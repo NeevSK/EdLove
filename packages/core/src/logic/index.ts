@@ -2,13 +2,23 @@
 export { api } from '../api';
 export { isDemo } from '../api/demo';
 export { type AuditLogEntry, historyAPI } from '../api/history';
-export { type DeviceAccountRecord, useDeviceAccounts } from '../hooks/useDeviceAccounts';
+export {
+  type DeviceAccountRecord,
+  useDeviceAccounts,
+} from '../hooks/useDeviceAccounts';
+export { useDeviceSecurity } from '../hooks/useDeviceSecurity';
 export { useManualSnapshot } from '../hooks/useManualSnapshot';
 // Logic Hooks & Utilities
-export { type AppNotification, useNotifications } from '../hooks/useNotifications';
+export {
+  type AppNotification,
+  useNotifications,
+} from '../hooks/useNotifications';
 export { useTemporalHeatmap } from '../hooks/useTemporalHeatmap';
 export { accountPin } from '../lib/accountPin';
-export { type CloudinaryUploadResponse, uploadToCloudinary } from '../lib/cloudinary';
+export {
+  type CloudinaryUploadResponse,
+  uploadToCloudinary,
+} from '../lib/cloudinary';
 export {
   type InviteCodeData,
   incrementInviteCodeUsage,
@@ -25,11 +35,12 @@ export { useAuthorityLifecycle } from '../native/useAuthorityLifecycle';
 export { useAuth } from '../providers/AuthProvider';
 export { useAuthStore } from '../store/useAuthStore';
 export { useFeatureStore } from '../store/useFeatureStore';
-export { useStore } from '../store/useStore';
+export { useStore, type TotalState } from '../store/useStore';
 export { useTemporalStore } from '../store/useTemporalStore';
 export type { APIError } from '../types/API';
 // Types (Agnostic / logic-layer)
 export type { AuthorityTier } from '../types/Authority';
+export type { LessonMaterial } from '../types/LessonMaterial';
 export * from './apiInterceptor';
 export * from './domains';
 export * from './entities';
@@ -54,4 +65,5 @@ export * from './runtimeRegistry';
 export * from './schemas';
 export * from './store-slices';
 export * from './utils';
+export * from './grading';
 export * from './workspace/index';

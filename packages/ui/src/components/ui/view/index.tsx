@@ -55,11 +55,14 @@ Pressable.displayName = 'Pressable';
 
 export const FlatList = React.forwardRef<
   RNFlatList,
-  FlatListProps<any> & { className?: string; contentContainerClassName?: string }
+  FlatListProps<any> & {
+    className?: string;
+    contentContainerClassName?: string;
+  }
 >(({ className, contentContainerClassName, ...props }, ref) => (
   <RNFlatList
     {...props}
-    ref={ref as any}
+    ref={ref}
     className={className}
     contentContainerClassName={contentContainerClassName}
   />
@@ -71,18 +74,18 @@ export const RefreshControl = React.forwardRef<
   RNRefreshControl,
   RefreshControlProps & { className?: string }
 >(({ className, ...props }, ref) => (
-  <RNRefreshControl {...props} ref={ref as any} className={className} />
+  <RNRefreshControl {...props} ref={ref} className={className} />
 ));
 RefreshControl.displayName = 'RefreshControl';
 
 // Redefine AnimatedView to ensure TypeScript knows about the className prop (via cssInterop)
 // and handles Reanimated's special entering/exiting/layout props.
-export const AnimatedView = Animated.View as any;
+export const AnimatedView = Animated.View;
 
 export const KeyboardAvoidingView = React.forwardRef<
   RNKeyboardAvoidingView,
   KeyboardAvoidingViewProps & { className?: string }
 >(({ className, ...props }, ref) => (
-  <RNKeyboardAvoidingView {...props} ref={ref as any} className={className} />
+  <RNKeyboardAvoidingView {...props} ref={ref} className={className} />
 ));
 KeyboardAvoidingView.displayName = 'KeyboardAvoidingView';

@@ -1,5 +1,6 @@
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
+import { View } from '../../primitives';
 
 /**
  * Portal Registry Context
@@ -47,7 +48,7 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
  */
 export const Portal: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const context = useContext(PortalContext);
-  const [id] = useState(() => Math.random().toString(36).substr(2, 9));
+  const id = React.useId();
 
   useEffect(() => {
     if (!context) {

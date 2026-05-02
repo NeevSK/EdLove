@@ -1,5 +1,5 @@
 import type React from 'react';
-import { ScrollView } from 'react-native';
+import { ScrollView } from '../primitives';
 import { Box, HStack, Text, VStack } from '../gluestack';
 
 export interface HeatmapPoint {

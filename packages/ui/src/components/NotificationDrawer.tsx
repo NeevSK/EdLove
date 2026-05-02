@@ -1,5 +1,6 @@
 import { Bell, BookOpen, Check, CheckCircle, Info, Users, X } from 'lucide-react-native';
-import { Dimensions, ScrollView } from 'react-native';
+import { Dimensions } from 'react-native';
+import { ScrollView } from '../primitives';
 import Animated, { Easing, SlideInLeft, SlideOutLeft } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Box, Heading, HStack, Portal, Pressable, Spinner, Text, VStack } from '../gluestack';

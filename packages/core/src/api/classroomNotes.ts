@@ -1,9 +1,9 @@
 import type { ClassroomNoteLifecycleEvent } from '../logic/schemas/classroom-note.schema';
-import { identityAPI } from './identity';
-import { classroomNotesServices } from '../native/runtimes/classroomNotes.runtime';
+import { classroomNotesServices } from './runtimes/classroomNotes.runtime';
 import { APIError } from '../types/API';
 import type { ClassroomNote } from '../types/ClassroomNote';
 import { classroomNotesContract } from './classroomNotes.contract';
+import { identityAPI } from './identity';
 
 export type { ClassroomNote };
 
@@ -36,7 +36,12 @@ export const classroomNotesAPI = {
   }): Promise<ClassroomNote> {
     const myId = await identityAPI.getMyInternalId();
     if (!myId) throw new APIError('Not authenticated', 'AUTH_REQUIRED');
-    return (await classroomNotesServices.createNote(myId, note)) as ClassroomNote;
+    
+    return (await classroomNotesServices.createNote(myId, {
+      ...note,
+      author_id: myId,
+      is_pinned: false,
+    })) as ClassroomNote;
   },
 
   /**

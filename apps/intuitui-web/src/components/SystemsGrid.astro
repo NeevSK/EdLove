@@ -1,10 +1,10 @@
 ---
 interface Props {
-  columns?: number;
-  className?: string;
+	columns?: number;
+	className?: string;
 }
 
-const { columns = 3, className = '' } = Astro.props;
+const { columns = 3, className = "" } = Astro.props;
 ---
 
 <div class={`grid grid-cols-1 md:grid-cols-${columns} gap-px bg-black/5 border border-black/5 ${className}`}>

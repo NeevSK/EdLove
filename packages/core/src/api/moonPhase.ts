@@ -154,14 +154,35 @@ const POYA_NAMES: Record<number, { name_en: string; name_si: string }> = {
     name_en: 'Duruthu Poya',
     name_si: '\u0DAF\u0DD4\u0DBB\u0DD4\u0DAD\u0DD4 \u0DB4\u0DDD\u0DBA',
   },
-  2: { name_en: 'Navam Poya', name_si: '\u0DB1\u0DC0\u0DB8\u0DCA \u0DB4\u0DDD\u0DBA' },
-  3: { name_en: 'Medin Poya', name_si: '\u0DB8\u0DD0\u0DAF\u0DD2\u0DB1\u0DCA \u0DB4\u0DDD\u0DBA' },
+  2: {
+    name_en: 'Navam Poya',
+    name_si: '\u0DB1\u0DC0\u0DB8\u0DCA \u0DB4\u0DDD\u0DBA',
+  },
+  3: {
+    name_en: 'Medin Poya',
+    name_si: '\u0DB8\u0DD0\u0DAF\u0DD2\u0DB1\u0DCA \u0DB4\u0DDD\u0DBA',
+  },
   4: { name_en: 'Bak Poya', name_si: '\u0DB6\u0D9A\u0DCA \u0DB4\u0DDD\u0DBA' },
-  5: { name_en: 'Vesak Poya', name_si: '\u0DC0\u0DD9\u0DC3\u0D9A\u0DCA \u0DB4\u0DDD\u0DBA' },
-  6: { name_en: 'Poson Poya', name_si: '\u0DB4\u0DDC\u0DC3\u0DDC\u0DB1\u0DCA \u0DB4\u0DDD\u0DBA' },
-  7: { name_en: 'Esala Poya', name_si: '\u0D87\u0DC3\u0DBD \u0DB4\u0DDD\u0DBA' },
-  8: { name_en: 'Nikini Poya', name_si: '\u0DB1\u0DD2\u0D9A\u0DD2\u0DB1\u0DD2 \u0DB4\u0DDD\u0DBA' },
-  9: { name_en: 'Binara Poya', name_si: '\u0DB6\u0DD2\u0DB1\u0DBB \u0DB4\u0DDD\u0DBA' },
+  5: {
+    name_en: 'Vesak Poya',
+    name_si: '\u0DC0\u0DD9\u0DC3\u0D9A\u0DCA \u0DB4\u0DDD\u0DBA',
+  },
+  6: {
+    name_en: 'Poson Poya',
+    name_si: '\u0DB4\u0DDC\u0DC3\u0DDC\u0DB1\u0DCA \u0DB4\u0DDD\u0DBA',
+  },
+  7: {
+    name_en: 'Esala Poya',
+    name_si: '\u0D87\u0DC3\u0DBD \u0DB4\u0DDD\u0DBA',
+  },
+  8: {
+    name_en: 'Nikini Poya',
+    name_si: '\u0DB1\u0DD2\u0D9A\u0DD2\u0DB1\u0DD2 \u0DB4\u0DDD\u0DBA',
+  },
+  9: {
+    name_en: 'Binara Poya',
+    name_si: '\u0DB6\u0DD2\u0DB1\u0DBB \u0DB4\u0DDD\u0DBA',
+  },
   10: { name_en: 'Vap Poya', name_si: '\u0DC0\u0DB4\u0DCA \u0DB4\u0DDD\u0DBA' },
   11: { name_en: 'Il Poya', name_si: '\u0D89\u0DBD\u0DCA \u0DB4\u0DDD\u0DBA' },
   12: {

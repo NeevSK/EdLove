@@ -25,14 +25,23 @@ export interface AuthSlice {
   setBridging: (isBridging: boolean) => void;
   dismissedSampleIds: string[];
   dismissSample: (id: string) => void;
-  demoLogs: Array<{ module: string; method: string; payload: unknown; timestamp: number }>;
+  demoLogs: Array<{
+    module: string;
+    method: string;
+    payload: unknown;
+    timestamp: number;
+  }>;
   addDemoLog: (log: { module: string; method: string; payload: unknown }) => void;
   clearDemoLogs: () => void;
   setTeacherName: (name: string) => void;
   setUserRole: (role: Role | null) => void;
   isOnline: boolean;
   setIsOnline: (isOnline: boolean) => void;
-  toast: { message: string; type: 'success' | 'error' | 'info'; duration?: number } | null;
+  toast: {
+    message: string;
+    type: 'success' | 'error' | 'info';
+    duration?: number;
+  } | null;
   showToast: (message: string, type: 'success' | 'error' | 'info', duration?: number) => void;
   hideToast: () => void;
 }

@@ -1,8 +1,9 @@
 import * as WebBrowser from 'expo-web-browser';
 import { ChevronLeft, ChevronRight, ExternalLink, RotateCcw, Share2, X } from 'lucide-react-native';
 import type React from 'react';
-import { useCallback, useRef, useState } from 'react';
-import { ActivityIndicator, Linking, Share, StyleSheet } from 'react-native';
+import { useCallback, useReducer, useRef } from 'react';
+import { Linking, Share, StyleSheet } from 'react-native';
+import { ActivityIndicator } from '../primitives';
 import { WebView, type WebViewNavigation } from 'react-native-webview';
 import { Pressable, Text, useTheme, View } from '../primitives';
 
@@ -13,36 +14,86 @@ export interface InternalBrowserProps {
   showToolbar?: boolean;
 }
 
-/**
- * InternalBrowser - A sandboxed, logic-isolated webview for general browsing.
- * Adheres to Gurudevi Decision 11: Display surface only, hard isolation boundary.
- */
+
+// ============================================================================
+// TYPES & REDUCER
+// ============================================================================
+
+interface BrowserState {
+  canGoBack: boolean;
+  canGoForward: boolean;
+  currentUrl: string;
+  isLoading: boolean;
+  progress: number;
+}
+
+type BrowserAction =
+  | { type: 'UPDATE_NAVIGATION'; navState: WebViewNavigation }
+  | { type: 'SET_PROGRESS'; progress: number }
+  | { type: 'SET_LOADING'; loading: boolean }
+  | { type: 'SET_URL'; url: string };
+
+function browserReducer(state: BrowserState, action: BrowserAction): BrowserState {
+  switch (action.type) {
+    case 'UPDATE_NAVIGATION':
+      return {
+        ...state,
+        canGoBack: action.navState.canGoBack,
+        canGoForward: action.navState.canGoForward,
+        currentUrl: action.navState.url,
+        isLoading: action.navState.loading,
+      };
+    case 'SET_PROGRESS':
+      return { ...state, progress: action.progress };
+    case 'SET_LOADING':
+      return { ...state, isLoading: action.loading };
+    case 'SET_URL':
+      return { ...state, currentUrl: action.url };
+    default:
+      return state;
+  }
+}
+
+// ============================================================================
+// MAIN COMPONENT
+// ============================================================================
+
 export const InternalBrowser: React.FC<InternalBrowserProps> = ({
   url,
   onClose,
   title,
   showToolbar = true,
 }) => {
-  const { scene, isDark } = useTheme();
+  const { scene } = useTheme();
   const webViewRef = useRef<WebView>(null);
-  const [canGoBack, setCanGoBack] = useState(false);
-  const [canGoForward, setCanGoForward] = useState(false);
-  const [currentUrl, setCurrentUrl] = useState(url);
-  const [isLoading, setIsLoading] = useState(true);
-  const [progress, setProgress] = useState(0);
+
+  const [state, dispatch] = useReducer(browserReducer, {
+    canGoBack: false,
+    canGoForward: false,
+    currentUrl: url,
+    isLoading: true,
+    progress: 0,
+  });
+
+  const { canGoBack, canGoForward, currentUrl, isLoading, progress } = state;
 
   const handleNavigationStateChange = useCallback((navState: WebViewNavigation) => {
-    setCanGoBack(navState.canGoBack);
-    setCanGoForward(navState.canGoForward);
-    setCurrentUrl(navState.url);
-    setIsLoading(navState.loading);
+    dispatch({ type: 'UPDATE_NAVIGATION', navState });
   }, []);
 
-  const handleBack = () => webViewRef.current?.goBack();
-  const handleForward = () => webViewRef.current?.goForward();
-  const handleReload = () => webViewRef.current?.reload();
+  const handleProgress = useCallback((p: number) => {
+    dispatch({ type: 'SET_PROGRESS', progress: p });
+  }, []);
 
-  const handleShare = async () => {
+  const handleLoading = useCallback((loading: boolean) => {
+    dispatch({ type: 'SET_LOADING', loading });
+  }, []);
+
+  const handleBack = useCallback(() => webViewRef.current?.goBack(), []);
+  const handleForward = useCallback(() => webViewRef.current?.goForward(), []);
+  const handleReload = useCallback(() => webViewRef.current?.reload(), []);
+
+  const handleShare = useCallback(async () => {
     try {
       await Share.share({
         url: currentUrl,
@@ -51,16 +102,17 @@ export const InternalBrowser: React.FC<InternalBrowserProps> = ({
     } catch (error) {
       console.error('Error sharing:', error);
     }
-  };
+  }, [currentUrl]);
 
-  const handleOpenExternal = async () => {
+  const handleOpenExternal = useCallback(async () => {
     try {
       await WebBrowser.openBrowserAsync(currentUrl);
     } catch (_error) {
       // Fallback to basic Linking
       Linking.openURL(currentUrl);
     }
-  };
+  }, [currentUrl]);
+
 
   return (
     <View style={[styles.container, { backgroundColor: scene.canvas.bg }]}>
@@ -104,7 +156,10 @@ export const InternalBrowser: React.FC<InternalBrowserProps> = ({
           <View
             style={[
               styles.progressBar,
-              { backgroundColor: scene.primary.main, width: `${progress * 100}%` },
+              {
+                backgroundColor: scene.primary.main,
+                width: `${progress * 100}%`,
+              },
             ]}
           />
         </View>
@@ -115,9 +170,9 @@ export const InternalBrowser: React.FC<InternalBrowserProps> = ({
         ref={webViewRef}
         source={{ uri: url }}
         onNavigationStateChange={handleNavigationStateChange}
-        onLoadProgress={({ nativeEvent }) => setProgress(nativeEvent.progress)}
-        onLoadStart={() => setIsLoading(true)}
-        onLoadEnd={() => setIsLoading(false)}
+        onLoadProgress={({ nativeEvent }) => handleProgress(nativeEvent.progress)}
+        onLoadStart={() => handleLoading(true)}
+        onLoadEnd={() => handleLoading(false)}
         style={[styles.webView, { backgroundColor: scene.canvas.bg }]}
         // Security Settings
         javaScriptEnabled={true}

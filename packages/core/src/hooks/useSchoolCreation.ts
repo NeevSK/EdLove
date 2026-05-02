@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useReducer, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useReducer, useState } from 'react';
 import { storage } from '../lib/storage';
 
 const PERSISTENCE_KEY = 'GURUDEVI_SCHOOL_CREATION_STATE';
@@ -34,10 +34,22 @@ export interface SchoolCreationState {
 type Action =
   | { type: 'SET_STATE'; payload: SchoolCreationState }
   | { type: 'UPDATE_STEP'; payload: number }
-  | { type: 'UPDATE_BASIC_INFO'; payload: Partial<SchoolCreationState['basicInfo']> }
-  | { type: 'UPDATE_LOCATION'; payload: Partial<SchoolCreationState['location']> }
-  | { type: 'UPDATE_DEMOGRAPHICS'; payload: Partial<SchoolCreationState['demographics']> }
-  | { type: 'UPDATE_HIERARCHY'; payload: Partial<SchoolCreationState['hierarchy']> }
+  | {
+      type: 'UPDATE_BASIC_INFO';
+      payload: Partial<SchoolCreationState['basicInfo']>;
+    }
+  | {
+      type: 'UPDATE_LOCATION';
+      payload: Partial<SchoolCreationState['location']>;
+    }
+  | {
+      type: 'UPDATE_DEMOGRAPHICS';
+      payload: Partial<SchoolCreationState['demographics']>;
+    }
+  | {
+      type: 'UPDATE_HIERARCHY';
+      payload: Partial<SchoolCreationState['hierarchy']>;
+    }
   | { type: 'RESET' };
 
 const initialState: SchoolCreationState = {
@@ -78,7 +90,10 @@ function creationReducer(state: SchoolCreationState, action: Action): SchoolCrea
     case 'UPDATE_LOCATION':
       return { ...state, location: { ...state.location, ...action.payload } };
     case 'UPDATE_DEMOGRAPHICS':
-      return { ...state, demographics: { ...state.demographics, ...action.payload } };
+      return {
+        ...state,
+        demographics: { ...state.demographics, ...action.payload },
+      };
     case 'UPDATE_HIERARCHY':
       return { ...state, hierarchy: { ...state.hierarchy, ...action.payload } };
     case 'RESET':
@@ -90,7 +105,7 @@ function creationReducer(state: SchoolCreationState, action: Action): SchoolCrea
 
 export function useSchoolCreation() {
   const [state, dispatch] = useReducer(creationReducer, initialState);
-  const isLoaded = useRef(false);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   // Load persisted state on mount
   useEffect(() => {
@@ -103,18 +118,20 @@ export function useSchoolCreation() {
       } catch (e) {
         console.error('[useSchoolCreation] Load error:', e);
       } finally {
-        isLoaded.current = true;
+        setIsLoaded(true);
       }
     }
-    loadState();
+    loadState().catch((e) => {
+      console.error('SchoolCreation: Failed to load state on mount', e);
+    });
   }, []);
 
   // Persist state changes
   useEffect(() => {
-    if (isLoaded.current) {
+    if (isLoaded) {
       storage.set(PERSISTENCE_KEY, JSON.stringify(state));
     }
-  }, [state]);
+  }, [state, isLoaded]);
 
   const updateStep = useCallback((step: number) => {
     dispatch({ type: 'UPDATE_STEP', payload: step });
@@ -141,14 +158,26 @@ export function useSchoolCreation() {
     dispatch({ type: 'RESET' });
   }, []);
 
-  return {
-    state,
-    isLoaded: isLoaded.current,
-    updateStep,
-    updateBasicInfo,
-    updateLocation,
-    updateDemographics,
-    updateHierarchy,
-    resetProgress,
-  };
+  return useMemo(
+    () => ({
+      state,
+      isLoaded,
+      updateStep,
+      updateBasicInfo,
+      updateLocation,
+      updateDemographics,
+      updateHierarchy,
+      resetProgress,
+    }),
+    [
+      state,
+      isLoaded,
+      updateStep,
+      updateBasicInfo,
+      updateLocation,
+      updateDemographics,
+      updateHierarchy,
+      resetProgress,
+    ],
+  );
 }

@@ -4,8 +4,8 @@
 
 import type { z } from 'zod';
 import { PulseMetricsSchema } from '../logic/schemas/dashboard.schema';
-import { supabase } from './supabase';
 import { APIError } from '../types/API';
+import { supabase } from './supabase';
 
 type PulseMetrics = z.infer<typeof PulseMetricsSchema>;
 
@@ -20,7 +20,10 @@ export const profileAPI = {
    */
   async getSchoolPulse(
     schoolId: string,
-    params: { viewDate: string; viewScale?: 'day' | 'week' | 'month' | 'year' | 'custom' },
+    params: {
+      viewDate: string;
+      viewScale?: 'day' | 'week' | 'month' | 'year' | 'custom';
+    },
   ): Promise<PulseMetrics> {
     try {
       // Simplified for POA: Fetch aggregated pulse metrics from the database

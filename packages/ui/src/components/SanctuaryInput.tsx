@@ -39,7 +39,6 @@ interface SanctuaryInputProps {
     | 'numeric'
     | 'email-address'
     | 'phone-pad';
-  autoFocus?: boolean;
   accessibilityLabel?: string;
   accessibilityHint?: string;
 }
@@ -65,7 +64,6 @@ export default function SanctuaryInput({
   isDisabled = false,
   multiline = false,
   numberOfLines = 1,
-  autoFocus = false,
   keyboardType = 'default',
   accessibilityLabel,
   accessibilityHint,
@@ -106,9 +104,8 @@ export default function SanctuaryInput({
           placeholderTextColor={Theme.colors.shadowViolet}
           value={value}
           onChangeText={onChangeText}
-          autoFocus={autoFocus}
           secureTextEntry={type === 'password'}
-          keyboardType={keyboardType as any}
+          keyboardType={keyboardType as 'default' | 'number-pad' | 'decimal-pad' | 'numeric' | 'email-address' | 'phone-pad'}
           className="text-phase-text-primary px-3 text-base"
           multiline={multiline}
           numberOfLines={numberOfLines}

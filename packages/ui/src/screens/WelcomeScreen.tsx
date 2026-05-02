@@ -1,6 +1,6 @@
-import { handleAPIError, LanguageUtils } from '@repo/core/logic';
 import { authAPI } from '@repo/core/auth';
-import { useState } from 'react';
+import { handleAPIError, LanguageUtils } from '@repo/core/logic';
+import { useState, useCallback, memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image } from 'react-native';
 import ScreenWrapper from '../components/ScreenWrapper';
@@ -32,35 +32,64 @@ const LANGUAGES = [
   { code: 'en', label: 'English' },
   { code: 'si', label: 'Sinhala' },
   { code: 'ta', label: 'Tamil' },
-];
+] as const;
+
+interface LanguagePillProps {
+  lang: (typeof LANGUAGES)[number];
+  isActive: boolean;
+  onPress: (code: string) => void;
+  t: (key: string, options?: any) => string;
+}
+
+const LanguagePill = memo(({ lang, isActive, onPress, t }: LanguagePillProps) => {
+  const handlePress = useCallback(() => onPress(lang.code), [lang.code, onPress]);
+
+  return (
+    <Pressable
+      onPress={handlePress}
+      accessibilityRole="button"
+      accessibilityLabel={t('accessibility.switchLanguage', {
+        lang: lang.label,
+      })}
+      accessibilityState={{ selected: isActive }}
+      className={`px-2.5 py-1.5 rounded-2xl ${isActive ? 'bg-phase-accent' : 'bg-transparent'}`}
+    >
+      <Text
+        className={`text-[10px] font-bold ${isActive ? 'text-white' : 'text-phase-text-secondary'}`}
+      >
+        {lang.code.toUpperCase()}
+      </Text>
+    </Pressable>
+  );
+});
 
 interface WelcomeScreenProps {
   onLogin?: () => void;
   onGuest?: () => void;
 }
 
-export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) {
+export const WelcomeScreen = memo(({ onLogin, onGuest }: WelcomeScreenProps) => {
   const { t, i18n } = useTranslation();
   const { accent } = useTheme();
   const [acceptedTerms, setAcceptedTerms] = useState(true);
   const [isConnecting, setIsConnecting] = useState(false);
   const { showToast } = useSanctuaryToast();
 
-  const changeLanguage = async (langCode: string) => {
+  const changeLanguage = useCallback(async (langCode: string) => {
     hapticLight();
     await LanguageUtils.setLanguage(langCode as 'en' | 'si' | 'ta');
-  };
+  }, []);
 
-  const showTermsToast = () => {
+  const showTermsToast = useCallback(() => {
     showToast({
       message:
         t('auth.acceptTermsRequired') ||
         'Please accept the Terms and Privacy Pact to continue in the sanctuary',
       type: 'error',
     });
-  };
+  }, [showToast, t]);
 
-  const handleStartExploring = async () => {
+  const handleStartExploring = useCallback(async () => {
     if (!acceptedTerms) {
       hapticError();
       showTermsToast();
@@ -76,9 +105,9 @@ export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) 
       handleAPIError(error);
       setIsConnecting(false);
     }
-  };
+  }, [acceptedTerms, onGuest, showTermsToast]);
 
-  const handleLogin = () => {
+  const handleLogin = useCallback(() => {
     if (!acceptedTerms) {
       hapticError();
       showTermsToast();
@@ -87,7 +116,27 @@ export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) 
     hapticLight();
     // Identity Phase: Navigate to Auth screen
     if (onLogin) onLogin();
-  };
+  }, [acceptedTerms, onLogin, showTermsToast]);
+
+  const handleTermsChange = useCallback((checked: boolean) => {
+    hapticLight();
+    setAcceptedTerms(checked);
+  }, []);
+
+  interface Pillar {
+    label: string;
+    tone: string;
+  }
+
+  const pillars = useMemo<Pillar[]>(
+    () => [
+      { label: 'Self', tone: accent.action },
+      { label: 'Classroom', tone: Theme.colors.gurudeviBlue },
+      { label: 'Community', tone: Theme.colors.gurudeviViolet },
+      { label: 'Library', tone: Theme.colors.sageGreen },
+    ],
+    [accent.action],
+  );
 
   return (
     <ScreenWrapper scroll>
@@ -108,25 +157,15 @@ export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) 
 
         <Box className="items-end mb-6">
           <HStack className="bg-phase-surface rounded-[20px] p-1 border border-phase-border space-x-0.5">
-            {LANGUAGES.map((lang) => {
-              const isActive = i18n.language?.startsWith(lang.code);
-              return (
-                <Pressable
-                  key={lang.code}
-                  onPress={() => changeLanguage(lang.code)}
-                  accessibilityRole="button"
-                  accessibilityLabel={t('accessibility.switchLanguage', { lang: lang.label })}
-                  accessibilityState={{ selected: isActive }}
-                  className={`px-2.5 py-1.5 rounded-2xl ${isActive ? 'bg-phase-accent' : 'bg-transparent'}`}
-                >
-                  <Text
-                    className={`text-[10px] font-bold ${isActive ? 'text-white' : 'text-phase-text-secondary'}`}
-                  >
-                    {lang.code.toUpperCase()}
-                  </Text>
-                </Pressable>
-              );
-            })}
+            {LANGUAGES.map((lang) => (
+              <LanguagePill
+                key={lang.code}
+                lang={lang}
+                isActive={i18n.language?.startsWith(lang.code)}
+                onPress={changeLanguage}
+                t={t}
+              />
+            ))}
           </HStack>
         </Box>
 
@@ -160,16 +199,14 @@ export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) 
             </VStack>
 
             <HStack className="justify-center gap-2 flex-wrap">
-              {[
-                { label: 'Self', tone: accent.action },
-                { label: 'Classroom', tone: Theme.colors.gurudeviBlue },
-                { label: 'Community', tone: Theme.colors.gurudeviViolet },
-                { label: 'Library', tone: Theme.colors.sageGreen },
-              ].map((pillar) => (
+              {pillars.map((pillar) => (
                 <Box
                   key={pillar.label}
                   className="px-4 py-1.5 rounded-full border"
-                  style={{ backgroundColor: `${pillar.tone}12`, borderColor: `${pillar.tone}30` }}
+                  style={{
+                    backgroundColor: `${pillar.tone}12`,
+                    borderColor: `${pillar.tone}30`,
+                  }}
                 >
                   <Text className="text-[10px] font-bold" style={{ color: pillar.tone }}>
                     {pillar.label}
@@ -191,15 +228,12 @@ export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) 
                 </Text>
               </VStack>
 
-              <VStack className="gap-4">
+              <VStack className="gap-6">
                 <HStack className="gap-3 items-center justify-center">
                   <Checkbox
                     value="terms"
                     isChecked={acceptedTerms}
-                    onChange={(checked: boolean) => {
-                      hapticLight();
-                      setAcceptedTerms(checked);
-                    }}
+                    onChange={handleTermsChange}
                     aria-label="Accept Terms"
                   >
                     <CheckboxIndicator>
@@ -252,4 +286,6 @@ export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) 
       </Box>
     </ScreenWrapper>
   );
-}
+});
+
+export default WelcomeScreen;

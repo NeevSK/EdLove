@@ -20,7 +20,7 @@ export type GradeLifecycleAuditRow = {
 
 export type GradePublicationSnapshot = Grade & {
   publication_state: GradePublicationState;
-  published_at?: string | null;
+  published_at?: Date | null;
   published_by?: string | null;
   publication_action?: string | null;
 };
@@ -67,7 +67,7 @@ export function annotateGradesWithPublicationState(
     const latest = latestByGradeId.get(grade.id);
     const metadata = latest?.metadata ?? {};
     const publicationState =
-      metadata.publicationState === 'published' ||
+      metadata['publicationState'] === 'published' ||
       (latest?.action ? GRADE_PUBLISHED_ACTIONS.includes(latest.action as any) : false)
         ? 'published'
         : 'draft';
@@ -75,8 +75,8 @@ export function annotateGradesWithPublicationState(
     return {
       ...grade,
       publication_state: publicationState,
-      published_at: metadata.publishedAt ?? null,
-      published_by: metadata.publishedBy ?? null,
+      published_at: metadata['publishedAt'] ?? null,
+      published_by: metadata['publishedBy'] ?? null,
       publication_action: latest?.action ?? null,
     };
   });
@@ -99,7 +99,7 @@ export function selectLatestPublishedSnapshots(
   });
 
   return Array.from(latestByGradeId.values())
-    .map((row) => normalizeSnapshot(row.metadata?.snapshot))
+    .map((row) => normalizeSnapshot(row.metadata?.['snapshot']))
     .filter((snapshot): snapshot is GradePublicationSnapshot => snapshot !== null)
-    .sort((a, b) => (b.published_at ?? b.updated_at).localeCompare(a.published_at ?? a.updated_at));
+    .sort((a, b) => (b.published_at?.getTime() ?? b.updated_at.getTime()) - (a.published_at?.getTime() ?? a.updated_at.getTime()));
 }

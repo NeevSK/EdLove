@@ -90,7 +90,9 @@ export const createSupabaseFounderRepository = (supabase: SupabaseClient): Found
 
     const pulses = await Promise.all(
       (schools || []).map(async (school) => {
-        const { data } = await supabase.rpc('get_school_pulse_weather', { p_school_id: school.id });
+        const { data } = await supabase.rpc('get_school_pulse_weather', {
+          p_school_id: school.id,
+        });
         return {
           school_id: school.id,
           school_name: school.name,

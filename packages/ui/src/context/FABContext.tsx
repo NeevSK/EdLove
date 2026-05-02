@@ -40,7 +40,11 @@ export const FABProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [state, setState] = useState<FABState>(defaultState);
 
   const registerFAB = useCallback((config: Partial<FABState>) => {
-    setState((prev) => ({ ...prev, ...config, visible: config.visible ?? true }));
+    setState((prev) => ({
+      ...prev,
+      ...config,
+      visible: config.visible ?? true,
+    }));
   }, []);
 
   const unregisterFAB = useCallback(() => {

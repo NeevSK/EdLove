@@ -1,6 +1,6 @@
+import { APIError } from '../types/API';
 import { identityAPI } from './identity';
 import { supabase } from './supabase';
-import { APIError } from '../types/API';
 
 export interface StudentEcho {
   id: string;

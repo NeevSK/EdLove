@@ -31,7 +31,10 @@ export const selfContract = c.router({
   getMoodHistory: {
     method: 'GET',
     path: '/self/mood',
-    query: z.object({ userId: z.string(), limit: z.coerce.number().optional() }),
+    query: z.object({
+      userId: z.string(),
+      limit: z.coerce.number().optional(),
+    }),
     responses: {
       200: z.array(MoodLogSchema),
     },
@@ -59,7 +62,10 @@ export const selfContract = c.router({
   getJournalHistory: {
     method: 'GET',
     path: '/self/journal',
-    query: z.object({ userId: z.string(), limit: z.coerce.number().optional() }),
+    query: z.object({
+      userId: z.string(),
+      limit: z.coerce.number().optional(),
+    }),
     responses: {
       200: z.array(FireJournalEntrySchema),
     },

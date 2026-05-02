@@ -30,14 +30,21 @@ export const growthContract = c.router({
   createManifesto: {
     method: 'POST',
     path: '/growth/manifestos',
-    body: SanctuaryManifestoSchema.omit({ id: true, created_at: true, updated_at: true }),
+    body: SanctuaryManifestoSchema.omit({
+      id: true,
+      created_at: true,
+      updated_at: true,
+    }),
     responses: { 201: SanctuaryManifestoSchema },
     metadata: manifestoAuthority('create'),
   },
   endorseManifesto: {
     method: 'POST',
     path: '/growth/manifestos/:id/endorse',
-    body: z.object({ user_id: z.string(), commitment_text: z.string().optional() }),
+    body: z.object({
+      user_id: z.string(),
+      commitment_text: z.string().optional(),
+    }),
     responses: { 200: z.object({ success: z.boolean() }) },
     metadata: manifestoAuthority('update'),
   },

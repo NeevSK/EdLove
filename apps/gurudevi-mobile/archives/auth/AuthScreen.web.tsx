@@ -12,413 +12,453 @@
  *  - Plain HTML + scoped CSS (no react-native-web quirks)
  */
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { handleAPIError } from '@repo/core/logic';
-import { identityAPI } from '@repo/core/api';
-import { GuestDataSync, supabase } from '@repo/core/native';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { identityAPI } from "@repo/core/api";
+import { handleAPIError } from "@repo/core/logic";
+import { GuestDataSync, supabase } from "@repo/core/native";
 
-import { GuestDataSyncModal } from '@repo/ui';
-import * as WebBrowser from 'expo-web-browser';
-import type React from 'react';
-import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { validateForm, validators } from '../utils/validators';
+import { GuestDataSyncModal } from "@repo/ui";
+import * as WebBrowser from "expo-web-browser";
+import type React from "react";
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { validateForm, validators } from "../utils/validators";
 
 WebBrowser.maybeCompleteAuthSession();
 
 interface AuthScreenProps {
-  onContinueAsGuest?: () => void;
-  onSuccess?: () => void;
-  onBack?: () => void;
-  initialMode?: 'login' | 'signup';
+	onContinueAsGuest?: () => void;
+	onSuccess?: () => void;
+	onBack?: () => void;
+	initialMode?: "login" | "signup";
 }
 
 export default function AuthScreenWeb({
-  onContinueAsGuest,
-  onSuccess,
-  onBack,
-  initialMode,
+	onContinueAsGuest,
+	onSuccess,
+	onBack,
+	initialMode,
 }: AuthScreenProps) {
-  const { t } = useTranslation();
+	const { t } = useTranslation();
 
-  // ── Mode: 'signup' | 'login' ─────────────────────────────────────────
-  const [mode, setMode] = useState<'signup' | 'login'>(
-    initialMode === 'login' ? 'login' : 'signup',
-  );
-  const [showEmailForm, setShowEmailForm] = useState(initialMode === 'login');
+	// ── Mode: 'signup' | 'login' ─────────────────────────────────────────
+	const [mode, setMode] = useState<"signup" | "login">(
+		initialMode === "login" ? "login" : "signup",
+	);
+	const [showEmailForm, setShowEmailForm] = useState(initialMode === "login");
 
-  // Form state
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [toast, setToast] = useState<{ msg: string; kind: 'success' | 'error' } | null>(null);
+	// Form state
+	const [email, setEmail] = useState("");
+	const [password, setPassword] = useState("");
+	const [loading, setLoading] = useState(false);
+	const [errors, setErrors] = useState<Record<string, string>>({});
+	const [toast, setToast] = useState<{
+		msg: string;
+		kind: "success" | "error";
+	} | null>(null);
 
-  const [currentUser, setCurrentUser] = useState<any>(null);
-  const [showSyncModal, setShowSyncModal] = useState(false);
-  const [newUserId, setNewUserId] = useState('');
+	const [currentUser, setCurrentUser] = useState<any>(null);
+	const [showSyncModal, setShowSyncModal] = useState(false);
+	const [newUserId, setNewUserId] = useState("");
 
-  // ── Load current user ─────────────────────────────────────────────────
-  useEffect(() => {
-    identityAPI.getMyInternalId().then(async (internalId) => {
-      if (!internalId) {
-        setCurrentUser(null);
-        return;
-      }
-      const { data } = await supabase
-        .from('users')
-        .select('id, email, is_anonymous, full_name')
-        .eq('id', internalId)
-        .maybeSingle();
-      setCurrentUser(data ?? null);
-    });
-  }, []);
+	// ── Load current user ─────────────────────────────────────────────────
+	useEffect(() => {
+		identityAPI.getMyInternalId().then(async (internalId) => {
+			if (!internalId) {
+				setCurrentUser(null);
+				return;
+			}
+			const { data } = await supabase
+				.from("users")
+				.select("id, email, is_anonymous, full_name")
+				.eq("id", internalId)
+				.maybeSingle();
+			setCurrentUser(data ?? null);
+		});
+	}, []);
 
-  // ── Detect OAuth error params in URL ──────────────────────────────────
-  useEffect(() => {
-    const getUrlParam = (name: string) => {
-      const fromQuery = new URLSearchParams(window.location.search).get(name);
-      if (fromQuery) return fromQuery;
-      return new URLSearchParams(window.location.hash.replace(/^#/, '')).get(name);
-    };
-    const errorCode = getUrlParam('error_code');
-    const errorDesc = getUrlParam('error_description');
-    if (!errorCode) return;
+	// ── Detect OAuth error params in URL ──────────────────────────────────
+	useEffect(() => {
+		const getUrlParam = (name: string) => {
+			const fromQuery = new URLSearchParams(window.location.search).get(name);
+			if (fromQuery) return fromQuery;
+			return new URLSearchParams(window.location.hash.replace(/^#/, "")).get(
+				name,
+			);
+		};
+		const errorCode = getUrlParam("error_code");
+		const errorDesc = getUrlParam("error_description");
+		if (!errorCode) return;
 
-    if (errorCode === 'identity_already_exists') {
-      setMode('login');
-      setShowEmailForm(true);
-      showToast(
-        t('auth.identityAlreadyExists') || 'This account already exists. Please sign in instead.',
-        'error',
-      );
-    } else {
-      showToast(decodeURIComponent(errorDesc ?? errorCode).replace(/\+/g, ' '), 'error');
-    }
-    try {
-      window.history.replaceState(null, '', window.location.origin + window.location.pathname);
-    } catch (_) {
-      /* ignore */
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [t, showToast]);
+		if (errorCode === "identity_already_exists") {
+			setMode("login");
+			setShowEmailForm(true);
+			showToast(
+				t("auth.identityAlreadyExists") ||
+					"This account already exists. Please sign in instead.",
+				"error",
+			);
+		} else {
+			showToast(
+				decodeURIComponent(errorDesc ?? errorCode).replace(/\+/g, " "),
+				"error",
+			);
+		}
+		try {
+			window.history.replaceState(
+				null,
+				"",
+				window.location.origin + window.location.pathname,
+			);
+		} catch (_) {
+			/* ignore */
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [t, showToast]);
 
-  // ── Auto-dismiss toast ────────────────────────────────────────────────
-  useEffect(() => {
-    if (!toast) return;
-    const id = setTimeout(() => setToast(null), 4000);
-    return () => clearTimeout(id);
-  }, [toast]);
+	// ── Auto-dismiss toast ────────────────────────────────────────────────
+	useEffect(() => {
+		if (!toast) return;
+		const id = setTimeout(() => setToast(null), 4000);
+		return () => clearTimeout(id);
+	}, [toast]);
 
-  function showToast(msg: string, kind: 'success' | 'error') {
-    setToast({ msg, kind });
-  }
+	function showToast(msg: string, kind: "success" | "error") {
+		setToast({ msg, kind });
+	}
 
-  const _isRealUser = currentUser?.email && !currentUser?.is_anonymous;
+	const _isRealUser = currentUser?.email && !currentUser?.is_anonymous;
 
-  // ── Google OAuth ──────────────────────────────────────────────────────
-  async function handleGoogleSignIn() {
-    setLoading(true);
-    const redirectUrl = window.location.origin;
+	// ── Google OAuth ──────────────────────────────────────────────────────
+	async function handleGoogleSignIn() {
+		setLoading(true);
+		const redirectUrl = window.location.origin;
 
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-    const isAnon = session?.user?.is_anonymous || !session?.user?.email;
+		const {
+			data: { session },
+		} = await supabase.auth.getSession();
+		const isAnon = session?.user?.is_anonymous || !session?.user?.email;
 
-    if (isAnon && session?.user) {
-      const { error } = await supabase.auth.linkIdentity({
-        provider: 'google',
-        options: { redirectTo: redirectUrl },
-      });
-      if (error) {
-        if (error.message.includes('already linked')) {
-          showToast(t('auth.alreadyLinkedDesc'), 'error');
-        } else {
-          handleAPIError(error);
-        }
-        setLoading(false);
-      }
-      // Note: linkIdentity will trigger a redirect.
-      return;
-    }
+		if (isAnon && session?.user) {
+			const { error } = await supabase.auth.linkIdentity({
+				provider: "google",
+				options: { redirectTo: redirectUrl },
+			});
+			if (error) {
+				if (error.message.includes("already linked")) {
+					showToast(t("auth.alreadyLinkedDesc"), "error");
+				} else {
+					handleAPIError(error);
+				}
+				setLoading(false);
+			}
+			// Note: linkIdentity will trigger a redirect.
+			return;
+		}
 
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: redirectUrl,
-        queryParams: { prompt: 'select_account' },
-      },
-    });
-    if (error) {
-      handleAPIError(error);
-      setLoading(false);
-    }
-  }
+		const { error } = await supabase.auth.signInWithOAuth({
+			provider: "google",
+			options: {
+				redirectTo: redirectUrl,
+				queryParams: { prompt: "select_account" },
+			},
+		});
+		if (error) {
+			handleAPIError(error);
+			setLoading(false);
+		}
+	}
 
-  // ── Email / password ──────────────────────────────────────────────────
-  async function handleEmailAuth(e?: React.FormEvent) {
-    e?.preventDefault();
+	// ── Email / password ──────────────────────────────────────────────────
+	async function handleEmailAuth(e?: React.FormEvent) {
+		e?.preventDefault();
 
-    const { isValid, errors: valErrors } = validateForm(
-      { email, password },
-      {
-        email: validators.email,
-        password: (val: string) => validators.nonEmpty(val, 'Password'),
-      },
-    );
-    if (!isValid) {
-      setErrors(valErrors);
-      return;
-    }
+		const { isValid, errors: valErrors } = validateForm(
+			{ email, password },
+			{
+				email: validators.email,
+				password: (val: string) => validators.nonEmpty(val, "Password"),
+			},
+		);
+		if (!isValid) {
+			setErrors(valErrors);
+			return;
+		}
 
-    setLoading(true);
-    try {
-      if (mode === 'signup') {
-        const {
-          data: { session: cur },
-        } = await supabase.auth.getSession();
-        const _isAnon = cur?.user?.is_anonymous || !cur?.user?.email;
+		setLoading(true);
+		try {
+			if (mode === "signup") {
+				const {
+					data: { session: cur },
+				} = await supabase.auth.getSession();
+				const _isAnon = cur?.user?.is_anonymous || !cur?.user?.email;
 
-        // Even if anonymous, we should call signUp to convert the user in Supabase Auth.
-        // Supabase handles the conversion automatically if a session exists.
-        const { data, error } = await supabase.auth.signUp({
-          email,
-          password,
-        });
+				// Even if anonymous, we should call signUp to convert the user in Supabase Auth.
+				// Supabase handles the conversion automatically if a session exists.
+				const { data, error } = await supabase.auth.signUp({
+					email,
+					password,
+				});
 
-        if (error) {
-          if (error.message.includes('already registered')) {
-            showToast(t('auth.alreadyRegisteredDesc'), 'success');
-            setMode('login');
-            setLoading(false);
-            return;
-          }
-          throw error;
-        }
+				if (error) {
+					if (error.message.includes("already registered")) {
+						showToast(t("auth.alreadyRegisteredDesc"), "success");
+						setMode("login");
+						setLoading(false);
+						return;
+					}
+					throw error;
+				}
 
-        if (data.user) {
-          // Refresh identity cache and locally stored state
-          identityAPI.clearCache();
-          const internalId = await identityAPI.getMyInternalId();
+				if (data.user) {
+					// Refresh identity cache and locally stored state
+					identityAPI.clearCache();
+					const internalId = await identityAPI.getMyInternalId();
 
-          if (internalId) {
-            // The database trigger will handle setting is_anonymous = false,
-            // but we can proactively refresh our local currentUser state.
-            const { data: profile } = await supabase
-              .from('users')
-              .select('id, email, is_anonymous, full_name')
-              .eq('id', internalId)
-              .maybeSingle();
-            setCurrentUser(profile);
-          }
+					if (internalId) {
+						// The database trigger will handle setting is_anonymous = false,
+						// but we can proactively refresh our local currentUser state.
+						const { data: profile } = await supabase
+							.from("users")
+							.select("id, email, is_anonymous, full_name")
+							.eq("id", internalId)
+							.maybeSingle();
+						setCurrentUser(profile);
+					}
 
-          showToast(t('auth.signupSuccess') || 'Account created!', 'success');
+					showToast(t("auth.signupSuccess") || "Account created!", "success");
 
-          const hasGuestData = await GuestDataSync.hasGuestData();
-          if (hasGuestData && internalId) {
-            setNewUserId(internalId);
-            setShowSyncModal(true);
-          } else {
-            // Small delay to let DB triggers finish
-            setTimeout(() => onSuccess?.(), 500);
-          }
-        } else {
-          showToast(t('auth.checkEmail') || 'Check your email for a confirmation link!', 'success');
-        }
-      } else {
-        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
+					const hasGuestData = await GuestDataSync.hasGuestData();
+					if (hasGuestData && internalId) {
+						setNewUserId(internalId);
+						setShowSyncModal(true);
+					} else {
+						// Small delay to let DB triggers finish
+						setTimeout(() => onSuccess?.(), 500);
+					}
+				} else {
+					showToast(
+						t("auth.checkEmail") || "Check your email for a confirmation link!",
+						"success",
+					);
+				}
+			} else {
+				const { data, error } = await supabase.auth.signInWithPassword({
+					email,
+					password,
+				});
+				if (error) throw error;
 
-        if (data.user) {
-          identityAPI.clearCache();
-          const internalId = await identityAPI.getMyInternalId();
-          const pendingInvite = await AsyncStorage.getItem('pending_invite');
-          if (pendingInvite && internalId) {
-            try {
-              const invite = JSON.parse(pendingInvite);
-              if (invite.school_id) {
-                await supabase
-                  .from('users')
-                  .update({ school_id: invite.school_id, role: invite.role || 'teacher' })
-                  .eq('id', internalId);
-                await AsyncStorage.removeItem('pending_invite');
-              }
-            } catch (_) {
-              /* ignore */
-            }
-          }
-        }
+				if (data.user) {
+					identityAPI.clearCache();
+					const internalId = await identityAPI.getMyInternalId();
+					const pendingInvite = await AsyncStorage.getItem("pending_invite");
+					if (pendingInvite && internalId) {
+						try {
+							const invite = JSON.parse(pendingInvite);
+							if (invite.school_id) {
+								await supabase
+									.from("users")
+									.update({
+										school_id: invite.school_id,
+										role: invite.role || "teacher",
+									})
+									.eq("id", internalId);
+								await AsyncStorage.removeItem("pending_invite");
+							}
+						} catch (_) {
+							/* ignore */
+						}
+					}
+				}
 
-        onSuccess?.();
-      }
-    } catch (err: any) {
-      handleAPIError(err);
-    } finally {
-      setLoading(false);
-    }
-  }
+				onSuccess?.();
+			}
+		} catch (err: any) {
+			handleAPIError(err);
+		} finally {
+			setLoading(false);
+		}
+	}
 
-  // ── When mode changes via pill, reset email form visibility ──────────
-  function switchMode(next: 'signup' | 'login') {
-    setMode(next);
-    setShowEmailForm(false);
-    setErrors({});
-  }
+	// ── When mode changes via pill, reset email form visibility ──────────
+	function switchMode(next: "signup" | "login") {
+		setMode(next);
+		setShowEmailForm(false);
+		setErrors({});
+	}
 
-  // ─────────────────────────────────────────────────────────────────────
-  return (
-    <div className="as-root">
-      {/* Toast */}
-      {toast && (
-        <div className={`as-toast as-toast--${toast.kind}`}>
-          {toast.msg}
-          <button className="as-toast-close" onClick={() => setToast(null)}>
-            ✕
-          </button>
-        </div>
-      )}
+	// ─────────────────────────────────────────────────────────────────────
+	return (
+		<div className="as-root">
+			{/* Toast */}
+			{toast && (
+				<div className={`as-toast as-toast--${toast.kind}`}>
+					{toast.msg}
+					<button className="as-toast-close" onClick={() => setToast(null)}>
+						✕
+					</button>
+				</div>
+			)}
 
-      <div className="as-card">
-        {/* Back button */}
-        {onBack && (
-          <button className="as-back-btn" onClick={onBack} aria-label="Go back">
-            ← Back
-          </button>
-        )}
+			<div className="as-card">
+				{/* Back button */}
+				{onBack && (
+					<button className="as-back-btn" onClick={onBack} aria-label="Go back">
+						← Back
+					</button>
+				)}
 
-        {/* Logo + title */}
-        <div className="as-header">
-          <div className="as-logo">🪷</div>
-          <h1 className="as-title">Gurudevi</h1>
-          <p className="as-subtitle">
-            {t('auth.tagline') || 'Education born from love, built with love.'}
-          </p>
-        </div>
+				{/* Logo + title */}
+				<div className="as-header">
+					<div className="as-logo">🪷</div>
+					<h1 className="as-title">Gurudevi</h1>
+					<p className="as-subtitle">
+						{t("auth.tagline") || "Education born from love, built with love."}
+					</p>
+				</div>
 
-        {/* Pill toggle */}
-        <div className="as-pill-row" role="tablist" aria-label="Sign Up or Log In">
-          <button
-            role="tab"
-            aria-selected={mode === 'signup'}
-            className={`as-pill ${mode === 'signup' ? 'active' : ''}`}
-            onClick={() => switchMode('signup')}
-          >
-            {t('auth.signup') || 'Sign Up'}
-          </button>
-          <button
-            role="tab"
-            aria-selected={mode === 'login'}
-            className={`as-pill ${mode === 'login' ? 'active' : ''}`}
-            onClick={() => switchMode('login')}
-          >
-            {t('auth.login') || 'Log In'}
-          </button>
-        </div>
-        <div className="as-methods">
-          {/* Google */}
-          <button className="as-btn-google" onClick={handleGoogleSignIn} disabled={loading}>
-            <span className="as-google-icon">G</span>
-            {mode === 'signup' ? t('auth.signUpWithGoogle') : t('auth.signInWithGoogle')}
-          </button>
+				{/* Pill toggle */}
+				<div
+					className="as-pill-row"
+					role="tablist"
+					aria-label="Sign Up or Log In"
+				>
+					<button
+						role="tab"
+						aria-selected={mode === "signup"}
+						className={`as-pill ${mode === "signup" ? "active" : ""}`}
+						onClick={() => switchMode("signup")}
+					>
+						{t("auth.signup") || "Sign Up"}
+					</button>
+					<button
+						role="tab"
+						aria-selected={mode === "login"}
+						className={`as-pill ${mode === "login" ? "active" : ""}`}
+						onClick={() => switchMode("login")}
+					>
+						{t("auth.login") || "Log In"}
+					</button>
+				</div>
+				<div className="as-methods">
+					{/* Google */}
+					<button
+						className="as-btn-google"
+						onClick={handleGoogleSignIn}
+						disabled={loading}
+					>
+						<span className="as-google-icon">G</span>
+						{mode === "signup"
+							? t("auth.signUpWithGoogle")
+							: t("auth.signInWithGoogle")}
+					</button>
 
-          {/* Email */}
-          <button
-            className="as-btn-email"
-            onClick={() => setShowEmailForm(true)}
-            disabled={loading}
-          >
-            ✉{' '}
-            {mode === 'signup'
-              ? t('auth.signUpWithEmail') || 'Sign up with email'
-              : t('auth.signInWithEmail') || 'Sign in with email'}
-          </button>
-        </div>
+					{/* Email */}
+					<button
+						className="as-btn-email"
+						onClick={() => setShowEmailForm(true)}
+						disabled={loading}
+					>
+						✉{" "}
+						{mode === "signup"
+							? t("auth.signUpWithEmail") || "Sign up with email"
+							: t("auth.signInWithEmail") || "Sign in with email"}
+					</button>
+				</div>
 
-        {/* Email form */}
-        {showEmailForm && (
-          <form className="as-form" onSubmit={handleEmailAuth} noValidate>
-            <h2 className="as-form-title">
-              {mode === 'signup'
-                ? t('auth.createAccount') || 'Create Account'
-                : t('auth.signInEmail') || 'Sign In with Email'}
-            </h2>
+				{/* Email form */}
+				{showEmailForm && (
+					<form className="as-form" onSubmit={handleEmailAuth} noValidate>
+						<h2 className="as-form-title">
+							{mode === "signup"
+								? t("auth.createAccount") || "Create Account"
+								: t("auth.signInEmail") || "Sign In with Email"}
+						</h2>
 
-            <div className="as-field">
-              <input
-                className={`as-input${errors.email ? ' error' : ''}`}
-                type="email"
-                placeholder={t('auth.email') || 'Email address'}
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                  setErrors((prev) => ({ ...prev, email: '' }));
-                }}
-                autoComplete="email"
-              />
-              {errors.email && <span className="as-error">{errors.email}</span>}
-            </div>
+						<div className="as-field">
+							<input
+								className={`as-input${errors.email ? " error" : ""}`}
+								type="email"
+								placeholder={t("auth.email") || "Email address"}
+								value={email}
+								onChange={(e) => {
+									setEmail(e.target.value);
+									setErrors((prev) => ({ ...prev, email: "" }));
+								}}
+								autoComplete="email"
+							/>
+							{errors.email && <span className="as-error">{errors.email}</span>}
+						</div>
 
-            <div className="as-field">
-              <input
-                className={`as-input${errors.password ? ' error' : ''}`}
-                type="password"
-                placeholder={t('auth.password') || 'Password'}
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                  setErrors((prev) => ({ ...prev, password: '' }));
-                }}
-                autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
-              />
-              {errors.password && <span className="as-error">{errors.password}</span>}
-            </div>
+						<div className="as-field">
+							<input
+								className={`as-input${errors.password ? " error" : ""}`}
+								type="password"
+								placeholder={t("auth.password") || "Password"}
+								value={password}
+								onChange={(e) => {
+									setPassword(e.target.value);
+									setErrors((prev) => ({ ...prev, password: "" }));
+								}}
+								autoComplete={
+									mode === "signup" ? "new-password" : "current-password"
+								}
+							/>
+							{errors.password && (
+								<span className="as-error">{errors.password}</span>
+							)}
+						</div>
 
-            <button className="as-btn-primary" type="submit" disabled={loading}>
-              {loading
-                ? t('auth.processing') || 'Processing…'
-                : mode === 'signup'
-                  ? t('auth.signup') || 'Sign Up'
-                  : t('auth.login') || 'Log In'}
-            </button>
+						<button className="as-btn-primary" type="submit" disabled={loading}>
+							{loading
+								? t("auth.processing") || "Processing…"
+								: mode === "signup"
+									? t("auth.signup") || "Sign Up"
+									: t("auth.login") || "Log In"}
+						</button>
 
-            <button
-              type="button"
-              className="as-btn-link"
-              onClick={() => {
-                setShowEmailForm(false);
-                setErrors({});
-              }}
-            >
-              ← {t('auth.backToGoogle') || 'Back to Google sign in'}
-            </button>
-          </form>
-        )}
+						<button
+							type="button"
+							className="as-btn-link"
+							onClick={() => {
+								setShowEmailForm(false);
+								setErrors({});
+							}}
+						>
+							← {t("auth.backToGoogle") || "Back to Google sign in"}
+						</button>
+					</form>
+				)}
 
-        {/* Continue as guest */}
-        {(!currentUser || currentUser?.is_anonymous) && onContinueAsGuest && (
-          <div className="as-guest-row">
-            <div className="as-divider" />
-            <button className="as-btn-ghost" onClick={onContinueAsGuest} disabled={loading}>
-              {t('auth.continueAsGuest') || 'Continue as Guest'}
-            </button>
-          </div>
-        )}
-      </div>
+				{/* Continue as guest */}
+				{(!currentUser || currentUser?.is_anonymous) && onContinueAsGuest && (
+					<div className="as-guest-row">
+						<div className="as-divider" />
+						<button
+							className="as-btn-ghost"
+							onClick={onContinueAsGuest}
+							disabled={loading}
+						>
+							{t("auth.continueAsGuest") || "Continue as Guest"}
+						</button>
+					</div>
+				)}
+			</div>
 
-      {/* Guest data sync modal */}
-      <GuestDataSyncModal
-        isOpen={showSyncModal}
-        userId={newUserId}
-        onSyncComplete={() => {
-          setShowSyncModal(false);
-          onSuccess?.();
-        }}
-        onClose={() => setShowSyncModal(false)}
-      />
+			{/* Guest data sync modal */}
+			<GuestDataSyncModal
+				isOpen={showSyncModal}
+				userId={newUserId}
+				onSyncComplete={() => {
+					setShowSyncModal(false);
+					onSuccess?.();
+				}}
+				onClose={() => setShowSyncModal(false)}
+			/>
 
-      {/* ── Scoped CSS ── */}
-      <style>{`
+			{/* ── Scoped CSS ── */}
+			<style>{`
                 .as-root {
                     position: fixed;
                     inset: 0;
@@ -713,6 +753,6 @@ export default function AuthScreenWeb({
                     .as-pill { padding: 9px 18px; }
                 }
             `}</style>
-    </div>
-  );
+		</div>
+	);
 }

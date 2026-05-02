@@ -1,38 +1,38 @@
-import { WorkspaceSurfaceDefinition } from '@repo/core/types';
+import type { WorkspaceSurfaceDefinition } from "@repo/core/types";
 
 export type ClassroomWorkspaceSurfaceId =
-  | 'principal'
-  | 'section-head'
-  | 'grade-head'
-  | 'teacher'
-  | 'student';
+	| "principal"
+	| "section-head"
+	| "grade-head"
+	| "teacher"
+	| "student";
 
 export type ClassroomWorkspaceCapabilityKey =
-  | 'PrincipalDashboard'
-  | 'SectionHeadDashboard'
-  | 'GradeHeadDashboard'
-  | 'TeacherDashboard'
-  | 'StudentDashboard';
+	| "PrincipalDashboard"
+	| "SectionHeadDashboard"
+	| "GradeHeadDashboard"
+	| "TeacherDashboard"
+	| "StudentDashboard";
 
 export type ClassroomWorkspaceSurface = WorkspaceSurfaceDefinition<
-  ClassroomWorkspaceSurfaceId,
-  ClassroomWorkspaceCapabilityKey
+	ClassroomWorkspaceSurfaceId,
+	ClassroomWorkspaceCapabilityKey
 > & {
-  content: React.ReactNode;
-  title: string;
-  subtitle?: string;
-  summary?: string;
-  temporalLabel?: string;
-  metadata?: string[];
+	content: React.ReactNode;
+	title: string;
+	subtitle?: string;
+	summary?: string;
+	temporalLabel?: string;
+	metadata?: string[];
 };
 
 export type PrincipalInsight = Partial<
-  Record<
-    ClassroomWorkspaceSurfaceId,
-    {
-      summary?: string;
-      temporalLabel?: string;
-      metadata?: string[];
-    }
-  >
+	Record<
+		ClassroomWorkspaceSurfaceId,
+		{
+			summary?: string;
+			temporalLabel?: string;
+			metadata?: string[];
+		}
+	>
 >;

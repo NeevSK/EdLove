@@ -6,7 +6,7 @@ export function selectLatestTemporalRecordsAsOf<T>(
   viewDate: string,
   options: {
     getEntityKey: (event: T) => string;
-    getEffectiveTo?: (event: T) => string | null | undefined;
+    getEffectiveTo?: (event: T) => string | Date | null | undefined;
   },
 ): T[] {
   const cutoff = endOfViewDate(viewDate);
@@ -14,7 +14,7 @@ export function selectLatestTemporalRecordsAsOf<T>(
 
   events.forEach((event) => {
     const effectiveTo = options.getEffectiveTo?.(event);
-    if (effectiveTo && effectiveTo <= cutoff) {
+    if (effectiveTo && new Date(effectiveTo) <= new Date(cutoff)) {
       return;
     }
 

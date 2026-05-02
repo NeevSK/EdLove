@@ -1,25 +1,25 @@
 {
-  "name": "apps-edlove-web",
-  "type": "module",
-  "version": "0.0.1",
-  "scripts": {
-    "dev": "pnpm exec astro dev",
-    "build": "pnpm exec astro build",
-    "preview": "pnpm exec astro preview",
-    "astro": "pnpm exec astro",
-    "lint": "pnpm exec eslint .",
-    "check-types": "pnpm exec astro check"
-  },
-  "dependencies": {
-    "@astrojs/check": "^0.9.8",
-    "@astrojs/sitemap": "^3.6.0",
-    "@astrojs/svelte": "^8.0.5",
-    "@tailwindcss/vite": "^4.1.18",
-    "@types/three": "^0.182.0",
-    "astro": "^6.1.7",
-    "svelte": "^5.55.4",
-    "tailwindcss": "^4.1.18",
-    "three": "^0.182.0",
-    "typescript": "^5.9.3"
-  }
+	"name": "apps-edlove-web",
+	"type": "module",
+	"version": "0.0.1",
+	"scripts": {
+		"dev": "pnpm exec astro dev",
+		"build": "pnpm exec astro build",
+		"preview": "pnpm exec astro preview",
+		"astro": "pnpm exec astro",
+		"lint": "pnpm exec eslint .",
+		"check-types": "pnpm exec astro check"
+	},
+	"dependencies": {
+		"@astrojs/check": "^0.9.8",
+		"@astrojs/sitemap": "^3.6.0",
+		"@astrojs/svelte": "^8.0.5",
+		"@tailwindcss/vite": "^4.1.18",
+		"@types/three": "^0.182.0",
+		"astro": "^6.1.7",
+		"svelte": "^5.55.4",
+		"tailwindcss": "^4.1.18",
+		"three": "^0.182.0",
+		"typescript": "^5.9.3"
+	}
 }

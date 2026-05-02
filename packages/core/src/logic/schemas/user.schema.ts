@@ -1,26 +1,14 @@
-/// <reference types="vitest/importMeta" />
 import { z } from 'zod';
+import { makeModelSchema } from '../generated/zod';
 import { RoleSchema } from './role.schema';
 
 /**
  * UserSchema - Base entity for a user in the sanctuary.
+ * Derived from ZenStack Model Schema + App-specific extensions.
  */
-export const UserSchema = z.object({
-  id: z.string().uuid(),
-  full_name: z.string(),
-  email: z.string().email().nullable().optional(),
-  avatar_url: z.string().nullable().optional(),
-  authority: z.string().nullable().optional(), // POA Role
-  role: z.string().nullable().optional(), // Legacy singular role
-  roles: z.array(z.string()).default([]), // Modern multiple roles
-  is_anonymous: z.boolean().default(false),
-  onboarding_completed: z.boolean().default(false),
-  onboarding_completed_at: z.string().nullable().optional(),
-  school_id: z.string().uuid().nullable().optional(), // Added for tenancy healing
-  created_at: z.string(),
-  updated_at: z.string(),
-  // Metadata
-  metadata: z.record(z.string(), z.any()).optional(),
+export const UserSchema = makeModelSchema('User').extend({
+  // App-specific singular role (Legacy)
+  role: z.string().nullable().optional(),
 });
 
 export type User = z.infer<typeof UserSchema>;
@@ -28,9 +16,9 @@ export type User = z.infer<typeof UserSchema>;
 export const TenantKindSchema = z.enum(['internal', 'customer', 'demo', 'sandbox']);
 
 export const UserContextSchema = z.object({
-  userId: z.string().uuid().nullable(),
-  email: z.string().email().nullable(),
-  schoolId: z.string().uuid().nullable(), // Null if 2nd class citizen
+  userId: z.uuid().nullable(),
+  email: z.email().nullable(),
+  schoolId: z.uuid().nullable(), // Null if 2nd class citizen
   tenancyName: z.string().nullable().default(null),
   tenancy: z
     .object({
@@ -44,9 +32,9 @@ export const UserContextSchema = z.object({
   authority: RoleSchema.nullable().default(null),
 
   // Scoped context for 1st class citizens
-  sectionId: z.string().uuid().nullable().optional(),
-  gradeId: z.string().uuid().nullable().optional(),
-  classroomId: z.string().uuid().nullable().optional(),
+  sectionId: z.uuid().nullable().optional(),
+  gradeId: z.uuid().nullable().optional(),
+  classroomId: z.uuid().nullable().optional(),
 
   // Metadata & Flags
   isAnonymous: z.boolean().default(false),
@@ -61,8 +49,8 @@ export const UserContextSchema = z.object({
 export type UserContext = z.infer<typeof UserContextSchema>;
 export type TenantKind = z.infer<typeof TenantKindSchema>;
 
-if (import.meta.vitest) {
-  const { it, expect } = import.meta.vitest;
+if ((import.meta as any).vitest) {
+  const { it, expect } = (import.meta as any).vitest;
   it('validates a correct user object', () => {
     const validUser = {
       id: '550e8400-e29b-41d4-a716-446655440000',

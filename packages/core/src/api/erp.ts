@@ -7,9 +7,9 @@
 import { z } from 'zod';
 import { AccountSchema, FinancialTransactionSchema } from '../logic/schemas/accounting.schema';
 import { InvoiceSchema, PaymentIntentSchema } from '../logic/schemas/payments.schema';
-import { supabase } from './supabase';
 import { APIError } from '../types/API';
 import { erpContract } from './erp.contract';
+import { supabase } from './supabase';
 
 export const accountingAPI = {
   /**
@@ -37,7 +37,9 @@ export const accountingAPI = {
     tx: Omit<z.infer<typeof FinancialTransactionSchema>, 'id'>,
   ): Promise<z.infer<typeof FinancialTransactionSchema>> {
     // In a real implementation, this would be a complex RPC call to handle double-entry
-    const { data, error } = await supabase.rpc('record_financial_transaction', { tx_data: tx });
+    const { data, error } = await supabase.rpc('record_financial_transaction', {
+      tx_data: tx,
+    });
 
     if (error) {
       throw new APIError('Failed to record transaction', error.code, error);
@@ -77,7 +79,9 @@ export const paymentsAPI = {
     let query = supabase.from('billing_invoices').select('*');
     if (customerId) query = query.eq('customer_id', customerId);
 
-    const { data, error } = await query.order('created_at', { ascending: false });
+    const { data, error } = await query.order('created_at', {
+      ascending: false,
+    });
 
     if (error) {
       throw new APIError('Failed to fetch invoices', error.code, error);

@@ -10,14 +10,14 @@
  * under 'pending_qr_action' — redeemed after login via redeemPendingQRAction().
  */
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { resolveQR } from '@repo/core/logic';
-import type { QRPayload } from '@repo/core/types';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { resolveQR } from "@repo/core/logic";
+import type { QRPayload } from "@repo/core/types";
 
-import { useCallback, useEffect, useRef } from 'react';
-import { Linking } from 'react-native';
+import { useCallback, useEffect, useRef } from "react";
+import { Linking } from "react-native";
 
-export const PENDING_QR_KEY = 'pending_qr_action';
+export const PENDING_QR_KEY = "pending_qr_action";
 
 export type QRDeepLinkHandler = (payload: QRPayload) => void;
 
@@ -26,46 +26,49 @@ export type QRDeepLinkHandler = (payload: QRPayload) => void;
  * Safe to call before handler is ready — pending payloads are stored in AsyncStorage.
  */
 export function useQRDeepLink(onQRAction?: QRDeepLinkHandler) {
-  const handlerRef = useRef<QRDeepLinkHandler | undefined>(onQRAction);
-  handlerRef.current = onQRAction;
+	const handlerRef = useRef<QRDeepLinkHandler | undefined>(onQRAction);
+	handlerRef.current = onQRAction;
 
-  const dispatchOrStore = useCallback(async (url: string) => {
-    if (!url || typeof url !== 'string') return;
-    if (!url.startsWith('gurudevi://qr')) return;
+	const dispatchOrStore = useCallback(async (url: string) => {
+		if (!url || typeof url !== "string") return;
+		if (!url.startsWith("gurudevi://qr")) return;
 
-    const result = resolveQR(url);
-    if (!result.ok) return;
+		const result = resolveQR(url);
+		if (!result.ok) return;
 
-    const handler = handlerRef.current;
-    if (handler) {
-      handler(result.payload);
-    } else {
-      // No handler yet (user not authenticated) — store for later
-      await AsyncStorage.setItem(PENDING_QR_KEY, JSON.stringify(result.payload));
-    }
-  }, []);
+		const handler = handlerRef.current;
+		if (handler) {
+			handler(result.payload);
+		} else {
+			// No handler yet (user not authenticated) — store for later
+			await AsyncStorage.setItem(
+				PENDING_QR_KEY,
+				JSON.stringify(result.payload),
+			);
+		}
+	}, []);
 
-  useEffect(() => {
-    // Handle cold-start URL (app opened from outside via QR link).
-    // On web: Linking.getInitialURL() returns the current https:// URL.
-    // dispatchOrStore() will check `url.startsWith('gurudevi://qr')` which
-    // never matches an https URL — so this is a safe no-op on web.
-    // Web QR routes (/qr path) are handled by NavigationContainer linking instead.
-    Linking.getInitialURL()
-      .then((url) => {
-        if (url) dispatchOrStore(url);
-      })
-      .catch(() => {
-        // Safe to ignore — linking can reject in some environments
-      });
+	useEffect(() => {
+		// Handle cold-start URL (app opened from outside via QR link).
+		// On web: Linking.getInitialURL() returns the current https:// URL.
+		// dispatchOrStore() will check `url.startsWith('gurudevi://qr')` which
+		// never matches an https URL — so this is a safe no-op on web.
+		// Web QR routes (/qr path) are handled by NavigationContainer linking instead.
+		Linking.getInitialURL()
+			.then((url) => {
+				if (url) dispatchOrStore(url);
+			})
+			.catch(() => {
+				// Safe to ignore — linking can reject in some environments
+			});
 
-    // Handle warm-resume URL (app already running, incoming deep link).
-    const subscription = Linking.addEventListener('url', ({ url }) => {
-      dispatchOrStore(url);
-    });
+		// Handle warm-resume URL (app already running, incoming deep link).
+		const subscription = Linking.addEventListener("url", ({ url }) => {
+			dispatchOrStore(url);
+		});
 
-    return () => subscription.remove();
-  }, [dispatchOrStore]);
+		return () => subscription.remove();
+	}, [dispatchOrStore]);
 }
 
 /**
@@ -74,12 +77,12 @@ export function useQRDeepLink(onQRAction?: QRDeepLinkHandler) {
  * Returns the payload and clears it from storage, or null if none.
  */
 export async function redeemPendingQRAction(): Promise<QRPayload | null> {
-  try {
-    const raw = await AsyncStorage.getItem(PENDING_QR_KEY);
-    if (!raw) return null;
-    await AsyncStorage.removeItem(PENDING_QR_KEY);
-    return JSON.parse(raw) as QRPayload;
-  } catch {
-    return null;
-  }
+	try {
+		const raw = await AsyncStorage.getItem(PENDING_QR_KEY);
+		if (!raw) return null;
+		await AsyncStorage.removeItem(PENDING_QR_KEY);
+		return JSON.parse(raw) as QRPayload;
+	} catch {
+		return null;
+	}
 }

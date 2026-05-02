@@ -9,10 +9,10 @@ interface MapContextProps {
 
 const MapContext = createContext<MapContextProps | undefined>(undefined);
 
-export const MapProvider: React.FC<{ children: ReactNode; initialProvider?: MapProviderType }> = ({
-  children,
-  initialProvider = 'google',
-}) => {
+export const MapProvider: React.FC<{
+  children: ReactNode;
+  initialProvider?: MapProviderType;
+}> = ({ children, initialProvider = 'google' }) => {
   const [provider, setProvider] = useState<MapProviderType>(initialProvider);
 
   return <MapContext.Provider value={{ provider, setProvider }}>{children}</MapContext.Provider>;

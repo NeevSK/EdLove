@@ -1,7 +1,7 @@
-import { SITE_URL } from '../lib/site';
+import { SITE_URL } from "../lib/site";
 
 export function GET() {
-  const body = `User-agent: *
+	const body = `User-agent: *
 Allow: /
 
 User-agent: GPTBot
@@ -22,9 +22,9 @@ Allow: /
 Sitemap: ${SITE_URL}/sitemap-index.xml
 `;
 
-  return new Response(body, {
-    headers: {
-      'Content-Type': 'text/plain; charset=utf-8',
-    },
-  });
+	return new Response(body, {
+		headers: {
+			"Content-Type": "text/plain; charset=utf-8",
+		},
+	});
 }

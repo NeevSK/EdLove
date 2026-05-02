@@ -6,11 +6,11 @@ export interface StaffLeave {
   user_id: string;
   school_id: string;
   leave_type: LeaveType;
-  start_date: string;
-  end_date: string;
+  start_date: Date;
+  end_date: Date;
   reason?: string;
   status: LeaveStatus;
   approved_by?: string;
-  approved_at?: string;
-  created_at: string;
+  approved_at?: Date;
+  created_at: Date;
 }

@@ -1,18 +1,11 @@
-﻿import { z } from 'zod';
+import { z } from 'zod';
+import { makeModelSchema } from '../generated/zod';
 
-export const GuardianIdentitySchema = z.object({
-  id: z.string(),
-  userId: z.string().optional(),
-  relationshipType: z.enum(['parent', 'guardian', 'caregiver']),
-  contactInfo: z.any(),
-  verificationStatus: z.enum(['pending', 'verified', 'rejected']),
-  custodyInfo: z.any().optional(),
-  emergencyContact: z.any().optional(),
-  createdAt: z.string(),
-  updatedAt: z.string(),
-  schoolId: z.string(),
-  tenantId: z.string(),
-});
+/**
+ * GuardianSchema - Identity of a student protector.
+ * Derived from ZenStack Guardian model.
+ */
+export const GuardianIdentitySchema = makeModelSchema('Guardian');
 
 export const GuardianContactInfoSchema = z.object({
   primaryPhone: z.string(),
@@ -52,14 +45,14 @@ export const GuardianEmergencyContactSchema = z.object({
 });
 
 export const GuardianProfileCreateSchema = z.object({
-  userId: z.string().optional(),
+  userId: z.uuid().optional(),
   relationshipType: z.enum(['parent', 'guardian', 'caregiver']),
   contactInfo: GuardianContactInfoSchema,
   verificationStatus: z.enum(['pending', 'verified', 'rejected']).default('pending'),
   custodyInfo: GuardianCustodyInfoSchema.optional(),
   emergencyContact: GuardianEmergencyContactSchema.optional(),
-  schoolId: z.string(),
-  tenantId: z.string(),
+  schoolId: z.uuid(),
+  tenantId: z.uuid(),
 });
 
 export const GuardianVerificationDocumentSchema = z.object({
@@ -108,20 +101,11 @@ export const GuardianPermissionConfigSchema = z.object({
 
 export const GuardianNotificationSettingsSchema = z.record(z.string(), z.any());
 
-export const StudentGuardianRelationshipSchema = z.object({
-  id: z.string(),
-  studentId: z.string(),
-  guardianId: z.string(),
-  relationshipType: z.enum(['parent', 'guardian', 'caregiver']),
-  permissions: z.array(GuardianPermissionConfigSchema),
-  custodyLevel: z.enum(['full', 'partial', 'visitation']),
-  effectiveDate: z.string(),
-  terminationDate: z.string().optional(),
-  isActive: z.boolean(),
-  createdAt: z.string(),
-  updatedAt: z.string(),
-  schoolId: z.string(),
-});
+/**
+ * StudentGuardianRelationshipSchema - The legal and social link between student and guardian.
+ * Derived from ZenStack StudentGuardianRelationship model.
+ */
+export const StudentGuardianRelationshipSchema = makeModelSchema('StudentGuardianRelationship');
 
 export const GuardianGradeInfoSchema = z.object({
   subject: z.string(),
@@ -257,3 +241,8 @@ export type GuardianVerificationDocument = z.infer<typeof GuardianVerificationDo
 export type GuardianPermissionConfig = z.infer<typeof GuardianPermissionConfigSchema>;
 export type GuardianNotificationSettings = z.infer<typeof GuardianNotificationSettingsSchema>;
 export type StudentGuardianRelationship = z.infer<typeof StudentGuardianRelationshipSchema>;
+export type GuardianNotification = z.infer<typeof GuardianNotificationSchema>;
+export type GuardianSchoolEvent = z.infer<typeof GuardianSchoolEventSchema>;
+export type GuardianActivityItem = z.infer<typeof GuardianActivityItemSchema>;
+export type GuardianAssignment = z.infer<typeof GuardianAssignmentSchema>;
+export type GuardianGradeInfo = z.infer<typeof GuardianGradeInfoSchema>;

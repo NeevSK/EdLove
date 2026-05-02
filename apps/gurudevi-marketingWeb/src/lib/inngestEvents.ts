@@ -1,10 +1,15 @@
-import { SyncMutationQueuedPayload, WellbeingMoodLoggedPayload, sendSyncMutationQueued, sendWellbeingMoodLogged } from '@repo/core/logic';
-import { inngest } from './inngest';
+import {
+	type SyncMutationQueuedPayload,
+	sendSyncMutationQueued,
+	sendWellbeingMoodLogged,
+	type WellbeingMoodLoggedPayload,
+} from "@repo/core/logic";
+import { inngest } from "./inngest";
 
 export function emitWellbeingMoodLogged(payload: WellbeingMoodLoggedPayload) {
-  return sendWellbeingMoodLogged(inngest, payload);
+	return sendWellbeingMoodLogged(inngest, payload);
 }
 
 export function emitSyncMutationQueued(payload: SyncMutationQueuedPayload) {
-  return sendSyncMutationQueued(inngest, payload);
+	return sendSyncMutationQueued(inngest, payload);
 }

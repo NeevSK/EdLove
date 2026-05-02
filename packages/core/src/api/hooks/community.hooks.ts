@@ -1,11 +1,14 @@
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useCallback, useState } from 'react';
-import { identityAPI } from '../identity';
+import { useCallback, useMemo, useState } from 'react';
 import { useStore, useTemporalStore } from '../../store';
 import { APIError } from '../../types/API';
 import type { Post } from '../../types/Community';
 import { communityAPI } from '../community';
+import { circleAPI } from '../circles';
+import { announcementAPI } from '../announcements';
+import { socialAPI } from '../social';
 import { growthSignalsAPI } from '../growthSignals';
+import { identityAPI } from '../identity';
 
 /**
  * Community Query Key Factory
@@ -33,7 +36,7 @@ export function useGroupsInfiniteQuery(options: {
   return useInfiniteQuery({
     queryKey: communityKeys.groups({ ...options }),
     queryFn: async ({ pageParam = 0 }) => {
-      return communityAPI.getGroups({
+      return circleAPI.getGroups({
         limit: 10,
         offset: pageParam,
         search: options.searchQuery,
@@ -97,8 +100,8 @@ export function useCreatePostMutation() {
       const authority = storeUser?.authority || 'student';
       return communityAPI.createPost(input, loggedInId, authority as any, schoolId);
     },
-    onSuccess: (_data, variables) => {
-      queryClient.invalidateQueries({
+    onSuccess: async (_data, variables) => {
+      await queryClient.invalidateQueries({
         queryKey: communityKeys.posts(variables.group_id || 'all', {}),
       });
       if (storeUser?.id) {
@@ -151,8 +154,8 @@ export function useToggleReactionMutation(groupId: string = 'all') {
 
       return { previous };
     },
-    onSettled: () => {
-      queryClient.invalidateQueries({
+    onSettled: async () => {
+      await queryClient.invalidateQueries({
         queryKey: communityKeys.posts(groupId, { viewDate, viewScale }),
       });
     },
@@ -166,7 +169,7 @@ export function useToggleReactionMutation(groupId: string = 'all') {
 export function useAnnouncementsQuery(schoolId: string) {
   return useQuery({
     queryKey: communityKeys.announcements(schoolId),
-    queryFn: () => communityAPI.getAnnouncements(schoolId),
+    queryFn: () => announcementAPI.getAnnouncements(schoolId),
     enabled: !!schoolId,
     staleTime: 5 * 60 * 1000,
   });
@@ -177,8 +180,8 @@ export function usePollVoteMutation() {
   return useMutation({
     mutationFn: (params: { postId: string; optionId: string; allowMultiple?: boolean }) =>
       communityAPI.voteInPoll(params.postId, params.optionId, params.allowMultiple),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: communityKeys.all });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: communityKeys.all });
     },
   });
 }
@@ -193,7 +196,7 @@ export function useReportMutation() {
       report_target: 'teacher' | 'principal' | 'platform';
       reporterId: string;
     }) =>
-      communityAPI.reportContent(
+      socialAPI.reportContent(
         {
           postId: params.postId,
           groupId: params.groupId,
@@ -221,19 +224,22 @@ export function usePostLogic(post: Post, userId?: string) {
     [post.id, userId, toggleReaction],
   );
 
-  return {
-    state: {
-      isMenuOpen,
-      isLiked: post.has_liked,
-      likeCount: post.reaction_count,
-      hasResonated: false,
-      isResonating: false,
-    },
-    handleLike,
-    handleResonate: () => {},
-    toggleMenu: () => setIsMenuOpen(true),
-    closeMenu: () => setIsMenuOpen(false),
-  };
+  return useMemo(
+    () => ({
+      state: {
+        isMenuOpen,
+        isLiked: post.has_liked,
+        likeCount: post.reaction_count,
+        hasResonated: false,
+        isResonating: false,
+      },
+      handleLike,
+      handleResonate: () => {},
+      toggleMenu: () => setIsMenuOpen(true),
+      closeMenu: () => setIsMenuOpen(false),
+    }),
+    [isMenuOpen, post.has_liked, post.reaction_count, handleLike],
+  );
 }
 
 /**
@@ -251,13 +257,16 @@ export function usePollLogic(postId: string, userId?: string, allowMultiple?: bo
     [postId, userId, allowMultiple, voteMutation],
   );
 
-  return {
-    counts: {}, // Mock/Placeholder for now
-    userVotes,
-    totalVotes: 0,
-    isLoading: false,
-    isVoting: voteMutation.isPending,
-    handleVote,
-    refreshVotes: () => {},
-  };
+  return useMemo(
+    () => ({
+      counts: {}, // Mock/Placeholder for now
+      userVotes,
+      totalVotes: 0,
+      isLoading: false,
+      isVoting: voteMutation.isPending,
+      handleVote,
+      refreshVotes: () => {},
+    }),
+    [userVotes, voteMutation.isPending, handleVote],
+  );
 }

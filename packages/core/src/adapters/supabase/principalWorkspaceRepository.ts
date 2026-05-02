@@ -27,14 +27,14 @@ const inviteRoleToAuthority = (role: PrincipalInviteRole) => {
 
 const normalizeInviteCode = (row: Record<string, unknown>): InviteCodeZod =>
   InviteCodeSchema.parse({
-    code: row.code,
-    school_id: row.school_id,
-    authority: RoleSchema.parse((row.authority ?? row.role ?? 'teacher') as string),
-    created_by: row.created_by,
-    used: Boolean(row.used ?? !row.is_active) || Number(row.uses_count ?? 0) > 0,
-    created_at: row.created_at,
-    expires_at: row.expires_at ?? null,
-    is_active: Boolean(row.is_active ?? true),
+    code: row['code'],
+    school_id: row['school_id'],
+    authority: RoleSchema.parse((row['authority'] ?? row['role'] ?? 'teacher') as string),
+    created_by: row['created_by'],
+    used: Boolean(row['used'] ?? !row['is_active']) || Number(row['uses_count'] ?? 0) > 0,
+    created_at: row['created_at'],
+    expires_at: row['expires_at'] ?? null,
+    is_active: Boolean(row['is_active'] ?? true),
   });
 
 export const createSupabasePrincipalWorkspaceRepository = (

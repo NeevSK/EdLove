@@ -39,7 +39,13 @@ export default function CommunityPresence({
             animation: isOffline ? 'none' : 'pulse 2s infinite',
           }}
         />
-        <span style={{ fontSize: '11px', color: 'var(--ink-ghost)', fontWeight: '600' }}>
+        <span
+          style={{
+            fontSize: '11px',
+            color: 'var(--ink-ghost)',
+            fontWeight: '600',
+          }}
+        >
           {isLoading ? '' : isOffline ? 'Offline' : `${onlineCount} ${label} online`}
         </span>
         <style>{`@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }`}</style>

@@ -34,13 +34,22 @@ export const validators = {
       return { isValid: false, error: 'Password is required' };
     }
     if (password.length < 8) {
-      return { isValid: false, error: 'Password must be at least 8 characters' };
+      return {
+        isValid: false,
+        error: 'Password must be at least 8 characters',
+      };
     }
     if (!/[A-Z]/.test(password)) {
-      return { isValid: false, error: 'Password must contain an uppercase letter' };
+      return {
+        isValid: false,
+        error: 'Password must contain an uppercase letter',
+      };
     }
     if (!/[a-z]/.test(password)) {
-      return { isValid: false, error: 'Password must contain a lowercase letter' };
+      return {
+        isValid: false,
+        error: 'Password must contain a lowercase letter',
+      };
     }
     if (!/[0-9]/.test(password)) {
       return { isValid: false, error: 'Password must contain a number' };
@@ -63,7 +72,10 @@ export const validators = {
    */
   maxLength: (value: string, max: number, fieldName: string = 'Field'): ValidationResult => {
     if (value.length > max) {
-      return { isValid: false, error: `${fieldName} must be less than ${max} characters` };
+      return {
+        isValid: false,
+        error: `${fieldName} must be less than ${max} characters`,
+      };
     }
     return { isValid: true };
   },
@@ -73,7 +85,10 @@ export const validators = {
    */
   minLength: (value: string, min: number, fieldName: string = 'Field'): ValidationResult => {
     if (value.length < min) {
-      return { isValid: false, error: `${fieldName} must be at least ${min} characters` };
+      return {
+        isValid: false,
+        error: `${fieldName} must be at least ${min} characters`,
+      };
     }
     return { isValid: true };
   },
@@ -91,7 +106,10 @@ export const validators = {
       return { isValid: false, error: `${fieldName} must be a number` };
     }
     if (value < min || value > max) {
-      return { isValid: false, error: `${fieldName} must be between ${min} and ${max}` };
+      return {
+        isValid: false,
+        error: `${fieldName} must be between ${min} and ${max}`,
+      };
     }
     return { isValid: true };
   },

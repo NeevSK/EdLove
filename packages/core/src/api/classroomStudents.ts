@@ -1,5 +1,5 @@
 import type { Student as EnrollmentRecord } from '../logic/schemas/student.schema';
-import { educationalServices } from '../native/runtimes/educational.runtime';
+import { educationalServices } from './runtimes/educational.runtime';
 import { educationalContract } from './educational.contract';
 
 export const classroomStudentsAPI = {

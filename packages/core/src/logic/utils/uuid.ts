@@ -1,1 +1,1 @@
-export { v4, v7 } from 'uuid';
+export { v4, v7, v7 as uuidv7 } from 'uuid';

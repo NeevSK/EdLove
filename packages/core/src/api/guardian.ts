@@ -8,7 +8,7 @@ import type {
   GuardianVerificationDocument,
   StudentGuardianRelationship,
 } from '../logic/schemas/guardian.schema';
-import { guardianServices } from '../native/runtimes/guardian.runtime';
+import { guardianServices } from './runtimes/guardian.runtime';
 import { guardianContract } from './guardian.contract';
 
 export const guardianAPI = {
@@ -74,7 +74,7 @@ export const guardianAPI = {
   async linkGuardianToStudent(
     guardianId: string,
     studentId: string,
-    relationshipType: GuardianIdentity['relationshipType'],
+    relationshipType: GuardianIdentity['relationship_type'],
     schoolId?: string,
   ): Promise<StudentGuardianRelationship> {
     return guardianServices.linkGuardianToStudent(

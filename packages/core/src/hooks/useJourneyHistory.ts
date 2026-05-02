@@ -1,8 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
+import { supabase } from '../api/supabase';
 import { usePermissions } from '../logic/permissions/hooks/usePermissions';
 import { applyTemporalFilter } from '../logic/utils/temporalUtils';
-import { supabase } from '../api/supabase';
 import { useTemporalStore } from '../store/useTemporalStore';
 
 export interface JourneyEvent {

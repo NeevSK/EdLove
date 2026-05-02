@@ -1,5 +1,6 @@
 import type React from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
+import { ScrollView, View } from '../primitives';
 import { useTheme } from '../hooks/useTheme';
 
 interface ScreenWrapperProps {

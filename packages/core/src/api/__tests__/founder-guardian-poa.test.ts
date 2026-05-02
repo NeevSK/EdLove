@@ -1,4 +1,4 @@
-﻿vi.mock('../native/runtimes/founder.runtime', () => ({
+vi.mock('../runtimes/founder.runtime', () => ({
   founderServices: {
     getEcosystemStats: vi.fn(),
     getAllSchools: vi.fn(),
@@ -12,7 +12,7 @@
   },
 }));
 
-vi.mock('../native/runtimes/guardian.runtime', () => ({
+vi.mock('../runtimes/guardian.runtime', () => ({
   guardianServices: {
     createProfile: vi.fn(),
     getProfile: vi.fn(),

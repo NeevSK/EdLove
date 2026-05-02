@@ -1,6 +1,6 @@
-import { supabase } from './supabase';
 import { withResilience } from '../offline/resilience';
 import { APIError } from '../types/API';
+import { supabase } from './supabase';
 
 // ============================================================================
 // DAILY CONTENT API (Motivation & "Did You Know?")
@@ -54,7 +54,10 @@ export const dailyContentAPI = {
         key: 'daily_content_today',
         ttl: 24 * 60 * 60 * 1000, // Cache for 24 hours
       },
-    ) as Promise<{ motivation: DailyContent | null; didYouKnow: DailyContent | null }>;
+    ) as Promise<{
+      motivation: DailyContent | null;
+      didYouKnow: DailyContent | null;
+    }>;
   },
 
   /**

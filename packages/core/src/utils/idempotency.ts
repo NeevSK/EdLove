@@ -13,7 +13,7 @@ export const generateIdempotencyKey = (prefix?: string) => {
  * Returns a consistent idempotency key for a specific set of data.
  * Useful for "fire-and-forget" syncs that might trigger multiple times.
  */
-export const getConsistentIdempotencyKey = async (data: any) => {
+export const getConsistentIdempotencyKey = async (_data: any) => {
   // In a real 2026 app, we might use a hash of the data.
   // For now, simple UUID is fine if stored in local state.
   return uuidv4();

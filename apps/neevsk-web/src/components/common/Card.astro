@@ -1,10 +1,10 @@
 ---
 export interface Props {
-  variant?: 'default' | 'feature' | 'minimal' | 'gradient';
-  class?: string;
+	variant?: "default" | "feature" | "minimal" | "gradient";
+	class?: string;
 }
 
-const { variant = 'default', class: className } = Astro.props;
+const { variant = "default", class: className } = Astro.props;
 ---
 
 <article class:list={['card', `card-${variant}`, className]}>

@@ -13,3 +13,4 @@ export * from './storage';
 export * from './storageWrapper';
 export * from './supabaseAuthStorage';
 export * from './temporalEvents';
+export * from './errors';

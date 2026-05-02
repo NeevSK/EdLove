@@ -1,4 +1,4 @@
-﻿import type {
+import type {
   GuardianDashboard,
   GuardianIdentity,
   GuardianNotificationSettings,
@@ -19,7 +19,7 @@ export interface GuardianRepository {
   linkGuardianToStudent(
     guardianId: string,
     studentId: string,
-    relationshipType: GuardianIdentity['relationshipType'],
+    relationshipType: GuardianIdentity['relationship_type'],
     schoolId?: string,
   ): Promise<StudentGuardianRelationship>;
   getGuardianRelationships(guardianId: string): Promise<StudentGuardianRelationship[]>;

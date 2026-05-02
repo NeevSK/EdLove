@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
-import { rewardsAPI } from '../api/rewards';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { identityAPI } from '../api/identity';
+import { rewardsAPI } from '../api/rewards';
 import { useTemporalStore } from '../store/useTemporalStore';
 
 /**
@@ -22,7 +22,9 @@ export function useRewards(
       const internalId = options.userId || (await identityAPI.getMyInternalId());
       if (internalId) setUserId(internalId);
     };
-    getUserId();
+    getUserId().catch((e) => {
+      console.error('Rewards: Failed to resolve identity', e);
+    });
   }, [options.userId]);
 
   // Fetch rewards data
@@ -66,8 +68,8 @@ export function useRewards(
       if (phase === 'past') throw new Error('Rewards are read-only in past view');
       return rewardsAPI.addPoints(userId, points);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['rewards', userId] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['rewards', userId] });
     },
   });
 
@@ -78,8 +80,8 @@ export function useRewards(
       if (phase === 'past') throw new Error('Rewards are read-only in past view');
       return rewardsAPI.awardBadge(userId, badge);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['rewards', userId] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['rewards', userId] });
     },
   });
 
@@ -93,54 +95,88 @@ export function useRewards(
         ? rewardsAPI.checkAndAwardAchievements(userId)
         : Promise.resolve({ updatedRewards: null, newAchievements: [] });
     },
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       if (data.updatedRewards) {
         queryClient.setQueryData(['rewards', userId], data.updatedRewards);
-        queryClient.invalidateQueries({ queryKey: ['rewards', userId] });
+        await queryClient.invalidateQueries({ queryKey: ['rewards', userId] });
       }
     },
   });
 
-  const trackAction = async (
-    actionType:
-      | 'mood_log'
-      | 'journal_entry'
-      | 'library_upload'
-      | 'community_post'
-      | 'comment'
-      | 'exploration',
-  ) => {
-    const pointsMap = {
-      mood_log: 10,
-      journal_entry: 20,
-      library_upload: 50,
-      community_post: 15,
-      comment: 5,
-      exploration: 0,
-    };
+  const addPoints = useCallback(
+    (points: number) => addPointsMutation.mutateAsync({ points }),
+    [addPointsMutation],
+  );
 
-    const points = pointsMap[actionType];
-    if (points > 0) {
-      await addPointsMutation.mutateAsync({ points });
-    }
+  const awardBadge = useCallback(
+    (badge: string) => awardBadgeMutation.mutateAsync({ badge }),
+    [awardBadgeMutation],
+  );
 
-    // After every action, check for achievements
-    return checkAchievementsMutation.mutateAsync();
-  };
+  const checkAchievements = useCallback(
+    () => checkAchievementsMutation.mutateAsync(),
+    [checkAchievementsMutation],
+  );
 
-  return {
-    rewards: rewards || { points: 0, badges: [] },
-    history,
-    isLoading,
-    error,
-    addPoints: (points: number) => addPointsMutation.mutateAsync({ points }),
-    awardBadge: (badge: string) => awardBadgeMutation.mutateAsync({ badge }),
-    checkAchievements: () => checkAchievementsMutation.mutateAsync(),
-    trackAction,
-    isUpdating:
-      addPointsMutation.isPending ||
-      awardBadgeMutation.isPending ||
+  const trackAction = useCallback(
+    async (
+      actionType:
+        | 'mood_log'
+        | 'journal_entry'
+        | 'library_upload'
+        | 'community_post'
+        | 'comment'
+        | 'exploration',
+    ) => {
+      const pointsMap = {
+        mood_log: 10,
+        journal_entry: 20,
+        library_upload: 50,
+        community_post: 15,
+        comment: 5,
+        exploration: 0,
+      };
+
+      const points = pointsMap[actionType];
+      if (points > 0) {
+        await addPointsMutation.mutateAsync({ points });
+      }
+
+      // After every action, check for achievements
+      return checkAchievementsMutation.mutateAsync();
+    },
+    [addPointsMutation, checkAchievementsMutation],
+  );
+
+  return useMemo(
+    () => ({
+      rewards: rewards || { points: 0, badges: [] },
+      history,
+      isLoading,
+      error,
+      addPoints,
+      awardBadge,
+      checkAchievements,
+      trackAction,
+      isUpdating:
+        addPointsMutation.isPending ||
+        awardBadgeMutation.isPending ||
+        checkAchievementsMutation.isPending,
+      newAchievements: checkAchievementsMutation.data?.newAchievements || [],
+    }),
+    [
+      rewards,
+      history,
+      isLoading,
+      error,
+      addPoints,
+      awardBadge,
+      checkAchievements,
+      trackAction,
+      addPointsMutation.isPending,
+      awardBadgeMutation.isPending,
       checkAchievementsMutation.isPending,
-    newAchievements: checkAchievementsMutation.data?.newAchievements || [],
-  };
+      checkAchievementsMutation.data?.newAchievements,
+    ],
+  );
 }

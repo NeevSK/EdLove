@@ -15,7 +15,8 @@ import * as Haptics from 'expo-haptics';
 import { Edit, Flower2, MessageCircle, Plus, Upload } from 'lucide-react-native';
 import type React from 'react';
 import { type FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Dimensions, Image, PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, Image, PanResponder, StyleSheet } from 'react-native';
+import { Pressable, Text, View } from '../primitives';
 import Animated, {
   Easing,
   Extrapolate,
@@ -40,7 +41,11 @@ type TabType = 'self' | 'classroom' | 'community' | 'library' | 'profile';
 export interface ActionItem {
   label: string;
   onPress: () => void;
-  icon?: React.ComponentType<{ size: number; color: string; strokeWidth: number }>;
+  icon?: React.ComponentType<{
+    size: number;
+    color: string;
+    strokeWidth: number;
+  }>;
 }
 
 interface LotusPetalFABProps {
@@ -65,7 +70,11 @@ const LONG_PRESS_DURATION = 400; // milliseconds
 const _SCREEN_WIDTH = Dimensions.get('window').width;
 
 // Context-aware configuration
-type IconComponentType = React.ComponentType<{ size: number; color: string; strokeWidth: number }>;
+type IconComponentType = React.ComponentType<{
+  size: number;
+  color: string;
+  strokeWidth: number;
+}>;
 
 const fabConfig: Record<TabType, { IconComponent: IconComponentType; label: string }> = {
   self: {
@@ -106,9 +115,6 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
   bottomInset = Theme.spacing.lg, // Default value if not provided
 }) => {
   const { isReduceMotionEnabled, announce } = useAccessibility();
-
-  // TEMPORARY: Return null if disabled to completely hide the FAB
-  if (disabled) return null;
 
   // Shared value for press animation
   const pressScale = useSharedValue(1);
@@ -258,7 +264,7 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
     return {
       transform: [{ scale: actionMenuScale.value }, { translateY: -10 }], // Pop up slightly
       opacity: actionMenuScale.value,
-    } as any;
+    };
   });
 
   useEffect(() => {
@@ -291,7 +297,7 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
   const dragStyle = useAnimatedStyle(() => {
     return {
       transform: [{ translateX: translateX.value }, { translateY: translateY.value }],
-    } as any;
+    };
   });
 
   const containerStyle = useMemo(
@@ -306,6 +312,8 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
     ],
     [bottomInset, breathingStyle, pressStyle, scrollStyle, dragStyle, disabled],
   );
+
+  if (disabled) return null;
 
   return (
     <Animated.View
@@ -333,9 +341,9 @@ const LotusPetalFAB: FC<LotusPetalFABProps> = ({
       {/* Action Menu */}
       {actions && actions.length > 0 && (
         <Animated.View style={[styles.actionMenu, actionMenuStyle]}>
-          {actions.map((action, index) => (
+          {actions.map((action) => (
             <Pressable
-              key={index}
+              key={action.label}
               style={styles.actionBubble}
               onPress={() => {
                 triggerHaptic();

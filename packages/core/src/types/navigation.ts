@@ -12,7 +12,10 @@ export type ClassroomStackParamList = {
     classroomStudentId: string;
   };
   Timetable: { schoolId?: string };
-  PublicProfile: { id: string; type: 'user' | 'school' | 'classroom' | 'community' };
+  PublicProfile: {
+    id: string;
+    type: 'user' | 'school' | 'classroom' | 'community';
+  };
   FormBuilder: undefined;
   PublicForm: { slug: string };
   // Missing routes used in mobile app
@@ -68,7 +71,10 @@ export type ProfileStackParamList = {
   PrivacyLedger: undefined;
   MuteHub: undefined;
   TrubeLab: undefined;
-  PublicProfile: { id: string; type: 'user' | 'school' | 'classroom' | 'community' };
+  PublicProfile: {
+    id: string;
+    type: 'user' | 'school' | 'classroom' | 'community';
+  };
 };
 export type CommunityStackParamList = {
   CommunityMain: undefined;
@@ -77,7 +83,10 @@ export type CommunityStackParamList = {
   Announcements: undefined;
   /** Public profile viewer  tapping any user avatar in community navigates here */
   UserProfile: { userId: string; userName: string };
-  PublicProfile: { id: string; type: 'user' | 'school' | 'classroom' | 'community' };
+  PublicProfile: {
+    id: string;
+    type: 'user' | 'school' | 'classroom' | 'community';
+  };
   /** 1:1 Direct Messaging */
   DirectMessagesList: undefined;
   DirectMessage: { conversationId: string; userName: string };
@@ -93,9 +102,19 @@ export type LibraryStackParamList = {
   LibraryMap: undefined;
   CuratorReview: undefined;
   /** Inline PDF viewer  resourceId is used to mark resource_read growth signal */
-  PDFViewer: { resourceId: string; title: string; url: string; creator?: string };
+  PDFViewer: {
+    resourceId: string;
+    title: string;
+    url: string;
+    creator?: string;
+  };
   /** Inline video player */
-  VideoPlayer: { resourceId: string; title: string; url: string; creator?: string };
+  VideoPlayer: {
+    resourceId: string;
+    title: string;
+    url: string;
+    creator?: string;
+  };
   /** Collection detail view */
   CollectionDetail: { id: string; title: string };
 };

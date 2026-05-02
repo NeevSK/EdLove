@@ -4,6 +4,7 @@ export interface Lesson {
   title: string;
   content?: string;
   order_index: number;
-  published_at?: string;
-  created_at: string;
+  published_at?: Date;
+  created_at: Date;
+  updated_at: Date;
 }

@@ -1,4 +1,4 @@
-import { DownloadState } from '@repo/core/hooks';
+import type { DownloadState } from '@repo/core/hooks';
 import { Bookmark, Download, ExternalLink, XCircle } from 'lucide-react-native';
 import { useTheme } from '../../hooks/useTheme';
 import { Box, HStack, Text, VStack } from '../../primitives';

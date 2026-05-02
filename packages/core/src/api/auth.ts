@@ -4,15 +4,6 @@ import { identityAPI } from './identity';
 import { supabase } from './supabase';
 
 export const authAPI = {
-  /**
-   * Get current auth session.
-   * @deprecated Use identityAPI for application logic. If you need the raw session for system tasks, use getAuthSession().
-   * NOTE: This returns the Supabase auth session (JWT, is_anonymous, email, etc.).
-   * Do NOT use session.user.id for DB queries — use identityAPI.getMyInternalId() instead.
-   */
-  async getSession() {
-    return this.getAuthSession();
-  },
 
   /**
    * Returns the raw Supabase auth session.
@@ -28,14 +19,6 @@ export const authAPI = {
     return data.session;
   },
 
-  /**
-   * Get current Supabase auth user object.
-   * @deprecated Use identityAPI.getMyInternalId() for ID resolution. Use getAuthUser() if you need raw metadata.
-   * NOTE: Returns the auth layer user. Do NOT use user.id for DB queries.
-   */
-  async getUser() {
-    return this.getAuthUser();
-  },
 
   /**
    * Returns the raw Supabase auth user object.
@@ -139,16 +122,6 @@ export const authAPI = {
 
     if (error) {
       throw new APIError('Failed to sign up', error.code, error);
-    }
-
-    return data;
-  },
-
-  async getUserProfile(userId: string) {
-    const { data, error } = await supabase.from('users').select('*').eq('id', userId).single();
-
-    if (error) {
-      throw new APIError('Failed to fetch user profile', error.code, error);
     }
 
     return data;

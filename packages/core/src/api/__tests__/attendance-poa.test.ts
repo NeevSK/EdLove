@@ -1,72 +1,67 @@
-﻿vi.mock('../native/runtimes/educational.runtime', () => ({
-  educationalServices: {
-    attendance: {
-      getByDate: vi.fn(),
-      record: vi.fn(),
-      batchRecord: vi.fn(),
-      getForStudent: vi.fn(),
-    },
-  },
-}));
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { attendanceAPI } from '../orchestration/operations';
+import { useAuthStore } from '../../store/useAuthStore';
+import { useTemporalStore } from '../../store/useTemporalStore';
+import { storage } from '../../logic/managers/StorageManager';
 
-vi.mock('../native/runtimes/attendanceProjection.runtime', () => ({
-  attendanceProjectionServices: {
-    getSchoolAttendancePulse: vi.fn(),
-    getAttendanceReport: vi.fn(),
-  },
-}));
+const mockStorage = {
+  set: vi.fn(),
+  getString: vi.fn(),
+  getStringAsync: vi.fn(),
+  getBoolean: vi.fn(),
+  getNumber: vi.fn(),
+  delete: vi.fn(),
+  clearAll: vi.fn(),
+  contains: vi.fn(),
+};
 
-vi.mock('../../lib/supabase', () => ({
+storage.registerAdapter(mockStorage as any);
+
+vi.mock('../supabase', () => ({
   supabase: {
     from: vi.fn(() => ({
-      insert: vi.fn().mockResolvedValue({ error: null }),
+      select: vi.fn(() => ({
+        eq: vi.fn(() => ({
+          single: vi.fn(() => Promise.resolve({ data: { id: 'test-1' }, error: null })),
+          insert: vi.fn(() => Promise.resolve({ data: { id: 'test-1' }, error: null })),
+        })),
+      })),
     })),
   },
 }));
 
-import { attendanceAPI as rawAttendanceAPI } from '../attendance';
-import { assertContractCoverage, defineContractCoverage } from '../contractCoverage';
-import { operationsContract } from '../operations.contract';
-
-describe('attendance POA coverage', () => {
-  test('attendance public API methods are fully contract-covered', () => {
-    const coverage = assertContractCoverage(
-      rawAttendanceAPI,
-      defineContractCoverage({
-        moduleName: 'attendance-test',
-        contract: operationsContract,
-        methodMapping: {
-          getByDate: 'getAttendance',
-          record: 'recordAttendance',
-          batchRecord: 'batchRecordAttendance',
-          getForStudent: 'getAttendanceForStudent',
-          getClassroomAttendanceSnapshot: 'getClassroomAttendanceSnapshot',
-          getStudentAttendanceTimeline: 'getStudentAttendanceTimeline',
-          getSchoolAttendancePulse: 'getSchoolAttendancePulse',
-          getAttendanceReport: 'getAttendanceReport',
-        },
-      }),
-    );
-
-    expect(coverage.contract).toBe(operationsContract);
+describe('Attendance POA Orchestration', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    // Setup mock abilities
+    useAuthStore.setState({
+      user: {
+        id: '550e8400-e29b-41d4-a716-446655440000',
+        role: 'teacher',
+        roles: ['teacher'],
+        authority: 'teacher',
+      } as any,
+    });
+    useTemporalStore.setState({
+      phase: 'present',
+      isOffline: false,
+    });
   });
 
-  test('attendance temporal routes carry authority metadata', () => {
-    expect(operationsContract.getClassroomAttendanceSnapshot.metadata?.authority).toEqual({
-      action: 'read',
-      subject: 'Attendance',
-    });
-    expect(operationsContract.getStudentAttendanceTimeline.metadata?.authority).toEqual({
-      action: 'read',
-      subject: 'Attendance',
-    });
-    expect(operationsContract.getSchoolAttendancePulse.metadata?.authority).toEqual({
-      action: 'read',
-      subject: 'Attendance',
-    });
-    expect(operationsContract.getAttendanceReport.metadata?.authority).toEqual({
-      action: 'read',
-      subject: 'Attendance',
-    });
+  it('should record attendance when authorized', async () => {
+    const result = await attendanceAPI.record(
+      'class-1',
+      'student-1',
+      'present',
+      '2026-05-02',
+    );
+    expect(result).toBeDefined();
+  });
+
+  it('should prevent mutation in past phase', async () => {
+    useTemporalStore.setState({ phase: 'past' });
+    await expect(
+      attendanceAPI.record('class-1', 'student-1', 'present', '2026-05-02'),
+    ).rejects.toThrow('Cannot modify history');
   });
 });

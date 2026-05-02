@@ -3,10 +3,10 @@ import type {
   StudentAssignment,
   StudentSubmissionSummary,
 } from '../logic/schemas/classroom.schema';
-import { educationalServices } from '../native/runtimes/educational.runtime';
-import { supabase } from './supabase';
+import { educationalServices } from './runtimes/educational.runtime';
 import type { Assignment } from '../types';
 import { educationalContract } from './educational.contract';
+import { supabase } from './supabase';
 
 type RecentGradeOverviewRow = {
   id: string;
@@ -70,12 +70,12 @@ export const assignmentsAPI = {
 
     // Supabase returns joined relations as arrays in some configurations.
     // We map them to the single object shape expected by the UI.
-    return ((data as any[] | null) ?? [])
-      .filter((row) => typeof row.grade === 'number')
+    return ((data as Record<string, any>[] | null) ?? [])
+      .filter((row) => typeof row['grade'] === 'number')
       .map((row) => ({
         ...row,
-        assignments: Array.isArray(row.assignments) ? row.assignments[0] : row.assignments || null,
-        classrooms: Array.isArray(row.classrooms) ? row.classrooms[0] : row.classrooms || null,
+        assignments: Array.isArray(row['assignments']) ? row['assignments'][0] : row['assignments'] || null,
+        classrooms: Array.isArray(row['classrooms']) ? row['classrooms'][0] : row['classrooms'] || null,
       })) as RecentGradeOverviewRow[];
   },
 

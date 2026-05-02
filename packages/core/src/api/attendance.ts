@@ -1,13 +1,12 @@
+import { Effect } from 'effect';
 import type {
   AttendanceReport,
   AttendanceSnapshot,
   SchoolAttendancePulse,
 } from '../logic/schemas/attendance.schema';
 import type { AttendanceRecord } from '../types';
-import { operationsContract } from './operations.contract';
-
-import { Effect } from "effect";
 import * as AttendanceEffect from './attendance.effect';
+import { operationsContract } from './operations.contract';
 
 export type AttendanceAuditContext = {
   actorId?: string;
@@ -33,7 +32,9 @@ export const attendanceAPI = {
     date: string,
     audit?: AttendanceAuditContext,
   ): Promise<AttendanceRecord> {
-    return Effect.runPromise(AttendanceEffect.attendanceAPI.record(classroomId, studentId, status, date, audit));
+    return Effect.runPromise(
+      AttendanceEffect.attendanceAPI.record(classroomId, studentId, status, date, audit),
+    );
   },
 
   async batchRecord(
@@ -51,14 +52,18 @@ export const attendanceAPI = {
   },
 
   async getForStudent(studentId: string, classroomId?: string): Promise<AttendanceRecord[]> {
-    return attendanceAPI.getStudentAttendanceTimeline(studentId, { classroomId });
+    return attendanceAPI.getStudentAttendanceTimeline(studentId, {
+      classroomId,
+    });
   },
 
   async getClassroomAttendanceSnapshot(
     classroomId: string,
     viewDate: string,
   ): Promise<AttendanceSnapshot> {
-    return Effect.runPromise(AttendanceEffect.attendanceAPI.getClassroomAttendanceSnapshot(classroomId, viewDate));
+    return Effect.runPromise(
+      AttendanceEffect.attendanceAPI.getClassroomAttendanceSnapshot(classroomId, viewDate),
+    );
   },
 
   async getStudentAttendanceTimeline(
@@ -69,7 +74,9 @@ export const attendanceAPI = {
       toDate?: string;
     },
   ): Promise<AttendanceRecord[]> {
-    return Effect.runPromise(AttendanceEffect.attendanceAPI.getStudentAttendanceTimeline(studentId, options));
+    return Effect.runPromise(
+      AttendanceEffect.attendanceAPI.getStudentAttendanceTimeline(studentId, options),
+    );
   },
 
   async getSchoolAttendancePulse(
@@ -78,7 +85,14 @@ export const attendanceAPI = {
     viewDate?: string,
     audit?: AttendanceAuditContext,
   ): Promise<SchoolAttendancePulse> {
-    return Effect.runPromise(AttendanceEffect.attendanceAPI.getSchoolAttendancePulse(schoolId, classroomId, viewDate, audit));
+    return Effect.runPromise(
+      AttendanceEffect.attendanceAPI.getSchoolAttendancePulse(
+        schoolId,
+        classroomId,
+        viewDate,
+        audit,
+      ),
+    );
   },
 
   async getAttendanceReport(

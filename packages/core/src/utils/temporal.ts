@@ -7,15 +7,14 @@
 
 import { formatISO } from 'date-fns';
 
-// @ts-ignore - Assuming Temporal is available in 2026 environments
+// @ts-expect-error - Assuming Temporal is available in 2026 environments
 const _Temporal = typeof Temporal !== 'undefined' ? Temporal : null;
 
 export const getCurrentTimestamp = () => {
   if (_Temporal) {
     try {
-      // @ts-ignore
       return _Temporal.Now.instant().toString();
-    } catch (e) {
+    } catch (_e) {
       // Fallback if global exists but fails
     }
   }
@@ -25,9 +24,8 @@ export const getCurrentTimestamp = () => {
 export const getZonedDateTime = (timeZone: string = 'Asia/Colombo') => {
   if (_Temporal) {
     try {
-      // @ts-ignore
       return _Temporal.Now.zonedDateTimeISO(timeZone).toString();
-    } catch (e) {
+    } catch (_e) {
       // Fallback
     }
   }

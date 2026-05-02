@@ -1,54 +1,54 @@
-import { spawnSync } from 'node:child_process';
-import path from 'node:path';
-import process from 'node:process';
+import { spawnSync } from "node:child_process";
+import path from "node:path";
+import process from "node:process";
 
 function usage() {
-  console.error(
-    [
-      'Usage:',
-      '  node scripts/mcp-call.mjs <toolName> [jsonArgs]',
-      '  node scripts/mcp-call.mjs <toolName> key=value [key2=value ...]',
-      '',
-      'Examples:',
-      '  node scripts/mcp-call.mjs check_package_types package=classroom',
-      '  node scripts/mcp-call.mjs structural_search query=useToast target=packages/classroom',
-      '  node scripts/mcp-call.mjs check_package_types \'{"package":"@repo/ui"}\'',
-    ].join('\n'),
-  );
+	console.error(
+		[
+			"Usage:",
+			"  node scripts/mcp-call.mjs <toolName> [jsonArgs]",
+			"  node scripts/mcp-call.mjs <toolName> key=value [key2=value ...]",
+			"",
+			"Examples:",
+			"  node scripts/mcp-call.mjs check_package_types package=classroom",
+			"  node scripts/mcp-call.mjs structural_search query=useToast target=packages/classroom",
+			'  node scripts/mcp-call.mjs check_package_types \'{"package":"@repo/ui"}\'',
+		].join("\n"),
+	);
 }
 
 const toolName = process.argv[2];
 if (!toolName) {
-  usage();
-  process.exit(2);
+	usage();
+	process.exit(2);
 }
 
 const rawArgs = process.argv.slice(3);
 
 let toolArgs = {};
 if (
-  rawArgs.length === 1 &&
-  (rawArgs[0].trim().startsWith('{') || rawArgs[0].trim().startsWith('['))
+	rawArgs.length === 1 &&
+	(rawArgs[0].trim().startsWith("{") || rawArgs[0].trim().startsWith("["))
 ) {
-  try {
-    toolArgs = JSON.parse(rawArgs[0]);
-  } catch {
-    console.error(`Invalid jsonArgs: ${rawArgs[0]}`);
-    process.exit(2);
-  }
+	try {
+		toolArgs = JSON.parse(rawArgs[0]);
+	} catch {
+		console.error(`Invalid jsonArgs: ${rawArgs[0]}`);
+		process.exit(2);
+	}
 } else {
-  for (const part of rawArgs) {
-    const eq = part.indexOf('=');
-    if (eq === -1) continue;
-    const key = part.slice(0, eq);
-    const value = part.slice(eq + 1);
-    if (!key) continue;
-    toolArgs[key] = value;
-  }
+	for (const part of rawArgs) {
+		const eq = part.indexOf("=");
+		if (eq === -1) continue;
+		const key = part.slice(0, eq);
+		const value = part.slice(eq + 1);
+		if (!key) continue;
+		toolArgs[key] = value;
+	}
 }
 
 const repoRoot = process.cwd();
-const platformMcpCwd = path.join(repoRoot, 'packages', 'platform-mcp');
+const platformMcpCwd = path.join(repoRoot, "packages", "platform-mcp");
 
 const inline = String.raw`
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
@@ -74,16 +74,16 @@ try {
 }
 `;
 
-const result = spawnSync('node', ['--input-type=module', '-'], {
-  cwd: platformMcpCwd,
-  env: {
-    ...process.env,
-    MCP_TOOL_NAME: toolName,
-    MCP_TOOL_ARGS_JSON: JSON.stringify(toolArgs),
-  },
-  input: inline,
-  encoding: 'utf8',
-  stdio: ['pipe', 'pipe', 'pipe'],
+const result = spawnSync("node", ["--input-type=module", "-"], {
+	cwd: platformMcpCwd,
+	env: {
+		...process.env,
+		MCP_TOOL_NAME: toolName,
+		MCP_TOOL_ARGS_JSON: JSON.stringify(toolArgs),
+	},
+	input: inline,
+	encoding: "utf8",
+	stdio: ["pipe", "pipe", "pipe"],
 });
 
 if (result.stdout) process.stdout.write(result.stdout);

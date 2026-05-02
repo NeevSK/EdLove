@@ -93,7 +93,10 @@ export class GuestDataManager {
       const index = allPeriods.findIndex((p) => p.localId === localId);
 
       if (index !== -1) {
-        allPeriods[index] = { ...allPeriods[index], ...updates } as GuestTimetablePeriod;
+        allPeriods[index] = {
+          ...allPeriods[index],
+          ...updates,
+        } as GuestTimetablePeriod;
         await SafeZustandStorage.setItem(GUEST_TIMETABLE_KEY, JSON.stringify(allPeriods));
       }
     } catch (error) {

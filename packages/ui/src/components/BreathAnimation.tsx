@@ -1,6 +1,7 @@
-import { Runtime } from '@repo/core/native';;
+import { Runtime } from '@repo/core/native';
+
 import React, { useEffect } from 'react';
-import { View } from 'react-native';
+import { View } from '../primitives';
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -62,9 +63,8 @@ export const BreathAnimation = ({
   const [isReady, setIsReady] = React.useState(Runtime.isReady());
 
   useEffect(() => {
-    if (!isReady) {
-      return Runtime.onReady(() => setIsReady(true));
-    }
+    if (isReady) return;
+    return Runtime.onReady(() => setIsReady(true));
   }, [isReady]);
 
   if (!isReady) {

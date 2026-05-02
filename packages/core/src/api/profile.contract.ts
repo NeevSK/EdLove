@@ -10,32 +10,32 @@ const authority = (
 ) => POAMetadataSchema.parse({ authority: { action, subject } });
 
 const SocialLinkSchema = z.object({
-  id: z.string(),
-  user_id: z.string(),
+  id: z.uuid(),
+  user_id: z.uuid(),
   platform: z.string(),
-  url: z.string(),
+  url: z.url(),
   is_public: z.boolean(),
   privacy_level: z.string(),
   order_index: z.number(),
-  created_at: z.string(),
-  updated_at: z.string(),
+  created_at: z.iso.datetime(),
+  updated_at: z.iso.datetime(),
 });
 
 const UserProfileSchema = z.record(z.string(), z.any());
 const RewardsSnapshotSchema = z.object({
-  id: z.string().optional(),
-  user_id: z.string().optional(),
+  id: z.uuid().optional(),
+  user_id: z.uuid().optional(),
   points: z.number(),
   badges: z.array(z.string()),
-  created_at: z.string().nullable().optional(),
-  updated_at: z.string().nullable().optional(),
+  created_at: z.iso.datetime().nullable().optional(),
+  updated_at: z.iso.datetime().nullable().optional(),
 });
 const UserGrowthStateSchema = z.record(z.string(), z.any());
 const WhisperedMomentSchema = z.object({
   key: z.string(),
   name_en: z.string(),
   name_si: z.string(),
-  awarded_at: z.string(),
+  awarded_at: z.iso.datetime(),
 });
 const JourneySnapshotSchema = z.object({
   as_of: z.string().nullable(),
@@ -44,8 +44,8 @@ const JourneySnapshotSchema = z.object({
   whispered_moments: z.array(WhisperedMomentSchema),
 });
 const JourneyEventSchema = z.object({
-  id: z.string(),
-  timestamp: z.string(),
+  id: z.uuid(),
+  timestamp: z.iso.datetime(),
   source: z.enum(['reward', 'growth', 'moment']),
   operation: z.enum(['insert', 'update', 'delete']).optional(),
   title: z.string(),
@@ -53,19 +53,19 @@ const JourneyEventSchema = z.object({
   snapshot: z.record(z.string(), z.any()).optional(),
 });
 const ProfileHistoryEntrySchema = z.object({
-  id: z.string(),
+  id: z.uuid(),
   operation: z.enum(['insert', 'update', 'delete']),
-  recorded_at: z.string(),
-  recorded_by: z.string().nullable().optional(),
+  recorded_at: z.iso.datetime(),
+  recorded_by: z.uuid().nullable().optional(),
   snapshot: z.record(z.string(), z.any()),
 });
 const CommunityProfileSchema = z.object({
-  id: z.string(),
+  id: z.uuid(),
   name: z.string(),
   description: z.string().nullable().optional(),
   visibility: z.string().nullable().optional(),
   member_count: z.number().nullable().optional(),
-  creator_id: z.string().nullable().optional(),
+  creator_id: z.uuid().nullable().optional(),
 });
 
 const PulseMetricsSchema = z.object({
@@ -164,7 +164,9 @@ export const profileContract = c.router({
   updateSocialLinksOrder: {
     method: 'POST',
     path: '/profile/users/:id/social-links/order',
-    body: z.object({ links: z.array(z.object({ id: z.string(), order_index: z.number() })) }),
+    body: z.object({
+      links: z.array(z.object({ id: z.uuid(), order_index: z.number() })),
+    }),
     responses: { 200: z.object({ ok: z.boolean() }) },
     metadata: authority('update', 'User'),
   },

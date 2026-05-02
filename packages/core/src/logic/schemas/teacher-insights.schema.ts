@@ -1,4 +1,4 @@
-﻿import { z } from 'zod';
+import { z } from 'zod';
 
 export const TeacherInsightShareStateSchema = z.enum([
   'private',
@@ -14,23 +14,23 @@ export const TeacherInsightTargetTypeSchema = z.enum([
 ]);
 
 export const TeacherInsightAuditEventSchema = z.object({
-  id: z.string(),
+  id: z.uuid(),
   action: z.string(),
-  entity_id: z.string().nullable().optional(),
+  entity_id: z.uuid().nullable().optional(),
   entity_type: z.string().nullable().optional(),
-  executor_id: z.string().nullable().optional(),
+  executor_id: z.uuid().nullable().optional(),
   metadata: z.record(z.string(), z.any()).nullable().optional(),
-  created_at: z.string(),
+  created_at: z.iso.datetime(),
 });
 
 export const TeacherInsightLifecycleEventSchema = z.object({
-  id: z.string(),
+  id: z.uuid(),
   insight_type: TeacherInsightTargetTypeSchema,
-  insight_id: z.string(),
-  owner_id: z.string(),
-  school_id: z.string().nullable().optional(),
-  classroom_id: z.string().nullable().optional(),
-  student_id: z.string().nullable().optional(),
+  insight_id: z.uuid(),
+  owner_id: z.uuid(),
+  school_id: z.uuid().nullable().optional(),
+  classroom_id: z.uuid().nullable().optional(),
+  student_id: z.uuid().nullable().optional(),
   event_type: z.enum([
     'create',
     'update',
@@ -44,11 +44,11 @@ export const TeacherInsightLifecycleEventSchema = z.object({
   share_state: TeacherInsightShareStateSchema,
   promotion_target: z.string().nullable().optional(),
   snapshot: z.record(z.string(), z.any()),
-  occurred_at: z.string(),
-  recorded_at: z.string(),
-  effective_from: z.string().nullable().optional(),
-  effective_to: z.string().nullable().optional(),
-  recorded_by: z.string().nullable().optional(),
+  occurred_at: z.iso.datetime(),
+  recorded_at: z.iso.datetime(),
+  effective_from: z.iso.datetime().nullable().optional(),
+  effective_to: z.iso.datetime().nullable().optional(),
+  recorded_by: z.uuid().nullable().optional(),
 });
 
 export const TeacherInsightShareUpdateSchema = z.object({
@@ -68,12 +68,12 @@ export const TeacherInsightAuditMarkerSchema = z.object({
 });
 
 export const TeacherPrivateNoteSchema = z.object({
-  id: z.string(),
-  teacher_id: z.string(),
+  id: z.uuid(),
+  teacher_id: z.uuid(),
   content: z.string().min(1),
   type: z.enum(['venting', 'reflection', 'note']),
-  created_at: z.string(),
-  updated_at: z.string(),
+  created_at: z.iso.datetime(),
+  updated_at: z.iso.datetime(),
   visibility: z.literal('private'),
   audit: TeacherInsightAuditMarkerSchema,
 });
@@ -85,18 +85,18 @@ export const TeacherPrivateNoteCreateSchema = z.object({
 });
 
 export const TeacherStudentObservationSchema = z.object({
-  id: z.string(),
-  classroom_id: z.string(),
-  classroom_student_id: z.string(),
-  student_id: z.string().optional(),
-  author_id: z.string(),
+  id: z.uuid(),
+  classroom_id: z.uuid(),
+  classroom_student_id: z.uuid(),
+  student_id: z.uuid().optional(),
+  author_id: z.uuid(),
   content: z.string().min(1),
   observation_type: z.enum(['positive', 'growth', 'neutral', 'concern']),
   visibility: z.enum(['private', 'student_visible', 'handover_visible']),
   is_finalized: z.boolean(),
   honesty_declaration_accepted: z.boolean(),
-  created_at: z.string(),
-  updated_at: z.string(),
+  created_at: z.iso.datetime(),
+  updated_at: z.iso.datetime(),
   audit: TeacherInsightAuditMarkerSchema,
 });
 
@@ -110,10 +110,10 @@ export const TeacherStudentObservationCreateSchema = z.object({
 });
 
 export const TeacherStudentPotentialSchema = z.object({
-  id: z.string(),
-  student_id: z.string(),
-  teacher_id: z.string(),
-  classroom_id: z.string(),
+  id: z.uuid(),
+  student_id: z.uuid(),
+  teacher_id: z.uuid(),
+  classroom_id: z.uuid(),
   cognitive_flow: z.number(),
   emotional_resonance: z.number(),
   social_weaving: z.number(),
@@ -121,8 +121,8 @@ export const TeacherStudentPotentialSchema = z.object({
   practical_mastery: z.number(),
   silver_lining: z.string().nullable(),
   potential_notes: z.array(z.any()),
-  created_at: z.string(),
-  updated_at: z.string(),
+  created_at: z.iso.datetime(),
+  updated_at: z.iso.datetime(),
   visibility: z.literal('private'),
   audit: TeacherInsightAuditMarkerSchema,
 });

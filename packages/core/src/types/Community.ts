@@ -27,10 +27,10 @@ export interface SanctuaryManifesto {
   content: string;
   vibe: ManifestoVibe;
   status: ManifestoStatus;
-  target_date?: string;
+  target_date?: Date;
   metadata: Record<string, any>;
-  created_at: string;
-  updated_at: string;
+  created_at: Date;
+  updated_at: Date;
   endorsement_count?: number;
   has_endorsed?: boolean;
 }
@@ -82,8 +82,8 @@ export interface CommunityPost {
   __typename?: 'CommunityPost';
   id: string;
   author_id: string;
-  author_name: string;
-  author_authority: AuthorityTier;
+  author_name?: string;
+  author_authority?: AuthorityTier;
   author_avatar?: string;
   content: string;
 
@@ -91,8 +91,8 @@ export interface CommunityPost {
   post_type: PostType;
   visibility: PostVisibility;
   subject?: string;
-  tags: string[];
-  is_anonymous: boolean;
+  tags?: string[];
+  is_anonymous?: boolean;
 
   // Question-specific fields
   urgency?: Urgency;
@@ -112,11 +112,12 @@ export interface CommunityPost {
   poll_data?: PollData;
 
   // Engagement
-  reactions: Record<string, number>;
+  reactions?: Record<string, number>;
   has_liked?: boolean;
   reaction_count?: number;
-  comment_count: number;
-  view_count: number;
+  comment_count?: number;
+  view_count?: number;
+  author_tier?: string;
 
   // Context
   group_id?: string;
@@ -125,8 +126,8 @@ export interface CommunityPost {
   school_id: string;
 
   // Timestamps
-  created_at: string;
-  updated_at: string;
+  created_at: Date;
+  updated_at: Date;
 }
 
 export type Post = CommunityPost; // Semantic Alias
@@ -183,8 +184,8 @@ export interface Comment {
   has_upvoted: boolean; // Current user has upvoted
 
   // Timestamps
-  created_at: string;
-  updated_at: string;
+  created_at: Date;
+  updated_at: Date;
 }
 
 // ============================================================================
@@ -210,7 +211,7 @@ export interface Notification {
   reference_type?: string;
   is_read: boolean;
   read_at?: string | null;
-  created_at: string;
+  created_at: Date;
 }
 
 // ============================================================================
@@ -248,8 +249,8 @@ export interface CommunityGroup {
   classroom_id?: string;
   creator_id: string;
   creator_name: string;
-  created_at: string;
-  updated_at: string;
+  created_at: Date;
+  updated_at: Date;
 }
 
 export type Group = CommunityGroup; // Semantic Alias
@@ -268,7 +269,7 @@ export interface GroupMember {
   is_admin: boolean;
   is_moderator: boolean;
   status: 'active' | 'pending' | 'banned';
-  joined_at: string;
+  joined_at: Date;
   role?: 'owner' | 'admin' | 'member';
   user?: User;
   memberId?: string; // For permission context
@@ -282,7 +283,7 @@ export interface GroupJoinRequest {
   user_authority: AuthorityTier;
   message?: string;
   status: 'pending' | 'approved' | 'rejected';
-  created_at: string;
+  created_at: Date;
   user?: User;
   reviewed_at?: string;
   reviewed_by?: string;
@@ -295,7 +296,7 @@ export interface GroupMessage {
   author_name: string;
   content: string;
   metadata?: Record<string, any>;
-  created_at: string;
+  created_at: Date;
 }
 
 // ============================================================================
@@ -313,7 +314,7 @@ export interface GroupReport {
   reason: string;
   details?: string;
   status: ReportStatus;
-  created_at: string;
+  created_at: Date;
 }
 
 export interface ReportContentInput {
@@ -333,7 +334,7 @@ export interface CommunityReaction {
   target_id: string;
   target_type: 'post' | 'comment';
   user_id: string;
-  created_at: string;
+  created_at: Date;
 }
 
 // ============================================================================
@@ -344,8 +345,8 @@ export interface DirectConversation {
   id: string;
   user1_id: string;
   user2_id: string;
-  created_at: string;
-  updated_at: string;
+  created_at: Date;
+  updated_at: Date;
   other_user_name: string;
   other_user_avatar?: string;
 }
@@ -355,6 +356,6 @@ export interface DirectMessage {
   conversation_id: string;
   author_id: string;
   content: string;
-  created_at: string;
+  created_at: Date;
   author?: { full_name: string; avatar_url?: string };
 }

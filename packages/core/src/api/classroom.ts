@@ -1,5 +1,5 @@
 import type { ClassroomStudent, TeacherStats } from '../logic/schemas/classroom.schema';
-import { educationalServices } from '../native/runtimes/educational.runtime';
+import { educationalServices } from './runtimes/educational.runtime';
 import type { Lesson } from '../types';
 import { educationalContract } from './educational.contract';
 
@@ -26,9 +26,10 @@ export const lessonsAPI = {
    * @authority create Lesson
    */
   async create(lesson: Omit<Lesson, 'id' | 'created_at' | 'updated_at'>): Promise<Lesson> {
-    return (await educationalServices.lessons.create(
-      lesson as Omit<Lesson, 'id' | 'created_at'>,
-    )) as unknown as Lesson;
+    return (await educationalServices.lessons.create({
+      ...lesson,
+      updated_at: new Date(),
+    } as Omit<Lesson, 'id' | 'created_at'>)) as unknown as Lesson;
   },
 
   /**

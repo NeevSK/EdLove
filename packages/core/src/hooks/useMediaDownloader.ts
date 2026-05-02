@@ -1,6 +1,6 @@
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Platform } from 'react-native';
 
 export type DownloadState = 'idle' | 'downloading' | 'ready' | 'error';
@@ -39,7 +39,9 @@ export function useMediaDownloader({ resourceId, url, mimeType }: UseMediaDownlo
   }, [localPath]);
 
   useEffect(() => {
-    checkCached();
+    checkCached().catch((e) => {
+      console.error('MediaDownloader: Failed to check cache', e);
+    });
   }, [checkCached]);
 
   const startDownload = useCallback(async () => {
@@ -97,16 +99,19 @@ export function useMediaDownloader({ resourceId, url, mimeType }: UseMediaDownlo
     }
   }, [localUri, url, mimeType]);
 
-  return {
-    downloadState,
-    progress,
-    localUri,
-    errorMsg,
-    startDownload,
-    openInNativeViewer,
-    reset: () => {
-      setDownloadState('idle');
-      setLocalUri(null);
-    },
-  };
+  return useMemo(
+    () => ({
+      downloadState,
+      progress,
+      localUri,
+      errorMsg,
+      startDownload,
+      openInNativeViewer,
+      reset: () => {
+        setDownloadState('idle');
+        setLocalUri(null);
+      },
+    }),
+    [downloadState, progress, localUri, errorMsg, startDownload, openInNativeViewer],
+  );
 }

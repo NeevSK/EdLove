@@ -1,29 +1,29 @@
 {
-  "name": "apps-neevsk-web",
-  "type": "module",
-  "version": "0.0.1",
-  "scripts": {
-    "dev": "pnpm exec astro dev",
-    "build": "pnpm exec astro build",
-    "preview": "pnpm exec astro preview",
-    "astro": "pnpm exec astro",
-    "lint": "pnpm exec eslint .",
-    "check-types": "pnpm exec astro check"
-  },
-  "dependencies": {
-    "@astrojs/react": "^5.0.3",
-    "@astrojs/sitemap": "^3.6.0",
-    "@astrojs/svelte": "^8.0.5",
-    "@tailwindcss/vite": "^4.1.18",
-    "astro": "^6.1.7",
-    "gsap": "^3.14.2",
-    "react": "19.1.0",
-    "react-dom": "19.1.0",
-    "svelte": "^5.55.4",
-    "tailwindcss": "^4.1.18",
-    "typescript": "^5.9.3"
-  },
-  "devDependencies": {
-    "sass": "^1.97.3"
-  }
+	"name": "apps-neevsk-web",
+	"type": "module",
+	"version": "0.0.1",
+	"scripts": {
+		"dev": "pnpm exec astro dev",
+		"build": "pnpm exec astro build",
+		"preview": "pnpm exec astro preview",
+		"astro": "pnpm exec astro",
+		"lint": "pnpm exec eslint .",
+		"check-types": "pnpm exec astro check"
+	},
+	"dependencies": {
+		"@astrojs/react": "^5.0.3",
+		"@astrojs/sitemap": "^3.6.0",
+		"@astrojs/svelte": "^8.0.5",
+		"@tailwindcss/vite": "^4.1.18",
+		"astro": "^6.1.7",
+		"gsap": "^3.14.2",
+		"react": "19.1.0",
+		"react-dom": "19.1.0",
+		"svelte": "^5.55.4",
+		"tailwindcss": "^4.1.18",
+		"typescript": "^5.9.3"
+	},
+	"devDependencies": {
+		"sass": "^1.97.3"
+	}
 }

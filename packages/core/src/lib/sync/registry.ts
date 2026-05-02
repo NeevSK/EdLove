@@ -1,4 +1,5 @@
 import { api } from '../../api';
+import { deviceTrustAPI } from '../../api/deviceTrust';
 import { supabase } from '../../api/supabase';
 
 /**
@@ -56,5 +57,22 @@ export const MUTATION_REGISTRY: Record<string, MutationFunction> = {
   },
   updateStudent: async (vars) => {
     return api.students.update(vars.id, vars.updates);
+  },
+
+  // Device security
+  logDeviceAuditEvent: async (vars) => {
+    return deviceTrustAPI.performLogAuditEventIntent(vars);
+  },
+  unlinkDevice: async (vars) => {
+    return deviceTrustAPI.performUnlinkMyDeviceIntent(vars);
+  },
+  revokeSecuritySession: async (vars) => {
+    return deviceTrustAPI.performRevokeMySecuritySessionIntent(vars);
+  },
+  revokeOtherSecuritySessions: async (vars) => {
+    return deviceTrustAPI.performRevokeMyOtherSecuritySessionsIntent(vars);
+  },
+  revokeCurrentInstallSecuritySessions: async (vars) => {
+    return deviceTrustAPI.performRevokeMyInstallSecuritySessionsIntent(vars);
   },
 };

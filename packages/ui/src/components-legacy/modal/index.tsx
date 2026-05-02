@@ -1,5 +1,5 @@
 import type React from 'react';
-import { View } from 'react-native';
+import { View } from '../../primitives';
 import Animated, { ZoomIn, ZoomOut } from 'react-native-reanimated';
 import { Box } from '../box';
 import { Overlay } from '../overlay';

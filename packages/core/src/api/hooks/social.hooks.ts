@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
-import { supabase } from '../supabase';
 import { useStore } from '../../store/useStore';
-import { communityAPI } from '../community';
+import { socialAPI } from '../social';
+import { supabase } from '../supabase';
 
 /**
  * Hook for social shielding (blocking, reporting) promoted to @repo/core.
@@ -19,7 +19,7 @@ export function useSocialShieldHooks() {
       report_target: 'teacher' | 'principal' | 'platform';
     }) => {
       if (!user) throw new Error('Unauthorized');
-      return communityAPI.reportContent(params, user.id);
+      return socialAPI.reportContent(params, user.id);
     },
   });
 

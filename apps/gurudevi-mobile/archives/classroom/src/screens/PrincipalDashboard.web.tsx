@@ -1,9 +1,9 @@
 ﻿import {
-  PrincipalDashboardWeb as AdminPrincipalDashboardWeb,
-  CreateSchoolModal,
-} from '@repo/admin';
-import { CreateClassroomModal, PrincipalOnboardingView } from '../components';
-import { DashboardContent } from './principal/DashboardContent';
+	PrincipalDashboardWeb as AdminPrincipalDashboardWeb,
+	CreateSchoolModal,
+} from "@repo/admin";
+import { CreateClassroomModal, PrincipalOnboardingView } from "../components";
+import { DashboardContent } from "./principal/DashboardContent";
 
 function _CreateSchoolModalAdapter(props: {
   isOpen: boolean;

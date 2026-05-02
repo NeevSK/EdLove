@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useWindowDimensions } from 'react-native';
 
 /**
@@ -14,12 +15,15 @@ export function useResponsive() {
   const isTablet = width >= 768;
   const isDesktop = width >= 1024;
 
-  return {
-    width,
-    height,
-    isTablet,
-    isDesktop,
-    isMobile: !isTablet,
-    orientation: width > height ? 'landscape' : 'portrait',
-  };
+  return useMemo(
+    () => ({
+      width,
+      height,
+      isTablet,
+      isDesktop,
+      isMobile: !isTablet,
+      orientation: width > height ? 'landscape' : 'portrait',
+    }),
+    [width, height, isTablet, isDesktop],
+  );
 }

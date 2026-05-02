@@ -3,14 +3,14 @@ import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
 import { getActiveAccountId, scopeStorageKey } from '../lib/accountScope';
 
-const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
+const supabaseUrl = process.env['EXPO_PUBLIC_SUPABASE_URL'];
 
 function getProjectRef() {
   if (!supabaseUrl) return 'default';
 
   try {
     const hostname = new URL(supabaseUrl).hostname;
-    return hostname.split('.')[0] || 'default';
+    return hostname.split('.')[0]! || 'default';
   } catch {
     return 'default';
   }
@@ -56,7 +56,9 @@ function normalizeStoredSession(parsed: unknown) {
     return direct;
   }
 
-  const nested = parsed as { currentSession?: { access_token?: string; refresh_token?: string } };
+  const nested = parsed as {
+    currentSession?: { access_token?: string; refresh_token?: string };
+  };
   if (nested.currentSession?.access_token && nested.currentSession?.refresh_token) {
     return nested.currentSession;
   }

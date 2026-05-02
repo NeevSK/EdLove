@@ -1,5 +1,6 @@
 import type React from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet } from 'react-native';
+import { Text, View } from '../primitives';
 import { Theme } from '../theme/Theme';
 import { getInitialsFromName } from '../utils/stringUtils';
 
@@ -79,7 +80,12 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
       accessibilityIgnoresInvertColors={true}
       style={[
         styles.base,
-        { width: size, height: size, borderRadius: radius, backgroundColor: bgColor },
+        {
+          width: size,
+          height: size,
+          borderRadius: radius,
+          backgroundColor: bgColor,
+        },
         style as any,
       ]}
     >

@@ -11,4 +11,6 @@ export const StorageKeys = {
   LAST_SYNC: 'last_sync',
   CACHED_COMMUNITY_POSTS: 'cached_community_posts',
   CACHED_GROUPS: 'cached_groups',
+  DRAFT_FORM: 'draft_form',
+  DRAFT_STUDENTS: 'draft_students',
 };

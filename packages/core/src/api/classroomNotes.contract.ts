@@ -19,7 +19,7 @@ export const classroomNotesContract = c.router({
   listVisibleNotes: {
     method: 'GET',
     path: '/classroom-notes',
-    query: z.object({ classroom_id: z.string().uuid() }),
+    query: z.object({ classroom_id: z.uuid() }),
     responses: {
       200: z.array(ClassroomNoteSchema),
     },
@@ -29,8 +29,8 @@ export const classroomNotesContract = c.router({
     method: 'GET',
     path: '/classroom-notes/snapshot',
     query: z.object({
-      classroom_id: z.string().uuid(),
-      view_date: z.string().datetime(),
+      classroom_id: z.uuid(),
+      view_date: z.iso.datetime(),
     }),
     responses: {
       200: z.array(ClassroomNoteSchema),
@@ -41,7 +41,7 @@ export const classroomNotesContract = c.router({
     method: 'POST',
     path: '/classroom-notes',
     body: z.object({
-      classroom_id: z.string().uuid(),
+      classroom_id: z.uuid(),
       content: z.string().min(1),
       note_type: ClassroomNoteTypeSchema,
       visibility: ClassroomNoteVisibilitySchema,

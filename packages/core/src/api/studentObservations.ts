@@ -4,8 +4,8 @@
  * CRUD for qualitative teacher observations about students.
  */
 
-import { identityAPI } from './identity';
 import { APIError } from '../types/API';
+import { identityAPI } from './identity';
 import { teacherInsightsAPI } from './teacherInsights';
 
 export interface StudentObservation {
@@ -44,14 +44,6 @@ export const studentObservationsAPI = {
     return data.map(({ audit, ...observation }) => observation as StudentObservation);
   },
 
-  /**
-   * Get all observations for a global student profile
-   * @deprecated Prefer teacherInsights.listStudentObservationsForStudent directly in new code.
-   */
-  async getForStudent(studentId: string): Promise<StudentObservation[]> {
-    const data = await teacherInsightsAPI.listStudentObservationsForStudent(studentId);
-    return data.map(({ audit, ...observation }) => observation as StudentObservation);
-  },
 
   /**
    * Create a new observation
@@ -77,7 +69,6 @@ export const studentObservationsAPI = {
 
   /**
    * Delete an observation
-   * @deprecated Prefer teacherInsights.deleteStudentObservation directly in new code.
    */
   async delete(id: string): Promise<void> {
     await teacherInsightsAPI.deleteStudentObservation(id);

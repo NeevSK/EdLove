@@ -1,4 +1,4 @@
-import { DownloadState } from '@repo/core/hooks';
+import type { DownloadState } from '@repo/core/hooks';
 import { AlertCircle, Download, ExternalLink, FileText, Info, Sparkles } from 'lucide-react-native';
 import { Box, HStack, Text, useTheme, VStack } from '../../primitives';
 import GlobalHeader from '../GlobalHeader';

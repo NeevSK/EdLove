@@ -1,6 +1,6 @@
 import { useTemporalStore } from '@repo/core/logic';
 import { Calendar, ChevronLeft, ChevronRight, RotateCcw } from 'lucide-react-native';
-import { Pressable } from 'react-native';
+import { Pressable } from '../primitives';
 import Animated, { FadeIn, Layout } from 'react-native-reanimated';
 import { Box, HStack, Text } from '../gluestack';
 

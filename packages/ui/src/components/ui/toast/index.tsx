@@ -44,14 +44,17 @@ export const Toast = ({
   const contextValue = useMemo(() => ({ action, variant }), [action, variant]);
 
   const actionStyles = {
-    success: 'bg-phase-reward border-emerald-500/20',
-    error: 'bg-phase-danger border-rose-500/20',
-    warning: 'bg-orange-500 border-orange-600/20',
-    info: 'bg-phase-interactive border-sky-500/20',
-    attention: 'bg-phase-accent border-amber-500/20',
+    success: 'bg-phase-reward/80 border-emerald-500/30',
+    error: 'bg-phase-danger/80 border-rose-500/30',
+    warning: 'bg-orange-500/80 border-orange-600/30',
+    info: 'bg-phase-interactive/80 border-sky-500/30',
+    attention: 'bg-phase-accent/80 border-amber-500/30',
   };
 
-  const variantStyles = variant === 'outline' ? 'bg-phase-elevated border-2' : 'border shadow-2xl';
+  const variantStyles =
+    variant === 'outline'
+      ? 'bg-phase-elevated/80 border-2'
+      : 'border shadow-2xl backdrop-blur-xl';
 
   return (
     <ToastContext.Provider value={contextValue}>

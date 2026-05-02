@@ -51,7 +51,10 @@ export function formatTimestamp(iso: string | number): string {
  */
 export function formatShortDate(dateStr: string): string {
   try {
-    return new Date(dateStr).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+    return new Date(dateStr).toLocaleDateString(undefined, {
+      month: 'short',
+      day: 'numeric',
+    });
   } catch {
     return dateStr;
   }

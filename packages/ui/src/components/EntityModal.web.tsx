@@ -9,7 +9,7 @@ export interface EntityModalProps {
   mode: EntityMode;
   instance?: EntityInstance;
   title?: string;
-  onSuccess?: (data: any) => void;
+  onSuccess?: (data: unknown) => void;
 }
 
 /**
@@ -23,9 +23,9 @@ export default function EntityModal({
   onClose,
   definition,
   mode,
-  instance,
+  instance: _instance,
   title,
-  onSuccess,
+  onSuccess: _onSuccess,
 }: EntityModalProps) {
   const displayTitle =
     title || `${mode.charAt(0).toUpperCase() + mode.slice(1)} ${definition.type}`;

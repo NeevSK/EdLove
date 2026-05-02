@@ -82,7 +82,10 @@ export function composerReducer(state: ComposerState, action: ComposerAction): C
     }
     case 'REMOVE_POLL_OPTION':
       return state.pollOptions.length > 2
-        ? { ...state, pollOptions: state.pollOptions.filter((_, i) => i !== action.index) }
+        ? {
+            ...state,
+            pollOptions: state.pollOptions.filter((_, i) => i !== action.index),
+          }
         : state;
     case 'SET_POLL_DURATION':
       return { ...state, pollDurationHours: action.payload };

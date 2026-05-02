@@ -1,19 +1,15 @@
-﻿import { z } from 'zod';
+import { z } from 'zod';
+import { makeModelSchema } from '../generated/zod';
 
-export const ProGiftSchema = z.object({
-  id: z.string().uuid(),
-  gifter_id: z.string(),
-  recipient_id: z.string().optional().nullable(),
-  gifter_name: z.string().optional().nullable(),
-  recipient_role: z.string().optional(),
-  gift_message: z.string().optional().nullable(),
-  gift_token: z.string().optional(),
-  claimed: z.boolean().default(false),
-  claimed_at: z.string().or(z.date()).optional().nullable(),
-  expires_at: z.string().or(z.date()).optional().nullable(),
-  created_at: z.string().or(z.date()),
-});
+/**
+ * ProGiftSchema - A token of premium access.
+ * Derived from ZenStack ProGift model.
+ */
+export const ProGiftSchema = makeModelSchema('ProGift');
 
+/**
+ * UserEntitlementsSchema - The current premium state of a user.
+ */
 export const UserEntitlementsSchema = z.object({
   user_id: z.string(),
   is_pro: z.boolean().default(false),
@@ -23,9 +19,16 @@ export const UserEntitlementsSchema = z.object({
   features: z.array(z.string()).default([]),
 });
 
+/**
+ * ProClaimResultSchema - The outcome of claiming a gift.
+ */
 export const ProClaimResultSchema = z.object({
   success: z.boolean(),
   message: z.string(),
   new_role: z.string().optional(),
   expiry: z.string().or(z.date()).optional().nullable(),
 });
+
+export type ProGift = z.infer<typeof ProGiftSchema>;
+export type UserEntitlements = z.infer<typeof UserEntitlementsSchema>;
+export type ProClaimResult = z.infer<typeof ProClaimResultSchema>;

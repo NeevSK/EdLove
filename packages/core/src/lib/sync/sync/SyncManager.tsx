@@ -1,5 +1,6 @@
 import { useCallback, useEffect } from 'react';
 import { useStore } from '../../../store/useStore';
+import { useConflictStore } from '../../../store/useConflictStore';
 import { classifyError } from '../errorClassifier';
 import { useMutationAuditLog } from '../MutationAuditLog';
 import { MUTATION_REGISTRY } from '../registry';
@@ -27,6 +28,7 @@ export default function SyncManager({ dispatchQueuedMutation }: SyncManagerProps
   const { queue, removeFromQueue, updateMutation, moveToDeadLetter, setSyncing, isSyncing } =
     useMutationQueue();
   const { updateEntry } = useMutationAuditLog();
+  const { addConflict, activeConflicts } = useConflictStore();
   const showToast = useStore((state) => state.showToast);
 
   const MAX_RETRIES = 5; // Increased for better robustness
@@ -41,6 +43,11 @@ export default function SyncManager({ dispatchQueuedMutation }: SyncManagerProps
     let processedCount = 0;
 
     for (const item of currentQueue) {
+      // Respect Conflict Locking: Don't retry if a conflict is already active for this mutation
+      if (activeConflicts.some(c => c.id === item.id)) {
+        continue;
+      }
+
       // Respect Temporal Pacing (Backoff)
       if (item.backoffUntil && Date.now() < item.backoffUntil) {
         continue;
@@ -89,6 +96,19 @@ export default function SyncManager({ dispatchQueuedMutation }: SyncManagerProps
           updateEntry(item.id, 'dead_letter', error.message);
 
           showToast(`Action required: ${item.name} failed permanentely`, 'error');
+        } else if (errorType === 'CONFLICT') {
+          // Resonance Fork: Data Conflict detected
+          addConflict({
+            id: item.id,
+            scope: item.scope,
+            name: item.name,
+            localData: item.variables,
+            remoteData: error.remoteState || null, // Capture remote state if provided by API
+            timestamp: Date.now(),
+          });
+          
+          showToast(`Conflict detected in ${item.name}`, 'info');
+          updateEntry(item.id, 'terminal_abort', 'Data Conflict Detected');
         } else {
           // Transient failure - retry with exponential backoff
           const backoffMs = Math.min(2 ** retryCount * 1000, 30000);
@@ -125,7 +145,9 @@ export default function SyncManager({ dispatchQueuedMutation }: SyncManagerProps
 
   useEffect(() => {
     if (isOnline && queue.length > 0 && !isSyncing) {
-      processQueue();
+    processQueue().catch((e) => {
+      console.error('SyncManager: Failed to process sync queue', e);
+    });
     }
   }, [isOnline, queue.length, isSyncing, processQueue]);
 

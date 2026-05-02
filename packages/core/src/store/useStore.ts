@@ -6,6 +6,7 @@ import { useAuthStore } from './useAuthStore';
 import { useFeatureStore } from './useFeatureStore';
 import { useTenantStore } from './useTenantStore';
 import { useUIStore } from './useUIStore';
+import { useMemo } from 'react';
 
 /**
  * TotalState - The union of all domain stores.
@@ -29,15 +30,17 @@ const useStoreFacade = <T>(selector?: (state: TotalState) => T): T | TotalState 
   const uiState = useUIStore();
   const featureState = useFeatureStore();
 
-  const combinedState: TotalState = {
+  const combinedState: TotalState = useMemo(() => ({
     ...authState,
     ...tenantState,
     ...uiState,
     ...featureState,
-  };
+  }), [authState, tenantState, uiState, featureState]);
 
-  if (!selector) return combinedState;
-  return selector(combinedState);
+  return useMemo(() => {
+    if (!selector) return combinedState;
+    return selector(combinedState);
+  }, [combinedState, selector]);
 };
 
 const getState = (): TotalState => {

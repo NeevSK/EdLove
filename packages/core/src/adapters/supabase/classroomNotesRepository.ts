@@ -69,14 +69,14 @@ export const createSupabaseClassroomNotesRepository = (
     };
 
     const { error } = await supabase.from('classroom_note_events').insert({
-      note_id: note.id,
+      entity_id: note.id,
       classroom_id: note.classroom_id,
       author_id: note.author_id,
-      event_type: eventType,
+      operation: eventType,
       note_type: note.note_type,
       visibility: note.visibility,
       is_pinned: note.is_pinned,
-      snapshot,
+      metadata: snapshot,
       occurred_at: occurredAt ?? new Date().toISOString(),
       effective_from: effectiveFrom ?? note.created_at ?? new Date().toISOString(),
       effective_to: effectiveTo ?? null,
@@ -119,14 +119,14 @@ export const createSupabaseClassroomNotesRepository = (
         }),
         viewDate,
         {
-          getEntityKey: (event) => `classroom_note:${event.note_id}`,
+          getEntityKey: (event) => `classroom_note:${event.entity_id}`,
           getEffectiveTo: (event) => event.effective_to,
         },
       );
 
       const visible = latestByNote
-        .filter((event) => event.event_type !== 'delete')
-        .map((event) => ClassroomNoteSchema.parse(event.snapshot));
+        .filter((event) => event.operation !== 'delete')
+        .map((event) => ClassroomNoteSchema.parse(event.metadata));
 
       return sortNotes(visible) as ClassroomNoteRecord[];
     },
@@ -211,7 +211,7 @@ export const createSupabaseClassroomNotesRepository = (
       const { data, error } = await supabase
         .from('classroom_note_events')
         .select('*')
-        .eq('note_id', noteId)
+        .eq('entity_id', noteId)
         .order('occurred_at', { ascending: false })
         .order('recorded_at', { ascending: false });
 

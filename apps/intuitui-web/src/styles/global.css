@@ -13,15 +13,15 @@
 }
 
 :root {
-  --color-primary: #1e293b;
-  --color-secondary: #fffdf2;
+	--color-primary: #1e293b;
+	--color-secondary: #fffdf2;
 }
 
 body {
-  background-color: var(--color-brand-background);
-  color: var(--color-brand-primary);
-  font-family: var(--font-sans);
-  line-height: 1.6;
+	background-color: var(--color-brand-background);
+	color: var(--color-brand-primary);
+	font-family: var(--font-sans);
+	line-height: 1.6;
 }
 
 h1,
@@ -30,15 +30,15 @@ h3,
 h4,
 h5,
 h6 {
-  @apply font-bold tracking-tight text-brand-accent;
+	@apply font-bold tracking-tight text-brand-accent;
 }
 
 .mono-label {
-  @apply font-mono text-[10px] uppercase tracking-[0.2em] opacity-50;
+	@apply font-mono text-[10px] uppercase tracking-[0.2em] opacity-50;
 }
 
 /* Custom Grid Utility */
 .systems-grid {
-  background-image: radial-gradient(circle, #cbd5e1 1px, transparent 1px);
-  background-size: 32px 32px;
+	background-image: radial-gradient(circle, #cbd5e1 1px, transparent 1px);
+	background-size: 32px 32px;
 }

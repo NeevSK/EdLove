@@ -1,4 +1,5 @@
-﻿import { z } from 'zod';
+import { z } from 'zod';
+import { makeModelSchema } from '../generated/zod';
 
 export const LongitudinalEntityTypeSchema = z.enum([
   'enrollment',
@@ -12,31 +13,24 @@ export const LongitudinalEntityTypeSchema = z.enum([
 
 export const LongitudinalOperationSchema = z.enum(['insert', 'update', 'delete']);
 
-export const StudentLongitudinalEventSchema = z.object({
-  id: z.string().uuid(),
-  student_id: z.string().uuid(),
-  school_id: z.string().uuid().nullable().optional(),
-  classroom_id: z.string().uuid().nullable().optional(),
+/**
+ * StudentLongitudinalEventSchema - A point in time for a student's journey.
+ * Derived from ZenStack StudentLongitudinalEvent model.
+ */
+export const StudentLongitudinalEventSchema = makeModelSchema('StudentLongitudinalEvent').extend({
   entity_type: LongitudinalEntityTypeSchema,
-  entity_id: z.string().uuid(),
   operation: LongitudinalOperationSchema,
-  source_table: z.string(),
-  snapshot: z.record(z.string(), z.any()),
-  occurred_at: z.string(),
-  recorded_at: z.string(),
-  effective_from: z.string().nullable().optional(),
-  effective_to: z.string().nullable().optional(),
-  recorded_by: z.string().uuid().nullable().optional(),
+  snapshot: z.any().optional(),
 });
 
 export const StudentLongitudinalTimelineSchema = z.object({
-  studentId: z.string().uuid(),
+  studentId: z.uuid(),
   viewDate: z.string(),
   events: z.array(StudentLongitudinalEventSchema),
 });
 
 export const StudentLongitudinalSnapshotSchema = z.object({
-  studentId: z.string().uuid(),
+  studentId: z.uuid(),
   viewDate: z.string(),
   records: z.array(StudentLongitudinalEventSchema),
 });

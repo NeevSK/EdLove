@@ -10,7 +10,12 @@ import { defineSectionHeadAbilities } from './abilities/sectionHead';
 import { defineStudentAbilities } from './abilities/student';
 import { defineTeacherAbilities } from './abilities/teacher';
 
-export { type Actions, type AppAbilities, AppAbility, type Subjects } from './abilities/base';
+export {
+  type Actions,
+  type AppAbilities,
+  AppAbility,
+  type Subjects,
+} from './abilities/base';
 
 /**
  * composeUserAbilities: The 2026 Unified Composition Engine.

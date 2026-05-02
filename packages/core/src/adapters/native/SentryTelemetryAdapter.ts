@@ -11,11 +11,11 @@ export class SentryTelemetryAdapter implements ITelemetry {
     });
   }
 
-  captureException(error: any, context?: any) {
+  captureException(error: unknown, context?: Record<string, unknown>) {
     NativeSentry.captureException(error, { extra: context });
   }
 
-  addBreadcrumb(breadcrumb: { message: string; category?: string; data?: any }) {
+  addBreadcrumb(breadcrumb: { message: string; category?: string; data?: Record<string, unknown> }) {
     NativeSentry.addBreadcrumb(breadcrumb);
   }
 

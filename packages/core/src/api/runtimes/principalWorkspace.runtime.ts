@@ -1,6 +1,6 @@
 import { createSupabasePrincipalWorkspaceRepository } from '../../adapters/supabase/principalWorkspaceRepository';
+import { supabase } from '../supabase';
 import { createPrincipalWorkspaceServices } from '../../logic/domains/principalWorkspace/services';
-import { supabase } from '../../api/supabase';
 
 const principalWorkspaceRepository = createSupabasePrincipalWorkspaceRepository(supabase);
 

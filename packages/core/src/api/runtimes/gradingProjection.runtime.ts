@@ -1,6 +1,6 @@
 import { createSupabaseGradingProjectionRepository } from '../../adapters/supabase/gradingProjectionRepository';
+import { supabase } from '../supabase';
 import { createGradingProjectionServices } from '../../logic/domains/gradingProjection/services';
-import { supabase } from '../../api/supabase';
 
 const gradingProjectionRepository = createSupabaseGradingProjectionRepository(supabase);
 

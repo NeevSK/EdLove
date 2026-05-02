@@ -2,7 +2,7 @@
  * Persistence Types for Offline Synchronization
  */
 
-export type MutationType = 'CREATE' | 'UPDATE' | 'DELETE' | 'CUSTOM';
+export type MutationType = 'CREATE' | 'UPDATE' | 'DELETE' | 'CUSTOM' | 'PATCH';
 
 export interface QueuedMutation {
   id: string;

@@ -1,4 +1,4 @@
-﻿vi.mock('../native/runtimes/principalWorkspace.runtime', () => ({
+vi.mock('../runtimes/principalWorkspace.runtime', () => ({
   principalWorkspaceServices: {
     listInviteCodes: vi.fn(),
     generateInviteCode: vi.fn(),

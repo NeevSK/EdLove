@@ -1,5 +1,5 @@
 import type React from 'react';
-import { Pressable, View } from 'react-native';
+import { Pressable, View } from '../primitives';
 
 export interface UniversalModalProps {
   isOpen: boolean;

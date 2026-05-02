@@ -104,6 +104,7 @@ export class GPACalculator {
         gpa: entry.gpa,
         created_at: entry.gradedAt,
         updated_at: entry.gradedAt,
+        publication_state: 'published',
         classroom_id: '',
         graded_by: '',
       });
@@ -142,7 +143,11 @@ export class GPACalculator {
     const currentGPA = this.calculateGPA(currentGrades, options);
 
     if (remainingAssignments.length === 0) {
-      return { predictedGPA: currentGPA, minGPA: currentGPA, maxGPA: currentGPA };
+      return {
+        predictedGPA: currentGPA,
+        minGPA: currentGPA,
+        maxGPA: currentGPA,
+      };
     }
 
     // Calculate current quality points and credits
@@ -186,7 +191,9 @@ export class GPACalculator {
   /**
    * Get grade distribution for a class
    */
-  public getGradeDistribution(grades: StudentGrade[]): { [grade: string]: number } {
+  public getGradeDistribution(grades: StudentGrade[]): {
+    [grade: string]: number;
+  } {
     const distribution: { [grade: string]: number } = {};
 
     for (const grade of grades) {

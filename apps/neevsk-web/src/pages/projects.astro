@@ -1,26 +1,29 @@
 ---
-import { getCollection } from 'astro:content';
-import { absoluteUrl } from '../lib/site';
-import BaseLayout from '../layouts/BaseLayout.astro';
-import Navigation from '../components/Navigation.astro';
-import RealitySwitch from '../components/RealitySwitch.astro';
+import { getCollection } from "astro:content";
+import Navigation from "../components/Navigation.astro";
+import RealitySwitch from "../components/RealitySwitch.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { absoluteUrl } from "../lib/site";
 
-const projectEntries = await getCollection('projects', ({ data }) => !data.draft);
+const projectEntries = await getCollection(
+	"projects",
+	({ data }) => !data.draft,
+);
 projectEntries.sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
 
 const _structuredData = {
-  '@context': 'https://schema.org',
-  '@type': 'CollectionPage',
-  name: 'Projects',
-  description:
-    'A collection of digital artifacts, philosophical experiments, and cybernetic systems.',
-  url: absoluteUrl('/projects'),
-  hasPart: projectEntries.map((entry, index) => ({
-    '@type': 'ListItem',
-    position: index + 1,
-    name: entry.data.title,
-    url: absoluteUrl('/projects'),
-  })),
+	"@context": "https://schema.org",
+	"@type": "CollectionPage",
+	name: "Projects",
+	description:
+		"A collection of digital artifacts, philosophical experiments, and cybernetic systems.",
+	url: absoluteUrl("/projects"),
+	hasPart: projectEntries.map((entry, index) => ({
+		"@type": "ListItem",
+		position: index + 1,
+		name: entry.data.title,
+		url: absoluteUrl("/projects"),
+	})),
 };
 ---
 

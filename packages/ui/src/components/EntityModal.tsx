@@ -10,7 +10,7 @@ export interface EntityModalProps {
   mode: EntityMode;
   instance?: EntityInstance;
   title?: string;
-  onSuccess?: (data: any) => void;
+  onSuccess?: (data: unknown) => void;
 }
 
 /**
@@ -32,9 +32,9 @@ export default function EntityModal({
     title || `${mode.charAt(0).toUpperCase() + mode.slice(1)} ${definition.type}`;
 
   const renderContent = () => {
-    // If a specialized component exists for this mode (e.g., a multi-step flow for school creation), use it.
-    const components = definition.components as any;
-    const specializedComponent = components?.[mode];
+    const components = definition.components;
+    const specializedComponent =
+      components && mode in components ? components[mode as keyof typeof components] : undefined;
 
     if (specializedComponent) {
       return (
@@ -42,7 +42,7 @@ export default function EntityModal({
           definition={definition}
           instance={instance}
           mode={mode}
-          onAction={(action: string, payload: any) => {
+          onAction={(action: string, payload: unknown) => {
             if (action === 'complete' || action === 'close') onClose();
             if (action === 'success' || action === 'complete') onSuccess?.(payload);
           }}
