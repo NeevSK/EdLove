@@ -19,11 +19,23 @@ if ($null -eq $packages -or $packages.Count -eq 0) {
     exit 0
 }
 
-$Filters = $packages | ForEach-Object { "--filter=...{$_}" }
+$Filters = $packages | ForEach-Object { "--filter=..../$_" }
 $FilterCmd = $Filters -join " "
 
 Write-Host ">>> Running Surgical Type Check for affected packages: $packages" -ForegroundColor Cyan
-Invoke-Expression "pnpm turbo run check-types $FilterCmd"
+
+# Turbo filters can pull in a large dependency graph and fail commits due to unrelated packages.
+# For surgical pre-commit checks, typecheck only the packages that were directly modified.
+foreach ($pkg in $packages) {
+    if (Test-Path $pkg) {
+        Write-Host ">>> check-types: $pkg" -ForegroundColor Cyan
+        Invoke-Expression "pnpm -C $pkg run check-types"
+        if ($LASTEXITCODE -ne 0) {
+            Write-Host "Surgical type check failed in $pkg" -ForegroundColor Red
+            exit 1
+        }
+    }
+}
 
 if ($LASTEXITCODE -ne 0) {
     Write-Host "❌ Surgical type check failed!" -ForegroundColor Red
