@@ -20,8 +20,8 @@ export function useTeacherClassroom(classroomId: string) {
 
     try {
       const [classData, studentData] = await Promise.all([
-        api.classrooms.getById(classroomId),
-        api.classroomStudents.getAll(classroomId),
+        api['classrooms'].getById(classroomId),
+        api['classroomStudents'].getAll(classroomId),
       ]);
 
       setClassroom(classData as Classroom);
@@ -42,7 +42,7 @@ export function useTeacherClassroom(classroomId: string) {
 
   const refreshStudents = useCallback(async () => {
     try {
-      const studentData = await api.classroomStudents.getAll(classroomId);
+      const studentData = await api['classroomStudents'].getAll(classroomId);
       setStudents(studentData as unknown as Student[]);
     } catch (err) {
       console.error('[useTeacherClassroom] Failed to refresh students:', err);

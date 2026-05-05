@@ -9,9 +9,11 @@
     "noEmit": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "@powersync/react-native": ["src/adapters/powersync/powersync-shim.d.ts"],
+      "@powersync/react": ["src/adapters/powersync/powersync-react-shim.d.ts"]
     },
-    "types": ["vitest/importMeta", "vitest/globals"]
+    "types": ["vitest/importMeta", "vitest/globals", "@repo/types-shim"]
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules"]

@@ -22,18 +22,18 @@ export const MUTATION_REGISTRY: Record<string, MutationFunction> = {
 
   // Inventory
   createInventoryRequest: async (vars) => {
-    return api.inventory.createRequest(vars);
+    return api['inventory'].createRequest(vars);
   },
 
   // Resources
   createResource: async (vars) => {
-    return api.resources.create(vars);
+    return api['resources'].create(vars);
   },
   toggleResourcePin: async (vars) => {
-    return api.resources.togglePin(vars.id, vars.isPinned);
+    return api['resources'].togglePin(vars.id, vars.isPinned);
   },
   deleteResource: async (vars) => {
-    return api.resources.delete(vars);
+    return api['resources'].delete(vars);
   },
 
   // Self/Wellbeing (Direct Supabase access)
@@ -50,13 +50,13 @@ export const MUTATION_REGISTRY: Record<string, MutationFunction> = {
 
   // Classroom (Upstreamed from mobile)
   createStudent: async (vars) => {
-    return api.students.create(vars);
+    return api['students'].create(vars);
   },
   updateAttendance: async (vars) => {
-    return api.attendance.record(vars.classroomId, vars.studentId, vars.status, vars.date);
+    return api['attendance'].record(vars.classroomId, vars.studentId, vars.status, vars.date);
   },
   updateStudent: async (vars) => {
-    return api.students.update(vars.id, vars.updates);
+    return api['students'].update(vars.id, vars.updates);
   },
 
   // Device security

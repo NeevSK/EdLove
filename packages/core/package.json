@@ -41,6 +41,18 @@
       "types": "./src/store/index.ts",
       "import": "./src/store/index.ts"
     },
+    "./store/*": {
+      "types": "./src/store/*.ts",
+      "import": "./src/store/*.ts"
+    },
+    "./sync/*": {
+      "types": "./src/lib/sync/*.ts",
+      "import": "./src/lib/sync/*.ts"
+    },
+    "./lib/*": {
+      "types": "./src/lib/*.ts",
+      "import": "./src/lib/*.ts"
+    },
     "./types": {
       "types": "./src/types/index.ts",
       "import": "./src/types/index.ts"
@@ -107,7 +119,10 @@
     "check-cycles": "node ../../scripts/refactor/sovereign-cycle-checker.mjs",
     "check-types": "pnpm exec tsc --noEmit",
     "test:logic": "vitest run src/logic",
-    "clean": "rm -rf .turbo node_modules"
+    "clean": "rm -rf .turbo node_modules dist",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui"
   },
   "peerDependencies": {
     "@react-native-async-storage/async-storage": "2.2.0",
@@ -127,6 +142,7 @@
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:^",
+    "@repo/types-shim": "workspace:*",
     "@supabase/supabase-js": "2.102.1",
     "@tanstack/react-query": "^5.90.20",
     "@types/jest": "^29.5.14",
@@ -146,20 +162,22 @@
     "typescript": "^5.9.3",
     "vite-tsconfig-paths": "^6.1.1",
     "vitest": "^2.1.9",
-    "zustand": "^5.0.10"
+    "zustand": "^5.0.10",
+    "@repo/typescript-config": "workspace:*"
   },
   "dependencies": {
     "@casl/ability": "^6.8.0",
     "@casl/react": "^5.0.1",
     "@effect/platform": "^0.96.1",
     "@react-native-community/netinfo": "^11.4.1",
+    "@repo/database": "workspace:*",
     "@sentry/browser": "^10.19.0",
     "@supabase/postgrest-js": "2.102.1",
     "@supabase/supabase-js": "2.102.1",
     "@tanstack/react-query": "^5.90.20",
     "@ts-rest/core": "3.53.0-rc.1",
-    "@zenstackhq/schema": "3.6.4",
     "@zenstackhq/zod": "3.6.4",
+    "@repo/schema": "workspace:*",
     "date-fns": "^4.1.0",
     "effect": "^3.21.2",
     "expo-clipboard": "~55.0.13",
