@@ -1,78 +1,68 @@
 import { supabase } from "@repo/core/api";
-import { getSchoolRoleForUser, getWorkRolesForUser } from "@repo/core/lib";
 import type { Membership, ScopeRef } from "@repo/core/types";
 
-interface MembershipSeed {
+interface BondSeed {
 	id: string;
-	school_id: string;
-	role?: string | null;
-	school_role?: string | null;
-	work_roles?: string[] | null;
-	tenant_kind?: string | null;
-	section_id?: string | null;
-	grade_id?: string | null;
-	classroom_id?: string | null;
+	user_id: string;
+	entity_id: string;
+	entity_type: string;
+	capacity: string | null;
+	status?: string | null;
+	metadata?: unknown;
+	valid_from?: string | null;
+	valid_until?: string | null;
+	created_at?: string | null;
 }
-function buildScopes(user: MembershipSeed): ScopeRef[] {
+function buildScopes(bond: BondSeed): ScopeRef[] {
 	const scopes: ScopeRef[] = [];
-	if (user.school_id) {
+	// People membership is currently scoped at the school bond; more granular scopes
+	// (section/grade/classroom) should be derived from dedicated placement tables.
+	if (bond.entity_id) {
 		scopes.push({
 			type: "school",
-			id: user.school_id,
-			schoolId: user.school_id,
-		});
-	}
-	if (user.section_id) {
-		scopes.push({
-			type: "section",
-			id: user.section_id,
-			schoolId: user.school_id,
-		});
-	}
-	if (user.grade_id) {
-		scopes.push({ type: "grade", id: user.grade_id, schoolId: user.school_id });
-	}
-	if (user.classroom_id) {
-		scopes.push({
-			type: "classroom",
-			id: user.classroom_id,
-			schoolId: user.school_id,
+			id: bond.entity_id,
+			schoolId: bond.entity_id,
 		});
 	}
 	return scopes;
 }
-function buildMembership(user: MembershipSeed): Membership {
+function buildMembership(bond: BondSeed): Membership {
+	const schoolId = bond.entity_id;
+	const capacity = bond.capacity;
 	return {
-		userId: user.id,
-		schoolId: user.school_id,
-		schoolRole: getSchoolRoleForUser(user as any),
-		workRoles: getWorkRolesForUser(user as any),
+		userId: bond.user_id,
+		schoolId,
+		// Legacy role fields are being purged; treat Bond.capacity as the single source of truth.
+		// This is an adapter-level mapping; authz should still be enforced via ReBAC/RLS.
+		schoolRole: (capacity as unknown as Membership["schoolRole"]) ?? null,
+		workRoles: [],
 		roles: [], // Initialize with empty roles; to be hydrated from backend if needed
-		scopes: buildScopes(user),
-		status: "active",
-		tenantKind: (user.tenant_kind as Membership["tenantKind"]) ?? undefined,
+		scopes: buildScopes(bond),
+		status: (bond.status as Membership["status"]) ?? "active",
+		tenantKind: undefined,
 	};
 }
 export const peopleMembershipsAPI = {
 	async getSchoolMemberships(schoolId: string): Promise<Membership[]> {
 		const { data, error } = await supabase
-			.from("users")
+			.from("bonds")
 			.select(
-				"id, school_id, role, school_role, work_roles, tenant_kind, section_id, grade_id",
+				"id, user_id, entity_id, entity_type, capacity, status, metadata, valid_from, valid_until, created_at",
 			)
-			.eq("school_id", schoolId);
+			.eq("entity_type", "SCHOOL")
+			.eq("entity_id", schoolId);
 		if (error) throw error;
-		return (data ?? []).map((row) => buildMembership(row as MembershipSeed));
+		return (data ?? []).map((row) => buildMembership(row as BondSeed));
 	},
 	async getUserMemberships(userId: string): Promise<Membership[]> {
 		const { data, error } = await supabase
-			.from("users")
+			.from("bonds")
 			.select(
-				"id, school_id, role, school_role, work_roles, tenant_kind, section_id, grade_id",
+				"id, user_id, entity_id, entity_type, capacity, status, metadata, valid_from, valid_until, created_at",
 			)
-			.eq("id", userId)
-			.maybeSingle();
+			.eq("entity_type", "SCHOOL")
+			.eq("user_id", userId);
 		if (error) throw error;
-		return data ? [buildMembership(data as MembershipSeed)] : [];
+		return (data ?? []).map((row) => buildMembership(row as BondSeed));
 	},
 };

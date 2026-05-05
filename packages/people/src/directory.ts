@@ -1,23 +1,28 @@
 import { supabase } from "@repo/core/api";
-import { getSchoolRoleForUser, getWorkRolesForUser } from "@repo/core/lib";
 import type { SchoolRole, User, WorkRole } from "@repo/core/types";
 export interface PeopleDirectoryEntry extends User {
 	schoolRole: SchoolRole | null;
 	workRoles: WorkRole[];
 	personKind: "staff" | "student";
 }
-function mapDirectoryEntry(user: User): PeopleDirectoryEntry {
-	const userWithRoles = {
+interface BondSeed {
+	user_id: string;
+	entity_id: string;
+	entity_type: string;
+	capacity: string | null;
+	status?: string | null;
+}
+function mapDirectoryEntry(user: User, bond: BondSeed): PeopleDirectoryEntry {
+	const userWithTimestamps = {
 		...user,
-		roles: user.roles || [],
 		created_at: user.created_at || new Date().toISOString(),
 		updated_at: user.updated_at || new Date().toISOString(),
 	};
-	const schoolRole = getSchoolRoleForUser(userWithRoles as any);
+	const schoolRole = (bond.capacity as unknown as SchoolRole) ?? null;
 	return {
-		...userWithRoles,
+		...userWithTimestamps,
 		schoolRole,
-		workRoles: getWorkRolesForUser(userWithRoles as any),
+		workRoles: [],
 		personKind: schoolRole === "student" ? "student" : "staff",
 	} as PeopleDirectoryEntry;
 }
@@ -28,36 +33,72 @@ export const peopleDirectoryAPI = {
 			personKind?: "all" | "staff" | "student";
 		},
 	): Promise<PeopleDirectoryEntry[]> {
-		let query = supabase
+		const { data: bondRows, error: bondError } = await supabase
+			.from("bonds")
+			.select("user_id, entity_id, entity_type, capacity, status")
+			.eq("entity_type", "SCHOOL")
+			.eq("entity_id", schoolId);
+		if (bondError) throw bondError;
+
+		let filteredBonds = (bondRows ?? []) as BondSeed[];
+		if (options?.personKind === "student") {
+			filteredBonds = filteredBonds.filter((b) => b.capacity === "student");
+		} else if (options?.personKind === "staff") {
+			filteredBonds = filteredBonds.filter((b) => b.capacity !== "student");
+		}
+
+		const userIds = Array.from(
+			new Set(filteredBonds.map((b) => b.user_id).filter(Boolean)),
+		);
+		if (userIds.length === 0) return [];
+
+		const { data: userRows, error: userError } = await supabase
 			.from("users")
 			.select("*")
-			.eq("school_id", schoolId)
+			.in("id", userIds)
 			.order("full_name", { ascending: true });
-		if (options?.personKind === "student") {
-			query = query.eq("role", "student");
-		} else if (options?.personKind === "staff") {
-			query = query.in("role", [
-				"principal",
-				"section_head",
-				"grade_head",
-				"teacher",
-				"founder",
-				"admin",
-				"developer",
-			]);
-		}
-		const { data, error } = await query;
-		if (error) throw error;
-		return (data ?? []).map((row) => mapDirectoryEntry(row as User));
+		if (userError) throw userError;
+
+		const bondByUserId = new Map(filteredBonds.map((b) => [b.user_id, b]));
+		return (userRows ?? [])
+			.map((row) => {
+				const bond = bondByUserId.get((row as User).id);
+				return bond ? mapDirectoryEntry(row as User, bond) : null;
+			})
+			.filter(Boolean) as PeopleDirectoryEntry[];
 	},
 	async getPerson(userId: string): Promise<PeopleDirectoryEntry | null> {
-		const { data, error } = await supabase
+		const { data: userRow, error: userError } = await supabase
 			.from("users")
 			.select("*")
 			.eq("id", userId)
 			.maybeSingle();
-		if (error) throw error;
-		return data ? mapDirectoryEntry(data as User) : null;
+		if (userError) throw userError;
+		if (!userRow) return null;
+
+		const schoolId = (userRow as User).school_id as string | null | undefined;
+		if (!schoolId) {
+			return {
+				...(userRow as User),
+				schoolRole: null,
+				workRoles: [],
+				personKind: "staff",
+			} as PeopleDirectoryEntry;
+		}
+
+		const { data: bondRow, error: bondError } = await supabase
+			.from("bonds")
+			.select("user_id, entity_id, entity_type, capacity, status")
+			.eq("entity_type", "SCHOOL")
+			.eq("entity_id", schoolId)
+			.eq("user_id", userId)
+			.maybeSingle();
+		if (bondError) throw bondError;
+
+		const bond =
+			(bondRow as BondSeed | null) ??
+			({ user_id: userId, entity_id: schoolId, entity_type: "SCHOOL", capacity: null } satisfies BondSeed);
+		return mapDirectoryEntry(userRow as User, bond);
 	},
 	async listStaff(schoolId: string): Promise<PeopleDirectoryEntry[]> {
 		return this.listBySchool(schoolId, { personKind: "staff" });
