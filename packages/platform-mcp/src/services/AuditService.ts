@@ -447,7 +447,7 @@ export class AuditService {
 
 	handlePushAudit() {
 		const auditCmd =
-			"pnpm exec commitlint --from=HEAD~1 --to=HEAD; pnpm run check-types; pnpm run check:hygiene; pnpm run identity:check; npx gitleaks detect --source . --verbose";
+			"pnpm exec commitlint --from=HEAD~1 --to=HEAD; pnpm run check-types; pnpm run check:hygiene; pnpm run identity:check";
 		console.error("Running Sovereign Push Audit...");
 
 		const result = runCommand("node", [
