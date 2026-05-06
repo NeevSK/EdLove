@@ -300,7 +300,7 @@ export class MaintenanceService {
 	handleSovereignPush() {
 		console.error("Sovereign Maintenance: Initiating Push Gate...");
 		const auditCmd =
-			"pnpm exec commitlint --from=HEAD~1 --to=HEAD; pnpm run check-types; pnpm run check:hygiene; pnpm run identity:check; (npx gitleaks detect --source . --verbose || echo 'Gitleaks check skipped or failed')";
+			"pnpm exec commitlint --from=HEAD~1 --to=HEAD; pnpm run check-types; pnpm run check:hygiene; pnpm run identity:check; npx gitleaks detect --source . --verbose";
 
 		const auditResult = runCommand("node", [
 			"scripts/sovereign-audit.mjs",

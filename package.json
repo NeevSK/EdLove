@@ -76,6 +76,7 @@
     "dependency-cruiser": "^17.3.9",
     "eslint": "^9.39.4",
     "expo-modules-core": "~55.0.17",
+    "gitleaks": "^1.0.0",
     "husky": "^9.1.7",
     "jest": "^29.7.0",
     "jest-expo": "~55.0.16",

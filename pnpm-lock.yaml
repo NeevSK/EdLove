@@ -198,6 +198,9 @@ importers:
       expo-modules-core:
         specifier: ~55.0.17
         version: 55.0.17(react-native@0.83.6(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0)
+      gitleaks:
+        specifier: ^1.0.0
+        version: 1.0.0
       husky:
         specifier: ^9.1.7
         version: 9.1.7
@@ -969,6 +972,9 @@ importers:
       '@repo/scanner-kit':
         specifier: workspace:*
         version: link:../scanner-kit
+      '@repo/self':
+        specifier: workspace:*
+        version: link:../self
       '@repo/ui':
         specifier: workspace:*
         version: link:../ui
@@ -1859,6 +1865,9 @@ importers:
       '@types/glob':
         specifier: ^9.0.0
         version: 9.0.0
+      '@types/node':
+        specifier: ^25.5.0
+        version: 25.5.2
       eslint:
         specifier: ^9.38.0
         version: 9.39.4(jiti@2.6.1)
@@ -11905,6 +11914,9 @@ packages:
 
   github-slugger@2.0.0:
     resolution: {integrity: sha512-IaOQ9puYtjrkq7Y0Ygl9KDZnrf/aiUJYUpVf89y8kyaxbRG7Y1SrX/jaumrv81vc61+kiMempujsM3Yw7w5qcw==}
+
+  gitleaks@1.0.0:
+    resolution: {integrity: sha512-mTtKkWCAeHnTiBmRzjKnot8D8zX/JVDuRffuvSCr+z93vuBXygeifGZ7lXOB8Hjxto+DikSoF0XXfxntd1BZSQ==}
 
   glob-parent@5.1.2:
     resolution: {integrity: sha512-AOIgSQCepiJYwP3ARnGx+5VnTu2HBYdzbGP45eLw1vr3zB3vZLeyed1sC9hnbcOc9/SrMyM5RPQrkGz4aS9Zow==}
@@ -29319,6 +29331,8 @@ snapshots:
   github-from-package@0.0.0: {}
 
   github-slugger@2.0.0: {}
+
+  gitleaks@1.0.0: {}
 
   glob-parent@5.1.2:
     dependencies:
