@@ -1,4 +1,4 @@
-import type { Role } from '../logic/schemas/role.schema';
+import type { Capacity } from '../logic/schemas/capacity.schema';
 import type { TenantKind } from '../logic/schemas/user.schema';
 
 export type { TenantKind };
@@ -26,7 +26,7 @@ export interface Membership {
   schoolId: string;
   schoolRole?: string | null;
   workRoles?: string[] | null;
-  roles: Role[];
+  roles: Capacity[];
   scopes: ScopeRef[];
   status?: 'active' | 'inactive' | 'invited';
   tenantKind?: TenantKind;
@@ -50,7 +50,7 @@ export interface PlatformAccessContext {
   sectionId?: string | null;
   gradeId?: string | null;
   tenantKind: TenantKind;
-  roles: Role[];
+  roles: Capacity[];
   hasGlobalAccess: boolean;
   isPersonal: boolean;
 }

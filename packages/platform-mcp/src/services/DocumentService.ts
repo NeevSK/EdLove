@@ -218,8 +218,10 @@ export class DocumentService {
 			.filter((line) => line.includes(":"))
 			.map((line) => {
 				const [filePath, count] = line.split(":");
-				return { path: filePath, count: parseInt(count, 10) };
+				const path = filePath ?? "";
+				const parsedCount = parseInt(count ?? "", 10);
+				return { path, count: parsedCount };
 			})
-			.filter((h) => !Number.isNaN(h.count));
+			.filter((h) => h.path.length > 0 && !Number.isNaN(h.count));
 	}
 }

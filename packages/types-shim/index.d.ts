@@ -59,66 +59,39 @@ declare module "react-native-gesture-handler" {
 	export const State: any;
 }
 
-// PowerSync is an optional dependency. In CI/dev environments where it is not
-// installed, these shims allow `tsc --noEmit` to run so we can keep the rest of
-// the monorepo type-safe.
-declare module "@powersync/react-native" {
-	export const column: {
-		text: any;
-		integer: any;
-	};
 
-	export class Table {
-		constructor(definition: Record<string, any>);
-	}
-
-	export class Schema {
-		constructor(tables: Record<string, any>);
-		types: any;
-	}
-
-	export type CrudEntry = {
-		id: string;
-		table: string;
-		op: "PUT" | "PATCH" | "DELETE";
-		opData?: Record<string, any> | null;
-	};
-
-	export type PowerSyncCredentials = { endpoint: string; token: string };
-
-	export interface AbstractPowerSyncDatabase {
-		getCrudBatch(limit: number): Promise<{
-			crud: CrudEntry[];
-			complete(): Promise<void>;
-		}>;
-	}
-
-	export interface PowerSyncBackendConnector {
-		fetchCredentials(): Promise<PowerSyncCredentials>;
-		uploadData(database: AbstractPowerSyncDatabase): Promise<void>;
-	}
-
-	export class PowerSyncDatabase implements AbstractPowerSyncDatabase {
-		constructor(options: any);
-		connect(connector: PowerSyncBackendConnector): Promise<void>;
-		disconnect(): Promise<void>;
-		getCrudBatch(limit: number): Promise<{
-			crud: CrudEntry[];
-			complete(): Promise<void>;
-		}>;
-	}
+declare module "expo-task-manager" {
+	export function defineTask(
+		taskName: string,
+		task: (...args: any[]) => any,
+	): void;
+	export function isTaskRegisteredAsync(taskName: string): Promise<boolean>;
 }
 
-declare module "@powersync/react" {
-	import * as React from "react";
-	import type { PowerSyncDatabase } from "@powersync/react-native";
+declare module "expo-background-task" {
+	export const BackgroundTaskResult: {
+		NewData: number;
+		NoData: number;
+		Failed: number;
+	};
+	export const BackgroundTaskStatus: {
+		Available: number;
+		Denied: number;
+		Restricted: number;
+	};
+	export type BackgroundTaskOptions = {
+		minimumInterval?: number;
+		stopOnTerminate?: boolean;
+		startOnBoot?: boolean;
+	};
 
-	export const PowerSyncContext: React.Context<PowerSyncDatabase>;
-	export function useQuery<T = Record<string, unknown>>(
-		sql: string,
-		parameters?: unknown[],
-	): { data: T[] };
-	export function useStatus(): any;
+	export function getStatusAsync(): Promise<number>;
+	export function registerTaskAsync(
+		taskName: string,
+		options?: BackgroundTaskOptions,
+	): Promise<void>;
+	export function unregisterTaskAsync(taskName: string): Promise<void>;
+	export function triggerTaskWorkerForTestingAsync(taskName: string): Promise<void>;
 }
 
 export {};

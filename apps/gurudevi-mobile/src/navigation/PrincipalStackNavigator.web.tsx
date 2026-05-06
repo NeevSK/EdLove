@@ -40,13 +40,13 @@ export default function PrincipalStackNavigatorWeb() {
 			>
 				<Stack.Screen
 					name="PrincipalDashboard"
-					component={PrincipalDashboardWeb}
+					component={PrincipalDashboardWeb as any}
 				/>
 				<Stack.Screen name="GuardianDashboard" component={GuardianDashboard} />
 				<Stack.Screen name="FounderDashboard" component={FounderDashboard} />
 				<Stack.Screen
 					name="FounderSchoolDashboard"
-					component={FounderSchoolDashboard}
+					component={FounderSchoolDashboard as any}
 				/>
 				<Stack.Screen name="SchoolCreation" component={SchoolCreationScreen} />
 			</Stack.Navigator>

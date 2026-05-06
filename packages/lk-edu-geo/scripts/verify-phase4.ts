@@ -19,18 +19,18 @@ console.log(
 const provinces = getProvinces();
 console.log(`\u2705 Provinces: ${provinces.length}`);
 
-if (provinces.length > 0) {
-	const p1 = provinces[0];
+const p1 = provinces[0];
+if (p1) {
 	const districts = getDistricts(p1.id);
 	console.log(`\u2705 Districts in ${p1.name}: ${districts.length}`);
 
-	if (districts.length > 0) {
-		const d1 = districts[0];
+	const d1 = districts[0];
+	if (d1) {
 		const dsDivs = getDSDivisions(d1.id);
 		console.log(`\u2705 DS Divisions in ${d1.name}: ${dsDivs.length}`);
 
-		if (dsDivs.length > 0) {
-			const ds1 = dsDivs[0];
+		const ds1 = dsDivs[0];
+		if (ds1) {
 			const gnDivs = getGNDivisions(ds1.id);
 			console.log(`\u2705 GN Divisions in ${ds1.name}: ${gnDivs.length}`);
 		}

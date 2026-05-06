@@ -48,7 +48,11 @@ export default function AdminDashboard({ userId }: AdminDashboardProps) {
 
 	const workspace = useAdminWorkspaceLayout(resolvedUserId, surfaces);
 
-	if (!context.hasGlobalAccess && !context.roles.includes("admin")) {
+	const isAdmin =
+		context.bonds.some((b) => b.capacity === "admin" && b.status === "active") ||
+		context.hasGlobalAccess;
+
+	if (!isAdmin) {
 		return (
 			<ScreenWrapper scroll={false}>
 				<VStack className="flex-1 items-center justify-center gap-3 px-6">

@@ -44,8 +44,8 @@ export default function AttendanceScreen() {
 
 			// Load student roster and any already-saved attendance for today in parallel
 			const [roster, snapshot] = await Promise.all([
-				api.classroomStudents.getAll(classroomId),
-				api.attendance
+				api["classroomStudents"].getAll(classroomId),
+				api["attendance"]
 					.getClassroomAttendanceSnapshot(classroomId, today || "")
 					.catch(() => ({
 						records: [] as { student_id: string; status: AttendanceStatus }[],
@@ -112,7 +112,7 @@ export default function AttendanceScreen() {
 				occurred_at: now,
 				academic_cycle_id: academicCycleId, // Tagging with academic cycle
 			}));
-			return api.attendance.batchRecord(records, {
+			return api["attendance"].batchRecord(records, {
 				actorId: currentUser?.id,
 				reason: "daily_roll_call",
 				accessKind: "teacher_marking",

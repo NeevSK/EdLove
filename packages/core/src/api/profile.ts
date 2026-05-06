@@ -2,63 +2,117 @@
  * PROFILE API (Protocol-Oriented Authority)
  */
 
-import type { z } from 'zod';
-import { PulseMetricsSchema } from '../logic/schemas/dashboard.schema';
-import { APIError } from '../types/API';
-import { supabase } from './supabase';
-
-type PulseMetrics = z.infer<typeof PulseMetricsSchema>;
+import { profileServices } from './runtimes/profile.runtime';
 
 /**
  * API methods for User and Institutional Profiles.
  * Following Protocol-Oriented Authority.
  */
 export const profileAPI = {
-  /**
-   * Get the realtime school pulse indicators.
-   * @authority read School
-   */
+  async getUserProfile(userId: string) {
+    return profileServices.getUserProfile(userId);
+  },
+
+  async getUserProfileAsOf(userId: string, at: string) {
+    return profileServices.getUserProfileAsOf(userId, at);
+  },
+
+  async getUserProfileHistory(userId: string, limit?: number) {
+    return profileServices.getUserProfileHistory(userId, limit);
+  },
+
+  async getJourneySnapshot(
+    userId: string,
+    params?: {
+      at?: string;
+      view_date?: string;
+      view_scale?: 'day' | 'week' | 'month' | 'year' | 'custom';
+    },
+  ) {
+    return profileServices.getJourneySnapshot(userId, {
+      asOf: params?.at,
+      viewDate: params?.view_date,
+      viewScale: params?.view_scale,
+    });
+  },
+
+  async getJourneyHistory(
+    userId: string,
+    params: {
+      view_date: string;
+      view_scale?: 'day' | 'week' | 'month' | 'year' | 'custom';
+      limit?: number;
+    },
+  ) {
+    return profileServices.getJourneyHistory(userId, {
+      viewDate: params.view_date,
+      viewScale: params.view_scale,
+      limit: params.limit,
+    });
+  },
+
+  async updateProfile(userId: string, updates: Record<string, any>) {
+    return profileServices.updateProfile(userId, updates);
+  },
+
+  async isAnonymous(userId: string) {
+    const isAnonymous = await profileServices.isAnonymous(userId);
+    return { is_anonymous: isAnonymous };
+  },
+
+  async uploadAvatar(userId: string, params: { local_uri: string }) {
+    return profileServices.uploadAvatar(userId, params.local_uri);
+  },
+
+  async getSocialLinks(userId: string) {
+    return profileServices.getSocialLinks(userId);
+  },
+
+  async upsertSocialLink(userId: string, link: Record<string, any>) {
+    return profileServices.upsertSocialLink(userId, link as any);
+  },
+
+  async deleteSocialLink(linkId: string) {
+    return profileServices.deleteSocialLink(linkId);
+  },
+
+  async updateSocialLinksOrder(
+    _userId: string,
+    params: { links: { id: string; order_index: number }[] },
+  ) {
+    await profileServices.updateSocialLinksOrder(_userId, params.links);
+    return { ok: true };
+  },
+
+  async getCommunityProfile(communityId: string) {
+    return profileServices.getCommunityProfile(communityId);
+  },
+
+  async getCommunityProfileAsOf(communityId: string, at: string) {
+    return profileServices.getCommunityProfileAsOf(communityId, at);
+  },
+
+  async getCommunityProfileHistory(communityId: string, limit?: number) {
+    return profileServices.getCommunityProfileHistory(communityId, limit);
+  },
+
+  async updateCommunityProfile(
+    communityId: string,
+    params: { field: 'name' | 'description'; value: string },
+  ) {
+    return profileServices.updateCommunityProfile(communityId, params.field, params.value);
+  },
+
   async getSchoolPulse(
     schoolId: string,
     params: {
-      viewDate: string;
-      viewScale?: 'day' | 'week' | 'month' | 'year' | 'custom';
+      view_date: string;
+      view_scale?: 'day' | 'week' | 'month' | 'year' | 'custom';
     },
-  ): Promise<PulseMetrics> {
-    try {
-      // Simplified for POA: Fetch aggregated pulse metrics from the database
-      const { data, error } = await supabase.rpc('get_school_pulse_metrics', {
-        p_school_id: schoolId,
-        p_view_date: params.viewDate,
-        p_view_scale: params.viewScale || 'day',
-      });
-
-      if (error) {
-        // If RPC doesn't exist yet, return a safe default for now
-        if (error.code === 'P0001' || error.message.includes('does not exist')) {
-          return {
-            resonance_score: 85,
-            aggregated_mood: 'peace',
-            trend: 'stable',
-            participation_rate: 92,
-            top_subjects: ['Holistic Development', 'Emotional Literacy'],
-            interaction_volume: 1240,
-          };
-        }
-        throw new APIError('Failed to fetch school pulse', error.code, error);
-      }
-
-      return PulseMetricsSchema.parse(data) as unknown as PulseMetrics;
-    } catch (_error: any) {
-      // Fallback for missing RPC during development
-      return {
-        resonance_score: 85,
-        aggregated_mood: 'peace',
-        trend: 'stable',
-        participation_rate: 92,
-        top_subjects: ['Holistic Development', 'Emotional Literacy'],
-        interaction_volume: 1240,
-      };
-    }
+  ) {
+    return profileServices.getSchoolPulse(schoolId, {
+      viewDate: params.view_date,
+      viewScale: params.view_scale,
+    });
   },
 };

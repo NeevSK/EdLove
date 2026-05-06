@@ -194,7 +194,6 @@ export default function UserPublicProfileScreen() {
 									<UserAvatar
 										avatarUrl={user?.avatar_url}
 										fullName={user?.full_name ?? userName ?? "?"}
-										authority={user?.authority}
 										size={120}
 									/>
 								</Box>

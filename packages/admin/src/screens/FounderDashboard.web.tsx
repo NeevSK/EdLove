@@ -1455,12 +1455,12 @@ export default function FounderDashboardWeb() {
 													{log.action}
 												</div>
 												<div style={{ fontSize: "11px", opacity: 0.5 }}>
-													Target: {log.target_id}
+													Target: {(log as any).target_id}
 												</div>
 											</div>
 										</div>
 										<div style={{ fontSize: "12px", fontWeight: "600" }}>
-											{log.executor_id || "SYSTEM"}
+											{(log as any).executor_id || "SYSTEM"}
 										</div>
 										<div
 											style={{

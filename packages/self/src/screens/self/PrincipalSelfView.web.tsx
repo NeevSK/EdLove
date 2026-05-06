@@ -1,4 +1,3 @@
-import { useNavigation } from "@react-navigation/native";
 import { useJourneyHistory } from "@repo/core/hooks";
 import { usePermissions, useStore } from "@repo/core/logic";
 import { JourneyHistoryCard } from "@repo/ui/components/JourneyHistoryCard";
@@ -19,6 +18,7 @@ import { ResonanceTimeline } from "../../components/ResonanceTimeline";
 import { WarmMirrorCard } from "../../components/WarmMirrorCard";
 import WelcomeModal from "../../components/WelcomeModal";
 import WisdomSeeds from "../../components/WisdomSeeds";
+import GovernanceHistoryTimeline from "../../components/GovernanceHistoryTimeline";
 import { useDecisionJournal } from "../../hooks/useDecisionJournal";
 import { useEnergyForecast as useCoreEnergyForecast } from "../../hooks/useEnergyForecast";
 import { useJournalEntries } from "../../hooks/useJournalEntries";
@@ -32,7 +32,6 @@ import {
 
 export default function PrincipalSelfView() {
 	const { t } = useTranslation();
-	const navigation = useNavigation<any>();
 	const { context } = usePermissions();
 	const userId = context.userId;
 	const justFinishedOnboarding = useStore((s) => s.justFinishedOnboarding);
@@ -58,7 +57,7 @@ export default function PrincipalSelfView() {
 				events={journeyEvents}
 				summary={holisticView.summary}
 				loading={journeyLoading}
-				scale={viewScale as any}
+				scale={viewScale === "custom" ? "day" : viewScale}
 			/>
 			<TemporalShield label="LEADERSHIP ENERGY">
 				<PrincipalPulse
@@ -78,7 +77,7 @@ export default function PrincipalSelfView() {
 			<MoodPickerCard
 				isOpen={false}
 				onToggle={() => {}}
-				onSelect={async (mood, note) => {
+				onSelect={async (mood: Parameters<typeof addMoodLog>[0], note: string) => {
 					await addMoodLog(mood, note || undefined);
 				}}
 				isSaving={false}
@@ -100,16 +99,10 @@ export default function PrincipalSelfView() {
 					Leadership ecology
 				</h3>
 				<div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-					<button
-						className="sidebar-item"
-						onClick={() => navigation.navigate("Main", { screen: "Community" })}
-					>
+					<button className="sidebar-item" onClick={() => {}}>
 						<Icon as={Activity} size={16} /> <span>Leadership Ecology</span>
 					</button>
-					<button
-						className="sidebar-item"
-						onClick={() => navigation.navigate("Main", { screen: "Community" })}
-					>
+					<button className="sidebar-item" onClick={() => {}}>
 						<Icon as={BookOpen} size={16} /> <span>Governance Ledger</span>
 					</button>
 				</div>
@@ -217,6 +210,11 @@ export default function PrincipalSelfView() {
 									</div>
 								),
 							},
+							{
+								id: "governance_history",
+								label: "Governance History",
+								content: <GovernanceHistoryTimeline userId={userId ?? ""} />,
+							},
 						],
 					},
 				]}
@@ -229,3 +227,4 @@ export default function PrincipalSelfView() {
 		</TemporalProvider>
 	);
 }
+

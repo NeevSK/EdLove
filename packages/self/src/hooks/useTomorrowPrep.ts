@@ -16,21 +16,25 @@ export function useTomorrowPrep(userId?: string) {
 	const [isLoading, setIsLoading] = useState(true);
 	useEffect(() => {
 		if (!userId) return;
+		let cancelled = false;
 		const loadCache = async () => {
 			try {
 				const cached = await SafeZustandStorage.getItem(
 					`${PREP_CACHE_KEY}-${userId}`,
 				);
-				if (cached) {
+				if (!cancelled && cached) {
 					setPrepItems(JSON.parse(cached));
 				}
 			} catch (error) {
 				console.warn("Failed to load prep cache", error);
 			} finally {
-				setIsLoading(false);
+				if (!cancelled) setIsLoading(false);
 			}
 		};
-		loadCache();
+		void loadCache();
+		return () => {
+			cancelled = true;
+		};
 	}, [userId]);
 	const refreshData = useCallback(async () => {
 		if (!userId || !isOnline) return;
@@ -46,7 +50,7 @@ export function useTomorrowPrep(userId?: string) {
 		}
 	}, [isOnline, userId]);
 	useEffect(() => {
-		refreshData();
+		void refreshData();
 	}, [refreshData]);
 	const addPrepItem = useCallback(
 		async (itemText: string, prepDate: string) => {

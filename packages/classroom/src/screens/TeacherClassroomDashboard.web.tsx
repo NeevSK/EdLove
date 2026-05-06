@@ -42,7 +42,7 @@ import {
 } from "@repo/ui/primitives";
 import { Theme } from "@repo/ui/theme";
 
-import { useState } from "react";
+import { useReducer, useState } from "react";
 import {
 	AttendanceView,
 	ClassroomEchoSection,
@@ -58,6 +58,7 @@ import TeacherGroupsModal from "../components/teacher/TeacherGroupsModal";
 import TeacherObservationsWorkspace from "../components/teacher/TeacherObservationsWorkspace";
 import { useTeacherClassroomWorkspaceData } from "../workspace/useTeacherClassroomWorkspaceData";
 import LessonFeed from "./LessonFeed";
+import ClassroomLegacyTimeline from "@repo/self/components/ClassroomLegacyTimeline";
 
 type FeatureId =
 	| "insights"
@@ -70,7 +71,8 @@ type FeatureId =
 	| "inventory"
 	| "echo"
 	| "observations"
-	| "analysis";
+	| "analysis"
+	| "legacy";
 
 const FEATURES: { id: FeatureId; label: string; icon: any }[] = [
 	{ id: "insights", label: "Insights", icon: TrendingUp },
@@ -84,6 +86,7 @@ const FEATURES: { id: FeatureId; label: string; icon: any }[] = [
 	{ id: "echo", label: "Echo", icon: MessageSquare },
 	{ id: "observations", label: "Observations", icon: Sparkles },
 	{ id: "analysis", label: "Analysis", icon: GraduationCap },
+	{ id: "legacy", label: "Legacy", icon: Layers3 },
 ];
 
 const FEATURE_TONES: Record<
@@ -145,6 +148,30 @@ const FEATURE_TONES: Record<
 		color: Theme.colors.amberGlow,
 		tint: "rgba(255,184,77,0.16)",
 	},
+	legacy: {
+		label: "Cohort lineage",
+		color: Theme.colors.sageGreen,
+		tint: "rgba(139,191,122,0.14)",
+	},
+};
+
+const initialState = {
+	activeFeature: "insights" as FeatureId,
+	showGroupsModal: false,
+	refreshTrigger: 0,
+	showAddMonthModal: false,
+	newMonthTitle: "",
+	showAddContentModal: false,
+	contentType: "material" as "material" | "assignment",
+	activeLessonId: null as string | null,
+	form: {
+		title: "",
+		description: "",
+		type: "note" as "pdf" | "link" | "note",
+		url: "",
+		dueDate: "",
+	},
+	isSubmitting: false,
 };
 
 export default function TeacherClassroomDashboardWeb() {
@@ -158,69 +185,95 @@ export default function TeacherClassroomDashboardWeb() {
 	const classroom = workspace.classroom;
 	const students = workspace.students;
 
-	const [activeFeature, setActiveFeature] = useState<FeatureId>("insights");
-	const activeTone = FEATURE_TONES[activeFeature];
-	const [showGroupsModal, setShowGroupsModal] = useState(false);
-	const [refreshTrigger, setRefreshTrigger] = useState(0);
-	const [showAddMonthModal, setShowAddMonthModal] = useState(false);
-	const [newMonthTitle, setNewMonthTitle] = useState("");
-	const [showAddContentModal, setShowAddContentModal] = useState(false);
-	const [contentType, setContentType] = useState<"material" | "assignment">(
-		"material",
+	const [state, dispatch] = useReducer(
+		(
+			prev: typeof initialState,
+			action:
+				| { type: "SET_ACTIVE_FEATURE"; payload: FeatureId }
+				| { type: "SET_SHOW_GROUPS_MODAL"; payload: boolean }
+				| { type: "INCREMENT_REFRESH_TRIGGER" }
+				| { type: "SET_SHOW_ADD_MONTH_MODAL"; payload: boolean }
+				| { type: "SET_NEW_MONTH_TITLE"; payload: string }
+				| { type: "SET_SHOW_ADD_CONTENT_MODAL"; payload: boolean }
+				| { type: "SET_CONTENT_TYPE"; payload: "material" | "assignment" }
+				| { type: "SET_ACTIVE_LESSON_ID"; payload: string | null }
+				| { type: "UPDATE_FORM"; payload: Partial<typeof initialState.form> }
+				| { type: "RESET_FORM" }
+				| { type: "SET_IS_SUBMITTING"; payload: boolean },
+		) => {
+			switch (action.type) {
+				case "SET_ACTIVE_FEATURE":
+					return { ...prev, activeFeature: action.payload };
+				case "SET_SHOW_GROUPS_MODAL":
+					return { ...prev, showGroupsModal: action.payload };
+				case "INCREMENT_REFRESH_TRIGGER":
+					return { ...prev, refreshTrigger: prev.refreshTrigger + 1 };
+				case "SET_SHOW_ADD_MONTH_MODAL":
+					return { ...prev, showAddMonthModal: action.payload };
+				case "SET_NEW_MONTH_TITLE":
+					return { ...prev, newMonthTitle: action.payload };
+				case "SET_SHOW_ADD_CONTENT_MODAL":
+					return { ...prev, showAddContentModal: action.payload };
+				case "SET_CONTENT_TYPE":
+					return { ...prev, contentType: action.payload };
+				case "SET_ACTIVE_LESSON_ID":
+					return { ...prev, activeLessonId: action.payload };
+				case "UPDATE_FORM":
+					return { ...prev, form: { ...prev.form, ...action.payload } };
+				case "RESET_FORM":
+					return { ...prev, form: initialState.form, activeLessonId: null };
+				case "SET_IS_SUBMITTING":
+					return { ...prev, isSubmitting: action.payload };
+				default:
+					return prev;
+			}
+		},
+		initialState,
 	);
-	const [activeLessonId, setActiveLessonId] = useState<string | null>(null);
-	const [formTitle, setFormTitle] = useState("");
-	const [formDescription, setFormDescription] = useState("");
-	const [formType, setFormType] = useState<"pdf" | "link" | "note">("note");
-	const [formUrl, setFormUrl] = useState("");
-	const [formDueDate, setFormDueDate] = useState("");
-	const [isSubmitting, setIsSubmitting] = useState(false);
+
+	const activeTone = FEATURE_TONES[state.activeFeature];
+	const contentType = state.contentType;
 
 	const resetForm = () => {
-		setFormTitle("");
-		setFormDescription("");
-		setFormType("note");
-		setFormUrl("");
-		setFormDueDate("");
-		setActiveLessonId(null);
+		dispatch({ type: "RESET_FORM" });
 	};
 
 	const handleAddMonth = async () => {
-		if (!newMonthTitle.trim()) return;
-		setIsSubmitting(true);
+		if (!state.newMonthTitle.trim()) return;
+		dispatch({ type: "SET_IS_SUBMITTING", payload: true });
 		try {
-			const lessons = await api.lessons.getAll(classroomId);
+			const lessons = await api["lessons"].getAll(classroomId);
 			const maxOrder = lessons.reduce(
 				(max: number, lesson: any) => Math.max(max, lesson.order_index),
 				0,
 			);
-			await api.lessons.create({
+			await api["lessons"].create({
 				classroom_id: classroomId,
-				title: newMonthTitle.trim(),
+				title: state.newMonthTitle.trim(),
 				order_index: maxOrder + 1,
 			});
-			setNewMonthTitle("");
-			setShowAddMonthModal(false);
-			setRefreshTrigger((prev) => prev + 1);
+			dispatch({ type: "SET_NEW_MONTH_TITLE", payload: "" });
+			dispatch({ type: "SET_SHOW_ADD_MONTH_MODAL", payload: false });
+			dispatch({ type: "INCREMENT_REFRESH_TRIGGER" });
 			await workspace.refreshWorkspace();
 		} catch (error) {
 			console.error("Failed to add month", error);
 		} finally {
-			setIsSubmitting(false);
+			dispatch({ type: "SET_IS_SUBMITTING", payload: false });
 		}
 	};
 
 	const handleAddContent = async () => {
-		if (!formTitle.trim() || !activeLessonId) return;
-		setIsSubmitting(true);
+		if (!state.form.title.trim() || !state.activeLessonId) return;
+		dispatch({ type: "SET_IS_SUBMITTING", payload: true });
 		try {
-			let targetLessonId = activeLessonId;
+			let targetLessonId = state.activeLessonId;
 			if (
 				!targetLessonId.match(
 					/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
 				)
 			) {
-				const lesson = await api.lessons.create({
+				const lesson = await api["lessons"].create({
 					classroom_id: classroomId,
 					title: targetLessonId,
 					content: `Materials for ${targetLessonId}`,
@@ -229,39 +282,39 @@ export default function TeacherClassroomDashboardWeb() {
 				targetLessonId = lesson.id;
 			}
 
-			if (contentType === "material") {
-				await api.lessonMaterials.create({
+			if (state.contentType === "material") {
+				await api["lessonMaterials"].create({
 					classroom_id: classroomId,
 					lesson_id: targetLessonId,
-					title: formTitle,
-					type: formType,
-					url: formType === "pdf" || formType === "link" ? formUrl : undefined,
-					content: formType === "note" ? formDescription : undefined,
+					title: state.form.title,
+					type: state.form.type,
+					url: state.form.type === "pdf" || state.form.type === "link" ? state.form.url : undefined,
+					content: state.form.type === "note" ? state.form.description : undefined,
 					is_pinned: false,
 				});
 			} else {
-				await api.assignments.create({
+				await api["assignments"].create({
 					classroom_id: classroomId,
 					lesson_id: targetLessonId,
-					title: formTitle,
-					description: formDescription,
-					due_date: formDueDate ? new Date(formDueDate) : undefined,
+					title: state.form.title,
+					description: state.form.description,
+					due_date: state.form.dueDate ? new Date(state.form.dueDate) : undefined,
 				});
 			}
 
-			setShowAddContentModal(false);
+			dispatch({ type: "SET_SHOW_ADD_CONTENT_MODAL", payload: false });
 			resetForm();
-			setRefreshTrigger((prev) => prev + 1);
+			dispatch({ type: "INCREMENT_REFRESH_TRIGGER" });
 			await workspace.refreshWorkspace();
 		} catch (error) {
 			console.error("Failed to add lesson content", error);
 		} finally {
-			setIsSubmitting(false);
+			dispatch({ type: "SET_IS_SUBMITTING", payload: false });
 		}
 	};
 
 	const renderFeatureContent = () => {
-		switch (activeFeature) {
+		switch (state.activeFeature) {
 			case "insights":
 				return <ClassroomHolisticInsights classroomId={classroomId} />;
 			case "students":
@@ -292,7 +345,7 @@ export default function TeacherClassroomDashboardWeb() {
 										size="sm"
 										variant="outline"
 										action="secondary"
-										onPress={() => setShowGroupsModal(true)}
+										onPress={() => dispatch({ type: "SET_SHOW_GROUPS_MODAL", payload: true })}
 										className="rounded-full"
 										style={{ borderColor: colors.border }}
 									>
@@ -325,20 +378,20 @@ export default function TeacherClassroomDashboardWeb() {
 					<LessonFeed
 						classroomId={classroomId}
 						isTeacher={can("update", "Lesson") || can("manage", "Classroom")}
-						refreshTrigger={refreshTrigger}
+						refreshTrigger={state.refreshTrigger}
 						onOpenLesson={(id: string) => console.log("Open Lesson", id)}
 						onOpenAssignment={(id: string) =>
 							console.log("Open Assignment", id)
 						}
 						onAddMaterial={(lessonId) => {
-							setActiveLessonId(lessonId);
-							setContentType("material");
-							setShowAddContentModal(true);
+							dispatch({ type: "SET_ACTIVE_LESSON_ID", payload: lessonId });
+							dispatch({ type: "SET_CONTENT_TYPE", payload: "material" });
+							dispatch({ type: "SET_SHOW_ADD_CONTENT_MODAL", payload: true });
 						}}
 						onAddAssignment={(lessonId) => {
-							setActiveLessonId(lessonId);
-							setContentType("assignment");
-							setShowAddContentModal(true);
+							dispatch({ type: "SET_ACTIVE_LESSON_ID", payload: lessonId });
+							dispatch({ type: "SET_CONTENT_TYPE", payload: "assignment" });
+							dispatch({ type: "SET_SHOW_ADD_CONTENT_MODAL", payload: true });
 						}}
 					/>
 				);
@@ -387,6 +440,8 @@ export default function TeacherClassroomDashboardWeb() {
 						students={students}
 					/>
 				);
+			case "legacy":
+				return <ClassroomLegacyTimeline classroomId={classroomId} />;
 			default:
 				return null;
 		}
@@ -445,11 +500,11 @@ export default function TeacherClassroomDashboardWeb() {
 									</HStack>
 								</Pressable>
 								<HStack className="gap-sm items-center">
-									{activeFeature === "lessons" && (
+									{state.activeFeature === "lessons" && (
 										<Button
 											size="sm"
 											action="primary"
-											onPress={() => setShowAddMonthModal(true)}
+											onPress={() => dispatch({ type: "SET_SHOW_ADD_MONTH_MODAL", payload: true })}
 											className="rounded-full"
 											style={{ backgroundColor: Theme.colors.sanctuarySaffron }}
 										>
@@ -542,7 +597,7 @@ export default function TeacherClassroomDashboardWeb() {
 											size="sm"
 											variant="outline"
 											action="secondary"
-											onPress={() => setActiveFeature("students")}
+											onPress={() => dispatch({ type: "SET_ACTIVE_FEATURE", payload: "students" })}
 										>
 											<ButtonText style={{ color: colors.text }}>
 												Roster
@@ -551,7 +606,7 @@ export default function TeacherClassroomDashboardWeb() {
 										<Button
 											size="sm"
 											action="primary"
-											onPress={() => setActiveFeature("attendance")}
+											onPress={() => dispatch({ type: "SET_ACTIVE_FEATURE", payload: "attendance" })}
 											style={{ backgroundColor: Theme.colors.sanctuarySaffron }}
 										>
 											<ButtonText style={{ color: Theme.colors.sacredWhite }}>
@@ -564,12 +619,12 @@ export default function TeacherClassroomDashboardWeb() {
 							<ScrollView horizontal showsHorizontalScrollIndicator={false}>
 								<HStack className="gap-sm px-md py-md">
 									{FEATURES.map((feature) => {
-										const isActive = activeFeature === feature.id;
+										const isActive = state.activeFeature === feature.id;
 										const tone = FEATURE_TONES[feature.id];
 										return (
 											<Pressable
 												key={feature.id}
-												onPress={() => setActiveFeature(feature.id)}
+												onPress={() => dispatch({ type: "SET_ACTIVE_FEATURE", payload: feature.id })}
 											>
 												<Box
 													className="px-md py-sm rounded-full border"
@@ -648,19 +703,17 @@ export default function TeacherClassroomDashboardWeb() {
 											className="font-bold"
 											style={{ color: activeTone.color }}
 										>
-											Active: {activeFeature}
+											Active: {state.activeFeature}
 										</Text>
 									</Box>
 									<VStack className="gap-sm">
-										{(
-											["students", "attendance", "analysis"] as FeatureId[]
-										).map((id) => {
+										{(["students", "attendance", "analysis"] as FeatureId[]).map((id) => {
 											const tone = FEATURE_TONES[id];
-											const isCurrent = activeFeature === id;
+											const isCurrent = state.activeFeature === id;
 											return (
 												<Pressable
 													key={id}
-													onPress={() => setActiveFeature(id)}
+													onPress={() => dispatch({ type: "SET_ACTIVE_FEATURE", payload: id })}
 												>
 													<Box
 														className="rounded-comfortable border p-sm"
@@ -724,14 +777,14 @@ export default function TeacherClassroomDashboardWeb() {
 
 			<TeacherGroupsModal
 				classroomId={classroomId}
-				isOpen={showGroupsModal}
-				onClose={() => setShowGroupsModal(false)}
+				isOpen={state.showGroupsModal}
+				onClose={() => dispatch({ type: "SET_SHOW_GROUPS_MODAL", payload: false })}
 				students={students}
 			/>
 
 			<Modal
-				isOpen={showAddMonthModal}
-				onClose={() => setShowAddMonthModal(false)}
+				isOpen={state.showAddMonthModal}
+				onClose={() => dispatch({ type: "SET_SHOW_ADD_MONTH_MODAL", payload: false })}
 			>
 				<ModalBackdrop />
 				<ModalContent
@@ -755,8 +808,8 @@ export default function TeacherClassroomDashboardWeb() {
 						>
 							<InputField
 								placeholder="September 2026"
-								value={newMonthTitle}
-								onChangeText={setNewMonthTitle}
+								value={state.newMonthTitle}
+								onChangeText={(val) => dispatch({ type: "SET_NEW_MONTH_TITLE", payload: val })}
 								style={{ color: colors.text }}
 							/>
 						</Input>
@@ -766,7 +819,7 @@ export default function TeacherClassroomDashboardWeb() {
 							<Button
 								variant="outline"
 								action="secondary"
-								onPress={() => setShowAddMonthModal(false)}
+								onPress={() => dispatch({ type: "SET_SHOW_ADD_MONTH_MODAL", payload: false })}
 							>
 								<ButtonText style={{ color: colors.textSecondary }}>
 									Cancel
@@ -775,7 +828,7 @@ export default function TeacherClassroomDashboardWeb() {
 							<Button
 								action="primary"
 								onPress={handleAddMonth}
-								isDisabled={!newMonthTitle.trim() || isSubmitting}
+								isDisabled={!state.newMonthTitle.trim() || state.isSubmitting}
 								style={{ backgroundColor: Theme.colors.sanctuarySaffron }}
 							>
 								<ButtonText style={{ color: Theme.colors.sacredWhite }}>
@@ -788,9 +841,9 @@ export default function TeacherClassroomDashboardWeb() {
 			</Modal>
 
 			<Modal
-				isOpen={showAddContentModal}
+				isOpen={state.showAddContentModal}
 				onClose={() => {
-					setShowAddContentModal(false);
+					dispatch({ type: "SET_SHOW_ADD_CONTENT_MODAL", payload: false });
 					resetForm();
 				}}
 			>
@@ -811,12 +864,12 @@ export default function TeacherClassroomDashboardWeb() {
 					</ModalHeader>
 					<ModalBody>
 						<VStack className="gap-md">
-							{contentType === "material" && (
+							{state.contentType === "material" && (
 								<HStack className="gap-sm">
 									{(["note", "link", "pdf"] as const).map((type) => {
-										const isActive = formType === type;
+										const isActive = state.form.type === type;
 										return (
-											<Pressable key={type} onPress={() => setFormType(type)}>
+											<Pressable key={type} onPress={() => dispatch({ type: "UPDATE_FORM", payload: { type } })}>
 												<Box
 													className="px-md py-sm rounded-full border"
 													style={{
@@ -852,12 +905,12 @@ export default function TeacherClassroomDashboardWeb() {
 							>
 								<InputField
 									placeholder="Title"
-									value={formTitle}
-									onChangeText={setFormTitle}
+									value={state.form.title}
+									onChangeText={(title) => dispatch({ type: "UPDATE_FORM", payload: { title } })}
 									style={{ color: colors.text }}
 								/>
 							</Input>
-							{(contentType === "assignment" || formType === "note") && (
+							{(state.contentType === "assignment" || state.form.type === "note") && (
 								<Input
 									className="min-h-[100px]"
 									style={{
@@ -867,15 +920,15 @@ export default function TeacherClassroomDashboardWeb() {
 								>
 									<InputField
 										placeholder="Description"
-										value={formDescription}
-										onChangeText={setFormDescription}
+										value={state.form.description}
+										onChangeText={(description) => dispatch({ type: "UPDATE_FORM", payload: { description } })}
 										style={{ color: colors.text }}
 										multiline
 									/>
 								</Input>
 							)}
-							{contentType === "material" &&
-								(formType === "pdf" || formType === "link") && (
+							{state.contentType === "material" &&
+								(state.form.type === "pdf" || state.form.type === "link") && (
 									<Input
 										style={{
 											backgroundColor: colors.secondary,
@@ -884,13 +937,13 @@ export default function TeacherClassroomDashboardWeb() {
 									>
 										<InputField
 											placeholder="URL"
-											value={formUrl}
-											onChangeText={setFormUrl}
+											value={state.form.url}
+											onChangeText={(url) => dispatch({ type: "UPDATE_FORM", payload: { url } })}
 											style={{ color: colors.text }}
 										/>
 									</Input>
 								)}
-							{contentType === "assignment" && (
+							{state.contentType === "assignment" && (
 								<Input
 									style={{
 										backgroundColor: colors.secondary,
@@ -899,8 +952,8 @@ export default function TeacherClassroomDashboardWeb() {
 								>
 									<InputField
 										placeholder="Due date (YYYY-MM-DD)"
-										value={formDueDate}
-										onChangeText={setFormDueDate}
+										value={state.form.dueDate}
+										onChangeText={(dueDate) => dispatch({ type: "UPDATE_FORM", payload: { dueDate } })}
 										style={{ color: colors.text }}
 									/>
 								</Input>
@@ -913,7 +966,7 @@ export default function TeacherClassroomDashboardWeb() {
 								variant="outline"
 								action="secondary"
 								onPress={() => {
-									setShowAddContentModal(false);
+									dispatch({ type: "SET_SHOW_ADD_CONTENT_MODAL", payload: false });
 									resetForm();
 								}}
 							>
@@ -924,7 +977,7 @@ export default function TeacherClassroomDashboardWeb() {
 							<Button
 								action="primary"
 								onPress={handleAddContent}
-								isDisabled={!formTitle.trim() || isSubmitting}
+								isDisabled={!state.form.title.trim() || state.isSubmitting}
 								style={{ backgroundColor: Theme.colors.sanctuarySaffron }}
 							>
 								<ButtonText style={{ color: Theme.colors.sacredWhite }}>

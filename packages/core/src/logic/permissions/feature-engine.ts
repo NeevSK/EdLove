@@ -56,6 +56,10 @@ export interface FeatureFlags {
 
   // Global Safety Flags (Kill Switches)
   isUnderMaintenance: boolean;
+
+  // Resilience & Infrastructure Flags
+  isPowerSyncEnabled: boolean;
+  isBackgroundSyncEnabled: boolean;
 }
 
 /**
@@ -113,6 +117,8 @@ export const resolveFeatureFlags = (
     isDevelopingAnalyticsDashboard: false,
     isDevelopingVoiceNavigation: false,
     isUnderMaintenance: false,
+    isPowerSyncEnabled: false,
+    isBackgroundSyncEnabled: true,
   };
 
   // 1. Infrastructure Level (Process Env)
@@ -164,7 +170,8 @@ export const resolveFeatureFlags = (
   const isPaidTier = ['pro', 'premium', 'gold', 'silver'].includes(
     context.tier?.toLowerCase() || '',
   );
-  const isAdmin = ['admin', 'founder', 'developer'].includes(context.authority || '');
+  const capacity = context.activeBond?.capacity || null;
+  const isAdmin = ['admin', 'founder', 'developer'].includes(capacity || '');
 
   flags.isProMember = isPaidTier || isAdmin;
 
@@ -214,12 +221,12 @@ export const resolveFeatureFlags = (
   if (context.features.includes('DIRECT_MESSAGING')) flags.isMessagingEnabled = true;
   if (context.features.includes('SOCIAL_SHIELD')) flags.isSocialShieldEnabled = true;
 
-  // 3. Role/Persona Logic
-  if (context.authority === 'student') {
+  // 3. Capacity/Persona Logic
+  if (capacity === 'student') {
     flags.isInventoryEnabled = false; // Strictly enforced override
   }
 
-  if (context.authority === 'developer') {
+  if (capacity === 'developer') {
     flags.isDevelopingAnalyticsDashboard = true;
     flags.isDevelopingVoiceNavigation = true;
     flags.isDevelopingWorkspace = true;
@@ -228,7 +235,7 @@ export const resolveFeatureFlags = (
     flags.isDevelopingWorkforce = true;
   }
 
-  if (context.authority === 'guardian' || context.authority === 'parent') {
+  if (capacity === 'guardian' || capacity === 'parent') {
     flags.isGuardianWorkspaceEnabled = true;
   }
 
@@ -254,6 +261,14 @@ export const resolveFeatureFlags = (
   if (globalConfigs['MAINTENANCE_MODE'] === 'true' || globalConfigs['MAINTENANCE_MODE'] === true) {
     flags.isUnderMaintenance = true;
     // Potentially disable features here
+  }
+
+  if (globalConfigs['ENABLE_POWERSYNC'] === 'true' || globalConfigs['ENABLE_POWERSYNC'] === true) {
+    flags.isPowerSyncEnabled = true;
+  }
+
+  if (globalConfigs['DISABLE_BACKGROUND_SYNC'] === 'true' || globalConfigs['DISABLE_BACKGROUND_SYNC'] === true) {
+    flags.isBackgroundSyncEnabled = false;
   }
 
   // 5. User Specific Override (Flag Injection from Context)

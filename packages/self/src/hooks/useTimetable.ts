@@ -8,8 +8,6 @@ import { useCallback, useEffect, useState } from "react";
 const TIMETABLE_CACHE_KEY = "gurudevi-timetable-cache";
 
 import type { Period } from "../types";
-
-export type { Period };
 export const useTimetable = (activeDay: number) => {
 	const isOnline = useStore((state) => state.isOnline);
 	const [periods, setPeriods] = useState<Period[]>([]);
@@ -26,6 +24,7 @@ export const useTimetable = (activeDay: number) => {
 	}, []);
 	// Initial load from cache or guest storage
 	useEffect(() => {
+		let cancelled = false;
 		const loadCache = async () => {
 			try {
 				if (isAnonymous) {
@@ -42,23 +41,26 @@ export const useTimetable = (activeDay: number) => {
 						start_time: gp.start_time,
 						end_time: gp.end_time,
 					}));
-					setPeriods(mappedPeriods);
+					if (!cancelled) setPeriods(mappedPeriods);
 				} else {
 					// Load from regular cache
 					const cached = await SafeZustandStorage.getItem(
 						`${TIMETABLE_CACHE_KEY}-${activeDay}`,
 					);
 					if (cached) {
-						setPeriods(JSON.parse(cached));
+						if (!cancelled) setPeriods(JSON.parse(cached));
 					}
 				}
 			} catch (e) {
 				console.warn("Failed to load timetable cache", e);
 			} finally {
-				setLoading(false);
+				if (!cancelled) setLoading(false);
 			}
 		};
-		loadCache();
+		void loadCache();
+		return () => {
+			cancelled = true;
+		};
 	}, [activeDay, isAnonymous]);
 	const fetchPeriods = useCallback(async () => {
 		// Skip Supabase fetch for anonymous users - they use local storage only
@@ -93,7 +95,7 @@ export const useTimetable = (activeDay: number) => {
 		}
 	}, [activeDay, isAnonymous, isOnline, periods.length]);
 	useEffect(() => {
-		fetchPeriods();
+		void fetchPeriods();
 	}, [fetchPeriods]);
 	const addPeriod = async (period: Omit<Period, "id" | "user_id">) => {
 		// Optimistic Update

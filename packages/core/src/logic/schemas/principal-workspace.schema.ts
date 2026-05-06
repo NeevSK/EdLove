@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { RoleSchema } from './role.schema';
+import { CapacitySchema } from './capacity.schema';
 
 export const PrincipalInviteRoleSchema = z.enum([
   'teacher',
@@ -22,7 +22,7 @@ export const PrincipalGovernanceEventTypeSchema = z.enum([
 export const InviteCodeSchema = z.object({
   code: z.string().min(1),
   school_id: z.string(),
-  authority: RoleSchema,
+  authority: CapacitySchema,
   created_by: z.string(),
   used: z.boolean(),
   created_at: z.string(),

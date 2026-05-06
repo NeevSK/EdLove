@@ -12,11 +12,10 @@ export function OnboardingWrapper() {
         session?.user?.is_anonymous === true ||
         !session?.user?.email
       }
-      onComplete={(name: string, role: AuthorityTier) => {
+      onComplete={async (name: string, capacity: any) => {
         const store = useStore.getState();
-        if (name) store.setTeacherName(name);
-        if (role) store.setUserRole(role);
-        store.setOnboardingCompleted(true);
+        // Refresh the user profile to pick up the new Bond and onboarding status
+        await (store as any).fetchUser();
       }}
     />
   );

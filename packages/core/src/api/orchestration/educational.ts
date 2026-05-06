@@ -60,6 +60,11 @@ const studentsCoverage = assertContractCoverage(
       remove: 'removeClassroomStudent',
       create: 'add',
       update: 'updateById',
+      getHistoricalAcademicRecords: 'getHistoricalAcademicRecords',
+      getHistoricalProfessionalRecords: 'getHistoricalProfessionalRecords',
+      getHistoricalGovernanceRecords: 'getHistoricalGovernanceRecords',
+      getSchoolLegacyHistory: 'getSchoolLegacyHistory',
+      getClassroomLegacyHistory: 'getClassroomLegacyHistory',
     },
   }),
 );

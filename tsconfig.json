@@ -6,7 +6,10 @@
 		{ "path": "./packages/graphics" },
 		{ "path": "./packages/admin" },
 		{ "path": "./packages/classroom" },
-		{ "path": "./packages/core" }
+		{ "path": "./packages/core" },
+		{ "path": "./packages/schema" },
+		{ "path": "./packages/database" },
+		{ "path": "./packages/self" }
 	],
 	"compilerOptions": {
 		"baseUrl": ".",
@@ -17,7 +20,10 @@
 			"@repo/graphics": ["./packages/graphics/src"],
 			"@repo/admin": ["./packages/admin/src"],
 			"@repo/classroom": ["./packages/classroom/src"],
-			"@repo/core": ["./packages/core/src"]
+			"@repo/core": ["./packages/core/src"],
+			"@repo/schema": ["./packages/schema/src"],
+			"@repo/database": ["./packages/database/src"],
+			"@repo/self": ["./packages/self/src"]
 		}
 	}
 }

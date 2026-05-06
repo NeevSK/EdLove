@@ -45,7 +45,7 @@ export default function PrivacyLedgerScreen() {
 				setLoading(false);
 			}
 		}
-		loadLedger();
+		void loadLedger();
 	}, []);
 
 	const renderEntry = ({
@@ -55,11 +55,6 @@ export default function PrivacyLedgerScreen() {
 		item: PrivacyLedgerEntry;
 		index: number;
 	}) => {
-		const _date = new Date(item.created_at).toLocaleDateString(undefined, {
-			month: "short",
-			day: "numeric",
-			year: "numeric",
-		});
 		const time = new Date(item.created_at).toLocaleTimeString([], {
 			hour: "2-digit",
 			minute: "2-digit",
@@ -132,7 +127,7 @@ export default function PrivacyLedgerScreen() {
 						</Heading>
 					</HStack>
 					<Text className="text-mistGray/60 text-sm leading-relaxed px-1">
-						Every time your data is accessed or security settings change, it's
+					Every time your data is accessed or security settings change, it&apos;s
 						recorded here for your peace of mind.
 					</Text>
 				</VStack>

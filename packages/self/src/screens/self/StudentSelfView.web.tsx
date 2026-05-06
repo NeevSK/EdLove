@@ -1,4 +1,4 @@
-﻿import {
+import {
 	useJourneyHistory,
 	useNaturePaths,
 	useStudentGoals,
@@ -54,7 +54,7 @@ export default function StudentSelfView() {
 				events={journeyEvents}
 				summary={holisticView.summary}
 				loading={journeyLoading}
-				scale={viewScale as any}
+				scale={viewScale === "custom" ? "day" : viewScale}
 			/>
 			<TemporalShield label="JOURNAL HISTORY">
 				<JournalSection entries={journalEntries} loading={loadingJournals} />
@@ -140,3 +140,4 @@ export default function StudentSelfView() {
 		</TemporalProvider>
 	);
 }
+

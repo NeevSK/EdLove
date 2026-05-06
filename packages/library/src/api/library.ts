@@ -11,7 +11,6 @@ import {
 import {
 	applyTemporalFilter,
 	composeUserAbilities,
-	type Role,
 } from "@repo/core/logic";
 
 import { APIError } from "@repo/core/types";
@@ -33,6 +32,44 @@ import { knowledgeDB } from "./database";
 // ============================================================================
 const capitalize = (s: string) =>
 	s ? s.charAt(0).toUpperCase() + s.slice(1) : "";
+type LibraryAbilityCapacity =
+	| "admin"
+	| "founder"
+	| "developer"
+	| "teacher"
+	| "student"
+	| "principal"
+	| "assistantPrincipal"
+	| "gradeHead"
+	| "parent"
+	| "guardian"
+	| "librarian"
+	| "nurse"
+	| "staff"
+	| "member";
+
+const toLibraryBondCapacity = (role: string): LibraryAbilityCapacity => {
+	switch (role) {
+		case "student":
+		case "teacher":
+		case "gradeHead":
+		case "principal":
+		case "assistantPrincipal":
+		case "admin":
+		case "developer":
+		case "founder":
+		case "librarian":
+		case "nurse":
+		case "staff":
+		case "member":
+			return role;
+		case "parent":
+		case "guardian":
+			return "guardian";
+		default:
+			return "member";
+	}
+};
 const getTemporalAsOf = (viewDate?: string): string | undefined => {
 	if (!viewDate) return undefined;
 	return new Date(`${viewDate}T23:59:59.999Z`).toISOString();
@@ -305,10 +342,20 @@ const rawLibraryAPI = {
 					uses_count: 0,
 					endorsements: 0,
 					bookmarks: 0,
-					verified: composeUserAbilities({ roles: [creatorRole as Role] }).can(
-						"verify",
-						"Library",
-					), // Auto-verify for staff
+					verified: composeUserAbilities({
+						schoolId: creatorId,
+						isAnonymous: false,
+						bonds: [
+							{
+								id: `library:${creatorId}:${creatorRole}`,
+								userId: creatorId,
+								entityId: creatorId,
+								entityType: "SCHOOL",
+								capacity: toLibraryBondCapacity(creatorRole),
+								status: "active",
+							},
+						],
+					}).can("verify", "Library"), // Auto-verify for staff
 				},
 			])
 			.select(`

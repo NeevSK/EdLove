@@ -81,7 +81,6 @@ export default function TeacherDashboard({
 	} = useTeacherWorkspaceShell(nav as any, onRefresh);
 
 	const dashboardSurfaces = useTeacherDashboardSurfaces({
-		colors,
 		isDemoMode,
 		isGuest,
 		isPastView,

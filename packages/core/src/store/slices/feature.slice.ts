@@ -1,4 +1,4 @@
-﻿import type { StateCreator } from 'zustand';
+import type { StateCreator } from 'zustand';
 import { type FeatureFlags, resolveFeatureFlags } from '../../logic/permissions/feature-engine';
 import type { UserContext } from '../../logic/schemas/user.schema';
 
@@ -23,8 +23,11 @@ export const createFeatureSlice: StateCreator<FeatureSlice> = (set, get) => ({
   flags: resolveFeatureFlags({
     userId: null,
     email: null,
-    roles: [],
-    authority: null,
+    // Sovereign ReBAC fields — required by UserContext schema
+    bonds: [],
+    primaryCapacity: null,
+    activeBond: null,
+    activeBondStatus: 'active',
     schoolId: null,
     tenancyName: null,
     tenancy: null,

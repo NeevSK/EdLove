@@ -302,7 +302,7 @@ export default function AIAssistantScreen() {
 							border: "1px solid var(--border-light)",
 						}}
 					>
-						{context.roles[0] ?? "member"}
+						{context.activeBond?.capacity ?? context.primaryCapacity ?? "member"}
 					</div>
 				</div>
 

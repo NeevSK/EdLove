@@ -3,9 +3,9 @@
  */
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { authAPI } from '@repo/core/auth';
-import { identityAPI } from '@repo/core/identity';
-import type { AuthorityTier } from '@repo/core/logic';
+import { authAPI, identityAPI, schoolAPI } from '@repo/core/api';
+import { getOnboardingState, type OnboardingState as DomainOnboardingState, type Capacity, identity } from '@repo/core/logic';
+import type { Bond } from '@repo/core/types';
 import { supabase } from '@repo/core/supabase';
 import React, { useCallback, useEffect, useMemo, useReducer, memo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -31,7 +31,7 @@ const PILLARS = [
   { name: 'Profile', emoji: '👤' },
 ];
 
-const ROLES = [
+const CAPACITY_OPTIONS = [
   { value: 'teacher', emoji: '🧑‍🏫', descKey: 'onboarding.roleDesc.teacher' },
   { value: 'student', emoji: '🎓', descKey: 'onboarding.roleDesc.student' },
   { value: 'principal', emoji: '🏫', descKey: 'onboarding.roleDesc.principal' },
@@ -49,10 +49,12 @@ const TRACKED_STEPS = [
 // TYPES & REDUCER
 // ──────────────────────────────────────────────────────────
 
-interface OnboardingState {
+interface OnboardingUIState {
+  domainState: DomainOnboardingState;
   currentStep: number;
   name: string;
-  authority: AuthorityTier;
+  activeBond: Bond | null;
+  selectedCapacity: Capacity;
   isCompleting: boolean;
   completionError: string | null;
 }
@@ -60,31 +62,63 @@ interface OnboardingState {
 type OnboardingAction =
   | { type: 'SET_STEP'; step: number }
   | { type: 'SET_NAME'; name: string }
-  | { type: 'SET_AUTHORITY'; authority: AuthorityTier }
+  | { type: 'SET_CAPACITY'; capacity: Capacity }
   | { type: 'SET_COMPLETING'; isCompleting: boolean }
   | { type: 'SET_ERROR'; error: string | null }
   | { type: 'NEXT_STEP' }
   | { type: 'PREV_STEP' }
-  | { type: 'RESTORE_PROGRESS'; progress: Partial<OnboardingState> };
+  | { type: 'RESTORE_PROGRESS'; progress: Partial<OnboardingUIState> };
 
-function onboardingReducer(state: OnboardingState, action: OnboardingAction): OnboardingState {
+function onboardingReducer(state: OnboardingUIState, action: OnboardingAction): OnboardingUIState {
   switch (action.type) {
-    case 'SET_STEP':
-      return { ...state, currentStep: action.step };
-    case 'SET_NAME':
-      return { ...state, name: action.name };
-    case 'SET_AUTHORITY':
-      return { ...state, authority: action.authority };
-    case 'SET_COMPLETING':
-      return { ...state, isCompleting: action.isCompleting };
+    case 'SET_STEP': {
+      const newState = { ...state, currentStep: action.step };
+      newState.domainState = getOnboardingState({
+        full_name: newState.name,
+        onboarding_completed: newState.isCompleting,
+      }, newState.activeBond);
+      return newState;
+    }
+    case 'SET_NAME': {
+      const newState = { ...state, name: action.name };
+      newState.domainState = getOnboardingState({
+        full_name: newState.name,
+        onboarding_completed: newState.isCompleting,
+      }, newState.activeBond);
+      return newState;
+    }
+    case 'SET_CAPACITY': {
+      const newState = { ...state, selectedCapacity: action.capacity };
+      newState.domainState = getOnboardingState({
+        full_name: newState.name,
+        onboarding_completed: newState.isCompleting,
+      }, newState.activeBond);
+      return newState;
+    }
+    case 'SET_COMPLETING': {
+      const newState = { ...state, isCompleting: action.isCompleting };
+      newState.domainState = getOnboardingState({
+        full_name: newState.name,
+        onboarding_completed: newState.isCompleting,
+      }, newState.activeBond);
+      return newState;
+    }
     case 'SET_ERROR':
       return { ...state, completionError: action.error };
     case 'NEXT_STEP':
       return { ...state, currentStep: Math.min(6, state.currentStep + 1) };
     case 'PREV_STEP':
       return { ...state, currentStep: Math.max(0, state.currentStep - 1) };
-    case 'RESTORE_PROGRESS':
-      return { ...state, ...action.progress };
+    case 'RESTORE_PROGRESS': {
+      const combined = { ...state, ...action.progress };
+      return {
+        ...combined,
+        domainState: getOnboardingState({
+          full_name: combined.name,
+          onboarding_completed: combined.isCompleting,
+        }, combined.activeBond),
+      };
+    }
     default:
       return state;
   }
@@ -164,21 +198,21 @@ const NameStep = memo(({
   </div>
 ));
 
-const RoleStep = memo(({
+const IdentityStep = memo(({
   t,
-  authority,
+  capacity,
   isCompleting,
   isAnonymous,
-  onAuthoritySelect,
+  onCapacitySelect,
   onBack,
   onNext,
   error
 }: {
   t: any;
-  authority: AuthorityTier;
+  capacity: Capacity;
   isCompleting: boolean;
   isAnonymous: boolean;
-  onAuthoritySelect: (val: AuthorityTier) => void;
+  onCapacitySelect: (val: Capacity) => void;
   onBack: () => void;
   onNext: () => void;
   error: string | null;
@@ -192,14 +226,14 @@ const RoleStep = memo(({
     <p className="ob-step-subtitle">{t('onboarding.roleSubtitle')}</p>
     <ErrorBanner error={error} />
     <div className="ob-role-grid">
-      {ROLES.map((r) => (
+      {CAPACITY_OPTIONS.map((r) => (
         <button
           key={r.value}
-          className={`ob-role-card ${authority === r.value ? 'selected' : ''}`}
-          onClick={() => onAuthoritySelect(r.value as AuthorityTier)}
+          className={`ob-role-card ${capacity === r.value ? 'selected' : ''}`}
+          onClick={() => onCapacitySelect(r.value as Capacity)}
         >
           <span className="ob-role-emoji">{r.emoji}</span>
-          <span className="ob-role-name">{t(`authority.${r.value}`)}</span>
+          <span className="ob-role-name">{t(`identity.${r.value}`)}</span>
           <span className="ob-role-desc">{t(r.descKey)}</span>
         </button>
       ))}
@@ -215,7 +249,7 @@ const RoleStep = memo(({
       >
         {isCompleting
           ? t('onboarding.saving')
-          : !isAnonymous && authority
+          : !isAnonymous && capacity
             ? t('onboarding.complete')
             : t('onboarding.continue')}{' '}
         →
@@ -290,7 +324,7 @@ const Tracker = memo(({ currentStep }: { currentStep: number }) => (
 // ──────────────────────────────────────────────────────────
 
 interface OnboardingScreenProps {
-  onComplete: (name: string, authority: AuthorityTier, wantsAccount?: boolean) => void;
+  onComplete: (name: string, capacity: Capacity, isAnonymous?: boolean) => void;
   isAnonymous?: boolean;
 }
 
@@ -302,14 +336,16 @@ export default memo(function OnboardingScreenWeb({
   const { width } = useWindowDimensions();
 
   const [state, dispatch] = useReducer(onboardingReducer, {
+    domainState: 'ARRIVAL',
     currentStep: 0,
     name: '',
-    authority: 'teacher',
+    activeBond: null,
+    selectedCapacity: 'teacher' as Capacity,
     isCompleting: false,
     completionError: null,
   });
 
-  const { currentStep, name, authority, isCompleting, completionError } = state;
+  const { domainState, currentStep, name, activeBond, selectedCapacity, isCompleting, completionError } = state;
   const isNarrow = width < 900;
 
   // ── Restore saved progress or pre-fill from existing auth ────────────────────
@@ -326,7 +362,7 @@ export default memo(function OnboardingScreenWeb({
                 type: 'RESTORE_PROGRESS',
                 progress: {
                   name: progress.name || '',
-                  authority: (progress.role as AuthorityTier) || 'teacher',
+                  selectedCapacity: (progress.selectedCapacity as Capacity) || 'teacher',
                   currentStep:
                     typeof progress.step === 'number' && progress.step >= 0 && progress.step < 7
                       ? progress.step
@@ -345,24 +381,24 @@ export default memo(function OnboardingScreenWeb({
           await authAPI.signInAnonymously();
           return initOnboarding();
         }
-        const { data: profile } = await supabase
-          .from('users')
-          .select('full_name, is_anonymous, authority:role')
-          .eq('id', internalId)
-          .maybeSingle();
+        
+        // USE NEW DOMAIN STATE API
+        const { state: initialDomainState, profile } = await identityAPI.getOnboardingStatus(internalId);
+        const activePerspective = await identity.getActivePerspective();
 
         if (!profile) return;
 
-        const PLACEHOLDER_NAMES = ['Guest User', 'Gurudevi User', 'Sanctuary User'];
-        if (
-          !profile.is_anonymous &&
-          profile.full_name &&
-          !PLACEHOLDER_NAMES.includes(profile.full_name)
-        ) {
+        // If already onboarded in DB, just finish locally
+        if (initialDomainState === 'COMPLETED') {
+          console.log('✅ Onboarding: Profile already marked as completed in DB, finalizing...');
+          const capacity = (activePerspective?.activeBond.capacity as Capacity) || 'teacher';
+          dispatch({ type: 'SET_NAME', name: profile.full_name || '' });
+          onComplete(profile.full_name || '', capacity, false);
+          return;
+        }
+
+        if (!profile.is_anonymous && profile.full_name) {
           dispatch({ type: 'SET_NAME', name: profile.full_name });
-          if (profile.authority) {
-            dispatch({ type: 'SET_AUTHORITY', authority: profile.authority as AuthorityTier });
-          }
           dispatch({ type: 'SET_STEP', step: 1 });
         }
       } catch (error) {
@@ -415,47 +451,25 @@ export default memo(function OnboardingScreenWeb({
       const internalId = await identityAPI.getMyInternalId();
       if (!internalId) throw new Error('Failed to resolve internal user ID');
 
-      const { data: existingProfile } = await supabase
-        .from('users')
-        .select('school_id, onboarding_completed')
-        .eq('id', internalId)
-        .maybeSingle();
+      // Check for existing profile
+      const existingProfile = await identityAPI.getProfile(internalId);
 
+      // 1. Create a default school (Personal Workspace) only if they don't have one
       let schoolId = existingProfile?.school_id;
       if (!schoolId) {
-        const schoolName = `${name || 'My'}'s Workspace`;
-        const { data: schoolData, error: schoolError } = await supabase
-          .from('schools')
-          .insert({
-            name: schoolName,
-            type: 'personal_workspace',
-            created_by: internalId,
-          })
-          .select()
-          .single();
-
-        if (schoolError) {
-          console.warn('⚠️ [Onboarding] Workspace creation failed:', schoolError.message);
-        } else {
-          schoolId = schoolData?.id;
-        }
+        schoolId = await schoolAPI.initializePersonalWorkspace(internalId, name || 'My');
       }
 
-      const { error: profileError } = await supabase.from('users').upsert({
-        id: internalId,
-        full_name: name || 'Gurudevi User',
-        role: authority,
-        school_id: schoolId,
-        onboarding_completed: true,
-        onboarding_completed_at: new Date().toISOString(),
-        is_anonymous: isAnonymous,
+      // 2. Create the initial Bond (ReBAC)
+      const { identity } = await import('@repo/core/logic');
+      await identity.createInitialBond(selectedCapacity, {
+        fullName: name,
+        schoolId,
       });
-
-      if (profileError) throw profileError;
 
       await AsyncStorage.removeItem('onboarding_progress');
       hapticSuccess();
-      onComplete(name, authority, false);
+      onComplete(name, selectedCapacity, false);
     } catch (error: any) {
       console.error('❌ Error completing onboarding:', error);
       hapticError();
@@ -465,7 +479,7 @@ export default memo(function OnboardingScreenWeb({
         error: error?.message || 'Failed to save your profile. Please try again.',
       });
     }
-  }, [name, authority, isAnonymous, onComplete]);
+  }, [name, selectedCapacity, isAnonymous, onComplete]);
 
   const handleNext = useCallback(() => {
     if (currentStep === 6) {
@@ -487,8 +501,8 @@ export default memo(function OnboardingScreenWeb({
   }, [handleCompleteOnboarding]);
 
   const handleNameChange = useCallback((val: string) => dispatch({ type: 'SET_NAME', name: val }), []);
-  const handleAuthoritySelect = useCallback((val: AuthorityTier) => {
-    dispatch({ type: 'SET_AUTHORITY', authority: val });
+  const handleCapacitySelect = useCallback((val: Capacity) => {
+    dispatch({ type: 'SET_CAPACITY', capacity: val });
     hapticLight();
   }, []);
   const handleLanguageChange = useCallback((code: string) => {
@@ -499,18 +513,18 @@ export default memo(function OnboardingScreenWeb({
   // Save progress whenever step/name/role changes
   useEffect(() => {
     if (currentStep === 0 && !name) return;
-    identityAPI.getMyInternalId().then((userId) => {
+    identity.getMyInternalId().then((userId) => {
       AsyncStorage.setItem(
         'onboarding_progress',
         JSON.stringify({
           userId,
           step: currentStep,
           name,
-          authority,
+          capacity: selectedCapacity,
         }),
       ).catch(() => {});
     });
-  }, [currentStep, name, authority]);
+  }, [currentStep, name, selectedCapacity]);
 
   const currentTourScreen = useMemo(() => {
     if (currentStep < 2 || currentStep > 6) return null;
@@ -518,7 +532,7 @@ export default memo(function OnboardingScreenWeb({
   }, [currentStep, tourScreens]);
 
   const renderCurrentStep = useCallback(() => {
-    if (currentStep === 0) {
+    if (domainState === 'ARRIVAL') {
       return (
         <NameStep 
           t={t} 
@@ -529,27 +543,27 @@ export default memo(function OnboardingScreenWeb({
         />
       );
     }
-    if (currentStep === 1) {
+    if (domainState === 'IDENTITY_SELECTION') {
       return (
-        <RoleStep 
+        <IdentityStep 
           t={t} 
-          authority={authority} 
+          capacity={selectedCapacity} 
           isCompleting={isCompleting} 
           isAnonymous={isAnonymous} 
-          onAuthoritySelect={handleAuthoritySelect} 
+          onCapacitySelect={handleCapacitySelect} 
           onBack={handleBack} 
-          onNext={handleNext === handleNext ? (async () => {
-            if (!isAnonymous && authority) {
+          onNext={async () => {
+            if (!isAnonymous && selectedCapacity) {
               handleCompleteOnboarding();
             } else {
               handleNext();
             }
-          }) : handleNext} 
+          }} 
           error={completionError} 
         />
       );
     }
-    if (currentStep >= 2 && currentStep <= 6 && currentTourScreen) {
+    if (domainState === 'SANCTUARY_INIT' && currentTourScreen) {
       return (
         <TourStep 
           t={t} 
@@ -564,7 +578,7 @@ export default memo(function OnboardingScreenWeb({
       );
     }
     return null;
-  }, [currentStep, t, name, handleNameChange, handleNext, completionError, authority, isCompleting, isAnonymous, handleAuthoritySelect, handleBack, handleCompleteOnboarding, currentTourScreen, handleSkipTour]);
+  }, [domainState, t, name, handleNameChange, handleNext, completionError, selectedCapacity, isCompleting, isAnonymous, handleCapacitySelect, handleBack, handleCompleteOnboarding, currentStep, currentTourScreen, handleSkipTour]);
 
   return (
     <div className="ob-root">

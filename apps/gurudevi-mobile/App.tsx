@@ -128,7 +128,6 @@ const RootStack = createNativeStackNavigator();
  */
 interface UserProfile {
 	id: string;
-	role: string | null;
 	school_id: string | null;
 	onboarding_completed: boolean;
 	full_name: string | null;
@@ -147,7 +146,7 @@ const fetchAndSetUserProfile = async (
 		const { data, error } = await supabase
 			.from("users")
 			.select(
-				"id, role, school_id, onboarding_completed, full_name, email, avatar_url, is_anonymous, profile_completed",
+				"id, school_id, onboarding_completed, full_name, email, avatar_url, is_anonymous, profile_completed",
 			)
 			.eq("id", internalUserId)
 			.maybeSingle();
@@ -162,17 +161,10 @@ const fetchAndSetUserProfile = async (
 
 		if (userProfile) {
 			const store = useStore.getState();
-			const normalizedRole = (
-				userProfile.role === "guest" ? null : userProfile.role
-			) as AuthorityTier | null;
-
-			if (normalizedRole || !store.onboardingCompleted) {
-				store.setUser({ ...userProfile, role: normalizedRole } as any);
-				store.setUserRole(normalizedRole);
-			}
+			store.setUser(userProfile as any);
 
 			const isEffectivelyOnboarded =
-				!!userProfile.onboarding_completed && !!normalizedRole;
+				!!userProfile.onboarding_completed;
 
 			if (isEffectivelyOnboarded) {
 				if (!store.onboardingCompleted) {
@@ -231,8 +223,9 @@ function App() {
 		coreRuntime.register(nativeRuntimeEnvironment);
 
 		initSentry();
-		initPostHog(process.env.EXPO_PUBLIC_POSTHOG_API_KEY!, {
-			host: process.env.EXPO_PUBLIC_POSTHOG_HOST || "https://eu.i.posthog.com",
+		initPostHog(process.env["EXPO_PUBLIC_POSTHOG_API_KEY"]!, {
+			host:
+				process.env["EXPO_PUBLIC_POSTHOG_HOST"] || "https://eu.i.posthog.com",
 		}).then(() => {
 			trackEvent("app_initialized", { platform: Platform.OS });
 		});
@@ -257,14 +250,13 @@ function App() {
 		identifyUser(currentUser.id, {
 			email: currentUser.email ?? undefined,
 			full_name: currentUser.full_name ?? undefined,
-			role: currentUser.authority ?? undefined,
+			capacity: (useStore.getState() as any).activeBond?.capacity ?? undefined,
 			school_id: currentUser.school_id ?? undefined,
 		});
 	}, [
 		currentUser?.id,
 		currentUser?.email,
 		currentUser?.full_name,
-		currentUser?.authority,
 		currentUser?.school_id,
 	]);
 
@@ -353,7 +345,6 @@ function App() {
 				identityAPI.clearCache();
 				const store = useStore.getState();
 				store.setUser(null);
-				store.setUserRole(null);
 				store.setSchoolType(null);
 				store.setOnboardingCompleted(false);
 			}
@@ -461,8 +452,8 @@ function OnboardingWrapper({ session }: { session: Session | null }) {
 			}
 			onComplete={(name: string, role: AuthorityTier | null) => {
 				const store = useStore.getState();
-				if (name) store.setTeacherName(name);
-				if (role) store.setUserRole(role);
+				if (name) store.setUser({ ...(store.user as any), full_name: name });
+				// Role/capacity selection is handled via Bonds/perspective switching now.
 				store.setOnboardingCompleted(true);
 				identityAPI.getMyInternalId().then((internalId) => {
 					if (internalId) fetchAndSetUserProfile(internalId);

@@ -7,8 +7,8 @@
  */
 
 import { supabase } from "@repo/core/api";
-import { useStore, useSafeMutation } from "@repo/core/hooks";
-import type { ChatMessage } from "@repo/core/types";
+import { useSafeMutation } from "@repo/core/hooks";
+import { useStore } from "@repo/core/store";
 import GlobalHeader from "@repo/ui/components/GlobalHeader";
 import ScreenWrapper from "@repo/ui/components/ScreenWrapper";
 import { UserAvatar } from "@repo/ui/components/UserAvatar";
@@ -29,6 +29,7 @@ import { useCallback, useEffect, useRef, useState, useOptimistic, useTransition 
 import { useTranslation } from "react-i18next";
 import { FlatList } from "react-native";
 import { FadeInDown } from "react-native-reanimated";
+import type { ChatMessage } from "../types";
 
 export interface SubscriptionConfig {
 	/** Supabase table name to listen on (e.g. 'group_messages') */
@@ -124,7 +125,7 @@ export default function BaseChatScreen({
 					filter: subscription.filter,
 				},
 				async (payload) => {
-					const msg = await subscription.fetchById(payload.new['id']);
+					const msg = await subscription.fetchById(payload.new["id"]);
 					if (!msg) return;
 					setMessages((prev) => {
 						if (prev.some((m) => m.id === msg.id)) return prev;
@@ -161,10 +162,10 @@ export default function BaseChatScreen({
 				id: `opt-${Date.now()}`,
 				author_id: user.id,
 				content,
-				created_at: new Date().toISOString(),
+				created_at: new Date(),
 				author: {
 					full_name: user.full_name || "You",
-					avatar_url: user.avatar_url,
+					avatar_url: user.avatar_url ?? undefined,
 				},
 			};
 
@@ -319,7 +320,7 @@ export default function BaseChatScreen({
 							</Box>
 							<Pressable
 								onPress={handleSend}
-								disabled={!draft.trim() || sending}
+								disabled={!draft.trim() || isPending}
 								accessibilityRole="button"
 								accessibilityLabel="Send message"
 								className={`w-12 h-12 rounded-full items-center justify-center shadow-lg transition-all ${
@@ -328,7 +329,7 @@ export default function BaseChatScreen({
 										: "bg-ink/5"
 								}`}
 							>
-								{sending ? (
+								{isPending ? (
 									<Spinner />
 								) : (
 									<Icon

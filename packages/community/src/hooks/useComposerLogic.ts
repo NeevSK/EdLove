@@ -18,6 +18,9 @@ interface PollData {
 
 export function useComposerLogic(groupId: string, onClose: () => void) {
 	const [state, dispatch] = useReducer(composerReducer, initialComposerState);
+	const { context } = usePermissions();
+	const userCapacity =
+		context.activeBond?.capacity ?? context.primaryCapacity ?? "guest";
 
 	const pickImage = useCallback(async () => {
 		const result = await ImagePicker.launchImageLibraryAsync({
@@ -30,8 +33,6 @@ export function useComposerLogic(groupId: string, onClose: () => void) {
 			dispatch({ type: "SET_IMAGE", payload: result.assets[0].uri });
 		}
 	}, []);
-
-	const { context } = usePermissions();
 
 	const handleSubmit = useCallback(async () => {
 		if (!state.content.trim() && !state.selectedImage) return;
@@ -90,7 +91,7 @@ export function useComposerLogic(groupId: string, onClose: () => void) {
 							: undefined,
 				},
 				myId,
-				(context.authority as any) || "guest",
+				userCapacity,
 				context.schoolId || "",
 			);
 
@@ -102,7 +103,7 @@ export function useComposerLogic(groupId: string, onClose: () => void) {
 		} finally {
 			dispatch({ type: "SET_SUBMITTING", payload: false });
 		}
-	}, [state, groupId, onClose, context.schoolId, context.authority]);
+	}, [state, groupId, onClose, context.schoolId, userCapacity]);
 
 	return {
 		state,

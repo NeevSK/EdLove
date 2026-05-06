@@ -69,7 +69,7 @@ export default function InventoryView({ classroomId }: InventoryViewProps) {
 	const [requestReason, setRequestReason] = useState("");
 	const reportMutation = useSafeMutation(
 		async (variables: { id: string; condition: InventoryCondition }) => {
-			return api.inventory.update(variables.id, {
+			return api["inventory"].update(variables.id, {
 				condition: variables.condition,
 			});
 		},
@@ -94,7 +94,7 @@ export default function InventoryView({ classroomId }: InventoryViewProps) {
 			quantity: string;
 			reason: string;
 		}) => {
-			return (api.inventory as any).createRequest({
+			return (api["inventory"] as any).createRequest({
 				classroom_id: classroomId,
 				school_id: user?.school_id || "",
 				teacher_id: user?.id || "",

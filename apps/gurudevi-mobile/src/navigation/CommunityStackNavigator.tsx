@@ -52,7 +52,7 @@ export default function CommunityStackNavigator() {
 			/>
 			<Stack.Screen
 				name="Announcements"
-				component={AnnouncementsScreen}
+				component={AnnouncementsScreen as any}
 				options={{ headerShown: false, animation: "slide_from_right" }}
 			/>
 		</Stack.Navigator>

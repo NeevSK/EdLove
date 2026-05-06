@@ -132,9 +132,9 @@ export default function LessonFeed({
 		setError(null);
 		try {
 			const [lessons, materials, assignments] = await Promise.all([
-				api.lessons.getAll(classroomId),
-				api.lessonMaterials.getAll(classroomId),
-				api.assignments.getAll(classroomId),
+				api["lessons"].getAll(classroomId),
+				api["lessonMaterials"].getAll(classroomId),
+				api["assignments"].getAll(classroomId),
 			]);
 
 			const now = new Date();
@@ -156,18 +156,20 @@ export default function LessonFeed({
 
 			const calendarGroups: MonthlyGroup[] = monthNames.map((name) => {
 				const monthTitle = `${name} ${year}`;
-				const existingLesson = lessons.find((l) => l.title === monthTitle);
+				const existingLesson = lessons.find(
+					(l: Lesson) => l.title === monthTitle,
+				);
 
 				return {
 					monthTitle,
 					lessonId: existingLesson?.id,
 					materials: materials.filter(
-						(m) => m.lesson_id === existingLesson?.id,
+						(m: LessonMaterial) => m.lesson_id === existingLesson?.id,
 					),
 					assignments: assignments.filter(
-						(a) => a.lesson_id === existingLesson?.id,
+						(a: Assignment) => a.lesson_id === existingLesson?.id,
 					),
-					lessons: lessons.filter((l) => l.title === monthTitle),
+					lessons: lessons.filter((l: Lesson) => l.title === monthTitle),
 				};
 			}) as MonthlyGroup[];
 

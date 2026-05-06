@@ -112,7 +112,7 @@ export default function AttendanceSheet({
 
 	const { mutate: recordAttendance, isLoading: isSyncing } = useSafeMutation(
 		({ studentId, status }: { studentId: string; status: AttendanceStatus }) =>
-			api.attendance.record(classroomId, studentId, status, date),
+			api["attendance"].record(classroomId, studentId, status, date),
 		{
 			mutationKey: "recordAttendance",
 			scope: "attendance",
@@ -281,13 +281,13 @@ export default function AttendanceSheet({
 								</Text>
 							</Box>
 						) : (
-							<SanctuaryFlashList
-								data={filteredStudents}
-								renderItem={renderStudentRow}
-								keyExtractor={(item: any) => item.id}
-								showsVerticalScrollIndicator={false}
-								contentContainerStyle={{ paddingBottom: 20 }}
-							/>
+				<SanctuaryFlashList
+					data={filteredStudents}
+					renderItem={renderStudentRow}
+					keyExtractor={(item: StudentAttendance) => item.id}
+					showsVerticalScrollIndicator={false}
+					contentContainerStyle={{ paddingBottom: 20 }}
+				/>
 						)}
 					</Box>
 

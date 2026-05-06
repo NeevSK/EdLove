@@ -1,8 +1,10 @@
 {
+  "extends": "../../packages/typescript-config/base.json",
 	"compilerOptions": {
 		"target": "ESNext",
 		"module": "ESNext",
 		"moduleResolution": "node",
+		"types": ["node"],
 		"baseUrl": ".",
 		"paths": {
 			"@repo/core": ["../core/src"],

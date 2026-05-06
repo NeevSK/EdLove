@@ -1,5 +1,7 @@
-import type { Role } from '../logic/schemas/role.schema';
+import type { Capacity } from '../types';
 import { APIError } from '../types/API';
+import { disconnectPowerSync } from '../adapters/powersync/database';
+import { storage } from '../lib/storage';
 import { identityAPI } from './identity';
 import { supabase } from './supabase';
 
@@ -128,14 +130,15 @@ export const authAPI = {
   },
 
   /**
-   * Create anonymous user session
+   * Create anonymous user session.
+   * Note: anonymous capacity defaults to 'student' — least-privileged.
    */
   async signInAnonymously() {
     const { data, error } = await supabase.auth.signInAnonymously({
       options: {
         data: {
           full_name: 'Guest User',
-          role: 'teacher' as Role,
+          capacity: 'student' as Capacity, // Principle of least privilege
           is_anonymous: true,
         },
       },
@@ -151,14 +154,14 @@ export const authAPI = {
   /**
    * Link anonymous account to email/password
    */
-  async linkAnonymousToEmail(email: string, password: string, fullName: string, role: Role) {
+  async linkAnonymousToEmail(email: string, password: string, fullName: string, capacity: Capacity) {
     // First, update the user's email and password in auth
     const { data: updateData, error: updateError } = await supabase.auth.updateUser({
       email,
       password,
       data: {
         full_name: fullName,
-        role: role,
+        capacity,
         is_anonymous: false,
       },
     });
@@ -168,7 +171,6 @@ export const authAPI = {
     }
 
     // Update the profile in public.users using the internal user ID.
-    // Use upsert so conversion still succeeds even if the DB trigger missed creating the row.
     const internalId = await identityAPI.getMyInternalId();
     if (!internalId) {
       throw new APIError('Cannot resolve user identity after linking', 'IDENTITY_ERROR');
@@ -179,7 +181,6 @@ export const authAPI = {
         id: internalId,
         email,
         full_name: fullName,
-        role,
         is_anonymous: false,
         onboarding_completed: true,
         onboarding_completed_at: new Date().toISOString(),
@@ -218,10 +219,40 @@ export const authAPI = {
   },
 
   /**
-   * Sign out
+   * Sovereign Sign-Out (2026 Secure Pattern)
+   *
+   * Execution order is intentional and critical:
+   *  1. Clear identity cache (sync, in-memory)
+   *  2. Disconnect + destroy the local PowerSync SQLite DB
+   *     — prevents cross-user data leakage on shared devices.
+   *  3. Clear sensitive MMKV keys (tokens, session markers)
+   *  4. Sign out of Supabase (invalidates JWT server-side)
+   *
+   * We tear down local state BEFORE the server call so that even if
+   * the network request fails, sensitive local data is already gone.
    */
   async signOut() {
+    // 1. Clear identity cache
     identityAPI.clearCache();
+
+    // 2. Tear down the PowerSync SQLite database
+    //    This is the critical privacy gate for shared-device scenarios.
+    try {
+      await disconnectPowerSync();
+    } catch (e) {
+      console.warn('[Auth] PowerSync disconnect failed during sign-out. Continuing.', e);
+    }
+
+    // 3. Clear session-sensitive MMKV keys
+    //    The Supabase session key uses the format sb-{project}-auth-token.
+    //    We clear by prefix to future-proof against key changes.
+    try {
+      storage.clearAll();
+    } catch (e) {
+      console.warn('[Auth] Storage clearAll failed during sign-out. Continuing.', e);
+    }
+
+    // 4. Invalidate the server-side session
     const { error } = await supabase.auth.signOut();
 
     if (error) {

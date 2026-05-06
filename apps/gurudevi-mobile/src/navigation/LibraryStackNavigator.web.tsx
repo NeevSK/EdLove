@@ -44,8 +44,8 @@ export default function LibraryStackNavigatorWeb() {
 				}}
 			>
 				<Stack.Screen name="LibraryHome" component={LibraryScreenWeb} />
-				<Stack.Screen name="PDFViewer" component={PDFViewerScreen} />
-				<Stack.Screen name="VideoPlayer" component={VideoPlayerScreen} />
+				<Stack.Screen name="PDFViewer" component={PDFViewerScreen as any} />
+				<Stack.Screen name="VideoPlayer" component={VideoPlayerScreen as any} />
 				<Stack.Screen name="LibraryMap" component={MapScreen} />
 				<Stack.Screen name="CuratorReview" component={CuratorReviewScreen} />
 			</Stack.Navigator>

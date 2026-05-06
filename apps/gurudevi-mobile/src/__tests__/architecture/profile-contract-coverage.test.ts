@@ -1,11 +1,11 @@
 ﻿describe("profile contract coverage", () => {
 	it("registers strict contract coverage for profile and social APIs", () => {
-		require("../../../../../packages/profile/src/api/profile");
-		require("../../../../../packages/profile/src/api/social");
+		require("@repo/profile/api/profile");
+		require("@repo/profile/api/social");
 		const {
 			getContractCoverage,
 			listContractCoverage,
-		} = require("../../../../../packages/core/src/api/contractCoverage");
+		} = require("@repo/core/api/contractCoverage");
 
 		const moduleNames = listContractCoverage().map((entry) => entry.moduleName);
 

@@ -10,6 +10,11 @@ import type {
   StudentAssignment,
   StudentSubmissionSummary,
   TeacherStats,
+  StudentAcademicRecord,
+  TeacherProfessionalRecord,
+  PrincipalGovernanceRecord,
+  SchoolLegacyRecord,
+  ClassroomLegacyRecord,
 } from '../../schemas/classroom.schema';
 import type { ClassroomGradingSettings, Grade } from '../../schemas/grading.schema';
 import type { Lesson } from '../../schemas/lesson.schema';
@@ -87,6 +92,15 @@ export interface EducationalServices {
     getAll(classroomId: string): Promise<ClassroomStudent[]>;
     enroll(classroomId: string, studentId: string): Promise<ClassroomStudent>;
     remove(classroomId: string, studentId: string): Promise<void>;
+    getHistoricalAcademicRecords(studentId: string): Promise<StudentAcademicRecord[]>;
+  };
+  teachers: {
+    getHistoricalProfessionalRecords(teacherId: string): Promise<TeacherProfessionalRecord[]>;
+    getHistoricalGovernanceRecords(principalId: string): Promise<PrincipalGovernanceRecord[]>;
+  };
+  institutions: {
+    getSchoolLegacyHistory(schoolId: string): Promise<SchoolLegacyRecord[]>;
+    getClassroomLegacyHistory(classroomId: string): Promise<ClassroomLegacyRecord[]>;
   };
   classroomStudents: {
     getAll(classroomId: string): Promise<EnrollmentRecord[]>;
@@ -274,6 +288,17 @@ export const createEducationalServices = (
     getAll: (classroomId) => repository.getSimpleStudents(classroomId),
     enroll: (classroomId, studentId) => repository.enrollStudent(classroomId, studentId),
     remove: (classroomId, studentId) => repository.removeStudent(classroomId, studentId),
+    getHistoricalAcademicRecords: (studentId) => repository.getHistoricalAcademicRecords(studentId),
+  },
+  teachers: {
+    getHistoricalProfessionalRecords: (teacherId) =>
+      repository.getHistoricalProfessionalRecords(teacherId),
+    getHistoricalGovernanceRecords: (principalId) =>
+      repository.getHistoricalGovernanceRecords(principalId),
+  },
+  institutions: {
+    getSchoolLegacyHistory: (schoolId) => repository.getSchoolLegacyHistory(schoolId),
+    getClassroomLegacyHistory: (classroomId) => repository.getClassroomLegacyHistory(classroomId),
   },
   lessonMaterials: {
     getAll: (classroomId) => repository.getMaterials(classroomId),

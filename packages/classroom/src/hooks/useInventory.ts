@@ -15,7 +15,7 @@ export function useInventory(classroomId: string) {
 
 	const { data, isLoading } = useQuery({
 		queryKey: ["inventory", classroomId],
-		queryFn: () => api.inventory.getAll(classroomId),
+		queryFn: () => api["inventory"].getAll(classroomId),
 		enabled: !!classroomId,
 	});
 

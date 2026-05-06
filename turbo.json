@@ -1,36 +1,36 @@
 {
-	"$schema": "https://turborepo.com/schema.json",
-	"globalEnv": ["NODE_ENV"],
-	"ui": "stream",
-	"tasks": {
-		"build": {
-			"dependsOn": ["^build"],
-			"inputs": ["$TURBO_DEFAULT$", ".env*"],
-			"outputs": ["dist/**", ".next/**", "!.next/cache/**"]
-		},
-		"format": {
-			"cache": true
-		},
-		"lint:biome": {
-			"cache": true
-		},
-		"lint:eslint": {
-			"dependsOn": ["^lint:eslint"],
-			"cache": true
-		},
-		"lint": {
-			"dependsOn": ["lint:biome", "lint:eslint"]
-		},
-		"check-types": {
-			"dependsOn": ["^check-types"]
-		},
-		"dev": {
-			"cache": false,
-			"persistent": true
-		},
-		"start": {
-			"cache": false,
-			"persistent": true
-		}
-	}
+  "$schema": "https://turborepo.com/schema.json",
+  "globalEnv": ["NODE_ENV", "DATABASE_URL"],
+  "ui": "stream",
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
+    },
+    "format": {
+      "cache": true
+    },
+    "lint:biome": {
+      "cache": true
+    },
+    "lint:eslint": {
+      "dependsOn": ["^lint:eslint"],
+      "cache": true
+    },
+    "lint": {
+      "dependsOn": ["lint:biome", "lint:eslint"]
+    },
+    "check-types": {
+      "dependsOn": ["^check-types"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "start": {
+      "cache": false,
+      "persistent": true
+    }
+  }
 }

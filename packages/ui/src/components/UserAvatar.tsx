@@ -13,7 +13,6 @@ export interface UserAvatarProps {
   /** Corner radius. Defaults to circular (size/2). Pass a fixed value for squircle style. */
   borderRadius?: number;
   style?: object;
-  authority?: string | null;
 }
 
 const DEFAULT_ICON = '🌿';
@@ -45,7 +44,6 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
   size = 40,
   borderRadius,
   style,
-  authority,
 }) => {
   const radius = borderRadius ?? size / 2;
   const bgColor = getAvatarColor(fullName);

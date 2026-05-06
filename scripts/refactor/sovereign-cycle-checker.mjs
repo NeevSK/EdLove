@@ -3,7 +3,8 @@ import path from "node:path";
 import chalk from "chalk";
 import madge from "madge";
 
-const ROOT_DIR = process.cwd();
+const __dirname = path.dirname(new URL(import.meta.url).pathname).replace(/^\/([A-Z]:)/, '$1');
+const ROOT_DIR = path.resolve(__dirname, "../../");
 const PACKAGES_DIR = path.resolve(ROOT_DIR, "packages");
 
 /**

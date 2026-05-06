@@ -1,6 +1,6 @@
 import { authAPI, identityAPI } from '@repo/core/api';
 import { useIdentity } from '@repo/core/hooks';
-import { coreRuntime, handleAPIError, type Role, validateForm, validators } from '@repo/core/logic';
+import { coreRuntime, handleAPIError, type Capacity, validateForm, validators, type User } from '@repo/core/logic';
 import { FlowResolver, GuestDataSync } from '@repo/core/native';
 import * as AuthSession from 'expo-auth-session';
 import * as WebBrowser from 'expo-web-browser';
@@ -56,6 +56,8 @@ const GoogleIcon = memo(({ size = 20 }: { size?: number }) => (
     </Text>
   </Box>
 ));
+GoogleIcon.displayName = 'GoogleIcon';
+
 
 const ENTRY_PILLARS = ['Self', 'Classroom', 'Community', 'Library'] as const;
 
@@ -82,7 +84,7 @@ interface AuthState {
   isSignUp: boolean;
   showScanner: boolean;
   errors: Record<string, string>;
-  currentUser: any;
+  currentUser: User | null;
   showSyncModal: boolean;
   newUserId: string;
 }
@@ -97,7 +99,7 @@ type AuthAction =
   | { type: 'SET_MODE'; isSignUp: boolean; showEmailAuth?: boolean }
   | { type: 'SET_SCANNER'; visible: boolean }
   | { type: 'SET_ERRORS'; errors: Record<string, string> }
-  | { type: 'SET_USER'; user: any }
+  | { type: 'SET_USER'; user: User | null }
   | { type: 'SET_SYNC_MODAL'; isOpen: boolean }
   | { type: 'RESET_ERRORS' };
 
@@ -259,9 +261,20 @@ const AuthScreen = memo(({ onSuccess, onBack, initialMode, Scanner }: AuthScreen
 
         try {
           await authAPI.signInWithOAuth(provider, redirectUrl);
-        } catch (error: any) {
-          handleAPIError(error);
+        } catch (error: unknown) {
+          console.error('Email Auth Error:', error);
+          hapticError();
           dispatch({ type: 'SET_LOADING', loading: false });
+
+          const apiErrors = handleAPIError(error);
+          if (apiErrors) {
+            dispatch({ type: 'SET_ERRORS', errors: { message: apiErrors.message } });
+          } else {
+            showToast({
+              message: (error as Error)?.message || t('auth.errorGeneric'),
+              type: 'error',
+            });
+          }
         }
         return;
       }
@@ -273,7 +286,7 @@ const AuthScreen = memo(({ onSuccess, onBack, initialMode, Scanner }: AuthScreen
             ? await authAPI.linkOAuthIdentity(provider, redirectUrl, true)
             : await authAPI.signInWithOAuth(provider, redirectUrl, true);
 
-        const oauthUrl = (oauthOptions as any)?.url as string | null | undefined;
+        const oauthUrl = (oauthOptions as { url?: string })?.url;
 
         if (!oauthUrl) {
           showToast({
@@ -309,7 +322,6 @@ const AuthScreen = memo(({ onSuccess, onBack, initialMode, Scanner }: AuthScreen
                 if (invite.school_id) {
                   await identityAPI.updateProfile(internalId, {
                     school_id: invite.school_id,
-                    role: (invite.role as Role) || 'teacher',
                   });
                   await coreRuntime.storage.removeItem('pending_invite');
                   showToast({
@@ -374,7 +386,7 @@ const AuthScreen = memo(({ onSuccess, onBack, initialMode, Scanner }: AuthScreen
         if (isAnon && currentSession?.user) {
           const existingName =
             (currentUser?.full_name && String(currentUser.full_name).trim()) || 'Sanctuary User';
-          await authAPI.linkAnonymousToEmail(email, password, existingName, 'teacher' as Role);
+          await authAPI.linkAnonymousToEmail(email, password, existingName, 'teacher' as Capacity);
 
           const internalId = await identityAPI.getMyInternalId();
 
@@ -411,7 +423,6 @@ const AuthScreen = memo(({ onSuccess, onBack, initialMode, Scanner }: AuthScreen
               if (invite.school_id) {
                 await identityAPI.updateProfile(internalId, {
                   school_id: invite.school_id,
-                  role: (invite.role as Role) || 'teacher',
                 });
                 await coreRuntime.storage.removeItem('pending_invite');
                 showToast({
@@ -817,6 +828,8 @@ const AuthScreen = memo(({ onSuccess, onBack, initialMode, Scanner }: AuthScreen
     </ScreenWrapper>
   );
 });
+
+AuthScreen.displayName = 'AuthScreen';
 
 export { AuthScreen };
 export default AuthScreen;

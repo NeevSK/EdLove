@@ -8,9 +8,6 @@ export {
 export { isDemo } from './api/demo';
 // 4. API & Business Logic (Named exports for better tree-shaking)
 export { deviceTrustAPI } from './api/deviceTrust';
-export * from './constants/SriLankanSchools';
-export * from './hooks';
-export type { DownloadState } from './hooks/useMediaDownloader';
 export { accountPin, validateAccountPin } from './lib/accountPin';
 export {
   type CloudinaryUploadResponse,
@@ -110,7 +107,6 @@ export {
 export { default as i18n } from './logic/i18n/config';
 export { mediaInitialState, mediaReducer } from './logic/mediaReducer';
 export { coreRuntime } from './logic/runtimeRegistry';
-export type { Role as AuthorityTier } from './logic/schemas/role.schema';
 export { LanguageUtils } from './logic/utils/LanguageUtils';
 export { buildQRString, QRBuilder } from './logic/utils/QRBuilder';
 export type { QRResolveResult } from './logic/utils/QRResolver';
@@ -160,7 +156,6 @@ export {
   useTeacherStatsQuery,
 } from './api/hooks/classroom.hooks';
 export * from './api/hooks/founder.hooks';
-export { useEntity } from './hooks/useEntity';
 export {
   type InviteCodeData,
   incrementInviteCodeUsage,
@@ -241,8 +236,8 @@ export type {
   InviteCodeZod,
   PrincipalInviteRole,
 } from './logic/schemas/principal-workspace.schema';
-export type { Role } from './logic/schemas/role.schema';
-export { RoleSchema } from './logic/schemas/role.schema';
+export type { Capacity } from './logic/schemas/capacity.schema';
+export { CapacitySchema } from './logic/schemas/capacity.schema';
 export type {
   LongitudinalEntityType,
   StudentLongitudinalEvent,
@@ -265,12 +260,7 @@ export {
   type WorkspaceSwitcherTarget,
 } from './logic/workspace/workspaceSwitcher';
 export { useWorkspaceLayoutSync } from './native/useWorkspaceLayoutSync';
-export * from './types/Grading';
-export * from './types/Inventory';
-export * from './types/School';
-export * from './types/StaffAttendance';
-export * from './types/StaffLeave';
-export * from './types/topology';
-export * from './types/visualization';
-export * from './types/Workspace';
 export { z };
+export * from './constants/SriLankanSchools';
+export * from './hooks';
+

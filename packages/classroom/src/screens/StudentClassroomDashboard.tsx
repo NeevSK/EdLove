@@ -279,7 +279,7 @@ export default function StudentClassroomDashboard({
 					assignmentTitle={submissionModal.title}
 					onClose={() => setSubmissionModal(null)}
 					onSubmit={async (content: string, photoUri?: string) => {
-						await api.assignments.submitSubmission(
+						await api["assignments"].submitSubmission(
 							submissionModal.id,
 							content,
 							photoUri,

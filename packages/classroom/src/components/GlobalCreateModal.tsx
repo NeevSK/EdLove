@@ -38,6 +38,7 @@ import { hapticLight, hapticSuccess } from "@repo/ui/utils/haptics";
 
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import type { LucideIcon } from "@repo/ui/icons";
 
 interface GlobalCreateModalProps {
 	isOpen: boolean;
@@ -108,7 +109,7 @@ export default function GlobalCreateModal({
 			let result;
 			if (type === "school") {
 				// 1. Create the school
-				result = await api.founder.createSchool({
+				result = await api["founder"].createSchool({
 					name: name.trim(),
 					type: schoolType,
 					created_by: userId,
@@ -129,7 +130,7 @@ export default function GlobalCreateModal({
 				}
 			} else if (type === "classroom") {
 				// 1. Create the classroom
-				result = await api.founder.createClassroom({
+				result = await api["founder"].createClassroom({
 					school_id: selectedSchoolId,
 					name: name.trim(),
 					grade_number: 1, // Default to 1
@@ -178,7 +179,7 @@ export default function GlobalCreateModal({
 			}
 			onSuccess(type, result);
 			handleClose();
-		} catch (err: any) {
+		} catch (err: unknown) {
 			const apiError = handleAPIError(err, true);
 			setError(apiError.message);
 		} finally {
@@ -393,7 +394,7 @@ function TypeButton({
 	active: boolean;
 	onPress: () => void;
 	label: string;
-	icon: any;
+	icon: LucideIcon;
 }) {
 	return (
 		<Button

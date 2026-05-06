@@ -756,11 +756,12 @@ class PolymathPlatformServer {
 			];
 
 			// Smart Selection Strategy
-			if (process.env.MCP_MODE === "GATEWAY" || !process.env.MCP_MODE) {
+			const mcpMode = process.env["MCP_MODE"];
+			if (mcpMode === "GATEWAY" || !mcpMode) {
 				return { tools: gatewayTools };
 			}
 
-			if (process.env.MCP_MODE === "LEAN") {
+			if (mcpMode === "LEAN") {
 				const highValueToolNames = [
 					"grep_code",
 					"sovereign_scout",

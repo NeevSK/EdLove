@@ -158,7 +158,7 @@ export function startPresenceSession(
 	const selfChannel = supabase.channel(`presence:self:${options.userRole}`);
 	const watcherChannel = supabase.channel(options.channelName);
 
-	selfChannel.subscribe(async (status) => {
+	void selfChannel.subscribe(async (status) => {
 		if (status !== "SUBSCRIBED") return;
 
 		try {
@@ -173,7 +173,7 @@ export function startPresenceSession(
 		}
 	});
 
-	watcherChannel
+	void watcherChannel
 		.on("presence", { event: "sync" }, () => {
 			const state = watcherChannel.presenceState();
 			const presences = Object.values(state).flat();

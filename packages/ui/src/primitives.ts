@@ -10,6 +10,7 @@ export * from './components/ui/avatar';
 export * from './components/ui/badge';
 export * from './components/ui/box';
 export * from './components/ui/button';
+export { Card } from './card';
 export * from './components/ui/center';
 export * from './components/ui/checkbox';
 export * from './components/ui/divider';

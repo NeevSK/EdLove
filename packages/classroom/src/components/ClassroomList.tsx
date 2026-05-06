@@ -39,19 +39,19 @@ interface ClassroomListProps {
 }
 
 type WorkspaceClassroom = Awaited<
-	ReturnType<typeof api.classrooms.getByTeacher>
+	ReturnType<(typeof api)["classrooms"]["getByTeacher"]>
 >[number];
 
 async function getSchoolScopedClassroomsForPrincipal(
 	userId: string,
 	pagination: { limit: number; offset: number },
 ) {
-	const summary = await api.identity.getClassroomRoleSummary(userId);
+	const summary = await api["identity"].getClassroomRoleSummary(userId);
 	if (!summary.schoolId) {
 		return [];
 	}
 
-	return api.classrooms.getBySchool(summary.schoolId, pagination);
+	return api["classrooms"].getBySchool(summary.schoolId, pagination);
 }
 
 export default function ClassroomList({
@@ -62,7 +62,7 @@ export default function ClassroomList({
 	emptyContent,
 }: ClassroomListProps) {
 	const { can, context } = usePermissions();
-	const role = context.roles[0];
+	const hasRoleContext = context.bonds.length > 0;
 	const { isGuest } = useFeatureAccess();
 
 	// Capability-based check for classroom creation
@@ -109,7 +109,7 @@ export default function ClassroomList({
 							(sampleSchool as any).is_sample = true;
 							data = [sampleSchool];
 						}
-					} else if (can("manage", "StudentDashboard") || !role) {
+					} else if (can("manage", "StudentDashboard") || !hasRoleContext) {
 						const sampleId = "sample-c1";
 						const sample = MOCK_CLASSROOMS.find((c: any) => c.id === sampleId);
 						if (sample && !dismissedSampleIds.includes(sampleId)) {
@@ -128,9 +128,9 @@ export default function ClassroomList({
 					let realData: WorkspaceClassroom[] = [];
 
 					if (can("manage", "TeacherDashboard")) {
-						realData = await api.classrooms.getByTeacher(userId, pagination);
+						realData = await api["classrooms"].getByTeacher(userId, pagination);
 					} else if (can("manage", "StudentDashboard")) {
-						realData = await api.classrooms.getByStudent(userId, pagination);
+						realData = await api["classrooms"].getByStudent(userId, pagination);
 					} else if (can("manage", "PrincipalDashboard")) {
 						realData = await getSchoolScopedClassroomsForPrincipal(
 							userId,
@@ -148,7 +148,7 @@ export default function ClassroomList({
 						if (
 							can("manage", "TeacherDashboard") ||
 							can("manage", "StudentDashboard") ||
-							!role
+							!hasRoleContext
 						) {
 							sampleToShow = MOCK_CLASSROOMS.find(
 								(c: any) => c.id === "sample-c1",
@@ -190,7 +190,7 @@ export default function ClassroomList({
 		return () => {
 			isMounted = false;
 		};
-	}, [role, isGuest, dismissedSampleIds, onDataLoaded, can]);
+	}, [hasRoleContext, isGuest, dismissedSampleIds, onDataLoaded, can]);
 
 	const handleRetry = () => {
 		setInternalRefreshTrigger((prev) => prev + 1);
@@ -208,9 +208,9 @@ export default function ClassroomList({
 			let newData: WorkspaceClassroom[] = [];
 
 			if (can("manage", "TeacherDashboard")) {
-				newData = await api.classrooms.getByTeacher(userId, pagination);
+				newData = await api["classrooms"].getByTeacher(userId, pagination);
 			} else if (can("manage", "StudentDashboard")) {
-				newData = await api.classrooms.getByStudent(userId, pagination);
+				newData = await api["classrooms"].getByStudent(userId, pagination);
 			} else if (can("manage", "PrincipalDashboard")) {
 				newData = await getSchoolScopedClassroomsForPrincipal(
 					userId,

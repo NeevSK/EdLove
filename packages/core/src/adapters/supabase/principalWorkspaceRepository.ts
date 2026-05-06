@@ -16,7 +16,7 @@ import {
   PrincipalObservationSchema,
   type PrincipalObservationZod,
 } from '../../logic/schemas/principal-workspace.schema';
-import { RoleSchema } from '../../logic/schemas/role.schema';
+import { CapacitySchema } from '../../logic/schemas/capacity.schema';
 import { getTemporalRange } from '../../logic/utils/temporalUtils';
 import { APIError } from '../../types/API';
 
@@ -29,7 +29,7 @@ const normalizeInviteCode = (row: Record<string, unknown>): InviteCodeZod =>
   InviteCodeSchema.parse({
     code: row['code'],
     school_id: row['school_id'],
-    authority: RoleSchema.parse((row['authority'] ?? row['role'] ?? 'teacher') as string),
+    authority: CapacitySchema.parse((row['authority'] ?? row['role'] ?? 'teacher') as string),
     created_by: row['created_by'],
     used: Boolean(row['used'] ?? !row['is_active']) || Number(row['uses_count'] ?? 0) > 0,
     created_at: row['created_at'],

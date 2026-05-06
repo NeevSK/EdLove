@@ -17,9 +17,6 @@ import maxUseStateRule from "./rules/max-use-state.js";
  * */
 export const nextJsConfig = [
 	...baseConfig,
-	js.configs.recommended,
-	eslintConfigPrettier,
-	...tseslint.configs.recommended,
 	pluginJsxA11y.flatConfigs.recommended,
 	globalIgnores([
 		// Default ignores of eslint-config-next:
@@ -61,6 +58,8 @@ export const nextJsConfig = [
 			"react-hooks/rules-of-hooks": "error",
 			"react-hooks/exhaustive-deps": "error",
 			"local/max-use-state": ["error", { max: 3 }],
+			"no-unused-vars": "off",
+			"@typescript-eslint/no-unused-vars": "warn",
 			// React scope no longer necessary with new JSX transform.
 			"react/react-in-jsx-scope": "off",
 			"no-restricted-syntax": [

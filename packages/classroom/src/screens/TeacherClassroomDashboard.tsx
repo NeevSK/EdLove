@@ -1,7 +1,13 @@
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { api } from "@repo/core/api";
 import { usePermissions } from "@repo/core/logic";
-import type { Classroom, ClassroomStackParamList } from "@repo/core/types";
+import { useStore } from "@repo/core/logic";
+import type {
+	Classroom,
+	ClassroomStackParamList,
+	WorkspaceLayout,
+	WorkspaceZoneId,
+} from "@repo/core/types";
 
 import { StudentAnalysisModal } from "@repo/library";
 import GlobalHeader from "@repo/ui/components/GlobalHeader";
@@ -43,7 +49,7 @@ import {
 import { Theme } from "@repo/ui/theme";
 import { hapticLight } from "@repo/ui/utils/haptics";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
 	AttendanceView,
 	ClassroomEchoSection,
@@ -60,6 +66,7 @@ import TeacherObservationsWorkspace from "../components/teacher/TeacherObservati
 import { useTeacherClassroomWorkspaceData } from "../workspace/useTeacherClassroomWorkspaceData";
 import AttendanceReportScreen from "./AttendanceReportScreen";
 import LessonFeed from "./LessonFeed";
+import ClassroomLegacyTimeline from "@repo/self/components/ClassroomLegacyTimeline";
 import { ResponsiveWorkspaceCanvas } from "@repo/ui/components/workspace/ResponsiveWorkspaceCanvas";
 import type { WorkspaceSurfaceDefinition } from "@repo/core/types";
 import { PredictiveButton } from "@repo/ui/components/PredictiveButton";
@@ -83,7 +90,8 @@ type FeatureId =
 	| "inventory"
 	| "echo"
 	| "observations"
-	| "analysis";
+	| "analysis"
+	| "legacy";
 
 const TEACHER_FEATURES: { id: FeatureId; label: string; icon: any }[] = [
 	{ id: "insights", label: "Insights", icon: TrendingUp },
@@ -97,6 +105,7 @@ const TEACHER_FEATURES: { id: FeatureId; label: string; icon: any }[] = [
 	{ id: "echo", label: "Echo", icon: MessageSquare },
 	{ id: "observations", label: "Observations", icon: Sparkles },
 	{ id: "analysis", label: "Analysis", icon: GraduationCap },
+	{ id: "legacy", label: "Legacy", icon: Layers3 },
 ];
 
 const FEATURE_TONES: Record<
@@ -158,6 +167,11 @@ const FEATURE_TONES: Record<
 		color: Theme.colors.amberGlow,
 		tint: "bg-amberGlow/10",
 	},
+	legacy: {
+		label: "Cohort lineage",
+		color: Theme.colors.sageGreen,
+		tint: "bg-sageGreen/10",
+	},
 };
 
 export default function TeacherClassroomDashboard({
@@ -188,6 +202,7 @@ export default function TeacherClassroomDashboard({
 	const [showAnalysisModal, setShowAnalysisModal] = useState(false);
 	const [analysisStudent, setAnalysisStudent] = useState<any | null>(null);
 	const workspace = useTeacherClassroomWorkspaceData(classroomId);
+	const currentUserId = useStore((state) => state.user?.id ?? "");
 	const classroom = workspace.classroom as Classroom | null;
 	const students = workspace.students as any[];
 
@@ -270,13 +285,14 @@ export default function TeacherClassroomDashboard({
 		if (!newMonthTitle.trim()) return;
 		setIsSubmitting(true);
 		try {
-			const lessons = await api.lessons.getAll(classroomId);
+			const lessons = await api["lessons"].getAll(classroomId);
 			const maxOrder = lessons.reduce(
-				(max, l) => Math.max(max, l.order_index),
+				(max: number, l: { order_index?: number | null }) =>
+					Math.max(max, l.order_index ?? 0),
 				0,
 			);
 
-			await api.lessons.create({
+			await api["lessons"].create({
 				classroom_id: classroomId,
 				title: newMonthTitle,
 				order_index: maxOrder + 1,
@@ -303,7 +319,7 @@ export default function TeacherClassroomDashboard({
 					/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
 				)
 			) {
-				const newLesson = await api.lessons.create({
+				const newLesson = await api["lessons"].create({
 					classroom_id: classroomId,
 					title: targetLessonId,
 					content: `Materials for ${targetLessonId}`,
@@ -313,7 +329,7 @@ export default function TeacherClassroomDashboard({
 			}
 
 			if (contentType === "material") {
-				await api.lessonMaterials.create({
+				await api["lessonMaterials"].create({
 					classroom_id: classroomId,
 					lesson_id: targetLessonId,
 					title: formTitle,
@@ -323,7 +339,7 @@ export default function TeacherClassroomDashboard({
 					is_pinned: false,
 				});
 			} else {
-				await api.assignments.create({
+				await api["assignments"].create({
 					classroom_id: classroomId,
 					lesson_id: targetLessonId,
 					title: formTitle,
@@ -488,6 +504,12 @@ export default function TeacherClassroomDashboard({
 						students={students}
 					/>
 				);
+			case "legacy":
+				return (
+					<Box className="mt-4">
+						<ClassroomLegacyTimeline classroomId={classroomId} />
+					</Box>
+				);
 			default:
 				return null;
 		}
@@ -537,8 +559,39 @@ export default function TeacherClassroomDashboard({
 			// For now, we'll just remove and let the user re-trigger or wait
 			removeFromQueue(conflictId);
 		}
-		resolveConflict(conflictId);
+		resolveConflict(
+			conflictId,
+			decision === 'remote' ? 'remote_wins' : 'local_wins',
+		);
 	};
+
+	const canvasLayout: WorkspaceLayout<string> = workspace.layout
+		? {
+				workspaceId: workspace.layout.workspace_id,
+				userId: workspace.layout.user_id,
+				order: workspace.layout.order,
+				hidden: workspace.layout.hidden,
+				pinned: workspace.layout.pinned,
+				zoneBySurface:
+					workspace.layout.zone_by_surface as Partial<
+						Record<string, WorkspaceZoneId>
+					>,
+				updatedAt: workspace.layout.updated_at,
+			}
+		: {
+				workspaceId: classroomId,
+				userId: currentUserId,
+				order: dashboardSurfaces.map((s) => s.surfaceId),
+				hidden: [],
+				pinned: [],
+				zoneBySurface: dashboardSurfaces.reduce<
+					Partial<Record<string, WorkspaceZoneId>>
+				>(
+					(acc, s) => ({ ...acc, [s.surfaceId]: s.defaultZone }),
+					{},
+				),
+				updatedAt: new Date().toISOString(),
+			};
 
 	return (
 		<ScreenWrapper scroll={false}>
@@ -601,15 +654,7 @@ export default function TeacherClassroomDashboard({
 				<Box className="bg-phase-surface px-6 pb-2 shadow-sm z-10" style={{ minHeight: 180 }}>
 					<ResponsiveWorkspaceCanvas
 						surfaces={dashboardSurfaces}
-						layout={workspace.layout || {
-							workspaceId: classroomId,
-							userId: classroomState.context.userId || "",
-							order: dashboardSurfaces.map(s => s.surfaceId),
-							hidden: [],
-							pinned: [],
-							zoneBySurface: dashboardSurfaces.reduce((acc, s) => ({ ...acc, [s.surfaceId]: s.defaultZone }), {}),
-							updatedAt: new Date().toISOString(),
-						}}
+						layout={canvasLayout}
 						renderSurfaceContent={renderSurfaceContent}
 						getSurfaceTitle={(s) => s.title || ""}
 						getSurfaceSubtitle={(s) => FEATURE_TONES[activeFeature].label}

@@ -165,7 +165,7 @@ export default function ClassroomNotes({
 
 	const fetchNotes = useCallback(async () => {
 		try {
-			const data = await api.classroomNotes.getAll(classroomId);
+			const data = await api["classroomNotes"].getAll(classroomId);
 			setNotes(data || []);
 		} catch (err) {
 			console.error("ClassroomNotes: fetch error", err);
@@ -184,7 +184,7 @@ export default function ClassroomNotes({
 		if (!draft.trim()) return;
 		setSaving(true);
 		try {
-			const created = await api.classroomNotes.create({
+			const created = await api["classroomNotes"].create({
 				classroom_id: classroomId,
 				content: draft.trim(),
 				note_type: draftType,
@@ -207,7 +207,7 @@ export default function ClassroomNotes({
 	const handleDelete = async (id: string) => {
 		hapticLight();
 		try {
-			await api.classroomNotes.delete(id);
+			await api["classroomNotes"].delete(id);
 			setNotes((prev) => prev.filter((n) => n.id !== id));
 			showToast({ message: "Note deleted.", type: "success" });
 		} catch {
@@ -218,7 +218,7 @@ export default function ClassroomNotes({
 	const handleTogglePin = async (note: ClassroomNote) => {
 		hapticLight();
 		try {
-			const updated = await api.classroomNotes.update(note.id, {
+			const updated = await api["classroomNotes"].update(note.id, {
 				is_pinned: !note.is_pinned,
 			});
 			setNotes((prev) => prev.map((n) => (n.id === updated.id ? updated : n)));
@@ -232,7 +232,7 @@ export default function ClassroomNotes({
 		const next: ClassroomNote["visibility"] =
 			note.visibility === "private" ? "class" : "private";
 		try {
-			const updated = await api.classroomNotes.update(note.id, {
+			const updated = await api["classroomNotes"].update(note.id, {
 				visibility: next,
 			});
 			setNotes((prev) => prev.map((n) => (n.id === updated.id ? updated : n)));

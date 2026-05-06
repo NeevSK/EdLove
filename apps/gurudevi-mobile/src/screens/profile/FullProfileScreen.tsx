@@ -7,9 +7,9 @@
 import { FullProfileScreen as PackageFullProfileScreen } from "@repo/profile";
 import ErrorBoundary from "@repo/ui/components/ErrorBoundary";
 
-const FullProfileWrapper = (props: Record<string, unknown>) => (
+const FullProfileWrapper = (props?: Record<string, unknown>) => (
 	<ErrorBoundary name="Detailed Profile">
-		<PackageFullProfileScreen {...props} />
+		<PackageFullProfileScreen {...((props ?? {}) as any)} />
 	</ErrorBoundary>
 );
 

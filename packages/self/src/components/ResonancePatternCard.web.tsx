@@ -77,7 +77,7 @@ export function ResonancePatternCard({
 	onExplore,
 }: ResonancePatternCardProps) {
 	const { context } = usePermissions();
-	const authority = context.roles[0];
+	const authority = context.activeBond?.capacity;
 
 	const {
 		seeds: inferredSeeds,

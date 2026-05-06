@@ -1,7 +1,7 @@
 import { useTracking } from "@repo/core/hooks";
 import { FeatureGuard, usePermissions } from "@repo/core/logic";
 
-import React from "react";
+import { useEffect } from "react";
 import {
 	AdminSelfView,
 	FounderSelfView,
@@ -19,8 +19,8 @@ export default function SelfScreen() {
 	const { discoverFeature } = useTracking();
 	const { can, context } = usePermissions();
 
-	React.useEffect(() => {
-		discoverFeature("section_self");
+	useEffect(() => {
+		void discoverFeature("section_self");
 	}, [discoverFeature]);
 
 	return (
@@ -43,8 +43,8 @@ export default function SelfScreen() {
 				}
 
 				if (
-					context.roles.includes("guardian") ||
-					context.roles.includes("parent")
+					context.activeBond?.capacity === "guardian" ||
+					context.activeBond?.capacity === "parent"
 				) {
 					return <GuardianSelfView />;
 				}

@@ -31,7 +31,7 @@ export default function PublicFormScreenWeb() {
 
 	async function loadTemplate() {
 		try {
-			const data = await api.forms.getBySlug(slug);
+			const data = await api["forms"].getBySlug(slug);
 			setTemplate(data);
 		} catch (err: any) {
 			console.error("Failed to load form:", err);
@@ -125,7 +125,7 @@ export default function PublicFormScreenWeb() {
 
 	const manager = FormHydrator.hydrate(formSchema, async (values) => {
 		try {
-			await api.forms.submitResponse({
+			await api["forms"].submitResponse({
 				template_id: template.id,
 				data: values,
 			});

@@ -19,7 +19,7 @@ export default function ProfileStackNavigator() {
 			<Stack.Screen name="ProfileMain" component={ProfileScreen} />
 			<Stack.Screen
 				name="FullProfile"
-				component={FullProfileScreen}
+				component={FullProfileScreen as any}
 				options={{
 					headerShown: false,
 					presentation: "modal",

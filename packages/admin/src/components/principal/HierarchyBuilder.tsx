@@ -134,10 +134,10 @@ export default function HierarchyBuilder({
 	const loadHierarchy = useCallback(async () => {
 		dispatch({ type: "SET_LOADING", payload: true });
 		try {
-			const sectionsData = await api.school.getSections(schoolId);
+			const sectionsData = await api["school"].getSections(schoolId);
 			const gradesMap: { [sectionId: string]: SchoolGrade[] } = {};
 			for (const section of sectionsData) {
-				const grades = await api.school.getGrades(section.id);
+				const grades = await api["school"].getGrades(section.id);
 				gradesMap[section.id] = grades;
 			}
 			dispatch({ type: "SET_HIERARCHY", sections: sectionsData, gradesMap });
@@ -186,7 +186,7 @@ export default function HierarchyBuilder({
 
 		try {
 			hapticLight();
-			await api.school.createSection(schoolId, state.newSectionName);
+			await api["school"].createSection(schoolId, state.newSectionName);
 			dispatch({ type: "RESET_SECTION_FORM" });
 			await loadHierarchy();
 		} catch (err: any) {
@@ -214,7 +214,7 @@ export default function HierarchyBuilder({
 
 		try {
 			hapticLight();
-			await api.school.createGrade(state.selectedSectionId, gradeNum);
+			await api["school"].createGrade(state.selectedSectionId, gradeNum);
 			dispatch({ type: "RESET_GRADE_FORM" });
 			await loadHierarchy();
 		} catch (err: any) {

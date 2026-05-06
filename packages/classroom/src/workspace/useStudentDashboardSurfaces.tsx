@@ -19,7 +19,7 @@ import {
 	VStack,
 } from "@repo/ui/primitives";
 
-import type React from "react";
+import type { ComponentType, ReactNode } from "react";
 import { useMemo } from "react";
 import { ClassroomList } from "../components";
 
@@ -49,7 +49,7 @@ export type StudentDashboardSurface = WorkspaceSurfaceDefinition<
 	temporalLabel?: string;
 	metadata?: string[];
 	hiddenByDefault?: boolean;
-	content: React.ReactNode;
+	content: ReactNode;
 };
 
 const DEMO_ASSIGNMENTS = [
@@ -72,7 +72,6 @@ const DEMO_GOALS = [
 ];
 
 type Args = {
-	colors: any; // Kept for interface compatibility but moving towards semantic tokens
 	isGuest: boolean;
 	isPastView: boolean;
 	isDemoExperience: boolean;
@@ -97,12 +96,11 @@ function QuickAction({
 	iconColorClass = "text-templeGold",
 	disabled,
 }: {
-	icon: any;
+	icon: ComponentType<any>;
 	label: string;
 	onPress: () => void;
 	iconColorClass?: string;
 	disabled?: boolean;
-	colors?: any;
 }) {
 	return (
 		<VStack
@@ -130,11 +128,10 @@ function StatWidget({
 	value,
 	iconColorClass = "text-phaseText-secondary",
 }: {
-	icon: any;
+	icon: ComponentType<any>;
 	label: string;
 	value: number | string;
 	iconColorClass?: string;
-	colors?: any;
 }) {
 	return (
 		<Box className="flex-1 bg-phase-surface p-5 rounded-[24px] border border-phase-border min-h-[110px] shadow-sm">
@@ -156,7 +153,6 @@ function StatWidget({
 }
 
 export function useStudentDashboardSurfaces({
-	colors,
 	isGuest,
 	isPastView,
 	isDemoExperience,

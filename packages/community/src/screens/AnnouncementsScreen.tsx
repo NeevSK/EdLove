@@ -6,7 +6,6 @@
  */
 
 import { usePermissions } from "@repo/core/logic";
-import type { AuthorityTier } from "@repo/core/types";
 import { SanctuaryButton } from "@repo/ui/components/SanctuaryButton";
 import SanctuaryModal from "@repo/ui/components/SanctuaryModal";
 import ScreenWrapper from "@repo/ui/components/ScreenWrapper";
@@ -31,7 +30,6 @@ import type { AnnouncementWithAuthor } from "../types/Community";
 interface AnnouncementsScreenProps {
 	schoolId: string;
 	userId: string;
-	userAuthority: AuthorityTier;
 }
 
 export default function AnnouncementsScreen({

@@ -1,8 +1,8 @@
 import {
   groupResolvedWorkspaceSurfacesByZone,
   resolveWorkspaceSurfaceLayout,
-  type WorkspaceRendererConfig,
 } from '@repo/core/logic';
+import type { WorkspaceRendererConfig } from '@repo/core/types';
 import { LayoutGrid, Pin } from 'lucide-react-native';
 import { useMemo } from 'react';
 import { StyleSheet } from 'react-native';

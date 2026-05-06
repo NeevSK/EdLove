@@ -15,9 +15,9 @@ import React from "react";
 import { communityAPI } from "../api/community";
 import HeaderMoreMenu from "../components/HeaderMoreMenu";
 import BaseChatScreen, {
-	type ChatMessage,
 	type SubscriptionConfig,
 } from "./BaseChatScreen";
+import type { ChatMessage } from "../types";
 
 type DMRoute = {
 	key: string;

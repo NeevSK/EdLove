@@ -192,12 +192,12 @@ export default function PrincipalGovernanceTimeline({
 
 			try {
 				const [timelineData, snapshotData] = await Promise.all([
-					api.principalWorkspace.getGovernanceTimeline(
+					api["principalWorkspace"].getGovernanceTimeline(
 						principalId,
 						viewDate,
 						limit,
 					),
-					api.principalWorkspace.getGovernanceSnapshotAsOf(
+					api["principalWorkspace"].getGovernanceSnapshotAsOf(
 						principalId,
 						viewDate,
 						12,
@@ -234,7 +234,7 @@ export default function PrincipalGovernanceTimeline({
 		dispatch({ type: "SAVE_FOLLOW_UP_START" });
 		try {
 			hapticLight();
-			await api.principalWorkspace.recordObservationFollowUp({
+			await api["principalWorkspace"].recordObservationFollowUp({
 				schoolId,
 				principalId,
 				observationId: targetId,
@@ -243,12 +243,12 @@ export default function PrincipalGovernanceTimeline({
 			});
 
 			const [timelineData, snapshotData] = await Promise.all([
-				api.principalWorkspace.getGovernanceTimeline(
+				api["principalWorkspace"].getGovernanceTimeline(
 					principalId,
 					viewDate,
 					limit,
 				),
-				api.principalWorkspace.getGovernanceSnapshotAsOf(
+				api["principalWorkspace"].getGovernanceSnapshotAsOf(
 					principalId,
 					viewDate,
 					12,

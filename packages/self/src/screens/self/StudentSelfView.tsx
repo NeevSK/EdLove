@@ -1,4 +1,3 @@
-﻿import { useNavigation } from "@react-navigation/native";
 import { useJourneyHistory } from "@repo/core/hooks";
 import { usePermissions, useStore } from "@repo/core/logic";
 
@@ -19,6 +18,7 @@ import JoyJar from "../../components/JoyJar";
 import MoodLotus from "../../components/MoodLotus";
 import { MoodPickerCard } from "../../components/MoodPickerCard";
 import MyGradesView from "../../components/MyGradesView";
+import AcademicHistoryTimeline from "../../components/AcademicHistoryTimeline";
 import ProgressTree from "../../components/ProgressTree";
 import { PulseDashboard } from "../../components/PulseDashboard";
 import RemindersManager from "../../components/RemindersManager";
@@ -45,9 +45,6 @@ import {
 
 export default function StudentSelfView() {
 	const { t } = useTranslation();
-	const _navigation = useNavigation<any>();
-	const _colors = useTheme().scene;
-
 	// State & Kernel Hooks
 	const { context } = usePermissions();
 	const userId = context.userId;
@@ -92,7 +89,10 @@ export default function StudentSelfView() {
 		</VStack>
 	);
 
-	const handleMoodSelect = async (mood: any, note: string) => {
+	const handleMoodSelect = async (
+		mood: Parameters<typeof addMoodLog>[0],
+		note: string,
+	) => {
 		setIsSavingMood(true);
 		try {
 			await addMoodLog(mood, note);
@@ -162,6 +162,13 @@ export default function StudentSelfView() {
 								id: "grades",
 								label: "Academic Mirror",
 								content: <MyGradesView userId={userId ?? undefined} />,
+							},
+							{
+								id: "history",
+								label: "Sovereign History",
+								content: (
+									<AcademicHistoryTimeline userId={userId ?? ""} />
+								),
 							},
 							{
 								id: "breath",

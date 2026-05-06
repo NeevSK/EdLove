@@ -3,9 +3,9 @@ module.exports = {
   content: [
     './src/**/*.{js,jsx,ts,tsx}',
     '../../apps/gurudevi-mobile/src/**/*.{js,jsx,ts,tsx}',
-    '../../packages/profile/src/**/*.{js,jsx,ts,tsx}',
-    '../../packages/community/src/**/*.{js,jsx,ts,tsx}',
-    '../../packages/admin/src/**/*.{js,jsx,ts,tsx}',
+    '../profile/src/**/*.{js,jsx,ts,tsx}',
+    '../community/src/**/*.{js,jsx,ts,tsx}',
+    '../admin/src/**/*.{js,jsx,ts,tsx}',
   ],
   theme: {
     extend: {

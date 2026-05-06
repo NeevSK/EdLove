@@ -21,6 +21,13 @@ import { useFeatureActivity } from "../hooks/useFeatureActivity";
 import type { BaseSelfViewProps, SelfViewFeature } from "./BaseSelfView.types";
 
 const TEMPORAL_SCALES = ["day", "week", "month", "year"] as const;
+type FeatureWithMeta = SelfViewFeature & {
+	domainId?: string;
+	domainColor?: string;
+};
+type DomainWithMeta = BaseSelfViewProps["domains"][number] & {
+	features?: FeatureWithMeta[];
+};
 
 /**
  * BaseSelfView.web - Restores the richer control-center sanctuary while
@@ -43,8 +50,8 @@ export function BaseSelfView({
 
 	const allFeatures = React.useMemo(
 		() => [
-			...domains.flatMap((domain: any) =>
-				(domain.features || []).map((feature: any) => ({
+			...domains.flatMap((domain: DomainWithMeta) =>
+				(domain.features || []).map((feature: FeatureWithMeta) => ({
 					...feature,
 					domainId: domain.id,
 					domainColor: domain.accentColor,
@@ -89,9 +96,10 @@ export function BaseSelfView({
 	const [focusedItemId, setFocusedItemId] = React.useState<string | null>(null);
 
 	const activeDomain =
-		domains.find((d: any) => d.id === activeCategoryId) || domains[0];
+		domains.find((d: DomainWithMeta) => d.id === activeCategoryId) || domains[0];
 	const focusedFeature =
-		activeDomain?.features?.find((f: any) => f.id === focusedItemId) || null;
+		activeDomain?.features?.find((f: FeatureWithMeta) => f.id === focusedItemId) ||
+		null;
 
 	const renderFocusedFeature = (feature: SelfViewFeature | null) => {
 		if (!feature) return null;
@@ -125,6 +133,7 @@ export function BaseSelfView({
 								setActiveCategoryId(domain.id);
 								setFocusedItemId(null);
 							}}
+							accessibilityRole="button"
 							className={`min-w-[160px] px-6 py-4.5 rounded-3xl bg-white/60 border flex-row items-center gap-3 interactive ${
 								activeCategoryId === domain.id
 									? "active border-transparent sanctuary-card bg-opacity-15"
@@ -166,6 +175,7 @@ export function BaseSelfView({
 					<HStack className="gap-2.5 items-center">
 						<Pressable
 							onPress={() => setViewMode("spotlight")}
+							accessibilityRole="button"
 							className={`px-4 py-2.5 rounded-full border ${
 								!isHistoryMode
 									? "bg-[#DEF2E8] border-[#29A17D40]"
@@ -182,6 +192,7 @@ export function BaseSelfView({
 						</Pressable>
 						<Pressable
 							onPress={() => setViewMode("timeline")}
+							accessibilityRole="button"
 							className={`px-4 py-2.5 rounded-full border ${
 								isHistoryMode
 									? "bg-[#DEF2E8] border-[#29A17D40]"
@@ -200,10 +211,11 @@ export function BaseSelfView({
 					{isHistoryMode && (
 						<Box className="flex-row gap-2 items-center flex-wrap">
 							{TEMPORAL_SCALES.map((scale) => (
-								<Pressable
-									key={scale}
-									onPress={() => setScale(scale)}
-									className={`px-3 py-1.5 rounded-full border ${
+							<Pressable
+								key={scale}
+								onPress={() => setScale(scale)}
+								accessibilityRole="button"
+								className={`px-3 py-1.5 rounded-full border ${
 										viewScale === scale
 											? "bg-[#EBE5FA] border-[#835CF630]"
 											: "bg-[#FFF2F7D0] border-[#CCBAA833]"
@@ -241,6 +253,7 @@ export function BaseSelfView({
 								</Text>
 								<Pressable
 									onPress={() => setFocusedItemId(null)}
+									accessibilityRole="button"
 									className="p-1 cursor-pointer"
 								>
 									<Text className="text-xl">✕</Text>
@@ -260,8 +273,8 @@ export function BaseSelfView({
 							<Box className="p-6">
 								<VStack className="gap-6">
 									{sortedFeatures
-										.filter(
-											(f: any) =>
+											.filter(
+											(f: FeatureWithMeta) =>
 												f.domainId === activeCategoryId ||
 												(activeCategoryId === "reflections" &&
 													f.id === "mirrors"),
@@ -303,18 +316,20 @@ export function BaseSelfView({
 
 														<Box className="flex-row items-center gap-3">
 															{hasHistory && (
-																<Pressable
-																	onPress={() => {
-																		setViewMode("timeline");
-																		setFocusedItemId(feature.id);
-																	}}
-																	className="p-1 mr-2 opacity-70"
-																>
+										<Pressable
+											onPress={() => {
+												setViewMode("timeline");
+												setFocusedItemId(feature.id);
+											}}
+											accessibilityRole="button"
+											className="p-1 mr-2 opacity-70"
+										>
 																	<Text className="text-base">⏳</Text>
 																</Pressable>
 															)}
 															<Pressable
 																onPress={() => togglePin(feature.id)}
+																accessibilityRole="button"
 																className="p-1"
 															>
 																<Text
@@ -333,6 +348,7 @@ export function BaseSelfView({
 																	trackFeatureAccess(feature.id);
 																	setFocusedItemId(feature.id);
 																}}
+																accessibilityRole="button"
 															>
 																<Text className="text-[11px] text-black/20 font-bold uppercase">
 																	{isHistoryMode ? "OPEN HISTORY" : "EXPAND"}

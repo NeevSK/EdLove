@@ -2,7 +2,6 @@ import { useMemo } from 'react';
 import { useAuthStore } from '../../../store/useAuthStore';
 import { useFeatureStore } from '../../../store/useFeatureStore';
 import { useTenantStore } from '../../../store/useTenantStore';
-import type { Role } from '../../schemas/role.schema';
 import { type TenantKind, type UserContext, UserContextSchema } from '../../schemas/user.schema';
 import type { Actions, SubjectType } from '../abilities/base';
 import { composeUserAbilities } from '../composer';
@@ -16,31 +15,42 @@ export const usePermissions = () => {
   const schoolType = useTenantStore((state) => state.schoolType);
   const flags = useFeatureStore((state) => state.flags);
 
-  // 1. Build context from store (Supabase auth + app state)
+  // 1. Build context from store (Perspective-aware)
   const context: UserContext = useMemo(() => {
-    const roles = (user?.roles || []) as Role[];
-    const hasGlobalAccess = roles.some((r) => ['founder', 'developer', 'admin'].includes(r));
+    const activePerspective = useAuthStore.getState().activePerspective;
+    const availableBonds = useAuthStore.getState().availableBonds;
+    const activeBond = activePerspective?.activeBond || null;
     const isPersonal = schoolType === 'personal_workspace';
 
     const rawContext = {
       userId: user?.id || null,
       email: user?.email || null,
-      schoolId: user?.school_id || null, // Null = 2nd class citizen
+      
+      // Sovereign ReBAC Context
+      // 1. The Reality: All bonds the user holds
+      bonds: availableBonds,
+      
+      // 2. The Anchor: The primary identity from onboarding (first bond)
+      primaryCapacity: availableBonds[0]?.capacity || null,
+
+      // 3. The Focus: The currently active bond
+      activeBond,
+      activeBondStatus: activeBond?.status || 'active',
+
+      schoolId: activeBond?.entityType === 'SCHOOL' ? activeBond.entityId : user?.school_id || null,
       tenancyName: user?.organization_name || null,
       tenancy: {
         kind: (user?.tenant_kind || 'customer') as TenantKind,
         isPersonal,
       },
       tenantKind: (user?.tenant_kind || 'customer') as TenantKind,
-      roles,
-      authority: (user?.authority as Role) || roles[0] || null,
       isAnonymous: !user || !!user?.is_anonymous,
-      hasGlobalAccess,
+      hasGlobalAccess: activeBond?.capacity === 'founder' || activeBond?.capacity === 'admin',
       isPersonal,
       // Scoped context injected from store if available
       sectionId: user?.section_id || null,
       gradeId: user?.grade_id || null,
-      classroomId: user?.classroom_id || null,
+      classroomId: activeBond?.entityType === 'CLASSROOM' ? activeBond.entityId : user?.classroom_id || null,
     };
 
     // Strict validation via Zod

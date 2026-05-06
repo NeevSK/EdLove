@@ -10,14 +10,34 @@ export interface ClassroomRoleData {
 	realClassCount: number;
 }
 
+type SyncableLocalUser = {
+	profile_completed?: boolean;
+	school_id?: string | null;
+	authority?: string | null;
+	platform_authorities?: unknown;
+	school_authority?: unknown;
+	work_capacities?: unknown;
+	tenant_kind?: unknown;
+	full_name?: string | null;
+	email?: string | null;
+	id?: string;
+};
+
+const toSyncableLocalUser = (user: unknown): SyncableLocalUser => {
+	if (user && typeof user === "object") {
+		return user as SyncableLocalUser;
+	}
+	return {};
+};
+
 export function useClassroomRoleData(_refreshTrigger: number = 0) {
 	const { context } = usePermissions();
 	const { userId, schoolId } = context;
+	const syncedLocalUser = toSyncableLocalUser(useStore((state) => state.user));
 	const {
 		realClassCount: storeClassCount,
 		setRealClassCount,
 		setUser,
-		user: localUser,
 	} = useStore();
 	const [loading, setLoading] = useState(true);
 	const [data, setData] = useState<ClassroomRoleData | null>(null);
@@ -39,47 +59,48 @@ export function useClassroomRoleData(_refreshTrigger: number = 0) {
 				prev &&
 				prev.userId === userId &&
 				prev.schoolId === schoolId &&
-				prev.profileCompleted === !!localUser?.profile_completed &&
+				prev.profileCompleted === !!syncedLocalUser.profile_completed &&
 				prev.realClassCount === currentClassCount
 			) {
 				return prev;
 			}
+
 			return {
 				userId,
 				schoolId,
-				profileCompleted: !!localUser?.profile_completed,
+				profileCompleted: !!syncedLocalUser.profile_completed,
 				realClassCount: currentClassCount as number,
 			};
 		});
 
 		try {
 			// 2. Background Sync: Fetch from the core API boundary
-			const summary = await api.identity.getClassroomRoleSummary(userId);
+			const summary = await api["identity"].getClassroomRoleSummary(userId);
 			const profileCheck = { data: summary.profile };
 			const realClassCount = summary.realClassCount;
 
 			// Update store if server data is newer/different (Convergence)
 			if (profileCheck.data) {
-				const serverUser = profileCheck.data;
-				// Strict comparison to prevent loop
-				const hasSignificantChanges =
-					serverUser.profile_completed !== localUser?.profile_completed ||
-					serverUser.school_id !== localUser?.school_id ||
-					serverUser.role !== localUser?.authority ||
+					const serverUser = profileCheck.data;
+					// Strict comparison to prevent loop
+					const hasSignificantChanges =
+					serverUser.profile_completed !== syncedLocalUser.profile_completed ||
+					serverUser.school_id !== syncedLocalUser.school_id ||
+					serverUser.role !== syncedLocalUser.authority ||
 					JSON.stringify(serverUser.platform_roles) !==
-						JSON.stringify((localUser as any)?.platform_authorities) ||
-					serverUser.school_role !== (localUser as any)?.school_authority ||
+						JSON.stringify(syncedLocalUser.platform_authorities) ||
+					serverUser.school_role !== syncedLocalUser.school_authority ||
 					JSON.stringify(serverUser.work_roles) !==
-						JSON.stringify((localUser as any)?.work_capacities) ||
-					serverUser.tenant_kind !== (localUser as any)?.tenant_kind ||
-					serverUser.full_name !== localUser?.full_name ||
-					serverUser.email !== localUser?.email;
+						JSON.stringify(syncedLocalUser.work_capacities) ||
+					serverUser.tenant_kind !== syncedLocalUser.tenant_kind ||
+					serverUser.full_name !== syncedLocalUser.full_name ||
+					serverUser.email !== syncedLocalUser.email;
 
 				if (hasSignificantChanges) {
 					console.log(
 						"= useClassroomRoleData: Syncing user data from server (Changes detected)",
 					);
-					setUser({ ...localUser, ...serverUser, id: userId } as any);
+					setUser({ ...syncedLocalUser, ...serverUser, id: userId });
 				}
 			}
 
@@ -99,16 +120,7 @@ export function useClassroomRoleData(_refreshTrigger: number = 0) {
 		} finally {
 			setLoading(false);
 		}
-	}, [
-		userId,
-		schoolId,
-		setUser,
-		setRealClassCount,
-		storeClassCount,
-		localUser,
-		localUser?.profile_completed,
-		localUser?.school_id,
-	]);
+	}, [userId, schoolId, setUser, setRealClassCount, storeClassCount, syncedLocalUser]);
 
 	useEffect(() => {
 		fetchData();

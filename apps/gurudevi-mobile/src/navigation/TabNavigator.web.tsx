@@ -79,9 +79,9 @@ const NotificationsScreenWeb = React.lazy(
 schedulePreload(() => import("@repo/ui/screens/NotificationsScreen.web"), 9000);
 
 const AppSettingsScreenWeb = React.lazy(
-	() => import("@repo/ui/screens/AppSettingsScreen.web"),
+	() => import("@repo/ui/screens/AppSettingsScreen"),
 );
-schedulePreload(() => import("@repo/ui/screens/AppSettingsScreen.web"), 10500);
+schedulePreload(() => import("@repo/ui/screens/AppSettingsScreen"), 10500);
 
 // ── Tab navigator ────────────────────────────────────────────────────────────
 
@@ -168,7 +168,9 @@ export default function TabNavigator({
 }) {
 	const { t } = useTranslation();
 	const { context } = usePermissions();
-	const role = context.roles[0];
+	const role =
+		context.bonds.find((b) => b.status === "active")?.capacity ??
+		context.bonds[0]?.capacity;
 	const userId = context.userId;
 	const { newAchievements } = useRewards();
 	const { unreadCount } = useNotifications(userId);
@@ -192,7 +194,8 @@ export default function TabNavigator({
 	if (newAchievements !== prevAchievements) {
 		setPrevAchievements(newAchievements);
 		if (newAchievements.length > 0 && !showCelebration) {
-			setCurrentAchievement(newAchievements[0]);
+			const first = newAchievements[0];
+			if (first) setCurrentAchievement(first);
 			setShowCelebration(true);
 		}
 	}
@@ -232,7 +235,8 @@ export default function TabNavigator({
 		const focusable = sidebar.querySelectorAll<HTMLElement>(
 			'a[href], button:not([disabled]), input:not([disabled]), textarea, select, [tabindex]:not([tabindex="-1"])',
 		);
-		if (focusable.length > 0) focusable[0].focus();
+		const firstFocusable = focusable.item(0);
+		if (firstFocusable) firstFocusable.focus();
 
 		// Tab key handler — cycle inside the sidebar only
 		const handleKeyDown = (e: KeyboardEvent) => {
@@ -249,6 +253,7 @@ export default function TabNavigator({
 			if (items.length === 0) return;
 			const first = items[0];
 			const last = items[items.length - 1];
+			if (!first || !last) return;
 			if (e.shiftKey) {
 				if (document.activeElement === first) {
 					e.preventDefault();
@@ -285,7 +290,7 @@ export default function TabNavigator({
 	const getClassroomLabel = () => {
 		if (role === "principal") return t("tabs.mySchool");
 		if (role === "founder") return t("tabs.school");
-		if (role === "sectionHead") return t("tabs.section");
+		if (role === "assistantPrincipal") return t("tabs.section");
 		if (role === "gradeHead") return t("tabs.grade");
 		return t("tabs.classroom");
 	};

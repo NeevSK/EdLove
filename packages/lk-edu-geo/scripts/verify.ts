@@ -22,13 +22,12 @@ async function test() {
 	// 3. Search for a specific school (e.g., Royal College)
 	const schools = searchSchools("Royal College");
 	console.log(`\u2705 Schools matching "Royal College": ${schools.length}`);
-	if (schools.length > 0) {
-		console.log(
-			`   Sample: ${schools[0].name} (Census: ${schools[0].census_no})`,
-		);
+	const firstSchool = schools[0];
+	if (firstSchool) {
+		console.log(`   Sample: ${firstSchool.name} (Census: ${firstSchool.census_no})`);
 
 		// 4. Check Hierarchy
-		const hierarchy = getHierarchyForSchool(schools[0].id);
+		const hierarchy = getHierarchyForSchool(firstSchool.id);
 		console.log("\u2705 Hierarchy lookup for Royal College:");
 		console.log(
 			`   Admin: ${hierarchy?.admin.province?.name} -> ${hierarchy?.admin.district?.name}`,

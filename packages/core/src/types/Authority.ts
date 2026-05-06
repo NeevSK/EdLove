@@ -1,6 +1,6 @@
-import type { Role } from '../logic/schemas/role.schema';
+import type { Capacity } from '../logic/schemas/capacity.schema';
 
-export type AuthorityTier = Role;
-export type { Role as PlatformAuthority, Role as SchoolAuthority, Role as WorkCapacity }; // Transitional aliases
-export type SchoolRole = Role;
-export type WorkRole = Role;
+export type AuthorityTier = Capacity;
+export type { Capacity as PlatformAuthority, Capacity as SchoolAuthority, Capacity as WorkCapacity }; // Transitional aliases
+export type SchoolRole = Capacity;
+export type WorkRole = Capacity;

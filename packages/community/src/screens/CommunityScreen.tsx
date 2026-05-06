@@ -67,7 +67,6 @@ export default function CommunityScreen() {
 
 	const userId = user?.id ?? "guest";
 	const schoolId = user?.school_id ?? undefined;
-	const userAuthority = user?.authority ?? "student";
 
 	const canReadFeed = can("read", "CommunityFeed");
 	const canReadGroups = can("read", "CommunityGroups");
@@ -666,7 +665,6 @@ export default function CommunityScreen() {
 						<AnnouncementsScreen
 							schoolId={schoolId}
 							userId={user.id}
-							userAuthority={userAuthority}
 						/>
 					</SectionCard>
 				</Box>

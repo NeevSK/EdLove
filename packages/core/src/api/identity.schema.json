@@ -8,23 +8,19 @@
       "properties": {
         "id": { "type": "string", "format": "uuid" },
         "email": { "type": "string", "format": "email" },
-        "role": { "type": "string" },
         "name": { "type": "string" }
       },
-      "required": ["id", "email", "role"]
+      "required": ["id", "email"]
     },
     "FacetedProfile": {
       "type": "object",
       "properties": {
         "school_id": { "type": ["string", "null"], "format": "uuid" },
         "profile_completed": { "type": "boolean" },
-        "role": { "type": "string" },
         "full_name": { "type": "string" },
         "email": { "type": "string", "format": "email" },
-        "platform_roles": { "type": "array", "items": { "type": "string" } },
-        "school_role": { "type": "string" },
-        "work_roles": { "type": "array", "items": { "type": "string" } },
-        "tenant_kind": { "type": "string" }
+        "tenant_kind": { "type": "string" },
+        "onboarding_completed": { "type": "boolean" }
       }
     }
   }

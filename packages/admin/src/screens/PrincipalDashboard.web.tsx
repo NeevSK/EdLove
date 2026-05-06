@@ -45,6 +45,7 @@ import { PrincipalWorkspaceContainer } from "./PrincipalWorkspaceContainer";
 import { CyclesDashboard } from "./principal/CyclesDashboard";
 import { HierarchyDashboard } from "./principal/HierarchyDashboard";
 import { InvitesDashboard } from "./principal/InvitesDashboard";
+import { LegacyDashboard } from "./principal/LegacyDashboard";
 import { LogbookDashboard } from "./principal/LogbookDashboard";
 
 const DEMO_PRINCIPAL_SCHOOL_ID = "mock-school";
@@ -147,6 +148,10 @@ interface PrincipalDashboardWebProps {
 		onClose: () => void;
 		onSuccess?: () => void;
 	}>;
+	LegacyDashboardComponent?: React.ComponentType<{
+		schoolId: string;
+		onBack: () => void;
+	}>;
 }
 
 export default function PrincipalDashboardWeb({
@@ -162,6 +167,7 @@ export default function PrincipalDashboardWeb({
 	PrincipalOnboardingViewComponent,
 	CreateSchoolModalComponent,
 	CreateClassroomModalComponent,
+	LegacyDashboardComponent = LegacyDashboard,
 }: PrincipalDashboardWebProps) {
 	const user = useAuthStore((state) => state.user) as User | null;
 	const { isGuest } = useFeatureAccess();
@@ -220,7 +226,7 @@ export default function PrincipalDashboardWeb({
 			viewDate,
 		],
 		queryFn: () =>
-			api.grading.getSchoolPublishedGradingCompletion(
+			api["grading"].getSchoolPublishedGradingCompletion(
 				principalSchoolId,
 				viewDate || "",
 				{
@@ -309,6 +315,14 @@ export default function PrincipalDashboardWeb({
 				<CyclesDashboardComponent
 					schoolId={principalSchoolId}
 					isPastView={isPastView}
+					onBack={handleBackToDashboard}
+				/>
+			);
+		}
+		if (view === "legacy") {
+			return (
+				<LegacyDashboardComponent
+					schoolId={principalSchoolId}
 					onBack={handleBackToDashboard}
 				/>
 			);

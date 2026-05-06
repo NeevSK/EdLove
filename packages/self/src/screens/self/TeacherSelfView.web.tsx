@@ -1,4 +1,3 @@
-import { useNavigation } from "@react-navigation/native";
 import { useBanyanGrowth, useJourneyHistory } from "@repo/core/hooks";
 import { usePermissions, useStore, useTemporalStore } from "@repo/core/logic";
 import { JourneyHistoryCard } from "@repo/ui/components/JourneyHistoryCard";
@@ -26,6 +25,7 @@ import VoiceJournaling from "../../components/VoiceJournaling";
 import { WarmMirrorCard } from "../../components/WarmMirrorCard";
 import WelcomeModal from "../../components/WelcomeModal";
 import WisdomSeeds from "../../components/WisdomSeeds";
+import TeachingHistoryTimeline from "../../components/TeachingHistoryTimeline";
 import { useJournalEntries } from "../../hooks/useJournalEntries";
 import { useMoodLogs } from "../../hooks/useMoodLogs";
 import { useWellbeingEnrichment } from "../../hooks/useWellbeingEnrichment";
@@ -37,7 +37,6 @@ import {
 
 export default function TeacherSelfView() {
 	const { t } = useTranslation();
-	const navigation = useNavigation<any>();
 	const { context } = usePermissions();
 	const userId = context.userId;
 	const { viewDate } = useTemporalStore();
@@ -80,7 +79,7 @@ export default function TeacherSelfView() {
 				events={journeyEvents}
 				summary={holisticView.summary}
 				loading={journeyLoading}
-				scale={viewScale as any}
+				scale={viewScale === "custom" ? "day" : viewScale}
 			/>
 			{workingLayer}
 			{personalLayer}
@@ -92,7 +91,7 @@ export default function TeacherSelfView() {
 			<MoodPickerCard
 				isOpen={false}
 				onToggle={() => {}}
-				onSelect={async (mood, note) => {
+				onSelect={async (mood: Parameters<typeof addMoodLog>[0], note: string) => {
 					await addMoodLog(mood, note || undefined);
 				}}
 				isSaving={false}
@@ -114,16 +113,10 @@ export default function TeacherSelfView() {
 					Professional Ecology
 				</h3>
 				<div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-					<button
-						className="sidebar-item"
-						onClick={() => navigation.navigate("Main", { screen: "Classroom" })}
-					>
+					<button className="sidebar-item" onClick={() => {}}>
 						<Icon as={Users} size={16} /> <span>Educational Ecology</span>
 					</button>
-					<button
-						className="sidebar-item"
-						onClick={() => navigation.navigate("Main", { screen: "Community" })}
-					>
+					<button className="sidebar-item" onClick={() => {}}>
 						<MessageSquare size={16} /> <span>Faculty Resonance</span>
 					</button>
 				</div>
@@ -235,6 +228,11 @@ export default function TeacherSelfView() {
 								label: "Decision Journal",
 								content: <DecisionJournalSection userId={userId ?? ""} />,
 							},
+							{
+								id: "professional_history",
+								label: "Professional History",
+								content: <TeachingHistoryTimeline userId={userId ?? ""} />,
+							},
 						],
 					},
 				]}
@@ -247,3 +245,4 @@ export default function TeacherSelfView() {
 		</TemporalProvider>
 	);
 }
+

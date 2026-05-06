@@ -4,7 +4,6 @@
  * Standardized to Zero-Legacy: purged corrupted mutation options and migrated to NativeWind v4.
  */
 
-import { useNavigation } from "@react-navigation/native";
 import { supabase } from "@repo/core/api";
 import { useSafeMutation } from "@repo/core/hooks";
 import { usePermissions } from "@repo/core/logic";
@@ -36,7 +35,6 @@ interface DecisionJournalSectionProps {
 export default function DecisionJournalSection({
 	userId,
 }: DecisionJournalSectionProps) {
-	const navigation = useNavigation<any>();
 	const { context } = usePermissions();
 	const activeUserId = userId || context.userId;
 	const [decisionText, setDecisionText] = useState("");
@@ -63,7 +61,7 @@ export default function DecisionJournalSection({
 			onSuccess: () => {
 				hapticLight();
 				setDecisionText("");
-				refreshData();
+				void refreshData();
 			},
 		},
 	);
@@ -78,7 +76,7 @@ export default function DecisionJournalSection({
 		return (
 			<PositiveInvitation
 				type="guest"
-				onAction={() => navigation.navigate("Auth" as never)}
+				onAction={() => {}}
 			/>
 		);
 	}
@@ -106,6 +104,7 @@ export default function DecisionJournalSection({
 							<Pressable
 								onPress={handleSave}
 								disabled={!decisionText.trim() || isSaving}
+								accessibilityRole="button"
 								className={`flex-row items-center gap-2 px-6 py-3 rounded-full border transition-all active:scale-95 ${
 									decisionText.trim()
 										? "bg-sanctuarySaffron border-sanctuarySaffron shadow-lg shadow-sanctuarySaffron/20"

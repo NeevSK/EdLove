@@ -21,7 +21,7 @@ import { useToast } from "@repo/ui/providers";
 import { Theme } from "@repo/ui/theme";
 import { hapticLight, hapticSuccess } from "@repo/ui/utils/haptics";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 interface BulkStudentCreationProps {
@@ -34,7 +34,7 @@ type Step = "count" | "entry" | "review";
 type DraftStudent = BulkStudent & { id: string };
 
 const createDraftStudent = (index: number): DraftStudent => ({
-	id: `draft-${index}-${Date.now().toString(36)}`,
+	id: `draft-${index}-${globalThis.crypto?.randomUUID?.() ?? "draft"}`,
 	name: "",
 	index_number: "",
 	notes: "",
@@ -52,14 +52,14 @@ export default function BulkStudentCreation({
 	const [step, setStep] = useState<Step>("count");
 
 	// Auto-save logic
-	React.useEffect(() => {
+	useEffect(() => {
 		if (students.length > 0) {
 			storage.set(StorageKeys.DRAFT_STUDENTS, JSON.stringify({ students, step, currentIndex }));
 		}
 	}, [students, step, currentIndex]);
 
 	// Restore draft on mount
-	React.useEffect(() => {
+	useEffect(() => {
 		const saved = storage.getString(StorageKeys.DRAFT_STUDENTS);
 		if (saved && students.length === 0) {
 			try {
@@ -73,7 +73,7 @@ export default function BulkStudentCreation({
 				console.error("Failed to restore student draft:", e);
 			}
 		}
-	}, []);
+	}, [students.length]);
 
 	const currentStudent = students[currentIndex];
 	const validStudentsCount = useMemo(

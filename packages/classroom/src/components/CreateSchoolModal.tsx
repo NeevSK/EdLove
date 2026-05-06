@@ -91,7 +91,7 @@ export default function CreateSchoolModal({
 
 			let updatedSchool;
 			if (isEdit && initialData) {
-				updatedSchool = await api.school.update(initialData.id, {
+				updatedSchool = await api["school"].update(initialData.id, {
 					name: name.trim(),
 					handle: handle.trim(),
 					type,
@@ -102,7 +102,7 @@ export default function CreateSchoolModal({
 				return;
 			} else {
 				// 1. Create real School
-				updatedSchool = await api.school.create({
+				updatedSchool = await api["school"].create({
 					name: name.trim(),
 					handle:
 						handle.trim() || name.trim().toLowerCase().replace(/\s+/g, "-"),

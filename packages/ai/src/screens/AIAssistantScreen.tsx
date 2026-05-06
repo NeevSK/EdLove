@@ -25,7 +25,7 @@ export default function AIAssistantScreen() {
 	const { gradientNodes, accent, glass, text, isDark } = useTheme();
 	const { t } = useTranslation();
 	const { messages, isThinking, sendMessage } = useAIAgent();
-	const userRole = useStore((state) => state.userRole);
+	const userRole = useStore((state) => state.activeBond?.capacity ?? null);
 	const [inputText, setInputText] = useState("");
 	const flatListRef = useRef<FlatList>(null);
 

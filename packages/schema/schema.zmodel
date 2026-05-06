@@ -1,0 +1,1029 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+plugin orm {
+  provider = "@zenstackhq/orm"
+  output = "./src/generated/orm"
+}
+
+plugin policy {
+  provider = "@zenstackhq/plugin-policy"
+  output = "src/generated/policy"
+}
+
+plugin zod {
+  provider = "@zenstackhq/zod"
+  output = "src/generated/zod"
+}
+
+/*
+ * POA Authorization Mapping
+ * --------------------------
+ * Capabilities defined in CASL are mapped here to ZenStack policies.
+ */
+
+model User {
+  id        String   @id @default(uuid())
+  email     String?  @unique
+  full_name String
+  username  String?  @unique
+  avatar_url String?
+  bio       String?
+  phone     String?
+  index_number String?
+  nic_number String?
+  public_profile Boolean? @default(true)
+  profile_completed Boolean? @default(false)
+  is_anonymous Boolean? @default(false)
+  experience_years Int?
+  subjects_taught String[]
+  qualifications String[]
+  tenant_kind String?
+  onboarding_completed Boolean? @default(false)
+  onboarding_completed_at DateTime?
+  school_id String?
+  metadata Json?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  posts     Post[]
+  memberships GroupMember[]
+  social_links UserSocialLink[]
+  
+  classrooms Classroom[] @relation("TeacherClassrooms")
+  student_attendance AttendanceRecord[] @relation("StudentAttendance")
+  student_enrollments ClassroomStudent[] @relation("StudentEnrollments")
+  student_grades Grade[] @relation("StudentGrades")
+  grades_given Grade[] @relation("GradedBy")
+  reactions CommunityReaction[]
+  messages  GroupMessage[]
+  mood_logs MoodLog[]
+  journal_entries FireJournalEntry[]
+  preferences UserPreferences?
+
+  // Growth & Wellbeing
+  gifts_given ThuthimalGift[] @relation("GiftsGiven")
+  gifts_received ThuthimalGift[] @relation("GiftsReceived")
+  impact_ripples ImpactRipple[] @relation("RecipientRipples")
+  actions_rippled ImpactRipple[] @relation("ActorRipples")
+  whispered_moments WhisperedMoment[]
+  growth_events GrowthEvent[]
+  growth_state UserGrowthState?
+  manifesto_endorsements ManifestoEndorsement[]
+
+  // HR & Staff
+  staff_leaves StaffLeave[]
+  
+  // Guardian & Relationship
+  guardian Guardian?
+  student_guardian_links StudentGuardianRelationship[] @relation("StudentGuardians")
+
+  // Accounting & Payments
+  invoices Invoice[]
+
+  classroom_notes ClassroomNote[]
+  longitudinal_events StudentLongitudinalEvent[] @relation("StudentEvents")
+  audit_logs SentinelAuditLog[] @relation("AuditLogs")
+  bonds      Bond[]
+
+  // Only the user themselves or a platform admin can update profile details
+  @@allow('all', auth() != null && auth().id == id)
+  @@allow('all', auth() != null && auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  
+  // Everyone can read basic profile info
+  @@allow('read', auth() != null)
+
+  @@map("users")
+}
+
+/**
+ * Bond: The atomic unit of ReBAC.
+ * Represents a relationship between a User and an Entity (Platform, School, Classroom).
+ */
+model Bond {
+  id          String   @id @default(uuid())
+  user_id     String
+  entity_id   String   // 'GLOBAL' for platform, or specific School/Classroom ID
+  entity_type String   // 'PLATFORM', 'SCHOOL', 'CLASSROOM', 'COMMUNITY'
+  capacity    String   // 'admin', 'teacher', 'student', etc.
+  metadata    Json?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  user        User     @relation(fields: [user_id], references: [id])
+
+  // Access Control: Platform Admins or the user themselves can manage their bonds
+  @@allow('all', user.bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@allow('read', auth() != null && user_id == auth().id)
+  
+  @@map("bonds")
+}
+
+model UserSocialLink {
+  id            String   @id @default(uuid())
+  user_id       String
+  platform      String
+  url           String
+  is_public     Boolean  @default(true)
+  privacy_level String   @default("public")
+  order_index   Int      @default(0)
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  user          User     @relation(fields: [user_id], references: [id])
+
+  @@allow('read', auth() != null && (is_public == true || user_id == auth().id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
+  @@allow('all', auth() != null && (user_id == auth().id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
+
+  @@map("user_social_links")
+}
+
+model Classroom {
+  id               String   @id @default(uuid())
+  school_id        String?
+  grade_id         String?
+  teacher_id       String?
+  section_id       String?
+  name             String
+  handle           String?
+  subject          String?
+  description      String?
+  color_theme      String?
+  syllabus_version String?
+  is_archived      Boolean  @default(false)
+  academic_year    String?
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+
+  school           School?    @relation(fields: [school_id], references: [id])
+  teacher          User?      @relation("TeacherClassrooms", fields: [teacher_id], references: [id])
+  students         ClassroomStudent[]
+  assignments      Assignment[]
+  grades           Grade[]
+  settings         ClassroomGradingSettings?
+  lessons          Lesson[]
+  materials        Material[]
+  attendance       AttendanceRecord[]
+  inventory        InventoryItem[]
+  notes            ClassroomNote[]
+
+  // Permissions
+  @@allow('read', auth() != null)
+  @@allow('all', auth().id == teacher_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+}
+
+model ClassroomStudent {
+  id           String    @id @default(uuid())
+  classroom_id String
+  student_id   String
+  status       String    @default("active") // active, left, suspended
+  joined_at    DateTime  @default(now())
+
+  classroom    Classroom @relation(fields: [classroom_id], references: [id])
+  student      User      @relation("StudentEnrollments", fields: [student_id], references: [id])
+
+  @@unique([classroom_id, student_id])
+
+  @@allow('read', classroom.teacher_id == auth().id || student_id == auth().id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@allow('all', classroom.teacher_id == auth().id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+}
+
+model Assignment {
+  id           String   @id @default(uuid())
+  title        String
+  description  String?
+  classroom_id String
+  lesson_id    String?
+  due_date     DateTime?
+  max_points   Int      @default(100)
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  classroom    Classroom @relation(fields: [classroom_id], references: [id])
+  grades       Grade[]
+
+  // Permissions
+  @@allow('read', classroom.teacher_id == auth().id || (auth() != null && classroom.is_archived == false))
+  @@allow('all', classroom.teacher_id == auth().id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+}
+
+model Grade {
+  id            String   @id @default(uuid())
+  classroom_id  String
+  assignment_id String?
+  student_id    String
+  graded_by     String
+  marks         Float
+  grade         String
+  gpa           Float
+  feedback      String?
+  publication_state String @default("draft") // draft, published
+  published_at      DateTime?
+  published_by      String?
+  publication_action String?
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  classroom     Classroom  @relation(fields: [classroom_id], references: [id])
+  assignment    Assignment? @relation(fields: [assignment_id], references: [id])
+  student       User       @relation("StudentGrades", fields: [student_id], references: [id])
+  grader        User       @relation("GradedBy", fields: [graded_by], references: [id])
+
+  // Permissions
+  @@allow('read', auth().id == student_id || auth().id == graded_by || classroom.teacher_id == auth().id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@allow('all', auth().id == graded_by || classroom.teacher_id == auth().id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+}
+
+model ClassroomGradingSettings {
+  classroom_id String @id
+  grading_mode String @default("both")
+  show_ranks   Boolean @default(true)
+  classroom    Classroom @relation(fields: [classroom_id], references: [id])
+
+  // Permissions
+  @@allow('read', classroom.teacher_id == auth().id || (auth() != null && classroom.is_archived == false))
+  @@allow('all', classroom.teacher_id == auth().id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+}
+
+model Group {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  school_id   String?
+  creator_id  String
+  type        String   @default("general") // class, interest, general
+  visibility  String   @default("public")  // public, private
+  join_policy String   @default("open")    // open, restricted, closed
+  is_public   Boolean  @default(true)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  members     GroupMember[]
+  posts       Post[]
+  messages    GroupMessage[]
+  school      School?  @relation(fields: [school_id], references: [id])
+
+  // Permissions
+  @@allow('read', is_public || visibility == 'public')
+  @@allow('read', members?[user_id == auth().id])
+  @@allow('all', creator_id == auth().id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+}
+
+model GroupMember {
+  id       String @id @default(uuid())
+  user_id  String
+  group_id String
+  role     String @default("member") // owner, moderator, member
+  status   String @default("active") // active, pending, rejected
+  
+  user     User   @relation(fields: [user_id], references: [id])
+  group    Group  @relation(fields: [group_id], references: [id])
+
+  @@unique([user_id, group_id])
+
+  @@allow('read', group.is_public || group.members?[user_id == auth().id])
+  @@allow('all', auth() != null && user_id == auth().id)
+  @@allow('all', group.creator_id == auth().id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+}
+
+model Post {
+  id               String   @id @default(uuid())
+  group_id         String
+  author_id        String
+  school_id        String?
+  content          String
+  post_type        String   @default("discussion")
+  visibility       String   @default("school")
+  author_tier      String   // Maps to RoleSchema
+  media_url        String?
+  media_type       String?
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+
+  group            Group    @relation(fields: [group_id], references: [id])
+  author           User     @relation(fields: [author_id], references: [id])
+  reactions        CommunityReaction[]
+
+  // Authors can manage their own posts
+  @@allow('all', auth() != null && author_id == auth().id)
+  
+  // Members of the group can read posts
+  @@allow('read', group.is_public || group.members?[user_id == auth().id])
+}
+
+model GroupMessage {
+  id          String   @id @default(uuid())
+  group_id    String
+  author_id   String
+  content     String
+  created_at  DateTime @default(now())
+
+  group       Group    @relation(fields: [group_id], references: [id])
+  author      User     @relation(fields: [author_id], references: [id])
+
+  @@allow('read', group.members?[user_id == auth().id])
+  @@allow('create', group.members?[user_id == auth().id])
+}
+
+model CommunityReaction {
+  id          String @id @default(uuid())
+  post_id     String
+  user_id     String
+  emoji       String @default("❤️")
+  
+  post        Post   @relation(fields: [post_id], references: [id])
+  user        User   @relation(fields: [user_id], references: [id])
+
+  @@unique([post_id, user_id])
+
+  @@allow('read', post.group.is_public || post.group.members?[user_id == auth().id])
+  @@allow('all', user_id == auth().id)
+}
+
+model Lesson {
+  id           String   @id @default(uuid())
+  classroom_id String
+  title        String
+  content      String?
+  order_index  Int      @default(0)
+  published_at DateTime?
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  classroom    Classroom @relation(fields: [classroom_id], references: [id])
+  materials    Material[]
+
+  // Permissions
+  @@allow('read', classroom.teacher_id == auth().id || (auth() != null && classroom.is_archived == false))
+  @@allow('all', classroom.teacher_id == auth().id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+}
+
+model Material {
+  id           String   @id @default(uuid())
+  classroom_id String
+  lesson_id    String?
+  title        String
+  type         String   // Maps to ResourceType
+  url          String?
+  content      String?
+  is_pinned    Boolean  @default(false)
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  classroom    Classroom @relation(fields: [classroom_id], references: [id])
+  lesson       Lesson?   @relation(fields: [lesson_id], references: [id])
+
+  // Permissions
+  @@allow('read', classroom.teacher_id == auth().id || (auth() != null && classroom.is_archived == false))
+  @@allow('all', classroom.teacher_id == auth().id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+
+  @@map("classroom_resources")
+}
+
+model AttendanceRecord {
+  id           String   @id @default(uuid())
+  classroom_id String
+  student_id    String
+  status       String   // e.g., "present", "absent", "late"
+  date         DateTime @default(now())
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+  occurred_at  DateTime? // Event time - foundation-v4
+  academic_cycle_id String? // foundation-v4
+
+  classroom    Classroom @relation(fields: [classroom_id], references: [id])
+  student      User      @relation("StudentAttendance", fields: [student_id], references: [id])
+
+  // Permissions: Teachers and Admins can manage attendance for their classroom
+  @@allow('read', classroom.teacher_id == auth().id || auth().id == student_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@allow('all', classroom.teacher_id == auth().id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+}
+
+model School {
+  id         String   @id @default(uuid())
+  name       String
+  handle     String?  @unique
+  status     String   @default("pending") // active, pending, rejected
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // Metadata Fields
+  type                  String?  // Legacy field
+  tenant_kind           String?
+  official_type         String?
+  province_id           String?
+  district_id           String?
+  city                  String?
+  address               String?
+  student_type          String?
+  religious_affiliation String?
+  student_count         Int?
+  avatar_url            String?
+
+  classrooms Classroom[]
+  groups     Group[]
+  manifestos SanctuaryManifesto[]
+  sections   Section[]
+
+  // HR & Staff
+  staff_leaves StaffLeave[]
+  calendar_events CalendarEvent[]
+
+  // Guardian
+  guardians Guardian[]
+
+  // Permissions: Only admins can manage schools; everyone authenticated can read basic info
+  @@allow('read', auth() != null)
+  @@allow('all', auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+}
+
+model InventoryItem {
+  id           String   @id @default(uuid())
+  classroom_id String
+  name         String
+  category     String
+  quantity     Int      @default(0)
+  condition    String   @default("good")
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  classroom    Classroom @relation(fields: [classroom_id], references: [id])
+
+  // Permissions: Teachers and Admins can manage their classroom inventory
+  @@allow('read', classroom.teacher_id == auth().id || auth() != null)
+  @@allow('all', classroom.teacher_id == auth().id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+}
+
+// ============================================================================
+// SELF DOMAIN
+// ============================================================================
+
+model MoodLog {
+  id         String   @id @default(uuid())
+  user_id    String
+  mood_score Int
+  mood       String?
+  note       String?
+  created_at DateTime @default(now())
+  user       User     @relation(fields: [user_id], references: [id])
+
+  @@allow('all', auth().id == user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@map("mood_logs")
+}
+
+model FireJournalEntry {
+  id              String   @id @default(uuid())
+  user_id         String
+  content_preview String
+  is_burned       Boolean  @default(true)
+  created_at      DateTime @default(now())
+  user            User     @relation(fields: [user_id], references: [id])
+
+  @@allow('all', auth().id == user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@map("fire_journal")
+}
+
+model UserPreferences {
+  id                        String   @id @default(uuid())
+  user_id                   String   @unique
+  favorite_features         String[]
+  hidden_features           String[]
+  morning_check_time        String?
+  afternoon_check_time      String?
+  evening_wind_down_time    String?
+  enable_contextual_prompts Boolean  @default(true)
+  enable_usage_tracking     Boolean  @default(true)
+  updated_at                DateTime @updatedAt
+  created_at                DateTime @default(now())
+  user                      User     @relation(fields: [user_id], references: [id])
+
+  @@allow('all', auth().id == user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@map("user_preferences")
+}
+
+//  ============================================================================
+// LIBRARY DOMAIN
+// ============================================================================
+
+model LibraryResource {
+  id               String   @id @default(uuid())
+  title            String
+  description      String?
+  type             String
+  format           String
+  url              String?
+  file_path        String?
+  subjects         String[]
+  topics           String[]
+  grades           Int[]
+  difficulty       String?
+  language         String[]
+  visibility       String   @default("public")
+  creator_id       String
+  creator_role     String
+  verified         Boolean  @default(false)
+  is_community     Boolean  @default(false)
+  views            Int      @default(0)
+  uses_count       Int      @default(0)
+  endorsements     Int      @default(0)
+  bookmarks        Int      @default(0)
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+  
+  engagements      ResourceEngagement[]
+  collections      LibraryCollection[] @relation("CollectionNodes")
+
+  @@allow('read', visibility == 'public' || auth().id == creator_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@allow('all', auth().id == creator_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@map("nodes")
+}
+
+model LibraryCollection {
+  id             String   @id @default(uuid())
+  name           String
+  description    String?
+  creator_id     String
+  visibility     String   @default("public")
+  subjects       String[]
+  topics         String[]
+  grades         Int[]
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+  
+  nodes          LibraryResource[] @relation("CollectionNodes")
+
+  @@allow('read', visibility == 'public' || auth().id == creator_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@allow('all', auth().id == creator_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@map("collections")
+}
+
+model ResourceEngagement {
+  id              String   @id @default(uuid())
+  resource_id     String
+  user_id         String
+  engagement_type String   // view, use, endorse, bookmark
+  classroom_id    String?
+  created_at      DateTime @default(now())
+  
+  resource        LibraryResource @relation(fields: [resource_id], references: [id])
+
+  @@allow('read', auth().id == user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@allow('all', auth().id == user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@map("resource_engagements")
+}
+
+// ============================================================================
+// GROWTH & WELLBEING (BHUMI STACK)
+// ============================================================================
+
+model ThuthimalGift {
+  id               String   @id @default(uuid())
+  gift_token       String   @unique @default(uuid())
+  gifter_id        String
+  recipient_id     String?
+  gifter_name      String?
+  recipient_role   String?
+  gift_message     String?
+  claimed          Boolean  @default(false)
+  claimed_at       DateTime?
+  expires_at       DateTime?
+  created_at       DateTime @default(now())
+
+  gifter           User     @relation("GiftsGiven", fields: [gifter_id], references: [id])
+  recipient        User?    @relation("GiftsReceived", fields: [recipient_id], references: [id])
+
+  @@allow('all', auth().id == gifter_id || auth().id == recipient_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@map("thuthimal_gifts")
+}
+
+model ImpactRipple {
+  id               String   @id @default(uuid())
+  recipient_user_id String
+  actor_user_id     String
+  entity_id        String?
+  ripple_type      String
+  warm_message_en  String?
+  warm_message_si  String?
+  delivered        Boolean  @default(false)
+  delivered_at     DateTime?
+  created_at       DateTime @default(now())
+
+  recipient        User     @relation("RecipientRipples", fields: [recipient_user_id], references: [id])
+  actor            User     @relation("ActorRipples", fields: [actor_user_id], references: [id])
+
+  @@allow('read', auth() != null)
+  @@allow('all', auth().id == actor_user_id || auth().id == recipient_user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@map("impact_ripples")
+}
+
+model WhisperedMoment {
+  id            String   @id @default(uuid())
+  user_id       String
+  moment_key    String
+  moment_name_en String
+  moment_name_si String?
+  awarded_at    DateTime @default(now())
+
+  user          User     @relation(fields: [user_id], references: [id])
+
+  @@allow('read', auth().id == user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@allow('all', auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@map("whispered_moments")
+}
+
+model GrowthEvent {
+  id             String   @id @default(uuid())
+  user_id        String
+  dimension      String   // presence, flowering, etc.
+  event_type     String
+  event_metadata Json?
+  created_at     DateTime @default(now())
+
+  user           User     @relation(fields: [user_id], references: [id])
+
+  @@allow('read', auth().id == user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@allow('create', auth().id == user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@map("growth_events")
+}
+
+model UserGrowthState {
+  id                          String   @id @default(uuid())
+  user_id                     String   @unique
+  bhumi_stage                 String   @default("seed")
+  banyan_stage                String?
+  river_stage                 String?
+  crystal_tier                String?
+  presence_signals             Int      @default(0)
+  nourishing_signals           Int      @default(0)
+  witnessing_signals           Int      @default(0)
+  weaving_signals              Int      @default(0)
+  blooming_signals             Int      @default(0)
+  peer_mentored_count          Int      @default(0)
+  circles_facilitated_count    Int      @default(0)
+  lessons_completed_count      Int      @default(0)
+  reflections_submitted_count Int      @default(0)
+  crystals_found_count         Int      @default(0)
+  fractal_moments_count        Int      @default(0)
+  last_seen_at                DateTime @default(now())
+  onboarding_completed Boolean? @default(false)
+  onboarding_completed_at DateTime?
+  profile_completed Boolean? @default(false)
+  deleted_at DateTime?
+  created_at                  DateTime @default(now())
+  updated_at                  DateTime @updatedAt
+
+  user                        User     @relation(fields: [user_id], references: [id])
+
+  @@allow('read', auth().id == user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@allow('all', auth().id == user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@map("user_growth_state")
+}
+
+model SanctuaryManifesto {
+  id          String   @id @default(uuid())
+  school_id   String
+  creator_id  String
+  title       String
+  content     String
+  vibe        String?
+  status      String   @default("active")
+  target_date DateTime?
+  metadata    Json?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+  endorsement_count Int @default(0)
+
+  school      School   @relation(fields: [school_id], references: [id])
+  endorsements ManifestoEndorsement[]
+
+  @@allow('read', auth() != null)
+  @@allow('all', auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@map("sanctuary_manifestos")
+}
+
+model ManifestoEndorsement {
+  id             String   @id @default(uuid())
+  manifesto_id   String
+  user_id        String
+  commitment_text String?
+  created_at     DateTime @default(now())
+
+  manifesto      SanctuaryManifesto @relation(fields: [manifesto_id], references: [id])
+  user           User               @relation(fields: [user_id], references: [id])
+
+  @@unique([manifesto_id, user_id])
+  @@allow('read', auth() != null)
+  @@allow('create', auth() != null)
+  @@map("manifesto_endorsements")
+}
+
+model Section {
+  id         String   @id @default(uuid())
+  school_id  String
+  name       String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  
+  school     School   @relation(fields: [school_id], references: [id])
+  grades     SchoolGrade[]
+
+  @@allow('read', auth() != null)
+  @@allow('all', auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+}
+
+model SchoolGrade {
+  id         String   @id @default(uuid())
+  section_id String
+  number     Int
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  
+  section    Section  @relation(fields: [section_id], references: [id])
+
+  @@allow('read', auth() != null)
+  @@allow('all', auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+}
+
+// ============================================================================
+// HR & STAFF DOMAIN
+// ============================================================================
+
+model StaffLeave {
+  id           String   @id @default(uuid())
+  school_id    String
+  user_id      String
+  leave_type   String
+  start_date   DateTime
+  end_date     DateTime
+  reason       String?
+  status       String   @default("pending") // pending, approved, rejected
+  reviewed_by  String?
+  reviewed_at  DateTime?
+  created_at   DateTime @default(now())
+
+  school       School   @relation(fields: [school_id], references: [id])
+  user         User     @relation(fields: [user_id], references: [id])
+
+  @@allow('all', auth().id == user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@allow('read', auth() != null && school_id == auth().school_id)
+  @@map("staff_leaves")
+}
+
+model CalendarEvent {
+  id           String   @id @default(uuid())
+  school_id    String
+  title        String
+  type         String
+  start_date   DateTime
+  end_date     DateTime?
+  is_public    Boolean  @default(true)
+  created_by   String?
+  created_at   DateTime @default(now())
+
+  school       School   @relation(fields: [school_id], references: [id])
+
+  @@allow('read', is_public || school_id == auth().school_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@allow('all', auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@map("calendar_events")
+}
+
+// ============================================================================
+// GUARDIAN DOMAIN
+// ============================================================================
+
+model Guardian {
+  id                 String   @id @default(uuid())
+  user_id            String?  @unique
+  relationship_type  String   // parent, guardian, caregiver
+  contact_info       Json
+  verification_status String  @default("pending") // pending, verified, rejected
+  custody_info       Json?
+  emergency_contact  Json?
+  created_at         DateTime @default(now())
+  updated_at         DateTime @updatedAt
+  school_id          String
+
+  user               User?    @relation(fields: [user_id], references: [id])
+  school             School   @relation(fields: [school_id], references: [id])
+  students           StudentGuardianRelationship[]
+
+  @@allow('all', auth().id == user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@allow('read', auth() != null)
+  @@map("guardians")
+}
+
+model StudentGuardianRelationship {
+  id                String   @id @default(uuid())
+  student_id        String
+  guardian_id       String
+  relationship_type String
+  permissions       Json     @default("[]")
+  custody_level     String   @default("full")
+  effective_date    DateTime @default(now())
+  termination_date  DateTime?
+  is_active         Boolean  @default(true)
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+  school_id         String
+
+  student           User     @relation("StudentGuardians", fields: [student_id], references: [id])
+  guardian          Guardian @relation(fields: [guardian_id], references: [id])
+
+  @@unique([student_id, guardian_id])
+  @@allow('read', auth().id == student_id || auth().id == guardian.user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@allow('all', auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@map("student_guardian_relationships")
+}
+
+// ============================================================================
+// ACCOUNTING & PAYMENTS DOMAIN
+// ============================================================================
+
+model Account {
+  id         String   @id @default(uuid())
+  name       String
+  code       String   @unique
+  type       String   // asset, liability, equity, income, expense
+  parent_id  String?
+  balance    Float    @default(0)
+  metadata   Json?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  entries    LedgerEntry[]
+  budgets    Budget[]
+  parent     Account?  @relation("AccountHierarchy", fields: [parent_id], references: [id])
+  children   Account[] @relation("AccountHierarchy")
+
+  @@allow('all', auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@allow('read', auth() != null)
+  @@map("accounts")
+}
+
+model LedgerEntry {
+  id             String   @id @default(uuid())
+  transaction_id String
+  account_id     String
+  amount         Float
+  side           String   // debit, credit
+  description    String?
+  created_at     DateTime @default(now())
+
+  account        Account              @relation(fields: [account_id], references: [id])
+  transaction    FinancialTransaction @relation(fields: [transaction_id], references: [id])
+
+  @@allow('all', auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@map("ledger_entries")
+}
+
+model FinancialTransaction {
+  id           String   @id @default(uuid())
+  date         DateTime @default(now())
+  description  String
+  reference_no String?
+  metadata     Json?
+  created_at   DateTime @default(now())
+
+  entries      LedgerEntry[]
+
+  @@allow('all', auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@map("financial_transactions")
+}
+
+model Budget {
+  id           String   @id @default(uuid())
+  account_id   String
+  amount       Float
+  period_start DateTime
+  period_end   DateTime
+  actual_spent Float    @default(0)
+  created_at   DateTime @default(now())
+
+  account      Account  @relation(fields: [account_id], references: [id])
+
+  @@allow('all', auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@map("budgets")
+}
+
+// -----------------------------------------------------------------------------
+// PREMIUM & ENTITLEMENTS (Pro)
+// -----------------------------------------------------------------------------
+
+model ProGift {
+  id             String    @id @default(uuid())
+  gifter_id      String
+  recipient_id   String?
+  gifter_name    String?
+  recipient_role String?
+  gift_message   String?
+  gift_token     String?
+  claimed        Boolean   @default(false)
+  claimed_at     DateTime?
+  expires_at     DateTime?
+  created_at     DateTime  @default(now())
+
+  @@allow('all', auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@map("pro_gifts")
+}
+
+model PaymentIntent {
+  id            String   @id @default(uuid())
+  amount        Float
+  currency      String   @default("LKR")
+  status        String   @default("pending")
+  provider      String   @default("stripe")
+  client_secret String?
+  metadata      Json?
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  @@allow('all', auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@map("payment_intents")
+}
+
+model Invoice {
+  id          String   @id @default(uuid())
+  customer_id String
+  amount      Float
+  currency    String   @default("LKR")
+  status      String   @default("draft")
+  due_date    DateTime
+  items       Json     // Array of items
+  metadata    Json?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  customer    User     @relation(fields: [customer_id], references: [id])
+
+  @@allow('all', auth().id == customer_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@map("invoices")
+}
+
+model Receipt {
+  id             String   @id @default(uuid())
+  invoice_id     String?
+  amount         Float
+  currency       String   @default("LKR")
+  paid_at        DateTime @default(now())
+  payment_method String
+  receipt_url    String?
+  created_at     DateTime @default(now())
+
+  @@allow('all', auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@map("receipts")
+}
+
+model ClassroomNote {
+  id           String   @id @default(uuid())
+  classroom_id String
+  author_id    String
+  content      String
+  note_type    String   @default("general") // general, observation, private
+  visibility   String   @default("teacher") // teacher, public, internal
+  is_pinned    Boolean  @default(false)
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  classroom    Classroom @relation(fields: [classroom_id], references: [id])
+  author       User      @relation(fields: [author_id], references: [id])
+
+  @@allow('all', auth().id == author_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@allow('read', auth().school_id == classroom.school_id && visibility != 'private')
+  @@map("classroom_notes")
+}
+
+model StudentLongitudinalEvent {
+  id          String   @id @default(uuid())
+  student_id  String
+  entity_type String   // enrollment, attendance, grade, etc.
+  entity_id   String
+  operation   String   // insert, update, delete
+  metadata    Json?
+  occurred_at DateTime @default(now())
+  recorded_at DateTime @default(now())
+  effective_to DateTime?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  student     User     @relation("StudentEvents", fields: [student_id], references: [id])
+
+  @@allow('all', auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@allow('read', auth().id == student_id || auth().bonds?[capacity == 'teacher'])
+  @@map("student_longitudinal_events")
+}
+
+model SentinelAuditLog {
+  id            String   @id @default(uuid())
+  actor_id      String
+  action        String
+  resource_type String
+  resource_id   String?
+  details       Json?
+  created_at    DateTime @default(now())
+
+  actor         User     @relation("AuditLogs", fields: [actor_id], references: [id])
+
+  @@allow('all', auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@map("sentinel_audit_logs")
+}

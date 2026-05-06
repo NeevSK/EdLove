@@ -8,41 +8,63 @@ import { dailyContentAPI } from './dailyContent';
 import { demoAPI } from './demo';
 import { deviceTrustAPI } from './deviceTrust';
 import { echoAPI } from './echo';
-import { educationalContract } from './educational.contract';
+import { attendanceAPI as rawAttendanceAPI } from './attendance';
+import { assignmentsAPI as rawAssignmentsAPI } from './assignments';
+import { classroomGroupsAPI as rawClassroomGroupsAPI } from './classroomGroups';
+import { classroomStudentsAPI as rawClassroomStudentsAPI } from './classroomStudents';
+import { classroomsAPI as rawClassroomsAPI } from './classrooms';
+import { gradingAPI as rawGradingAPI } from './grading';
+import { schoolAPI as rawSchoolAPI } from './school';
+import { inventoryAPI as rawInventoryAPI } from './inventory';
+import { accountingAPI as rawAccountingAPI } from './erp';
+import { paymentsAPI as rawPaymentsAPI } from './erp';
+import { rewardsAPI } from './rewards';
+import { trackingAPI } from './tracking';
+import { onboardingAPI } from './onboarding';
+import { presenceAPI } from './presence';
+import { growthAPI, missionsAPI, ripplesAPI, growthStateAPI, proAPI } from './orchestration/growth';
+import { classroomNotesAPI as rawClassroomNotesAPI } from './classroomNotes';
+import { principalNotesAPI } from './principalNotes';
+import { communityAPI as rawCommunityAPI } from './community';
+import { messagingAPI } from './messaging';
+import { guardianAPI as rawGuardianAPI } from './guardian';
+import { staffManagementAPI as rawStaffManagementAPI } from './staffManagement';
+import { demoAPI as demoProviderAPI } from './demo';
+import { warmMirrorAPI } from './warmMirror';
+import { naturePathsAPI } from './naturePaths';
+import { moonPhaseAPI } from './moonPhase';
+import { schoolForestAPI } from './schoolForest';
+import { founderAPI as rawFounderAPI } from './founder';
+import { principalWorkspaceAPI as rawPrincipalWorkspaceAPI } from './principalWorkspace';
+import { teacherInsightsAPI as rawTeacherInsightsAPI } from './teacherInsights';
+import { longitudinalAPI as rawLongitudinalAPI } from './longitudinal';
+import { studentObservationsAPI } from './studentObservations';
+import { privacyAPI } from './privacy';
+import { studentPotentialAPI } from './studentPotential';
+import { mappingAPI } from './mapping';
+import { historyAPI } from './history';
 import { formTemplatesAPI } from './formTemplates';
+import { profileAPI } from './profile';
+import { socialAPI } from './social';
+import { supabase } from './supabase';
+import { educationalContract } from './educational.contract';
 import { founderContract } from './founder.contract';
 import { gradingContract } from './grading.contract';
 import { groupsAPI } from './groups';
 import { growthContract } from './growth.contract';
 import { guardianContract } from './guardian.contract';
-import { historyAPI } from './history';
 import { identityContract } from './identity.contract';
 import { longitudinalContract } from './longitudinal.contract';
-import { mappingAPI } from './mapping';
-import { messagingAPI } from './messaging';
-import { moonPhaseAPI } from './moonPhase';
-import { naturePathsAPI } from './naturePaths';
-import { onboardingAPI } from './onboarding';
-import { presenceAPI } from './presence';
-import { principalNotesAPI } from './principalNotes';
 import { principalWorkspaceContract } from './principalWorkspace.contract';
-import { privacyAPI } from './privacy';
 import { proContract } from './pro.contract';
 import { profileContract } from './profile.contract';
 import { resourcesAPI } from './resources';
-import { rewardsAPI } from './rewards';
-import { schoolForestAPI } from './schoolForest';
-import { studentObservationsAPI } from './studentObservations';
-import { studentPotentialAPI } from './studentPotential';
-import { supabase } from './supabase';
-import { notesAPI, tasksAPI } from './teacher';
+import { tasksAPI } from './teacher';
 import { teacherInsightsContract } from './teacherInsights.contract';
 import { thuthimalAPI } from './thuthimal';
-import { trackingAPI } from './tracking';
-import { warmMirrorAPI } from './warmMirror';
 
 // --- Orchestrated APIs (Extracted Domains) ---
-import { identityAPI, profileAPI } from './orchestration/identity';
+import { identityAPI } from './orchestration/identity';
 import {
   staffManagementAPI,
   attendanceAPI,
@@ -59,13 +81,6 @@ import {
   lessonMaterialsAPI,
 } from './orchestration/educational';
 import { accountingAPI, paymentsAPI } from './orchestration/erp';
-import {
-  growthAPI,
-  proAPI,
-  missionsAPI,
-  ripplesAPI,
-  growthStateAPI,
-} from './orchestration/growth';
 import { communityAPI } from './orchestration/community';
 import {
   gradingAPI,
@@ -76,7 +91,6 @@ import {
   longitudinalAPI,
   notesWithPOA,
 } from './orchestration/specialized';
-import { socialAPI } from './social';
 
 // --- Re-exports (Types & Contracts) ---
 export * from './announcements';
@@ -85,7 +99,7 @@ export * from './circles';
 export * from './classroomGroups';
 export type { ClassroomNote } from './classroomNotes';
 export * from './classroomNotes.contract';
-export * from './community';
+export type * from './community';
 export * from './community.contract';
 export * from './contextualChallenges';
 export * from './contractCoverage';
@@ -129,75 +143,48 @@ export * from './thuthimal';
 export * from './userGrowthState';
 export * from './warmMirror';
 
-// Simplified named exports for direct access
 export {
   academicCyclesAPI,
-  announcementAPI,
-  assignmentsAPI,
-  attendanceAPI,
   authAPI,
-  circleAPI,
-  classroomGroupsAPI,
+  attendanceAPI,
   classroomStudentsAPI,
   classroomsAPI,
-  communityAPI,
-  contextualChallengesAPI,
   dailyContentAPI,
   demoAPI,
-  deviceTrustAPI,
   echoAPI,
   formTemplatesAPI,
-  founderAPI,
-  gradingAPI,
-  groupsAPI,
-  guardianAPI,
-  historyAPI,
   identityAPI,
   inventoryAPI,
   lessonMaterialsAPI,
   lessonsAPI,
-  longitudinalAPI,
-  mappingAPI,
   messagingAPI,
-  moonPhaseAPI,
-  naturePathsAPI,
-  notesAPI,
   notesWithPOA as classroomNotesAPI,
+  gradingAPI,
   onboardingAPI,
   presenceAPI,
-  principalNotesAPI,
-  principalWorkspaceAPI,
-  privacyAPI,
   profileAPI,
   resourcesAPI,
   rewardsAPI,
   missionsAPI,
   schoolAPI,
-  schoolForestAPI,
   socialAPI,
-  staffManagementAPI,
-  studentObservationsAPI,
-  studentPotentialAPI,
+  communityAPI,
   studentsAPI,
   supabase,
   tasksAPI,
-  teacherInsightsAPI,
-  thuthimalAPI,
-  trackingAPI,
-  warmMirrorAPI,
 };
 
 /**
  * Unified API Object (Sovereign Orchestration)
  */
-export const api = {
+export const api: Record<string, any> = {
   announcements: announcementAPI,
   auth: authAPI,
   circles: circleAPI,
   identity: identityAPI,
   supabase,
   tasks: tasksAPI,
-  notes: notesAPI,
+  notes: notesWithPOA,
   lessons: lessonsAPI,
   students: studentsAPI,
   attendance: attendanceAPI,

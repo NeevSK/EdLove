@@ -76,7 +76,8 @@ export const warmMirrorAPI = {
       throw new APIError('Unauthorized access to wellbeing data', 'FORBIDDEN');
     }
 
-    const periodStart = since ?? new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+    const now = Date.now();
+    const periodStart = since ?? new Date(now - 7 * 24 * 60 * 60 * 1000).toISOString();
 
     // 1. Days present \u2014 distinct calendar days with any growth_event
     const { data: growthEvents } = await supabase
@@ -151,7 +152,7 @@ export const warmMirrorAPI = {
       .eq('user_id', userId)
       .maybeSingle();
     const joinedAt = growthState?.created_at ? new Date(growthState.created_at) : new Date();
-    const days_since_joined = Math.floor((Date.now() - joinedAt.getTime()) / (1000 * 60 * 60 * 24));
+    const days_since_joined = Math.floor((now - joinedAt.getTime()) / (1000 * 60 * 60 * 24));
 
     return {
       days_present,

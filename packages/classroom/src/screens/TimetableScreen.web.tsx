@@ -32,7 +32,7 @@ export default function TimetableScreen() {
 	const { t } = useTranslation();
 	const { user } = useStore();
 	const { context } = usePermissions();
-	const _role = context.roles[0];
+	const _hasBonds = context.bonds.length > 0;
 
 	const schoolId: string = route.params?.schoolId ?? user?.school_id ?? "";
 

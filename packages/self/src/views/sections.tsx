@@ -19,10 +19,56 @@ import {
 } from "lucide-react-native";
 import type React from "react";
 
+type JournalEntry = {
+	id: string;
+	content?: string | null;
+	title?: string | null;
+};
+
+type MoodLog = {
+	id: string;
+	mood_type?: string | null;
+	mood?: string | null;
+};
+
+type BanyanSummary = {
+	banyan_stage?: string | null;
+	peer_mentored_count?: number | null;
+};
+
+type DecisionItem = {
+	id: string;
+	decision_text: string;
+};
+
+type WisdomItem = {
+	id: string;
+	insight: string;
+};
+
+type GoalItem = {
+	id: string;
+	title: string;
+};
+
+type NaturePath = {
+	[key: string]: unknown;
+	banyan_stage?: string | null;
+	peer_mentored_count?: number | null;
+	river_stage?: string | null;
+	crystal_tier?: string | null;
+	crystals_found_count?: number | null;
+	fractal_moments_count?: number | null;
+};
+
+type EnergySummary = {
+	energy_level?: string | number | null;
+};
+
 // --- CROSS-ROLE SECTIONS ---
 
 export const JournalSection: React.FC<{
-	entries: any[];
+	entries: JournalEntry[];
 	loading?: boolean;
 }> = ({ entries, loading }) => (
 	<Box className="p-6 bg-white/5 rounded-2xl border border-white/10 mb-4">
@@ -61,7 +107,7 @@ export const JournalSection: React.FC<{
 	</Box>
 );
 
-export const MoodSection: React.FC<{ logs: any[]; loading?: boolean }> = ({
+export const MoodSection: React.FC<{ logs: MoodLog[]; loading?: boolean }> = ({
 	logs,
 	loading,
 }) => (
@@ -79,8 +125,8 @@ export const MoodSection: React.FC<{ logs: any[]; loading?: boolean }> = ({
 			</VStack>
 		) : (
 			<Text className="text-sacredWhite/70 text-sm leading-relaxed italic">
-				{logs.length > 0
-					? `Currently resonant with ${logs[0].mood_type || logs[0].mood}.`
+					{logs.length > 0
+					? `Currently resonant with ${logs[0]?.mood_type || logs[0]?.mood}.`
 					: "The emotional waters are still."}
 			</Text>
 		)}
@@ -89,7 +135,10 @@ export const MoodSection: React.FC<{ logs: any[]; loading?: boolean }> = ({
 
 // --- TEACHER SECTIONS ---
 
-export const TeacherPulse: React.FC<{ banyan?: any; loading?: boolean }> = ({
+export const TeacherPulse: React.FC<{
+	banyan?: BanyanSummary | null;
+	loading?: boolean;
+}> = ({
 	banyan,
 	loading,
 }) => {
@@ -144,7 +193,7 @@ export const BanyanSection: React.FC = () => (
 			</Text>
 		</HStack>
 		<Text className="text-mistGray text-xs leading-relaxed italic">
-			Visualizing your classroom's collective growth roots.
+			Visualizing your classroom&apos;s collective growth roots.
 		</Text>
 	</Box>
 );
@@ -152,8 +201,8 @@ export const BanyanSection: React.FC = () => (
 // --- PRINCIPAL SECTIONS ---
 
 export const PrincipalPulse: React.FC<{
-	energy?: any;
-	decisions?: any[];
+	energy?: EnergySummary | null;
+	decisions?: DecisionItem[];
 	loading?: boolean;
 }> = ({ energy, decisions, loading }) => {
 	const { ability } = usePermissions();
@@ -192,7 +241,7 @@ export const PrincipalPulse: React.FC<{
 };
 
 export const DecisionSection: React.FC<{
-	decisions: any[];
+	decisions: DecisionItem[];
 	loading?: boolean;
 }> = ({ decisions, loading }) => (
 	<Box className="p-6 bg-white/5 rounded-2xl border border-white/10 mb-4">
@@ -245,14 +294,14 @@ export const VisionSection: React.FC = () => {
 				</Text>
 			</HStack>
 			<Text className="text-sanctuarySaffron italic text-sm leading-relaxed font-medium">
-				"The architecture of education is the architecture of human potential."
+				&ldquo;The architecture of education is the architecture of human potential.&rdquo;
 			</Text>
 		</Box>
 	);
 };
 
 export const PhilosophySection: React.FC<{
-	wisdom: any[];
+	wisdom: WisdomItem[];
 	loading?: boolean;
 }> = ({ wisdom, loading }) => {
 	const { ability } = usePermissions();
@@ -294,7 +343,7 @@ export const PhilosophySection: React.FC<{
 
 // --- STUDENT SECTIONS ---
 
-export const GoalSection: React.FC<{ goals: any[]; loading?: boolean }> = ({
+export const GoalSection: React.FC<{ goals: GoalItem[]; loading?: boolean }> = ({
 	goals,
 	loading,
 }) => {
@@ -336,7 +385,7 @@ export const GoalSection: React.FC<{ goals: any[]; loading?: boolean }> = ({
 	);
 };
 
-export const NatureSection: React.FC<{ paths: any; loading?: boolean }> = ({
+export const NatureSection: React.FC<{ paths: NaturePath | null; loading?: boolean }> = ({
 	paths,
 	loading,
 }) => (

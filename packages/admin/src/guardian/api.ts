@@ -51,7 +51,7 @@ export const guardianAPI: GuardianAPI = {
 	async createGuardianProfile(
 		data: Omit<GuardianIdentity, "id" | "createdAt" | "updatedAt">,
 	): Promise<GuardianIdentity> {
-		return api.guardian.createProfile(
+		return api["guardian"].createProfile(
 			data as any,
 		) as unknown as Promise<GuardianIdentity>;
 	},
@@ -60,14 +60,14 @@ export const guardianAPI: GuardianAPI = {
 		guardianId: string,
 		documents: VerificationDocument[],
 	): Promise<void> {
-		await api.guardian.verifyGuardian(guardianId, documents as any);
+		await api["guardian"].verifyGuardian(guardianId, documents as any);
 	},
 
 	async updateGuardianProfile(
 		guardianId: string,
 		updates: Partial<GuardianIdentity>,
 	): Promise<GuardianIdentity> {
-		return api.guardian.updateProfile(
+		return api["guardian"].updateProfile(
 			guardianId,
 			updates as any,
 		) as unknown as Promise<GuardianIdentity>;
@@ -77,7 +77,7 @@ export const guardianAPI: GuardianAPI = {
 		guardianId: string,
 	): Promise<GuardianIdentity | null> {
 		try {
-			return (await api.guardian.getProfile(guardianId)) as GuardianIdentity;
+			return (await api["guardian"].getProfile(guardianId)) as GuardianIdentity;
 		} catch {
 			return null;
 		}
@@ -89,7 +89,7 @@ export const guardianAPI: GuardianAPI = {
 		studentId: string,
 		relationship: RelationshipType,
 	): Promise<StudentGuardianRelationship> {
-		return api.guardian.linkGuardianToStudent(
+		return api["guardian"].linkGuardianToStudent(
 			guardianId,
 			studentId,
 			relationship,
@@ -101,7 +101,7 @@ export const guardianAPI: GuardianAPI = {
 		studentId: string,
 		permissions: GuardianPermissionConfig[],
 	): Promise<void> {
-		await api.guardian.updatePermissions(
+		await api["guardian"].updatePermissions(
 			guardianId,
 			studentId,
 			permissions as any,
@@ -112,16 +112,16 @@ export const guardianAPI: GuardianAPI = {
 		guardianId: string,
 		studentId: string,
 	): Promise<void> {
-		await api.guardian.terminateRelationship(guardianId, studentId);
+		await api["guardian"].terminateRelationship(guardianId, studentId);
 	},
 
 	// Access and visibility
 	async getGuardianStudents(guardianId: string): Promise<any[]> {
-		return api.guardian.getStudents(guardianId);
+		return api["guardian"].getStudents(guardianId);
 	},
 
 	async getStudentGuardians(studentId: string): Promise<GuardianIdentity[]> {
-		return api.guardian.getStudentGuardians(studentId) as unknown as Promise<
+		return api["guardian"].getStudentGuardians(studentId) as unknown as Promise<
 			GuardianIdentity[]
 		>;
 	},
@@ -130,7 +130,7 @@ export const guardianAPI: GuardianAPI = {
 	async getGuardianDashboard(
 		guardianId: string,
 	): Promise<GuardianDashboardData> {
-		return api.guardian.getDashboard(
+		return api["guardian"].getDashboard(
 			guardianId,
 		) as unknown as Promise<GuardianDashboardData>;
 	},
@@ -139,6 +139,6 @@ export const guardianAPI: GuardianAPI = {
 		guardianId: string,
 		settings: any,
 	): Promise<void> {
-		await api.guardian.updateNotificationSettings(guardianId, settings);
+		await api["guardian"].updateNotificationSettings(guardianId, settings);
 	},
 };

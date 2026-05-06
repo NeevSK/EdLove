@@ -55,7 +55,7 @@ export default function ResourcesView({
 			type: "link" | "pdf" | "note";
 			content: string;
 		}) => {
-			return api.resources.create({
+			return api["resources"].create({
 				classroom_id: classroomId,
 				teacher_id: user?.id || "",
 				...CLASSROOM_RESOURCE_SCOPE,
@@ -82,7 +82,7 @@ export default function ResourcesView({
 	);
 	const togglePinMutation = useSafeMutation(
 		async ({ id, isPinned }: { id: string; isPinned: boolean }) => {
-			return api.resources.togglePin(id, isPinned);
+			return api["resources"].togglePin(id, isPinned);
 		},
 		{
 			onMutate: ({ id, isPinned }) => {
@@ -99,7 +99,7 @@ export default function ResourcesView({
 	);
 	const deleteMutation = useSafeMutation(
 		async (id: string) => {
-			return api.resources.delete(id);
+			return api["resources"].delete(id);
 		},
 		{
 			onMutate: (id) => {

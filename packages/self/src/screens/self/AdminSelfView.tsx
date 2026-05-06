@@ -1,4 +1,3 @@
-import { useNavigation } from "@react-navigation/native";
 import { usePermissions, useStore } from "@repo/core/logic";
 
 import ScreenWrapper from "@repo/ui/components/ScreenWrapper";
@@ -25,8 +24,7 @@ import { useWellbeingEnrichment } from "../../hooks/useWellbeingEnrichment";
 
 export default function AdminSelfView() {
 	const { t } = useTranslation();
-	const _navigation = useNavigation<any>();
-
+	
 	// State & Kernel Hooks
 	const { context } = usePermissions();
 	const userId = context.userId;
@@ -54,7 +52,10 @@ export default function AdminSelfView() {
 		(state) => state.setJustFinishedOnboarding,
 	);
 
-	const handleMoodSelect = async (mood: any, note: string) => {
+	const handleMoodSelect = async (
+		mood: Parameters<typeof addMoodLog>[0],
+		note: string,
+	) => {
 		setIsSavingMood(true);
 		try {
 			await addMoodLog(mood, note);
@@ -165,3 +166,4 @@ export default function AdminSelfView() {
 }
 
 export { AdminSelfView };
+

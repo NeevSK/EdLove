@@ -8,6 +8,13 @@ interface AttendanceViewProps {
 	classroomId: string;
 }
 
+type RosterStudent = {
+	id: string;
+	student_id?: string | null;
+	full_name?: string | null;
+	roll_number?: string | null;
+};
+
 export default function AttendanceView({ classroomId }: AttendanceViewProps) {
 	const [students, setStudents] = useState<StudentAttendance[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
@@ -19,8 +26,8 @@ export default function AttendanceView({ classroomId }: AttendanceViewProps) {
 
 			// Load student roster and any already-saved attendance for today in parallel
 			const [roster, snapshot] = await Promise.all([
-				api.classroomStudents.getAll(classroomId),
-				api.attendance
+				api["classroomStudents"].getAll(classroomId),
+				api["attendance"]
 					.getClassroomAttendanceSnapshot(classroomId, today || "")
 					.catch(() => ({
 						records: [] as { student_id: string; status: AttendanceStatus }[],
@@ -34,21 +41,21 @@ export default function AttendanceView({ classroomId }: AttendanceViewProps) {
 				).map((r) => [r.student_id, r.status]),
 			);
 
-			const attendanceData: StudentAttendance[] = (roster as any[]).map(
-				(student) => ({
+			const typedRoster = roster as RosterStudent[];
+
+			const attendanceData: StudentAttendance[] = typedRoster.map((student) => ({
 					id: student.id,
 					student_id: student.student_id || student.id,
 					full_name: student.full_name || "Unknown Student",
 					roll_number: student.roll_number || null,
 					// Restore saved status; default to 'present' for unmarked students
 					status:
-						(savedStatus.get(student.student_id || student.id) as any) ??
+						savedStatus.get(student.student_id || student.id) ??
 						"present",
-				}),
-			) as StudentAttendance[];
+				}));
 
 			setStudents(attendanceData);
-		} catch (_Error) {
+		} catch (_error) {
 			console.error("Failed to load student list");
 		} finally {
 			setIsLoading(false);
@@ -56,7 +63,7 @@ export default function AttendanceView({ classroomId }: AttendanceViewProps) {
 	}, [classroomId]);
 
 	useEffect(() => {
-		fetchStudents();
+		void fetchStudents();
 	}, [fetchStudents]);
 
 	const handleAttendanceChange = (updatedAttendance: StudentAttendance[]) => {

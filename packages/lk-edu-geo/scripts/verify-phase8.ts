@@ -35,8 +35,9 @@ if (wp) {
 
 			const gns = getGNDivisionsByDSDivision(thimbirigasyaya.id);
 			console.log(`         \u2514\u2500 GN Divisions Count: ${gns.length}`);
-			if (gns.length > 0) {
-				console.log(`            Sample: ${gns[0].name} / ${gns[0].name_si}`);
+			const sampleGn = gns[0];
+			if (sampleGn) {
+				console.log(`            Sample: ${sampleGn.name} / ${sampleGn.name_si}`);
 			}
 		}
 	}

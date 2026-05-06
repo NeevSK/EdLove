@@ -13,17 +13,17 @@ function requireEnvValue(
 	);
 }
 
-const supabaseUrl = requireEnvValue(import.meta.env.PUBLIC_SUPABASE_URL, [
+const supabaseUrl = requireEnvValue(import.meta.env["PUBLIC_SUPABASE_URL"], [
 	"PUBLIC_SUPABASE_URL",
 ]);
 const supabaseAnonKey = requireEnvValue(
-	import.meta.env.PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
-		import.meta.env.PUBLIC_SUPABASE_ANON_KEY,
+	import.meta.env["PUBLIC_SUPABASE_PUBLISHABLE_KEY"] ||
+		import.meta.env["PUBLIC_SUPABASE_ANON_KEY"],
 	["PUBLIC_SUPABASE_PUBLISHABLE_KEY", "PUBLIC_SUPABASE_ANON_KEY"],
 );
 const supabaseServiceRoleKey = requireEnvValue(
-	import.meta.env.SUPABASE_SECRET_KEY ||
-		import.meta.env.SUPABASE_SERVICE_ROLE_KEY,
+	import.meta.env["SUPABASE_SECRET_KEY"] ||
+		import.meta.env["SUPABASE_SERVICE_ROLE_KEY"],
 	["SUPABASE_SECRET_KEY", "SUPABASE_SERVICE_ROLE_KEY"],
 );
 /**

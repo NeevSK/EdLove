@@ -1,4 +1,4 @@
-import type { Role as AuthorityTier } from '../logic/schemas/role.schema';
+import type { Capacity as AuthorityTier } from '../logic/schemas/capacity.schema';
 import type { TenantKind } from './Tenancy';
 
 export interface School {

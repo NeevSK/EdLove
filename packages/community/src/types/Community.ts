@@ -502,6 +502,16 @@ export interface DirectMessage {
 	author?: { full_name: string; avatar_url?: string };
 }
 
+export interface ChatMessage {
+	id: string;
+	group_id?: string;
+	conversation_id?: string;
+	author_id: string;
+	content: string;
+	created_at: Date;
+	author?: { full_name: string; avatar_url?: string };
+}
+
 // ============================================================================
 // REPORTING & SAFETY TYPES
 // ============================================================================

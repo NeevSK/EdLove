@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { makeModelSchema } from '../generated/zod';
+import { makeModelSchema } from '@repo/schema';
 
 /**
  * GuardianSchema - Identity of a student protector.

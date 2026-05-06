@@ -1,8 +1,9 @@
-import { api, useStore } from '@repo/core/logic';
+import { api } from '@repo/core/api';
+import { useStore } from '@repo/core/logic';
+import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Platform } from 'react-native';
 import { hapticSuccess, hapticWarning } from '../utils/haptics';
-import { useCallback, useMemo } from 'react';
 
 /**
  * Hook to handle the "Bridge to Reality" flow when exiting Demo Mode.
@@ -10,26 +11,30 @@ import { useCallback, useMemo } from 'react';
  */
 export function useDemoBridge() {
   const { t } = useTranslation();
-  const { demoLogs, clearDemoLogs, setDemoMode } = useStore() as any;
+  const { demoLogs, clearDemoLogs, setDemoMode } = useStore();
 
   /**
    * Processes the shadow logs and executes real API calls.
    */
-  const processDemoLogs = useCallback(async (logs: any[]) => {
-    console.log(`[DemoBridge] Processing ${logs.length} logs for reality...`);
+  const processDemoLogs = useCallback(
+    async (logs: Array<{ module: string; method: string; payload: any }>) => {
+      console.log(`[DemoBridge] Processing ${logs.length} logs for reality...`);
 
-    for (const log of logs) {
-      try {
-        const apiModule = (api as any)[log.module];
-        if (apiModule && typeof apiModule[log.method] === 'function') {
-          console.log(`[DemoBridge] Realizing: ${log.module}.${log.method}`);
-          await apiModule[log.method](log.payload);
+      for (const log of logs) {
+        try {
+          const apiModule = (api as Record<string, Record<string, unknown>>)[log.module];
+          if (apiModule && typeof apiModule[log.method] === 'function') {
+            console.log(`[DemoBridge] Realizing: ${log.module}.${log.method}`);
+            const method = apiModule[log.method] as (payload: unknown) => Promise<void>;
+            await method(log.payload);
+          }
+        } catch (err) {
+          console.error(`[DemoBridge] Failed to realize ${log.module}.${log.method}:`, err);
         }
-      } catch (err) {
-        console.error(`[DemoBridge] Failed to realize ${log.module}.${log.method}:`, err);
       }
-    }
-  }, []);
+    },
+    [],
+  );
 
   const exitDemoWithBridge = useCallback(async () => {
     if (demoLogs.length === 0) {
@@ -39,10 +44,12 @@ export function useDemoBridge() {
 
     // Get the name of the first item created for a personalized message
     const firstLog = demoLogs.find(
-      (log: any) => log.method.startsWith('create') || log.method.startsWith('add'),
+      (log) => log.method.startsWith('create') || log.method.startsWith('add'),
     );
     const firstItemName =
-      (firstLog?.payload as any)?.name || (firstLog?.payload as any)?.title || 'item';
+      (firstLog?.payload as Record<string, string> | undefined)?.['name'] ||
+      (firstLog?.payload as Record<string, string> | undefined)?.['title'] ||
+      'item';
 
     hapticWarning();
 
@@ -55,7 +62,7 @@ export function useDemoBridge() {
         }),
       );
       if (save) {
-        const { setBridging } = useStore.getState() as any;
+        const { setBridging } = useStore.getState();
         try {
           setBridging(true);
           await processDemoLogs(demoLogs);
@@ -90,7 +97,7 @@ export function useDemoBridge() {
         {
           text: t('demoMode.bridgeSave'),
           onPress: async () => {
-            const { setBridging } = useStore.getState() as any;
+            const { setBridging } = useStore.getState();
             try {
               // Enable bridging mode to bypass API interception
               setBridging(true);

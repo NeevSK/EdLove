@@ -82,7 +82,7 @@ export default function ResourceNeedsDashboard({
 	const fetchResourceNeeds = async () => {
 		try {
 			setIsLoading(true);
-			const data = await api.inventory.getSchoolResourceNeeds(schoolId);
+			const data = await api["inventory"].getSchoolResourceNeeds(schoolId);
 			setNeeds(data || []);
 		} catch (error) {
 			console.error("Failed to fetch resource needs:", error);

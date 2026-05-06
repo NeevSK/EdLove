@@ -6,8 +6,16 @@ import type { IStorage } from '../interfaces/storage.port';
  * This class follows the Port/Adapter (Hexagonal) pattern to keep
  * core logic free from native pollution.
  */
+import { MemoryStorageAdapter } from '../../adapters/MemoryStorageAdapter';
+
+/**
+ * StorageManager - The Sovereign Dispatcher for KV Storage.
+ *
+ * This class follows the Port/Adapter (Hexagonal) pattern to keep
+ * core logic free from native pollution.
+ */
 class StorageManager implements IStorage {
-  private adapter: IStorage | null = null;
+  private adapter: IStorage = new MemoryStorageAdapter();
 
   /**
    * Registers the platform-specific adapter.
@@ -18,11 +26,6 @@ class StorageManager implements IStorage {
   }
 
   private getAdapter(): IStorage {
-    if (!this.adapter) {
-      throw new Error(
-        '[StorageManager] No adapter registered. Ensure registerAdapter() is called at the app entry point.',
-      );
-    }
     return this.adapter;
   }
 

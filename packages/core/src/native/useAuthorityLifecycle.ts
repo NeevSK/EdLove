@@ -7,7 +7,7 @@ import { supabase } from '../api/supabase';
 import type { SchoolType } from '../constants/SriLankanSchools';
 import { identifyUser, initPostHog, trackEvent } from '../lib/monitoring/posthog';
 import { clearSentryUser, initSentry, setSentryUser } from '../lib/monitoring/sentry';
-import type { Role } from '../logic/schemas/role.schema';
+import { useAuthStore } from '../store/useAuthStore';
 import { useStore } from '../store/useStore';
 import type { User } from '../types';
 import { APIError } from '../types/API';
@@ -24,7 +24,8 @@ export function useAuthorityLifecycle() {
   const [isProfileLoading, setIsProfileLoading] = useState(false);
 
   const setUser = useStore((state) => state.setUser);
-  const setUserRole = useStore((state) => state.setUserRole);
+  const setPerspective = useStore((state) => state.setPerspective);
+  const setAvailableBonds = useStore((state) => state.setAvailableBonds);
   const setSchoolType = useStore((state) => state.setSchoolType);
   const setOnboardingCompleted = useStore((state) => state.setOnboardingCompleted);
   const setAuthSession = useStore((state) => state.setAuthSession);
@@ -34,38 +35,28 @@ export function useAuthorityLifecycle() {
     async (internalUserId: string) => {
       setIsProfileLoading(true);
       try {
-        const { data: userProfile, error } = await supabase
-          .from('users')
-          .select(
-            'id, role, school_id, onboarding_completed, full_name, email, avatar_url, is_anonymous, profile_completed',
-          )
-          .eq('id', internalUserId)
-          .maybeSingle();
+        // 1. Resolve Sovereign Identity (Bonds & Perspectives)
+        const [profile, bonds, perspective] = await Promise.all([
+          identityAPI.getProfile(internalUserId),
+          identityAPI.getClassroomRoleSummary(internalUserId), // This handles bonds
+          identityAPI.getOnboardingStatus(internalUserId), // This handles perspective/state
+        ]);
 
-        if (error) {
-          console.warn('\u26A0\uFE0F Profile: Table fetch returned error:', error.message);
-          return;
-        }
-
-        if (userProfile) {
-          const normalizedRole = (
-            userProfile.role === 'guest' ? null : userProfile.role
-          ) as Role | null;
-
-          // Update store
-          setUser({ ...userProfile, role: normalizedRole } as unknown as User);
-          setUserRole(normalizedRole);
-
-          const isEffectivelyOnboarded = !!userProfile.onboarding_completed && !!normalizedRole;
+        if (profile) {
+          // 2. Update store
+          setUser(profile as any);
+          // Note: Perspective resolution might need a more direct call if classroom summary isn't enough
+          
+          const isEffectivelyOnboarded = !!profile.onboarding_completed;
           if (isEffectivelyOnboarded) {
             setOnboardingCompleted(true);
           }
 
-          if (userProfile.school_id) {
+          if (profile.school_id) {
             const { data: schoolData } = await supabase
               .from('schools')
               .select('type')
-              .eq('id', userProfile.school_id)
+              .eq('id', profile.school_id)
               .single();
 
             if (schoolData) {
@@ -77,16 +68,16 @@ export function useAuthorityLifecycle() {
 
           // Monitoring identification
           setSentryUser({
-            id: userProfile.id,
-            email: userProfile.email,
-            username: userProfile.full_name,
+            id: profile.id,
+            email: profile.email,
+            username: profile.full_name,
           });
 
-          identifyUser(userProfile.id, {
-            email: userProfile.email,
-            full_name: userProfile.full_name,
-            role: normalizedRole,
-            school_id: userProfile.school_id,
+          identifyUser(profile.id, {
+            email: profile.email,
+            full_name: profile.full_name,
+            capacity: bonds.profile.activeBond?.capacity || null,
+            school_id: profile.school_id,
           });
         }
       } catch (error) {
@@ -95,7 +86,7 @@ export function useAuthorityLifecycle() {
         setIsProfileLoading(false);
       }
     },
-    [setUser, setUserRole, setSchoolType, setOnboardingCompleted],
+    [setUser, setPerspective, setAvailableBonds, setSchoolType, setOnboardingCompleted],
   );
 
   const refreshProfile = useCallback(async () => {
@@ -167,7 +158,8 @@ export function useAuthorityLifecycle() {
         clearSentryUser();
         identityAPI.clearCache();
         setUser(null);
-        setUserRole(null);
+        setPerspective(null);
+        setAvailableBonds([]);
         setSchoolType(null);
         setOnboardingCompleted(false);
       }
@@ -178,13 +170,22 @@ export function useAuthorityLifecycle() {
     setAuthSession,
     setAuthSessionResolved,
     setUser,
-    setUserRole,
+    setPerspective,
+    setAvailableBonds,
     setSchoolType,
     setOnboardingCompleted,
     fetchAndSetUserProfile,
   ]);
 
-  // 4. Realtime Profile Updates (Capability Sync)
+  // 4. Realtime Profile Updates (Capability Sync) — 2026 JWT-Aware Pattern
+  //
+  //  CRITICAL FIX: When a user's capacity changes (e.g., promoted to 'principal'),
+  //  Supabase Realtime pushes the new row immediately. BUT the Supabase JWT still
+  //  has the OLD claims until explicitly refreshed.
+  //  If we only update Zustand, the UI shows 'Principal' but API calls carry a
+  //  'teacher' JWT and Supabase RLS rejects them.
+  //
+  //  Fix: detect capacity delta → refreshSession() FIRST → then refreshProfile().
   const currentUser = useStore((state) => state.user);
   useEffect(() => {
     if (!currentUser?.id) return;
@@ -203,11 +204,31 @@ export function useAuthorityLifecycle() {
           table: 'users',
           filter: `id=eq.${currentUser.id}`,
         },
-        (payload) => {
+        async (payload) => {
           if (__DEV__) {
             console.log('\uD83C\uDF38 Auth: Profile update received:', payload.new);
           }
-          // Force a profile refresh on remote change
+
+          // Detect privilege change
+          // NOTE: capacity lives on the Bond, not the User record.
+          // Read the current active capacity from the auth store's activeBond.
+          const oldCapacity = useAuthStore.getState().activeBond?.capacity;
+          const newCapacity = (payload.new as { capacity?: string })?.capacity;
+          const capacityChanged = Boolean(newCapacity && newCapacity !== oldCapacity);
+
+          if (capacityChanged) {
+            if (__DEV__) {
+              console.log(`\uD83D\uDD11 Auth: Capacity changed ${oldCapacity} -> ${newCapacity}. Refreshing JWT...`);
+            }
+            // Force a new JWT with updated custom claims so that
+            // RLS-dependent API calls inside refreshProfile() succeed.
+            try {
+              await supabase.auth.refreshSession();
+            } catch (e) {
+              console.error('Auth: JWT refresh failed after capacity change', e);
+            }
+          }
+
           refreshProfile().catch((e) => {
             console.error('Auth: Profile refresh failed after remote update', e);
           });

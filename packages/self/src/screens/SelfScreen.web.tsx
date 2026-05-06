@@ -1,4 +1,4 @@
-﻿import { usePermissions } from "@repo/core/logic";
+import { usePermissions } from "@repo/core/logic";
 import { WebScreenHeader } from "@repo/ui/components/WebScreenHeader.web";
 
 import {
@@ -22,8 +22,8 @@ export default function SelfScreenWeb() {
 			return { title: "Mastery Hub", note: "Personal Growth Stream" };
 		}
 		if (
-			context.roles.includes("guardian") ||
-			context.roles.includes("parent")
+			context.activeBond?.capacity === "guardian" ||
+			context.activeBond?.capacity === "parent"
 		) {
 			return { title: "Sadhana", note: "Guardian Sanctuary" };
 		}
@@ -41,7 +41,7 @@ export default function SelfScreenWeb() {
 		if (can("manage", "AdminDashboard")) return <AdminSelfView />;
 		if (can("manage", "PrincipalDashboard")) return <PrincipalSelfView />;
 		if (can("manage", "TeacherDashboard")) return <TeacherSelfView />;
-		if (context.roles.includes("guardian") || context.roles.includes("parent"))
+		if (context.activeBond?.capacity === "guardian" || context.activeBond?.capacity === "parent")
 			return <GuardianSelfView />;
 		if (can("manage", "StudentDashboard")) return <StudentSelfView />;
 		return <StudentSelfView />;

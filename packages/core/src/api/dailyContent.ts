@@ -1,5 +1,6 @@
 import { withResilience } from '../offline/resilience';
 import { APIError } from '../types/API';
+import { getCurrentTimeMillis } from '../utils/temporal';
 import { supabase } from './supabase';
 
 // ============================================================================
@@ -82,11 +83,12 @@ export const dailyContentAPI = {
    * Get recent content (last N days)
    */
   async getRecentContent(days: number = 7): Promise<DailyContent[]> {
+    const now = getCurrentTimeMillis();
     const { data, error } = await supabase
       .from('daily_content')
       .select('*')
       .eq('active', true)
-      .gte('date', new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString().split('T')[0])
+      .gte('date', new Date(now - days * 24 * 60 * 60 * 1000).toISOString().split('T')[0])
       .order('date', { ascending: false })
       .order('type');
 

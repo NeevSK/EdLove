@@ -1,10 +1,10 @@
 ﻿describe("educational contract coverage", () => {
 	it("registers strict contract coverage for the educational APIs", () => {
-		require("../../../../../packages/core/src/api");
+		require("@repo/core/api");
 		const {
 			getContractCoverage,
 			listContractCoverage,
-		} = require("../../../../../packages/core/src/api/contractCoverage");
+		} = require("@repo/core/api/contractCoverage");
 
 		const moduleNames = listContractCoverage().map((entry) => entry.moduleName);
 

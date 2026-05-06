@@ -30,6 +30,32 @@ We use a layered approach to health checks. These tools ensure that "Rot" never 
 
 ---
 
+## 🛂 Sovereign Quality Gates (The Gatekeepers)
+
+We use a graduated validation system to ensure code quality without killing developer velocity.
+
+### 🛡️ Pre-commit: Surgical Sentinel
+By default, every commit runs Biome (linting/hooks) and a surgical TSC check on affected packages.
+
+| Mode | Command | Description |
+| :--- | :--- | :--- |
+| **Full** | `git commit` | (Default) Runs Biome + Surgical TSC on affected packages. |
+| **Hooks** | `$env:AUDIT_MODE="hooks"; git commit` | Skips TSC. Runs only Biome (Hooks hygiene). |
+| **TSC** | `$env:AUDIT_MODE="tsc"; git commit` | Runs only Surgical TSC. |
+
+### 🚀 Pre-push: Sovereign Gate
+Before code reaches the remote, it must pass the Sovereign Audit. This is the **superset** of all checks.
+
+| Mode | Command | Description |
+| :--- | :--- | :--- |
+| **Full** | `git push` | (Default) Full suite: Lint, TSC, Hygiene, Identity, i18n. |
+| **Min** | `$env:PUSH_MODE="min"; git push` | **Emergency only.** Runs only Global Lint + Global TSC. |
+
+> [!IMPORTANT]
+> Using `--no-verify` is strictly discouraged. Use `PUSH_MODE="min"` if you need a faster gate that still guarantees **Zero Type Impurity**.
+
+---
+
 ## 🏛️ Empire-Level Guardrails (Professional Standards)
 
 These tools are common in world-class engineering teams to ensure consistency across large teams.
@@ -75,4 +101,6 @@ All audit results are captured into the `reports/` folder:
 - [check-types.txt](file:///c:/Users/Naween/projects/polymath-platform/reports/check-types.txt)
 
 > [!TIP]
-> **For AI Agents**: Always check the `reports/` folder first to understand the current "Health delta" of the workspace before suggesting changes.
+> **For AI Agents**: Always check the `reports/` folder first to understand the current "Health delta" of the workspace before suggesting changes. 
+> 
+> You MUST follow the [Sovereign AI Agent Quality Protocol](file:///c:/Users/Naween/projects/polymath-platform/.agents/workflows/sovereign-quality-gate.md) which mandates the use of MCP audit tools before any submission.

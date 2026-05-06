@@ -1,4 +1,4 @@
-import type { StaffLeave as StaffLeaveDTO } from "@repo/core/api";
+import type { StaffLeaveDTO } from "@repo/core/api";
 import { ClipboardList } from "@repo/ui/icons";
 import {
 	Box,
@@ -36,6 +36,8 @@ export const PendingApprovals: React.FC<PendingApprovalsProps> = ({
 			.replace(/_/g, " ")
 			.replace(/\b\w/g, (char) => char.toUpperCase());
 	};
+
+	const formatDate = (value: Date) => value.toLocaleDateString();
 
 	const getStatusColorClass = (status: string) => {
 		switch (status) {
@@ -89,8 +91,8 @@ export const PendingApprovals: React.FC<PendingApprovalsProps> = ({
 										Staff ID: {leave.user_id}
 									</Text>
 									<Text className="text-[10px] text-phaseText-muted font-black uppercase tracking-wider leading-relaxed">
-										{formatLeaveLabel(leave)} · {leave.start_date} to{" "}
-										{leave.end_date}
+										{formatLeaveLabel(leave)} · {formatDate(leave.start_date)} to{" "}
+										{formatDate(leave.end_date)}
 									</Text>
 								</VStack>
 							</HStack>

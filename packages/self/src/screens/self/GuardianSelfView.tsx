@@ -1,4 +1,4 @@
-﻿import { useJourneyHistory } from "@repo/core/hooks";
+import { useJourneyHistory } from "@repo/core/hooks";
 import { usePermissions, useStore } from "@repo/core/logic";
 import { JourneyHistoryCard } from "@repo/ui/components/JourneyHistoryCard";
 import ScreenWrapper from "@repo/ui/components/ScreenWrapper";
@@ -54,7 +54,7 @@ export default function GuardianSelfView() {
 				events={journeyEvents}
 				summary={holisticView.summary}
 				loading={journeyLoading}
-				scale={viewScale as any}
+				scale={viewScale === "custom" ? "day" : viewScale}
 			/>
 			<JournalSection entries={journalEntries} loading={loadingJournals} />
 			<MoodSection logs={moodLogs} loading={loadingMoods} />
@@ -161,3 +161,5 @@ export default function GuardianSelfView() {
 		</ScreenWrapper>
 	);
 }
+
+

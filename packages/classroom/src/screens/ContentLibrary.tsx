@@ -138,7 +138,7 @@ export default function ContentLibrary() {
 	// Mutations
 	const togglePinMutation = useSafeMutation(
 		(variables: { id: string; is_pinned: boolean }) =>
-			api.resources.togglePin(variables.id, variables.is_pinned),
+			api["resources"].togglePin(variables.id, variables.is_pinned),
 		{
 			onMutate: ({ id, is_pinned }) => {
 				setResources((prev) =>
@@ -150,7 +150,7 @@ export default function ContentLibrary() {
 	);
 
 	const deleteMutation = useSafeMutation(
-		(id: string) => api.resources.delete(id),
+		(id: string) => api["resources"].delete(id),
 		{
 			onMutate: (id) => {
 				setResources((prev) => prev.filter((r) => r.id !== id));
@@ -163,7 +163,7 @@ export default function ContentLibrary() {
 	);
 
 	const addMutation = useSafeMutation(
-		(variables: any) => api.resources.create(variables),
+		(variables: any) => api["resources"].create(variables),
 		{
 			onSuccess: (newResource: any) => {
 				hapticSuccess();

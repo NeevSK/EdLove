@@ -15,7 +15,8 @@ export function useCommunityPresence({
 	userVibe = "active",
 }: UseCommunityPresenceOptions) {
 	const { can, context } = usePermissions();
-	const userRole = context.roles[0] || "guest";
+	const userRole =
+		context.activeBond?.capacity ?? context.primaryCapacity ?? "guest";
 	const [onlineCount, setOnlineCount] = useState(0);
 	const [isLoading, setIsLoading] = useState(true);
 	const [isOffline, setIsOffline] = useState(false);

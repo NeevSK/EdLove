@@ -23,7 +23,7 @@ export type {
   WorkCapacity,
   WorkRole,
 } from './Authority';
-export type { Classroom } from './Classroom';
+export type { Classroom, ClassroomStudent, StudentAcademicRecord } from './Classroom';
 export type { ClassroomNote } from './ClassroomNote';
 export type {
   AnnouncementWithAuthor,
@@ -96,6 +96,7 @@ export type {
   CapabilityResource,
   PolicyDecision,
 } from './Policy';
+export type { Bond, Perspective, Capacity } from './Identity';
 export type { PrincipalNote } from './PrincipalNote';
 export {
   type ClaimInvitePayload,
@@ -155,11 +156,11 @@ export type {
   KnowledgeTopology,
   LayoutResult,
   LinkRelationship,
+  MappingTopologyZod,
   PerspectiveId,
   PulseMetricsZod,
-  MappingTopologyZod,
 } from './topology';
-export type { AuthSession, LoginData, SignUpData, User } from './User';
+export type { AuthSession, LoginData, ProfileStats, SignUpData, User } from './User';
 export type {
   PerspectiveRenderer,
   PerspectiveViewProps,

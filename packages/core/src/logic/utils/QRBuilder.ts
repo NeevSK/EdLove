@@ -1,11 +1,11 @@
-﻿/**
- * QRBuilder â€” Factory for canonical gurudevi:// QR payload strings
+/**
+ * QRBuilder — Factory for canonical gurudevi:// QR payload strings
  *
  * Usage:
- *   QRBuilder.school(schoolId, groupId)       â†’ 'https://platform.gurudevi.edlove.org/qr?v=1&action=join_school&...'
- *   QRBuilder.classroom(classroomId)          â†’ 'https://platform.gurudevi.edlove.org/qr...?'
- *   QRBuilder.invite(code, schoolId, role)    â†’ 'https://platform.gurudevi.edlove.org/qr...?'
- *   QRBuilder.thuthimal(token, gifterName)    â†’ 'https://platform.gurudevi.edlove.org/qr...?'
+ *   QRBuilder.school(schoolId, groupId)       → 'https://platform.gurudevi.edlove.org/qr?v=1&action=join_school&...'
+ *   QRBuilder.classroom(classroomId)          → 'https://platform.gurudevi.edlove.org/qr...?'
+ *   QRBuilder.invite(code, schoolId, role)    → 'https://platform.gurudevi.edlove.org/qr...?'
+ *   QRBuilder.thuthimal(token, gifterName)    → 'https://platform.gurudevi.edlove.org/qr...?'
  */
 
 import type { QRPayload } from '../../types/QRPayload';
@@ -26,21 +26,21 @@ export function buildQRString(payload: QRPayload): string {
 /** Factory methods for building canonical QR payload strings */
 export const QRBuilder = {
   /**
-   * School QR â€” scanning joins school AND its community group in a single action.
+   * School QR — scanning joins school AND its community group in a single action.
    * Displayed on school creation success screen.
    */
   school: (school_id: string, group_id: string, handle?: string): string =>
     buildQRString({ v: 1, action: 'join_school', school_id, group_id, handle }),
 
   /**
-   * Classroom QR â€” scanning joins the teacher/student to this classroom.
+   * Classroom QR — scanning joins the teacher/student to this classroom.
    * Generated when a classroom is created; displayed in teacher dashboard.
    */
   classroom: (classroom_id: string, handle?: string): string =>
     buildQRString({ v: 1, action: 'join_class', classroom_id, handle }),
 
   /**
-   * Community group QR â€” standalone group join link.
+   * Community group QR — standalone group join link.
    * Used for groups that exist independently of a school.
    */
   group: (group_id: string, handle?: string): string =>
@@ -81,7 +81,7 @@ export const QRBuilder = {
     buildQRString({ v: 1, action: 'thuthimal_gift', gift_token, gifter_name }),
 
   /**
-   * Library Resource QR â€” scanning allows the user to view or import the resource.
+   * Library Resource QR — scanning allows the user to view or import the resource.
    * Used for sharing documents, videos, and collections.
    */
   resource: (resource_id: string, resource_type: string, title: string, url?: string): string =>

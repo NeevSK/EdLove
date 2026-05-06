@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { makeModelSchema } from '../generated/zod';
+import { makeModelSchema } from '@repo/schema';
 
 export const LongitudinalEntityTypeSchema = z.enum([
   'enrollment',

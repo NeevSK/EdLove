@@ -430,4 +430,44 @@ export const educationalContract = c.router({
     responses: { 200: ClassroomGradingSettingsSchema },
     metadata: gradeAuthority('update'),
   },
+  getHistoricalAcademicRecords: {
+    method: 'GET',
+    path: '/educational/students/:studentId/history',
+    responses: { 200: z.array(z.any()) }, // Using any for now to avoid schema recursion issues in contract
+    metadata: POAMetadataSchema.parse({
+      authority: { action: 'read', subject: 'AcademicHistory' },
+    }),
+  },
+  getHistoricalProfessionalRecords: {
+    method: 'GET',
+    path: '/educational/teachers/:teacherId/history',
+    responses: { 200: z.array(z.any()) },
+    metadata: POAMetadataSchema.parse({
+      authority: { action: 'read', subject: 'ProfessionalHistory' },
+    }),
+  },
+  getHistoricalGovernanceRecords: {
+    method: 'GET',
+    path: '/educational/principals/:principalId/history',
+    responses: { 200: z.array(z.any()) },
+    metadata: POAMetadataSchema.parse({
+      authority: { action: 'read', subject: 'GovernanceHistory' },
+    }),
+  },
+  getSchoolLegacyHistory: {
+    method: 'GET',
+    path: '/educational/schools/:schoolId/legacy',
+    responses: { 200: z.array(z.any()) },
+    metadata: POAMetadataSchema.parse({
+      authority: { action: 'read', subject: 'School' },
+    }),
+  },
+  getClassroomLegacyHistory: {
+    method: 'GET',
+    path: '/educational/classrooms/:classroomId/legacy',
+    responses: { 200: z.array(z.any()) },
+    metadata: POAMetadataSchema.parse({
+      authority: { action: 'read', subject: 'Classroom' },
+    }),
+  },
 });

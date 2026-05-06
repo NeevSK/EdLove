@@ -1,10 +1,10 @@
-﻿import { useNavigation } from "@react-navigation/native";
+
 import { useJourneyHistory } from "@repo/core/hooks";
 import { usePermissions, useStore } from "@repo/core/logic";
 import { JourneyHistoryCard } from "@repo/ui/components/JourneyHistoryCard";
 import { TemporalProvider } from "@repo/ui/components/TemporalProvider";
 import { TemporalShield } from "@repo/ui/components/TemporalShield";
-import { useTheme } from "@repo/ui/primitives";
+
 
 import { Lightbulb, Sparkles } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
@@ -30,10 +30,10 @@ import {
 
 export default function FounderSelfView() {
 	const { t } = useTranslation();
-	const _navigation = useNavigation<any>();
+	
 	const { context } = usePermissions();
 	const { userId } = context;
-	const _colors = useTheme().scene;
+	
 	const justFinishedOnboarding = useStore((s) => s.justFinishedOnboarding);
 	const setJustFinishedOnboarding = useStore(
 		(s) => s.setJustFinishedOnboarding,
@@ -56,7 +56,7 @@ export default function FounderSelfView() {
 				events={journeyEvents}
 				summary={holisticView.summary}
 				loading={journeyLoading}
-				scale={viewScale as any}
+				scale={viewScale === "custom" ? "day" : viewScale}
 			/>
 			<TemporalShield label="ECOSYSTEM VISION">
 				<VisionSection />
@@ -72,7 +72,7 @@ export default function FounderSelfView() {
 			<MoodPickerCard
 				isOpen={false}
 				onToggle={() => {}}
-				onSelect={async (mood, note) => {
+				onSelect={async (mood: Parameters<typeof addMoodLog>[0], note: string) => {
 					await addMoodLog(mood, note || undefined);
 				}}
 				isSaving={false}
@@ -216,3 +216,7 @@ export default function FounderSelfView() {
 		</TemporalProvider>
 	);
 }
+
+
+
+

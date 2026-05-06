@@ -65,12 +65,12 @@ export default function StudentProfileScreen() {
 			setIsLoading(true);
 			const [attData, gradeData, obsData, timelineData, snapshotData] =
 				await Promise.all([
-					api.attendance.getStudentAttendanceTimeline(studentId, {
+					api["attendance"].getStudentAttendanceTimeline(studentId, {
 						classroomId,
 					}),
-					api.grading.getStudentGradeTimeline(studentId, { classroomId }),
-					api.studentObservations.getForEnrollment(classroomStudentId),
-					api.longitudinal.getStudentTimeline(studentId, viewDate, [
+					api["grading"].getStudentGradeTimeline(studentId, { classroomId }),
+					api["studentObservations"].getForEnrollment(classroomStudentId),
+					api["longitudinal"].getStudentTimeline(studentId, viewDate, [
 						"enrollment",
 						"attendance",
 						"grade",
@@ -78,7 +78,7 @@ export default function StudentProfileScreen() {
 						"submission",
 						"study_note",
 					]),
-					api.longitudinal.getStudentSnapshotAsOf(studentId, viewDate, [
+					api["longitudinal"].getStudentSnapshotAsOf(studentId, viewDate, [
 						"enrollment",
 						"attendance",
 						"grade",

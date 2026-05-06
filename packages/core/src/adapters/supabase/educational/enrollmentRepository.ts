@@ -205,4 +205,70 @@ export const createEnrollmentRepository = (supabase: SupabaseClient) => ({
     const { error } = await supabase.from('classroom_students').delete().eq('id', id);
     if (error) throw new APIError('Failed to remove student from classroom', error.code, error);
   },
+
+  async getHistoricalAcademicRecords(studentId: string) {
+    const { data, error } = await supabase
+      .from('student_academic_records')
+      .select('*')
+      .eq('student_id', studentId)
+      .order('academic_year', { ascending: false });
+
+    if (error) throw new APIError('Failed to fetch historical academic records', error.code, error);
+    return data as any[]; // Schema validation happens in the service layer
+  },
+
+  async getHistoricalProfessionalRecords(teacherId: string) {
+    const { data, error } = await supabase
+      .from('teacher_professional_records')
+      .select('*, school:schools(name)')
+      .eq('teacher_id', teacherId)
+      .order('academic_year', { ascending: false });
+
+    if (error) throw new APIError('Failed to fetch historical professional records', error.code, error);
+    
+    return (data || []).map(record => ({
+      ...record,
+      school_name: record.school?.name,
+    })) as any[];
+  },
+
+  async getHistoricalGovernanceRecords(principalId: string) {
+    const { data, error } = await supabase
+      .from('principal_governance_records')
+      .select('*, school:schools(name)')
+      .eq('principal_id', principalId)
+      .order('academic_year', { ascending: false });
+
+    if (error) throw new APIError('Failed to fetch historical governance records', error.code, error);
+    
+    return (data || []).map(record => ({
+      ...record,
+      school_name: record.school?.name,
+    })) as any[];
+  },
+
+  async getSchoolLegacyHistory(schoolId: string) {
+    const { data, error } = await supabase
+      .from('school_legacy_records')
+      .select('*')
+      .eq('school_id', schoolId)
+      .order('academic_year', { ascending: false });
+
+    if (error) throw new APIError('Failed to fetch school legacy history', error.code, error);
+    return data || [];
+  },
+
+  async getClassroomLegacyHistory(classroomId: string) {
+    const { data, error } = await supabase
+      .from('classroom_legacy_records')
+      .select('*, teacher:users(full_name)')
+      .eq('classroom_id', classroomId)
+      .order('academic_year', { ascending: false });
+
+    if (error) throw new APIError('Failed to fetch classroom legacy history', error.code, error);
+    return (data || []).map(record => ({
+      ...record,
+      teacher_name: record.teacher?.full_name,
+    }));
+  },
 });

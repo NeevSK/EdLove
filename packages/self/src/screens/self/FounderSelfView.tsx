@@ -1,4 +1,3 @@
-﻿import { useNavigation } from "@react-navigation/native";
 import { useJourneyHistory } from "@repo/core/hooks";
 import { usePermissions, useStore } from "@repo/core/logic";
 
@@ -34,9 +33,7 @@ import {
 
 export default function FounderSelfView() {
 	const { t } = useTranslation();
-	const _navigation = useNavigation<any>();
-	const _colors = useTheme().scene;
-
+		
 	// State & Kernel Hooks
 	const { context } = usePermissions();
 	const userId = context.userId;
@@ -80,7 +77,10 @@ export default function FounderSelfView() {
 		</VStack>
 	);
 
-	const handleMoodSelect = async (mood: any, note: string) => {
+	const handleMoodSelect = async (
+		mood: Parameters<typeof addMoodLog>[0],
+		note: string,
+	) => {
 		setIsSavingMood(true);
 		try {
 			await addMoodLog(mood, note);
@@ -223,3 +223,4 @@ export default function FounderSelfView() {
 		</ScreenWrapper>
 	);
 }
+

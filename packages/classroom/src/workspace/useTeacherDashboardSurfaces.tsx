@@ -22,8 +22,9 @@ import {
 	VStack,
 } from "@repo/ui/primitives";
 import { Theme } from "@repo/ui/theme";
+import { useThemedColors } from "@repo/ui/hooks";
 
-import type React from "react";
+import type { ComponentType, ReactNode } from "react";
 import { useMemo } from "react";
 import { ClassroomList } from "../components";
 
@@ -50,7 +51,7 @@ export type TeacherDashboardSurface = WorkspaceSurfaceDefinition<
 	summary?: string;
 	temporalLabel?: string;
 	metadata?: string[];
-	content: React.ReactNode;
+	content: ReactNode;
 };
 
 // ─── Helper Components ───────────────────────────────────────────────────────
@@ -61,14 +62,12 @@ function QuickAction({
 	onPress,
 	color,
 	disabled,
-	colors,
 }: {
-	icon: any;
+	icon: ComponentType<any>;
 	label: string;
 	onPress: () => void;
 	color?: string;
 	disabled?: boolean;
-	colors: any;
 }) {
 	return (
 		<Pressable
@@ -100,13 +99,11 @@ function StatCard({
 	label,
 	value,
 	isDemoMode,
-	colors,
 }: {
-	icon: any;
+	icon: ComponentType<any>;
 	label: string;
 	value: number | string;
 	isDemoMode: boolean;
-	colors: any;
 }) {
 	return (
 		<Box className="flex-1 bg-phase-surface-secondary p-6 rounded-[24px] border border-phase-border relative overflow-hidden min-h-[100px]">
@@ -141,7 +138,6 @@ function StatCard({
 // ─── Hook Definition ─────────────────────────────────────────────────────────
 
 type Args = {
-	colors: any;
 	isDemoMode: boolean;
 	isGuest: boolean;
 	isPastView: boolean;
@@ -165,7 +161,6 @@ type Args = {
 };
 
 export function useTeacherDashboardSurfaces({
-	colors,
 	isDemoMode,
 	isGuest,
 	isPastView,
@@ -181,6 +176,8 @@ export function useTeacherDashboardSurfaces({
 	handleClassroomsLoaded,
 	onOpenClassroom,
 }: Args) {
+	const colors = useThemedColors();
+
 	return useMemo<TeacherDashboardSurface[]>(
 		() => [
 			{
@@ -222,7 +219,6 @@ export function useTeacherDashboardSurfaces({
 							label="Create Class"
 							onPress={() => openCreateFlow("create")}
 							disabled={isPastView}
-							colors={colors}
 						/>
 						<QuickAction
 							icon={Users}
@@ -230,7 +226,6 @@ export function useTeacherDashboardSurfaces({
 							onPress={() => openCreateFlow("join")}
 							color={Theme.colors.sanctuarySaffron}
 							disabled={isPastView}
-							colors={colors}
 						/>
 						<QuickAction
 							icon={ScanLine}
@@ -238,7 +233,6 @@ export function useTeacherDashboardSurfaces({
 							onPress={() => setIsScannerOpen(true)}
 							color={Theme.colors.amberGlow}
 							disabled={isPastView}
-							colors={colors}
 						/>
 					</HStack>
 				),
@@ -266,7 +260,6 @@ export function useTeacherDashboardSurfaces({
 								label="Admin"
 								onPress={() => setIsAdminModalOpen(true)}
 								color={Theme.colors.sageGreen}
-								colors={colors}
 							/>
 						</Box>
 						<Box className="w-[48%]">
@@ -275,7 +268,6 @@ export function useTeacherDashboardSurfaces({
 								label="Library"
 								onPress={onOpenLibrary}
 								color={Theme.colors.amberGlow}
-								colors={colors}
 							/>
 						</Box>
 						<Box className="w-[48%]">
@@ -284,7 +276,6 @@ export function useTeacherDashboardSurfaces({
 								label="Principal Echo"
 								onPress={() => setIsFeedbackModalOpen(true)}
 								color={Theme.colors.emberRed}
-								colors={colors}
 							/>
 						</Box>
 						<Box className="w-[48%]">
@@ -293,7 +284,6 @@ export function useTeacherDashboardSurfaces({
 								label="My Echoes"
 								onPress={() => setShowEchoHistory(true)}
 								color={colors.action}
-								colors={colors}
 							/>
 						</Box>
 						<Box className="w-[48%]">
@@ -302,7 +292,6 @@ export function useTeacherDashboardSurfaces({
 								label="Breathing"
 								onPress={() => setIsBreathingOpen(true)}
 								color={colors.success}
-								colors={colors}
 							/>
 						</Box>
 					</HStack>
@@ -333,14 +322,12 @@ export function useTeacherDashboardSurfaces({
 							label="Active Classes"
 							value={stats.activeClasses}
 							isDemoMode={isDemoMode}
-							colors={colors}
 						/>
 						<StatCard
 							icon={Users}
 							label="Total Students"
 							value={stats.totalStudents}
 							isDemoMode={isDemoMode}
-							colors={colors}
 						/>
 					</HStack>
 				),

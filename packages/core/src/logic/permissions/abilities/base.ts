@@ -1,4 +1,4 @@
-﻿import { type AbilityClass, createMongoAbility, type MongoAbility } from '@casl/ability';
+import { type AbilityClass, createMongoAbility, type MongoAbility } from '@casl/ability';
 import type {
   Assignment,
   AttendanceRecord,
@@ -12,6 +12,7 @@ import type {
   LessonMaterial,
   Post,
   School,
+  StudentAcademicRecord,
   StudentGrade,
   ThuthimalGift,
   User,
@@ -89,6 +90,9 @@ export type Subjects =
   | 'Wellbeing'
   | 'Grade'
   | 'ClassroomGradingSettings'
+  | 'StudentAcademicRecord'
+  | 'AcademicHistory'
+  | 'TeachingHistory'
   | 'all';
 
 /**
@@ -112,6 +116,7 @@ export type SubjectType =
   | GroupMember
   | GroupMessage
   | CommunityReaction
+  | StudentAcademicRecord
   | ThuthimalGift;
 
 export type AppAbilities = [Actions, SubjectType];

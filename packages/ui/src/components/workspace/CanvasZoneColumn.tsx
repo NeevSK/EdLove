@@ -1,10 +1,11 @@
-import type { ResolvedWorkspaceSurface, WorkspaceZoneLayoutGroup } from '@repo/core/logic';
 import type React from 'react';
 import { type StyleProp, StyleSheet, type ViewStyle } from 'react-native';
 import { View } from '../../primitives';
 import { Text } from '../../gluestack';
 import { useThemedColors } from '../../hooks/useThemedColors';
 import { Theme } from '../../theme/Theme';
+import type { WorkspaceZoneLayoutGroup } from '@repo/core/logic/workspace/canvas';
+import type { ResolvedWorkspaceSurface } from '@repo/core/types';
 import { CanvasSurfaceCard } from './CanvasSurfaceCard';
 import { DraggableCanvasSurface } from './DraggableCanvasSurface';
 

@@ -52,9 +52,18 @@
  */
 
 import type { AuthorityTier } from "@repo/core/types";
-import type { OrientationSeeds } from "@repo/profile";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import type { EnergyForecast, MoodLog } from "../types";
+
+type OrientationSeeds = {
+	depth_breadth: number;
+	reflect_act: number;
+	solo_social: number;
+	steady_surge: number;
+	source: "seeded" | "inferred" | "mixed";
+	seeded_at?: string;
+	last_updated?: string;
+};
 
 // ============================================================================
 // CONSTANTS
@@ -491,8 +500,9 @@ export function useOrientationInference(
 		gradeNumber,
 	} = input;
 
+	const [now] = useState(() => Date.now());
+
 	return useMemo(() => {
-		const now = Date.now();
 
 		// 1. Authority defaults
 		const NEUTRAL: AuthorityDefaults = {
@@ -547,5 +557,5 @@ export function useOrientationInference(
 			confidence,
 			dataQuality,
 		};
-	}, [explicitSeeds, moodLogs, energyForecasts, authority, gradeNumber]);
+	}, [explicitSeeds, moodLogs, energyForecasts, authority, gradeNumber, now]);
 }

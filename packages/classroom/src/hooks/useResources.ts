@@ -38,7 +38,7 @@ export function useResources(classroomId: string) {
 	const refreshData = useCallback(async () => {
 		if (!isOnline) return;
 		try {
-			const fetched = await api.resources.getAll(classroomId);
+			const fetched = await api["resources"].getAll(classroomId);
 			setResources(fetched);
 			// Persist to cache
 			await SafeZustandStorage.setItem(

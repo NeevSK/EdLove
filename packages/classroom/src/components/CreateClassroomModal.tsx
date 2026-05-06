@@ -188,7 +188,7 @@ export default function CreateClassroomModal({
 
 	async function fetchSections() {
 		try {
-			const fetchedSections = await api.school.getSections(schoolId!);
+			const fetchedSections = await api["school"].getSections(schoolId!);
 			setSections(fetchedSections);
 		} catch (err) {
 			console.error("Error fetching sections:", err);
@@ -234,7 +234,7 @@ export default function CreateClassroomModal({
 		setAvailableClassrooms([]);
 		setSelectedClassroomId("");
 		try {
-			const fetchedGrades = await api.school.getGrades(sectionId);
+			const fetchedGrades = await api["school"].getGrades(sectionId);
 			setGrades(fetchedGrades);
 		} catch (err) {
 			console.error("Error fetching grades:", err);
@@ -263,7 +263,7 @@ export default function CreateClassroomModal({
 		}
 
 		try {
-			const classrooms = await api.classrooms.getAvailableByGrade(gradeId);
+			const classrooms = await api["classrooms"].getAvailableByGrade(gradeId);
 			setAvailableClassrooms(classrooms);
 		} catch (err) {
 			console.error("Error fetching available classrooms:", err);
@@ -298,7 +298,7 @@ export default function CreateClassroomModal({
 					setIsSubmitting(false);
 					return;
 				}
-				const updatedGroup = await api.classrooms.update(selectedClassroomId, {
+				const updatedGroup = await api["classrooms"].update(selectedClassroomId, {
 					teacher_id: userId,
 				});
 				result = updatedGroup;
@@ -399,7 +399,7 @@ export default function CreateClassroomModal({
 				setSelectedClassroomId(classroomId);
 				const userId = await identityAPI.getMyInternalId();
 				if (userId) {
-					const result = await api.classrooms.update(classroomId, {
+					const result = await api["classrooms"].update(classroomId, {
 						teacher_id: userId,
 					});
 

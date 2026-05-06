@@ -59,7 +59,7 @@ export default function TeacherObservationsWorkspace({
 		setIsLoading(true);
 		try {
 			const data =
-				await api.teacherInsights.listStudentObservations(classroomId);
+				await api["teacherInsights"].listStudentObservations(classroomId);
 			setObservations(data || []);
 		} catch (error) {
 			console.error("Failed to load observations", error);
@@ -88,7 +88,7 @@ export default function TeacherObservationsWorkspace({
 		if (!content.trim() || !selectedStudent || !userId) return;
 		setIsSaving(true);
 		try {
-			await api.teacherInsights.createStudentObservation({
+			await api["teacherInsights"].createStudentObservation({
 				classroom_id: classroomId,
 				student_id: (selectedStudent as Student).id,
 				classroom_student_id:
@@ -112,7 +112,7 @@ export default function TeacherObservationsWorkspace({
 
 	const handleDelete = async (id: string) => {
 		try {
-			await api.studentObservations.delete(id);
+			await api["studentObservations"].delete(id);
 			setObservations((prev) =>
 				prev.filter((observation) => observation.id !== id),
 			);

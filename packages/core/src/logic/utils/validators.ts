@@ -1,4 +1,4 @@
-﻿/**
+/**
  * INPUT VALIDATION UTILITIES
  *
  * Comprehensive validation functions for form inputs.

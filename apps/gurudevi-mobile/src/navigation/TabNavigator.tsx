@@ -30,7 +30,7 @@ import {
 	Users,
 	X,
 } from "lucide-react-native";
-import React, { Suspense } from "react";
+import React, { Suspense, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -53,7 +53,14 @@ interface TabNavigatorProps {
 export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
 	const { t } = useTranslation();
 	const { context, flags } = usePermissions();
-	const role = context.roles[0];
+	
+	// ✅ 2026 Sovereign Pattern: Derive Focus (activeBond) with Anchor (primaryCapacity) fallback.
+	// This ensures the UI reflects the user's soul even when no specific school is focused.
+	const role = useMemo(
+		() => context.activeBond?.capacity || context.primaryCapacity,
+		[context.activeBond, context.primaryCapacity]
+	);
+
 	const colors = useTheme().scene;
 	const [currentTab, setCurrentTab] = React.useState<
 		"self" | "classroom" | "community" | "library" | "profile" | "workforce"
@@ -65,23 +72,27 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
 	const [currentAchievement, setCurrentAchievement] = React.useState("");
 	const [prevAchievements, setPrevAchievements] = React.useState<string[]>([]);
 
-	// Synchronize achievement state during render to avoid cascading renders in useEffect
-	if (newAchievements !== prevAchievements) {
-		setPrevAchievements(newAchievements);
-		if (newAchievements.length > 0 && !showCelebration) {
-			setCurrentAchievement(newAchievements[0]);
-			setShowCelebration(true);
-		}
-	}
+	// Synchronize achievement state via effect to avoid infinite re-render loops
+		React.useEffect(() => {
+			if (newAchievements.length !== prevAchievements.length || 
+				newAchievements.some((val, index) => val !== prevAchievements[index])) {
+				setPrevAchievements(newAchievements);
+				if (newAchievements.length > 0 && !showCelebration) {
+					const first = newAchievements[0];
+					if (first) setCurrentAchievement(first);
+					setShowCelebration(true);
+				}
+			}
+		}, [newAchievements, prevAchievements, showCelebration]);
 
-	// Dynamic Label Logic
-	const getClassroomLabel = () => {
+	// ✅ Memoized Label Logic (Referential Stability)
+	const classroomLabel = useMemo(() => {
 		if (role === "principal") return t("tabs.mySchool") || "My School";
 		if (role === "founder") return t("tabs.school");
 		if (role === "sectionHead") return t("tabs.section");
 		if (role === "gradeHead") return t("tabs.grade") || t("tabs.classroom");
 		return t("tabs.classroom");
-	};
+	}, [role, t]);
 
 	return (
 		<Box className="flex-1">
@@ -170,7 +181,7 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
 				<Tab.Screen
 					name="Classroom"
 					options={{
-						tabBarLabel: getClassroomLabel(),
+						tabBarLabel: classroomLabel,
 						tabBarIcon: ({ color, size }) => (
 							<School
 								color={color}

@@ -100,7 +100,7 @@ export default function AcademicCycleManager({
 
 	const fetchCycles = async () => {
 		try {
-			const data = await api.academicCycles.getAll(schoolId);
+			const data = await api["academicCycles"].getAll(schoolId);
 			dispatch({ type: "SET_CYCLES", cycles: data ?? [] });
 		} catch (error) {
 			console.error("Failed to fetch cycles:", error);
@@ -124,7 +124,7 @@ export default function AcademicCycleManager({
 
 		dispatch({ type: "SET_SAVING", isSaving: true });
 		try {
-			await api.academicCycles.create({
+			await api["academicCycles"].create({
 				school_id: schoolId,
 				name,
 				start_date: new Date(startDate),
@@ -149,7 +149,7 @@ export default function AcademicCycleManager({
 
 	const handleSetCurrent = async (cycleId: string) => {
 		try {
-			await api.academicCycles.update(cycleId, schoolId, { is_current: true });
+			await api["academicCycles"].update(cycleId, schoolId, { is_current: true });
 			hapticLight();
 			fetchCycles();
 			toast.showToast({
@@ -186,7 +186,7 @@ export default function AcademicCycleManager({
 
 	const executeDelete = async (cycleId: string) => {
 		try {
-			await api.academicCycles.delete(cycleId);
+			await api["academicCycles"].delete(cycleId);
 			hapticLight();
 			fetchCycles();
 			toast.showToast({

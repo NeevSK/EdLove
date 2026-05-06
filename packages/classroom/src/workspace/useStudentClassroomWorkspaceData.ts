@@ -53,13 +53,13 @@ export function useStudentClassroomWorkspaceData(classroomId: string) {
 
 			const [classroom, lessons, materials, assignments, notes, submissions] =
 				await Promise.all([
-					api.classrooms.getById(classroomId),
-					api.lessons.getAll(classroomId),
-					api.lessonMaterials.getAll(classroomId),
-					api.assignments.getAll(classroomId),
-					api.classroomNotes.getAll(classroomId),
+					api["classrooms"].getById(classroomId),
+					api["lessons"].getAll(classroomId),
+					api["lessonMaterials"].getAll(classroomId),
+					api["assignments"].getAll(classroomId),
+					api["classroomNotes"].getAll(classroomId),
 					userId
-						? api.assignments.getSubmissionHistoryForStudent(
+						? api["assignments"].getSubmissionHistoryForStudent(
 								userId,
 								classroomId,
 							)
@@ -74,7 +74,7 @@ export function useStudentClassroomWorkspaceData(classroomId: string) {
 				submissions: submissions as any,
 				noteCount: notes.length,
 				personalNoteCount: notes.filter(
-					(note) => (note as any).note_type === "personal",
+					(note: { note_type?: string }) => note.note_type === "personal",
 				).length,
 			});
 		} catch (err: any) {

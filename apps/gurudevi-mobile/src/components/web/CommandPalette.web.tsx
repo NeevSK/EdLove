@@ -142,7 +142,7 @@ export default function CommandPalette({
 				id: "self",
 				label: "Self",
 				subtitle: "Your sanctuary & wellbeing",
-				glyph: GLYPHS.Self,
+				glyph: GLYPHS["Self"] ?? "",
 				section: "Navigate",
 				shortcut: "⌘3",
 				action: () => goToTab("Self"),
@@ -151,7 +151,7 @@ export default function CommandPalette({
 				id: "classroom",
 				label: "Classroom",
 				subtitle: "Lessons, students & teaching",
-				glyph: GLYPHS.Classroom,
+				glyph: GLYPHS["Classroom"] ?? "",
 				section: "Navigate",
 				shortcut: "⌘2",
 				action: () => goToTab("Classroom"),
@@ -160,7 +160,7 @@ export default function CommandPalette({
 				id: "community",
 				label: "Community",
 				subtitle: "Teachers sharing wisdom",
-				glyph: GLYPHS.Community,
+				glyph: GLYPHS["Community"] ?? "",
 				section: "Navigate",
 				shortcut: "⌘4",
 				action: () => goToTab("Community"),
@@ -169,7 +169,7 @@ export default function CommandPalette({
 				id: "library",
 				label: "Library",
 				subtitle: "Resources & knowledge",
-				glyph: GLYPHS.Library,
+				glyph: GLYPHS["Library"] ?? "",
 				section: "Navigate",
 				shortcut: "⌘5",
 				action: () => goToTab("Library"),
@@ -178,7 +178,7 @@ export default function CommandPalette({
 				id: "profile",
 				label: "Profile",
 				subtitle: "Your identity & settings",
-				glyph: GLYPHS.Profile,
+				glyph: GLYPHS["Profile"] ?? "",
 				section: "Navigate",
 				shortcut: "⌘1",
 				action: () => goToTab("Profile"),
@@ -187,7 +187,7 @@ export default function CommandPalette({
 				id: "ai",
 				label: "AI Assistant",
 				subtitle: "Ask anything about teaching",
-				glyph: GLYPHS.AIAssistant,
+				glyph: GLYPHS["AIAssistant"] ?? "",
 				section: "Tools",
 				shortcut: "⌘.",
 				action: () => {
@@ -200,7 +200,7 @@ export default function CommandPalette({
 				id: "qr",
 				label: "Scan QR Code",
 				subtitle: "Join a class or redeem Thuthimal",
-				glyph: GLYPHS.QRScanner,
+				glyph: GLYPHS["QRScanner"] ?? "",
 				section: "Tools",
 				action: () => {
 					onOpenScanner?.();
@@ -226,8 +226,8 @@ export default function CommandPalette({
 	const sections = useMemo(
 		() =>
 			filtered.reduce<Record<string, Command[]>>((acc, cmd) => {
-				if (!acc[cmd.section]) acc[cmd.section] = [];
-				acc[cmd.section].push(cmd);
+				const bucket = acc[cmd.section] ?? (acc[cmd.section] = []);
+				bucket.push(cmd);
 				return acc;
 			}, {}),
 		[filtered],
@@ -255,9 +255,10 @@ export default function CommandPalette({
 				navigate("AIAssistant");
 				return;
 			}
-			if (meta && TAB_MAP[e.key]) {
+			const tab = TAB_MAP[e.key];
+			if (meta && tab) {
 				e.preventDefault();
-				goToTab(TAB_MAP[e.key]);
+				goToTab(tab);
 				return;
 			}
 			if (!visible) return;

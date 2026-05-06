@@ -40,7 +40,7 @@
 import { type ChallengeMetric, contextualChallengesAPI } from './contextualChallenges';
 import { naturePathsAPI } from './naturePaths';
 import { supabase } from './supabase';
-import { userGrowthStateAPI } from './userGrowthState';
+import { userGrowthStateAPI, type UserGrowthState } from './userGrowthState';
 
 // \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 // TYPES
@@ -234,24 +234,26 @@ export const growthSignalsAPI = {
     if (BANYAN_SIGNALS.has(signalType)) {
       const state = await userGrowthStateAPI.getFullState(userId).catch(() => null);
       if (state) {
+        const growthState = state as UserGrowthState;
         void naturePathsAPI
           .advanceBanyan(userId, {
-            banyan_stage: (state.banyan_stage as any) ?? 'sapling',
-            peer_mentored_count: state.peer_mentored_count ?? 0,
-            circles_facilitated_count: state.circles_facilitated_count ?? 0,
-            blooming_signals: state.blooming_signals ?? 0,
+            banyan_stage: growthState.banyan_stage ?? 'sapling',
+            peer_mentored_count: growthState.peer_mentored_count ?? 0,
+            circles_facilitated_count: growthState.circles_facilitated_count ?? 0,
+            blooming_signals: growthState.blooming_signals ?? 0,
           })
           .catch(() => {});
       }
     } else if (RIVER_SIGNALS.has(signalType)) {
       const state = await userGrowthStateAPI.getFullState(userId).catch(() => null);
       if (state) {
+        const growthState = state as UserGrowthState;
         void naturePathsAPI
           .advanceRiver(userId, {
-            river_stage: (state.river_stage as any) ?? 'trickle',
-            lessons_completed_count: state.lessons_completed_count ?? 0,
-            reflections_submitted_count: state.reflections_submitted_count ?? 0,
-            weaving_signals: state.weaving_signals ?? 0,
+            river_stage: growthState.river_stage ?? 'trickle',
+            lessons_completed_count: growthState.lessons_completed_count ?? 0,
+            reflections_submitted_count: growthState.reflections_submitted_count ?? 0,
+            weaving_signals: growthState.weaving_signals ?? 0,
           })
           .catch(() => {});
       }
@@ -374,7 +376,8 @@ async function evaluateMomentCondition(
 
     case 'storm_holder': {
       // 3+ fire journal entries within any 7-day window
-      const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+      const now = Date.now();
+      const sevenDaysAgo = new Date(now - 7 * 24 * 60 * 60 * 1000).toISOString();
       const { count } = await supabase
         .from('growth_events')
         .select('id', { count: 'exact', head: true })

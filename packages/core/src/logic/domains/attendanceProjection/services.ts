@@ -1,4 +1,4 @@
-﻿import type { AttendanceReport, SchoolAttendancePulse } from '../../schemas/attendance.schema';
+import type { AttendanceReport, SchoolAttendancePulse } from '../../schemas/attendance.schema';
 import type { AttendanceProjectionRepository } from './ports';
 
 export interface AttendanceProjectionServices {

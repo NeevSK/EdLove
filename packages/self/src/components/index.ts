@@ -19,6 +19,7 @@ export { PulseDashboard } from "./PulseDashboard";
 export { default as RemindersManager } from "./RemindersManager";
 export { default as ResonancePatternCard } from "./ResonancePatternCard";
 export { ResonanceTimeline } from "./ResonanceTimeline";
+export { default as SchoolLegacyTimeline } from "./SchoolLegacyTimeline";
 export { default as SleepTracker } from "./SleepTracker";
 export { SpotlightEmpty } from "./SpotlightEmpty";
 export { default as StudentGoals } from "./StudentGoals";

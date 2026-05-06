@@ -12,7 +12,6 @@ import { useTenantStore } from './useTenantStore';
 import { useUIStore } from './useUIStore';
 
 const authScopedDefaults = {
-  userRole: null,
   userName: 'Gurudevi',
   user: null,
   authSession: null,
@@ -50,8 +49,11 @@ const uiScopedDefaults: Partial<UISlice> = {
 const featureScopedDefaults = resolveFeatureFlags({
   userId: null,
   email: null,
-  roles: [],
-  authority: null,
+  // Sovereign ReBAC fields — required by UserContext schema
+  bonds: [],
+  primaryCapacity: null,
+  activeBond: null,
+  activeBondStatus: 'active',
   schoolId: null,
   tenancyName: null,
   tenancy: null,

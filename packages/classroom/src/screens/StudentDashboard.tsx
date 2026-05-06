@@ -49,7 +49,6 @@ export default function StudentDashboard({
 	});
 
 	const dashboardSurfaces = useStudentDashboardSurfaces({
-		colors,
 		isGuest,
 		isPastView,
 		isDemoExperience,

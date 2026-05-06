@@ -59,6 +59,7 @@ export function materializeDurableAgentRun(
 ): DurableAgentRunView | null {
 	if (rows.length === 0) return null;
 	const first = rows[0];
+	if (!first) return null;
 	const latest = rows.at(-1)!;
 	const requested = rows.find(
 		(row) => row.action === "durable_agent_requested",
@@ -74,7 +75,8 @@ export function materializeDurableAgentRun(
 	const completedMetadata = asRecord(completed?.metadata);
 	const failedMetadata = asRecord(failed?.metadata);
 	const promotedMetadata = asRecord(promoted?.metadata);
-	const classroom = asRecord(asRecord(completedMetadata?.evidence)?.classroom);
+	const evidence = asRecord(completedMetadata?.["evidence"]);
+	const classroom = asRecord(evidence?.["classroom"]);
 	return {
 		runId: first.entity_id,
 		status: deriveRunStatus(rows),
@@ -98,8 +100,8 @@ export function materializeDurableAgentRun(
 		teacherId: pickString(requestedMetadata, "teacherId"),
 		requestedBy: pickString(requestedMetadata, "requestedBy"),
 		summaryDraft: pickString(completedMetadata, "summaryDraft"),
-		evidence: completedMetadata?.evidence ?? null,
-		governor: completedMetadata?.governor ?? null,
+		evidence: completedMetadata?.["evidence"] ?? null,
+		governor: completedMetadata?.["governor"] ?? null,
 		promotedTeacherNoteId: pickString(promotedMetadata, "teacherNoteId"),
 		promotionMode: pickString(promotedMetadata, "promotionMode"),
 		promotedAt: promoted?.created_at ?? null,

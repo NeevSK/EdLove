@@ -5,7 +5,8 @@ export type PrincipalWorkspaceView =
 	| "notes"
 	| "log"
 	| "cycles"
-	| "attendance_report";
+	| "attendance_report"
+	| "legacy";
 
 export type PrincipalWorkspaceSurfaceId =
 	| "setup_runway"
@@ -61,6 +62,7 @@ export type PrincipalCapabilityId =
 	| "compliance"
 	| "curriculum_pulse"
 	| "timetable"
+	| "legacy"
 	| "workspace_switcher";
 
 export interface PrincipalFeatureScopeMeta {
@@ -345,6 +347,14 @@ export const PRINCIPAL_CAPABILITY_REGISTRY: Record<
 		status: "planned",
 		atlasFamily: "Operations ERP",
 	}),
+	legacy: definePrincipalCapability("legacy", {
+		title: "Institutional Legacy",
+		description: "Longitudinal institutional memory and historical milestones.",
+		zone: "institution",
+		scope: "institutional",
+		status: "live",
+		workspaceView: "legacy",
+	}),
 	workspace_switcher: definePrincipalCapability("workspace_switcher", {
 		title: "Workspace Switcher",
 		description: "Switch between different institutional roles and workspaces.",
@@ -412,5 +422,6 @@ export function resolvePrincipalWorkspaceView(
 	if (capability?.workspaceView === "notes") return "notes";
 	if (capability?.workspaceView) return capability.workspaceView;
 	if (featureId === "log" || featureId === "notes") return "log";
+	if (featureId === "legacy") return "legacy";
 	return "main";
 }

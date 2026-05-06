@@ -15,7 +15,7 @@ export * from './material.schema';
 export * from './payments.schema';
 export * from './principal-workspace.schema';
 export * from './pro.schema';
-export * from './role.schema';
+export * from './capacity.schema';
 export * from './school.schema';
 export * from './self.schema';
 export * from './staff.schema';

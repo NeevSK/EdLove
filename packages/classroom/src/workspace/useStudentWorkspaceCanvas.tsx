@@ -156,7 +156,7 @@ export function StudentWorkspaceCanvas({
 	return (
 		<WorkspaceCanvas
 			surfaces={surfaces}
-			layout={layout as any}
+			layout={layout}
 			title="Student Workspace Canvas"
 			subtitle="Daily learning flow arranged as a shared canvas, with room to pin, hide, and move surfaces around real study rhythms."
 			emptyMessage="No student surfaces are available yet for this workspace."

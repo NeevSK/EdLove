@@ -57,8 +57,8 @@ export function useSchoolStats(schoolId: string) {
 				statsData = { ...MOCK_SCHOOL_STATS, is_sample: true } as SchoolStats;
 			} else {
 				const [sData, stData] = await Promise.all([
-					api.school.getSchool(schoolId),
-					api.school.getSchoolStats(schoolId, viewDate),
+					api["school"].getSchool(schoolId),
+					api["school"].getSchoolStats(schoolId, viewDate),
 				]);
 				schoolData = sData;
 				statsData = stData;

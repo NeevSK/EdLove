@@ -1,7 +1,6 @@
-// Unified exports for cross-package alignment
-export { api } from '../api';
-export { isDemo } from '../api/demo';
-export { type AuditLogEntry, historyAPI } from '../api/history';
+// Logic Hooks & Utilities
+
+export * from '../api/history';
 export {
   type DeviceAccountRecord,
   useDeviceAccounts,
@@ -30,16 +29,17 @@ export {
   type PendingGateAction,
   setPendingGateAction,
 } from '../lib/pendingGateAction';
+export { StorageKeys, storage } from '../lib/storage';
 export { useMutationQueue } from '../lib/sync/useMutationQueue';
 export { useAuthorityLifecycle } from '../native/useAuthorityLifecycle';
 export { useAuth } from '../providers/AuthProvider';
 export { useAuthStore } from '../store/useAuthStore';
 export { useFeatureStore } from '../store/useFeatureStore';
-export { useStore, type TotalState } from '../store/useStore';
-export { useTemporalStore } from '../store/useTemporalStore';
+export { type TotalState, useStore } from '../store/useStore';
+export { type TemporalScale, useTemporalStore } from '../store/useTemporalStore';
 export type { APIError } from '../types/API';
 // Types (Agnostic / logic-layer)
-export type { AuthorityTier } from '../types/Authority';
+export type { AuthorityTier, Capacity, Bond } from '../types';
 export type { LessonMaterial } from '../types/LessonMaterial';
 export * from './apiInterceptor';
 export * from './domains';
@@ -50,20 +50,18 @@ export * from './experience';
 export * from './experience/ActivityPulseContext';
 export * from './forms';
 // ZENSTACK MODELS (Namespaced to avoid member collisions with Zod schemas)
-export * as ZenModels from './generated';
-export * from './i18n';
+export * as ZenModels from '@repo/schema';
+export * from './grading';
 export { default as i18n } from './i18n/config';
 export * from './mediaReducer';
-export * from './permissions/abilities/base';
-// Protocol-Oriented Authority (POA)
 export * from './permissions/composer';
 export * from './permissions/feature-engine';
 export * from './permissions/guards/FeatureGuard';
 export * from './permissions/guards/RouteGuard';
+export { identity } from './managers/factory';
 export * from './permissions/hooks/usePermissions';
 export * from './runtimeRegistry';
 export * from './schemas';
 export * from './store-slices';
 export * from './utils';
-export * from './grading';
 export * from './workspace/index';

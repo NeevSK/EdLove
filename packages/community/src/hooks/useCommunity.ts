@@ -32,7 +32,7 @@ export const useCommunity = (
 	const viewScale = useTemporalStore((state) => state.viewScale);
 
 	const groupsInfiniteQuery = useGroupsInfiniteQuery({
-		schoolId: user?.school_id,
+		schoolId: user?.school_id ?? undefined,
 		searchQuery: options.searchQuery,
 		isPublicOnly: options.isPublicOnly,
 	});

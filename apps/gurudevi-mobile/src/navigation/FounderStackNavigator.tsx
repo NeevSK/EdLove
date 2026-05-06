@@ -29,11 +29,11 @@ export default function FounderStackNavigator() {
 			<Stack.Screen name="FounderDashboard" component={FounderDashboard} />
 			<Stack.Screen
 				name="FounderSchoolDashboard"
-				component={FounderSchoolDashboard}
+				component={FounderSchoolDashboard as any}
 			/>
 			<Stack.Screen name="AdminDashboard" component={AdminDashboard} />
 			<Stack.Screen name="AdminIncidentQueue" component={AdminIncidentQueue} />
-			<Stack.Screen name="AdminTenantDetail" component={AdminTenantDetail} />
+			<Stack.Screen name="AdminTenantDetail" component={AdminTenantDetail as any} />
 			<Stack.Screen
 				name="AdminAuthorityRepair"
 				component={AdminAuthorityRepair}
@@ -44,7 +44,10 @@ export default function FounderStackNavigator() {
 				name="AdminReleaseControl"
 				component={AdminReleaseControl}
 			/>
-			<Stack.Screen name="PrincipalDashboard" component={PrincipalDashboard} />
+			<Stack.Screen
+				name="PrincipalDashboard"
+				component={PrincipalDashboard as any}
+			/>
 			<Stack.Screen name="SchoolCreation" component={SchoolCreationScreen} />
 		</Stack.Navigator>
 	);

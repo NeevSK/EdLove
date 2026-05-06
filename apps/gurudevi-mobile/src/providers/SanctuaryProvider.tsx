@@ -1,5 +1,6 @@
 import { AnalyticsProvider } from "@repo/analytics/ui";
 import { useAuth, usePermissions } from "@repo/core/logic";
+import { useAuthStore } from "@repo/core/store";
 import { SyncManager } from "@repo/core/sync";
 import { SanctuaryGlobalStyles } from "@repo/ui/components/SanctuaryGlobalStyles";
 import { EnvironmentProvider, ExternalLinkProvider } from "@repo/ui/context";
@@ -20,13 +21,21 @@ const queryClient = new QueryClient();
 
 /**
  * AssetLoaderWatcher
- * Shows a loading splash until fonts and session are resolved.
+ *
+ * Shows a loading splash until:
+ *  1. Fonts are loaded (expo-font)
+ *  2. Auth session is resolved (Supabase)
+ *  3. Zustand store is fully hydrated from MMKV (Fix 6: Race Condition)
+ *
+ * The `isStoreHydrated` gate prevents ReBAC permission contexts from
+ * being evaluated with empty bond arrays during app bootstrap.
  */
 function AssetLoaderWatcher({ children }: { children: React.ReactNode }) {
 	const { fontsLoaded } = useAssets();
 	const { loading } = useAuth();
+	const isStoreHydrated = useAuthStore((s) => s.isStoreHydrated);
 
-	if (!fontsLoaded || loading) {
+	if (!fontsLoaded || loading || !isStoreHydrated) {
 		return (
 			<SafeAreaProvider>
 				<Center className="flex-1 bg-obsidian">
@@ -57,11 +66,11 @@ export function SanctuaryProvider({ children }: SanctuaryProviderProps) {
 								<ToastProvider>
 									<ExternalLinkProvider>
 										<AnalyticsProvider
-											apiKey={process.env.EXPO_PUBLIC_POSTHOG_API_KEY}
+											apiKey={process.env["EXPO_PUBLIC_POSTHOG_API_KEY"]}
 											enabled={flags?.isAnalyticsEnabled}
 											options={{
 												host:
-													process.env.EXPO_PUBLIC_POSTHOG_HOST ||
+													process.env["EXPO_PUBLIC_POSTHOG_HOST"] ||
 													"https://app.posthog.com",
 											}}
 										>

@@ -14,7 +14,7 @@ export const observationsAPI = {
 		principalId: string,
 		limit = 5,
 	): Promise<PrincipalObservation[]> {
-		return api.principalWorkspace.listRecentObservations(
+		return api["principalWorkspace"].listRecentObservations(
 			principalId,
 			limit,
 		) as Promise<PrincipalObservation[]>;
@@ -25,7 +25,7 @@ export const observationsAPI = {
 		viewDate: string,
 		limit = 10,
 	): Promise<PrincipalObservation[]> {
-		return api.principalWorkspace.listObservationsByDate(
+		return api["principalWorkspace"].listObservationsByDate(
 			principalId,
 			viewDate,
 			limit,
@@ -38,7 +38,7 @@ export const observationsAPI = {
 		type: string;
 		content: string;
 	}): Promise<PrincipalObservation> {
-		return api.principalWorkspace.createObservation(
+		return api["principalWorkspace"].createObservation(
 			input,
 		) as Promise<PrincipalObservation>;
 	},
@@ -51,7 +51,7 @@ export const observationsAPI = {
 		status?: "noted" | "escalated" | "resolved";
 		occurredAt?: string;
 	}) {
-		return api.principalWorkspace.recordObservationFollowUp({
+		return api["principalWorkspace"].recordObservationFollowUp({
 			...input,
 			status: input.status ?? "noted",
 		});

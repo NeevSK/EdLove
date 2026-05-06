@@ -1,9 +1,3 @@
-export type {
-  ResolvedWorkspaceSurface,
-  WorkspaceLayout,
-  WorkspaceSurfaceDefinition,
-  WorkspaceZoneId,
-} from '@repo/core/types';
 export { useTranslation } from 'react-i18next';
 export {
   default as Animated,

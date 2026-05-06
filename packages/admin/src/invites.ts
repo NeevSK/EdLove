@@ -2,12 +2,12 @@ import { api } from "@repo/core/api";
 import type { PrincipalInviteRole } from "@repo/core/logic";
 
 export type InviteCode = Awaited<
-	ReturnType<typeof api.principalWorkspace.listInviteCodes>
+	ReturnType<typeof api["principalWorkspace"]["listInviteCodes"]>
 >[number];
 
 export const invitesAPI = {
 	async listInviteCodes(schoolId: string): Promise<InviteCode[]> {
-		return api.principalWorkspace.listInviteCodes(schoolId);
+		return api["principalWorkspace"].listInviteCodes(schoolId);
 	},
 
 	async getInviteCodesBySchool(schoolId: string): Promise<InviteCode[]> {
@@ -19,7 +19,7 @@ export const invitesAPI = {
 		role: PrincipalInviteRole,
 		createdBy: string,
 	): Promise<InviteCode> {
-		return api.principalWorkspace.generateInviteCode(schoolId, role, createdBy);
+		return api["principalWorkspace"].generateInviteCode(schoolId, role, createdBy);
 	},
 
 	async revokeInviteCode(
@@ -27,7 +27,7 @@ export const invitesAPI = {
 		inviteCode: string,
 		userId: string,
 	): Promise<void> {
-		await api.principalWorkspace.recordInviteEvent({
+		await api["principalWorkspace"].recordInviteEvent({
 			schoolId,
 			principalId: userId,
 			inviteCode,

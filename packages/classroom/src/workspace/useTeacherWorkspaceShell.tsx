@@ -12,7 +12,7 @@ import { Plus } from "@repo/ui/icons";
 import { Icon } from "@repo/ui/primitives";
 import { hapticLight } from "@repo/ui/utils/haptics";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 
 type WorkspaceClassroom = {
 	id: string;
@@ -29,13 +29,15 @@ export function useTeacherWorkspaceShell(
 	const { showToast } = useSanctuaryToast();
 	const { isPastView } = useTemporalStore();
 
-	const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-	const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
-	const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
-	const [isBreathingOpen, setIsBreathingOpen] = useState(false);
-	const [showEchoHistory, setShowEchoHistory] = useState(false);
-	const [isScannerOpen, setIsScannerOpen] = useState(false);
-	const [modalMode, setModalMode] = useState<"create" | "join">("create");
+	const [uiState, setUiState] = useState({
+		isCreateModalOpen: false,
+		isFeedbackModalOpen: false,
+		isAdminModalOpen: false,
+		isBreathingOpen: false,
+		showEchoHistory: false,
+		isScannerOpen: false,
+		modalMode: "create" as "create" | "join",
+	});
 	const [refreshTrigger, setRefreshTrigger] = useState(0);
 	const [classrooms, setClassrooms] = useState<WorkspaceClassroom[]>([]);
 	const [stats, setStats] = useState({
@@ -43,23 +45,21 @@ export function useTeacherWorkspaceShell(
 		totalStudents: 0,
 	});
 
+	const setIsScannerOpen = useCallback((value: boolean) => {
+		setUiState((prev) => ({ ...prev, isScannerOpen: value }));
+	}, []);
+
 	useRegisterFAB({
 		tabType: "classroom",
 		onPress: () => {
-			setModalMode("create");
-			setIsCreateModalOpen(true);
+			setUiState((prev) => ({ ...prev, modalMode: "create", isCreateModalOpen: true }));
 		},
 		icon: <Icon as={Plus} size={24} color="#FFF" />,
 		visible: !isGuest && !isPastView,
 	});
 
-	useEffect(() => {
-		void onRefresh;
-	}, [onRefresh]);
-
 	const openCreateFlow = useCallback((mode: "create" | "join") => {
-		setModalMode(mode);
-		setIsCreateModalOpen(true);
+		setUiState((prev) => ({ ...prev, modalMode: mode, isCreateModalOpen: true }));
 	}, []);
 
 	const bumpRefresh = useCallback(() => {
@@ -138,7 +138,7 @@ export function useTeacherWorkspaceShell(
 	const handleAdminAction = useCallback(
 		(action: string) => {
 			if (action === "Attendance" && classrooms.length > 0 && classrooms[0]) {
-				setIsAdminModalOpen(false);
+				setUiState((prev) => ({ ...prev, isAdminModalOpen: false }));
 				navigation.navigate("Attendance", {
 					classroomId: classrooms[0].id,
 					classroomName: classrooms[0].name,
@@ -154,20 +154,25 @@ export function useTeacherWorkspaceShell(
 		isPastView,
 		classrooms,
 		stats,
-		modalMode,
+		modalMode: uiState.modalMode,
 		refreshTrigger,
-		isCreateModalOpen,
-		isFeedbackModalOpen,
-		isAdminModalOpen,
-		isBreathingOpen,
-		showEchoHistory,
-		isScannerOpen,
+		isCreateModalOpen: uiState.isCreateModalOpen,
+		isFeedbackModalOpen: uiState.isFeedbackModalOpen,
+		isAdminModalOpen: uiState.isAdminModalOpen,
+		isBreathingOpen: uiState.isBreathingOpen,
+		showEchoHistory: uiState.showEchoHistory,
+		isScannerOpen: uiState.isScannerOpen,
 		openCreateFlow,
-		setIsCreateModalOpen,
-		setIsFeedbackModalOpen,
-		setIsAdminModalOpen,
-		setIsBreathingOpen,
-		setShowEchoHistory,
+		setIsCreateModalOpen: (value: boolean) =>
+			setUiState((prev) => ({ ...prev, isCreateModalOpen: value })),
+		setIsFeedbackModalOpen: (value: boolean) =>
+			setUiState((prev) => ({ ...prev, isFeedbackModalOpen: value })),
+		setIsAdminModalOpen: (value: boolean) =>
+			setUiState((prev) => ({ ...prev, isAdminModalOpen: value })),
+		setIsBreathingOpen: (value: boolean) =>
+			setUiState((prev) => ({ ...prev, isBreathingOpen: value })),
+		setShowEchoHistory: (value: boolean) =>
+			setUiState((prev) => ({ ...prev, showEchoHistory: value })),
 		setIsScannerOpen,
 		handleClassroomsLoaded,
 		handleScan,
@@ -177,7 +182,7 @@ export function useTeacherWorkspaceShell(
 				message: "Well done. Take this peace into your next class.",
 				type: "success",
 			});
-			setIsBreathingOpen(false);
+			setUiState((prev) => ({ ...prev, isBreathingOpen: false }));
 		},
 		bumpRefresh,
 		hapticLight,

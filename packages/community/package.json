@@ -1,62 +1,70 @@
 {
-	"name": "@repo/community",
-	"version": "0.0.1",
-	"main": "src/index.ts",
-	"types": "src/index.ts",
-	"exports": {
-		".": "./src/index.ts",
-		"./components": "./src/components/index.ts",
-		"./hooks": "./src/hooks/index.ts",
-		"./screens": "./src/screens/index.ts",
-		"./types": "./src/types/index.ts",
-		"./api": "./src/api/index.ts",
-		"./screens/CommunityScreen.web": "./src/screens/CommunityScreen.web.tsx",
-		"./screens/UserPublicProfileScreen.web": "./src/screens/UserPublicProfileScreen.web.tsx",
-		"./screens/GroupDetailsScreen.web": "./src/screens/GroupDetailsScreen.web.tsx",
-		"./screens/GroupChatScreen.web": "./src/screens/GroupChatScreen.web.tsx",
-		"./screens/DirectMessagesListScreen": "./src/screens/DirectMessagesListScreen.tsx",
-		"./screens/DirectMessageScreen.web": "./src/screens/DirectMessageScreen.web.tsx",
-		"./screens/AnnouncementsScreen": "./src/screens/AnnouncementsScreen.tsx",
-		"./package.json": "./package.json"
-	},
-
-	"scripts": {
-		"lint": "pnpm exec eslint .",
-		"check-types": "pnpm exec tsc --noEmit",
-		"clean": "rm -rf .turbo node_modules dist"
-	},
-	"dependencies": {
-		"@repo/core": "workspace:*",
-		"@repo/library": "workspace:*",
-		"@repo/scanner-kit": "workspace:*",
-		"@repo/ui": "workspace:*",
-		"@repo/self": "workspace:*",
-		"@repo/profile": "workspace:*",
-		"@tanstack/react-query": "^5.90.20",
-		"expo-clipboard": "~55.0.13",
-		"lucide-react-native": "^0.563.0",
-		"react-i18next": "^16.5.4",
-		"date-fns": "^4.1.0",
-		"expo-image-picker": "~55.0.19",
-		"react-native-reanimated": "^4.2.1",
-		"@supabase/supabase-js": "2.102.1",
-		"@supabase/postgrest-js": "2.102.1"
-	},
-	"devDependencies": {
-		"@repo/typescript-config": "workspace:*",
-		"react-i18next": "^16.5.4",
-		"eslint": "^9.38.0",
-		"@repo/eslint-config": "workspace:^",
-		"@types/react": "^19.2.14",
-		"typescript": "^5.9.3"
-	},
-	"peerDependencies": {
-		"react": "*",
-		"react-native": "*",
-		"react-i18next": "*",
-		"@repo/ui": "*",
-		"lucide-react-native": "*",
-		"@supabase/supabase-js": "2.102.1",
-		"@supabase/postgrest-js": "2.102.1"
-	}
+  "name": "@repo/community",
+  "version": "0.0.1",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./components": "./src/components/index.ts",
+    "./hooks": "./src/hooks/index.ts",
+    "./screens": "./src/screens/index.ts",
+    "./types": "./src/types/index.ts",
+    "./api": "./src/api/index.ts",
+    "./screens/CommunityScreen.web": "./src/screens/CommunityScreen.web.tsx",
+    "./screens/UserPublicProfileScreen.web": "./src/screens/UserPublicProfileScreen.web.tsx",
+    "./screens/GroupDetailsScreen.web": "./src/screens/GroupDetailsScreen.web.tsx",
+    "./screens/GroupChatScreen.web": "./src/screens/GroupChatScreen.web.tsx",
+    "./screens/DirectMessagesListScreen": "./src/screens/DirectMessagesListScreen.tsx",
+    "./screens/DirectMessageScreen.web": "./src/screens/DirectMessageScreen.web.tsx",
+    "./screens/AnnouncementsScreen": "./src/screens/AnnouncementsScreen.tsx",
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "lint": "pnpm run lint:biome && pnpm run lint:eslint",
+    "check-types": "pnpm exec tsc --noEmit",
+    "clean": "rm -rf .turbo node_modules dist",
+    "lint:biome": "biome check .",
+    "lint:eslint": "eslint .",
+    "format": "biome format --write .",
+    "check-cycles": "node ../../scripts/refactor/sovereign-cycle-checker.mjs",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui"
+  },
+  "dependencies": {
+    "@repo/core": "workspace:*",
+    "@repo/library": "workspace:*",
+    "@repo/scanner-kit": "workspace:*",
+    "@repo/ui": "workspace:*",
+    "@repo/self": "workspace:*",
+    "@repo/profile": "workspace:*",
+    "@tanstack/react-query": "^5.90.20",
+    "expo-clipboard": "~55.0.13",
+    "lucide-react-native": "^0.563.0",
+    "react-i18next": "^16.5.4",
+    "date-fns": "^4.1.0",
+    "expo-image-picker": "~55.0.19",
+    "react-native-reanimated": "^4.2.1",
+    "@supabase/supabase-js": "2.102.1",
+    "@supabase/postgrest-js": "2.102.1"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "react-i18next": "^16.5.4",
+    "eslint": "^9.38.0",
+    "@repo/eslint-config": "workspace:^",
+    "@types/react": "^19.2.14",
+    "typescript": "^5.9.3",
+    "vitest": "^2.1.9",
+    "vite-tsconfig-paths": "^6.1.1"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*",
+    "react-i18next": "*",
+    "@repo/ui": "*",
+    "lucide-react-native": "*",
+    "@supabase/supabase-js": "2.102.1",
+    "@supabase/postgrest-js": "2.102.1"
+  }
 }

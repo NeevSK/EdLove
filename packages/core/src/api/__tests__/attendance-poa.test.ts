@@ -37,9 +37,13 @@ describe('Attendance POA Orchestration', () => {
     useAuthStore.setState({
       user: {
         id: '550e8400-e29b-41d4-a716-446655440000',
-        role: 'teacher',
-        roles: ['teacher'],
-        authority: 'teacher',
+        activeBond: {
+          id: 'b1',
+          userId: '550e8400-e29b-41d4-a716-446655440000',
+          entityId: 'school-1',
+          entityType: 'SCHOOL',
+          capacity: 'teacher',
+        },
       } as any,
     });
     useTemporalStore.setState({

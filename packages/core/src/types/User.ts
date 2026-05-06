@@ -1,39 +1,58 @@
-import type { AuthorityTier, PlatformAuthority, SchoolAuthority, WorkCapacity } from './Authority';
+import type { SocialLink } from './Social';
 import type { Membership, TenantKind } from './Tenancy';
+import type { Bond } from './Identity';
+
+export interface ProfileStats {
+  classes_taught?: number;
+  students_count?: number;
+  assignments_graded?: number;
+  attendance_streak?: number;
+  assignments_completed?: number;
+  assignments_count?: number;
+  guru_points?: number;
+}
 
 /**
  * User Profile Interface
  * Represents a Gurudevi user with authority and school context
  */
-export interface User {
+export interface User extends ProfileStats {
   id: string; // Internal Gurudevi User UUID (from public.users, resolved via auth_identities)
-  email: string; // User's email address
+  email?: string | null; // User's email address
   full_name: string; // Display name
-  authority: AuthorityTier; // User's authority level
-  school_id: string; // UUID of the school they belong to
-  username?: string; // Unique handle for the user
-  created_at: string; // ISO timestamp
-  updated_at?: string; // ISO timestamp (optional)
-  avatar_url?: string; // Profile picture URL (optional)
-  is_anonymous?: boolean; // Flag for anonymous/guest users
+  bonds?: Bond[]; // Sovereign Identity (ReBAC) Relationships
+  school_id?: string | null; // UUID of the school they belong to
+  username?: string | null; // Unique handle for the user
+  created_at: string | Date; // ISO timestamp or Date object
+  updated_at?: string | Date; // ISO timestamp or Date object (optional)
+  avatar_url?: string | null; // Profile picture URL (optional)
+  is_anonymous?: boolean | null; // Flag for anonymous/guest users
   profile_completed: boolean; // Flag for "No Trust" barrier
-  bio?: string; // User bio
-  authority_label?: string; // Personalized authority label (e.g. "Physics Teacher")
-  index_number?: string; // Mandatory for students
-  nic_number?: string; // Mandatory for teachers
-  organization_name?: string; // Name of the user's organization/school
-  tenant_kind?: TenantKind; // Distinguishes internal, customer, demo, and sandbox tenants
-  platform_authorities?: PlatformAuthority[];
-  school_authority?: SchoolAuthority | null;
-  work_capacities?: WorkCapacity[];
-  school_memberships?: Membership[];
-  onboarding_completed?: boolean; // Flag indicating if user has completed onboarding
-  onboarding_completed_at?: string; // Timestamp when onboarding was completed
-  public_profile?: boolean; // Visibility flag for community profile (optional  defaults to false if absent)
-  roles?: AuthorityTier[];
+  bio?: string | null; // User bio
+  authority_label?: string | null; // Personalized authority label (e.g. "Physics Teacher")
+  index_number?: string | null; // Mandatory for students
+  nic_number?: string | null; // Mandatory for teachers
+  organization_name?: string | null; // Name of the user's organization/school
+  school_name?: string | null; // Alias for organization_name
+  tenant_kind?: TenantKind | null; // Distinguishes internal, customer, demo, and sandbox tenants
+  onboarding_completed?: boolean | null; // Flag indicating if user has completed onboarding
+  onboarding_completed_at?: string | Date | null; // Timestamp when onboarding was completed
+  public_profile?: boolean | null; // Visibility flag for community profile (optional  defaults to false if absent)
   section_id?: string | null;
   grade_id?: string | null;
   classroom_id?: string | null;
+
+  // Profile specific fields
+  is_thuthimal?: boolean;
+  thuthimal_gifter?: string;
+  thuthimal_gifted_at?: string;
+  level?: number;
+  phone?: string;
+  experience_years?: number;
+  subjects_taught?: string | string[];
+  qualifications?: string | string[];
+  social_links?: SocialLink[];
+
   /**
    * Private orientation fingerprint  4-dimensional learning tendency vector.
    * Set during onboarding orientation step and updated via behavioral inference.
@@ -73,7 +92,7 @@ export interface SignUpData {
   avatar_url: string | null;
   username: string | null;
   full_name: string;
-  authority: AuthorityTier;
+  initialCapacity?: string; // Optional - used to seed the first bond
   school_id?: string; // Optional - can be selected or created during signup
 }
 

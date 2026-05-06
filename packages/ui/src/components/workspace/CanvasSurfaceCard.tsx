@@ -1,4 +1,3 @@
-import type { ResolvedWorkspaceSurface } from '@repo/core/logic';
 import { EyeOff, Info, MoveDiagonal2, Pin, Sparkles } from 'lucide-react-native';
 import { useCallback } from 'react';
 import type React from 'react';
@@ -7,6 +6,7 @@ import { Pressable, View } from '../../primitives';
 import { Text } from '../../gluestack';
 import { useThemedColors } from '../../hooks/useThemedColors';
 import { Theme } from '../../theme/Theme';
+import type { ResolvedWorkspaceSurface } from '@repo/core/types';
 
 export interface CanvasSurfaceCardProps<
   TSurfaceId extends string = string,

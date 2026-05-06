@@ -430,7 +430,9 @@ function TeacherJoinSchool({
 				dispatch({ type: "CODE_FAILURE", error: res.error || "Invalid code" });
 				return;
 			}
-			const role = ((context?.roles?.[0] as string) || "teacher") as
+			const role = (
+				context.activeBond?.capacity ?? context.primaryCapacity ?? "teacher"
+			) as
 				| "student"
 				| "teacher"
 				| "gradeHead"
@@ -447,7 +449,7 @@ function TeacherJoinSchool({
 				| "guest";
 			await onboardingAPI.requestSchoolJoin(user.id, res.data.school_id, role);
 			await incrementInviteCodeUsage(state.code.trim());
-			const roleSummary = await api.identity.getClassroomRoleSummary(user.id);
+			const roleSummary = await api["identity"].getClassroomRoleSummary(user.id);
 			const schoolId =
 				roleSummary.schoolId || roleSummary.profile.school_id || null;
 
@@ -716,7 +718,7 @@ function TeacherCreateStandaloneClassroom({
 		if (!userId || !state.name.trim()) return;
 		dispatch({ type: "CREATE_START" });
 		try {
-			await api.classrooms.create({
+			await api["classrooms"].create({
 				name: state.name.trim(),
 				subject: state.subject.trim() || undefined,
 				teacher_id: userId,
@@ -925,7 +927,7 @@ function StudentJoinClassroom({ onSuccess }: { onSuccess: () => void }) {
 		if (!state.code.trim()) return;
 		dispatch({ type: "JOIN_START" });
 		try {
-			await api.classroomStudents.claimStudent(state.code.trim());
+			await api["classroomStudents"].claimStudent(state.code.trim());
 			dispatch({ type: "JOIN_SUCCESS" });
 		} catch (e: unknown) {
 			dispatch({

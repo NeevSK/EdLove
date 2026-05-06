@@ -31,6 +31,8 @@ export const config = [
 			"deprecation/deprecation": "off",
 			"@typescript-eslint/no-floating-promises": "error",
 			"@typescript-eslint/no-explicit-any": "error",
+			"no-unused-vars": "off",
+			"@typescript-eslint/no-unused-vars": "warn",
 			"import-x/no-cycle": ["error", { maxDepth: 5 }],
 			"no-restricted-syntax": [
 				"error",

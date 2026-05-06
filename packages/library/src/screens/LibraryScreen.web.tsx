@@ -294,7 +294,7 @@ export default function LibraryScreenWeb() {
 							recipientUserId: resource.creator_id,
 							actorUserId: user.id,
 							rippleType: "resource_saved",
-							schoolId: user.school_id,
+							schoolId: user.school_id ?? undefined,
 							sourceEntityType: "resource",
 							sourceEntityId: resource.id,
 						})

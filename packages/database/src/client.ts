@@ -1,11 +1,10 @@
-import { schema } from "@repo/core/zen";
+import { schema } from "@repo/schema";
 import { ZenStackClient } from "@zenstackhq/orm";
 import { PostgresDialect } from "kysely";
 import { Pool } from "pg";
 
 type AuthUser = {
 	id: string;
-	authority?: string | null;
 };
 
 let sharedPool: Pool | null = null;
@@ -26,6 +25,7 @@ const getPool = () => {
 	return sharedPool;
 };
 
+
 export const createZenStackDb = (user: AuthUser) => {
 	const dialect = new PostgresDialect({
 		pool: getPool(),
@@ -35,7 +35,6 @@ export const createZenStackDb = (user: AuthUser) => {
 		dialect,
 		user: {
 			id: user.id,
-			authority: user.authority ?? "student",
 		},
 	});
 };

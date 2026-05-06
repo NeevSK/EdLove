@@ -4,7 +4,7 @@
  * Standardized to Zero-Legacy: purged corrupted imports and migrated to Sanctuary V3 architecture.
  */
 
-import type { OrientationSeeds } from "@repo/profile";
+import type { OrientationSeeds as ProfileOrientationSeeds } from "@repo/profile";
 import {
 	Box,
 	Heading,
@@ -34,21 +34,29 @@ import {
 	Zap,
 } from "lucide-react-native";
 import { useCallback, useState } from "react";
+import type React from "react";
 import Animated, { FadeIn, FadeInRight, Layout } from "react-native-reanimated";
+
+type OrientationSeeds = {
+	depth_breadth: number;
+	reflect_act: number;
+	solo_social: number;
+	steady_surge: number;
+	source: "seeded" | "inferred" | "mixed";
+	seeded_at?: string;
+	last_updated?: string;
+};
 
 // ============================================================================
 // DATA
 // ============================================================================
 
 interface OptionCard {
-	icon: any;
+	icon: React.ComponentType<{ size?: number; className?: string }>;
 	label: string;
 	description?: string;
 	delta: Partial<
-		Record<
-			keyof Omit<OrientationSeeds, "source" | "seeded_at" | "last_updated">,
-			number
-		>
+		Record<"depth_breadth" | "reflect_act" | "solo_social" | "steady_surge", number>
 	>;
 }
 
@@ -156,7 +164,7 @@ const QUESTIONS: Question[] = [
 // ============================================================================
 
 export interface OrientationCaptureStepProps {
-	onComplete: (seeds: OrientationSeeds) => void;
+	onComplete: (seeds: ProfileOrientationSeeds) => void;
 	onSkip: () => void;
 	onBack: () => void;
 	currentStep: number;
@@ -176,9 +184,6 @@ export const OrientationCaptureStep = ({
 }: OrientationCaptureStepProps) => {
 	const [questionIndex, setQuestionIndex] = useState(0);
 	const [selectedPerQuestion, setSelectedPerQuestion] = useState<number[]>([]);
-
-	const question = QUESTIONS[questionIndex];
-	if (!question) return null;
 
 	const isLast = questionIndex === QUESTIONS.length - 1;
 
@@ -210,6 +215,9 @@ export const OrientationCaptureStep = ({
 			onBack();
 		}
 	}, [questionIndex, onBack]);
+
+	const question = QUESTIONS[questionIndex];
+	if (!question) return null;
 
 	const selected = selectedPerQuestion[questionIndex] ?? -1;
 
@@ -264,9 +272,10 @@ export const OrientationCaptureStep = ({
 								entering={FadeInRight.delay(i * 100)}
 								layout={Layout}
 							>
-								<Pressable
-									onPress={() => handleSelect(i)}
-									className={`p-6 rounded-3xl border transition-all active:scale-[0.98] ${
+							<Pressable
+								onPress={() => handleSelect(i)}
+								accessibilityRole="button"
+								className={`p-6 rounded-3xl border transition-all active:scale-[0.98] ${
 										isSelected
 											? "bg-sanctuarySaffron/10 border-sanctuarySaffron shadow-lg shadow-sanctuarySaffron/10"
 											: "bg-white/5 border-white/5"
@@ -320,6 +329,7 @@ export const OrientationCaptureStep = ({
 			<HStack className="p-6 pb-12 gap-4 items-center">
 				<Pressable
 					onPress={handleBack}
+					accessibilityRole="button"
 					className="flex-1 h-14 rounded-2xl border border-white/10 items-center justify-center flex-row gap-2 active:bg-white/5"
 				>
 					<Icon as={ChevronLeft} className="text-mistGray/60" size={16} />
@@ -329,6 +339,7 @@ export const OrientationCaptureStep = ({
 				</Pressable>
 				<Pressable
 					onPress={onSkip}
+					accessibilityRole="button"
 					className="flex-1 items-center justify-center h-14 active:opacity-50"
 				>
 					<Text className="text-mistGray/30 text-xs font-black uppercase tracking-widest">
@@ -345,12 +356,10 @@ export const OrientationCaptureStep = ({
 // ============================================================================
 
 export function computeSeeds(selections: number[]): OrientationSeeds {
-	const acc: {
-		[K in keyof Omit<
-			OrientationSeeds,
-			"source" | "seeded_at" | "last_updated"
-		>]: number;
-	} = {
+	const acc: Record<
+		"depth_breadth" | "reflect_act" | "solo_social" | "steady_surge",
+		number
+	> = {
 		depth_breadth: 50,
 		reflect_act: 50,
 		solo_social: 50,

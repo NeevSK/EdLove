@@ -15,3 +15,6 @@ export type {
 	ReportingTenantFilter,
 } from "./reporting";
 export { documentsAPI, reportingAPI } from "./reporting";
+export { default as FounderVisionScreen } from "./screens/FounderVisionScreen";
+export { PrincipalNativeWorkspace } from "./screens/PrincipalNativeWorkspace";
+export { default as SchoolProfileScreen } from "./screens/SchoolProfileScreen.web";

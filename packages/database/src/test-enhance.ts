@@ -1,4 +1,4 @@
-import { schema } from "@repo/core/zen";
+import { schema } from "@repo/schema";
 import { ZenStackClient } from "@zenstackhq/orm";
 import { PostgresDialect } from "kysely";
 import { Pool } from "pg";
@@ -6,7 +6,7 @@ import { Pool } from "pg";
 // Initialize a Kysely dialect with a connection pool
 const dialect = new PostgresDialect({
 	pool: new Pool({
-		connectionString: process.env.DATABASE_URL,
+		connectionString: process.env['DATABASE_URL'],
 	}),
 });
 

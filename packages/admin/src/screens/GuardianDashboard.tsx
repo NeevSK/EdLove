@@ -4,8 +4,8 @@ import {
 	resolveWorkspaceSwitcherTargets,
 	usePermissions,
 	useStore,
-	type WorkspaceSwitcherTarget,
 } from "@repo/core/logic";
+import type { WorkspaceSwitcherTarget } from "@repo/core";
 import type { GuardianStackParamList } from "@repo/core/types";
 
 import ScreenWrapper from "@repo/ui/components/ScreenWrapper";

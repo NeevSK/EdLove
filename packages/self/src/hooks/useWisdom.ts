@@ -35,7 +35,7 @@ export function useWisdom(userId?: string) {
 				setIsLoading(false);
 			}
 		};
-		loadCache();
+		void loadCache();
 	}, [userId, viewDate]);
 	// Refresh from API
 	const refreshData = useCallback(async () => {
@@ -69,7 +69,7 @@ export function useWisdom(userId?: string) {
 	}, [userId, isOnline, viewDate, isPastView]);
 	// Fetch on mount/online change
 	useEffect(() => {
-		refreshData();
+		void refreshData();
 	}, [refreshData]);
 	return {
 		notes,

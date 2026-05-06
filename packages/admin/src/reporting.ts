@@ -92,7 +92,7 @@ export const reportingAPI = {
 		);
 		return {
 			...report,
-			trend: (report.trend || []).map((p) => ({
+			trend: (report.trend || []).map((p: any) => ({
 				...p,
 				date: p.date || new Date().toISOString().split("T")[0],
 			})),

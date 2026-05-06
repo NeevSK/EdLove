@@ -2,11 +2,11 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import FounderDashboard from "@repo/admin/screens/FounderDashboard";
 import FounderSchoolDashboard from "@repo/admin/screens/FounderSchoolDashboard";
 import GuardianDashboard from "@repo/admin/screens/GuardianDashboard";
-import GuardianCommunicationBridgeScreen from "@repo/admin/screens/guardian/GuardianCommunicationBridgeScreen";
-import GuardianEventsScreen from "@repo/admin/screens/guardian/GuardianEventsScreen";
-import GuardianNotificationsScreen from "@repo/admin/screens/guardian/GuardianNotificationsScreen";
-import GuardianStudentDetailScreen from "@repo/admin/screens/guardian/GuardianStudentDetailScreen";
-import GuardianStudentsScreen from "@repo/admin/screens/guardian/GuardianStudentsScreen";
+import GuardianCommunicationBridgeScreen from "@repo/admin/screens/GuardianCommunicationBridgeScreen";
+import GuardianEventsScreen from "@repo/admin/screens/GuardianEventsScreen";
+import GuardianNotificationsScreen from "@repo/admin/screens/GuardianNotificationsScreen";
+import GuardianStudentDetailScreen from "@repo/admin/screens/GuardianStudentDetailScreen";
+import GuardianStudentsScreen from "@repo/admin/screens/GuardianStudentsScreen";
 import PrincipalDashboard from "@repo/admin/screens/PrincipalDashboard";
 import SchoolCreationScreen from "@repo/admin/screens/SchoolCreationScreen";
 import type { GuardianStackParamList } from "@repo/core/types";
@@ -42,11 +42,14 @@ export default function GuardianStackNavigator() {
 				name="GuardianCommunicationBridge"
 				component={GuardianCommunicationBridgeScreen}
 			/>
-			<Stack.Screen name="PrincipalDashboard" component={PrincipalDashboard} />
+			<Stack.Screen
+				name="PrincipalDashboard"
+				component={PrincipalDashboard as any}
+			/>
 			<Stack.Screen name="FounderDashboard" component={FounderDashboard} />
 			<Stack.Screen
 				name="FounderSchoolDashboard"
-				component={FounderSchoolDashboard}
+				component={FounderSchoolDashboard as any}
 			/>
 			<Stack.Screen name="SchoolCreation" component={SchoolCreationScreen} />
 		</Stack.Navigator>

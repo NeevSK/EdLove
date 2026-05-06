@@ -291,4 +291,30 @@ export const communityContract = c.router({
     responses: { 204: z.undefined() },
     metadata: authority('update', 'User'),
   },
+  blockUser: {
+    method: 'POST',
+    path: '/community/users/block',
+    body: z.object({ target_user_id: z.string() }),
+    responses: { 201: z.any() },
+    metadata: authority('create', 'User'),
+  },
+  unblockUser: {
+    method: 'POST',
+    path: '/community/users/unblock',
+    body: z.object({ target_user_id: z.string() }),
+    responses: { 204: z.undefined() },
+    metadata: authority('delete', 'User'),
+  },
+  isBlockingActive: {
+    method: 'GET',
+    path: '/community/users/:targetUserId/blocking-status',
+    responses: { 200: z.object({ active: z.boolean() }) },
+    metadata: authority('read', 'User'),
+  },
+  getMutedUsers: {
+    method: 'GET',
+    path: '/community/users/muted',
+    responses: { 200: z.array(z.any()) },
+    metadata: authority('read', 'User'),
+  },
 });

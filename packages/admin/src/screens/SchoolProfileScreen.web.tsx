@@ -6,12 +6,15 @@ import {
 	useSchoolProfile,
 } from "@repo/profile";
 import { SkeletonCard } from "@repo/ui/components/SkeletonLoader";
-import { Box } from "@repo/ui/components/ui/box";
-import { HStack } from "@repo/ui/components/ui/hstack";
-import { Icon } from "@repo/ui/components/ui/icon";
-import { Pressable } from "@repo/ui/components/ui/pressable";
-import { Heading, Text } from "@repo/ui/components/ui/text";
-import { VStack } from "@repo/ui/components/ui/vstack";
+import {
+	Box,
+	Heading,
+	HStack,
+	Icon,
+	Pressable,
+	Text,
+	VStack,
+} from "@repo/ui/primitives";
 import {
 	ArrowLeft,
 	BookOpen,

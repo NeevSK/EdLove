@@ -27,7 +27,7 @@ export class SeedCursor {
 
 		// Random seed type
 		const types = ["idea", "connection", "insight"];
-		const type = types[Math.floor(Math.random() * types.length)];
+		const type = types[Math.floor(Math.random() * types.length)] ?? "idea";
 		seed.setAttribute("data-seed-type", type);
 
 		this.trail.appendChild(seed);

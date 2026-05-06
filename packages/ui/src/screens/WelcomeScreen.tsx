@@ -68,7 +68,7 @@ interface WelcomeScreenProps {
   onGuest?: () => void;
 }
 
-export const WelcomeScreen = memo(({ onLogin, onGuest }: WelcomeScreenProps) => {
+const WelcomeScreen = memo(({ onLogin, onGuest }: WelcomeScreenProps) => {
   const { t, i18n } = useTranslation();
   const { accent } = useTheme();
   const [acceptedTerms, setAcceptedTerms] = useState(true);
@@ -287,5 +287,8 @@ export const WelcomeScreen = memo(({ onLogin, onGuest }: WelcomeScreenProps) => 
     </ScreenWrapper>
   );
 });
+
+LanguagePill.displayName = 'LanguagePill';
+WelcomeScreen.displayName = 'WelcomeScreen';
 
 export default WelcomeScreen;

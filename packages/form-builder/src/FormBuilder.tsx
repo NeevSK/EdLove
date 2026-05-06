@@ -229,7 +229,7 @@ export const FormBuilder = ({
 	async function fetchResponses() {
 		setIsFetchingResponses(true);
 		try {
-			const data = await api.forms.getResponses(templateId!);
+			const data = await api["forms"].getResponses(templateId!);
 			setResponses(data);
 		} catch (err) {
 			console.error("Failed to fetch responses:", err);
@@ -271,7 +271,7 @@ export const FormBuilder = ({
 		setIsSaving(true);
 		try {
 			const { api } = await import("@repo/core/api");
-			const ownerId = await api.identity.getMyInternalId();
+			const ownerId = await api["identity"].getMyInternalId();
 			if (!ownerId && !isGuest) {
 				throw new Error("You must be logged in to save forms.");
 			}
@@ -287,9 +287,9 @@ export const FormBuilder = ({
 			}
 			let result: any;
 			if (templateId) {
-				result = await api.forms.update(templateId, payload);
+				result = await api["forms"].update(templateId, payload);
 			} else {
-				result = await api.forms.create(payload);
+				result = await api["forms"].create(payload);
 				setTemplateId(result.id);
 			}
 			console.log(publish ? "Form Published!" : "Form Saved Successfully");

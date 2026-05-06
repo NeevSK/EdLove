@@ -49,14 +49,14 @@ async function importData() {
 	}
 
 	const csvContent = fs.readFileSync(postalCsvPath, "utf8");
-	const csvLines = csvContent.split("\n").filter((l) => l.trim());
+	const csvLines = csvContent.split("\n").filter((line: string) => line.trim());
 	const postalUnits: PostalUnit[] = [];
 
 	for (const line of csvLines.slice(1)) {
 		const parts = line.split(",");
 		if (parts.length < 5) continue;
 
-		const [code, area, districtName, lat, lon] = parts;
+		const [code = "", area = "", districtName = "", lat = "0", lon = "0"] = parts;
 		const districtMatch = districts.find(
 			(d) => d.name.toLowerCase() === districtName.toLowerCase(),
 		);
@@ -99,22 +99,22 @@ async function importData() {
 		while ((match = regex.exec(content)) !== null) {
 			const [
 				_full,
-				census_no,
-				name,
-				address,
-				tel,
-				email,
-				provinceName,
-				districtName,
-				zoneName,
-				divName,
-				medium,
-				gender,
-				category,
-				type,
-				grade_span,
-				difficulty,
-				students,
+				census_no = "",
+				name = "",
+				address = "",
+				tel = "",
+				email = "",
+				provinceName = "",
+				districtName = "",
+				zoneName = "",
+				divName = "",
+				medium = "",
+				gender = "",
+				category = "",
+				type = "",
+				grade_span = "",
+				difficulty = "",
+				students = "0",
 			] = match;
 
 			const pMatch = provinces.find((p) =>

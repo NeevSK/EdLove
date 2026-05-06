@@ -1,4 +1,5 @@
-import { type Actions, type Subjects, usePermissions } from '@repo/core/logic';
+import { usePermissions } from '@repo/core/logic';
+import type { Actions, Subjects } from '@repo/core/logic/permissions/abilities/base';
 import type { ReactNode } from 'react';
 import CitizenGate, { type CitizenGateProps } from './CitizenGate';
 

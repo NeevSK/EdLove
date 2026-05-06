@@ -25,14 +25,17 @@ export default function ClassroomStackNavigator() {
 			}}
 		>
 			<Stack.Screen name="ClassroomList" component={ClassroomScreen} />
-			<Stack.Screen name="ClassroomDetails" component={ClassroomDashboard} />
+			<Stack.Screen
+				name="TeacherClassroomDashboard"
+				component={ClassroomDashboard as any}
+			/>
 			<Stack.Screen name="Attendance" component={AttendanceScreen} />
-			<Stack.Screen name="Gradebook" component={GradebookScreen} />
+			<Stack.Screen name="Gradebook" component={GradebookScreen as any} />
 			<Stack.Screen name="SchoolCreation" component={SchoolCreationScreen} />
 			<Stack.Screen name="FounderDashboard" component={FounderDashboard} />
 			<Stack.Screen
 				name="FounderSchoolView"
-				component={FounderSchoolDashboard}
+				component={FounderSchoolDashboard as any}
 			/>
 		</Stack.Navigator>
 	);

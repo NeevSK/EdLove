@@ -52,8 +52,8 @@ const gnSiSearch = searchGNDivisions("\u0D9A\u0DDC\u0DC5\u0DB9"); // Searching f
 console.log(
 	`   searchGNDivisions('\u0D9A\u0DDC\u0DC5\u0DB9'): Found ${gnSiSearch.length} results.`,
 );
-if (gnSiSearch.length > 0) {
-	const gn = gnSiSearch[0];
+const gn = gnSiSearch[0];
+if (gn) {
 	console.log(`   Match: ${gn.name} / ${gn.name_si} / ${gn.name_ta}`);
 	console.log(`   Spatial: ${gn.location?.lat}, ${gn.location?.lng}`);
 }

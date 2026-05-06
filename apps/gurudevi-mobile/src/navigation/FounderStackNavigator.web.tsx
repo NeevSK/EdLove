@@ -63,7 +63,7 @@ export default function FounderStackNavigatorWeb() {
 				<Stack.Screen name="FounderDashboard" component={FounderDashboard} />
 				<Stack.Screen
 					name="FounderSchoolDashboard"
-					component={FounderSchoolDashboard}
+					component={FounderSchoolDashboard as any}
 				/>
 				<Stack.Screen name="AdminDashboard" component={AdminDashboard} />
 				<Stack.Screen
@@ -83,7 +83,7 @@ export default function FounderStackNavigatorWeb() {
 				/>
 				<Stack.Screen
 					name="PrincipalDashboard"
-					component={PrincipalDashboardWeb}
+					component={PrincipalDashboardWeb as any}
 				/>
 				<Stack.Screen name="SchoolCreation" component={SchoolCreationScreen} />
 				<Stack.Screen name="SchoolForest" component={SchoolForestScreen} />

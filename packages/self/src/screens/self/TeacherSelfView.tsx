@@ -1,4 +1,3 @@
-import { useNavigation } from "@react-navigation/native";
 import { useBanyanGrowth, useJourneyHistory } from "@repo/core/hooks";
 import { usePermissions, useStore } from "@repo/core/logic";
 
@@ -29,6 +28,7 @@ import { WarmMirrorCard } from "../../components/WarmMirrorCard";
 import WelcomeModal from "../../components/WelcomeModal";
 import WindDownRitual from "../../components/WindDownRitual";
 import WisdomSeeds from "../../components/WisdomSeeds";
+import TeachingHistoryTimeline from "../../components/TeachingHistoryTimeline";
 import { useEnergyForecast } from "../../hooks/useEnergyForecast";
 import { useJournalEntries } from "../../hooks/useJournalEntries";
 import { useMoodLogs } from "../../hooks/useMoodLogs";
@@ -41,9 +41,6 @@ import {
 
 export default function TeacherSelfView() {
 	const { t } = useTranslation();
-	const _navigation = useNavigation<any>();
-	const _colors = useTheme().scene;
-
 	// State & Kernel Hooks
 	const { context } = usePermissions();
 	const userId = context.userId;
@@ -87,7 +84,10 @@ export default function TeacherSelfView() {
 		</VStack>
 	);
 
-	const handleMoodSelect = async (mood: any, note: string) => {
+	const handleMoodSelect = async (
+		mood: Parameters<typeof addMoodLog>[0],
+		note: string,
+	) => {
 		setIsSavingMood(true);
 		try {
 			await addMoodLog(mood, note);
@@ -243,6 +243,11 @@ export default function TeacherSelfView() {
 								id: "decisions",
 								label: "Decision Journal",
 								content: <DecisionJournalSection userId={userId} />,
+							},
+							{
+								id: "history",
+								label: "Professional History",
+								content: <TeachingHistoryTimeline userId={userId ?? ""} />,
 							},
 						],
 					},

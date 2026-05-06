@@ -6,6 +6,7 @@ export * from './founder';
 export * from './gradingProjection';
 export * from './guardian';
 export * from './principalWorkspace';
+export * from './profile';
 export * from './social';
 export * from './teacherInsights';
 export * from './workspaceLayout';

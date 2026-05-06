@@ -320,7 +320,7 @@ export default function PrincipalNotes({
 
 	const fetchNotes = useCallback(async () => {
 		try {
-			const data = await api.principalNotes.getAll(schoolId);
+			const data = await api["principalNotes"].getAll(schoolId);
 			dispatch({ type: "SET_NOTES", notes: data ?? [] });
 		} catch (err) {
 			console.error("PrincipalNotes: fetch error", err);
@@ -348,7 +348,7 @@ export default function PrincipalNotes({
 		if (!state.draft.trim()) return;
 		dispatch({ type: "SAVE_START" });
 		try {
-			const created = await api.principalNotes.create({
+			const created = await api["principalNotes"].create({
 				school_id: schoolId,
 				content: state.draft.trim(),
 				note_type: state.draftType,
@@ -365,7 +365,7 @@ export default function PrincipalNotes({
 		if (note.note_type !== "todo") return;
 		try {
 			hapticLight();
-			const updated = await api.principalNotes.update(note.id, {
+			const updated = await api["principalNotes"].update(note.id, {
 				is_done: !note.is_done,
 			});
 			dispatch({ type: "UPDATE_NOTE", note: updated });
@@ -378,7 +378,7 @@ export default function PrincipalNotes({
 		if (note.is_done) return;
 		try {
 			hapticLight();
-			const updated = await api.principalNotes.update(note.id, {
+			const updated = await api["principalNotes"].update(note.id, {
 				is_pinned: !note.is_pinned,
 			});
 			dispatch({ type: "UPDATE_NOTE", note: updated });
@@ -390,7 +390,7 @@ export default function PrincipalNotes({
 	const handleDelete = async (id: string) => {
 		try {
 			hapticLight();
-			await api.principalNotes.delete(id);
+			await api["principalNotes"].delete(id);
 			dispatch({ type: "DELETE_NOTE", id });
 			showToast({ message: "Note deleted.", type: "success" });
 		} catch {

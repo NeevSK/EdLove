@@ -37,7 +37,9 @@ export default function ClassroomScreenWeb() {
 		(isTeacherLike || isPrincipalLike || isStudentLike) &&
 		hasSchoolId;
 
-	if (context.roles.length === 0 || (!hasSchoolId && !isWanderer)) {
+	const hasBonds = context.bonds.length > 0;
+
+	if (!hasBonds || (!hasSchoolId && !isWanderer)) {
 		return (
 			<ScreenWrapper>
 				<Box className="flex-1 items-center justify-center gap-5 text-center">
@@ -46,7 +48,7 @@ export default function ClassroomScreenWeb() {
 						Welcome to Gurudevi
 					</Heading>
 					<Text className="text-phase-text-secondary max-w-[400px]">
-						{context.roles.length === 0
+						{!hasBonds
 							? "Let's get you set up. Choose your role to get started."
 							: "Welcome! To access your classroom workspace, please join your school first."}
 					</Text>
@@ -55,7 +57,7 @@ export default function ClassroomScreenWeb() {
 						onPress={() => navigation.navigate("Auth")}
 					>
 						<Text className="text-white font-black">
-							{context.roles.length === 0 ? "Get started" : "Join School"}
+							{!hasBonds ? "Get started" : "Join School"}
 						</Text>
 						<Icon as={ArrowRight} size={18} className="text-white" />
 					</Pressable>

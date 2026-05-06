@@ -1,4 +1,4 @@
-﻿import { useMemo } from 'react';
+import { useMemo } from 'react';
 import { usePermissions } from '../logic/permissions/hooks/usePermissions';
 import type { AuthorityTier } from '../types/Authority';
 import { useFeatureAccess } from './useFeatureAccess';
@@ -18,7 +18,7 @@ export interface AuthorityFeatures {
 
   // Status flags
   isAnonymous: boolean;
-  authority: AuthorityTier | null;
+  capacity: string | null;
 }
 
 /**
@@ -32,7 +32,7 @@ export function useAuthorityFeatures(): AuthorityFeatures {
 
   // Combining store anonymity with feature-level guest status
   const isAnonymous = isUserAnonymous || isGuest;
-  const authority = context.authority;
+  const capacity = context.activeBond?.capacity || null;
 
   const features = useMemo(() => {
     // Base features for everyone
@@ -46,11 +46,11 @@ export function useAuthorityFeatures(): AuthorityFeatures {
       canInteract: !isAnonymous,
       canManageSchool: false,
       isAnonymous,
-      authority,
+      capacity,
     };
 
-    // Authority-specific overrides
-    switch (authority) {
+    // Capacity-specific overrides
+    switch (capacity) {
       case 'founder':
       case 'admin':
       case 'developer':
@@ -81,7 +81,7 @@ export function useAuthorityFeatures(): AuthorityFeatures {
           canInteract: false,
         };
     }
-  }, [authority, isAnonymous]);
+  }, [capacity, isAnonymous]);
 
   return features;
 }

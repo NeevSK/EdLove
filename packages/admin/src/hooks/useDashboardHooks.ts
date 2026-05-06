@@ -25,7 +25,7 @@ export function useSchoolPulseQuery(schoolId: string) {
 	return useQuery({
 		queryKey: ["school-pulse", schoolId, viewDate, viewScale],
 		queryFn: () =>
-			coreAPI.profile.getSchoolPulse(schoolId, {
+			coreAPI["profile"].getSchoolPulse(schoolId, {
 				viewDate,
 				viewScale,
 			}) as Promise<PulseMetricsZod>,
@@ -80,8 +80,8 @@ export function useSchoolStatsQuery(schoolId: string) {
 				};
 			}
 			const [school, stats] = await Promise.all([
-				coreAPI.school.getSchool(schoolId),
-				coreAPI.school.getSchoolStats(schoolId, viewDate),
+				coreAPI["school"].getSchool(schoolId),
+				coreAPI["school"].getSchoolStats(schoolId, viewDate),
 			]);
 			return { school, stats };
 		},

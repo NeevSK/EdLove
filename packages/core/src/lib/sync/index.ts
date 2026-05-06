@@ -1,4 +1,7 @@
 export * from './errorClassifier';
+export * from './eventBus';
+export * from './hooks/useOptimisticMerge';
+export * from './hooks/useSyncStatus';
 export * from './idempotency';
 export * from './MutationAuditLog';
 export * from './registry';

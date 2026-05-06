@@ -1,4 +1,4 @@
-import type { WorkspaceRendererConfig } from '@repo/core/logic';
+import type { WorkspaceRendererConfig } from '@repo/core/types';
 import { StyleSheet } from 'react-native';
 import { ScrollView, View } from '../../../primitives';
 import { Theme } from '../../../theme/Theme';

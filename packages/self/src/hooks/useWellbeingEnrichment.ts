@@ -28,22 +28,29 @@ export function useWellbeingEnrichment(
 
 	useEffect(() => {
 		if (!userId) return;
+		let cancelled = false;
 		warmMirrorAPI
 			.getDataPoints(userId)
-			.then((data) =>
-				setWarmMirrorText(warmMirrorAPI.generateNarrativeEn(data)),
-			)
+			.then((data) => {
+				if (!cancelled) {
+					setWarmMirrorText(warmMirrorAPI.generateNarrativeEn(data));
+				}
+			})
 			.catch(() => {});
+		return () => {
+			cancelled = true;
+		};
 	}, [userId]);
 
 	useEffect(() => {
 		if (!userId) return;
-		let deliveryTimer: any;
+		let deliveryTimer: ReturnType<typeof setTimeout> | undefined;
+		let cancelled = false;
 
 		impactRipplesAPI
 			.getPendingRipples(userId)
 			.then((pending) => {
-				if (!pending.length) return;
+				if (cancelled || !pending.length) return;
 				setRipples(pending);
 				deliveryTimer = setTimeout(() => {
 					pending.forEach(
@@ -62,6 +69,7 @@ export function useWellbeingEnrichment(
 			.catch(() => {});
 
 		return () => {
+			cancelled = true;
 			if (deliveryTimer) clearTimeout(deliveryTimer);
 		};
 	}, [userId]);

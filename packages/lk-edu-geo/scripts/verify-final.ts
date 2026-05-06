@@ -30,8 +30,8 @@ async function verify() {
 	console.log(`- Search "Royal College" found: ${results.length} schools`);
 
 	// Test Hierarchy
-	if (schools.length > 0) {
-		const firstSchool = schools[0];
+	const firstSchool = schools[0];
+	if (firstSchool) {
 		console.log(
 			`- Testing Hierarchy for: ${firstSchool.name} (${firstSchool.id})`,
 		);

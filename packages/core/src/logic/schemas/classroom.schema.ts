@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { makeModelSchema } from '../generated/zod';
+import { makeModelSchema } from '@repo/schema';
 
 /**
  * ClassroomSchema - A sacred space for learning.
@@ -79,6 +79,86 @@ export const EchoSchema = z.object({
   updated_at: z.iso.datetime(),
 });
 
+export const StudentAcademicRecordSchema = z.object({
+  id: z.string().uuid(),
+  student_id: z.string().uuid(),
+  classroom_id: z.string().uuid(),
+  school_id: z.string().uuid(),
+  academic_year: z.string(),
+  grade_number: z.number().optional().nullable(),
+  subject: z.string().optional().nullable(),
+  handle: z.string().optional().nullable(),
+  avg_grade: z.number().optional().nullable(),
+  highest_grade: z.number().optional().nullable(),
+  lowest_grade: z.number().optional().nullable(),
+  assignments_total: z.number(),
+  assignments_submitted: z.number(),
+  teacher_note: z.string().optional().nullable(),
+  created_at: z.string(),
+  updated_at: z.string(),
+});
+
+export const TeacherProfessionalRecordSchema = z.object({
+  id: z.string().uuid(),
+  teacher_id: z.string().uuid(),
+  school_id: z.string().uuid(),
+  school_name: z.string().optional().nullable(),
+  academic_year: z.string(),
+  designation: z.string(),
+  subjects: z.array(z.string()).default([]),
+  classrooms_count: z.number().default(0),
+  students_count: z.number().default(0),
+  avg_classroom_performance: z.number().optional().nullable(),
+  achievements: z.array(z.string()).default([]),
+  created_at: z.string(),
+  updated_at: z.string(),
+});
+
+export const PrincipalGovernanceRecordSchema = z.object({
+  id: z.string().uuid(),
+  principal_id: z.string().uuid(),
+  school_id: z.string().uuid(),
+  school_name: z.string().optional().nullable(),
+  academic_year: z.string(),
+  role: z.string(),
+  staff_count: z.number().default(0),
+  student_count: z.number().default(0),
+  key_initiatives: z.array(z.string()).default([]),
+  institutional_growth_score: z.number().optional().nullable(),
+  created_at: z.string(),
+  updated_at: z.string(),
+});
+
+export const SchoolLegacyRecordSchema = z.object({
+  id: z.string().uuid(),
+  school_id: z.string().uuid(),
+  academic_year: z.string(),
+  total_students: z.number().default(0),
+  total_staff: z.number().default(0),
+  avg_performance: z.number().optional().nullable(),
+  graduation_rate: z.number().optional().nullable(),
+  milestones: z.array(z.string()).default([]),
+  leadership: z.object({
+    principal_id: z.string().uuid().optional(),
+    principal_name: z.string().optional(),
+  }).optional(),
+  created_at: z.string(),
+  updated_at: z.string(),
+});
+
+export const ClassroomLegacyRecordSchema = z.object({
+  id: z.string().uuid(),
+  classroom_id: z.string().uuid(),
+  academic_year: z.string(),
+  teacher_id: z.string().uuid(),
+  teacher_name: z.string().optional(),
+  student_count: z.number().default(0),
+  avg_performance: z.number().optional().nullable(),
+  top_achievements: z.array(z.string()).default([]),
+  created_at: z.string(),
+  updated_at: z.string(),
+});
+
 export type Classroom = z.infer<typeof ClassroomSchema>;
 export type Assignment = z.infer<typeof AssignmentSchema>;
 export type StudentAssignment = z.infer<typeof StudentAssignmentSchema>;
@@ -89,3 +169,8 @@ export type ClassroomStudent = z.infer<typeof ClassroomStudentSchema>;
 export type TeacherStats = z.infer<typeof TeacherStatsSchema>;
 export type StudentStats = z.infer<typeof StudentStatsSchema>;
 export type Echo = z.infer<typeof EchoSchema>;
+export type StudentAcademicRecord = z.infer<typeof StudentAcademicRecordSchema>;
+export type TeacherProfessionalRecord = z.infer<typeof TeacherProfessionalRecordSchema>;
+export type PrincipalGovernanceRecord = z.infer<typeof PrincipalGovernanceRecordSchema>;
+export type SchoolLegacyRecord = z.infer<typeof SchoolLegacyRecordSchema>;
+export type ClassroomLegacyRecord = z.infer<typeof ClassroomLegacyRecordSchema>;

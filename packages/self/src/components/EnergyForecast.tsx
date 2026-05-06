@@ -4,10 +4,10 @@
  * Visualizes internal batteries.
  */
 
-import { useNavigation } from "@react-navigation/native";
 import { supabase } from "@repo/core/api";
 import { useSafeMutation } from "@repo/core/hooks";
 import { usePermissions } from "@repo/core/logic";
+import { useNavigation } from "@react-navigation/native";
 
 import PositiveInvitation from "@repo/ui/components/PositiveInvitation";
 import { SkeletonCard } from "@repo/ui/components/SkeletonLoader";
@@ -23,7 +23,7 @@ import {
 import { hapticLight, hapticSuccess } from "@repo/ui/utils/haptics";
 
 import { Battery, BatteryLow, BatteryMedium, Zap } from "lucide-react-native";
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import Animated, { FadeIn, FadeInUp } from "react-native-reanimated";
 import { useEnergyForecast } from "../hooks/useEnergyForecast";
@@ -48,20 +48,14 @@ export default function EnergyForecast({
 		isLoading: dataLoading,
 	} = useEnergyForecast(activeUserId ?? undefined);
 	const [selectedLevel, setSelectedLevel] = useState<number | null>(null);
-	const [lastUpdatedAt, setLastUpdatedAt] = useState<string | null>(null);
 
 	const today = new Date().toISOString().split("T")[0];
-
-	useEffect(() => {
-		if (forecasts.length > 0) {
-			const todayDate = new Date().toISOString().split("T")[0];
-			const found = forecasts.find((f) => f.forecast_date === todayDate);
-			if (found) {
-				setSelectedLevel(found.energy_level);
-				setLastUpdatedAt(found.created_at);
-			}
-		}
-	}, [forecasts]);
+	const currentForecast = useMemo(
+		() => forecasts.find((f) => f.forecast_date === today) ?? forecasts[0],
+		[forecasts, today],
+	);
+	const displayLevel = selectedLevel ?? currentForecast?.energy_level ?? null;
+	const lastUpdatedAt = currentForecast?.created_at ?? null;
 
 	const { mutate: saveEnergy, isLoading: isSaving } = useSafeMutation(
 		async (level: number) => {
@@ -80,7 +74,7 @@ export default function EnergyForecast({
 		{
 			onSuccess: () => {
 				hapticSuccess();
-				refreshData();
+				void refreshData();
 			},
 		},
 	);
@@ -162,7 +156,7 @@ export default function EnergyForecast({
 		);
 	}
 
-	const currentEnergy = selectedLevel ? energyLevels[selectedLevel - 1] : null;
+	const currentEnergy = displayLevel ? energyLevels[displayLevel - 1] : null;
 
 	return (
 		<VStack className="gap-lg p-lg">
@@ -198,6 +192,7 @@ export default function EnergyForecast({
 								key={energy.level}
 								onPress={() => handleSelectEnergy(energy.level)}
 								disabled={isSaving || componentDisabled}
+								accessibilityRole="button"
 								className="items-center gap-2"
 							>
 								<Box
@@ -223,7 +218,7 @@ export default function EnergyForecast({
 			</Box>
 
 			{/* Status Feedback */}
-			{selectedLevel && (
+			{displayLevel && (
 				<Animated.View entering={FadeInUp.duration(400)}>
 					<Box
 						className={`p-md rounded-comfortable border ${currentEnergy?.bg} ${currentEnergy?.border} items-center`}
@@ -260,7 +255,7 @@ export default function EnergyForecast({
 			{/* Guidance */}
 			<Box className="p-md bg-white/5 rounded-comfortable border border-white/5 mt-2">
 				<Text className="text-mistGray text-[11px] text-center italic">
-					GuruDevi: "Honour your energy. It is the fuel for your purpose."
+					GuruDevi: &ldquo;Honour your energy. It is the fuel for your purpose.&rdquo;
 				</Text>
 			</Box>
 		</VStack>

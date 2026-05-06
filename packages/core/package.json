@@ -17,13 +17,25 @@
       "types": "./src/api/index.ts",
       "import": "./src/api/index.ts"
     },
+    "./api/*": {
+      "types": "./src/api/*.ts",
+      "import": "./src/api/*.ts"
+    },
     "./api/hooks": {
       "types": "./src/api/hooks/index.ts",
       "import": "./src/api/hooks/index.ts"
     },
+    "./api/runtimes/*": {
+      "types": "./src/api/runtimes/*.ts",
+      "import": "./src/api/runtimes/*.ts"
+    },
     "./logic": {
       "types": "./src/logic/index.ts",
       "import": "./src/logic/index.ts"
+    },
+    "./logic/schemas/*": {
+      "types": "./src/logic/schemas/*.ts",
+      "import": "./src/logic/schemas/*.ts"
     },
     "./zen": {
       "types": "./src/logic/generated/index.ts",
@@ -37,6 +49,10 @@
       "types": "./src/hooks/index.ts",
       "import": "./src/hooks/index.ts"
     },
+    "./hooks/*": {
+      "types": "./src/hooks/*.ts",
+      "import": "./src/hooks/*.ts"
+    },
     "./store": {
       "types": "./src/store/index.ts",
       "import": "./src/store/index.ts"
@@ -44,6 +60,10 @@
     "./store/*": {
       "types": "./src/store/*.ts",
       "import": "./src/store/*.ts"
+    },
+    "./native/*": {
+      "types": "./src/native/*.ts",
+      "import": "./src/native/*.ts"
     },
     "./sync/*": {
       "types": "./src/lib/sync/*.ts",
@@ -56,6 +76,10 @@
     "./types": {
       "types": "./src/types/index.ts",
       "import": "./src/types/index.ts"
+    },
+    "./types/*": {
+      "types": "./src/types/*.ts",
+      "import": "./src/types/*.ts"
     },
     "./auth": {
       "types": "./src/api/auth.ts",
@@ -89,6 +113,10 @@
       "types": "./src/constants/index.ts",
       "import": "./src/constants/index.ts"
     },
+    "./constants/*": {
+      "types": "./src/constants/*.ts",
+      "import": "./src/constants/*.ts"
+    },
     "./grading": {
       "types": "./src/logic/grading/index.ts",
       "import": "./src/logic/grading/index.ts"
@@ -108,6 +136,22 @@
     "./lib": {
       "types": "./src/lib/index.ts",
       "import": "./src/lib/index.ts"
+    },
+    "./logic/workspace/*": {
+      "types": "./src/logic/workspace/*.ts",
+      "import": "./src/logic/workspace/*.ts"
+    },
+    "./logic/permissions/*": {
+      "types": "./src/logic/permissions/*.ts",
+      "import": "./src/logic/permissions/*.ts"
+    },
+    "./logic/forms/*": {
+      "types": "./src/logic/forms/*.ts",
+      "import": "./src/logic/forms/*.ts"
+    },
+    "./logic/entities/*": {
+      "types": "./src/logic/entities/*.ts",
+      "import": "./src/logic/entities/*.ts"
     },
     "./package.json": "./package.json"
   },

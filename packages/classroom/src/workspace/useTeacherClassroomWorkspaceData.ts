@@ -1,5 +1,6 @@
 import { api } from "@repo/core/api";
 import { useTeacherClassroom } from "@repo/core/hooks";
+import { useStore } from "@repo/core/logic";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { workspaceLayoutServices } from "@repo/core/api/runtimes/workspaceLayout.runtime";
@@ -12,6 +13,7 @@ type TeacherObservation = Awaited<
 
 export function useTeacherClassroomWorkspaceData(classroomId: string) {
 	const classroomState = useTeacherClassroom(classroomId);
+	const currentUserId = useStore((state) => state.user?.id ?? "");
 	const [assignments, setAssignments] = useState<any[]>([]);
 	const [lessons, setLessons] = useState<any[]>([]);
 	const [materials, setMaterials] = useState<any[]>([]);
@@ -21,7 +23,7 @@ export function useTeacherClassroomWorkspaceData(classroomId: string) {
 	const [workspaceError, setWorkspaceError] = useState<Error | null>(null);
 	const [layout, setLayout] = useState<WorkspaceLayoutRecord | null>(null);
 
-	const layoutTarget = Platform.OS === 'web' ? 'web' : 'mobile';
+	const layoutTarget = Platform.OS === "web" ? "web" : "mobile";
 
 	const refreshWorkspace = useCallback(async () => {
 		if (!classroomId) {
@@ -38,14 +40,14 @@ export function useTeacherClassroomWorkspaceData(classroomId: string) {
 		setWorkspaceError(null);
 
 		try {
-			const [assignmentData, lessonData, materialData, observationData, notes] =
+			const [assignmentData, lessonData, materialData, observationData, notes, layoutData] =
 				await Promise.all([
-					api.assignments.getAll(classroomId),
-					api.lessons.getAll(classroomId),
-					api.lessonMaterials.getAll(classroomId),
-					api.teacherInsights.listStudentObservations(classroomId),
-					api.classroomNotes.getAll(classroomId),
-					workspaceLayoutServices.getLayout(context.userId || "", classroomId, layoutTarget),
+					api["assignments"].getAll(classroomId),
+					api["lessons"].getAll(classroomId),
+					api["lessonMaterials"].getAll(classroomId),
+					api["teacherInsights"].listStudentObservations(classroomId),
+					api["classroomNotes"].getAll(classroomId),
+					workspaceLayoutServices.getLayout(currentUserId, classroomId, layoutTarget),
 				]);
 
 			setAssignments(assignmentData || []);
@@ -65,13 +67,13 @@ export function useTeacherClassroomWorkspaceData(classroomId: string) {
 		} finally {
 			setIsWorkspaceLoading(false);
 		}
-	}, [classroomId, layoutTarget, classroomState.context.userId]);
+	}, [classroomId, layoutTarget, currentUserId]);
 
 	const updateLayout = useCallback(async (newOrder: string[]) => {
-		if (!layout || !classroomState.context.userId) return;
+		if (!layout || !currentUserId) return;
 
 		const updated = await workspaceLayoutServices.upsertLayout({
-			userId: classroomState.context.userId,
+			userId: currentUserId,
 			workspaceId: classroomId,
 			layoutTarget,
 			order: newOrder,
@@ -83,7 +85,7 @@ export function useTeacherClassroomWorkspaceData(classroomId: string) {
 		});
 
 		setLayout(updated);
-	}, [layout, classroomId, layoutTarget, classroomState.context.userId]);
+	}, [layout, classroomId, layoutTarget, currentUserId]);
 
 	useEffect(() => {
 		void refreshWorkspace();

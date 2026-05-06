@@ -1,4 +1,4 @@
-﻿import { usePermissions } from "@repo/core/logic";
+import { usePermissions } from "@repo/core/logic";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
 	fetchPresenceFallbackCount,
@@ -15,7 +15,7 @@ export function useCommunityPresence({
 	userVibe = "active",
 }: UseCommunityPresenceOptions) {
 	const { can, context } = usePermissions();
-	const userRole = context.roles[0] || "guest";
+	const userRole = context.activeBond?.capacity || "guest";
 	const [onlineCount, setOnlineCount] = useState(0);
 	const [isLoading, setIsLoading] = useState(true);
 	const [isOffline, setIsOffline] = useState(false);

@@ -11,12 +11,12 @@ import PositiveInvitation from "@repo/ui/components/PositiveInvitation";
 import { WebScreenHeader } from "@repo/ui/components/WebScreenHeader.web";
 import { Bell, Compass, Info, Plus, Shield, Users2 } from "@repo/ui/icons";
 import { Box, Heading, Icon, Spinner, Text, VStack } from "@repo/ui/primitives";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useReducer } from "react";
 import { CommentSheet } from "../components/CommentSheet";
 import CommunityHearth from "../components/CommunityHearth";
 import CreateGroupModal from "../components/CreateGroupModal";
 import CreatePostModal from "../components/CreatePostModal";
-import PostCard from "../components/PostCard";
+import { PostCard } from "../components/PostCard";
 import { useCommunity } from "../hooks/useCommunity";
 import { useCommunityGroups } from "../hooks/useCommunityGroups";
 import type {
@@ -33,9 +33,95 @@ import {
 	getCommunityQuickPaths,
 	mapCommunitySurfaceSlots,
 } from "./communityWorkspace.shared";
+import type { CommunityStackParamList } from "@repo/core/types";
+
+type CommunityState = {
+	activeMode: CommunityWorkspaceMode;
+	selectedFilter: string;
+	searchQuery: string;
+	showCreatePost: boolean;
+	showCreateGroup: boolean;
+	commentPostId: string | null;
+	commentPostAuthorId: string | undefined;
+	commentPostType: string | undefined;
+	conversations: DirectConversation[];
+	loadingMessages: boolean;
+	announcementCount: number;
+};
+
+type CommunityAction =
+	| { type: "SET_MODE"; mode: CommunityWorkspaceMode }
+	| { type: "SET_FILTER"; filter: string }
+	| { type: "SET_SEARCH"; query: string }
+	| { type: "TOGGLE_CREATE_POST"; show: boolean }
+	| { type: "TOGGLE_CREATE_GROUP"; show: boolean }
+	| {
+			type: "OPEN_COMMENTS";
+			postId: string;
+			authorId?: string;
+			postType?: string;
+	  }
+	| { type: "CLOSE_COMMENTS" }
+	| { type: "SET_CONVERSATIONS"; conversations: DirectConversation[] }
+	| { type: "SET_LOADING_MESSAGES"; loading: boolean }
+	| { type: "SET_ANNOUNCEMENT_COUNT"; count: number };
+
+function communityReducer(
+	state: CommunityState,
+	action: CommunityAction,
+): CommunityState {
+	switch (action.type) {
+		case "SET_MODE":
+			return { ...state, activeMode: action.mode };
+		case "SET_FILTER":
+			return { ...state, selectedFilter: action.filter };
+		case "SET_SEARCH":
+			return { ...state, searchQuery: action.query };
+		case "TOGGLE_CREATE_POST":
+			return { ...state, showCreatePost: action.show };
+		case "TOGGLE_CREATE_GROUP":
+			return { ...state, showCreateGroup: action.show };
+		case "OPEN_COMMENTS":
+			return {
+				...state,
+				commentPostId: action.postId,
+				commentPostAuthorId: action.authorId,
+				commentPostType: action.postType,
+			};
+		case "CLOSE_COMMENTS":
+			return {
+				...state,
+				commentPostId: null,
+				commentPostAuthorId: undefined,
+				commentPostType: undefined,
+			};
+		case "SET_CONVERSATIONS":
+			return { ...state, conversations: action.conversations };
+		case "SET_LOADING_MESSAGES":
+			return { ...state, loadingMessages: action.loading };
+		case "SET_ANNOUNCEMENT_COUNT":
+			return { ...state, announcementCount: action.count };
+		default:
+			return state;
+	}
+}
+
+const initialState: CommunityState = {
+	activeMode: "feed",
+	selectedFilter: "all",
+	searchQuery: "",
+	showCreatePost: false,
+	showCreateGroup: false,
+	commentPostId: null,
+	commentPostAuthorId: undefined,
+	commentPostType: undefined,
+	conversations: [],
+	loadingMessages: false,
+	announcementCount: 0,
+};
 
 export default function CommunityScreenWeb() {
-	const navigation = useNavigation<any>();
+	const navigation = useNavigation<any>(); // Keep any for web navigation compatibility
 	const { can } = usePermissions();
 	const { user, flags } = useStore();
 	const { isCommunityEnabled, isMessagingEnabled, isSocialShieldEnabled } =
@@ -45,8 +131,6 @@ export default function CommunityScreenWeb() {
 
 	const userId = user?.id ?? "guest";
 	const schoolId = user?.school_id ?? undefined;
-	const userAuthority = (user?.authority as any) ?? "student";
-
 	const canReadFeed = can("read", "CommunityFeed");
 	const canReadGroups = can("read", "CommunityGroups");
 	const canReadMessages = can("read", "DirectMessages");
@@ -54,52 +138,30 @@ export default function CommunityScreenWeb() {
 	const canCreateGroup = can("create", "Group");
 	const canReadAnnouncements = Boolean(schoolId) && can("read", "Group");
 
-	const [activeMode, setActiveMode] = useState<CommunityWorkspaceMode>("feed");
-	const [selectedFilter, setSelectedFilter] = useState<string>("all");
-	const [searchQuery, setSearchQuery] = useState("");
-	const [showCreatePost, setShowCreatePost] = useState(false);
-	const [showCreateGroup, setShowCreateGroup] = useState(false);
-	const [commentPostId, setCommentPostId] = useState<string | null>(null);
-	const [commentPostAuthorId, setCommentPostAuthorId] = useState<
-		string | undefined
-	>(undefined);
-	const [commentPostType, setCommentPostType] = useState<string | undefined>(
-		undefined,
-	);
-	const [conversations, setConversations] = useState<DirectConversation[]>([]);
-	const [loadingMessages, setLoadingMessages] = useState(false);
-	const [_announcementCount, setAnnouncementCount] = useState(0);
+	const [state, dispatch] = useReducer(communityReducer, initialState);
+	const {
+		activeMode,
+		selectedFilter,
+		searchQuery,
+		showCreatePost,
+		showCreateGroup,
+		commentPostId,
+		commentPostAuthorId,
+		commentPostType,
+		conversations,
+		loadingMessages,
+	} = state;
 
 	const { posts, isLoadingPosts, fetchPosts, fetchGroups } = useCommunity(
 		selectedFilter !== "all" ? selectedFilter : undefined,
 	);
-
-	if (!isCommunityEnabled) {
-		return (
-			<Box className="flex-1 bg-phase-canvas">
-				<WebScreenHeader title="Community" />
-				<Box className="flex-1 items-center justify-center p-12">
-					<VStack space="xl" className="items-center max-w-md">
-						<Box className="w-16 h-16 bg-phase-warning/10 rounded-full items-center justify-center">
-							<Icon as={Info} size="xl" className="text-phase-warning" />
-						</Box>
-						<Heading className="text-center">Sanctuary Maintenance</Heading>
-						<Text className="text-center text-phase-text-secondary">
-							The community spaces are currently undergoing a structural
-							expansion. Please check back soon for a calmer, more resonant
-							experience.
-						</Text>
-					</VStack>
-				</Box>
-			</Box>
-		);
-	}
 
 	const { sanctuaryGroups, galaxyGroups } = useCommunityGroups({
 		schoolId,
 		searchQuery,
 	});
 	const { manifestos } = useManifestoHooks(schoolId, user?.id);
+
 
 	const slots = useMemo(
 		() => mapCommunitySurfaceSlots("web", userId),
@@ -141,24 +203,33 @@ export default function CommunityScreenWeb() {
 	}, [posts, searchQuery]);
 
 	useEffect(() => {
-		if (!pending.action) return;
+		if (!pending.action || !isCommunityEnabled) return;
 		if (
 			pending.action.kind === "community_open_create_group" &&
 			canCreateGroup
 		) {
-			setShowCreateGroup(true);
+			dispatch({ type: "TOGGLE_CREATE_GROUP", show: true });
 			pending.clear().catch(() => {});
 		}
-	}, [canCreateGroup, pending]);
+	}, [canCreateGroup, pending, isCommunityEnabled]);
 
 	useEffect(() => {
-		if (activeMode !== "messages" || !canReadMessages) return;
+		if (
+			!isCommunityEnabled ||
+			activeMode !== "messages" ||
+			!canReadMessages
+		)
+			return;
 		let cancelled = false;
-		setLoadingMessages(true);
+		dispatch({ type: "SET_LOADING_MESSAGES", loading: true });
 		communityAPI
 			.getDirectConversations()
 			.then((data) => {
-				if (!cancelled) setConversations(data as DirectConversation[]);
+				if (!cancelled)
+					dispatch({
+						type: "SET_CONVERSATIONS",
+						conversations: data as DirectConversation[],
+					});
 			})
 			.catch((error) => {
 				console.error(
@@ -167,21 +238,25 @@ export default function CommunityScreenWeb() {
 				);
 			})
 			.finally(() => {
-				if (!cancelled) setLoadingMessages(false);
+				if (!cancelled)
+					dispatch({ type: "SET_LOADING_MESSAGES", loading: false });
 			});
 		return () => {
 			cancelled = true;
 		};
-	}, [activeMode, canReadMessages]);
+	}, [activeMode, canReadMessages, isCommunityEnabled]);
 
 	useEffect(() => {
-		if (!canReadAnnouncements || !schoolId) return;
+		if (!isCommunityEnabled || !canReadAnnouncements || !schoolId) return;
 		let cancelled = false;
 		communityAPI
 			.getAnnouncements(schoolId)
 			.then((data) => {
 				if (!cancelled)
-					setAnnouncementCount((data as AnnouncementWithAuthor[]).length);
+					dispatch({
+						type: "SET_ANNOUNCEMENT_COUNT",
+						count: (data as any[]).length,
+					});
 			})
 			.catch((error) => {
 				console.error(
@@ -192,19 +267,43 @@ export default function CommunityScreenWeb() {
 		return () => {
 			cancelled = true;
 		};
-	}, [canReadAnnouncements, schoolId]);
+	}, [canReadAnnouncements, schoolId, isCommunityEnabled]);
 
-	const openAuthFlow = () => {
+	const openAuthFlow = useCallback(() => {
 		setPendingGateAction({
 			kind: "community_open_create_group",
 			createdAt: Date.now(),
 		}).catch(() => {});
 		navigation.navigate("Auth");
-	};
+	}, [navigation]);
 
-	const handleOpenGroup = (groupId: string, groupName?: string) => {
-		navigation.navigate("GroupDetails", { groupId, groupName });
-	};
+	const handleOpenGroup = useCallback(
+		(groupId: string, groupName?: string) => {
+			navigation.navigate("GroupDetails", { groupId, groupName });
+		},
+		[navigation],
+	);
+
+	if (!isCommunityEnabled) {
+		return (
+			<Box className="flex-1 bg-phase-canvas">
+				<WebScreenHeader title="Community" />
+				<Box className="flex-1 items-center justify-center p-12">
+					<VStack space="xl" className="items-center max-w-md">
+						<Box className="w-16 h-16 bg-phase-warning/10 rounded-full items-center justify-center">
+							<Icon as={Info} size="xl" className="text-phase-warning" />
+						</Box>
+						<Heading className="text-center">Sanctuary Maintenance</Heading>
+						<Text className="text-center text-phase-text-secondary">
+							The community spaces are currently undergoing a structural
+							expansion. Please check back soon for a calmer, more resonant
+							experience.
+						</Text>
+					</VStack>
+				</Box>
+			</Box>
+		);
+	}
 
 	const renderGuestGate = (title: string, description: string) => (
 		<div className="community-empty-card">
@@ -249,7 +348,9 @@ export default function CommunityScreenWeb() {
 					<button
 						className="premium-button"
 						onClick={() =>
-							canCreatePost ? setShowCreatePost(true) : openAuthFlow()
+							canCreatePost
+								? dispatch({ type: "TOGGLE_CREATE_POST", show: true })
+								: openAuthFlow()
 						}
 					>
 						{canCreatePost ? "New Post" : "Create account"}
@@ -272,12 +373,17 @@ export default function CommunityScreenWeb() {
 					if (user?.id)
 						communityAPI
 							.togglePostReaction(post.id, user.id)
-							.catch(console.error);
+							.catch((err) =>
+								console.error("[CommunityScreen.web] Like failed", err),
+							);
 				}}
 				onComment={() => {
-					setCommentPostId(post.id);
-					setCommentPostAuthorId(post.author_id ?? undefined);
-					setCommentPostType(post.post_type);
+					dispatch({
+						type: "OPEN_COMMENTS",
+						postId: post.id,
+						authorId: post.author_id ?? undefined,
+						postType: post.post_type,
+					});
 				}}
 				onAuthorPress={() => {
 					if (post.author_id && !post.is_anonymous && navigation?.navigate) {
@@ -411,7 +517,6 @@ export default function CommunityScreenWeb() {
 			<AnnouncementsScreen
 				schoolId={schoolId}
 				userId={user.id}
-				userAuthority={userAuthority}
 			/>
 		);
 	};
@@ -441,7 +546,9 @@ export default function CommunityScreenWeb() {
 							<button
 								className="premium-button"
 								onClick={() =>
-									canCreatePost ? setShowCreatePost(true) : openAuthFlow()
+									canCreatePost
+										? dispatch({ type: "TOGGLE_CREATE_POST", show: true })
+										: openAuthFlow()
 								}
 							>
 								<Plus size={15} />
@@ -450,7 +557,9 @@ export default function CommunityScreenWeb() {
 							<button
 								className="secondary-button"
 								onClick={() =>
-									canCreateGroup ? setShowCreateGroup(true) : openAuthFlow()
+									canCreateGroup
+										? dispatch({ type: "TOGGLE_CREATE_GROUP", show: true })
+										: openAuthFlow()
 								}
 							>
 								<Users2 size={15} />
@@ -475,7 +584,7 @@ export default function CommunityScreenWeb() {
 									<button
 										key={mode.key}
 										className={`community-mode-button ${activeMode === mode.key ? "active" : ""}`}
-										onClick={() => setActiveMode(mode.key)}
+										onClick={() => dispatch({ type: "SET_MODE", mode: mode.key })}
 									>
 										{mode.label}
 									</button>
@@ -491,8 +600,8 @@ export default function CommunityScreenWeb() {
 										key={group.id}
 										className={`community-chip ${selectedFilter === group.id ? "active" : ""}`}
 										onClick={() => {
-											setSelectedFilter(group.id);
-											setActiveMode("feed");
+											dispatch({ type: "SET_FILTER", filter: group.id });
+											dispatch({ type: "SET_MODE", mode: "feed" });
 											fetchPosts(group.id);
 										}}
 									>
@@ -522,7 +631,10 @@ export default function CommunityScreenWeb() {
 										key={path.key}
 										className="community-quick-path"
 										onClick={() =>
-											setActiveMode(path.key as CommunityWorkspaceMode)
+											dispatch({
+												type: "SET_MODE",
+												mode: path.key as CommunityWorkspaceMode,
+											})
 										}
 									>
 										<strong>{path.title}</strong>
@@ -569,7 +681,9 @@ export default function CommunityScreenWeb() {
 								<Compass size={16} />
 								<input
 									value={searchQuery}
-									onChange={(event) => setSearchQuery(event.target.value)}
+									onChange={(event) =>
+										dispatch({ type: "SET_SEARCH", query: event.target.value })
+									}
 									placeholder="Search posts, circles, members, announcements..."
 									aria-label="Search community"
 								/>
@@ -579,7 +693,7 @@ export default function CommunityScreenWeb() {
 									<button
 										key={mode.key}
 										className={`community-inline-chip ${activeMode === mode.key ? "active" : ""}`}
-										onClick={() => setActiveMode(mode.key)}
+										onClick={() => dispatch({ type: "SET_MODE", mode: mode.key })}
 									>
 										{mode.label}
 									</button>
@@ -604,7 +718,9 @@ export default function CommunityScreenWeb() {
 									<button
 										className="premium-button"
 										onClick={() =>
-											canCreatePost ? setShowCreatePost(true) : openAuthFlow()
+											canCreatePost
+												? dispatch({ type: "TOGGLE_CREATE_POST", show: true })
+												: openAuthFlow()
 										}
 									>
 										New Post
@@ -612,7 +728,9 @@ export default function CommunityScreenWeb() {
 									<button
 										className="secondary-button"
 										onClick={() =>
-											canCreateGroup ? setShowCreateGroup(true) : openAuthFlow()
+											canCreateGroup
+												? dispatch({ type: "TOGGLE_CREATE_GROUP", show: true })
+												: openAuthFlow()
 										}
 									>
 										New Group
@@ -637,7 +755,7 @@ export default function CommunityScreenWeb() {
 											key={filter.value}
 											className={`community-inline-chip ${selectedFilter === filter.value ? "active" : ""}`}
 											onClick={() => {
-												setSelectedFilter(filter.value);
+												dispatch({ type: "SET_FILTER", filter: filter.value });
 												fetchPosts(
 													filter.value === "all" ? undefined : filter.value,
 												);
@@ -688,7 +806,7 @@ export default function CommunityScreenWeb() {
 			<CreatePostModal
 				isOpen={showCreatePost}
 				onClose={() => {
-					setShowCreatePost(false);
+					dispatch({ type: "TOGGLE_CREATE_POST", show: false });
 					fetchPosts(selectedFilter === "all" ? undefined : selectedFilter);
 				}}
 				groupId={selectedFilter !== "all" ? selectedFilter : undefined}
@@ -697,7 +815,7 @@ export default function CommunityScreenWeb() {
 			<CreateGroupModal
 				isOpen={showCreateGroup}
 				onClose={() => {
-					setShowCreateGroup(false);
+					dispatch({ type: "TOGGLE_CREATE_GROUP", show: false });
 					fetchGroups?.();
 				}}
 			/>
@@ -707,7 +825,7 @@ export default function CommunityScreenWeb() {
 				postAuthorId={commentPostAuthorId}
 				currentUserId={user?.id}
 				postType={commentPostType}
-				onClose={() => setCommentPostId(null)}
+				onClose={() => dispatch({ type: "CLOSE_COMMENTS" })}
 			/>
 
 			<style

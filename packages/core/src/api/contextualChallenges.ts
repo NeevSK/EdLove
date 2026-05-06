@@ -30,6 +30,7 @@
  * See GROWTH_MODEL.md \u00A714 for the full doctrine and Duolingo analysis.
  */
 
+import { getCurrentTimeMillis } from '../utils/temporal';
 import { supabase } from './supabase';
 
 // \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
@@ -236,8 +237,9 @@ export const contextualChallengesAPI = {
     titleEn: string,
     durationDays = 7,
   ): Promise<Challenge> {
-    const now = new Date();
-    const endsAt = new Date(now.getTime() + durationDays * 86400000);
+    const nowMs = getCurrentTimeMillis();
+    const now = new Date(nowMs);
+    const endsAt = new Date(nowMs + durationDays * 86400000);
 
     const celebrationMessages: Record<ChallengeMetric, string> = {
       library_resources_opened:
@@ -589,7 +591,8 @@ export const contextualChallengesAPI = {
    * Used to show collective celebration history.
    */
   async getRecentCompletions(schoolId: string, classroomId?: string): Promise<Challenge[]> {
-    const thirtyDaysAgo = new Date(Date.now() - 30 * 86400000).toISOString();
+    const now = getCurrentTimeMillis();
+    const thirtyDaysAgo = new Date(now - 30 * 86400000).toISOString();
 
     const query = supabase
       .from('contextual_challenges')

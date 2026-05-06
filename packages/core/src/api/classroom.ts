@@ -108,6 +108,41 @@ export const studentsAPI = {
   async getTeacherStats(teacherId: string): Promise<TeacherStats> {
     return educationalServices.classrooms.getTeacherStats(teacherId);
   },
+
+  /**
+   * @authority read AcademicHistory
+   */
+  async getHistoricalAcademicRecords(studentId: string) {
+    return educationalServices.students.getHistoricalAcademicRecords(studentId);
+  },
+
+  /**
+   * @authority read ProfessionalHistory
+   */
+  async getHistoricalProfessionalRecords(teacherId: string) {
+    return educationalServices.teachers.getHistoricalProfessionalRecords(teacherId);
+  },
+
+  /**
+   * @authority read GovernanceHistory
+   */
+  async getHistoricalGovernanceRecords(principalId: string) {
+    return educationalServices.teachers.getHistoricalGovernanceRecords(principalId);
+  },
+
+  /**
+   * @authority read School
+   */
+  async getSchoolLegacyHistory(schoolId: string) {
+    return educationalServices.institutions.getSchoolLegacyHistory(schoolId);
+  },
+
+  /**
+   * @authority read Classroom
+   */
+  async getClassroomLegacyHistory(classroomId: string) {
+    return educationalServices.institutions.getClassroomLegacyHistory(classroomId);
+  },
 };
 
 // Satisfy linter

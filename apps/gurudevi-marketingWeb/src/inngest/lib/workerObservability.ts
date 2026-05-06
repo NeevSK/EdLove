@@ -58,8 +58,8 @@ export async function trackWorkerAnalytics({
 	causationId,
 	properties,
 }: WorkerAnalyticsInput) {
-	await initPostHog(import.meta.env.POSTHOG_API_KEY!, {
-		host: import.meta.env.POSTHOG_HOST || "https://eu.i.posthog.com",
+	await initPostHog(import.meta.env["POSTHOG_API_KEY"]!, {
+		host: import.meta.env["POSTHOG_HOST"] || "https://eu.i.posthog.com",
 	});
 
 	trackEvent(eventName, {

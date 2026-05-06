@@ -41,12 +41,12 @@ export default function AttendanceReportScreen({
 	const fetchData = async (cycleId?: string) => {
 		setLoading(true);
 		try {
-			const allCycles = await api.academicCycles.getAll(schoolId);
+			const allCycles = await api["academicCycles"].getAll(schoolId);
 			setCycles(allCycles);
 
 			const targetCycle = cycleId
-				? allCycles.find((c) => c.id === cycleId)
-				: allCycles.find((c) => c.is_current) || allCycles[0];
+				? allCycles.find((c: AcademicCycle) => c.id === cycleId)
+				: allCycles.find((c: AcademicCycle) => c.is_current) || allCycles[0];
 
 			if (targetCycle) {
 				setSelectedCycleId(targetCycle.id);

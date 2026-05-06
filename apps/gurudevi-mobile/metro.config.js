@@ -65,8 +65,7 @@ config.resolver.blockList = [
 	/packages[/\\].*[/\\]node_modules[/\\]react-native[/\\].*/,
 	/packages[/\\].*[/\\]node_modules[/\\]@react-native-async-storage[/\\].*/,
 	/apps[/\\].*[/\\]node_modules[/\\]\.vite[/\\].*/,
-	/apps[/\\].*[/\\]\.expo[/\\]cache[/\\].*/,
-	/apps[/\\].*[/\\]\.expo[/\\]packager-info[/\\].*/,
+	/apps[/\\].*[/\\]\.expo[/\\].*/,
 ];
 
 const SINGLETON_OVERRIDES = {

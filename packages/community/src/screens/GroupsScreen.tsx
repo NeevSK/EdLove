@@ -1,4 +1,5 @@
-import { isDemo, usePermissions } from "@repo/core/logic";
+import { isDemo } from "@repo/core";
+import { usePermissions } from "@repo/core/logic";
 import { SanctuaryButton } from "@repo/ui/components/SanctuaryButton";
 import SanctuaryFlashList from "@repo/ui/components/SanctuaryFlashList";
 import { Compass, Globe, Plus, Shield, X } from "@repo/ui/icons";

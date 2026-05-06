@@ -1,4 +1,3 @@
-import { useNavigation } from "@react-navigation/native";
 import { usePermissions, useStore } from "@repo/core/logic";
 
 import PositiveInvitation from "@repo/ui/components/PositiveInvitation";
@@ -22,6 +21,7 @@ import { WarmMirrorCard } from "../../components/WarmMirrorCard";
 // Role Components
 import WelcomeModal from "../../components/WelcomeModal";
 import WisdomSeeds from "../../components/WisdomSeeds";
+import GovernanceHistoryTimeline from "../../components/GovernanceHistoryTimeline";
 import { useDecisionJournal } from "../../hooks/useDecisionJournal";
 import { useEnergyForecast } from "../../hooks/useEnergyForecast";
 import { useJournalEntries } from "../../hooks/useJournalEntries";
@@ -36,8 +36,6 @@ import {
 
 export default function PrincipalSelfView() {
 	const { t } = useTranslation();
-	const _navigation = useNavigation<any>();
-
 	// State & Kernel Hooks
 	const { context } = usePermissions();
 	const userId = context.userId;
@@ -82,7 +80,10 @@ export default function PrincipalSelfView() {
 		</VStack>
 	);
 
-	const handleMoodSelect = async (mood: any, note: string) => {
+	const handleMoodSelect = async (
+		mood: Parameters<typeof addMoodLog>[0],
+		note: string,
+	) => {
 		setIsSavingMood(true);
 		try {
 			await addMoodLog(mood, note);
@@ -219,6 +220,11 @@ export default function PrincipalSelfView() {
 										)}
 									/>
 								),
+							},
+							{
+								id: "history",
+								label: "Governance History",
+								content: <GovernanceHistoryTimeline userId={userId ?? ""} />,
 							},
 						],
 					},

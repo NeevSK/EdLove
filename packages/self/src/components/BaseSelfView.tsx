@@ -101,24 +101,16 @@ export function BaseSelfView({
 	const { topItems: sortedFeatures } = useDynamicSelfFeatures(allFeatures);
 	const pinned = getPinnedFeatures();
 
-	const [activeFeatureId, setActiveFeatureId] = React.useState(
-		sortedFeatures.find(
-			(f) => f.id === "energy_pulse" || f.id === "mood_checkin",
-		)?.id || sortedFeatures[0]?.id,
-	);
-
-	React.useEffect(() => {
-		if (!sortedFeatures.length) return;
-		const hasActiveFeature = sortedFeatures.some(
-			(feature) => feature.id === activeFeatureId,
-		);
-		if (!hasActiveFeature) {
-			setActiveFeatureId(sortedFeatures[0]?.id);
-		}
-	}, [sortedFeatures, activeFeatureId]);
+	const [activeFeatureId, setActiveFeatureId] = React.useState<string | undefined>();
+	const activeFeatureIdResolved =
+		activeFeatureId ??
+		sortedFeatures.find((f) => f.id === "energy_pulse" || f.id === "mood_checkin")
+			?.id ??
+		sortedFeatures[0]?.id;
 
 	const activeFeature =
-		sortedFeatures.find((f) => f.id === activeFeatureId) || sortedFeatures[0];
+		sortedFeatures.find((f) => f.id === activeFeatureIdResolved) ||
+		sortedFeatures[0];
 
 	const getEmoji = (feature: SelfViewFeature) =>
 		FEATURE_EMOJIS[feature.id as keyof typeof FEATURE_EMOJIS] || "\u2728";
@@ -171,7 +163,7 @@ export function BaseSelfView({
 						contentContainerStyle={{ paddingHorizontal: 20, gap: 12 }}
 					>
 						{sortedFeatures.map((feature) => {
-							const isActive = activeFeatureId === feature.id;
+							const isActive = activeFeatureIdResolved === feature.id;
 							const isPinned = pinned.includes(feature.id);
 							const isInsight =
 								feature.id === "mirrors" || feature.id === "reminders";
@@ -182,6 +174,7 @@ export function BaseSelfView({
 									key={feature.id}
 									onPress={() => handleFeaturePress(feature.id)}
 									onLongPress={() => togglePin(feature.id)}
+									accessibilityRole="button"
 									className="items-center w-[72px]"
 								>
 									<Box
@@ -265,6 +258,7 @@ export function BaseSelfView({
 												setViewMode("timeline");
 												handleFeaturePress("holistic_history");
 											}}
+											accessibilityRole="button"
 											className="p-1 ml-1"
 										>
 											<Text className="text-lg">⏳</Text>
@@ -297,13 +291,14 @@ function TemporalShellControls({
 	isHistoryMode: boolean;
 	viewScale: string;
 	onModeChange: (mode: "spotlight" | "timeline") => void;
-	onScaleChange: (scale: any) => void;
+	onScaleChange: (scale: "day" | "week" | "month" | "year") => void;
 }) {
 	return (
 		<Box className="px-lg pt-sm pb-sm gap-2">
 			<HStack className="gap-2 items-center">
 				<Pressable
 					onPress={() => onModeChange("spotlight")}
+					accessibilityRole="button"
 					className={`px-3.5 py-2 rounded-full border ${
 						!isHistoryMode
 							? "bg-[#DEF2E8] border-[#29A17D40]"
@@ -320,6 +315,7 @@ function TemporalShellControls({
 				</Pressable>
 				<Pressable
 					onPress={() => onModeChange("timeline")}
+					accessibilityRole="button"
 					className={`px-3.5 py-2 rounded-full border ${
 						isHistoryMode
 							? "bg-[#EBE5FA] border-[#835CF630]"
@@ -345,6 +341,7 @@ function TemporalShellControls({
 						<Pressable
 							key={scale}
 							onPress={() => onScaleChange(scale)}
+							accessibilityRole="button"
 							className={`px-3 py-1.5 rounded-full border ${
 								viewScale === scale
 									? "bg-[#EBE5FA] border-[#835CF630]"

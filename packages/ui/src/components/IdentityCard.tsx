@@ -26,7 +26,7 @@ export interface IdentityData {
   id: string;
   full_name: string;
   username?: string;
-  role: string;
+  capacity: string;
   avatar_url?: string;
   school_name?: string;
   nic_number?: string;
@@ -144,7 +144,7 @@ export default function IdentityCard({
         <QRCodeGenerator
           value={
             data.id
-              ? QRBuilder.userInvite(data.id, data.role || 'unknown', data.username || undefined)
+              ? QRBuilder.userInvite(data.id, data.capacity || 'unknown', data.username || undefined)
               : 'gurudevi-guest'
           }
           size={120}

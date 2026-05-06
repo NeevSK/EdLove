@@ -13,8 +13,8 @@ export type GuardianLinkedStudentRow = {
 export async function getGuardianStudentsRows(
 	guardianId: string,
 ): Promise<GuardianLinkedStudentRow[]> {
-	const students = await api.guardian.getStudents(guardianId);
-	return students.map((student) => {
+	const students = await api["guardian"].getStudents(guardianId);
+	return students.map((student: { name: string; studentId: string; grade: string; classroom: string }) => {
 		const nameParts = student.name.split(" ");
 		return {
 			id: student.studentId,
@@ -29,7 +29,7 @@ export async function getGuardianStudentsRows(
 export async function getStudentGuardiansRows(
 	studentId: string,
 ): Promise<GuardianIdentity[]> {
-	return api.guardian.getStudentGuardians(studentId) as Promise<
+	return api["guardian"].getStudentGuardians(studentId) as Promise<
 		GuardianIdentity[]
 	>;
 }
@@ -38,12 +38,12 @@ export async function getStudentAttendanceRows(
 	studentId: string,
 	_sinceIso: string,
 ) {
-	const guardians = await api.guardian.getStudentGuardians(studentId);
+	const guardians = await api["guardian"].getStudentGuardians(studentId);
 	const guardianId = guardians[0]?.id;
 	if (!guardianId) return [];
-	const dashboard = await api.guardian.getDashboard(guardianId);
+	const dashboard = await api["guardian"].getDashboard(guardianId);
 	const student = dashboard.students.find(
-		(entry) => entry.studentId === studentId,
+		(entry: { studentId: string }) => entry.studentId === studentId,
 	);
 	if (!student) return [];
 	return [
@@ -60,14 +60,20 @@ export async function getStudentAttendanceRows(
 }
 
 export async function getStudentRecentGradesRows(studentId: string, limit = 5) {
-	const guardians = await api.guardian.getStudentGuardians(studentId);
+	const guardians = await api["guardian"].getStudentGuardians(studentId);
 	const guardianId = guardians[0]?.id;
 	if (!guardianId) return [];
-	const dashboard = await api.guardian.getDashboard(guardianId);
+	const dashboard = await api["guardian"].getDashboard(guardianId);
 	const student = dashboard.students.find(
-		(entry) => entry.studentId === studentId,
+		(entry: { studentId: string }) => entry.studentId === studentId,
 	);
-	return (student?.grades.latest || []).slice(0, limit).map((grade) => ({
+	return (student?.grades.latest || []).slice(0, limit).map((grade: {
+		subject: string;
+		grade: string;
+		percentage: number;
+		date: string;
+		type: string;
+	}) => ({
 		subject: grade.subject,
 		grade: grade.grade,
 		percentage: grade.percentage,
@@ -89,8 +95,16 @@ export async function getGuardianNotificationsRows(
 	guardianId: string,
 	limit = 10,
 ) {
-	const dashboard = await api.guardian.getDashboard(guardianId);
-	return dashboard.notifications.slice(0, limit).map((notification) => ({
+	const dashboard = await api["guardian"].getDashboard(guardianId);
+	return dashboard.notifications.slice(0, limit).map((notification: {
+		id: string;
+		type: string;
+		title: string;
+		message: string;
+		isRead: boolean;
+		createdAt: string;
+		actionUrl?: string;
+	}) => ({
 		id: notification.id,
 		type: notification.type,
 		title: notification.title,

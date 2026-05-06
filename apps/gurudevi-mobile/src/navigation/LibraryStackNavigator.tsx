@@ -27,12 +27,12 @@ export default function LibraryStackNavigator() {
 			<Stack.Screen name="CuratorReview" component={CuratorReviewScreen} />
 			<Stack.Screen
 				name="PDFViewer"
-				component={PDFViewerScreen}
+				component={PDFViewerScreen as any}
 				options={{ gestureEnabled: false }}
 			/>
 			<Stack.Screen
 				name="VideoPlayer"
-				component={VideoPlayerScreen}
+				component={VideoPlayerScreen as any}
 				options={{ gestureEnabled: false }}
 			/>
 		</Stack.Navigator>

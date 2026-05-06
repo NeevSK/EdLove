@@ -21,7 +21,7 @@ import type {
   CrudEntry,
   PowerSyncBackendConnector,
   PowerSyncCredentials,
-} from '@powersync/react-native';
+} from './powersync-shim';
 import { supabase } from '../../api/supabase';
 import { sovereignBus } from '../../lib/sync/eventBus';
 

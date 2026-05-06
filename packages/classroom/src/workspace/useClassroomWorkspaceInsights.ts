@@ -38,7 +38,7 @@ export function useClassroomWorkspaceInsights({
 			}
 
 			try {
-				const classrooms = await api.classrooms.getByTeacher(userId);
+				const classrooms = await api["classrooms"].getByTeacher(userId);
 				if (!isMounted) return;
 
 				setTeacherStats({

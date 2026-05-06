@@ -1,6 +1,7 @@
 export type {
 	AnnouncementWithAuthor,
 	Badge,
+	ChatMessage,
 	Comment,
 	CommunityGroup,
 	CommunityPost,

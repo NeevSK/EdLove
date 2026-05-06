@@ -2,7 +2,7 @@ import type {
   ResolvedWorkspaceSurface,
   WorkspaceLayout,
   WorkspaceSurfaceDefinition,
-} from '@repo/core/logic';
+} from '@repo/core/types';
 
 export interface WorkspaceCanvasProps<
   TSurfaceId extends string = string,

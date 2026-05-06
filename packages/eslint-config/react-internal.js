@@ -24,9 +24,6 @@ const compat = new FlatCompat({
  * @type {import("eslint").Linter.Config[]} */
 export const config = [
 	...baseConfig,
-	js.configs.recommended,
-	eslintConfigPrettier,
-	...tseslint.configs.recommended,
 	pluginReact.configs.flat.recommended,
 	pluginReactHooks.configs.flat.recommended,
 	pluginJsxA11y.flatConfigs.recommended,
@@ -54,6 +51,8 @@ export const config = [
 			"react-hooks/rules-of-hooks": "error",
 			"react-hooks/exhaustive-deps": "error",
 			"local/max-use-state": ["error", { max: 3 }],
+			"no-unused-vars": "off",
+			"@typescript-eslint/no-unused-vars": "warn",
 			"no-restricted-syntax": [
 				"warn",
 				{

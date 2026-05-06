@@ -7,7 +7,7 @@ import { supabase } from '../api/supabase';
 import type { SchoolType } from '../constants/SriLankanSchools';
 import { identifyUser, initPostHog, trackEvent } from '../lib/monitoring/posthog';
 import { clearSentryUser, initSentry, setSentryUser } from '../lib/monitoring/sentry';
-import type { Role } from '../logic/schemas/role.schema';
+import { getAuthorityLabel } from '../lib/permissions';
 import { useStore } from '../store/useStore';
 import type { User } from '../types';
 import { APIError } from '../types/API';
@@ -24,7 +24,8 @@ export function useAuthorityLifecycle() {
   const [isProfileLoading, setIsProfileLoading] = useState(false);
 
   const setUser = useStore((state) => state.setUser);
-  const setUserRole = useStore((state) => state.setUserRole);
+  const setPerspective = useStore((state) => state.setPerspective);
+  const setAvailableBonds = useStore((state) => state.setAvailableBonds);
   const setSchoolType = useStore((state) => state.setSchoolType);
   const setOnboardingCompleted = useStore((state) => state.setOnboardingCompleted);
   const setAuthSession = useStore((state) => state.setAuthSession);
@@ -34,38 +35,30 @@ export function useAuthorityLifecycle() {
     async (internalUserId: string) => {
       setIsProfileLoading(true);
       try {
-        const { data: userProfile, error } = await supabase
-          .from('users')
-          .select(
-            'id, role, school_id, onboarding_completed, full_name, email, avatar_url, is_anonymous, profile_completed',
-          )
-          .eq('id', internalUserId)
-          .maybeSingle();
+        // 1. Resolve Sovereign Identity (Bonds & Perspectives)
+        const [profile, bonds, perspective] = await Promise.all([
+          identityAPI.getProfile(internalUserId),
+          identityAPI.getBonds(internalUserId),
+          identityAPI.getActivePerspective(),
+        ]);
 
-        if (error) {
-          console.warn('\u26A0\uFE0F Profile: Table fetch returned error:', error.message);
-          return;
-        }
+        if (profile) {
+          // 2. Update Store with ReBAC data
+          setUser(profile as unknown as User);
+          setAvailableBonds(bonds);
+          setPerspective(perspective);
 
-        if (userProfile) {
-          const normalizedRole = (
-            userProfile.role === 'guest' ? null : userProfile.role
-          ) as Role | null;
-
-          // Update store
-          setUser({ ...userProfile, role: normalizedRole } as unknown as User);
-          setUserRole(normalizedRole);
-
-          const isEffectivelyOnboarded = !!userProfile.onboarding_completed && !!normalizedRole;
+          // 3. Handle Onboarding & School Logic
+          const isEffectivelyOnboarded = !!profile.onboarding_completed && bonds.length > 0;
           if (isEffectivelyOnboarded) {
             setOnboardingCompleted(true);
           }
 
-          if (userProfile.school_id) {
+          if (profile.school_id) {
             const { data: schoolData } = await supabase
               .from('schools')
               .select('type')
-              .eq('id', userProfile.school_id)
+              .eq('id', profile.school_id)
               .single();
 
             if (schoolData) {
@@ -75,27 +68,28 @@ export function useAuthorityLifecycle() {
             setSchoolType(null);
           }
 
-          // Monitoring identification
+          // 4. Monitoring identification (Relationship-aware)
           setSentryUser({
-            id: userProfile.id,
-            email: userProfile.email,
-            username: userProfile.full_name,
+            id: profile.id,
+            email: profile.email,
+            username: profile.full_name,
           });
 
-          identifyUser(userProfile.id, {
-            email: userProfile.email,
-            full_name: userProfile.full_name,
-            role: normalizedRole,
-            school_id: userProfile.school_id,
+          identifyUser(profile.id, {
+            email: profile.email,
+            full_name: profile.full_name,
+            active_perspective: perspective?.activeBond?.capacity || null,
+            total_bonds: bonds.length,
+            school_id: profile.school_id,
           });
         }
       } catch (error) {
-        console.warn('\u274C Profile: Fetching encountered an error:', error);
+        console.warn('❌ Profile: Fetching encountered an error:', error);
       } finally {
         setIsProfileLoading(false);
       }
     },
-    [setUser, setUserRole, setSchoolType, setOnboardingCompleted],
+    [setUser, setPerspective, setAvailableBonds, setSchoolType, setOnboardingCompleted],
   );
 
   const refreshProfile = useCallback(async () => {
@@ -167,7 +161,8 @@ export function useAuthorityLifecycle() {
         clearSentryUser();
         identityAPI.clearCache();
         setUser(null);
-        setUserRole(null);
+        setPerspective(null);
+        setAvailableBonds([]);
         setSchoolType(null);
         setOnboardingCompleted(false);
       }
@@ -178,7 +173,8 @@ export function useAuthorityLifecycle() {
     setAuthSession,
     setAuthSessionResolved,
     setUser,
-    setUserRole,
+    setPerspective,
+    setAvailableBonds,
     setSchoolType,
     setOnboardingCompleted,
     fetchAndSetUserProfile,
