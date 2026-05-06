@@ -5,20 +5,21 @@ This workflow defines the mandatory quality gates that an AI agent must pass bef
 ## 🛡️ The "No Impurity" Mandate
 In this repository, architecture and quality take precedence over velocity. No code shall be merged if it violates the Sovereign principles.
 
-## 🛂 Mandatory Audit Steps (MCP)
-Before asking the USER to commit or concluding a task, you MUST run the following MCP tools:
+## 🛂 Mandatory Audit & Commit Flow (MCP)
+Agents MUST NOT use raw `git` commands for committing. You must use the platform's orchestrated tools to ensure the "Intelligence Layer" remains active.
 
-### 1. Hook Hygiene Audit
-Check for state management violations (e.g., >3 useState hooks) and React 19 compatibility.
-- **Tool**: `sovereign_audit(action: 'hooks')`
+### 1. The Audit Loop
+Before any submission, run:
+- `sovereign_audit(action: 'hooks')` -> Check React/State hygiene.
+- `sovereign_audit(action: 'hygiene')` -> Check architecture/boundaries.
 
-### 2. Monorepo Hygiene Audit
-Check for circular dependencies, unused code, and architectural boundary violations.
-- **Tool**: `sovereign_audit(action: 'hygiene')`
+### 2. The Checkpoint (Commit)
+- **Tool**: `sovereign_maintenance(action: 'checkpoint', params: { message: 'feat: ...' })`
+- **Why**: This triggers the **Surgical Sentinel** (TSC + ESLint + Biome) and provides a structured failure report if any "Impurities" are found.
 
-### 3. Architecture Integrity
-Verify that platform-agnostic packages remain pure and native shims are correctly implemented.
-- **Tool**: `sovereign_audit(action: 'architecture')`
+### 3. The Push (Remote Sync)
+- **Manual Gate**: Usually, pushing is left to the USER after reviewing the Agent's checkpoints.
+- **Automated Gate**: If authorized, the `pre-push` hook will execute the **Full Sovereign Audit**. If it fails, read `reports/push_audit.md` and heal the issues.
 
 ## 🚀 Local Validation
 In addition to MCP tools, you MUST verify that your changes pass the local gates:

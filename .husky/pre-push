@@ -1,4 +1,4 @@
-echo ">>> Sovereign Sentinel: Validating Push Integrity..."
+echo ">>> 🛂 SOVEREIGN GATE: Validating Global Push Integrity..."
 
 # PUSH_MODE handling: full (default) or min (TSC + Lint only)
 if [ "$PUSH_MODE" = "min" ]; then

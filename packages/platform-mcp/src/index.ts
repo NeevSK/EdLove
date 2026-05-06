@@ -706,6 +706,7 @@ class PolymathPlatformServer {
 									"schema_drift",
 									"purge",
 									"runbyte_config",
+									"push",
 								],
 							},
 							params: {
@@ -931,6 +932,8 @@ class PolymathPlatformServer {
 							return this.maintenance.handlePurgeStaleArtifacts(params);
 						case "runbyte_config":
 							return this.maintenance.handleGenerateRunbyteConfig(params);
+						case "push":
+							return this.maintenance.handleSovereignPush();
 						default:
 							throw new Error(`Unknown maintenance action: ${action}`);
 					}

@@ -295,7 +295,33 @@ export class MaintenanceService {
 			},
 			...(transport === "http" ? { server: { port: 3000, timeout: 30 } } : {}),
 		};
-
 		return toMcpText(JSON.stringify(config, null, 2));
+	}
+	handleSovereignPush() {
+		console.error("Sovereign Maintenance: Initiating Push Gate...");
+		const auditCmd =
+			"pnpm exec commitlint --from=HEAD~1 --to=HEAD; pnpm run check-types; pnpm run check:hygiene; pnpm run identity:check; pnpm dlx gitleaks detect --source . --verbose";
+
+		const auditResult = runCommand("node", [
+			"scripts/sovereign-audit.mjs",
+			"--cmd",
+			auditCmd,
+			"--log",
+			"reports/push_audit.md",
+		]);
+
+		if (!auditResult.ok) {
+			return toMcpText(
+				`❌ PUSH REJECTED: Sovereign Quality Gate failed.\n\n${auditResult.combined}`,
+				true,
+			);
+		}
+
+		console.error("Quality gate passed. Executing git push...");
+		const pushResult = runCommand("git", ["push"]);
+		return toMcpText(
+			`✅ GATE PASSED: Push successful.\n\n${pushResult.combined}`,
+			!pushResult.ok,
+		);
 	}
 }
