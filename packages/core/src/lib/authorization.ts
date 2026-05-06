@@ -1,6 +1,6 @@
-import { composeUserAbilities } from '../logic/permissions/composer';
 import { identityAPI } from '../api/identity';
 import { supabase } from '../api/supabase';
+import { composeUserAbilities } from '../logic/permissions/composer';
 import { APIError } from '../types/API';
 
 /**
@@ -31,7 +31,10 @@ export async function requireClassroomAccess(classroomId: string, capability: st
     throw new APIError('Classroom not found', 'NOT_FOUND');
   }
 
-  const ability = composeUserAbilities({ userId, schoolId: classroom.school_id! });
+  const ability = composeUserAbilities({
+    userId,
+    schoolId: classroom.school_id!,
+  });
 
   if (
     !ability.can(capability as any, 'Classroom', {

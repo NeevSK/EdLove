@@ -1,6 +1,7 @@
 import { X } from 'lucide-react-native';
 import type React from 'react';
-import { Dimensions, Pressable } from 'react-native';
+import { Dimensions } from 'react-native';
+import { Pressable } from '../primitives';
 import { Box, HStack, Text, VStack } from '../gluestack';
 import { UniversalModal } from './UniversalModal';
 

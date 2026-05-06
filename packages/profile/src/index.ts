@@ -1,16 +1,18 @@
-export * from './api/profile';
-export * from './api/social';
 export * from './components';
 
 export * from './config/profileSections';
 export * from './hooks/useCommunityProfile';
 export * from './hooks/useCommunityProfileHistory';
+export * from './hooks/useInstitutionalHistory';
+export * from './hooks/usePrincipalGovernanceHistory';
 export * from './hooks/useProfile';
 export * from './hooks/useProfileCompletion';
 export * from './hooks/useProfileHistory';
 export * from './hooks/useSchoolProfile';
 export * from './hooks/useSchoolPulse';
 export * from './hooks/useSocialLinks';
+export * from './hooks/useStudentAcademicHistory';
+export * from './hooks/useTeacherProfessionalHistory';
 export { isFieldFilled } from './lib/isFieldFilled';
 export * from './lib/validator';
 export * from './navigation';

@@ -1,12 +1,15 @@
-﻿import type { DashboardContent as AdminDashboardContent, DashboardContentProps } from '@repo/admin';
-import type { TemporalNavigator } from '@repo/ui/components';
+﻿import type {
+	DashboardContent as AdminDashboardContent,
+	DashboardContentProps,
+} from "@repo/admin";
+import type { TemporalNavigator } from "@repo/ui/components";
 
-import type React from 'react';
+import type React from "react";
 
 export const DashboardContent: React.FC<DashboardContentProps> = (_props) => (
   <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', paddingBottom: '64px' }}    <div      <TemporalNavigator >/    ></div    <AdminDashboardContent>
 {
-  ...props
+	...props
 }
 renderTodayZone={({ schoolId, principalId, studentPulse, atRiskCount, onShowAtRisk }) => (
         <          <_MorningSituationalBrief _schoolId={schoolId} _principalId={principalId} _viewDate={props.viewDate} /          ><_TeacherCarousel _schoolId={schoolId} /          ><_StudentPulse _pulse={studentPulse} _atRiskCount={atRiskCount} _onShowAtRisk={onShowAtRisk} /          ><_LeaveApprovalSection _schoolId={schoolId} _principalId={principalId} /          ><_InstitutionalCalendarSection _schoolId={schoolId} _principalId={principalId} /        ></      )}

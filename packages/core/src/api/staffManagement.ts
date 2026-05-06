@@ -19,9 +19,9 @@ import {
   type TeacherCarouselItemZod as TeacherCarouselItem,
   TeacherCarouselItemSchema,
 } from '../logic/schemas/staff.schema';
-import { attendanceProjectionServices } from '../native/runtimes/attendanceProjection.runtime';
-import { supabase } from './supabase';
+import { attendanceProjectionServices } from './runtimes/attendanceProjection.runtime';
 import type { AttendanceReport } from '../types/Attendance';
+import { supabase } from './supabase';
 
 export type {
   CalendarEvent,
@@ -48,7 +48,12 @@ export const staffManagementAPI = {
     viewDate?: string,
   ): Promise<StaffPresenceSummary> {
     const targetDate = viewDate || todayISO();
-    const empty: StaffPresenceSummary = { present: 0, absent: 0, onLeave: 0, total: 0 };
+    const empty: StaffPresenceSummary = {
+      present: 0,
+      absent: 0,
+      onLeave: 0,
+      total: 0,
+    };
     try {
       const { data, error } = await supabase
         .from('staff_attendance')

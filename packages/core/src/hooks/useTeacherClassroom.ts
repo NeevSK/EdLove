@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { api } from '../api';
 import type { Classroom, Student } from '../types';
 
@@ -20,8 +20,8 @@ export function useTeacherClassroom(classroomId: string) {
 
     try {
       const [classData, studentData] = await Promise.all([
-        api.classrooms.getById(classroomId),
-        api.classroomStudents.getAll(classroomId),
+        api['classrooms'].getById(classroomId),
+        api['classroomStudents'].getAll(classroomId),
       ]);
 
       setClassroom(classData as Classroom);
@@ -35,24 +35,29 @@ export function useTeacherClassroom(classroomId: string) {
   }, [classroomId]);
 
   useEffect(() => {
-    loadData();
+    loadData().catch((e) => {
+      console.error('TeacherClassroom: Failed to load on mount', e);
+    });
   }, [loadData]);
 
   const refreshStudents = useCallback(async () => {
     try {
-      const studentData = await api.classroomStudents.getAll(classroomId);
+      const studentData = await api['classroomStudents'].getAll(classroomId);
       setStudents(studentData as unknown as Student[]);
     } catch (err) {
       console.error('[useTeacherClassroom] Failed to refresh students:', err);
     }
   }, [classroomId]);
 
-  return {
-    classroom,
-    students,
-    loading,
-    error,
-    refresh: loadData,
-    refreshStudents,
-  };
+  return useMemo(
+    () => ({
+      classroom,
+      students,
+      loading,
+      error,
+      refresh: loadData,
+      refreshStudents,
+    }),
+    [classroom, students, loading, error, loadData, refreshStudents],
+  );
 }

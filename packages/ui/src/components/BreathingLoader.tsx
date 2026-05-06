@@ -13,7 +13,8 @@
 
 import { type FC, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
+import { View } from '../primitives';
 import Animated, {
   Easing,
   useAnimatedStyle,

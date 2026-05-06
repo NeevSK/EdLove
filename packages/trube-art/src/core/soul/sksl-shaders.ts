@@ -112,7 +112,7 @@ vec3 skShadow() { return vec3(u_shadow[0],    u_shadow[1],    u_shadow[2]); }
 `;
 
 function makeSKSL(body: string): string {
-  return `${SKSL_NOISE}\n${UNIFORM_HEADER}\n${body}`.trim();
+	return `${SKSL_NOISE}\n${UNIFORM_HEADER}\n${body}`.trim();
 }
 
 // =============================================================================
@@ -341,20 +341,20 @@ half4 main(vec2 fragCoord) {
 // =============================================================================
 
 export const SKSL_SURFACES: Record<string, string> = {
-  aurora: AURORA_SKSL,
-  silk: SILK_SKSL,
-  'young-leaf': YOUNG_LEAF_SKSL,
-  mist: MIST_SKSL,
-  waterfall: WATERFALL_SKSL,
-  'evening-sky': EVENING_SKY_SKSL,
-  skymorphic: SKYMORPHIC_SKSL,
-  'water-surface': WATER_SURFACE_SKSL,
+	aurora: AURORA_SKSL,
+	silk: SILK_SKSL,
+	"young-leaf": YOUNG_LEAF_SKSL,
+	mist: MIST_SKSL,
+	waterfall: WATERFALL_SKSL,
+	"evening-sky": EVENING_SKY_SKSL,
+	skymorphic: SKYMORPHIC_SKSL,
+	"water-surface": WATER_SURFACE_SKSL,
 };
 
 export function getSKSLSurface(name: string): string | null {
-  return SKSL_SURFACES[name] ?? null;
+	return SKSL_SURFACES[name] ?? null;
 }
 
 export function getSKSLSurfaceNames(): string[] {
-  return Object.keys(SKSL_SURFACES);
+	return Object.keys(SKSL_SURFACES);
 }

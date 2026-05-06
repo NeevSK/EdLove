@@ -1,4 +1,4 @@
-﻿import type { FormConfig } from '../forms/form-manager';
+import type { FormConfig } from '../forms/form-manager';
 
 export type EntityType =
   | 'user'

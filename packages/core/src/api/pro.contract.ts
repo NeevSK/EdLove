@@ -42,7 +42,11 @@ export const proContract = c.router({
     method: 'GET',
     path: '/pro/gifts/preview/:token',
     responses: {
-      200: ProGiftSchema.pick({ gifter_name: true, gift_message: true, recipient_role: true }),
+      200: ProGiftSchema.pick({
+        gifter_name: true,
+        gift_message: true,
+        recipient_role: true,
+      }),
       404: z.object({ message: z.string() }),
     },
     metadata: proAuthority('read'),

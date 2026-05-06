@@ -1,32 +1,41 @@
 {
-  "$schema": "https://unpkg.com/knip@5/schema.json",
-  "workspaces": {
-    "apps/*": {
-      "entry": [
-        "src/index.{ts,tsx}",
-        "src/pages/**/*.{astro,ts,tsx}",
-        "src/components/**/*.{astro,svelte,ts,tsx}",
-        "index.{js,ts,tsx}",
-        "App.tsx",
-        "app.json"
-      ],
-      "project": ["src/**/*.{ts,tsx,astro,svelte}", "*.{js,ts,tsx}"]
-    },
-    "packages/*": {
-      "entry": ["src/index.{ts,tsx}", "src/api/index.{ts,tsx}", "src/**/*.svelte"],
-      "project": ["src/**/*.{ts,tsx,svelte}"]
-    }
-  },
-  "ignore": [
-    "**/*.d.ts",
-    "**/node_modules/**",
-    "**/dist/**",
-    "**/build/**",
-    "**/.expo/**",
-    "**/android/**",
-    "**/ios/**",
-    "**/.gemini/**"
-  ],
-  "ignoreDependencies": ["@repo/types-shim", "husky", "lint-staged", "@repo/eslint-config"],
-  "ignoreBinaries": ["turbo"]
+	"$schema": "https://unpkg.com/knip@5/schema.json",
+	"workspaces": {
+		"apps/*": {
+			"entry": [
+				"src/index.{ts,tsx}",
+				"src/pages/**/*.{astro,ts,tsx}",
+				"src/components/**/*.{astro,svelte,ts,tsx}",
+				"index.{js,ts,tsx}",
+				"App.tsx",
+				"app.json"
+			],
+			"project": ["src/**/*.{ts,tsx,astro,svelte}", "*.{js,ts,tsx}"]
+		},
+		"packages/*": {
+			"entry": [
+				"src/index.{ts,tsx}",
+				"src/api/index.{ts,tsx}",
+				"src/**/*.svelte"
+			],
+			"project": ["src/**/*.{ts,tsx,svelte}"]
+		}
+	},
+	"ignore": [
+		"**/*.d.ts",
+		"**/node_modules/**",
+		"**/dist/**",
+		"**/build/**",
+		"**/.expo/**",
+		"**/android/**",
+		"**/ios/**",
+		"**/.gemini/**"
+	],
+	"ignoreDependencies": [
+		"@repo/types-shim",
+		"husky",
+		"lint-staged",
+		"@repo/eslint-config"
+	],
+	"ignoreBinaries": ["turbo"]
 }

@@ -1,16 +1,10 @@
-﻿import { z } from 'zod';
+import { z } from 'zod';
+import { makeModelSchema } from '@repo/schema';
 
 /**
- * LessonSchema  A structured step in the learning arc.
+ * LessonSchema - A structured step in the learning arc.
+ * Derived from ZenStack Lesson model.
  */
-export const LessonSchema = z.object({
-  id: z.string().uuid(),
-  classroom_id: z.string().uuid(),
-  title: z.string(),
-  content: z.string().nullable().optional(),
-  order_index: z.number().int().nonnegative(),
-  published_at: z.string().nullable().optional(),
-  created_at: z.string(),
-});
+export const LessonSchema = makeModelSchema('Lesson');
 
 export type Lesson = z.infer<typeof LessonSchema>;

@@ -1,7 +1,7 @@
-import { SITE_DESCRIPTION, SITE_URL } from '../lib/site';
+import { SITE_DESCRIPTION, SITE_URL } from "../lib/site";
 
 export function GET() {
-  const body = `# Intuitui Labs
+	const body = `# Intuitui Labs
 
 > ${SITE_DESCRIPTION}
 
@@ -23,9 +23,9 @@ export function GET() {
 - Canonical truth lives in the HTML pages, structured metadata, and machine-readable endpoints.
 `;
 
-  return new Response(body, {
-    headers: {
-      'Content-Type': 'text/plain; charset=utf-8',
-    },
-  });
+	return new Response(body, {
+		headers: {
+			"Content-Type": "text/plain; charset=utf-8",
+		},
+	});
 }

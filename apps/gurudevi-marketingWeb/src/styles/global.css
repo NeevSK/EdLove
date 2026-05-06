@@ -33,29 +33,29 @@
 }
 
 @layer base {
-  @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@400;500;600;700&family=Noto+Sans+Tamil:wght@400;500;600;700&display=swap");
+	@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@400;500;600;700&family=Noto+Sans+Tamil:wght@400;500;600;700&display=swap");
 
-  body {
-    background-color: var(--color-cream-silence);
-    color: var(--color-charcoal-truth);
-    font-family: var(--font-content);
-    @apply transition-colors duration-300;
-  }
+	body {
+		background-color: var(--color-cream-silence);
+		color: var(--color-charcoal-truth);
+		font-family: var(--font-content);
+		@apply transition-colors duration-300;
+	}
 
-  [lang="si"] {
-    font-family: var(--font-sinhala);
-    line-height: 1.8;
-  }
+	[lang="si"] {
+		font-family: var(--font-sinhala);
+		line-height: 1.8;
+	}
 
-  [lang="ta"] {
-    font-family: var(--font-tamil);
-    line-height: 1.7;
-  }
+	[lang="ta"] {
+		font-family: var(--font-tamil);
+		line-height: 1.7;
+	}
 }
 
 /* Custom Utilities */
 @layer utilities {
-  .text-glow {
-    text-shadow: 0 0 10px rgba(230, 126, 34, 0.3);
-  }
+	.text-glow {
+		text-shadow: 0 0 10px rgba(230, 126, 34, 0.3);
+	}
 }

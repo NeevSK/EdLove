@@ -8,3 +8,5 @@ export * from './useDemoBridge';
 export * from './useResponsive';
 export * from './useTheme';
 export * from './useThemedColors';
+export * from './useSafeAction';
+export * from '../providers/ErrorResolutionProvider';

@@ -1,8 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
+import { supabase } from '../api/supabase';
 import { usePermissions } from '../logic/permissions/hooks/usePermissions';
 import { getTemporalRange } from '../logic/utils/temporalUtils';
-import { supabase } from '../api/supabase';
 
 export interface HeatmapData {
   date: string;

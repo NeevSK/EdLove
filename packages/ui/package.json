@@ -11,7 +11,8 @@
   "exports": {
     ".": "./src/index.ts",
     "./components": "./src/components/index.ts",
-    "./components/*": "./src/components/*",
+    "./components/*.tsx": "./src/components/*.tsx",
+    "./components/*": "./src/components/*.tsx",
     "./components/AccountPinModal": "./src/components/AccountPinModal.tsx",
     "./components/AchievementUnlockOverlay": "./src/components/AchievementUnlockOverlay.tsx",
     "./components/AdaptiveLayout": "./src/components/AdaptiveLayout.tsx",
@@ -25,6 +26,7 @@
     "./components/DailyResonanceCard": "./src/components/DailyResonanceCard.tsx",
     "./components/DeleteAccountModal": "./src/components/DeleteAccountModal.tsx",
     "./components/DeviceAccountManager": "./src/components/DeviceAccountManager.tsx",
+    "./components/DeviceSecurityCenter": "./src/components/DeviceSecurityCenter.tsx",
     "./components/EmptyState": "./src/components/EmptyState.tsx",
     "./components/EntityModal": "./src/components/EntityModal.tsx",
     "./components/EntityModal.web": "./src/components/EntityModal.web.tsx",
@@ -153,8 +155,6 @@
     "./screens": "./src/screens/index.ts",
     "./screens/*": "./src/screens/*",
     "./screens/AppSettingsScreen": "./src/screens/AppSettingsScreen.tsx",
-    "./screens/AppSettingsScreen.bridge": "./src/screens/AppSettingsScreen.bridge.tsx",
-    "./screens/AppSettingsScreen.web": "./src/screens/AppSettingsScreen.web.tsx",
     "./screens/AuthScreen": "./src/screens/AuthScreen.tsx",
     "./screens/AuthScreen.web": "./src/screens/AuthScreen.web.tsx",
     "./screens/ErrorMessageDemo": "./src/screens/ErrorMessageDemo.tsx",
@@ -178,11 +178,16 @@
   "scripts": {
     "build": "pnpm exec tsc",
     "typecheck": "pnpm exec tsc --noEmit",
-    "check-types": "pnpm run typecheck",
+    "check-types": "pnpm exec tsc --noEmit",
     "lint": "pnpm run lint:biome && pnpm run lint:eslint",
     "lint:biome": "biome check .",
     "lint:eslint": "eslint .",
-    "format": "biome format --write ."
+    "format": "biome format --write .",
+    "check-cycles": "node ../../scripts/refactor/sovereign-cycle-checker.mjs",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui",
+    "clean": "rm -rf .turbo node_modules dist"
   },
   "dependencies": {
     "@react-native-community/slider": "4.5.6",
@@ -239,6 +244,9 @@
     "i18next": "^25.8.11",
     "react-i18next": "^16.5.4",
     "tailwindcss": "3.4.17",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "@repo/typescript-config": "workspace:*",
+    "vitest": "^2.1.9",
+    "vite-tsconfig-paths": "^6.1.1"
   }
 }

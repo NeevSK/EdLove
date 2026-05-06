@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { storage } from '../lib/storage';
 
 const PERSISTENCE_KEY = 'GURUDEVI_GROUP_CREATION_STATE';
@@ -48,7 +48,9 @@ export function useGroupCreation() {
         setIsLoaded(true);
       }
     };
-    loadState();
+    loadState().catch((e) => {
+      console.error('GroupCreation: Failed to load state', e);
+    });
   }, []);
 
   useEffect(() => {
@@ -70,12 +72,15 @@ export function useGroupCreation() {
     setState(initialState);
   };
 
-  return {
-    state,
-    isLoaded,
-    updateStep,
-    updateDetails,
-    updateSetup,
-    resetProgress,
-  };
+  return useMemo(
+    () => ({
+      state,
+      isLoaded,
+      updateStep,
+      updateDetails,
+      updateSetup,
+      resetProgress,
+    }),
+    [state, isLoaded],
+  );
 }

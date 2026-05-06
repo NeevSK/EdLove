@@ -1,5 +1,5 @@
 import type React from 'react';
-import { createContext, useCallback, useContext, useMemo, useReducer } from 'react';
+import { createContext, useCallback, useContext, useMemo, useReducer, useRef } from 'react';
 import Animated, { FadeInUp, FadeOutUp, Layout } from 'react-native-reanimated';
 import { Toast, ToastTitle } from '../components/ui/toast';
 import { VStack } from '../components/ui/vstack';
@@ -42,6 +42,7 @@ function toastReducer(state: ToastItem[], action: ToastAction): ToastItem[] {
 
 export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [toasts, dispatch] = useReducer(toastReducer, []);
+  const counterRef = useRef(0);
 
   const removeToast = useCallback((id: string) => {
     dispatch({ type: 'REMOVE_TOAST', id });
@@ -49,7 +50,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const showToast = useCallback(
     ({ message, type = 'sanctuary', duration = 3000 }: Omit<ToastItem, 'id'>) => {
-      const id = Math.random().toString(36).substring(2, 9);
+      const id = `toast-${counterRef.current++}`;
       dispatch({ type: 'ADD_TOAST', payload: { id, message, type, duration } });
 
       setTimeout(() => {
@@ -130,14 +131,15 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 export const useSanctuaryToast = () => {
   const context = useContext(ToastContext);
   if (!context) throw new Error('useSanctuaryToast must be used within ToastProvider');
-  return {
+
+  return useMemo(() => ({
     ...context,
     showToast: (options: { message: string; type?: ToastType; duration?: number }) =>
       context.showToast({
         type: 'sanctuary',
         ...options,
       } as ToastItem),
-  };
+  }), [context]);
 };
 
 export { useSanctuaryToast as useToast };

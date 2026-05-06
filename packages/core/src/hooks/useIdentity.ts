@@ -1,10 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
-import { identityAPI } from '../api/identity';
+import { useCallback, useMemo } from 'react';
 import { authAPI } from '../api/auth';
+import { identityAPI } from '../api/identity';
 
 /**
  * Sovereign Identity Hook
- * 
+ *
  * This is the primary gateway for getting the current logged-in user's
  * internal ID and profile. It abstracts away the Supabase auth layer.
  */
@@ -34,16 +35,23 @@ export function useIdentity() {
   const isLoading = isLoadingId || isLoadingProfile;
   const error = idError || profileError;
 
-  return {
-    internalId,
-    profile,
-    isLoading,
-    error,
-    isAuthenticated: !!internalId,
-    refresh: async () => {
-      await refetchId();
-      await refetchProfile();
-    },
-    signOut: () => authAPI.signOut(),
-  };
+  const refresh = useCallback(async () => {
+    await refetchId();
+    await refetchProfile();
+  }, [refetchId, refetchProfile]);
+
+  const signOut = useCallback(() => authAPI.signOut(), []);
+
+  return useMemo(
+    () => ({
+      internalId,
+      profile,
+      isLoading,
+      error,
+      isAuthenticated: !!internalId,
+      refresh,
+      signOut,
+    }),
+    [internalId, profile, isLoading, error, refresh, signOut],
+  );
 }

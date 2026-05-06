@@ -1,2 +1,2 @@
-export * from './useDashboardHooks';
-export * from './useSchoolStats';
+export * from "./useDashboardHooks";
+export * from "./useSchoolStats";

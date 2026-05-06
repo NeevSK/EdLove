@@ -2,7 +2,12 @@ import { storage } from './storage';
 
 export type PendingGateAction =
   | { kind: 'community_open_create_group'; createdAt: number }
-  | { kind: 'community_join_group'; createdAt: number; groupId: string; joinPolicy?: string }
+  | {
+      kind: 'community_join_group';
+      createdAt: number;
+      groupId: string;
+      joinPolicy?: string;
+    }
   | { kind: 'library_open_add_resource'; createdAt: number }
   | { kind: 'classroom_open_create_join'; createdAt: number };
 

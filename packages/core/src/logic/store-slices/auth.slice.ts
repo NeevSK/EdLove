@@ -1,14 +1,20 @@
 import type { Session } from '@supabase/supabase-js';
 import type { StateCreator } from 'zustand';
 import type { User } from '../../types';
-import type { Role } from '../schemas/role.schema';
+import type { Bond, Perspective } from '../../types/Identity';
 
 export interface AuthSlice {
-  userRole: Role | null;
   userName: string;
   setUserName: (name: string) => void;
   user: User | null;
   setUser: (user: User | null) => void;
+  
+  // Sovereign Identity (ReBAC)
+  activeBond: Bond | null;
+  availableBonds: Bond[];
+  perspective: Perspective | null;
+  setAvailableBonds: (bonds: Bond[]) => void;
+  setPerspective: (perspective: Perspective | null) => void;
   authSession: Session | null;
   authSessionResolved: boolean;
   setAuthSession: (session: Session | null) => void;
@@ -25,24 +31,38 @@ export interface AuthSlice {
   setBridging: (isBridging: boolean) => void;
   dismissedSampleIds: string[];
   dismissSample: (id: string) => void;
-  demoLogs: Array<{ module: string; method: string; payload: unknown; timestamp: number }>;
+  demoLogs: Array<{
+    module: string;
+    method: string;
+    payload: unknown;
+    timestamp: number;
+  }>;
   addDemoLog: (log: { module: string; method: string; payload: unknown }) => void;
   clearDemoLogs: () => void;
   setTeacherName: (name: string) => void;
-  setUserRole: (role: Role | null) => void;
   isOnline: boolean;
   setIsOnline: (isOnline: boolean) => void;
-  toast: { message: string; type: 'success' | 'error' | 'info'; duration?: number } | null;
+  toast: {
+    message: string;
+    type: 'success' | 'error' | 'info';
+    duration?: number;
+  } | null;
   showToast: (message: string, type: 'success' | 'error' | 'info', duration?: number) => void;
   hideToast: () => void;
 }
 
 export const createAuthSlice: StateCreator<AuthSlice, [], [], AuthSlice> = (set) => ({
-  userRole: null,
   userName: 'Gurudevi',
   setUserName: (name) => set({ userName: name }),
   user: null,
   setUser: (user) => set({ user }),
+
+  // Sovereign Defaults
+  activeBond: null,
+  availableBonds: [],
+  perspective: null,
+  setAvailableBonds: (bonds) => set({ availableBonds: bonds, activeBond: bonds[0] || null }),
+  setPerspective: (perspective) => set({ perspective, activeBond: perspective?.activeBond || null }),
   authSession: null,
   authSessionResolved: false,
   setAuthSession: (authSession) => set({ authSession }),
@@ -69,17 +89,6 @@ export const createAuthSlice: StateCreator<AuthSlice, [], [], AuthSlice> = (set)
     })),
   clearDemoLogs: () => set({ demoLogs: [] }),
   setTeacherName: (name) => set({ userName: name }),
-  setUserRole: (role) =>
-    set((state) => ({
-      userRole: role,
-      user: state.user
-        ? ({
-            ...state.user,
-            authority: role as any,
-            roles: role ? ([role] as any) : [],
-          } as User)
-        : null,
-    })),
   isOnline: true,
   setIsOnline: (isOnline) => set({ isOnline }),
   toast: null,

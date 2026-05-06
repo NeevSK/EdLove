@@ -1,1 +1,4 @@
-export { default, default as ClassroomDetailScreenWeb } from './TeacherClassroomDashboard.web';
+export {
+	default,
+	default as ClassroomDetailScreenWeb,
+} from "./TeacherClassroomDashboard.web";

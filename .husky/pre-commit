@@ -1,2 +1,3 @@
+echo ">>> 🛡️  SOVEREIGN SENTINEL: Initializing Pre-commit Audit..."
 pnpm exec lint-staged
-
+echo ">>> ✅ SENTINEL: Commit Cleared."

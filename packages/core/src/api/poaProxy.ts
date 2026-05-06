@@ -1,6 +1,5 @@
 import { AuthorityInterceptor } from '../logic/permissions/AuthorityInterceptor';
 import { composeUserAbilities } from '../logic/permissions/composer';
-import type { Role } from '../logic/schemas/role.schema';
 import { type TenantKind, UserContextSchema } from '../logic/schemas/user.schema';
 import { useStore } from '../store/useStore';
 
@@ -27,25 +26,22 @@ export function createPOAProxy<T extends object>(
           // 1. Resolve User Context from Store
           const state = useStore.getState();
           const user = state.user;
+          const activeBond = state.activeBond;
           const schoolType = state.schoolType;
-
-          const roles = (user?.roles || []) as Role[];
-          const hasGlobalAccess = roles.some((r) => ['founder', 'developer', 'admin'].includes(r));
 
           const context = UserContextSchema.parse({
             userId: user?.id || null,
             email: user?.email || null,
             schoolId: user?.school_id || null,
+            activeBond,
             tenancyName: user?.organization_name || null,
             tenancy: {
               kind: (user?.tenant_kind || 'customer') as TenantKind,
               isPersonal: schoolType === 'personal_workspace',
             },
             tenantKind: (user?.tenant_kind || 'customer') as TenantKind,
-            roles,
-            authority: (user?.authority as Role) || roles[0] || null,
             isAnonymous: !user || !!user?.is_anonymous,
-            hasGlobalAccess,
+            hasGlobalAccess: !!activeBond && ['founder', 'developer', 'admin'].includes(activeBond.capacity),
             isPersonal: schoolType === 'personal_workspace',
           });
 
@@ -56,12 +52,13 @@ export function createPOAProxy<T extends object>(
           // Try mapping, then exact match, or fallback to the method name itself in the contract router
           const contractKey = methodMapping[prop] || prop;
           const contractEntry = contract?.[contractKey] as Record<string, unknown> | undefined;
-          const metadata = contractEntry?.metadata;
+          const metadata = contractEntry?.['metadata'];
 
           if (metadata && typeof metadata === 'object' && 'authority' in metadata) {
             if (__DEV__) {
-              console.log(`[POA Interceptor] Verifying authority for ${moduleName}.${prop}...`);
+              console.log(`[POA] Dispatching ${moduleName}.${prop}`);
             }
+            // POA validation
             await AuthorityInterceptor.enforce(ability, metadata);
           } else {
             if (options.strictUnmappedMethods) {

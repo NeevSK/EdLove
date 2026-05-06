@@ -34,7 +34,10 @@ export function shouldUseDarkTheme(phase: TemporalPhase): boolean {
  * - Medium: 3-6GB RAM
  * - High: > 6GB RAM
  */
-export async function detectDeviceTier(): Promise<{ tier: DeviceTier; memoryGB: number }> {
+export async function detectDeviceTier(): Promise<{
+  tier: DeviceTier;
+  memoryGB: number;
+}> {
   try {
     // Get total memory if available
     const totalMemory = coreRuntime.device.getTotalMemory?.();

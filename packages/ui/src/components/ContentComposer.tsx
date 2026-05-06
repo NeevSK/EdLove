@@ -147,23 +147,26 @@ export function ContentComposer(props: ComposerProps) {
         {isPollMode && (
           <VStack className="gap-4">
             <VStack className="gap-2">
-              {pollOptions.map((opt, idx) => (
-                <HStack key={idx} className="items-center gap-2">
-                  <Input className="flex-1 bg-phase-surface border-border h-12 rounded-xl">
-                    <InputField
-                      placeholder={`Option ${idx + 1}`}
-                      value={opt}
-                      onChangeText={(val: string) => onUpdatePollOption(idx, val)}
-                      className="text-ink text-sm"
-                    />
-                  </Input>
-                  {pollOptions.length > 2 && (
-                    <Pressable onPress={() => onRemovePollOption(idx)} className="p-2">
-                      <Icon as={X} size="sm" className="text-ink/40" />
-                    </Pressable>
-                  )}
-                </HStack>
-              ))}
+              {pollOptions.map((opt, idx) => {
+                return (
+                  // biome-ignore lint/suspicious/noArrayIndexKey: indices are stable for poll options within this composer session
+                  <HStack key={`poll-option-${idx}`} className="items-center gap-2">
+                    <Input className="flex-1 bg-phase-surface border-border h-12 rounded-xl">
+                      <InputField
+                        placeholder={`Option ${idx + 1}`}
+                        value={opt}
+                        onChangeText={(val: string) => onUpdatePollOption(idx, val)}
+                        className="text-ink text-sm"
+                      />
+                    </Input>
+                    {pollOptions.length > 2 && (
+                      <Pressable onPress={() => onRemovePollOption(idx)} className="p-2">
+                        <Icon as={X} size="sm" className="text-ink/40" />
+                      </Pressable>
+                    )}
+                  </HStack>
+                );
+              })}
               {pollOptions.length < 5 && (
                 <Pressable onPress={onAddPollOption} className="flex-row items-center py-2 gap-2">
                   <Icon as={Plus} size="xs" className="text-phase-interactive" />

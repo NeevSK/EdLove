@@ -3,7 +3,7 @@ import type {
   WorkspaceLayoutRecord,
   WorkspaceLayoutUpsert,
 } from '../logic/schemas/workspace-layout.schema';
-import { workspaceLayoutServices } from '../native/runtimes/workspaceLayout.runtime';
+import { workspaceLayoutServices } from './runtimes/workspaceLayout.runtime';
 import { workspaceLayoutContract } from './workspaceLayout.contract';
 
 export const workspaceLayoutAPI = {

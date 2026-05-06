@@ -5,8 +5,9 @@ This registry serves as the **Sovereign Checklist** for sanitizing the codebase 
 ---
 
 ## 🚀 1. The "State Machine" Migration (Local Logic)
-**Target**: Components with >2 interdependent `useState` hooks.
+**Target**: Components with >3 interdependent `useState` hooks.
 **Goal**: Atomic updates and deterministic transitions.
+**Enforcement**: `local/max-use-state` (ESLint Error).
 
 ### 🛡️ Guidance: Code-to-Cure
 ```tsx
@@ -66,7 +67,7 @@ const handleDone = useCallback(() => {
 ## 🔮 5. The "Zero-Legacy" 2-Minute Audit (2026 Edition)
 *Run this over any file before checking in:*
 
-1.  **State Density**: Are there > 2 `useState` hooks? **Action**: Refactor to `useReducer`.
+1.  **State Density**: Are there > 3 `useState` hooks? **Action**: Refactor to `useReducer`. (Automated check: `local/max-use-state`).
 2.  **State Mirroring**: Is this `useEffect` syncing state? **Action**: Delete it. Use **Derived State** (computed during render).
 3.  **Async Mutations**: Is there a manual `loading` flag for a form? **Action**: Upgrade to `useActionState`. (Note: useReducer can also manage this if logic is complex).
 4.  **Referential Check**: Are there objects `{}`, arrays `[]`, or `() => {}` inside the JSX or dependency arrays? **Action**: Move to `useMemo` / `useCallback` or static scope.

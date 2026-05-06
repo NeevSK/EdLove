@@ -1,9 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
 import { v7 as uuidv7 } from 'uuid';
-import { APIError } from '../types/API';
 import { identityAPI } from '../api/identity';
 import { supabase } from '../api/supabase';
+import { APIError } from '../types/API';
 
 const DEVICE_INSTALL_ID_KEY = 'gurudevi-device-install-id';
 const SERVER_DEVICE_ID_KEY = 'gurudevi-server-device-id';
@@ -54,8 +54,8 @@ function normalizeDeviceTrustRow(
 
 function getDeviceMetadata() {
   const constants = (Platform.constants ?? {}) as Record<string, unknown>;
-  const brand = typeof constants.Brand === 'string' ? constants.Brand.trim() : '';
-  const model = typeof constants.Model === 'string' ? constants.Model.trim() : '';
+  const brand = typeof constants['Brand'] === 'string' ? constants['Brand'].trim() : '';
+  const model = typeof constants['Model'] === 'string' ? constants['Model'].trim() : '';
   const parts = [brand, model].filter(Boolean);
 
   return {

@@ -1,33 +1,68 @@
+import { profileAPI } from '@repo/core/api';
 import { handleAPIError } from '@repo/core/logic';
-import { SocialLink } from '@repo/core/types';
-import { useCallback, useEffect, useState } from 'react';
-import { socialAPI } from '../api/social';
+import type { SocialLink } from '@repo/core/types';
+import { useCallback, useEffect, useReducer } from 'react';
+
+type SocialState = {
+  links: SocialLink[];
+  loading: boolean;
+};
+
+type SocialAction =
+  | { type: 'FETCH_START' }
+  | { type: 'FETCH_SUCCESS'; payload: SocialLink[] }
+  | { type: 'ADD_LINK'; payload: SocialLink }
+  | { type: 'UPDATE_LINK'; id: string; payload: SocialLink }
+  | { type: 'DELETE_LINK'; id: string }
+  | { type: 'FETCH_FAILURE' };
+
+function socialReducer(state: SocialState, action: SocialAction): SocialState {
+  switch (action.type) {
+    case 'FETCH_START':
+      return { ...state, loading: true };
+    case 'FETCH_SUCCESS':
+      return { ...state, loading: false, links: action.payload };
+    case 'ADD_LINK':
+      return { ...state, links: [...state.links, action.payload] };
+    case 'UPDATE_LINK':
+      return { ...state, links: state.links.map((l) => (l.id === action.id ? action.payload : l)) };
+    case 'DELETE_LINK':
+      return { ...state, links: state.links.filter((l) => l.id !== action.id) };
+    case 'FETCH_FAILURE':
+      return { ...state, loading: false };
+    default:
+      return state;
+  }
+}
 
 export function useSocialLinks(userId?: string) {
-  const [links, setLinks] = useState<SocialLink[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [state, dispatch] = useReducer(socialReducer, {
+    links: [],
+    loading: true,
+  });
+
+  const { links, loading } = state;
 
   const fetchLinks = useCallback(async () => {
     if (!userId) return;
+    dispatch({ type: 'FETCH_START' });
     try {
-      setLoading(true);
-      const data = await socialAPI.getSocialLinks(userId);
-      setLinks(data);
+      const data = await profileAPI.getSocialLinks(userId);
+      dispatch({ type: 'FETCH_SUCCESS', payload: data });
     } catch (error) {
       handleAPIError(error);
-    } finally {
-      setLoading(false);
+      dispatch({ type: 'FETCH_FAILURE' });
     }
   }, [userId]);
 
   useEffect(() => {
-    fetchLinks();
+    fetchLinks().catch(handleAPIError);
   }, [fetchLinks]);
 
   const addLink = async (link: Omit<SocialLink, 'id' | 'created_at' | 'updated_at'>) => {
     try {
-      const newLink = await socialAPI.upsertSocialLink(link);
-      setLinks((prev) => [...prev, newLink]);
+      const newLink = await profileAPI.upsertSocialLink(userId!, link);
+      dispatch({ type: 'ADD_LINK', payload: newLink });
       return { success: true, data: newLink };
     } catch (error) {
       handleAPIError(error);
@@ -37,8 +72,12 @@ export function useSocialLinks(userId?: string) {
 
   const updateLink = async (id: string, updates: Partial<SocialLink>) => {
     try {
-      const updatedLink = await socialAPI.upsertSocialLink({ id, user_id: userId, ...updates });
-      setLinks((prev) => prev.map((l) => (l.id === id ? updatedLink : l)));
+      const updatedLink = await profileAPI.upsertSocialLink(userId!, {
+        id,
+        user_id: userId,
+        ...updates,
+      });
+      dispatch({ type: 'UPDATE_LINK', id, payload: updatedLink });
       return { success: true, data: updatedLink };
     } catch (error) {
       handleAPIError(error);
@@ -48,8 +87,8 @@ export function useSocialLinks(userId?: string) {
 
   const deleteLink = async (id: string) => {
     try {
-      await socialAPI.deleteSocialLink(id);
-      setLinks((prev) => prev.filter((l) => l.id !== id));
+      await profileAPI.deleteSocialLink(id);
+      dispatch({ type: 'DELETE_LINK', id });
       return { success: true };
     } catch (error) {
       handleAPIError(error);

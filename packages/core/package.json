@@ -17,13 +17,25 @@
       "types": "./src/api/index.ts",
       "import": "./src/api/index.ts"
     },
+    "./api/*": {
+      "types": "./src/api/*.ts",
+      "import": "./src/api/*.ts"
+    },
     "./api/hooks": {
       "types": "./src/api/hooks/index.ts",
       "import": "./src/api/hooks/index.ts"
     },
+    "./api/runtimes/*": {
+      "types": "./src/api/runtimes/*.ts",
+      "import": "./src/api/runtimes/*.ts"
+    },
     "./logic": {
       "types": "./src/logic/index.ts",
       "import": "./src/logic/index.ts"
+    },
+    "./logic/schemas/*": {
+      "types": "./src/logic/schemas/*.ts",
+      "import": "./src/logic/schemas/*.ts"
     },
     "./zen": {
       "types": "./src/logic/generated/index.ts",
@@ -37,13 +49,37 @@
       "types": "./src/hooks/index.ts",
       "import": "./src/hooks/index.ts"
     },
+    "./hooks/*": {
+      "types": "./src/hooks/*.ts",
+      "import": "./src/hooks/*.ts"
+    },
     "./store": {
       "types": "./src/store/index.ts",
       "import": "./src/store/index.ts"
     },
+    "./store/*": {
+      "types": "./src/store/*.ts",
+      "import": "./src/store/*.ts"
+    },
+    "./native/*": {
+      "types": "./src/native/*.ts",
+      "import": "./src/native/*.ts"
+    },
+    "./sync/*": {
+      "types": "./src/lib/sync/*.ts",
+      "import": "./src/lib/sync/*.ts"
+    },
+    "./lib/*": {
+      "types": "./src/lib/*.ts",
+      "import": "./src/lib/*.ts"
+    },
     "./types": {
       "types": "./src/types/index.ts",
       "import": "./src/types/index.ts"
+    },
+    "./types/*": {
+      "types": "./src/types/*.ts",
+      "import": "./src/types/*.ts"
     },
     "./auth": {
       "types": "./src/api/auth.ts",
@@ -77,6 +113,10 @@
       "types": "./src/constants/index.ts",
       "import": "./src/constants/index.ts"
     },
+    "./constants/*": {
+      "types": "./src/constants/*.ts",
+      "import": "./src/constants/*.ts"
+    },
     "./grading": {
       "types": "./src/logic/grading/index.ts",
       "import": "./src/logic/grading/index.ts"
@@ -84,10 +124,6 @@
     "./events": {
       "types": "./src/logic/events/bus.ts",
       "import": "./src/logic/events/bus.ts"
-    },
-    "./hooks": {
-      "types": "./src/hooks/index.ts",
-      "import": "./src/hooks/index.ts"
     },
     "./offline": {
       "types": "./src/offline/resilience.ts",
@@ -101,6 +137,22 @@
       "types": "./src/lib/index.ts",
       "import": "./src/lib/index.ts"
     },
+    "./logic/workspace/*": {
+      "types": "./src/logic/workspace/*.ts",
+      "import": "./src/logic/workspace/*.ts"
+    },
+    "./logic/permissions/*": {
+      "types": "./src/logic/permissions/*.ts",
+      "import": "./src/logic/permissions/*.ts"
+    },
+    "./logic/forms/*": {
+      "types": "./src/logic/forms/*.ts",
+      "import": "./src/logic/forms/*.ts"
+    },
+    "./logic/entities/*": {
+      "types": "./src/logic/entities/*.ts",
+      "import": "./src/logic/entities/*.ts"
+    },
     "./package.json": "./package.json"
   },
   "scripts": {
@@ -111,7 +163,10 @@
     "check-cycles": "node ../../scripts/refactor/sovereign-cycle-checker.mjs",
     "check-types": "pnpm exec tsc --noEmit",
     "test:logic": "vitest run src/logic",
-    "clean": "rm -rf .turbo node_modules"
+    "clean": "rm -rf .turbo node_modules dist",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui"
   },
   "peerDependencies": {
     "@react-native-async-storage/async-storage": "2.2.0",
@@ -131,6 +186,7 @@
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:^",
+    "@repo/types-shim": "workspace:*",
     "@supabase/supabase-js": "2.102.1",
     "@tanstack/react-query": "^5.90.20",
     "@types/jest": "^29.5.14",
@@ -139,6 +195,7 @@
     "@types/react-native": "workspace:*",
     "@types/uuid": "^10.0.0",
     "@vitest/ui": "^4.1.5",
+    "decimal.js": "^10.6.0",
     "eslint": "^9.38.0",
     "expo-device": "*",
     "expo-haptics": "*",
@@ -149,26 +206,29 @@
     "typescript": "^5.9.3",
     "vite-tsconfig-paths": "^6.1.1",
     "vitest": "^2.1.9",
-    "zustand": "^5.0.10"
+    "zustand": "^5.0.10",
+    "@repo/typescript-config": "workspace:*"
   },
   "dependencies": {
     "@casl/ability": "^6.8.0",
     "@casl/react": "^5.0.1",
     "@effect/platform": "^0.96.1",
     "@react-native-community/netinfo": "^11.4.1",
+    "@repo/database": "workspace:*",
     "@sentry/browser": "^10.19.0",
     "@supabase/postgrest-js": "2.102.1",
     "@supabase/supabase-js": "2.102.1",
     "@tanstack/react-query": "^5.90.20",
     "@ts-rest/core": "3.53.0-rc.1",
-    "@zenstackhq/schema": "3.5.5",
-    "@zenstackhq/zod": "3.5.5",
+    "@zenstackhq/zod": "3.6.4",
+    "@repo/schema": "workspace:*",
     "date-fns": "^4.1.0",
     "effect": "^3.21.2",
     "expo-clipboard": "~55.0.13",
     "expo-crypto": "~55.0.14",
     "expo-file-system": "~55.0.15",
     "expo-sharing": "~55.0.18",
+    "fast-json-patch": "^3.1.1",
     "i18next": "^25.8.11",
     "inngest": "^4.2.4",
     "isomorphic-webcrypto": "^2.3.8",

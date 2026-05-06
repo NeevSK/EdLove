@@ -39,7 +39,7 @@ export const pOALessonsContract = c.router({
     method: 'GET',
     path: '/lessons',
     responses: {
-      200: z.array(z.object({ id: z.string(), title: z.string() })),
+      200: z.array(z.object({ id: z.uuid(), title: z.string() })),
     },
     metadata: {
       authority: { action: 'read', subject: 'Lesson' },
@@ -50,7 +50,7 @@ export const pOALessonsContract = c.router({
     path: '/lessons',
     body: z.object({ title: z.string() }),
     responses: {
-      201: z.object({ id: z.string() }),
+      201: z.object({ id: z.uuid() }),
     },
     metadata: {
       authority: { action: 'create', subject: 'Lesson' },

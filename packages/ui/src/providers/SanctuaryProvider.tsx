@@ -4,6 +4,7 @@ import { CircadianProvider } from '../context/CircadianProvider';
 import { EnvironmentProvider } from '../context/EnvironmentContext';
 import { ExternalLinkProvider } from '../context/ExternalLinkContext';
 import { FABProvider } from '../context/FABContext';
+import { ErrorResolutionProvider } from './ErrorResolutionProvider';
 import { ToastProvider } from './ToastProvider';
 
 interface SanctuaryProviderProps {
@@ -22,9 +23,11 @@ export const SanctuaryProvider: React.FC<SanctuaryProviderProps> = ({ children }
     <EnvironmentProvider>
       <CircadianProvider>
         <ToastProvider>
-          <ExternalLinkProvider>
-            <FABProvider>{children}</FABProvider>
-          </ExternalLinkProvider>
+          <ErrorResolutionProvider>
+            <ExternalLinkProvider>
+              <FABProvider>{children}</FABProvider>
+            </ExternalLinkProvider>
+          </ErrorResolutionProvider>
         </ToastProvider>
       </CircadianProvider>
     </EnvironmentProvider>

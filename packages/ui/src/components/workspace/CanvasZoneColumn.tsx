@@ -1,10 +1,13 @@
-import type { ResolvedWorkspaceSurface, WorkspaceZoneLayoutGroup } from '@repo/core/logic';
 import type React from 'react';
-import { type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
+import { type StyleProp, StyleSheet, type ViewStyle } from 'react-native';
+import { View } from '../../primitives';
 import { Text } from '../../gluestack';
 import { useThemedColors } from '../../hooks/useThemedColors';
 import { Theme } from '../../theme/Theme';
+import type { WorkspaceZoneLayoutGroup } from '@repo/core/logic/workspace/canvas';
+import type { ResolvedWorkspaceSurface } from '@repo/core/types';
 import { CanvasSurfaceCard } from './CanvasSurfaceCard';
+import { DraggableCanvasSurface } from './DraggableCanvasSurface';
 
 export interface CanvasZoneColumnProps<
   TSurfaceId extends string = string,
@@ -41,6 +44,7 @@ export interface CanvasZoneColumnProps<
   onSurfacePress?: (surface: ResolvedWorkspaceSurface<TSurfaceId, TCapabilityKey>) => void;
   onPressSurfaceInfo?: (surface: ResolvedWorkspaceSurface<TSurfaceId, TCapabilityKey>) => void;
   onToggleHidden?: (surface: ResolvedWorkspaceSurface<TSurfaceId, TCapabilityKey>) => void;
+  onReorder?: (surfaceId: TSurfaceId, newIndex: number) => void;
   emptyMessage?: string;
   compact?: boolean;
   style?: StyleProp<ViewStyle>;
@@ -81,6 +85,7 @@ export function CanvasZoneColumn<
   onSurfacePress,
   onPressSurfaceInfo,
   onToggleHidden,
+  onReorder,
   emptyMessage = 'No visible surfaces in this zone yet.',
   compact = false,
   style,
@@ -99,22 +104,36 @@ export function CanvasZoneColumn<
       <View style={styles.body}>
         {group.surfaces.length ? (
           group.surfaces.map((surface) => (
-            <CanvasSurfaceCard
-              key={surface.surfaceId}
-              surface={surface}
-              title={getSurfaceTitle?.(surface)}
-              subtitle={getSurfaceSubtitle?.(surface)}
-              summary={getSurfaceSummary?.(surface)}
-              snapshot={getSurfaceSnapshot?.(surface)}
-              temporalLabel={getSurfaceTemporalLabel?.(surface)}
-              temporalTone={getSurfaceTemporalTone?.(surface)}
-              metadata={getSurfaceMetadata?.(surface)}
-              content={renderSurfaceContent?.(surface)}
-              actions={renderSurfaceActions?.(surface)}
-              onPress={onSurfacePress}
-              onPressInfo={onPressSurfaceInfo}
-              onToggleHidden={onToggleHidden}
-            />
+            <DraggableCanvasSurface 
+              key={surface.surfaceId} 
+              id={surface.surfaceId}
+              onDragEnd={(id, translation) => {
+                // Logic to calculate new index based on vertical translation
+                // For now, we'll assume a simple vertical stack reorder
+                const cardHeight = 180; // approximate
+                const shift = Math.round(translation.y / cardHeight);
+                if (shift !== 0 && onReorder) {
+                  const currentIndex = group.surfaces.findIndex(s => s.surfaceId === id);
+                  onReorder(id as TSurfaceId, currentIndex + shift);
+                }
+              }}
+            >
+              <CanvasSurfaceCard
+                surface={surface}
+                title={getSurfaceTitle?.(surface)}
+                subtitle={getSurfaceSubtitle?.(surface)}
+                summary={getSurfaceSummary?.(surface)}
+                snapshot={getSurfaceSnapshot?.(surface)}
+                temporalLabel={getSurfaceTemporalLabel?.(surface)}
+                temporalTone={getSurfaceTemporalTone?.(surface)}
+                metadata={getSurfaceMetadata?.(surface)}
+                content={renderSurfaceContent?.(surface)}
+                actions={renderSurfaceActions?.(surface)}
+                onPress={onSurfacePress}
+                onPressInfo={onPressSurfaceInfo}
+                onToggleHidden={onToggleHidden}
+              />
+            </DraggableCanvasSurface>
           ))
         ) : (
           <View style={[styles.emptyState, compact ? styles.emptyStateCompact : null]}>

@@ -11,7 +11,7 @@ import type {
   TeacherStudentPotentialUpsert,
   TeacherStudentPotentialZod,
 } from '../logic/schemas/teacher-insights.schema';
-import { teacherInsightsServices } from '../native/runtimes/teacherInsights.runtime';
+import { teacherInsightsServices } from './runtimes/teacherInsights.runtime';
 import { teacherInsightsContract } from './teacherInsights.contract';
 
 export const teacherInsightsAPI = {

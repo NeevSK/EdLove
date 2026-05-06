@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useId } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 /**
@@ -44,7 +44,7 @@ export const PortalProvider = ({ children }: { children: React.ReactNode }) => {
 
 export const Portal = ({ children }: { children: React.ReactNode }) => {
   const context = useContext(PortalContext);
-  const [id] = useState(() => Math.random().toString(36).substring(7));
+  const id = useId();
 
   useEffect(() => {
     if (context) {

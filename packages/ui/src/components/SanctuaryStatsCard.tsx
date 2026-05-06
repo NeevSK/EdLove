@@ -46,8 +46,8 @@ export default function SanctuaryStatsCard({
       </HStack>
 
       <HStack className="justify-between mb-4">
-        {items.map((item, index) => (
-          <VStack key={index} className="flex-1 items-center justify-center gap-1">
+        {items.map((item) => (
+          <VStack key={item.label} className="flex-1 items-center justify-center gap-1">
             <Box className="p-3 rounded-xl mb-1" style={{ backgroundColor: `${item.color}20` }}>
               <item.icon size={20} color={item.color} />
             </Box>

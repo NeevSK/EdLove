@@ -1,5 +1,5 @@
-import { supabase } from './supabase';
 import type { ManifestoVibe, SanctuaryManifesto } from '../types/Community';
+import { supabase } from './supabase';
 
 /**
  * Sacred Missions API for managing school-wide manifestos and endorsements.

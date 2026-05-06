@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
-import { Animated, StyleSheet, Text, type ViewStyle } from 'react-native';
+import { StyleSheet, type ViewStyle } from 'react-native';
+import { Text } from '../primitives';
 import Reanimated, {
   useAnimatedStyle,
   useSharedValue,
@@ -26,16 +27,15 @@ export function SanctuaryProgressBar({
   compact = false,
   style,
 }: SanctuaryProgressBarProps) {
-  // Animated.Value for fill width — useNativeDriver must be false (width interpolation)
-  const fillAnim = useRef(new Animated.Value(0)).current;
+  const fillWidth = useSharedValue(0);
 
   useEffect(() => {
-    Animated.timing(fillAnim, {
-      toValue: Math.min(100, Math.max(0, percentage)),
-      duration: 600,
-      useNativeDriver: false,
-    }).start();
-  }, [percentage, fillAnim]);
+    fillWidth.value = withTiming(Math.min(100, Math.max(0, percentage)), { duration: 600 });
+  }, [percentage, fillWidth]);
+
+  const fillStyle = useAnimatedStyle(() => ({
+    width: `${fillWidth.value}%`,
+  }));
 
   // Reanimated glow pulse when complete
   const glowOpacity = useSharedValue(0);
@@ -83,17 +83,14 @@ export function SanctuaryProgressBar({
         style={{ height: barHeight }}
       >
         {/* Animated fill */}
-        <Animated.View
+        <Reanimated.View
           style={[
             StyleSheet.absoluteFillObject,
             {
               backgroundColor: isComplete ? '#10B981' : '#F6BF8C', // phase-reward : phase-accent
-              width: fillAnim.interpolate({
-                inputRange: [0, 100],
-                outputRange: ['0%', '100%'],
-              }),
               borderRadius: barHeight / 2,
             },
+            fillStyle,
           ]}
         />
         {/* Reanimated glow overlay on completion */}
@@ -101,7 +98,10 @@ export function SanctuaryProgressBar({
           <Reanimated.View
             style={[
               StyleSheet.absoluteFillObject,
-              { backgroundColor: 'rgba(16, 185, 129, 0.3)', borderRadius: barHeight / 2 },
+              {
+                backgroundColor: 'rgba(16, 185, 129, 0.3)',
+                borderRadius: barHeight / 2,
+              },
               glowAnimStyle,
             ]}
           />

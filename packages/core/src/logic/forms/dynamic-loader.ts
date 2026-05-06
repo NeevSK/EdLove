@@ -1,4 +1,4 @@
-﻿import { validators } from '../utils/validators';
+import { validators } from '../utils/validators';
 import type { FormConfig } from './form-manager';
 import { FormManager } from './form-manager';
 

@@ -33,7 +33,11 @@ export const Avatar = ({
   className,
   size = 'md',
   ...props
-}: { size?: AvatarSize; children?: React.ReactNode; className?: string } & ViewProps) => {
+}: {
+  size?: AvatarSize;
+  children?: React.ReactNode;
+  className?: string;
+} & ViewProps) => {
   const sizeMap: Record<AvatarSize, string> = {
     xs: 'w-6 h-6',
     sm: 'w-8 h-8',

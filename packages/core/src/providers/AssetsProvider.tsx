@@ -21,7 +21,9 @@ export const AssetsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       }
     }
 
-    initAssets();
+    initAssets().catch((e) => {
+      console.error('AssetsProvider: Failed to initialize on mount', e);
+    });
   }, []);
 
   if (!isReady) {

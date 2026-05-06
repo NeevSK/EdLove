@@ -6,39 +6,49 @@ export const defineTeacherAbilities = (user: UserContext, builder: AbilityBuilde
   const { can } = builder;
   if (!user.schoolId) return;
 
+  const isActive = user.activeBondStatus === 'active';
+  const isArchived = user.activeBondStatus === 'archived';
+
+  // --- CORE VISIBILITY (Shared) ---
   can('read', 'TeacherPulse');
-  can('manage', 'TeacherDashboard');
   can('read', 'ClassroomList');
   can('read', 'School', { id: user.schoolId } as any);
-
-  // Classroom management
   can('read', 'Classroom', { school_id: user.schoolId } as any);
-  can('manage', 'Classroom', { teacher_id: user.userId } as any);
   can('read', 'Lesson', { school_id: user.schoolId } as any);
   can('read', 'Material', { school_id: user.schoolId } as any);
-  can('read', 'Grade');
-  can('grade', 'Grade');
 
-  // Student oversight
-  can('read', 'Student', { school_id: user.schoolId } as any);
-  can('manage', 'Attendance', { classroom_teacher_id: user.userId } as any);
+  // --- ACTIVE POWERS (Manage) ---
+  if (isActive) {
+    can('manage', 'TeacherDashboard');
+    can('manage', 'Classroom', { teacher_id: user.userId } as any);
+    can('read', 'Grade');
+    can('grade', 'Grade');
 
-  // Content creation
-  can('create', 'Assignment', { teacher_id: user.userId } as any);
-  can('manage', 'Assignment', { teacher_id: user.userId } as any);
+    // Student oversight
+    can('read', 'Student', { school_id: user.schoolId } as any);
+    can('manage', 'Attendance', { classroom_teacher_id: user.userId } as any);
 
-  // Resource handling
-  can('create', 'ClassroomResource', { owner_id: user.userId } as any);
-  can('manage', 'ClassroomResource', { owner_id: user.userId } as any);
+    // Content creation
+    can('create', 'Assignment', { teacher_id: user.userId } as any);
+    can('manage', 'Assignment', { teacher_id: user.userId } as any);
 
-  can('create', 'LibraryResource', { owner_id: user.userId } as any);
-  can('manage', 'LibraryResource', { owner_id: user.userId } as any);
+    // Resource handling
+    can('create', 'ClassroomResource', { owner_id: user.userId } as any);
+    can('manage', 'ClassroomResource', { owner_id: user.userId } as any);
+    can('create', 'LibraryResource', { owner_id: user.userId } as any);
+    can('manage', 'LibraryResource', { owner_id: user.userId } as any);
 
-  // Library POA refinement
-  can('read', 'LibrarySearch');
-  can('manage', 'Library'); // 1st class citizen full access
-  can('manage', 'LibraryReview'); // Specialist power
+    can('manage', 'Library');
+    can('manage', 'LibraryReview');
+    can('manage', 'Wellbeing');
+  }
 
-  // Wellbeing
-  can('manage', 'Wellbeing');
+  // --- ARCHIVED POWERS (History) ---
+  if (isArchived) {
+    // Archived teachers can only see their past, not change it
+    can('read', 'TeachingHistory');
+    // They can still read their old materials
+    can('read', 'Assignment', { teacher_id: user.userId } as any);
+    can('read', 'ClassroomResource', { owner_id: user.userId } as any);
+  }
 };

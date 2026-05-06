@@ -65,7 +65,10 @@ export class FlowResolver {
             outcome: 'redirect',
             message: 'Redirecting to Thuthimal claim...',
             intent: 'GOTO_THUTHIMAL_CLAIM',
-            params: { gift_token: payload.gift_token, gifter_name: payload.gifter_name },
+            params: {
+              gift_token: payload.gift_token,
+              gifter_name: payload.gifter_name,
+            },
           };
 
         default:
@@ -73,7 +76,11 @@ export class FlowResolver {
       }
     } catch (error: any) {
       console.error('[FlowResolver] Execution error:', error);
-      return { outcome: 'error', message: error.message || 'Action failed', error };
+      return {
+        outcome: 'error',
+        message: error.message || 'Action failed',
+        error,
+      };
     }
   }
 
@@ -243,7 +250,10 @@ export class FlowResolver {
 
       if (error) throw error;
       if (data && !data.success) {
-        return { outcome: 'error', message: data.message || 'Failed to claim invite' };
+        return {
+          outcome: 'error',
+          message: data.message || 'Failed to claim invite',
+        };
       }
 
       return {
@@ -253,7 +263,11 @@ export class FlowResolver {
       };
     } catch (error: any) {
       console.error('[FlowResolver] Claim error:', error);
-      return { outcome: 'error', message: error.message || 'Claim failed', error };
+      return {
+        outcome: 'error',
+        message: error.message || 'Claim failed',
+        error,
+      };
     }
   }
 }

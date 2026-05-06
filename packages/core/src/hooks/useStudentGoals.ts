@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { supabase } from '../api/supabase';
 
 export interface StudentGoal {
@@ -37,8 +37,10 @@ export const useStudentGoals = (userId?: string) => {
       }
     };
 
-    fetchGoals();
+    fetchGoals().catch((e) => {
+      console.error('StudentGoals: Failed to load on mount', e);
+    });
   }, [userId]);
 
-  return { goals, isLoading };
+  return useMemo(() => ({ goals, isLoading }), [goals, isLoading]);
 };

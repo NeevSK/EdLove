@@ -5,10 +5,19 @@ import { FacetedProfileSchema, IdentitySchema } from './identity.generated';
 
 const c = initContract();
 
+export const OnboardingStateSchema = z.enum([
+  'ARRIVAL',
+  'IDENTITY_SELECTION',
+  'SANCTUARY_INIT',
+  'COMPLETED',
+]);
+
 export const ClassroomRoleSummarySchema = z.object({
-  userId: z.string(),
-  schoolId: z.string().nullable(),
+  userId: z.uuid(),
+  schoolId: z.uuid().nullable(),
   profileCompleted: z.boolean(),
+  onboardingCompleted: z.boolean(),
+  onboardingState: OnboardingStateSchema,
   realClassCount: z.number().int().nonnegative(),
   profile: FacetedProfileSchema,
 });

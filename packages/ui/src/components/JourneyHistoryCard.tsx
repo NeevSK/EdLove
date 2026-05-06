@@ -12,7 +12,7 @@ import {
 } from 'lucide-react-native';
 import type React from 'react';
 import { useMemo } from 'react';
-import { Pressable } from 'react-native';
+import { Pressable } from '../primitives';
 import { Box, HStack, Text, VStack } from '../gluestack';
 import { ResonantHeatmap } from './ResonantHeatmap';
 import { SanctuaryCard } from './SanctuaryCard';
@@ -130,7 +130,9 @@ export const JourneyHistoryCard: React.FC<JourneyHistoryCardProps> = ({
                 <HStack key={event.id} className="mb-5">
                   <VStack className="w-5 items-center">
                     <Box
-                      style={{ backgroundColor: event.accentColor || '#F6BF8C' }}
+                      style={{
+                        backgroundColor: event.accentColor || '#F6BF8C',
+                      }}
                       className="w-2 h-2 rounded-full z-[2] mt-1.5"
                     />
                     {index < events.length - 1 && (

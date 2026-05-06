@@ -30,7 +30,11 @@ export function mediaReducer(state: MediaState, action: MediaAction): MediaState
     case 'SET_PLAYING':
       return { ...state, isPlaying: action.payload };
     case 'SET_PROGRESS':
-      return { ...state, positionMillis: action.position, durationMillis: action.duration };
+      return {
+        ...state,
+        positionMillis: action.position,
+        durationMillis: action.duration,
+      };
     case 'TOGGLE_CONTROLS':
       return { ...state, showControls: !state.showControls };
     case 'SET_CONTROLS_VISIBLE':

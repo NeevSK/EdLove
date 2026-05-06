@@ -12,7 +12,8 @@
 
 import { BookOpen } from 'lucide-react-native';
 import React, { useCallback } from 'react';
-import { FlatList, RefreshControl, type StyleProp, type ViewStyle } from 'react-native';
+import { type StyleProp, type ViewStyle } from 'react-native';
+import { FlatList, RefreshControl } from '../primitives';
 import { useThemedColors } from '../hooks/useThemedColors';
 import { Theme } from '../theme/Theme';
 import EmptyState from './EmptyState';

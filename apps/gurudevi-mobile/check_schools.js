@@ -1,37 +1,41 @@
 // Try to load .env file if dotenv is available
 try {
-  require('dotenv').config();
+	require("dotenv").config();
 } catch {
-  // dotenv not available; rely on environment variables being set externally
+	// dotenv not available; rely on environment variables being set externally
 }
 
-const { createClient } = require('@supabase/supabase-js');
+const { createClient } = require("@supabase/supabase-js");
 
-const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
+const supabaseUrl =
+	process.env.EXPO_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
 // Supabase anon keys are sunset in 2026 — use the new publishable API key instead
 const supabasePublishableKey =
-  process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY || process.env.SUPABASE_PUBLISHABLE_KEY;
+	process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+	process.env.SUPABASE_PUBLISHABLE_KEY;
 
 if (!supabaseUrl || !supabasePublishableKey) {
-  console.error(
-    'Missing required environment variables.\n' +
-      'Set EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY in your .env file.\n' +
-      'See .env.example for reference.',
-  );
-  process.exit(1);
+	console.error(
+		"Missing required environment variables.\n" +
+			"Set EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY in your .env file.\n" +
+			"See .env.example for reference.",
+	);
+	process.exit(1);
 }
 
 const supabase = createClient(supabaseUrl, supabasePublishableKey);
 
 async function checkSchools() {
-  console.log('Querying schools...');
-  const { data, error } = await supabase.from('schools').select('id, name, type');
+	console.log("Querying schools...");
+	const { data, error } = await supabase
+		.from("schools")
+		.select("id, name, type");
 
-  if (error) {
-    console.error('Error fetching schools:', error);
-  } else {
-    console.log('Found schools:', data);
-  }
+	if (error) {
+		console.error("Error fetching schools:", error);
+	} else {
+		console.log("Found schools:", data);
+	}
 }
 
 checkSchools();

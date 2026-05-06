@@ -1,5 +1,6 @@
-import type { WorkspaceRendererConfig } from '@repo/core/logic';
-import { StyleSheet, View } from 'react-native';
+import type { WorkspaceRendererConfig } from '@repo/core/types';
+import { StyleSheet } from 'react-native';
+import { View } from '../../../primitives';
 import { Theme } from '../../../theme/Theme';
 import { CanvasZoneColumn } from '../CanvasZoneColumn';
 import { useWorkspaceCanvasData, WorkspaceCanvasEmptyState, WorkspaceCanvasHero } from '../shared';

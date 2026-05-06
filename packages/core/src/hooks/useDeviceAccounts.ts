@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { type DeviceAccountRecord, deviceAccounts } from '../accounts/deviceAccounts';
 
 export type { DeviceAccountRecord };
@@ -36,7 +36,9 @@ export function useDeviceAccounts() {
           setLoading(false);
         }
       }
-    })();
+    })().catch((e) => {
+      console.error('DeviceAccounts: Initial hydration failed', e);
+    });
 
     return () => {
       cancelled = true;
@@ -80,14 +82,38 @@ export function useDeviceAccounts() {
     }
   }, [activeAccountId, refresh]);
 
-  return {
-    accounts,
-    activeAccountId,
-    loading,
-    busyAccountId,
-    refresh,
-    switchAccount,
-    removeAccount,
-    signOutCurrentAccount,
-  };
+  const signOutAllAccounts = useCallback(async () => {
+    setBusyAccountId(activeAccountId);
+    try {
+      await deviceAccounts.signOutAllAccounts();
+      await refresh();
+    } finally {
+      setBusyAccountId(null);
+    }
+  }, [activeAccountId, refresh]);
+
+  return useMemo(
+    () => ({
+      accounts,
+      activeAccountId,
+      loading,
+      busyAccountId,
+      refresh,
+      switchAccount,
+      removeAccount,
+      signOutCurrentAccount,
+      signOutAllAccounts,
+    }),
+    [
+      accounts,
+      activeAccountId,
+      loading,
+      busyAccountId,
+      refresh,
+      switchAccount,
+      removeAccount,
+      signOutCurrentAccount,
+      signOutAllAccounts,
+    ],
+  );
 }

@@ -5,45 +5,97 @@ import type { GuardianRepository } from '../../logic/domains/guardian/ports';
 import {
   type GuardianIdentity,
   GuardianIdentitySchema,
+  type GuardianNotification,
   type GuardianNotificationSettings,
   type GuardianPermissionConfig,
   type GuardianProfileCreate,
+  type GuardianSchoolEvent,
   type GuardianVerificationDocument,
   type StudentGuardianRelationship,
   StudentGuardianRelationshipSchema,
 } from '../../logic/schemas/guardian.schema';
 import { APIError } from '../../types/API';
 
-function mapGuardianIdentity(row: any): GuardianIdentity {
+interface AttendanceRow {
+  id: string;
+  student_id: string;
+  status: string;
+  date: string;
+}
+
+interface AssignmentRow {
+  id: string;
+  title: string;
+  subject?: string;
+  due_date: string;
+  classroom_id: string;
+}
+
+interface GradeRow {
+  id: string;
+  subject?: string;
+  grade?: string;
+  percentage?: number;
+  marks?: number;
+  published_at?: string;
+  created_at: string;
+  type?: string;
+}
+
+interface NotificationRow {
+  id: string;
+  type: GuardianNotification['type'];
+  title: string;
+  message: string;
+  is_read: boolean;
+  created_at: string;
+  action_url?: string;
+}
+
+interface EventRow {
+  id: string;
+  title: string;
+  description: string;
+  date: string;
+  time: string;
+  location: string;
+  type: GuardianSchoolEvent['type'];
+  requires_rsvp: boolean;
+  rsvp_status?: GuardianSchoolEvent['rsvpStatus'];
+}
+
+function mapGuardianIdentity(row: Record<string, unknown>): GuardianIdentity {
+  const r = row as any;
   return GuardianIdentitySchema.parse({
-    id: row.id,
-    userId: row.userId ?? row.user_id,
-    relationshipType: row.relationshipType ?? row.relationship_type,
-    contactInfo: row.contactInfo ?? row.contact_info,
-    verificationStatus: row.verificationStatus ?? row.verification_status,
-    custodyInfo: row.custodyInfo ?? row.custody_info,
-    emergencyContact: row.emergencyContact ?? row.emergency_contact,
-    createdAt: row.createdAt ?? row.created_at,
-    updatedAt: row.updatedAt ?? row.updated_at,
-    schoolId: row.schoolId ?? row.school_id,
-    tenantId: row.tenantId ?? row.tenant_id,
+    id: r.id,
+    userId: r.userId ?? r.user_id,
+    relationshipType: r.relationshipType ?? r.relationship_type,
+    contactInfo: r.contactInfo ?? r.contact_info,
+    verificationStatus: r.verificationStatus ?? r.verification_status,
+    custodyInfo: r.custodyInfo ?? r.custody_info,
+    emergencyContact: r.emergencyContact ?? r.emergency_contact,
+    createdAt: r.createdAt ?? r.created_at,
+    updatedAt: r.updatedAt ?? r.updated_at,
+    schoolId: r.schoolId ?? r.school_id,
+    tenantId: r.tenantId ?? r.tenant_id,
   });
 }
 
-function mapGuardianRelationship(row: any): StudentGuardianRelationship {
+function mapGuardianRelationship(row: Record<string, unknown>): StudentGuardianRelationship {
+  const r = row as any;
   return StudentGuardianRelationshipSchema.parse({
-    id: row.id,
-    studentId: row.studentId ?? row.student_id,
-    guardianId: row.guardianId ?? row.guardian_id,
-    relationshipType: row.relationshipType ?? row.relationship_type,
-    permissions: row.permissions ?? [],
-    custodyLevel: row.custodyLevel ?? row.custody_level,
-    effectiveDate: row.effectiveDate ?? row.effective_date,
-    terminationDate: row.terminationDate ?? row.termination_date,
-    isActive: row.isActive ?? row.is_active,
-    createdAt: row.createdAt ?? row.created_at,
-    updatedAt: row.updatedAt ?? row.updated_at,
-    schoolId: row.schoolId ?? row.school_id,
+    id: r.id,
+    studentId: r.studentId ?? r.student_id,
+    guardianId: r.guardianId ?? r.guardian_id,
+    relationshipType: r.relationshipType ?? r.relationship_type,
+    permissions: r.permissions ?? [],
+    custodyLevel: r.custodyLevel ?? r.custody_level,
+    effectiveDate: r.effectiveDate ?? r.effective_date,
+    terminationDate: r.terminationDate ?? r.termination_date,
+    isActive: r.isActive ?? r.is_active,
+    createdAt: r.createdAt ?? r.created_at,
+    updatedAt: r.updatedAt ?? r.updated_at,
+    schoolId: r.schoolId ?? r.school_id,
   });
 }
 
@@ -140,26 +192,26 @@ export const createSupabaseGuardianRepository = (supabase: SupabaseClient): Guar
     async linkGuardianToStudent(
       guardianId: string,
       studentId: string,
-      relationshipType: GuardianIdentity['relationshipType'],
+      relationshipType: GuardianIdentity['relationship_type'],
       schoolId?: string,
     ) {
       let resolvedSchoolId = schoolId;
       if (!resolvedSchoolId) {
         const guardianProfile = await this.getGuardianProfile(guardianId);
-        resolvedSchoolId = guardianProfile?.schoolId;
+        resolvedSchoolId = guardianProfile?.school_id;
       }
       const payload = {
         id: crypto.randomUUID(),
         guardianId,
         studentId,
-        relationshipType,
+        relationship_type: relationshipType,
         permissions: [],
         custodyLevel: 'partial',
         effectiveDate: new Date().toISOString(),
         isActive: true,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        schoolId: resolvedSchoolId ?? '',
+        school_id: resolvedSchoolId ?? '',
       };
 
       const { data, error } = await supabase
@@ -181,16 +233,16 @@ export const createSupabaseGuardianRepository = (supabase: SupabaseClient): Guar
           permissions,
           updatedAt: new Date().toISOString(),
         })
-        .eq('guardianId', guardianId)
-        .eq('studentId', studentId);
+        .eq('guardian_id', guardianId)
+        .eq('student_id', studentId);
       if (error) throw new APIError('Failed to update guardian permissions', error.code, error);
     },
     async getGuardianRelationships(guardianId: string) {
       const { data, error } = await supabase
         .from('student_guardian_relationships')
         .select('*')
-        .eq('guardianId', guardianId)
-        .eq('isActive', true);
+        .eq('guardian_id', guardianId)
+        .eq('is_active', true);
       if (error) throw new APIError('Failed to fetch guardian relationships', error.code, error);
       return (data || []).map(mapGuardianRelationship);
     },
@@ -202,8 +254,8 @@ export const createSupabaseGuardianRepository = (supabase: SupabaseClient): Guar
           terminationDate: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         })
-        .eq('guardianId', guardianId)
-        .eq('studentId', studentId);
+        .eq('guardian_id', guardianId)
+        .eq('student_id', studentId);
       if (error) throw new APIError('Failed to terminate guardian relationship', error.code, error);
     },
     async getGuardianStudents(guardianId) {
@@ -219,10 +271,12 @@ export const createSupabaseGuardianRepository = (supabase: SupabaseClient): Guar
                   *
                 )
               `)
-        .eq('studentId', studentId)
-        .eq('isActive', true);
+        .eq('student_id', studentId)
+        .eq('is_active', true);
       if (error) throw new APIError('Failed to fetch student guardians', error.code, error);
-      return ((data?.map((relationship: any) => relationship.guardians) as any[]) || [])
+      return (
+        (data?.map((relationship: any) => relationship.guardians) as Record<string, any>[]) || []
+      )
         .filter(Boolean)
         .map(mapGuardianIdentity);
     },
@@ -239,8 +293,8 @@ export const createSupabaseGuardianRepository = (supabase: SupabaseClient): Guar
                   classroom_id
                 )
               `)
-        .eq('guardianId', guardianId)
-        .eq('isActive', true);
+        .eq('guardian_id', guardianId)
+        .eq('is_active', true);
       if (relationshipsError)
         throw new APIError(
           'Failed to fetch guardian students',
@@ -249,24 +303,26 @@ export const createSupabaseGuardianRepository = (supabase: SupabaseClient): Guar
         );
 
       const students = (
-        ((relationships as any[]) || []).map((relationship) => relationship.students) || []
+        ((relationships as any[]) || []).map(
+          (relationship) => relationship.students as Record<string, any>,
+        ) || []
       ).filter(Boolean);
       const monthAgoIso = new Date(new Date().setMonth(new Date().getMonth() - 1)).toISOString();
       const nowIso = new Date().toISOString();
 
       const studentOverviews = await Promise.all(
-        students.map(async (student: any) => {
+        students.map(async (student: Record<string, any>) => {
           const [attendanceRes, publishedGrades, assignmentsRes] = await Promise.all([
             supabase
               .from('attendance')
               .select('*')
-              .eq('student_id', student.id)
+              .eq('student_id', student['id'])
               .gte('date', monthAgoIso),
-            getGuardianPublishedGrades(student.id),
+            getGuardianPublishedGrades(student['id']),
             supabase
               .from('assignments')
               .select('*')
-              .eq('classroom_id', student.classroom_id)
+              .eq('classroom_id', student['classroom_id'])
               .gte('due_date', nowIso)
               .order('due_date', { ascending: true })
               .limit(3),
@@ -285,45 +341,43 @@ export const createSupabaseGuardianRepository = (supabase: SupabaseClient): Guar
               assignmentsRes.error,
             );
 
-          const attendance = attendanceRes.data || [];
-          const grades = publishedGrades;
-          const assignments = assignmentsRes.data || [];
-          const presentCount = attendance.filter(
-            (record: any) => record.status === 'present',
-          ).length;
+          const attendance = (attendanceRes.data as AttendanceRow[]) || [];
+          const grades = publishedGrades as GradeRow[];
+          const assignments = (assignmentsRes.data as AssignmentRow[]) || [];
+          const presentCount = attendance.filter((record) => record.status === 'present').length;
 
           return {
-            studentId: student.id,
-            name: `${student.first_name} ${student.last_name}`,
-            grade: student.grade,
-            classroom: student.classroom_id,
+            studentId: student['id'],
+            name: `${student['first_name']} ${student['last_name']}`,
+            grade: student['grade'],
+            classroom: student['classroom_id'],
             attendance: {
               present: presentCount,
-              absent: attendance.filter((record: any) => record.status === 'absent').length,
-              late: attendance.filter((record: any) => record.status === 'late').length,
+              absent: attendance.filter((record) => record.status === 'absent').length,
+              late: attendance.filter((record) => record.status === 'late').length,
               total: attendance.length,
               percentage: attendance.length > 0 ? (presentCount / attendance.length) * 100 : 0,
             },
             grades: {
-              latest: grades.map((grade: any) => ({
+              latest: grades.map((grade) => ({
                 subject: grade.subject ?? 'Published assessment',
-                grade: grade.grade,
+                grade: grade.grade ?? '',
                 percentage: grade.percentage ?? grade.marks,
                 date: grade.published_at ?? grade.created_at,
-                type: grade.type ?? 'assignment',
+                type: (grade.type as any) ?? 'assignment',
               })),
               average:
                 grades.length > 0
                   ? grades.reduce(
-                      (sum: number, grade: any) => sum + (grade.percentage ?? grade.marks ?? 0),
+                      (sum: number, grade) => sum + (grade.percentage ?? grade.marks ?? 0),
                       0,
                     ) / grades.length
                   : 0,
             },
-            upcomingAssignments: assignments.map((assignment: any) => ({
+            upcomingAssignments: assignments.map((assignment) => ({
               id: assignment.id,
               title: assignment.title,
-              subject: assignment.subject,
+              subject: assignment.subject ?? 'General',
               dueDate: assignment.due_date,
               status: 'pending' as const,
               grade: undefined,
@@ -337,7 +391,7 @@ export const createSupabaseGuardianRepository = (supabase: SupabaseClient): Guar
         supabase
           .from('guardian_notifications')
           .select('*')
-          .eq('guardianId', guardianId)
+          .eq('guardian_id', guardianId)
           .order('created_at', { ascending: false })
           .limit(10),
         supabase
@@ -367,7 +421,7 @@ export const createSupabaseGuardianRepository = (supabase: SupabaseClient): Guar
       return {
         guardianId,
         students: studentOverviews,
-        notifications: (notificationsRes.data || []).map((notification: any) => ({
+        notifications: ((notificationsRes.data as NotificationRow[]) || []).map((notification) => ({
           id: notification.id,
           type: notification.type,
           title: notification.title,
@@ -376,7 +430,7 @@ export const createSupabaseGuardianRepository = (supabase: SupabaseClient): Guar
           createdAt: notification.created_at,
           actionUrl: notification.action_url,
         })),
-        upcomingEvents: (eventsRes.data || []).map((event: any) => ({
+        upcomingEvents: ((eventsRes.data as EventRow[]) || []).map((event) => ({
           id: event.id,
           title: event.title,
           description: event.description,
@@ -395,9 +449,9 @@ export const createSupabaseGuardianRepository = (supabase: SupabaseClient): Guar
       settings: GuardianNotificationSettings,
     ) {
       const { error } = await supabase.from('guardian_notification_settings').upsert({
-        guardianId,
+        guardian_id: guardianId,
         settings,
-        updatedAt: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
       });
       if (error)
         throw new APIError('Failed to update guardian notification settings', error.code, error);

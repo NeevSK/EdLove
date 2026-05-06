@@ -1,17 +1,25 @@
-import { usePermissions } from '@repo/core/logic';
 import { useAccountDeletion, useTracking } from '@repo/core/hooks';
-import { useStore } from '@repo/core/logic';
+import { usePermissions, useStore } from '@repo/core/logic';
 
 import DeleteAccountModal from '@repo/ui/components/DeleteAccountModal';
-import DeviceAccountManager from '@repo/ui/components/DeviceAccountManager';
+import DeviceSecurityCenter from '@repo/ui/components/DeviceSecurityCenter';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import IdentityCard from '@repo/ui/components/IdentityCard';
 import LogoutModal from '@repo/ui/components/LogoutModal';
-import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
-import { Box, Button, ButtonText, Center, HStack, Heading, Icon, Text, VStack } from '@repo/ui/primitives';
 import { SanctuaryProgressBar } from '@repo/ui/components/SanctuaryProgressBar';
-import { useBottomTabPadding } from '@repo/ui/components/ScreenWrapper';
-import { Pressable } from '@repo/ui/primitives';
+import ScreenWrapper, { useBottomTabPadding } from '@repo/ui/components/ScreenWrapper';
+import {
+  Box,
+  Button,
+  ButtonText,
+  Center,
+  Heading,
+  HStack,
+  Icon,
+  Pressable,
+  Text,
+  VStack,
+} from '@repo/ui/primitives';
 import { hapticError, hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 
 import {
@@ -37,6 +45,7 @@ import Animated, {
   withSequence,
   withTiming,
 } from 'react-native-reanimated';
+import type { TFunction } from 'i18next';
 import LivingJourneyPanel from '../components/LivingJourneyPanel';
 import ProfileListItem from '../components/ProfileListItem';
 // Local Package Imports
@@ -44,9 +53,19 @@ import ProfileSkeleton from '../components/ProfileSkeleton';
 import ThuthimalBadge from '../components/ThuthimalBadge';
 import { useProfile } from '../hooks/useProfile';
 import { useProfileCompletion } from '../hooks/useProfileCompletion';
-import { toFullProfileParams, useProfileNavigation } from '../navigation';
+import { toFullProfileParams, useProfileNavigation, type ProfileNavigationCapabilities } from '../navigation';
+import type { UserProfile } from '../types';
 
 // --- Internal Sub-Components ---
+
+interface IdentitySectionProps {
+  profile: UserProfile | null;
+  navigation: ProfileNavigationCapabilities;
+  t: TFunction;
+  onGuestAction?: () => void;
+  completionResult: any; // We'll refine this if we can, but it's better than unknown
+  cardWidth: number;
+}
 
 const IdentitySection = ({
   profile,
@@ -55,27 +74,30 @@ const IdentitySection = ({
   onGuestAction,
   completionResult,
   cardWidth,
-}: any) => {
+}: IdentitySectionProps) => {
   const { context } = usePermissions();
   const isWanderer = context.isAnonymous;
+  const capacity = context.activeBond?.capacity || context.primaryCapacity || 'guest';
 
   return (
     <Center>
       <Box style={{ width: cardWidth }}>
-        <IdentityCard
-          data={profile}
-          onViewFullProfile={() => {
-            if (isWanderer) {
-              onGuestAction?.();
-            }
-            hapticLight();
-            if (isWanderer) {
-              navigation.openAuth?.();
-            } else {
-              navigation.openFullProfile(toFullProfileParams(profile));
-            }
-          }}
-        />
+        {profile && profile.id && (
+          <IdentityCard
+            data={{ ...(profile as any), id: profile.id, capacity }}
+            onViewFullProfile={() => {
+              if (isWanderer) {
+                onGuestAction?.();
+              }
+              hapticLight();
+              if (isWanderer) {
+                navigation.openAuth?.();
+              } else {
+                navigation.openFullProfile(toFullProfileParams(profile as any));
+              }
+            }}
+          />
+        )}
       </Box>
       {!context.isAnonymous && completionResult && (
         <Box style={{ width: cardWidth }} className="mt-4">
@@ -93,12 +115,17 @@ const IdentitySection = ({
           if (isWanderer) {
             navigation.openAuth?.();
           } else {
-            navigation.openFullProfile(toFullProfileParams(profile));
+            if (profile) navigation.openFullProfile(toFullProfileParams(profile));
           }
         }}
         accessible={true}
         accessibilityRole="button"
         accessibilityLabel={isWanderer ? t('auth.createAccount') : t('profile.viewEditProfile')}
+        accessibilityHint={
+          isWanderer
+            ? 'Navigates to the account creation screen'
+            : 'Opens your full profile for viewing and editing'
+        }
         className="mt-6 h-[52px] bg-phase-canvas rounded-2xl flex-row items-center justify-center border border-phase-surface shadow-sm"
         style={{ width: cardWidth }}
       >
@@ -117,7 +144,12 @@ const IdentitySection = ({
   );
 };
 
-const StatsSection = ({ profile, role }: any) => {
+interface StatsSectionProps {
+  profile: UserProfile | null;
+  role?: string;
+}
+
+const StatsSection = ({ profile, role }: StatsSectionProps) => {
   if (!profile?.id) {
     return null;
   }
@@ -125,7 +157,13 @@ const StatsSection = ({ profile, role }: any) => {
   return <LivingJourneyPanel userId={profile.id} role={role ?? 'student'} />;
 };
 
-const SupportSection = ({ t, navigation, cardWidth }: any) => (
+interface SupportSectionProps {
+  t: TFunction;
+  navigation: ProfileNavigationCapabilities;
+  cardWidth: number;
+}
+
+const SupportSection = ({ t, cardWidth }: SupportSectionProps) => (
   <Center>
     <VStack
       className="bg-phase-canvas rounded-3xl p-4 border border-phase-surface shadow-md"
@@ -156,7 +194,12 @@ const SupportSection = ({ t, navigation, cardWidth }: any) => (
   </Center>
 );
 
-const AppExperienceSection = ({ t, cardWidth }: any) => {
+interface AppExperienceSectionProps {
+  t: TFunction;
+  cardWidth: number;
+}
+
+const AppExperienceSection = ({ t, cardWidth }: AppExperienceSectionProps) => {
   const showToast = useStore((state) => state.showToast);
   return (
     <Center>
@@ -212,11 +255,12 @@ const AppExperienceSection = ({ t, cardWidth }: any) => {
 export const ProfileScreen = () => {
   const { t } = useTranslation();
   const navigation = useProfileNavigation();
-  const { profile, loading, refreshing, refresh, logout, rewards } = useProfile();
+  const { profile, loading, refreshing, refresh, logout } = useProfile();
 
   const { context } = usePermissions();
-  const authority = context.roles?.[0];
-  const completionResult = useProfileCompletion(profile, authority ?? null);
+  const capacity = context.activeBond?.capacity || context.primaryCapacity || 'guest';
+  const completionCapacity = (context.activeBond?.capacity || context.primaryCapacity) ?? null;
+  const completionResult = useProfileCompletion(profile, completionCapacity as any);
   const bottomPadding = useBottomTabPadding();
   const { width: windowWidth } = useWindowDimensions();
   const cardWidth = Math.min(windowWidth, 600) - 32;
@@ -236,6 +280,7 @@ export const ProfileScreen = () => {
 
   const triggerBannerShake = () => {
     hapticError();
+    // eslint-disable-next-line react-compiler/react-compiler
     bannerShake.value = withSequence(
       withTiming(-10, { duration: 50 }),
       withRepeat(withTiming(10, { duration: 100 }), 3, true),
@@ -244,7 +289,7 @@ export const ProfileScreen = () => {
   };
 
   useEffect(() => {
-    discoverFeature('section_profile');
+    void discoverFeature('section_profile');
   }, [discoverFeature]);
 
   const handleLogout = () => {
@@ -257,7 +302,7 @@ export const ProfileScreen = () => {
     try {
       await logout();
       setLogoutModalVisible(false);
-    } catch (_error) {
+    } catch {
       hapticError();
     } finally {
       setLoggingOut(false);
@@ -274,7 +319,7 @@ export const ProfileScreen = () => {
       await deleteAccount();
       hapticSuccess();
       setDeleteModalVisible(false);
-    } catch (_error) {
+    } catch {
       hapticError();
       if (Platform.OS === 'web') {
         showToast(t('profile.deleteFailedTitle'), 'error');
@@ -308,6 +353,7 @@ export const ProfileScreen = () => {
             accessible={true}
             accessibilityRole="button"
             accessibilityLabel={t('settings.title')}
+            accessibilityHint="Opens the settings screen"
             className="p-2 rounded-xl bg-phase-canvas border border-phase-surface"
           >
             <Settings size={24} color="#4A90E2" />
@@ -334,6 +380,7 @@ export const ProfileScreen = () => {
                       <Heading className="text-white text-lg">{t('profile.guestTitle')}</Heading>
                       <Text className="text-white text-sm">{t('profile.guestDesc')}</Text>
                       <Button
+                        action="secondary"
                         size="sm"
                         onPress={() => {
                           hapticSuccess();
@@ -417,7 +464,7 @@ export const ProfileScreen = () => {
             )}
 
             <Animated.View entering={FadeInDown.delay(300).duration(500)}>
-              <StatsSection profile={profile} role={profile?.role as any} />
+              <StatsSection profile={profile} role={capacity} />
             </Animated.View>
 
             <Animated.View entering={FadeInDown.delay(400).duration(500)}>
@@ -437,7 +484,7 @@ export const ProfileScreen = () => {
                 <Box style={{ width: cardWidth }}>
                   <ProfileListItem
                     icon={Info}
-                    label={t('profile.privacyLedgerTitle', 'Privacy Ledger')}
+                    label={t('profile.privacyLedgerTitle')}
                     onPress={() => navigation.openPrivacyLedger?.()}
                   />
                 </Box>
@@ -449,10 +496,13 @@ export const ProfileScreen = () => {
                 <Box style={{ width: cardWidth }}>
                   <ProfileListItem
                     icon={Eye}
-                    label={t('profile.publicPreviewTitle', 'Public Preview')}
+                    label={t('profile.publicPreviewTitle')}
                     onPress={() =>
                       profile?.id
-                        ? navigation.openPublicProfile?.({ id: profile.id, type: 'user' })
+                        ? navigation.openPublicProfile?.({
+                            id: profile.id,
+                            type: 'user',
+                          })
                         : undefined
                     }
                   />
@@ -471,13 +521,7 @@ export const ProfileScreen = () => {
             <Animated.View entering={FadeInDown.delay(700).duration(500)}>
               <Center>
                 <Box style={{ width: cardWidth }} className="mt-4">
-                  <DeviceAccountManager
-                    title={t('profile.account.actions', 'Shared device accounts')}
-                    subtitle={t(
-                      'profile.account.shared_device_desc',
-                      'Switch, protect, and remove accounts stored on this device without leaving this screen.',
-                    )}
-                  />
+                  <DeviceSecurityCenter />
                 </Box>
               </Center>
             </Animated.View>
@@ -494,6 +538,7 @@ export const ProfileScreen = () => {
                       accessible={true}
                       accessibilityRole="button"
                       accessibilityLabel={t('profile.logout')}
+                      accessibilityHint="Logs you out of your account"
                       className="flex-row items-center justify-center p-4 bg-phase-canvas rounded-2xl border border-phase-surface"
                     >
                       <Icon as={LogOut} size={20} color="#FF6B6B" className="mr-2" />
@@ -504,6 +549,7 @@ export const ProfileScreen = () => {
                       accessible={true}
                       accessibilityRole="button"
                       accessibilityLabel={t('profile.deleteAccount')}
+                      accessibilityHint="Opens the account deletion modal"
                       className="flex-row items-center justify-center p-1"
                     >
                       <Icon as={Trash2} size={16} color="#9DA1A3" className="mr-1.5" />

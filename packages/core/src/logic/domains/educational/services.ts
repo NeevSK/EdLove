@@ -1,4 +1,4 @@
-﻿import { marksToGPA } from '../../../lib/grading';
+import { marksToGPA } from '../../../lib/grading';
 import { APIError } from '../../../types/API';
 import type { Attendance as AttendanceRecord } from '../../schemas/attendance.schema';
 import type {
@@ -10,6 +10,11 @@ import type {
   StudentAssignment,
   StudentSubmissionSummary,
   TeacherStats,
+  StudentAcademicRecord,
+  TeacherProfessionalRecord,
+  PrincipalGovernanceRecord,
+  SchoolLegacyRecord,
+  ClassroomLegacyRecord,
 } from '../../schemas/classroom.schema';
 import type { ClassroomGradingSettings, Grade } from '../../schemas/grading.schema';
 import type { Lesson } from '../../schemas/lesson.schema';
@@ -87,6 +92,15 @@ export interface EducationalServices {
     getAll(classroomId: string): Promise<ClassroomStudent[]>;
     enroll(classroomId: string, studentId: string): Promise<ClassroomStudent>;
     remove(classroomId: string, studentId: string): Promise<void>;
+    getHistoricalAcademicRecords(studentId: string): Promise<StudentAcademicRecord[]>;
+  };
+  teachers: {
+    getHistoricalProfessionalRecords(teacherId: string): Promise<TeacherProfessionalRecord[]>;
+    getHistoricalGovernanceRecords(principalId: string): Promise<PrincipalGovernanceRecord[]>;
+  };
+  institutions: {
+    getSchoolLegacyHistory(schoolId: string): Promise<SchoolLegacyRecord[]>;
+    getClassroomLegacyHistory(classroomId: string): Promise<ClassroomLegacyRecord[]>;
   };
   classroomStudents: {
     getAll(classroomId: string): Promise<EnrollmentRecord[]>;
@@ -151,7 +165,12 @@ export interface EducationalServices {
       date: string,
     ): Promise<AttendanceRecord>;
     batchRecord(
-      records: Array<{ classroom_id: string; student_id: string; status: string; date: string }>,
+      records: Array<{
+        classroom_id: string;
+        student_id: string;
+        status: string;
+        date: string;
+      }>,
     ): Promise<AttendanceRecord[]>;
     getForStudent(studentId: string, classroomId?: string): Promise<AttendanceRecord[]>;
   };
@@ -202,6 +221,8 @@ export const createEducationalServices = (
         student_id: myId,
         content: content?.trim() || null,
         photo_url: photoUrl ?? null,
+        // SAFE_SIDE_EFFECT: Mutation payload generated in action handler, not during hydration.
+        // eslint-disable-next-line no-restricted-syntax
         submitted_at: new Date().toISOString(),
       });
 
@@ -267,6 +288,17 @@ export const createEducationalServices = (
     getAll: (classroomId) => repository.getSimpleStudents(classroomId),
     enroll: (classroomId, studentId) => repository.enrollStudent(classroomId, studentId),
     remove: (classroomId, studentId) => repository.removeStudent(classroomId, studentId),
+    getHistoricalAcademicRecords: (studentId) => repository.getHistoricalAcademicRecords(studentId),
+  },
+  teachers: {
+    getHistoricalProfessionalRecords: (teacherId) =>
+      repository.getHistoricalProfessionalRecords(teacherId),
+    getHistoricalGovernanceRecords: (principalId) =>
+      repository.getHistoricalGovernanceRecords(principalId),
+  },
+  institutions: {
+    getSchoolLegacyHistory: (schoolId) => repository.getSchoolLegacyHistory(schoolId),
+    getClassroomLegacyHistory: (classroomId) => repository.getClassroomLegacyHistory(classroomId),
   },
   lessonMaterials: {
     getAll: (classroomId) => repository.getMaterials(classroomId),
@@ -292,7 +324,10 @@ export const createEducationalServices = (
         gpa,
         feedback,
         graded_by: myId,
+        // SAFE_SIDE_EFFECT: Mutation payload generated in action handler.
+        // eslint-disable-next-line no-restricted-syntax
         created_at: new Date().toISOString(),
+        // eslint-disable-next-line no-restricted-syntax
         updated_at: new Date().toISOString(),
       });
 
@@ -322,6 +357,8 @@ export const createEducationalServices = (
         grade,
         gpa,
         feedback: feedback ?? null,
+        // SAFE_SIDE_EFFECT: Mutation payload generated in action handler.
+        // eslint-disable-next-line no-restricted-syntax
         updated_at: new Date().toISOString(),
       });
     },

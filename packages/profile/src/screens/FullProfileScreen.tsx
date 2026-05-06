@@ -1,15 +1,23 @@
-import { useStore } from '@repo/core/logic';
+import { usePermissions, useStore } from '@repo/core/logic';
 
 // Local Package Imports
 import { StaffPresencePulse } from '@repo/people';
 import AchievementUnlockOverlay from '@repo/ui/components/AchievementUnlockOverlay';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import IdentityCard from '@repo/ui/components/IdentityCard';
-import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
-import { Box, Button, ButtonText, Center, HStack, Heading, Text, VStack } from '@repo/ui/primitives';
 import { SanctuaryProgressBar } from '@repo/ui/components/SanctuaryProgressBar';
-import { useBottomTabPadding } from '@repo/ui/components/ScreenWrapper';
-import { Pressable } from '@repo/ui/primitives';
+import ScreenWrapper, { useBottomTabPadding } from '@repo/ui/components/ScreenWrapper';
+import {
+  Box,
+  Button,
+  ButtonText,
+  Center,
+  Heading,
+  HStack,
+  Pressable,
+  Text,
+  VStack,
+} from '@repo/ui/primitives';
 import { hapticSuccess } from '@repo/ui/utils/haptics';
 
 import {
@@ -40,12 +48,24 @@ import { useSocialLinks } from '../hooks/useSocialLinks';
 import type { UserProfile } from '../types';
 
 // We use any for navigation props to avoid strict app-level dependency inside the package
-export const FullProfileScreen = ({ route, navigation }: any) => {
-  const { profile: initialParams } = route.params;
-  const initialProfile = initialParams as unknown as UserProfile;
+type FullProfileProps = {
+  route: {
+    params: {
+      profile: UserProfile;
+    };
+  };
+  navigation: {
+    goBack: () => void;
+    navigate: (screen: string, params?: Record<string, unknown>) => void;
+  };
+};
+
+export const FullProfileScreen = ({ route, navigation }: FullProfileProps) => {
+  const { profile: initialProfile } = route.params;
 
   const { t } = useTranslation();
-  const { user: currentUser, userRole } = useStore();
+  const { user: currentUser } = useStore();
+  const { context } = usePermissions();
   const bottomPadding = useBottomTabPadding();
   const { width: windowWidth } = useWindowDimensions();
   const cardWidth = Math.min(windowWidth, 600) - 32;
@@ -57,7 +77,8 @@ export const FullProfileScreen = ({ route, navigation }: any) => {
     uploadAvatar,
   } = useProfile(initialProfile?.id);
   const profile = liveProfile || initialProfile;
-  const completionResult = useProfileCompletion(profile, userRole ?? null);
+  const completionCapacity = (context.activeBond?.capacity || context.primaryCapacity) ?? null;
+  const completionResult = useProfileCompletion(profile, completionCapacity as any);
   const { links: socialLinks } = useSocialLinks(profile?.id);
 
   const [showCelebration, setShowCelebration] = useState(false);
@@ -74,25 +95,29 @@ export const FullProfileScreen = ({ route, navigation }: any) => {
 
   useEffect(() => {
     if (completionResult.isComplete && !completionResult.hasSeenCompletionCelebration) {
-      setShowCelebration(true);
-      hapticSuccess();
-      completionResult.markCompletionCelebrationSeen();
+      // Delay state update to avoid synchronous render warning
       const timer = setTimeout(() => {
+        setShowCelebration(true);
+        hapticSuccess();
+        void completionResult.markCompletionCelebrationSeen();
+      }, 0);
+
+      const fadeTimer = setTimeout(() => {
         barOpacity.value = withTiming(0, { duration: 800 });
       }, 2000);
-      return () => clearTimeout(timer);
+
+      return () => {
+        clearTimeout(timer);
+        clearTimeout(fadeTimer);
+      };
     }
-  }, [
-    completionResult.isComplete,
-    completionResult.hasSeenCompletionCelebration,
-    barOpacity,
-    completionResult.markCompletionCelebrationSeen,
-  ]);
+    return;
+  }, [completionResult, barOpacity]);
 
   if (!profile) return null;
 
   const isOtherProfile = currentUserId !== undefined && currentUserId !== profile.id;
-  const profileRole = ((profile as any).authority ?? profile.role ?? '').toString();
+  const profileRole = ((profile as any)?.activeBond?.capacity ?? (profile as any)?.capacity ?? '').toString();
   const isStudentProfile = profileRole === 'student';
   const isTeacherProfile = [
     'teacher',
@@ -103,7 +128,7 @@ export const FullProfileScreen = ({ route, navigation }: any) => {
     'section_head',
   ].includes(profileRole);
 
-  const handleSave = async (field: string, value: any) => {
+  const handleSave = async (field: string, value: string | string[] | number) => {
     let valueToSave = value;
     if ((field === 'subjects_taught' || field === 'qualifications') && typeof value === 'string') {
       valueToSave = value
@@ -118,7 +143,7 @@ export const FullProfileScreen = ({ route, navigation }: any) => {
     const success = !!result?.success;
     if (success) {
       hapticSuccess();
-      refresh?.();
+      void refresh?.();
     }
     return success;
   };
@@ -136,7 +161,7 @@ export const FullProfileScreen = ({ route, navigation }: any) => {
         <VStack space="2xl">
           <Center>
             <Box style={{ width: cardWidth }}>
-              <IdentityCard data={profile} />
+              <IdentityCard data={{ ...(profile as any), capacity: profileRole }} />
             </Box>
           </Center>
 
@@ -216,11 +241,11 @@ export const FullProfileScreen = ({ route, navigation }: any) => {
                 <EditableItem
                   icon={AtSign}
                   label={t('profile.username')}
-                  value={profile.username}
+                  value={profile.username ?? undefined}
                   field="username"
                   placeholder="your-handle"
                   onSave={isOtherProfile || profile.is_anonymous ? async () => {} : handleSave}
-                  disabled={profile.is_anonymous}
+                  disabled={!!profile.is_anonymous}
                   helperText={
                     profile.is_anonymous
                       ? t('profile.anonymousHandleNotice')
@@ -231,7 +256,7 @@ export const FullProfileScreen = ({ route, navigation }: any) => {
                 <EditableItem
                   icon={Phone}
                   label={t('profile.phone')}
-                  value={profile.phone}
+                  value={profile.phone ?? undefined}
                   field="phone"
                   placeholder="+94 XX XXX XXXX"
                   onSave={isOtherProfile ? async () => {} : handleSave}
@@ -240,7 +265,7 @@ export const FullProfileScreen = ({ route, navigation }: any) => {
                   <EditableItem
                     icon={Fingerprint}
                     label={t('profile.indexNumber')}
-                    value={profile.index_number}
+                    value={profile.index_number ?? undefined}
                     field="index_number"
                     placeholder="STU-XXXXX"
                     onSave={isOtherProfile ? async () => {} : handleSave}
@@ -249,7 +274,7 @@ export const FullProfileScreen = ({ route, navigation }: any) => {
                   <EditableItem
                     icon={Fingerprint}
                     label={t('profile.nicNumber')}
-                    value={profile.nic_number}
+                    value={profile.nic_number ?? undefined}
                     field="nic_number"
                     placeholder="19XXXXXXXXXX"
                     onSave={isOtherProfile ? async () => {} : handleSave}
@@ -337,7 +362,7 @@ export const FullProfileScreen = ({ route, navigation }: any) => {
               <EditableItem
                 field="bio"
                 label={t('profile.bio')}
-                value={profile.bio}
+                value={profile.bio ?? undefined}
                 icon={FileText}
                 placeholder={t('profile.tellUsAboutYourself')}
                 onSave={isOtherProfile ? async () => {} : handleSave}
@@ -351,13 +376,17 @@ export const FullProfileScreen = ({ route, navigation }: any) => {
               <ContactLinktree
                 links={socialLinks || []}
                 userName={profile.full_name}
-                bio={profile.bio}
+                bio={profile.bio ?? undefined}
                 userId={profile.id}
                 isOwnProfile={!isOtherProfile}
               />
               {!isOtherProfile && (
                 <Pressable
                   onPress={() => setShowSocialModal(true)}
+                  accessible={true}
+                  accessibilityRole="button"
+                  accessibilityLabel="Manage Social Hub"
+                  accessibilityHint="Opens a modal to manage your social media links"
                   className="mt-4 p-4 rounded-2xl border border-dashed border-phase-surface items-center bg-phase-surface/30"
                 >
                   <HStack space="sm" className="items-center">
@@ -379,7 +408,7 @@ export const FullProfileScreen = ({ route, navigation }: any) => {
 
           <Box className="items-center mt-4">
             <Text className="text-phase-text-tertiary text-[10px] uppercase tracking-widest">
-              v1.2.0 • Sanctuary ID: {profile.id?.substring(0, 8)}
+              v1.2.0 â€¢ Sanctuary ID: {profile.id?.substring(0, 8)}
             </Text>
           </Box>
         </VStack>

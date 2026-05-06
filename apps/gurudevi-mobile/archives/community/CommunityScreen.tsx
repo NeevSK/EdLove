@@ -1,1 +1,1 @@
-export { CommunityScreen as default } from '@repo/community';
+export { CommunityScreen as default } from "@repo/community";

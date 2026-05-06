@@ -1,13 +1,13 @@
 ---
 export interface Props {
-  variant?: 'primary' | 'secondary' | 'ghost';
-  href?: string;
-  class?: string;
-  [key: string]: any;
+	variant?: "primary" | "secondary" | "ghost";
+	href?: string;
+	class?: string;
+	[key: string]: any;
 }
 
-const { variant = 'primary', href, class: className, ...rest } = Astro.props;
-const Tag = href ? 'a' : 'button';
+const { variant = "primary", href, class: className, ...rest } = Astro.props;
+const Tag = href ? "a" : "button";
 ---
 
 <Tag

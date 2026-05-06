@@ -16,28 +16,29 @@ During the Astro v6 migration, the ZenStack generation process appeared to fail 
 ## 2. Sovereign Core vs. Framework Contamination
 As identified in the `structural_integrity_audit.md`, the `@repo/core` package is currently "Mixed." To achieve the goal of "making version changes low friction in the endless future," we must separate the **Sovereign Brain** from the **Framework Hands**.
 
-### The Siphoning Strategy (L0 Resolution):
-- **Layer 0 (Pure Domain)**: Contains the `generated` schemas, `factory.ts`, and pure business logic. **ZERO** imports from `react`, `react-native`, or `supabase`.
-- **Layer 0.5 (Framework Bridge)**: Contains the Supabase clients, Zustand stores, and React Query hooks. These are the parts that will "oscillate" with Astro/Node updates.
+### The Sovereign Kernel (L0 Resolution):
+- **Layer 0 (Sovereign Kernel - @repo/schema)**: Immutable, dependency-free kernel containing the `schema.zmodel` and all generated artifacts (ORM metadata, Zod factories).
+- **Layer 1 (Platform Logic - @repo/core)**: Consumes L0 types and validation logic. Agnostic to specific database drivers or framework specifics.
+- **Layer 2 (Integration Drivers - @repo/database)**: Node-specific integration for server-side access, wrapping ZenStack with `pg` and `kysely`.
 
 ### Current Implementation State:
-- [x] Redirect ZenStack SSOT to `packages/core/src/logic/generated`.
-- [x] Standardize Zod v4 and ZenStack v3 peer dependencies.
-- [x] Keep `schema.zmodel` in `packages/database/zenstack/schema.zmodel`, but generate all artifacts into `@repo/core`.
-- [ ] **Next Step**: Audit and move `core/src/lib/supabase.ts` and `core/src/api/hooks` to a separate layer or package to prevent leakages into the Pure Brain.
+- [x] Establish `@repo/schema` as the single source of truth for all data contracts.
+- [x] Standardize ZenStack v3 generation to `src/generated` via root-level `schema.zmodel`.
+- [x] Purge all legacy generated wrappers and reports from `@repo/core`.
+- [x] Standardize Zod v3/v4 bridge via `createSchemaFactory`.
 
-## 3. Verification: Supabase Reality Check (as-of 2026-04-25)
+## 3. Verification: Supabase Reality Check (as-of 2026-05-03)
 This repo now has **one SSOT** for ZenStack artifacts:
-- **Model Source**: `packages/database/zenstack/schema.zmodel`
-- **Generated Artifacts**: `packages/core/src/logic/generated/*`
-
-To verify that the generated artifacts match what Supabase is actually running, do **both** checks:
+- **Model Source**: `packages/schema/schema.zmodel`
+- **Generated Artifacts**: `packages/schema/src/generated/*`
+- **Consumer**: `@repo/core` and `@repo/database`
+- **Kernel**: `@repo/schema`
 
 ### A) Repo-internal sync (zmodel → generated)
-1. Regenerate into core SSOT:
-   - `pnpm -C packages/database generate`
-2. Validate drift (source ↔ artifacts):
-   - `node scripts/check-schema-drift.mjs`
+1. Regenerate into schema SSOT:
+   - `pnpm -C packages/schema generate`
+2. Validate types:
+   - `pnpm -r check-types`
 
 If this is clean, it only proves “our generated artifacts match our zmodel”, not that Supabase matches.
 

@@ -8,9 +8,9 @@
  * See: apps/gurudevi-mobile/docs/Support/THUTHIMAL_README.md
  */
 
-import { supabase } from './supabase';
 import type { ThuthimalGift } from '../types';
 import { growthSignalsAPI } from './growthSignals';
+import { supabase } from './supabase';
 
 export interface CreateGiftInput {
   gifterName: string;

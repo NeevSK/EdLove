@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import React from 'react';
-import { supabase } from '../supabase';
+import { useEffect, useMemo } from 'react';
 import { communityAPI } from '../community';
+import { supabase } from '../supabase';
 
 export const commentKeys = {
   all: ['community', 'comments'] as const,
@@ -22,13 +22,13 @@ export function useCommentHooks(postId: string | null) {
   });
 
   // Real-time subscription
-  React.useEffect(() => {
+  useEffect(() => {
     if (!postId) return;
 
     const channel = supabase
       .channel(`comments-${postId}`)
       .on(
-        'postgres_changes' as any,
+        'postgres_changes',
         {
           event: '*',
           schema: 'public',
@@ -36,56 +36,74 @@ export function useCommentHooks(postId: string | null) {
           filter: `post_id=eq.${postId}`,
         },
         () => {
-          queryClient.invalidateQueries({ queryKey: commentKeys.list(postId) });
+          queryClient.invalidateQueries({ queryKey: commentKeys.list(postId) }).catch((e) => {
+            console.error('Failed to invalidate comments after real-time update', e);
+          });
         },
       )
       .subscribe();
 
     return () => {
-      supabase.removeChannel(channel);
+      supabase.removeChannel(channel).catch((e) => {
+        console.error('Failed to remove channel during cleanup', e);
+      });
     };
   }, [postId, queryClient]);
 
   const createMutation = useMutation({
     mutationFn: ({ content, isAnonymous = false }: { content: string; isAnonymous?: boolean }) =>
       communityAPI.createComment(postId!, content, isAnonymous),
-    onSuccess: () => {
-      if (postId) queryClient.invalidateQueries({ queryKey: commentKeys.list(postId) });
+    onSuccess: async () => {
+      if (postId) await queryClient.invalidateQueries({ queryKey: commentKeys.list(postId) });
     },
   });
 
   const deleteMutation = useMutation({
     mutationFn: (commentId: string) => communityAPI.deleteComment(commentId),
-    onSuccess: () => {
-      if (postId) queryClient.invalidateQueries({ queryKey: commentKeys.list(postId) });
+    onSuccess: async () => {
+      if (postId) await queryClient.invalidateQueries({ queryKey: commentKeys.list(postId) });
     },
   });
 
   const upvoteMutation = useMutation({
     mutationFn: (commentId: string) => communityAPI.toggleCommentUpvote(commentId),
-    onSuccess: () => {
-      if (postId) queryClient.invalidateQueries({ queryKey: commentKeys.list(postId) });
+    onSuccess: async () => {
+      if (postId) await queryClient.invalidateQueries({ queryKey: commentKeys.list(postId) });
     },
   });
 
   const markOfficialMutation = useMutation({
     mutationFn: ({ commentId, isOfficial }: { commentId: string; isOfficial: boolean }) =>
       communityAPI.markOfficialAnswer(commentId, isOfficial),
-    onSuccess: () => {
-      if (postId) queryClient.invalidateQueries({ queryKey: commentKeys.list(postId) });
+    onSuccess: async () => {
+      if (postId) await queryClient.invalidateQueries({ queryKey: commentKeys.list(postId) });
     },
   });
 
-  return {
-    comments: query.data ?? [],
-    isLoading: query.isLoading,
-    error: query.error,
-    createComment: createMutation.mutateAsync,
-    isCreatingComment: createMutation.isPending,
-    deleteComment: deleteMutation.mutateAsync,
-    isDeletingComment: deleteMutation.isPending,
-    toggleUpvote: upvoteMutation.mutateAsync,
-    isUpvoting: upvoteMutation.isPending,
-    markOfficialAnswer: markOfficialMutation.mutateAsync,
-  };
+  return useMemo(
+    () => ({
+      comments: query.data ?? [],
+      isLoading: query.isLoading,
+      error: query.error,
+      createComment: createMutation.mutateAsync,
+      isCreatingComment: createMutation.isPending,
+      deleteComment: deleteMutation.mutateAsync,
+      isDeletingComment: deleteMutation.isPending,
+      toggleUpvote: upvoteMutation.mutateAsync,
+      isUpvoting: upvoteMutation.isPending,
+      markOfficialAnswer: markOfficialMutation.mutateAsync,
+    }),
+    [
+      query.data,
+      query.isLoading,
+      query.error,
+      createMutation.mutateAsync,
+      createMutation.isPending,
+      deleteMutation.mutateAsync,
+      deleteMutation.isPending,
+      upvoteMutation.mutateAsync,
+      upvoteMutation.isPending,
+      markOfficialMutation.mutateAsync,
+    ],
+  );
 }

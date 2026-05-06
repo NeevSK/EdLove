@@ -13,8 +13,8 @@ export interface Classroom {
   is_archived: boolean;
   /** Academic year label, e.g. '2026'. Set automatically on creation; used for year-end rollover and historical queries. */
   academic_year?: string | null;
-  created_at: string;
-  updated_at: string;
+  created_at: Date;
+  updated_at: Date;
 }
 
 /**

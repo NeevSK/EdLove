@@ -1,9 +1,9 @@
 export { useAccountDeletion } from './useAccountDeletion';
-export { useIdentity } from './useIdentity';
 export { useAuthorityFeatures } from './useAuthorityFeatures';
 export { useBanyanGrowth } from './useBanyanGrowth';
 export { useClassroomCreation } from './useClassroomCreation';
 export { useDeviceAccounts } from './useDeviceAccounts';
+export { useDeviceSecurity } from './useDeviceSecurity';
 export {
   useClassroomNotes,
   useDomainServices,
@@ -15,9 +15,10 @@ export { useFeatureAccess } from './useFeatureAccess';
 export { useForm } from './useForm';
 export { useGroupCreation } from './useGroupCreation';
 export { useGuardedNavigation } from './useGuardedNavigation';
+export { useIdentity } from './useIdentity';
 export { useJourneyHistory } from './useJourneyHistory';
 export { useManualSnapshot } from './useManualSnapshot';
-export { useMediaDownloader, type DownloadState } from './useMediaDownloader';
+export { type DownloadState, useMediaDownloader } from './useMediaDownloader';
 export { useNaturePaths } from './useNaturePaths';
 export { type AppNotification, useNotifications } from './useNotifications';
 export { usePendingActions } from './usePendingActions';

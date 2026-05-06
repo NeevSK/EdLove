@@ -4,7 +4,7 @@
  */
 
 import { useStore } from '@repo/core/logic';
-import { type ReactNode, useMemo } from 'react';
+import { type ReactNode, useMemo, useCallback } from 'react';
 import { FidelityProvider, useFidelity } from './FidelityProvider';
 import { LanguageProvider, useLanguage } from './LanguageProvider';
 // Atomic Providers
@@ -35,7 +35,7 @@ export function EnvironmentProvider({ children }: { children: ReactNode }) {
  */
 export function useEnvironment(): EnvironmentContextValue {
   const user = useStore((state: any) => state.user);
-  const authority = (user as any)?.authority;
+  const activeBond = (user as any)?.activeBond ?? null;
 
   const { reality, refreshReality } = useReality();
   const { language, setLanguage } = useLanguage();
@@ -51,11 +51,17 @@ export function useEnvironment(): EnvironmentContextValue {
   } = useThemeContext();
   const { fidelityLevel, effectiveFidelity, setFidelityLevel } = useFidelity();
 
+  // ReBAC actions
+  const switchPerspective = useCallback(async (entityId: string, capacity: string) => {
+    const { identity } = await import('@repo/core/logic');
+    await identity.switchPerspective(entityId, capacity as any);
+  }, []);
+
   // Aggregate into a single memoized value to minimize blast radius for legacy consumers
   return useMemo(
     () => ({
       // State
-      authority,
+      activeBond,
       themeMode,
       temporalPhase,
       isDark,
@@ -73,9 +79,10 @@ export function useEnvironment(): EnvironmentContextValue {
       toggleVeil,
       refreshReality,
       setEnableLivingTheme,
+      switchPerspective,
     }),
     [
-      authority,
+      activeBond,
       themeMode,
       temporalPhase,
       isDark,
@@ -91,6 +98,7 @@ export function useEnvironment(): EnvironmentContextValue {
       toggleVeil,
       refreshReality,
       setEnableLivingTheme,
+      switchPerspective,
     ],
   );
 }

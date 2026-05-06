@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Platform, useWindowDimensions } from 'react-native';
 import { workspaceLayoutAPI } from '../api/workspaceLayout';
 import { SafeZustandStorage } from '../lib/storageWrapper';
@@ -147,11 +147,14 @@ export function useWorkspaceLayoutSync<
     [userId, workspaceId, surfaces],
   );
 
-  const setLayout = (next: WorkspaceLayout<TSurfaceId>) => {
-    setLayoutState(normalizeWorkspaceLayout(next, surfaces));
-  };
+  const setLayout = useCallback(
+    (next: WorkspaceLayout<TSurfaceId>) => {
+      setLayoutState(normalizeWorkspaceLayout(next, surfaces));
+    },
+    [surfaces],
+  );
 
-  const refreshFromRemote = async () => {
+  const refreshFromRemote = useCallback(async () => {
     if (!userId || !canUseRemoteSync(userId, enableRemoteSync)) return;
 
     setIsSyncing(true);
@@ -175,7 +178,7 @@ export function useWorkspaceLayoutSync<
     } finally {
       setIsSyncing(false);
     }
-  };
+  }, [userId, enableRemoteSync, workspaceId, layoutTarget, surfaces, layout]);
 
   useEffect(() => {
     let isMounted = true;
@@ -297,28 +300,64 @@ export function useWorkspaceLayoutSync<
     [surfaces, layout],
   );
 
-  return {
-    layout,
-    surfaces: resolvedSurfaces,
-    layoutTarget,
-    isHydrated,
-    isSyncing,
-    syncError,
-    refreshFromRemote,
-    setLayout,
-    setSurfaceOrder: (order) =>
+  const setSurfaceOrder = useCallback(
+    (order: TSurfaceId[]) =>
       setLayoutState((current) => (current ? setWorkspaceSurfaceOrder(current, order) : current)),
-    setSurfaceHidden: (surfaceId, hidden) =>
+    [],
+  );
+
+  const setSurfaceHidden = useCallback(
+    (surfaceId: TSurfaceId, hidden: boolean) =>
       setLayoutState((current) =>
         current ? setWorkspaceSurfaceHidden(current, surfaceId, hidden) : current,
       ),
-    setSurfacePinned: (surfaceId, pinned) =>
+    [],
+  );
+
+  const setSurfacePinned = useCallback(
+    (surfaceId: TSurfaceId, pinned: boolean) =>
       setLayoutState((current) =>
         current ? setWorkspaceSurfacePinned(current, surfaceId, pinned) : current,
       ),
-    setSurfaceZone: (surfaceId, zone) =>
+    [],
+  );
+
+  const setSurfaceZone = useCallback(
+    (surfaceId: TSurfaceId, zone: WorkspaceZoneId) =>
       setLayoutState((current) =>
         current ? setWorkspaceSurfaceZone(current, surfaceId, zone) : current,
       ),
-  };
+    [],
+  );
+
+  return useMemo(
+    () => ({
+      layout,
+      surfaces: resolvedSurfaces,
+      layoutTarget,
+      isHydrated,
+      isSyncing,
+      syncError,
+      refreshFromRemote,
+      setLayout,
+      setSurfaceOrder,
+      setSurfaceHidden,
+      setSurfacePinned,
+      setSurfaceZone,
+    }),
+    [
+      layout,
+      resolvedSurfaces,
+      layoutTarget,
+      isHydrated,
+      isSyncing,
+      syncError,
+      refreshFromRemote,
+      setLayout,
+      setSurfaceOrder,
+      setSurfaceHidden,
+      setSurfacePinned,
+      setSurfaceZone,
+    ],
+  );
 }

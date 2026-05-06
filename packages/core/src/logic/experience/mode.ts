@@ -1,4 +1,4 @@
-﻿export type ExperienceMode = 'live' | 'demo' | 'sandbox';
+export type ExperienceMode = 'live' | 'demo' | 'sandbox';
 
 export const DEFAULT_EXPERIENCE_MODE: ExperienceMode = 'live';
 

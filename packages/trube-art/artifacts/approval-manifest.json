@@ -1,556 +1,556 @@
 {
-  "package": "@repo/trube-art",
-  "version": "0.1.0",
-  "generatedAt": "2026-03-24T19:16:15.721Z",
-  "exportVersion": 1,
-  "approvals": {
-    "approved": ["goethe-night-study", "lotus-dawn", "lotus-vigil"],
-    "inReview": [
-      "branch-wind",
-      "beethoven-dawn",
-      "shoreline-reverie",
-      "vellum-prayer",
-      "sanctuary-air"
-    ],
-    "experimental": ["tidal-memory"]
-  },
-  "canonical": [
-    {
-      "name": "lotus-dawn",
-      "role": "Quiet awakening",
-      "rationale": "The default spiritual morning scene: warm, breathable, and suitable for reading-led surfaces."
-    },
-    {
-      "name": "goethe-night-study",
-      "role": "Ambient depth",
-      "rationale": "The standard nocturnal atmosphere: rich enough to feel alive, restrained enough to stay behind content."
-    },
-    {
-      "name": "lotus-vigil",
-      "role": "Ceremonial signature",
-      "rationale": "The first true signature scene for sacred or emotionally heightened moments inside Gurudevi."
-    }
-  ],
-  "scores": [
-    {
-      "name": "goethe-night-study",
-      "label": "Goethe Night Study",
-      "description": "Aurora body, atmospheric mist, constellation overtone, and a lotus draft.",
-      "experience": "ambient",
-      "review": {
-        "state": "approved",
-        "approvedFor": "Gurudevi lineage standard",
-        "note": "Approved as the primary nighttime ambient scene."
-      },
-      "lineage": {
-        "doctrine": "Readable scenic depth behind content.",
-        "dialect": "Gurudevi nocturne with sacred restraint.",
-        "temperament": "Calm, inward, watchful."
-      },
-      "placement": {
-        "focalZone": "centered",
-        "safeOverlayZone": "lower-third",
-        "textDensity": "light",
-        "preferredUse": "Home canvases, reading intros, and atmospheric hero backdrops.",
-        "avoidUse": "Dense feeds or screens where illustrations already own the center."
-      },
-      "canonicalRole": "Ambient depth",
-      "canonicalRationale": "The standard nocturnal atmosphere: rich enough to feel alive, restrained enough to stay behind content.",
-      "background": "#121b28",
-      "layers": [
-        {
-          "id": "body",
-          "role": "body",
-          "quality": "balanced",
-          "opacity": 0.94,
-          "surface": "aurora"
-        },
-        {
-          "id": "air",
-          "role": "air",
-          "quality": "efficient",
-          "opacity": 0.28,
-          "surface": "mist"
-        }
-      ],
-      "extras": {
-        "ornament": {
-          "name": "constellation",
-          "density": 0.7,
-          "opacity": 0.58,
-          "seed": 31
-        },
-        "motif": {
-          "name": "lotus-sketch",
-          "density": 0.54,
-          "opacity": 0.5,
-          "seed": 29,
-          "style": "luminous"
-        }
-      }
-    },
-    {
-      "name": "lotus-dawn",
-      "label": "Lotus Dawn",
-      "description": "Young leaf warmth opening through mist with a drafted lotus center.",
-      "experience": "quiet",
-      "review": {
-        "state": "approved",
-        "approvedFor": "Gurudevi lineage standard",
-        "note": "Approved as the default quiet awakening scene."
-      },
-      "lineage": {
-        "doctrine": "Breathable entry surface with central calm.",
-        "dialect": "Gurudevi morning warmth with spiritual clarity.",
-        "temperament": "Soft, receptive, devotional."
-      },
-      "placement": {
-        "focalZone": "centered",
-        "safeOverlayZone": "lower-third",
-        "textDensity": "minimal",
-        "preferredUse": "Morning welcome surfaces, empty states, and reflective reading entry points.",
-        "avoidUse": "Busy cards, notification-heavy layouts, or aggressive color accents."
-      },
-      "canonicalRole": "Quiet awakening",
-      "canonicalRationale": "The default spiritual morning scene: warm, breathable, and suitable for reading-led surfaces.",
-      "background": "#f2ead9",
-      "layers": [
-        {
-          "id": "body",
-          "role": "body",
-          "quality": "balanced",
-          "opacity": 0.92,
-          "surface": "young-leaf"
-        },
-        {
-          "id": "air",
-          "role": "air",
-          "quality": "efficient",
-          "opacity": 0.24,
-          "surface": "mist"
-        }
-      ],
-      "extras": {
-        "ornament": {
-          "name": "filigree",
-          "density": 0.46,
-          "opacity": 0.34,
-          "seed": 13
-        },
-        "motif": {
-          "name": "lotus-sketch",
-          "density": 0.6,
-          "opacity": 0.38,
-          "seed": 17,
-          "style": "draft"
-        }
-      }
-    },
-    {
-      "name": "branch-wind",
-      "label": "Branch Wind",
-      "description": "A cooler sky-field with branch-like structural drift.",
-      "experience": "ambient",
-      "review": {
-        "state": "in-review",
-        "approvedFor": "Settings and peripheral atmospheres",
-        "note": "Promising for secondary surfaces, still under product fit review."
-      },
-      "lineage": {
-        "doctrine": "Perimeter-led motion that leaves the center readable.",
-        "dialect": "Gurudevi structural air and branchlike drift.",
-        "temperament": "Alert, light, directional."
-      },
-      "placement": {
-        "focalZone": "edge-weighted",
-        "safeOverlayZone": "centered",
-        "textDensity": "light",
-        "preferredUse": "Profile or settings backgrounds where structure should stay at the periphery.",
-        "avoidUse": "Layouts with too many floating elements competing at the edges."
-      },
-      "canonicalRole": null,
-      "canonicalRationale": null,
-      "background": "#dfe8ea",
-      "layers": [
-        {
-          "id": "body",
-          "role": "body",
-          "quality": "balanced",
-          "opacity": 0.9,
-          "surface": "mist"
-        },
-        {
-          "id": "shimmer",
-          "role": "shimmer",
-          "quality": "efficient",
-          "opacity": 0.18,
-          "surface": "aurora"
-        }
-      ],
-      "extras": {
-        "ornament": {
-          "name": "vein",
-          "density": 0.44,
-          "opacity": 0.26,
-          "seed": 23
-        },
-        "motif": {
-          "name": "branch-flow",
-          "density": 0.58,
-          "opacity": 0.34,
-          "seed": 19,
-          "style": "ink"
-        }
-      }
-    },
-    {
-      "name": "tidal-memory",
-      "label": "Tidal Memory",
-      "description": "Layered mist and aurora motion meant for waterline and shorelike compositions.",
-      "experience": "quiet",
-      "review": {
-        "state": "experimental",
-        "approvedFor": "Exploration only",
-        "note": "Hold for future transitional scenes after more device validation."
-      },
-      "lineage": {
-        "doctrine": "Slow transitional motion with low visual pressure.",
-        "dialect": "Gurudevi reflective shoreline study.",
-        "temperament": "Restful, open, drifting."
-      },
-      "placement": {
-        "focalZone": "lower-third",
-        "safeOverlayZone": "upper-third",
-        "textDensity": "minimal",
-        "preferredUse": "Transitional surfaces, meditative pauses, and low-contrast reading environments.",
-        "avoidUse": "Moments that need symbolic focus or strong emotional arrival."
-      },
-      "canonicalRole": null,
-      "canonicalRationale": null,
-      "background": "#f0e3d1",
-      "layers": [
-        {
-          "id": "body",
-          "role": "body",
-          "quality": "balanced",
-          "opacity": 0.94,
-          "surface": "mist"
-        },
-        {
-          "id": "air",
-          "role": "air",
-          "quality": "efficient",
-          "opacity": 0.2,
-          "surface": "aurora"
-        }
-      ],
-      "extras": {
-        "ornament": {
-          "name": "constellation",
-          "density": 0.24,
-          "opacity": 0.18,
-          "seed": 37
-        },
-        "motif": {
-          "name": "tide-lines",
-          "density": 0.72,
-          "opacity": 0.28,
-          "seed": 41,
-          "style": "draft"
-        }
-      }
-    },
-    {
-      "name": "beethoven-dawn",
-      "label": "Beethoven Dawn",
-      "description": "A rising aurora ensemble with leaf warmth and ceremonial light.",
-      "experience": "ceremonial",
-      "review": {
-        "state": "in-review",
-        "approvedFor": "High ceremony welcomes",
-        "note": "Visually strong but still needs restraint checks in product context."
-      },
-      "lineage": {
-        "doctrine": "Heroic opening with controlled ceremonial lift.",
-        "dialect": "Gurudevi dawn grandeur.",
-        "temperament": "Rising, luminous, declarative."
-      },
-      "placement": {
-        "focalZone": "upper-third",
-        "safeOverlayZone": "lower-third",
-        "textDensity": "minimal",
-        "preferredUse": "Opening ceremonies, first-run moments, and flagship entry canvases.",
-        "avoidUse": "Compact utilities, nested sheets, or form-heavy contexts."
-      },
-      "canonicalRole": null,
-      "canonicalRationale": null,
-      "background": "#f4e2c5",
-      "layers": [
-        {
-          "id": "body",
-          "role": "body",
-          "quality": "cinematic",
-          "opacity": 0.96,
-          "surface": "aurora"
-        },
-        {
-          "id": "air",
-          "role": "air",
-          "quality": "balanced",
-          "opacity": 0.3,
-          "surface": "mist"
-        },
-        {
-          "id": "shimmer",
-          "role": "shimmer",
-          "quality": "efficient",
-          "opacity": 0.2,
-          "surface": "young-leaf"
-        }
-      ],
-      "extras": {
-        "ornament": {
-          "name": "filigree",
-          "density": 0.62,
-          "opacity": 0.34,
-          "seed": 43
-        },
-        "motif": {
-          "name": "branch-flow",
-          "density": 0.52,
-          "opacity": 0.32,
-          "seed": 47,
-          "style": "luminous"
-        }
-      }
-    },
-    {
-      "name": "lotus-vigil",
-      "label": "Lotus Vigil",
-      "description": "A dark contemplative chamber with drafted lotus geometry and subtle constellations.",
-      "experience": "ceremonial",
-      "review": {
-        "state": "approved",
-        "approvedFor": "Gurudevi lineage standard",
-        "note": "Approved as the signature ceremonial scene."
-      },
-      "lineage": {
-        "doctrine": "Sacred focus with low-density interface framing.",
-        "dialect": "Gurudevi liturgical stillness.",
-        "temperament": "Contemplative, solemn, concentrated."
-      },
-      "placement": {
-        "focalZone": "centered",
-        "safeOverlayZone": "lower-third",
-        "textDensity": "minimal",
-        "preferredUse": "Sacred pauses, milestone completions, and moments where the interface should feel almost liturgical.",
-        "avoidUse": "Transactional tasks, multi-card dashboards, or strong competing iconography."
-      },
-      "canonicalRole": "Ceremonial signature",
-      "canonicalRationale": "The first true signature scene for sacred or emotionally heightened moments inside Gurudevi.",
-      "background": "#101723",
-      "layers": [
-        {
-          "id": "body",
-          "role": "body",
-          "quality": "balanced",
-          "opacity": 0.96,
-          "surface": "aurora"
-        },
-        {
-          "id": "air",
-          "role": "air",
-          "quality": "efficient",
-          "opacity": 0.22,
-          "surface": "mist"
-        }
-      ],
-      "extras": {
-        "ornament": {
-          "name": "constellation",
-          "density": 0.42,
-          "opacity": 0.26,
-          "seed": 53
-        },
-        "motif": {
-          "name": "lotus-sketch",
-          "density": 0.66,
-          "opacity": 0.42,
-          "seed": 59,
-          "style": "ink"
-        }
-      }
-    },
-    {
-      "name": "shoreline-reverie",
-      "label": "Shoreline Reverie",
-      "description": "A brighter coastal study with slow tide motion and airy branchlike detail.",
-      "experience": "ambient",
-      "review": {
-        "state": "in-review",
-        "approvedFor": "Afternoon home surfaces",
-        "note": "Strong candidate for daytime home screens pending broader usage tests."
-      },
-      "lineage": {
-        "doctrine": "Open spatial field with edge reward.",
-        "dialect": "Gurudevi afternoon coastal air.",
-        "temperament": "Fresh, lucid, spacious."
-      },
-      "placement": {
-        "focalZone": "lower-third",
-        "safeOverlayZone": "upper-third",
-        "textDensity": "moderate",
-        "preferredUse": "Afternoon home surfaces and open layouts with spacious headers.",
-        "avoidUse": "Dense tabular content or screens that already rely on vivid accent colors."
-      },
-      "canonicalRole": null,
-      "canonicalRationale": null,
-      "background": "#edf0e8",
-      "layers": [
-        {
-          "id": "body",
-          "role": "body",
-          "quality": "balanced",
-          "opacity": 0.94,
-          "surface": "mist"
-        },
-        {
-          "id": "air",
-          "role": "air",
-          "quality": "efficient",
-          "opacity": 0.24,
-          "surface": "young-leaf"
-        }
-      ],
-      "extras": {
-        "ornament": {
-          "name": "vein",
-          "density": 0.3,
-          "opacity": 0.18,
-          "seed": 61
-        },
-        "motif": {
-          "name": "tide-lines",
-          "density": 0.64,
-          "opacity": 0.24,
-          "seed": 67,
-          "style": "draft"
-        }
-      }
-    },
-    {
-      "name": "vellum-prayer",
-      "label": "Vellum Prayer",
-      "description": "Soft vellum-like warmth with filigree breath and restrained lotus draftsmanship.",
-      "experience": "quiet",
-      "review": {
-        "state": "in-review",
-        "approvedFor": "Reading sanctuaries and devotional cards",
-        "note": "A strong quiet offering that needs real-world readability checks with long-form content."
-      },
-      "lineage": {
-        "doctrine": "Quiet material depth with almost tactile softness.",
-        "dialect": "Gurudevi vellum warmth and drafted prayerful stillness.",
-        "temperament": "Tender, intimate, hushed."
-      },
-      "placement": {
-        "focalZone": "centered",
-        "safeOverlayZone": "lower-third",
-        "textDensity": "minimal",
-        "preferredUse": "Reading entry points, sacred notes, and reflective single-column surfaces.",
-        "avoidUse": "Notification-heavy screens or layouts with multiple competing call-to-action groups."
-      },
-      "canonicalRole": null,
-      "canonicalRationale": null,
-      "background": "#efe5d3",
-      "layers": [
-        {
-          "id": "body",
-          "role": "body",
-          "quality": "balanced",
-          "opacity": 0.92,
-          "surface": "mist"
-        },
-        {
-          "id": "air",
-          "role": "air",
-          "quality": "efficient",
-          "opacity": 0.26,
-          "surface": "young-leaf"
-        }
-      ],
-      "extras": {
-        "ornament": {
-          "name": "filigree",
-          "density": 0.38,
-          "opacity": 0.26,
-          "seed": 79
-        },
-        "motif": {
-          "name": "lotus-sketch",
-          "density": 0.48,
-          "opacity": 0.24,
-          "seed": 83,
-          "style": "draft"
-        }
-      }
-    },
-    {
-      "name": "sanctuary-air",
-      "label": "Sanctuary Air",
-      "description": "A peripheral atmospheric field with cool mist and slight aurora lift for support screens.",
-      "experience": "ambient",
-      "review": {
-        "state": "in-review",
-        "approvedFor": "Profile, settings, and support surfaces",
-        "note": "A practical offering that still needs validation across lower-end devices and denser layouts."
-      },
-      "lineage": {
-        "doctrine": "Periphery motion with operational calm.",
-        "dialect": "Gurudevi support-surface airiness.",
-        "temperament": "Open, light, unobtrusive."
-      },
-      "placement": {
-        "focalZone": "edge-weighted",
-        "safeOverlayZone": "centered",
-        "textDensity": "moderate",
-        "preferredUse": "Operational screens that still deserve atmosphere, especially settings and profile areas.",
-        "avoidUse": "Hero landings, ceremonial moments, or sacred focus scenes."
-      },
-      "canonicalRole": null,
-      "canonicalRationale": null,
-      "background": "#dfe5e6",
-      "layers": [
-        {
-          "id": "body",
-          "role": "body",
-          "quality": "balanced",
-          "opacity": 0.9,
-          "surface": "mist"
-        },
-        {
-          "id": "shimmer",
-          "role": "shimmer",
-          "quality": "efficient",
-          "opacity": 0.16,
-          "surface": "aurora"
-        }
-      ],
-      "extras": {
-        "ornament": {
-          "name": "vein",
-          "density": 0.22,
-          "opacity": 0.16,
-          "seed": 71
-        },
-        "motif": {
-          "name": "branch-flow",
-          "density": 0.36,
-          "opacity": 0.2,
-          "seed": 73,
-          "style": "draft"
-        }
-      }
-    }
-  ]
+	"package": "@repo/trube-art",
+	"version": "0.1.0",
+	"generatedAt": "2026-03-24T19:16:15.721Z",
+	"exportVersion": 1,
+	"approvals": {
+		"approved": ["goethe-night-study", "lotus-dawn", "lotus-vigil"],
+		"inReview": [
+			"branch-wind",
+			"beethoven-dawn",
+			"shoreline-reverie",
+			"vellum-prayer",
+			"sanctuary-air"
+		],
+		"experimental": ["tidal-memory"]
+	},
+	"canonical": [
+		{
+			"name": "lotus-dawn",
+			"role": "Quiet awakening",
+			"rationale": "The default spiritual morning scene: warm, breathable, and suitable for reading-led surfaces."
+		},
+		{
+			"name": "goethe-night-study",
+			"role": "Ambient depth",
+			"rationale": "The standard nocturnal atmosphere: rich enough to feel alive, restrained enough to stay behind content."
+		},
+		{
+			"name": "lotus-vigil",
+			"role": "Ceremonial signature",
+			"rationale": "The first true signature scene for sacred or emotionally heightened moments inside Gurudevi."
+		}
+	],
+	"scores": [
+		{
+			"name": "goethe-night-study",
+			"label": "Goethe Night Study",
+			"description": "Aurora body, atmospheric mist, constellation overtone, and a lotus draft.",
+			"experience": "ambient",
+			"review": {
+				"state": "approved",
+				"approvedFor": "Gurudevi lineage standard",
+				"note": "Approved as the primary nighttime ambient scene."
+			},
+			"lineage": {
+				"doctrine": "Readable scenic depth behind content.",
+				"dialect": "Gurudevi nocturne with sacred restraint.",
+				"temperament": "Calm, inward, watchful."
+			},
+			"placement": {
+				"focalZone": "centered",
+				"safeOverlayZone": "lower-third",
+				"textDensity": "light",
+				"preferredUse": "Home canvases, reading intros, and atmospheric hero backdrops.",
+				"avoidUse": "Dense feeds or screens where illustrations already own the center."
+			},
+			"canonicalRole": "Ambient depth",
+			"canonicalRationale": "The standard nocturnal atmosphere: rich enough to feel alive, restrained enough to stay behind content.",
+			"background": "#121b28",
+			"layers": [
+				{
+					"id": "body",
+					"role": "body",
+					"quality": "balanced",
+					"opacity": 0.94,
+					"surface": "aurora"
+				},
+				{
+					"id": "air",
+					"role": "air",
+					"quality": "efficient",
+					"opacity": 0.28,
+					"surface": "mist"
+				}
+			],
+			"extras": {
+				"ornament": {
+					"name": "constellation",
+					"density": 0.7,
+					"opacity": 0.58,
+					"seed": 31
+				},
+				"motif": {
+					"name": "lotus-sketch",
+					"density": 0.54,
+					"opacity": 0.5,
+					"seed": 29,
+					"style": "luminous"
+				}
+			}
+		},
+		{
+			"name": "lotus-dawn",
+			"label": "Lotus Dawn",
+			"description": "Young leaf warmth opening through mist with a drafted lotus center.",
+			"experience": "quiet",
+			"review": {
+				"state": "approved",
+				"approvedFor": "Gurudevi lineage standard",
+				"note": "Approved as the default quiet awakening scene."
+			},
+			"lineage": {
+				"doctrine": "Breathable entry surface with central calm.",
+				"dialect": "Gurudevi morning warmth with spiritual clarity.",
+				"temperament": "Soft, receptive, devotional."
+			},
+			"placement": {
+				"focalZone": "centered",
+				"safeOverlayZone": "lower-third",
+				"textDensity": "minimal",
+				"preferredUse": "Morning welcome surfaces, empty states, and reflective reading entry points.",
+				"avoidUse": "Busy cards, notification-heavy layouts, or aggressive color accents."
+			},
+			"canonicalRole": "Quiet awakening",
+			"canonicalRationale": "The default spiritual morning scene: warm, breathable, and suitable for reading-led surfaces.",
+			"background": "#f2ead9",
+			"layers": [
+				{
+					"id": "body",
+					"role": "body",
+					"quality": "balanced",
+					"opacity": 0.92,
+					"surface": "young-leaf"
+				},
+				{
+					"id": "air",
+					"role": "air",
+					"quality": "efficient",
+					"opacity": 0.24,
+					"surface": "mist"
+				}
+			],
+			"extras": {
+				"ornament": {
+					"name": "filigree",
+					"density": 0.46,
+					"opacity": 0.34,
+					"seed": 13
+				},
+				"motif": {
+					"name": "lotus-sketch",
+					"density": 0.6,
+					"opacity": 0.38,
+					"seed": 17,
+					"style": "draft"
+				}
+			}
+		},
+		{
+			"name": "branch-wind",
+			"label": "Branch Wind",
+			"description": "A cooler sky-field with branch-like structural drift.",
+			"experience": "ambient",
+			"review": {
+				"state": "in-review",
+				"approvedFor": "Settings and peripheral atmospheres",
+				"note": "Promising for secondary surfaces, still under product fit review."
+			},
+			"lineage": {
+				"doctrine": "Perimeter-led motion that leaves the center readable.",
+				"dialect": "Gurudevi structural air and branchlike drift.",
+				"temperament": "Alert, light, directional."
+			},
+			"placement": {
+				"focalZone": "edge-weighted",
+				"safeOverlayZone": "centered",
+				"textDensity": "light",
+				"preferredUse": "Profile or settings backgrounds where structure should stay at the periphery.",
+				"avoidUse": "Layouts with too many floating elements competing at the edges."
+			},
+			"canonicalRole": null,
+			"canonicalRationale": null,
+			"background": "#dfe8ea",
+			"layers": [
+				{
+					"id": "body",
+					"role": "body",
+					"quality": "balanced",
+					"opacity": 0.9,
+					"surface": "mist"
+				},
+				{
+					"id": "shimmer",
+					"role": "shimmer",
+					"quality": "efficient",
+					"opacity": 0.18,
+					"surface": "aurora"
+				}
+			],
+			"extras": {
+				"ornament": {
+					"name": "vein",
+					"density": 0.44,
+					"opacity": 0.26,
+					"seed": 23
+				},
+				"motif": {
+					"name": "branch-flow",
+					"density": 0.58,
+					"opacity": 0.34,
+					"seed": 19,
+					"style": "ink"
+				}
+			}
+		},
+		{
+			"name": "tidal-memory",
+			"label": "Tidal Memory",
+			"description": "Layered mist and aurora motion meant for waterline and shorelike compositions.",
+			"experience": "quiet",
+			"review": {
+				"state": "experimental",
+				"approvedFor": "Exploration only",
+				"note": "Hold for future transitional scenes after more device validation."
+			},
+			"lineage": {
+				"doctrine": "Slow transitional motion with low visual pressure.",
+				"dialect": "Gurudevi reflective shoreline study.",
+				"temperament": "Restful, open, drifting."
+			},
+			"placement": {
+				"focalZone": "lower-third",
+				"safeOverlayZone": "upper-third",
+				"textDensity": "minimal",
+				"preferredUse": "Transitional surfaces, meditative pauses, and low-contrast reading environments.",
+				"avoidUse": "Moments that need symbolic focus or strong emotional arrival."
+			},
+			"canonicalRole": null,
+			"canonicalRationale": null,
+			"background": "#f0e3d1",
+			"layers": [
+				{
+					"id": "body",
+					"role": "body",
+					"quality": "balanced",
+					"opacity": 0.94,
+					"surface": "mist"
+				},
+				{
+					"id": "air",
+					"role": "air",
+					"quality": "efficient",
+					"opacity": 0.2,
+					"surface": "aurora"
+				}
+			],
+			"extras": {
+				"ornament": {
+					"name": "constellation",
+					"density": 0.24,
+					"opacity": 0.18,
+					"seed": 37
+				},
+				"motif": {
+					"name": "tide-lines",
+					"density": 0.72,
+					"opacity": 0.28,
+					"seed": 41,
+					"style": "draft"
+				}
+			}
+		},
+		{
+			"name": "beethoven-dawn",
+			"label": "Beethoven Dawn",
+			"description": "A rising aurora ensemble with leaf warmth and ceremonial light.",
+			"experience": "ceremonial",
+			"review": {
+				"state": "in-review",
+				"approvedFor": "High ceremony welcomes",
+				"note": "Visually strong but still needs restraint checks in product context."
+			},
+			"lineage": {
+				"doctrine": "Heroic opening with controlled ceremonial lift.",
+				"dialect": "Gurudevi dawn grandeur.",
+				"temperament": "Rising, luminous, declarative."
+			},
+			"placement": {
+				"focalZone": "upper-third",
+				"safeOverlayZone": "lower-third",
+				"textDensity": "minimal",
+				"preferredUse": "Opening ceremonies, first-run moments, and flagship entry canvases.",
+				"avoidUse": "Compact utilities, nested sheets, or form-heavy contexts."
+			},
+			"canonicalRole": null,
+			"canonicalRationale": null,
+			"background": "#f4e2c5",
+			"layers": [
+				{
+					"id": "body",
+					"role": "body",
+					"quality": "cinematic",
+					"opacity": 0.96,
+					"surface": "aurora"
+				},
+				{
+					"id": "air",
+					"role": "air",
+					"quality": "balanced",
+					"opacity": 0.3,
+					"surface": "mist"
+				},
+				{
+					"id": "shimmer",
+					"role": "shimmer",
+					"quality": "efficient",
+					"opacity": 0.2,
+					"surface": "young-leaf"
+				}
+			],
+			"extras": {
+				"ornament": {
+					"name": "filigree",
+					"density": 0.62,
+					"opacity": 0.34,
+					"seed": 43
+				},
+				"motif": {
+					"name": "branch-flow",
+					"density": 0.52,
+					"opacity": 0.32,
+					"seed": 47,
+					"style": "luminous"
+				}
+			}
+		},
+		{
+			"name": "lotus-vigil",
+			"label": "Lotus Vigil",
+			"description": "A dark contemplative chamber with drafted lotus geometry and subtle constellations.",
+			"experience": "ceremonial",
+			"review": {
+				"state": "approved",
+				"approvedFor": "Gurudevi lineage standard",
+				"note": "Approved as the signature ceremonial scene."
+			},
+			"lineage": {
+				"doctrine": "Sacred focus with low-density interface framing.",
+				"dialect": "Gurudevi liturgical stillness.",
+				"temperament": "Contemplative, solemn, concentrated."
+			},
+			"placement": {
+				"focalZone": "centered",
+				"safeOverlayZone": "lower-third",
+				"textDensity": "minimal",
+				"preferredUse": "Sacred pauses, milestone completions, and moments where the interface should feel almost liturgical.",
+				"avoidUse": "Transactional tasks, multi-card dashboards, or strong competing iconography."
+			},
+			"canonicalRole": "Ceremonial signature",
+			"canonicalRationale": "The first true signature scene for sacred or emotionally heightened moments inside Gurudevi.",
+			"background": "#101723",
+			"layers": [
+				{
+					"id": "body",
+					"role": "body",
+					"quality": "balanced",
+					"opacity": 0.96,
+					"surface": "aurora"
+				},
+				{
+					"id": "air",
+					"role": "air",
+					"quality": "efficient",
+					"opacity": 0.22,
+					"surface": "mist"
+				}
+			],
+			"extras": {
+				"ornament": {
+					"name": "constellation",
+					"density": 0.42,
+					"opacity": 0.26,
+					"seed": 53
+				},
+				"motif": {
+					"name": "lotus-sketch",
+					"density": 0.66,
+					"opacity": 0.42,
+					"seed": 59,
+					"style": "ink"
+				}
+			}
+		},
+		{
+			"name": "shoreline-reverie",
+			"label": "Shoreline Reverie",
+			"description": "A brighter coastal study with slow tide motion and airy branchlike detail.",
+			"experience": "ambient",
+			"review": {
+				"state": "in-review",
+				"approvedFor": "Afternoon home surfaces",
+				"note": "Strong candidate for daytime home screens pending broader usage tests."
+			},
+			"lineage": {
+				"doctrine": "Open spatial field with edge reward.",
+				"dialect": "Gurudevi afternoon coastal air.",
+				"temperament": "Fresh, lucid, spacious."
+			},
+			"placement": {
+				"focalZone": "lower-third",
+				"safeOverlayZone": "upper-third",
+				"textDensity": "moderate",
+				"preferredUse": "Afternoon home surfaces and open layouts with spacious headers.",
+				"avoidUse": "Dense tabular content or screens that already rely on vivid accent colors."
+			},
+			"canonicalRole": null,
+			"canonicalRationale": null,
+			"background": "#edf0e8",
+			"layers": [
+				{
+					"id": "body",
+					"role": "body",
+					"quality": "balanced",
+					"opacity": 0.94,
+					"surface": "mist"
+				},
+				{
+					"id": "air",
+					"role": "air",
+					"quality": "efficient",
+					"opacity": 0.24,
+					"surface": "young-leaf"
+				}
+			],
+			"extras": {
+				"ornament": {
+					"name": "vein",
+					"density": 0.3,
+					"opacity": 0.18,
+					"seed": 61
+				},
+				"motif": {
+					"name": "tide-lines",
+					"density": 0.64,
+					"opacity": 0.24,
+					"seed": 67,
+					"style": "draft"
+				}
+			}
+		},
+		{
+			"name": "vellum-prayer",
+			"label": "Vellum Prayer",
+			"description": "Soft vellum-like warmth with filigree breath and restrained lotus draftsmanship.",
+			"experience": "quiet",
+			"review": {
+				"state": "in-review",
+				"approvedFor": "Reading sanctuaries and devotional cards",
+				"note": "A strong quiet offering that needs real-world readability checks with long-form content."
+			},
+			"lineage": {
+				"doctrine": "Quiet material depth with almost tactile softness.",
+				"dialect": "Gurudevi vellum warmth and drafted prayerful stillness.",
+				"temperament": "Tender, intimate, hushed."
+			},
+			"placement": {
+				"focalZone": "centered",
+				"safeOverlayZone": "lower-third",
+				"textDensity": "minimal",
+				"preferredUse": "Reading entry points, sacred notes, and reflective single-column surfaces.",
+				"avoidUse": "Notification-heavy screens or layouts with multiple competing call-to-action groups."
+			},
+			"canonicalRole": null,
+			"canonicalRationale": null,
+			"background": "#efe5d3",
+			"layers": [
+				{
+					"id": "body",
+					"role": "body",
+					"quality": "balanced",
+					"opacity": 0.92,
+					"surface": "mist"
+				},
+				{
+					"id": "air",
+					"role": "air",
+					"quality": "efficient",
+					"opacity": 0.26,
+					"surface": "young-leaf"
+				}
+			],
+			"extras": {
+				"ornament": {
+					"name": "filigree",
+					"density": 0.38,
+					"opacity": 0.26,
+					"seed": 79
+				},
+				"motif": {
+					"name": "lotus-sketch",
+					"density": 0.48,
+					"opacity": 0.24,
+					"seed": 83,
+					"style": "draft"
+				}
+			}
+		},
+		{
+			"name": "sanctuary-air",
+			"label": "Sanctuary Air",
+			"description": "A peripheral atmospheric field with cool mist and slight aurora lift for support screens.",
+			"experience": "ambient",
+			"review": {
+				"state": "in-review",
+				"approvedFor": "Profile, settings, and support surfaces",
+				"note": "A practical offering that still needs validation across lower-end devices and denser layouts."
+			},
+			"lineage": {
+				"doctrine": "Periphery motion with operational calm.",
+				"dialect": "Gurudevi support-surface airiness.",
+				"temperament": "Open, light, unobtrusive."
+			},
+			"placement": {
+				"focalZone": "edge-weighted",
+				"safeOverlayZone": "centered",
+				"textDensity": "moderate",
+				"preferredUse": "Operational screens that still deserve atmosphere, especially settings and profile areas.",
+				"avoidUse": "Hero landings, ceremonial moments, or sacred focus scenes."
+			},
+			"canonicalRole": null,
+			"canonicalRationale": null,
+			"background": "#dfe5e6",
+			"layers": [
+				{
+					"id": "body",
+					"role": "body",
+					"quality": "balanced",
+					"opacity": 0.9,
+					"surface": "mist"
+				},
+				{
+					"id": "shimmer",
+					"role": "shimmer",
+					"quality": "efficient",
+					"opacity": 0.16,
+					"surface": "aurora"
+				}
+			],
+			"extras": {
+				"ornament": {
+					"name": "vein",
+					"density": 0.22,
+					"opacity": 0.16,
+					"seed": 71
+				},
+				"motif": {
+					"name": "branch-flow",
+					"density": 0.36,
+					"opacity": 0.2,
+					"seed": 73,
+					"style": "draft"
+				}
+			}
+		}
+	]
 }

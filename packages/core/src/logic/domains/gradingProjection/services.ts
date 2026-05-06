@@ -1,4 +1,4 @@
-﻿import type {
+import type {
   PublishedSchoolGradingCompletion,
   SchoolGradingCompletion,
 } from '../../schemas/grading.schema';

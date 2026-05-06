@@ -1,10 +1,10 @@
 import type { QueryClient } from '@tanstack/react-query';
+import { identityAPI } from '../api/identity';
+import { supabase } from '../api/supabase';
 import { getActiveAccountId, setActiveAccountId } from '../lib/accountScope';
 import { DeviceTrustEngine } from '../lib/security/deviceTrust';
 import { useMutationQueue } from '../lib/sync/useMutationQueue';
 import { resolveFeatureFlags } from '../logic/permissions/feature-engine';
-import { identityAPI } from '../api/identity';
-import { supabase } from '../api/supabase';
 import type { UISlice } from './slices/ui.slice';
 import { useAuthStore } from './useAuthStore';
 import { useFeatureStore } from './useFeatureStore';
@@ -12,7 +12,6 @@ import { useTenantStore } from './useTenantStore';
 import { useUIStore } from './useUIStore';
 
 const authScopedDefaults = {
-  userRole: null,
   userName: 'Gurudevi',
   user: null,
   authSession: null,
@@ -50,8 +49,11 @@ const uiScopedDefaults: Partial<UISlice> = {
 const featureScopedDefaults = resolveFeatureFlags({
   userId: null,
   email: null,
-  roles: [],
-  authority: null,
+  // Sovereign ReBAC fields — required by UserContext schema
+  bonds: [],
+  primaryCapacity: null,
+  activeBond: null,
+  activeBondStatus: 'active',
   schoolId: null,
   tenancyName: null,
   tenancy: null,

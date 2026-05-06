@@ -1,9 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
+import { supabase } from '../api/supabase';
 import { usePermissions } from '../logic/permissions/hooks/usePermissions';
 import { applyTemporalFilter } from '../logic/utils/temporalUtils';
-import { supabase } from '../api/supabase';
 import { useTemporalStore } from '../store/useTemporalStore';
+
+import type { UserGrowthState } from '../api/userGrowthState';
+import type { UserRewardsSnapshot } from '../logic/domains/profile/ports';
 
 export interface JourneyEvent {
   id: string;
@@ -11,7 +14,7 @@ export interface JourneyEvent {
   type: 'mood' | 'journal' | 'growth' | 'reward' | 'moment' | 'impact' | 'system';
   title: string;
   description?: string;
-  metadata?: any;
+  metadata?: Record<string, unknown>;
   accentColor?: string;
 }
 
@@ -29,7 +32,7 @@ export interface HolisticView {
  */
 export function useJourneyHistory(_section?: string, _feature?: string) {
   const { context } = usePermissions();
-  const { userId, authority } = context;
+  const { userId, activeBond } = context;
   const { phase, viewDate, viewScale, timelineFocus } = useTemporalStore();
 
   // Fetch Mood Logs for the current context
@@ -112,22 +115,22 @@ export function useJourneyHistory(_section?: string, _feature?: string) {
             id: item.id,
             timestamp: item.recorded_at,
             type: 'growth',
-            title: `Growth moved through ${(item.snapshot as any)?.bhumi_stage ?? 'journey'}`,
+            title: `Growth moved through ${(item.snapshot as unknown as UserGrowthState)?.bhumi_stage ?? 'journey'}`,
             description:
               [
-                (item.snapshot as any)?.banyan_stage
-                  ? `Banyan ${(item.snapshot as any).banyan_stage}`
+                (item.snapshot as unknown as UserGrowthState)?.banyan_stage
+                  ? `Banyan ${(item.snapshot as unknown as UserGrowthState).banyan_stage}`
                   : null,
-                (item.snapshot as any)?.river_stage
-                  ? `River ${(item.snapshot as any).river_stage}`
+                (item.snapshot as unknown as UserGrowthState)?.river_stage
+                  ? `River ${(item.snapshot as unknown as UserGrowthState).river_stage}`
                   : null,
-                (item.snapshot as any)?.crystal_tier
-                  ? `Crystal ${(item.snapshot as any).crystal_tier}`
+                (item.snapshot as unknown as UserGrowthState)?.crystal_tier
+                  ? `Crystal ${(item.snapshot as unknown as UserGrowthState).crystal_tier}`
                   : null,
               ]
                 .filter(Boolean)
                 .join(' " ') || 'Growth state updated',
-            metadata: item.snapshot as any,
+            metadata: item.snapshot as Record<string, unknown>,
             accentColor: '#D97706',
           }) as JourneyEvent,
       );
@@ -159,8 +162,8 @@ export function useJourneyHistory(_section?: string, _feature?: string) {
             timestamp: item.recorded_at,
             type: 'reward',
             title: `Rewards ${item.operation}`,
-            description: `${(item.snapshot as any)?.points ?? 0} growth points " ${Array.isArray((item.snapshot as any)?.badges) ? (item.snapshot as any).badges.length : 0} badges`,
-            metadata: item.snapshot as any,
+            description: `${(item.snapshot as unknown as UserRewardsSnapshot)?.points ?? 0} growth points " ${Array.isArray((item.snapshot as unknown as UserRewardsSnapshot)?.badges) ? (item.snapshot as unknown as UserRewardsSnapshot).badges.length : 0} badges`,
+            metadata: item.snapshot as Record<string, unknown>,
             accentColor: '#7C3AED',
           }) as JourneyEvent,
       );
@@ -260,7 +263,7 @@ export function useJourneyHistory(_section?: string, _feature?: string) {
     events,
     holisticView,
     isLoading: moodLoading || journalLoading || growthLoading || rewardLoading || momentLoading,
-    authority,
+    activeBond,
     currentScale: viewScale,
     phase,
     timelineFocus,

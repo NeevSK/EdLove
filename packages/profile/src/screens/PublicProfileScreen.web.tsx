@@ -1,11 +1,8 @@
-import { type RouteProp, useRoute } from '@react-navigation/native';
-import { EntityType } from '@repo/core/logic';
+﻿import { type RouteProp, useRoute } from '@react-navigation/native';
 import { useEntity } from '@repo/core/hooks';
-
-import IdentityCard from '@repo/ui/components/IdentityCard';
-import { IdentityData } from '@repo/ui/components/IdentityCard';
-import { Box } from '@repo/ui/primitives';
-import { Center, Spinner } from '@repo/ui/primitives';
+import type { EntityType } from '@repo/core/logic';
+import IdentityCard, { type IdentityData } from '@repo/ui/components/IdentityCard';
+import { Box, Center, Spinner } from '@repo/ui/primitives';
 import { useProfile } from '../hooks/useProfile';
 
 type PublicProfileRouteProp = RouteProp<

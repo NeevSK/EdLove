@@ -1,1 +1,1 @@
-declare module 'srilankan-postalcode-backend';
+declare module "srilankan-postalcode-backend";

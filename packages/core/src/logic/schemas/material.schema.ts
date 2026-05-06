@@ -1,19 +1,10 @@
-﻿import { z } from 'zod';
+import { z } from 'zod';
+import { makeModelSchema } from '@repo/schema';
 
 /**
- * MaterialSchema  A repository of knowledge.
+ * MaterialSchema - A repository of knowledge.
+ * Derived from ZenStack Material model.
  */
-export const MaterialSchema = z.object({
-  id: z.string().uuid(),
-  classroom_id: z.string().uuid(),
-  lesson_id: z.string().uuid().nullable().optional(),
-  title: z.string(),
-  type: z.string(), // ResourceType
-  url: z.string().url().nullable().optional(),
-  content: z.string().nullable().optional(),
-  is_pinned: z.boolean().default(false),
-  created_at: z.string(),
-  updated_at: z.string().nullable().optional(),
-});
+export const MaterialSchema = makeModelSchema('Material');
 
 export type Material = z.infer<typeof MaterialSchema>;

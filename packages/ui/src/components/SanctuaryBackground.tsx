@@ -12,14 +12,16 @@
 
 import { LinearGradient } from 'expo-linear-gradient';
 import { useEffect, useRef } from 'react';
-import { Animated, StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
+import { View } from '../primitives';
 import { useTheme } from '../hooks/useTheme';
+import Reanimated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
 export function SanctuaryBackground() {
-  const { gradientNodes, animationsEnabled, phase, isDark } = useTheme();
+  const { gradientNodes, animationsEnabled } = useTheme();
 
   // Two gradient layers for crossfade transition
-  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const fadeValue = useSharedValue(0);
   const prevNodes = useRef<[string, string, string]>(gradientNodes);
   const currentNodes = useRef<[string, string, string]>(gradientNodes);
 
@@ -28,7 +30,7 @@ export function SanctuaryBackground() {
       // Static - just update immediately
       prevNodes.current = gradientNodes;
       currentNodes.current = gradientNodes;
-      fadeAnim.setValue(1);
+      fadeValue.value = 1;
       return;
     }
 
@@ -36,18 +38,13 @@ export function SanctuaryBackground() {
     prevNodes.current = currentNodes.current;
     currentNodes.current = gradientNodes;
 
-    fadeAnim.setValue(0);
-    const animation = Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 2000,
-      useNativeDriver: true,
-    });
-    animation.start();
+    fadeValue.value = 0;
+    fadeValue.value = withTiming(1, { duration: 2000 });
+  }, [fadeValue, gradientNodes, animationsEnabled]); // Re-run when phase OR theme mode changes.
 
-    return () => animation.stop();
-    // Note: isDark theme-mode toggles DO trigger a crossfade here to ensure immediate reactive update
-    // of the background gradient nodes.
-  }, [fadeAnim, gradientNodes, animationsEnabled]); // Re-run when phase OR theme mode changes.
+  const animatedStyle = useAnimatedStyle(() => ({
+    opacity: fadeValue.value,
+  }));
 
   return (
     <View style={StyleSheet.absoluteFillObject} pointerEvents="none">
@@ -59,8 +56,8 @@ export function SanctuaryBackground() {
         style={StyleSheet.absoluteFillObject}
       />
       {/* Layer 1: Current phase (fades in) */}
-      <Animated.View
-        style={[StyleSheet.absoluteFillObject, { opacity: fadeAnim }]}
+      <Reanimated.View
+        style={[StyleSheet.absoluteFillObject, animatedStyle]}
         pointerEvents="none"
       >
         <LinearGradient
@@ -69,7 +66,7 @@ export function SanctuaryBackground() {
           end={{ x: 0.8, y: 1 }}
           style={StyleSheet.absoluteFillObject}
         />
-      </Animated.View>
+      </Reanimated.View>
     </View>
   );
 }

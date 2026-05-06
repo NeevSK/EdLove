@@ -1,8 +1,0 @@
-{
-  "tool": "audit_export_integrity",
-  "timestamp": "2026-04-26T10:21:41.501Z",
-  "durationMs": 2966,
-  "status": "success",
-  "output": "🛡️ Auditing Export Integrity...\n✅ Export Integrity: Crystal Clear. All packages respect boundaries.\n",
-  "metadata": {}
-}

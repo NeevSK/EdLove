@@ -3,7 +3,7 @@
  * Core types for the Environment Context system
  */
 
-import type { AuthorityTier } from '@repo/core/types';
+import type { Bond } from '@repo/core/types';
 
 /**
  * Temporal Phase - Time of day affecting theme and behavior
@@ -53,12 +53,9 @@ export interface RealityState {
   isBatterySaverMode: boolean;
 }
 
-/**
- * Environment State - The complete context
- */
 export interface EnvironmentState {
-  // Role & Identity
-  authority: AuthorityTier | null;
+  // ReBAC Identity
+  activeBond: Bond | null;
 
   // Theme & Visual
   themeMode: ThemeMode;
@@ -90,6 +87,7 @@ export interface EnvironmentActions {
   toggleVeil: () => Promise<void>;
   refreshReality: () => Promise<void>;
   setEnableLivingTheme: (enabled: boolean) => Promise<void>;
+  switchPerspective: (entityId: string, capacity: string) => Promise<void>;
 }
 
 /**

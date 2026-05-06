@@ -22,8 +22,8 @@ export async function uploadToCloudinary(
   fileUri: string,
   resourceType: 'image' | 'video' | 'auto' = 'image',
 ): Promise<string> {
-  const cloudName = process.env.EXPO_PUBLIC_CLOUDINARY_CLOUD_NAME || 'neevsk';
-  const uploadPreset = process.env.EXPO_PUBLIC_CLOUDINARY_UPLOAD_PRESET || 'gurudevi_unsigned';
+  const cloudName = process.env['EXPO_PUBLIC_CLOUDINARY_CLOUD_NAME'] || 'neevsk';
+  const uploadPreset = process.env['EXPO_PUBLIC_CLOUDINARY_UPLOAD_PRESET'] || 'gurudevi_unsigned';
 
   if (!fileUri) {
     throw new Error('No file URI provided for upload');

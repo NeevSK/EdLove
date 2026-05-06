@@ -6,54 +6,54 @@
  * on the web.
  */
 
-const _React = require('react');
+const _React = require("react");
 
 const AudioModule = {
-  requestRecordingPermissionsAsync: async () => ({ granted: false }),
+	requestRecordingPermissionsAsync: async () => ({ granted: false }),
 };
 
 const RecordingPresets = {
-  HIGH_QUALITY: {},
+	HIGH_QUALITY: {},
 };
 
 function useAudioRecorder() {
-  return {
-    prepareToRecordAsync: async () => {},
-    record: () => {},
-    stop: async () => {},
-    uri: null,
-  };
+	return {
+		prepareToRecordAsync: async () => {},
+		record: () => {},
+		stop: async () => {},
+		uri: null,
+	};
 }
 
 function useAudioPlayer(_source) {
-  return {
-    play: () => {},
-    pause: () => {},
-    stop: () => {},
-    seekTo: () => {},
-    currentTime: 0,
-    duration: 0,
-  };
+	return {
+		play: () => {},
+		pause: () => {},
+		stop: () => {},
+		seekTo: () => {},
+		currentTime: 0,
+		duration: 0,
+	};
 }
 
 function useAudioPlayerStatus(_player) {
-  return {
-    didJustFinish: false,
-    isPlaying: false,
-    currentTime: 0,
-    duration: 0,
-  };
+	return {
+		didJustFinish: false,
+		isPlaying: false,
+		currentTime: 0,
+		duration: 0,
+	};
 }
 
 async function setAudioModeAsync() {
-  return;
+	return;
 }
 
 module.exports = {
-  AudioModule,
-  RecordingPresets,
-  useAudioRecorder,
-  useAudioPlayer,
-  useAudioPlayerStatus,
-  setAudioModeAsync,
+	AudioModule,
+	RecordingPresets,
+	useAudioRecorder,
+	useAudioPlayer,
+	useAudioPlayerStatus,
+	setAudioModeAsync,
 };

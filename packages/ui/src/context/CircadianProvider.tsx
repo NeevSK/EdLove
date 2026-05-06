@@ -1,7 +1,7 @@
 import { vars } from 'nativewind';
 import type React from 'react';
 import { createContext, useContext, useMemo } from 'react';
-import { View } from 'react-native';
+import { View } from '../primitives';
 import { colors, phaseMatrix } from '../theme/Theme';
 import { getTextOnBackground } from '../utils/colorUtils';
 import { useEnvironment } from './EnvironmentContext';

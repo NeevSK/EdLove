@@ -13,7 +13,7 @@ export const defineAdminAbilities = (user: UserContext, builder: AbilityBuilder<
   }
 
   // 2. Specific Admin capabilities (if not global)
-  if (user.roles.includes('admin')) {
+  if (user.activeBond?.capacity === 'admin') {
     can('manage', 'School', { id: user.schoolId } as any);
     can('manage', 'Staff', { schoolId: user.schoolId } as any);
     can('read', 'Inventory', { schoolId: user.schoolId } as any);

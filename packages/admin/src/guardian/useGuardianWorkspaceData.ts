@@ -1,39 +1,41 @@
-import { api } from '@repo/core/api';
+import { api } from "@repo/core/api";
 
-import { useCallback, useEffect, useState } from 'react';
-import type { GuardianDashboardData } from './types';
+import { useCallback, useEffect, useState } from "react";
+import type { GuardianDashboardData } from "./types";
 
 export function useGuardianWorkspaceData(guardianId: string) {
-  const [dashboard, setDashboard] = useState<GuardianDashboardData | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+	const [dashboard, setDashboard] = useState<GuardianDashboardData | null>(
+		null,
+	);
+	const [isLoading, setIsLoading] = useState(true);
+	const [error, setError] = useState<string | null>(null);
 
-  const loadDashboard = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      const dashboardData = await api.guardian.getDashboard(guardianId);
-      setDashboard({
-        ...dashboardData,
-        guardianId: dashboardData.guardianId || guardianId,
-      } as GuardianDashboardData);
-      setError(null);
-    } catch (caughtError: any) {
-      console.error('Failed to load guardian workspace data', caughtError);
-      setDashboard(null);
-      setError(caughtError.message || 'Failed to load guardian dashboard');
-    } finally {
-      setIsLoading(false);
-    }
-  }, [guardianId]);
+	const loadDashboard = useCallback(async () => {
+		try {
+			setIsLoading(true);
+			const dashboardData = await api["guardian"].getDashboard(guardianId);
+			setDashboard({
+				...dashboardData,
+				guardianId: dashboardData.guardianId || guardianId,
+			} as GuardianDashboardData);
+			setError(null);
+		} catch (caughtError: any) {
+			console.error("Failed to load guardian workspace data", caughtError);
+			setDashboard(null);
+			setError(caughtError.message || "Failed to load guardian dashboard");
+		} finally {
+			setIsLoading(false);
+		}
+	}, [guardianId]);
 
-  useEffect(() => {
-    void loadDashboard();
-  }, [loadDashboard]);
+	useEffect(() => {
+		void loadDashboard();
+	}, [loadDashboard]);
 
-  return {
-    dashboard,
-    isLoading,
-    error,
-    refreshData: loadDashboard,
-  };
+	return {
+		dashboard,
+		isLoading,
+		error,
+		refreshData: loadDashboard,
+	};
 }

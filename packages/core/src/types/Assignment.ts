@@ -4,10 +4,10 @@ export interface Assignment {
   lesson_id?: string | null;
   title: string;
   description?: string | null;
-  due_date?: string | null;
+  due_date?: Date | null;
   max_points?: number | null;
   classroom?: string | null;
   submitted?: boolean;
-  created_at: string;
-  updated_at: string;
+  created_at: Date;
+  updated_at: Date;
 }

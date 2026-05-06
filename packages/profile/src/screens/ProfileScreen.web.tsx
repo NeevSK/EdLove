@@ -1,5 +1,4 @@
-import { usePermissions } from '@repo/core/logic';
-import { useStore } from '@repo/core/logic';
+import { usePermissions, useStore } from '@repo/core/logic';
 
 import { StaffPresencePulse } from '@repo/people';
 import { QRCodeGenerator } from '@repo/scanner-kit';
@@ -44,7 +43,7 @@ export default function ProfileScreenWeb({
   const { t } = useTranslation();
   const navigation = useProfileNavigation();
   const { can, context } = usePermissions();
-  const authority = context.roles[0];
+  const authority = context.activeBond?.capacity;
   const { user } = useStore();
   const {
     profile,
@@ -180,7 +179,12 @@ export default function ProfileScreenWeb({
           >
             <div
               className="profile-identity-column"
-              style={{ display: 'flex', alignItems: 'flex-start', gap: '28px', flexWrap: 'wrap' }}
+              style={{
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: '28px',
+                flexWrap: 'wrap',
+              }}
             >
               <div style={{ flexShrink: 0 }}>
                 <AvatarDisplay
@@ -211,7 +215,12 @@ export default function ProfileScreenWeb({
                   }}
                 >
                   <h1
-                    style={{ margin: 0, fontSize: '30px', fontWeight: '800', color: 'var(--ink)' }}
+                    style={{
+                      margin: 0,
+                      fontSize: '30px',
+                      fontWeight: '800',
+                      color: 'var(--ink)',
+                    }}
                   >
                     {profile.full_name}
                   </h1>
@@ -248,7 +257,7 @@ export default function ProfileScreenWeb({
                       textTransform: 'capitalize',
                     }}
                   >
-                    {profile.role?.split('_').join(' ')}
+                    {authority?.split('_').join(' ')}
                   </span>
                   {profile.school_name && (
                     <>
@@ -270,11 +279,21 @@ export default function ProfileScreenWeb({
                       }}
                     >
                       <span
-                        style={{ fontSize: '12px', fontWeight: '700', color: 'var(--ink-ghost)' }}
+                        style={{
+                          fontSize: '12px',
+                          fontWeight: '700',
+                          color: 'var(--ink-ghost)',
+                        }}
                       >
                         Profile Completion
                       </span>
-                      <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--action)' }}>
+                      <span
+                        style={{
+                          fontSize: '12px',
+                          fontWeight: '800',
+                          color: 'var(--action)',
+                        }}
+                      >
                         {completionResult.percentage}%
                       </span>
                     </div>
@@ -297,7 +316,13 @@ export default function ProfileScreenWeb({
                       />
                     </div>
                     {completionResult.nextHint && (
-                      <p style={{ fontSize: '11px', color: 'var(--ink-ghost)', margin: '6px 0 0' }}>
+                      <p
+                        style={{
+                          fontSize: '11px',
+                          color: 'var(--ink-ghost)',
+                          margin: '6px 0 0',
+                        }}
+                      >
                         {completionResult.nextHint}
                       </p>
                     )}
@@ -337,40 +362,63 @@ export default function ProfileScreenWeb({
 
                 {isOwnProfile && !context.isAnonymous && (
                   <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                    <button
+                    <button type="button"
                       className="secondary-button"
-                      style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                      }}
                       onClick={openInlineEdit}
                     >
                       <Edit3 size={16} />
                       {t('profile.viewEditProfile')}
                     </button>
-                    <button
+                    <button type="button"
                       className="secondary-button"
-                      style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                      }}
                       onClick={() => navigation.openFullProfile(toFullProfileParams(profile))}
                     >
                       Full Profile
                     </button>
-                    <button
+                    <button type="button"
                       className="secondary-button"
-                      style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                      }}
                       onClick={() => navigation.openSettings?.()}
                     >
                       Settings
                     </button>
-                    <button
+                    <button type="button"
                       className="secondary-button"
-                      style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                      }}
                       onClick={() => navigation.openPrivacyLedger?.()}
                     >
                       Privacy Ledger
                     </button>
-                    <button
+                    <button type="button"
                       className="secondary-button"
-                      style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                      }}
                       onClick={() =>
-                        navigation.openPublicProfile?.({ id: profile.id, type: 'user' })
+                        navigation.openPublicProfile?.({
+                          id: profile.id,
+                          type: 'user',
+                        })
                       }
                     >
                       Public Preview
@@ -430,7 +478,7 @@ export default function ProfileScreenWeb({
                 >
                   Scan to view profile
                 </p>
-                <button
+                <button type="button"
                   style={{
                     background: 'none',
                     border: 'none',
@@ -462,7 +510,11 @@ export default function ProfileScreenWeb({
         {editForm && !context.isAnonymous && (
           <div
             className="sanctuary-card"
-            style={{ padding: '32px', marginBottom: '24px', border: '2px solid var(--action)' }}
+            style={{
+              padding: '32px',
+              marginBottom: '24px',
+              border: '2px solid var(--action)',
+            }}
           >
             <div
               style={{
@@ -473,7 +525,7 @@ export default function ProfileScreenWeb({
               }}
             >
               <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '800' }}>Edit Profile</h3>
-              <button
+              <button type="button"
                 onClick={cancelEdit}
                 style={{
                   background: 'none',
@@ -496,6 +548,7 @@ export default function ProfileScreenWeb({
             >
               <div>
                 <label
+                  htmlFor="edit-full-name"
                   style={{
                     display: 'block',
                     fontSize: '11px',
@@ -509,6 +562,7 @@ export default function ProfileScreenWeb({
                   Display Name
                 </label>
                 <input
+                  id="edit-full-name"
                   value={editForm.full_name}
                   onChange={(e) =>
                     setEditForm((f) => (f ? { ...f, full_name: e.target.value } : f))
@@ -529,6 +583,7 @@ export default function ProfileScreenWeb({
               </div>
               <div>
                 <label
+                  htmlFor="edit-username"
                   style={{
                     display: 'block',
                     fontSize: '11px',
@@ -542,10 +597,11 @@ export default function ProfileScreenWeb({
                   Handle / Username
                 </label>
                 <input
+                  id="edit-username"
                   value={editForm.username}
                   onChange={(e) => setEditForm((f) => (f ? { ...f, username: e.target.value } : f))}
                   placeholder="your-handle"
-                  disabled={profile.is_anonymous}
+                  disabled={!!profile.is_anonymous}
                   style={{
                     width: '100%',
                     padding: '10px 14px',
@@ -561,13 +617,20 @@ export default function ProfileScreenWeb({
                   }}
                 />
                 {profile.is_anonymous && (
-                  <p style={{ fontSize: '10px', color: 'var(--ink-ghost)', marginTop: '4px' }}>
+                  <p
+                    style={{
+                      fontSize: '10px',
+                      color: 'var(--ink-ghost)',
+                      marginTop: '4px',
+                    }}
+                  >
                     Anonymous users cannot have handles.
                   </p>
                 )}
               </div>
               <div>
                 <label
+                  htmlFor="edit-phone"
                   style={{
                     display: 'block',
                     fontSize: '11px',
@@ -581,6 +644,7 @@ export default function ProfileScreenWeb({
                   Phone
                 </label>
                 <input
+                  id="edit-phone"
                   value={editForm.phone}
                   onChange={(e) => setEditForm((f) => (f ? { ...f, phone: e.target.value } : f))}
                   style={{
@@ -600,6 +664,7 @@ export default function ProfileScreenWeb({
             </div>
             <div style={{ marginBottom: '24px' }}>
               <label
+                htmlFor="edit-bio"
                 style={{
                   display: 'block',
                   fontSize: '11px',
@@ -613,6 +678,7 @@ export default function ProfileScreenWeb({
                 Bio
               </label>
               <textarea
+                id="edit-bio"
                 value={editForm.bio}
                 onChange={(e) => setEditForm((f) => (f ? { ...f, bio: e.target.value } : f))}
                 rows={3}
@@ -632,7 +698,7 @@ export default function ProfileScreenWeb({
               />
             </div>
             <div style={{ display: 'flex', gap: '12px' }}>
-              <button
+              <button type="button"
                 className="premium-button"
                 onClick={saveEdit}
                 disabled={isSaving}
@@ -640,7 +706,7 @@ export default function ProfileScreenWeb({
               >
                 {isSaving ? 'Saving...' : 'Save Changes'}
               </button>
-              <button className="secondary-button" onClick={cancelEdit}>
+              <button type="button" className="secondary-button" onClick={cancelEdit}>
                 Cancel
               </button>
             </div>
@@ -659,7 +725,12 @@ export default function ProfileScreenWeb({
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
             <div className="sanctuary-card" style={{ padding: '32px' }}>
               <div
-                style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  marginBottom: '20px',
+                }}
               >
                 <FileText size={18} color="var(--ink-ghost)" />
                 <h3
@@ -715,7 +786,13 @@ export default function ProfileScreenWeb({
                       Professional Credentials
                     </h3>
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '16px',
+                    }}
+                  >
                     {subjectsTaught.length > 0 && (
                       <div>
                         <div
@@ -729,7 +806,13 @@ export default function ProfileScreenWeb({
                         >
                           Subjects Taught
                         </div>
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                        <div
+                          style={{
+                            display: 'flex',
+                            flexWrap: 'wrap',
+                            gap: '8px',
+                          }}
+                        >
                           {subjectsTaught.map((subject: string) => (
                             <span
                               key={subject}
@@ -761,7 +844,13 @@ export default function ProfileScreenWeb({
                         >
                           Qualifications
                         </div>
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                        <div
+                          style={{
+                            display: 'flex',
+                            flexWrap: 'wrap',
+                            gap: '8px',
+                          }}
+                        >
                           {qualifications.map((qualification: string) => (
                             <span
                               key={qualification}
@@ -784,7 +873,13 @@ export default function ProfileScreenWeb({
                       </div>
                     )}
                     {profile.experience_years && (
-                      <div style={{ fontSize: '14px', color: 'var(--ink)', fontWeight: '600' }}>
+                      <div
+                        style={{
+                          fontSize: '14px',
+                          color: 'var(--ink)',
+                          fontWeight: '600',
+                        }}
+                      >
                         {profile.experience_years} years of teaching experience
                       </div>
                     )}
@@ -836,7 +931,7 @@ export default function ProfileScreenWeb({
             )}
 
             <div style={{ width: '100%' }}>
-              <LivingJourneyPanel userId={profile.id} authority={profile.role as any} />
+              <LivingJourneyPanel userId={profile.id} authority={authority as any} />
             </div>
           </div>
         </div>

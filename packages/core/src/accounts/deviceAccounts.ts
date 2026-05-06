@@ -1,5 +1,7 @@
 import type { Session } from '@supabase/supabase-js';
 import { deviceTrustAPI } from '../api/deviceTrust';
+import { identityAPI } from '../api/identity';
+import { supabase } from '../api/supabase';
 import { accountPin } from '../lib/accountPin';
 import { getActiveAccountId, setActiveAccountId } from '../lib/accountScope';
 import { storage } from '../lib/storage';
@@ -9,8 +11,6 @@ import {
   removeStoredSessionForAccount,
   setStoredSessionForAccount,
 } from '../lib/supabaseAuthStorage';
-import { identityAPI } from '../api/identity';
-import { supabase } from '../api/supabase';
 import { rehydrateScopedStores, resetScopedStores } from '../store/resetScopedStores';
 
 const ACCOUNTS_REGISTRY_KEY = 'gurudevi-device-accounts';
@@ -115,7 +115,7 @@ export const deviceAccounts = {
       email: profile?.email ?? session.user.email ?? existing?.email ?? null,
       fullName:
         profile?.full_name ??
-        (session.user.user_metadata?.full_name as string | undefined) ??
+        (session.user.user_metadata?.['full_name'] as string | undefined) ??
         existing?.fullName ??
         null,
       avatarUrl: profile?.avatar_url ?? existing?.avatarUrl ?? null,
@@ -149,6 +149,11 @@ export const deviceAccounts = {
         },
         accountId,
       );
+      await deviceTrustAPI.upsertCurrentSecuritySession({
+        accountId,
+        authUserId,
+        authStrength: 'session',
+      });
     } catch (error) {
       console.warn('Failed to synchronize device trust during account capture.', error);
     }
@@ -199,16 +204,26 @@ export const deviceAccounts = {
         },
         accountId,
       );
+      await deviceTrustAPI.upsertCurrentSecuritySession({
+        accountId,
+        authUserId: null,
+        authStrength: 'switch',
+      });
     } catch (error) {
       console.warn('Failed to synchronize device trust during account switch.', error);
     }
   },
 
   async removeAccount(accountId: string) {
-    try {
-      await deviceTrustAPI.logAuditEvent('ACCOUNT_REMOVED_FROM_DEVICE', {}, accountId);
-    } catch (error) {
-      console.warn('Failed to write device audit log for account removal.', error);
+    const isActiveAccount = getActiveAccountId() === accountId;
+    if (isActiveAccount) {
+      try {
+        const installId = await deviceTrustAPI.getInstallId();
+        await deviceTrustAPI.logAuditEvent('ACCOUNT_REMOVED_FROM_DEVICE', { installId }, accountId);
+        await deviceTrustAPI.revokeMyInstallSecuritySessions(installId, 'removed_from_device');
+      } catch (error) {
+        console.warn('Failed to write device audit log for account removal.', error);
+      }
     }
 
     const accounts = await readRegistry();
@@ -218,7 +233,7 @@ export const deviceAccounts = {
     await accountPin.removePin(accountId);
     await writeRegistry(nextAccounts);
 
-    if (getActiveAccountId() !== accountId) {
+    if (!isActiveAccount) {
       return nextAccounts;
     }
 
@@ -246,21 +261,43 @@ export const deviceAccounts = {
       return [];
     }
 
+    try {
+      const installId = await deviceTrustAPI.getInstallId();
+      await deviceTrustAPI.logAuditEvent(
+        'ACCOUNT_SIGNED_OUT_FROM_DEVICE',
+        {
+          scope: 'current',
+          installId,
+        },
+        activeAccountId,
+      );
+      await deviceTrustAPI.revokeMyInstallSecuritySessions(installId, 'signed_out_locally');
+    } catch (error) {
+      console.warn('Failed to synchronize sign-out for the current account.', error);
+    }
+
     return this.removeAccount(activeAccountId);
   },
 
   async signOutAllAccounts() {
     const accounts = await readRegistry();
+    const activeAccountId = getActiveAccountId();
+    const installId = await deviceTrustAPI.getInstallId();
     await Promise.all(
       accounts.map(async (entry) => {
+        if (!activeAccountId || entry.accountId !== activeAccountId) {
+          return;
+        }
         try {
           await deviceTrustAPI.logAuditEvent(
             'ACCOUNT_SIGNED_OUT_FROM_DEVICE',
             {
               scope: 'all',
+              installId,
             },
             entry.accountId,
           );
+          await deviceTrustAPI.revokeMyInstallSecuritySessions(installId, 'signed_out_all_locally');
         } catch (error) {
           console.warn('Failed to write device audit log during global sign-out.', error);
         }

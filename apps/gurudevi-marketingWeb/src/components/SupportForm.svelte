@@ -1,75 +1,87 @@
 <script lang="ts">
-import { type FormConfig, FormManager } from '@repo/core/forms/form-manager';
-import { validators } from '@repo/core/utils/validators';
+import { type FormConfig, FormManager } from "@repo/core/forms/form-manager";
+import { validators } from "@repo/core/utils/validators";
 
-const formAction = import.meta.env.PUBLIC_SUPPORT_FORM_ACTION as string | undefined;
-const SUPPORT_EMAIL = 'support@gurudevi.lk';
+const formAction = import.meta.env.PUBLIC_SUPPORT_FORM_ACTION as
+	| string
+	| undefined;
+const SUPPORT_EMAIL = "support@gurudevi.lk";
 
 const config: FormConfig<{
-  issueType: 'support' | 'bug' | 'feature' | 'feedback';
-  name: string;
-  email: string;
-  message: string;
+	issueType: "support" | "bug" | "feature" | "feedback";
+	name: string;
+	email: string;
+	message: string;
 }> = {
-  fields: {
-    issueType: {
-      label: 'Type',
-      type: 'select',
-      defaultValue: 'support',
-      options: [
-        { value: 'support', label: 'Support' },
-        { value: 'bug', label: 'Bug Report' },
-        { value: 'feature', label: 'Feature Request' },
-        { value: 'feedback', label: 'Feedback' },
-      ],
-    },
-    name: { label: 'Name', type: 'text', defaultValue: '' },
-    email: { label: 'Email', type: 'email', defaultValue: '', validators: [validators.email] },
-    message: { label: 'Message', type: 'textarea', defaultValue: '', required: true },
-  },
-  onSubmit: async (values) => {
-    if (!formAction) return;
+	fields: {
+		issueType: {
+			label: "Type",
+			type: "select",
+			defaultValue: "support",
+			options: [
+				{ value: "support", label: "Support" },
+				{ value: "bug", label: "Bug Report" },
+				{ value: "feature", label: "Feature Request" },
+				{ value: "feedback", label: "Feedback" },
+			],
+		},
+		name: { label: "Name", type: "text", defaultValue: "" },
+		email: {
+			label: "Email",
+			type: "email",
+			defaultValue: "",
+			validators: [validators.email],
+		},
+		message: {
+			label: "Message",
+			type: "textarea",
+			defaultValue: "",
+			required: true,
+		},
+	},
+	onSubmit: async (values) => {
+		if (!formAction) return;
 
-    const formData = new FormData();
-    formData.set('source', 'gurudevi-web');
-    formData.set('type', values.issueType);
-    formData.set('name', values.name);
-    formData.set('email', values.email);
-    formData.set('message', values.message);
-    formData.set('page', window.location.href);
-    formData.set('ts', new Date().toISOString());
+		const formData = new FormData();
+		formData.set("source", "gurudevi-web");
+		formData.set("type", values.issueType);
+		formData.set("name", values.name);
+		formData.set("email", values.email);
+		formData.set("message", values.message);
+		formData.set("page", window.location.href);
+		formData.set("ts", new Date().toISOString());
 
-    const res = await fetch(formAction, {
-      method: 'POST',
-      body: formData,
-      headers: { Accept: 'application/json' },
-    });
+		const res = await fetch(formAction, {
+			method: "POST",
+			body: formData,
+			headers: { Accept: "application/json" },
+		});
 
-    if (!res.ok) throw new Error(`Request failed (${res.status})`);
-  },
+		if (!res.ok) throw new Error(`Request failed (${res.status})`);
+	},
 };
 
 const manager = new FormManager(config);
 let state = $state(manager.getState());
 
 manager.subscribe((s) => {
-  state = s;
+	state = s;
 });
 
 function _mailtoHref() {
-  const { issueType, name, email, message } = state.values;
-  const subject = `Gurudevi (${issueType})`;
-  const body = [
-    `Type: ${issueType}`,
-    name ? `Name: ${name}` : null,
-    email ? `Email: ${email}` : null,
-    '',
-    message || '(message)',
-  ]
-    .filter(Boolean)
-    .join('\n');
+	const { issueType, name, email, message } = state.values;
+	const subject = `Gurudevi (${issueType})`;
+	const body = [
+		`Type: ${issueType}`,
+		name ? `Name: ${name}` : null,
+		email ? `Email: ${email}` : null,
+		"",
+		message || "(message)",
+	]
+		.filter(Boolean)
+		.join("\n");
 
-  return `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+	return `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }
 </script>
 

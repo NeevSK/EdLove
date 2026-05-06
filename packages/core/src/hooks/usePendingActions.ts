@@ -10,7 +10,7 @@
  * Gracefully degrades on any DB error  returns empty arrays rather than throwing.
  */
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { supabase } from '../api/supabase';
 
 export interface PendingAttendanceItem {
@@ -139,8 +139,13 @@ export function usePendingActions(teacherId: string | null | undefined): Pending
   }, [teacherId]);
 
   useEffect(() => {
-    load();
+    load().catch((e) => {
+      console.error('PendingActions: Failed to load data', e);
+    });
   }, [load]);
 
-  return { attendancePending, gradingPending, isLoading, refresh: load };
+  return useMemo(
+    () => ({ attendancePending, gradingPending, isLoading, refresh: load }),
+    [attendancePending, gradingPending, isLoading, load],
+  );
 }

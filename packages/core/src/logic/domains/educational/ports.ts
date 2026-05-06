@@ -1,4 +1,4 @@
-﻿import type { Attendance as AttendanceRecord } from '../../schemas/attendance.schema';
+import type { Attendance as AttendanceRecord } from '../../schemas/attendance.schema';
 import type {
   Assignment,
   AssignmentSubmission,
@@ -7,6 +7,11 @@ import type {
   ClassroomStudent,
   StudentAssignment,
   StudentSubmissionSummary,
+  StudentAcademicRecord,
+  TeacherProfessionalRecord,
+  PrincipalGovernanceRecord,
+  SchoolLegacyRecord,
+  ClassroomLegacyRecord,
 } from '../../schemas/classroom.schema';
 import type { ClassroomGradingSettings, Grade } from '../../schemas/grading.schema';
 import type { Lesson } from '../../schemas/lesson.schema';
@@ -109,6 +114,11 @@ export interface EducationalRepository {
     updates: { roll_number?: string; notes?: string },
   ): Promise<EnrollmentRecord>;
   deleteEnrollmentRecord(id: string): Promise<void>;
+  getHistoricalAcademicRecords(studentId: string): Promise<StudentAcademicRecord[]>;
+  getHistoricalProfessionalRecords(teacherId: string): Promise<TeacherProfessionalRecord[]>;
+  getHistoricalGovernanceRecords(principalId: string): Promise<PrincipalGovernanceRecord[]>;
+  getSchoolLegacyHistory(schoolId: string): Promise<SchoolLegacyRecord[]>;
+  getClassroomLegacyHistory(classroomId: string): Promise<ClassroomLegacyRecord[]>;
 
   getTeacherStats(teacherId: string): Promise<any>;
 

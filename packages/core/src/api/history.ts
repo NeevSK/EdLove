@@ -4,8 +4,8 @@
  * Fetches version history/audit logs for records.
  */
 
-import { supabase } from './supabase';
 import { APIError } from '../types/API';
+import { supabase } from './supabase';
 
 export interface AuditLogEntry {
   id: string;

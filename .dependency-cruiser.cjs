@@ -60,7 +60,7 @@ module.exports = {
       from: { path: '^packages/(core|types-shim)/src/' },
       to: {
         path: '^packages/',
-        pathNot: '^packages/(core|types-shim|eslint-config|typescript-config)/',
+        pathNot: '^packages/(core|database|schema|types-shim|eslint-config|typescript-config)/',
       },
     },
     {
@@ -128,6 +128,19 @@ module.exports = {
       to: {
         path: '^packages/(form-builder|trube-art|lk-edu-geo)/src/.+',
         pathNot: '^packages/(form-builder|trube-art|lk-edu-geo)/src/(index\\.ts|api/index\\.ts)$',
+      },
+    },
+    {
+      name: 'no-db-leaks-to-apps',
+      severity: 'error',
+      comment:
+        'Apps and Domain packages must not import directly from the Database. Use @repo/core/types instead.',
+      from: {
+        path: '^(apps/|packages/(?!core|database|types-shim))',
+        pathNot: '\\.test\\.ts$',
+      },
+      to: {
+        path: '^packages/database/',
       },
     },
   ],

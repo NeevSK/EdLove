@@ -3,7 +3,7 @@ import { Briefcase, Crown, GraduationCap, ShieldAlert, User } from 'lucide-react
 import type React from 'react';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Dimensions, Image as RNImage } from 'react-native';
+import { Dimensions, Image as RNImage, type StyleProp, type ViewStyle } from 'react-native';
 import Animated, {
   interpolate,
   useAnimatedStyle,
@@ -26,7 +26,7 @@ export interface IdentityData {
   id: string;
   full_name: string;
   username?: string;
-  role: string;
+  capacity: string;
   avatar_url?: string;
   school_name?: string;
   nic_number?: string;
@@ -37,7 +37,7 @@ interface IdentityCardProps {
   data: IdentityData;
   onEdit?: () => void;
   onViewFullProfile?: () => void;
-  style?: any;
+  style?: StyleProp<ViewStyle>;
   /** Optional custom renderer for the back of the card. */
   renderBackSide?: () => React.ReactNode;
   /** Whether to allow flipping the card. Defaults to true. */
@@ -82,7 +82,7 @@ export default function IdentityCard({
       transform: [{ rotateY: `${rotateValue}deg` }],
       opacity: interpolate(isFlipped.value, [0, 0.5, 1], [1, 0, 0]),
       zIndex: isFlipped.value < 0.5 ? 2 : 1,
-    } as any;
+    };
   });
 
   const backStyle = useAnimatedStyle(() => {
@@ -91,7 +91,7 @@ export default function IdentityCard({
       transform: [{ rotateY: `${rotateValue}deg` }],
       opacity: interpolate(isFlipped.value, [0, 0.5, 1], [0, 0, 1]),
       zIndex: isFlipped.value > 0.5 ? 2 : 1,
-    } as any;
+    };
   });
 
   const { can: internalCan } = usePermissions();
@@ -123,7 +123,12 @@ export default function IdentityCard({
       };
     }
     if (can('manage', 'FounderDashboard')) {
-      return { label: 'Holden 🛡️', icon: ShieldAlert, colorClass: 'text-phase-accent', emoji: '🛡️' };
+      return {
+        label: 'Holden 🛡️',
+        icon: ShieldAlert,
+        colorClass: 'text-phase-accent',
+        emoji: '🛡️',
+      };
     }
     return {
       label: 'Explorer 🌿',
@@ -139,7 +144,7 @@ export default function IdentityCard({
         <QRCodeGenerator
           value={
             data.id
-              ? QRBuilder.userInvite(data.id, data.role || 'unknown', data.username || undefined)
+              ? QRBuilder.userInvite(data.id, data.capacity || 'unknown', data.username || undefined)
               : 'gurudevi-guest'
           }
           size={120}

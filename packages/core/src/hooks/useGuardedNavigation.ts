@@ -1,4 +1,4 @@
-﻿import { type NavigationProp, useNavigation } from '@react-navigation/native';
+import { type NavigationProp, useNavigation } from '@react-navigation/native';
 import { useCallback } from 'react';
 import type { Actions, Subjects } from '../logic/permissions/abilities/base';
 import { usePermissions } from '../logic/permissions/hooks/usePermissions';

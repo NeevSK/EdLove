@@ -10,59 +10,59 @@
 //  Core provider interface
 
 export interface OCRProvider {
-  readonly name: 'mlkit' | 'google_vision' | 'openai_vision';
-  recognize(imageUri: string): Promise<OCRRawResult>;
+	readonly name: "mlkit" | "google_vision" | "openai_vision";
+	recognize(imageUri: string): Promise<OCRRawResult>;
 }
 
 //  Raw output (normalized across all providers)
 
 export interface OCRRawResult {
-  /** Full concatenated text of the document */
-  text: string;
-  /** Structural blocks (paragraphs / lines / words depending on provider) */
-  blocks: OCRBlock[];
-  /** Overall document confidence, 01. Not all providers supply this. */
-  confidence?: number;
+	/** Full concatenated text of the document */
+	text: string;
+	/** Structural blocks (paragraphs / lines / words depending on provider) */
+	blocks: OCRBlock[];
+	/** Overall document confidence, 01. Not all providers supply this. */
+	confidence?: number;
 }
 
 export interface OCRBlock {
-  text: string;
-  /** Per-block confidence, 01. Used for uncertainty highlighting in review UI. */
-  confidence?: number;
-  /** Pixel-space position within the source image */
-  boundingBox?: OCRBoundingBox;
-  /**
-   * BCP-47 language hint if detectable (e.g. 'si', 'ta', 'en').
-   * Present on MLKit for multi-script documents.
-   */
-  language?: string;
+	text: string;
+	/** Per-block confidence, 01. Used for uncertainty highlighting in review UI. */
+	confidence?: number;
+	/** Pixel-space position within the source image */
+	boundingBox?: OCRBoundingBox;
+	/**
+	 * BCP-47 language hint if detectable (e.g. 'si', 'ta', 'en').
+	 * Present on MLKit for multi-script documents.
+	 */
+	language?: string;
 }
 
 export interface OCRBoundingBox {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
+	x: number;
+	y: number;
+	width: number;
+	height: number;
 }
 
 //  Table structure (from TableParser)
 
 export interface OCRTable {
-  rows: OCRTableRow[];
+	rows: OCRTableRow[];
 }
 
 export interface OCRTableRow {
-  cells: string[];
+	cells: string[];
 }
 
 //  Pipeline options
 
-export type OCRProviderName = OCRProvider['name'];
+export type OCRProviderName = OCRProvider["name"];
 
 export interface OCRRecognizeOptions {
-  /**
-   * Preferred provider. Falls back to 'mlkit' on error.
-   * @default 'mlkit'
-   */
-  provider?: OCRProviderName;
+	/**
+	 * Preferred provider. Falls back to 'mlkit' on error.
+	 * @default 'mlkit'
+	 */
+	provider?: OCRProviderName;
 }

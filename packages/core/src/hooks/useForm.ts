@@ -12,12 +12,16 @@ import type { FormManager, FormState } from '../logic/forms/form-manager';
  * const state = useForm(manager);
  */
 export function useForm<T extends Record<string, any>>(manager: FormManager<T>): FormState<T> {
-  const [state, setState] = useState<FormState<T>>(manager.getState());
+  // Use lazy initialization to get the current state from the manager
+  const [state, setState] = useState<FormState<T>>(() => manager.getState());
 
   useEffect(() => {
-    // Subscribe to state changes in the manager
+    // Force sync when manager dependency changes
+    setState(manager.getState());
+
     const unsubscribe = manager.subscribe((newState) => {
-      setState({ ...newState });
+      // Use functional update to ensure we always have the latest state reference
+      setState(() => ({ ...newState }));
     });
 
     return () => {

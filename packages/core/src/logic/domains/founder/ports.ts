@@ -1,4 +1,4 @@
-﻿import type { Classroom } from '../../schemas/classroom.schema';
+import type { Classroom } from '../../schemas/classroom.schema';
 import type { CommunityGroup } from '../../schemas/community.schema';
 import type {
   EcosystemPulse,

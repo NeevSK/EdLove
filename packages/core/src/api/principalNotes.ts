@@ -10,10 +10,10 @@
  * but remain in the record forever (the history matters).
  */
 
-import { identityAPI } from './identity';
-import { supabase } from './supabase';
 import { APIError } from '../types/API';
 import type { PrincipalNote } from '../types/PrincipalNote';
+import { identityAPI } from './identity';
+import { supabase } from './supabase';
 
 export type { PrincipalNote };
 

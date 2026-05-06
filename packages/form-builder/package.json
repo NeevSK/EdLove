@@ -13,8 +13,16 @@
   },
   "license": "MIT",
   "scripts": {
-    "lint": "pnpm exec eslint .",
-    "check-types": "pnpm exec tsc --noEmit"
+    "lint": "pnpm run lint:biome && pnpm run lint:eslint",
+    "check-types": "pnpm exec tsc --noEmit",
+    "lint:biome": "biome check .",
+    "lint:eslint": "eslint .",
+    "format": "biome format --write .",
+    "check-cycles": "node ../../scripts/refactor/sovereign-cycle-checker.mjs",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui",
+    "clean": "rm -rf .turbo node_modules dist"
   },
   "dependencies": {
     "@repo/ui": "workspace:*",
@@ -26,7 +34,13 @@
   },
   "devDependencies": {
     "@types/react": "^19.2.14",
-    "@types/react-dom": "19.2.1"
+    "@types/react-dom": "19.2.1",
+    "@repo/eslint-config": "workspace:^",
+    "@repo/typescript-config": "workspace:*",
+    "vitest": "^2.1.9",
+    "vite-tsconfig-paths": "^6.1.1",
+    "typescript": "^5.9.3",
+    "eslint": "^9.38.0"
   },
   "peerDependencies": {
     "react": "*",

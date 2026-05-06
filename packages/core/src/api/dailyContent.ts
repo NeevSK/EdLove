@@ -1,6 +1,7 @@
-import { supabase } from './supabase';
 import { withResilience } from '../offline/resilience';
 import { APIError } from '../types/API';
+import { getCurrentTimeMillis } from '../utils/temporal';
+import { supabase } from './supabase';
 
 // ============================================================================
 // DAILY CONTENT API (Motivation & "Did You Know?")
@@ -54,7 +55,10 @@ export const dailyContentAPI = {
         key: 'daily_content_today',
         ttl: 24 * 60 * 60 * 1000, // Cache for 24 hours
       },
-    ) as Promise<{ motivation: DailyContent | null; didYouKnow: DailyContent | null }>;
+    ) as Promise<{
+      motivation: DailyContent | null;
+      didYouKnow: DailyContent | null;
+    }>;
   },
 
   /**
@@ -79,11 +83,12 @@ export const dailyContentAPI = {
    * Get recent content (last N days)
    */
   async getRecentContent(days: number = 7): Promise<DailyContent[]> {
+    const now = getCurrentTimeMillis();
     const { data, error } = await supabase
       .from('daily_content')
       .select('*')
       .eq('active', true)
-      .gte('date', new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString().split('T')[0])
+      .gte('date', new Date(now - days * 24 * 60 * 60 * 1000).toISOString().split('T')[0])
       .order('date', { ascending: false })
       .order('type');
 

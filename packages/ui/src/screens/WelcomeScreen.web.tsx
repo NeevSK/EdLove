@@ -4,24 +4,24 @@
  * On native, WelcomeScreen is a mobile-style centred card. On web Metro
  * resolves this file instead, rendering a two-column layout:
  *
- *  \u250C\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u252C\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510
- *  \u2502  LEFT PANEL          \u2502  RIGHT PANEL               \u2502
- *  \u2502  Branding + mission  \u2502  Auth card                 \u2502
- *  \u2502  3 stat pills        \u2502  Language selector         \u2502
- *  \u2502  Five Pillars chips  \u2502  Explore/Login buttons     \u2502
- *  \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2534\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518
+ *  ┌──────────────────────┬───────────────────────────┐
+ *  │  LEFT PANEL          │  RIGHT PANEL              │
+ *  │  Branding + mission  │  Auth card                │
+ *  │  3 stat pills        │  Language selector        │
+ *  │  Five Pillars chips  │  Explore/Login buttons    │
+ *  └──────────────────────┴───────────────────────────┘
  *
  * Auth logic is identical to the native screen (same handlers, same hooks).
  * AuthScreen renders on top of this layout when the user taps "I have an account".
  *
- * Design tokens: Vellum bg \u00B7 Ink text \u00B7 Saffron primary \u00B7 Dalu Green secondary
+ * Design tokens: Vellum bg · Ink text · Saffron primary · Dalu Green secondary
  * Shadow rule: Shadow Violet only, never grey/black.
  */
 
-import { handleAPIError } from '@repo/core/logic';
 import { authAPI } from '@repo/core/auth';
+import { handleAPIError } from '@repo/core/logic';
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useCallback, useMemo, useReducer, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
@@ -29,22 +29,22 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  useWindowDimensions,
   View,
-} from 'react-native';
+  useWindowDimensions,
+} from '../primitives';
 import { VStack } from '../gluestack-legacy';
 import { useTheme } from '../hooks/useTheme';
 import { Theme } from '../theme/Theme';
 import { hapticError, hapticLight, hapticSuccess } from '../utils/haptics';
 import { openExternalURL } from '../utils/linking';
 
-// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+// ──────────────────────────────────────────────────────────
 // Constants
-// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+// ──────────────────────────────────────────────────────────
 const LANGUAGES = [
   { code: 'en', label: 'EN' },
-  { code: 'si', label: '\u0DC3\u0DD2\u0D82' },
-  { code: 'ta', label: '\u0BA4\u0BAE\u00BF\u0BB4\u0BCD' },
+  { code: 'si', label: 'සිං' },
+  { code: 'ta', label: 'தமிழ்' },
 ];
 
 const STATS = [
@@ -54,26 +54,58 @@ const STATS = [
 ];
 
 const PILLARS = [
-  { name: 'Self', emoji: '\u2665', color: Theme.colors.sanctuarySaffron },
-  { name: 'Classroom', emoji: '\uD83C\uDFEB', color: Theme.colors.sageGreen },
-  { name: 'Community', emoji: '\uD83E\uDD1D', color: Theme.colors.shadowViolet },
-  { name: 'Library', emoji: '\uD83D\uDCDA', color: Theme.colors.skyBlue },
-  { name: 'Profile', emoji: '\uD83E\uDEAA', color: Theme.colors.sanctuarySaffron },
+  { name: 'Self', emoji: '❤️', color: Theme.colors.sanctuarySaffron },
+  { name: 'Classroom', emoji: '🏫', color: Theme.colors.sageGreen },
+  {
+    name: 'Community',
+    emoji: '🤝',
+    color: Theme.colors.shadowViolet,
+  },
+  { name: 'Library', emoji: '📚', color: Theme.colors.skyBlue },
+  {
+    name: 'Profile',
+    emoji: '🪪',
+    color: Theme.colors.sanctuarySaffron,
+  },
 ];
 
-// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
-// Constants
-// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+// ──────────────────────────────────────────────────────────
+// TYPES & REDUCER
+// ──────────────────────────────────────────────────────────
 
-// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
-// LeftPanel \u2014 standalone component (must NOT be defined inside render)
-// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
-interface LeftPanelProps {
-  isDark: boolean;
-  isNarrow: boolean;
+interface WelcomeState {
+  acceptedTerms: boolean;
+  isConnecting: boolean;
+  langHover: string | null;
+  btnHover: 'explore' | 'login' | null;
 }
 
-function LeftPanel({ isNarrow }: { isNarrow: boolean }) {
+type WelcomeAction =
+  | { type: 'SET_TERMS'; accepted: boolean }
+  | { type: 'SET_CONNECTING'; connecting: boolean }
+  | { type: 'SET_LANG_HOVER'; lang: string | null }
+  | { type: 'SET_BTN_HOVER'; btn: 'explore' | 'login' | null };
+
+function welcomeReducer(state: WelcomeState, action: WelcomeAction): WelcomeState {
+  switch (action.type) {
+    case 'SET_TERMS':
+      return { ...state, acceptedTerms: action.accepted };
+    case 'SET_CONNECTING':
+      return { ...state, isConnecting: action.connecting };
+    case 'SET_LANG_HOVER':
+      return { ...state, langHover: action.lang };
+    case 'SET_BTN_HOVER':
+      return { ...state, btnHover: action.btn };
+    default:
+      return state;
+  }
+}
+
+// ──────────────────────────────────────────────────────────
+// SUB-COMPONENTS
+// ──────────────────────────────────────────────────────────
+
+const LeftPanel = memo(({ isNarrow }: { isNarrow: boolean }) => {
   const { text, accent, isDark } = useTheme();
   return (
     <View style={[styles.leftPanel, isNarrow && styles.leftPanelNarrow]}>
@@ -120,7 +152,10 @@ function LeftPanel({ isNarrow }: { isNarrow: boolean }) {
       <View
         style={[
           styles.quoteBox,
-          { borderLeftColor: accent.action, backgroundColor: `${accent.action}0A` },
+          {
+            borderLeftColor: accent.action,
+            backgroundColor: `${accent.action}0A`,
+          },
         ]}
       >
         <Text style={[styles.quoteText, { color: text.secondary }]}>
@@ -129,13 +164,9 @@ function LeftPanel({ isNarrow }: { isNarrow: boolean }) {
       </View>
     </View>
   );
-}
+});
 
-// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
-// RightPanel \u2014 standalone component (must NOT be defined inside render)
-// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 interface RightPanelProps {
-  isDark: boolean;
   i18nLanguage: string;
   acceptedTerms: boolean;
   isConnecting: boolean;
@@ -152,236 +183,262 @@ interface RightPanelProps {
   footer: string;
 }
 
-function RightPanel({
-  i18nLanguage,
-  acceptedTerms,
-  isConnecting,
-  langHover,
-  btnHover,
-  onChangeLanguage,
-  onStartExploring,
-  onLogin,
-  onToggleTerms,
-  onLangHoverIn,
-  onLangHoverOut,
-  onBtnHoverIn,
-  onBtnHoverOut,
-  footer,
-}: Omit<RightPanelProps, 'isDark'>) {
-  const { text, isDark, glass, accent } = useTheme();
+const RightPanel = memo(
+  ({
+    i18nLanguage,
+    acceptedTerms,
+    isConnecting,
+    langHover,
+    btnHover,
+    onChangeLanguage,
+    onStartExploring,
+    onLogin,
+    onToggleTerms,
+    onLangHoverIn,
+    onLangHoverOut,
+    onBtnHoverIn,
+    onBtnHoverOut,
+    footer,
+  }: RightPanelProps) => {
+    const { text, glass, accent } = useTheme();
 
-  return (
-    <View style={styles.rightPanel}>
-      <View
-        style={[
-          styles.authCard,
-          {
-            backgroundColor: glass.modal.bg,
-            borderColor: glass.modal.border,
-          },
-        ]}
-      >
-        {/* Language selector */}
-        <View style={styles.langRow}>
-          {LANGUAGES.map((lang) => {
-            const isActive = i18nLanguage?.startsWith(lang.code);
-            const isHov = langHover === lang.code;
-            return (
-              <Pressable
-                accessibilityRole="button"
-                key={lang.code}
-                onPress={() => onChangeLanguage(lang.code)}
-                onHoverIn={() => onLangHoverIn(lang.code)}
-                onHoverOut={onLangHoverOut}
-                style={[
-                  styles.langPill,
-                  {
-                    backgroundColor: isActive
-                      ? accent.action
-                      : isHov
-                        ? glass.interact.bg
-                        : 'transparent',
-                  },
-                ]}
-              >
-                <Text
+    const handlePrivacyPress = useCallback((e: any) => {
+      e.stopPropagation();
+      openExternalURL('https://neevsk.org/privacy', {
+        title: 'Privacy Pact',
+        sourceLabel: 'Welcome',
+        sourceBadge: 'External policy',
+        trustLevel: 'verified',
+      });
+    }, []);
+
+    return (
+      <View style={styles.rightPanel}>
+        <View
+          style={[
+            styles.authCard,
+            {
+              backgroundColor: glass.modal.bg,
+              borderColor: glass.modal.border,
+            },
+          ]}
+        >
+          {/* Language selector */}
+          <View style={styles.langRow}>
+            {LANGUAGES.map((lang) => {
+              const isActive = i18nLanguage?.startsWith(lang.code);
+              const isHov = langHover === lang.code;
+              return (
+                <Pressable
+                  accessibilityRole="button"
+                  key={lang.code}
+                  onPress={() => onChangeLanguage(lang.code)}
+                  onHoverIn={() => onLangHoverIn(lang.code)}
+                  onHoverOut={onLangHoverOut}
                   style={[
-                    styles.langText,
+                    styles.langPill,
                     {
-                      color: isActive ? Theme.colors.sacredWhite : text.secondary,
-                      fontWeight: isActive ? '700' : '500',
+                      backgroundColor: isActive
+                        ? accent.action
+                        : isHov
+                          ? glass.interact.bg
+                          : 'transparent',
                     },
                   ]}
                 >
-                  {lang.label}
-                </Text>
-              </Pressable>
-            );
-          })}
-        </View>
-        {/* Greeting */}
-        <Text style={[styles.cardTitle, { color: text.primary }]}>Welcome to the Sanctuary</Text>
-        <Text style={[styles.cardSubtitle, { color: text.secondary }]}>
-          Choose how you'd like to begin your journey.
-        </Text>
-        {/* Explore button */}
-        <Pressable
-          onPress={onStartExploring}
-          onHoverIn={() => onBtnHoverIn('explore')}
-          onHoverOut={onBtnHoverOut}
-          disabled={isConnecting}
-          accessibilityRole="button"
-          style={[
-            styles.primaryBtn,
-            {
-              backgroundColor: acceptedTerms ? accent.action : Theme.colors.willow,
-              opacity: btnHover === 'explore' ? 0.88 : 1,
-              transform: btnHover === 'explore' ? [{ scale: 1.015 }] : [{ scale: 1 }],
-            },
-          ]}
-        >
-          {isConnecting ? (
-            <ActivityIndicator color={Theme.colors.sacredWhite} size="small" />
-          ) : (
-            <Text style={styles.primaryBtnText}>Explore as Guest</Text>
-          )}
-        </Pressable>
-        {/* Login button */}
-        <Pressable
-          onPress={onLogin}
-          onHoverIn={() => onBtnHoverIn('login')}
-          onHoverOut={onBtnHoverOut}
-          accessibilityRole="button"
-          style={[
-            styles.secondaryBtn,
-            {
-              borderColor: glass.interact.border,
-              backgroundColor: btnHover === 'login' ? glass.interact.bg : 'transparent',
-            },
-          ]}
-        >
-          <Text style={[styles.secondaryBtnText, { color: text.secondary }]}>
-            I have an account
+                  <Text
+                    style={[
+                      styles.langText,
+                      {
+                        color: isActive ? Theme.colors.sacredWhite : text.secondary,
+                        fontWeight: isActive ? '700' : '500',
+                      },
+                    ]}
+                  >
+                    {lang.label}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </View>
+          {/* Greeting */}
+          <Text style={[styles.cardTitle, { color: text.primary }]}>Welcome to the Sanctuary</Text>
+          <Text style={[styles.cardSubtitle, { color: text.secondary }]}>
+            Choose how you'd like to begin your journey.
           </Text>
-        </Pressable>
-        {/* Terms \u2014 accessible checkbox */}
-        <Pressable
-          onPress={onToggleTerms}
-          accessibilityRole="checkbox"
-          accessibilityState={{ checked: acceptedTerms }}
-          accessibilityLabel="Accept Terms and Privacy Pact"
-          style={styles.termsRow}
-        >
-          <View
+          {/* Explore button */}
+          <Pressable
+            onPress={onStartExploring}
+            onHoverIn={() => onBtnHoverIn('explore')}
+            onHoverOut={onBtnHoverOut}
+            disabled={isConnecting}
+            accessibilityRole="button"
             style={[
-              styles.checkbox,
+              styles.primaryBtn,
               {
-                backgroundColor: acceptedTerms ? accent.action : 'transparent',
-                borderColor: acceptedTerms ? accent.action : text.muted,
+                backgroundColor: acceptedTerms ? accent.action : Theme.colors.willow,
+                opacity: btnHover === 'explore' ? 0.88 : 1,
+                transform: btnHover === 'explore' ? [{ scale: 1.015 }] : [{ scale: 1 }],
               },
             ]}
           >
-            {acceptedTerms && <Text style={styles.checkmark}>✓</Text>}
-          </View>
-          <Text style={[styles.termsText, { color: text.secondary }]}>
-            I agree to the{' '}
-            <Pressable
-              onPress={(e) => {
-                e.stopPropagation();
-                openExternalURL('https://neevsk.org/privacy', {
-                  title: 'Privacy Pact',
-                  sourceLabel: 'Welcome',
-                  sourceBadge: 'External policy',
-                  trustLevel: 'verified',
-                });
-              }}
-              accessibilityRole="link"
-              accessibilityLabel="Read Privacy Pact"
+            {isConnecting ? (
+              <ActivityIndicator color={Theme.colors.sacredWhite} size="small" />
+            ) : (
+              <Text style={styles.primaryBtnText}>Explore as Guest</Text>
+            )}
+          </Pressable>
+          {/* Login button */}
+          <Pressable
+            onPress={onLogin}
+            onHoverIn={() => onBtnHoverIn('login')}
+            onHoverOut={onBtnHoverOut}
+            accessibilityRole="button"
+            style={[
+              styles.secondaryBtn,
+              {
+                borderColor: glass.interact.border,
+                backgroundColor: btnHover === 'login' ? glass.interact.bg : 'transparent',
+              },
+            ]}
+          >
+            <Text style={[styles.secondaryBtnText, { color: text.secondary }]}>
+              I have an account
+            </Text>
+          </Pressable>
+          {/* Terms — accessible checkbox */}
+          <Pressable
+            onPress={onToggleTerms}
+            accessibilityRole="checkbox"
+            accessibilityState={{ checked: acceptedTerms }}
+            accessibilityLabel="Accept Terms and Privacy Pact"
+            style={styles.termsRow}
+          >
+            <View
+              style={[
+                styles.checkbox,
+                {
+                  backgroundColor: acceptedTerms ? accent.action : 'transparent',
+                  borderColor: acceptedTerms ? accent.action : text.muted,
+                },
+              ]}
             >
-              <Text
-                style={{
-                  color: accent.action,
-                  fontWeight: '600',
-                  textDecorationLine: 'underline',
-                  fontSize: 13,
-                }}
+              {acceptedTerms && <Text style={styles.checkmark}>✓</Text>}
+            </View>
+            <Text style={[styles.termsText, { color: text.secondary }]}>
+              I agree to the{' '}
+              <Pressable
+                onPress={handlePrivacyPress}
+                accessibilityRole="link"
+                accessibilityLabel="Read Privacy Pact"
               >
-                Privacy Pact
-              </Text>
-            </Pressable>
-          </Text>
-        </Pressable>
-        {/* Footer note */}
-        <Text style={[styles.cardFooter, { color: text.muted }]}>{footer}</Text>
+                <Text
+                  style={{
+                    color: accent.action,
+                    fontWeight: '600',
+                    textDecorationLine: 'underline',
+                    fontSize: 13,
+                  }}
+                >
+                  Privacy Pact
+                </Text>
+              </Pressable>
+            </Text>
+          </Pressable>
+          {/* Footer note */}
+          <Text style={[styles.cardFooter, { color: text.muted }]}>{footer}</Text>
+        </View>
       </View>
-    </View>
-  );
-}
+    );
+  },
+);
 
 interface WelcomeScreenProps {
   onLogin?: () => void;
   onGuest?: () => void;
 }
 
-export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) {
+export const WelcomeScreen = memo(({ onLogin, onGuest }: WelcomeScreenProps) => {
   const { t, i18n } = useTranslation();
-  const _router = useRouter();
-  const { phase, isDark, gradientNodes, text: themeText } = useTheme();
+  const { gradientNodes } = useTheme();
   const { width } = useWindowDimensions();
 
-  const [acceptedTerms, setAcceptedTerms] = useState(true);
-  const [isConnecting, setIsConnecting] = useState(false);
-  const [langHover, setLangHover] = useState<string | null>(null);
-  const [btnHover, setBtnHover] = useState<'explore' | 'login' | null>(null);
+  const [state, dispatch] = useReducer(welcomeReducer, {
+    acceptedTerms: true,
+    isConnecting: false,
+    langHover: null,
+    btnHover: null,
+  });
+
+  const { acceptedTerms, isConnecting, langHover, btnHover } = state;
 
   const isNarrow = width < 900;
-
   const bgFrom = gradientNodes[0];
 
-  const changeLanguage = async (code: string) => {
-    hapticLight();
-    await i18n.changeLanguage(code);
-  };
+  const changeLanguage = useCallback(
+    async (code: string) => {
+      hapticLight();
+      await i18n.changeLanguage(code);
+    },
+    [i18n],
+  );
 
-  const handleStartExploring = async () => {
+  const handleStartExploring = useCallback(async () => {
     if (!acceptedTerms) {
       hapticError();
       return;
     }
     hapticSuccess();
-    setIsConnecting(true);
+    dispatch({ type: 'SET_CONNECTING', connecting: true });
     try {
       await authAPI.signInAnonymously();
       if (onGuest) onGuest();
     } catch (err) {
       handleAPIError(err);
-      setIsConnecting(false);
+      dispatch({ type: 'SET_CONNECTING', connecting: false });
     }
-  };
+  }, [acceptedTerms, onGuest]);
 
-  const handleLoginPress = () => {
+  const handleLoginPress = useCallback(() => {
     if (!acceptedTerms) {
       hapticError();
       return;
     }
     hapticLight();
     if (onLogin) onLogin();
-  };
+  }, [acceptedTerms, onLogin]);
 
-  const footer =
-    t('welcome.footer') ||
-    'Part of the EdLove Constellation \u00B7 Made with \uD83D\uDC96 in Sri Lanka';
+  const toggleTerms = useCallback(() => {
+    dispatch({ type: 'SET_TERMS', accepted: !acceptedTerms });
+  }, [acceptedTerms]);
 
-  // \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
-  // Full layout
-  // \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+  const setLangHoverIn = useCallback((code: string) => {
+    dispatch({ type: 'SET_LANG_HOVER', lang: code });
+  }, []);
+
+  const setLangHoverOut = useCallback(() => {
+    dispatch({ type: 'SET_LANG_HOVER', lang: null });
+  }, []);
+
+  const setBtnHoverIn = useCallback((btn: 'explore' | 'login') => {
+    dispatch({ type: 'SET_BTN_HOVER', btn });
+  }, []);
+
+  const setBtnHoverOut = useCallback(() => {
+    dispatch({ type: 'SET_BTN_HOVER', btn: null });
+  }, []);
+
+  const footer = useMemo(
+    () => t('welcome.footer') || 'Part of the EdLove Constellation · Made with 💖 in Sri Lanka',
+    [t],
+  );
+
   return (
     <View style={[styles.root, { backgroundColor: bgFrom }]}>
       {/* Subtle ambient glow blobs */}
       <View style={[styles.blob1, { backgroundColor: `${Theme.colors.sanctuarySaffron}12` }]} />
       <View style={[styles.blob2, { backgroundColor: `${Theme.colors.sageGreen}0D` }]} />
       {isNarrow ? (
-        // \u2500\u2500 Mobile web: stack vertically \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
         <ScrollView
           contentContainerStyle={styles.narrowContent}
           showsVerticalScrollIndicator={false}
@@ -396,16 +453,15 @@ export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) 
             onChangeLanguage={changeLanguage}
             onStartExploring={handleStartExploring}
             onLogin={handleLoginPress}
-            onToggleTerms={() => setAcceptedTerms((v) => !v)}
-            onLangHoverIn={setLangHover}
-            onLangHoverOut={() => setLangHover(null)}
-            onBtnHoverIn={setBtnHover}
-            onBtnHoverOut={() => setBtnHover(null)}
+            onToggleTerms={toggleTerms}
+            onLangHoverIn={setLangHoverIn}
+            onLangHoverOut={setLangHoverOut}
+            onBtnHoverIn={setBtnHoverIn}
+            onBtnHoverOut={setBtnHoverOut}
             footer={footer}
           />
         </ScrollView>
       ) : (
-        // ── Desktop web: two-column layout ──────────────────────────────
         <View style={styles.twoCol}>
           <LeftPanel isNarrow={false} />
           <VStack className="flex-1 justify-center items-center">
@@ -418,11 +474,11 @@ export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) 
               onChangeLanguage={changeLanguage}
               onStartExploring={handleStartExploring}
               onLogin={handleLoginPress}
-              onToggleTerms={() => setAcceptedTerms((v) => !v)}
-              onLangHoverIn={setLangHover}
-              onLangHoverOut={() => setLangHover(null)}
-              onBtnHoverIn={setBtnHover}
-              onBtnHoverOut={() => setBtnHover(null)}
+              onToggleTerms={toggleTerms}
+              onLangHoverIn={setLangHoverIn}
+              onLangHoverOut={setLangHoverOut}
+              onBtnHoverIn={setBtnHoverIn}
+              onBtnHoverOut={setBtnHoverOut}
               footer={footer}
             />
           </VStack>
@@ -430,11 +486,13 @@ export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) 
       )}
     </View>
   );
-}
+});
 
-// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+export default WelcomeScreen;
+
+// ──────────────────────────────────────────────────────────
 // Styles
-// \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+// ──────────────────────────────────────────────────────────
 const styles = StyleSheet.create({
   root: {
     flex: 1,
@@ -469,7 +527,7 @@ const styles = StyleSheet.create({
     alignItems: 'stretch',
   },
 
-  // \u2500\u2500 Left panel \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+  // ── Left panel ──────────────────────────────────────────────────────────────────
   leftPanel: {
     flex: 1,
     justifyContent: 'center',
@@ -571,7 +629,7 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
   },
 
-  // \u2500\u2500 Right panel \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+  // ── Right panel ───────────────────────────────────────────────────────────
   rightPanel: {
     width: '100%',
     maxWidth: 420,

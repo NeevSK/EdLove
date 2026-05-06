@@ -2,10 +2,19 @@ import { APIError } from './API';
 import type { DeviceMetadata } from './runtime';
 import type { User } from './User';
 
-export type { Actor, ActorRelationship, ActorType, ContactChannel } from './Actor';
+export type {
+  Actor,
+  ActorRelationship,
+  ActorType,
+  ContactChannel,
+} from './Actor';
 export type { PaginatedResponse, PaginationParams } from './API';
 export type { Assignment } from './Assignment';
-export type { AttendanceRecord, AttendanceStatus, StudentAttendance } from './Attendance';
+export type {
+  AttendanceRecord,
+  AttendanceStatus,
+  StudentAttendance,
+} from './Attendance';
 export type {
   AuthorityTier,
   PlatformAuthority,
@@ -14,7 +23,7 @@ export type {
   WorkCapacity,
   WorkRole,
 } from './Authority';
-export type { Classroom } from './Classroom';
+export type { Classroom, ClassroomStudent, StudentAcademicRecord } from './Classroom';
 export type { ClassroomNote } from './ClassroomNote';
 export type {
   AnnouncementWithAuthor,
@@ -57,6 +66,8 @@ export type { StudentGroup } from './Group';
 export type {
   FieldAnalytics,
   InstitutionalAsset,
+  InventoryCategory,
+  InventoryCondition,
   InventoryItem,
   InventoryRequest,
   ResourceNeedSummary,
@@ -80,7 +91,12 @@ export type {
   RequestStatus,
   SchoolJoinRequest,
 } from './Onboarding';
-export type { CapabilityKey, CapabilityResource, PolicyDecision } from './Policy';
+export type {
+  CapabilityKey,
+  CapabilityResource,
+  PolicyDecision,
+} from './Policy';
+export type { Bond, Perspective, Capacity } from './Identity';
 export type { PrincipalNote } from './PrincipalNote';
 export {
   type ClaimInvitePayload,
@@ -94,8 +110,17 @@ export {
   type ThuthimalGiftPayload,
   type UserInvitePayload,
 } from './QRPayload';
-export type { BaseResource, ClassroomResource, ResourceFormat, ResourceType } from './Resource';
-export type { CoreRuntimeEnvironment, DeviceMetadata, StorageProvider } from './runtime';
+export type {
+  BaseResource,
+  ClassroomResource,
+  ResourceFormat,
+  ResourceType,
+} from './Resource';
+export type {
+  CoreRuntimeEnvironment,
+  DeviceMetadata,
+  StorageProvider,
+} from './runtime';
 export type {
   AcademicCycle,
   Announcement,
@@ -112,7 +137,11 @@ export type { LeaveStatus, LeaveType, StaffLeave } from './StaffLeave';
 export type { BulkStudent, Student } from './Student';
 export type { Task } from './Task';
 export type { TeacherNote } from './TeacherNote';
-export type { LongitudinalRecord, TemporalBounds, TemporalPoint } from './Temporal';
+export type {
+  LongitudinalRecord,
+  TemporalBounds,
+  TemporalPoint,
+} from './Temporal';
 export type {
   Membership,
   PlatformAccessContext,
@@ -127,10 +156,15 @@ export type {
   KnowledgeTopology,
   LayoutResult,
   LinkRelationship,
+  MappingTopologyZod,
   PerspectiveId,
+  PulseMetricsZod,
 } from './topology';
-export type { AuthSession, LoginData, SignUpData, User } from './User';
-export type { PerspectiveRenderer, PerspectiveViewProps } from './visualization';
+export type { AuthSession, LoginData, ProfileStats, SignUpData, User } from './User';
+export type {
+  PerspectiveRenderer,
+  PerspectiveViewProps,
+} from './visualization';
 export type {
   ResolvedWorkspaceSurface,
   WorkspaceLayout,

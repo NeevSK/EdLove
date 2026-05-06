@@ -8,12 +8,12 @@ export interface StudentGrade {
   gpa: number;
   feedback?: string | null;
   rank?: number | null;
-  created_at: string;
-  updated_at: string;
+  created_at: Date;
+  updated_at: Date;
   graded_by: string;
-  graded_at: string;
+  graded_at: Date;
   publication_state?: 'draft' | 'published';
-  published_at?: string | null;
+  published_at?: Date | null;
   published_by?: string | null;
   publication_action?: string | null;
 }

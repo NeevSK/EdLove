@@ -1,4 +1,4 @@
-﻿/**
+/**
  * QRResolver â€” Central parser and router for all QR scan results
  *
  * Handles all payload formats:
@@ -16,7 +16,11 @@ import { QR_VERSION } from '../../types/QRPayload';
 
 export type QRResolveResult =
   | { ok: true; payload: QRPayload }
-  | { ok: false; error: 'invalid' | 'version_mismatch' | 'unknown_action'; raw: string };
+  | {
+      ok: false;
+      error: 'invalid' | 'version_mismatch' | 'unknown_action';
+      raw: string;
+    };
 
 /** UUID v4 pattern for legacy bare-UUID identity card QRs */
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -50,7 +54,12 @@ export function resolveQR(raw: string): QRResolveResult {
   if (UUID_REGEX.test(trimmed)) {
     return {
       ok: true,
-      payload: { v: 1, action: 'user_invite', inviter_id: trimmed, inviter_authority: 'unknown' },
+      payload: {
+        v: 1,
+        action: 'user_invite',
+        inviter_id: trimmed,
+        inviter_authority: 'unknown',
+      },
     };
   }
 
@@ -65,12 +74,12 @@ export function resolveQR(raw: string): QRResolveResult {
       const queryString = trimmed.substring(queryStart + 1);
       const params = parseQueryString(queryString);
 
-      const v = parseInt(params.v ?? '', 10);
+      const v = parseInt(params['v'] ?? '', 10);
       if (Number.isNaN(v) || v !== QR_VERSION) {
         return { ok: false, error: 'version_mismatch', raw };
       }
 
-      const action = params.action as QRAction | undefined;
+      const action = params['action'] as QRAction | undefined;
       if (!action) return { ok: false, error: 'invalid', raw };
 
       return buildPayloadFromParams(action, params, raw);
@@ -109,7 +118,10 @@ function buildPayloadFromParams(
     case 'join_school': {
       const { school_id, group_id, handle } = params;
       if (!school_id || !group_id) return { ok: false, error: 'invalid', raw };
-      return { ok: true, payload: { v: 1, action, school_id, group_id, handle } };
+      return {
+        ok: true,
+        payload: { v: 1, action, school_id, group_id, handle },
+      };
     }
 
     case 'join_class': {
@@ -131,7 +143,13 @@ function buildPayloadFromParams(
         return { ok: false, error: 'invalid', raw };
       return {
         ok: true,
-        payload: { v: 1, action, invite_code, school_id, authority: finalAuthority },
+        payload: {
+          v: 1,
+          action,
+          invite_code,
+          school_id,
+          authority: finalAuthority,
+        },
       };
     }
 
@@ -141,7 +159,13 @@ function buildPayloadFromParams(
       if (!inviter_id) return { ok: false, error: 'invalid', raw };
       return {
         ok: true,
-        payload: { v: 1, action, inviter_id, inviter_authority: finalInviterAuthority, username },
+        payload: {
+          v: 1,
+          action,
+          inviter_id,
+          inviter_authority: finalInviterAuthority,
+          username,
+        },
       };
     }
 

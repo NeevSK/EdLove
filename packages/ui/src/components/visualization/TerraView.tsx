@@ -1,4 +1,4 @@
-import { PerspectiveViewProps } from '@repo/core/types';
+import type { PerspectiveViewProps } from '@repo/core/types';
 import type React from 'react';
 import { useMemo } from 'react';
 import { useThemedColors } from '../../hooks/useThemedColors';
@@ -16,7 +16,12 @@ export const TerraView: React.FC<PerspectiveViewProps> = ({ data, onNodePress })
 
   const initialRegion = useMemo(() => {
     if (geoNodes.length === 0) {
-      return { latitude: 7.8731, longitude: 80.7718, latitudeDelta: 3.0, longitudeDelta: 3.0 };
+      return {
+        latitude: 7.8731,
+        longitude: 80.7718,
+        latitudeDelta: 3.0,
+        longitudeDelta: 3.0,
+      };
     }
     const lats = geoNodes.map((n: any) => n.geo!.lat);
     const lngs = geoNodes.map((n: any) => n.geo!.lng);

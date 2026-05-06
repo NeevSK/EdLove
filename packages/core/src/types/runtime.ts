@@ -40,7 +40,11 @@ export interface LocationProvider {
 }
 
 export interface NetworkProvider {
-  fetch(): Promise<{ isConnected: boolean | null; type: string; details?: any }>;
+  fetch(): Promise<{
+    isConnected: boolean | null;
+    type: string;
+    details?: any;
+  }>;
 }
 
 export interface ShareOptions {

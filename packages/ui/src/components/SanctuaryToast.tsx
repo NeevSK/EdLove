@@ -1,6 +1,6 @@
 import { AlertCircle, CheckCircle, Info, X } from 'lucide-react-native';
 import { useCallback, useEffect } from 'react';
-import { Pressable } from 'react-native';
+import { Pressable } from '../primitives';
 import Animated, {
   runOnJS,
   useAnimatedStyle,
@@ -55,17 +55,19 @@ export default function SanctuaryToast({
   }, [opacity, translateY, visible, onHide]);
 
   useEffect(() => {
-    if (visible) {
-      translateY.value = withSpring(0, { damping: 15 });
-      opacity.value = withTiming(1);
-
-      const timer = setTimeout(() => {
-        hide();
-      }, duration);
-
-      return () => clearTimeout(timer);
+    if (!visible) {
+      hide();
+      return;
     }
-    hide();
+
+    translateY.value = withSpring(0, { damping: 15 });
+    opacity.value = withTiming(1);
+
+    const timer = setTimeout(() => {
+      hide();
+    }, duration);
+
+    return () => clearTimeout(timer);
   }, [visible, translateY, opacity, hide, duration]);
 
   const animatedStyle = useAnimatedStyle(() => ({

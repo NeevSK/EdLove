@@ -7,6 +7,13 @@ const GUEST_JOURNAL_ENTRIES_KEY = 'guest-journal-entries';
 const GUEST_CLASSROOM_DATA_KEY = 'guest-classroom-data';
 const GUEST_STUDENTS_KEY = 'guest-students';
 
+let localIdCounter = 0;
+const createLocalId = () => {
+  localIdCounter += 1;
+  const suffix = globalThis.crypto?.randomUUID?.() ?? `seq-${localIdCounter}`;
+  return `local-${new Date().getTime()}-${suffix}`;
+};
+
 export interface GuestTimetablePeriod {
   localId: string;
   day_of_week: number;
@@ -68,7 +75,7 @@ export class GuestDataManager {
 
       const newPeriod: GuestTimetablePeriod = {
         ...period,
-        localId: `local-${Date.now()}-${Math.random()}`,
+        localId: createLocalId(),
       };
 
       allPeriods.push(newPeriod);
@@ -93,7 +100,10 @@ export class GuestDataManager {
       const index = allPeriods.findIndex((p) => p.localId === localId);
 
       if (index !== -1) {
-        allPeriods[index] = { ...allPeriods[index], ...updates } as GuestTimetablePeriod;
+        allPeriods[index] = {
+          ...allPeriods[index],
+          ...updates,
+        } as GuestTimetablePeriod;
         await SafeZustandStorage.setItem(GUEST_TIMETABLE_KEY, JSON.stringify(allPeriods));
       }
     } catch (error) {
@@ -135,7 +145,7 @@ export class GuestDataManager {
       const logs: GuestMoodLog[] = data ? JSON.parse(data) : [];
 
       const newLog: GuestMoodLog = {
-        localId: `local-${Date.now()}-${Math.random()}`,
+        localId: createLocalId(),
         mood,
         note,
         timestamp: new Date().toISOString(),
@@ -169,7 +179,7 @@ export class GuestDataManager {
       const entries: GuestJournalEntry[] = data ? JSON.parse(data) : [];
 
       const newEntry: GuestJournalEntry = {
-        localId: `local-${Date.now()}-${Math.random()}`,
+        localId: createLocalId(),
         content,
         timestamp: new Date().toISOString(),
       };
@@ -203,7 +213,7 @@ export class GuestDataManager {
 
       const newStudents = students.map((s) => ({
         ...s,
-        localId: `local-${Date.now()}-${Math.random()}`,
+        localId: createLocalId(),
       }));
 
       const updated = [...existing, ...newStudents];

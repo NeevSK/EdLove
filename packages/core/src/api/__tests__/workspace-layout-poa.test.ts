@@ -1,4 +1,4 @@
-﻿vi.mock('../native/runtimes/workspaceLayout.runtime', () => ({
+vi.mock('../runtimes/workspaceLayout.runtime', () => ({
   workspaceLayoutServices: {
     getLayout: vi.fn(),
     upsertLayout: vi.fn(),

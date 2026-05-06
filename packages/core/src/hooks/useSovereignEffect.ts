@@ -1,5 +1,5 @@
-import { Effect, Runtime, Fiber } from "effect";
-import { useEffect, useState, useCallback } from "react";
+import { Effect, Fiber, Runtime } from 'effect';
+import { useCallback, useEffect, useState } from 'react';
 
 /**
  * Hook to run an Effect-TS effect within a React lifecycle.
@@ -7,7 +7,7 @@ import { useEffect, useState, useCallback } from "react";
  */
 export function useSovereignEffect<A, E, R>(
   effect: Effect.Effect<A, E, R>,
-  deps: React.DependencyList = []
+  deps: React.DependencyList = [],
 ) {
   const [result, setResult] = useState<{
     status: 'idle' | 'running' | 'success' | 'failure';
@@ -26,7 +26,7 @@ export function useSovereignEffect<A, E, R>(
       Effect.catchAll((error) => {
         setResult({ status: 'failure', error: error as E });
         return Effect.void;
-      })
+      }),
     );
 
     const runtime = Runtime.defaultRuntime as Runtime.Runtime<R>;
@@ -36,6 +36,7 @@ export function useSovereignEffect<A, E, R>(
     return () => {
       Effect.runFork(Fiber.interrupt(fiber));
     };
+    // biome-ignore lint/correctness/useExhaustiveDependencies: deps is passed as argument
   }, deps);
 
   return result;
@@ -46,23 +47,26 @@ export function useSovereignEffect<A, E, R>(
  * Useful for event handlers (e.g., button clicks).
  */
 export function useSovereignCallback<Args extends Array<unknown>, A, E, R>(
-  effectFn: (...args: Args) => Effect.Effect<A, E, R>
+  effectFn: (...args: Args) => Effect.Effect<A, E, R>,
 ) {
   const [status, setStatus] = useState<'idle' | 'running' | 'success' | 'failure'>('idle');
 
-  const execute = useCallback((...args: Args) => {
-    setStatus('running');
-    
-    return Runtime.runPromise(Runtime.defaultRuntime as Runtime.Runtime<R>)(
-      effectFn(...args).pipe(
-        Effect.tap(() => Effect.sync(() => setStatus('success'))),
-        Effect.catchAll((e) => {
-          setStatus('failure');
-          return Effect.fail(e);
-        })
-      )
-    );
-  }, [effectFn]);
+  const execute = useCallback(
+    (...args: Args) => {
+      setStatus('running');
+
+      return Runtime.runPromise(Runtime.defaultRuntime as Runtime.Runtime<R>)(
+        effectFn(...args).pipe(
+          Effect.tap(() => Effect.sync(() => setStatus('success'))),
+          Effect.catchAll((e) => {
+            setStatus('failure');
+            return Effect.fail(e);
+          }),
+        ),
+      );
+    },
+    [effectFn],
+  );
 
   return [execute, status] as const;
 }

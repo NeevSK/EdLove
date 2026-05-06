@@ -1,5 +1,5 @@
 import { Lock, Shield, Smartphone } from 'lucide-react-native';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useReducer } from 'react';
 import { Box, HStack, Text, VStack } from '../gluestack';
 import { Theme } from '../theme/Theme';
 import { SanctuaryButton } from './SanctuaryButton';
@@ -8,7 +8,7 @@ import SanctuaryModal from './SanctuaryModal';
 
 export type AccountPinModalMode = 'create' | 'verify' | 'update' | 'remove';
 
-type AccountPinModalSubmit = { pin: string } | { currentPin: string; nextPin: string };
+export type AccountPinModalSubmit = { pin: string } | { currentPin: string; nextPin: string };
 
 interface AccountPinModalProps {
   isOpen: boolean;
@@ -63,6 +63,45 @@ function getCopy(mode: AccountPinModalMode, accountLabel?: string | null) {
   }
 }
 
+// ──────────────────────────────────────────────────────────
+// TYPES & REDUCER
+// ──────────────────────────────────────────────────────────
+
+interface PinState {
+  pin: string;
+  confirmPin: string;
+  currentPin: string;
+  localError: string | null;
+}
+
+type PinAction =
+  | { type: 'SET_PIN'; pin: string }
+  | { type: 'SET_CONFIRM_PIN'; pin: string }
+  | { type: 'SET_CURRENT_PIN'; pin: string }
+  | { type: 'SET_ERROR'; error: string | null }
+  | { type: 'RESET' };
+
+function pinReducer(state: PinState, action: PinAction): PinState {
+  switch (action.type) {
+    case 'SET_PIN':
+      return { ...state, pin: action.pin };
+    case 'SET_CONFIRM_PIN':
+      return { ...state, confirmPin: action.pin };
+    case 'SET_CURRENT_PIN':
+      return { ...state, currentPin: action.pin };
+    case 'SET_ERROR':
+      return { ...state, localError: action.error };
+    case 'RESET':
+      return { pin: '', confirmPin: '', currentPin: '', localError: null };
+    default:
+      return state;
+  }
+}
+
+// ──────────────────────────────────────────────────────────
+// MAIN COMPONENT
+// ──────────────────────────────────────────────────────────
+
 export default function AccountPinModal({
   isOpen,
   mode,
@@ -73,79 +112,84 @@ export default function AccountPinModal({
   error,
   allowClose = true,
 }: AccountPinModalProps) {
-  const [pin, setPin] = useState('');
-  const [confirmPin, setConfirmPin] = useState('');
-  const [currentPin, setCurrentPin] = useState('');
-  const [localError, setLocalError] = useState<string | null>(null);
+  const [state, dispatch] = useReducer(pinReducer, {
+    pin: '',
+    confirmPin: '',
+    currentPin: '',
+    localError: null,
+  });
+
+  const { pin, confirmPin, currentPin, localError } = state;
+
 
   const copy = useMemo(() => getCopy(mode, accountLabel), [accountLabel, mode]);
 
   useEffect(() => {
-    if (!isOpen) return;
-
-    setPin('');
-    setConfirmPin('');
-    setCurrentPin('');
-    setLocalError(null);
+    if (isOpen) {
+      dispatch({ type: 'RESET' });
+    }
   }, [isOpen]);
 
   const resolvedError = localError || error || null;
 
-  const handleSubmit = async () => {
+  const handleSubmit = useCallback(async () => {
     const normalizedPin = pin.replace(/\s+/g, '').trim();
     const normalizedCurrentPin = currentPin.replace(/\s+/g, '').trim();
 
     if (mode === 'verify') {
       if (!normalizedPin) {
-        setLocalError('Enter the PIN for this account.');
+        dispatch({ type: 'SET_ERROR', error: 'Enter the PIN for this account.' });
         return;
       }
 
-      setLocalError(null);
+      dispatch({ type: 'SET_ERROR', error: null });
       await onSubmit({ pin: normalizedPin });
       return;
     }
 
     if (mode === 'remove') {
       if (!normalizedCurrentPin) {
-        setLocalError('Enter the current PIN first.');
+        dispatch({ type: 'SET_ERROR', error: 'Enter the current PIN first.' });
         return;
       }
 
-      setLocalError(null);
+      dispatch({ type: 'SET_ERROR', error: null });
       await onSubmit({ pin: normalizedCurrentPin });
       return;
     }
 
     if (!/^\d{4,8}$/.test(normalizedPin)) {
-      setLocalError('Use 4 to 8 digits for the app PIN.');
+      dispatch({ type: 'SET_ERROR', error: 'Use 4 to 8 digits for the app PIN.' });
       return;
     }
 
     if (mode === 'create') {
       if (normalizedPin !== confirmPin.replace(/\s+/g, '').trim()) {
-        setLocalError('The two PIN entries do not match.');
+        dispatch({ type: 'SET_ERROR', error: 'The two PIN entries do not match.' });
         return;
       }
 
-      setLocalError(null);
+      dispatch({ type: 'SET_ERROR', error: null });
       await onSubmit({ pin: normalizedPin });
       return;
     }
 
     if (!/^\d{4,8}$/.test(normalizedCurrentPin)) {
-      setLocalError('Enter the current PIN before changing it.');
+      dispatch({ type: 'SET_ERROR', error: 'Enter the current PIN before changing it.' });
       return;
     }
 
     if (normalizedPin !== confirmPin.replace(/\s+/g, '').trim()) {
-      setLocalError('The new PIN entries do not match.');
+      dispatch({ type: 'SET_ERROR', error: 'The new PIN entries do not match.' });
       return;
     }
 
-    setLocalError(null);
-    await onSubmit({ currentPin: normalizedCurrentPin, nextPin: normalizedPin });
-  };
+    dispatch({ type: 'SET_ERROR', error: null });
+    await onSubmit({
+      currentPin: normalizedCurrentPin,
+      nextPin: normalizedPin,
+    });
+  }, [mode, pin, currentPin, confirmPin, onSubmit]);
 
   const footer = (
     <HStack className="w-full gap-3">
@@ -189,7 +233,7 @@ export default function AccountPinModal({
           <SanctuaryInput
             label={mode === 'verify' ? 'PIN' : 'New PIN'}
             value={pin}
-            onChangeText={setPin}
+            onChangeText={(text) => dispatch({ type: 'SET_PIN', pin: text })}
             type="password"
             keyboardType="number-pad"
             placeholder="4 to 8 digits"
@@ -201,7 +245,7 @@ export default function AccountPinModal({
           <SanctuaryInput
             label="Current PIN"
             value={currentPin}
-            onChangeText={setCurrentPin}
+            onChangeText={(text) => dispatch({ type: 'SET_CURRENT_PIN', pin: text })}
             type="password"
             keyboardType="number-pad"
             placeholder="Enter current PIN"
@@ -213,7 +257,7 @@ export default function AccountPinModal({
           <SanctuaryInput
             label="Confirm PIN"
             value={confirmPin}
-            onChangeText={setConfirmPin}
+            onChangeText={(text) => dispatch({ type: 'SET_CONFIRM_PIN', pin: text })}
             type="password"
             keyboardType="number-pad"
             placeholder="Enter it again"
@@ -225,7 +269,7 @@ export default function AccountPinModal({
             <SanctuaryInput
               label="Current PIN"
               value={currentPin}
-              onChangeText={setCurrentPin}
+              onChangeText={(text) => dispatch({ type: 'SET_CURRENT_PIN', pin: text })}
               type="password"
               keyboardType="number-pad"
               placeholder="Current PIN"
@@ -234,7 +278,7 @@ export default function AccountPinModal({
             <SanctuaryInput
               label="New PIN"
               value={pin}
-              onChangeText={setPin}
+              onChangeText={(text) => dispatch({ type: 'SET_PIN', pin: text })}
               type="password"
               keyboardType="number-pad"
               placeholder="4 to 8 digits"
@@ -242,7 +286,7 @@ export default function AccountPinModal({
             <SanctuaryInput
               label="Confirm new PIN"
               value={confirmPin}
-              onChangeText={setConfirmPin}
+              onChangeText={(text) => dispatch({ type: 'SET_CONFIRM_PIN', pin: text })}
               type="password"
               keyboardType="number-pad"
               placeholder="Enter it again"

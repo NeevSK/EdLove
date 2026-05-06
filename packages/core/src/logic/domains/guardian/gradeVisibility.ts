@@ -1,4 +1,4 @@
-﻿const PUBLISHED_GRADE_STATUSES = new Set([
+const PUBLISHED_GRADE_STATUSES = new Set([
   'published',
   'released',
   'finalized',

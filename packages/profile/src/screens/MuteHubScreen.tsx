@@ -4,14 +4,12 @@ import { socialAPI } from '@repo/core/api';
 
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
-import { Box } from '@repo/ui/primitives';
-import { Center, HStack, Heading, Icon, Text, VStack } from '@repo/ui/primitives';
 import { UserAvatar } from '@repo/ui/components/UserAvatar';
-import { Pressable } from '@repo/ui/primitives';
+import { Box, Center, Heading, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 
 import { Shield, Trash2, XCircle } from 'lucide-react-native';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, RefreshControl, ScrollView } from 'react-native';
 
@@ -19,7 +17,7 @@ interface MutedUser {
   id: string;
   full_name: string;
   avatar_url?: string;
-  authority?: string;
+  capacity?: string;
 }
 
 export default function MuteHubScreen() {
@@ -30,7 +28,7 @@ export default function MuteHubScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
-  const fetchMutes = async () => {
+  const fetchMutes = useCallback(async () => {
     try {
       const data = await socialAPI.getMutedUsers();
       setMutedUsers((data as MutedUser[]) || []);
@@ -40,7 +38,7 @@ export default function MuteHubScreen() {
       setLoading(false);
       setRefreshing(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchMutes();
@@ -131,7 +129,7 @@ export default function MuteHubScreen() {
                         avatarUrl={user.avatar_url}
                         fullName={user.full_name}
                         size={44}
-                        authority={user.authority}
+                        fallbackEmoji={user.capacity === 'principal' ? '🏛️' : user.capacity === 'teacher' ? '🌱' : '🌿'}
                       />
                       <VStack className="flex-1">
                         <Text className="text-phase-text-primary font-bold">{user.full_name}</Text>

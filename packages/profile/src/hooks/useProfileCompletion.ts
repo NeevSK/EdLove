@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { AuthorityTier } from '@repo/core/types';
+import { handleAPIError } from '@repo/core/logic';
+import type { AuthorityTier } from '@repo/core/types';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { PROFILE_SECTIONS } from '../config/profileSections';
 import { isFieldFilled } from '../lib/isFieldFilled';
@@ -8,7 +9,7 @@ import type { UserProfile } from '../types';
 const CELEBRATION_KEY = '@gurudevi/profile_completed_celebrated';
 
 export interface ProfileCompletionResult {
-  percentage: number; // 0\u2013100 integer
+  percentage: number; // 0–100 integer
   isComplete: boolean;
   nextHint: string; // e.g. "Add your profile photo to complete"
   sectionBreakdown: {
@@ -26,15 +27,24 @@ export function useProfileCompletion(
   const [hasSeenCelebration, setHasSeenCelebration] = useState(true);
 
   useEffect(() => {
-    AsyncStorage.getItem(CELEBRATION_KEY).then((val) => {
-      // val === null means never set \u2192 hasn't seen it
-      setHasSeenCelebration(val === 'true');
-    });
+    const loadCelebrationState = async () => {
+      try {
+        const val = await AsyncStorage.getItem(CELEBRATION_KEY);
+        setHasSeenCelebration(val === 'true');
+      } catch (error) {
+        handleAPIError(error);
+      }
+    };
+    loadCelebrationState().catch(handleAPIError);
   }, []);
 
   const markCompletionCelebrationSeen = useCallback(async () => {
-    setHasSeenCelebration(true);
-    await AsyncStorage.setItem(CELEBRATION_KEY, 'true');
+    try {
+      setHasSeenCelebration(true);
+      await AsyncStorage.setItem(CELEBRATION_KEY, 'true');
+    } catch (error) {
+      handleAPIError(error);
+    }
   }, []);
 
   const computed = useMemo(() => {
@@ -74,7 +84,7 @@ export function useProfileCompletion(
         totalWeight += field.weight;
         sectionTotalWeight += field.weight;
 
-        const value = profile[field.key];
+        const value = profile[field.key as keyof UserProfile];
         if (isFieldFilled(value)) {
           filledWeight += field.weight;
           sectionFilledWeight += field.weight;
@@ -99,9 +109,7 @@ export function useProfileCompletion(
     return {
       percentage,
       isComplete: percentage === 100,
-      nextHint: topUnfilled
-        ? `Add your ${topUnfilled.label} to complete`
-        : '\uD83C\uDF89 Profile complete!',
+      nextHint: topUnfilled ? `Add your ${topUnfilled.label} to complete` : '🎉 Profile complete!',
       sectionBreakdown,
     };
   }, [profile, role]);

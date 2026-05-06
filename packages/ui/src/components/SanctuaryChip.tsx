@@ -1,5 +1,5 @@
 import type React from 'react';
-import { Pressable } from 'react-native';
+import { Pressable } from '../primitives';
 import { Text } from '../gluestack';
 
 export interface SanctuaryChipProps {

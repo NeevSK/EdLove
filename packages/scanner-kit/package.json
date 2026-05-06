@@ -12,7 +12,15 @@
   },
   "scripts": {
     "check-types": "pnpm exec tsc --noEmit",
-    "lint": "pnpm exec eslint ."
+    "lint": "pnpm run lint:biome && pnpm run lint:eslint",
+    "lint:biome": "biome check .",
+    "lint:eslint": "eslint .",
+    "format": "biome format --write .",
+    "check-cycles": "node ../../scripts/refactor/sovereign-cycle-checker.mjs",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui",
+    "clean": "rm -rf .turbo node_modules dist"
   },
   "dependencies": {
     "@repo/core": "workspace:*",
@@ -25,11 +33,11 @@
     "@react-native-ml-kit/text-recognition": "*",
     "buffer": "*",
     "expo-camera": "~55.0.10",
+    "expo-clipboard": "^55.0.8",
     "expo-file-system": "~55.0.11",
     "expo-image-manipulator": "~55.0.11",
     "expo-image-picker": "~55.0.13",
     "expo-sharing": "~55.0.11",
-    "expo-clipboard": "^55.0.8",
     "jpeg-js": "*",
     "jsqr": "*",
     "qrcode": "*",
@@ -38,12 +46,15 @@
     "react-native-svg": "15.15.3"
   },
   "devDependencies": {
+    "@repo/eslint-config": "workspace:^",
     "@repo/typescript-config": "workspace:*",
+    "@types/qrcode": "^1.5.6",
     "@types/react": "^19.2.14",
     "@types/react-native": "0.83.2",
     "eslint": "^9.38.0",
-    "@repo/eslint-config": "workspace:^",
     "tailwindcss": "^4.1.18",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^2.1.9",
+    "vite-tsconfig-paths": "^6.1.1"
   }
 }

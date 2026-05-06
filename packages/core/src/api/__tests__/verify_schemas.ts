@@ -53,10 +53,16 @@ function verify() {
   process.stdout.write('--- Verifying Schemas ---\n');
 
   const results = [
-    { name: 'ClassroomSchema', result: ClassroomSchema.safeParse(validClassroom) },
+    {
+      name: 'ClassroomSchema',
+      result: ClassroomSchema.safeParse(validClassroom),
+    },
     { name: 'StudentSchema', result: StudentSchema.safeParse(validStudent) },
     { name: 'LessonSchema', result: LessonSchema.safeParse(validLesson) },
-    { name: 'AttendanceSchema', result: AttendanceSchema.safeParse(validAttendance) },
+    {
+      name: 'AttendanceSchema',
+      result: AttendanceSchema.safeParse(validAttendance),
+    },
   ];
 
   let allPassed = true;

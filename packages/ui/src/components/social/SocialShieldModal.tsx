@@ -30,7 +30,11 @@ export interface SocialShieldModalProps {
 const REPORT_REASONS = [
   { label: 'Harmful Content', value: 'harmful', icon: AlertTriangle },
   { label: 'Harassment', value: 'harassment', icon: UserX },
-  { label: 'Inappropriate for School', value: 'inappropriate', icon: ShieldOff },
+  {
+    label: 'Inappropriate for School',
+    value: 'inappropriate',
+    icon: ShieldOff,
+  },
   { label: 'Other', value: 'other', icon: AlertTriangle },
 ];
 

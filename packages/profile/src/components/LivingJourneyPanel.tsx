@@ -6,20 +6,59 @@
  * Whispered Moments.
  */
 
-import { BanyanStage, BhumiStage, CrystalTier, MoonPhase, RiverStage, UserGrowthState } from '@repo/core/api';
-import { usePermissions } from '@repo/core/logic';
-import { communityAPI, moonPhaseAPI } from '@repo/core/api';
-import { useTemporalStore } from '@repo/core/logic';
-
-import { Box } from '@repo/ui/primitives';
-import { HStack, Heading, Spinner, Text, VStack } from '@repo/ui/primitives';
-import { AnimatedView } from '@repo/ui/primitives';
-
-import { useEffect, useState } from 'react';
+import {
+  type BanyanStage,
+  type BhumiStage,
+  type CrystalTier,
+  type MoonPhase,
+  moonPhaseAPI,
+  profileAPI,
+  type RiverStage,
+  socialAPI,
+  type UserGrowthState,
+} from '@repo/core/api';
+import { type TemporalScale, usePermissions, useTemporalStore } from '@repo/core/logic';
+import { AnimatedView, Box, Heading, HStack, Spinner, Text, VStack } from '@repo/ui/primitives';
+import { useEffect, useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform } from 'react-native';
 import { FadeInDown } from 'react-native-reanimated';
-import { profileAPI } from '../api/profile';
+
+type PanelState = {
+  growth: UserGrowthState | null;
+  rewards: { points: number; badges: string[] } | null;
+  moon: MoonPhase | null;
+  moments: Array<{ key: string; name_en: string; name_si: string }>;
+  resonance: { likes: number; comments: number; shares: number };
+  loading: boolean;
+};
+
+type PanelAction =
+  | { type: 'FETCH_START' }
+  | { type: 'FETCH_SUCCESS'; payload: Omit<PanelState, 'loading'> }
+  | { type: 'FETCH_FAILURE' };
+
+function panelReducer(state: PanelState, action: PanelAction): PanelState {
+  switch (action.type) {
+    case 'FETCH_START':
+      return { ...state, loading: true };
+    case 'FETCH_SUCCESS':
+      return { ...state, ...action.payload, loading: false };
+    case 'FETCH_FAILURE':
+      return { ...state, loading: false };
+    default:
+      return state;
+  }
+}
+
+const initialPanelState: PanelState = {
+  growth: null,
+  rewards: null,
+  moon: null,
+  moments: [],
+  resonance: { likes: 0, comments: 0, shares: 0 },
+  loading: true,
+};
 
 // —————————————————————————————————————————————————————————————————————————————
 // TYPES
@@ -138,7 +177,7 @@ function MoonRow({ moon, t }: MoonRowProps) {
               {t('journey.moonTonight')}
             </Text>
             <Text className="text-sm font-bold text-phase-text-primary">
-              {moon.name.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase())}
+              {moon.name.replace(/_/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase())}
             </Text>
           </HStack>
           <Text className="text-sm text-phase-text-secondary leading-relaxed italic">
@@ -326,47 +365,44 @@ export default function LivingJourneyPanel({ userId }: LivingJourneyPanelProps) 
   const viewScale = useTemporalStore((state) => state.viewScale);
   const phase = useTemporalStore((state) => state.phase);
 
-  const [growth, setGrowth] = useState<UserGrowthState | null>(null);
-  const [journeyRewards, setJourneyRewards] = useState<{ points: number; badges: string[] } | null>(
-    null,
-  );
-  const [moon, setMoon] = useState<MoonPhase | null>(null);
-  const [moments, setMoments] = useState<Array<{ key: string; name_en: string; name_si: string }>>(
-    [],
-  );
-  const [resonance, setResonance] = useState({ likes: 0, comments: 0, shares: 0 });
-  const [loading, setLoading] = useState(true);
+  const [state, dispatch] = useReducer(panelReducer, initialPanelState);
 
   useEffect(() => {
     const fetchData = async () => {
+      dispatch({ type: 'FETCH_START' });
       try {
-        setMoon(moonPhaseAPI.getCurrentMoonPhase(new Date(viewDate)));
-
         const [journeySnapshot, resonanceData] = await Promise.all([
           profileAPI.getJourneySnapshot(userId, {
-            asOf: phase === 'past' ? viewDate : undefined,
-            viewDate,
-            viewScale,
+            at: phase === 'past' ? viewDate : undefined,
+            view_date: viewDate,
+            view_scale: viewScale as TemporalScale,
           }),
-          communityAPI.getCommunityResonance(userId, { viewDate, viewScale }),
+          socialAPI.getCommunityResonance(userId, {
+            viewDate,
+            viewScale: viewScale as TemporalScale,
+          }),
         ]);
 
-        if (journeySnapshot?.growth) setGrowth(journeySnapshot.growth);
-        else setGrowth(null);
-        setJourneyRewards(journeySnapshot?.rewards ?? null);
-        setMoments(journeySnapshot?.whispered_moments ?? []);
-        if (resonanceData) setResonance(resonanceData);
+        dispatch({
+          type: 'FETCH_SUCCESS',
+          payload: {
+            moon: moonPhaseAPI.getCurrentMoonPhase(new Date(viewDate)),
+            growth: (journeySnapshot?.growth as unknown as UserGrowthState | undefined) ?? null,
+            rewards: journeySnapshot?.rewards ?? null,
+            moments: journeySnapshot?.whispered_moments ?? [],
+            resonance: resonanceData || { likes: 0, comments: 0, shares: 0 },
+          },
+        });
       } catch (err) {
         console.error('Error fetching growth journey:', err);
-      } finally {
-        setLoading(false);
+        dispatch({ type: 'FETCH_FAILURE' });
       }
     };
 
-    void fetchData();
+    fetchData().catch(console.error);
   }, [userId, phase, viewDate, viewScale]);
 
-  if (loading) {
+  if (state.loading) {
     return (
       <Box className="bg-phase-canvas rounded-3xl border border-phase-surface p-10 mx-5 mt-8 min-h-[200px] items-center justify-center shadow-lg">
         <Spinner className="text-phase-interactive" size="large" />
@@ -374,7 +410,7 @@ export default function LivingJourneyPanel({ userId }: LivingJourneyPanelProps) 
     );
   }
 
-  if (!growth) {
+  if (!state.growth) {
     return (
       <Box className="p-12 items-center">
         <Text className="text-phase-text-tertiary italic">
@@ -383,6 +419,12 @@ export default function LivingJourneyPanel({ userId }: LivingJourneyPanelProps) 
       </Box>
     );
   }
+
+  const growth = state.growth;
+  const journeyRewards = state.rewards;
+  const moon = state.moon;
+  const moments = state.moments;
+  const resonance = state.resonance;
 
   const bhumi = growth.bhumi_stage ?? 'bijam';
   const banyan = (growth.banyan_stage as BanyanStage | undefined) ?? 'sapling';

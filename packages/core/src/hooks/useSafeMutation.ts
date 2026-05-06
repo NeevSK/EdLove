@@ -5,6 +5,7 @@ import { useMutationAuditLog } from '../lib/sync/MutationAuditLog';
 import { useMutationQueue } from '../lib/sync/useMutationQueue';
 import { networkManager } from '../logic/managers/NetworkManager';
 import { useStore } from '../store/useStore';
+import { DeltaResonance } from '../lib/sync/delta';
 
 interface SafeMutationOptions<TData, TVariables> {
   mutationKey?: string; // Unique key for queueing (e.g. 'createPost')
@@ -13,7 +14,8 @@ interface SafeMutationOptions<TData, TVariables> {
   onSuccess?: (data: TData | null, variables: TVariables) => void;
   onError?: (error: unknown, variables: TVariables, rollback?: () => void) => void;
   retryCount?: number;
-  mutationType?: 'CREATE' | 'UPDATE' | 'DELETE' | 'CUSTOM';
+  mutationType?: 'CREATE' | 'UPDATE' | 'DELETE' | 'CUSTOM' | 'PATCH';
+  originalVariables?: TVariables; // For Delta-Resonance diffing
 }
 
 /**
@@ -97,12 +99,23 @@ export function useSafeMutation<TData, TVariables>(
               queuedAt: Date.now(),
             });
 
-            // 2. Queue for Persistence
+            // 2. Queue for Persistence (with Delta-Resonance check)
+            let finalVariables = variables;
+            let finalType = options.mutationType || 'CREATE';
+
+            if (options?.originalVariables && (finalType === 'UPDATE' || finalType === 'PATCH')) {
+              const patch = DeltaResonance.diff(options.originalVariables, variables);
+              if (patch.length > 0) {
+                finalVariables = patch as any;
+                finalType = 'PATCH';
+              }
+            }
+
             await addToQueue({
               name,
               scope,
-              variables,
-              type: options.mutationType || 'CREATE',
+              variables: finalVariables,
+              type: finalType,
             });
 
             showToast('Saved to Outbox (Offline)', 'info');

@@ -20,7 +20,7 @@ export const gradingContract = c.router({
       200: z.array(StudentGradeSchema),
     },
     query: z.object({
-      studentId: z.string().uuid(),
+      studentId: z.uuid(),
     }),
     metadata: POAMetadataSchema.parse({
       authority: {
@@ -37,7 +37,7 @@ export const gradingContract = c.router({
       200: z.array(StudentGradeSchema),
     },
     query: z.object({
-      classroomId: z.string().uuid(),
+      classroomId: z.uuid(),
     }),
     metadata: POAMetadataSchema.parse({
       authority: {
@@ -54,7 +54,7 @@ export const gradingContract = c.router({
       200: GradebookSnapshotSchema,
     },
     query: z.object({
-      classroomId: z.string().uuid(),
+      classroomId: z.uuid(),
       viewDate: z.string(),
     }),
     metadata: POAMetadataSchema.parse({
@@ -72,8 +72,8 @@ export const gradingContract = c.router({
       200: z.array(StudentGradeSchema),
     },
     query: z.object({
-      studentId: z.string().uuid(),
-      classroomId: z.string().uuid().optional(),
+      studentId: z.uuid(),
+      classroomId: z.uuid().optional(),
       fromDate: z.string().optional(),
       toDate: z.string().optional(),
     }),
@@ -92,9 +92,9 @@ export const gradingContract = c.router({
       200: PublishedStudentGradesSnapshotSchema,
     },
     query: z.object({
-      studentId: z.string().uuid(),
+      studentId: z.uuid(),
       viewDate: z.string(),
-      classroomId: z.string().uuid().optional(),
+      classroomId: z.uuid().optional(),
     }),
     metadata: POAMetadataSchema.parse({
       authority: {
@@ -111,7 +111,7 @@ export const gradingContract = c.router({
       200: SchoolGradingCompletionSchema,
     },
     query: z.object({
-      schoolId: z.string().uuid(),
+      schoolId: z.uuid(),
       viewDate: z.string(),
     }),
     metadata: POAMetadataSchema.parse({
@@ -129,7 +129,7 @@ export const gradingContract = c.router({
       200: PublishedSchoolGradingCompletionSchema,
     },
     query: z.object({
-      schoolId: z.string().uuid(),
+      schoolId: z.uuid(),
       viewDate: z.string(),
     }),
     metadata: POAMetadataSchema.parse({
@@ -144,10 +144,10 @@ export const gradingContract = c.router({
     method: 'POST',
     path: '/grades/draft',
     body: z.object({
-      studentId: z.string().uuid(),
-      classroomId: z.string().uuid(),
+      studentId: z.uuid(),
+      classroomId: z.uuid(),
       marks: z.number(),
-      assignmentId: z.string().uuid().optional(),
+      assignmentId: z.uuid().optional(),
       feedback: z.string().optional(),
     }),
     responses: {
@@ -165,10 +165,10 @@ export const gradingContract = c.router({
     method: 'POST',
     path: '/grades',
     body: z.object({
-      studentId: z.string().uuid(),
-      classroomId: z.string().uuid(),
+      studentId: z.uuid(),
+      classroomId: z.uuid(),
       marks: z.number(),
-      assignmentId: z.string().uuid().optional(),
+      assignmentId: z.uuid().optional(),
       feedback: z.string().optional(),
     }),
     responses: {

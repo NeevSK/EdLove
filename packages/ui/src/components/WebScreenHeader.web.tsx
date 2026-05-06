@@ -23,7 +23,6 @@ export const WebScreenHeader: React.FC<WebScreenHeaderProps> = ({
 }) => {
   const { t } = useTranslation();
   const { context, can } = usePermissions();
-  const { roles } = context;
   const { user } = useStore();
 
   // Determine greeting based on time of day (DRY from GlobalHeader)
@@ -43,7 +42,8 @@ export const WebScreenHeader: React.FC<WebScreenHeaderProps> = ({
       (user as any)?.user_metadata?.full_name?.split(' ')[0] ||
       user?.full_name?.split(' ')[0] ||
       '';
-    const roleLabel = roles[0] ? roles[0].charAt(0).toUpperCase() + roles[0].slice(1) : '';
+    const capacity = context.activeBond?.capacity || '';
+    const roleLabel = capacity ? capacity.charAt(0).toUpperCase() + capacity.slice(1) : '';
 
     if (can('manage', 'TeacherDashboard') || can('manage', 'PrincipalDashboard')) {
       displayTimeText = `${greetingText}, ${roleLabel}`;

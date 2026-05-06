@@ -1,4 +1,4 @@
-﻿import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { type BanyanStage, naturePathsAPI } from '../api/naturePaths';
 import { usePermissions } from '../logic/permissions/hooks/usePermissions';
 
@@ -31,12 +31,17 @@ export function useBanyanGrowth() {
   }, [userId]);
 
   useEffect(() => {
-    refreshBanyan();
+    refreshBanyan().catch((e) => {
+      console.error('Banyan: Failed to refresh on mount', e);
+    });
   }, [refreshBanyan]);
 
-  return {
-    banyan,
-    isLoading,
-    refreshBanyan,
-  };
+  return useMemo(
+    () => ({
+      banyan,
+      isLoading,
+      refreshBanyan,
+    }),
+    [banyan, isLoading, refreshBanyan],
+  );
 }

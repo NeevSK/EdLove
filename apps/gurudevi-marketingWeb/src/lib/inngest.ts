@@ -1,4 +1,4 @@
-import { Inngest } from 'inngest';
+import { Inngest } from "inngest";
 
 /**
  * Gurudevi Inngest Client (Marketing Shell)
@@ -8,8 +8,8 @@ import { Inngest } from 'inngest';
  * run on this client.
  */
 export const inngest = new Inngest({
-  id: 'gurudevi-marketing-web',
-  eventKey: import.meta.env.INNGEST_EVENT_KEY,
+	id: "gurudevi-marketing-web",
+	eventKey: import.meta.env["INNGEST_EVENT_KEY"],
 });
 
 export default inngest;

@@ -1,7 +1,8 @@
 import { type AuditLogEntry, historyAPI } from '@repo/core/logic';
 import type React from 'react';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet } from 'react-native';
+import { ActivityIndicator, ScrollView, Text, View } from '../primitives';
 
 interface HistoryTimelineProps {
   tableName: string;
@@ -19,8 +20,8 @@ export const HistoryTimeline: React.FC<HistoryTimelineProps> = ({ tableName, rec
         setLoading(true);
         const data = await historyAPI.getForRecord(tableName, recordId);
         setHistory(data);
-      } catch (err: any) {
-        setError(err.message || 'Failed to load history');
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load history');
       } finally {
         setLoading(false);
       }

@@ -30,6 +30,7 @@
  * See GROWTH_MODEL.md \u00A714 for the full doctrine and Duolingo analysis.
  */
 
+import { getCurrentTimeMillis } from '../utils/temporal';
 import { supabase } from './supabase';
 
 // \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
@@ -123,14 +124,32 @@ function buildProgressNarrative(
   const remaining = target - current;
 
   const metricLabel: Record<ChallengeMetric, { singular: string; plural: string }> = {
-    library_resources_opened: { singular: 'resource opened', plural: 'resources opened' },
+    library_resources_opened: {
+      singular: 'resource opened',
+      plural: 'resources opened',
+    },
     joy_jar_entries: { singular: 'Joy Jar entry', plural: 'Joy Jar entries' },
-    assignments_submitted: { singular: 'assignment submitted', plural: 'assignments submitted' },
+    assignments_submitted: {
+      singular: 'assignment submitted',
+      plural: 'assignments submitted',
+    },
     community_posts: { singular: 'community post', plural: 'community posts' },
-    reflections_written: { singular: 'reflection written', plural: 'reflections written' },
-    lessons_completed: { singular: 'lesson completed', plural: 'lessons completed' },
-    attendance_recorded: { singular: 'attendance taken', plural: 'attendances recorded' },
-    feedback_given: { singular: 'piece of feedback given', plural: 'pieces of feedback given' },
+    reflections_written: {
+      singular: 'reflection written',
+      plural: 'reflections written',
+    },
+    lessons_completed: {
+      singular: 'lesson completed',
+      plural: 'lessons completed',
+    },
+    attendance_recorded: {
+      singular: 'attendance taken',
+      plural: 'attendances recorded',
+    },
+    feedback_given: {
+      singular: 'piece of feedback given',
+      plural: 'pieces of feedback given',
+    },
   };
 
   const label = current === 1 ? metricLabel[metric].singular : metricLabel[metric].plural;
@@ -218,8 +237,9 @@ export const contextualChallengesAPI = {
     titleEn: string,
     durationDays = 7,
   ): Promise<Challenge> {
-    const now = new Date();
-    const endsAt = new Date(now.getTime() + durationDays * 86400000);
+    const nowMs = getCurrentTimeMillis();
+    const now = new Date(nowMs);
+    const endsAt = new Date(nowMs + durationDays * 86400000);
 
     const celebrationMessages: Record<ChallengeMetric, string> = {
       library_resources_opened:
@@ -571,7 +591,8 @@ export const contextualChallengesAPI = {
    * Used to show collective celebration history.
    */
   async getRecentCompletions(schoolId: string, classroomId?: string): Promise<Challenge[]> {
-    const thirtyDaysAgo = new Date(Date.now() - 30 * 86400000).toISOString();
+    const now = getCurrentTimeMillis();
+    const thirtyDaysAgo = new Date(now - 30 * 86400000).toISOString();
 
     const query = supabase
       .from('contextual_challenges')

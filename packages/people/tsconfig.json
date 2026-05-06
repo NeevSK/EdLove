@@ -1,12 +1,15 @@
 {
-  "extends": "../../packages/typescript-config/react-library.json",
-  "compilerOptions": {
-    "outDir": "./dist",
-    "rootDir": "./src",
-    "baseUrl": ".",
-    "paths": {
-      "@repo/people/*": ["./src/*"]
-    }
-  },
-  "include": ["src/**/*"]
+	"extends": "../../packages/typescript-config/base.json",
+	"compilerOptions": {
+		"outDir": "./dist",
+		"rootDir": "./src",
+		"baseUrl": ".",
+		"types": ["@repo/types-shim"],
+		"paths": {
+			"@powersync/react-native": ["../core/src/adapters/powersync/powersync-shim.d.ts"],
+			"@powersync/react": ["../core/src/adapters/powersync/powersync-react-shim.d.ts"],
+			"@repo/people/*": ["./src/*"]
+		}
+	},
+	"include": ["src/**/*"]
 }

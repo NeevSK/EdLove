@@ -1,4 +1,5 @@
 import { supabase } from '../api/supabase';
+import { generateRandomString } from '../utils/random';
 
 /**
  * Invite Code Validation and Management
@@ -171,7 +172,7 @@ export async function generateInviteCodesForSchool(
  */
 function generateInviteCode(role: 'teacher' | 'student'): string {
   const suffix = role === 'teacher' ? 'TEACH' : 'STUDY';
-  const randomPart = Math.random().toString(36).substring(2, 8).toUpperCase().padEnd(6, '0');
+  const randomPart = generateRandomString(6).toUpperCase();
   return `GURU-${randomPart}-${suffix}`;
 }
 

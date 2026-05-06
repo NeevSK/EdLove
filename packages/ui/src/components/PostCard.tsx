@@ -56,7 +56,7 @@ export interface PostContent {
   author: Author;
   content: string;
   type: PostType;
-  createdAt: string;
+  createdAt: string | Date;
   mediaUrl?: string;
   mediaType?: 'image' | 'video' | 'audio' | 'document';
   isAnonymous?: boolean;
@@ -65,7 +65,7 @@ export interface PostContent {
   hasAcceptedAnswer?: boolean;
   feedbackStatus?: FeedbackStatus;
   feedbackResponse?: string;
-  commentCount: number;
+  commentCount?: number;
 }
 
 interface PostCardProps {
@@ -235,8 +235,16 @@ export const PostCard = React.memo(function PostCard({
     if (type === 'question') {
       const urgencyConfig: Record<Urgency, { label: string; textClass: string; bgClass: string }> =
         {
-          high: { label: 'Urgent', textClass: 'text-red-600', bgClass: 'bg-red-600/10' },
-          medium: { label: 'Medium', textClass: 'text-amber-600', bgClass: 'bg-amber-600/10' },
+          high: {
+            label: 'Urgent',
+            textClass: 'text-red-600',
+            bgClass: 'bg-red-600/10',
+          },
+          medium: {
+            label: 'Medium',
+            textClass: 'text-amber-600',
+            bgClass: 'bg-amber-600/10',
+          },
           low: {
             label: 'Low',
             textClass: 'text-phaseText-secondary',
@@ -302,7 +310,11 @@ export const PostCard = React.memo(function PostCard({
           textClass: 'text-sanctuarySaffron',
           bgClass: 'bg-sanctuarySaffron/15',
         },
-        declined: { label: 'Declined', textClass: 'text-red-600', bgClass: 'bg-red-600/10' },
+        declined: {
+          label: 'Declined',
+          textClass: 'text-red-600',
+          bgClass: 'bg-red-600/10',
+        },
       };
       const cfg = statusConfig[feedbackStatus ?? 'pending'];
       return (

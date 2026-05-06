@@ -1,4 +1,4 @@
-﻿import { selectGuardianVisibleGrades } from '../gradeVisibility';
+import { selectGuardianVisibleGrades } from '../gradeVisibility';
 
 describe('guardian grade visibility', () => {
   test('keeps only published grades when publication metadata is present', () => {

@@ -2,7 +2,7 @@ import type {
   ResolvedWorkspaceSurface,
   WorkspaceLayout,
   WorkspaceSurfaceDefinition,
-} from '@repo/core/logic';
+} from '@repo/core/types';
 
 export interface WorkspaceCanvasProps<
   TSurfaceId extends string = string,
@@ -42,4 +42,5 @@ export interface WorkspaceCanvasProps<
   onSurfacePress?: (surface: ResolvedWorkspaceSurface<TSurfaceId, TCapabilityKey>) => void;
   onPressSurfaceInfo?: (surface: ResolvedWorkspaceSurface<TSurfaceId, TCapabilityKey>) => void;
   onToggleHidden?: (surface: ResolvedWorkspaceSurface<TSurfaceId, TCapabilityKey>) => void;
+  onReorder?: (surfaceId: TSurfaceId, newIndex: number) => void;
 }

@@ -1,13 +1,12 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { useStore } from '@repo/core/logic';
+import { usePermissions, useStore } from '@repo/core/logic';
 
 import { StaffPresencePulse } from '@repo/people';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
+import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { useThemedColors } from '@repo/ui/hooks';
-import { Box } from '@repo/ui/primitives';
-import { HStack, Heading, Text, VStack } from '@repo/ui/primitives';
-import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
+import { Box, Heading, HStack, Text, VStack } from '@repo/ui/primitives';
 import { hapticSuccess } from '@repo/ui/utils/haptics';
 
 import { AtSign, Edit3, User as UserIcon } from 'lucide-react-native';
@@ -33,6 +32,7 @@ export default function FullProfileScreenWeb() {
   const { t } = useTranslation();
   const _colors = useThemedColors();
   const { user: currentUser } = useStore();
+  const { context } = usePermissions();
 
   const {
     profile: liveProfile,
@@ -41,7 +41,8 @@ export default function FullProfileScreenWeb() {
     uploadAvatar,
   } = useProfile(initialProfile?.id);
   const profile = liveProfile || initialProfile;
-  useProfileCompletion(profile, currentUser?.authority ?? currentUser?.roles?.[0] ?? null);
+  const completionCapacity = (context.activeBond?.capacity || context.primaryCapacity) ?? null;
+  useProfileCompletion(profile, completionCapacity as any);
   const { links: socialLinks } = useSocialLinks(profile?.id);
 
   const [showSocialModal, setShowSocialModal] = useState(false);
@@ -53,8 +54,9 @@ export default function FullProfileScreenWeb() {
   if (!profile) return null;
 
   const isOtherProfile = currentUserId !== undefined && currentUserId !== profile.id;
-  const isTeacherProfile = ['teacher', 'principal', 'grade_head', 'section_head'].includes(
-    profile.role || '',
+  const profileCapacity = (profile as any)?.activeBond?.capacity || (profile as any)?.capacity || '';
+  const isTeacherProfile = ['teacher', 'principal', 'gradeHead', 'sectionHead', 'grade_head', 'section_head'].includes(
+    profileCapacity || '',
   );
 
   const handleSave = async (field: string, value: any) => {
@@ -123,7 +125,7 @@ export default function FullProfileScreenWeb() {
                 <EditableItem
                   icon={AtSign}
                   label={t('profile.username')}
-                  value={profile.username}
+                  value={profile.username ?? undefined}
                   field="username"
                   onSave={handleSave}
                   disabled={isOtherProfile}
@@ -134,7 +136,7 @@ export default function FullProfileScreenWeb() {
             <ContactLinktree
               links={socialLinks || []}
               userName={profile.full_name}
-              bio={profile.bio}
+              bio={profile.bio ?? undefined}
               userId={profile.id}
               isOwnProfile={!isOtherProfile}
             />
@@ -165,7 +167,7 @@ export default function FullProfileScreenWeb() {
           onClose={() => setShowThuthimalModal(false)}
           recipientId={profile.id}
           recipientName={profile.full_name ?? 'this person'}
-          recipientTier={profile.role ?? 'teacher'}
+          recipientTier={(profileCapacity || 'teacher') as any}
           giverId={currentUserId}
           giverName={currentUserName}
         />

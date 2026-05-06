@@ -1,36 +1,22 @@
 /**
  * ONBOARDING SCREEN - Web Edition
- *
- * ┌──────────────────────┬─────────────────────────────┐
- * │  LEFT PANEL (desktop)│  RIGHT PANEL (always)       │
- * │  Branding + pillars  │  Current step content       │
- * │  Step progress tracker│  Input / Role / Tour / Auth │
- * │  Language selector   │  Primary/Back actions       │
- * └──────────────────────┴─────────────────────────────┘
- *
- * Flow:
- * 0. Name Entry
- * Narrow (< 900px): single-column scroll with compact header.
- * Same API as native: onComplete(name, role, wantsAccount?) and isAnonymous.
- * Roles: teacher · student · principal (NOT founder / admin / developer).
  */
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import type { AuthorityTier } from '@repo/core/logic';
-import { authAPI } from '@repo/core/auth';
-import { identityAPI } from '@repo/core/identity';
+import { authAPI, identityAPI, schoolAPI } from '@repo/core/api';
+import { getOnboardingState, type OnboardingState as DomainOnboardingState, type Capacity, identity } from '@repo/core/logic';
+import type { Bond } from '@repo/core/types';
 import { supabase } from '@repo/core/supabase';
-import { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useReducer, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useWindowDimensions } from 'react-native';
 
 import { hapticError, hapticLight, hapticSuccess } from '../utils/haptics';
 
-// Using direct i18n calls for language switching on web.
+// ──────────────────────────────────────────────────────────
+// CONSTANTS
+// ──────────────────────────────────────────────────────────
 
-// ──────────────────────────────────────────────────────────
-// Constants
-// ──────────────────────────────────────────────────────────
 const LANGUAGES = [
   { code: 'en', label: 'EN' },
   { code: 'si', label: 'සිං' },
@@ -45,7 +31,7 @@ const PILLARS = [
   { name: 'Profile', emoji: '👤' },
 ];
 
-const ROLES = [
+const CAPACITY_OPTIONS = [
   { value: 'teacher', emoji: '🧑‍🏫', descKey: 'onboarding.roleDesc.teacher' },
   { value: 'student', emoji: '🎓', descKey: 'onboarding.roleDesc.student' },
   { value: 'principal', emoji: '🏫', descKey: 'onboarding.roleDesc.principal' },
@@ -53,7 +39,6 @@ const ROLES = [
 
 const TOTAL_STEPS = 7; // 0: Name, 1: Role, 2-6: Tour
 
-// Visible steps for the left-panel progress tracker
 const TRACKED_STEPS = [
   { idx: 0, label: 'Name' },
   { idx: 1, label: 'Role' },
@@ -61,29 +46,306 @@ const TRACKED_STEPS = [
 ] as const;
 
 // ──────────────────────────────────────────────────────────
-// Props
+// TYPES & REDUCER
 // ──────────────────────────────────────────────────────────
-interface OnboardingScreenProps {
-  onComplete: (name: string, authority: AuthorityTier, wantsAccount?: boolean) => void;
-  isAnonymous?: boolean;
+
+interface OnboardingUIState {
+  domainState: DomainOnboardingState;
+  currentStep: number;
+  name: string;
+  activeBond: Bond | null;
+  selectedCapacity: Capacity;
+  isCompleting: boolean;
+  completionError: string | null;
+}
+
+type OnboardingAction =
+  | { type: 'SET_STEP'; step: number }
+  | { type: 'SET_NAME'; name: string }
+  | { type: 'SET_CAPACITY'; capacity: Capacity }
+  | { type: 'SET_COMPLETING'; isCompleting: boolean }
+  | { type: 'SET_ERROR'; error: string | null }
+  | { type: 'NEXT_STEP' }
+  | { type: 'PREV_STEP' }
+  | { type: 'RESTORE_PROGRESS'; progress: Partial<OnboardingUIState> };
+
+function onboardingReducer(state: OnboardingUIState, action: OnboardingAction): OnboardingUIState {
+  switch (action.type) {
+    case 'SET_STEP': {
+      const newState = { ...state, currentStep: action.step };
+      newState.domainState = getOnboardingState({
+        full_name: newState.name,
+        onboarding_completed: newState.isCompleting,
+      }, newState.activeBond);
+      return newState;
+    }
+    case 'SET_NAME': {
+      const newState = { ...state, name: action.name };
+      newState.domainState = getOnboardingState({
+        full_name: newState.name,
+        onboarding_completed: newState.isCompleting,
+      }, newState.activeBond);
+      return newState;
+    }
+    case 'SET_CAPACITY': {
+      const newState = { ...state, selectedCapacity: action.capacity };
+      newState.domainState = getOnboardingState({
+        full_name: newState.name,
+        onboarding_completed: newState.isCompleting,
+      }, newState.activeBond);
+      return newState;
+    }
+    case 'SET_COMPLETING': {
+      const newState = { ...state, isCompleting: action.isCompleting };
+      newState.domainState = getOnboardingState({
+        full_name: newState.name,
+        onboarding_completed: newState.isCompleting,
+      }, newState.activeBond);
+      return newState;
+    }
+    case 'SET_ERROR':
+      return { ...state, completionError: action.error };
+    case 'NEXT_STEP':
+      return { ...state, currentStep: Math.min(6, state.currentStep + 1) };
+    case 'PREV_STEP':
+      return { ...state, currentStep: Math.max(0, state.currentStep - 1) };
+    case 'RESTORE_PROGRESS': {
+      const combined = { ...state, ...action.progress };
+      return {
+        ...combined,
+        domainState: getOnboardingState({
+          full_name: combined.name,
+          onboarding_completed: combined.isCompleting,
+        }, combined.activeBond),
+      };
+    }
+    default:
+      return state;
+  }
 }
 
 // ──────────────────────────────────────────────────────────
-// Main Component
+// SUB-COMPONENTS
 // ──────────────────────────────────────────────────────────
-export default function OnboardingScreenWeb({
+
+const LanguagePillRow = memo(({ 
+  currentLang, 
+  onLanguageChange 
+}: { 
+  currentLang: string; 
+  onLanguageChange: (code: string) => void;
+}) => (
+  <div className="ob-lang-row">
+    {LANGUAGES.map((lang) => (
+      <button
+        key={lang.code}
+        className={`ob-lang-pill ${currentLang?.startsWith(lang.code) ? 'active' : ''}`}
+        onClick={() => onLanguageChange(lang.code)}
+      >
+        {lang.label}
+      </button>
+    ))}
+  </div>
+));
+
+const ErrorBanner = memo(({ error }: { error: string | null }) => {
+  if (!error) return null;
+  return (
+    <div className="ob-error-banner">
+      <span className="ob-error-icon">⚠️ </span>
+      <span className="ob-error-text">{error}</span>
+    </div>
+  );
+});
+
+const NameStep = memo(({
+  t,
+  name,
+  onNameChange,
+  onNext,
+  error
+}: {
+  t: any;
+  name: string;
+  onNameChange: (val: string) => void;
+  onNext: () => void;
+  error: string | null;
+}) => (
+  <div className="ob-step">
+    <div className="ob-step-shell">
+      <div className="ob-step-meta">Step 1 · Arrival</div>
+      <div className="ob-step-icon">👋🏻</div>
+    </div>
+    <h2 className="ob-step-title">{t('onboarding.nameTitle')}</h2>
+    <p className="ob-step-subtitle">{t('onboarding.nameSubtitle')}</p>
+    <ErrorBanner error={error} />
+    <input
+      className="ob-input"
+      type="text"
+      placeholder={t('onboarding.namePlaceholder')}
+      value={name}
+      onChange={(e) => onNameChange(e.target.value)}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' && name.trim()) onNext();
+      }}
+      autoComplete="given-name"
+    />
+    <div className="ob-actions">
+      <button className="ob-btn-primary" onClick={onNext} disabled={!name.trim()}>
+        {t('onboarding.continue')} →
+      </button>
+    </div>
+  </div>
+));
+
+const IdentityStep = memo(({
+  t,
+  capacity,
+  isCompleting,
+  isAnonymous,
+  onCapacitySelect,
+  onBack,
+  onNext,
+  error
+}: {
+  t: any;
+  capacity: Capacity;
+  isCompleting: boolean;
+  isAnonymous: boolean;
+  onCapacitySelect: (val: Capacity) => void;
+  onBack: () => void;
+  onNext: () => void;
+  error: string | null;
+}) => (
+  <div className="ob-step">
+    <div className="ob-step-shell">
+      <div className="ob-step-meta">Step 2 · Belonging</div>
+      <div className="ob-step-icon">🎯</div>
+    </div>
+    <h2 className="ob-step-title">{t('onboarding.roleTitle')}</h2>
+    <p className="ob-step-subtitle">{t('onboarding.roleSubtitle')}</p>
+    <ErrorBanner error={error} />
+    <div className="ob-role-grid">
+      {CAPACITY_OPTIONS.map((r) => (
+        <button
+          key={r.value}
+          className={`ob-role-card ${capacity === r.value ? 'selected' : ''}`}
+          onClick={() => onCapacitySelect(r.value as Capacity)}
+        >
+          <span className="ob-role-emoji">{r.emoji}</span>
+          <span className="ob-role-name">{t(`identity.${r.value}`)}</span>
+          <span className="ob-role-desc">{t(r.descKey)}</span>
+        </button>
+      ))}
+    </div>
+    <div className="ob-actions">
+      <button className="ob-btn-secondary" onClick={onBack}>
+        ← {t('onboarding.back')}
+      </button>
+      <button
+        className="ob-btn-primary"
+        onClick={onNext}
+        disabled={isCompleting}
+      >
+        {isCompleting
+          ? t('onboarding.saving')
+          : !isAnonymous && capacity
+            ? t('onboarding.complete')
+            : t('onboarding.continue')}{' '}
+        →
+      </button>
+    </div>
+  </div>
+));
+
+const TourStep = memo(({
+  t,
+  currentStep,
+  screen,
+  isCompleting,
+  onBack,
+  onNext,
+  onSkip,
+  error
+}: {
+  t: any;
+  currentStep: number;
+  screen: any;
+  isCompleting: boolean;
+  onBack: () => void;
+  onNext: () => void;
+  onSkip: () => void;
+  error: string | null;
+}) => (
+  <div className="ob-step">
+    <div className="ob-step-shell">
+      <div className="ob-step-meta">Sanctuary Tour</div>
+      <div className="ob-step-icon">{screen.emoji}</div>
+    </div>
+    <h2 className="ob-step-title">{screen.title}</h2>
+    <p className="ob-step-subtitle">{screen.subtitle}</p>
+    <ErrorBanner error={error} />
+    <div className="ob-tour-content">{screen.content}</div>
+    <div className="ob-actions">
+      <button className="ob-btn-secondary" onClick={onBack}>
+        ← {t('onboarding.back')}
+      </button>
+      <button className="ob-btn-primary" onClick={onNext} disabled={isCompleting}>
+        {isCompleting
+          ? t('onboarding.saving')
+          : currentStep === 6
+            ? t('onboarding.complete')
+            : t('onboarding.next')}{' '}
+        →
+      </button>
+    </div>
+    <button className="ob-btn-link" onClick={onSkip}>
+      {t('onboarding.skip')}
+    </button>
+  </div>
+));
+
+const Tracker = memo(({ currentStep }: { currentStep: number }) => (
+  <div className="ob-tracker">
+    {TRACKED_STEPS.map((s) => (
+      <div
+        key={s.idx}
+        className={`ob-tracker-row ${currentStep > s.idx ? 'done' : ''} ${currentStep === s.idx ? 'current' : ''}`}
+      >
+        <div className="ob-tracker-dot" />
+        <span className="ob-tracker-label">{s.label}</span>
+      </div>
+    ))}
+  </div>
+));
+
+// ──────────────────────────────────────────────────────────
+// MAIN COMPONENT
+// ──────────────────────────────────────────────────────────
+
+interface OnboardingScreenProps {
+  onComplete: (name: string, capacity: Capacity, isAnonymous?: boolean) => void;
+  isAnonymous?: boolean;
+}
+
+export default memo(function OnboardingScreenWeb({
   onComplete,
   isAnonymous = false,
 }: OnboardingScreenProps) {
   const { t, i18n } = useTranslation();
   const { width } = useWindowDimensions();
 
-  const [currentStep, setCurrentStep] = useState(0);
-  const [name, setName] = useState('');
-  const [authority, setAuthority] = useState<AuthorityTier>('teacher');
-  const [isCompleting, setIsCompleting] = useState(false);
-  const [completionError, setCompletionError] = useState<string | null>(null);
+  const [state, dispatch] = useReducer(onboardingReducer, {
+    domainState: 'ARRIVAL',
+    currentStep: 0,
+    name: '',
+    activeBond: null,
+    selectedCapacity: 'teacher' as Capacity,
+    isCompleting: false,
+    completionError: null,
+  });
 
+  const { domainState, currentStep, name, activeBond, selectedCapacity, isCompleting, completionError } = state;
   const isNarrow = width < 900;
 
   // ── Restore saved progress or pre-fill from existing auth ────────────────────
@@ -96,12 +358,18 @@ export default function OnboardingScreenWeb({
           if (saved) {
             const progress = JSON.parse(saved);
             if (progress.userId === internalId || !progress.userId || isAnonymous) {
-              if (progress.name) setName(progress.name);
-              if (progress.role) setAuthority(progress.role as AuthorityTier);
-              if (typeof progress.step === 'number' && progress.step >= 0 && progress.step < 7) {
-                setCurrentStep(progress.step);
-                return;
-              }
+              dispatch({
+                type: 'RESTORE_PROGRESS',
+                progress: {
+                  name: progress.name || '',
+                  selectedCapacity: (progress.selectedCapacity as Capacity) || 'teacher',
+                  currentStep:
+                    typeof progress.step === 'number' && progress.step >= 0 && progress.step < 7
+                      ? progress.step
+                      : 0,
+                },
+              });
+              return;
             }
           }
         } catch (e) {
@@ -109,32 +377,29 @@ export default function OnboardingScreenWeb({
         }
 
         if (!internalId) {
-          // This is likely a deep-link where the session wasn't initialized yet.
-          // We trigger an anonymous sign-in here to ensure the wizard has an ID.
-          console.log(
-            '🗝️ OnboardingScreen.web: No internalId found, initiating anonymous session...',
-          );
+          console.log('🗝️ OnboardingScreen.web: No internalId found, initiating anonymous session...');
           await authAPI.signInAnonymously();
-          // Re-run the initialization once signed in
           return initOnboarding();
         }
-        const { data: profile } = await supabase
-          .from('users')
-          .select('full_name, is_anonymous, authority:role')
-          .eq('id', internalId)
-          .maybeSingle();
+        
+        // USE NEW DOMAIN STATE API
+        const { state: initialDomainState, profile } = await identityAPI.getOnboardingStatus(internalId);
+        const activePerspective = await identity.getActivePerspective();
 
         if (!profile) return;
 
-        const PLACEHOLDER_NAMES = ['Guest User', 'Gurudevi User', 'Sanctuary User'];
-        if (
-          !profile.is_anonymous &&
-          profile.full_name &&
-          !PLACEHOLDER_NAMES.includes(profile.full_name)
-        ) {
-          setName(profile.full_name);
-          if (profile.authority) setAuthority(profile.authority as AuthorityTier);
-          setCurrentStep(1);
+        // If already onboarded in DB, just finish locally
+        if (initialDomainState === 'COMPLETED') {
+          console.log('✅ Onboarding: Profile already marked as completed in DB, finalizing...');
+          const capacity = (activePerspective?.activeBond.capacity as Capacity) || 'teacher';
+          dispatch({ type: 'SET_NAME', name: profile.full_name || '' });
+          onComplete(profile.full_name || '', capacity, false);
+          return;
+        }
+
+        if (!profile.is_anonymous && profile.full_name) {
+          dispatch({ type: 'SET_NAME', name: profile.full_name });
+          dispatch({ type: 'SET_STEP', step: 1 });
         }
       } catch (error) {
         console.error('[Onboarding] Initialization error:', error);
@@ -180,342 +445,177 @@ export default function OnboardingScreenWeb({
     [t],
   );
 
-  // ── Navigation helpers ────────────────────
-  const handleNext = () => {
+  const handleCompleteOnboarding = useCallback(async () => {
+    dispatch({ type: 'SET_COMPLETING', isCompleting: true });
+    try {
+      const internalId = await identityAPI.getMyInternalId();
+      if (!internalId) throw new Error('Failed to resolve internal user ID');
+
+      // Check for existing profile
+      const existingProfile = await identityAPI.getProfile(internalId);
+
+      // 1. Create a default school (Personal Workspace) only if they don't have one
+      let schoolId = existingProfile?.school_id;
+      if (!schoolId) {
+        schoolId = await schoolAPI.initializePersonalWorkspace(internalId, name || 'My');
+      }
+
+      // 2. Create the initial Bond (ReBAC)
+      const { identity } = await import('@repo/core/logic');
+      await identity.createInitialBond(selectedCapacity, {
+        fullName: name,
+        schoolId,
+      });
+
+      await AsyncStorage.removeItem('onboarding_progress');
+      hapticSuccess();
+      onComplete(name, selectedCapacity, false);
+    } catch (error: any) {
+      console.error('❌ Error completing onboarding:', error);
+      hapticError();
+      dispatch({ type: 'SET_COMPLETING', isCompleting: false });
+      dispatch({
+        type: 'SET_ERROR',
+        error: error?.message || 'Failed to save your profile. Please try again.',
+      });
+    }
+  }, [name, selectedCapacity, isAnonymous, onComplete]);
+
+  const handleNext = useCallback(() => {
     if (currentStep === 6) {
-      // Final step (Tour 4)
       handleCompleteOnboarding();
     } else {
-      setCurrentStep((prev) => prev + 1);
+      dispatch({ type: 'NEXT_STEP' });
       hapticLight();
     }
-  };
-  const handleBack = () => {
+  }, [currentStep, handleCompleteOnboarding]);
+
+  const handleBack = useCallback(() => {
     hapticLight();
-    setCurrentStep((prev) => Math.max(0, prev - 1));
-  };
-  const handleSkipTour = () => {
+    dispatch({ type: 'PREV_STEP' });
+  }, []);
+
+  const handleSkipTour = useCallback(() => {
     hapticLight();
     handleCompleteOnboarding();
-  };
+  }, [handleCompleteOnboarding]);
 
-  // Save progress whenever step/name/role/seeds change
+  const handleNameChange = useCallback((val: string) => dispatch({ type: 'SET_NAME', name: val }), []);
+  const handleCapacitySelect = useCallback((val: Capacity) => {
+    dispatch({ type: 'SET_CAPACITY', capacity: val });
+    hapticLight();
+  }, []);
+  const handleLanguageChange = useCallback((code: string) => {
+    hapticLight();
+    i18n.changeLanguage(code);
+  }, [i18n]);
+
+  // Save progress whenever step/name/role changes
   useEffect(() => {
     if (currentStep === 0 && !name) return;
-    identityAPI.getMyInternalId().then((userId) => {
+    identity.getMyInternalId().then((userId) => {
       AsyncStorage.setItem(
         'onboarding_progress',
         JSON.stringify({
           userId,
           step: currentStep,
           name,
-          authority,
+          capacity: selectedCapacity,
         }),
-      ).catch(() => {
-        /* silent */
-      });
+      ).catch(() => {});
     });
-  }, [currentStep, name, authority]);
+  }, [currentStep, name, selectedCapacity]);
 
-  const changeLanguage = async (code: string) => {
-    hapticLight();
-    await i18n.changeLanguage(code);
-  };
+  const currentTourScreen = useMemo(() => {
+    if (currentStep < 2 || currentStep > 6) return null;
+    return tourScreens[currentStep - 2];
+  }, [currentStep, tourScreens]);
 
-  // ── Complete onboarding ────────────────────
-  const handleCompleteOnboarding = async () => {
-    console.log('🪷 OnboardingScreen.web: handleCompleteOnboarding started...', {
-      name,
-      authority,
-      isAnonymous,
-    });
-    setIsCompleting(true);
-    try {
-      const internalId = await identityAPI.getMyInternalId();
-      console.log('⭕· [Onboarding] Resolved internalId:', internalId);
-
-      if (!internalId) {
-        console.error(
-          '[OnboardingScreen.web] No internal user ID — anonymous session may not have been created yet.',
-        );
-        throw new Error('Failed to resolve internal user ID during onboarding completion');
-      }
-
-      // Verify if profile already exists
-      const { data: existingProfile, error: fetchError } = await supabase
-        .from('users')
-        .select('school_id, onboarding_completed')
-        .eq('id', internalId)
-        .maybeSingle();
-
-      if (fetchError) {
-        console.warn('⭕· [Onboarding] Error fetching existing profile:', fetchError);
-      }
-
-      console.log('⭕· [Onboarding] Existing profile state:', existingProfile);
-
-      let schoolId = existingProfile?.school_id;
-      if (!schoolId) {
-        console.log('🌀 [Onboarding] No existing workspace found, attempting creation...');
-        const schoolName = `${name || 'My'}'s Workspace`;
-
-        // Note: The schools table currently has a broken trigger referencing
-        // "create_personal_workspace_unified()". We wrap this in a try/catch-style
-        // logic to ensure onboarding completes even if workspace creation fails.
-        const { data: schoolData, error: schoolError } = await supabase
-          .from('schools')
-          .insert({
-            name: schoolName,
-            type: 'personal_workspace',
-            created_by: internalId,
-          })
-          .select()
-          .single();
-
-        if (schoolError) {
-          console.warn(
-            '⚠️ [Onboarding] Workspace creation failed (likely broken DB trigger):',
-            schoolError.message,
-          );
-          // We continue with schoolId = null. The app will render the "Guest Gate"
-          // (Join/Create Workspace) as a fallback, which is a stable state.
-        } else {
-          schoolId = schoolData?.id;
-          console.log('✅ [Onboarding] Personal workspace created:', schoolId);
-        }
-      }
-
-      console.log('⭕· [Onboarding] Finalizing profile update...');
-      const { error: profileError } = await supabase.from('users').upsert({
-        id: internalId,
-        full_name: name || 'Gurudevi User',
-        role: authority,
-        school_id: schoolId,
-        onboarding_completed: true,
-        onboarding_completed_at: new Date().toISOString(),
-        is_anonymous: isAnonymous,
-      });
-
-      if (profileError) {
-        console.error('⭕· [Onboarding] Profile update failed:', profileError);
-        throw profileError;
-      }
-
-      console.log('⭕· [Onboarding] Profile updated successfully. Cleaning up storage...');
-      await AsyncStorage.removeItem('onboarding_progress');
-
-      hapticSuccess();
-      console.log('⭕· [Onboarding] Calling onComplete callback...');
-
-      // Artificial delay to ensure DB replication / state synchronization
-      await new Promise((resolve) => setTimeout(resolve, 300));
-
-      onComplete(name, authority, false);
-      console.log('⭕· [Onboarding] onComplete called successfully.');
-    } catch (error: any) {
-      console.error('❌ Error completing onboarding:', error);
-      hapticError();
-      setIsCompleting(false);
-      setCompletionError(error?.message || 'Failed to save your profile. Please try again.');
-    }
-  };
-
-  const renderError = () => {
-    if (!completionError) return null;
-    return (
-      <div className="ob-error-banner">
-        <span className="ob-error-icon">⚠️ </span>
-        <span className="ob-error-text">{completionError}</span>
-      </div>
-    );
-  };
-
-  // ── Step content renderer ────────────────────
-  const renderStep = () => {
-    // Step 0: Name
-    if (currentStep === 0) {
+  const renderCurrentStep = useCallback(() => {
+    if (domainState === 'ARRIVAL') {
       return (
-        <div className="ob-step">
-          <div className="ob-step-shell">
-            <div className="ob-step-meta">Step 1 · Arrival</div>
-            <div className="ob-step-icon">👋🏻</div>
-          </div>
-          <h2 className="ob-step-title">{t('onboarding.nameTitle')}</h2>
-          <p className="ob-step-subtitle">{t('onboarding.nameSubtitle')}</p>
-          {renderError()}
-          <input
-            className="ob-input"
-            type="text"
-            placeholder={t('onboarding.namePlaceholder')}
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && name.trim()) handleNext();
-            }}
-            autoComplete="given-name"
-          />
-          <div className="ob-actions">
-            <button className="ob-btn-primary" onClick={handleNext} disabled={!name.trim()}>
-              {t('onboarding.continue')} →
-            </button>
-          </div>
-        </div>
+        <NameStep 
+          t={t} 
+          name={name} 
+          onNameChange={handleNameChange} 
+          onNext={handleNext} 
+          error={completionError} 
+        />
       );
     }
-
-    // Step 1: Role
-    if (currentStep === 1) {
+    if (domainState === 'IDENTITY_SELECTION') {
       return (
-        <div className="ob-step">
-          <div className="ob-step-shell">
-            <div className="ob-step-meta">Step 2 · Belonging</div>
-            <div className="ob-step-icon">🎯</div>
-          </div>
-          <h2 className="ob-step-title">{t('onboarding.roleTitle')}</h2>
-          <p className="ob-step-subtitle">{t('onboarding.roleSubtitle')}</p>
-          {renderError()}
-          <div className="ob-role-grid">
-            {ROLES.map((r) => (
-              <button
-                key={r.value}
-                className={`ob-role-card ${authority === r.value ? 'selected' : ''}`}
-                onClick={() => {
-                  setAuthority(r.value as AuthorityTier);
-                  hapticLight();
-                }}
-              >
-                <span className="ob-role-emoji">{r.emoji}</span>
-                <span className="ob-role-name">{t(`authority.${r.value}`)}</span>
-                <span className="ob-role-desc">{t(r.descKey)}</span>
-              </button>
-            ))}
-          </div>
-          <div className="ob-actions">
-            <button className="ob-btn-secondary" onClick={handleBack}>
-              ← {t('onboarding.back')}
-            </button>
-            <button
-              className="ob-btn-primary"
-              onClick={async () => {
-                if (!isAnonymous && authority) {
-                  // If already signed in (Google), jump straight to finish after picking role
-                  handleCompleteOnboarding();
-                } else {
-                  handleNext();
-                }
-              }}
-              disabled={isCompleting}
-            >
-              {isCompleting
-                ? t('onboarding.saving')
-                : !isAnonymous && authority
-                  ? t('onboarding.complete')
-                  : t('onboarding.continue')}{' '}
-              →
-            </button>
-          </div>
-        </div>
+        <IdentityStep 
+          t={t} 
+          capacity={selectedCapacity} 
+          isCompleting={isCompleting} 
+          isAnonymous={isAnonymous} 
+          onCapacitySelect={handleCapacitySelect} 
+          onBack={handleBack} 
+          onNext={async () => {
+            if (!isAnonymous && selectedCapacity) {
+              handleCompleteOnboarding();
+            } else {
+              handleNext();
+            }
+          }} 
+          error={completionError} 
+        />
       );
     }
-
-    // Steps 2–6: Tour slides
-    if (currentStep >= 2 && currentStep <= 6) {
-      const screen = tourScreens[currentStep - 2];
-      if (!screen) return null;
+    if (domainState === 'SANCTUARY_INIT' && currentTourScreen) {
       return (
-        <div className="ob-step">
-          <div className="ob-step-shell">
-            <div className="ob-step-meta">Sanctuary Tour</div>
-            <div className="ob-step-icon">{screen.emoji}</div>
-          </div>
-          <h2 className="ob-step-title">{screen.title}</h2>
-          <p className="ob-step-subtitle">{screen.subtitle}</p>
-          {renderError()}
-          <div className="ob-tour-content">{screen.content}</div>
-          <div className="ob-actions">
-            <button className="ob-btn-secondary" onClick={handleBack}>
-              ← {t('onboarding.back')}
-            </button>
-            <button className="ob-btn-primary" onClick={handleNext} disabled={isCompleting}>
-              {isCompleting
-                ? t('onboarding.saving')
-                : currentStep === 6
-                  ? t('onboarding.complete')
-                  : t('onboarding.next')}{' '}
-              →
-            </button>
-          </div>
-          <button className="ob-btn-link" onClick={handleSkipTour}>
-            {t('onboarding.skip')}
-          </button>
-        </div>
+        <TourStep 
+          t={t} 
+          currentStep={currentStep} 
+          screen={currentTourScreen} 
+          isCompleting={isCompleting} 
+          onBack={handleBack} 
+          onNext={handleNext} 
+          onSkip={handleSkipTour} 
+          error={completionError} 
+        />
       );
     }
-
     return null;
-  };
+  }, [domainState, t, name, handleNameChange, handleNext, completionError, selectedCapacity, isCompleting, isAnonymous, handleCapacitySelect, handleBack, handleCompleteOnboarding, currentStep, currentTourScreen, handleSkipTour]);
 
-  // ── Layout ────────────────────
   return (
     <div className="ob-root">
       <div className="ob-atmosphere ob-atmosphere-one" />
       <div className="ob-atmosphere ob-atmosphere-two" />
+      
       {isNarrow ? (
-        /* ── Narrow: single-column scroll ── */
         <div className="ob-narrow">
           <div className="ob-narrow-header">
             <span className="ob-brand-name">🪷 Gurudevi</span>
-            <div className="ob-lang-row">
-              {LANGUAGES.map((lang) => (
-                <button
-                  key={lang.code}
-                  className={`ob-lang-pill ${i18n.language?.startsWith(lang.code) ? 'active' : ''}`}
-                  onClick={() => changeLanguage(lang.code)}
-                >
-                  {lang.label}
-                </button>
-              ))}
-            </div>
+            <LanguagePillRow 
+              currentLang={i18n.language} 
+              onLanguageChange={handleLanguageChange} 
+            />
           </div>
-
-          {/* Progress bar */}
-          <div
-            className="ob-progress-track"
-            role="progressbar"
-            aria-valuenow={currentStep}
-            aria-valuemax={TOTAL_STEPS - 1}
-          >
+          <div className="ob-progress-track" role="progressbar">
             <div
               className="ob-progress-fill"
               style={{ width: `${(currentStep / (TOTAL_STEPS - 1)) * 100}%` }}
             />
           </div>
-
-          <div className="ob-narrow-content">{renderStep()}</div>
+          <div className="ob-narrow-content">{renderCurrentStep()}</div>
         </div>
       ) : (
-        /* ── Wide: two-column split ── */
         <div className="ob-split">
-          {/* Left: Branding + progress tracker */}
           <div className="ob-left">
             <div className="ob-left-inner">
               <div className="ob-brand">
                 <span className="ob-brand-icon">🪷</span>
                 <span className="ob-brand-name">Gurudevi</span>
               </div>
-
               <div>
-                <h1 className="ob-left-headline">
-                  Your Sacred
-                  <br />
-                  Sanctuary
-                </h1>
+                <h1 className="ob-left-headline">Your Sacred<br />Sanctuary</h1>
                 <p className="ob-left-tagline">
                   A healing ecosystem for educators — built in Sri Lanka, breathing worldwide.
                 </p>
               </div>
-
-              {/* Five Pillars */}
               <div className="ob-pillars">
                 {PILLARS.map((p) => (
                   <div key={p.name} className="ob-pillar">
@@ -524,45 +624,18 @@ export default function OnboardingScreenWeb({
                   </div>
                 ))}
               </div>
-
-              {/* Step progress tracker */}
-              <div className="ob-tracker">
-                {TRACKED_STEPS.map((s) => (
-                  <div
-                    key={s.idx}
-                    className={`ob-tracker-row ${currentStep > s.idx ? 'done' : ''} ${currentStep === s.idx ? 'current' : ''}`}
-                  >
-                    <div className="ob-tracker-dot" />
-                    <span className="ob-tracker-label">{s.label}</span>
-                  </div>
-                ))}
-              </div>
-
-              {/* Language picker */}
+              <Tracker currentStep={currentStep} />
               <div className="ob-lang-row ob-lang-bottom">
-                {LANGUAGES.map((lang) => (
-                  <button
-                    key={lang.code}
-                    className={`ob-lang-pill ${i18n.language?.startsWith(lang.code) ? 'active' : ''}`}
-                    onClick={() => changeLanguage(lang.code)}
-                  >
-                    {lang.label}
-                  </button>
-                ))}
+                <LanguagePillRow 
+                  currentLang={i18n.language} 
+                  onLanguageChange={handleLanguageChange} 
+                />
               </div>
             </div>
           </div>
-
-          {/* Right: Step content */}
           <div className="ob-right">
             <div className="ob-right-inner">
-              {/* Step progress dots */}
-              <div
-                className="ob-dots"
-                role="progressbar"
-                aria-valuenow={currentStep}
-                aria-valuemax={TOTAL_STEPS - 1}
-              >
+              <div className="ob-dots" role="progressbar">
                 {Array.from({ length: TOTAL_STEPS }).map((_, i) => (
                   <div
                     key={i}
@@ -570,485 +643,452 @@ export default function OnboardingScreenWeb({
                   />
                 ))}
               </div>
-
-              {renderStep()}
+              {renderCurrentStep()}
             </div>
           </div>
         </div>
       )}
 
-      {/* ── Scoped CSS ── */}
-      <style>{`
-                .ob-root {
-                    position: fixed;
-                    inset: 0;
-                    background:
-                        radial-gradient(circle at 18% 14%, rgba(125, 212, 192, 0.14), transparent 24%),
-                        radial-gradient(circle at 88% 22%, rgba(184, 169, 224, 0.14), transparent 22%),
-                        linear-gradient(160deg, var(--background, #F5EDD6) 0%, var(--background-alt, #FAF7ED) 60%, rgba(252, 249, 242, 0.96) 100%);
-                    font-family: var(--font-body, 'DM Sans', sans-serif);
-                    overflow: hidden;
-                }
-                .ob-atmosphere {
-                    position: absolute;
-                    border-radius: 999px;
-                    pointer-events: none;
-                    filter: blur(14px);
-                    opacity: 0.55;
-                }
-                .ob-atmosphere-one {
-                    top: -80px;
-                    right: 18%;
-                    width: 220px;
-                    height: 220px;
-                    background: radial-gradient(circle, rgba(212,132,58,0.18), transparent 70%);
-                }
-                .ob-atmosphere-two {
-                    bottom: -70px;
-                    left: 8%;
-                    width: 260px;
-                    height: 260px;
-                    background: radial-gradient(circle, rgba(125,212,192,0.2), transparent 70%);
-                }
-
-                /* ── NARROW (single-column) ──────────────────── */
-                .ob-narrow {
-                    display: flex;
-                    flex-direction: column;
-                    height: 100%;
-                    position: relative;
-                    z-index: 1;
-                }
-                .ob-narrow-header {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    padding: 14px 20px;
-                    border-bottom: 1px solid var(--border, rgba(42,35,24,0.1));
-                    flex-shrink: 0;
-                }
-                .ob-progress-track {
-                    height: 3px;
-                    background: var(--border, rgba(42,35,24,0.1));
-                    flex-shrink: 0;
-                }
-                .ob-progress-fill {
-                    height: 100%;
-                    background: var(--action, #D4843A);
-                    transition: width 0.4s ease;
-                    border-radius: 0 2px 2px 0;
-                }
-                .ob-narrow-content {
-                    flex: 1;
-                    padding: 28px 20px;
-                    overflow-y: auto;
-                }
-
-                /* ── SPLIT (two-column) ──────────────────── */
-                .ob-split {
-                    display: flex;
-                    height: 100%;
-                    position: relative;
-                    z-index: 1;
-                }
-
-                /* Left Panel */
-                .ob-left {
-                    width: 340px;
-                    flex-shrink: 0;
-                    background: linear-gradient(160deg, rgba(252,249,242,0.72) 0%, rgba(252,249,242,0.5) 100%);
-                    border-right: 1px solid var(--border, rgba(42,35,24,0.08));
-                    overflow-y: auto;
-                    padding: 44px 36px;
-                    backdrop-filter: blur(18px);
-                }
-                .ob-left-inner {
-                    display: flex;
-                    flex-direction: column;
-                    gap: 32px;
-                    min-height: 100%;
-                }
-                .ob-brand {
-                    display: flex;
-                    align-items: center;
-                    gap: 10px;
-                }
-                .ob-brand-icon { font-size: 22px; }
-                .ob-brand-name {
-                    font-size: 18px;
-                    font-weight: 800;
-                    color: var(--ink, #2A2318);
-                    letter-spacing: -0.3px;
-                }
-                .ob-left-headline {
-                    font-size: 40px;
-                    font-weight: 800;
-                    color: var(--ink, #2A2318);
-                    line-height: 1.1;
-                    letter-spacing: -1.5px;
-                    margin: 0 0 12px;
-                }
-                .ob-left-tagline {
-                    font-size: 14px;
-                    line-height: 1.6;
-                    color: var(--ink-ghost, #7A6E5F);
-                    margin: 0;
-                    max-width: 240px;
-                }
-
-                /* Pillars */
-                .ob-pillars {
-                    display: flex;
-                    flex-wrap: wrap;
-                    gap: 8px;
-                }
-                .ob-pillar {
-                    display: flex;
-                    align-items: center;
-                    gap: 6px;
-                    padding: 5px 11px;
-                    border-radius: 50px;
-                    background: rgba(212,132,58,0.08);
-                    border: 1px solid rgba(212,132,58,0.2);
-                    font-size: 12px;
-                    font-weight: 600;
-                    color: var(--action, #D4843A);
-                }
-
-                /* Step tracker */
-                .ob-tracker {
-                    display: flex;
-                    flex-direction: column;
-                    gap: 14px;
-                }
-                .ob-tracker-row {
-                    display: flex;
-                    align-items: center;
-                    gap: 12px;
-                    opacity: 0.35;
-                    transition: opacity 0.3s;
-                }
-                .ob-tracker-row.done { opacity: 0.55; }
-                .ob-tracker-row.current { opacity: 1; }
-                .ob-tracker-dot {
-                    width: 8px;
-                    height: 8px;
-                    border-radius: 50%;
-                    background: var(--border, rgba(42,35,24,0.2));
-                    flex-shrink: 0;
-                    transition: background 0.3s, transform 0.3s;
-                }
-                .ob-tracker-row.done .ob-tracker-dot,
-                .ob-tracker-row.current .ob-tracker-dot {
-                    background: var(--action, #D4843A);
-                }
-                .ob-tracker-row.current .ob-tracker-dot {
-                    transform: scale(1.6);
-                }
-                .ob-tracker-label {
-                    font-size: 13px;
-                    font-weight: 600;
-                    color: var(--ink, #2A2318);
-                }
-                .ob-lang-bottom { margin-top: auto; }
-
-                /* Right Panel */
-                .ob-right {
-                    flex: 1;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    overflow-y: auto;
-                    padding: 40px;
-                }
-                .ob-right-inner {
-                    width: 100%;
-                    max-width: 560px;
-                    display: flex;
-                    flex-direction: column;
-                    gap: 28px;
-                    padding: 34px;
-                    border-radius: 32px;
-                    background: linear-gradient(180deg, rgba(252,249,242,0.8), rgba(252,249,242,0.6));
-                    border: 1px solid rgba(42,35,24,0.08);
-                    box-shadow: 0 28px 72px rgba(121, 93, 48, 0.12);
-                    backdrop-filter: blur(18px);
-                }
-
-                /* Progress dots */
-                .ob-dots {
-                    display: flex;
-                    gap: 6px;
-                    align-items: center;
-                }
-                .ob-dot {
-                    width: 6px;
-                    height: 6px;
-                    border-radius: 50%;
-                    background: var(--border, rgba(42,35,24,0.2));
-                    transition: all 0.3s ease;
-                    flex-shrink: 0;
-                }
-                .ob-dot.active { background: var(--action, #D4843A); transform: scale(1.3); }
-                .ob-dot.done { background: var(--success, #7DD4C0); }
-
-                .ob-error-banner {
-                    display: flex;
-                    align-items: center;
-                    gap: 8px;
-                    padding: 10px 14px;
-                    background: rgba(212, 110, 58, 0.1);
-                    border-left: 3px solid #D46E3A;
-                    border-radius: 4px;
-                    margin-bottom: 20px;
-                    animation: slideDown 0.3s ease;
-                }
-                .ob-error-icon { font-size: 16px; }
-                .ob-error-text { font-size: 13px; color: #D46E3A; font-weight: 600; }
-
-                @keyframes slideDown {
-                    from { opacity: 0; transform: translateY(-10px); }
-                    to { opacity: 1; transform: translateY(0); }
-                }
-
-                /* ── RESPONSIVE BITS ────────────────────────────────── */
-                .ob-step {
-                    display: flex;
-                    flex-direction: column;
-                    gap: 20px;
-                }
-                .ob-step-shell {
-                    display: flex;
-                    align-items: center;
-                    justify-content: space-between;
-                    gap: 16px;
-                }
-                .ob-step-meta {
-                    width: fit-content;
-                    padding: 8px 12px;
-                    border-radius: 999px;
-                    background: rgba(212,132,58,0.08);
-                    border: 1px solid rgba(212,132,58,0.18);
-                    color: var(--action, #D4843A);
-                    font-size: 11px;
-                    font-weight: 800;
-                    text-transform: uppercase;
-                    letter-spacing: 0.12em;
-                }
-                .ob-step-icon {
-                    font-size: 40px;
-                    line-height: 1;
-                }
-                .ob-step-title {
-                    font-size: 27px;
-                    font-weight: 800;
-                    color: var(--ink, #2A2318);
-                    margin: 0;
-                    letter-spacing: -0.5px;
-                    line-height: 1.2;
-                }
-                .ob-step-subtitle {
-                    font-size: 15px;
-                    color: var(--ink-ghost, #7A6E5F);
-                    margin: 0;
-                    line-height: 1.5;
-                }
-                .ob-tour-content {
-                    font-size: 15px;
-                    color: var(--ink, #2A2318);
-                    line-height: 1.7;
-                    padding: 22px;
-                    background: linear-gradient(180deg, rgba(252,249,242,0.62), rgba(252,249,242,0.42));
-                    border-radius: 22px;
-                    border: 1px solid var(--border, rgba(42,35,24,0.08));
-                }
-
-                /* Name input */
-                .ob-input {
-                    width: 100%;
-                    padding: 17px 18px;
-                    border-radius: 18px;
-                    border: 1px solid var(--border, rgba(42,35,24,0.15));
-                    background: rgba(255,255,255,0.58);
-                    font-size: 16px;
-                    color: var(--ink, #2A2318);
-                    font-family: var(--font-body, 'DM Sans', sans-serif);
-                    outline: none;
-                    transition: border-color 0.2s, box-shadow 0.2s;
-                    box-sizing: border-box;
-                }
-                .ob-input:focus {
-                    border-color: var(--action, #D4843A);
-                    box-shadow: 0 0 0 3px rgba(212,132,58,0.12);
-                }
-                .ob-input::placeholder { color: var(--ink-ghost, #7A6E5F); }
-
-                /* Role grid */
-                .ob-role-grid {
-                    display: grid;
-                    grid-template-columns: repeat(3, 1fr);
-                    gap: 12px;
-                }
-                @media (max-width: 420px) {
-                    .ob-role-grid { grid-template-columns: 1fr; }
-                }
-                .ob-role-card {
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    gap: 8px;
-                    padding: 22px 14px;
-                    border-radius: 22px;
-                    border: 1px solid var(--border, rgba(42,35,24,0.1));
-                    background: linear-gradient(180deg, rgba(252,249,242,0.66), rgba(252,249,242,0.5));
-                    cursor: pointer;
-                    transition: all 0.2s ease;
-                    font-family: var(--font-body, 'DM Sans', sans-serif);
-                    text-align: center;
-                }
-                .ob-role-card:hover {
-                    border-color: rgba(212,132,58,0.5);
-                    background: rgba(212,132,58,0.04);
-                    transform: translateY(-2px);
-                }
-                .ob-role-card.selected {
-                    border-color: var(--action, #D4843A);
-                    background: rgba(212,132,58,0.08);
-                    box-shadow: 0 14px 28px rgba(212,132,58,0.14);
-                }
-                .ob-role-emoji { font-size: 26px; line-height: 1; }
-                .ob-role-name {
-                    font-size: 13px;
-                    font-weight: 700;
-                    color: var(--ink, #2A2318);
-                }
-                .ob-role-desc {
-                    font-size: 10px;
-                    color: var(--ink-ghost, #7A6E5F);
-                    line-height: 1.4;
-                }
-
-                /* Actions row */
-                .ob-actions {
-                    display: flex;
-                    gap: 12px;
-                    margin-top: 4px;
-                    flex-wrap: wrap;
-                }
-
-                /* Buttons */
-                .ob-btn-primary {
-                    flex: 1;
-                    padding: 15px 24px;
-                    min-height: 50px;
-                    border-radius: 16px;
-                    background: linear-gradient(180deg, var(--action, #D4843A), var(--action-2, #C7742B));
-                    color: var(--text-on-action, #FCF9F2);
-                    font-size: 15px;
-                    font-weight: 700;
-                    border: none;
-                    cursor: pointer;
-                    transition: all 0.2s ease;
-                    font-family: var(--font-body, 'DM Sans', sans-serif);
-                    letter-spacing: 0.2px;
-                }
-                .ob-btn-primary:hover:not(:disabled) {
-                    filter: brightness(1.06);
-                    transform: translateY(-1px);
-                    box-shadow: 0 4px 14px rgba(212,132,58,0.28);
-                }
-                .ob-btn-primary:disabled {
-                    opacity: 0.45;
-                    cursor: not-allowed;
-                }
-                .ob-btn-secondary {
-                    padding: 15px 22px;
-                    min-height: 50px;
-                    border-radius: 16px;
-                    background: rgba(255,255,255,0.55);
-                    color: var(--ink, #2A2318);
-                    font-size: 15px;
-                    font-weight: 600;
-                    border: 1.5px solid var(--border, rgba(42,35,24,0.2));
-                    cursor: pointer;
-                    transition: all 0.2s ease;
-                    font-family: var(--font-body, 'DM Sans', sans-serif);
-                    white-space: nowrap;
-                }
-                .ob-btn-secondary:hover {
-                    background: var(--glass-surface, rgba(255,255,255,0.6));
-                    border-color: var(--ink-ghost, #7A6E5F);
-                }
-                .ob-btn-link {
-                    background: none;
-                    border: none;
-                    color: var(--ink-ghost, #7A6E5F);
-                    font-size: 13px;
-                    cursor: pointer;
-                    text-align: center;
-                    font-family: var(--font-body, 'DM Sans', sans-serif);
-                    padding: 4px 0;
-                    text-decoration: none;
-                    transition: color 0.2s;
-                }
-                .ob-btn-link:hover {
-                    color: var(--ink, #2A2318);
-                    text-decoration: underline;
-                }
-
-                /* Language pills */
-                .ob-lang-row {
-                    display: flex;
-                    gap: 4px;
-                }
-                .ob-lang-pill {
-                    padding: 6px 12px;
-                    border-radius: 50px;
-                    background: transparent;
-                    border: 1px solid transparent;
-                    font-size: 12px;
-                    font-weight: 600;
-                    color: var(--ink-ghost, #7A6E5F);
-                    cursor: pointer;
-                    font-family: var(--font-body, 'DM Sans', sans-serif);
-                    transition: all 0.2s;
-                }
-                .ob-lang-pill.active {
-                    background: var(--action, #D4843A);
-                    color: #F5EDD6;
-                }
-                .ob-lang-pill:hover:not(.active) {
-                    background: var(--glass-surface, rgba(255,255,255,0.6));
-                    border-color: var(--border, rgba(42,35,24,0.15));
-                }
-
-                /* Orientation step wrapper */
-                .ob-step-orientation {
-                    gap: 0;
-                }
-                @media (max-width: 900px) {
-                    .ob-root {
-                        overflow: auto;
-                    }
-                    .ob-right-inner {
-                        padding: 24px;
-                        border-radius: 24px;
-                    }
-                }
-                @media (max-width: 640px) {
-                    .ob-role-grid {
-                        grid-template-columns: 1fr;
-                    }
-                    .ob-step-shell {
-                        align-items: flex-start;
-                        flex-direction: column;
-                    }
-                    .ob-narrow-header {
-                        align-items: flex-start;
-                        flex-direction: column;
-                    }
-                }
-            `}</style>
+      <style>{ONBOARDING_STYLES}</style>
     </div>
   );
-}
+});
+
+// ──────────────────────────────────────────────────────────
+// STYLES
+// ──────────────────────────────────────────────────────────
+
+const ONBOARDING_STYLES = `
+    .ob-root {
+        position: fixed;
+        inset: 0;
+        background:
+            radial-gradient(circle at 18% 14%, rgba(125, 212, 192, 0.14), transparent 24%),
+            radial-gradient(circle at 88% 22%, rgba(184, 169, 224, 0.14), transparent 22%),
+            linear-gradient(160deg, var(--background, #F5EDD6) 0%, var(--background-alt, #FAF7ED) 60%, rgba(252, 249, 242, 0.96) 100%);
+        font-family: var(--font-body, 'DM Sans', sans-serif);
+        overflow: hidden;
+    }
+    .ob-atmosphere {
+        position: absolute;
+        border-radius: 999px;
+        pointer-events: none;
+        filter: blur(14px);
+        opacity: 0.55;
+    }
+    .ob-atmosphere-one {
+        top: -80px;
+        right: 18%;
+        width: 220px;
+        height: 220px;
+        background: radial-gradient(circle, rgba(212,132,58,0.18), transparent 70%);
+    }
+    .ob-atmosphere-two {
+        bottom: -70px;
+        left: 8%;
+        width: 260px;
+        height: 260px;
+        background: radial-gradient(circle, rgba(125,212,192,0.2), transparent 70%);
+    }
+
+    /* ── NARROW (single-column) ──────────────────── */
+    .ob-narrow {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        position: relative;
+        z-index: 1;
+    }
+    .ob-narrow-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 14px 20px;
+        border-bottom: 1px solid var(--border, rgba(42,35,24,0.1));
+        flex-shrink: 0;
+    }
+    .ob-progress-track {
+        height: 3px;
+        background: var(--border, rgba(42,35,24,0.1));
+        flex-shrink: 0;
+    }
+    .ob-progress-fill {
+        height: 100%;
+        background: var(--action, #D4843A);
+        transition: width 0.4s ease;
+        border-radius: 0 2px 2px 0;
+    }
+    .ob-narrow-content {
+        flex: 1;
+        padding: 28px 20px;
+        overflow-y: auto;
+    }
+
+    /* ── SPLIT (two-column) ──────────────────── */
+    .ob-split {
+        display: flex;
+        height: 100%;
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Left Panel */
+    .ob-left {
+        width: 340px;
+        flex-shrink: 0;
+        background: linear-gradient(160deg, rgba(252,249,242,0.72) 0%, rgba(252,249,242,0.5) 100%);
+        border-right: 1px solid var(--border, rgba(42,35,24,0.08));
+        overflow-y: auto;
+        padding: 44px 36px;
+        backdrop-filter: blur(18px);
+    }
+    .ob-left-inner {
+        display: flex;
+        flex-direction: column;
+        gap: 32px;
+        min-height: 100%;
+    }
+    .ob-brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .ob-brand-icon { font-size: 22px; }
+    .ob-brand-name {
+        font-size: 18px;
+        font-weight: 800;
+        color: var(--ink, #2A2318);
+        letter-spacing: -0.3px;
+    }
+    .ob-left-headline {
+        font-size: 40px;
+        font-weight: 800;
+        color: var(--ink, #2A2318);
+        line-height: 1.1;
+        letter-spacing: -1.5px;
+        margin: 0 0 12px;
+    }
+    .ob-left-tagline {
+        font-size: 14px;
+        line-height: 1.6;
+        color: var(--ink-ghost, #7A6E5F);
+        margin: 0;
+        max-width: 240px;
+    }
+
+    /* Pillars */
+    .ob-pillars {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    .ob-pillar {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 11px;
+        border-radius: 50px;
+        background: rgba(212,132,58,0.08);
+        border: 1px solid rgba(212,132,58,0.2);
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--action, #D4843A);
+    }
+
+    /* Step tracker */
+    .ob-tracker {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+    }
+    .ob-tracker-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        opacity: 0.35;
+        transition: opacity 0.3s;
+    }
+    .ob-tracker-row.done { opacity: 0.55; }
+    .ob-tracker-row.current { opacity: 1; }
+    .ob-tracker-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--border, rgba(42,35,24,0.2));
+        flex-shrink: 0;
+        transition: background 0.3s, transform 0.3s;
+    }
+    .ob-tracker-row.current .ob-tracker-dot {
+        background: var(--action, #D4843A);
+        transform: scale(1.4);
+        box-shadow: 0 0 0 4px rgba(212,132,58,0.15);
+    }
+    .ob-tracker-row.done .ob-tracker-dot {
+        background: var(--action, #D4843A);
+    }
+    .ob-tracker-label {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--ink, #2A2318);
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+    }
+
+    /* Language pills */
+    .ob-lang-row {
+        display: flex;
+        gap: 8px;
+    }
+    .ob-lang-pill {
+        padding: 4px 10px;
+        border-radius: 4px;
+        border: 1px solid var(--border, rgba(42,35,24,0.12));
+        background: transparent;
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--ink-ghost, #7A6E5F);
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .ob-lang-pill:hover { background: rgba(42,35,24,0.04); }
+    .ob-lang-pill.active {
+        background: var(--ink, #2A2318);
+        color: #fff;
+        border-color: var(--ink, #2A2318);
+    }
+    .ob-lang-bottom { margin-top: auto; }
+
+    /* Right Panel */
+    .ob-right {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow-y: auto;
+        padding: 60px 40px;
+    }
+    .ob-right-inner {
+        width: 100%;
+        max-width: 520px;
+    }
+
+    /* Step Dots */
+    .ob-dots {
+        display: flex;
+        gap: 6px;
+        margin-bottom: 44px;
+    }
+    .ob-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--border, rgba(42,35,24,0.1));
+        transition: all 0.3s;
+    }
+    .ob-dot.active {
+        width: 24px;
+        border-radius: 4px;
+        background: var(--action, #D4843A);
+    }
+    .ob-dot.done {
+        background: var(--action, #D4843A);
+        opacity: 0.4;
+    }
+
+    /* STEP CONTENT */
+    .ob-step {
+        animation: obFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes obFadeIn {
+        from { opacity: 0; transform: translateY(12px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .ob-step-shell {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+    .ob-step-meta {
+        font-size: 12px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        color: var(--action, #D4843A);
+    }
+    .ob-step-icon { font-size: 24px; }
+    .ob-step-title {
+        font-size: 36px;
+        font-weight: 800;
+        color: var(--ink, #2A2318);
+        line-height: 1.1;
+        letter-spacing: -1px;
+        margin: 0 0 12px;
+    }
+    .ob-step-subtitle {
+        font-size: 16px;
+        line-height: 1.6;
+        color: var(--ink-ghost, #7A6E5F);
+        margin: 0 0 36px;
+    }
+
+    /* Inputs & Buttons */
+    .ob-input {
+        width: 100%;
+        padding: 16px 20px;
+        border-radius: 12px;
+        border: 2px solid var(--border, rgba(42,35,24,0.1));
+        background: rgba(255,255,255,0.6);
+        font-size: 18px;
+        font-weight: 500;
+        color: var(--ink, #2A2318);
+        outline: none;
+        transition: all 0.2s;
+        margin-bottom: 32px;
+    }
+    .ob-input:focus {
+        border-color: var(--action, #D4843A);
+        background: #fff;
+        box-shadow: 0 0 0 4px rgba(212,132,58,0.1);
+    }
+    .ob-actions {
+        display: flex;
+        gap: 16px;
+    }
+    .ob-btn-primary {
+        flex: 2;
+        padding: 16px 24px;
+        border-radius: 12px;
+        border: none;
+        background: var(--action, #D4843A);
+        color: #fff;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s;
+        box-shadow: 0 4px 12px rgba(212,132,58,0.25);
+    }
+    .ob-btn-primary:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(212,132,58,0.35);
+        filter: brightness(1.1);
+    }
+    .ob-btn-primary:active:not(:disabled) { transform: translateY(0); }
+    .ob-btn-primary:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .ob-btn-secondary {
+        flex: 1;
+        padding: 16px 24px;
+        border-radius: 12px;
+        border: 2px solid var(--border, rgba(42,35,24,0.1));
+        background: transparent;
+        color: var(--ink, #2A2318);
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .ob-btn-secondary:hover { background: rgba(42,35,24,0.04); }
+
+    .ob-btn-link {
+        display: block;
+        margin: 24px auto 0;
+        padding: 8px 16px;
+        background: none;
+        border: none;
+        color: var(--ink-ghost, #7A6E5F);
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        opacity: 0.7;
+        transition: opacity 0.2s;
+    }
+    .ob-btn-link:hover { opacity: 1; text-decoration: underline; }
+
+    /* Role Grid */
+    .ob-role-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 36px;
+    }
+    .ob-role-card {
+        display: grid;
+        grid-template-columns: 48px 1fr;
+        grid-template-areas: "emoji name" "emoji desc";
+        align-items: center;
+        gap: 0 16px;
+        padding: 16px 20px;
+        border-radius: 16px;
+        border: 2px solid var(--border, rgba(42,35,24,0.08));
+        background: rgba(255,255,255,0.4);
+        text-align: left;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .ob-role-card:hover {
+        background: rgba(255,255,255,0.8);
+        border-color: rgba(212,132,58,0.2);
+    }
+    .ob-role-card.selected {
+        background: #fff;
+        border-color: var(--action, #D4843A);
+        box-shadow: 0 8px 24px rgba(42,35,24,0.08);
+    }
+    .ob-role-emoji {
+        grid-area: emoji;
+        font-size: 32px;
+    }
+    .ob-role-name {
+        grid-area: name;
+        font-size: 16px;
+        font-weight: 800;
+        color: var(--ink, #2A2318);
+    }
+    .ob-role-desc {
+        grid-area: desc;
+        font-size: 13px;
+        color: var(--ink-ghost, #7A6E5F);
+        line-height: 1.4;
+    }
+
+    /* Tour Content */
+    .ob-tour-content {
+        background: rgba(255,255,255,0.5);
+        padding: 24px;
+        border-radius: 16px;
+        border: 1px solid var(--border, rgba(42,35,24,0.06));
+        font-size: 15px;
+        line-height: 1.7;
+        color: var(--ink, #2A2318);
+        margin-bottom: 36px;
+        min-height: 140px;
+    }
+
+    /* Error Banner */
+    .ob-error-banner {
+        background: #FEF2F2;
+        border: 1px solid #FCA5A5;
+        padding: 12px 16px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 24px;
+        animation: obShake 0.4s ease-in-out;
+    }
+    @keyframes obShake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-4px); }
+        75% { transform: translateX(4px); }
+    }
+    .ob-error-icon { font-size: 16px; }
+    .ob-error-text {
+        font-size: 13px;
+        font-weight: 600;
+        color: #991B1B;
+    }
+`;

@@ -1,6 +1,10 @@
 /**
  * Web-specific implementation of share
  */
+interface NavigatorShare {
+  share?: (data: { title?: string; text?: string; url?: string }) => Promise<void>;
+}
+
 export async function shareAction(options: {
   title?: string;
   url: string;
@@ -8,9 +12,11 @@ export async function shareAction(options: {
 }): Promise<void> {
   const { title, url, message } = options;
 
-  if (typeof navigator !== 'undefined' && (navigator as any).share) {
+  const nav = navigator as unknown as NavigatorShare;
+
+  if (typeof navigator !== 'undefined' && nav.share) {
     try {
-      await (navigator as any).share({
+      await nav.share({
         title,
         text: message,
         url,

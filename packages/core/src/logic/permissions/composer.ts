@@ -1,4 +1,4 @@
-﻿import { AbilityBuilder } from '@casl/ability';
+import { AbilityBuilder } from '@casl/ability';
 import { type UserContext, UserContextSchema } from '../schemas/user.schema';
 import { defineAdminAbilities } from './abilities/admin';
 import { defineAssistantPrincipalAbilities } from './abilities/assistantPrincipal';
@@ -9,8 +9,6 @@ import { definePrincipalAbilities } from './abilities/principal';
 import { defineSectionHeadAbilities } from './abilities/sectionHead';
 import { defineStudentAbilities } from './abilities/student';
 import { defineTeacherAbilities } from './abilities/teacher';
-
-export { type Actions, type AppAbilities, AppAbility, type Subjects } from './abilities/base';
 
 /**
  * composeUserAbilities: The 2026 Unified Composition Engine.
@@ -23,8 +21,6 @@ export const composeUserAbilities = (rawContext: Partial<UserContext>): AppAbili
   const user = UserContextSchema.parse({
     userId: null,
     email: null,
-    roles: [],
-    authority: null,
     schoolId: null,
     tenancyName: null,
     tenancy: null,
@@ -35,6 +31,7 @@ export const composeUserAbilities = (rawContext: Partial<UserContext>): AppAbili
     tier: 'free',
     features: [],
     flags: {},
+    bonds: [],
     ...rawContext,
   });
 
@@ -61,7 +58,7 @@ export const composeUserAbilities = (rawContext: Partial<UserContext>): AppAbili
     can('update', 'User');
     can('create', 'User');
     can('resolve', 'User');
-    can('read', 'School', { id: user.schoolId } as any);
+    can('read', 'School', { id: user.schoolId });
   } else if (!user.schoolId && !user.isAnonymous) {
     // 3. 2nd Class Citizen (Authenticated but NO school yet)
     // Limited to onboarding and public exploration
@@ -78,39 +75,42 @@ export const composeUserAbilities = (rawContext: Partial<UserContext>): AppAbili
     can('resolve', 'User');
   }
 
-  // 2. Iterate through all roles and merge abilities
-  user.roles.forEach((role) => {
-    switch (role) {
+  // 2. Load Abilities based on the Union of Identity (All Bonds)
+  user.bonds.forEach((bond) => {
+    const { capacity, entityId, entityType } = bond;
+
+    // Create a contextual context for this specific bond to satisfy legacy definers
+    // while moving towards relationship-scoped permissions.
+    const contextualUser = {
+      ...user,
+      schoolId: entityType === 'SCHOOL' ? entityId : user.schoolId,
+      activeBondStatus: bond.status,
+    };
+
+    switch (capacity) {
       case 'student':
-        defineStudentAbilities(user, builder);
+        defineStudentAbilities(contextualUser, builder);
         break;
       case 'teacher':
-        defineTeacherAbilities(user, builder);
+        defineTeacherAbilities(contextualUser, builder);
         can('manage', 'LibraryReview'); // Teachers can review
         can('grade', 'Grade');
         break;
-      case 'gradeHead':
-        defineGradeHeadAbilities(user, builder);
-        break;
-      case 'sectionHead':
-        defineSectionHeadAbilities(user, builder);
-        break;
       case 'principal':
-        definePrincipalAbilities(user, builder);
+        definePrincipalAbilities(contextualUser, builder);
         can('manage', 'LibraryReview'); // Principal can review
         can('grade', 'Grade');
         break;
       case 'assistantPrincipal':
-        defineAssistantPrincipalAbilities(user, builder);
+        defineAssistantPrincipalAbilities(contextualUser, builder);
         break;
       case 'parent':
-      case 'guardian':
-        defineParentAbilities(user, builder);
+        defineParentAbilities(contextualUser, builder);
         break;
       case 'admin':
       case 'developer':
       case 'founder':
-        defineAdminAbilities(user, builder);
+        defineAdminAbilities(contextualUser, builder);
         can('manage', 'LibraryReview'); // Founder/Admin can review
         can('grade', 'Grade');
         break;
@@ -118,8 +118,8 @@ export const composeUserAbilities = (rawContext: Partial<UserContext>): AppAbili
         can('manage', 'Library');
         can('manage', 'LibraryReview'); // Librarian can review
         break;
-      case 'nurse':
-        can('manage', 'HealthRecords');
+      case 'staff':
+        can('read', 'School', { id: contextualUser.schoolId });
         break;
     }
   });

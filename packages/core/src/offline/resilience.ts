@@ -31,9 +31,12 @@ export async function withResilience<T>(
     try {
       const { data, timestamp } = JSON.parse(cachedRaw);
       cachedData = data;
-      isExpired = Date.now() - timestamp > ttl;
-    } catch (_e) {
-      console.warn(`[Resilience] Failed to parse cache for ${key}`);
+      // SAFE_SIDE_EFFECT: TTL check occurs within an async persistence layer, not during render.
+      // eslint-disable-next-line no-restricted-syntax
+      const now = Date.now();
+      isExpired = now - timestamp > ttl;
+    } catch (error) {
+      console.warn(`[Resilience] Failed to parse cache for ${key}`, error);
     }
   }
 
@@ -46,6 +49,8 @@ export async function withResilience<T>(
           key,
           JSON.stringify({
             data: freshData,
+            // DETERMINISTIC_OK: Storing a timestamp in local storage is a side-effect.
+            // eslint-disable-next-line no-restricted-syntax
             timestamp: Date.now(),
           }),
         );
@@ -61,7 +66,9 @@ export async function withResilience<T>(
 
   // If we have cached data and it's not expired, return it and fetch in background (Stale-While-Revalidate)
   if (cachedData && !isExpired) {
-    executeFetch(); // Background refresh
+    executeFetch().catch((e) => {
+      console.error(`[Resilience] Background refresh failed for ${key}`, e);
+    });
     return cachedData;
   }
 

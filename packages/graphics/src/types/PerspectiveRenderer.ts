@@ -1,5 +1,10 @@
-import { GraphNode, KnowledgeTopology, LayoutResult, PerspectiveId } from '@repo/core/types';
-import type React from 'react';
+import type {
+	GraphNode,
+	KnowledgeTopology,
+	LayoutResult,
+	PerspectiveId,
+} from "@repo/core/types";
+import type React from "react";
 
 /**
  * PerspectiveViewProps  Props passed to every perspective renderer.
@@ -8,13 +13,13 @@ import type React from 'react';
  * positions and just draws. No D3, no simulation logic inside renderers.
  */
 export interface PerspectiveViewProps {
-  data: KnowledgeTopology;
-  layout: LayoutResult;
-  selectedNode?: GraphNode | null;
-  onNodePress?: (node: GraphNode) => void;
-  /** Screen dimensions  renderers use this to scale the canvas */
-  width: number;
-  height: number;
+	data: KnowledgeTopology;
+	layout: LayoutResult;
+	selectedNode?: GraphNode | null;
+	onNodePress?: (node: GraphNode) => void;
+	/** Screen dimensions  renderers use this to scale the canvas */
+	width: number;
+	height: number;
 }
 
 /**
@@ -28,17 +33,17 @@ export interface PerspectiveViewProps {
  * (web) implementations if the rendering strategy differs.
  */
 export interface PerspectiveRenderer {
-  id: PerspectiveId;
-  label: string;
-  description: string;
+	id: PerspectiveId;
+	label: string;
+	description: string;
 
-  /**
-   * Pure function  inspects the topology and returns true if this
-   * perspective can meaningfully render the given data.
-   * Used by `getAvailablePerspectives()` to auto-enable/disable tabs.
-   */
-  validate: (data: KnowledgeTopology) => boolean;
+	/**
+	 * Pure function  inspects the topology and returns true if this
+	 * perspective can meaningfully render the given data.
+	 * Used by `getAvailablePerspectives()` to auto-enable/disable tabs.
+	 */
+	validate: (data: KnowledgeTopology) => boolean;
 
-  /** The React component that renders this perspective */
-  Component: React.ComponentType<PerspectiveViewProps>;
+	/** The React component that renders this perspective */
+	Component: React.ComponentType<PerspectiveViewProps>;
 }

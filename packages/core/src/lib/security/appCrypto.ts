@@ -1,5 +1,5 @@
-import { cryptoManager } from '../../logic/managers/CryptoManager';
 import { supabase } from '../../api/supabase';
+import { cryptoManager } from '../../logic/managers/CryptoManager';
 
 export const AppCryptoEngine = {
   /**
@@ -24,7 +24,7 @@ export const AppCryptoEngine = {
    */
   unwrapMasterDEK(wrappedPayload: string, kek: string): string {
     if (!wrappedPayload.includes(`kek=${kek}`)) throw new Error('Decryption Failed: Invalid KEK');
-    return wrappedPayload.split(',')[0].replace('wrapped(', '');
+    return wrappedPayload.split(',')[0]!.replace('wrapped(', '');
   },
 
   /**

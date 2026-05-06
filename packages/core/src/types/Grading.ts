@@ -28,7 +28,7 @@ export interface GradebookEntry {
   gpa: number;
   isExtraCredit: boolean;
   isDropped: boolean;
-  gradedAt: string;
+  gradedAt: Date;
 }
 
 export const STANDARD_GRADING_SCALE: GradingScale = {

@@ -1,117 +1,130 @@
-import { usePermissions } from '@repo/core/logic';
-import { api } from '@repo/core/api';
-import { useStore } from '@repo/core/logic';
+import { api } from "@repo/core/api";
+import { usePermissions, useStore } from "@repo/core/logic";
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from "react";
 
 export interface ClassroomRoleData {
-  userId: string;
-  schoolId: string | null;
-  profileCompleted: boolean;
-  realClassCount: number;
+	userId: string;
+	schoolId: string | null;
+	profileCompleted: boolean;
+	realClassCount: number;
 }
 
+type SyncableLocalUser = {
+	profile_completed?: boolean;
+	school_id?: string | null;
+	authority?: string | null;
+	platform_authorities?: unknown;
+	school_authority?: unknown;
+	work_capacities?: unknown;
+	tenant_kind?: unknown;
+	full_name?: string | null;
+	email?: string | null;
+	id?: string;
+};
+
+const toSyncableLocalUser = (user: unknown): SyncableLocalUser => {
+	if (user && typeof user === "object") {
+		return user as SyncableLocalUser;
+	}
+	return {};
+};
+
 export function useClassroomRoleData(_refreshTrigger: number = 0) {
-  const { context } = usePermissions();
-  const { userId, schoolId } = context;
-  const {
-    realClassCount: storeClassCount,
-    setRealClassCount,
-    setUser,
-    user: localUser,
-  } = useStore();
-  const [loading, setLoading] = useState(true);
-  const [data, setData] = useState<ClassroomRoleData | null>(null);
+	const { context } = usePermissions();
+	const { userId, schoolId } = context;
+	const syncedLocalUser = toSyncableLocalUser(useStore((state) => state.user));
+	const {
+		realClassCount: storeClassCount,
+		setRealClassCount,
+		setUser,
+	} = useStore();
+	const [loading, setLoading] = useState(true);
+	const [data, setData] = useState<ClassroomRoleData | null>(null);
 
-  const fetchData = useCallback(async () => {
-    // 1. Instant Hydration: Prepare initial data from local store
-    if (!userId) {
-      setData(null);
-      setLoading(false);
-      return;
-    }
+	const fetchData = useCallback(async () => {
+		// 1. Instant Hydration: Prepare initial data from local store
+		if (!userId) {
+			setData(null);
+			setLoading(false);
+			return;
+		}
 
-    // Set initial data immediately so UI doesn't wait
-    setData((prev) => {
-      const currentClassCount =
-        storeClassCount !== null ? storeClassCount : prev?.realClassCount || 0;
+		// Set initial data immediately so UI doesn't wait
+		setData((prev) => {
+			const currentClassCount =
+				storeClassCount !== null ? storeClassCount : prev?.realClassCount || 0;
 
-      if (
-        prev &&
-        prev.userId === userId &&
-        prev.schoolId === schoolId &&
-        prev.profileCompleted === !!localUser?.profile_completed &&
-        prev.realClassCount === currentClassCount
-      ) {
-        return prev;
-      }
-      return {
-        userId,
-        schoolId,
-        profileCompleted: !!localUser?.profile_completed,
-        realClassCount: currentClassCount as number,
-      };
-    });
+			if (
+				prev &&
+				prev.userId === userId &&
+				prev.schoolId === schoolId &&
+				prev.profileCompleted === !!syncedLocalUser.profile_completed &&
+				prev.realClassCount === currentClassCount
+			) {
+				return prev;
+			}
 
-    try {
-      // 2. Background Sync: Fetch from the core API boundary
-      const summary = await api.identity.getClassroomRoleSummary(userId);
-      const profileCheck = { data: summary.profile };
-      const realClassCount = summary.realClassCount;
+			return {
+				userId,
+				schoolId,
+				profileCompleted: !!syncedLocalUser.profile_completed,
+				realClassCount: currentClassCount as number,
+			};
+		});
 
-      // Update store if server data is newer/different (Convergence)
-      if (profileCheck.data) {
-        const serverUser = profileCheck.data;
-        // Strict comparison to prevent loop
-        const hasSignificantChanges =
-          serverUser.profile_completed !== localUser?.profile_completed ||
-          serverUser.school_id !== localUser?.school_id ||
-          serverUser.role !== localUser?.authority ||
-          JSON.stringify(serverUser.platform_roles) !==
-            JSON.stringify((localUser as any)?.platform_authorities) ||
-          serverUser.school_role !== (localUser as any)?.school_authority ||
-          JSON.stringify(serverUser.work_roles) !==
-            JSON.stringify((localUser as any)?.work_capacities) ||
-          serverUser.tenant_kind !== (localUser as any)?.tenant_kind ||
-          serverUser.full_name !== localUser?.full_name ||
-          serverUser.email !== localUser?.email;
+		try {
+			// 2. Background Sync: Fetch from the core API boundary
+			const summary = await api["identity"].getClassroomRoleSummary(userId);
+			const profileCheck = { data: summary.profile };
+			const realClassCount = summary.realClassCount;
 
-        if (hasSignificantChanges) {
-          console.log('= useClassroomRoleData: Syncing user data from server (Changes detected)');
-          setUser({ ...localUser, ...serverUser, id: userId } as any);
-        }
-      }
+			// Update store if server data is newer/different (Convergence)
+			if (profileCheck.data) {
+					const serverUser = profileCheck.data;
+					// Strict comparison to prevent loop
+					const hasSignificantChanges =
+					serverUser.profile_completed !== syncedLocalUser.profile_completed ||
+					serverUser.school_id !== syncedLocalUser.school_id ||
+					serverUser.role !== syncedLocalUser.authority ||
+					JSON.stringify(serverUser.platform_roles) !==
+						JSON.stringify(syncedLocalUser.platform_authorities) ||
+					serverUser.school_role !== syncedLocalUser.school_authority ||
+					JSON.stringify(serverUser.work_roles) !==
+						JSON.stringify(syncedLocalUser.work_capacities) ||
+					serverUser.tenant_kind !== syncedLocalUser.tenant_kind ||
+					serverUser.full_name !== syncedLocalUser.full_name ||
+					serverUser.email !== syncedLocalUser.email;
 
-      // Sync class count back to store if different
-      if (realClassCount !== storeClassCount) {
-        setRealClassCount(realClassCount);
-      }
+				if (hasSignificantChanges) {
+					console.log(
+						"= useClassroomRoleData: Syncing user data from server (Changes detected)",
+					);
+					setUser({ ...syncedLocalUser, ...serverUser, id: userId });
+				}
+			}
 
-      setData({
-        userId,
-        schoolId: summary.schoolId || schoolId,
-        profileCompleted: summary.profileCompleted,
-        realClassCount,
-      });
-    } catch (error) {
-      console.error('Error syncing classroom role data:', error);
-    } finally {
-      setLoading(false);
-    }
-  }, [
-    userId,
-    schoolId,
-    setUser,
-    setRealClassCount,
-    storeClassCount,
-    localUser,
-    localUser?.profile_completed,
-    localUser?.school_id,
-  ]);
+			// Sync class count back to store if different
+			if (realClassCount !== storeClassCount) {
+				setRealClassCount(realClassCount);
+			}
 
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+			setData({
+				userId,
+				schoolId: summary.schoolId || schoolId,
+				profileCompleted: summary.profileCompleted,
+				realClassCount,
+			});
+		} catch (error) {
+			console.error("Error syncing classroom role data:", error);
+		} finally {
+			setLoading(false);
+		}
+	}, [userId, schoolId, setUser, setRealClassCount, storeClassCount, syncedLocalUser]);
 
-  return { data, loading, fetchRoleData: fetchData };
+	useEffect(() => {
+		fetchData();
+	}, [fetchData]);
+
+	return { data, loading, fetchRoleData: fetchData };
 }

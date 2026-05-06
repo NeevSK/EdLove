@@ -47,7 +47,10 @@ export function useNavigationAuthGuard(
       // Only allow onboarding routes if we have a valid session (e.g. guest or user)
       if (onboardingRoutes.includes(currentRoute)) {
         if (!hasValidSession) {
-          navigationRef.reset({ index: 0, routes: [{ name: 'Welcome' as never }] });
+          navigationRef.reset({
+            index: 0,
+            routes: [{ name: 'Welcome' as never }],
+          });
         }
         return;
       }

@@ -1,46 +1,24 @@
-﻿import { z } from 'zod';
+import { z } from 'zod';
+import { makeModelSchema } from '@repo/schema';
 
-export const PaymentStatusSchema = z.enum([
-  'pending',
-  'processing',
-  'succeeded',
-  'failed',
-  'refunded',
-]);
+/**
+ * PaymentIntentSchema - Orchestrating a future transfer of value.
+ * Derived from ZenStack PaymentIntent model.
+ */
+export const PaymentIntentSchema = makeModelSchema('PaymentIntent');
 
-export const PaymentIntentSchema = z.object({
-  id: z.string(),
-  amount: z.number(),
-  currency: z.string(),
-  status: PaymentStatusSchema,
-  provider: z.string(),
-  clientSecret: z.string().optional(),
-  metadata: z.record(z.string(), z.any()).optional(),
-});
+/**
+ * InvoiceSchema - A formal request for settlement.
+ * Derived from ZenStack Invoice model.
+ */
+export const InvoiceSchema = makeModelSchema('Invoice');
 
-export const InvoiceSchema = z.object({
-  id: z.string(),
-  customerId: z.string(),
-  amount: z.number(),
-  currency: z.string(),
-  status: z.enum(['draft', 'open', 'paid', 'uncollectible', 'void']),
-  dueDate: z.string(),
-  items: z.array(
-    z.object({
-      description: z.string(),
-      amount: z.number(),
-      quantity: z.number(),
-    }),
-  ),
-  metadata: z.record(z.string(), z.any()).optional(),
-});
+/**
+ * ReceiptSchema - Proof of successful value exchange.
+ * Derived from ZenStack Receipt model.
+ */
+export const ReceiptSchema = makeModelSchema('Receipt');
 
-export const ReceiptSchema = z.object({
-  id: z.string(),
-  invoiceId: z.string().optional(),
-  amount: z.number(),
-  currency: z.string(),
-  paidAt: z.string(),
-  paymentMethod: z.string(),
-  receiptUrl: z.string().optional(),
-});
+export type PaymentIntent = z.infer<typeof PaymentIntentSchema>;
+export type Invoice = z.infer<typeof InvoiceSchema>;
+export type Receipt = z.infer<typeof ReceiptSchema>;

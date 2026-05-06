@@ -1,29 +1,57 @@
-import { useCallback, useEffect, useState } from 'react';
-import { profileAPI } from '../api/profile';
-import type { CommunityProfile, ProfileHistoryEntry } from '../domains/profile/ports';
+import { profileAPI } from '@repo/core/api';
+import type { CommunityProfile, ProfileHistoryEntry } from '@repo/core/logic';
+import { handleAPIError } from '@repo/core/logic';
+import { useCallback, useEffect, useReducer } from 'react';
+
+type HistoryState = {
+  history: ProfileHistoryEntry<CommunityProfile>[];
+  loading: boolean;
+};
+
+type HistoryAction =
+  | { type: 'FETCH_START' }
+  | { type: 'FETCH_SUCCESS'; payload: ProfileHistoryEntry<CommunityProfile>[] }
+  | { type: 'FETCH_FAILURE' };
+
+function historyReducer(state: HistoryState, action: HistoryAction): HistoryState {
+  switch (action.type) {
+    case 'FETCH_START':
+      return { ...state, loading: true };
+    case 'FETCH_SUCCESS':
+      return { ...state, loading: false, history: action.payload };
+    case 'FETCH_FAILURE':
+      return { ...state, loading: false };
+    default:
+      return state;
+  }
+}
 
 export function useCommunityProfileHistory(communityId: string, limit = 20) {
-  const [history, setHistory] = useState<ProfileHistoryEntry<CommunityProfile>[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [state, dispatch] = useReducer(historyReducer, {
+    history: [],
+    loading: true,
+  });
+
+  const { history, loading } = state;
 
   const loadHistory = useCallback(async () => {
     if (!communityId) {
-      setHistory([]);
-      setLoading(false);
+      dispatch({ type: 'FETCH_SUCCESS', payload: [] });
       return;
     }
 
-    setLoading(true);
+    dispatch({ type: 'FETCH_START' });
     try {
       const data = await profileAPI.getCommunityProfileHistory(communityId, limit);
-      setHistory(data);
-    } finally {
-      setLoading(false);
+      dispatch({ type: 'FETCH_SUCCESS', payload: data });
+    } catch (error) {
+      handleAPIError(error);
+      dispatch({ type: 'FETCH_FAILURE' });
     }
   }, [communityId, limit]);
 
   useEffect(() => {
-    void loadHistory();
+    loadHistory().catch(handleAPIError);
   }, [loadHistory]);
 
   return { history, loading, refresh: loadHistory };

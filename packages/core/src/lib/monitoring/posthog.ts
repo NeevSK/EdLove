@@ -64,6 +64,9 @@ export const trackScreen = (screenName: string, properties?: any) => {
   if (_posthog?.screen) {
     _posthog.screen(screenName, properties);
   } else if (_posthog) {
-    _posthog.capture('$screen_view', { screen_name: screenName, ...properties });
+    _posthog.capture('$screen_view', {
+      screen_name: screenName,
+      ...properties,
+    });
   }
 };

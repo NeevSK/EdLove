@@ -1,4 +1,4 @@
-﻿import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { type CrystalTier, naturePathsAPI, type RiverStage } from '../api/naturePaths';
 import { usePermissions } from '../logic/permissions/hooks/usePermissions';
 
@@ -32,12 +32,17 @@ export const useNaturePaths = () => {
   }, [userId]);
 
   useEffect(() => {
-    refreshPaths();
+    refreshPaths().catch((e) => {
+      console.error('NaturePaths: Failed to load on mount', e);
+    });
   }, [refreshPaths]);
 
-  return {
-    paths,
-    isLoading,
-    refreshPaths,
-  };
+  return useMemo(
+    () => ({
+      paths,
+      isLoading,
+      refreshPaths,
+    }),
+    [paths, isLoading, refreshPaths],
+  );
 };

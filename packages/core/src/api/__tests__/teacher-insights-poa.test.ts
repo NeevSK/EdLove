@@ -1,4 +1,4 @@
-﻿vi.mock('../native/runtimes/teacherInsights.runtime', () => ({
+vi.mock('../runtimes/teacherInsights.runtime', () => ({
   teacherInsightsServices: {
     listPrivateNotes: vi.fn(),
     createPrivateNote: vi.fn(),

@@ -186,13 +186,12 @@ export function ConversationSheet({
 }: ConversationSheetProps) {
   const [draft, setDraft] = useState('');
   const [isAnonymous, setIsAnonymous] = useState(false);
-  const flatListRef = useRef<any>(null);
+  const flatListRef = useRef<FlatList>(null);
 
   useEffect(() => {
-    if (comments.length > 0) {
-      const timer = setTimeout(() => flatListRef.current?.scrollToEnd({ animated: true }), 150);
-      return () => clearTimeout(timer);
-    }
+    if (comments.length === 0) return;
+    const timer = setTimeout(() => flatListRef.current?.scrollToEnd({ animated: true }), 150);
+    return () => clearTimeout(timer);
   }, [comments.length]);
 
   const handleSend = async () => {
@@ -242,9 +241,13 @@ export function ConversationSheet({
               <FlatList
                 ref={flatListRef}
                 data={comments}
-                keyExtractor={(item: any) => item.id}
-                contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 10, paddingBottom: 24 }}
-                renderItem={({ item }: { item: any }) => (
+                keyExtractor={(item: CommentItem) => item.id}
+                contentContainerStyle={{
+                  paddingHorizontal: 20,
+                  paddingTop: 10,
+                  paddingBottom: 24,
+                }}
+                renderItem={({ item }: { item: CommentItem }) => (
                   <CommentRow
                     comment={item}
                     currentUserId={currentUserId}

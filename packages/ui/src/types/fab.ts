@@ -14,5 +14,9 @@ export type TabType =
 export interface ActionItem {
   label: string;
   onPress: () => void;
-  icon?: React.ComponentType<{ size: number; color: string; strokeWidth: number }>;
+  icon?: React.ComponentType<{
+    size: number;
+    color: string;
+    strokeWidth: number;
+  }>;
 }

@@ -8,8 +8,8 @@ export interface ClassroomNote {
   /** 'private' = only author | 'class' = all enrolled members */
   visibility: 'private' | 'class';
   is_pinned: boolean;
-  created_at: string;
-  updated_at: string;
+  created_at: Date;
+  updated_at: Date;
   /** Joined from users table when fetching */
   author?: { full_name: string; role: string };
 }

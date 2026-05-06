@@ -1,4 +1,4 @@
-import { PerspectiveViewProps } from '@repo/core/types';
+import type { PerspectiveViewProps } from '@repo/core/types';
 import type React from 'react';
 import { useTheme } from '../../hooks/useTheme';
 import { useThemedColors } from '../../hooks/useThemedColors';

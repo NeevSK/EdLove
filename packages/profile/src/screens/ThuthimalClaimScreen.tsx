@@ -9,8 +9,17 @@ import { type RouteProp, useNavigation, useRoute } from '@react-navigation/nativ
 import { identityAPI, thuthimalAPI } from '@repo/core/api';
 
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
-import { Box, Button, ButtonText, HStack, Heading, Spinner, Text, VStack } from '@repo/ui/primitives';
-import { AnimatedView } from '@repo/ui/primitives';
+import {
+  AnimatedView,
+  Box,
+  Button,
+  ButtonText,
+  Heading,
+  HStack,
+  Spinner,
+  Text,
+  VStack,
+} from '@repo/ui/primitives';
 import { hapticError, hapticSuccess } from '@repo/ui/utils/haptics';
 
 import { useEffect, useState } from 'react';
@@ -50,50 +59,50 @@ export default function ThuthimalClaimScreen() {
     opacity: flowerOpacity.value,
   }));
 
-  const claimGift = async () => {
-    const { gift_token } = route.params;
-    try {
-      const myId = await identityAPI.getMyInternalId();
-      if (!myId) {
-        navigation.navigate('Auth');
-        return;
-      }
+  useEffect(() => {
+    const claimGift = async () => {
+      const { gift_token } = route.params;
+      try {
+        const myId = await identityAPI.getMyInternalId();
+        if (!myId) {
+          navigation.navigate('Auth');
+          return;
+        }
 
-      const result = await thuthimalAPI.claimGift({
-        gift_token,
-        recipient_id: myId,
-      });
+        const result = await thuthimalAPI.claimGift({
+          gift_token,
+          recipient_id: myId,
+        });
 
-      if (result.success) {
-        setGifterName(result.gifter_name ?? gifterName);
-        setClaimState('success');
-        hapticSuccess();
-        // Bloom animation
-        flowerScale.value = withDelay(
-          200,
-          withSequence(
-            withSpring(1.3, { damping: 8, stiffness: 100 }),
-            withSpring(1.0, { damping: 12, stiffness: 120 }),
-          ),
-        );
-        flowerOpacity.value = withTiming(1, { duration: 400 });
-      } else if (result.error === 'already_claimed_or_invalid') {
-        setClaimState('already_claimed');
-        hapticError();
-      } else {
+        if (result.success) {
+          setGifterName(result.gifter_name ?? gifterName);
+          setClaimState('success');
+          hapticSuccess();
+          // Bloom animation
+          flowerScale.value = withDelay(
+            200,
+            withSequence(
+              withSpring(1.3, { damping: 8, stiffness: 100 }),
+              withSpring(1.0, { damping: 12, stiffness: 120 }),
+            ),
+          );
+          flowerOpacity.value = withTiming(1, { duration: 400 });
+        } else if (result.error === 'already_claimed_or_invalid') {
+          setClaimState('already_claimed');
+          hapticError();
+        } else {
+          setClaimState('error');
+          hapticError();
+        }
+      } catch (err) {
+        console.error('ThuthimalClaimScreen error:', err);
         setClaimState('error');
         hapticError();
       }
-    } catch (err) {
-      console.error('ThuthimalClaimScreen error:', err);
-      setClaimState('error');
-      hapticError();
-    }
-  };
+    };
 
-  useEffect(() => {
     void claimGift();
-  }, [claimGift]);
+  }, [route.params, navigation, gifterName, flowerScale, flowerOpacity]);
 
   const handleContinue = () => {
     navigation.navigate('Main', { screen: 'Profile' });
@@ -128,7 +137,7 @@ export default function ThuthimalClaimScreen() {
                 {t('thuthimalClaim.alreadyBloomedDesc')}
               </Text>
               <Button
-                size="lg"
+                size="sm"
                 variant="outline"
                 onPress={() => navigation.goBack()}
                 className="mt-4 border-phase-surface rounded-2xl"

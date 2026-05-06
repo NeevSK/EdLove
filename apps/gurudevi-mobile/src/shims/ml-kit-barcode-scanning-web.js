@@ -9,7 +9,7 @@
  */
 
 const BarcodeScanning = {
-  scan: async () => [],
+	scan: async () => [],
 };
 
 module.exports = BarcodeScanning;

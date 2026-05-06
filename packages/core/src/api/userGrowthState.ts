@@ -20,10 +20,10 @@
 
 import { composeUserAbilities } from '../logic/permissions/composer';
 import { getTemporalRange } from '../logic/utils/temporalUtils';
-import { identityAPI } from './identity';
-import { supabase } from './supabase';
 import { APIError } from '../types/API';
+import { identityAPI } from './identity';
 import type { BanyanStage, CrystalTier, RiverStage } from './naturePaths';
+import { supabase } from './supabase';
 
 export type BhumiStage = 'bijam' | 'mula' | 'nala' | 'patra' | 'kamala' | 'purna_kamala';
 
@@ -205,7 +205,10 @@ export const userGrowthStateAPI = {
     // Atomic DB-side increment via dedicated RPC (avoids read-then-write race condition).
     // The RPC does UPDATE ... SET col = COALESCE(col,0)+1 in a single round-trip.
     const { data: updatedRow, error } = await supabase
-      .rpc('increment_growth_dimension', { p_user_id: userId, p_column: column })
+      .rpc('increment_growth_dimension', {
+        p_user_id: userId,
+        p_column: column,
+      })
       .maybeSingle();
 
     if (error || !updatedRow) {
@@ -239,7 +242,10 @@ export const userGrowthStateAPI = {
         try {
           await supabase
             .from('user_growth_state')
-            .update({ bhumi_stage: nextStageFallback, updated_at: new Date().toISOString() })
+            .update({
+              bhumi_stage: nextStageFallback,
+              updated_at: new Date().toISOString(),
+            })
             .eq('user_id', userId);
         } catch {
           // ignore
@@ -255,7 +261,10 @@ export const userGrowthStateAPI = {
       try {
         await supabase
           .from('user_growth_state')
-          .update({ bhumi_stage: nextStage, updated_at: new Date().toISOString() })
+          .update({
+            bhumi_stage: nextStage,
+            updated_at: new Date().toISOString(),
+          })
           .eq('user_id', userId);
       } catch {
         // ignore

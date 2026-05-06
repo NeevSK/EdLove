@@ -1,2 +1,2 @@
-export * from './externalLinks';
-export * from './resourceLinks';
+export * from "./externalLinks";
+export * from "./resourceLinks";

@@ -177,12 +177,29 @@ export const operationsContract = c.router({
     path: '/schools',
     body: z.object({
       name: z.string().min(1),
-      handle: z.string().min(1),
-      type: z.enum(['primary', 'secondary', 'mixed']),
+      handle: z.string().min(1).optional(),
+      type: z.string(),
       created_by: z.string(),
     }),
     responses: {
       201: SchoolSchema,
+    },
+    metadata: POAMetadataSchema.parse({
+      authority: {
+        action: 'create',
+        subject: 'School',
+      },
+    }),
+  },
+  initializePersonalWorkspace: {
+    method: 'POST',
+    path: '/schools/initialize-workspace',
+    body: z.object({
+      userId: z.string(),
+      name: z.string(),
+    }),
+    responses: {
+      201: z.object({ id: z.string() }),
     },
     metadata: POAMetadataSchema.parse({
       authority: {

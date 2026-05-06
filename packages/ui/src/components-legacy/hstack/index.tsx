@@ -1,8 +1,9 @@
 import { cssInterop } from 'nativewind';
 import React from 'react';
-import { View, type ViewProps } from 'react-native';
+import { type ViewProps, type View } from 'react-native';
+import { View as PrimitiveView } from '../../primitives';
 
-const StyledView = View;
+const StyledView = PrimitiveView;
 
 cssInterop(StyledView, {
   className: {

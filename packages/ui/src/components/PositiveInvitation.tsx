@@ -8,7 +8,7 @@ import { SanctuaryButton } from './SanctuaryButton';
 interface PositiveInvitationProps {
   title?: string;
   description?: string;
-  icon?: any;
+  icon?: React.ElementType;
   actionLabel?: string;
   onAction?: () => void;
   type?: 'empty' | 'guest';

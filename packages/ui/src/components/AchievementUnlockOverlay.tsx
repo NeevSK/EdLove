@@ -44,19 +44,19 @@ export default function AchievementUnlockOverlay({
   }, [opacity, scale, translateY, onHide]);
 
   useEffect(() => {
-    if (visible) {
-      // Animate In
-      translateY.value = withSpring(60, { damping: 12 });
-      opacity.value = withTiming(1, { duration: 400 });
-      scale.value = withSpring(1, { damping: 10 });
+    if (!visible) return;
 
-      // Auto Hide after 4 seconds
-      const timer = setTimeout(() => {
-        performHide();
-      }, 4000);
+    // Animate In
+    translateY.value = withSpring(60, { damping: 12 });
+    opacity.value = withTiming(1, { duration: 400 });
+    scale.value = withSpring(1, { damping: 10 });
 
-      return () => clearTimeout(timer);
-    }
+    // Auto Hide after 4 seconds
+    const timer = setTimeout(() => {
+      performHide();
+    }, 4000);
+
+    return () => clearTimeout(timer);
   }, [visible, translateY, scale, opacity, performHide]);
 
   const animatedStyle = useAnimatedStyle(() => ({

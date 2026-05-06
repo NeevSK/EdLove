@@ -1,8 +1,8 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { identityAPI } from '../api/identity';
 import { trackingAPI } from '../api/tracking';
 import { trackEvent } from '../lib/monitoring/posthog';
-import { identityAPI } from '../api/identity';
 
 /**
  * Hook for tracking feature discovery and exploration status.
@@ -16,7 +16,9 @@ export function useTracking() {
       const myId = await identityAPI.getMyInternalId();
       if (myId) setUserId(myId);
     };
-    getUserId();
+    getUserId().catch((e) => {
+      console.error('Tracking: Failed to resolve identity', e);
+    });
   }, []);
 
   // Get explored features
@@ -38,10 +40,15 @@ export function useTracking() {
     try {
       await trackingAPI.logFeatureUsage(userId, featureName);
       // PostHog Tracking
-      trackEvent('feature_discovered', { feature_name: featureName, user_id: userId });
+      trackEvent('feature_discovered', {
+        feature_name: featureName,
+        user_id: userId,
+      });
 
       // Invalidate to refresh the explored list
-      queryClient.invalidateQueries({ queryKey: ['explored_features', userId] });
+      await queryClient.invalidateQueries({
+        queryKey: ['explored_features', userId],
+      });
     } catch (error) {
       console.error(`Failed to track discovery for ${featureName}:`, error);
     }
@@ -67,11 +74,14 @@ export function useTracking() {
     });
   };
 
-  return {
-    exploredFeatures,
-    isLoading,
-    discoverFeature,
-    isDiscovered,
-    trackSnapshot,
-  };
+  return useMemo(
+    () => ({
+      exploredFeatures,
+      isLoading,
+      discoverFeature,
+      isDiscovered,
+      trackSnapshot,
+    }),
+    [exploredFeatures, isLoading, discoverFeature, trackSnapshot],
+  );
 }

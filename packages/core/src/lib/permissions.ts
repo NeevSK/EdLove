@@ -70,8 +70,18 @@ export function getAuthorityLabel(
     },
     nurse: {
       si: '\u0DC4\u0DD9\u0DAF',
-      ta: '\u0B9A\u0BC6\u0BB5\u0BBF\u0BB2\u0BBF\u0BAF\u0BB0\u0BCD',
+      ta: '\u0B9A\u0BC6\u0BB5\u0BBF\u0BB2\u0BAF\u0BB0\u0BCD',
       en: 'Nurse',
+    },
+    staff: {
+      si: 'කාර්ය මණ්ඩලය',
+      ta: 'பணியாளர்கள்',
+      en: 'Staff',
+    },
+    member: {
+      si: 'සාමාජික',
+      ta: 'உறுப்பினர்',
+      en: 'Member',
     },
     guest: {
       si: '\u0D85\u0DB8\u0DD4\u0DAD\u0DCA\u0DAD\u0DCF',
@@ -83,21 +93,20 @@ export function getAuthorityLabel(
   return labels[authority]?.[language] || authority;
 }
 
-import type { Role } from '../logic/schemas/role.schema';
-import type { User } from '../logic/schemas/user.schema';
-
-/**
- * Extract school-specific role for a user
- */
-export function getSchoolRoleForUser(user: User | null): Role | null {
-  if (!user) return null;
-  return (user.authority as Role) || null;
+// Legacy compatibility helpers.
+// These should not be used for authorization decisions; prefer ReBAC bonds + active perspective.
+export function getSchoolRoleForUser(user: any): AuthorityTier | null {
+  const activeBond = user?.activeBond;
+  if (activeBond?.entityType === 'SCHOOL' && typeof activeBond?.capacity === 'string') {
+    return activeBond.capacity as AuthorityTier;
+  }
+  const bonds: any[] = Array.isArray(user?.bonds) ? user.bonds : [];
+  const schoolBond = bonds.find((b) => b?.entityType === 'SCHOOL' && (b?.status ?? 'active') === 'active');
+  if (schoolBond?.capacity) return schoolBond.capacity as AuthorityTier;
+  return null;
 }
 
-/**
- * Extract work roles for a user
- */
-export function getWorkRolesForUser(user: User | null): Role[] {
-  if (!user) return [];
-  return (user.roles as Role[]) || [];
+export function getWorkRolesForUser(_user: any): AuthorityTier[] {
+  // Work roles are not yet modeled canonically in ReBAC; return empty for compatibility.
+  return [];
 }

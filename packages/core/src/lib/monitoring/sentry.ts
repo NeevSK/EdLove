@@ -7,13 +7,13 @@
 import { telemetry } from '../../logic/managers/TelemetryManager';
 
 export const initSentry = () => {
-  const dsn = process.env.EXPO_PUBLIC_SENTRY_DSN;
+  const dsn = process.env['EXPO_PUBLIC_SENTRY_DSN'];
   if (!dsn) return;
 
   telemetry.init({
     dsn,
-    environment: process.env.EXPO_PUBLIC_SENTRY_ENVIRONMENT || 'production',
-    release: process.env.EXPO_PUBLIC_SENTRY_RELEASE,
+    environment: process.env['EXPO_PUBLIC_SENTRY_ENVIRONMENT'] || 'production',
+    release: process.env['EXPO_PUBLIC_SENTRY_RELEASE'],
   });
 };
 

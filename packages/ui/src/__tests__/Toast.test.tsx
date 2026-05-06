@@ -1,5 +1,5 @@
 import { act, fireEvent, render } from '@testing-library/react-native';
-import { Pressable, Text } from 'react-native';
+import { Pressable, Text } from '../primitives';
 import { ToastProvider, useToast } from '../providers/ToastProvider';
 
 const TestComponent = ({ message = 'Hello', type = 'info' as any }) => {

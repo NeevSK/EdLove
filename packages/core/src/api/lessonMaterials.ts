@@ -1,4 +1,4 @@
-import { educationalServices } from '../native/runtimes/educational.runtime';
+import { educationalServices } from './runtimes/educational.runtime';
 import type { LessonMaterial } from '../types';
 import { educationalContract } from './educational.contract';
 

@@ -1,4 +1,4 @@
-import { PerspectiveViewProps } from '@repo/core/types';
+import type { PerspectiveViewProps } from '@repo/core/types';
 import { Layers, Network, Orbit, TrendingUp } from 'lucide-react-native';
 import type React from 'react';
 import { useMemo } from 'react';
@@ -83,7 +83,12 @@ export const JyotiView: React.FC<PerspectiveViewProps> = ({ data }) => {
               icon: Network,
               color: Theme.colors.sanctuarySaffron,
             },
-            { label: 'Links', value: totalLinks, icon: Orbit, color: actionColor },
+            {
+              label: 'Links',
+              value: totalLinks,
+              icon: Orbit,
+              color: actionColor,
+            },
           ]}
           progressLabel="Topology Density"
           progressValue={Math.min(100, Math.round(Number(avgConnectivity) * 10))}

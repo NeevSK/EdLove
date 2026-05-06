@@ -1,37 +1,25 @@
 import { z } from 'zod';
+import { makeModelSchema } from '@repo/schema';
 
-export const SchoolSchema = z.object({
-  id: z.string().uuid(),
-  name: z.string().min(1),
-  handle: z.string().nullable(),
-  type: z.string(), // Legacy field
+/**
+ * SchoolSchema - The educational institution.
+ * Derived from ZenStack Model Schema with app-specific enums.
+ */
+export const SchoolSchema = makeModelSchema('School').extend({
   status: z.enum(['active', 'pending', 'rejected']),
-  tenant_kind: z.string().optional(),
-  official_type: z.string().optional(),
-  province_id: z.string().uuid().optional(),
-  district_id: z.string().uuid().optional(),
-  city: z.string().optional(),
-  address: z.string().optional(),
-  student_type: z.string().optional(),
-  religious_affiliation: z.string().optional(),
-  student_count: z.number().int().nonnegative().optional(),
-  avatar_url: z.string().nullable().optional(),
-  created_at: z.string().datetime().optional(),
 });
 
-export const SectionSchema = z.object({
-  id: z.string().uuid(),
-  school_id: z.string().uuid(),
-  name: z.string().min(1),
-  created_at: z.string().datetime(),
-});
+/**
+ * SectionSchema - A department or level within a school.
+ * Derived from ZenStack Model Schema.
+ */
+export const SectionSchema = makeModelSchema('Section');
 
-export const SchoolGradeSchema = z.object({
-  id: z.string().uuid(),
-  section_id: z.string().uuid(),
-  number: z.number().int().min(1).max(13),
-  created_at: z.string().datetime(),
-});
+/**
+ * SchoolGradeSchema - A specific level (e.g. Grade 1, Grade 12).
+ * Derived from ZenStack Model Schema.
+ */
+export const SchoolGradeSchema = makeModelSchema('SchoolGrade');
 
 export const SchoolStatsSchema = z.object({
   total_students: z.number().int().nonnegative(),

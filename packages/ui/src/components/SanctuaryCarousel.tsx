@@ -1,5 +1,6 @@
 import type React from 'react';
-import { FlatList, StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
+import { FlatList, View } from '../primitives';
 import { Theme } from '../theme/Theme';
 
 export interface SanctuaryCarouselProps<T> {

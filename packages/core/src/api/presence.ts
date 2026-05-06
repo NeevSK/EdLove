@@ -19,7 +19,8 @@ export interface PresenceSessionOptions {
 export async function fetchPresenceFallbackCount(
   options: PresenceFallbackCountOptions,
 ): Promise<number> {
-  const fiveMinutesAgo = new Date(Date.now() - (options.windowMs ?? 5 * 60 * 1000)).toISOString();
+  const now = Date.now();
+  const fiveMinutesAgo = new Date(now - (options.windowMs ?? 5 * 60 * 1000)).toISOString();
   let query = supabase
     .from('users')
     .select('id', { count: 'exact', head: true })
@@ -58,6 +59,7 @@ export function startPresenceSession(options: PresenceSessionOptions): () => voi
       await selfChannel.track({
         user_id: options.userId,
         vibe: options.userVibe ?? 'active',
+        // DETERMINISTIC_OK: Background side-effect for presence heartbeat.
         online_at: new Date().toISOString(),
       });
     } catch {
@@ -82,8 +84,12 @@ export function startPresenceSession(options: PresenceSessionOptions): () => voi
     });
 
   return () => {
-    supabase.removeChannel(selfChannel);
-    supabase.removeChannel(watcherChannel);
+    supabase.removeChannel(selfChannel).catch((e) => {
+      console.error('Presence: Failed to remove self channel', e);
+    });
+    supabase.removeChannel(watcherChannel).catch((e) => {
+      console.error('Presence: Failed to remove watcher channel', e);
+    });
   };
 }
 

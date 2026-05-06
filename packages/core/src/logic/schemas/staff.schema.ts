@@ -1,4 +1,5 @@
-﻿import { z } from 'zod';
+import { z } from 'zod';
+import { makeModelSchema } from '@repo/schema';
 
 /**
  * StaffPresenceSummarySchema - Daily presence indicators for school staff.
@@ -14,30 +15,19 @@ export const StaffPresenceSummarySchema = z.object({
  * TeacherCarouselItemSchema - Metadata for teacher profile cards.
  */
 export const TeacherCarouselItemSchema = z.object({
-  userId: z.string().uuid(),
+  userId: z.uuid(),
   fullName: z.string().min(1),
   role: z.string(),
   todayStatus: z.string().nullable().optional(),
   classroomCount: z.number().int().min(0).default(0),
-  avatarUrl: z.string().url().nullable().optional().or(z.string().length(0)),
+  avatarUrl: z.url().nullable().optional().or(z.string().length(0)),
 });
 
 /**
  * StaffLeaveSchema - Data Transfer Object for leave requests.
+ * Derived from ZenStack StaffLeave model.
  */
-export const StaffLeaveSchema = z.object({
-  id: z.string().uuid(),
-  school_id: z.string().uuid(),
-  user_id: z.string().uuid(),
-  leave_type: z.string(),
-  start_date: z.string(), // ISO Date string YYYY-MM-DD
-  end_date: z.string(), // ISO Date string YYYY-MM-DD
-  reason: z.string().nullable().optional(),
-  status: z.enum(['pending', 'approved', 'rejected']).default('pending'),
-  reviewed_by: z.string().uuid().nullable().optional(),
-  reviewed_at: z.string().nullable().optional(),
-  created_at: z.string(),
-});
+export const StaffLeaveSchema = makeModelSchema('StaffLeave');
 
 /**
  * StudentAttendancePulseSchema - High-level metrics for student engagement.
@@ -50,18 +40,9 @@ export const StudentAttendancePulseSchema = z.object({
 
 /**
  * CalendarEventSchema - Institutional event metadata.
+ * Derived from ZenStack CalendarEvent model.
  */
-export const CalendarEventSchema = z.object({
-  id: z.string().uuid(),
-  school_id: z.string().uuid(),
-  title: z.string().min(1),
-  type: z.string(),
-  start_date: z.string(),
-  end_date: z.string().nullable().optional(),
-  is_public: z.boolean().default(true),
-  created_by: z.string().uuid().nullable().optional(),
-  created_at: z.string(),
-});
+export const CalendarEventSchema = makeModelSchema('CalendarEvent');
 
 export type StaffPresenceSummaryZod = z.infer<typeof StaffPresenceSummarySchema>;
 export type TeacherCarouselItemZod = z.infer<typeof TeacherCarouselItemSchema>;

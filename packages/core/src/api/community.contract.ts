@@ -132,7 +132,10 @@ export const communityContract = c.router({
   voteInPoll: {
     method: 'POST',
     path: '/community/posts/:postId/poll/vote',
-    body: z.object({ optionId: z.string(), allowMultiple: z.boolean().optional() }),
+    body: z.object({
+      optionId: z.string(),
+      allowMultiple: z.boolean().optional(),
+    }),
     responses: { 200: z.array(z.string()) },
     metadata: authority('create', 'Post'),
   },
@@ -287,5 +290,31 @@ export const communityContract = c.router({
     body: z.any().optional(),
     responses: { 204: z.undefined() },
     metadata: authority('update', 'User'),
+  },
+  blockUser: {
+    method: 'POST',
+    path: '/community/users/block',
+    body: z.object({ target_user_id: z.string() }),
+    responses: { 201: z.any() },
+    metadata: authority('create', 'User'),
+  },
+  unblockUser: {
+    method: 'POST',
+    path: '/community/users/unblock',
+    body: z.object({ target_user_id: z.string() }),
+    responses: { 204: z.undefined() },
+    metadata: authority('delete', 'User'),
+  },
+  isBlockingActive: {
+    method: 'GET',
+    path: '/community/users/:targetUserId/blocking-status',
+    responses: { 200: z.object({ active: z.boolean() }) },
+    metadata: authority('read', 'User'),
+  },
+  getMutedUsers: {
+    method: 'GET',
+    path: '/community/users/muted',
+    responses: { 200: z.array(z.any()) },
+    metadata: authority('read', 'User'),
   },
 });

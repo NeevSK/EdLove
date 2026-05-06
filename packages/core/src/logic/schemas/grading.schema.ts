@@ -1,36 +1,29 @@
 import { z } from 'zod';
+import { makeModelSchema } from '@repo/schema';
 
-export const StudentGradeSchema = z.object({
-  id: z.string().uuid(),
-  classroom_id: z.string().uuid(),
-  assignment_id: z.string().uuid().optional().nullable(),
-  student_id: z.string().uuid(),
-  graded_by: z.string().uuid(),
-  marks: z.number(),
-  grade: z.string(),
-  gpa: z.number(),
-  feedback: z.string().optional().nullable(),
-  created_at: z.string().datetime(),
-  updated_at: z.string().datetime(),
-  publication_state: z.enum(['draft', 'published']).default('draft').optional(),
-  published_at: z.string().datetime().optional().nullable(),
-  published_by: z.string().uuid().optional().nullable(),
-  publication_action: z.string().optional().nullable(),
-  rank: z.number().optional().nullable(),
+/**
+ * StudentGradeSchema - A record of academic performance.
+ * Derived from ZenStack Grade model.
+ */
+export const StudentGradeSchema = makeModelSchema('Grade').extend({
+  publication_state: z.enum(['draft', 'published']).default('draft'),
+  rank: z.number().optional(),
 });
 
-export const ClassroomGradingSettingsSchema = z.object({
-  classroom_id: z.string().uuid(),
-  grading_mode: z.enum(['marks', 'grade', 'gpa', 'both']).default('both').optional(),
-  show_ranks: z.boolean().default(true).optional(),
+/**
+ * ClassroomGradingSettingsSchema - Configuration for the classroom's grading logic.
+ * Derived from ZenStack ClassroomGradingSettings model.
+ */
+export const ClassroomGradingSettingsSchema = makeModelSchema('ClassroomGradingSettings').extend({
+  grading_mode: z.enum(['marks', 'grade', 'gpa', 'both']).default('both'),
 });
 
 export const AssessmentSchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
   title: z.string(),
   max_points: z.number().default(100),
   passing_score: z.number().default(40),
-  created_at: z.string().datetime(),
+  created_at: z.iso.datetime(),
 });
 
 export const GradebookSnapshotSchema = z.object({

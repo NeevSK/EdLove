@@ -1,10 +1,13 @@
 import { useCallback, useEffect } from 'react';
 import { useStore } from '../../../store/useStore';
+import { useConflictStore } from '../../../store/useConflictStore';
 import { classifyError } from '../errorClassifier';
 import { useMutationAuditLog } from '../MutationAuditLog';
+import { sovereignBus } from '../eventBus';
 import { MUTATION_REGISTRY } from '../registry';
 import type { QueuedMutation, QueuedMutationDispatchResult } from '../types';
 import { useMutationQueue } from '../useMutationQueue';
+
 
 /**
  * SyncManager
@@ -27,20 +30,28 @@ export default function SyncManager({ dispatchQueuedMutation }: SyncManagerProps
   const { queue, removeFromQueue, updateMutation, moveToDeadLetter, setSyncing, isSyncing } =
     useMutationQueue();
   const { updateEntry } = useMutationAuditLog();
+  const { addConflict, activeConflicts } = useConflictStore();
   const showToast = useStore((state) => state.showToast);
 
   const MAX_RETRIES = 5; // Increased for better robustness
 
   const processQueue = useCallback(async () => {
     setSyncing(true);
+    sovereignBus.emit('sync:started', { queueLength: queue.length });
     if (__DEV__) {
       console.log(`[ResonantSync] Analyzing outbox: ${queue.length} items pending.`);
     }
 
     const currentQueue = [...queue];
     let processedCount = 0;
+    let failedCount = 0;
 
     for (const item of currentQueue) {
+      // Respect Conflict Locking: Don't retry if a conflict is already active for this mutation
+      if (activeConflicts.some(c => c.id === item.id)) {
+        continue;
+      }
+
       // Respect Temporal Pacing (Backoff)
       if (item.backoffUntil && Date.now() < item.backoffUntil) {
         continue;
@@ -72,6 +83,7 @@ export default function SyncManager({ dispatchQueuedMutation }: SyncManagerProps
         // Success! (Resonance achieved)
         removeFromQueue(item.id);
         updateEntry(item.id, 'success');
+        sovereignBus.emit('sync:item_succeeded', { mutationId: item.id, name: item.name, scope: item.scope });
         processedCount++;
       } catch (error: any) {
         const errorType = classifyError(error);
@@ -87,8 +99,23 @@ export default function SyncManager({ dispatchQueuedMutation }: SyncManagerProps
 
           moveToDeadLetter(item.id, error.message);
           updateEntry(item.id, 'dead_letter', error.message);
-
+          sovereignBus.emit('sync:item_moved_to_dlq', { mutationId: item.id, name: item.name, reason: exitReason });
+          failedCount++;
           showToast(`Action required: ${item.name} failed permanentely`, 'error');
+        } else if (errorType === 'CONFLICT') {
+          // Resonance Fork: Data Conflict detected
+          // Note: addConflict now emits 'conflict:detected' on the SovereignBus internally
+          addConflict({
+            id: item.id,
+            scope: item.scope,
+            name: item.name,
+            localData: item.variables,
+            remoteData: error.remoteState || null,
+            timestamp: Date.now(),
+          });
+          failedCount++;
+          showToast(`Conflict detected in ${item.name}`, 'info');
+          updateEntry(item.id, 'terminal_abort', 'Data Conflict Detected');
         } else {
           // Transient failure - retry with exponential backoff
           const backoffMs = Math.min(2 ** retryCount * 1000, 30000);
@@ -108,6 +135,7 @@ export default function SyncManager({ dispatchQueuedMutation }: SyncManagerProps
     }
 
     setSyncing(false);
+    sovereignBus.emit('sync:completed', { processedCount, failedCount });
 
     if (processedCount > 0) {
       showToast(`Synced ${processedCount} pending actions`, 'success');
@@ -125,7 +153,9 @@ export default function SyncManager({ dispatchQueuedMutation }: SyncManagerProps
 
   useEffect(() => {
     if (isOnline && queue.length > 0 && !isSyncing) {
-      processQueue();
+    processQueue().catch((e) => {
+      console.error('SyncManager: Failed to process sync queue', e);
+    });
     }
   }, [isOnline, queue.length, isSyncing, processQueue]);
 

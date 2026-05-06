@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 const PERSISTENCE_KEY = 'GURUDEVI_CLASSROOM_CREATION_STATE';
 
@@ -58,12 +58,16 @@ export function useClassroomCreation() {
         setIsLoaded(true);
       }
     };
-    loadState();
+    loadState().catch((e) => {
+      console.error('ClassroomCreation: Failed to load state', e);
+    });
   }, []);
 
   useEffect(() => {
     if (isLoaded) {
-      AsyncStorage.setItem(PERSISTENCE_KEY, JSON.stringify(state));
+      AsyncStorage.setItem(PERSISTENCE_KEY, JSON.stringify(state)).catch((e) => {
+        console.error('ClassroomCreation: Failed to save state', e);
+      });
     }
   }, [state, isLoaded]);
 
@@ -73,23 +77,32 @@ export function useClassroomCreation() {
     setState((prev) => ({ ...prev, details: { ...prev.details, ...details } }));
 
   const updateAcademic = (academic: Partial<ClassroomCreationState['academic']>) =>
-    setState((prev) => ({ ...prev, academic: { ...prev.academic, ...academic } }));
+    setState((prev) => ({
+      ...prev,
+      academic: { ...prev.academic, ...academic },
+    }));
 
   const updateAesthetics = (aesthetics: Partial<ClassroomCreationState['aesthetics']>) =>
-    setState((prev) => ({ ...prev, aesthetics: { ...prev.aesthetics, ...aesthetics } }));
+    setState((prev) => ({
+      ...prev,
+      aesthetics: { ...prev.aesthetics, ...aesthetics },
+    }));
 
   const resetProgress = async () => {
     await AsyncStorage.removeItem(PERSISTENCE_KEY);
     setState(initialState);
   };
 
-  return {
-    state,
-    isLoaded,
-    updateStep,
-    updateDetails,
-    updateAcademic,
-    updateAesthetics,
-    resetProgress,
-  };
+  return useMemo(
+    () => ({
+      state,
+      isLoaded,
+      updateStep,
+      updateDetails,
+      updateAcademic,
+      updateAesthetics,
+      resetProgress,
+    }),
+    [state, isLoaded],
+  );
 }

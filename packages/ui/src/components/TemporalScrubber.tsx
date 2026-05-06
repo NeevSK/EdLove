@@ -21,7 +21,9 @@ export const TemporalScrubber: React.FC = () => {
   const panResponder = React.useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
-      onPanResponderMove: Animated.event([null, { dx: pan }], { useNativeDriver: false }),
+      onPanResponderMove: Animated.event([null, { dx: pan }], {
+        useNativeDriver: false,
+      }),
       onPanResponderRelease: (_e, gestureState) => {
         // Simple logic to change date based on swipe direction
         const today = new Date();

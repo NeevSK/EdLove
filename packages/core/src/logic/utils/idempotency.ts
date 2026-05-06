@@ -35,4 +35,9 @@ export const Idempotency = {
   } as const,
 };
 
+export const generateIdempotencyKey = (prefix?: string) => {
+	const uuid = uuidv7();
+	return prefix ? `${prefix}_${uuid}` : uuid;
+};
+
 export default Idempotency;

@@ -1,10 +1,10 @@
 import type React from 'react';
-import type { LayoutChangeEvent } from 'react-native';
+import type { LayoutChangeEvent, StyleProp, ViewStyle } from 'react-native';
 import { Box } from '../gluestack';
 
 interface GlassCardProps {
   children: React.ReactNode;
-  style?: any;
+  style?: StyleProp<ViewStyle>;
   onLayout?: (event: LayoutChangeEvent) => void;
   className?: string;
 }

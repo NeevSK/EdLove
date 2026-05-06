@@ -1,7 +1,7 @@
 import { composeUserAbilities } from '../logic/permissions/composer';
-import type { Role } from '../logic/schemas/role.schema';
-import { supabase } from './supabase';
+import type { Capacity } from '../logic/schemas/capacity.schema';
 import type { ClassroomJoinRequest, RequestStatus, SchoolJoinRequest } from '../types/Onboarding';
+import { supabase } from './supabase';
 
 /**
  * Onboarding API (Triple Helix BDD Implementation)
@@ -15,11 +15,11 @@ export const onboardingAPI = {
   async requestSchoolJoin(
     userId: string,
     schoolId: string,
-    role: Role,
+    capacity: Capacity,
   ): Promise<SchoolJoinRequest> {
     const { data, error } = await supabase
       .from('school_join_requests')
-      .insert([{ user_id: userId, school_id: schoolId, role, status: 'pending' }])
+      .insert([{ user_id: userId, school_id: schoolId, role: capacity, status: 'pending' }])
       .select()
       .single();
 
@@ -74,7 +74,7 @@ export const onboardingAPI = {
   async requestClassroomJoin(
     userId: string,
     classroomId: string,
-    role: string,
+    capacity: string,
     subjectLabel?: string,
   ): Promise<ClassroomJoinRequest> {
     // 1. Create classroom join request
@@ -84,7 +84,7 @@ export const onboardingAPI = {
         {
           user_id: userId,
           classroom_id: classroomId,
-          role,
+          role: capacity,
           subject_label: subjectLabel,
           status: 'pending',
         },
@@ -102,15 +102,23 @@ export const onboardingAPI = {
       .single();
 
     if (group) {
-      const ability = composeUserAbilities({ roles: [role as Role] });
+      const requestedCapacity = capacity;
+      const ability = composeUserAbilities({
+        userId,
+        activeBond: {
+          capacity: requestedCapacity as any,
+          entityId: classroomId,
+          entityType: 'CLASSROOM',
+        } as any,
+      } as any);
       // POA: Use capability to determine group capacity instead of hardcoded roles
-      const capacity = ability.can('manage', 'CommunityGroup') ? 'admin' : 'member';
+      const groupCapacity = ability.can('manage', 'CommunityGroup') ? 'admin' : 'member';
 
       await supabase.from('group_members').insert([
         {
           group_id: group.id,
           user_id: userId,
-          capacity,
+          capacity: groupCapacity,
           status: 'pending',
         },
       ]);
@@ -156,7 +164,14 @@ export const onboardingAPI = {
           .eq('user_id', request.user_id);
       }
 
-      const ability = composeUserAbilities({ roles: [request.role as Role] });
+      const ability = composeUserAbilities({
+        userId: request.user_id,
+        activeBond: {
+          capacity: request.role as any,
+          entityId: request.classroom_id,
+          entityType: 'CLASSROOM',
+        } as any,
+      } as any);
 
       if (ability.can('manage', 'StudentDashboard')) {
         await supabase
@@ -282,7 +297,7 @@ export const onboardingAPI = {
   async completeProfile(
     userId: string,
     fullName: string,
-    roleLabel: string,
+    capacityLabel: string,
     bio?: string,
     indexNumber?: string,
     nicNumber?: string,
@@ -291,7 +306,7 @@ export const onboardingAPI = {
       .from('users')
       .update({
         full_name: fullName,
-        authority_label: roleLabel,
+        authority_label: capacityLabel,
         bio,
         index_number: indexNumber,
         nic_number: nicNumber,

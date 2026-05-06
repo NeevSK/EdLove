@@ -1,53 +1,84 @@
-import { School, SchoolStats } from '@repo/core/types';
-import { handleAPIError, usePermissions } from '@repo/core/logic';
 import { schoolAPI } from '@repo/core/api';
-import { useMutationQueue } from '@repo/core/logic';
+import { handleAPIError, useMutationQueue, usePermissions } from '@repo/core/logic';
+import type { School, SchoolStats } from '@repo/core/types';
+import { useCallback, useEffect, useMemo, useReducer } from 'react';
 
-import { useCallback, useEffect, useState } from 'react';
+type SchoolState = {
+  school: School | null;
+  stats: SchoolStats | null;
+  loading: boolean;
+};
+
+type SchoolAction =
+  | { type: 'FETCH_START' }
+  | { type: 'FETCH_SUCCESS'; payload: { school: School | null; stats: SchoolStats | null } }
+  | { type: 'UPDATE_SCHOOL'; payload: Partial<School> }
+  | { type: 'FETCH_FAILURE' };
+
+function schoolReducer(state: SchoolState, action: SchoolAction): SchoolState {
+  switch (action.type) {
+    case 'FETCH_START':
+      return { ...state, loading: true };
+    case 'FETCH_SUCCESS':
+      return { ...state, ...action.payload, loading: false };
+    case 'UPDATE_SCHOOL':
+      return { ...state, school: state.school ? { ...state.school, ...action.payload } : null };
+    case 'FETCH_FAILURE':
+      return { ...state, loading: false };
+    default:
+      return state;
+  }
+}
 
 export function useSchoolProfile(schoolId: string) {
-  const [school, setSchool] = useState<School | null>(null);
-  const [stats, setStats] = useState<SchoolStats | null>(null);
-  const [loading, setLoading] = useState(true);
-  const { context } = usePermissions();
-  const { roles, schoolId: userSchoolId } = context;
-  const authority = roles[0];
+  const [state, dispatch] = useReducer(schoolReducer, {
+    school: null,
+    stats: null,
+    loading: true,
+  });
 
-  // Editable only if current user is principal of THIS school
-  const isPrincipal =
-    (authority === 'principal' || authority === 'developer') && userSchoolId === schoolId;
+  const { school, stats, loading } = state;
+  const { ability } = usePermissions();
+
+  // ✅ 2026 Sovereign Pattern: Ability-based gate (Union of Identity)
+  // This allows editing if the user has the power at THIS school, regardless of active focus.
+  const isEditable = useMemo(
+    () => ability.can('manage', 'School', { id: schoolId } as any),
+    [ability, schoolId]
+  );
   const addToQueue = useMutationQueue((state) => state.addToQueue);
 
   const fetchSchool = useCallback(async () => {
     if (!schoolId) return;
+    dispatch({ type: 'FETCH_START' });
     try {
-      setLoading(true);
       const [schoolData, statsData] = await Promise.all([
         schoolAPI.getSchool(schoolId),
         schoolAPI.getSchoolStats(schoolId),
       ]);
-      setSchool(schoolData);
-      setStats(statsData);
+      dispatch({
+        type: 'FETCH_SUCCESS',
+        payload: { school: schoolData, stats: statsData },
+      });
     } catch (error) {
       handleAPIError(error);
-    } finally {
-      setLoading(false);
+      dispatch({ type: 'FETCH_FAILURE' });
     }
   }, [schoolId]);
 
   useEffect(() => {
-    fetchSchool();
+    fetchSchool().catch(handleAPIError);
   }, [fetchSchool]);
 
   const refresh = useCallback(() => {
     return fetchSchool();
   }, [fetchSchool]);
 
-  const updateField = async (field: keyof School, value: any) => {
-    if (!isPrincipal || !school) return { success: false };
+  const updateField = async (field: keyof School, value: School[keyof School]) => {
+    if (!isEditable || !school) return { success: false };
 
     // Optimistic update
-    setSchool((prev) => (prev ? { ...prev, [field]: value } : null));
+    dispatch({ type: 'UPDATE_SCHOOL', payload: { [field]: value } });
 
     addToQueue({
       type: 'UPDATE',
@@ -59,7 +90,7 @@ export function useSchoolProfile(schoolId: string) {
     try {
       await schoolAPI.update(school.id, { [field]: value });
       return { success: true };
-    } catch (_error) {
+    } catch {
       console.log('= Sync pending for school:', field);
       return { success: true, pending: true };
     }
@@ -71,6 +102,6 @@ export function useSchoolProfile(schoolId: string) {
     loading,
     refresh,
     updateField,
-    isEditable: isPrincipal,
+    isEditable,
   };
 }

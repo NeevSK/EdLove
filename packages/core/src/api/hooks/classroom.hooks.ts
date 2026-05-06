@@ -5,9 +5,9 @@ import {
   StudentStatsSchema,
   TeacherStatsSchema,
 } from '../../logic/schemas/classroom.schema';
-import { supabase } from '../supabase';
 import { assignmentsAPI } from '../assignments';
 import { classroomsAPI } from '../classrooms';
+import { supabase } from '../supabase';
 
 /**
  * useTeacherClassroomsQuery  Fetch all sanctuaries managed by a teacher.

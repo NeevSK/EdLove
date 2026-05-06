@@ -103,3 +103,14 @@ export interface LayoutResult {
   positions: Map<string, { x: number; y: number }>;
   bounds: { width: number; height: number; minX: number; minY: number };
 }
+
+export type MappingTopologyZod = KnowledgeTopology;
+
+export interface PulseMetricsZod {
+  resonance_score: number;
+  aggregated_mood: 'joy' | 'peace' | 'focus' | 'struggle' | 'unknown';
+  trend: 'rising' | 'stable' | 'failing';
+  participation_rate: number;
+  top_subjects: string[];
+  interaction_volume: number;
+}

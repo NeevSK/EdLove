@@ -90,6 +90,42 @@ function getTrustCopy(level: ExternalLinkTrustLevel | undefined) {
   }
 }
 
+interface MethodItemProps {
+  method: MethodDefinition;
+  isSelected: boolean;
+  onSelect: (id: ExternalOpenMethod) => void;
+}
+
+const MethodItem = React.memo(({ method, isSelected, onSelect }: MethodItemProps) => {
+  const handlePress = React.useCallback(() => {
+    onSelect(method.id);
+  }, [method.id, onSelect]);
+
+  return (
+    <GSPressable
+      accessibilityRole="button"
+      onPress={handlePress}
+      className={`p-4 border rounded-xl flex-row items-center gap-3 ${isSelected ? 'border-phase-accent bg-phase-accent/10' : 'border-white/10 bg-phase-surface'}`}
+    >
+      <Box
+        className={`w-5 h-5 rounded-full border-[1.5px] items-center justify-center ${isSelected ? 'border-phase-accent bg-phase-accent' : 'border-white/20'}`}
+      >
+        {isSelected ? (
+          <Box className="text-white">
+            <Check size={10} />
+          </Box>
+        ) : null}
+      </Box>
+      <VStack className="flex-1">
+        <Text className="text-phase-text-primary font-bold">{method.title}</Text>
+        <Text className="text-phase-text-secondary text-[13px] leading-5">
+          {method.description}
+        </Text>
+      </VStack>
+    </GSPressable>
+  );
+});
+
 export function ExternalLinkProvider({ children }: { children: React.ReactNode }) {
   const { reality } = useReality();
   const { showToast } = useSanctuaryToast();
@@ -144,6 +180,32 @@ export function ExternalLinkProvider({ children }: { children: React.ReactNode }
     [pendingRequest],
   );
 
+  const handleOpenNow = React.useCallback(() => {
+    closeRequest({
+      method: selectedMethod,
+      persistPreference: rememberChoice,
+    });
+  }, [closeRequest, selectedMethod, rememberChoice]);
+
+  const handleSetDefault = React.useCallback(() => {
+    closeRequest({
+      method: selectedMethod,
+      persistPreference: true,
+    });
+  }, [closeRequest, selectedMethod]);
+
+  const handleResetPreference = React.useCallback(() => {
+    clearStoredExternalOpenPreference();
+    showToast({
+      message: 'Link opening preference reset for this platform.',
+      type: 'info',
+    });
+  }, [showToast]);
+
+  const handleToggleRememberChoice = React.useCallback(() => {
+    setRememberChoice((current) => !current);
+  }, []);
+
   return (
     <>
       {children}
@@ -163,12 +225,7 @@ export function ExternalLinkProvider({ children }: { children: React.ReactNode }
             <VStack className="gap-2">
               <HStack className="gap-2 flex-wrap">
                 <SanctuaryButton
-                  onPress={() =>
-                    closeRequest({
-                      method: selectedMethod,
-                      persistPreference: rememberChoice,
-                    })
-                  }
+                  onPress={handleOpenNow}
                   fullWidth
                 >
                   Open Now
@@ -178,12 +235,7 @@ export function ExternalLinkProvider({ children }: { children: React.ReactNode }
                 <SanctuaryButton
                   variant="outline"
                   action="secondary"
-                  onPress={() =>
-                    closeRequest({
-                      method: selectedMethod,
-                      persistPreference: true,
-                    })
-                  }
+                  onPress={handleSetDefault}
                   fullWidth
                 >
                   Set as Default
@@ -193,13 +245,7 @@ export function ExternalLinkProvider({ children }: { children: React.ReactNode }
                 <SanctuaryButton
                   variant="ghost"
                   action="secondary"
-                  onPress={() => {
-                    clearStoredExternalOpenPreference();
-                    showToast({
-                      message: 'Link opening preference reset for this platform.',
-                      type: 'info',
-                    });
-                  }}
+                  onPress={handleResetPreference}
                   leftIcon={ArrowLeftRight}
                 >
                   Reset Saved Preference
@@ -242,37 +288,18 @@ export function ExternalLinkProvider({ children }: { children: React.ReactNode }
               ) : null}
             </Box>
             <VStack className="gap-2">
-              {methods.map((method) => {
-                const isSelected = selectedMethod === method.id;
-                return (
-                  <GSPressable
-                    key={method.id}
-                    accessibilityRole="button"
-                    onPress={() => setSelectedMethod(method.id)}
-                    className={`p-4 border rounded-xl flex-row items-center gap-3 ${isSelected ? 'border-phase-accent bg-phase-accent/10' : 'border-white/10 bg-phase-surface'}`}
-                  >
-                    <Box
-                      className={`w-5 h-5 rounded-full border-[1.5px] items-center justify-center ${isSelected ? 'border-phase-accent bg-phase-accent' : 'border-white/20'}`}
-                    >
-                      {isSelected ? (
-                        <Box className="text-white">
-                          <Check size={10} />
-                        </Box>
-                      ) : null}
-                    </Box>
-                    <VStack className="flex-1">
-                      <Text className="text-phase-text-primary font-bold">{method.title}</Text>
-                      <Text className="text-phase-text-secondary text-[13px] leading-5">
-                        {method.description}
-                      </Text>
-                    </VStack>
-                  </GSPressable>
-                );
-              })}
+              {methods.map((method) => (
+                <MethodItem
+                  key={method.id}
+                  method={method}
+                  isSelected={selectedMethod === method.id}
+                  onSelect={setSelectedMethod}
+                />
+              ))}
             </VStack>
             <GSPressable
               accessibilityRole="button"
-              onPress={() => setRememberChoice((current) => !current)}
+              onPress={handleToggleRememberChoice}
               className="flex-row items-center gap-3 border border-white/10 rounded-xl p-4"
             >
               <Box
