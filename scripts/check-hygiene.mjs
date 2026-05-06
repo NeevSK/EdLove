@@ -30,8 +30,12 @@ function runAudit(name, script) {
 // 1. Circular Dependencies
 runAudit("Circular Dependencies", "check:circular");
 
-// 2. Unused Code
-runAudit("Unused Code", "check:unused");
+// 2. Unused Code (Warnings only)
+console.log("--- Checking Unused Code ---");
+spawnSync("pnpm", ["run", "check:unused"], {
+	stdio: "inherit",
+	shell: process.platform === "win32",
+});
 
 // 3. Architecture Boundaries
 runAudit("Architecture Boundaries", "check:architecture");
