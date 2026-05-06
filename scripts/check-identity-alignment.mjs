@@ -57,6 +57,8 @@ const EXCLUDES = [
 	"supabase/migrations",
 	"packages/core/src/api/identity.ts", // Exclude the API definition itself
 	"packages/core/src/api/auth.ts", // Exclude the low-level auth wrapper
+	"packages/core/src/adapters/supabaseIdentity.adapter.ts",
+	"packages/core/src/adapters/powersync/SupabasePowerSyncConnector.ts",
 ];
 
 function scanDirectory(dir, results = []) {

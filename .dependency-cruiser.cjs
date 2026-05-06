@@ -60,7 +60,7 @@ module.exports = {
       from: { path: '^packages/(core|types-shim)/src/' },
       to: {
         path: '^packages/',
-        pathNot: '^packages/(core|database|types-shim|eslint-config|typescript-config)/',
+        pathNot: '^packages/(core|database|schema|types-shim|eslint-config|typescript-config)/',
       },
     },
     {

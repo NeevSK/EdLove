@@ -1,22 +1,20 @@
-import { User } from './User';
-
 /**
  * Capacity: The functional role within a Bond.
  * Replaces the concept of a "Global Role".
  */
-export type Capacity = 
-  | 'admin' 
-  | 'founder' 
-  | 'developer' 
-  | 'teacher' 
-  | 'student' 
+export type Capacity =
+  | 'admin'
+  | 'founder'
+  | 'developer'
+  | 'teacher'
+  | 'student'
   | 'principal'
   | 'assistantPrincipal'
   | 'gradeHead'
   | 'sectionHead'
-  | 'parent' 
+  | 'parent'
   | 'guardian'
-  | 'librarian' 
+  | 'librarian'
   | 'nurse'
   | 'staff'
   | 'member'
@@ -35,7 +33,7 @@ export interface Bond {
   status: 'active' | 'archived' | 'pending';
   validFrom?: string;
   validUntil?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 /**

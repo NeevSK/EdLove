@@ -1,8 +1,8 @@
 # Sovereign Monorepo Hygiene Audit Report
 
-> **Generated:** 5/6/2026, 9:44:25 AM
+> **Generated:** 5/6/2026, 9:57:02 AM
 > **Command:** pnpm exec commitlint --from=HEAD~1 --to=HEAD; pnpm run check-types; pnpm run check:hygiene; pnpm run identity:check; pnpm dlx gitleaks detect --source . --verbose
-> **Duration:** 381.9s
+> **Duration:** 39.5s
 > **Status:** ❌ Failed
 
 ## Executive Summary
@@ -376,7 +376,7 @@ Node.js v24.11.0
 > node scripts/sovereign-audit.mjs --cmd "pnpm turbo run check-types" --log "reports/check-types.txt"
 
 
->>> Starting Sovereign Audit: 2026-05-06T04:08:06.789Z
+>>> Starting Sovereign Audit: 2026-05-06T04:26:24.843Z
 
 >>> Command: pnpm turbo run check-types
 --------------------------------------------------------------------------------
@@ -389,134 +389,134 @@ Node.js v24.11.0
    • Remote caching disabled
 
 
-@repo/types-shim:check-types: cache hit, replaying logs 1211b7d4bd055451
+@repo/schema:check-types: cache hit, replaying logs 5142c8d6ed5c4236
 
-@repo/platform-mcp:check-types: cache miss, executing 3cdf4a40b18d4935
+apps-intuitui-web:check-types: cache hit, replaying logs cf8e84cbc1fd1755
+@repo/schema:check-types: 
+@repo/schema:check-types: > @repo/schema@1.0.0 check-types C:\Users\Naween\projects\polymath-platform\packages\schema
+apps-intuitui-web:check-types: 
+@repo/schema:check-types: > pnpm exec tsc --noEmit
+apps-intuitui-web:check-types: > apps-intuitui-web@0.0.1 check-types C:\Users\Naween\projects\polymath-platform\apps\intuitui-web
+@repo/schema:check-types: 
+apps-intuitui-web:check-types: > pnpm exec tsc --noEmit
+apps-intuitui-web:check-types: 
+@repo/types-shim:check-types: cache hit, replaying logs 1211b7d4bd055451
 @repo/types-shim:check-types: 
 @repo/types-shim:check-types: > @repo/types-shim@0.0.1 check-types C:\Users\Naween\projects\polymath-platform\packages\types-shim
 @repo/types-shim:check-types: > pnpm exec tsc --noEmit
 @repo/types-shim:check-types: 
 
-apps-intuitui-web:check-types: cache miss, executing cf8e84cbc1fd1755
+@repo/platform-mcp:check-types: cache miss, executing 31a6d36994cd036d
 
-apps-edlove-web:check-types: cache miss, executing 7464d5878eaaa5c5
-
-apps-neevsk-web:check-types: cache miss, executing ef3987ce8a008824
-
-@repo/schema:check-types: cache hit, replaying logs 5142c8d6ed5c4236
-
-@repo/schema:check-types: 
-@repo/schema:check-types: > @repo/schema@1.0.0 check-types C:\Users\Naween\projects\polymath-platform\packages\schema
-@repo/schema:check-types: > pnpm exec tsc --noEmit
-@repo/schema:check-types: 
-
-@repo/database:check-types: cache hit, replaying logs e9ededdc7ebc654e
-@repo/database:check-types: 
-@repo/database:check-types: > @repo/database@1.0.0 check-types C:\Users\Naween\projects\polymath-platform\packages\database
-@repo/database:check-types: > pnpm exec tsc --noEmit
-@repo/database:check-types: 
-
-@repo/core:check-types: cache miss, executing f5ac1f8afec29b01
-
-@repo/platform-mcp:check-types: 
-@repo/platform-mcp:check-types: > @repo/platform-mcp@0.0.1 check-types C:\Users\Naween\projects\polymath-platform\packages\platform-mcp
-@repo/platform-mcp:check-types: > pnpm exec tsc --noEmit
-@repo/platform-mcp:check-types: 
-
-apps-intuitui-web:check-types: 
-apps-intuitui-web:check-types: > apps-intuitui-web@0.0.1 check-types C:\Users\Naween\projects\polymath-platform\apps\intuitui-web
-apps-intuitui-web:check-types: > pnpm exec tsc --noEmit
-apps-intuitui-web:check-types: 
+apps-edlove-web:check-types: cache hit, replaying logs 7464d5878eaaa5c5
 
 apps-edlove-web:check-types: 
 apps-edlove-web:check-types: > apps-edlove-web@0.0.1 check-types C:\Users\Naween\projects\polymath-platform\apps\edlove-web
 apps-edlove-web:check-types: > pnpm exec tsc --noEmit
 apps-edlove-web:check-types: 
 
-@repo/core:check-types: 
-@repo/core:check-types: > @repo/core@0.0.1 check-types C:\Users\Naween\projects\polymath-platform\packages\core
-@repo/core:check-types: > pnpm exec tsc --noEmit
-@repo/core:check-types: 
+apps-neevsk-web:check-types: cache hit, replaying logs ef3987ce8a008824
 
 apps-neevsk-web:check-types: 
 apps-neevsk-web:check-types: > apps-neevsk-web@0.0.1 check-types C:\Users\Naween\projects\polymath-platform\apps\neevsk-web
 apps-neevsk-web:check-types: > pnpm exec tsc --noEmit
 apps-neevsk-web:check-types: 
 
-@repo/ui:check-types: cache miss, executing 07ada7e89cf7b90b
+@repo/database:check-types: cache hit, replaying logs e9ededdc7ebc654e
 
-@intuitui-labs/lk-edu-geo:check-types: cache hit, replaying logs 45cce60aaef1e916
+@repo/database:check-types: 
+@repo/database:check-types: > @repo/database@1.0.0 check-types C:\Users\Naween\projects\polymath-platform\packages\database
+@repo/database:check-types: > pnpm exec tsc --noEmit
+@repo/database:check-types: 
 
-@repo/accounting:check-types: cache miss, executing 74ad86f196f64fcb
-@intuitui-labs/lk-edu-geo:check-types: 
-@intuitui-labs/lk-edu-geo:check-types: > @intuitui-labs/lk-edu-geo@1.0.0 check-types C:\Users\Naween\projects\polymath-platform\packages\lk-edu-geo
-@intuitui-labs/lk-edu-geo:check-types: > pnpm exec tsc --noEmit
-@intuitui-labs/lk-edu-geo:check-types: 
+@repo/core:check-types: cache hit, replaying logs f5ac1f8afec29b01
 
-@repo/accounting:check-types: 
-@repo/accounting:check-types: > @repo/accounting@0.0.1 check-types C:\Users\Naween\projects\polymath-platform\packages\accounting
-@repo/accounting:check-types: > pnpm exec tsc --noEmit
-@repo/accounting:check-types: 
+@repo/core:check-types: 
+
+@repo/core:check-types: > @repo/core@0.0.1 check-types C:\Users\Naween\projects\polymath-platform\packages\core
+@repo/core:check-types: > pnpm exec tsc --noEmit
+@repo/core:check-types: 
+
+@repo/ui:check-types: cache hit, replaying logs 07ada7e89cf7b90b
 
 @repo/ui:check-types: 
 @repo/ui:check-types: > @repo/ui@1.0.0 check-types C:\Users\Naween\projects\polymath-platform\packages\ui
 @repo/ui:check-types: > pnpm exec tsc --noEmit
+
 @repo/ui:check-types: 
 
-@repo/payments:check-types: cache miss, executing 2688e1bafdaeed46
+@repo/accounting:check-types: cache hit, replaying logs 74ad86f196f64fcb
 
-@repo/payments:check-types: 
-@repo/payments:check-types: > @repo/payments@0.0.1 check-types C:\Users\Naween\projects\polymath-platform\packages\payments
-@repo/payments:check-types: > pnpm exec tsc --noEmit
-@repo/payments:check-types: 
+@repo/accounting:check-types: 
+@repo/accounting:check-types: > @repo/accounting@0.0.1 check-types C:\Users\Naween\projects\polymath-platform\packages\accounting
 
-@repo/ai:check-types: cache miss, executing ca0c4615ea91fd1b
-@repo/scanner-kit:check-types: cache miss, executing a98c554bc984875c
-@repo/graphics:check-types: cache miss, executing cc1a8b759d51cd8e
+@repo/accounting:check-types: > pnpm exec tsc --noEmit
+@repo/accounting:check-types: 
 
-@repo/people:check-types: cache miss, executing 244fa1cb83c9512a
+@intuitui-labs/lk-edu-geo:check-types: cache hit, replaying logs 45cce60aaef1e916
+
+@intuitui-labs/lk-edu-geo:check-types: 
+@intuitui-labs/lk-edu-geo:check-types: > @intuitui-labs/lk-edu-geo@1.0.0 check-types C:\Users\Naween\projects\polymath-platform\packages\lk-edu-geo
+
+@intuitui-labs/lk-edu-geo:check-types: > pnpm exec tsc --noEmit
+@intuitui-labs/lk-edu-geo:check-types: 
+
+@repo/ai:check-types: cache hit, replaying logs ca0c4615ea91fd1b
+
+@repo/ai:check-types: 
+@repo/ai:check-types: > @repo/ai@0.0.1 check-types C:\Users\Naween\projects\polymath-platform\packages\ai
+
+@repo/ai:check-types: > pnpm exec tsc --noEmit
+@repo/ai:check-types: 
 
 @repo/workforce:check-types: cache hit, replaying logs 8bcd1a2f54d63a0e
 
 @repo/workforce:check-types: 
-
 @repo/workforce:check-types: > @repo/workforce@0.0.1 check-types C:\Users\Naween\projects\polymath-platform\packages\workforce
 @repo/workforce:check-types: > pnpm exec tsc --noEmit
 
 @repo/workforce:check-types: 
 
-@repo/scanner-kit:check-types: 
-@repo/scanner-kit:check-types: > @repo/scanner-kit@0.0.0 check-types C:\Users\Naween\projects\polymath-platform\packages\scanner-kit
-@repo/scanner-kit:check-types: > pnpm exec tsc --noEmit
-@repo/scanner-kit:check-types: 
-
-@repo/graphics:check-types: 
-
-@repo/graphics:check-types: > @repo/graphics@0.0.1 check-types C:\Users\Naween\projects\polymath-platform\packages\graphics
-@repo/graphics:check-types: > pnpm exec tsc --noEmit
-@repo/graphics:check-types: 
-
-@repo/ai:check-types: 
-@repo/ai:check-types: > @repo/ai@0.0.1 check-types C:\Users\Naween\projects\polymath-platform\packages\ai
-@repo/ai:check-types: > pnpm exec tsc --noEmit
-@repo/ai:check-types: 
+@repo/people:check-types: cache hit, replaying logs 244fa1cb83c9512a
 
 @repo/people:check-types: 
 @repo/people:check-types: > @repo/people@0.0.1 check-types C:\Users\Naween\projects\polymath-platform\packages\people
 @repo/people:check-types: > pnpm exec tsc --noEmit
 @repo/people:check-types: 
+@repo/scanner-kit:check-types: cache hit, replaying logs a98c554bc984875c
+@repo/scanner-kit:check-types: 
+@repo/scanner-kit:check-types: > @repo/scanner-kit@0.0.0 check-types C:\Users\Naween\projects\polymath-platform\packages\scanner-kit
+@repo/scanner-kit:check-types: > pnpm exec tsc --noEmit
+@repo/scanner-kit:check-types: 
 
-@repo/form-builder:check-types: cache miss, executing e4065ee5931afd1c
+@repo/payments:check-types: cache hit, replaying logs 2688e1bafdaeed46
 
-@repo/profile:check-types: cache miss, executing 959e78f0d4be86d3
+@repo/payments:check-types: 
+@repo/payments:check-types: > @repo/payments@0.0.1 check-types C:\Users\Naween\projects\polymath-platform\packages\payments
 
+@repo/payments:check-types: > pnpm exec tsc --noEmit
+@repo/payments:check-types: 
+
+@repo/graphics:check-types: cache hit, replaying logs cc1a8b759d51cd8e
+
+@repo/graphics:check-types: 
+@repo/graphics:check-types: > @repo/graphics@0.0.1 check-types C:\Users\Naween\projects\polymath-platform\packages\graphics
+@repo/graphics:check-types: > pnpm exec tsc --noEmit
+
+@repo/graphics:check-types: 
+
+@repo/profile:check-types: cache hit, replaying logs 959e78f0d4be86d3
+
+@repo/profile:check-types: 
+@repo/profile:check-types: > @repo/profile@0.0.1 check-types C:\Users\Naween\projects\polymath-platform\packages\profile
+
+@repo/profile:check-types: > pnpm exec tsc --noEmit
+@repo/profile:check-types: 
+@repo/form-builder:check-types: cache hit, replaying logs e4065ee5931afd1c
 @repo/form-builder:check-types: 
 @repo/form-builder:check-types: > @repo/form-builder@1.0.0 check-types C:\Users\Naween\projects\polymath-platform\packages\form-builder
 @repo/form-builder:check-types: > pnpm exec tsc --noEmit
 @repo/form-builder:check-types: 
-
-@repo/library:check-types: cache miss, executing e0b81387c2743cda
-
 @repo/analytics:check-types: cache hit, replaying logs b6c9e1f278ed1881
 
 @repo/analytics:check-types: 
@@ -524,76 +524,77 @@ apps-neevsk-web:check-types:
 @repo/analytics:check-types: > pnpm exec tsc --noEmit
 @repo/analytics:check-types: 
 
-@repo/profile:check-types: 
-
-@repo/profile:check-types: > @repo/profile@0.0.1 check-types C:\Users\Naween\projects\polymath-platform\packages\profile
-
-@repo/profile:check-types: > pnpm exec tsc --noEmit
-@repo/profile:check-types: 
+@repo/library:check-types: cache hit, replaying logs e0b81387c2743cda
 
 @repo/library:check-types: 
 @repo/library:check-types: > @repo/library@0.0.1 check-types C:\Users\Naween\projects\polymath-platform\packages\library
 @repo/library:check-types: > pnpm exec tsc --noEmit
+
 @repo/library:check-types: 
 
-apps-gurudevi-marketing-web:check-types: cache miss, executing 85cdfd26de69cd7e
-
-apps-gurudevi-marketing-web:check-types: 
-apps-gurudevi-marketing-web:check-types: > apps-gurudevi-marketing-web@0.0.1 check-types C:\Users\Naween\projects\polymath-platform\apps\gurudevi-marketingWeb
-apps-gurudevi-marketing-web:check-types: > pnpm exec tsc --noEmit
-apps-gurudevi-marketing-web:check-types: 
-
-@repo/self:check-types: cache miss, executing 37c838ea22d2aa70
+@repo/self:check-types: cache hit, replaying logs 37c838ea22d2aa70
 
 @repo/self:check-types: 
 @repo/self:check-types: > @repo/self@0.0.1 check-types C:\Users\Naween\projects\polymath-platform\packages\self
 @repo/self:check-types: > pnpm exec tsc --noEmit
-@repo/self:check-types: 
 
-@repo/community:check-types: cache miss, executing a80312781271b1ca
+@repo/self:check-types: 
+apps-gurudevi-marketing-web:check-types: cache hit, replaying logs 85cdfd26de69cd7e
+
+apps-gurudevi-marketing-web:check-types: 
+apps-gurudevi-marketing-web:check-types: > apps-gurudevi-marketing-web@0.0.1 check-types C:\Users\Naween\projects\polymath-platform\apps\gurudevi-marketingWeb
+
+apps-gurudevi-marketing-web:check-types: > pnpm exec tsc --noEmit
+apps-gurudevi-marketing-web:check-types: 
+
+@repo/community:check-types: cache hit, replaying logs a80312781271b1ca
 
 @repo/community:check-types: 
 @repo/community:check-types: > @repo/community@0.0.1 check-types C:\Users\Naween\projects\polymath-platform\packages\community
 @repo/community:check-types: > pnpm exec tsc --noEmit
+
 @repo/community:check-types: 
 
-@repo/admin:check-types: cache miss, executing 34d98f2a551e31d8
+@repo/admin:check-types: cache hit, replaying logs 34d98f2a551e31d8
 
 @repo/admin:check-types: 
 @repo/admin:check-types: > @repo/admin@0.0.1 check-types C:\Users\Naween\projects\polymath-platform\packages\admin
+
 @repo/admin:check-types: > pnpm exec tsc --noEmit
 @repo/admin:check-types: 
 
-@repo/classroom:check-types: cache miss, executing 54db4ad824aa3144
+@repo/classroom:check-types: cache hit, replaying logs 54db4ad824aa3144
 
 @repo/classroom:check-types: 
 @repo/classroom:check-types: > @repo/classroom@0.0.1 check-types C:\Users\Naween\projects\polymath-platform\packages\classroom
 @repo/classroom:check-types: > pnpm exec tsc --noEmit
-
 @repo/classroom:check-types: 
 
-gurudevi-mobile:check-types: cache miss, executing 512e635ffde3a42f
+gurudevi-mobile:check-types: cache hit, replaying logs 512e635ffde3a42f
 
 gurudevi-mobile:check-types: 
 gurudevi-mobile:check-types: > gurudevi-mobile@1.0.2 check-types C:\Users\Naween\projects\polymath-platform\apps\gurudevi-mobile
 gurudevi-mobile:check-types: > pnpm exec tsc --noEmit
 gurudevi-mobile:check-types: 
 
+@repo/platform-mcp:check-types: 
+@repo/platform-mcp:check-types: > @repo/platform-mcp@0.0.1 check-types C:\Users\Naween\projects\polymath-platform\packages\platform-mcp
+@repo/platform-mcp:check-types: > pnpm exec tsc --noEmit
+@repo/platform-mcp:check-types: 
+
 
  Tasks:    27 successful, 27 total
-Cached:    6 cached, 27 total
-
-  Time:    5m39.838s 
+Cached:    26 cached, 27 total
+  Time:    3.149s 
 
 
 
 --------------------------------------------------------------------------------
-
 AUDIT SUMMARY
-Duration: 341.5s
+Duration: 4.4s
+
 Findings: 0
 Log File: reports/check-types.txt
-
 --------------------------------------------------------------------------------
 
 
@@ -612,7 +613,7 @@ Log File: reports/check-types.txt
 > node scripts/sovereign-audit.mjs --cmd "pnpm exec depcruise packages apps --config .dependency-cruiser.cjs --output-type err" --filter "no-circular" --log "reports/circular_deps.txt"
 
 
->>> Starting Sovereign Audit: 2026-05-06T04:13:49.707Z
+>>> Starting Sovereign Audit: 2026-05-06T04:26:30.429Z
 
 >>> Command: pnpm exec depcruise packages apps --config .dependency-cruiser.cjs --output-type err
 
@@ -725,9 +726,8 @@ x 94 dependency violations (26 errors, 68 warnings). 1936 modules, 6278 dependen
 --------------------------------------------------------------------------------
 
 AUDIT SUMMARY
-Duration: 11.5s
+Duration: 8.9s
 Findings: 1
-
 Log File: reports/circular_deps.txt
 
 --------------------------------------------------------------------------------
@@ -735,7 +735,6 @@ Log File: reports/circular_deps.txt
  ELIFECYCLE  Command failed with exit code 1.
 
 ❌ Circular Dependencies check failed!
-
 --- Checking Unused Code ---
 
 
@@ -743,7 +742,7 @@ Log File: reports/circular_deps.txt
 > node scripts/sovereign-audit.mjs --cmd "pnpm exec depcruise packages apps --config .dependency-cruiser.cjs --output-type err" --filter "no-orphans" --log "reports/unused_code.txt"
 
 
->>> Starting Sovereign Audit: 2026-05-06T04:14:02.237Z
+>>> Starting Sovereign Audit: 2026-05-06T04:26:40.300Z
 
 >>> Command: pnpm exec depcruise packages apps --config .dependency-cruiser.cjs --output-type err
 >>> Filter: no-orphans
@@ -855,8 +854,10 @@ x 94 dependency violations (26 errors, 68 warnings). 1936 modules, 6278 dependen
 --------------------------------------------------------------------------------
 
 AUDIT SUMMARY
-Duration: 9.3s
+Duration: 8.8s
+
 Findings: 61
+
 Log File: reports/unused_code.txt
 
 --------------------------------------------------------------------------------
@@ -864,7 +865,6 @@ Log File: reports/unused_code.txt
  ELIFECYCLE  Command failed with exit code 1.
 
 ❌ Unused Code check failed!
-
 --- Checking Architecture Boundaries ---
 
 
@@ -872,10 +872,9 @@ Log File: reports/unused_code.txt
 > node scripts/sovereign-audit.mjs --cmd "pnpm exec depcruise packages apps --config .dependency-cruiser.cjs --output-type err" --log "reports/architecture.txt"
 
 
->>> Starting Sovereign Audit: 2026-05-06T04:14:12.395Z
+>>> Starting Sovereign Audit: 2026-05-06T04:26:50.019Z
 
 >>> Command: pnpm exec depcruise packages apps --config .dependency-cruiser.cjs --output-type err
-
 --------------------------------------------------------------------------------
 
 
@@ -983,8 +982,8 @@ x 94 dependency violations (26 errors, 68 warnings). 1936 modules, 6278 dependen
 
 --------------------------------------------------------------------------------
 AUDIT SUMMARY
-Duration: 9.3s
 
+Duration: 8.7s
 Findings: 95
 Log File: reports/architecture.txt
 --------------------------------------------------------------------------------
@@ -993,11 +992,12 @@ Log File: reports/architecture.txt
 
 ❌ Architecture Boundaries check failed!
 
-
 ⚠️  Hygiene checks failed. Please review the reports in the 'reports/' directory.
+
 
 >>> FACILITATION & HEALING SUGGESTIONS <<<
 💡 Circular Dependencies: Run 'node scripts/refactor/sovereign-cycle-checker.mjs' or 'pnpm run ai:fix'
+
 💡 Architectural Boundaries: Run 'pnpm run check:architecture' for details
 
  ELIFECYCLE  Command failed with exit code 1.
@@ -1007,7 +1007,7 @@ Log File: reports/architecture.txt
 > node scripts/sovereign-audit.mjs --cmd "node scripts/check-identity-alignment.mjs" --log "reports/identity_check.txt"
 
 
->>> Starting Sovereign Audit: 2026-05-06T04:14:22.816Z
+>>> Starting Sovereign Audit: 2026-05-06T04:26:59.688Z
 
 >>> Command: node scripts/check-identity-alignment.mjs
 
@@ -1016,7 +1016,7 @@ Log File: reports/architecture.txt
 🚀 Starting Identity Alignment Audit...
 
 
-Scan complete in 0.67s. Found 2 potential alignment issues.
+Scan complete in 0.39s. Found 2 potential alignment issues.
 
 
 
@@ -1026,10 +1026,9 @@ File: packages/core/src/adapters/powersync/SupabasePowerSyncConnector.ts
     [90m> } = await supabase.auth.getSession();[0m
 
 File: packages/core/src/adapters/supabaseIdentity.adapter.ts
-
   [[31mHIGH[0m] Line 65: Direct usage of supabase.auth.getUser() found. Use identityAPI.getMyInternalId() if you need the application user ID.
-    [90m> const { data } = await supabase.auth.getUser();[0m
 
+    [90m> const { data } = await supabase.auth.getUser();[0m
 
 [31m⚠️  HIGH priority identity anomalies detected. Please review the findings above and migrate to identityAPI.[0m
 
@@ -1037,19 +1036,13 @@ File: packages/core/src/adapters/supabaseIdentity.adapter.ts
 --------------------------------------------------------------------------------
 
 AUDIT SUMMARY
-Duration: 1.2s
+Duration: 0.9s
 Findings: 0
+
 Log File: reports/identity_check.txt
 --------------------------------------------------------------------------------
 
  ELIFECYCLE  Command failed with exit code 1.
-
-Progress: resolved 1, reused 0, downloaded 0, added 0
-
-Packages: +1
-+
-
-Progress: resolved 1, reused 1, downloaded 0, added 1, done
 
  ERR_PNPM_DLX_NO_BIN  No binaries found in gitleaks
 
