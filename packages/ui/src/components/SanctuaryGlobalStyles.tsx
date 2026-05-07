@@ -57,15 +57,15 @@ const STATIC_CSS = `
       background: var(--world-bg);
     }
     
-    /* Vellum Grain / Noise Overlay for World */
+    /* World Ambient Glow (No Grain) */
     .world-bg::after {
       content: '';
       position: absolute;
       inset: 0;
       background: radial-gradient(circle at 70% 30%, var(--water-soft), transparent 60%),
                   radial-gradient(circle at 20% 80%, var(--lotus-soft), transparent 50%);
-      opacity: 0.3;
-      filter: blur(60px);
+      opacity: 0.2;
+      filter: blur(80px);
       z-index: 1;
     }
 
@@ -292,16 +292,9 @@ const STATIC_CSS = `
         0 14px 28px rgba(var(--action-rgb), 0.08);
     }
 
-    /* Texture Overlay on Cards */
+    /* Removed Texture Overlay for Sleekness */
     .sanctuary-card::after {
-      content: '';
-      position: absolute; inset: 0;
-      /* Refined vellum texture: softened frequency and reduced opacity for organic soul */
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-      opacity: 0.018;
-      pointer-events: none;
-      z-index: 1;
-      mix-blend-mode: overlay;
+      display: none;
     }
     /* Glass System - Premium Frosted Effects */
     .sanctuary-glass-hub {

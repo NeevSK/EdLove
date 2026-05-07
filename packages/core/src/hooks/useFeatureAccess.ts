@@ -19,7 +19,7 @@ export interface FeatureAccess {
  */
 export function useFeatureAccess(): FeatureAccess {
   const { context } = usePermissions();
-  const { isAnonymous } = context;
+  const { is_anonymous: isAnonymous } = context;
 
   const promptAccountCreation = useCallback(
     (feature: 'classroom' | 'community' | 'library' | 'self' | 'general') => {
@@ -51,8 +51,8 @@ export function useFeatureAccess(): FeatureAccess {
     canInviteUsers: !isAnonymous,
 
     // Status flags
-    isAnonymous,
-    isGuest: isAnonymous,
+    isAnonymous: !!isAnonymous,
+    isGuest: !!isAnonymous,
 
     // Helper methods
     promptAccountCreation,

@@ -30,12 +30,12 @@ import {
 	Users,
 	X,
 } from "lucide-react-native";
-import React, { Suspense, useMemo } from "react";
+import React, { Suspense, lazy, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 // Screens
-const SelfScreen = React.lazy(() =>
+const SelfScreen = lazy(() =>
 	import("@repo/self").then((m) => ({ default: m.SelfScreen })),
 );
 
@@ -50,6 +50,62 @@ interface TabNavigatorProps {
 	onTabChange?: (tabName: string) => void;
 }
 
+function ProfileTabScreen() {
+	return (
+		<ErrorBoundary name="Profile Stack">
+			<ProfileStackNavigator />
+		</ErrorBoundary>
+	);
+}
+
+function ClassroomTabScreen() {
+	return (
+		<ErrorBoundary name="Classroom Tab">
+			<ClassroomStackNavigator />
+		</ErrorBoundary>
+	);
+}
+
+function SelfTabScreen() {
+	return (
+		<ErrorBoundary name="Self Screen">
+			<Suspense
+				fallback={
+					<Center className="flex-1">
+						<Spinner />
+					</Center>
+				}
+			>
+				<SelfScreen />
+			</Suspense>
+		</ErrorBoundary>
+	);
+}
+
+function CommunityTabScreen() {
+	return (
+		<ErrorBoundary name="Community Stack">
+			<CommunityStackNavigator />
+		</ErrorBoundary>
+	);
+}
+
+function LibraryTabScreen() {
+	return (
+		<ErrorBoundary name="Library Stack">
+			<LibraryStackNavigator />
+		</ErrorBoundary>
+	);
+}
+
+function WorkforceTabScreen() {
+	return (
+		<ErrorBoundary name="Workforce Tab">
+			<WorkforceShell />
+		</ErrorBoundary>
+	);
+}
+
 export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
 	const { t } = useTranslation();
 	const { context, flags } = usePermissions();
@@ -57,33 +113,22 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
 	// ✅ 2026 Sovereign Pattern: Derive Focus (activeBond) with Anchor (primaryCapacity) fallback.
 	// This ensures the UI reflects the user's soul even when no specific school is focused.
 	const role = useMemo(
-		() => context.activeBond?.capacity || context.primaryCapacity,
-		[context.activeBond, context.primaryCapacity]
+		() => context.active_bond?.capacity || context.primary_capacity,
+		[context.active_bond, context.primary_capacity]
 	);
 
 	const colors = useTheme().scene;
-	const [currentTab, setCurrentTab] = React.useState<
+	const [currentTab, setCurrentTab] = useState<
 		"self" | "classroom" | "community" | "library" | "profile" | "workforce"
 	>("self");
 	const insets = useSafeAreaInsets();
 	const { newAchievements } = useRewards();
 	const { isBreathingOpen, setBreathingOpen } = useStore();
-	const [showCelebration, setShowCelebration] = React.useState(false);
-	const [currentAchievement, setCurrentAchievement] = React.useState("");
-	const [prevAchievements, setPrevAchievements] = React.useState<string[]>([]);
-
-	// Synchronize achievement state via effect to avoid infinite re-render loops
-		React.useEffect(() => {
-			if (newAchievements.length !== prevAchievements.length || 
-				newAchievements.some((val, index) => val !== prevAchievements[index])) {
-				setPrevAchievements(newAchievements);
-				if (newAchievements.length > 0 && !showCelebration) {
-					const first = newAchievements[0];
-					if (first) setCurrentAchievement(first);
-					setShowCelebration(true);
-				}
-			}
-		}, [newAchievements, prevAchievements, showCelebration]);
+	const [dismissedAchievement, setDismissedAchievement] = useState("");
+	const currentAchievement =
+		newAchievements[newAchievements.length - 1] ?? "";
+	const showCelebration =
+		currentAchievement.length > 0 && currentAchievement !== dismissedAchievement;
 
 	// ✅ Memoized Label Logic (Referential Stability)
 	const classroomLabel = useMemo(() => {
@@ -156,6 +201,7 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
 				{/* 1. Profile Tab */}
 				<Tab.Screen
 					name="Profile"
+					component={ProfileTabScreen}
 					options={{
 						tabBarLabel: t("tabs.profile"),
 						tabBarIcon: ({ color, size }) => (
@@ -169,17 +215,12 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
 							</Box>
 						),
 					}}
-				>
-					{() => (
-						<ErrorBoundary name="Profile Stack">
-							<ProfileStackNavigator />
-						</ErrorBoundary>
-					)}
-				</Tab.Screen>
+				/>
 
 				{/* 2. Classroom Tab */}
 				<Tab.Screen
 					name="Classroom"
+					component={ClassroomTabScreen}
 					options={{
 						tabBarLabel: classroomLabel,
 						tabBarIcon: ({ color, size }) => (
@@ -190,17 +231,12 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
 							/>
 						),
 					}}
-				>
-					{() => (
-						<ErrorBoundary name="Classroom Tab">
-							<ClassroomStackNavigator />
-						</ErrorBoundary>
-					)}
-				</Tab.Screen>
+				/>
 
 				{/* 3. Self Tab (Center Anchor) */}
 				<Tab.Screen
 					name="Self"
+					component={SelfTabScreen}
 					options={{
 						tabBarLabel: t("tabs.self"),
 						tabBarIcon: ({ color, size }) => (
@@ -213,25 +249,12 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
 							</Box>
 						),
 					}}
-				>
-					{() => (
-						<ErrorBoundary name="Self Screen">
-							<Suspense
-								fallback={
-									<Center className="flex-1">
-										<Spinner />
-									</Center>
-								}
-							>
-								<SelfScreen />
-							</Suspense>
-						</ErrorBoundary>
-					)}
-				</Tab.Screen>
+				/>
 
 				{/* 4. Community Tab */}
 				<Tab.Screen
 					name="Community"
+					component={CommunityTabScreen}
 					options={{
 						tabBarLabel: t("tabs.community"),
 						tabBarIcon: ({ color, size }) => (
@@ -245,17 +268,12 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
 							</Box>
 						),
 					}}
-				>
-					{() => (
-						<ErrorBoundary name="Community Stack">
-							<CommunityStackNavigator />
-						</ErrorBoundary>
-					)}
-				</Tab.Screen>
+				/>
 
 				{/* 5. Library Tab */}
 				<Tab.Screen
 					name="Library"
+					component={LibraryTabScreen}
 					options={{
 						tabBarLabel: t("tabs.library"),
 						tabBarIcon: ({ color, size }) => (
@@ -268,18 +286,13 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
 							</Box>
 						),
 					}}
-				>
-					{() => (
-						<ErrorBoundary name="Library Stack">
-							<LibraryStackNavigator />
-						</ErrorBoundary>
-					)}
-				</Tab.Screen>
+				/>
 
 				{/* 6. Workforce Tab (Experimental) */}
 				{flags.isDevelopingWorkforce && (
 					<Tab.Screen
 						name="Workforce"
+						component={WorkforceTabScreen}
 						options={{
 							tabBarLabel: "Workforce",
 							tabBarIcon: ({ color, size }) => (
@@ -292,20 +305,14 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
 								</Box>
 							),
 						}}
-					>
-						{() => (
-							<ErrorBoundary name="Workforce Tab">
-								<WorkforceShell />
-							</ErrorBoundary>
-						)}
-					</Tab.Screen>
+					/>
 				)}
 			</Tab.Navigator>
 
 			<AchievementUnlockOverlay
 				title={currentAchievement}
 				visible={showCelebration}
-				onHide={() => setShowCelebration(false)}
+				onHide={() => setDismissedAchievement(currentAchievement)}
 			/>
 
 			<Modal isOpen={isBreathingOpen} onClose={() => setBreathingOpen(false)}>

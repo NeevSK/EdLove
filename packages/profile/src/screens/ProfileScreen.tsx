@@ -76,8 +76,8 @@ const IdentitySection = ({
   cardWidth,
 }: IdentitySectionProps) => {
   const { context } = usePermissions();
-  const isWanderer = context.isAnonymous;
-  const capacity = context.activeBond?.capacity || context.primaryCapacity || 'guest';
+  const isWanderer = context.is_anonymous;
+  const capacity = context.active_bond?.capacity || context.primary_capacity || 'guest';
 
   return (
     <Center>
@@ -99,7 +99,7 @@ const IdentitySection = ({
           />
         )}
       </Box>
-      {!context.isAnonymous && completionResult && (
+      {!context.is_anonymous && completionResult && (
         <Box style={{ width: cardWidth }} className="mt-4">
           <SanctuaryProgressBar
             percentage={completionResult.percentage}
@@ -258,8 +258,8 @@ export const ProfileScreen = () => {
   const { profile, loading, refreshing, refresh, logout } = useProfile();
 
   const { context } = usePermissions();
-  const capacity = context.activeBond?.capacity || context.primaryCapacity || 'guest';
-  const completionCapacity = (context.activeBond?.capacity || context.primaryCapacity) ?? null;
+  const capacity = context.active_bond?.capacity || context.primary_capacity || 'guest';
+  const completionCapacity = (context.active_bond?.capacity || context.primary_capacity) ?? null;
   const completionResult = useProfileCompletion(profile, completionCapacity as any);
   const bottomPadding = useBottomTabPadding();
   const { width: windowWidth } = useWindowDimensions();

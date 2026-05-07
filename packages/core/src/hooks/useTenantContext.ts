@@ -5,12 +5,18 @@ import type { TenantContext } from '../types';
 export function useTenantContext(): TenantContext {
   const { context } = usePermissions();
   const academicCycleId = useStore((state) => state.academicCycleId);
-  const { schoolId, sectionId, gradeId, classroomId, tenantKind } = context;
+  const {
+    school_id: schoolId,
+    section_id: sectionId,
+    grade_id: gradeId,
+    classroom_id: classroomId,
+    tenant_kind: tenantKind,
+  } = context;
   const hasSchoolContext = !!schoolId;
 
   return {
     schoolId,
-    tenantKind,
+    tenantKind: tenantKind || 'customer',
     academicCycleId,
     sectionId,
     gradeId,

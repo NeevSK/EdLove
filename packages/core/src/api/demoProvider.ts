@@ -31,6 +31,11 @@ const MOCK_DATA_REGISTRY: Record<string, () => any> = {
   'community.getPosts': () => MOCK.MOCK_COMMUNITY_POSTS,
   'community.getComments': () => [],
   'community.getAnnouncements': () => MOCK.MOCK_ANNOUNCEMENTS,
+  'community.getGroup': () => MOCK.MOCK_COMMUNITY_GROUPS[0],
+  'community.getMessages': () => [],
+  'community.getDirectConversations': () => [],
+  'community.getNotifications': () => [],
+  'community.getUnreadNotificationCount': () => 0,
 };
 
 /**

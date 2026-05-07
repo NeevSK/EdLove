@@ -5,6 +5,7 @@ import Animated, { Easing, SlideInLeft, SlideOutLeft } from 'react-native-reanim
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Box, Heading, HStack, Portal, Pressable, Spinner, Text, VStack } from '../gluestack';
 import { hapticLight } from '../utils/haptics';
+import SkeletonLoader, { SkeletonAvatar, SkeletonTextLine } from './SkeletonLoader';
 
 const { width } = Dimensions.get('window');
 const DRAWER_WIDTH = width * 0.65;
@@ -22,6 +23,8 @@ interface NotificationDrawerProps {
   }>;
   unreadCount?: number;
   isLoading?: boolean;
+  isRealtimeConnected?: boolean;
+  error?: string | null;
   onMarkRead?: (id: string) => void;
   onMarkAllRead?: () => void;
 }
@@ -63,6 +66,8 @@ export default function NotificationDrawer({
   notifications = [],
   unreadCount = 0,
   isLoading = false,
+  isRealtimeConnected = false,
+  error = null,
   onMarkRead,
   onMarkAllRead,
 }: NotificationDrawerProps) {
@@ -100,10 +105,22 @@ export default function NotificationDrawer({
             {/* Header */}
             <HStack className="justify-between items-center h-[60px]">
               <HStack className="items-center gap-2">
-                <Bell size={24} color="#F6BF8C" />
-                <Heading size="lg" className="text-phase-text-primary">
-                  Notifications
-                </Heading>
+                <Box className="relative">
+                  <Bell size={24} color="#F6BF8C" />
+                  {isRealtimeConnected && (
+                    <Box className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-green-500 border border-phase-canvas" />
+                  )}
+                </Box>
+                <VStack className="gap-0">
+                  <Heading size="lg" className="text-phase-text-primary">
+                    Notifications
+                  </Heading>
+                  {isRealtimeConnected && (
+                    <Text className="text-[10px] text-green-500 font-bold uppercase tracking-wider">
+                      Live • Connected
+                    </Text>
+                  )}
+                </VStack>
                 {unreadCount > 0 && (
                   <Box className="bg-phase-accent rounded-full min-w-[20px] h-5 items-center justify-center px-1">
                     <Text className="text-white text-[11px] font-bold">
@@ -138,68 +155,147 @@ export default function NotificationDrawer({
               </HStack>
             </HStack>
 
+            {error && (
+              <Box className="bg-red-500/10 border border-red-500/20 p-3 rounded-xl">
+                <Text className="text-red-500 text-xs text-center font-medium">
+                  {error}
+                </Text>
+              </Box>
+            )}
+
             <ScrollView
               showsVerticalScrollIndicator={false}
               contentContainerStyle={{ paddingBottom: 40 }}
             >
               {isLoading ? (
-                <Box className="items-center py-10">
-                  <Spinner className="text-phase-accent" />
-                </Box>
+                <VStack className="mt-4 gap-4">
+                  {[1, 2, 3, 4, 5].map((i) => (
+                    <Box key={i} className="p-4 rounded-xl border border-phase-surface bg-phase-surface/30">
+                      <HStack className="items-start gap-3">
+                        <SkeletonAvatar size={36} />
+                        <VStack className="flex-1 gap-2">
+                          <SkeletonTextLine width="60%" />
+                          <SkeletonTextLine width="90%" />
+                          <SkeletonTextLine width="30%" />
+                        </VStack>
+                      </HStack>
+                    </Box>
+                  ))}
+                </VStack>
               ) : notifications.length === 0 ? (
-                <VStack className="items-center py-10 gap-2">
-                  <Bell size={40} color="#666" style={{ opacity: 0.3 }} />
-                  <Text className="text-center text-phase-text-secondary text-sm">
-                    You're all caught up ✨
-                  </Text>
+                <VStack className="items-center py-20 gap-6">
+                  <Box className="w-16 h-16 rounded-full bg-phase-surface/30 items-center justify-center">
+                    <Bell size={32} color="#F6BF8C" style={{ opacity: 0.5 }} />
+                  </Box>
+                  <VStack className="items-center gap-3 px-6">
+                    <Text className="text-center text-phase-text-primary font-bold text-lg">
+                      Quietude Achieved
+                    </Text>
+                    <Text className="text-center text-phase-text-secondary text-sm italic leading-relaxed">
+                      "In the garden of the mind, peace is the most beautiful flower that blooms."
+                    </Text>
+                  </VStack>
+                  <Box className="w-8 h-[1px] bg-phase-accent/20" />
                 </VStack>
               ) : (
-                <VStack className="mt-4 gap-2">
-                  {notifications.map((n) => {
-                    const Icon = notificationIcon(n.type);
-                    return (
-                      <Pressable
-                        accessibilityRole="button"
-                        key={n.id}
-                        onPress={() => {
-                          hapticLight();
-                          if (!n.is_read && onMarkRead) onMarkRead(n.id);
-                        }}
-                      >
-                        <Box
-                          className={`p-4 rounded-xl border ${
-                            n.is_read
-                              ? 'bg-phase-surface border-phase-surface'
-                              : 'bg-phase-accent/10 border-phase-accent/30'
-                          }`}
-                        >
-                          <HStack className="items-start gap-2">
-                            <Box className="p-2 rounded-full bg-phase-surface">
-                              <Icon size={16} color={n.is_read ? '#666' : '#F6BF8C'} />
-                            </Box>
-                            <VStack className="flex-1 gap-1">
-                              <Text
-                                className={`text-phase-text-primary text-sm ${n.is_read ? 'font-normal' : 'font-bold'}`}
+                <VStack className="mt-4 gap-6">
+                  {(() => {
+                    const groups: Record<string, typeof notifications> = {
+                      Today: [],
+                      Yesterday: [],
+                      Earlier: [],
+                    };
+
+                    notifications.forEach((n) => {
+                      const date = new Date(n.created_at);
+                      const now = new Date();
+                      const diff = now.getTime() - date.getTime();
+                      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+                      if (days === 0) groups['Today']?.push(n);
+                      else if (days === 1) groups['Yesterday']?.push(n);
+                      else groups['Earlier']?.push(n);
+                    });
+
+                    return Object.entries(groups).map(([title, items]) => {
+                      if (items.length === 0) return null;
+                      return (
+                        <VStack key={title} className="gap-3">
+                          <Text className="text-[10px] font-bold tracking-[2px] uppercase text-phase-text-secondary opacity-60 ml-1">
+                            {title}
+                          </Text>
+                          {items.map((n) => {
+                            const Icon = notificationIcon(n.type);
+                            const accentColor = 
+                                n.type === 'resonance' ? '#F6BF8C' : 
+                                n.type === 'community' ? '#10b981' : 
+                                n.type === 'achievement' ? '#8b5cf6' : 
+                                '#94a3b8';
+
+                            return (
+                              <Pressable
+                                accessibilityRole="button"
+                                key={n.id}
+                                onPress={() => {
+                                  hapticLight();
+                                  if (!n.is_read && onMarkRead) onMarkRead(n.id);
+                                }}
                               >
-                                {n.title}
-                              </Text>
-                              {n.body ? (
-                                <Text
-                                  className="text-phase-text-secondary text-xs"
-                                  numberOfLines={2}
+                                <Box
+                                  className={`p-4 rounded-2xl border transition-all duration-300 ${
+                                    n.is_read
+                                      ? 'bg-phase-surface/40 border-phase-surface'
+                                      : 'bg-phase-accent/5 border-phase-accent/20 shadow-sm'
+                                  }`}
+                                  style={{
+                                    borderLeftWidth: n.is_read ? 1 : 4,
+                                    borderLeftColor: accentColor,
+                                  }}
                                 >
-                                  {n.body}
-                                </Text>
-                              ) : null}
-                              <Text className="text-phase-text-secondary text-[10px]">
-                                {relativeTime(n.created_at)}
-                              </Text>
-                            </VStack>
-                          </HStack>
-                        </Box>
-                      </Pressable>
-                    );
-                  })}
+                                  <HStack className="items-start gap-3">
+                                    <Box 
+                                      className="p-2.5 rounded-xl bg-phase-canvas border border-phase-surface"
+                                      style={{
+                                        shadowColor: accentColor,
+                                        shadowOffset: { width: 0, height: 0 },
+                                        shadowOpacity: n.is_read ? 0 : 0.4,
+                                        shadowRadius: 4,
+                                      }}
+                                    >
+                                      <Icon size={18} color={accentColor} />
+                                    </Box>
+                                    <VStack className="flex-1 gap-1">
+                                      <Text
+                                        className={`text-phase-text-primary text-sm leading-tight ${n.is_read ? 'font-medium' : 'font-bold'}`}
+                                      >
+                                        {n.title}
+                                      </Text>
+                                      {n.body ? (
+                                        <Text
+                                          className="text-phase-text-secondary text-xs leading-relaxed"
+                                          numberOfLines={3}
+                                        >
+                                          {n.body}
+                                        </Text>
+                                      ) : null}
+                                      <HStack className="items-center gap-1.5 mt-1">
+                                        <Text className="text-phase-text-secondary text-[10px] font-medium uppercase tracking-wider">
+                                          {relativeTime(n.created_at)}
+                                        </Text>
+                                        {!n.is_read && (
+                                          <Box className="w-1 h-1 rounded-full bg-phase-accent" />
+                                        )}
+                                      </HStack>
+                                    </VStack>
+                                  </HStack>
+                                </Box>
+                              </Pressable>
+                            );
+                          })}
+                        </VStack>
+                      );
+                    });
+                  })()}
                 </VStack>
               )}
             </ScrollView>

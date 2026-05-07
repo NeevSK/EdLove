@@ -32,8 +32,8 @@ export async function requireClassroomAccess(classroomId: string, capability: st
   }
 
   const ability = composeUserAbilities({
-    userId,
-    schoolId: classroom.school_id!,
+    user_id: userId,
+    school_id: classroom.school_id!,
   });
 
   if (
@@ -54,7 +54,7 @@ export async function requireClassroomAccess(classroomId: string, capability: st
  */
 export async function requireTeacherAccess(schoolId?: string) {
   const userId = await requireAuth();
-  const ability = composeUserAbilities({ userId, schoolId });
+  const ability = composeUserAbilities({ user_id: userId, school_id: schoolId });
 
   if (!ability.can('read', 'TeacherProfile')) {
     throw new APIError('Unauthorized: Teacher access required', 'FORBIDDEN');

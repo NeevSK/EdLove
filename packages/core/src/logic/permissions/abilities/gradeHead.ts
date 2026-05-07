@@ -13,10 +13,10 @@ export const defineGradeHeadAbilities = (
 
   // 2. Grade Head Specifics
   can('manage', 'GradeHeadDashboard');
-  can('read', 'Report', { gradeId: user.gradeId } as any);
+  can('read', 'Report', { grade_id: user.grade_id } as any);
 
-  if (user.gradeId) {
-    can('manage', 'Classroom', { gradeId: user.gradeId } as any);
-    can('manage', 'Attendance', { gradeId: user.gradeId } as any);
+  if (user.grade_id) {
+    can('manage', 'Classroom', { grade_id: user.grade_id } as any);
+    can('manage', 'Attendance', { grade_id: user.grade_id } as any);
   }
 };

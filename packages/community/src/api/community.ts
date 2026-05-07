@@ -1,11 +1,14 @@
 import {
 	communityAPI as coreCommunityAPI,
+	communityContract,
 	identityAPI,
 	supabase,
 } from "@repo/core/api";
+import { createPOAProxy } from "@repo/core/api/poaProxy";
 import { applyTemporalFilter } from "@repo/core/logic";
 
 import type { Comment, CommunityGroup, GroupFilters, Post } from "../types";
+
 /**
  * Community API
  *
@@ -14,7 +17,7 @@ import type { Comment, CommunityGroup, GroupFilters, Post } from "../types";
  * contract-backed in core, while delegating all shared reads/writes to the
  * canonical core API.
  */
-export const communityAPI = {
+const rawCommunityAPI = {
 	...coreCommunityAPI,
 	async getAnnouncements(schoolId: string) {
 		const { data, error } = await supabase
@@ -910,3 +913,9 @@ export const communityAPI = {
 		return !!data;
 	},
 };
+
+export const communityAPI = createPOAProxy(
+	"community",
+	rawCommunityAPI,
+	communityContract,
+);

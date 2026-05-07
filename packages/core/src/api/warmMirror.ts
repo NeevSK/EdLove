@@ -70,7 +70,7 @@ export const warmMirrorAPI = {
    */
   async getDataPoints(userId: string, since?: string): Promise<WarmMirrorDataPoints> {
     const loggedInId = await identityAPI.getMyInternalId();
-    const ability = composeUserAbilities({ userId: loggedInId });
+    const ability = composeUserAbilities({ user_id: loggedInId });
 
     if (loggedInId !== userId && !ability.can('manage', 'Wellbeing')) {
       throw new APIError('Unauthorized access to wellbeing data', 'FORBIDDEN');

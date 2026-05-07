@@ -11,7 +11,6 @@ import { SanctuaryCard } from "@repo/ui/components/SanctuaryCard";
 import ScreenWrapper from "@repo/ui/components/ScreenWrapper";
 import {
 	Box,
-	FlatList,
 	Heading,
 	HStack,
 	Icon,
@@ -19,6 +18,7 @@ import {
 	Text,
 	VStack,
 } from "@repo/ui/primitives";
+import SanctuaryFlashList from "@repo/ui/components/SanctuaryFlashList";
 
 import {
 	Clock,
@@ -140,10 +140,10 @@ export default function PrivacyLedgerScreen() {
 						</Text>
 					</Box>
 				) : (
-					<FlatList
+					<SanctuaryFlashList
 						data={entries}
-						keyExtractor={(item) => item.id}
-						renderItem={renderEntry}
+						keyExtractor={(item) => (item as PrivacyLedgerEntry).id}
+						renderItem={renderEntry as any}
 						ListHeaderComponent={<Box className="h-2" />}
 						ListFooterComponent={<Box className="h-10" />}
 						ListEmptyComponent={

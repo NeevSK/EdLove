@@ -27,12 +27,12 @@ export interface AuthorityFeatures {
  */
 export function useAuthorityFeatures(): AuthorityFeatures {
   const { can, context } = usePermissions();
-  const isUserAnonymous = !context.userId;
+  const isUserAnonymous = !context.user_id;
   const { isGuest } = useFeatureAccess();
 
   // Combining store anonymity with feature-level guest status
   const isAnonymous = isUserAnonymous || isGuest;
-  const capacity = context.activeBond?.capacity || null;
+  const capacity = context.active_bond?.capacity || null;
 
   const features = useMemo(() => {
     // Base features for everyone

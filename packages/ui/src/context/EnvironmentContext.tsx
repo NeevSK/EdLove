@@ -3,7 +3,7 @@
  * 2026 Sovereign Architecture: Decoupled Atomic State Providers.
  */
 
-import { useStore } from '@repo/core/logic';
+import { useStore, identity } from '@repo/core/logic';
 import { type ReactNode, useMemo, useCallback } from 'react';
 import { FidelityProvider, useFidelity } from './FidelityProvider';
 import { LanguageProvider, useLanguage } from './LanguageProvider';
@@ -53,7 +53,6 @@ export function useEnvironment(): EnvironmentContextValue {
 
   // ReBAC actions
   const switchPerspective = useCallback(async (entityId: string, capacity: string) => {
-    const { identity } = await import('@repo/core/logic');
     await identity.switchPerspective(entityId, capacity as any);
   }, []);
 

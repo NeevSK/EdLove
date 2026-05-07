@@ -18,39 +18,46 @@ export const usePermissions = () => {
   // 1. Build context from store (Perspective-aware)
   const context: UserContext = useMemo(() => {
     const activePerspective = useAuthStore.getState().activePerspective;
-    const availableBonds = useAuthStore.getState().availableBonds;
-    const activeBond = activePerspective?.activeBond || null;
-    const isPersonal = schoolType === 'personal_workspace';
+    const available_bonds = useAuthStore.getState().available_bonds;
+    const active_bond = activePerspective?.active_bond || null;
+    const is_personal = schoolType === 'personal_workspace';
 
     const rawContext = {
+      user_id: user?.id || null,
       userId: user?.id || null,
       email: user?.email || null,
       
       // Sovereign ReBAC Context
       // 1. The Reality: All bonds the user holds
-      bonds: availableBonds,
+      bonds: available_bonds,
       
       // 2. The Anchor: The primary identity from onboarding (first bond)
-      primaryCapacity: availableBonds[0]?.capacity || null,
+      primary_capacity: available_bonds[0]?.capacity || null,
+      primaryCapacity: available_bonds[0]?.capacity || null,
 
       // 3. The Focus: The currently active bond
-      activeBond,
-      activeBondStatus: activeBond?.status || 'active',
+      active_bond,
+      activeBond: active_bond,
+      active_bond_status: active_bond?.status || 'active',
+      role: active_bond?.capacity || null,
+      traits: active_bond?.capacity ? [`role:${active_bond.capacity}`] : [],
 
-      schoolId: activeBond?.entityType === 'SCHOOL' ? activeBond.entityId : user?.school_id || null,
-      tenancyName: user?.organization_name || null,
+      school_id: active_bond?.entity_type === 'SCHOOL' ? active_bond.entity_id : user?.school_id || null,
+      schoolId: active_bond?.entity_type === 'SCHOOL' ? active_bond.entity_id : user?.school_id || null,
+      tenancy_name: user?.organization_name || null,
       tenancy: {
         kind: (user?.tenant_kind || 'customer') as TenantKind,
-        isPersonal,
+        is_personal,
       },
-      tenantKind: (user?.tenant_kind || 'customer') as TenantKind,
+      tenant_kind: (user?.tenant_kind || 'customer') as TenantKind,
+      is_anonymous: !user || !!user?.is_anonymous,
       isAnonymous: !user || !!user?.is_anonymous,
-      hasGlobalAccess: activeBond?.capacity === 'founder' || activeBond?.capacity === 'admin',
-      isPersonal,
+      has_global_access: active_bond?.capacity === 'founder' || active_bond?.capacity === 'admin',
+      is_personal,
       // Scoped context injected from store if available
-      sectionId: user?.section_id || null,
-      gradeId: user?.grade_id || null,
-      classroomId: activeBond?.entityType === 'CLASSROOM' ? activeBond.entityId : user?.classroom_id || null,
+      section_id: user?.section_id || null,
+      grade_id: user?.grade_id || null,
+      classroom_id: active_bond?.entity_type === 'CLASSROOM' ? active_bond.entity_id : user?.classroom_id || null,
     };
 
     // Strict validation via Zod

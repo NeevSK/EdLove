@@ -6,8 +6,8 @@ import type { Bond, Perspective } from '../../types/Identity';
 export interface AuthSlice {
   // Sovereign Identity (ReBAC)
   activePerspective: Perspective | null;
-  activeBond: Bond | null;
-  availableBonds: Bond[];
+  active_bond: Bond | null;
+  available_bonds: Bond[];
   setPerspective: (perspective: Perspective | null) => void;
   setAvailableBonds: (bonds: Bond[]) => void;
   
@@ -75,10 +75,10 @@ export interface AuthSlice {
 
 export const createAuthSlice: StateCreator<AuthSlice, [], [], AuthSlice> = (set) => ({
   activePerspective: null,
-  activeBond: null,
-  availableBonds: [],
-  setPerspective: (perspective) => set({ activePerspective: perspective, activeBond: perspective?.activeBond || null }),
-  setAvailableBonds: (bonds) => set({ availableBonds: bonds }),
+  active_bond: null,
+  available_bonds: [],
+  setPerspective: (perspective) => set({ activePerspective: perspective, active_bond: perspective?.active_bond || null }),
+  setAvailableBonds: (bonds) => set({ available_bonds: bonds }),
   
   userName: 'Gurudevi',
   setUserName: (name) => set({ userName: name }),

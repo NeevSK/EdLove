@@ -19,15 +19,15 @@ import { defineTeacherAbilities } from './abilities/teacher';
 export const composeUserAbilities = (rawContext: Partial<UserContext>): AppAbility => {
   // 1. Strict Validation of Authority Context
   const user = UserContextSchema.parse({
-    userId: null,
+    user_id: null,
     email: null,
-    schoolId: null,
-    tenancyName: null,
+    school_id: null,
+    tenancy_name: null,
     tenancy: null,
-    tenantKind: 'customer',
-    isAnonymous: false,
-    hasGlobalAccess: false,
-    isPersonal: false,
+    tenant_kind: 'customer',
+    is_anonymous: false,
+    has_global_access: false,
+    is_personal: false,
     tier: 'free',
     features: [],
     flags: {},
@@ -39,13 +39,19 @@ export const composeUserAbilities = (rawContext: Partial<UserContext>): AppAbili
   const { can } = builder;
 
   // 1. Guest / Wanderer (Always available, even if offline/no school)
-  can('read', 'PublicLibrary');
+  can('read', 'Library');
+  can('read', 'LibraryResource');
   can('read', 'LibrarySearch');
   can('read', 'CommunityFeed');
   can('read', 'Post');
+  
+  // HEAL: Anonymous guests must be able to resolve their own identity profile
+  can('resolve', 'User');
+  can('read', 'User');
+  can('update', 'User');
 
   // 2. 1st Class Citizen (Authenticated + Attached to School)
-  if (user.schoolId && !user.isAnonymous) {
+  if (user.school_id && !user.is_anonymous) {
     can('manage', 'Library');
     can('read', 'CommunityGroups');
     can('read', 'DirectMessages');
@@ -58,8 +64,11 @@ export const composeUserAbilities = (rawContext: Partial<UserContext>): AppAbili
     can('update', 'User');
     can('create', 'User');
     can('resolve', 'User');
-    can('read', 'School', { id: user.schoolId });
-  } else if (!user.schoolId && !user.isAnonymous) {
+    can('read', 'School', { id: user.school_id });
+    // Coexistence: Every user has a personal sanctuary
+    can('manage', 'School', { type: 'personal_workspace' });
+    can('create', 'School');
+  } else if (!user.school_id && !user.is_anonymous) {
     // 3. 2nd Class Citizen (Authenticated but NO school yet)
     // Limited to onboarding and public exploration
     can('read', 'Ecosystem');
@@ -67,7 +76,9 @@ export const composeUserAbilities = (rawContext: Partial<UserContext>): AppAbili
     can('read', 'User');
     can('update', 'User');
     can('resolve', 'User');
-  } else if (!user.isAnonymous) {
+    can('create', 'School'); // HEAL: Allow creating Personal Workspaces
+    can('manage', 'School', { type: 'personal_workspace' }); 
+    can('read', 'School', { type: 'personal_workspace' });  } else if (!user.is_anonymous) {
     // Authenticated but no specific 1st/2nd class categorization yet (fallback)
     can('manage', 'Wellbeing');
     can('read', 'User');
@@ -76,15 +87,15 @@ export const composeUserAbilities = (rawContext: Partial<UserContext>): AppAbili
   }
 
   // 2. Load Abilities based on the Union of Identity (All Bonds)
-  user.bonds.forEach((bond) => {
-    const { capacity, entityId, entityType } = bond;
+  (user.bonds || []).forEach((bond) => {
+    const { capacity, entity_id, entity_type } = bond;
 
     // Create a contextual context for this specific bond to satisfy legacy definers
     // while moving towards relationship-scoped permissions.
     const contextualUser = {
       ...user,
-      schoolId: entityType === 'SCHOOL' ? entityId : user.schoolId,
-      activeBondStatus: bond.status,
+      school_id: entity_type === 'SCHOOL' ? entity_id : user.school_id,
+      active_bond_status: bond.status,
     };
 
     switch (capacity) {
@@ -119,7 +130,7 @@ export const composeUserAbilities = (rawContext: Partial<UserContext>): AppAbili
         can('manage', 'LibraryReview'); // Librarian can review
         break;
       case 'staff':
-        can('read', 'School', { id: contextualUser.schoolId });
+        can('read', 'School', { id: contextualUser.school_id });
         break;
     }
   });

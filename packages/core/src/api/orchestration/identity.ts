@@ -15,7 +15,13 @@ const identityCoverage = assertContractCoverage(
       getMyInternalId: 'resolveIdentity',
       updateProfile: 'updateProfile',
     },
-    internalMethods: ['linkIdentity', 'clearCache'], // Explicitly internal
+    internalMethods: [
+      'linkIdentity',
+      'clearCache',
+      'getBonds',
+      'getActivePerspective',
+      'switchPerspective',
+    ], // Explicitly internal or handled via POA
   }),
 );
 
@@ -26,6 +32,7 @@ export const identityAPI = createPOAProxy(
   identityCoverage.methodMapping,
   {
     strictUnmappedMethods: true,
+    ignoredMethods: identityCoverage.internalMethods as string[],
   },
 );
 

@@ -114,8 +114,9 @@ model Bond {
   user        User     @relation(fields: [user_id], references: [id])
 
   // Access Control: Platform Admins or the user themselves can manage their bonds
-  @@allow('all', user.bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@allow('all', auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
   @@allow('read', auth() != null && user_id == auth().id)
+  @@allow('create', auth() != null && user_id == auth().id)
   
   @@map("bonds")
 }
@@ -419,6 +420,7 @@ model School {
   student_type          String?
   religious_affiliation String?
   student_count         Int?
+  created_by            String?
   avatar_url            String?
 
   classrooms Classroom[]
@@ -433,9 +435,10 @@ model School {
   // Guardian
   guardians Guardian[]
 
-  // Permissions: Only admins can manage schools; everyone authenticated can read basic info
+  // Permissions: Everyone authenticated can read basic info; users can manage their own creations
   @@allow('read', auth() != null)
-  @@allow('all', auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@allow('create', auth() != null)
+  @@allow('all', auth().id == created_by || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
 }
 
 model InventoryItem {

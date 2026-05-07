@@ -10,6 +10,7 @@
   },
   "exports": {
     ".": "./src/index.ts",
+    "./global.css": "./src/global.css",
     "./components": "./src/components/index.ts",
     "./components/*.tsx": "./src/components/*.tsx",
     "./components/*": "./src/components/*.tsx",
@@ -28,8 +29,11 @@
     "./components/DeviceAccountManager": "./src/components/DeviceAccountManager.tsx",
     "./components/DeviceSecurityCenter": "./src/components/DeviceSecurityCenter.tsx",
     "./components/EmptyState": "./src/components/EmptyState.tsx",
-    "./components/EntityModal": "./src/components/EntityModal.tsx",
-    "./components/EntityModal.web": "./src/components/EntityModal.web.tsx",
+    "./components/EntityModal": {
+      "browser": "./src/components/EntityModal.web.tsx",
+      "react-native": "./src/components/EntityModal.tsx",
+      "default": "./src/components/EntityModal.tsx"
+    },
     "./components/EntityView": "./src/components/EntityView.tsx",
     "./components/EnvironmentGuard": "./src/components/EnvironmentGuard.tsx",
     "./components/ErrorBoundary": "./src/components/ErrorBoundary.tsx",
@@ -44,8 +48,11 @@
     "./components/HorizontalChipRow": "./src/components/HorizontalChipRow.tsx",
     "./components/IdentityCard": "./src/components/IdentityCard.tsx",
     "./components/InteractiveRadarChart": "./src/components/InteractiveRadarChart.tsx",
-    "./components/InternalBrowser": "./src/components/InternalBrowser.tsx",
-    "./components/InternalBrowser.web": "./src/components/InternalBrowser.web.tsx",
+    "./components/InternalBrowser": {
+      "browser": "./src/components/InternalBrowser.web.tsx",
+      "react-native": "./src/components/InternalBrowser.tsx",
+      "default": "./src/components/InternalBrowser.tsx"
+    },
     "./components/JourneyHistoryCard": "./src/components/JourneyHistoryCard.tsx",
     "./components/LivingGlow": "./src/components/LivingGlow.tsx",
     "./components/LoadingOverlay": "./src/components/LoadingOverlay.tsx",
@@ -66,41 +73,62 @@
     "./components/SanctuaryCard": "./src/components/SanctuaryCard.tsx",
     "./components/SanctuaryCarousel": "./src/components/SanctuaryCarousel.tsx",
     "./components/SanctuaryChip": "./src/components/SanctuaryChip.tsx",
-    "./components/SanctuaryFlashList": "./src/components/SanctuaryFlashList.tsx",
-    "./components/SanctuaryFlashList.web": "./src/components/SanctuaryFlashList.web.tsx",
+    "./components/SanctuaryFlashList": {
+      "browser": "./src/components/SanctuaryFlashList.web.tsx",
+      "react-native": "./src/components/SanctuaryFlashList.tsx",
+      "default": "./src/components/SanctuaryFlashList.tsx"
+    },
     "./components/SanctuaryGlobalStyles": "./src/components/SanctuaryGlobalStyles.tsx",
     "./components/SanctuaryInput": "./src/components/SanctuaryInput.tsx",
-    "./components/SanctuaryModal": "./src/components/SanctuaryModal.tsx",
-    "./components/SanctuaryModal.web": "./src/components/SanctuaryModal.web.tsx",
+    "./components/SanctuaryModal": {
+      "browser": "./src/components/SanctuaryModal.web.tsx",
+      "react-native": "./src/components/SanctuaryModal.tsx",
+      "default": "./src/components/SanctuaryModal.tsx"
+    },
     "./components/SanctuaryNudge": "./src/components/SanctuaryNudge.tsx",
     "./components/SanctuaryProgressBar": "./src/components/SanctuaryProgressBar.tsx",
     "./components/SanctuaryStatsCard": "./src/components/SanctuaryStatsCard.tsx",
     "./components/SanctuaryToast": "./src/components/SanctuaryToast.tsx",
     "./components/SandboxBanner": "./src/components/SandboxBanner.tsx",
-    "./components/ScreenWrapper": "./src/components/ScreenWrapper.tsx",
-    "./components/ScreenWrapper.web": "./src/components/ScreenWrapper.web.tsx",
+    "./components/ScreenWrapper": {
+      "browser": "./src/components/ScreenWrapper.web.tsx",
+      "react-native": "./src/components/ScreenWrapper.tsx",
+      "default": "./src/components/ScreenWrapper.tsx"
+    },
     "./components/SkeletonLoader": "./src/components/SkeletonLoader.tsx",
     "./components/SmartShelf": "./src/components/SmartShelf.tsx",
     "./components/StepIndicator": "./src/components/StepIndicator.tsx",
     "./components/TemporalNavigator": "./src/components/TemporalNavigator.tsx",
     "./components/TemporalPilot": "./src/components/TemporalPilot.tsx",
-    "./components/TemporalProvider": "./src/components/TemporalProvider.tsx",
-    "./components/TemporalProvider.web": "./src/components/TemporalProvider.web.tsx",
+    "./components/TemporalProvider": {
+      "browser": "./src/components/TemporalProvider.web.tsx",
+      "react-native": "./src/components/TemporalProvider.tsx",
+      "default": "./src/components/TemporalProvider.tsx"
+    },
     "./components/TemporalScrubber": "./src/components/TemporalScrubber.tsx",
     "./components/TemporalShield": "./src/components/TemporalShield.tsx",
-    "./components/UniversalModal": "./src/components/UniversalModal.tsx",
-    "./components/UniversalModal.web": "./src/components/UniversalModal.web.tsx",
+    "./components/UniversalModal": {
+      "browser": "./src/components/UniversalModal.web.tsx",
+      "react-native": "./src/components/UniversalModal.tsx",
+      "default": "./src/components/UniversalModal.tsx"
+    },
     "./components/UserAvatar": "./src/components/UserAvatar.tsx",
     "./components/WebScreenHeader.web": "./src/components/WebScreenHeader.web.tsx",
     "./components/debug/FeatureOverridesPanel": "./src/components/debug/FeatureOverridesPanel.tsx",
     "./components/maps": "./src/components/maps/index.ts",
     "./components/maps/*": "./src/components/maps/*",
     "./components/maps/MapProvider": "./src/components/maps/MapProvider.tsx",
-    "./components/maps/UnifiedMapView": "./src/components/maps/UnifiedMapView.tsx",
-    "./components/maps/UnifiedMapView.web": "./src/components/maps/UnifiedMapView.web.tsx",
-    "./components/maps/UnifiedMarker": "./src/components/maps/UnifiedMarker.tsx",
+    "./components/maps/UnifiedMapView": {
+      "browser": "./src/components/maps/UnifiedMapView.web.tsx",
+      "react-native": "./src/components/maps/UnifiedMapView.tsx",
+      "default": "./src/components/maps/UnifiedMapView.tsx"
+    },
+    "./components/maps/UnifiedMarker": {
+      "browser": "./src/components/maps/UnifiedMarker.web.tsx",
+      "react-native": "./src/components/maps/UnifiedMarker.tsx",
+      "default": "./src/components/maps/UnifiedMarker.tsx"
+    },
     "./components/maps/UnifiedMarker.types": "./src/components/maps/UnifiedMarker.types.ts",
-    "./components/maps/UnifiedMarker.web": "./src/components/maps/UnifiedMarker.web.tsx",
     "./components/media": "./src/components/media/index.ts",
     "./components/media/*": "./src/components/media/*",
     "./components/media/AssetCollectionPicker": "./src/components/media/AssetCollectionPicker.tsx",
@@ -110,12 +138,18 @@
     "./components/media/ResourceActionSheet": "./src/components/media/ResourceActionSheet.tsx",
     "./components/media/ResourceCard": "./src/components/media/ResourceCard.tsx",
     "./components/media/UniversalDocumentPortal": "./src/components/media/UniversalDocumentPortal.tsx",
-    "./components/media/VideoPlayer": "./src/components/media/VideoPlayer.tsx",
-    "./components/media/VideoPlayer.web": "./src/components/media/VideoPlayer.web.tsx",
+    "./components/media/VideoPlayer": {
+      "browser": "./src/components/media/VideoPlayer.web.tsx",
+      "react-native": "./src/components/media/VideoPlayer.tsx",
+      "default": "./src/components/media/VideoPlayer.tsx"
+    },
     "./components/social": "./src/components/social/index.ts",
     "./components/social/*": "./src/components/social/*",
-    "./components/social/CommunityPresence": "./src/components/social/CommunityPresence.tsx",
-    "./components/social/CommunityPresence.web": "./src/components/social/CommunityPresence.web.tsx",
+    "./components/social/CommunityPresence": {
+      "browser": "./src/components/social/CommunityPresence.web.tsx",
+      "react-native": "./src/components/social/CommunityPresence.tsx",
+      "default": "./src/components/social/CommunityPresence.tsx"
+    },
     "./components/social/SocialShieldModal": "./src/components/social/SocialShieldModal.tsx",
     "./components/ui/*": "./src/components/ui/*",
     "./components/visualization": "./src/components/visualization/index.ts",
@@ -125,10 +159,16 @@
     "./components/visualization/JyotiView": "./src/components/visualization/JyotiView.tsx",
     "./components/visualization/TerraView": "./src/components/visualization/TerraView.tsx",
     "./components/visualization/UniversalPerspective": "./src/components/visualization/UniversalPerspective.tsx",
-    "./components/visualization/VastuView": "./src/components/visualization/VastuView.tsx",
-    "./components/visualization/VastuView.web": "./src/components/visualization/VastuView.web.tsx",
-    "./components/visualization/VatyaView": "./src/components/visualization/VatyaView.tsx",
-    "./components/visualization/VatyaView.web": "./src/components/visualization/VatyaView.web.tsx",
+    "./components/visualization/VastuView": {
+      "browser": "./src/components/visualization/VastuView.web.tsx",
+      "react-native": "./src/components/visualization/VastuView.tsx",
+      "default": "./src/components/visualization/VastuView.tsx"
+    },
+    "./components/visualization/VatyaView": {
+      "browser": "./src/components/visualization/VatyaView.web.tsx",
+      "react-native": "./src/components/visualization/VatyaView.tsx",
+      "default": "./src/components/visualization/VatyaView.tsx"
+    },
     "./components/workspace": "./src/components/workspace/index.ts",
     "./components/workspace/*": "./src/components/workspace/*",
     "./components/workspace/CanvasSurfaceCard": "./src/components/workspace/CanvasSurfaceCard.tsx",
@@ -155,16 +195,28 @@
     "./screens": "./src/screens/index.ts",
     "./screens/*": "./src/screens/*",
     "./screens/AppSettingsScreen": "./src/screens/AppSettingsScreen.tsx",
-    "./screens/AuthScreen": "./src/screens/AuthScreen.tsx",
-    "./screens/AuthScreen.web": "./src/screens/AuthScreen.web.tsx",
+    "./screens/AuthScreen": {
+      "browser": "./src/screens/AuthScreen.web.tsx",
+      "react-native": "./src/screens/AuthScreen.tsx",
+      "default": "./src/screens/AuthScreen.tsx"
+    },
     "./screens/ErrorMessageDemo": "./src/screens/ErrorMessageDemo.tsx",
-    "./screens/NotificationsScreen": "./src/screens/NotificationsScreen.tsx",
-    "./screens/NotificationsScreen.web": "./src/screens/NotificationsScreen.web.tsx",
-    "./screens/OnboardingScreen": "./src/screens/OnboardingScreen.tsx",
-    "./screens/OnboardingScreen.web": "./src/screens/OnboardingScreen.web.tsx",
+    "./screens/NotificationsScreen": {
+      "browser": "./src/screens/NotificationsScreen.web.tsx",
+      "react-native": "./src/screens/NotificationsScreen.tsx",
+      "default": "./src/screens/NotificationsScreen.tsx"
+    },
+    "./screens/OnboardingScreen": {
+      "browser": "./src/screens/OnboardingScreen.web.tsx",
+      "react-native": "./src/screens/OnboardingScreen.tsx",
+      "default": "./src/screens/OnboardingScreen.tsx"
+    },
     "./screens/OnboardingWrapper": "./src/screens/OnboardingWrapper.tsx",
-    "./screens/WelcomeScreen": "./src/screens/WelcomeScreen.tsx",
-    "./screens/WelcomeScreen.web": "./src/screens/WelcomeScreen.web.tsx",
+    "./screens/WelcomeScreen": {
+      "browser": "./src/screens/WelcomeScreen.web.tsx",
+      "react-native": "./src/screens/WelcomeScreen.tsx",
+      "default": "./src/screens/WelcomeScreen.tsx"
+    },
     "./screens/WorkspaceCanvasDemo": "./src/screens/WorkspaceCanvasDemo.tsx",
     "./svelte/*": "./src/svelte/*.svelte",
     "./theme": "./src/theme/Theme.ts",

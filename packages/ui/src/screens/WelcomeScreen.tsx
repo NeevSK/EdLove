@@ -1,5 +1,5 @@
 import { authAPI } from '@repo/core/auth';
-import { handleAPIError, LanguageUtils } from '@repo/core/logic';
+import { LanguageUtils } from '@repo/core/logic';
 import { useState, useCallback, memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image } from 'react-native';
@@ -38,7 +38,7 @@ interface LanguagePillProps {
   lang: (typeof LANGUAGES)[number];
   isActive: boolean;
   onPress: (code: string) => void;
-  t: (key: string, options?: any) => string;
+  t: (key: string, options?: Record<string, unknown>) => string;
 }
 
 const LanguagePill = memo(({ lang, isActive, onPress, t }: LanguagePillProps) => {
@@ -51,6 +51,7 @@ const LanguagePill = memo(({ lang, isActive, onPress, t }: LanguagePillProps) =>
       accessibilityLabel={t('accessibility.switchLanguage', {
         lang: lang.label,
       })}
+      accessibilityHint={t('accessibility.switchLanguageHint') || 'Changes the application language'}
       accessibilityState={{ selected: isActive }}
       className={`px-2.5 py-1.5 rounded-2xl ${isActive ? 'bg-phase-accent' : 'bg-transparent'}`}
     >
@@ -102,10 +103,14 @@ const WelcomeScreen = memo(({ onLogin, onGuest }: WelcomeScreenProps) => {
       await authAPI.signInAnonymously();
       if (onGuest) onGuest();
     } catch (error) {
-      handleAPIError(error);
+      console.error('Guest login failed:', error);
+      showToast({
+        message: (error as Error)?.message || t('auth.guestLoginFailed') || 'We could not open the sanctuary doors for you right now. Please try again.',
+        type: 'error',
+      });
       setIsConnecting(false);
     }
-  }, [acceptedTerms, onGuest, showTermsToast]);
+  }, [acceptedTerms, onGuest, showTermsToast, showToast, t]);
 
   const handleLogin = useCallback(() => {
     if (!acceptedTerms) {
@@ -184,7 +189,8 @@ const WelcomeScreen = memo(({ onLogin, onGuest }: WelcomeScreenProps) => {
                   source={LOGO}
                   style={{ width: 96, height: 96, borderRadius: 18 }}
                   accessible={true}
-                  accessibilityLabel={t('accessibility.appLogo')}
+                  accessibilityHint={t('accessibility.appLogoHint') || 'Gurudevi Sanctuary Icon'}
+                  accessibilityIgnoresInvertColors={true}
                 />
               </Box>
 

@@ -306,7 +306,10 @@ export default function CommandPalette({
 	let globalIndex = 0;
 
 	return (
-		<Box className="absolute inset-0 z-[1000]" pointerEvents="box-none">
+		<Box
+			className="absolute inset-0 z-[1000]"
+			pointerEvents="box-none"
+		>
 			{/* Backdrop */}
 			<AnimatedView
 				style={backdropStyle}
@@ -319,7 +322,10 @@ export default function CommandPalette({
 				/>
 			</AnimatedView>
 
-			<Box className="flex-1 items-center pt-[12%]" pointerEvents="box-none">
+			<Box
+				className="flex-1 items-center pt-[12%]"
+				pointerEvents="box-none"
+			>
 				<AnimatedView
 					accessibilityViewIsModal
 					style={[

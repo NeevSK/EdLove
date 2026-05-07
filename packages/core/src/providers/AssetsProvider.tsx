@@ -1,5 +1,6 @@
 import type React from 'react';
 import { type ReactNode, useEffect, useState } from 'react';
+import { storage } from '../lib/storage';
 import { LanguageUtils } from '../logic/utils/LanguageUtils';
 
 /**
@@ -12,6 +13,21 @@ export const AssetsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   useEffect(() => {
     async function initAssets() {
       try {
+        LanguageUtils.setStorage({
+          getItem: async (key: string) => {
+            const value = storage.getString(key);
+            if (value !== undefined) return value;
+
+            return (await storage.getStringAsync(key)) ?? null;
+          },
+          setItem: async (key: string, value: string) => {
+            storage.set(key, value);
+          },
+          removeItem: async (key: string) => {
+            storage.delete(key);
+          },
+        });
+
         // Initialize Language
         await LanguageUtils.init();
         setIsReady(true);

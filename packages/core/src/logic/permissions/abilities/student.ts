@@ -3,28 +3,28 @@ import type { UserContext } from '../..//schemas/user.schema';
 import type { AppAbility } from './base';
 
 export const defineStudentAbilities = (user: UserContext, { can }: AbilityBuilder<AppAbility>) => {
-  if (!user.schoolId) return;
+  if (!user.school_id) return;
 
-  const isActive = user.activeBondStatus === 'active';
-  const isArchived = user.activeBondStatus === 'archived';
+  const isActive = user.active_bond_status === 'active';
+  const isArchived = user.active_bond_status === 'archived';
 
   // --- CORE VISIBILITY (Shared) ---
-  can('read', 'School', { id: user.schoolId } as any);
-  can('read', 'StudentProfile', { user_id: user.userId } as any);
+  can('read', 'School', { id: user.school_id } as any);
+  can('read', 'StudentProfile', { user_id: user.user_id } as any);
 
   // --- ACTIVE POWERS ---
   if (isActive) {
     can('read', 'Classroom', {
-      members: { $elemMatch: { user_id: user.userId } },
+      members: { $elemMatch: { user_id: user.user_id } },
     } as any);
-    can('update', 'StudentProfile', { user_id: user.userId } as any);
+    can('update', 'StudentProfile', { user_id: user.user_id } as any);
     can('read', 'StudentPulse');
     can('manage', 'StudentDashboard');
     can('read', 'ClassroomList');
-    can('read', 'Lesson', { school_id: user.schoolId } as any);
-    can('read', 'Material', { school_id: user.schoolId } as any);
+    can('read', 'Lesson', { school_id: user.school_id } as any);
+    can('read', 'Material', { school_id: user.school_id } as any);
     can('read', 'Grade');
-    can('create', 'AssignmentSubmission', { student_id: user.userId } as any);
+    can('create', 'AssignmentSubmission', { student_id: user.user_id } as any);
 
     // Community & Library access
     can('read', 'CommunityFeed');
@@ -37,6 +37,6 @@ export const defineStudentAbilities = (user: UserContext, { can }: AbilityBuilde
   if (isArchived) {
     // Archived students can only see their past record at this school
     can('read', 'AcademicHistory');
-    can('read', 'StudentAcademicRecord', { student_id: user.userId, school_id: user.schoolId } as any);
+    can('read', 'StudentAcademicRecord', { student_id: user.user_id, school_id: user.school_id } as any);
   }
 };

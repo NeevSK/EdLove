@@ -6,6 +6,7 @@ import { useStore } from "@repo/core/store";
 import { BreathGuide } from "@repo/self";
 import AchievementUnlockOverlay from "@repo/ui/components/AchievementUnlockOverlay";
 import ErrorBoundary from "@repo/ui/components/ErrorBoundary";
+import { SanctuarySignal } from "@repo/ui/components/SanctuarySignal";
 import { UniversalModal } from "@repo/ui/components/UniversalModal";
 
 import { Box, HStack, Icon, Text } from "@repo/ui/primitives";
@@ -21,7 +22,7 @@ import {
 	Users,
 	X,
 } from "lucide-react-native";
-import React from "react";
+import { Suspense, lazy, useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { StackFallback } from "../components/web/WebScreenShimmer";
 
@@ -47,38 +48,38 @@ const schedulePreload = (importFn: () => Promise<unknown>, delay = 1000) => {
 // Screens / stacks
 // Tab stacks — lazy loaded (major code split boundary)
 // We stagger these to prevent "bundling storms" that crash Metro on web
-const ClassroomStackNavigatorWeb = React.lazy(
+const ClassroomStackNavigatorWeb = lazy(
 	() => import("./ClassroomStackNavigator.web"),
 );
 schedulePreload(() => import("./ClassroomStackNavigator.web"), 1500);
 
-const ProfileStackNavigatorWeb = React.lazy(
+const ProfileStackNavigatorWeb = lazy(
 	() => import("./ProfileStackNavigator.web"),
 );
 schedulePreload(() => import("./ProfileStackNavigator.web"), 3000);
 
-const CommunityStackNavigatorWeb = React.lazy(
+const CommunityStackNavigatorWeb = lazy(
 	() => import("./CommunityStackNavigator.web"),
 );
 schedulePreload(() => import("./CommunityStackNavigator.web"), 4500);
 
-const SelfStackNavigatorWeb = React.lazy(
+const SelfStackNavigatorWeb = lazy(
 	() => import("./SelfStackNavigator.web"),
 );
 schedulePreload(() => import("./SelfStackNavigator.web"), 6000);
 
-const LibraryStackNavigatorWeb = React.lazy(
+const LibraryStackNavigatorWeb = lazy(
 	() => import("./LibraryStackNavigator.web"),
 );
 schedulePreload(() => import("./LibraryStackNavigator.web"), 7500);
 
 // In-shell panel screens — lazy loaded
-const NotificationsScreenWeb = React.lazy(
-	() => import("@repo/ui/screens/NotificationsScreen.web"),
+const NotificationsScreenWeb = lazy(
+	() => import("@repo/ui/screens/NotificationsScreen"),
 );
-schedulePreload(() => import("@repo/ui/screens/NotificationsScreen.web"), 9000);
+schedulePreload(() => import("@repo/ui/screens/NotificationsScreen"), 9000);
 
-const AppSettingsScreenWeb = React.lazy(
+const AppSettingsScreenWeb = lazy(
 	() => import("@repo/ui/screens/AppSettingsScreen"),
 );
 schedulePreload(() => import("@repo/ui/screens/AppSettingsScreen"), 10500);
@@ -124,43 +125,6 @@ const TAB_CONFIG = [
 
 // ─── MAIN NAVIGATOR (Overlay Architecture) ─────────────────────────────────
 
-/** Reusable notification badge dot for Bell icons */
-function _NotificationBadge({
-	count,
-	size = "md",
-}: {
-	count: number;
-	size?: "sm" | "md";
-}) {
-	if (count <= 0) return null;
-	const dim =
-		size === "sm"
-			? { minW: "14px", h: "14px", fs: "8px", top: "-3px", right: "-5px" }
-			: { minW: "16px", h: "16px", fs: "9px", top: "-4px", right: "-6px" };
-	return (
-		<div
-			style={{
-				display: "flex",
-				alignItems: "center",
-				justifyContent: "center",
-				minWidth: dim.minW,
-				height: dim.h,
-				padding: "0 4px",
-				fontSize: dim.fs,
-				fontWeight: "800",
-				background: "var(--lotus)",
-				color: "white",
-				borderRadius: "8px",
-				position: "absolute",
-				top: dim.top,
-				right: dim.right,
-			}}
-		>
-			{count > 99 ? "99+" : String(count)}
-		</div>
-	);
-}
-
 export default function TabNavigator({
 	onTabChange,
 }: {
@@ -168,10 +132,11 @@ export default function TabNavigator({
 }) {
 	const { t } = useTranslation();
 	const { context } = usePermissions();
-	const role =
-		context.bonds.find((b) => b.status === "active")?.capacity ??
-		context.bonds[0]?.capacity;
-	const userId = context.userId;
+	const bonds = context.bonds ?? [];
+	const role = (
+		bonds.find((b) => b.status === "active")?.capacity ?? bonds[0]?.capacity
+	) as string | undefined;
+	const userId = context.user_id;
 	const { newAchievements } = useRewards();
 	const { unreadCount } = useNotifications(userId);
 	const navigation = useNavigation();
@@ -179,37 +144,53 @@ export default function TabNavigator({
 		navigate: (route: string, params?: object) => void;
 	};
 
-	const [isSidebarExpanded, setIsSidebarExpanded] = React.useState(true);
-	// Mobile/tablet: < 1024px (aligns with CSS @media max-width: 1023px)
-	const [isMobileView, setIsMobileView] = React.useState(false);
-	const [activeTab, setActiveTab] = React.useState("Self");
-	const [showCelebration, setShowCelebration] = React.useState(false);
-	const [currentAchievement, setCurrentAchievement] = React.useState("");
-	// biome-ignore lint/suspicious/noExplicitAny: store types are loosely defined in this package
-	const store = useStore() as any;
-	const [prevAchievements, setPrevAchievements] = React.useState<string[]>([]);
-	const { isBreathingOpen, setBreathingOpen } = store;
+	const isAnonymous = context.is_anonymous;
 
-	// Synchronize achievement state during render to avoid cascading renders in useEffect
-	if (newAchievements !== prevAchievements) {
-		setPrevAchievements(newAchievements);
-		if (newAchievements.length > 0 && !showCelebration) {
-			const first = newAchievements[0];
-			if (first) setCurrentAchievement(first);
-			setShowCelebration(true);
+	const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
+	// Mobile/tablet: < 1024px (aligns with CSS @media max-width: 1023px)
+	const [isMobileView, setIsMobileView] = useState(false);
+	const [activeTab, setActiveTab] = useState("Self");
+	const [showCelebration, setShowCelebration] = useState(false);
+	const [currentAchievement, setCurrentAchievement] = useState("");
+	// biome-ignore lint/suspicious/noExplicitAny: store types are loosely defined in this package
+	const store = useStore() as {
+		isBreathingOpen?: boolean;
+		setBreathingOpen?: (open: boolean) => void;
+	};
+	const previousAchievementsRef = useRef<string[]>([]);
+	const isBreathingOpen = store.isBreathingOpen ?? false;
+	const setBreathingOpen = store.setBreathingOpen ?? (() => {});
+
+	// Sync reward overlays after render so the tab shell never mutates state mid-render.
+	useEffect(() => {
+		if (newAchievements === previousAchievementsRef.current) return;
+		previousAchievementsRef.current = newAchievements;
+
+		if (newAchievements.length === 0 || showCelebration) {
+			return;
 		}
-	}
+
+		const first = newAchievements[0];
+		if (!first) return;
+
+		const timer = window.setTimeout(() => {
+			setCurrentAchievement(first);
+			setShowCelebration(true);
+		}, 0);
+
+		return () => window.clearTimeout(timer);
+	}, [newAchievements, showCelebration]);
 
 	// Ref to the sidebar element — used for focus trap
-	const sidebarRef = React.useRef<HTMLElement>(null);
+	const sidebarRef = useRef<HTMLElement>(null);
 	// Last focused element before sidebar opened — returned on close
-	const preSidebarFocusRef = React.useRef<HTMLElement | null>(null);
+	const preSidebarFocusRef = useRef<HTMLElement | null>(null);
 
 	// Define closeSidebar before the useEffects that reference it
-	const closeSidebar = React.useCallback(() => setIsSidebarExpanded(false), []);
+	const closeSidebar = useCallback(() => setIsSidebarExpanded(false), []);
 
 	// Responsive design: mobile/tablet < 1024px
-	React.useEffect(() => {
+	useEffect(() => {
 		const checkScreenSize = () => {
 			const isCompact = window.innerWidth < 1024;
 			setIsMobileView(isCompact);
@@ -223,7 +204,7 @@ export default function TabNavigator({
 	// ── FOCUS TRAP: mobile sidebar ──────────────────────────────────────────
 	// When the overlay sidebar opens, move keyboard focus inside and prevent
 	// Tab from escaping to page content behind the backdrop.
-	React.useEffect(() => {
+	useEffect(() => {
 		if (!isMobileView || !isSidebarExpanded) return;
 
 		// Save the element that was focused before we opened the sidebar
@@ -276,7 +257,7 @@ export default function TabNavigator({
 	}, [isMobileView, isSidebarExpanded, closeSidebar]);
 
 	// ── DOCUMENT TITLE: update on tab change ───────────────────────────────
-	React.useEffect(() => {
+	useEffect(() => {
 		const base = t("webNav.brandName");
 		if (activeTab === "NotificationsPanel") {
 			document.title = `${t("webNav.notifications")} — ${base}`;
@@ -290,7 +271,7 @@ export default function TabNavigator({
 	const getClassroomLabel = () => {
 		if (role === "principal") return t("tabs.mySchool");
 		if (role === "founder") return t("tabs.school");
-		if (role === "assistantPrincipal") return t("tabs.section");
+		if (role === "sectionHead") return t("tabs.section");
 		if (role === "gradeHead") return t("tabs.grade");
 		return t("tabs.classroom");
 	};
@@ -430,7 +411,7 @@ export default function TabNavigator({
 					</div>
 
 					<nav className="sidebar-nav" aria-label="Main navigation">
-						{TAB_CONFIG.map((conf) => {
+						{TAB_CONFIG.filter((c) => !isAnonymous || c.name !== "Profile").map((conf) => {
 							const isActive = activeTab === conf.name;
 							const Icon = conf.icon;
 							return (
@@ -462,6 +443,8 @@ export default function TabNavigator({
 							);
 						})}
 					</nav>
+
+					{isAnonymous && isSidebarExpanded && <SanctuarySignal />}
 
 					<div className="sidebar-footer">
 						<div className="sidebar-divider" />
@@ -584,7 +567,7 @@ export default function TabNavigator({
 						id="MainTabs"
 						initialRouteName="Self"
 						tabBar={() => null}
-						// @ts-expect-error
+						// @ts-expect-error React Navigation web accepts CSS-like scene sizing here.
 						sceneContainerStyle={{
 							backgroundColor: "transparent",
 							minHeight: "100%",
@@ -620,45 +603,45 @@ export default function TabNavigator({
 						<Tab.Screen name="Self">
 							{() => (
 								<ErrorBoundary name="Self">
-									<React.Suspense fallback={<StackFallback />}>
+									<Suspense fallback={<StackFallback />}>
 										<SelfStackNavigatorWeb />
-									</React.Suspense>
+									</Suspense>
 								</ErrorBoundary>
 							)}
 						</Tab.Screen>
 						<Tab.Screen name="Community">
 							{() => (
 								<ErrorBoundary name="Community">
-									<React.Suspense fallback={<StackFallback />}>
+									<Suspense fallback={<StackFallback />}>
 										<CommunityStackNavigatorWeb />
-									</React.Suspense>
+									</Suspense>
 								</ErrorBoundary>
 							)}
 						</Tab.Screen>
 						<Tab.Screen name="Classroom">
 							{() => (
 								<ErrorBoundary name="Classroom">
-									<React.Suspense fallback={<StackFallback />}>
+									<Suspense fallback={<StackFallback />}>
 										<ClassroomStackNavigatorWeb />
-									</React.Suspense>
+									</Suspense>
 								</ErrorBoundary>
 							)}
 						</Tab.Screen>
 						<Tab.Screen name="Library">
 							{() => (
 								<ErrorBoundary name="Library">
-									<React.Suspense fallback={<StackFallback />}>
+									<Suspense fallback={<StackFallback />}>
 										<LibraryStackNavigatorWeb />
-									</React.Suspense>
+									</Suspense>
 								</ErrorBoundary>
 							)}
 						</Tab.Screen>
 						<Tab.Screen name="Profile">
 							{() => (
 								<ErrorBoundary name="Profile">
-									<React.Suspense fallback={<StackFallback />}>
+									<Suspense fallback={<StackFallback />}>
 										<ProfileStackNavigatorWeb />
-									</React.Suspense>
+									</Suspense>
 								</ErrorBoundary>
 							)}
 						</Tab.Screen>
@@ -666,18 +649,18 @@ export default function TabNavigator({
 						<Tab.Screen name="NotificationsPanel">
 							{() => (
 								<ErrorBoundary name="Notifications">
-									<React.Suspense fallback={<StackFallback />}>
+									<Suspense fallback={<StackFallback />}>
 										<NotificationsScreenWeb />
-									</React.Suspense>
+									</Suspense>
 								</ErrorBoundary>
 							)}
 						</Tab.Screen>
 						<Tab.Screen name="SettingsPanel">
 							{() => (
 								<ErrorBoundary name="Settings">
-									<React.Suspense fallback={<StackFallback />}>
+									<Suspense fallback={<StackFallback />}>
 										<AppSettingsScreenWeb />
-									</React.Suspense>
+									</Suspense>
 								</ErrorBoundary>
 							)}
 						</Tab.Screen>
@@ -694,7 +677,7 @@ export default function TabNavigator({
 					className="mobile-bottom-nav"
 					aria-label={t("webNav.tabNavigation")}
 				>
-					{TAB_CONFIG.map((conf) => {
+					{TAB_CONFIG.filter((c) => !isAnonymous || c.name !== "Profile").map((conf) => {
 						const isActive = activeTab === conf.name;
 						const Icon = conf.icon;
 						return (

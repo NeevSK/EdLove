@@ -13,12 +13,12 @@ export const OnboardingStateSchema = z.enum([
 ]);
 
 export const ClassroomRoleSummarySchema = z.object({
-  userId: z.uuid(),
-  schoolId: z.uuid().nullable(),
-  profileCompleted: z.boolean(),
-  onboardingCompleted: z.boolean(),
-  onboardingState: OnboardingStateSchema,
-  realClassCount: z.number().int().nonnegative(),
+  user_id: z.uuid(),
+  school_id: z.uuid().nullable(),
+  profile_completed: z.boolean(),
+  onboarding_completed: z.boolean(),
+  onboarding_state: OnboardingStateSchema,
+  real_class_count: z.number().int().nonnegative(),
   profile: FacetedProfileSchema,
 });
 
@@ -79,5 +79,22 @@ export const identityContract = c.router({
       },
     }),
     summary: 'Update a user profile',
+  },
+  getOnboardingStatus: {
+    method: 'GET',
+    path: '/identity/onboarding-status/:id',
+    responses: {
+      200: z.object({
+        state: OnboardingStateSchema,
+        profile: IdentitySchema,
+      }),
+    },
+    metadata: POAMetadataSchema.parse({
+      authority: {
+        action: 'read',
+        subject: 'User',
+      },
+    }),
+    summary: 'Get the explicit onboarding state for a user',
   },
 });

@@ -233,7 +233,7 @@ export const schoolForestAPI = {
    */
   async getForestOverview(schoolId: string): Promise<SchoolForestState> {
     const loggedInId = await identityAPI.getMyInternalId();
-    const ability = composeUserAbilities({ userId: loggedInId, schoolId });
+    const ability = composeUserAbilities({ user_id: loggedInId, school_id: schoolId });
 
     if (!ability.can('read', 'SchoolForest')) {
       throw new APIError('Unauthorized to view school forest', 'FORBIDDEN');
@@ -472,7 +472,7 @@ export const schoolForestAPI = {
     if (principalUserId === recipientUserId) return;
 
     const loggedInId = await identityAPI.getMyInternalId();
-    const ability = composeUserAbilities({ userId: loggedInId, schoolId });
+    const ability = composeUserAbilities({ user_id: loggedInId, school_id: schoolId });
 
     if (!ability.can('manage', 'SchoolForest')) {
       throw new APIError('Unauthorized to send gratitude gifts', 'FORBIDDEN');
@@ -518,7 +518,7 @@ export const schoolForestAPI = {
   async getPendingGifts(recipientUserId: string): Promise<GratitudeGift[]> {
     const loggedInId = await identityAPI.getMyInternalId();
     if (loggedInId !== recipientUserId) {
-      const ability = composeUserAbilities({ userId: loggedInId });
+      const ability = composeUserAbilities({ user_id: loggedInId });
       if (!ability.can('manage', 'Staff')) {
         throw new APIError('Unauthorized to view others gifts', 'FORBIDDEN');
       }

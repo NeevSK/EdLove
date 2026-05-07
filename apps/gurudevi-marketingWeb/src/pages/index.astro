@@ -4,9 +4,29 @@ import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import StatsSection from "../components/StatsSection.svelte";
 import StoryCard from "../components/StoryCard.astro";
+
+const machineReadableData = {
+	"@context": "https://schema.org",
+	"@type": "SoftwareApplication",
+	"name": "Gurudevi",
+	"applicationCategory": "EducationalApplication",
+	"operatingSystem": "Web",
+	"url": "https://platform.gurudevi.edlove.org",
+	"description": "An Education Ecology Support System designed to mend the teaching-learning impedance match.",
+	"offers": {
+		"@type": "Offer",
+		"price": "0",
+		"priceCurrency": "USD"
+	},
+	"potentialAction": {
+		"@type": "ControlAction",
+		"name": "Enter Platform",
+		"target": "https://platform.gurudevi.edlove.org"
+	}
+};
 ---
 
-<Layout title="Home">
+<Layout title="Home" structuredData={machineReadableData}>
 	<Header />
 	
 	<main class="flex-grow">
@@ -24,8 +44,8 @@ import StoryCard from "../components/StoryCard.astro";
 						Gurudevi is a polycentric support system designed to mend the teaching-learning impedance match. We believe education is a living ecology that thrives on care, not surveillance.
 					</p>
 					<div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-						<a href="#join" class="px-8 py-4 bg-void-indigo text-sacred-white rounded-full font-bold shadow-xl hover:bg-peacock-blue transition-all text-center">
-							Download the App
+						<a href="https://platform.gurudevi.edlove.org" class="px-8 py-4 bg-void-indigo text-sacred-white rounded-full font-bold shadow-xl hover:bg-peacock-blue transition-all text-center">
+							Enter the Platform
 						</a>
 						<a href="/thuthimal" class="px-8 py-4 border-2 border-sanctuary-saffron text-sanctuary-saffron rounded-full font-bold hover:bg-sanctuary-saffron/5 transition-all text-center">
 							Gift Gratitude (තුතිමල්)
@@ -113,9 +133,9 @@ import StoryCard from "../components/StoryCard.astro";
 						role="Ecology Architect"
 					/>
 					<StoryCard 
-						quote="Teachers are the heavy lifters of both school and app. If the system serves us well, it serves the entire future of the school."
-						author="Lead Teacher"
-						role="Grade Head Observer"
+						quote="The architecture of care starts with respecting the boundaries of the educator. We build for human flourishing, not institutional capture."
+						author="System Designer"
+						role="Topology Observer"
 					/>
 				</div>
 			</div>
@@ -131,24 +151,24 @@ import StoryCard from "../components/StoryCard.astro";
 				
 				<div class="flex flex-col sm:flex-row justify-center items-center space-y-6 sm:space-y-0 sm:space-x-8">
 					<div class="space-y-4">
-						<p class="text-sm uppercase tracking-widest text-temple-gold font-bold">For Individuals</p>
+						<p class="text-sm uppercase tracking-widest text-temple-gold font-bold">Web Platform</p>
+						<a href="https://platform.gurudevi.edlove.org" class="px-10 py-4 bg-sacred-white text-peacock-blue rounded-full font-bold hover:bg-peacock-blue hover:text-white transition-all block">
+							Open Web App
+						</a>
+					</div>
+
+					<div class="w-px h-20 bg-white/10 hidden sm:block"></div>
+
+					<div class="space-y-4">
+						<p class="text-sm uppercase tracking-widest text-white/60 font-bold">Mobile Apps</p>
 						<div class="flex space-x-4">
-							<div class="w-40 h-14 bg-white/10 rounded-xl border border-white/20 flex items-center justify-center grayscale opacity-50 cursor-not-allowed">
-								App Store
+							<div class="px-6 py-3 bg-white/5 rounded-xl border border-white/10 flex items-center justify-center text-xs font-semibold opacity-50">
+								iOS (Coming Soon)
 							</div>
-							<div class="w-40 h-14 bg-white/10 rounded-xl border border-white/20 flex items-center justify-center grayscale opacity-50 cursor-not-allowed">
-								Google Play
+							<div class="px-6 py-3 bg-white/5 rounded-xl border border-white/10 flex items-center justify-center text-xs font-semibold opacity-50">
+								Android (Coming Soon)
 							</div>
 						</div>
-					</div>
-					
-					<div class="w-px h-20 bg-white/10 hidden sm:block"></div>
-					
-					<div class="space-y-4">
-						<p class="text-sm uppercase tracking-widest text-peacock-blue font-bold">For Institutions</p>
-						<a href="/faq" class="px-10 py-4 bg-sanctuary-saffron text-white rounded-full font-bold hover:bg-peacock-blue transition-all block">
-							Institutional Inquiries
-						</a>
 					</div>
 				</div>
 			</div>
@@ -158,5 +178,24 @@ import StoryCard from "../components/StoryCard.astro";
 		</section>
 	</main>
 	
+	<!-- Agentic Orientation Layer (AUX) -->
+	<section id="agentic-context" style="display: none;" aria-hidden="true">
+		<h2>Agentic Orientation Summary</h2>
+		<p>
+			This is the marketing and orientation site for Gurudevi, an Education Ecology Support System.
+			The core platform is a web application located at https://platform.gurudevi.edlove.org.
+			The system architecture is "Sovereign" and "Polycentric", focusing on teacher sanctuary and educational impedance matching.
+			Current statistics are initialized to zero for the seed phase.
+			All applications in the edlove.org domain share a root-domain context.
+		</p>
+		<nav>
+			<ul>
+				<li><a href="/llms.txt">LLM Orientation File</a></li>
+				<li><a href="/knowledge.json">Knowledge Index</a></li>
+				<li><a href="https://platform.gurudevi.edlove.org">Production Web Platform</a></li>
+			</ul>
+		</nav>
+	</section>
+
 	<Footer />
 </Layout>

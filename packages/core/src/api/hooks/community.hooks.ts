@@ -81,7 +81,7 @@ export function usePostsInfiniteQuery(groupId: string = 'all', options: Record<s
  */
 export function useCreatePostMutation() {
   const queryClient = useQueryClient();
-  const { user: storeUser, activeBond } = useStore();
+  const { user: storeUser, active_bond } = useStore();
   const _viewDate = useTemporalStore((state) => state.viewDate);
   const _viewScale = useTemporalStore((state) => state.viewScale);
 
@@ -97,7 +97,7 @@ export function useCreatePostMutation() {
           'BAD_REQUEST' as any,
         );
       }
-      const capacity = activeBond?.capacity || 'student';
+      const capacity = active_bond?.capacity || 'student';
       return communityAPI.createPost(input, loggedInId, capacity as any, schoolId);
     },
     onSuccess: async (_data, variables) => {

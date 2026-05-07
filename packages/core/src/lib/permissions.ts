@@ -96,12 +96,14 @@ export function getAuthorityLabel(
 // Legacy compatibility helpers.
 // These should not be used for authorization decisions; prefer ReBAC bonds + active perspective.
 export function getSchoolRoleForUser(user: any): AuthorityTier | null {
-  const activeBond = user?.activeBond;
-  if (activeBond?.entityType === 'SCHOOL' && typeof activeBond?.capacity === 'string') {
+  const activeBond = user?.active_bond;
+  if (activeBond?.entity_type === 'SCHOOL' && typeof activeBond?.capacity === 'string') {
     return activeBond.capacity as AuthorityTier;
   }
   const bonds: any[] = Array.isArray(user?.bonds) ? user.bonds : [];
-  const schoolBond = bonds.find((b) => b?.entityType === 'SCHOOL' && (b?.status ?? 'active') === 'active');
+  const schoolBond = bonds.find(
+    (b) => b?.entity_type === 'SCHOOL' && (b?.status ?? 'active') === 'active',
+  );
   if (schoolBond?.capacity) return schoolBond.capacity as AuthorityTier;
   return null;
 }

@@ -1,0 +1,34 @@
+import { IDeviceSecurityPort } from '../logic/ports/deviceSecurity.port';
+import { deviceTrustAPI, DeviceTrustSummary, DeviceSecurityEvent, DeviceSecuritySession } from '../api/deviceTrust';
+
+/**
+ * SupabaseDeviceSecurityAdapter
+ * 
+ * Maps the Device Security Port to the Supabase-backed API.
+ */
+export class SupabaseDeviceSecurityAdapter implements IDeviceSecurityPort {
+  async getSecuritySummary(): Promise<{
+    devices: DeviceTrustSummary[];
+    events: DeviceSecurityEvent[];
+    sessions: DeviceSecuritySession[];
+    currentDevice: DeviceTrustSummary | null;
+  }> {
+    return deviceTrustAPI.getSecuritySummary();
+  }
+
+  async revokeSession(sessionId: string): Promise<void> {
+    await deviceTrustAPI.revokeSession(sessionId);
+  }
+
+  async unlinkDevice(deviceId: string): Promise<void> {
+    await deviceTrustAPI.unlinkDevice(deviceId);
+  }
+
+  async revokeAllSessions(): Promise<void> {
+    await deviceTrustAPI.revokeAllSessions();
+  }
+
+  async trustDevice(deviceId: string): Promise<void> {
+    await deviceTrustAPI.trustDevice(deviceId);
+  }
+}

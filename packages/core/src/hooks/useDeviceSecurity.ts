@@ -1,88 +1,110 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useOptimistic, useTransition, useCallback } from 'react';
 import { useMutationQueue } from '../lib/sync/useMutationQueue';
-import {
-  type DeviceSecurityEvent,
-  type DeviceSecuritySession,
-  type DeviceTrustSummary,
-  deviceTrustAPI,
-} from '../api/deviceTrust';
 import { isQueuedDeviceSecurityMutation } from '../lib/sync/deviceSecurityIntents';
+import { useDeviceSecurityStore } from '../store/useDeviceSecurityStore';
 
-export function useDeviceSecurity(limit = 50) {
-  const pendingSecurityMutations = useMutationQueue((state) =>
-    state.queue.filter(isQueuedDeviceSecurityMutation),
+/**
+ * useDeviceSecurity
+ * 
+ * The Sovereign Connector for Device Trust.
+ * Now acts as a lightweight interface to the global DeviceSecurityStore.
+ */
+export function useDeviceSecurity() {
+  const {
+    devices,
+    events,
+    sessions,
+    currentDevice,
+    loading,
+    error,
+    fetchSecuritySummary,
+    revokeSession,
+    unlinkDevice,
+    revokeAllSessions,
+    trustDevice,
+  } = useDeviceSecurityStore();
+
+  const [isPending, startTransition] = useTransition();
+
+  // Optimistic tracking for local feedback
+  const [optimisticDevices, addOptimisticDevice] = useOptimistic(
+    devices,
+    (state, action: { type: 'unlink'; deviceId: string }) => {
+      if (action.type === 'unlink') {
+        return state.filter((d) => d.deviceId !== action.deviceId);
+      }
+      return state;
+    }
   );
-  const [devices, setDevices] = useState<DeviceTrustSummary[]>([]);
-  const [events, setEvents] = useState<DeviceSecurityEvent[]>([]);
-  const [sessions, setSessions] = useState<DeviceSecuritySession[]>([]);
-  const [currentDevice, setCurrentDevice] = useState<DeviceTrustSummary | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
-  const refresh = useCallback(async () => {
-    setError(null);
-    const [nextDevices, nextEvents, nextSessions, nextCurrentDevice] = await Promise.all([
-      deviceTrustAPI.listMyDevices(),
-      deviceTrustAPI.listMySecurityAuditEvents(limit),
-      deviceTrustAPI.listMySecuritySessions(limit),
-      deviceTrustAPI.getCurrentDeviceTrust(),
-    ]);
+  const [optimisticSessions, addOptimisticSession] = useOptimistic(
+    sessions,
+    (state, action: { type: 'revoke'; sessionId: string }) => {
+      if (action.type === 'revoke') {
+        return state.map((s) => (s.sessionId === action.sessionId ? { ...s, status: 'revoked' as const } : s));
+      }
+      return state;
+    }
+  );
 
-    setDevices(nextDevices);
-    setEvents(nextEvents);
-    setSessions(nextSessions);
-    setCurrentDevice(nextCurrentDevice);
-  }, [limit]);
+  // Sync with mutation queue for offline-resilience awareness
+  const queueLength = useMutationQueue((s) =>
+    s.queue.filter(isQueuedDeviceSecurityMutation).length
+  );
 
   useEffect(() => {
-    let cancelled = false;
+    fetchSecuritySummary();
+  }, [fetchSecuritySummary]);
 
-    (async () => {
-      try {
-        await refresh();
-      } catch (nextError) {
-        if (!cancelled) {
-          const message =
-            nextError instanceof Error ? nextError.message : 'Failed to load device security data.';
-          setError(message);
-        }
-      } finally {
-        if (!cancelled) {
-          setLoading(false);
-        }
-      }
-    })().catch((e) => {
-      console.error('DeviceSecurity: Failed to load security state', e);
+  // Actions wrapped in transitions and optimistic updates
+  const handleRevokeSession = useCallback(async (sessionId: string) => {
+    startTransition(() => {
+      addOptimisticSession({ type: 'revoke', sessionId });
+      revokeSession(sessionId);
     });
+  }, [revokeSession, addOptimisticSession]);
 
-    return () => {
-      cancelled = true;
-    };
-  }, [refresh]);
+  const handleUnlinkDevice = useCallback(async (deviceId: string) => {
+    startTransition(() => {
+      addOptimisticDevice({ type: 'unlink', deviceId });
+      unlinkDevice(deviceId);
+    });
+  }, [unlinkDevice, addOptimisticDevice]);
 
-  return useMemo(
-    () => ({
-      devices,
-      events,
-      sessions,
-      currentDevice,
-      loading,
-      error,
-      refresh,
-      pendingSecuritySyncCount: pendingSecurityMutations.length,
-      unlinkDevice: deviceTrustAPI.unlinkMyDevice,
-      revokeSession: deviceTrustAPI.revokeMySecuritySession,
-      revokeOtherSessions: deviceTrustAPI.revokeMyOtherSecuritySessions,
-    }),
-    [
-      devices,
-      events,
-      sessions,
-      currentDevice,
-      loading,
-      error,
-      refresh,
-      pendingSecurityMutations.length,
-    ],
-  );
+  // Health Score (Derived Intelligence)
+  const healthScore = useMemo(() => {
+    if (loading && devices.length === 0) return null;
+    let score = 100;
+
+    // Deduct for untrusted active devices
+    const untrustedCount = devices.filter((d) => !d.isTrusted).length;
+    score -= untrustedCount * 15;
+
+    // Deduct for multiple active sessions on different platforms
+    const activeSessions = sessions.filter((s) => s.status === 'active');
+    const platforms = new Set(activeSessions.map((s) => s.platform));
+    if (platforms.size > 2) score -= 10;
+
+    // Deduct for stale devices
+    const staleCount = devices.filter((d) => d.trustStatus === 'stale').length;
+    score -= staleCount * 5;
+
+    return Math.max(0, score);
+  }, [devices, sessions, loading]);
+
+  return {
+    devices: optimisticDevices,
+    events,
+    sessions: optimisticSessions,
+    currentDevice,
+    loading: loading || isPending,
+    error,
+    refresh: fetchSecuritySummary,
+    revokeSession: handleRevokeSession,
+    unlinkDevice: handleUnlinkDevice,
+    revokeAllSessions,
+    trustDevice,
+    syncPending: queueLength > 0,
+    healthScore,
+  };
 }

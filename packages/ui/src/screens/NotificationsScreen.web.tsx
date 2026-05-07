@@ -164,7 +164,7 @@ const NotificationRow = memo(({
 export default memo(function NotificationsScreenWeb() {
   const { t } = useTranslation();
   const { user } = useStore();
-  const { notifications, unreadCount, isLoading, markAsRead, markAllRead } = useNotifications(
+  const { notifications, unreadCount, isLoading, isRealtimeConnected, error, markAsRead, markAllRead } = useNotifications(
     user?.id,
   );
 
@@ -189,6 +189,36 @@ export default memo(function NotificationsScreenWeb() {
 
         {/* CONTENT */}
         <div style={{ maxWidth: '800px' }}>
+          {isRealtimeConnected && (
+            <div style={{ 
+              fontSize: '11px', 
+              color: 'var(--moss)', 
+              marginBottom: '16px', 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '6px',
+              fontWeight: '600',
+              textTransform: 'uppercase',
+              letterSpacing: '0.5px'
+            }}>
+              <div style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'var(--moss)' }} />
+              Live Stream Active
+            </div>
+          )}
+
+          {error && (
+            <div style={{ 
+              padding: '12px 16px', 
+              backgroundColor: 'rgba(239, 68, 68, 0.1)', 
+              border: '1px solid rgba(239, 68, 68, 0.2)', 
+              borderRadius: '12px',
+              color: '#ef4444',
+              fontSize: '13px',
+              marginBottom: '20px'
+            }}>
+              {error}
+            </div>
+          )}
           {/* Actions bar */}
           {notifications.length > 0 && unreadCount > 0 && (
             <div

@@ -7,6 +7,7 @@ export function GET() {
 
 ## Canonical Site
 - ${SITE_URL}/
+- Web Platform: https://platform.gurudevi.edlove.org
 
 ## Priority Sections
 - Home: ${SITE_URL}/
@@ -20,10 +21,13 @@ export function GET() {
 ## Machine-Readable Endpoints
 - Sitemap: ${SITE_URL}/sitemap-index.xml
 - Knowledge Index: ${SITE_URL}/knowledge.json
+- Agentic Context: See window.GURUDEVI_CONTEXT in HTML
 
 ## Notes
-- This file is an optional AI-orientation layer, not the canonical source of truth.
-- Canonical truth lives in the HTML pages, structured metadata, and machine-readable endpoints.
+- This site serves as the human-facing entry point and agentic orientation layer for the Gurudevi Education Ecology.
+- Mobile applications are currently in development (coming soon).
+- The web platform is the primary interface for active educational support.
+- All web applications under edlove.org share a root-domain security and context boundary.
 `;
 
 	return new Response(body, {

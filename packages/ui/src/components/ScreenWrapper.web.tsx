@@ -31,6 +31,7 @@ export function useBottomTabPadding() {
  */
 export default function ScreenWrapper({
   children,
+  title,
   scrollable = true,
   scroll,
   backgroundColor,
@@ -43,7 +44,7 @@ export default function ScreenWrapper({
   const resolvedBackground = backgroundColor || scene.canvas.bg;
 
   return (
-    <View style={[styles.container, { backgroundColor: resolvedBackground }]}>
+    <View role="main" aria-label={title} style={[styles.container, { backgroundColor: resolvedBackground }]}>
       {isScrollable ? (
         <ScrollView
           style={styles.scrollView}

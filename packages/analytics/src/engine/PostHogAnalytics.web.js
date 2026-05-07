@@ -3,6 +3,10 @@ export class PostHogAnalytics {
 	isInitialized = false;
 	async initialize(apiKey, options) {
 		if (this.isInitialized) return;
+		if (!apiKey) {
+			console.warn("[PostHog Web] Missing API key. Initialization skipped.");
+			return;
+		}
 		try {
 			posthog.init(apiKey, {
 				api_host: options?.host || "https://app.posthog.com",
@@ -25,6 +29,9 @@ export class PostHogAnalytics {
 		} catch (error) {
 			console.error("[PostHog Web] track failed:", error);
 		}
+	}
+	capture(event, properties) {
+		this.track(event, properties);
 	}
 	identify(userId, properties) {
 		try {
