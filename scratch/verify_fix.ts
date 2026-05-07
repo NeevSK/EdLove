@@ -1,12 +1,15 @@
 import { createClient } from '@supabase/supabase-js';
 
-const SUPABASE_URL = process.env.SUPABASE_URL;
-const SUPABASE_KEY = process.env.SUPABASE_PUBLISHABLE_KEY;
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_PUBLISHABLE_KEY;
 
-if (!SUPABASE_URL || !SUPABASE_KEY) {
+if (!supabaseUrl || !supabaseKey) {
   console.error('Missing required env vars: SUPABASE_URL and SUPABASE_PUBLISHABLE_KEY');
   process.exit(1);
 }
+
+const SUPABASE_URL: string = supabaseUrl;
+const SUPABASE_KEY: string = supabaseKey;
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, {
   auth: {
