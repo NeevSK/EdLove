@@ -30,7 +30,7 @@ const stats = {
 };
 
 function formatCount(value: number): string {
-	return "0";
+	return new Intl.NumberFormat("en-US").format(value);
 }
 </script>
 
@@ -52,4 +52,3 @@ function formatCount(value: number): string {
     </div>
   {/each}
 </div>
-

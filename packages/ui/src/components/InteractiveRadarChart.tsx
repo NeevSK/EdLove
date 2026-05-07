@@ -1,8 +1,8 @@
 import type React from 'react';
 import { useMemo } from 'react';
 import { StyleSheet } from 'react-native';
-import { View } from '../primitives';
 import Svg, { Circle, G, Line, Polygon, Text as SvgText } from 'react-native-svg';
+import { View } from '../primitives';
 import { Theme } from '../theme/Theme';
 
 export interface RadarDimension {
@@ -81,18 +81,21 @@ export const InteractiveRadarChart: React.FC<InteractiveRadarChartProps> = ({
         ))}
 
         {/* Axis Lines */}
-        {bgPoints.map((p, i) => (
-          <Line
-            key={`axis-${i}`}
-            x1={centerX}
-            y1={centerY}
-            x2={p.x}
-            y2={p.y}
-            stroke={Theme.colors.border}
-            strokeWidth="1"
-            opacity={0.3}
-          />
-        ))}
+        {bgPoints.map((p, i) => {
+          const dimensionKey = dimensions[i]?.key ?? `axis-${p.x}-${p.y}`;
+          return (
+            <Line
+              key={`axis-${dimensionKey}`}
+              x1={centerX}
+              y1={centerY}
+              x2={p.x}
+              y2={p.y}
+              stroke={Theme.colors.border}
+              strokeWidth="1"
+              opacity={0.3}
+            />
+          );
+        })}
 
         {/* Background Full Polygon */}
         <Polygon points={bgPolygonPointsString} fill={Theme.colors.linen} opacity={0.1} />
@@ -118,7 +121,7 @@ export const InteractiveRadarChart: React.FC<InteractiveRadarChartProps> = ({
           const labelY = centerY + Math.sin(angle) * labelDist;
 
           return (
-            <G key={`vertex-group-${i}`}>
+            <G key={`vertex-group-${dim.key}`}>
               {/* Label */}
               <SvgText
                 x={labelX}
@@ -148,10 +151,8 @@ export const InteractiveRadarChart: React.FC<InteractiveRadarChartProps> = ({
 
       {/* Glow Effect Overlay (subtle) */}
       <View
-        style={[
-          styles.glow,
-          { width: size * 0.6, height: size * 0.6, borderRadius: size * 0.3, pointerEvents: 'none' },
-        ]}
+        pointerEvents="none"
+        style={[styles.glow, { width: size * 0.6, height: size * 0.6, borderRadius: size * 0.3 }]}
       />
     </View>
   );

@@ -59,6 +59,12 @@ CREATE POLICY "Users can view their own bonds"
 ON public.bonds FOR SELECT 
 USING (public.get_my_id() = user_id);
 
+-- Users can insert their own bonds (onboarding/bootstrap path)
+DROP POLICY IF EXISTS "Users can insert their own bonds" ON public.bonds;
+CREATE POLICY "Users can insert their own bonds"
+ON public.bonds FOR INSERT
+WITH CHECK (public.get_my_id() = user_id);
+
 -- Admins can do everything (ReBAC recursion starts here)
 DROP POLICY IF EXISTS "Platform admins can manage all bonds" ON public.bonds;
 CREATE POLICY "Platform admins can manage all bonds" 
@@ -72,4 +78,3 @@ GRANT ALL ON public.bonds TO authenticated;
 GRANT ALL ON public.bonds TO service_role;
 
 COMMIT;
-

@@ -12,14 +12,14 @@ The identity fabric is anchored in two primary Supabase tables, governed by **Ro
 - **Key Columns**: `id` (UUID), `is_anonymous` (Boolean), `school_id` (UUID, nullable), `onboarding_completed` (Boolean).
 - **RLS Policies**:
   - `SELECT`: Allowed for all authenticated users (Self-read).
-  - `UPDATE`: Restricted to the user themselves (`auth.uid() = id`). 
+  - `UPDATE`: Restricted to the user themselves (`public.get_my_id() = id`).
   - **Critical Note**: Anonymous users are mapped to a temporary internal ID to allow profile updates during guest exploration.
 
 ### `bonds` Table
 - **Purpose**: Atomic unit of **Relationship-Based Access Control (ReBAC)**.
 - **Columns**: `user_id`, `entity_id`, `entity_type` (PLATFORM, SCHOOL, PERSONAL), `capacity` (admin, teacher, student).
 - **RLS Policies**:
-  - `INSERT`: Enabled for authenticated users to bootstrap their own identity (`auth.uid() = user_id`).
+  - `INSERT`: Enabled for authenticated users to bootstrap their own identity (`public.get_my_id() = user_id`).
   - `SELECT`: Allowed for the user themselves or Platform Admins.
 
 ---
