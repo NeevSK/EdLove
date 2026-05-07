@@ -10,6 +10,7 @@ export {
 	type LibraryResource,
 	type ResourceDifficulty,
 	type ResourceFilters,
+	type LayoutResult,
 	type ResourceFormat,
 	type ResourceLanguage,
 	type ResourceType,

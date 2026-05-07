@@ -251,10 +251,15 @@ export function deriveCommunityPulse(
 	conversations: DirectConversation[],
 ) {
 	const joinedGroups = groups.filter((group) => group.is_member);
-	const totalMembersSeen = joinedGroups.reduce(
-		(sum, group) => sum + (group.member_count || 0),
-		0,
-	);
+	const hasJoinedAny = joinedGroups.length > 0;
+
+	// For guests or new users, show global members seen to make the heart feel alive
+	const totalMembersSeen = hasJoinedAny
+		? joinedGroups.reduce((sum, group) => sum + (group.member_count || 0), 0)
+		: groups.reduce((sum, group) => sum + (group.member_count || 0), 0);
+
+	const activeCirclesCount = hasJoinedAny ? joinedGroups.length : groups.length;
+
 	const newPostsToday = posts.filter((post) => {
 		const created = new Date(post.created_at);
 		const now = new Date();
@@ -263,7 +268,7 @@ export function deriveCommunityPulse(
 
 	return {
 		membersSeen: totalMembersSeen,
-		circlesActive: joinedGroups.length,
+		circlesActive: activeCirclesCount,
 		newPostsToday,
 		manifestosActive: manifestos.filter(
 			(manifesto) => manifesto.status === "active",

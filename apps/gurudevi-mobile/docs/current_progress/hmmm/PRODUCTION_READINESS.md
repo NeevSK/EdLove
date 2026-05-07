@@ -205,7 +205,7 @@ npm install isomorphic-dompurify
 ```bash
 # .env (never commit)
 SUPABASE_URL=xxx
-SUPABASE_ANON_KEY=xxx
+SUPABASE_PUBLISHABLE_KEY=xxx
 POSTHOG_API_KEY=xxx
 ```
 

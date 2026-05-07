@@ -137,7 +137,7 @@ All P0 and most P1/P2 items are now resolved:
 | Variable | Source | Required? |
 |---|---|---|
 | `EXPO_PUBLIC_SUPABASE_URL` | GH Secret `SUPABASE_URL` | ✅ Yes |
-| `EXPO_PUBLIC_SUPABASE_ANON_KEY` | GH Secret `SUPABASE_ANON_KEY` | ✅ Yes |
+| `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | GH Secret `SUPABASE_PUBLISHABLE_KEY` | ✅ Yes |
 | `EXPO_PUBLIC_POSTHOG_API_KEY` | GH Secret `POSTHOG_API_KEY` | Optional |
 | `EXPO_PUBLIC_POSTHOG_HOST` | GH Secret `POSTHOG_HOST` | Optional |
 | `EXPO_PUBLIC_SENTRY_DSN` | GH Secret `SENTRY_DSN` | Optional |
@@ -161,7 +161,7 @@ After any web change, run and confirm all green:
 
 ```bash
 cd apps/gurudevi-mobile
-EXPO_PUBLIC_SUPABASE_URL=... EXPO_PUBLIC_SUPABASE_ANON_KEY=... pnpm build:web
+EXPO_PUBLIC_SUPABASE_URL=... EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY=... pnpm build:web
 npx -y serve dist -l 4000
 # Manual checks at http://localhost:4000:
 ```
@@ -324,7 +324,7 @@ This throws before React mounts. Everything else was already handled. One file c
 | Variable | Source | Required? |
 |---|---|---|
 | `EXPO_PUBLIC_SUPABASE_URL` | GH Secret `SUPABASE_URL` | ✅ Yes |
-| `EXPO_PUBLIC_SUPABASE_ANON_KEY` | GH Secret `SUPABASE_ANON_KEY` | ✅ Yes |
+| `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | GH Secret `SUPABASE_PUBLISHABLE_KEY` | ✅ Yes |
 | `EXPO_PUBLIC_POSTHOG_API_KEY` | GH Secret `POSTHOG_API_KEY` | Optional |
 | `EXPO_PUBLIC_POSTHOG_HOST` | GH Secret `POSTHOG_HOST` | Optional |
 | `EXPO_PUBLIC_SENTRY_DSN` | GH Secret `SENTRY_DSN` | Optional |

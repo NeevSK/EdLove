@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 // This would typically come from an environment config
 const SUPABASE_URL = "https://qzoawolfkuwiuyaoiybz.supabase.co";
-const SUPABASE_ANON_KEY = "your-anon-key-here"; // Placeholder
+const SUPABASE_PUBLISHABLE_KEY = "your-publishable-key-here"; // Placeholder
 
 export interface GeoFeature {
 	id: string;
@@ -38,8 +38,8 @@ export function useGeoData(datasetId: string) {
 					`${SUPABASE_URL}/rest/v1/geo_features?dataset_id=eq.${datasetId}&select=*,geom:geom.geojson()`,
 					{
 						headers: {
-							apikey: SUPABASE_ANON_KEY,
-							Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+							apikey: SUPABASE_PUBLISHABLE_KEY,
+							Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
 						},
 					},
 				);

@@ -45,10 +45,10 @@ export function useFeatureAccess(): FeatureAccess {
 
   return {
     // Feature flags
-    canCreateClassroom: !isAnonymous,
-    canPostInCommunity: !isAnonymous,
-    canUploadToLibrary: !isAnonymous,
-    canInviteUsers: !isAnonymous,
+    canCreateClassroom: true,
+    canPostInCommunity: true,
+    canUploadToLibrary: true,
+    canInviteUsers: true,
 
     // Status flags
     isAnonymous: !!isAnonymous,

@@ -13,24 +13,29 @@ function requireEnvValue(
 	);
 }
 
-const supabaseUrl = requireEnvValue(import.meta.env["PUBLIC_SUPABASE_URL"], [
+const supabaseUrl = requireEnvValue(
+	import.meta.env["PUBLIC_SUPABASE_URL"] || import.meta.env["SUPABASE_URL"],
+	[
 	"PUBLIC_SUPABASE_URL",
-]);
-const supabaseAnonKey = requireEnvValue(
+	"SUPABASE_URL",
+	],
+);
+const supabasePublishableKey = requireEnvValue(
 	import.meta.env["PUBLIC_SUPABASE_PUBLISHABLE_KEY"] ||
-		import.meta.env["PUBLIC_SUPABASE_ANON_KEY"],
-	["PUBLIC_SUPABASE_PUBLISHABLE_KEY", "PUBLIC_SUPABASE_ANON_KEY"],
+		import.meta.env["SUPABASE_PUBLISHABLE_KEY"],
+	["PUBLIC_SUPABASE_PUBLISHABLE_KEY", "SUPABASE_PUBLISHABLE_KEY"],
 );
 const supabaseServiceRoleKey = requireEnvValue(
 	import.meta.env["SUPABASE_SECRET_KEY"] ||
 		import.meta.env["SUPABASE_SERVICE_ROLE_KEY"],
 	["SUPABASE_SECRET_KEY", "SUPABASE_SERVICE_ROLE_KEY"],
 );
+
 /**
  * Standard Supabase client (respects RLS).
  * Use this for client-side operations or non-privileged background tasks.
  */
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase = createClient(supabaseUrl, supabasePublishableKey);
 
 /**
  * 'God Mode' Supabase client (bypasses RLS).

@@ -24,7 +24,7 @@ import { useFeatureActivity } from "../hooks/useFeatureActivity";
 import type { BaseSelfViewProps, SelfViewFeature } from "./BaseSelfView.types";
 import { FeatureErrorBoundary } from "./FeatureErrorBoundary";
 
-const TEMPORAL_SCALES = ["day", "week", "month", "year"] as const;
+
 
 /**
  * BaseSelfView.web - Capability-Driven Sanctuary for Web.
@@ -39,7 +39,7 @@ export function BaseSelfView({
 	const { context } = usePermissions();
 	const isAnonymous = context.is_anonymous;
 	
-	const { viewMode, setViewMode, viewScale, setScale } = useTemporalStore();
+	const { viewMode, setViewMode, viewScale } = useTemporalStore();
 	const isHistoryMode = viewMode === "timeline";
 
 	const allFeatures = useMemo(
@@ -83,18 +83,15 @@ export function BaseSelfView({
 	);
 
 	const { getPinnedFeatures, togglePin, trackFeatureAccess } = useFeatureActivity();
-	const { topItems: sortedFeatures } = useDynamicSelfFeatures(allFeatures);
 	const pinned = getPinnedFeatures();
 
-	const [focusedItemId, setFocusedItemId] = useState<string | null>(null);
+	const [focusedItemId, setFocusedItemId] = useState<string | null>(() => {
+		if (typeof window === "undefined") return null;
+		return window.location.hash.replace("#", "") || null;
+	});
 
 	// URL Resonance: Sync focused feature with URL hash
 	useEffect(() => {
-		const hash = window.location.hash.replace("#", "");
-		if (hash && allFeatures.some(f => f.id === hash)) {
-			setFocusedItemId(hash);
-		}
-
 		const handleHashChange = () => {
 			const newHash = window.location.hash.replace("#", "");
 			setFocusedItemId(newHash || null);
@@ -102,7 +99,7 @@ export function BaseSelfView({
 
 		window.addEventListener("hashchange", handleHashChange);
 		return () => window.removeEventListener("hashchange", handleHashChange);
-	}, [allFeatures]);
+	}, []);
 
 	const updateFocusedId = (id: string | null) => {
 		setFocusedItemId(id);
@@ -129,7 +126,7 @@ export function BaseSelfView({
 		if (!feature) return null;
 		
 		const content = isHistoryMode
-			? feature.historyContent ?? <HistoryScaffold feature={feature as any} viewScale={viewScale} />
+			? feature.historyContent ?? <HistoryScaffold feature={feature} viewScale={viewScale} />
 			: feature.content;
 
 		return (
@@ -160,6 +157,7 @@ export function BaseSelfView({
 									setViewMode("spotlight");
 									updateFocusedId(null);
 								}}
+								accessibilityRole="button"
 								className={`px-5 py-2.5 rounded-full border transition-all ${
 									!isHistoryMode ? "bg-white border-black/10 shadow-sm" : "bg-transparent border-transparent opacity-40"
 								}`}
@@ -168,6 +166,7 @@ export function BaseSelfView({
 							</Pressable>
 							<Pressable
 								onPress={() => setViewMode("timeline")}
+								accessibilityRole="button"
 								className={`px-5 py-2.5 rounded-full border transition-all ${
 									isHistoryMode ? "bg-white border-black/10 shadow-sm" : "bg-transparent border-transparent opacity-40"
 								}`}
@@ -182,7 +181,7 @@ export function BaseSelfView({
 			<ScrollView className="flex-1" contentContainerStyle={{ padding: 40 }} showsVerticalScrollIndicator={false}>
 				{focusedItemId ? (
 					<Box className="max-w-5xl mx-auto w-full animate-in fade-in slide-in-from-bottom-4 duration-700">
-						<Pressable onPress={() => updateFocusedId(null)} className="flex-row items-center gap-2 mb-8 group opacity-60 hover:opacity-100 transition-all">
+						<Pressable onPress={() => updateFocusedId(null)} accessibilityRole="button" className="flex-row items-center gap-2 mb-8 group opacity-60 hover:opacity-100 transition-all">
 							<Text className="text-xl group-hover:-translate-x-1 transition-transform">←</Text>
 							<Text className="text-xs font-black uppercase tracking-widest">Back to Sanctuary</Text>
 						</Pressable>
@@ -202,7 +201,7 @@ export function BaseSelfView({
 										discoveryInfo={FEATURE_DISCOVERY_DATA[focusedFeature?.id as keyof typeof FEATURE_DISCOVERY_DATA]}
 										color={focusedFeature?.domainColor}
 									/>
-									<Pressable onPress={() => togglePin(focusedFeature?.id || "")} className="p-2 bg-black/5 rounded-full">
+									<Pressable onPress={() => togglePin(focusedFeature?.id || "")} accessibilityRole="button" className="p-2 bg-black/5 rounded-full">
 										<Text>{pinned.includes(focusedFeature?.id || "") ? "📌" : "📍"}</Text>
 									</Pressable>
 								</HStack>
@@ -218,7 +217,12 @@ export function BaseSelfView({
 									<Box className="w-2 h-8 rounded-full" style={{ backgroundColor: domain.accentColor }} />
 									<Text className="text-xl font-black tracking-tight text-[#1A1610]">{domain.title}</Text>
 								</HStack>
-								
+								{domain.content && (
+									<Box className="mb-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
+										{domain.content}
+									</Box>
+								)}
+
 								<Box className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
 									{domain.features?.map((feature) => (
 										<SanctuaryCard 
@@ -257,7 +261,7 @@ function HistoryScaffold({
 	feature,
 	viewScale,
 }: {
-	feature: SelfViewFeature & { domainColor?: string };
+	feature: SelfViewFeature;
 	viewScale: string;
 }) {
 	return (

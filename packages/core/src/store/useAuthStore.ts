@@ -13,8 +13,8 @@ import { type AuthSlice, createAuthSlice } from './slices/auth.slice';
  */
 export const useAuthStore = create<AuthSlice>()(
   persist(
-    (...a) => ({
-      ...createAuthSlice(...a),
+    (set, get, api) => ({
+      ...createAuthSlice(set, get, api),
     }),
     {
       name: 'gurudevi-auth-storage',

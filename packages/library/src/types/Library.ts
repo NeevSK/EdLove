@@ -8,9 +8,10 @@ import type {
 	LinkRelationship,
 	ResourceFormat,
 	ResourceType,
+	LayoutResult,
 } from "@repo/core/types";
 
-export type { ResourceFormat, ResourceType }; // Re-export for package consumers
+export type { ResourceFormat, ResourceType, LayoutResult }; // Re-export for package consumers
 export type ResourceDifficulty = "beginner" | "intermediate" | "advanced";
 export type ResourceLanguage = "english" | "sinhala" | "tamil";
 export type ResourceVisibility =

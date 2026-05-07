@@ -176,7 +176,7 @@ export const LibraryThumbnailCard = React.memo(
 
 		// Stable Handlers
 		const handlePress = React.useCallback(() => {
-			if (resource) onPress(resource);
+			onPress(resource || ({} as LibraryResource));
 		}, [resource, onPress]);
 
 		const handleLongPress = React.useCallback(() => {

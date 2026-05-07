@@ -10,8 +10,8 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
-      "@powersync/react-native": ["src/adapters/powersync/powersync-shim.d.ts"],
-      "@powersync/react": ["src/adapters/powersync/powersync-react-shim.d.ts"]
+      "@powersync/react-native": ["src/adapters/powersync/powersync-shim.ts"],
+      "@powersync/react": ["src/adapters/powersync/powersync-react-shim.ts"]
     },
     "types": ["vitest/importMeta", "vitest/globals", "@repo/types-shim"]
   },

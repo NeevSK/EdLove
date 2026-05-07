@@ -21,7 +21,6 @@ export const FeatureOverridesPanel: React.FC = () => {
     const updatedUser = {
       ...user,
       flags: {
-        // @ts-expect-error - Handle possible missing flags object in older user schema
         ...(user.flags || {}),
         [key]: value,
       },

@@ -4,14 +4,13 @@ import { storage } from '../lib/storage';
 
 // Configuration from environment variables
 const supabaseUrl = process.env['EXPO_PUBLIC_SUPABASE_URL'];
-const supabaseAnonKey =
-  process.env['EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY'] || process.env['EXPO_PUBLIC_SUPABASE_ANON_KEY'];
+const supabasePublishableKey = process.env['EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY'];
 
 // Validate environment variables
-if (!supabaseUrl || !supabaseAnonKey) {
+if (!supabaseUrl || !supabasePublishableKey) {
   throw new Error(
     'Missing Supabase credentials. Please check your .env file.\n' +
-      'Required: EXPO_PUBLIC_SUPABASE_URL and (EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY or EXPO_PUBLIC_SUPABASE_ANON_KEY)',
+      'Required: EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY',
   );
 }
 
@@ -26,7 +25,7 @@ if (!supabaseUrl || !supabaseAnonKey) {
  * Scope: ONLY applies to requests made by this specific Supabase client
  * instance, NOT to global fetch. This is intentional and safe.
  */
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+export const supabase = createClient(supabaseUrl, supabasePublishableKey, {
   auth: {
     // Wrap StorageManager to satisfy Supabase's GoTrue storage interface
     storage: {
