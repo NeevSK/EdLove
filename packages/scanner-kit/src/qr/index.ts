@@ -1,4 +1,3 @@
-export * from './QRPayload'
-export * from './QRBuilder'
-export * from './QRResolver'
-export { default as QRShareButton } from './QRShareButton'
+export { QRBuilder, resolveQR } from "@repo/core/logic";
+export type { QRPayload } from "@repo/core/types";
+export { default as QRShareButton } from "./QRShareButton";

@@ -1,140 +1,178 @@
-import React, { useState, useEffect } from 'react';
-import { TouchableOpacity, StyleSheet } from 'react-native';
+import { identityAPI, supabase } from "@repo/core/api";
+import { usePermissions } from "@repo/core/logic";
+
+import { useLotusToast } from "@repo/ui/hooks";
 import {
-    Box,
-    VStack,
-    HStack,
-    Text,
-    useThemedColors,
-    Theme,
-} from '@repo/ui';
-import { MoreVertical, BellOff, Bell, UserX, ShieldAlert } from 'lucide-react-native';
-import { useSocialShield } from '../hooks/useSocialShield';
-import SocialShieldModal from './SocialShieldModal';
-import { supabase } from '@repo/core';
+	Bell,
+	BellOff,
+	MoreVertical,
+	ShieldAlert,
+	UserX,
+} from "@repo/ui/icons";
+import {
+	Box,
+	HStack,
+	Icon,
+	Pressable,
+	Text,
+	VStack,
+} from "@repo/ui/primitives";
+import { hapticError, hapticSuccess } from "@repo/ui/utils";
+import { useEffect, useState } from "react";
+import { useSocialShield } from "../hooks/useSocialShield";
+import SocialShieldModal from "./SocialShieldModal";
 
 interface HeaderMoreMenuProps {
-    conversationId?: string;
-    groupId?: string;
-    targetUserId?: string;
-    targetUserName?: string;
+	conversationId?: string;
+	groupId?: string;
+	targetUserId?: string;
+	targetUserName?: string;
 }
 
 export default function HeaderMoreMenu({
-    conversationId,
-    groupId,
-    targetUserId,
-    targetUserName
+	conversationId,
+	groupId,
+	targetUserId,
+	targetUserName,
 }: HeaderMoreMenuProps) {
-    const colors = useThemedColors();
-    const { toggleMute, blockUser } = useSocialShield();
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [isMuted, setIsMuted] = useState(false);
-    const [showReportModal, setShowReportModal] = useState(false);
+	const { toggleMute, blockUser } = useSocialShield();
+	const { showToast } = useLotusToast();
+	const { flags } = usePermissions();
+	const [isMenuOpen, setIsMenuOpen] = useState(false);
+	const [isMuted, setIsMuted] = useState(false);
+	const [showReportModal, setShowReportModal] = useState(false);
 
-    // Fetch initial mute state
-    useEffect(() => {
-        async function fetchMuteState() {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) return;
+	// Fetch initial mute state
+	useEffect(() => {
+		async function fetchMuteState() {
+			const userId = await identityAPI.getMyInternalId();
+			if (!userId) return;
 
-            const { data } = await supabase
-                .from('conversation_settings')
-                .select('is_muted')
-                .eq('user_id', user.id)
-                .match({
-                    conversation_id: conversationId || null,
-                    group_id: groupId || null
-                })
-                .single();
+			const { data } = await supabase
+				.from("conversation_settings")
+				.select("is_muted")
+				.eq("user_id", userId)
+				.match({
+					conversation_id: conversationId || null,
+					group_id: groupId || null,
+				})
+				.single();
 
-            if (data) setIsMuted(data.is_muted);
-        }
-        fetchMuteState();
-    }, [conversationId, groupId]);
+			if (data) setIsMuted(data.is_muted);
+		}
+		fetchMuteState();
+	}, [conversationId, groupId]);
 
-    const handleToggleMute = async () => {
-        const newState = !isMuted;
-        await toggleMute({ conversationId, groupId, isMuted: newState });
-        setIsMuted(newState);
-        setIsMenuOpen(false);
-    };
+	const handleToggleMute = async () => {
+		const newState = !isMuted;
+		const result = await toggleMute({
+			conversationId,
+			groupId,
+			isMuted: newState,
+		});
+		if (result?.success) {
+			hapticSuccess();
+			showToast({
+				message: newState
+					? "Notifications silenced for this sanctuary."
+					: "Notifications restored.",
+				type: "success",
+			});
+			setIsMuted(newState);
+		} else {
+			hapticError();
+			showToast({ message: "Failed to update mute settings.", type: "error" });
+		}
+		setIsMenuOpen(false);
+	};
 
-    const handleBlock = async () => {
-        if (targetUserId) {
-            await blockUser(targetUserId);
-            setIsMenuOpen(false);
-        }
-    };
+	const handleBlock = async () => {
+		if (targetUserId) {
+			const result = await blockUser(targetUserId);
+			if (result?.success) {
+				hapticSuccess();
+				showToast({
+					message:
+						"User has been blocked. They can no longer see your content or message you.",
+					type: "success",
+				});
+			} else {
+				hapticError();
+				showToast({ message: "Failed to block user.", type: "error" });
+			}
+			setIsMenuOpen(false);
+		}
+	};
 
-    return (
-        <Box>
-            <TouchableOpacity onPress={() => setIsMenuOpen(!isMenuOpen)} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-                <MoreVertical size={24} color={colors.text} />
-            </TouchableOpacity>
+	return (
+		<Box>
+			<Pressable
+				onPress={() => setIsMenuOpen(!isMenuOpen)}
+				hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+			>
+				<Icon as={MoreVertical} size="lg" color="rgba(255,255,255,0.9)" />
+			</Pressable>
 
-            {isMenuOpen && (
-                <Box
-                    sx={{
-                        position: 'absolute',
-                        top: 35,
-                        right: 0,
-                        backgroundColor: colors.secondary,
-                        borderRadius: Theme.corners.comfortable,
-                        borderWidth: 1,
-                        borderColor: colors.border,
-                        shadowColor: '#000',
-                        shadowOffset: { width: 0, height: 4 },
-                        shadowOpacity: 0.1,
-                        shadowRadius: 8,
-                        elevation: 5,
-                        minWidth: 180,
-                        zIndex: 1000,
-                        overflow: 'hidden',
-                    }}
-                >
-                    <VStack>
-                        <TouchableOpacity style={styles.menuItem} onPress={handleToggleMute}>
-                            <HStack space="md" alignItems="center">
-                                {isMuted ? <Bell size={18} color={colors.text} /> : <BellOff size={18} color={colors.text} />}
-                                <Text size="sm" color={colors.text}>{isMuted ? 'Unmute Sanctuary' : 'Mute Sanctuary'}</Text>
-                            </HStack>
-                        </TouchableOpacity>
+			{isMenuOpen && (
+				<Box className="absolute top-8 right-0 bg-surface-lowest rounded-xl border border-outline-variant shadow-lg min-w-[180px] z-[1000] overflow-hidden">
+					<VStack>
+						<Pressable
+							className="p-3 border-b border-outline-variant/50 active:bg-white/5"
+							onPress={handleToggleMute}
+						>
+							<HStack className="items-center gap-3">
+								<Icon
+									as={isMuted ? Bell : BellOff}
+									size="sm"
+									color="rgba(255,255,255,0.9)"
+								/>
+								<Text className="text-sm text-foreground">
+									{isMuted ? "Unmute" : "Mute"} Sanctuary
+								</Text>
+							</HStack>
+						</Pressable>
 
-                        {targetUserId && (
-                            <TouchableOpacity style={styles.menuItem} onPress={handleBlock}>
-                                <HStack space="md" alignItems="center">
-                                    <UserX size={18} color={Theme.colors.sanctuarySaffron} />
-                                    <Text size="sm" color={Theme.colors.sanctuarySaffron}>Block User</Text>
-                                </HStack>
-                            </TouchableOpacity>
-                        )}
+						{targetUserId && flags.isSocialShieldEnabled && (
+							<Pressable
+								className="p-3 border-b border-outline-variant/50 active:bg-white/5"
+								onPress={handleBlock}
+							>
+								<HStack className="items-center gap-3">
+									<Icon as={UserX} size="sm" color="#E67E22" />
+									<Text className="text-sm text-primary-500">Block User</Text>
+								</HStack>
+							</Pressable>
+						)}
 
-                        <TouchableOpacity style={[styles.menuItem, { borderBottomWidth: 0 }]} onPress={() => { setShowReportModal(true); setIsMenuOpen(false); }}>
-                            <HStack space="md" alignItems="center">
-                                <ShieldAlert size={18} color={colors.text} />
-                                <Text size="sm" color={colors.text}>Report</Text>
-                            </HStack>
-                        </TouchableOpacity>
-                    </VStack>
-                </Box>
-            )}
+						{flags.isSocialShieldEnabled && (
+							<Pressable
+								className="p-3 active:bg-white/5"
+								onPress={() => {
+									setShowReportModal(true);
+									setIsMenuOpen(false);
+								}}
+							>
+								<HStack className="items-center gap-3">
+									<Icon
+										as={ShieldAlert}
+										size="sm"
+										color="rgba(255,255,255,0.9)"
+									/>
+									<Text className="text-sm text-foreground">Report</Text>
+								</HStack>
+							</Pressable>
+						)}
+					</VStack>
+				</Box>
+			)}
 
-            <SocialShieldModal
-                isOpen={showReportModal}
-                onClose={() => setShowReportModal(false)}
-                targetUserId={targetUserId}
-                targetUserName={targetUserName}
-                groupId={groupId}
-            />
-        </Box>
-    );
+			<SocialShieldModal
+				isOpen={showReportModal}
+				onClose={() => setShowReportModal(false)}
+				targetUserId={targetUserId}
+				targetUserName={targetUserName}
+				groupId={groupId}
+			/>
+		</Box>
+	);
 }
-
-const styles = StyleSheet.create({
-    menuItem: {
-        padding: 12,
-        borderBottomWidth: 1,
-        borderBottomColor: 'rgba(0,0,0,0.05)',
-    }
-});

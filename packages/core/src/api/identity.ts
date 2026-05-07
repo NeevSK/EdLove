@@ -1,102 +1,120 @@
-import { supabase } from '../lib/supabase';
-import { APIError } from './types';
+import { getOnboardingState } from '../logic/domains/profile/onboarding';
+import { type User, UserSchema } from '../logic/schemas/user.schema';
+import { identity } from '../logic/managers/factory';
+import { APIError } from '../types/API';
+import { supabase } from './supabase';
 
-// In-memory cache for the current session's internal user ID
-let cachedInternalId: string | null = null;
+// State is managed by the adapter now
+
 
 export const identityAPI = {
-    /**
-     * Resolves the internal user ID from a provider and provider-specific user ID.
-     */
-    async resolveInternalId(provider: string, providerUserId: string): Promise<string | null> {
-        // Only return from cache if we are explicitly asking for the current Supabase session
-        if (provider === 'supabase' && cachedInternalId) {
-            return cachedInternalId;
-        }
+  /**
+   * Resolves the internal user ID from a provider and provider-specific user ID.
+   */
+  async resolveInternalId(provider: string, providerUserId: string): Promise<string | null> {
+    return identity.resolveInternalId(provider, providerUserId);
+  },
 
-        const { data, error } = await supabase
-            .from('auth_identities')
-            .select('user_id')
-            .eq('provider', provider)
-            .eq('provider_user_id', providerUserId)
-            .maybeSingle();
+  /**
+   * Links an authentication identity to an existing internal user.
+   */
+  async linkIdentity(userId: string, provider: string, providerUserId: string) {
+    return identity.linkIdentity(userId, provider, providerUserId);
+  },
 
-        if (error) {
-            throw new APIError('Failed to resolve identity', error.code, error);
-        }
+  /**
+   * Resolves the current logged-in user's internal ID.
+   */
+  async getMyInternalId(): Promise<string | null> {
+    return identity.getMyInternalId();
+  },
 
-        const resolvedId = data?.user_id ?? null;
+  /**
+   * Fetches the full user profile from the `users` table.
+   */
+  async getProfile(userId: string): Promise<User> {
+    const { data, error } = await supabase.from('users').select('*').eq('id', userId).single();
 
-        if (provider === 'supabase' && resolvedId) {
-            cachedInternalId = resolvedId;
-        }
-
-        return resolvedId;
-    },
-
-    /**
-     * Links an authentication identity to an existing internal user.
-     */
-    async linkIdentity(userId: string, provider: string, providerUserId: string) {
-        const { error } = await supabase
-            .from('auth_identities')
-            .upsert({
-                user_id: userId,
-                provider,
-                provider_user_id: providerUserId,
-                updated_at: new Date().toISOString()
-            }, {
-                onConflict: 'provider,provider_user_id'
-            });
-
-        if (error) {
-            throw new APIError('Failed to link identity', error.code, error);
-        }
-
-        // Cache the newly linked ID if it's for the current supabase session
-        if (provider === 'supabase') {
-            cachedInternalId = userId;
-        }
-    },
-
-    /**
-     * Resolves the current logged-in user's internal ID.
-     * This is a critical helper for the new architecture.
-     */
-    async getMyInternalId(): Promise<string | null> {
-        if (cachedInternalId) return cachedInternalId;
-
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return null;
-
-        // Try to resolve from auth_identities
-        const internalId = await this.resolveInternalId('supabase', user.id);
-
-        // Fallback: If not found in auth_identities, check if public.users has it (legacy sync)
-        if (!internalId) {
-            const { data: legacyUser } = await supabase
-                .from('users')
-                .select('id')
-                .eq('id', user.id)
-                .maybeSingle();
-
-            if (legacyUser) {
-                // Proactively heal the state by creating the missing identity mapping
-                await this.linkIdentity(legacyUser.id, 'supabase', user.id);
-                cachedInternalId = legacyUser.id;
-                return legacyUser.id;
-            }
-        } else {
-            cachedInternalId = internalId;
-        }
-
-        return internalId;
-    },
-
-    /**
-     * Clears the identity cache (e.g., on logout).
-     */
-    clearCache() {
-        cachedInternalId = null;
+    if (error) {
+      throw new APIError('Failed to fetch user profile', error.code, error);
     }
+
+    return UserSchema.parse(data);
+  },
+
+  /**
+   * Updates the user's profile in the `users` table.
+   */
+  async updateProfile(userId: string, updates: Partial<User>) {
+    // Validate updates against partial UserSchema
+    const validatedUpdates = UserSchema.partial().parse(updates);
+
+    const { error } = await supabase.from('users').update(validatedUpdates).eq('id', userId);
+
+    if (error) {
+      throw new APIError('Failed to update user profile', error.code, error);
+    }
+  },
+
+  async getBonds(userId: string) {
+    return identity.getBonds(userId);
+  },
+
+  async getActivePerspective() {
+    return identity.getActivePerspective();
+  },
+
+  async switchPerspective(entityId: string, capacity: any) {
+    return identity.switchPerspective(entityId, capacity);
+  },
+
+
+  /**
+   * Returns the classroom workspace summary needed by the academic daily-work shell.
+   */
+  async getClassroomRoleSummary(userId: string) {
+    const [profile, bonds, activePerspective] = await Promise.all([
+      identity.getProfile(userId),
+      identity.getBonds(userId),
+      identity.getActivePerspective(),
+    ]);
+
+    const active_bond = activePerspective?.active_bond || null;
+
+    // A "real class count" is now a count of Classroom Bonds
+    const realClassCount = bonds.filter(b => b.entity_type === 'CLASSROOM').length;
+
+    return {
+      user_id: userId,
+      school_id: profile.school_id,
+      profile_completed: !!profile.profile_completed,
+      onboarding_completed: !!profile.onboarding_completed,
+      onboarding_state: getOnboardingState(profile, active_bond),
+      real_class_count: realClassCount,
+      profile: {
+        ...profile,
+        active_bond,
+      },
+    };
+  },
+
+  /**
+   * Returns the explicit onboarding state for the current user.
+   */
+  async getOnboardingStatus(userId: string) {
+    const profile = await identity.getProfile(userId);
+    const perspective = await identity.getActivePerspective();
+    return {
+      state: getOnboardingState(profile, perspective?.active_bond),
+      profile,
+    };
+  },
+
+  /**
+   * Clears the identity cache (e.g., on logout).
+   */
+  clearCache() {
+    // Adapter handles its own cache clearing via auth subscription if needed,
+    // but we can expose it if added to port. For now, no-op.
+  },
 };

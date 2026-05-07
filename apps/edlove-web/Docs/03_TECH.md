@@ -2,7 +2,16 @@
 ## The Build Guide | How We Actually Make This
 
 **Role in Constellation**: The technical blueprint. Feed this to Cursor alongside the relevant domain doc.  
-**Last Updated**: February 3, 2026
+**Last Updated**: April 17, 2026
+
+---
+
+## IMPORTANT CURRENT ADDENDA
+
+This file remains the core technical guide for edlove.org, but for current cross-site reality and future AI-native direction, also read:
+
+- [18_WEB_PLATFORM_STATUS_2026-04-17.md](./18_WEB_PLATFORM_STATUS_2026-04-17.md)
+- [19_AI_NATIVE_WEB_ROADMAP.md](./19_AI_NATIVE_WEB_ROADMAP.md)
 
 ---
 
@@ -128,7 +137,7 @@ Three additional sites exist as **subdomains** temporarily:
 ```
 /apps
   /edlove-web → deploys to edlove.org
-  /gurudevi-web → deploys to gurudevi.edlove.org  
+  /gurudevi-marketingWeb → deploys to gurudevi.edlove.org  
   /intuitui-web → deploys to intuitui.edlove.org
   /neevsk-web → deploys to neevsk.edlove.org
 ```

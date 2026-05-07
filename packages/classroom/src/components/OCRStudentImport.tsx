@@ -8,249 +8,227 @@
  * Uncertain items (low OCR confidence) are highlighted amber for teacher review.
  */
 
-import React, { useState } from 'react';
-import { View, TouchableOpacity } from 'react-native';
+import { studentsAPI } from "@repo/core/api";
+
+import type { ScannedStudent } from "@repo/scanner-kit";
+import { Camera, Check, Info, RotateCcw, X } from "@repo/ui/icons";
 import {
-  VStack,
-  HStack,
-  Text,
-  Heading,
-  Theme,
-  SanctuaryToast,
-  useToast,
-} from '@repo/ui';
-import OCRScanner from './OCRScanner';
-import type { ScannedStudent } from '@repo/scanner-kit';
-import { studentsAPI } from '@repo/core';
+	Box,
+	Heading,
+	HStack,
+	Icon,
+	Pressable,
+	ScrollView,
+	Text,
+	VStack,
+} from "@repo/ui/primitives";
+import { useToast } from "@repo/ui/providers";
+
+import { useState } from "react";
+import OCRScanner from "./OCRScanner";
 
 interface OCRStudentImportProps {
-  classroomId: string;
-  onImported: (count: number) => void;
-  onCancel: () => void;
+	classroomId: string;
+	onImported: (count: number) => void;
+	onCancel: () => void;
 }
 
-type Phase = 'scan' | 'review' | 'importing';
+type Phase = "scan" | "review" | "importing";
 
 interface ReviewStudent extends ScannedStudent {
-  /** Selected for import (defaults to true, teacher can deselect) */
-  selected: boolean;
-  /** Low OCR confidence flag passed through from ParsedStudent */
-  uncertain?: boolean;
+	/** Selected for import (defaults to true, teacher can deselect) */
+	selected: boolean;
+	/** Low OCR confidence flag passed through from ParsedStudent */
+	uncertain?: boolean;
 }
 
 export default function OCRStudentImport({
-  classroomId,
-  onImported,
-  onCancel,
+	classroomId,
+	onImported,
+	onCancel,
 }: OCRStudentImportProps) {
-  const toast = useToast();
-  const [phase, setPhase] = useState<Phase>('scan');
-  const [students, setStudents] = useState<ReviewStudent[]>([]);
+	const { showToast } = useToast();
+	const [phase, setPhase] = useState<Phase>("scan");
+	const [students, setStudents] = useState<ReviewStudent[]>([]);
 
-  // ── Scanner callback ──────────────────────────────────────────────────────
+	// ── Scanner callback ──────────────────────────────────────────────────
 
-  const handleScanned = (scanned: ScannedStudent[]) => {
-    const review: ReviewStudent[] = scanned.map(s => ({
-      ...s,
-      selected: true,
-      uncertain: (s as any).uncertain ?? false,
-    }));
-    setStudents(review);
-    setPhase('review');
-  };
+	const handleScanned = (scanned: ScannedStudent[]) => {
+		const review: ReviewStudent[] = scanned.map((s) => ({
+			...s,
+			selected: true,
+			uncertain: (s as any).uncertain ?? false,
+		}));
+		setStudents(review);
+		setPhase("review");
+	};
 
-  // ── Toggle individual student selection ───────────────────────────────────
+	// ── Toggle individual student selection ───────────────────────────────
 
-  const toggleStudent = (index: number) => {
-    setStudents(prev =>
-      prev.map((s, i) => (i === index ? { ...s, selected: !s.selected } : s)),
-    );
-  };
+	const toggleStudent = (index: number) => {
+		setStudents((prev) =>
+			prev.map((s, i) => (i === index ? { ...s, selected: !s.selected } : s)),
+		);
+	};
 
-  // ── Bulk create ───────────────────────────────────────────────────────────
+	// ── Bulk create ───────────────────────────────────────────────────────
 
-  const handleConfirm = async () => {
-    const selected = students.filter(s => s.selected);
-    if (selected.length === 0) {
-      toast.show({
-        placement: 'top',
-        render: ({ id }: { id: string }) => (
-          <SanctuaryToast
-            message="Select at least one student to import"
-            type="info"
-            visible
-            onHide={() => toast.close(id)}
-          />
-        ),
-      });
-      return;
-    }
+	const handleConfirm = async () => {
+		const selected = students.filter((s) => s.selected);
+		if (selected.length === 0) {
+			showToast({
+				message: "Select at least one student to import",
+				type: "info",
+			});
+			return;
+		}
 
-    setPhase('importing');
-    try {
-      await Promise.all(
-        selected.map(s =>
-          studentsAPI.create({
-            full_name: s.name,
-            roll_number: s.index_number,
-            notes: s.notes,
-            class_id: classroomId,
-          } as any),
-        ),
-      );
-      onImported(selected.length);
-    } catch (err) {
-      console.error('OCRStudentImport: bulk create failed', err);
-      toast.show({
-        placement: 'top',
-        render: ({ id }: { id: string }) => (
-          <SanctuaryToast
-            message="Failed to import students. Please try again."
-            type="error"
-            visible
-            onHide={() => toast.close(id)}
-          />
-        ),
-      });
-      setPhase('review');
-    }
-  };
+		setPhase("importing");
+		try {
+			await Promise.all(
+				selected.map((s) =>
+					studentsAPI.create({
+						full_name: s.name,
+						roll_number: s.index_number,
+						notes: s.notes,
+						class_id: classroomId,
+					} as any),
+				),
+			);
+			onImported(selected.length);
+		} catch (err) {
+			console.error("OCRStudentImport: bulk create failed", err);
+			showToast({
+				message: "Failed to import students. Please try again.",
+				type: "error",
+			});
+			setPhase("review");
+		}
+	};
 
-  // ── Render ────────────────────────────────────────────────────────────────
+	// ── Render ────────────────────────────────────────────────────────────
 
-  if (phase === 'scan') {
-    return (
-      <OCRScanner
-        onStudentsScanned={handleScanned}
-        onCancel={onCancel}
-        colors={{
-          primary: Theme.colors.ink,
-          secondary: Theme.colors.ink,
-          border: Theme.colors.mistGray,
-          text: Theme.colors.sacredWhite,
-          textSecondary: Theme.colors.starlightGray,
-          tertiary: Theme.colors.ink,
-          accent: Theme.colors.sanctuarySaffron,
-          success: Theme.colors.sageGreen,
-        }}
-      />
-    );
-  }
+	if (phase === "scan") {
+		return (
+			<OCRScanner
+				onStudentsScanned={handleScanned}
+				onCancel={onCancel}
+				colors={{
+					primary: "#0F0F0F", // ink replacement
+					secondary: "#0F0F0F",
+					border: "#E2E2E2",
+					text: "#FFFFFF",
+					textSecondary: "#A3A3A3",
+					tertiary: "#0F0F0F",
+					accent: "#E7C67F", // templeGold replacement
+					success: "#4ADE80", // sageGreen approx
+				}}
+			/>
+		);
+	}
 
-  if (phase === 'importing') {
-    return (
-      <VStack sx={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: Theme.spacing.lg }}>
-        <Text sx={{ color: Theme.colors.sanctuarySaffron, fontSize: 32 }}>⏳</Text>
-        <Text sx={{ color: Theme.colors.starlightGray, textAlign: 'center' }}>
-          Importing students...
-        </Text>
-      </VStack>
-    );
-  }
+	if (phase === "importing") {
+		return (
+			<VStack className="flex-1 items-center justify-center gap-6 bg-phase-world">
+				<Icon as={Camera} size="xl" className="text-templeGold opacity-50" />
+				<Text className="text-phaseText-secondary text-center font-black">
+					Importing students...
+				</Text>
+			</VStack>
+		);
+	}
 
-  // Phase: review
-  const selectedCount = students.filter(s => s.selected).length;
+	// Phase: review
+	const selectedCount = students.filter((s) => s.selected).length;
 
-  return (
-    <VStack sx={{ flex: 1, gap: Theme.spacing.md }}>
-      <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-        <Heading sx={{ color: Theme.colors.sacredWhite, fontSize: Theme.typography.fontSize.lg }}>
-          Review Students ({students.length} found)
-        </Heading>
-        <TouchableOpacity onPress={() => setPhase('scan')}>
-          <Text sx={{ color: Theme.colors.sanctuarySaffron, fontSize: 13 }}>Rescan</Text>
-        </TouchableOpacity>
-      </HStack>
+	return (
+		<VStack className="flex-1 gap-4 bg-phase-world">
+			<HStack className="justify-between items-center">
+				<Heading className="text-phaseText-primary text-xl font-black">
+					Review Students
+				</Heading>
+				<Pressable
+					onPress={() => setPhase("scan")}
+					className="flex-row items-center gap-1 bg-templeGold/10 px-3 py-1.5 rounded-full"
+				>
+					<Icon as={RotateCcw} size="xs" className="text-templeGold" />
+					<Text className="text-templeGold text-xs font-black uppercase">
+						Rescan
+					</Text>
+				</Pressable>
+			</HStack>
 
-      <Text sx={{ color: Theme.colors.mistGray, fontSize: 12 }}>
-        Tap a student to toggle selection. Amber items have low OCR confidence.
-      </Text>
+			<HStack className="items-center gap-2 bg-phase-canvas/50 p-3 rounded-2xl border border-phase-canvas">
+				<Icon as={Info} size="xs" className="text-phaseText-secondary" />
+				<Text className="text-phaseText-secondary text-[10px] font-bold flex-1">
+					Tap a student to toggle selection. Amber items have low OCR
+					confidence.
+				</Text>
+			</HStack>
 
-      <VStack sx={{ gap: Theme.spacing.sm, flex: 1 }}>
-        {students.map((student, index) => (
-          <TouchableOpacity key={index} onPress={() => toggleStudent(index)}>
-            <View
-              style={{
-                backgroundColor: Theme.colors.ink,
-                borderRadius: Theme.corners.comfortable,
-                borderWidth: 1,
-                borderLeftWidth: 4,
-                borderColor: student.selected
-                  ? student.uncertain
-                    ? '#f59e0b'
-                    : Theme.colors.sageGreen
-                  : Theme.colors.mistGray,
-                borderLeftColor: student.selected
-                  ? student.uncertain
-                    ? '#f59e0b'
-                    : Theme.colors.sageGreen
-                  : Theme.colors.mistGray,
-                padding: Theme.spacing.md,
-                opacity: student.selected ? 1 : 0.5,
-              }}
-            >
-              <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                <VStack sx={{ gap: 2, flex: 1 }}>
-                  <Text sx={{ color: Theme.colors.sacredWhite, fontWeight: '600' }}>
-                    {student.name}
-                  </Text>
-                  <Text sx={{ color: Theme.colors.starlightGray, fontSize: 13 }}>
-                    Index: {student.index_number}
-                  </Text>
-                  {student.uncertain && student.selected && (
-                    <Text style={{ color: '#f59e0b', fontSize: 11 }}>
-                      ⚠ Low confidence — verify before importing
-                    </Text>
-                  )}
-                </VStack>
-                <Text
-                  style={{
-                    fontSize: 20,
-                    color: student.selected
-                      ? student.uncertain
-                        ? '#f59e0b'
-                        : Theme.colors.sageGreen
-                      : Theme.colors.mistGray,
-                  }}
-                >
-                  {student.selected ? (student.uncertain ? '?' : '✓') : '○'}
-                </Text>
-              </HStack>
-            </View>
-          </TouchableOpacity>
-        ))}
-      </VStack>
+			<VStack className="flex-1">
+				<ScrollView contentContainerStyle={{ gap: 12 }}>
+					{students.map((student, index) => (
+						<Pressable key={index} onPress={() => toggleStudent(index)}>
+							<Box
+								className={`p-4 rounded-generous border bg-phase-surface shadow-sm ${!student.selected ? "opacity-50 grayscale" : ""} ${student.selected ? (student.uncertain ? "border-l-4 border-l-amberGlow" : "border-l-4 border-l-sageGreen") : "border-phase-canvas"}`}
+							>
+								<HStack className="justify-between items-center">
+									<VStack className="gap-1 flex-1">
+										<Text className="text-phaseText-primary font-black text-lg">
+											{student.name}
+										</Text>
+										<Text className="text-phaseText-secondary text-sm font-medium">
+											Index: {student.index_number}
+										</Text>
+										{student.uncertain && student.selected && (
+											<HStack className="items-center gap-1 mt-1">
+												<Icon as={Info} size="xs" className="text-amberGlow" />
+												<Text className="text-amberGlow text-xs font-black">
+													Low confidence — verify
+												</Text>
+											</HStack>
+										)}
+									</VStack>
+									<Box
+										className={`w-8 h-8 rounded-full items-center justify-center ${student.selected ? (student.uncertain ? "bg-amberGlow" : "bg-sageGreen") : "bg-phase-canvas"}`}
+									>
+										<Icon
+											as={
+												student.selected
+													? student.uncertain
+														? Info
+														: Check
+													: X
+											}
+											size="xs"
+											className="text-white"
+										/>
+									</Box>
+								</HStack>
+							</Box>
+						</Pressable>
+					))}
+				</ScrollView>
+			</VStack>
 
-      <HStack sx={{ gap: Theme.spacing.md, paddingTop: Theme.spacing.sm }}>
-        <TouchableOpacity
-          onPress={onCancel}
-          style={{
-            flex: 1,
-            borderWidth: 1,
-            borderColor: Theme.colors.mistGray,
-            borderRadius: Theme.corners.comfortable,
-            paddingVertical: 14,
-            alignItems: 'center',
-          }}
-        >
-          <Text sx={{ color: Theme.colors.sacredWhite }}>Cancel</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={handleConfirm}
-          style={{
-            flex: 2,
-            backgroundColor:
-              selectedCount > 0 ? Theme.colors.sanctuarySaffron : Theme.colors.mistGray,
-            borderRadius: Theme.corners.comfortable,
-            paddingVertical: 14,
-            alignItems: 'center',
-          }}
-        >
-          <Text style={{ color: Theme.colors.ink, fontWeight: '700' }}>
-            Import {selectedCount} Student{selectedCount !== 1 ? 's' : ''}
-          </Text>
-        </TouchableOpacity>
-      </HStack>
-    </VStack>
-  );
+			<HStack className="gap-4 pt-2">
+				<Pressable
+					onPress={onCancel}
+					className="flex-1 h-16 rounded-full border border-phase-canvas items-center justify-center bg-phase-surface"
+				>
+					<Text className="text-phaseText-primary font-black">Cancel</Text>
+				</Pressable>
+				<Pressable
+					onPress={handleConfirm}
+					disabled={selectedCount === 0}
+					className={`flex-[2] h-16 rounded-full items-center justify-center shadow-lg ${selectedCount > 0 ? "bg-templeGold shadow-templeGold/20 active:opacity-90" : "bg-phase-canvas opacity-50"}`}
+				>
+					<Text className="text-black font-black uppercase tracking-wider">
+						Import {selectedCount} Member{selectedCount !== 1 ? "s" : ""}
+					</Text>
+				</Pressable>
+			</HStack>
+		</VStack>
+	);
 }

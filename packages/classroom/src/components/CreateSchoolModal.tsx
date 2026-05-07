@@ -1,226 +1,489 @@
-﻿import React, { useState } from 'react';
+import { useNavigation } from "@react-navigation/native";
+import { api, communityAPI, identityAPI } from "@repo/core/api";
+
+import { CheckCircle, MessageSquare, School } from "@repo/ui/icons";
 import {
-    Modal,
-    ModalBackdrop,
-    ModalContent,
-    ModalHeader,
-    ModalBody,
-    ModalFooter,
-    Heading,
-    VStack,
-    HStack,
-    Box,
-    Text,
-    Input,
-    InputField,
-    Button,
-    ButtonText,
-    FormControl,
-    FormControlLabel,
-    FormControlLabelText,
-    Spinner,
-    Select,
-    SelectTrigger,
-    SelectInput,
-    SelectIcon,
-    SelectPortal,
-    SelectBackdrop,
-    SelectContent,
-    SelectDragIndicatorWrapper,
-    SelectDragIndicator,
-    SelectItem,
-} from '@repo/ui';
-import { ChevronDown } from 'lucide-react-native';
-import { Theme } from '@repo/ui';
-import { api, supabase } from '@repo/core';
-import { useTranslation } from 'react-i18next';
-import { hapticLight, hapticSuccess } from '@repo/ui';
-import { useThemedColors } from '@repo/ui';
+	Box,
+	Button,
+	ButtonText,
+	FormControl,
+	FormControlLabel,
+	FormControlLabelText,
+	Heading,
+	HStack,
+	Icon,
+	Input,
+	InputField,
+	Modal,
+	ModalBackdrop,
+	ModalBody,
+	ModalContent,
+	ModalFooter,
+	ModalHeader,
+	Pressable,
+	Spinner,
+	Text,
+	VStack,
+} from "@repo/ui/primitives";
+import { Theme } from "@repo/ui/theme";
+import { hapticLight, hapticSuccess } from "@repo/ui/utils/haptics";
+
+import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 interface CreateSchoolModalProps {
-    isOpen: boolean;
-    onClose: () => void;
-    onSuccess: (newSchool: any) => void;
+	isOpen: boolean;
+	onClose: () => void;
+	onSuccess: (school: any) => void;
+	initialData?: {
+		id: string;
+		name: string;
+		handle?: string;
+		type: "primary" | "secondary" | "mixed";
+	};
 }
 
 export default function CreateSchoolModal({
-    isOpen,
-    onClose,
-    onSuccess,
+	isOpen,
+	onClose,
+	onSuccess,
+	initialData,
 }: CreateSchoolModalProps) {
-    const { t } = useTranslation();
-    const [name, setName] = useState('');
-    const [type, setType] = useState<'primary' | 'secondary' | 'mixed'>('mixed');
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const colors = useThemedColors();
+	const { t } = useTranslation();
+	const navigation = useNavigation<any>();
+	const [step, setStep] = useState<"details" | "type" | "success">("details");
+	const [name, setName] = useState(initialData?.name ?? "");
+	const [handle, setHandle] = useState(initialData?.handle ?? "");
+	const [type, setType] = useState<"primary" | "secondary" | "mixed">(
+		initialData?.type ?? "mixed",
+	);
+	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [error, setError] = useState<string | null>(null);
+	const [createdIds, setCreatedIds] = useState<{
+		schoolId: string;
+		groupId?: string;
+	} | null>(null);
 
-    const handleSubmit = async () => {
-        if (!name.trim()) {
-            setError(t('school.errorNameRequired') || 'School name is required');
-            return;
-        }
+	const isEdit = !!initialData;
 
-        setIsSubmitting(true);
-        setError(null);
-        hapticLight();
+	React.useEffect(() => {
+		if (isOpen) {
+			setName(initialData?.name ?? "");
+			setHandle(initialData?.handle ?? "");
+			setType(initialData?.type ?? "mixed");
+			setStep("details");
+		}
+	}, [isOpen, initialData]);
 
-        try {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) throw new Error('Not authenticated');
+	const handleSubmit = async () => {
+		if (!name.trim()) {
+			setError(t("school.errorNameRequired") || "School name is required");
+			return;
+		}
 
-            // Call real API
-            const newSchool = await api.school.create({
-                name: name.trim(),
-                type,
-                created_by: user.id
-            });
+		setIsSubmitting(true);
+		setError(null);
+		hapticLight();
 
-            hapticSuccess();
-            onSuccess(newSchool);
-            handleClose();
-        } catch (err: any) {
-            console.error('Failed to create school:', err);
-            setError(err.message || 'Failed to create school');
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
+		try {
+			const userId = await identityAPI.getMyInternalId();
+			if (!userId) throw new Error("Not authenticated");
 
-    const handleClose = () => {
-        setName('');
-        setType('mixed');
-        setError(null);
-        onClose();
-    };
+			let updatedSchool;
+			if (isEdit && initialData) {
+				updatedSchool = await api["school"].update(initialData.id, {
+					name: name.trim(),
+					handle: handle.trim(),
+					type,
+				});
+				hapticSuccess();
+				onSuccess(updatedSchool);
+				handleClose();
+				return;
+			} else {
+				// 1. Create real School
+				updatedSchool = await api["school"].create({
+					name: name.trim(),
+					handle:
+						handle.trim() || name.trim().toLowerCase().replace(/\s+/g, "-"),
+					type,
+					created_by: userId,
+				});
 
-    return (
-        <Modal isOpen={isOpen} onClose={handleClose}>
-            <ModalBackdrop />
-            <ModalContent
-                sx={{
-                    backgroundColor: colors.secondary,
-                    maxWidth: 400,
-                    borderColor: colors.border,
-                    borderWidth: 1,
-                }}
-            >
-                <ModalHeader>
-                    <Heading color={colors.text} size="lg">
-                        {t('school.createTitle') || 'Initialize Sanctuary'}
-                    </Heading>
-                </ModalHeader>
+				let communityGroupId: string | undefined;
 
-                <ModalBody>
-                    <VStack sx={{ gap: Theme.spacing.xl }}>
-                        {error && (
-                            <Box
-                                sx={{
-                                    padding: Theme.spacing.md,
-                                    backgroundColor: Theme.colors.emberRed + '30',
-                                    borderRadius: Theme.corners.comfortable,
-                                    borderWidth: 1,
-                                    borderColor: Theme.colors.emberRed,
-                                }}
-                            >
-                                <Text color={Theme.colors.emberRed} sx={{ fontSize: 14 }}>
-                                    {error}
-                                </Text>
-                            </Box>
-                        )}
+				// 2. Create default Community Group
+				try {
+					const group = await communityAPI.createGroupWithOwner(
+						{
+							name: `${name.trim()} HQ`,
+							description: `Official community portal for ${name.trim()}`,
+							type: "general",
+							join_policy: "open",
+							school_id: updatedSchool.id,
+						},
+						userId,
+					);
+					communityGroupId = group.id;
+				} catch (groupErr) {
+					console.warn("Failed to create default group:", groupErr);
+				}
 
-                        <FormControl isRequired isInvalid={!!error}>
-                            <FormControlLabel>
-                                <FormControlLabelText color={colors.textSecondary}>
-                                    {t('school.labelName') || 'Sanctuary Name'}
-                                </FormControlLabelText>
-                            </FormControlLabel>
-                            <Input
-                                sx={{
-                                    height: 44, // Equivalent to size="md"
-                                    backgroundColor: colors.tertiary,
-                                    borderColor: colors.border,
-                                    borderWidth: 1,
-                                    borderRadius: Theme.corners.comfortable
-                                }}
-                            >
-                                <InputField
-                                    placeholder={t('school.placeholderName') || "e.g., Green Valley Sanctuary"}
-                                    value={name}
-                                    onChangeText={(text: string) => {
-                                        setName(text);
-                                        if (error) setError(null);
-                                    }}
-                                    color={colors.text}
-                                    placeholderTextColor={colors.textTertiary}
-                                />
-                            </Input>
-                        </FormControl>
+				hapticSuccess();
+				setCreatedIds({
+					schoolId: updatedSchool.id,
+					groupId: communityGroupId,
+				});
+				setStep("success");
+				onSuccess(updatedSchool);
+			}
+		} catch (err: any) {
+			console.error("Failed to save school:", err);
+			setError(err.message || "Failed to save school");
+		} finally {
+			setIsSubmitting(false);
+		}
+	};
 
-                        <FormControl>
-                            <FormControlLabel>
-                                <FormControlLabelText color={colors.textSecondary}>
-                                    {t('school.labelType') || 'Sanctuary Type'}
-                                </FormControlLabelText>
-                            </FormControlLabel>
-                            <HStack sx={{ gap: Theme.spacing.md }}>
-                                {(['primary', 'secondary', 'mixed'] as const).map((tType) => (
-                                    <Button
-                                        key={tType}
-                                        variant={type === tType ? 'solid' : 'outline'}
-                                        onPress={() => setType(tType)}
-                                        sx={{
-                                            flex: 1,
-                                            backgroundColor: type === tType ? Theme.colors.sanctuarySaffron : 'transparent',
-                                            borderColor: type === tType ? Theme.colors.sanctuarySaffron : colors.border,
-                                        }}
-                                    >
-                                        <ButtonText
-                                            size="xs"
-                                            color={type === tType ? Theme.colors.sacredWhite : colors.textSecondary}
-                                        >
-                                            {t(`school.type_${tType}`) || tType.charAt(0).toUpperCase() + tType.slice(1)}
-                                        </ButtonText>
-                                    </Button>
-                                ))}
-                            </HStack>
-                        </FormControl>
-                    </VStack>
-                </ModalBody>
+	const handleClose = () => {
+		setName("");
+		setHandle("");
+		setType("mixed");
+		setError(null);
+		setStep("details");
+		onClose();
+	};
 
-                <ModalFooter>
-                    <HStack sx={{ width: '100%', gap: Theme.spacing.md }}>
-                        <Button
-                            variant="outline"
-                            action="secondary"
-                            onPress={handleClose}
-                            sx={{ flex: 1, borderColor: colors.border }}
-                            isDisabled={isSubmitting}
-                        >
-                            <ButtonText color={colors.textSecondary}>
-                                {t('common.cancel') || 'Cancel'}
-                            </ButtonText>
-                        </Button>
-                        <Button
-                            action="primary"
-                            onPress={handleSubmit}
-                            sx={{
-                                flex: 1,
-                                backgroundColor: Theme.colors.sanctuarySaffron,
-                            }}
-                            isDisabled={isSubmitting || !name.trim()}
-                        >
-                            {isSubmitting ? (
-                                <Spinner color={Theme.colors.sacredWhite} size="small" />
-                            ) : (
-                                <ButtonText color={Theme.colors.sacredWhite}>
-                                    {t('common.initialize') || 'Initialize'}
-                                </ButtonText>
-                            )}
-                        </Button>
-                    </HStack>
-                </ModalFooter>
-            </ModalContent>
-        </Modal>
-    );
+	const navigateToCommunity = () => {
+		if (createdIds?.groupId) {
+			navigation.navigate("CommunityStack", {
+				screen: "GroupDetails",
+				params: { groupId: createdIds.groupId },
+			});
+			handleClose();
+		}
+	};
+
+	return (
+		<Modal isOpen={isOpen} onClose={handleClose}>
+			<ModalBackdrop />
+			<ModalContent className="bg-sanctuary-surface max-w-[400px] border-sanctuary-border border rounded-generous">
+				{step === "details" && (
+					<>
+						<ModalHeader>
+							<VStack className="gap-1">
+								<Heading className="text-sanctuary-text" size="lg">
+									{isEdit
+										? "Refine Sanctuary Identity"
+										: t("school.createTitle") || "Sanctuary Identity"}
+								</Heading>
+								<Text size="xs" className="text-sanctuary-text-secondary">
+									{isEdit
+										? "Update the details of your institution"
+										: "Step 1 of 2: Name your institution"}
+								</Text>
+							</VStack>
+						</ModalHeader>
+
+						<ModalBody>
+							<VStack className="gap-xl py-md">
+								{error && (
+									<Box className="p-md bg-emberRed/20 rounded-comfortable border border-emberRed">
+										<Text className="text-emberRed text-sm">{error}</Text>
+									</Box>
+								)}
+
+								<FormControl isRequired isInvalid={!!error}>
+									<FormControlLabel>
+										<FormControlLabelText className="text-sanctuary-text-secondary">
+											{t("school.labelName") ||
+												"What shall we call your Sanctuary?"}
+										</FormControlLabelText>
+									</FormControlLabel>
+									<Input className="h-14 bg-sanctuary-surface-elevated border-sanctuary-border border rounded-generous">
+										<InputField
+											placeholder={
+												t("school.placeholderName") ||
+												"e.g., Green Valley Sanctuary"
+											}
+											value={name}
+											onChangeText={(text: string) => {
+												setName(text);
+												if (!isEdit) {
+													setHandle(
+														text
+															.toLowerCase()
+															.replace(/\s+/g, "-")
+															.replace(/[^a-z0-9_-]/g, ""),
+													);
+												}
+												if (error) setError(null);
+											}}
+											className="text-sanctuary-text text-lg font-semibold"
+											placeholderTextColor={Theme.colors.mistGray}
+										/>
+									</Input>
+								</FormControl>
+
+								<FormControl isRequired isInvalid={!!error}>
+									<FormControlLabel>
+										<FormControlLabelText className="text-sanctuary-text-secondary">
+											URL Handle (unique ID)
+										</FormControlLabelText>
+									</FormControlLabel>
+									<Input className="h-14 bg-sanctuary-surface-elevated border-sanctuary-border border rounded-generous">
+										<InputField
+											placeholder="e.g., green-valley"
+											value={handle}
+											onChangeText={(text: string) => {
+												setHandle(
+													text
+														.toLowerCase()
+														.replace(/\s+/g, "-")
+														.replace(/[^a-z0-9_-]/g, ""),
+												);
+												if (error) setError(null);
+											}}
+											className="text-sanctuary-text text-base font-medium"
+											placeholderTextColor={Theme.colors.mistGray}
+										/>
+									</Input>
+									<Text size="xs" className="text-sanctuary-text-tertiary mt-1">
+										Used in your Sanctuary's QR codes and links.
+									</Text>
+								</FormControl>
+							</VStack>
+						</ModalBody>
+
+						<ModalFooter>
+							<HStack className="w-full gap-md">
+								<Button
+									variant="outline"
+									action="secondary"
+									onPress={handleClose}
+									className="flex-1 border-phase-border"
+									isDisabled={isSubmitting}
+								>
+									<ButtonText className="text-sanctuary-text-secondary font-English">
+										{t("common.cancel") || "Cancel"}
+									</ButtonText>
+								</Button>
+								<Button
+									action="primary"
+									onPress={() => setStep("type")}
+									className="flex-[2] bg-sanctuarySaffron"
+									isDisabled={!name.trim() || !handle.trim()}
+								>
+									<ButtonText className="text-sacredWhite font-English">
+										{isEdit ? "Continue to Focus" : "Next — Academic Focus"}
+									</ButtonText>
+								</Button>
+							</HStack>
+						</ModalFooter>
+					</>
+				)}
+
+				{step === "type" && (
+					<>
+						<ModalHeader>
+							<VStack className="gap-1">
+								<Heading className="text-sanctuary-text" size="lg">
+									Academic Focus
+								</Heading>
+								<Text size="xs" className="text-sanctuary-text-secondary">
+									{isEdit
+										? "Update your scope"
+										: "Step 2 of 2: Define your scope"}
+								</Text>
+							</VStack>
+						</ModalHeader>
+
+						<ModalBody>
+							<VStack className="gap-lg py-md">
+								<Text className="text-sanctuary-text-secondary text-sm">
+									What is the core mission of{" "}
+									<Text className="font-bold text-sanctuary-text">{name}</Text>?
+								</Text>
+
+								{(
+									[
+										{
+											id: "primary",
+											label: "Primary Excellence",
+											emoji: "🏫",
+											desc: "Foundational years (Grades 1-5). Focus on literacy and logic.",
+										},
+										{
+											id: "secondary",
+											label: "Higher Foundations",
+											emoji: "🎓",
+											desc: "Advanced development (Grades 6-13). Specialized disciplines.",
+										},
+										{
+											id: "mixed",
+											label: "All-Grade Sanctuary",
+											emoji: "🌿",
+											desc: "Holistic journey across all levels. Complete integration.",
+										},
+									] as const
+								).map((tType) => {
+									const isSelected = type === tType.id;
+									return (
+										<Pressable
+											onPress={() => {
+												hapticLight();
+												setType(tType.id);
+											}}
+										>
+											<Box
+												className={`p-md rounded-generous border-2 ${
+													isSelected
+														? "border-sanctuarySaffron bg-sanctuarySaffron/5"
+														: "border-sanctuary-border bg-sanctuary-surface-elevated"
+												}`}
+											>
+												<HStack className="gap-md items-center">
+													<Text className="text-[32px]">{tType.emoji}</Text>
+													<VStack className="flex-1">
+														<Text className="font-extrabold text-sanctuary-text">
+															{tType.label}
+														</Text>
+														<Text
+															size="xs"
+															className="text-sanctuary-text-secondary"
+														>
+															{tType.desc}
+														</Text>
+													</VStack>
+													{isSelected && (
+														<Icon
+															as={CheckCircle}
+															className="text-sanctuarySaffron"
+															size="sm"
+														/>
+													)}
+												</HStack>
+											</Box>
+										</Pressable>
+									);
+								})}
+							</VStack>
+						</ModalBody>
+
+						<ModalFooter>
+							<HStack className="w-full gap-md">
+								<Button
+									variant="outline"
+									action="secondary"
+									onPress={() => setStep("details")}
+									className="flex-1 border-sanctuary-border"
+									isDisabled={isSubmitting}
+								>
+									<ButtonText className="text-sanctuary-text-secondary font-English">
+										Back
+									</ButtonText>
+								</Button>
+								<Button
+									action="primary"
+									onPress={handleSubmit}
+									className="flex-[2] bg-sanctuarySaffron"
+									isDisabled={isSubmitting}
+								>
+									{isSubmitting ? (
+										<Spinner size="small" className="text-sacredWhite" />
+									) : (
+										<ButtonText className="text-sacredWhite font-English">
+											{isEdit ? "Save Changes" : "Establish Sanctuary"}
+										</ButtonText>
+									)}
+								</Button>
+							</HStack>
+						</ModalFooter>
+					</>
+				)}
+
+				{step === "success" && (
+					<>
+						<ModalHeader>
+							<VStack className="items-center w-full gap-sm">
+								<Icon
+									as={CheckCircle}
+									className="text-sanctuarySaffron"
+									size="xl"
+								/>
+								<Heading className="text-sanctuary-text text-center" size="lg">
+									Sanctuary Established!
+								</Heading>
+							</VStack>
+						</ModalHeader>
+
+						<ModalBody>
+							<VStack className="gap-lg items-center">
+								<Text className="text-center text-sanctuary-text-secondary">
+									Congratulations!{" "}
+									<Text className="font-bold text-sanctuary-text">{name}</Text>{" "}
+									is now live.
+								</Text>
+
+								<Box className="bg-sanctuary-surface-elevated p-md rounded-comfortable w-full">
+									<VStack className="gap-sm">
+										<HStack className="gap-sm items-center">
+											<Icon
+												as={School}
+												className="text-sanctuarySaffron"
+												size="sm"
+											/>
+											<Text className="text-sm text-sanctuary-text">
+												School Dashboard Ready
+											</Text>
+										</HStack>
+										<HStack className="gap-sm items-center">
+											<Icon
+												as={MessageSquare}
+												className="text-sanctuarySaffron"
+												size="sm"
+											/>
+											<Text className="text-sm text-sanctuary-text">
+												Community HQ Created
+											</Text>
+										</HStack>
+									</VStack>
+								</Box>
+
+								<Text className="text-[13px] text-sanctuary-text-tertiary text-center">
+									You've been assigned as the Principal. You can now invite
+									staff and start building your curriculum.
+								</Text>
+							</VStack>
+						</ModalBody>
+
+						<ModalFooter>
+							<VStack className="w-full gap-md">
+								<Button
+									action="primary"
+									onPress={handleClose}
+									className="w-full bg-sanctuarySaffron"
+								>
+									<ButtonText className="text-sacredWhite font-English">
+										Enter School Dashboard
+									</ButtonText>
+								</Button>
+								{createdIds?.groupId && (
+									<Button
+										variant="outline"
+										onPress={navigateToCommunity}
+										className="w-full border-sanctuary-border"
+									>
+										<ButtonText className="text-sanctuary-text-secondary font-English">
+											Visit Community HQ
+										</ButtonText>
+									</Button>
+								)}
+							</VStack>
+						</ModalFooter>
+					</>
+				)}
+			</ModalContent>
+		</Modal>
+	);
 }

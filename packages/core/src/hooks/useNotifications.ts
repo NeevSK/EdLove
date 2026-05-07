@@ -1,13 +1,12 @@
 /**
- * useNotifications — Real notification data for NotificationDrawer.
+ * useNotifications  Real notification data for NotificationDrawer.
  *
- * Fetches the 20 most recent notifications for the current user.
- * Provides `markAsRead` and `markAllRead` helpers.
- * Gracefully degrades on DB error (returns empty array).
+ * This hook is now a facade for the centralized NotificationStore.
+ * It manages the connection lifecycle automatically based on the userId.
  */
 
-import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '../lib/supabase';
+import { useEffect, useMemo } from 'react';
+import { useNotificationStore } from '../store/useNotificationStore';
 
 export interface AppNotification {
   id: string;
@@ -24,109 +23,50 @@ export interface UseNotificationsResult {
   notifications: AppNotification[];
   unreadCount: number;
   isLoading: boolean;
+  isRealtimeConnected: boolean;
+  error: string | null;
   markAsRead: (id: string) => Promise<void>;
   markAllRead: () => Promise<void>;
   refresh: () => void;
 }
 
 export function useNotifications(userId: string | null | undefined): UseNotificationsResult {
-  const [notifications, setNotifications] = useState<AppNotification[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-
-  const load = useCallback(async () => {
-    if (!userId) return;
-    setIsLoading(true);
-    try {
-      const { data, error } = await supabase
-        .from('notifications')
-        .select('id, type, title, body, is_read, reference_id, reference_type, created_at')
-        .eq('user_id', userId)
-        .order('created_at', { ascending: false })
-        .limit(20);
-
-      if (!error && data) {
-        setNotifications(data as AppNotification[]);
-      }
-    } catch {
-      // Silently degrade — drawer shows empty state rather than crashing
-    } finally {
-      setIsLoading(false);
-    }
-  }, [userId]);
+  const {
+    notifications,
+    unreadCount,
+    isLoading,
+    isRealtimeConnected,
+    error,
+    markAsRead,
+    markAllRead,
+    loadNotifications,
+    setUserId,
+  } = useNotificationStore();
 
   useEffect(() => {
-    load();
-  }, [load]);
+    setUserId(userId || null);
+  }, [userId, setUserId]);
 
-  // Real-time subscription — new notifications arrive instantly without polling
-  useEffect(() => {
-    if (!userId) return;
-
-    const channel = supabase
-      .channel(`notifications:${userId}`)
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'notifications',
-          filter: `user_id=eq.${userId}`,
-        },
-        (payload) => {
-          // Prepend new notification immediately
-          const incoming = payload.new as AppNotification;
-          setNotifications((prev) => [incoming, ...prev].slice(0, 20));
-        }
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'notifications',
-          filter: `user_id=eq.${userId}`,
-        },
-        (payload) => {
-          // Reflect is_read changes in real-time
-          const updated = payload.new as AppNotification;
-          setNotifications((prev) =>
-            prev.map((n) => (n.id === updated.id ? { ...n, is_read: updated.is_read } : n))
-          );
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [userId]);
-
-  const markAsRead = useCallback(
-    async (id: string) => {
-      if (!userId) return;
-      await supabase
-        .from('notifications')
-        .update({ is_read: true })
-        .eq('id', id)
-        .eq('user_id', userId);
-      setNotifications((prev) =>
-        prev.map((n) => (n.id === id ? { ...n, is_read: true } : n)),
-      );
-    },
-    [userId],
+  return useMemo(
+    () => ({
+      notifications,
+      unreadCount,
+      isLoading,
+      isRealtimeConnected,
+      error,
+      markAsRead,
+      markAllRead,
+      refresh: loadNotifications,
+    }),
+    [
+      notifications,
+      unreadCount,
+      isLoading,
+      isRealtimeConnected,
+      error,
+      markAsRead,
+      markAllRead,
+      loadNotifications,
+    ],
   );
-
-  const markAllRead = useCallback(async () => {
-    if (!userId) return;
-    await supabase
-      .from('notifications')
-      .update({ is_read: true })
-      .eq('user_id', userId)
-      .eq('is_read', false);
-    setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })));
-  }, [userId]);
-
-  const unreadCount = notifications.filter((n) => !n.is_read).length;
-
-  return { notifications, unreadCount, isLoading, markAsRead, markAllRead, refresh: load };
 }

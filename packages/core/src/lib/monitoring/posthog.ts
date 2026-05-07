@@ -1,63 +1,72 @@
-import { PostHog } from 'posthog-react-native';
+/**
+ * PostHog Abstract Interface
+ *
+ * This file defines the generic interface for analytics.
+ * Shells (Mobile, Web, Server) must inject their platform-specific
+ * implementation into this singleton using injectPostHog().
+ *
+ * CORE PURITY: No platform-specific imports (React Native/Browser/Node) here.
+ */
 
-let posthogInstance: PostHog | null = null;
+export interface IPostHog {
+  identify(userId: string, properties?: Record<string, any>): void;
+  capture(event: string, properties?: Record<string, any>): void;
+  screen?(screenName: string, properties?: Record<string, any>): void;
+  reset(): void;
+  flush?(): Promise<void>;
+}
+
+let _posthog: IPostHog | null = null;
 
 /**
- * Initializes PostHog for product analytics.
+ * Injection point for platform-specific PostHog instance.
+ * Call this in the App Entry/Shell.
  */
+export const injectPostHog = (instance: IPostHog) => {
+  _posthog = instance;
+};
+
+export const isPostHogInitialized = () => _posthog !== null;
+
 export const initPostHog = async () => {
-    if (posthogInstance) return posthogInstance;
-
-    const apiKey = process.env.EXPO_PUBLIC_POSTHOG_API_KEY;
-    if (!apiKey) {
-        console.warn('[PostHog] API Key missing');
-        return null;
-    }
-
-    try {
-        const host = process.env.EXPO_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com';
-        if (__DEV__) {
-            console.log(`[PostHog] Initializing with key: ${apiKey.substring(0, 8)}... on host: ${host}`);
-        }
-        posthogInstance = new PostHog(apiKey, { host });
-        return posthogInstance;
-    } catch (error) {
-        console.error('[PostHog] Initialization failed:', error);
-        return null;
-    }
+  // Legacy function signature to maintain compatibility with existing hook calls.
+  // Initialization should actually be handled by the shell.
+  if (!_posthog && typeof __DEV__ !== 'undefined' && __DEV__) {
+    console.warn(
+      '[PostHog] initPostHog called but no instance injected. Ensure injectPostHog() is called in shell.',
+    );
+  }
 };
 
-/**
- * Tracks a custom event.
- */
-export const trackEvent = (eventName: string, properties?: any) => {
-    if (__DEV__) {
-        console.log(`[PostHog Track] ${eventName}`, properties);
-    }
-
-    if (posthogInstance) {
-        posthogInstance.capture(eventName, properties);
-    }
+export const trackEvent = (event: string, properties?: any) => {
+  if (_posthog) {
+    _posthog.capture(event, properties);
+  } else if (typeof __DEV__ !== 'undefined' && __DEV__) {
+    console.log('[PostHog Bridge] Event tracked (noop):', event, properties);
+  }
 };
 
-/**
- * Identifies the current user.
- */
 export const identifyUser = (userId: string, properties?: any) => {
-    if (__DEV__) {
-        console.log(`[PostHog Identify] ${userId}`, properties);
-    }
-
-    if (posthogInstance) {
-        posthogInstance.identify(userId, properties);
-    }
+  if (_posthog) {
+    _posthog.identify(userId, properties);
+  } else if (typeof __DEV__ !== 'undefined' && __DEV__) {
+    console.log('[PostHog Bridge] User identified (noop):', userId, properties);
+  }
 };
 
-/**
- * Resets the current user session.
- */
 export const resetUser = () => {
-    if (posthogInstance) {
-        posthogInstance.reset();
-    }
+  if (_posthog) {
+    _posthog.reset();
+  }
+};
+
+export const trackScreen = (screenName: string, properties?: any) => {
+  if (_posthog?.screen) {
+    _posthog.screen(screenName, properties);
+  } else if (_posthog) {
+    _posthog.capture('$screen_view', {
+      screen_name: screenName,
+      ...properties,
+    });
+  }
 };

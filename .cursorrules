@@ -22,3 +22,10 @@ Before performing any task, you **MUST** read the following files:
 ## Aesthetic Standards
 - Follow the **Glass Protocol** (translucency, blur) and **Breath-like Motion** defined in `TAIL_FIN.md`.
 - No hex codes. Use theme tokens from `@repo/ui`.
+
+## Command Line Discipline (STRICT)
+- **PNPM ONLY**: You are FORBIDDEN from using `npm` or `npx`.
+- Use `pnpm` for all logic/dependency changes.
+- Use `pnpm exec` instead of `npx`.
+- Use `pnpm dlx` for one-off tool executions.
+- Reason: Common package managers corrupt the workspace symlink topology.

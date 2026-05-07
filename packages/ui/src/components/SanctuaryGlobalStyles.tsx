@@ -7,28 +7,31 @@ import { hexToRgba } from '../utils/colorUtils';
  * SanctuaryGlobalStyles (Web-only)
  *
  * Injects global CSS for the web platform.  Consumes the full adaptive
- * token set from useTheme() — including WCAG-computed textOnAccent /
- * textOnReward — so that text colors automatically adapt whenever the
- * temporal phase changes the active accent (Saffron → Sage → Blue → Gold).
+ * token set from useTheme() \u2014 including WCAG-computed textOnAccent /
+ * textOnReward \u2014 so that text colors automatically adapt whenever the
+ * temporal phase changes the active accent (Saffron \u2192 Sage \u2192 Blue \u2192 Gold).
  */
 const STATIC_CSS = `
-    /* ── RESET ── */
+    /* \u2500\u2500 RESET \u2500\u2500 */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; outline: none !important; }
-    body { 
+    body {
       font-family: var(--font-body); 
       color: var(--ink); 
-      /* overflow: clip (not hidden) — doesn't create a scroll container,
+      /* overflow: clip (not hidden) \u2014 doesn't create a scroll container,
          so browser scroll restoration and URL-hash navigation work correctly.
          All actual scrolling is handled by .sanctuary-screen (overflow-y: auto). */
       overflow: clip; 
       overscroll-behavior-y: none;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
-      background-color: var(--color-background);
+      background:
+        radial-gradient(circle at 18% 18%, var(--action-soft), transparent 32%),
+        radial-gradient(circle at 82% 12%, var(--reward-soft), transparent 28%),
+        var(--world-bg);
     }
-    button { background: none; border: none; cursor: pointer; font-family: inherit; }
+    button { background: none; border: none; cursor: pointer; font-family: inherit; transition: var(--transition-snap); }
 
-    /* ── APP SHELL (Flexbox Architecture) ── */
+    /* \u2500\u2500 APP SHELL (Flexbox Architecture) \u2500\u2500 */
     .vellum-app-shell {
       display: flex;
       flex-direction: column;
@@ -46,7 +49,7 @@ const STATIC_CSS = `
       position: relative;
     }
 
-    /* ── WORLD BACKGROUND (VELLUM) ── */
+    /* \u2500\u2500 WORLD BACKGROUND (VELLUM) \u2500\u2500 */
     .world-bg {
       position: fixed;
       inset: 0;
@@ -54,19 +57,19 @@ const STATIC_CSS = `
       background: var(--world-bg);
     }
     
-    /* Vellum Grain / Noise Overlay for World */
+    /* World Ambient Glow (No Grain) */
     .world-bg::after {
       content: '';
       position: absolute;
       inset: 0;
       background: radial-gradient(circle at 70% 30%, var(--water-soft), transparent 60%),
                   radial-gradient(circle at 20% 80%, var(--lotus-soft), transparent 50%);
-      opacity: 0.3;
-      filter: blur(60px);
+      opacity: 0.2;
+      filter: blur(80px);
       z-index: 1;
     }
 
-    /* ── TOP BAR ── */
+    /* \u2500\u2500 TOP BAR \u2500\u2500 */
     .top-bar {
       height: var(--top-bar-h);
       display: flex;
@@ -77,10 +80,10 @@ const STATIC_CSS = `
       z-index: 1100;
 
       background: var(--topbar-bg);
-      backdrop-filter: blur(28px) saturate(1.8);
-      -webkit-backdrop-filter: blur(28px) saturate(1.8);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03);
+      backdrop-filter: blur(40px) saturate(1.35);
+      -webkit-backdrop-filter: blur(40px) saturate(1.35);
+      border-bottom: 1px solid var(--scene-chrome-border);
+      box-shadow: 0 10px 32px rgba(107,100,128,0.08);
     }
 
     .top-bar-left {
@@ -100,7 +103,7 @@ const STATIC_CSS = `
       font-style: italic;
     }
 
-    /* ── SIDEBAR ── */
+    /* \u2500\u2500 SIDEBAR \u2500\u2500 */
     .sidebar {
       width: var(--sidebar-w);
       display: flex;
@@ -112,24 +115,25 @@ const STATIC_CSS = `
       overflow: hidden;
 
       background: var(--sidebar-bg);
-      /* Reduced blur (16px) vs topbar (28px) — avoids stacking two heavy
+      /* Reduced blur (16px) vs topbar (28px) \u2014 avoids stacking two heavy
          backdrop-filter compositing layers on mid-range Android devices. */
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border-right: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(36px) saturate(1.2);
+      -webkit-backdrop-filter: blur(36px) saturate(1.2);
+      border-right: 1px solid var(--scene-chrome-border);
     }
-    .sidebar.collapsed { width: 60px; }
-    .sidebar.collapsed .sidebar-item { justify-content: center; padding: 12px 0; gap: 0; }
+    .sidebar.collapsed { width: 64px; }
+    .sidebar.collapsed .sidebar-item { justify-content: center; padding: 12px 0; gap: 0; width: 100%; }
     .sidebar.collapsed .sidebar-header { justify-content: center; padding: 0; }
-    .sidebar.collapsed .sidebar-profile-btn { justify-content: center; padding: 12px 0; border-radius: 50%; width: 44px; margin: 0 auto; }
+    .sidebar.collapsed .sidebar-profile-btn { justify-content: center; padding: 0; border-radius: 50%; width: 48px; height: 48px; margin: 12px auto; }
     .sidebar.collapsed .sidebar-group-label { display: none; }
+    .sidebar.collapsed .sidebar-label { display: none; }
 
     .sidebar-header {
       height: var(--top-bar-h);
       display: flex;
       align-items: center;
       padding: 0 16px;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      border-bottom: 1px solid var(--scene-chrome-border);
     }
 
     .sidebar-toggle {
@@ -139,15 +143,15 @@ const STATIC_CSS = `
       align-items: center;
       justify-content: center;
       border-radius: 10px;
-      background: rgba(255, 255, 255, 0.2);
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: var(--scene-interactive);
+      border: 1px solid var(--scene-interactive-border);
       color: var(--ink-soft);
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: var(--transition-smooth);
     }
     .sidebar-toggle:hover {
-      background: rgba(255, 255, 255, 0.5);
-      transform: scale(1.05);
+      background: var(--scene-elevated);
+      transform: scale(1.1);
     }
 
     .sidebar-group-label {
@@ -174,19 +178,39 @@ const STATIC_CSS = `
       border-radius: 12px;
       font-size: 14px;
       color: var(--ink-ghost);
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: var(--transition-smooth);
       width: 100%;
+      position: relative;
     }
     .sidebar-item:hover {
       color: var(--ink-soft);
-      background: rgba(255, 255, 255, 0.4);
-      transform: translateX(4px);
+      background: var(--scene-interactive);
+      transform: translateX(8px);
     }
     .sidebar-item.active {
       color: var(--water);
-      background: rgba(255, 255, 255, 0.8);
-      border: 1px solid rgba(90, 154, 186, 0.2);
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      background: linear-gradient(135deg, var(--scene-elevated), var(--scene-interactive));
+      box-shadow: 0 10px 24px rgba(107,100,128,0.10);
+    }
+    .sidebar-item::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 30%;
+      height: 40%;
+      width: 3px;
+      background: var(--water);
+      border-radius: 0 4px 4px 0;
+      opacity: 0;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      transform: scaleY(0.4);
+    }
+    .sidebar-item.active::before {
+      opacity: 1;
+      transform: scaleY(1);
+    }
+    .sidebar.collapsed .sidebar-item::before {
+      left: 2px;
     }
 
     .sidebar-footer {
@@ -207,8 +231,8 @@ const STATIC_CSS = `
       gap: 12px;
       padding: 12px;
       border-radius: 16px;
-      background: rgba(255, 255, 255, 0.4);
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: var(--scene-interactive);
+      border: 1px solid var(--scene-interactive-border);
       cursor: pointer;
       width: 100%;
       text-align: left;
@@ -216,7 +240,7 @@ const STATIC_CSS = `
     }
     .sidebar-profile-btn:hover {
       transform: translateY(-2px);
-      background: rgba(255, 255, 255, 0.6);
+      background: var(--scene-elevated);
       box-shadow: var(--shadow-sm);
     }
 
@@ -239,41 +263,58 @@ const STATIC_CSS = `
       border: 1.5px solid white;
     }
 
-    /* ── CARDS (THE HEART OF THE DEPTH) ── */
+    /* \u2500\u2500 CARDS (THE HEART OF THE DEPTH) \u2500\u2500 */
     .sanctuary-card {
       position: relative;
       border-radius: 20px;
       overflow: hidden;
-      background: var(--card-bg);
-      backdrop-filter: blur(20px) saturate(1.6);
-      -webkit-backdrop-filter: blur(20px) saturate(1.6);
-      border: 1px solid rgba(255, 255, 255, 0.4);
+      background:
+        linear-gradient(165deg, rgba(var(--surface-rgb), 0.94) 0%, rgba(var(--surface-rgb), 0.84) 100%);
+      backdrop-filter: blur(36px) saturate(1.18);
+      -webkit-backdrop-filter: blur(36px) saturate(1.18);
+      border: 1px solid var(--scene-surface-border);
       box-shadow: 
-        inset 0 1px 0 rgba(255, 255, 255, 0.5),
-        0 4px 24px rgba(0, 0, 0, 0.04),
-        0 8px 32px rgba(90, 154, 186, 0.05);
-      transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        inset 0 1px 0 rgba(252,249,242,0.34),
+        inset 0 -18px 32px rgba(107,100,128,0.03),
+        0 12px 32px rgba(107,100,128,0.08),
+        0 22px 48px rgba(var(--action-rgb), 0.05);
+      transition: var(--transition-smooth);
       will-change: transform;
     }
 
     .sanctuary-card:hover {
       transform: translateY(-6px);
-      background: var(--card-bg-hover);
+      background:
+        linear-gradient(165deg, var(--card-bg-hover) 0%, var(--scene-surface) 100%);
       box-shadow: 
-        inset 0 1px 0 rgba(255, 255, 255, 0.6),
-        0 24px 48px rgba(0, 0, 0, 0.08),
-        0 12px 24px rgba(90, 154, 186, 0.1);
+        inset 0 1px 0 rgba(252,249,242,0.42),
+        0 24px 48px rgba(107,100,128,0.14),
+        0 14px 28px rgba(var(--action-rgb), 0.08);
     }
 
-    /* Texture Overlay on Cards */
+    /* Removed Texture Overlay for Sleekness */
     .sanctuary-card::after {
-      content: '';
-      position: absolute; inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-      opacity: 0.03;
-      pointer-events: none;
-      z-index: 1;
-      mix-blend-mode: overlay;
+      display: none;
+    }
+    /* Glass System - Premium Frosted Effects */
+    .sanctuary-glass-hub {
+      backdrop-filter: blur(24px) saturate(1.8);
+      -webkit-backdrop-filter: blur(24px) saturate(1.8);
+      background: rgba(var(--surface-rgb), 0.78);
+      border-bottom: 1px solid var(--scene-surface-border);
+      z-index: 100;
+    }
+
+    .sanctuary-card.active {
+      border-color: var(--action);
+      background: var(--action-soft);
+      box-shadow: 0 4px 16px var(--action-glow);
+    }
+
+    .sanctuary-sidebar-glass {
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      background: rgba(var(--surface-rgb), 0.52);
     }
 
     /* Inner Light Gloss for Card Variants */
@@ -287,7 +328,7 @@ const STATIC_CSS = `
       padding: 24px;
     }
 
-    /* ── BUTTONS ── */
+    /* \u2500\u2500 BUTTONS \u2500\u2500 */
     .premium-button {
       display: inline-flex;
       align-items: center;
@@ -301,9 +342,9 @@ const STATIC_CSS = `
       font-size: 14px;
       font-weight: 700;
       letter-spacing: 0.01em;
-      background: var(--action);
+      background: linear-gradient(135deg, var(--action) 0%, color-mix(in srgb, var(--action) 76%, var(--reward) 24%) 100%);
       color: var(--text-on-action);
-      box-shadow: 0 4px 16px var(--action-glow);
+      box-shadow: 0 10px 28px var(--action-glow);
       transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
       white-space: nowrap;
     }
@@ -326,11 +367,11 @@ const STATIC_CSS = `
       font-family: var(--font-body);
       font-size: 14px;
       font-weight: 600;
-      background: var(--btn-secondary-bg);
+      background: linear-gradient(180deg, var(--btn-secondary-bg) 0%, var(--scene-surface) 100%);
       color: var(--ink);
       border: 1px solid var(--btn-secondary-border);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(36px);
+      -webkit-backdrop-filter: blur(36px);
       transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
       white-space: nowrap;
     }
@@ -340,7 +381,7 @@ const STATIC_CSS = `
       box-shadow: var(--shadow-sm);
     }
 
-    /* ── INTERACTIVE CARD ── */
+    /* \u2500\u2500 INTERACTIVE CARD \u2500\u2500 */
     .sanctuary-card.interactive {
       cursor: pointer;
     }
@@ -348,7 +389,7 @@ const STATIC_CSS = `
       transform: translateY(-6px) scale(1.012);
     }
 
-    /* ── SIDEBAR LABEL ── */
+    /* \u2500\u2500 SIDEBAR LABEL \u2500\u2500 */
     .sidebar-label {
       font-size: 14px;
       font-weight: 500;
@@ -358,7 +399,7 @@ const STATIC_CSS = `
       text-overflow: ellipsis;
     }
 
-    /* ── PROFILE GEM ── */
+    /* \u2500\u2500 PROFILE GEM \u2500\u2500 */
     .profile-gem {
       width: 36px;
       height: 36px;
@@ -404,7 +445,7 @@ const STATIC_CSS = `
       width: 100%;
     }
 
-    /* ── GREETING & TYPOGRAPHY ── */
+    /* \u2500\u2500 GREETING & TYPOGRAPHY \u2500\u2500 */
     .greeting {
       margin-bottom: 48px;
     }
@@ -433,7 +474,7 @@ const STATIC_CSS = `
       letter-spacing: 0.01em;
     }
 
-    /* ── FILTER TABS (top-tab) ── */
+    /* \u2500\u2500 FILTER TABS (top-tab) \u2500\u2500 */
     .top-tab {
       display: inline-flex;
       align-items: center;
@@ -455,19 +496,100 @@ const STATIC_CSS = `
       color: var(--ink);
     }
     .top-tab.active {
-      background: var(--tab-active-bg);
-      border-color: var(--water);
-      color: var(--water);
+      background: linear-gradient(135deg, var(--tab-active-bg), var(--action-soft));
+      border-color: var(--action-border);
+      color: var(--action);
+      box-shadow: 0 8px 20px rgba(var(--action-rgb), 0.10);
     }
 
-    /* ──────────────────────────────────────────────────────────────────
+    .sanctuary-search-shell {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      border-radius: 16px;
+      border: 1px solid var(--scene-interactive-border);
+      background:
+        linear-gradient(180deg, var(--scene-elevated) 0%, var(--scene-interactive) 100%);
+      backdrop-filter: blur(36px) saturate(1.14);
+      -webkit-backdrop-filter: blur(36px) saturate(1.14);
+      box-shadow: inset 0 1px 0 rgba(252,249,242,0.28), 0 10px 24px rgba(107,100,128,0.05);
+    }
+    .sanctuary-search-shell input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      color: var(--ink);
+      font-family: var(--font-body);
+      font-size: 14px;
+      outline: none;
+    }
+    .sanctuary-icon-well {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 16px;
+      background: linear-gradient(180deg, var(--action-soft), rgba(var(--reward-rgb), 0.08));
+      border: 1px solid rgba(var(--action-rgb), 0.16);
+      color: var(--action);
+      box-shadow: inset 0 1px 0 rgba(252,249,242,0.2);
+    }
+    .sanctuary-icon-well.soft {
+      width: 52px;
+      height: 52px;
+      border-radius: 20px;
+    }
+    .sanctuary-hero-panel {
+      position: relative;
+      overflow: hidden;
+      border-radius: 28px;
+      background:
+        linear-gradient(180deg, rgba(var(--surface-rgb), 0.30) 0%, rgba(42,35,24,0.08) 100%);
+      border: 1px solid var(--scene-surface-border);
+      box-shadow: 0 20px 44px rgba(107,100,128,0.12);
+    }
+    .sanctuary-hero-panel::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, transparent 0%, rgba(42,35,24,0.18) 48%, rgba(42,35,24,0.78) 100%);
+      pointer-events: none;
+    }
+    .sanctuary-map-stage {
+      border-radius: 24px;
+      border: 1px solid var(--scene-surface-border);
+      background:
+        radial-gradient(circle at 20% 18%, var(--action-soft), transparent 28%),
+        radial-gradient(circle at 78% 14%, var(--reward-soft), transparent 24%),
+        linear-gradient(180deg, var(--scene-elevated) 0%, var(--scene-surface) 100%);
+      overflow: hidden;
+    }
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      background: var(--action-soft);
+      color: var(--action);
+      border: 1px solid rgba(var(--action-rgb), 0.18);
+    }
+
+    /* \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
        ADAPTIVE COLOUR UTILITY CLASSES
        These classes automatically adapt when the temporal phase changes
-       the active accent colour (Saffron → Sage → Blue → Gold etc.).
-       Text colours are WCAG-computed so contrast is always ≥ 4.5 : 1.
-    ────────────────────────────────────────────────────────────────── */
+       the active accent colour (Saffron \u2192 Sage \u2192 Blue \u2192 Gold etc.).
+       Text colours are WCAG-computed so contrast is always \u2265 4.5 : 1.
+    \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
 
-    /* Solid accent background — text colour auto-adapts */
+    /* Solid accent background \u2014 text colour auto-adapts */
     .action-bg {
       background: var(--action);
       color: var(--text-on-action);
@@ -477,7 +599,7 @@ const STATIC_CSS = `
       color: var(--action);
     }
 
-    /* Solid reward background — text colour auto-adapts */
+    /* Solid reward background \u2014 text colour auto-adapts */
     .reward-bg {
       background: var(--reward);
       color: var(--text-on-reward);
@@ -528,7 +650,7 @@ const STATIC_CSS = `
       border-color: var(--border);
     }
 
-    /* Stat chip — metric pill used in dashboards */
+    /* Stat chip \u2014 metric pill used in dashboards */
     .stat-chip {
       display: flex;
       flex-direction: column;
@@ -559,7 +681,7 @@ const STATIC_CSS = `
       outline-offset: 3px;
     }
 
-    /* Phase-aware action button — adapts to current phase accent */
+    /* Phase-aware action button \u2014 adapts to current phase accent */
     .action-button {
       display: inline-flex;
       align-items: center;
@@ -593,7 +715,7 @@ const STATIC_CSS = `
       background: var(--action-medium);
     }
 
-    /* Ghost button — subtle, no fill, used for secondary actions (e.g. "Mark all read") */
+    /* Ghost button \u2014 subtle, no fill, used for secondary actions (e.g. "Mark all read") */
     .sanctuary-button-ghost {
       display: inline-flex;
       align-items: center;
@@ -616,7 +738,7 @@ const STATIC_CSS = `
     }
     .sanctuary-button-ghost:active { transform: scale(0.97); }
 
-    /* ── LAYOUT UTILS ── */
+    /* \u2500\u2500 LAYOUT UTILS \u2500\u2500 */
     .sub-view-container {
       display: grid;
       grid-template-columns: minmax(0, 1fr) 340px;
@@ -644,7 +766,7 @@ const STATIC_CSS = `
       min-height: min-content;
     }
 
-    /* ── SCROLLBAR ── */
+    /* \u2500\u2500 SCROLLBAR \u2500\u2500 */
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb {
@@ -653,7 +775,7 @@ const STATIC_CSS = `
     }
     ::-webkit-scrollbar-thumb:hover { background: rgba(160, 150, 130, 0.4); }
 
-    /* ── COMMUNITY LAYOUT ── */
+    /* \u2500\u2500 COMMUNITY LAYOUT \u2500\u2500 */
     .community-grid {
       display: grid;
       grid-template-columns: 200px 1fr 340px;
@@ -698,37 +820,75 @@ const STATIC_CSS = `
       }
     }
 
-    /* ── SUB-NAV (Horizontal Tabs) ── */
+    /* \u2500\u2500 SUB-NAV (Horizontal Tabs) \u2500\u2500 */
     .community-sub-nav {
       display: none;
       gap: 8px;
       margin-bottom: 24px;
-      padding: 4px;
-      background: rgba(255, 255, 255, 0.4);
-      backdrop-filter: blur(20px);
-      border-radius: 16px;
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 6px;
+      background: linear-gradient(180deg, var(--scene-elevated) 0%, var(--scene-interactive) 100%);
+      backdrop-filter: blur(36px) saturate(1.12);
+      -webkit-backdrop-filter: blur(36px) saturate(1.12);
+      border-radius: 18px;
+      border: 1px solid var(--scene-interactive-border);
     }
     .sub-nav-item {
       flex: 1;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-      padding: 10px;
+      gap: 10px;
+      padding: 12px;
       border-radius: 12px;
-      font-size: 13px;
-      font-weight: 500;
+      font-size: 14px;
+      font-weight: 600;
       color: var(--ink-ghost);
-      transition: all 0.2s ease;
+      transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
     .sub-nav-item.active {
-      background: white;
-      color: var(--water);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      background: linear-gradient(180deg, var(--scene-elevated) 0%, var(--scene-surface) 100%);
+      color: var(--action);
+      box-shadow: 0 8px 24px rgba(var(--action-rgb), 0.12);
+      transform: scale(1.02);
+    }
+    .sub-nav-item:hover:not(.active) {
+      background: var(--scene-interactive);
+      color: var(--ink-soft);
     }
 
-    /* ── RESPONSIVE — TABLET (768–1023px) ── */
+    /* \u2500\u2500 SUB-NAV-TABS (3rd Level) \u2500\u2500 */
+    .sub-nav-tabs-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+    .sub-nav-tab {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 20px;
+      border-radius: 100px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink-ghost);
+      background: rgba(0, 0, 0, 0.03);
+      border: 1px solid transparent;
+      transition: all 0.2s ease;
+    }
+    .sub-nav-tab.active {
+      background: var(--water-soft);
+      color: var(--water);
+      border-color: var(--water-glow);
+    }
+    .sub-nav-tab:hover:not(.active) {
+      background: rgba(0, 0, 0, 0.06);
+      color: var(--ink-soft);
+    }
+
+    /* \u2500\u2500 RESPONSIVE \u2014 TABLET (768\u20131023px) \u2500\u2500 */
     @media (max-width: 1023px) {
       .sidebar {
         transform: translateX(-100%);
@@ -761,7 +921,7 @@ const STATIC_CSS = `
       .community-sub-nav { display: flex !important; }
     }
 
-    /* ── RESPONSIVE — MOBILE (< 768px) ── */
+    /* \u2500\u2500 RESPONSIVE \u2014 MOBILE (< 768px) \u2500\u2500 */
     @media (max-width: 767px) {
       .sanctuary-screen {
         padding: 20px 14px 88px 14px;
@@ -775,20 +935,20 @@ const STATIC_CSS = `
       .premium-button, .secondary-button { padding: 10px 16px; font-size: 13px; }
     }
 
-    /* ── SIDEBAR OVERLAY (mobile backdrop) ── */
+    /* \u2500\u2500 SIDEBAR OVERLAY (mobile backdrop) \u2500\u2500 */
     .sidebar-overlay {
       display: none;
       position: fixed;
       inset: 0;
       z-index: 999;
-      background: rgba(0,0,0,0.45);
+      background: rgba(42,35,24,0.22);
       backdrop-filter: blur(2px);
       -webkit-backdrop-filter: blur(2px);
       animation: fadeIn 0.2s ease;
     }
     .sidebar-overlay.visible { display: block; }
 
-    /* ── MOBILE BOTTOM NAV ── */
+    /* \u2500\u2500 MOBILE BOTTOM NAV \u2500\u2500 */
     .mobile-bottom-nav {
       display: none;
     }
@@ -841,7 +1001,7 @@ const STATIC_CSS = `
       .mobile-nav-item:not(.active) .mobile-nav-label { color: var(--ink-ghost); }
     }
 
-    /* ── PWA SAFE AREA ── */
+    /* \u2500\u2500 PWA SAFE AREA \u2500\u2500 */
     @supports (padding: env(safe-area-inset-bottom)) {
       .sanctuary-screen { padding-bottom: calc(88px + env(safe-area-inset-bottom)); }
       @media (max-width: 767px) {
@@ -854,20 +1014,41 @@ export function SanctuaryGlobalStyles() {
   if (Platform.OS !== 'web') return null;
 
   const {
-    accent, glass, text, isDark, gradientNodes,
-    textOnAccent, textOnReward,
-    accentRgb, rewardRgb, surfaceRgb,
+    accent,
+    text,
+    isDark,
+    gradientNodes,
+    scene,
+    textOnAccent,
+    textOnReward,
+    accentRgb,
+    rewardRgb,
+    surfaceRgb,
     phase,
   } = useTheme();
 
   const dynamicCss = `
     :root {
       /* Sanctuary Core Tokens (Dynamic) */
-      --color-background: ${gradientNodes[0]};
-      --color-text-primary: ${text.primary};
+      --color-background: ${scene.canvas.bg};
+      --color-text-primary: ${text.onCanvas};
       --color-text-secondary: ${text.secondary};
       --color-accent: ${accent.action};
-      --color-glass-border: ${glass.surface.border};
+      --color-glass-border: ${scene.surface.border};
+
+      /* Scene hierarchy */
+      --scene-world: ${scene.world.bg};
+      --scene-world-border: ${scene.world.border};
+      --scene-chrome: ${scene.chrome.bg};
+      --scene-chrome-border: ${scene.chrome.border};
+      --scene-canvas: ${scene.canvas.bg};
+      --scene-canvas-border: ${scene.canvas.border};
+      --scene-surface: ${scene.surface.bg};
+      --scene-surface-border: ${scene.surface.border};
+      --scene-elevated: ${scene.elevated.bg};
+      --scene-elevated-border: ${scene.elevated.border};
+      --scene-interactive: ${scene.interactive.bg};
+      --scene-interactive-border: ${scene.interactive.border};
 
       /* High-Fidelity Design Palette (Vellum/Ink) */
       --water:       #3a7a9a;
@@ -894,13 +1075,13 @@ export function SanctuaryGlobalStyles() {
       --action-soft:        ${hexToRgba(accent.action, 0.09)};
       --action-medium:      ${hexToRgba(accent.action, 0.18)};
       --action-glow:        ${hexToRgba(accent.action, 0.28)};
-      --action-border:      ${hexToRgba(accent.action, 0.40)};
+      --action-border:      ${hexToRgba(accent.action, 0.4)};
       /* Text that is WCAG-safe on top of --action backgrounds */
       --text-on-action:     ${textOnAccent};
       --sanctuary-saffron:  ${accent.action};
       --sanctuary-saffron-soft: ${hexToRgba(accent.action, 0.09)};
 
-      /* Reward (achievement / celebration — phase-aware) */
+      /* Reward (achievement / celebration \u2014 phase-aware) */
       --reward:             ${accent.reward};
       --reward-rgb:         ${rewardRgb};
       --reward-soft:        ${hexToRgba(accent.reward, 0.09)};
@@ -925,40 +1106,48 @@ export function SanctuaryGlobalStyles() {
       --text-secondary: ${text.secondary};
       --text-inverse:   ${text.inverse};
       --text-muted:     ${text.muted};
+      --text-on-world:  ${text.onWorld};
+      --text-on-chrome: ${text.onChrome};
+      --text-on-canvas: ${text.onCanvas};
+      --text-on-surface:${text.onSurface};
+      --text-on-elevated:${text.onElevated};
+      --text-on-interactive:${text.onInteractive};
+      --text-on-danger: ${text.onDanger};
 
-      /* Phase identifier — useful for CSS [data-phase="morning"] overrides */
+      /* Phase identifier \u2014 useful for CSS [data-phase="morning"] overrides */
       --phase: "${phase}";
 
       /* Backgrounds */
-      --background:     ${isDark ? '#111218' : '#F5EDD6'};
-      --background-alt: ${isDark ? 'rgba(40,42,58,0.65)' : 'rgba(255,255,255,0.55)'};
-      --surface:        ${glass.surface.bg};
-      --glass-surface:  ${glass.surface.bg};
-      --glass-interact: ${isDark ? 'rgba(50,52,68,0.70)' : 'rgba(255,255,255,0.75)'};
+      --background:     ${scene.canvas.bg};
+      --background-alt: ${scene.surface.bg};
+      --surface:        ${scene.surface.bg};
+      --glass-surface:  ${scene.surface.bg};
+      --glass-interact: ${scene.interactive.bg};
 
       /* World/shell background layers */
-      --world-bg:           ${isDark ? 'radial-gradient(circle at 50% 50%, #1a1b26 0%, #111218 100%)' : 'linear-gradient(135deg, #f8f4eb 0%, #edf1f4 100%)'};
-      --topbar-bg:          ${isDark ? 'rgba(26,27,38,0.45)' : 'rgba(255,255,255,0.45)'};
-      --sidebar-bg:         ${isDark ? 'rgba(26,27,38,0.45)' : 'rgba(255,255,255,0.30)'};
-      --card-bg:            ${isDark ? 'rgba(40,42,58,0.45)' : 'rgba(255,255,255,0.50)'};
-      --card-bg-hover:      ${isDark ? 'rgba(50,52,68,0.55)' : 'rgba(255,255,255,0.65)'};
-      --btn-secondary-bg:   ${isDark ? 'rgba(255,255,255,0.07)' : 'rgba(255,255,255,0.65)'};
-      --btn-secondary-border: ${isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)'};
-      --btn-secondary-hover: ${isDark ? 'rgba(255,255,255,0.13)' : 'rgba(255,255,255,0.90)'};
+      --world-bg:           linear-gradient(135deg, ${gradientNodes[0]} 0%, ${gradientNodes[1]} 55%, ${gradientNodes[2]} 100%);
+      --topbar-bg:          ${scene.chrome.bg};
+      --sidebar-bg:         ${scene.chrome.bg};
+      --card-bg:            ${scene.surface.bg};
+      --card-bg-hover:      ${scene.elevated.bg};
+      --btn-secondary-bg:   ${scene.interactive.bg};
+      --btn-secondary-border: ${scene.interactive.border};
+      --btn-secondary-hover: ${scene.elevated.bg};
       --profile-gem-bg:     ${isDark ? 'rgba(255,255,255,0.10)' : 'rgba(58,122,154,0.12)'};
       --profile-gem-border: ${isDark ? 'rgba(255,255,255,0.15)' : 'rgba(58,122,154,0.20)'};
       --tab-bg:             ${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)'};
       --tab-bg-hover:       ${isDark ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.07)'};
       --tab-active-bg:      ${isDark ? 'rgba(58,122,154,0.22)' : 'rgba(58,122,154,0.10)'};
-      --mobile-panel-bg:    ${isDark ? 'rgba(26,27,38,0.88)' : 'rgba(255,255,255,0.88)'};
+      --mobile-panel-bg:    ${scene.chrome.bg};
 
       /* Ink */
-      --ink:         ${isDark ? text.primary : '#2a2820'};
+      --ink:         ${text.onCanvas};
       --ink-soft:    ${text.secondary};
       --ink-ghost:   #7a7068;
+      --error:       #FF6347;
 
       /* Borders & Shadows */
-      --border:       ${glass.surface.border};
+      --border:       ${scene.surface.border};
       --border-light: rgba(255,255,255,0.7);
       --shadow-sm:    0 2px 8px rgba(107,100,128,0.07);
       --shadow-md:    0 8px 24px rgba(107,100,128,0.10);
@@ -980,6 +1169,10 @@ export function SanctuaryGlobalStyles() {
       --sanctuary-primary-rgb: ${isDark ? '26, 22, 16' : '245, 237, 214'};
       --sanctuary-text-primary: ${text.primary};
       --sanctuary-text-secondary: ${text.secondary};
+
+      /* Motion */
+      --transition-smooth: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      --transition-snap:   all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
   `;
 

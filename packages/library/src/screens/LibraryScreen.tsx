@@ -1,601 +1,1226 @@
-﻿/**
- * LibraryScreen â€” Netflix-Style Holistic Digital Library
+/**
+ * LibraryScreen — Netflix-Style Holistic Digital Library
  */
 
-import React, { useState, useMemo, useCallback } from 'react';
+import { useNavigation } from "@react-navigation/native";
+import { identityAPI } from "@repo/core/api";
+import { useTracking } from "@repo/core/hooks";
 import {
-    ScrollView,
-    ActivityIndicator,
-    View,
-    Text as RNText,
-    ImageBackground,
-    StyleSheet,
-    Pressable,
-    TouchableOpacity,
-    Platform,
-} from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+	coreRuntime,
+	FeatureGuard,
+	useStore,
+	useTemporalStore,
+} from "@repo/core/logic";
+import { CollectionCard } from "@repo/ui/components/CollectionCard";
+import GlobalHeader from "@repo/ui/components/GlobalHeader";
+import { HorizontalChipRow } from "@repo/ui/components/HorizontalChipRow";
 import {
-    Box,
-    VStack,
-    HStack,
-    Text,
-    useThemedColors,
-    SkeletonCard,
-    PositiveInvitation,
-    Theme,
-    GlobalHeader,
-    ScreenWrapper,
-    SmartShelf,
-    CollectionCard,
-    LibraryThumbnailCard,
-    useBottomTabPadding,
-    LotusPetalFAB,
-    FadeInDown,
-    HorizontalChipRow,
-    openExternalURL,
-} from '@repo/ui';
-import { useNavigation } from '@react-navigation/native';
-import Animated from 'react-native-reanimated';
-import AddResourceModal from '../components/AddResourceModal';
-import { ResourceList } from '../components/ResourceList';
-import { Map as MapIcon, Play, Plus, FileText } from 'lucide-react-native';
-import { useTranslation } from 'react-i18next';
-import { useLibrary } from '../hooks/useLibrary';
-import { LibraryResource } from '../types';
+	AssetCreationModal,
+	CollectionCreationModal,
+} from "@repo/ui/components/media/AssetCreationPortal";
+import { ResourceActionSheet } from "@repo/ui/components/media/ResourceActionSheet";
+import ScreenWrapper, {
+	useBottomTabPadding,
+} from "@repo/ui/components/ScreenWrapper";
+import { SkeletonCard } from "@repo/ui/components/SkeletonLoader";
+import { SmartShelf } from "@repo/ui/components/SmartShelf";
+import { TemporalNavigator } from "@repo/ui/components/TemporalNavigator";
+import { useRegisterFAB } from "@repo/ui/context/FABContext";
 import {
-    useUserRole,
-    useRoleFeatures,
-    useTracking,
-    supabase,
-    useStore,
-} from '@repo/core';
-import { LIBRARY_UI_CATEGORIES } from '../constants/categories';
-import CuratorReviewScreen from './CuratorReviewScreen'; // Added for completeness if needed in exports
+	AnimatedView,
+	Box,
+	FlatList,
+	HStack,
+	Icon,
+	ImageBackground,
+	LinearGradient,
+	Pressable,
+	RefreshControl,
+	Text,
+	useTheme,
+	VStack,
+} from "@repo/ui/primitives";
+import { Theme } from "@repo/ui/theme";
+import { openExternalURL, showExternalLinkOptions } from "@repo/ui/utils";
+import {
+	FileText,
+	Layers,
+	LayoutGrid,
+	Library,
+	List,
+	Map as MapIcon,
+	Play,
+	Plus,
+} from "lucide-react-native";
+import React, { useCallback, useMemo, useReducer, useRef } from "react";
+import { useTranslation } from "react-i18next";
+import { FadeInDown } from "react-native-reanimated";
+import { libraryAPI } from "../api/library";
+import { CollectionPickerModal } from "../components/CollectionPickerModal";
+import { LibraryThumbnailCard } from "../components/LibraryThumbnailCard";
+import { ResourceList } from "../components/ResourceList";
+import { getOrderedShelfDefs } from "../constants/shelf";
+import { useBookmarkedResources, useLibrary } from "../hooks/useLibrary";
+import type { LibraryResource } from "../types";
+import { buildLibraryExternalLinkOptions } from "../utils/externalLinks";
 
-// Shelf definitions
-const SHELF_DEFS = [
-    { id: 'movie_trailer', label: 'ðŸŽ¬ Inspiring Films', types: ['movie_trailer'] },
-    { id: 'map', label: 'ðŸ—ºï¸ Maps & Visuals', types: ['map', 'infographic'] },
-    { id: 'story', label: 'ðŸ“– Stories', types: ['story'] },
-    { id: 'circular', label: 'ðŸ“‹ Edu Circulars', types: ['circular'] },
-    { id: 'guide', label: 'ðŸ‘©â€ðŸ« Teacher Guides', types: ['guide'] },
-    { id: 'tech_guide', label: 'ðŸ’¡ Tech Guides', types: ['tech_guide'] },
-    { id: 'video', label: 'ðŸŽ¥ Videos', types: ['video'] },
-    { id: 'doc', label: 'ðŸ“„ Documents', types: ['pdf', 'doc', 'lesson', 'worksheet', 'reading', 'pedagogy'] },
-    { id: 'link', label: 'ðŸŒ Web Resources', types: ['link'] },
-] as const;
+const LIBRARY_UI_CATEGORIES = [
+	{ id: "All", en: "All" },
+	{ id: "video", en: "Videos" },
+	{ id: "pdf", en: "Documents" },
+	{ id: "link", en: "Web Resources" },
+	{ id: "text", en: "Articles" },
+	{ id: "note", en: "Personal Notes" },
+];
 
+const MapInvitation = React.memo(({ onPress }: { onPress: () => void }) => {
+	const theme = useTheme();
 
-function MapInvitation({ onPress }: { onPress: () => void }) {
-    const colors = useThemedColors();
+	return (
+		<AnimatedView entering={FadeInDown.delay(200).springify()}>
+			<Pressable
+				onPress={onPress}
+				className="mx-4 my-4 rounded-[24px] overflow-hidden bg-phase-surface border border-phase-border"
+			>
+				<Box className="absolute inset-0">
+					<LinearGradient
+						colors={[`${theme.accent.action}16`, `${theme.accent.reward}0D`]}
+						className="flex-1"
+					/>
+				</Box>
+				<HStack className="p-5 gap-4 items-center">
+					<Box className="w-[60px] h-[60px] rounded-[30px] bg-white/10 justify-center items-center">
+						<Icon as={MapIcon} size={32} color={theme.accent.action} />
+					</Box>
+					<VStack className="flex-1 gap-1">
+						<Text className="text-[10px] font-extrabold text-phaseText-secondary uppercase tracking-widest">
+							Knowledge map
+						</Text>
+						<Text className="text-lg font-extrabold text-phaseText-primary">
+							Enter the Cosmos
+						</Text>
+						<Text className="text-[13px] text-phaseText-secondary leading-5">
+							Shift from shelves into constellation-style discovery when you
+							want relationships, not just a list.
+						</Text>
+					</VStack>
+					<Box className="p-2.5 bg-phase-accent rounded-xl">
+						<Icon as={Play} size={16} color="white" fill="white" />
+					</Box>
+				</HStack>
+			</Pressable>
+		</AnimatedView>
+	);
+});
 
-    return (
-        <Animated.View entering={FadeInDown.delay(200).springify()}>
-            <Pressable onPress={onPress}>
-                <Box sx={{
-                    margin: Theme.spacing.md,
-                    borderRadius: 24,
-                    overflow: 'hidden',
-                    backgroundColor: colors.secondary,
-                    borderWidth: 1,
-                    borderColor: 'rgba(255, 255, 255, 0.05)',
-                }}>
-                    <LinearGradient
-                        colors={['rgba(138, 43, 226, 0.2)', 'rgba(0, 0, 0, 0)']}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 1 }}
-                        style={StyleSheet.absoluteFill}
-                    />
-                    <HStack sx={{ p: 20, gap: 16, alignItems: 'center' }}>
-                        <Box sx={{
-                            width: 60,
-                            height: 60,
-                            borderRadius: 30,
-                            backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                        }}>
-                            <MapIcon size={32} color={Theme.colors.sanctuarySaffron} />
-                        </Box>
-                        <VStack sx={{ flex: 1, gap: 4 }}>
-                            <Text sx={{ fontSize: 18, fontWeight: '800', color: colors.textPrimary }}>
-                                Enter the Cosmos
-                            </Text>
-                            <Text sx={{ fontSize: 13, color: colors.textSecondary, lineHeight: 18 }}>
-                                Explore the hidden connections between knowledge and shared wisdom.
-                            </Text>
-                        </VStack>
-                        <Box sx={{
-                            padding: 10,
-                            backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                            borderRadius: 12
-                        }}>
-                            <Play size={16} color={colors.textPrimary} fill={colors.textPrimary} />
-                        </Box>
-                    </HStack>
-                </Box>
-            </Pressable>
-        </Animated.View>
-    );
-}
+const CuratorInvitation = React.memo(({ onPress }: { onPress: () => void }) => {
+	const theme = useTheme();
 
-function CuratorInvitation({ onPress }: { onPress: () => void }) {
-    const colors = useThemedColors();
-
-    return (
-        <Animated.View entering={FadeInDown.delay(300).springify()}>
-            <Pressable onPress={onPress}>
-                <Box sx={{
-                    margin: Theme.spacing.md,
-                    marginTop: 0,
-                    borderRadius: 24,
-                    overflow: 'hidden',
-                    backgroundColor: colors.secondary,
-                    borderWidth: 1,
-                    borderColor: Theme.colors.sanctuarySaffron + '33',
-                }}>
-                    <HStack sx={{ p: 16, gap: 16, alignItems: 'center' }}>
-                        <Box sx={{
-                            width: 48,
-                            height: 48,
-                            borderRadius: 24,
-                            backgroundColor: Theme.colors.sanctuarySaffron + '11',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                        }}>
-                            <FileText size={24} color={Theme.colors.sanctuarySaffron} />
-                        </Box>
-                        <VStack sx={{ flex: 1, gap: 2 }}>
-                            <Text sx={{ fontSize: 16, fontWeight: '800', color: colors.textPrimary }}>
-                                Curator Dashboard
-                            </Text>
-                            <Text sx={{ fontSize: 12, color: colors.textSecondary }}>
-                                Review {'&'} publish new knowledge streams.
-                            </Text>
-                        </VStack>
-                        <Plus size={16} color={colors.textSecondary} />
-                    </HStack>
-                </Box>
-            </Pressable>
-        </Animated.View>
-    );
-}
+	return (
+		<AnimatedView entering={FadeInDown.delay(300).springify()}>
+			<Pressable
+				onPress={onPress}
+				className="mx-4 mt-0 mb-4 rounded-[24px] overflow-hidden bg-phase-surface border border-phase-accent/20"
+			>
+				<Box className="absolute inset-0">
+					<LinearGradient
+						colors={[`${theme.accent.action}14`, "rgba(255,255,255,0.2)"]}
+						className="flex-1"
+					/>
+				</Box>
+				<HStack className="p-4 gap-4 items-center">
+					<Box className="w-12 h-12 rounded-full bg-phase-accent/10 justify-center items-center">
+						<Icon as={FileText} size={24} color={theme.accent.action} />
+					</Box>
+					<VStack className="flex-1 gap-0.5">
+						<Text className="text-[10px] font-extrabold text-phaseText-secondary uppercase tracking-widest">
+							Curator pathway
+						</Text>
+						<Text className="text-base font-extrabold text-phaseText-primary">
+							Curator Dashboard
+						</Text>
+						<Text className="text-[12px] text-phaseText-secondary">
+							Review, polish, and publish new knowledge streams without leaving
+							the sanctuary shell.
+						</Text>
+					</VStack>
+					<Icon as={Plus} size={16} color={theme.text.secondary} />
+				</HStack>
+			</Pressable>
+		</AnimatedView>
+	);
+});
 
 export default function LibraryScreen() {
-    const { t } = useTranslation();
-    const navigation = useNavigation<any>();
-    const { role } = useUserRole();
-    const { isGuest } = useRoleFeatures();
+	const { t } = useTranslation();
+	const navigation = useNavigation<any>();
 
-    const [searchQuery, setSearchQuery] = useState('');
-    const [selectedCategoryId, setSelectedCategoryId] = useState('All');
-    const [selectedSort, setSelectedSort] = useState<'recent' | 'popular' | 'most_endorsed' | 'most_bookmarked'>('recent');
-    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-    const [refreshing, setRefreshing] = useState(false);
-    const [isSyncing, setIsSyncing] = useState(false);
+	// --- 1. STATE MACHINE (Mechanism) ---
+	interface LibraryState {
+		searchQuery: string;
+		debouncedSearchQuery: string;
+		selectedCategoryId: string;
+		selectedSort: "recent" | "popular" | "most_endorsed" | "most_bookmarked";
+		viewMode: "shelf" | "grid" | "list";
+		isAddModalOpen: boolean;
+		isAddCollectionModalOpen: boolean;
+		refreshing: boolean;
+		isSyncing: boolean;
+		fallbackAttempted: boolean;
+		isFetchingPublic: boolean;
+		publicCollections: any[];
+		selectedResource: LibraryResource | null;
+		isActionSheetVisible: boolean;
+		isCollectionPickerVisible: boolean;
+	}
 
-    const colors = useThemedColors();
-    const bottomPadding = useBottomTabPadding();
-    const { discoverFeature } = useTracking();
+	const initialState: LibraryState = {
+		searchQuery: "",
+		debouncedSearchQuery: "",
+		selectedCategoryId: "All",
+		selectedSort: "recent",
+		viewMode: "shelf",
+		isAddModalOpen: false,
+		isAddCollectionModalOpen: false,
+		refreshing: false,
+		isSyncing: false,
+		fallbackAttempted: false,
+		isFetchingPublic: false,
+		publicCollections: [],
+		selectedResource: null,
+		isActionSheetVisible: false,
+		isCollectionPickerVisible: false,
+	};
 
-    React.useEffect(() => {
-        discoverFeature('section_library');
+	const isFetchingPublicRef = useRef(false);
 
-        // Trigger knowledge index sync (Whispered Moment)
-        setIsSyncing(true);
-        syncLibrary()
-            .catch(err => console.error('Library sync failed in background:', err))
-            .finally(() => setIsSyncing(false));
-    }, []);
+	type LibraryAction =
+		| { type: "SET_SEARCH"; query: string }
+		| { type: "SET_DEBOUNCED_SEARCH"; query: string }
+		| { type: "SET_CATEGORY"; id: string }
+		| { type: "SET_SORT"; sort: LibraryState["selectedSort"] }
+		| { type: "SET_VIEW_MODE"; mode: LibraryState["viewMode"] }
+		| {
+				type: "SET_MODAL";
+				name: "add" | "collection" | "actionSheet" | "picker";
+				isOpen: boolean;
+		  }
+		| { type: "SET_SYNCING"; isSyncing: boolean }
+		| { type: "SET_REFRESHING"; refreshing: boolean }
+		| { type: "SET_FETCHING_PUBLIC"; isFetching: boolean }
+		| { type: "SET_PUBLIC_COLLECTIONS"; collections: any[] }
+		| { type: "SET_SELECTED_RESOURCE"; resource: LibraryResource | null }
+		| { type: "MARK_FALLBACK_ATTEMPTED" };
 
-    const isSearchMode = searchQuery.trim().length > 0 || selectedCategoryId !== 'All';
+	function libraryReducer(
+		state: LibraryState,
+		action: LibraryAction,
+	): LibraryState {
+		switch (action.type) {
+			case "SET_SEARCH":
+				return { ...state, searchQuery: action.query };
+			case "SET_DEBOUNCED_SEARCH":
+				return { ...state, debouncedSearchQuery: action.query };
+			case "SET_CATEGORY":
+				return { ...state, selectedCategoryId: action.id };
+			case "SET_SORT":
+				return { ...state, selectedSort: action.sort };
+			case "SET_VIEW_MODE":
+				return { ...state, viewMode: action.mode };
+			case "SET_MODAL":
+				if (action.name === "add")
+					return { ...state, isAddModalOpen: action.isOpen };
+				if (action.name === "collection")
+					return { ...state, isAddCollectionModalOpen: action.isOpen };
+				if (action.name === "actionSheet")
+					return { ...state, isActionSheetVisible: action.isOpen };
+				if (action.name === "picker")
+					return { ...state, isCollectionPickerVisible: action.isOpen };
+				return state;
+			case "SET_SYNCING":
+				return { ...state, isSyncing: action.isSyncing };
+			case "SET_REFRESHING":
+				return { ...state, refreshing: action.refreshing };
+			case "SET_FETCHING_PUBLIC":
+				return { ...state, isFetchingPublic: action.isFetching };
+			case "SET_PUBLIC_COLLECTIONS":
+				return { ...state, publicCollections: action.collections };
+			case "SET_SELECTED_RESOURCE":
+				return { ...state, selectedResource: action.resource };
+			case "MARK_FALLBACK_ATTEMPTED":
+				return { ...state, fallbackAttempted: true };
+			default:
+				return state;
+		}
+	}
 
-    const resourceTypeFilter = useMemo(() => {
-        if (selectedCategoryId === 'All') return undefined;
-        return selectedCategoryId as any;
-    }, [selectedCategoryId]);
+	const [
+		{
+			searchQuery,
+			debouncedSearchQuery,
+			selectedCategoryId,
+			selectedSort,
+			viewMode,
+			isAddModalOpen,
+			isAddCollectionModalOpen,
+			refreshing,
+			isSyncing,
+			fallbackAttempted,
+			isFetchingPublic,
+			publicCollections,
+			selectedResource,
+			isActionSheetVisible,
+			isCollectionPickerVisible,
+		},
+		dispatch,
+	] = useReducer(libraryReducer, initialState);
 
-    const {
-        resources,
-        collections,
-        loading,
-        fetchResources,
-        fetchNextResources,
-        hasNextResources,
-        isFetchingNextResources,
-        syncLibrary,
-    } = useLibrary(
-        isSearchMode
-            ? { type: resourceTypeFilter, search: searchQuery || undefined, sort_by: selectedSort }
-            : { limit: 60 }
-    );
+	// --- 2. ATOMIC SELECTORS & DERIVATIONS ---
+	const isPastView = useTemporalStore((state) => state.isPastView);
+	const viewDate = useTemporalStore((state) => state.viewDate);
+	const viewScale = useTemporalStore((state) => state.viewScale);
+	const deskItems = useStore((state) => state.deskItems);
+	const user = useStore((state) => state.user);
+	const _showToast = useStore((state) => state.showToast);
 
-    const shelfData = useMemo(() => {
-        const byType: Record<string, LibraryResource[]> = {};
-        for (const res of resources) {
-            const type = res.type;
-            if (!type) continue;
-            if (!byType[type]) byType[type] = [];
-            byType[type].push(res);
-        }
-        return byType;
-    }, [resources]);
+	// Search Debouncing (Orchestrated by Reducer)
+	React.useEffect(() => {
+		const handler = setTimeout(() => {
+			dispatch({ type: "SET_DEBOUNCED_SEARCH", query: searchQuery });
+		}, 500);
+		return () => clearTimeout(handler);
+	}, [searchQuery]);
 
-    const trending = useMemo(() =>
-        [...resources].sort((a, b) => (b.endorsements ?? 0) - (a.endorsements ?? 0)).slice(0, 10),
-        [resources]);
+	const theme = useTheme();
+	const bottomPadding = useBottomTabPadding();
+	const { discoverFeature } = useTracking();
 
-    const newArrivals = useMemo(() =>
-        [...resources].sort((a, b) =>
-            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-        ).slice(0, 10),
-        [resources]);
+	const isSearchMode =
+		searchQuery.trim().length > 0 || selectedCategoryId !== "All";
 
-    const heroResource = trending[0] ?? newArrivals[0] ?? null;
+	const resourceTypeFilter = useMemo(() => {
+		if (selectedCategoryId === "All") return undefined;
+		return selectedCategoryId as any;
+	}, [selectedCategoryId]);
 
-    const { deskItems, removeFromDeskLocal, user } = useStore();
+	const libraryFilters = useMemo(
+		() =>
+			isSearchMode
+				? {
+						type: resourceTypeFilter,
+						search: debouncedSearchQuery || undefined,
+						sort_by: selectedSort,
+						limit: 60,
+					}
+				: { limit: 60 },
+		[isSearchMode, resourceTypeFilter, debouncedSearchQuery, selectedSort],
+	);
 
-    const orientationSeeds = user?.orientation_seeds ?? null;
-    const orderedShelfDefs = useMemo(() => {
-        if (!orientationSeeds) return [...SHELF_DEFS];
+	const orientationSeeds = user?.orientation_seeds ?? null;
+	const orderedShelfDefs = useMemo(
+		() => getOrderedShelfDefs(orientationSeeds),
+		[orientationSeeds],
+	);
 
-        const depthBreadth = orientationSeeds.depth_breadth;
-        const soloSocial = orientationSeeds.solo_social;
-        const reflectAct = orientationSeeds.reflect_act;
+	const {
+		resources: rawResources,
+		collections: rawUserCollections,
+		loading,
+		error: libraryError,
+		fetchResources,
+		fetchNextResources,
+		hasNextResources,
+		isFetchingNextResources,
+		syncLibrary,
+		bookmarkResource,
+		addToCollection,
+		isAddingToCollection,
+	} = useLibrary(libraryFilters, libraryFilters);
 
-        const priority: Record<string, number> = {
-            movie_trailer: soloSocial > 55 ? 10 : 0,
-            map: depthBreadth > 55 ? 15 : depthBreadth < 45 ? 5 : 10,
-            story: reflectAct < 45 ? 14 : 8,
-            circular: 0,
-            guide: (depthBreadth < 45 || reflectAct < 45) ? 20 : 10,
-            tech_guide: reflectAct > 55 ? 18 : 8,
-            video: soloSocial > 55 ? 12 : 6,
-            doc: depthBreadth < 45 ? 16 : 8,
-            link: depthBreadth > 55 ? 10 : 4,
-        };
+	// Get Bookmarks
+	const {
+		resources: bookmarkedResources,
+		isLoading: loadingBookmarks,
+		refetch: refetchBookmarks,
+	} = useBookmarkedResources(user?.id);
 
-        return [...SHELF_DEFS].sort((a, b) => (priority[b.id] ?? 0) - (priority[a.id] ?? 0));
-    }, [orientationSeeds]);
+	React.useEffect(() => {
+		discoverFeature("section_library");
+		dispatch({ type: "SET_SYNCING", isSyncing: true });
+		syncLibrary()
+			.catch((err) => console.error("Library sync failed:", err))
+			.finally(() => dispatch({ type: "SET_SYNCING", isSyncing: false }));
+	}, [syncLibrary, discoverFeature]);
 
-    const handleOpenResource = useCallback((resource: LibraryResource) => {
-        if (!resource.url) return;
-        if (resource.type === 'pdf') {
-            navigation.navigate('PDFViewer', { resourceId: resource.id, title: resource.title, url: resource.url });
-            return;
-        }
-        if (resource.type === 'video' || resource.type === 'movie_trailer') {
-            navigation.navigate('VideoPlayer', { resourceId: resource.id, title: resource.title, url: resource.url, creator: resource.creator_name });
-            return;
-        }
-        openExternalURL(resource.url).catch(err => console.error("Couldn't load page", err));
-    }, [navigation]);
+	React.useEffect(() => {
+		if (
+			!loading &&
+			rawResources.length === 0 &&
+			rawUserCollections.length === 0 &&
+			publicCollections.length === 0 &&
+			!fallbackAttempted &&
+			!isFetchingPublicRef.current
+		) {
+			isFetchingPublicRef.current = true;
+			dispatch({ type: "SET_FETCHING_PUBLIC", isFetching: true });
+			libraryAPI
+				.getCollections({
+					limit: 10,
+					visibility: "public",
+					viewDate,
+					viewScale,
+				})
+				.then((cols) => {
+					dispatch({ type: "SET_PUBLIC_COLLECTIONS", collections: cols });
+					dispatch({ type: "MARK_FALLBACK_ATTEMPTED" });
+				})
+				.catch((_err) => {
+					dispatch({ type: "MARK_FALLBACK_ATTEMPTED" });
+				})
+				.finally(() => {
+					dispatch({ type: "SET_FETCHING_PUBLIC", isFetching: false });
+					isFetchingPublicRef.current = false;
+				});
+		}
+	}, [
+		loading,
+		rawResources.length,
+		rawUserCollections.length,
+		publicCollections.length,
+		fallbackAttempted,
+		viewDate,
+		viewScale,
+	]);
 
-    const handleAddResource = useCallback(async () => {
-        try {
-            await fetchResources();
-        } catch (err) {
-            console.error('Failed to refresh after add', err);
-        }
-    }, [fetchResources]);
+	const resources = useMemo(() => rawResources, [rawResources]);
+	const collections = useMemo(
+		() =>
+			rawUserCollections.length > 0 ? rawUserCollections : publicCollections,
+		[rawUserCollections, publicCollections],
+	);
 
-    const onRefresh = useCallback(async () => {
-        setRefreshing(true);
-        await fetchResources();
-        setRefreshing(false);
-    }, [fetchResources]);
+	const trending = useMemo(
+		() =>
+			[...resources]
+				.sort((a, b) => (b.endorsements ?? 0) - (a.endorsements ?? 0))
+				.slice(0, 10),
+		[resources],
+	);
 
-    const chipData = useMemo(() => LIBRARY_UI_CATEGORIES.map(cat => ({
-        label: cat.en,
-        value: cat.id,
-    })), []);
+	const newArrivals = useMemo(
+		() =>
+			[...resources]
+				.sort(
+					(a, b) =>
+						new Date(b.created_at || 0).getTime() -
+						new Date(a.created_at || 0).getTime(),
+				)
+				.slice(0, 10),
+		[resources],
+	);
 
-    const sortChips = useMemo(() => [
-        { label: 'ðŸ• Recent', value: 'recent' },
-        { label: 'ðŸ”¥ Popular', value: 'popular' },
-        { label: 'â­ Endorsed', value: 'most_endorsed' },
-        { label: 'ðŸ”– Saved', value: 'most_bookmarked' },
-    ], []);
+	const heroResource = trending[0] ?? newArrivals[0] ?? null;
 
-    const handleEndReached = useCallback(() => {
-        if (hasNextResources && !isFetchingNextResources) fetchNextResources();
-    }, [hasNextResources, isFetchingNextResources, fetchNextResources]);
+	const handleOpenResource = useCallback(
+		(resource: LibraryResource) => {
+			if (!resource.url) return;
+			if (resource.type === "pdf") {
+				navigation.navigate("PDFViewer", {
+					resourceId: resource.id,
+					title: resource.title,
+					url: resource.url,
+				});
+				return;
+			}
+			if (resource.type === "video" || resource.type === "movie_trailer") {
+				navigation.navigate("VideoPlayer", {
+					resourceId: resource.id,
+					title: resource.title,
+					url: resource.url,
+					creator: resource.creator_name,
+				});
+				return;
+			}
+			openExternalURL(
+				resource.url,
+				buildLibraryExternalLinkOptions(resource),
+			).catch((err) => console.error("Couldn't load page", err));
+		},
+		[navigation],
+	);
 
-    const renderShelf = useCallback((label: string, items: LibraryResource[], onSeeAll?: () => void) => {
-        if (items.length === 0) return null;
-        return (
-            <SmartShelf key={label} title={label} onSeeAll={onSeeAll}>
-                {items.map(res => (
-                    <LibraryThumbnailCard
-                        key={res.id}
-                        title={res.title}
-                        type={res.type}
-                        subject={res.subject}
-                        thumbnailUrl={res.media?.url as string | undefined}
-                        endorsements={res.endorsements}
-                        verified={res.verified}
-                        copyrightNotice={res.copyright_notice}
-                        onPress={() => handleOpenResource(res)}
-                    />
-                ))}
-            </SmartShelf>
-        );
-    }, [handleOpenResource]);
+	const handleOpenResourceOptions = useCallback((resource: LibraryResource) => {
+		if (
+			!resource.url ||
+			resource.type === "pdf" ||
+			resource.type === "video" ||
+			resource.type === "movie_trailer"
+		) {
+			return;
+		}
+		showExternalLinkOptions(
+			resource.url,
+			buildLibraryExternalLinkOptions(resource),
+		).catch((err) => console.error("Couldn't show external link options", err));
+	}, []);
 
-    return (
-        <ScreenWrapper scroll={!isSearchMode} noTopInset={true}>
-            <GlobalHeader
-                title={t('tabs.library') || 'Library'}
-                subtitle={t('library.knowledgeSanctuary')}
-                showSearch
-                searchProps={{
-                    value: searchQuery,
-                    onChangeText: setSearchQuery,
-                    placeholder: t('library.searchPlaceholder')
-                }}
-                rightAction={
-                    <HStack sx={{ gap: 8, alignItems: 'center' }}>
-                        {isSyncing && (
-                            <Animated.View entering={FadeInDown}>
-                                <Box sx={{ width: 8, height: 8, borderRadius: 4, backgroundColor: Theme.colors.sanctuarySaffron }} />
-                            </Animated.View>
-                        )}
-                        <TouchableOpacity
-                            onPress={() => navigation.navigate('LibraryMap' as any)}
-                            style={styles.mapToggleButton}
-                        >
-                            <MapIcon size={20} color={colors.textPrimary} />
-                        </TouchableOpacity>
-                    </HStack>
-                }
-            />
+	const handleAddResource = useCallback(async () => {
+		try {
+			await fetchResources();
+			await refetchBookmarks();
+		} catch (err) {
+			console.error("Failed to refresh after add", err);
+		}
+	}, [fetchResources, refetchBookmarks]);
 
-            {loading && !refreshing ? (
-                <VStack space="md" px={Theme.spacing.md} mt={Theme.spacing.lg}>
-                    <SkeletonCard height={200} />
-                    <SkeletonCard height={160} />
-                    <SkeletonCard height={160} />
-                </VStack>
-            ) : isSearchMode ? (
-                <Box sx={{ flex: 1, backgroundColor: colors.secondary }}>
-                    <Animated.View entering={FadeInDown.delay(100).springify()}>
-                        <HorizontalChipRow
-                            chips={chipData}
-                            selectedValue={selectedCategoryId}
-                            onSelect={setSelectedCategoryId}
-                            size="sm"
-                        />
-                    </Animated.View>
-                    <Animated.View entering={FadeInDown.delay(160).springify()}>
-                        <HorizontalChipRow
-                            chips={sortChips}
-                            selectedValue={selectedSort}
-                            onSelect={(v) => setSelectedSort(v as typeof selectedSort)}
-                            size="sm"
-                        />
-                    </Animated.View>
-                    <ResourceList
-                        resources={resources}
-                        onOpenResource={handleOpenResource}
-                        onPullToDesk={(res) => console.log('Pull to desk', res.id)}
-                        ListFooterComponent={isFetchingNextResources ? (
-                            <ActivityIndicator size="small" color={Theme.colors.sanctuarySaffron} style={{ padding: 20 }} />
-                        ) : null}
-                        onEndReached={handleEndReached}
-                        refreshing={refreshing}
-                        onRefresh={onRefresh}
-                    />
-                </Box>
-            ) : (
-                <ScrollView
-                    style={{ flex: 1, backgroundColor: colors.primary }}
-                    showsVerticalScrollIndicator={false}
-                    contentContainerStyle={{ paddingBottom: bottomPadding + Theme.spacing.xl }}
-                >
-                    {heroResource && (
-                        <HeroBanner resource={heroResource} onPress={() => handleOpenResource(heroResource)} />
-                    )}
+	const handleBookmark = useCallback(
+		async (resource: LibraryResource) => {
+			if (isPastView || !user?.id) return;
+			try {
+				await bookmarkResource({ resourceId: resource.id, userId: user.id });
+				await refetchBookmarks();
+			} catch (err) {
+				console.error("Failed to bookmark:", err);
+			}
+		},
+		[isPastView, user?.id, bookmarkResource, refetchBookmarks],
+	);
 
-                    <MapInvitation onPress={() => navigation.navigate('LibraryMap' as any)} />
+	const handleShare = useCallback(async (resource: LibraryResource) => {
+		if (!resource.url) return;
+		try {
+			await coreRuntime.share.share({
+				message: `Check out this resource on Polymath: ${resource.title}\n${resource.url}`,
+				url: resource.url,
+				title: resource.title,
+			});
+		} catch (err) {
+			console.error("Failed to share:", err);
+		}
+	}, []);
 
-                    {(role === 'founder' || role === 'admin' || role === 'developer') && (
-                        <CuratorInvitation onPress={() => navigation.navigate('CuratorReview' as any)} />
-                    )}
+	const handleAddToCollection = useCallback(
+		async (collectionId: string) => {
+			if (isPastView || !selectedResource) return;
+			try {
+				await addToCollection({
+					collectionId,
+					resourceId: selectedResource.id,
+				});
+				dispatch({ type: "SET_MODAL", name: "picker", isOpen: false });
+			} catch (err) {
+				console.error("Failed to add to collection:", err);
+			}
+		},
+		[isPastView, selectedResource, addToCollection],
+	);
 
-                    <Box sx={{ paddingTop: Theme.spacing.md }}>
-                        <Animated.View entering={FadeInDown.delay(100).springify()}>
-                            <HorizontalChipRow
-                                chips={chipData}
-                                selectedValue={selectedCategoryId}
-                                onSelect={setSelectedCategoryId}
-                                size="sm"
-                            />
-                        </Animated.View>
+	const onRefresh = useCallback(async () => {
+		dispatch({ type: "SET_REFRESHING", refreshing: true });
+		await fetchResources();
+		const userId = await identityAPI.getMyInternalId();
 
-                        {deskItems && deskItems.filter((r: any) => r.type === 'resource').length > 0 && (
-                            <SmartShelf title="â–¶ Continue Learning">
-                                {deskItems.filter((r: any) => r.type === 'resource').map((res: any) => (
-                                    <LibraryThumbnailCard
-                                        key={res.id}
-                                        title={res.title}
-                                        type={res.type}
-                                        thumbnailUrl={res.thumbnailUrl}
-                                        onPress={() => handleOpenResource(res)}
-                                    />
-                                ))}
-                            </SmartShelf>
-                        )}
+		if (resources.length === 0) {
+			const pub = await libraryAPI.getCollections({
+				limit: 10,
+				visibility: "public",
+				userId: userId ?? undefined,
+				viewDate,
+				viewScale,
+			});
+			dispatch({ type: "SET_PUBLIC_COLLECTIONS", collections: pub });
+		}
+		dispatch({ type: "SET_REFRESHING", refreshing: false });
+	}, [fetchResources, resources.length, viewDate, viewScale]);
 
-                        {collections.length > 0 && (
-                            <SmartShelf title="ðŸ“š Featured Collections">
-                                {collections.map((col: any) => (
-                                    <CollectionCard
-                                        key={col.id}
-                                        title={col.name}
-                                        creator={col.creator_name}
-                                        resourceCount={col.resource_ids?.length ?? 0}
-                                        subjectTag={col.subject}
-                                        onPullToDesk={() => { }}
-                                    />
-                                ))}
-                            </SmartShelf>
-                        )}
+	const handleCreateCollection = useCallback(
+		async (data: any) => {
+			if (isPastView) return;
+			try {
+				const userId = await identityAPI.getMyInternalId();
+				if (!userId) return;
 
-                        {orderedShelfDefs.map(shelf => {
-                            const items = resources.filter(r => (shelf.types as readonly string[]).includes(r.type));
-                            return renderShelf(shelf.label, items);
-                        })}
+				await libraryAPI.createCollection(
+					{
+						...data,
+						resource_ids: [],
+						subject: "",
+						grades: [],
+					},
+					userId,
+				);
 
-                        {trending.length > 0 && renderShelf('â­ Trending', trending)}
-                        {newArrivals.length > 0 && renderShelf('âœ¨ New Arrivals', newArrivals)}
+				await fetchResources();
+				dispatch({ type: "SET_REFRESHING", refreshing: true });
+				setTimeout(
+					() => dispatch({ type: "SET_REFRESHING", refreshing: false }),
+					500,
+				);
+			} catch (err) {
+				console.error("Failed to create collection:", err);
+			}
+		},
+		[fetchResources, isPastView],
+	);
 
-                        {resources.length === 0 && (
-                            <PositiveInvitation
-                                context="library"
-                                onAction={() => setIsAddModalOpen(true)}
-                            />
-                        )}
-                    </Box>
-                </ScrollView>
-            )}
+	const chipData = useMemo(
+		() =>
+			LIBRARY_UI_CATEGORIES.map((cat) => ({
+				label: cat.en,
+				value: cat.id,
+			})),
+		[],
+	);
 
-            <LotusPetalFAB
-                currentTab="library"
-                onPress={() => setIsAddModalOpen(true)}
-            />
+	const sortChips = useMemo(
+		() => [
+			{ label: `\u23F2\uFE0F ${t("library.sort.recent")}`, value: "recent" },
+			{ label: `\uD83D\uDD25 ${t("library.sort.popular")}`, value: "popular" },
+			{
+				label: `\uD83C\uDF1F ${t("library.sort.most_endorsed")}`,
+				value: "most_endorsed",
+			},
+			{
+				label: `\uD83D\uDD16 ${t("library.sort.most_bookmarked")}`,
+				value: "most_bookmarked",
+			},
+		],
+		[t],
+	);
 
-            <AddResourceModal
-                isOpen={isAddModalOpen}
-                onClose={() => setIsAddModalOpen(false)}
-                onAdd={handleAddResource}
-            />
-        </ScreenWrapper>
-    );
-}
+	const handleEndReached = useCallback(() => {
+		if (hasNextResources && !isFetchingNextResources) fetchNextResources();
+	}, [hasNextResources, isFetchingNextResources, fetchNextResources]);
 
-const HERO_HEIGHT = 220;
+	const fabConfig = useMemo(
+		() => ({
+			tabType: "library" as const,
+			onPress: () => dispatch({ type: "SET_MODAL", name: "add", isOpen: true }),
+			visible: !loading && !isPastView,
+		}),
+		[loading, isPastView],
+	);
 
-function HeroBanner({ resource, onPress }: HeroBannerProps) {
-    const colors = useThemedColors();
+	useRegisterFAB(fabConfig);
 
-    return (
-        <Pressable onPress={onPress} style={heroBannerStyles.pressable}>
-            <View style={[heroBannerStyles.container, { backgroundColor: colors.secondary }]}>
-                {resource.media?.url ? (
-                    <ImageBackground
-                        source={{ uri: resource.media.url as string }}
-                        style={heroBannerStyles.image}
-                        resizeMode="cover"
-                    >
-                        <HeroOverlay resource={resource} colors={colors} />
-                    </ImageBackground>
-                ) : (
-                    <View style={[heroBannerStyles.fallback, { backgroundColor: Theme.colors.sanctuarySaffron + '18' }]}>
-                        <HeroOverlay resource={resource} colors={colors} />
-                    </View>
-                )}
-            </View>
-        </Pressable>
-    );
-}
+	const handleLongPressResource = useCallback((res: LibraryResource) => {
+		dispatch({ type: "SET_SELECTED_RESOURCE", resource: res });
+		dispatch({ type: "SET_MODAL", name: "actionSheet", isOpen: true });
+	}, []);
 
-function HeroOverlay({ resource, colors }: { resource: LibraryResource; colors: any }) {
-    const gradientColors: [string, string, string] = [
-        'transparent',
-        colors.primary + 'BB',
-        colors.primary,
-    ];
+	const renderShelf = useCallback(
+		(label: string, items: LibraryResource[], onSeeAll?: () => void) => {
+			if (items.length === 0) return null;
+			return (
+				<Box className="mb-lg">
+					<SmartShelf key={label} title={label} onSeeAll={onSeeAll}>
+						{items.map((res) => (
+							<LibraryThumbnailCard
+								key={`shelf-${label}-${res.id}`}
+								resource={res}
+								onPress={handleOpenResource}
+								onBookmarkToggle={handleBookmark}
+								onLongPress={handleLongPressResource}
+							/>
+						))}
+					</SmartShelf>
+				</Box>
+			);
+		},
+		[handleOpenResource, handleBookmark, handleLongPressResource],
+	);
 
-    return (
-        <LinearGradient colors={gradientColors} style={heroBannerStyles.gradient}>
-            <View style={heroBannerStyles.featuredBadge}>
-                <RNText style={heroBannerStyles.featuredText}>âœ¦ FEATURED</RNText>
-            </View>
-            <RNText style={[heroBannerStyles.heroTitle, { color: colors.text }]} numberOfLines={2}>
-                {resource.title}
-            </RNText>
-            {resource.description ? (
-                <RNText style={[heroBannerStyles.heroDesc, { color: colors.textSecondary }]} numberOfLines={2}>
-                    {resource.description}
-                </RNText>
-            ) : null}
-            <View style={heroBannerStyles.playRow}>
-                <View style={heroBannerStyles.playBtn}>
-                    <Play size={14} color="#fff" fill="#fff" />
-                    <RNText style={heroBannerStyles.playText}>Open</RNText>
-                </View>
-                {resource.copyright_notice && (
-                    <View style={heroBannerStyles.copyrightBadge}>
-                        <RNText style={heroBannerStyles.copyrightText} numberOfLines={1}>
-                            Â© {resource.copyright_notice}
-                        </RNText>
-                    </View>
-                )}
-            </View>
-        </LinearGradient>
-    );
+	return (
+		<ScreenWrapper scroll={!isSearchMode} noTopInset={true}>
+			<GlobalHeader
+				title={t("tabs.library") || "Library"}
+				subtitle={t("library.knowledgeSanctuary")}
+				showSearch
+				searchProps={{
+					value: searchQuery,
+					onChangeText: (text) => dispatch({ type: "SET_SEARCH", query: text }),
+					placeholder: t("library.searchPlaceholder"),
+				}}
+				rightAction={
+					<HStack className="gap-2 items-center">
+						{isSyncing && (
+							<AnimatedView entering={FadeInDown}>
+								<Box className="w-2 h-2 rounded-full bg-phase-accent" />
+							</AnimatedView>
+						)}
+						<Pressable
+							onPress={() => navigation.navigate("LibraryMap" as any)}
+							className="p-2 rounded-xl bg-phase-interactive/10 border border-phase-interactive/15 mr-1"
+						>
+							<Icon as={MapIcon} size={20} color={theme.text.primary} />
+						</Pressable>
+					</HStack>
+				}
+			/>
+			<Box className="px-md pb-sm">
+				<TemporalNavigator />
+			</Box>
+
+			{libraryError ? (
+				<VStack className="p-md mt-lg items-center gap-3">
+					<Text className="text-phase-danger text-center">
+						{t("library.errorLoading") || "Failed to load sanctuary wisdom."}
+					</Text>
+					<Pressable onPress={() => fetchResources()}>
+						<Text className="text-phase-accent font-bold">Retry</Text>
+					</Pressable>
+				</VStack>
+			) : (loading || isFetchingPublic) && !refreshing ? (
+				<VStack className="p-md mt-lg gap-4">
+					<SkeletonCard height={200} />
+					<SkeletonCard height={160} />
+					<SkeletonCard height={160} />
+				</VStack>
+			) : (
+				<Box className="flex-1">
+					{!isSearchMode && (
+						<FeatureGuard
+							feature="isLibraryManagementEnabled"
+							action="create"
+							subject="Library"
+						>
+							<HStack className="px-md py-3 gap-3">
+								<Pressable
+									onPress={() =>
+										!isPastView &&
+										dispatch({
+											type: "SET_MODAL",
+											name: "collection",
+											isOpen: true,
+										})
+									}
+									className="flex-row items-center gap-2 px-4 py-2.5 rounded-2xl bg-phase-interactive/10 border border-phase-interactive/50"
+								>
+									<Icon as={Library} size={14} color={theme.accent.action} />
+									<Text className="text-[13px] font-bold text-phaseText-primary">
+										+ Collection
+									</Text>
+								</Pressable>
+							</HStack>
+						</FeatureGuard>
+					)}
+
+					<Box className="flex-1 bg-phase-surface">
+						<AnimatedView entering={FadeInDown.delay(100).springify()}>
+							<HorizontalChipRow
+								chips={chipData}
+								selectedValue={selectedCategoryId}
+								onSelect={(id) => dispatch({ type: "SET_CATEGORY", id })}
+								size="sm"
+							/>
+						</AnimatedView>
+
+						<AnimatedView entering={FadeInDown.delay(160).springify()}>
+							<HStack className="px-md pb-sm justify-between items-center">
+								<Box className="flex-1">
+									<HorizontalChipRow
+										chips={sortChips}
+										selectedValue={selectedSort}
+										onSelect={(v) =>
+											dispatch({ type: "SET_SORT", sort: v as any })
+										}
+										size="sm"
+									/>
+								</Box>
+								<HStack className="gap-1 p-1 rounded-xl border border-phase-border bg-phase-surface/80">
+									<Pressable
+										onPress={() =>
+											dispatch({ type: "SET_VIEW_MODE", mode: "shelf" })
+										}
+										className={`w-8 h-8 rounded-lg justify-center items-center ${viewMode === "shelf" ? "bg-phase-interactive" : ""}`}
+									>
+										<Icon
+											as={Layers}
+											size={14}
+											color={
+												viewMode === "shelf"
+													? theme.text.inverse
+													: theme.text.secondary
+											}
+										/>
+									</Pressable>
+									<Pressable
+										onPress={() =>
+											dispatch({ type: "SET_VIEW_MODE", mode: "grid" })
+										}
+										className={`w-8 h-8 rounded-lg justify-center items-center ${viewMode === "grid" ? "bg-phase-interactive" : ""}`}
+									>
+										<Icon
+											as={LayoutGrid}
+											size={14}
+											color={
+												viewMode === "grid"
+													? theme.text.inverse
+													: theme.text.secondary
+											}
+										/>
+									</Pressable>
+									<Pressable
+										onPress={() =>
+											dispatch({ type: "SET_VIEW_MODE", mode: "list" })
+										}
+										className={`w-8 h-8 rounded-lg justify-center items-center ${viewMode === "list" ? "bg-phase-interactive" : ""}`}
+									>
+										<Icon
+											as={List}
+											size={14}
+											color={
+												viewMode === "list"
+													? theme.text.inverse
+													: theme.text.secondary
+											}
+										/>
+									</Pressable>
+								</HStack>
+							</HStack>
+						</AnimatedView>
+
+						{viewMode === "shelf" && !isSearchMode ? (
+							<Box className="flex-1">
+								<FlatList
+									data={useMemo(() => {
+										const rows: any[] = [{ type: "PULSE", id: "pulse" }];
+
+										if (heroResource) {
+											rows.push({
+												type: "HERO",
+												id: "hero",
+												resource: heroResource,
+											});
+										}
+
+										rows.push({ type: "MAP_INVITATION", id: "map-invit" });
+
+										// Only show curator if allowed
+										rows.push({
+											type: "CURATOR_INVITATION_GUARD",
+											id: "curator-invit",
+										});
+
+										const deskItemsResources =
+											deskItems?.filter((r: any) => r.type === "resource") ||
+											[];
+										if (deskItemsResources.length > 0) {
+											rows.push({
+												type: "CONTINUE_LEARNING",
+												id: "continue",
+												items: deskItemsResources,
+											});
+										}
+
+										if (bookmarkedResources.length > 0) {
+											rows.push({
+												type: "BOOKMARKS",
+												id: "bookmarks",
+												items: bookmarkedResources,
+											});
+										}
+
+										if (collections.length > 0) {
+											rows.push({
+												type: "COLLECTIONS",
+												id: "collections",
+												items: collections,
+												isUser: rawUserCollections.length > 0,
+											});
+										}
+
+										// Dynamic shelves
+										orderedShelfDefs.forEach((shelf) => {
+											const items = resources.filter((r: LibraryResource) =>
+												(shelf.types as readonly string[]).includes(r.type),
+											);
+											if (items.length > 0) {
+												rows.push({
+													type: "SHELF",
+													id: `shelf-${shelf.label}`,
+													label: shelf.label,
+													items,
+												});
+											}
+										});
+
+										if (trending.length > 0) {
+											rows.push({
+												type: "SHELF",
+												id: "shelf-trending",
+												label: "⭐ Trending",
+												items: trending,
+											});
+										}
+
+										if (newArrivals.length > 0) {
+											rows.push({
+												type: "SHELF",
+												id: "shelf-new",
+												label: "✨ New Arrivals",
+												items: newArrivals,
+											});
+										}
+
+										return rows;
+									}, [
+										heroResource,
+										resources,
+										bookmarkedResources,
+										collections,
+										deskItems,
+										rawUserCollections,
+										orderedShelfDefs,
+										trending,
+										newArrivals,
+									])}
+									keyExtractor={(item) => item.id}
+									renderItem={({ item }) => {
+										switch (item.type) {
+											case "PULSE":
+												return (
+													<SanctuaryPulse
+														resourceCount={resources.length}
+														collectionCount={collections.length}
+														bookmarkCount={bookmarkedResources.length}
+													/>
+												);
+											case "HERO":
+												return (
+													<HeroBanner
+														resource={item.resource}
+														onPress={() => handleOpenResource(item.resource)}
+													/>
+												);
+											case "MAP_INVITATION":
+												return (
+													<MapInvitation
+														onPress={() =>
+															navigation.navigate("LibraryMap" as any)
+														}
+													/>
+												);
+											case "CURATOR_INVITATION_GUARD":
+												return (
+													<FeatureGuard
+														feature="isLibraryManagementEnabled"
+														action="manage"
+														subject="LibraryCuratorDashboard"
+													>
+														<CuratorInvitation
+															onPress={() =>
+																navigation.navigate("CuratorReview" as any)
+															}
+														/>
+													</FeatureGuard>
+												);
+											case "CONTINUE_LEARNING":
+												return (
+													<SmartShelf title="▶ Continue Learning">
+														{item.items.map((res: any) => (
+															<LibraryThumbnailCard
+																key={`continue-${res.id}`}
+																title={res.title}
+																type={res.type}
+																onPress={() => handleOpenResource(res)}
+																onLongPress={
+																	res.url
+																		? () => handleOpenResourceOptions(res)
+																		: undefined
+																}
+															/>
+														))}
+													</SmartShelf>
+												);
+											case "BOOKMARKS":
+												return (
+													<SmartShelf title="🔖 My Bookmarks">
+														{item.items.map((res: any) => (
+															<LibraryThumbnailCard
+																key={`bookmark-${res.id}`}
+																resource={res}
+																onPress={handleOpenResource}
+																onBookmarkToggle={handleBookmark}
+																onLongPress={handleLongPressResource}
+															/>
+														))}
+													</SmartShelf>
+												);
+											case "COLLECTIONS":
+												return (
+													<Box className="mb-lg">
+														<SmartShelf
+															title={
+																item.isUser
+																	? "📚 Your Collections"
+																	: "🌟 Discover Collections"
+															}
+														>
+															{item.items.map((col: any) => (
+																<CollectionCard
+																	key={col.id}
+																	title={col.name}
+																	creator={col.creator_name}
+																	resourceCount={col.resource_ids?.length || 0}
+																	subjectTag={col.subjects?.[0] || "General"}
+																	thumbnailUrl={col.thumbnail_url}
+																	verified={col.is_official}
+																	contextData={col}
+																	onPress={(collection) =>
+																		navigation.navigate("CollectionDetail", {
+																			id: collection.id,
+																			title: collection.name,
+																		})
+																	}
+																/>
+															))}
+														</SmartShelf>
+													</Box>
+												);
+											case "SHELF":
+												return renderShelf(item.label, item.items);
+											default:
+												return null;
+										}
+									}}
+									contentContainerStyle={{
+										paddingBottom: bottomPadding + 40,
+										paddingTop: Theme.spacing.md,
+									}}
+									showsVerticalScrollIndicator={false}
+									refreshControl={
+										<RefreshControl
+											refreshing={refreshing}
+											onRefresh={onRefresh}
+										/>
+									}
+									removeClippedSubviews={
+										coreRuntime.device.getMetadata().platform !== "web"
+									}
+									initialNumToRender={4}
+									maxToRenderPerBatch={2}
+									windowSize={5}
+								/>
+							</Box>
+						) : (
+							<ResourceList
+								resources={resources}
+								onOpenResource={handleOpenResource}
+								onOpenResourceOptions={handleOpenResourceOptions}
+								onPullToDesk={(res) => console.log("Pull", res.id)}
+								viewMode={viewMode === "grid" ? "grid" : "list"}
+								ListHeaderComponent={
+									<Box className="p-md">
+										<Text className="text-[13px] text-phaseText-secondary">
+											{searchQuery
+												? `Found ${resources.length} resources for "${searchQuery}"`
+												: `Showing curated findings`}
+										</Text>
+									</Box>
+								}
+								onEndReached={handleEndReached}
+								refreshing={refreshing}
+								onRefresh={onRefresh}
+							/>
+						)}
+					</Box>
+				</Box>
+			)}
+
+			<AssetCreationModal
+				isOpen={isAddModalOpen && !isPastView}
+				onClose={() =>
+					dispatch({ type: "SET_MODAL", name: "add", isOpen: false })
+				}
+				onAdd={handleAddResource}
+			/>
+			<CollectionCreationModal
+				isOpen={isAddCollectionModalOpen && !isPastView}
+				onClose={() =>
+					dispatch({ type: "SET_MODAL", name: "collection", isOpen: false })
+				}
+				onSubmit={handleCreateCollection}
+			/>
+			{selectedResource && (
+				<ResourceActionSheet
+					visible={isActionSheetVisible}
+					onClose={() =>
+						dispatch({ type: "SET_MODAL", name: "actionSheet", isOpen: false })
+					}
+					resource={selectedResource}
+					onBookmark={() => handleBookmark(selectedResource)}
+					onAddToCollection={() =>
+						dispatch({ type: "SET_MODAL", name: "picker", isOpen: true })
+					}
+					onShare={() => handleShare(selectedResource)}
+				/>
+			)}
+
+			<CollectionPickerModal
+				visible={isCollectionPickerVisible}
+				onClose={() =>
+					dispatch({ type: "SET_MODAL", name: "picker", isOpen: false })
+				}
+				collections={rawUserCollections as any}
+				onSelect={handleAddToCollection}
+				isAdding={isAddingToCollection}
+			/>
+		</ScreenWrapper>
+	);
 }
 
 interface HeroBannerProps {
-    resource: LibraryResource;
-    onPress: () => void;
+	resource: LibraryResource;
+	onPress: () => void;
 }
 
-const heroBannerStyles = StyleSheet.create({
-    pressable: { marginBottom: Theme.spacing.md },
-    container: { height: HERO_HEIGHT, overflow: 'hidden' },
-    image: { flex: 1 },
-    fallback: { flex: 1 },
-    gradient: {
-        ...StyleSheet.absoluteFillObject,
-        justifyContent: 'flex-end',
-        paddingHorizontal: Theme.spacing.lg,
-        paddingBottom: Theme.spacing.lg,
-        paddingTop: Theme.spacing.xl,
-    },
-    featuredBadge: {
-        alignSelf: 'flex-start',
-        backgroundColor: Theme.colors.sanctuarySaffron,
-        paddingHorizontal: 8,
-        paddingVertical: 3,
-        borderRadius: 4,
-        marginBottom: Theme.spacing.sm,
-    },
-    featuredText: { fontSize: 10, fontWeight: '800', color: '#fff', letterSpacing: 1 },
-    heroTitle: { fontSize: 22, fontWeight: '800', lineHeight: 28, marginBottom: 6 },
-    heroDesc: { fontSize: 13, lineHeight: 18, marginBottom: Theme.spacing.sm },
-    playRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-    playBtn: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 6,
-        backgroundColor: Theme.colors.sanctuarySaffron,
-        paddingHorizontal: 14,
-        paddingVertical: 8,
-        borderRadius: Theme.corners.comfortable,
-    },
-    playText: { color: '#fff', fontWeight: '700', fontSize: 13 },
-    copyrightBadge: {
-        paddingHorizontal: 8,
-        paddingVertical: 4,
-        borderRadius: 6,
-        backgroundColor: 'rgba(0,0,0,0.45)',
-        borderWidth: 0.5,
-        borderColor: 'rgba(255,255,255,0.2)',
-        maxWidth: 200,
-    },
-    copyrightText: { fontSize: 10, color: 'rgba(255,255,255,0.7)' },
+const _HERO_HEIGHT = 220;
+
+const SanctuaryPulse = React.memo(
+	({
+		resourceCount,
+		collectionCount,
+		bookmarkCount,
+	}: {
+		resourceCount: number;
+		collectionCount: number;
+		bookmarkCount: number;
+	}) => {
+		const theme = useTheme();
+
+		const items = useMemo(
+			() => [
+				{
+					label: "Resources",
+					value: resourceCount,
+					accent: `${theme.accent.action}18`,
+				},
+				{
+					label: "Collections",
+					value: collectionCount,
+					accent: `${theme.accent.reward}16`,
+				},
+				{
+					label: "Bookmarks",
+					value: bookmarkCount,
+					accent: `${theme.accent.sageGreen}16`,
+				},
+			],
+			[
+				resourceCount,
+				collectionCount,
+				bookmarkCount,
+				theme.accent.action,
+				theme.accent.reward,
+				theme.accent.sageGreen,
+			],
+		);
+
+		return (
+			<HStack className="px-md pt-sm gap-2.5">
+				{items.map((item) => (
+					<Box
+						key={item.label}
+						className="flex-1 rounded-[18px] border border-phase-border bg-phase-surface overflow-hidden"
+					>
+						<Box className="px-5 py-4" style={{ backgroundColor: item.accent }}>
+							<Text className="text-[10px] font-extrabold tracking-widest uppercase text-phaseText-secondary">
+								{item.label}
+							</Text>
+							<Text className="text-2xl font-extrabold text-phaseText-primary mt-1">
+								{item.value}
+							</Text>
+						</Box>
+					</Box>
+				))}
+			</HStack>
+		);
+	},
+);
+
+const HeroBanner = React.memo(({ resource, onPress }: HeroBannerProps) => {
+	const theme = useTheme();
+	return (
+		<Pressable onPress={onPress}>
+			<Box className="h-[240px] overflow-hidden bg-phase-surface/50 mb-md mx-md rounded-3xl border border-phase-border">
+				{resource.media?.url ? (
+					<ImageBackground
+						source={{ uri: resource.media.url as string }}
+						className="flex-1"
+						resizeMode="cover"
+					>
+						<HeroOverlay resource={resource} theme={theme} />
+					</ImageBackground>
+				) : (
+					<Box className="flex-1">
+						<LinearGradient
+							colors={[`${theme.accent.action}18`, `${theme.accent.reward}16`]}
+							className="flex-1"
+						/>
+						<HeroOverlay resource={resource} theme={theme} />
+					</Box>
+				)}
+			</Box>
+		</Pressable>
+	);
 });
 
-const styles = StyleSheet.create({
-    mapToggleButton: {
-        padding: 8,
-        borderRadius: 12,
-        backgroundColor: 'rgba(255, 255, 255, 0.05)',
-        borderWidth: 1,
-        borderColor: 'rgba(255, 255, 255, 0.1)',
-        marginRight: 4,
-    },
-});
-
+function HeroOverlay({
+	resource,
+	theme,
+}: {
+	resource: LibraryResource;
+	theme: any;
+}) {
+	return (
+		<Box className="absolute inset-0 justify-end p-6">
+			<LinearGradient
+				colors={[
+					"rgba(255,255,255,0.04)",
+					"rgba(255,255,255,0.1)",
+					"rgba(252,249,242,0.94)",
+				]}
+				className="absolute inset-0"
+			/>
+			<Box className="bg-[#FCF9F2]/90 rounded-[20px] p-5 border border-white/50">
+				<Box
+					className="self-start px-2 py-1 rounded-full mb-2"
+					style={{ backgroundColor: `${theme.accent.action}18` }}
+				>
+					<Text
+						className="text-[10px] font-extrabold tracking-widest"
+						style={{ color: theme.accent.action }}
+					>
+						✧ FEATURED
+					</Text>
+				</Box>
+				<Text className="text-[22px] font-extrabold leading-7 mb-1.5 text-phaseText-primary">
+					{resource.title}
+				</Text>
+				{resource.description && (
+					<Text
+						className="text-[13px] leading-[18px] mb-3 text-phaseText-secondary"
+						numberOfLines={3}
+					>
+						{resource.description}
+					</Text>
+				)}
+				<HStack className="items-center gap-2.5">
+					<Box
+						className="flex-row items-center gap-1.5 px-3.5 py-2 rounded-xl"
+						style={{ backgroundColor: theme.accent.action }}
+					>
+						<Icon as={Play} size={14} color="white" fill="white" />
+						<Text className="text-white font-bold text-[13px]">Open</Text>
+					</Box>
+					{resource.creator_name ? (
+						<Text className="text-[12px] text-phaseText-secondary font-semibold">
+							Curated by {resource.creator_name}
+						</Text>
+					) : null}
+				</HStack>
+			</Box>
+		</Box>
+	);
+}

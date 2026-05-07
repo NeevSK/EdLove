@@ -458,7 +458,7 @@ These features don't block launch, but without them the app is a utility, not a 
 ### T4.5 — CI/CD: Production Build
 **Source**: Feb/4th_week/tasks.md item 12
 **Effort**: M
-**Actions**: EAS Development Build (APK with dev client); EAS App Bundle (production AAB); Set EAS secrets (SUPABASE_URL, SUPABASE_ANON_KEY, SENTRY_DSN, POSTHOG_API_KEY); run `npx expo-doctor` before each build.
+**Actions**: EAS Development Build (APK with dev client); EAS App Bundle (production AAB); Set EAS secrets (SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, SENTRY_DSN, POSTHOG_API_KEY); run `npx expo-doctor` before each build.
 
 ---
 

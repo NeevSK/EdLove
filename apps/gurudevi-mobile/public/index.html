@@ -6,53 +6,97 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <title>Gurudevi</title>
 
-    <!-- ── Primary SEO ───────────────────────────────────────────────── -->
-    <meta name="description" content="A sacred space for teachers — wellbeing, classroom tools, and community. Built for educators in Sri Lanka and beyond." />
+    <!-- \u2500\u2500 Primary SEO \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 -->
+    <meta name="description" content="A sacred space for teachers \u2014 wellbeing, classroom tools, and community." />
     <meta name="theme-color" content="#D4843A" />
 
-    <!-- ── Open Graph (Facebook, WhatsApp, LinkedIn previews) ───────── -->
-    <meta property="og:type"        content="website" />
-    <meta property="og:url"         content="https://app.gurudevi.edlove.org/" />
-    <meta property="og:title"       content="Gurudevi — A Sanctuary for Teachers" />
-    <meta property="og:description" content="Mending the teaching-learning impedance match — through care, not surveillance." />
-    <meta property="og:image"       content="https://app.gurudevi.edlove.org/og-image.png" />
-    <meta property="og:locale"      content="en_LK" />
-    <meta property="og:site_name"   content="Gurudevi" />
+    <!-- \u2500\u2500 Open Graph \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 -->
+    <meta property="og:image" content="/og-image.png" />
 
-    <!-- ── Twitter / X card ─────────────────────────────────────────── -->
-    <meta name="twitter:card"        content="summary_large_image" />
-    <meta name="twitter:title"       content="Gurudevi — A Sanctuary for Teachers" />
-    <meta name="twitter:description" content="Mending the teaching-learning impedance match — through care, not surveillance." />
-    <meta name="twitter:image"       content="https://app.gurudevi.edlove.org/og-image.png" />
+    <!-- \u2500\u2500 Agentic & Machine-Readable Discovery \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 -->
+    <link rel="alternate" type="application/json" href="/knowledge.json" title="Machine-Readable Knowledge Index" />
+    <link rel="author" type="text/plain" href="/llms.txt" title="LLM-Friendly Overview" />
+    
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Gurudevi-Web Platform",
+        "url": "https://platform.gurudevi.edlove.org",
+        "description": "A sacred space for teachers \u2014 wellbeing, classroom tools, and community.",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://platform.gurudevi.edlove.org/app/library?q={search_term_string}",
+          "query-input": "required name=search_term_string"
+        }
+      }
+    </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "NeevSK",
+        "url": "https://gurudevi.edlove.org",
+        "logo": "https://gurudevi.edlove.org/favicon.ico",
+        "sameAs": [
+          "https://github.com/edlove-org",
+          "https://platform.gurudevi.edlove.org"
+        ]
+      }
+    </script>
 
-    <!-- ── PWA / Icons ──────────────────────────────────────────────── -->
-    <link rel="icon" href="/favicon.ico" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <link rel="manifest" href="/manifest.json" crossorigin="use-credentials" />
-    <link rel="canonical" href="https://app.gurudevi.edlove.org/" />
+    <!-- \u2500\u2500 Zero-Flash Theme Init \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 -->
+    <script>
+      (() => {
+        try {
+          var raw = localStorage.getItem('gurudevi-storage');
+          var theme = 'sanctuary';
+          if (raw) {
+            var state = JSON.parse(raw);
+            theme = (state?.state?.themeMode) || 'sanctuary';
+          }
+          if (theme === 'system') {
+            theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'midnight' : 'sanctuary';
+          }
+          document.documentElement.setAttribute('data-theme', theme);
+          
+          // Apply critical variables to prevent flash
+          var isDark = theme === 'midnight' || theme === 'dark';
+          var background = isDark ? '#0F0F12' : '#FFF8E7';
+          var ink = isDark ? '#E6E6E6' : '#2C3E50';
+          
+          document.documentElement.style.setProperty('--color-background', background);
+          document.documentElement.style.setProperty('--ink', ink);
 
-    <!-- Prevent iOS from auto-linking phone numbers, dates, addresses -->
-    <meta name="format-detection" content="telephone=no, date=no, address=no, email=no" />
-    <!-- Chrome on Android — "Add to Home Screen" prompt -->
-    <meta name="mobile-web-app-capable" content="yes" />
-    <!-- Safari on iOS — full-screen web app mode -->
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="Gurudevi" />
-    <!-- Windows / Edge tile -->
-    <meta name="application-name" content="Gurudevi" />
-    <meta name="msapplication-TileColor" content="#D4843A" />
-    <meta name="msapplication-config" content="/browserconfig.xml" />
+          // \u2500\u2500 Agentic Context Initialization \u2500\u2500
+          window.GURUDEVI_CONTEXT = {
+            ecology: 'edlove',
+            purpose: 'educational-support-platform',
+            environment: 'production',
+            capabilities: [
+              'classroom-orchestration',
+              'teacher-wellbeing',
+              'community-resonance',
+              'knowledge-sanctuary',
+              'ai-pedagogical-assistance'
+            ],
+            manifesto: 'https://gurudevi.edlove.org/about',
+            agent_policy: 'empower'
+          };
+        } catch (e) {}
+      })();
+    </script>
 
-    <!-- Google Fonts — loaded here (not inside React) to prevent FOUC on theme change -->
+    <!-- Google Fonts \u2014 loaded here (not inside React) to prevent FOUC on theme change -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=Noto+Sans+Sinhala:wght@400;500;600;700&family=Noto+Sans+Tamil:wght@400;500;600;700&display=swap" />
 
     <!-- Expo root element reset -->
     <style id="expo-reset">
       html, body { height: 100%; margin: 0; padding: 0; }
-      /* overflow:clip (not hidden) — avoids creating a scroll container so
+      /* overflow:clip (not hidden) \u2014 avoids creating a scroll container so
          hash navigation and browser scroll restoration work correctly. */
       body { overflow: clip; }
       #root { display: flex; height: 100%; flex: 1; flex-direction: column; }
@@ -72,6 +116,21 @@
 
       /* Global */
       * { scroll-behavior: smooth; box-sizing: border-box; }
+      /* Global font stack with Sinhala/Tamil fallbacks */
+      :root {
+        --font-main: 'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+        --font-sinhala: 'Noto Sans Sinhala', sans-serif;
+        --font-tamil: 'Noto Sans Tamil', sans-serif;
+      }
+
+      * { 
+        font-family: var(--font-main);
+      }
+
+      /* Native script support */
+      :lang(si) { font-family: var(--font-sinhala); }
+      :lang(ta) { font-family: var(--font-tamil); }
+
       html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
       body {
         -webkit-font-smoothing: antialiased;
@@ -248,23 +307,23 @@
     DARK MODE FOUC PREVENTION
     Reads themeMode from Zustand's persisted localStorage BEFORE React mounts.
     Sets data-theme="dark" on <html> so CSS variables resolve correctly on
-    the very first paint — zero flash of wrong theme.
+    the very first paint \u2014 zero flash of wrong theme.
     =========================================================================
     -->
     <script>
-      (function () {
+      (() => {
         try {
           var raw = localStorage.getItem('gurudevi-storage');
           if (raw) {
             var state = JSON.parse(raw);
-            var mode = (state && state.state && state.state.themeMode) || 'system';
+            var mode = (state?.state?.themeMode) || 'system';
             if (mode === 'dark') {
               document.documentElement.setAttribute('data-theme', 'dark');
             } else if (mode === 'light') {
               document.documentElement.setAttribute('data-theme', 'light');
             } else {
-              // system — match prefers-color-scheme
-              if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+              // system \u2014 match prefers-color-scheme
+              if (window.matchMedia?.('(prefers-color-scheme: dark)').matches) {
                 document.documentElement.setAttribute('data-theme', 'dark');
               }
             }
@@ -281,7 +340,7 @@
     =========================================================================
     -->
     <script>
-      (function () {
+      (() => {
         var h = new Date().getHours();
         var phase =
           h < 4  ? 'night'     :
@@ -292,7 +351,7 @@
           h < 18 ? 'afternoon' :
           h < 20 ? 'evening'   :
           h < 22 ? 'dusk'      : 'night';
-        document.documentElement.classList.add('phase-' + phase);
+        document.documentElement.classList.add(`phase-${phase}`);
       })();
     </script>
 
@@ -307,7 +366,7 @@
     =========================================================================
     -->
     <script>
-      (function () {
+      (() => {
         var search = window.location.search;
         if (search) {
           var match = search.match(/[?&]p=([^&]+)/);
@@ -329,14 +388,14 @@
     <div id="bg-breathe" aria-hidden="true"></div>
 
     <!-- Ambient lotus petals - pure CSS, zero JS -->
-    <div class="lotus-petal petal-1" aria-hidden="true">🪷</div>
-    <div class="lotus-petal petal-2" aria-hidden="true">🌸</div>
-    <div class="lotus-petal petal-3" aria-hidden="true">🪷</div>
-    <div class="lotus-petal petal-4" aria-hidden="true">🌸</div>
-    <div class="lotus-petal petal-5" aria-hidden="true">🪷</div>
-    <div class="lotus-petal petal-6" aria-hidden="true">🌸</div>
-    <div class="lotus-petal petal-7" aria-hidden="true">🪷</div>
-    <div class="lotus-petal petal-8" aria-hidden="true">🪷</div>
+    <div class="lotus-petal petal-1" aria-hidden="true">\uD83E\uDEB7</div>
+    <div class="lotus-petal petal-2" aria-hidden="true">\uD83C\uDF38</div>
+    <div class="lotus-petal petal-3" aria-hidden="true">\uD83E\uDEB7</div>
+    <div class="lotus-petal petal-4" aria-hidden="true">\uD83C\uDF38</div>
+    <div class="lotus-petal petal-5" aria-hidden="true">\uD83E\uDEB7</div>
+    <div class="lotus-petal petal-6" aria-hidden="true">\uD83C\uDF38</div>
+    <div class="lotus-petal petal-7" aria-hidden="true">\uD83E\uDEB7</div>
+    <div class="lotus-petal petal-8" aria-hidden="true">\uD83E\uDEB7</div>
 
     <noscript>
       <style>
@@ -349,7 +408,7 @@
       </style>
       <div class="noscript-msg">
         <div>
-          <h1>🪷 Gurudevi</h1>
+          <h1>\uD83E\uDEB7 Gurudevi</h1>
           <p>Gurudevi requires JavaScript to run. Please enable JavaScript in your browser to access this sanctuary for teachers.</p>
         </div>
       </div>
@@ -359,12 +418,12 @@
     <!-- PWA Service Worker Registration -->
     <script>
       if ('serviceWorker' in navigator) {
-        window.addEventListener('load', function () {
+        window.addEventListener('load', () => {
           navigator.serviceWorker.register('/sw.js', { scope: '/' })
-            .then(function (reg) {
+            .then((reg) => {
               console.log('[Gurudevi SW] Registered:', reg.scope);
             })
-            .catch(function (err) {
+            .catch((err) => {
               console.warn('[Gurudevi SW] Registration failed:', err);
             });
         });
@@ -373,12 +432,12 @@
     <script>
       // Capture beforeinstallprompt for an in-app install button
       window.__pwaInstallPrompt = null;
-      window.addEventListener('beforeinstallprompt', function(e) {
+      window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         window.__pwaInstallPrompt = e;
         document.dispatchEvent(new CustomEvent('pwa-installable'));
       });
-      window.addEventListener('appinstalled', function() {
+      window.addEventListener('appinstalled', () => {
         window.__pwaInstallPrompt = null;
         document.dispatchEvent(new CustomEvent('pwa-installed'));
       });

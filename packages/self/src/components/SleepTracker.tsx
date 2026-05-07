@@ -2,340 +2,310 @@
  * SLEEP TRACKER
  * Morning check-in: "How was your sleep?"
  * Simple, gentle way to track sleep quality
- * 
- * Philosophy:
- * - Asked only in the morning (5am - 11am)
- * - Simple scale (1-5) with meaningful labels
- * - No pressure, just awareness
- * - Helps teachers understand rest patterns
  */
 
-import React, { useState, useEffect, useMemo } from 'react';
+import { supabase } from "@repo/core/api";
+import { useSafeMutation } from "@repo/core/hooks";
+import { usePermissions } from "@repo/core/logic";
+
+import { SkeletonCard } from "@repo/ui/components/SkeletonLoader";
 import {
-    Box,
-    VStack,
-    HStack,
-    Text,
-    Heading,
-    Slider,
-    SliderTrack,
-    SliderFilledTrack,
-    SliderThumb,
-    Button,
-    ButtonText,
-} from '@repo/ui';
-import { supabase } from '@repo/core';
-import Animated, {
-    useAnimatedStyle,
-    useSharedValue,
-    withSpring,
-    withRepeat,
-    withTiming,
-    Easing,
-} from 'react-native-reanimated';
-import { Moon, Sun, Cloud, Stars } from 'lucide-react-native';
-import { Theme, typography } from '@repo/ui';
-import { hapticLight, hapticSuccess } from '@repo/ui';
-import { useSafeMutation } from '@repo/core';
-import { useSleepTracker } from '../hooks/useSleepTracker';
-import { useTranslation } from 'react-i18next';
+	AnimatedView,
+	Box,
+	Button,
+	ButtonText,
+	Heading,
+	HStack,
+	Icon,
+	Slider,
+	Text,
+	VStack,
+} from "@repo/ui/primitives";
+import { hapticLight, hapticSuccess } from "@repo/ui/utils/haptics";
+
+import { Moon, Stars } from "lucide-react-native";
+import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import {
+	Easing,
+	FadeIn,
+	useAnimatedStyle,
+	useSharedValue,
+	withRepeat,
+	withTiming,
+} from "react-native-reanimated";
+import { useSleepTracker } from "../hooks/useSleepTracker";
 
 interface SleepTrackerProps {
-    userId?: string;
+	userId?: string;
+	disabled?: boolean;
 }
 
-export default function SleepTracker({ userId }: SleepTrackerProps) {
-    // Resilient Data Hook
-    const { sleepLogs, refreshData } = useSleepTracker(userId);
-    const { t, i18n } = useTranslation();
+export default function SleepTracker({
+	userId,
+	disabled: componentDisabled,
+}: SleepTrackerProps) {
+	const { context } = usePermissions();
+	const activeUserId = userId || context.userId;
+	const { sleepLogs, refreshData, isLoading } = useSleepTracker(
+		activeUserId ?? undefined,
+	);
+	const { t, i18n } = useTranslation();
 
-    const [sleepQuality, setSleepQuality] = useState(3);
-    const [hasLoggedToday, setHasLoggedToday] = useState(false);
+	const [sleepQuality, setSleepQuality] = useState(3);
+	const [hasLoggedToday, setHasLoggedToday] = useState(false);
 
-    // Animation values
-    const moonScale = useSharedValue(1);
-    const starsOpacity = useSharedValue(0.6);
+	// Animation values
+	const moonScale = useSharedValue(1);
+	const starsOpacity = useSharedValue(0.6);
 
-    const SLEEP_QUALITY = useMemo(() => [
-        { value: 1, label: t('sleepTracker.restless'), emoji: '😰', color: Theme.colors.emberRed, description: t('sleepTracker.restlessDesc') },
-        { value: 2, label: t('sleepTracker.poor'), emoji: '😔', color: Theme.colors.amberGlow, description: t('sleepTracker.poorDesc') },
-        { value: 3, label: t('sleepTracker.okay'), emoji: '😐', color: Theme.colors.mistGray, description: t('sleepTracker.okayDesc') },
-        { value: 4, label: t('sleepTracker.good'), emoji: '😊', color: Theme.colors.sageGreen, description: t('sleepTracker.goodDesc') },
-        { value: 5, label: t('sleepTracker.excellent'), emoji: '😌', color: Theme.colors.sanctuarySaffron, description: t('sleepTracker.excellentDesc') },
-    ], [i18n.resolvedLanguage]);
+	const SLEEP_QUALITY = useMemo(
+		() => [
+			{
+				value: 1,
+				label: t("sleepTracker.restless") || "Restless",
+				emoji: "😰",
+				color: "text-emberRed",
+				bg: "bg-emberRed",
+				description:
+					t("sleepTracker.restlessDesc") ||
+					"Difficult night, tossing and turning.",
+			},
+			{
+				value: 2,
+				label: t("sleepTracker.poor") || "Poor",
+				emoji: "😔",
+				color: "text-amberGlow",
+				bg: "bg-amberGlow",
+				description:
+					t("sleepTracker.poorDesc") ||
+					"Woke up feeling tired and unrefreshed.",
+			},
+			{
+				value: 3,
+				label: t("sleepTracker.okay") || "Okay",
+				emoji: "😐",
+				color: "text-mistGray",
+				bg: "bg-mistGray",
+				description:
+					t("sleepTracker.okayDesc") || "Average sleep, feeling functional.",
+			},
+			{
+				value: 4,
+				label: t("sleepTracker.good") || "Good",
+				emoji: "😊",
+				color: "text-emeraldGreen",
+				bg: "bg-emeraldGreen",
+				description:
+					t("sleepTracker.goodDesc") || "Slept mostly through, feeling rested.",
+			},
+			{
+				value: 5,
+				label: t("sleepTracker.excellent") || "Excellent",
+				emoji: "😌",
+				color: "text-sanctuarySaffron",
+				bg: "bg-sanctuarySaffron",
+				description:
+					t("sleepTracker.excellentDesc") ||
+					"Deep, peaceful sleep. Feeling rejuvenated.",
+			},
+		],
+		[t],
+	);
 
-    const currentQuality = SLEEP_QUALITY[sleepQuality - 1] || SLEEP_QUALITY[2];
+	const currentQuality = SLEEP_QUALITY[sleepQuality - 1] || SLEEP_QUALITY[2]!;
 
-    const checkTodayLog = () => {
-        if (!sleepLogs.length) return;
+	useEffect(() => {
+		if (!activeUserId || !sleepLogs.length) return;
 
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
+		const today = new Date();
+		today.setHours(0, 0, 0, 0);
 
-        const todayLog = sleepLogs.find(log => new Date(log.created_at) >= today);
+		const todayLog = sleepLogs.find((log) => new Date(log.created_at) >= today);
 
-        if (todayLog) {
-            setHasLoggedToday(true);
-            setSleepQuality(todayLog.quality);
-        }
-    };
+		if (todayLog) {
+			setHasLoggedToday(true);
+			setSleepQuality(todayLog.quality);
+		}
+	}, [sleepLogs, activeUserId]);
 
-    useEffect(() => {
-        if (userId) {
-            checkTodayLog();
-        }
+	useEffect(() => {
+		// Gentle breathing animation
+		moonScale.value = withRepeat(
+			withTiming(1.05, {
+				duration: 3000,
+				easing: Easing.inOut(Easing.ease),
+			}),
+			-1,
+			true,
+		);
 
-        // Gentle breathing animation
-        moonScale.value = withRepeat(
-            withTiming(1.1, {
-                duration: 3000,
-                easing: Easing.inOut(Easing.ease),
-            }),
-            -1,
-            true
-        );
+		starsOpacity.value = withRepeat(
+			withTiming(1, {
+				duration: 2000,
+				easing: Easing.inOut(Easing.ease),
+			}),
+			-1,
+			true,
+		);
+	}, [moonScale, starsOpacity]);
 
-        starsOpacity.value = withRepeat(
-            withTiming(1, {
-                duration: 2000,
-                easing: Easing.inOut(Easing.ease),
-            }),
-            -1,
-            true
-        );
-    }, [userId]);
+	const { mutate: saveLog, isLoading: isSaving } = useSafeMutation(
+		async (quality: number) => {
+			const { error } = await supabase.from("sleep_logs").insert([
+				{
+					user_id: activeUserId,
+					quality: quality,
+					created_at: new Date().toISOString(),
+				},
+			]);
+			if (error) throw error;
+		},
+		{
+			onSuccess: () => {
+				hapticSuccess();
+				setHasLoggedToday(true);
+				refreshData();
+			},
+		},
+	);
 
-    // Check if logged today based on hook data
-    useEffect(() => {
-        if (!userId || !sleepLogs.length) return;
+	const handleSaveSleepLog = async () => {
+		if (!activeUserId || componentDisabled) return;
+		hapticLight();
+		await saveLog(sleepQuality);
+	};
 
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
+	const animatedMoonStyle = useAnimatedStyle(() => ({
+		transform: [{ scale: moonScale.value }],
+	}));
 
-        const todayLog = sleepLogs.find(log => new Date(log.created_at) >= today);
+	const animatedStarsStyle = useAnimatedStyle(() => ({
+		opacity: starsOpacity.value,
+	}));
 
-        if (todayLog) {
-            setHasLoggedToday(true);
-            setSleepQuality(todayLog.quality);
-        }
-    }, [sleepLogs, userId]);
+	const hour = new Date().getHours();
+	const isMorning = hour >= 5 && hour < 11;
 
-    const { mutate: saveLog, isLoading: isSaving } = useSafeMutation(
-        async (quality: number) => {
-            const { error } = await supabase
-                .from('sleep_logs')
-                .insert([
-                    {
-                        user_id: userId,
-                        quality: quality,
-                        created_at: new Date().toISOString(),
-                    },
-                ]);
-            if (error) throw error;
-        },
-        {
-            onSuccess: () => {
-                hapticSuccess();
-                setHasLoggedToday(true);
-                refreshData();
-            }
-        }
-    );
+	if (isLoading && activeUserId) {
+		return (
+			<VStack className="p-lg gap-lg">
+				<SkeletonCard height={40} />
+				<SkeletonCard height={280} />
+			</VStack>
+		);
+	}
 
-    const saveSleepLog = async () => {
-        if (!userId) return;
-        hapticLight();
-        await saveLog(sleepQuality);
-    };
+	if (!isMorning && !hasLoggedToday) {
+		return (
+			<VStack className="p-lg gap-lg items-center justify-center min-h-[200px] bg-obsidian rounded-comfortable border border-white/5">
+				<Icon as={Moon} className="text-sanctuarySaffron mb-4" size={48} />
+				<Text className="text-mistGray text-center">
+					{t("sleepTracker.notTime") ||
+						"Sleep tracking is available in the morning (5am - 11am)"}
+				</Text>
+			</VStack>
+		);
+	}
 
-    const moonStyle = useAnimatedStyle(() => ({
-        transform: [{ scale: moonScale.value }],
-    }));
+	return (
+		<VStack className="p-lg gap-lg">
+			{/* Header */}
+			<VStack className="gap-1">
+				<Heading className="text-sacredWhite" size="lg">
+					{t("sleepTracker.title") || "Morning Rest"}
+				</Heading>
+				<Text className="text-mistGray text-sm">
+					{t("sleepTracker.subtitle") ||
+						"Understanding your rest helps you care for yourself."}
+				</Text>
+			</VStack>
 
-    const starsStyle = useAnimatedStyle(() => ({
-        opacity: starsOpacity.value,
-    }));
+			{/* Sleep visualization */}
+			<Box className="items-center justify-center p-xl bg-obsidian rounded-comfortable min-h-[220px] relative border border-white/5">
+				{/* Animated stars */}
+				<AnimatedView
+					style={[animatedStarsStyle]}
+					className="absolute top-5 right-8"
+				>
+					<Icon as={Stars} className="text-indigo-400" size={24} />
+				</AnimatedView>
 
-    const hour = new Date().getHours();
-    const isMorning = hour >= 5 && hour < 11;
+				{/* Emoji Feedback */}
+				<AnimatedView style={animatedMoonStyle}>
+					<Text className="text-[96px]">{currentQuality.emoji}</Text>
+				</AnimatedView>
 
-    if (!isMorning && !hasLoggedToday) {
-        return (
-            <VStack space="lg" sx={{ padding: Theme.spacing.lg, alignItems: 'center' }}>
-                <Text color={Theme.colors.mistGray} size="md" textAlign="center">
-                    Sleep tracking is available in the morning (5am - 11am)
-                </Text>
-                <Text style={{ fontSize: 48 }}>🌙</Text>
-            </VStack>
-        );
-    }
+				<VStack className="items-center mt-4">
+					<Text className={`text-2xl font-bold ${currentQuality.color}`}>
+						{currentQuality.label}
+					</Text>
+					<Text className="text-mistGray text-sm italic text-center">
+						{currentQuality.description}
+					</Text>
+				</VStack>
+			</Box>
 
-    // Loading state removed as we show UI optimistically or empty state
+			{/* Slider and Logging Controls */}
+			{!hasLoggedToday ? (
+				<VStack className="gap-6">
+					<Box className="px-md">
+						<Slider
+							value={sleepQuality}
+							onValueChange={(value: number) => {
+								hapticLight();
+								setSleepQuality(value);
+							}}
+							minValue={1}
+							maxValue={5}
+							step={1}
+							className="h-10 w-full"
+						/>
 
-    return (
-        <VStack space="lg" sx={{ padding: Theme.spacing.lg }}>
-            {/* Header */}
-            <VStack space="xs">
-                <Heading color={Theme.colors.sacredWhite} size="lg">
-                    {t('sleepTracker.title')}
-                </Heading>
-                <Text color={Theme.colors.mistGray} size="sm">
-                    Understanding your rest helps you care for yourself
-                </Text>
-            </VStack>
+						<HStack className="justify-between mt-4">
+							<Text className="text-dimGray text-xs">
+								{t("sleepTracker.restless") || "Restless"}
+							</Text>
+							<Text className="text-dimGray text-xs">
+								{t("sleepTracker.excellent") || "Excellent"}
+							</Text>
+						</HStack>
+					</Box>
 
-            {/* Sleep visualization */}
-            <Box
-                sx={{
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    padding: Theme.spacing.xl,
-                    backgroundColor: Theme.colors.ink,
-                    borderRadius: Theme.corners.comfortable,
-                    minHeight: 200,
-                    position: 'relative',
-                }}
-            >
-                {/* Animated stars */}
-                <Animated.View
-                    style={[
-                        starsStyle,
-                        {
-                            position: 'absolute',
-                            top: 20,
-                            right: 30,
-                        },
-                    ]}
-                >
-                    <Stars color={Theme.colors.twilightBlue} size={24} />
-                </Animated.View>
+					<Button
+						size="lg"
+						onPress={handleSaveSleepLog}
+						isDisabled={isSaving || componentDisabled}
+						className={`rounded-full h-14 ${currentQuality.bg}`}
+					>
+						<ButtonText className="text-white font-bold">
+							{isSaving
+								? t("common.loading")
+								: t("sleepTracker.logButton") || "Log Rest"}
+						</ButtonText>
+					</Button>
+				</VStack>
+			) : (
+				<AnimatedView entering={FadeIn}>
+					<VStack className="p-lg bg-emeraldGreen/10 rounded-comfortable items-center border border-emeraldGreen/20 gap-2">
+						<Text className="text-emeraldGreen font-bold text-md">
+							✓ {t("sleepTracker.alreadyLogged") || "Rest Logged Today"}
+						</Text>
+						<Text className="text-mistGray text-xs">
+							{t("sleepTracker.tomorrowHint") ||
+								"You can record your next rest tomorrow morning."}
+						</Text>
+					</VStack>
+				</AnimatedView>
+			)}
 
-                {/* Moon/Sun based on quality */}
-                <Animated.View style={moonStyle}>
-                    <Text style={{ fontSize: 96 }}>
-                        {currentQuality?.emoji}
-                    </Text>
-                </Animated.View>
-
-                <Text
-                    color={currentQuality?.color}
-                    size="2xl"
-                    sx={{
-                        fontWeight: typography.fontWeight.semibold,
-                        marginTop: Theme.spacing.md,
-                    }}
-                >
-                    {currentQuality?.label}
-                </Text>
-                <Text
-                    color={Theme.colors.mistGray}
-                    size="sm"
-                    sx={{ fontStyle: 'italic' }}
-                >
-                    {currentQuality?.description}
-                </Text>
-            </Box>
-
-            {/* Slider */}
-            {!hasLoggedToday && (
-                <>
-                    <Box sx={{ paddingHorizontal: Theme.spacing.md }}>
-                        <Slider
-                            value={sleepQuality}
-                            onChange={(value: number) => {
-                                hapticLight();
-                                setSleepQuality(value);
-                            }}
-                            minValue={1}
-                            maxValue={5}
-                            step={1}
-                            size="lg"
-                            orientation="horizontal"
-                        >
-                            <SliderTrack sx={{ height: 12, borderRadius: 6, backgroundColor: Theme.colors.ink }}>
-                                <SliderFilledTrack
-                                    sx={{
-                                        backgroundColor: currentQuality?.color,
-                                    }}
-                                />
-                            </SliderTrack>
-                            <SliderThumb
-                                sx={{
-                                    backgroundColor: currentQuality?.color,
-                                    borderWidth: 4,
-                                    borderColor: Theme.colors.sacredWhite,
-                                    width: 36,
-                                    height: 36,
-                                }}
-                            />
-                        </Slider>
-
-                        {/* Labels */}
-                        <HStack
-                            justifyContent="space-between"
-                            sx={{ marginTop: Theme.spacing.md }}
-                        >
-                            <Text color={Theme.colors.dimGray} size="xs">
-                                {t('sleepTracker.restless')}
-                            </Text>
-                            <Text color={Theme.colors.dimGray} size="xs">
-                                {t('sleepTracker.excellent')}
-                            </Text>
-                        </HStack>
-                    </Box>
-
-                    {/* Save button */}
-                    <Button
-                        size="lg"
-                        onPress={saveSleepLog}
-                        isDisabled={isSaving}
-                        sx={{
-                            borderRadius: Theme.corners.full,
-                            backgroundColor: currentQuality?.color,
-                        }}
-                    >
-                        <ButtonText>
-                            {isSaving ? t('common.loading') : t('sleepTracker.logButton')}
-                        </ButtonText>
-                    </Button>
-                </>
-            )}
-
-            {hasLoggedToday && (
-                <Box
-                    sx={{
-                        padding: Theme.spacing.md,
-                        backgroundColor: Theme.colors.ink,
-                        borderRadius: Theme.corners.comfortable,
-                        alignItems: 'center',
-                    }}
-                >
-                    <Text color={Theme.colors.sageGreen} size="md">
-                        ✓ {t('sleepTracker.alreadyLogged')}
-                    </Text>
-                    <Text color={Theme.colors.mistGray} size="xs" sx={{ marginTop: Theme.spacing.xs }}>
-                        You can update tomorrow morning
-                    </Text>
-                </Box>
-            )}
-
-            {/* Info */}
-            <Box
-                sx={{
-                    padding: Theme.spacing.md,
-                    backgroundColor: Theme.colors.ink,
-                    borderRadius: Theme.corners.comfortable,
-                }}
-            >
-                <Text
-                    color={Theme.colors.mistGray}
-                    size="xs"
-                    textAlign="center"
-                    sx={{ fontStyle: 'italic' }}
-                >
-                    💤 Rest is sacred. Your wellbeing matters.
-                </Text>
-            </Box>
-        </VStack>
-    );
+			{/* Philosophy note */}
+			<Box className="p-md bg-white/5 rounded-comfortable border border-white/5">
+				<Text className="text-mistGray text-xs text-center italic">
+					{t("sleepTracker.philosophy") ||
+						"💤 Rest is sacred. Your wellbeing matters."}
+				</Text>
+			</Box>
+		</VStack>
+	);
 }

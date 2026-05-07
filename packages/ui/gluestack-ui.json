@@ -1,0 +1,6 @@
+{
+  "engine": "nativewind",
+  "componentsPath": "./src/components/ui",
+  "tailwindConfigPath": "./tailwind.config.js",
+  "stylingEnginePath": "./src/components/ui"
+}

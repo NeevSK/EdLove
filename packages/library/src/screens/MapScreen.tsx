@@ -1,281 +1,452 @@
-﻿import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, useWindowDimensions, TouchableOpacity, FlatList } from 'react-native';
+import { useNavigation } from "@react-navigation/native";
+import { FeatureGuard, usePermissions, useStore } from "@repo/core/logic";
 import {
-    ScreenWrapper,
-    GlobalHeader,
-    useThemedColors,
-    Theme,
-    Box,
-    Text,
-    FadeInDown,
-    HorizontalChipRow,
-    HStack,
-    VStack,
-    SanctuaryLocation,
-    LocationSubscription,
-    LocationObject
-} from '@repo/ui';
-import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
-import { useNavigation } from '@react-navigation/native';
-import { Search, Map as MapIcon, Layers, X, Globe, Star } from 'lucide-react-native';
-import { libraryAPI } from '../api/library';
-import { supabase } from '@repo/core';
-import { useMapPresence } from '../hooks/useMapPresence';
-import { useUserRole } from '@repo/core';
-// Removed: import * as Location from 'expo-location';
+	CaptureEngine,
+	getAvailablePerspectives as getEnginePerspectives,
+	KnowledgeParser,
+} from "@repo/graphics/algorithms";
+import GlobalHeader from "@repo/ui/components/GlobalHeader";
+import ScreenWrapper from "@repo/ui/components/ScreenWrapper";
+import {
+	AstroView,
+	DharmaView,
+	JyotiView,
+	TerraView,
+	VastuView,
+	VatyaView,
+} from "@repo/ui/components/visualization";
+import { useReality } from "@repo/ui/context";
+import { useResponsive } from "@repo/ui/hooks";
+import {
+	Box,
+	HStack,
+	Pressable,
+	Icon as SanctuaryIcon,
+	ScrollView,
+	Spinner,
+	Text,
+	useTheme,
+	VStack,
+} from "@repo/ui/primitives";
+import { Theme } from "@repo/ui/theme";
+import { BlurView } from "expo-blur";
+import {
+	BarChart3,
+	FileCheck,
+	Globe,
+	Network,
+	Orbit,
+	Route,
+	Wind,
+	X,
+} from "lucide-react-native";
+import { cssInterop } from "nativewind";
+import React, { useEffect, useMemo, useState } from "react";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { useSharedValue, withSpring } from "react-native-reanimated";
+import { libraryAPI } from "../api/library";
+import { usePerspectiveLayout } from "../hooks/usePerspectiveLayout";
+import type { KnowledgeNode, KnowledgeTopology } from "../types/Library";
 
-export default function MapScreen() {
-    const colors = useThemedColors();
-    const navigation = useNavigation();
-    const [layers, setLayers] = useState<any[]>([]);
-    const [selectedLayer, setSelectedLayer] = useState<string>('cosmos');
-    const [projection, setProjection] = useState<'earth' | 'cosmos'>('cosmos');
-    const [loading, setLoading] = useState(true);
-    const [searchQuery, setSearchQuery] = useState('');
-    const [searchResults, setSearchResults] = useState<any[]>([]);
-    const [isSearching, setIsSearching] = useState(false);
-    const { role, userId } = useUserRole();
-    const { presences, updateLocation } = useMapPresence(`presence:map:${selectedLayer}`);
-
-    useEffect(() => {
-        if (searchQuery.trim().length > 2) {
-            const delayDebounceFn = setTimeout(async () => {
-                setIsSearching(true);
-                try {
-                    const results = await libraryAPI.searchMapUniverse(searchQuery);
-                    setSearchResults(results);
-                } catch (err) {
-                    console.error('Map search failed:', err);
-                } finally {
-                    setIsSearching(false);
-                }
-            }, 300);
-            return () => clearTimeout(delayDebounceFn);
-        } else {
-            setSearchResults([]);
-        }
-    }, [searchQuery]);
-
-    useEffect(() => {
-        const fetchLayers = async () => {
-            const { data } = await supabase.from('map_layers').select('*').order('created_at');
-            if (data) {
-                setLayers(data.map(l => ({
-                    label: l.name,
-                    value: l.layer_type,
-                    projection: l.projection_type
-                })));
-                setLoading(false);
-            }
-        };
-        fetchLayers();
-    }, []);
-
-    // Track user location for Community Aura
-    useEffect(() => {
-        if (!userId || !role) return;
-
-        let locationSubscription: LocationSubscription | null = null;
-
-        const startTracking = async () => {
-            const { status } = await SanctuaryLocation.requestPermissionsAsync();
-            if (status !== 'granted') return;
-
-            locationSubscription = await SanctuaryLocation.watchPositionAsync(
-                {
-                    accuracy: SanctuaryLocation.Accuracy.Balanced,
-                    timeInterval: 10000,
-                    distanceInterval: 50,
-                },
-                (location: LocationObject) => {
-                    updateLocation({
-                        userId: userId!,
-                        vibe: 'active',
-                        latitude: location.coords.latitude,
-                        longitude: location.coords.longitude,
-                        role: role || 'guest',
-                    });
-                }
-            );
-        };
-
-        startTracking();
-
-        return () => {
-            if (locationSubscription) locationSubscription.remove();
-        };
-    }, [userId, role, updateLocation, selectedLayer]);
-
-    const handleLayerSelect = (value: string) => {
-        setSelectedLayer(value);
-        const layer = layers.find(l => l.value === value);
-        if (layer?.projection) setProjection(layer.projection);
-    };
-
-    return (
-        <ScreenWrapper scroll={false}>
-            <GlobalHeader
-                title="Knowledge Map"
-                subtitle="The TrÃ¼be of Shared Wisdom"
-                showBack
-                onBack={() => navigation.goBack()}
-                showSearch
-                searchProps={{
-                    value: searchQuery,
-                    onChangeText: setSearchQuery,
-                    placeholder: "Search Sri Lanka, Schools, Topics..."
-                }}
-            />
-
-            {searchResults.length > 0 && (
-                <Animated.View
-                    entering={FadeIn}
-                    exiting={FadeOut}
-                    style={[styles.searchResultsOverlay, { backgroundColor: colors.primary, borderBottomColor: colors.border }]}
-                >
-                    <FlatList
-                        data={searchResults}
-                        keyExtractor={(item) => `${item.result_type}-${item.id}`}
-                        renderItem={({ item }) => (
-                            <TouchableOpacity
-                                style={styles.searchResultItem}
-                                onPress={() => {
-                                    if (item.result_type === 'layer') handleLayerSelect(item.layer_type);
-                                    setSearchQuery('');
-                                }}
-                            >
-                                <HStack sx={{ gap: 12, alignItems: 'center' }}>
-                                    <Box sx={{
-                                        p: 8,
-                                        borderRadius: 8,
-                                        backgroundColor: item.result_type === 'layer'
-                                            ? Theme.colors.sanctuarySaffron + '11'
-                                            : colors.secondary
-                                    }}>
-                                        {item.result_type === 'layer' ? (
-                                            <Globe size={18} color={Theme.colors.sanctuarySaffron} />
-                                        ) : (
-                                            <Star size={18} color={Theme.colors.sanctuarySaffron} />
-                                        )}
-                                    </Box>
-                                    <VStack sx={{ flex: 1 }}>
-                                        <Text sx={{ fontSize: 14, fontWeight: '700', color: colors.textPrimary }}>
-                                            {item.name}
-                                        </Text>
-                                        <Text sx={{ fontSize: 11, color: colors.textSecondary }} numberOfLines={1}>
-                                            {item.result_type === 'layer' ? `Map Layer â€¢ ${item.projection_type}` : 'Resource Node'}
-                                        </Text>
-                                    </VStack>
-                                </HStack>
-                            </TouchableOpacity>
-                        )}
-                        style={{ maxHeight: 300 }}
-                    />
-                </Animated.View>
-            )}
-
-            <Box sx={{ p: 12, backgroundColor: colors.secondary }}>
-                <HorizontalChipRow
-                    chips={layers.length > 0 ? layers : [{ label: 'Assembling...', value: 'loading' }]}
-                    selectedValue={selectedLayer}
-                    onSelect={handleLayerSelect}
-                    size="sm"
-                />
-            </Box>
-
-            <Box sx={{ flex: 1, backgroundColor: colors.secondary, justifyContent: 'center', alignItems: 'center' }}>
-                {/* Community Aura Visualization */}
-                {presences.map((presence) => (
-                    <Animated.View
-                        key={presence.userId}
-                        entering={FadeIn}
-                        exiting={FadeOut}
-                        style={[
-                            styles.aura,
-                            {
-                                backgroundColor: getVibeColor(presence.vibe, colors),
-                                // Simplified positioning for placeholder visualization
-                                // In a real Mapbox implementation, these would be markers
-                                left: 50 + (Math.random() * 100),
-                                top: 50 + (Math.random() * 100),
-                            }
-                        ]}
-                    >
-                        <Box sx={{ width: 12, height: 12, borderRadius: 6, backgroundColor: getVibeColor(presence.vibe, colors) }} />
-                    </Animated.View>
-                ))}
-
-                <Animated.View entering={FadeInDown.delay(200).springify()} style={styles.placeholder}>
-                    <Box sx={{
-                        width: 80,
-                        height: 80,
-                        borderRadius: 40,
-                        backgroundColor: Theme.colors.sanctuarySaffron + '11',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        marginBottom: 16
-                    }}>
-                        {projection === 'earth' ? (
-                            <MapIcon size={40} color={Theme.colors.sanctuarySaffron} />
-                        ) : (
-                            <Layers size={40} color={Theme.colors.sanctuarySaffron} />
-                        )}
-                    </Box>
-                    <Text sx={{ fontSize: 20, fontWeight: '900', color: colors.textPrimary }}>
-                        {projection === 'earth' ? 'Geographic Island' : 'Epistemic Cosmos'}
-                    </Text>
-                    <Text sx={{ fontSize: 13, color: colors.textSecondary, textAlign: 'center', maxWidth: 280, marginTop: 8 }}>
-                        {projection === 'earth'
-                            ? `Mapping the physical presence of ${layers.find(l => l.value === selectedLayer)?.label || 'entities'} across Sri Lanka and the world.`
-                            : `Exploring the hidden islands of thought, mind maps, and pathways within the ${layers.find(l => l.value === selectedLayer)?.label || 'cosmos'}.`
-                        }
-                    </Text>
-                </Animated.View>
-            </Box>
-        </ScreenWrapper>
-    );
+cssInterop(BlurView, { className: "style" });
+type PerspectiveId = "astro" | "terra" | "dharma" | "vastu" | "jyoti" | "vatya";
+interface Perspective {
+	id: PerspectiveId;
+	label: string;
+	icon: any;
+	description: string;
+	disabled?: boolean;
 }
+// --- Perspective Metadata (Stabilized outside component or memoized) ---
+const PERSPECTIVES: Perspective[] = [
+	{
+		id: "astro",
+		label: "Cosmos",
+		icon: Orbit,
+		description: "Interconnected topology of wisdom",
+	},
+	{
+		id: "terra",
+		label: "Geo",
+		icon: Globe,
+		description: "Geographical maps of knowledge",
+	},
+	{
+		id: "dharma",
+		label: "Path",
+		icon: Route,
+		description: "Sequential learning pathways",
+	},
+	{
+		id: "vastu",
+		label: "Structure",
+		icon: Network,
+		description: "Mind maps & hierarchies",
+	},
+	{
+		id: "jyoti",
+		label: "Insight",
+		icon: BarChart3,
+		description: "Analytic charts & metrics",
+	},
+	{
+		id: "vatya",
+		label: "Vatya",
+		icon: Wind,
+		description: "Dynamic flow of knowledge",
+	},
+];
+export default function MapScreen() {
+	const theme = useTheme();
+	const { can, flags } = usePermissions();
+	const navigation = useNavigation();
+	const { width, height } = useResponsive();
+	const showToast = useStore((state) => state.showToast);
+	const { reality } = useReality();
+	const [activePerspective, setActivePerspective] =
+		useState<PerspectiveId>("astro");
+	const [isExporting, setIsExporting] = useState(false);
+	const [loading, setLoading] = useState(true);
+	const [data, setData] = useState<KnowledgeTopology | null>(null);
+	const [selectedNode, setSelectedNode] = useState<KnowledgeNode | null>(null);
+	// Zoom and Pan state for layout reference (though views handle their own state)
+	const scale = useSharedValue(1);
+	const translateX = useSharedValue(0);
+	const translateY = useSharedValue(0);
+	useEffect(() => {
+		const fetchData = async () => {
+			setLoading(true);
+			try {
+				const topology = await libraryAPI.getMapTopology();
+				setData(topology);
+			} catch (err) {
+				console.error("Failed to fetch map topology:", err);
+			} finally {
+				setLoading(false);
+			}
+		};
+		fetchData();
+	}, []);
+	const availablePerspectives = useMemo(() => {
+		if (!data) return PERSPECTIVES;
+		const engineIds = getEnginePerspectives(data);
+		const isDeviceConstrained =
+			reality.deviceTier === "low" ||
+			reality.networkQuality === "poor" ||
+			reality.networkQuality === "offline";
+		return PERSPECTIVES.map((p) => {
+			let isDisabled = !engineIds.includes(p.id);
+			// Throttle heavy 'vatya' perspective on constrained devices
+			if (p.id === "vatya" && isDeviceConstrained) {
+				isDisabled = true;
+			}
+			return { ...p, disabled: isDisabled };
+		});
+	}, [data, reality.deviceTier, reality.networkQuality]);
+	const activeData = useMemo(() => {
+		if (activePerspective === "astro" && !data?.nodes?.length) {
+			return KnowledgeParser.fromMermaid(`
+                graph TD
+                A[Retina Engine] --> B[Astro View]
+                A --> C[Vastu View]
+                A --> D[Terra View]
+                B --> E[High Performance]
+                C --> F[Hierarchical]
+                D --> G[Geographical]
+            `);
+		}
+		return data;
+	}, [data, activePerspective]);
+	// --- State Excellence: Memoized Layout ---
+	const layout = usePerspectiveLayout(activeData as any, {
+		width: width * 3,
+		height: height * 3,
+		perspective: activePerspective,
+	});
+	const handleExport = React.useCallback(async () => {
+		setIsExporting(true);
+		try {
+			const snapshot = CaptureEngine.prepareForCapture(activeData as any);
+			console.log("--- NATIVE VISUALIZATION CAPTURED ---");
+			console.log("Snapshot Nodes:", snapshot.nodes.length);
+			showToast(
+				"Visualization logic captured for the Student Report.",
+				"success",
+			);
+		} catch (err) {
+			console.error("Export failed:", err);
+		} finally {
+			setIsExporting(false);
+		}
+	}, [activeData, showToast]);
+	const handleNodePress = React.useCallback(
+		(node: KnowledgeNode) => {
+			setSelectedNode(node);
+			const pos = layout?.positions.get(node.id);
+			if (pos) {
+				translateX.value = withSpring(width / 2 - pos.x);
+				translateY.value = withSpring(height / 2.5 - pos.y);
+				scale.value = withSpring(2);
+			}
+		},
+		[layout, width, height, translateX, translateY, scale],
+	);
+	const visualizationContent = useMemo(() => {
+		if (loading) {
+			return (
+				<Box className="flex-1 justify-center items-center">
+					<Spinner size="large" color={Theme.colors.sanctuarySaffron} />
+				</Box>
+			);
+		}
+		if (activePerspective === "astro" && data && layout) {
+			return (
+				<AstroView
+					data={data as any}
+					layout={layout}
+					onNodePress={handleNodePress as any}
+					selectedNode={selectedNode as any}
+					width={width}
+					height={height}
+				/>
+			);
+		}
+		if (activePerspective === "jyoti" && data) {
+			return (
+				<JyotiView
+					data={data as any}
+					layout={layout!}
+					width={width}
+					height={height}
+				/>
+			);
+		}
+		if (activePerspective === "terra" && data) {
+			return (
+				<TerraView
+					data={data as any}
+					layout={layout!}
+					width={width}
+					height={height}
+				/>
+			);
+		}
+		if (activePerspective === "dharma" && data) {
+			return (
+				<DharmaView
+					data={data as any}
+					layout={layout!}
+					width={width}
+					height={height}
+				/>
+			);
+		}
+		if (activePerspective === "vastu" && data && layout) {
+			return (
+				<VastuView
+					data={data as any}
+					layout={layout}
+					onNodePress={handleNodePress as any}
+					selectedNode={selectedNode as any}
+					width={width}
+					height={height}
+				/>
+			);
+		}
+		if (activePerspective === "vatya" && data && layout) {
+			return (
+				<VatyaView
+					data={data as any}
+					layout={layout}
+					width={width}
+					height={height}
+				/>
+			);
+		}
+		return (
+			<Box className="flex-1 justify-center items-center">
+				<Spinner color={Theme.colors.sanctuarySaffron} />
+			</Box>
+		);
+	}, [
+		loading,
+		activePerspective,
+		data,
+		layout,
+		handleNodePress,
+		selectedNode,
+		width,
+		height,
+	]);
+	const accentColor = theme.accent.action;
+	return (
+		<ScreenWrapper scroll={false}>
+			<GlobalHeader
+				title="Knowledge Cosmos"
+				subtitle="Isomorphic Visualization Engine"
+				showBack
+				onBack={() => navigation.goBack()}
+				rightAction={
+					<FeatureGuard feature="isProMember">
+						<Pressable
+							onPress={handleExport}
+							disabled={isExporting}
+							className="flex-row items-center px-4 py-2 rounded-xl mr-3"
+							style={({ pressed }) => ({
+								backgroundColor: `${accentColor}20`,
+								opacity: isExporting || pressed ? 0.5 : 1,
+							})}
+						>
+							<SanctuaryIcon
+								as={FileCheck}
+								size={18}
+								color={accentColor}
+								className="mr-2"
+							/>
+							<Text
+								className="text-xs font-bold"
+								style={{ color: accentColor }}
+							>
+								{isExporting ? "..." : "EXPORT"}
+							</Text>
+						</Pressable>
+					</FeatureGuard>
+				}
+			/>
 
-const styles = StyleSheet.create({
-    placeholder: {
-        alignItems: 'center',
-    },
-    searchResultsOverlay: {
-        position: 'absolute',
-        top: 110, // Approx header height
-        left: 0,
-        right: 0,
-        zIndex: 100,
-        borderBottomWidth: 1,
-        maxHeight: 400,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 4.65,
-        elevation: 8,
-    },
-    searchResultItem: {
-        padding: 16,
-        borderBottomWidth: 0.5,
-        borderBottomColor: 'rgba(255,255,255,0.05)',
-    },
-    aura: {
-        position: 'absolute',
-        width: 30,
-        height: 30,
-        borderRadius: 15,
-        justifyContent: 'center',
-        alignItems: 'center',
-        opacity: 0.4,
-    }
-});
+			<Box className="p-3 bg-phase-surface">
+				<Box className="rounded-[20px] overflow-hidden border border-phase-border">
+					<BlurView
+						intensity={30}
+						tint="dark"
+						className="flex-row bg-phase-surface/80"
+					>
+						<ScrollView
+							horizontal
+							showsHorizontalScrollIndicator={false}
+							contentContainerStyle={{ padding: 6 }}
+						>
+							{availablePerspectives.map((p) => {
+								const isActive = activePerspective === p.id;
+								const isDisabled = p.disabled;
+								const PerspectiveIcon = p.icon;
+								return (
+									<Pressable
+										key={p.id}
+										onPress={() => !isDisabled && setActivePerspective(p.id)}
+										disabled={isDisabled}
+										className={`px-4 py-2.5 rounded-2xl flex-row items-center mx-1 gap-2 border ${isActive ? "bg-amber-500/15 border-amber-500/30" : "border-transparent"} ${isDisabled ? "opacity-30" : "active:opacity-80"}`}
+									>
+										<SanctuaryIcon
+											as={PerspectiveIcon}
+											size={18}
+											color={
+												isActive
+													? Theme.colors.sanctuarySaffron
+													: Theme.colors.starlightGray
+											}
+										/>
+										<Text
+											className={`text-[13px] ${
+												isActive
+													? "font-extrabold text-amber-500"
+													: "font-semibold text-phaseText-tertiary"
+											}`}
+										>
+											{p.label}
+										</Text>
+									</Pressable>
+								);
+							})}
+						</ScrollView>
+					</BlurView>
+				</Box>
+			</Box>
 
-const getVibeColor = (vibe: string, colors: any) => {
-    switch (vibe.toLowerCase()) {
-        case 'active': return colors.action || Theme.colors.sanctuarySaffron;
-        case 'reflecting': return colors.secondary || Theme.colors.gurudeviViolet;
-        case 'teaching': return colors.success || Theme.colors.sanctuarySaffron;
-        default: return Theme.colors.sanctuarySaffron;
-    }
-};
+			<GestureHandlerRootView style={{ flex: 1 }}>
+				<Box className="flex-1 bg-phase-surface overflow-hidden">
+					{visualizationContent}
 
+					{selectedNode && (
+						<Box className="absolute bottom-10 left-5 right-5 rounded-[32px] overflow-hidden border border-white/10 shadow-2xl">
+							<BlurView intensity={25} tint="dark" className="p-5 bg-black/40">
+								<VStack className="gap-3">
+									<HStack className="justify-between items-center">
+										<VStack className="flex-1 mr-4">
+											<Text
+												className="text-xl font-black text-white"
+												numberOfLines={1}
+											>
+												{selectedNode.label}
+											</Text>
+											<Text className="text-[10px] font-extrabold text-phase-accent uppercase tracking-widest mt-0.5">
+												{selectedNode.type} \u00B7 {selectedNode.group}
+											</Text>
+										</VStack>
+										<Pressable
+											onPress={() => setSelectedNode(null)}
+											className="p-2 rounded-full bg-white/10 active:bg-white/20"
+										>
+											<SanctuaryIcon as={X} size={20} color="white" />
+										</Pressable>
+									</HStack>
+
+									{selectedNode.metadata?.description && (
+										<Text
+											className="text-sm text-white/70 leading-5"
+											numberOfLines={3}
+										>
+											{selectedNode.metadata.description}
+										</Text>
+									)}
+
+									<Pressable
+										className="h-14 rounded-[28px] justify-center items-center mt-2 bg-phase-accent active:bg-phase-accent/90 shadow-lg"
+										onPress={() => {
+											if (selectedNode.type === "resource") {
+												(navigation as any).navigate("ResourceDetail", {
+													id: selectedNode.id,
+												});
+											}
+										}}
+									>
+										<Text className="text-white font-black uppercase tracking-widest">
+											{selectedNode.type === "topic"
+												? "Explore Knowledge"
+												: "Begin Learning"}
+										</Text>
+									</Pressable>
+								</VStack>
+							</BlurView>
+						</Box>
+					)}
+				</Box>
+			</GestureHandlerRootView>
+		</ScreenWrapper>
+	);
+}
+function _StatCardNative({
+	label,
+	value,
+	icon: IconComponent,
+}: {
+	label: string;
+	value: number;
+	icon: any;
+}) {
+	return (
+		<Box className="flex-1 bg-white/5 p-4 rounded-3xl flex-row items-center gap-3 border border-white/5">
+			<SanctuaryIcon
+				as={IconComponent}
+				size={20}
+				color={Theme.colors.sanctuarySaffron}
+			/>
+			<VStack>
+				<Text className="text-[10px] uppercase font-bold tracking-widest text-phaseText-tertiary">
+					{label}
+				</Text>
+				<Text className="text-lg font-black text-white">{value}</Text>
+			</VStack>
+		</Box>
+	);
+}

@@ -11,16 +11,11 @@
  *   </SmartShelf>
  */
 
-import React from 'react';
-import {
-    View,
-    ScrollView,
-    Text,
-    Pressable,
-    StyleSheet,
-    useColorScheme,
-} from 'react-native';
 import { ChevronRight } from 'lucide-react-native';
+import type React from 'react';
+import { StyleSheet } from 'react-native';
+import { Pressable, ScrollView, Text, View } from '../primitives';
+import { useThemedColors } from '../hooks/useThemedColors';
 import { Theme } from '../theme/Theme';
 
 // ============================================================================
@@ -28,11 +23,11 @@ import { Theme } from '../theme/Theme';
 // ============================================================================
 
 export interface SmartShelfProps {
-    title: string;
-    children: React.ReactNode;
-    onSeeAll?: () => void;
-    /** Horizontal padding for the scroll area. Defaults to Theme.spacing.md */
-    horizontalPadding?: number;
+  title: string;
+  children: React.ReactNode;
+  onSeeAll?: () => void;
+  /** Horizontal padding for the scroll area. Defaults to Theme.spacing.md */
+  horizontalPadding?: number;
 }
 
 // ============================================================================
@@ -40,72 +35,71 @@ export interface SmartShelfProps {
 // ============================================================================
 
 export function SmartShelf({
-    title,
-    children,
-    onSeeAll,
-    horizontalPadding = Theme.spacing.md,
+  title,
+  children,
+  onSeeAll,
+  horizontalPadding = Theme.spacing.md,
 }: SmartShelfProps) {
-    const isDark = useColorScheme() === 'dark';
+  const colors = useThemedColors();
 
-    const styles = StyleSheet.create({
-        container: {
-            marginBottom: Theme.spacing.lg,
-        },
-        header: {
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            paddingHorizontal: horizontalPadding,
-            marginBottom: Theme.spacing.sm,
-        },
-        title: {
-            fontSize: Theme.typography.fontSize.md,
-            fontWeight: '700',
-            color: isDark ? Theme.colors.sacredWhite : Theme.colors.inkTruth,
-            letterSpacing: 0.2,
-        },
-        seeAllRow: {
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: 2,
-        },
-        seeAllText: {
-            fontSize: Theme.typography.fontSize.sm,
-            color: Theme.colors.sanctuarySaffron,
-            fontWeight: '600',
-        },
-        scrollContent: {
-            paddingHorizontal: horizontalPadding,
-            paddingVertical: Theme.spacing.xs,
-        },
-    });
+  return (
+    <View style={styles.container}>
+      {/* Header */}
+      <View style={[styles.header, { paddingHorizontal: horizontalPadding }]}>
+        <Text style={[styles.title, { color: colors.text }]}>{title}</Text>
+        {onSeeAll && (
+          <Pressable
+            accessibilityRole="button"
+            onPress={onSeeAll}
+            style={styles.seeAllRow}
+            hitSlop={8}
+          >
+            <Text style={styles.seeAllText}>See All</Text>
+            <ChevronRight color={Theme.colors.sanctuarySaffron} size={16} />
+          </Pressable>
+        )}
+      </View>
 
-    return (
-        <View style={styles.container}>
-            {/* Header */}
-            <View style={styles.header}>
-                <Text style={styles.title}>{title}</Text>
-                {onSeeAll && (
-                    <Pressable onPress={onSeeAll} style={styles.seeAllRow} hitSlop={8}>
-                        <Text style={styles.seeAllText}>See All</Text>
-                        <ChevronRight
-                            color={Theme.colors.sanctuarySaffron}
-                            size={16}
-                        />
-                    </Pressable>
-                )}
-            </View>
-
-            {/* Horizontal Scroll */}
-            <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.scrollContent}
-            >
-                {children}
-            </ScrollView>
-        </View>
-    );
+      {/* Horizontal Scroll */}
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={[styles.scrollContent, { paddingHorizontal: horizontalPadding }]}
+      >
+        {children}
+      </ScrollView>
+    </View>
+  );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    marginBottom: Theme.spacing.lg,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: Theme.spacing.sm,
+  },
+  title: {
+    fontSize: Theme.typography.fontSize.md,
+    fontWeight: '700',
+    letterSpacing: 0.2,
+  },
+  seeAllRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 2,
+  },
+  seeAllText: {
+    fontSize: Theme.typography.fontSize.sm,
+    color: Theme.colors.sanctuarySaffron,
+    fontWeight: '600',
+  },
+  scrollContent: {
+    paddingVertical: Theme.spacing.xs,
+  },
+});
 
 export default SmartShelf;

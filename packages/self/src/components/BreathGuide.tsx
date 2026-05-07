@@ -2,305 +2,213 @@
  * BREATH GUIDE COMPONENT
  * Petal-guided breathing companion
  * 1-minute breathing exercise with visual and haptic rhythm
- * EROI 60:1 (1 min → calm for hour)
  */
 
-import React, { useState, useEffect } from 'react';
-import {
-    Box,
-    VStack,
-    Text,
-    Button,
-    ButtonText,
-    Pressable,
-} from '@repo/ui';
-import { useTranslation } from 'react-i18next';
-import Animated, {
-    useAnimatedStyle,
-    useSharedValue,
-    withTiming,
-    withRepeat,
-    Easing,
-    runOnJS,
-} from 'react-native-reanimated';
-import { Wind } from 'lucide-react-native';
-import { Theme, typography } from '@repo/ui';
-import * as Haptics from 'expo-haptics';
-import { Platform } from 'react-native';
-import { useThemedColors } from '@repo/ui';
+import { Box, Button, ButtonText, Icon, Pressable, Text, VStack } from "@repo/ui/primitives";
+
+import * as Haptics from "expo-haptics";
+import { Wind } from "lucide-react-native";
+import { useCallback, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Platform } from "react-native";
 
 interface BreathGuideProps {
-    onComplete?: () => void;
+	onComplete?: () => void;
 }
 
-type BreathPhase = 'inhale' | 'hold' | 'exhale' | 'rest';
-const TOTAL_CYCLES = 4; // ~1 minute total
+type BreathPhase = "inhale" | "hold" | "exhale" | "rest";
+
+type BreathStep = {
+	phase: BreathPhase;
+	duration: number;
+	instruction: string;
+};
+
+const TOTAL_CYCLES = 4;
+
+const BREATH_SEQUENCE: BreathStep[] = [
+	{ phase: "inhale", duration: 4000, instruction: "Inhale" },
+	{ phase: "hold", duration: 2000, instruction: "Hold" },
+	{ phase: "exhale", duration: 6000, instruction: "Exhale" },
+	{ phase: "rest", duration: 2000, instruction: "Rest" },
+];
+
+function getScaleForPhase(phase: BreathPhase, active: boolean): number {
+	if (!active) return 0.9;
+	if (phase === "exhale") return 0.8;
+	if (phase === "rest") return 0.92;
+	return 1.4;
+}
+
+function getOpacityForPhase(phase: BreathPhase, active: boolean): number {
+	if (!active) return 0.5;
+	if (phase === "exhale") return 0.5;
+	if (phase === "rest") return 0.7;
+	return 1;
+}
 
 export default function BreathGuide({ onComplete }: BreathGuideProps) {
-    const { t } = useTranslation();
-    const [isActive, setIsActive] = useState(false);
-    const [currentPhase, setCurrentPhase] = useState<BreathPhase>('inhale');
-    const [currentCycle, setCurrentCycle] = useState(0);
-    const [phaseIndex, setPhaseIndex] = useState(0);
+	const { t } = useTranslation();
+	const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+	const [isActive, setIsActive] = useState(false);
+	const [currentCycle, setCurrentCycle] = useState(0);
+	const [phaseIndex, setPhaseIndex] = useState(0);
 
-    const BREATH_CYCLE = [
-        { phase: 'inhale' as BreathPhase, duration: 4000, instruction: t('self.inhale') || 'Breathe in...' },
-        { phase: 'hold' as BreathPhase, duration: 2000, instruction: t('self.hold') || 'Hold...' },
-        { phase: 'exhale' as BreathPhase, duration: 6000, instruction: t('self.exhale') || 'Breathe out...' },
-        { phase: 'rest' as BreathPhase, duration: 2000, instruction: t('self.rest') || 'Rest...' },
-    ];
+	const sequence = useMemo(
+		() =>
+			BREATH_SEQUENCE.map((step) => ({
+				...step,
+				instruction: t(`self.${step.phase}`) || step.instruction,
+			})),
+		[t],
+	);
 
-    // Animation values
-    const petalScale = useSharedValue(0.8);
-    const petalOpacity = useSharedValue(0.5);
-    const petalRotation = useSharedValue(0);
+	const currentStep = sequence[phaseIndex] ?? sequence[0];
 
-    useEffect(() => {
-        if (isActive && currentCycle < TOTAL_CYCLES) {
-            startBreathCycle();
-        } else if (currentCycle >= TOTAL_CYCLES) {
-            completeSession();
-        }
-    }, [isActive, currentCycle, phaseIndex]);
+	const clearTimer = useCallback(() => {
+		if (timerRef.current) {
+			clearTimeout(timerRef.current);
+			timerRef.current = null;
+		}
+	}, []);
 
-    const startBreathCycle = () => {
-        const currentStep = BREATH_CYCLE[phaseIndex];
-        if (!currentStep) return;
+	const triggerHaptic = useCallback((phase: BreathPhase) => {
+		if (Platform.OS === "web") return;
 
-        setCurrentPhase(currentStep.phase);
+		const feedback =
+			phase === "hold"
+				? Haptics.ImpactFeedbackStyle.Medium
+				: Haptics.ImpactFeedbackStyle.Light;
+		void Haptics.impactAsync(feedback);
+	}, []);
 
-        // Trigger haptic feedback at phase start
-        triggerHaptic(currentStep.phase);
+	const finishSession = useCallback(() => {
+		clearTimer();
+		setIsActive(false);
+		setCurrentCycle(0);
+		setPhaseIndex(0);
+		if (Platform.OS !== "web") {
+			void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+		}
+		onComplete?.();
+	}, [clearTimer, onComplete]);
 
-        // Animate petal based on phase
-        animatePetal(currentStep.phase, currentStep.duration);
+	function stepForward(cycle: number, phase: number) {
+		const nextPhase = (phase + 1) % sequence.length;
+		const nextCycle = nextPhase === 0 ? cycle + 1 : cycle;
 
-        // Move to next phase
-        setTimeout(() => {
-            const nextIndex = (phaseIndex + 1) % BREATH_CYCLE.length;
-            if (nextIndex === 0) {
-                // Completed one full cycle
-                setCurrentCycle(c => c + 1);
-            }
-            setPhaseIndex(nextIndex);
-        }, currentStep.duration);
-    };
+		if (nextCycle >= TOTAL_CYCLES) {
+			finishSession();
+			return;
+		}
 
-    const animatePetal = (phase: BreathPhase, duration: number) => {
-        switch (phase) {
-            case 'inhale':
-                // Expand
-                petalScale.value = withTiming(1.4, {
-                    duration,
-                    easing: Easing.inOut(Easing.ease),
-                });
-                petalOpacity.value = withTiming(1, {
-                    duration,
-                    easing: Easing.inOut(Easing.ease),
-                });
-                petalRotation.value = withTiming(petalRotation.value + 45, {
-                    duration,
-                    easing: Easing.linear,
-                });
-                break;
+		const nextStep = sequence[nextPhase];
+		if (!nextStep) {
+			finishSession();
+			return;
+		}
 
-            case 'hold':
-                // Stay expanded
-                petalScale.value = withTiming(1.4, {
-                    duration,
-                    easing: Easing.linear,
-                });
-                break;
+		triggerHaptic(nextStep.phase);
+		setPhaseIndex(nextPhase);
+		setCurrentCycle(nextCycle);
+		timerRef.current = setTimeout(
+			() => stepForward(nextCycle, nextPhase),
+			nextStep.duration,
+		);
+	}
 
-            case 'exhale':
-                // Contract
-                petalScale.value = withTiming(0.8, {
-                    duration,
-                    easing: Easing.inOut(Easing.ease),
-                });
-                petalOpacity.value = withTiming(0.5, {
-                    duration,
-                    easing: Easing.inOut(Easing.ease),
-                });
-                petalRotation.value = withTiming(petalRotation.value + 45, {
-                    duration,
-                    easing: Easing.linear,
-                });
-                break;
+	const startSession = useCallback(() => {
+		clearTimer();
+		setIsActive(true);
+		setCurrentCycle(0);
+		setPhaseIndex(0);
+		const firstStep = sequence[0];
+		if (!firstStep) return;
+		triggerHaptic(firstStep.phase);
+		timerRef.current = setTimeout(() => stepForward(0, 0), firstStep.duration);
+	}, [clearTimer, sequence]);
 
-            case 'rest':
-                // Gentle pulse
-                petalScale.value = withTiming(0.9, {
-                    duration: duration / 2,
-                    easing: Easing.inOut(Easing.ease),
-                });
-                break;
-        }
-    };
+	const stopSession = useCallback(() => {
+		clearTimer();
+		setIsActive(false);
+		setCurrentCycle(0);
+		setPhaseIndex(0);
+	}, [clearTimer]);
 
-    const triggerHaptic = (phase: BreathPhase) => {
-        if (Platform.OS === 'web') return;
+	const phase = currentStep?.phase ?? "rest";
+	const scale = getScaleForPhase(phase, isActive);
+	const opacity = getOpacityForPhase(phase, isActive);
+	const rotation = isActive && phase === "exhale" ? currentCycle * 45 : 0;
+	const progress = ((currentCycle * sequence.length + phaseIndex + 1) / (TOTAL_CYCLES * sequence.length)) * 100;
 
-        switch (phase) {
-            case 'inhale':
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                break;
-            case 'hold':
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                break;
-            case 'exhale':
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                break;
-            case 'rest':
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                break;
-        }
-    };
+	return (
+		<VStack className="items-center p-lg gap-lg">
+			<Box className="items-center justify-center min-h-[250px]">
+				<Box
+					className="w-[150px] h-[150px] rounded-full bg-gurudeviViolet items-center justify-center shadow-xl shadow-gurudeviViolet/60"
+					style={{
+						transform: [
+							{ scale },
+							{ rotate: `${rotation}deg` },
+						],
+						opacity,
+						elevation: 10,
+					}}
+				>
+					<Text className="text-5xl">🌸</Text>
+				</Box>
+			</Box>
 
-    const startSession = () => {
-        setIsActive(true);
-        setCurrentCycle(0);
-        setPhaseIndex(0);
+			{isActive && (
+				<VStack className="items-center gap-1">
+					<Text className="text-ink text-2xl font-semibold text-center">
+						{currentStep?.instruction ?? "Begin..."}
+					</Text>
+					<Text className="text-mistGray text-sm">
+						{t("self.cycleCount", {
+							current: currentCycle + 1,
+							total: TOTAL_CYCLES,
+						}) || `Cycle ${currentCycle + 1} of ${TOTAL_CYCLES}`}
+					</Text>
+				</VStack>
+			)}
 
-        if (Platform.OS !== 'web') {
-            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        }
-    };
+			<Box className="mt-lg">
+				{!isActive ? (
+					<Button
+						size="lg"
+						onPress={startSession}
+						className="rounded-full bg-gurudeviViolet px-xl flex-row items-center justify-center"
+					>
+						<Icon as={Wind} className="text-white mr-2" size={20} />
+						<ButtonText className="text-white">
+							{t("self.startBreathing") || "Start Breathing"}
+						</ButtonText>
+					</Button>
+				) : (
+					<Pressable accessibilityRole="button" onPress={stopSession}>
+						<Text className="text-mistGray text-sm underline">
+							{t("self.stop") || "Stop"}
+						</Text>
+					</Pressable>
+				)}
+			</Box>
 
-    const stopSession = () => {
-        setIsActive(false);
-        setCurrentCycle(0);
-        setPhaseIndex(0);
-        petalScale.value = withTiming(0.8);
-        petalOpacity.value = withTiming(0.5);
-    };
+			{!isActive && (
+				<Box className="mt-md p-md bg-black/5 rounded-comfortable items-center">
+					<Text className="text-mistGray text-xs text-center italic">
+						{t("self.breathHero") ||
+							"One minute of breathing, an hour of calm."}
+					</Text>
+				</Box>
+			)}
 
-    const completeSession = () => {
-        setIsActive(false);
-
-        if (Platform.OS !== 'web') {
-            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        }
-
-        onComplete?.();
-    };
-
-    const petalStyle = useAnimatedStyle(() => ({
-        transform: [
-            { scale: petalScale.value },
-            { rotate: `${petalRotation.value}deg` },
-        ],
-        opacity: petalOpacity.value,
-    } as any));
-
-    const colors = useThemedColors();
-    const currentInstruction = BREATH_CYCLE[phaseIndex]?.instruction || 'Begin...';
-
-    return (
-        <VStack space="lg" sx={{ alignItems: 'center', padding: Theme.spacing.lg }}>
-            {/* Breath visualization - Lotus Petal */}
-            <Box
-                sx={{
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    minHeight: 250,
-                }}
-            >
-                <Animated.View style={petalStyle}>
-                    <Box
-                        sx={{
-                            width: 150,
-                            height: 150,
-                            borderRadius: 75,
-                            backgroundColor: colors.action, // Use theme-aware action color
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            shadowColor: colors.action,
-                            shadowOffset: { width: 0, height: 0 },
-                            shadowOpacity: 0.6,
-                            shadowRadius: 20,
-                            elevation: 10,
-                        }}
-                    >
-                        <Text style={{ fontSize: 48 }}>🌸</Text>
-                    </Box>
-                </Animated.View>
-            </Box>
-
-            {/* Instruction text */}
-            {isActive && (
-                <VStack space="sm" sx={{ alignItems: 'center' }}>
-                    <Text
-                        color={colors.text}
-                        size="2xl"
-                        sx={{ fontWeight: typography.fontWeight.semibold }}
-                    >
-                        {currentInstruction}
-                    </Text>
-                    <Text
-                        color={colors.textSecondary}
-                        size="sm"
-                    >
-                        {t('self.cycleCount', { current: currentCycle + 1, total: TOTAL_CYCLES })}
-                    </Text>
-                </VStack>
-            )}
-
-            {/* Controls */}
-            <Box sx={{ marginTop: Theme.spacing.lg }}>
-                {!isActive ? (
-                    <Button
-                        size="lg"
-                        action="primary"
-                        onPress={startSession}
-                        sx={{
-                            borderRadius: Theme.corners.full,
-                            backgroundColor: colors.action,
-                            paddingHorizontal: Theme.spacing.xl,
-                        }}
-                    >
-                        <Wind
-                            color={Theme.colors.sacredWhite}
-                            size={20}
-                            style={{ marginRight: Theme.spacing.sm }}
-                        />
-                        <ButtonText color={Theme.colors.sacredWhite}>
-                            {t('self.startBreathing')}
-                        </ButtonText>
-                    </Button>
-                ) : (
-                    <Pressable onPress={stopSession}>
-                        <Text
-                            color={colors.textTertiary}
-                            size="sm"
-                            sx={{ textDecorationLine: 'underline' }}
-                        >
-                            {t('self.stop')}
-                        </Text>
-                    </Pressable>
-                )}
-            </Box>
-
-            {/* Info */}
-            {!isActive && (
-                <Box
-                    sx={{
-                        marginTop: Theme.spacing.md,
-                        padding: Theme.spacing.md,
-                        backgroundColor: colors.secondary,
-                        borderRadius: Theme.corners.comfortable,
-                    }}
-                >
-                    <Text
-                        color={colors.textSecondary}
-                        size="xs"
-                        textAlign="center"
-                        sx={{ fontStyle: 'italic' }}
-                    >
-                        {t('self.breathHero')}
-                    </Text>
-                </Box>
-            )}
-        </VStack>
-    );
+			<Box className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
+				<Box
+					className="h-full bg-gurudeviViolet rounded-full"
+					style={{ width: `${progress}%` }}
+				/>
+			</Box>
+		</VStack>
+	);
 }

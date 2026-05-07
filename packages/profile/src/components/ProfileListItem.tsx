@@ -1,76 +1,69 @@
-import React from 'react';
-import { TouchableOpacity } from 'react-native';
-import { Box, HStack, VStack, Text, Theme, useThemedColors, hapticLight } from '@repo/ui';
-import { ChevronRight, LucideIcon } from 'lucide-react-native';
-import { useTranslation } from 'react-i18next';
+import { Box, HStack, Pressable, Text } from "@repo/ui/primitives";
+import { hapticLight } from "@repo/ui/utils/haptics";
+
+import { ChevronRight, type LucideIcon } from "lucide-react-native";
+import type React from "react";
+import { useTranslation } from "react-i18next";
 
 interface ProfileListItemProps {
-    icon: LucideIcon;
-    iconColor?: string;
-    label: string;
-    onPress: () => void;
-    accessibilityLabel?: string;
-    rightElement?: React.ReactNode;
-    showChevron?: boolean;
+	icon: LucideIcon;
+	iconColor?: string;
+	label: string;
+	onPress: () => void;
+	accessibilityLabel?: string;
+	rightElement?: React.ReactNode;
+	showChevron?: boolean;
 }
 
+/**
+ * PROFILE LIST ITEM
+ * Sanctuary V3 standard for settings and navigation items within profiles.
+ */
 const ProfileListItem: React.FC<ProfileListItemProps> = ({
-    icon: Icon,
-    iconColor,
-    label,
-    onPress,
-    accessibilityLabel,
-    rightElement,
-    showChevron = true
+	icon: Icon,
+	iconColor,
+	label,
+	onPress,
+	accessibilityLabel,
+	rightElement,
+	showChevron = true,
 }) => {
-    const colors = useThemedColors() as any;
-    const { t } = useTranslation();
+	const { t } = useTranslation();
 
-    const handlePress = () => {
-        hapticLight();
-        onPress();
-    };
+	const handlePress = () => {
+		hapticLight();
+		onPress();
+	};
 
-    return (
-        <TouchableOpacity
-            onPress={handlePress}
-            accessible={true}
-            accessibilityRole="button"
-            accessibilityLabel={accessibilityLabel || label}
-            style={{
-                backgroundColor: colors.isDark ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.5)',
-                borderRadius: Theme.corners.comfortable,
-                padding: Theme.spacing.md,
-                borderWidth: 1,
-                borderColor: colors.border,
-                minHeight: 52,
-                justifyContent: 'center',
-                ...Theme.shadows.none
-            }}
-        >
-            <HStack justifyContent="space-between" alignItems="center">
-                <HStack space="md" alignItems="center">
-                    <Box
-                        sx={{
-                            p: '$2',
-                            bg: colors.isDark ? 'rgba(255,255,255,0.05)' : colors.secondary,
-                            borderRadius: '$full'
-                        }}
-                    >
-                        <Icon size={18} color={iconColor || colors.action} />
-                    </Box>
-                    <Text color={colors.text} size="sm" bold>
-                        {label}
-                    </Text>
-                </HStack>
+	return (
+		<Pressable
+			onPress={handlePress}
+			accessible={true}
+			accessibilityRole="button"
+			accessibilityLabel={accessibilityLabel || label}
+			className="bg-phase-canvas border border-phase-surface rounded-3xl p-5 mb-2 active:scale-[0.98] transition-all shadow-sm"
+		>
+			<HStack className="justify-between items-center">
+				<HStack space="md" className="items-center">
+					<Box className="w-10 h-10 bg-phase-interactive/10 rounded-2xl items-center justify-center border border-phase-interactive/10">
+						<Icon size={18} color={iconColor || "#4A90E2"} strokeWidth={2.5} />
+					</Box>
+					<Text className="text-phase-text-primary text-base font-bold tracking-tight">
+						{label}
+					</Text>
+				</HStack>
 
-                <HStack space="xs" alignItems="center">
-                    {rightElement}
-                    {showChevron && <ChevronRight size={16} color={colors.textTertiary} />}
-                </HStack>
-            </HStack>
-        </TouchableOpacity>
-    );
+				<HStack space="sm" className="items-center">
+					{rightElement}
+					{showChevron && (
+						<Box className="p-1 rounded-full bg-phase-surface/30">
+							<ChevronRight size={16} color="#9DA1A3" strokeWidth={3} />
+						</Box>
+					)}
+				</HStack>
+			</HStack>
+		</Pressable>
+	);
 };
 
 export default ProfileListItem;

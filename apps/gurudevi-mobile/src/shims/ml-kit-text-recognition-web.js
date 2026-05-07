@@ -13,7 +13,7 @@
  */
 
 const TextRecognition = {
-    recognize: async () => ({ text: '', blocks: [] }),
+	recognize: async () => ({ text: "", blocks: [] }),
 };
 
 module.exports = TextRecognition;

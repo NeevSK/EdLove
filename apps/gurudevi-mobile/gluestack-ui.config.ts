@@ -1,38 +1,60 @@
-import { createConfig } from '@gluestack-ui/themed';
-import { config as defaultConfig } from '@gluestack-ui/config';
-import { Theme } from '@repo/ui';
+import {
+	createConfig,
+	gluestackConfig as defaultConfig,
+} from "@repo/ui/primitives";
+import {
+	amberGlow,
+	bark,
+	emberRed,
+	gurudeviBlue,
+	gurudeviViolet,
+	linen,
+	mistGray,
+	mossGreen,
+	obsidian,
+	sacredWhite,
+	saffronMuted,
+	sageGreen,
+	sanctuarySaffron,
+	shadowViolet,
+	shroud,
+	silk,
+	starlightGray,
+	vellum,
+} from "@repo/ui/theme";
 
 // Extend the default config with our Sanctuary colors
-// This allows using bg="$sanctuarySaffron" instead of Theme.colors.sanctuarySaffron
+// This allows using bg="$sanctuarySaffron" instead of sanctuarySaffron
 export const config = createConfig({
-    ...defaultConfig,
-    tokens: {
-        ...defaultConfig.tokens,
-        colors: {
-            ...defaultConfig.tokens.colors,
-            // Core
-            sanctuarySaffron: Theme.colors.sanctuarySaffron,
-            gurudeviBlue: Theme.colors.gurudeviBlue,
-            gurudeviViolet: Theme.colors.gurudeviViolet,
-            // Dark Mode
-            voidIndigo: Theme.colors.voidIndigo,
-            deepIndigo: Theme.colors.deepIndigo,
-            midnightBlue: Theme.colors.midnightBlue,
-            sacredWhite: Theme.colors.sacredWhite,
-            starlightGray: Theme.colors.starlightGray,
-            // Light Mode
-            creamSilence: Theme.colors.creamSilence,
-            lotusWhite: Theme.colors.lotusWhite,
-            sandStone: Theme.colors.sandStone,
-            charcoalTruth: Theme.colors.charcoalTruth,
-            stoneGray: Theme.colors.stoneGray,
-            // Functional
-            emberRed: Theme.colors.emberRed,
-            sageGreen: Theme.colors.sageGreen,
-            mossGreen: Theme.colors.mossGreen,
-            amberGlow: Theme.colors.amberGlow,
-            pearlGray: Theme.colors.pearlGray,
-            mistGray: Theme.colors.mistGray,
-        },
-    },
+	...defaultConfig,
+	tokens: {
+		...defaultConfig.tokens,
+		colors: {
+			...defaultConfig.tokens.colors,
+			// Core
+			sanctuarySaffron: sanctuarySaffron,
+			saffronMuted: saffronMuted,
+			gurudeviBlue: gurudeviBlue,
+			gurudeviViolet: gurudeviViolet,
+			// Dark Mode
+			obsidian: obsidian,
+			ink: "#2A2318",
+			shroud: shroud,
+			sacredWhite: sacredWhite,
+			starlightGray: starlightGray,
+			// Light Mode
+			vellum: vellum,
+			silk: silk,
+			linen: linen,
+			inkTruth: "#2A2318",
+			bark: bark,
+			// Functional
+			emberRed: emberRed,
+			sageGreen: sageGreen,
+			mossGreen: mossGreen,
+			amberGlow: amberGlow,
+			shadowViolet: shadowViolet,
+			mistGray: mistGray,
+		},
+	},
 });

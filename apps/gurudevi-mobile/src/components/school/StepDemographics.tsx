@@ -1,112 +1,105 @@
-import React from 'react';
+import { RELIGIOUS_AFFILIATIONS, STUDENT_TYPES } from "@repo/core/constants";
+import SanctuaryInput from "@repo/ui/components/SanctuaryInput";
 import {
-    VStack,
-    Text,
-    HStack,
-    Pressable,
-    useThemedColors,
-    Theme,
-    FormControl,
-    FormControlLabel,
-    FormControlLabelText,
-    SanctuaryInput
-} from '@repo/ui';
-import { STUDENT_TYPES, RELIGIOUS_AFFILIATIONS } from '@repo/core';
-import { Users, Book } from 'lucide-react-native';
-import { useTranslation } from 'react-i18next';
+	FormControl,
+	FormControlLabel,
+	FormControlLabelText,
+	HStack,
+	Pressable,
+	Text,
+	VStack,
+} from "@repo/ui/primitives";
+
+import { Users } from "lucide-react-native";
+import { useTranslation } from "react-i18next";
 
 interface StepDemographicsProps {
-    data: {
-        studentType: 'mixed' | 'boys' | 'girls' | '';
-        religiousAffiliation: string;
-        studentCount: string;
-    };
-    onUpdate: (demo: Partial<StepDemographicsProps['data']>) => void;
+	data: {
+		studentType: "mixed" | "boys" | "girls" | "";
+		religiousAffiliation: string;
+		studentCount: string;
+	};
+	onUpdate: (demo: Partial<StepDemographicsProps["data"]>) => void;
 }
 
-export default function StepDemographics({ data, onUpdate }: StepDemographicsProps) {
-    const colors = useThemedColors();
-    const { t, i18n } = useTranslation();
-    const lang = (i18n.resolvedLanguage ?? 'en') as 'en' | 'si' | 'ta';
+export default function StepDemographics({
+	data,
+	onUpdate,
+}: StepDemographicsProps) {
+	const { t, i18n } = useTranslation();
+	const lang = (i18n.resolvedLanguage ?? "en") as "en" | "si" | "ta";
 
-    return (
-        <VStack sx={{ gap: '$lg' as any }}>
-            <FormControl>
-                <FormControlLabel sx={{ marginBottom: '$2' as any }}>
-                    <FormControlLabelText color={colors.textSecondary} sx={{ fontSize: '$sm' as any }}>
-                        {t('schoolSetup.studentBodyType')}
-                    </FormControlLabelText>
-                </FormControlLabel>
-                <HStack sx={{ gap: '$sm' as any, flexWrap: 'wrap' }}>
-                    {STUDENT_TYPES.map(type => (
-                        <Pressable
-                            key={type.id}
-                            onPress={() => onUpdate({ studentType: type.id as any })}
-                            sx={{
-                                flex: 1,
-                                minWidth: '30%',
-                                padding: '$3' as any,
-                                borderRadius: Theme.corners.comfortable,
-                                borderWidth: 2,
-                                borderColor: data.studentType === type.id ? Theme.colors.sanctuarySaffron : colors.border,
-                                backgroundColor: data.studentType === type.id ? `${Theme.colors.sanctuarySaffron}10` : colors.secondary,
-                                alignItems: 'center'
-                            }}
-                        >
-                            <Text
-                                color={data.studentType === type.id ? Theme.colors.sanctuarySaffron : colors.text}
-                                bold={data.studentType === type.id}
-                                sx={{ fontSize: '$sm' as any }}
-                            >
-                                {(type[lang] ?? type.en).split(' ')[0]}
-                            </Text>
-                        </Pressable>
-                    ))}
-                </HStack>
-            </FormControl>
+	return (
+		<VStack className="gap-6">
+			<FormControl>
+				<FormControlLabel className="mb-2">
+					<FormControlLabelText className="text-secondary-400 text-sm">
+						{t("schoolSetup.studentBodyType")}
+					</FormControlLabelText>
+				</FormControlLabel>
+				<HStack className="gap-2 flex-wrap">
+					{STUDENT_TYPES.map((type) => {
+						const isSelected = data.studentType === type.id;
+						return (
+							<Pressable
+								accessibilityRole="button"
+								key={type.id}
+								onPress={() =>
+									onUpdate({
+										studentType:
+											type.id as StepDemographicsProps["data"]["studentType"],
+									})
+								}
+								className={`flex-1 min-w-[30%] p-3 rounded-xl border-2 items-center ${isSelected ? "border-primary-500 bg-primary-500/10" : "border-white/10 bg-secondary-900"}`}
+							>
+								<Text
+									className={`text-sm ${isSelected ? "text-primary-500 font-bold" : "text-white"}`}
+								>
+									{(type[lang] ?? type.en).split(" ")[0]}
+								</Text>
+							</Pressable>
+						);
+					})}
+				</HStack>
+			</FormControl>
 
-            {/* Religious Affiliation might use a similar selection style or dropdown */}
-            <SanctuaryInput
-                label={t('schoolSetup.studentCount')}
-                placeholder={t('schoolSetup.studentCountPlaceholder')}
-                value={data.studentCount}
-                onChangeText={(text) => onUpdate({ studentCount: text })}
-                leftIcon={Users}
-                {...({ keyboardType: 'numeric' } as any)}
-            />
+			<SanctuaryInput
+				label={t("schoolSetup.studentCount")}
+				placeholder={t("schoolSetup.studentCountPlaceholder")}
+				value={data.studentCount}
+				onChangeText={(text) => onUpdate({ studentCount: text })}
+				leftIcon={Users}
+				keyboardType="numeric"
+			/>
 
-            <FormControl>
-                <FormControlLabel sx={{ marginBottom: '$2' as any }}>
-                    <FormControlLabelText color={colors.textSecondary} sx={{ fontSize: '$sm' as any }}>
-                        {t('schoolSetup.religiousContext')}
-                    </FormControlLabelText>
-                </FormControlLabel>
-                <VStack sx={{ gap: '$xs' as any }}>
-                    <HStack sx={{ gap: '$xs' as any, flexWrap: 'wrap' }}>
-                        {RELIGIOUS_AFFILIATIONS.map(rel => (
-                            <Pressable
-                                key={rel.id}
-                                onPress={() => onUpdate({ religiousAffiliation: rel.id })}
-                                sx={{
-                                    paddingHorizontal: '$3' as any,
-                                    paddingVertical: '$2' as any,
-                                    borderRadius: Theme.corners.full,
-                                    borderWidth: 1,
-                                    borderColor: data.religiousAffiliation === rel.id ? Theme.colors.sanctuarySaffron : colors.border,
-                                    backgroundColor: data.religiousAffiliation === rel.id ? Theme.colors.sanctuarySaffron : 'transparent',
-                                }}
-                            >
-                                <Text
-                                    color={data.religiousAffiliation === rel.id ? Theme.colors.sacredWhite : colors.textSecondary}
-                                    sx={{ fontSize: '$xs' as any }}
-                                >
-                                    {rel[lang] ?? rel.en}
-                                </Text>
-                            </Pressable>
-                        ))}
-                    </HStack>
-                </VStack>
-            </FormControl>
-        </VStack>
-    );
+			<FormControl>
+				<FormControlLabel className="mb-2">
+					<FormControlLabelText className="text-secondary-400 text-sm">
+						{t("schoolSetup.religiousContext")}
+					</FormControlLabelText>
+				</FormControlLabel>
+				<VStack className="gap-1">
+					<HStack className="gap-1 flex-wrap">
+						{RELIGIOUS_AFFILIATIONS.map((rel) => {
+							const isSelected = data.religiousAffiliation === rel.id;
+							return (
+								<Pressable
+									accessibilityRole="button"
+									key={rel.id}
+									onPress={() => onUpdate({ religiousAffiliation: rel.id })}
+									className={`px-3 py-2 rounded-full border ${isSelected ? "border-primary-500 bg-primary-500" : "border-white/10 bg-transparent"}`}
+								>
+									<Text
+										className={`text-xs ${isSelected ? "text-white" : "text-secondary-400"}`}
+									>
+										{rel[lang] ?? rel.en}
+									</Text>
+								</Pressable>
+							);
+						})}
+					</HStack>
+				</VStack>
+			</FormControl>
+		</VStack>
+	);
 }

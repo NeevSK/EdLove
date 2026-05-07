@@ -1,0 +1,12 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+plugin orm {
+  provider = "@zenstackhq/orm"
+}
+
+plugin policy {
+  provider = "@zenstackhq/plugin-policy"
+}

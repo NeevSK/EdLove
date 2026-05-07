@@ -71,11 +71,16 @@ jobs:
       - name: 🏗 Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version-file: '.nvmrc'
           cache: 'pnpm'
 
       - name: 📦 Install dependencies
-        run: pnpm install --fetch-timeout 100000
+        run: pnpm install --frozen-lockfile --fetch-timeout 100000
+
+      - name: 🔍 Verify Module Resolution (Critical CSS)
+        run: |
+          cd apps/gurudevi-mobile
+          node -e "try { require.resolve('@repo/ui/global.css'); console.log('✅ @repo/ui/global.css is resolvable'); } catch(e) { console.error('❌ @repo/ui/global.css NOT found'); process.exit(1); }"
 
       - name: 🔍 Debug — Runner environment
         run: |
@@ -134,10 +139,14 @@ jobs:
         continue-on-error: true
         env:
           EXPO_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          EXPO_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
           EXPO_PUBLIC_POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
           EXPO_PUBLIC_POSTHOG_HOST: ${{ secrets.POSTHOG_HOST }}
+          EXPO_PUBLIC_SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+          EXPO_PUBLIC_INNGEST_EVENT_KEY: ${{ secrets.INNGEST_EVENT_KEY }}
+          EXPO_PUBLIC_POWERSYNC_URL: ${{ secrets.POWERSYNC_URL }}
           NODE_ENV: production
+          NODE_OPTIONS: --max-old-space-size=8192
         run: |
           mkdir -p /tmp/sentry-artifacts
 
@@ -146,13 +155,10 @@ jobs:
           echo "Output: /tmp/sentry-artifacts/"
           echo ""
 
-          # IMPORTANT: Run from workspace root, not from apps/gurudevi-mobile.
-          # Metro resolves the entry file relative to --project-root.
-          # When run from the monorepo root, passing the full relative path works.
+          cd apps/gurudevi-mobile
           pnpm exec expo export:embed \
             --platform android \
-            --project-root apps/gurudevi-mobile \
-            --entry-file apps/gurudevi-mobile/index.ts \
+            --entry-file index.ts \
             --bundle-output /tmp/sentry-artifacts/index.android.bundle \
             --sourcemap-output /tmp/sentry-artifacts/index.android.bundle.map \
             --dev false \
@@ -244,7 +250,7 @@ jobs:
       - name: 🏗 Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version-file: '.nvmrc'
           cache: 'pnpm'
 
       - name: 🏗 Setup JDK 17
@@ -302,12 +308,27 @@ jobs:
           echo "=== Restored artifacts on build runner ==="
           ls -lah /tmp/sentry-artifacts/ || echo "(nothing restored)"
 
+      - name: 🔍 Debug — Verify sentry.properties after prebuild
+        if: github.event.inputs.build_method == 'local'
+        run: |
+          echo "=== Searching for sentry.properties in workspace ==="
+          find $GITHUB_WORKSPACE -name "sentry.properties" 2>/dev/null || echo "(none found yet — prebuild hasn't run)"
+          echo ""
+          echo "=== Note ==="
+          echo "sentry.properties is generated during EAS prebuild inside /tmp/runner/..."
+          echo "The plugin console logs above (in the build output) are the real verification."
+          echo "Look for the ╔══╗ banner in the [PREBUILD] section of the build log."
+
       - name: 🚀 Build App
         env:
           EXPO_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          EXPO_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
           EXPO_PUBLIC_POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
           EXPO_PUBLIC_POSTHOG_HOST: ${{ secrets.POSTHOG_HOST }}
+          EXPO_PUBLIC_SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+          EXPO_PUBLIC_INNGEST_EVENT_KEY: ${{ secrets.INNGEST_EVENT_KEY }}
+          EXPO_PUBLIC_POWERSYNC_URL: ${{ secrets.POWERSYNC_URL }}
+          NODE_OPTIONS: --max-old-space-size=8192
         run: |
           pnpm config set side-effects-cache false
           pnpm approve-builds --yes 2>/dev/null || true
@@ -387,6 +408,7 @@ jobs:
   sentry-upload:
     needs: [prep, prebundle, build]
     runs-on: ubuntu-latest
+    continue-on-error: true
     if: |
       needs.build.result == 'success' &&
       needs.prebundle.outputs.sourcemaps_available == 'true' &&
@@ -406,7 +428,7 @@ jobs:
       - name: 🏗 Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version-file: '.nvmrc'
           cache: 'pnpm'
 
       - name: 📦 Install dependencies
@@ -485,6 +507,7 @@ jobs:
         run: |
           BUNDLE_PATH="/tmp/sentry-artifacts/index.android.bundle"
           MAP_PATH="/tmp/sentry-artifacts/index.android.bundle.map"
+          STRIP_PREFIX="$GITHUB_WORKSPACE/apps/gurudevi-mobile"
 
           if [ ! -f "$BUNDLE_PATH" ]; then
             echo "❌ Bundle not found at $BUNDLE_PATH"
@@ -513,11 +536,51 @@ jobs:
           echo "   Project : gurudevi-mobile"
           echo "   Release : $RELEASE"
           echo "   Dist    : $VERSION_CODE"
+          echo "   Prefix  : $STRIP_PREFIX"
 
           cd apps/gurudevi-mobile
-          pnpm exec sentry-cli sourcemaps upload \
-            --release "$RELEASE" \
-            --dist "$VERSION_CODE" \
-            "$BUNDLE_PATH" "$MAP_PATH"
+
+          echo "Attempting modern Expo upload mode (debug-id-reference)..."
+          UPLOAD_OK=0
+          for ATTEMPT in 1 2 3; do
+            echo "Modern upload attempt $ATTEMPT/3"
+            if pnpm exec sentry-cli sourcemaps upload \
+              --org "$SENTRY_ORG" \
+              --project "$SENTRY_PROJECT" \
+              --debug-id-reference \
+              --strip-prefix "$STRIP_PREFIX" \
+              --validate \
+              "$BUNDLE_PATH" \
+              "$MAP_PATH"; then
+              UPLOAD_OK=1
+              break
+            fi
+            sleep $((ATTEMPT * 10))
+          done
+
+          if [ "$UPLOAD_OK" -eq 0 ]; then
+            echo "⚠️ Modern upload mode failed. Falling back to release/dist mode..."
+            for ATTEMPT in 1 2 3; do
+              echo "Legacy upload attempt $ATTEMPT/3"
+              if pnpm exec sentry-cli sourcemaps upload \
+                --org "$SENTRY_ORG" \
+                --project "$SENTRY_PROJECT" \
+                --release "$RELEASE" \
+                --dist "$VERSION_CODE" \
+                --strip-prefix "$STRIP_PREFIX" \
+                --validate \
+                "$BUNDLE_PATH" \
+                "$MAP_PATH"; then
+                UPLOAD_OK=1
+                break
+              fi
+              sleep $((ATTEMPT * 10))
+            done
+          fi
+
+          if [ "$UPLOAD_OK" -ne 1 ]; then
+            echo "❌ Sentry sourcemap upload failed after all retries and fallback modes."
+            exit 1
+          fi
 
           echo "✅ Sentry sourcemap upload complete."

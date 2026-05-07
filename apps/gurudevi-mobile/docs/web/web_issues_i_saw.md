@@ -1,12 +1,49 @@
 this doc is to list issues in web i saw when manual testing.
-## 08/03/2026 (latest [n])
+
+
+## 13/03/2026 (latest - [n])
+
+###  2.45 pm
+1. add info icon and when clicked it should show modal with info about that feature and where to find it in app. (neeed to test for self section)
+2. in community scetion there are 3 main parts and 4 cumulative sub parts. feed, groups, dms are 3 main parts and in groups there are 2 parts where joined groups vs global groups. so that how things are. then i think we need to groups tab to align with two types and i think whats there now seems not aligh with that. we need UI and wiring and everything. including showing global groups to everyone should be functional. currently, in small screens it shows upper bar instead of sid list of thing but upper bar only as three things
+3. lots of Missing translations. 
+4. self ui should be more human, organic, soulful - now its its not good its bad i dont know why. something is there.  may be texture of UI which feels like grainy or rough i dont know. may be emoji varient is ugly i dont know something is out of alignment. may be something is missing or something is not there. layout may be fine. 
+5. in profile scetion - social links parts lets make inline editable than open in new modal again. we can show icons of different social medias and then let edit the contact. may be need validation or confirmation of ownership of they very contact?. privacy(visible to whom?) thing may be using emojies such as eye to visibility globe for public and lock for private and two people for only frineds. think as UX stragist and best user experience.(need to check mobile as wel) 
+6. need to implement and if implemented then need to check whether its working the social profile thing when someone tap on the avatar or profile icon in community section.
+7. school, classroom, community creation modal should be isomorphic and accurate against real world info, details in context of sri lanka, and need to validate and make it accurate fo user inputs. and it should be flowing one step by step than being confusing. (this should be same for mobile too.[need to implement in upstream so usable for both platforms])
+8. after creating school/classroom/community it should be visible in the list of schools/classrooms/communities in the app. and user should be accurately use it. 
+
+## 09/03/2026 (latest [n])
+
+### 2.00 pm
+1. https://platform.gurudevi.edlove.org/?error=server_error&error_code=unexpected_failure&error_description=Database+error+saving+new+user#error=server_error&error_code=unexpected_failure&error_description=Database+error+saving+new+user&sb= (seems okay)
+2. explore as guest not wroking - seems we had some plans but didnt continued in other hand we changed identityapi and users recently.
+3. loading shimmers are very small and ugly not aligned with screen size(in large screens where shimmers are too small). i think may be issues is we are using mobile native shimmers in web which  can't match web screen sizes? then what?
+4. lazy loading seems making everything slow. is that a issue or only because local build? (why lazy loading over other way - justify)
+5. in smaller desktop screens(responsiveness) when bottom bar is appeared and side bar become hamberger. when opening the hamberger menu it clashes with bottom bar. so it need to close the bottom bar when opening the hamberger menu.
+6. the dot icon on notification bell s is still there in side bar though when no notifications. though tried still same.
+7. icons are not aligned in the collapsed side bar specially setting icon in below. seems setting icon is has s\different padding etc. 
+8. in sidebar, there is text as naviagte, lets rename it as Menu and lets bring the collapsing icon to right side to the label where its in left side.. seems okay this.
+9. the name and top most part of self screen is different from other sections(which has specific font etc), we need to keep the UI standard b making self section aligned with other pages(for everyone). done 
+10. wire all features in functional way with db saving all things in temporal manner
+11. ai and ocr features, library and maps
+12. community groups
+13. demo classroom for even guest, newly authed based on view
+14. easily accessible breathing guides
+15. info or guidance for each feature and where to put them???
+
+
+
+
+## 08/03/2026 (latest [n-1])
 
 ### 4.00 pm
 1. what is the mechanism to handle this? both mobile and web. need to show user to say in {email} already have an accout and please login while user shiuld directed to auth -> login page. https://platform.gurudevi.edlove.org/?error=server_error&error_code=identity_already_exists&error_description=Identity+is+already+linked#error=server_error&error_code=identity_already_exists&error_description=Identity+is+already+linked&sb=
 
 
 
-## 07/03/2026 (previous [n-1])
+
+## 07/03/2026 (previous [n-2])
 
 ### 11.00 pm
 1. remove founder, developer admin rolew from onboarding journey screens in both web (done)

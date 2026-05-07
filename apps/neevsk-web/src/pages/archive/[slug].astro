@@ -1,29 +1,49 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import Navigation from '../../components/Navigation.astro';
-import RealitySwitch from '../../components/RealitySwitch.astro';
-import { getCollection, render } from 'astro:content';
+import { getCollection, render } from "astro:content";
+import Navigation from "../../components/Navigation.astro";
+import RealitySwitch from "../../components/RealitySwitch.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { absoluteUrl } from "../../lib/site";
 
 export async function getStaticPaths() {
-  const archiveEntries = await getCollection('archive');
-  return archiveEntries.map(entry => ({
-    params: { slug: entry.slug }, props: { entry },
-  }));
+	const archiveEntries = await getCollection("archive");
+	return archiveEntries.map((entry) => ({
+		params: { slug: entry.id.replace(/\.(md|mdx)$/, "") },
+		props: { entry },
+	}));
 }
 
 const { entry } = Astro.props;
 const { Content } = await render(entry);
 
-const formatDate = (date: Date) => {
-    return date.toLocaleDateString('en-CA', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit'
-    }).replace(/-/g, '.');
+const _formatDate = (date: Date) => {
+	return date
+		.toLocaleDateString("en-CA", {
+			year: "numeric",
+			month: "2-digit",
+			day: "2-digit",
+		})
+		.replace(/-/g, ".");
+};
+
+const articleSlug = entry.id.replace(/\.(md|mdx)$/i, "");
+const articleUrl = absoluteUrl(`/archive/${articleSlug}`);
+const _structuredData = {
+	"@context": "https://schema.org",
+	"@type": "Article",
+	headline: entry.data.title,
+	description: entry.data.subtitle ?? entry.data.title,
+	url: articleUrl,
+	datePublished: entry.data.publishDate.toISOString(),
+	keywords: entry.data.tags ?? [],
+	author: {
+		"@type": "Person",
+		name: "NeevSK",
+	},
 };
 ---
 
-<BaseLayout title={entry.data.title}>
+<BaseLayout title={`${entry.data.title} | NeevSK`} description={entry.data.subtitle ?? entry.data.title} structuredData={_structuredData}>
 	<RealitySwitch />
 	
 	<main class="max-w-3xl mx-auto px-6 pb-24">
@@ -32,7 +52,7 @@ const formatDate = (date: Date) => {
 		<article class="mt-24">
 			<header class="mb-16">
 				<div class="flex items-center gap-4 mb-8">
-					<span class="text-[10px] font-mono opacity-40">{formatDate(entry.data.publishDate)}</span>
+					<span class="text-[10px] font-mono opacity-40">{_formatDate(entry.data.publishDate)}</span>
 					<div class="h-px flex-1 bg-[var(--text-main)]/5"></div>
 				</div>
 				
@@ -53,7 +73,7 @@ const formatDate = (date: Date) => {
 
 			<footer class="mt-32 pt-12 border-t border-[var(--text-main)]/10">
 				<div class="flex flex-wrap gap-4">
-					{entry.data.tags.map(tag => (
+					{entry.data.tags.map((tag: any) => (
 						<span class="text-[10px] uppercase tracking-widest font-mono bg-[var(--text-main)]/5 px-3 py-1 rounded-full opacity-40">
 							#{tag}
 						</span>

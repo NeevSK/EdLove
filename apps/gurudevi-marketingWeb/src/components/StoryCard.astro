@@ -1,0 +1,32 @@
+---
+interface Props {
+	quote: string;
+	author: string;
+	role: string;
+}
+
+const { quote, author, role } = Astro.props;
+---
+
+<div class="p-8 md:p-12 bg-white rounded-[3rem] border border-mud-brown/10 shadow-sm hover:shadow-xl transition-all duration-500 flex flex-col justify-between h-full group">
+  <div class="space-y-6">
+    <div class="text-sanctuary-saffron opacity-20 group-hover:opacity-40 transition-opacity">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M14.017 21L14.017 18C14.017 16.8954 14.9124 16 16.017 16H19.017C19.5693 16 20.017 15.5523 20.017 15V9C20.017 8.44772 19.5693 8 19.017 8H16.017C14.9124 8 14.017 7.10457 14.017 6V3H21.017V12C21.017 16.9706 17.0006 21 12.017 21H14.017ZM5.017 21L5.017 18C5.017 16.8954 5.91243 16 7.017 116H10.017C11.5693 16 11.017 15.5523 11.017 15V9C11.017 8.44772 11.5693 8 11.017 8H7.017C5.91243 8 5.017 7.10457 5.017 6V3H12.017V12C12.017 16.9706 7.9878 21 2.99997 21H5.017Z" />
+      </svg>
+    </div>
+    <p class="text-xl md:text-2xl text-mud-brown leading-relaxed font-medium italic">
+      "{quote}"
+    </p>
+  </div>
+  
+  <div class="mt-8 pt-6 border-t border-mud-brown/5 flex items-center space-x-4">
+    <div class="w-12 h-12 bg-temple-stone rounded-full flex items-center justify-center text-charcoal-truth font-bold">
+      {author[0]}
+    </div>
+    <div>
+      <h4 class="font-bold text-charcoal-truth">{author}</h4>
+      <p class="text-sm text-peacock-blue uppercase tracking-widest font-semibold">{role}</p>
+    </div>
+  </div>
+</div>

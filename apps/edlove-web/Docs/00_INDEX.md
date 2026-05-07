@@ -1,11 +1,11 @@
-# EDLOVE.ORG — DOCUMENT CONSTELLATION
+# EDLOVE.ORG - DOCUMENT CONSTELLATION
 ## 00 INDEX | The Navigator
 
-**Project**: edlove.org — Educational Transformation Ecosystem  
+**Project**: edlove.org - Educational Transformation Ecosystem  
 **Lead Architect**: Neev (Intuitui Labs / Gurudevi)  
 **AI Collaborator**: Claude (Anthropic)  
-**Last Updated**: February 3, 2026  
-**Status**: Active — Phase 1 Build
+**Last Updated**: April 17, 2026  
+**Status**: Active - Phase 1 Build
 
 ---
 
@@ -13,33 +13,35 @@
 
 This is the living map of everything edlove.org is, does, and will become. Every document in this constellation has a purpose. Nothing is redundant. Everything connects.
 
-When you need to find something — come here first.  
-When you need to hand something to Cursor AI — grab the relevant doc(s) from here.  
-When you need to remember why we're building this — read 01_PHILOSOPHY first.
+When you need to find something, come here first.  
+When you need to hand something to an AI collaborator, grab the relevant docs from here.  
+When you need to remember why we are building this, read `01_PHILOSOPHY.md` first.
 
 ---
 
 ## THE CONSTELLATION MAP
 
-```
-                    ★ 00_INDEX (you are here)
+```text
+                    * 00_INDEX (you are here)
                           |
-          ┌───────────────┼───────────────┐
-          ↓               ↓               ↓
-   ★ 01_PHILOSOPHY   ★ 02_DESIGN    ★ 03_TECH
+          ----------------+----------------
+          |               |               |
+          v               v               v
+   * 01_PHILOSOPHY   * 02_DESIGN    * 03_TECH
       (the root)     (the aesthetic)  (the build)
-          |               |               |
-          |               |               |
-          ↓               ↓               ↓
-   ┌──────┴──────────────────────────┐
-   ↓                                 ↓
-★ DOMAIN DOCS                  ★ 10_ROADMAP
-   ├── 04_Domain_I_Paradigm_Cosmos     (the timeline)
-   ├── 05_Domain_II_Sri_Lanka
-   ├── 06_Domain_III_Gurudevi
-   ├── 07_Domain_IV_Resources
-   ├── 08_Domain_V_Sangha
-   └── 09_Domain_VI_Epistemic_Core
+          |                               |
+          |                               |
+          v                               v
+   --------------------------       * 10_ROADMAP
+   |                        |         (the timeline)
+   v                        v
+* DOMAIN DOCS         * STATUS / FUTURE DOCS
+  - 04 Domain I         - 18 Web Platform Status
+  - 05 Domain II        - 19 AI-Native Web Roadmap
+  - 06 Domain III
+  - 07 Domain IV
+  - 08 Domain V
+  - 09 Domain VI
 ```
 
 ---
@@ -48,114 +50,138 @@ When you need to remember why we're building this — read 01_PHILOSOPHY first.
 
 | File | Name | What It Holds | Status |
 |------|------|---------------|--------|
-| 00_INDEX.md | The Navigator | This file. Map of everything. | ✅ Active |
-| 01_PHILOSOPHY.md | The Root | WHY edlove exists. Core principles. Topological invariants. | ✅ Active |
-| 02_DESIGN.md | Contextual Design System | Foundation + contextual aesthetics for EdLove.org | ✅ Active |
-| 03_TECH.md | The Build Guide | Stack, hosting, file structure, AI workflow, subdomains | ✅ Active |
-| 04_Domain_I.md | Paradigm Cosmos | The widest exploration of education | ✅ Active |
-| 05_Domain_II.md | Sri Lanka | The local ground truth | ✅ Active |
-| 06_Domain_III.md | Gurudevi | The flagship tool pointer page | ✅ Active |
-| 07_Domain_IV.md | Resources | Coordination of education resources | v0.1 Sketch |
-| 08_Domain_V.md | Sangha | The community layer | v0.1 Sketch |
-| 09_Domain_VI.md | Epistemic Core | The intellectual backbone | ✅ Active |
-| 10_ROADMAP.md | The Timeline | Phases, weeks, checklists, metrics | ✅ Active |
-| 11_SUBDOMAIN_NOTES.md | Ecosystem Context | Brief notes on the three subdomains | 📝 Placeholder |
-| 12_WALKTHROUGH.md | Build Logs | History of what has been built and verified | ✅ Active |
-| 13_GLOBAL_INNOVATION_GALLERY.md | Global Gallery | 40+ countries and niche innovations (The Gallery) | ✅ Active |
-| 14_SRI_LANKA_FRIENDLY_TOOLS.md | Local Tools | Hyper-local and low-bandwidth strategies for SL | ✅ Active |
-| 15_THE_TEACHER_LIFECYCLE.md | Teacher Lifecycle | Global process tools for the human derrière the desk | ✅ Active |
-| 16_PATTERN_LANGUAGE.md | Pattern Language | Synergetic principles (Fuller/Alexander) | ✅ Active |
-| 17_THE_STUDENTS_JOURNEY.md | Student Journey | Sovereignty, metacognition, and peer learning | ✅ Active |
+| 00_INDEX.md | The Navigator | This file. Map of everything. | Active |
+| 01_PHILOSOPHY.md | The Root | Why edlove exists. Core principles. Topological invariants. | Active |
+| 02_DESIGN.md | Contextual Design System | Foundation plus contextual aesthetics for edlove.org. | Active |
+| 03_TECH.md | The Build Guide | Stack, hosting, file structure, AI workflow, subdomains. | Active |
+| 04_Domain_I.md | Paradigm Cosmos | The widest exploration of education. | Active |
+| 05_Domain_II.md | Sri Lanka | The local ground truth. | Active |
+| 06_Domain_III.md | Gurudevi | The flagship tool pointer page. | Active |
+| 07_Domain_IV.md | Resources | Coordination of education resources. | v0.1 Sketch |
+| 08_Domain_V.md | Sangha | The community layer. | v0.1 Sketch |
+| 09_Domain_VI.md | Epistemic Core | The intellectual backbone. | Active |
+| 10_ROADMAP.md | The Timeline | Phases, weeks, checklists, metrics. | Active |
+| 11_SUBDOMAIN_NOTES.md | Ecosystem Context | Brief notes on the three subdomains. | Placeholder |
+| 12_WALKTHROUGH.md | Build Logs | History of what has been built and verified. | Active |
+| 13_GLOBAL_INNOVATION_GALLERY.md | Global Gallery | 40+ countries and niche innovations. | Active |
+| 14_SRI_LANKA_FRIENDLY_TOOLS.md | Local Tools | Hyper-local and low-bandwidth strategies for Sri Lanka. | Active |
+| 15_THE_TEACHER_LIFECYCLE.md | Teacher Lifecycle | Global process tools for the human behind the desk. | Active |
+| 16_PATTERN_LANGUAGE.md | Pattern Language | Synergetic principles. | Active |
+| 17_THE_STUDENTS_JOURNEY.md | Student Journey | Sovereignty, metacognition, and peer learning. | Active |
+| 18_WEB_PLATFORM_STATUS_2026-04-17.md | Web Platform Status | Cross-site migration status, current health, and next technical moves. | Active |
+| 19_AI_NATIVE_WEB_ROADMAP.md | AI-Native Web Roadmap | Layered strategy for semantic, structured, and agent-friendly websites. | Active |
 
 ---
 
-## THE TOPOLOGY (Quick Reference)
+## THE TOPOLOGY
 
-Edlove's shape — like a donut in topology — stays true no matter how we stretch or evolve it. These are the **invariants**. The properties that define us no matter what:
+Edlove's shape, like a donut in topology, stays true no matter how we stretch or evolve it. These are the invariants:
 
-1. **Professional yet soulful and alive** — the feeling
-2. **Education as care work** — the philosophical root
-3. **Global + Local simultaneously** — the dual zoom
-4. **The Cosmos** — education in its widest sense (all life, all time)
-5. **Sri Lanka** — the specific ground we stand on
-6. **Gurudevi** — the flagship tool for present reality
-7. **Resources** — coordinating what education needs to flourish
-8. **Community** — the human connections that sustain everything
-9. **Epistemic Core** — the knowledge backbone, sovereign yet connected to all
+1. Professional yet soulful and alive
+2. Education as care work
+3. Global and local simultaneously
+4. The Cosmos
+5. Sri Lanka
+6. Gurudevi
+7. Resources
+8. Community
+9. Epistemic Core
 
-These 9 points are the **non-negotiables**. Everything else can change. These cannot.
+Everything else can change. These cannot.
 
 ---
 
 ## THE ECOSYSTEM CONTEXT
 
-**EdLove.org is the main house** — six domains, fully documented here.
+**EdLove.org is the main house** - six domains, fully documented here.
 
 **Three subdomains exist as temporary homes** within the edlove.org domain:
-- **gurudevi.edlove.org** — Teacher sanctuary web companion (full site, eventually migrates to gurudevi.lk)
-- **intuitui.edlove.org** — Systems intelligence studio / professional practice (eventually migrates to intuituilabs.lk)
-- **neevsk.edlove.org** — Personal portfolio, writing, CV (Neev's own space)
+
+- `gurudevi.edlove.org` - Teacher sanctuary web companion
+- `intuitui.edlove.org` - Systems intelligence studio / professional practice
+- `neevsk.edlove.org` - Personal portfolio, writing, CV
 
 **Why subdomains temporarily:**
-- Economic reality (separate domains cost money)
-- Shows ecosystem connection
-- Professional and functional
-- Easy migration when revenue flows
+
+- economic reality
+- visible ecosystem connection
+- professional and functional URLs
+- easy migration later
 
 **Documentation strategy:**
-- **This constellation documents EdLove.org** (the priority, Phase 1)
-- **Subdomains documented separately** when ready to build (not now)
-- See `11_SUBDOMAIN_NOTES.md` for brief context
 
-**Focus:** Build the main house first. Subdomains later.
+- This constellation documents EdLove.org as the Phase 1 priority
+- Subdomains are documented separately when needed
+- See `11_SUBDOMAIN_NOTES.md` for brief context
+- Cross-site web migration and AI-native direction are now tracked in:
+  - `18_WEB_PLATFORM_STATUS_2026-04-17.md`
+  - `19_AI_NATIVE_WEB_ROADMAP.md`
+
+**Focus**: Build the main house first. Subdomains later.
 
 ---
 
 ## HOW TO USE THIS CONSTELLATION
 
-### When building with Cursor AI:
-Feed it: **00_INDEX** + **02_DESIGN** + **03_TECH** + the specific **Domain doc** you're building.  
-That's it. Clean. Focused. No noise.
+### When building with AI tools
 
-### When writing content:
-Feed it: **00_INDEX** + **01_PHILOSOPHY** + **02_DESIGN** (voice section) + the specific **Domain doc**.
+Feed:
 
-### When planning or deciding:
-Read: **01_PHILOSOPHY** first. Then **10_ROADMAP**. Then whatever domain is relevant.
+- `00_INDEX.md`
+- `02_DESIGN.md`
+- `03_TECH.md`
+- the specific domain doc
 
-### When something feels off:
-Check against **01_PHILOSOPHY**. The guiding questions live there. If something doesn't pass those questions, it doesn't belong.
+### When writing content
+
+Feed:
+
+- `00_INDEX.md`
+- `01_PHILOSOPHY.md`
+- `02_DESIGN.md`
+- the specific domain doc
+
+### When planning or deciding
+
+Read:
+
+- `01_PHILOSOPHY.md`
+- `10_ROADMAP.md`
+- the relevant domain or status doc
+
+### When something feels off
+
+Check against `01_PHILOSOPHY.md`. If it does not pass those guiding questions, it likely does not belong.
 
 ---
 
 ## CONNECTIONS BETWEEN DOMAINS
 
-Every domain connects to others. Here's the web:
-
-- **Domain I (Cosmos)** ↔ **Domain VI (Epistemic Core)**: The cosmos needs intellectual depth. The research needs the widest framing.
-- **Domain I (Cosmos)** ↔ **Domain II (Sri Lanka)**: Global paradigms ground themselves in local reality.
-- **Domain II (Sri Lanka)** ↔ **Domain III (Gurudevi)**: The diagnosis leads to the tool. The tool addresses what the diagnosis reveals.
-- **Domain III (Gurudevi)** ↔ **Domain VI (Epistemic Core)**: Theory becomes practice. Practice informs theory.
-- **Domain IV (Resources)** ↔ **Domain II (Sri Lanka)**: Resources flow toward needs that Sri Lanka mapping reveals.
-- **Domain IV (Resources)** ↔ **Domain V (Sangha)**: Community surfaces needs and offers. Resources respond.
-- **Domain V (Sangha)** ↔ **All Domains**: Community is the living layer that touches everything.
-- **Domain VI (Epistemic Core)** ↔ **All Domains**: Knowledge is the backbone. It feeds every other domain.
+- Domain I <-> Domain VI: the cosmos needs intellectual depth, and the research needs the widest framing
+- Domain I <-> Domain II: global paradigms must ground themselves in local reality
+- Domain II <-> Domain III: diagnosis leads to the tool
+- Domain III <-> Domain VI: theory becomes practice and practice informs theory
+- Domain IV <-> Domain II: resources flow toward mapped needs
+- Domain IV <-> Domain V: community surfaces needs and offers, resources respond
+- Domain V <-> All Domains: community is the living layer touching everything
+- Domain VI <-> All Domains: knowledge is the backbone feeding every other domain
 
 ---
 
 ## VERSIONING
 
-- **v1.0** = Fully realized for Phase 1 launch. Complete, polished, ready.
-- **v0.1** = Visible skeleton. Shows the vision. Not yet fully built.
-- **v0.0** = Concept only. Placeholder. Needs work.
+- `v1.0` = fully realized for Phase 1 launch
+- `v0.1` = visible skeleton
+- `v0.0` = concept only
 
 Current Phase 1 targets:
-- Domains I, II, III, VI → **v1.0**
-- Domains IV, V → **v0.1**
+
+- Domains I, II, III, VI -> `v1.0`
+- Domains IV, V -> `v0.1`
 
 ---
 
 *"Education born from Love, built with Love"*
 
 **Last touch**: Neev  
-**Date**: February 3, 2026
+**Date**: April 17, 2026

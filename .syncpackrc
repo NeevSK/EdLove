@@ -1,0 +1,28 @@
+{
+  "dependencyTypes": ["dev", "prod", "overrides", "pnpmOverrides"],
+  "filter": ".",
+  "indent": "  ",
+  "semverGroups": [
+    {
+      "range": "~",
+      "dependencies": ["expo", "expo-*", "react-native"],
+      "packages": ["**"],
+      "label": "Expo SDK 55 Pinning"
+    }
+  ],
+  "versionGroups": [
+    {
+      "dependencies": ["@repo/*"],
+      "packages": ["**"],
+      "isEnforced": true,
+      "label": "Internal Workspace Packages"
+    }
+  ],
+  "sortAz": [
+    "dependencies",
+    "devDependencies",
+    "peerDependencies",
+    "optionalDependencies"
+  ],
+  "sortFirst": ["name", "description", "version", "author"]
+}

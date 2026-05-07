@@ -1,36 +1,59 @@
-/**
- * SelfScreen Component
- * 
- * Role-aware routing screen that displays different Self views based on user role:
- * - Student: Growth & reflection features (mood, goals, study rhythm)
- * - Principal: Leadership wellbeing features (energy, pulse, decisions)
- * - Teacher/Section Head/Grade Head: Teacher wellbeing features (current implementation)
- */
+import { useTracking } from "@repo/core/hooks";
+import { FeatureGuard, usePermissions } from "@repo/core/logic";
 
-import React from 'react';
-import { useUserRole, useTracking } from '@repo/core';
-
-// Import role-specific views
-import { StudentSelfView, TeacherSelfView, PrincipalSelfView, FounderSelfView, AdminSelfView } from './self';
+import { useEffect } from "react";
+import {
+	AdminSelfView,
+	FounderSelfView,
+	GuardianSelfView,
+	PrincipalSelfView,
+	StudentSelfView,
+	TeacherSelfView,
+} from "./self";
 
 /**
- * SelfScreen — routes directly to the role-specific view.
- * Each role view IS the home: DailyContentCard + horizontal feature carousel
- * + feature content below. No intermediate "enter sanctuary" gate.
+ * SelfScreen  declarative entry point for the user's sanctuary.
+ * Capability-driven (POA) instead of registry-intent based.
  */
 export default function SelfScreen() {
-    const { role } = useUserRole();
-    const { discoverFeature } = useTracking();
+	const { discoverFeature } = useTracking();
+	const { can, context } = usePermissions();
 
-    React.useEffect(() => {
-        discoverFeature('section_self');
-    }, []);
+	useEffect(() => {
+		void discoverFeature("section_self");
+	}, [discoverFeature]);
 
-    if (role === 'student') return <StudentSelfView />;
-    if (role === 'principal') return <PrincipalSelfView />;
-    if (role === 'founder') return <FounderSelfView />;
-    if (role === 'admin') return <AdminSelfView />;
+	return (
+		<FeatureGuard feature="isSelfWorkspaceEnabled">
+			{(() => {
+				const role = context.activeBond?.capacity || context.role;
 
-    // Default: Teacher view (includes teacher, section_head, grade_head)
-    return <TeacherSelfView />;
+				if (can("manage", "FounderDashboard")) {
+					return <FounderSelfView />;
+				}
+
+				if (can("manage", "AdminDashboard")) {
+					return <AdminSelfView />;
+				}
+
+				if (can("manage", "PrincipalDashboard")) {
+					return <PrincipalSelfView />;
+				}
+
+				if (can("manage", "TeacherDashboard") || role === "teacher") {
+					return <TeacherSelfView />;
+				}
+
+				if (role === "guardian" || role === "parent") {
+					return <GuardianSelfView />;
+				}
+
+				if (can("manage", "StudentDashboard") || role === "student") {
+					return <StudentSelfView />;
+				}
+
+				return <StudentSelfView />;
+			})()}
+		</FeatureGuard>
+	);
 }

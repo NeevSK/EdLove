@@ -1,23 +1,17 @@
-export interface Student {
-    id: string;
-    class_id: string;
-    student_id?: string | null; // ID of the user profile if claimed
-    full_name: string;
-    roll_number?: string | null;
-    index_number?: string | null;
-    notes?: string | null;
-    parent_phone?: string | null;
-    guardian_name?: string | null;
-    is_claimed?: boolean;
-    invite_code?: string | null;
-    created_at: string;
-    updated_at: string;
-}
+import { z } from 'zod';
+import type { StudentSchema } from '../logic/schemas/student.schema';
 
-export interface BulkStudent {
-    name: string;
-    index_number: string;
-    notes: string;
-}
+/**
+ * Student - Authoritative domain type.
+ * Derived from StudentSchema in logic/schemas.
+ */
+export type Student = z.infer<typeof StudentSchema>;
 
-export type ClassroomStudent = Student;
+// Keep the bulk interface for now if not yet schema-tized, or derive it.
+export const BulkStudentSchema = z.object({
+  name: z.string(),
+  index_number: z.string(),
+  notes: z.string(),
+});
+
+export type BulkStudent = z.infer<typeof BulkStudentSchema>;

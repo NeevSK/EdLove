@@ -1,320 +1,365 @@
-﻿﻿import React, { useState, useEffect } from 'react';
+/**
+ * JOY JAR
+ * Captures small teaching sparks, student breakthroughs, and great questions.
+ * Standardized to Zero-Legacy: purged sx props and fixed syntax corruption in handlers.
+ */
+
+import { useNavigation } from "@react-navigation/native";
+import { supabase } from "@repo/core/api";
+import { useSafeMutation } from "@repo/core/hooks";
+import { usePermissions } from "@repo/core/logic";
+
+import PositiveInvitation from "@repo/ui/components/PositiveInvitation";
+import { SkeletonCard } from "@repo/ui/components/SkeletonLoader";
 import {
-  Box,
-  VStack,
-  HStack,
-  Text,
-  Heading,
-  Input,
-  InputField,
-  Button,
-  ButtonText,
-  Pressable,
-  ScrollView
-} from '@repo/ui';
-import { Sparkles, Plus } from 'lucide-react-native';
-import { useTranslation } from 'react-i18next';
-import { Theme } from '@repo/ui';
-import { supabase, useSafeMutation } from '@repo/core';
-import { hapticLight, hapticSuccess, SkeletonCard, PositiveInvitation } from '@repo/ui';
-import { useJoyJar } from '../hooks/useJoyJar';
-import { JoyMoment } from '../types';
-import { useNavigation } from '@react-navigation/native';
+	AnimatedView,
+	Box,
+	Button,
+	ButtonText,
+	Heading,
+	HStack,
+	Icon,
+	InputField,
+	Pressable,
+	ScrollView,
+	Text,
+	VStack,
+} from "@repo/ui/primitives";
+import { hapticLight, hapticSuccess } from "@repo/ui/utils/haptics";
+
+import {
+	BookOpen,
+	MessageSquare,
+	Plus,
+	Save,
+	Sparkles,
+	Star,
+	User,
+	X,
+} from "lucide-react-native";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { FadeInUp, SlideInRight } from "react-native-reanimated";
+import { useJoyJar } from "../hooks/useJoyJar";
 
 interface JoyJarProps {
-  userId?: string;
+	userId?: string;
+	disabled?: boolean;
 }
 
-export default function JoyJar({ userId }: JoyJarProps) {
-  const navigation = useNavigation<any>();
-  const { t } = useTranslation();
-  // Resilient Data Hook
-  const { joyMoments, refreshData, isLoading } = useJoyJar(userId);
+export default function JoyJar({
+	userId,
+	disabled: componentDisabled,
+}: JoyJarProps) {
+	const navigation = useNavigation<any>();
+	const { t } = useTranslation();
+	const { context } = usePermissions();
+	const activeUserId = userId || context.userId;
 
-  const [showForm, setShowForm] = useState(false);
+	const { joyMoments, refreshData, isLoading } = useJoyJar(
+		activeUserId ?? undefined,
+	);
+	const [showForm, setShowForm] = useState(false);
 
-  // Form state
+	// Form state
+	const [studentName, setStudentName] = useState("");
+	const [momentDescription, setMomentDescription] = useState("");
+	const [category, setCategory] = useState<
+		"breakthrough" | "question" | "connection" | "other"
+	>("breakthrough");
 
-  // Form state
-  const [studentName, setStudentName] = useState('');
-  const [momentDescription, setMomentDescription] = useState('');
-  const [category, setCategory] = useState<'breakthrough' | 'question' | 'connection' | 'other'>('breakthrough');
+	const { mutate, isLoading: isSaving } = useSafeMutation(
+		async (variables: {
+			studentName: string | null;
+			description: string;
+			category: string;
+		}) => {
+			const { error } = await supabase.from("joy_moments").insert({
+				user_id: activeUserId,
+				student_name: variables.studentName,
+				moment_description: variables.description,
+				category: variables.category,
+			});
+			if (error) throw error;
+		},
+		{
+			onSuccess: () => {
+				hapticSuccess();
+				setStudentName("");
+				setMomentDescription("");
+				setCategory("breakthrough");
+				setShowForm(false);
+				refreshData();
+			},
+		},
+	);
 
-  // Removed manual loadJoyMoments as it's handled by the hook
+	const handleSaveMoment = async () => {
+		if (!activeUserId || !momentDescription.trim() || isSaving) return;
+		hapticLight();
+		await mutate({
+			studentName: studentName.trim() || null,
+			description: momentDescription.trim(),
+			category,
+		});
+	};
 
-  const { mutate, isLoading: isSaving } = useSafeMutation(
-    async (variables: { studentName: string | null, description: string, category: string }) => {
-      const { error } = await supabase
-        .from('joy_moments')
-        .insert({
-          user_id: userId,
-          student_name: variables.studentName,
-          moment_description: variables.description,
-          category: variables.category
-        });
-      if (error) throw error;
-    },
-    {
-      onSuccess: () => {
-        hapticSuccess();
-        setStudentName('');
-        setMomentDescription('');
-        setCategory('breakthrough');
-        setShowForm(false);
-        refreshData(); // Refresh local cache
-      },
-      retryCount: 3
-    }
-  );
+	const categories = [
+		{
+			id: "breakthrough",
+			label: t("self.breakthrough") || "Breakthrough",
+			emoji: "🎉",
+			icon: Star,
+			color: "text-sanctuarySaffron",
+		},
+		{
+			id: "question",
+			label: t("self.question") || "Great Question",
+			emoji: "❓",
+			icon: MessageSquare,
+			color: "text-skyBlue",
+		},
+		{
+			id: "connection",
+			label: t("self.connection") || "Connection",
+			emoji: "💫",
+			icon: BookOpen,
+			color: "text-emeraldGreen",
+		},
+		{
+			id: "other",
+			label: t("self.other") || "Other",
+			emoji: "✨",
+			icon: Sparkles,
+			color: "text-templeGold",
+		},
+	];
 
-  const handleSaveMoment = async () => {
-    if (!userId || !momentDescription.trim()) return;
+	if (isLoading && activeUserId) {
+		return (
+			<VStack className="p-lg gap-lg">
+				<SkeletonCard height={48} />
+				<SkeletonCard height={80} />
+				<SkeletonCard height={80} />
+			</VStack>
+		);
+	}
 
-    hapticLight();
-    await mutate({
-      studentName: studentName.trim() || null,
-      description: momentDescription.trim(),
-      category
-    });
-  };
+	if (!activeUserId) {
+		return (
+			<PositiveInvitation
+				type="guest"
+				onAction={() => navigation.navigate("Auth" as never)}
+			/>
+		);
+	}
 
-  const categories = [
-    { id: 'breakthrough', label: t('self.breakthrough'), emoji: '🎉' },
-    { id: 'question', label: t('self.question'), emoji: '❓' },
-    { id: 'connection', label: t('self.connection'), emoji: '💫' },
-    { id: 'other', label: t('self.other'), emoji: '✨' }
-  ];
+	return (
+		<VStack className="gap-lg">
+			{/* Header */}
+			<VStack className="gap-1">
+				<HStack className="items-center gap-2">
+					<Icon as={Sparkles} className="text-sanctuarySaffron" size={24} />
+					<Heading className="text-sacredWhite" size="lg">
+						{t("self.joyJar") || "Joy Jar"}
+					</Heading>
+				</HStack>
+				<Text className="text-mistGray text-sm italic">
+					{t("self.joyJarDesc") ||
+						"Capture the small sparks that keep the flame of teaching alive."}
+				</Text>
+			</VStack>
 
-  if (isLoading && userId) {
-    return (
-      <VStack space="lg" sx={{ flex: 1, padding: Theme.spacing.lg }}>
-        <SkeletonCard height={48} />
-        <SkeletonCard height={80} />
-        <SkeletonCard height={80} />
-      </VStack>
-    );
-  }
+			{!showForm ? (
+				<VStack className="gap-md">
+					<Button
+						onPress={() => {
+							hapticLight();
+							setShowForm(true);
+						}}
+						isDisabled={componentDisabled}
+						className="bg-sanctuarySaffron rounded-full py-4 shadow-xl shadow-sanctuarySaffron/20"
+					>
+						<HStack className="gap-2 items-center">
+							<Icon as={Plus} className="text-obsidian" size={20} />
+							<ButtonText className="text-obsidian font-black uppercase tracking-wider text-sm">
+								{t("self.captureJoy") || "Add a Spark"}
+							</ButtonText>
+						</HStack>
+					</Button>
 
-  if (!userId) {
-    return (
-      <PositiveInvitation
-        type="guest"
-        onAction={() => navigation.navigate('Auth' as never)}
-      />
-    );
-  }
+					<ScrollView
+						className="max-h-[500px]"
+						showsVerticalScrollIndicator={false}
+					>
+						<VStack className="gap-4 pb-20">
+							{joyMoments.map((moment, index) => {
+								const catInfo =
+									categories.find((c) => c.id === moment.category) ||
+									categories[3];
+								return (
+									<AnimatedView
+										key={moment.id}
+										entering={SlideInRight.delay(index * 100)}
+									>
+										<Box className="p-6 bg-white/5 rounded-2xl border border-white/5 shadow-sm border-l-4 border-l-sanctuarySaffron">
+											<HStack className="justify-between items-start">
+												<VStack className="flex-1 mr-4 gap-2">
+													{moment.student_name && (
+														<HStack className="items-center gap-2">
+															<Icon
+																as={User}
+																size={10}
+																className="text-sanctuarySaffron"
+															/>
+															<Text className="text-sanctuarySaffron text-[10px] font-black uppercase tracking-widest">
+																{moment.student_name}
+															</Text>
+														</HStack>
+													)}
+													<Text className="text-sacredWhite text-[15px] leading-relaxed font-medium">
+														"{moment.moment_description}"
+													</Text>
+													<Text className="text-dimGray text-[10px] italic">
+														{new Date(moment.created_at).toLocaleDateString(
+															undefined,
+															{
+																month: "short",
+																day: "numeric",
+																year: "numeric",
+															},
+														)}
+													</Text>
+												</VStack>
+												<Box className="bg-white/5 p-2 rounded-full border border-white/10">
+													<Text className="text-2xl">
+														{catInfo?.emoji || "✨"}
+													</Text>
+												</Box>
+											</HStack>
+										</Box>
+									</AnimatedView>
+								);
+							})}
 
-  return (
-    <VStack space="lg" sx={{ flex: 1 }}>
-      <VStack space="xs">
-        <HStack space="sm" alignItems="center">
-          <Sparkles color={Theme.colors.sanctuarySaffron} size={24} />
-          <Heading color={Theme.colors.sacredWhite} size="lg">
-            {t('self.joyJar')}
-          </Heading>
-        </HStack>
-        <Text color={Theme.colors.mistGray} size="sm">
-          {t('self.joyJarDesc')}
-        </Text>
-      </VStack>
+							{joyMoments.length === 0 && (
+								<Box className="py-10">
+									<PositiveInvitation
+										icon={Sparkles}
+										title={
+											t("self.startCapturing") ||
+											"Collect your first spark of inspiration."
+										}
+									/>
+								</Box>
+							)}
+						</VStack>
+					</ScrollView>
+				</VStack>
+			) : (
+				<AnimatedView entering={FadeInUp}>
+					<VStack className="gap-6 bg-white/5 p-lg rounded-3xl border border-white/10">
+						{/* Student Name */}
+						<VStack className="gap-2">
+							<Text className="text-mistGray text-xs uppercase font-black tracking-widest px-1">
+								{t("self.studentName") || "Whose spark was it? (Optional)"}
+							</Text>
+							<Box className="bg-obsidian rounded-xl border border-white/10">
+								<InputField
+									placeholder={
+										t("self.exampleStudent") || "e.g. Rahul, Class 10B"
+									}
+									value={studentName}
+									onChangeText={setStudentName}
+									className="text-sacredWhite h-12 px-4"
+									placeholderTextColor="rgba(255,255,255,0.2)"
+								/>
+							</Box>
+						</VStack>
 
-      {!showForm ? (
-        <>
-          <Button
-            size="md"
-            action="primary"
-            onPress={() => {
-              hapticLight();
-              setShowForm(true);
-            }}
-            sx={{
-              backgroundColor: Theme.colors.sanctuarySaffron,
-              borderRadius: Theme.corners.comfortable
-            }}
-          >
-            <Plus color={Theme.colors.sacredWhite} size={20} />
-            <ButtonText ml="$2">{t('self.captureJoy')}</ButtonText>
-          </Button>
+						{/* Category Selection */}
+						<VStack className="gap-3">
+							<Text className="text-mistGray text-xs uppercase font-black tracking-widest px-1">
+								{t("self.category") || "Nature of the spark"}
+							</Text>
+							<HStack className="gap-2 flex-wrap">
+								{categories.map((cat) => (
+									<Pressable
+										key={cat.id}
+										onPress={() => {
+											hapticLight();
+											setCategory(cat.id as any);
+										}}
+										className={`flex-row items-center gap-2 px-4 py-3 rounded-full border-2 transition-all ${
+											category === cat.id
+												? "bg-sanctuarySaffron border-sanctuarySaffron shadow-md"
+												: "bg-white/5 border-white/10"
+										}`}
+									>
+										<Text className="text-lg">{cat.emoji}</Text>
+										<Text
+											className={`text-[11px] font-black uppercase tracking-wider ${
+												category === cat.id ? "text-obsidian" : "text-mistGray"
+											}`}
+										>
+											{cat.label}
+										</Text>
+									</Pressable>
+								))}
+							</HStack>
+						</VStack>
 
-          <ScrollView sx={{ flex: 1, maxHeight: 400 }}>
-            <VStack space="md">
-              {joyMoments.map((moment) => (
-                <Box
-                  key={moment.id}
-                  p={Theme.spacing.md}
-                  sx={{
-                    backgroundColor: Theme.colors.ink,
-                    borderRadius: Theme.corners.comfortable,
-                    borderLeftWidth: 3,
-                    borderLeftColor: Theme.colors.sanctuarySaffron
-                  }}
-                >
-                  <HStack justifyContent="space-between" alignItems="flex-start">
-                    <VStack space="xs" sx={{ flex: 1 }}>
-                      {moment.student_name && (
-                        <Text
-                          color={Theme.colors.sanctuarySaffron}
-                          size="sm"
-                          bold
-                        >
-                          {moment.student_name}
-                        </Text>
-                      )}
-                      <Text color={Theme.colors.sacredWhite} size="md">
-                        {moment.moment_description}
-                      </Text>
-                      <Text color={Theme.colors.dimGray} size="xs">
-                        {new Date(moment.created_at).toLocaleDateString()}
-                      </Text>
-                    </VStack>
-                    <Text fontSize="$2xl">
-                      {categories.find(c => c.id === moment.category)?.emoji || '✨'}
-                    </Text>
-                  </HStack>
-                </Box>
-              ))}
+						{/* Moment Description */}
+						<VStack className="gap-3">
+							<Text className="text-mistGray text-xs uppercase font-black tracking-widest px-1">
+								{t("self.momentDescription") || "The Moment"}
+							</Text>
+							<Box className="bg-obsidian rounded-xl border border-white/10 p-4 min-h-[140px]">
+								<InputField
+									placeholder={
+										t("self.momentDescriptionPlaceholder") ||
+										"What made you smile?"
+									}
+									value={momentDescription}
+									onChangeText={setMomentDescription}
+									multiline
+									className="text-sacredWhite text-base text-start align-top"
+									placeholderTextColor="rgba(255,255,255,0.2)"
+								/>
+							</Box>
+						</VStack>
 
-              {joyMoments.length === 0 && (
-                <PositiveInvitation
-                  icon={Sparkles}
-                  title={t('self.startCapturing')}
-                />
-              )}
-            </VStack>
-          </ScrollView>
-        </>
-      ) : (
-        <VStack space="md">
-          {/* Student Name */}
-          <Box>
-            <Text color={Theme.colors.mistGray} size="sm" mb="$2">
-              {t('self.studentName')}
-            </Text>
-            <Input
-              variant="outline"
-              size="md"
-              sx={{
-                backgroundColor: Theme.colors.ink,
-                borderWidth: 1,
-                borderColor: Theme.colors.transparent
-              }}
-            >
-              <InputField
-                placeholder={t('self.exampleStudent')}
-                value={studentName}
-                onChangeText={setStudentName}
-                color={Theme.colors.sacredWhite}
-                placeholderTextColor={Theme.colors.dimGray}
-              />
-            </Input>
-          </Box>
+						{/* Actions */}
+						<HStack className="gap-3 mt-2">
+							<Button
+								onPress={() => {
+									hapticLight();
+									setShowForm(false);
+									setStudentName("");
+									setMomentDescription("");
+								}}
+								variant="outline"
+								className="flex-1 border-white/10 h-14 rounded-full"
+							>
+								<Icon as={X} size={20} className="text-mistGray" />
+							</Button>
 
-          {/* Category Selection */}
-          <Box>
-            <Text color={Theme.colors.mistGray} size="sm" mb="$2">
-              {t('self.category')}
-            </Text>
-            <HStack space="sm" flexWrap="wrap">
-              {categories.map((cat) => (
-                <Pressable
-                  key={cat.id}
-                  onPress={() => {
-                    hapticLight();
-                    setCategory(cat.id as any);
-                  }}
-                >
-                  <HStack
-                    space="xs"
-                    alignItems="center"
-                    px="$3"
-                    py="$2"
-                    sx={{
-                      backgroundColor:
-                        category === cat.id
-                          ? Theme.colors.sanctuarySaffron
-                          : Theme.colors.ink,
-                      borderRadius: Theme.corners.comfortable
-                    }}
-                  >
-                    <Text fontSize="$md">{cat.emoji}</Text>
-                    <Text
-                      color={
-                        category === cat.id
-                          ? Theme.colors.sacredWhite
-                          : Theme.colors.mistGray
-                      }
-                      size="sm"
-                    >
-                      {cat.label}
-                    </Text>
-                  </HStack>
-                </Pressable>
-              ))}
-            </HStack>
-          </Box>
-
-          {/* Moment Description */}
-          <Box>
-            <Text color={Theme.colors.mistGray} size="sm" mb="$2">
-              {t('self.momentDescription')}
-            </Text>
-            <Input
-              variant="outline"
-              size="md"
-              sx={{
-                backgroundColor: Theme.colors.ink,
-                borderWidth: 1,
-                borderColor: Theme.colors.transparent,
-                minHeight: 100
-              }}
-            >
-              <InputField
-                placeholder={t('self.momentDescriptionPlaceholder')}
-                value={momentDescription}
-                onChangeText={setMomentDescription}
-                multiline
-                color={Theme.colors.sacredWhite}
-                placeholderTextColor={Theme.colors.dimGray}
-                sx={{ textAlignVertical: 'top' }}
-              />
-            </Input>
-          </Box>
-
-          {/* Actions */}
-          <HStack space="md" justifyContent="flex-end">
-            <Button
-              size="md"
-              variant="outline"
-              onPress={() => {
-                hapticLight();
-                setShowForm(false);
-                setStudentName('');
-                setMomentDescription('');
-              }}
-              sx={{
-                borderColor: Theme.colors.ink,
-                borderRadius: Theme.corners.comfortable
-              }}
-            >
-              <ButtonText color={Theme.colors.mistGray}>
-                {t('common.cancel')}
-              </ButtonText>
-            </Button>
-            <Button
-              size="md"
-              action="primary"
-              onPress={handleSaveMoment}
-              isDisabled={!momentDescription.trim() || isSaving}
-              sx={{
-                backgroundColor: Theme.colors.sanctuarySaffron,
-                borderRadius: Theme.corners.comfortable
-              }}
-            >
-              <ButtonText>{t('common.save')}</ButtonText>
-            </Button>
-          </HStack>
-        </VStack>
-      )}
-    </VStack>
-  );
+							<Button
+								onPress={handleSaveMoment}
+								isDisabled={!momentDescription.trim() || isSaving}
+								className="flex-[3] bg-emeraldGreen h-14 rounded-full shadow-lg shadow-emeraldGreen/20"
+							>
+								<HStack className="items-center gap-2">
+									<Icon as={Save} size={18} className="text-white" />
+									<ButtonText className="text-white font-black uppercase tracking-widest text-sm">
+										Seal in Jar
+									</ButtonText>
+								</HStack>
+							</Button>
+						</HStack>
+					</VStack>
+				</AnimatedView>
+			)}
+		</VStack>
+	);
 }

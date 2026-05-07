@@ -1,8 +1,10 @@
-
-export * from './types';
-export * from './registry';
-export * from './idempotency';
 export * from './errorClassifier';
+export * from './eventBus';
+export * from './hooks/useOptimisticMerge';
+export * from './hooks/useSyncStatus';
+export * from './idempotency';
 export * from './MutationAuditLog';
-export * from './useMutationQueue';
+export * from './registry';
 export { default as SyncManager } from './sync/SyncManager';
+export * from './types';
+export * from './useMutationQueue';

@@ -1,44 +1,52 @@
-
-import { v5 as uuidv5 } from 'uuid';
-
-// Fixed namespace for Polymath idempotency keys
-const POLYMATH_NAMESPACE = '6ba7b810-9dad-11d1-80b4-00c04fd430c8';
+import crypto from 'isomorphic-webcrypto';
 
 /**
  * generateIdempotencyKey
- * 
- * Creates a deterministic UUID-v5 hash from mutation metadata.
- * Same inputs always result in the same key, allowing the server 
- * to deduplicate identical retries.
+ *
+ * Creates a deterministic SHA-256 hash from mutation metadata and an event salt.
+ * Uses the Asynchronous path (WebCrypto) for future-proof execution.
+ *
+ * @param scope - The feature scope (e.g., 'community')
+ * @param eventType - The specific event name or salt (e.g., 'CHECK_PULSE')
+ * @param variables - The payload variables to hash
+ * @param studentId - Optional student auth_id to incorporate into the salt
  */
-export function generateIdempotencyKey(
-    scope: string,
-    name: string,
-    variables: any
-): string {
-    // Sort variables to ensure key stability if object order changes
-    const stableVars = sortObject(variables);
-    const inputString = `${scope}:${name}:${JSON.stringify(stableVars)}`;
+export async function generateIdempotencyKey(
+  scope: string,
+  eventType: string,
+  variables: unknown,
+  studentId?: string,
+): Promise<string> {
+  const salt = studentId ? `${studentId}:${eventType}` : eventType;
+  const stableVars = sortObject(variables);
+  const inputString = `${scope}:${salt}:${JSON.stringify(stableVars)}`;
 
-    return uuidv5(inputString, POLYMATH_NAMESPACE);
+  const encoder = new TextEncoder();
+  const data = encoder.encode(inputString);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+
+  // Convert buffer to hex string
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
 }
 
 /**
  * Deeply sorts an object's keys to ensure identical stringification.
  */
-function sortObject(obj: any): any {
-    if (obj === null || typeof obj !== 'object') {
-        return obj;
-    }
+function sortObject(obj: unknown): unknown {
+  if (obj === null || typeof obj !== 'object') {
+    return obj;
+  }
 
-    if (Array.isArray(obj)) {
-        return obj.map(sortObject);
-    }
+  if (Array.isArray(obj)) {
+    return obj.map(sortObject);
+  }
 
-    return Object.keys(obj)
-        .sort()
-        .reduce((result: any, key) => {
-            result[key] = sortObject(obj[key]);
-            return result;
-        }, {});
+  const typedObj = obj as Record<string, unknown>;
+  return Object.keys(typedObj)
+    .sort()
+    .reduce((result: Record<string, unknown>, key) => {
+      result[key] = sortObject(typedObj[key]);
+      return result;
+    }, {});
 }

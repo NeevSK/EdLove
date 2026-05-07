@@ -1,0 +1,41 @@
+{
+  "name": "@repo/schema",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts"
+    },
+    "./zod": {
+      "types": "./src/generated/zod/index.ts",
+      "import": "./src/generated/zod/index.ts"
+    },
+    "./orm": {
+      "types": "./src/generated/orm/schema.ts",
+      "import": "./src/generated/orm/schema.ts"
+    }
+  },
+  "scripts": {
+    "generate": "zenstack generate --schema schema.zmodel -o src/generated/orm",
+    "check-types": "pnpm exec tsc --noEmit",
+    "clean": "rm -rf .turbo node_modules src/generated"
+  },
+  "dependencies": {
+    "@zenstackhq/orm": "3.6.4",
+    "@zenstackhq/zod": "3.6.4",
+    "zod": "4.3.6",
+    "decimal.js": "^10.6.0"
+  },
+  "devDependencies": {
+    "@zenstackhq/cli": "3.6.4",
+    "@zenstackhq/language": "3.6.4",
+    "@zenstackhq/plugin-policy": "3.6.4",
+    "@zenstackhq/sdk": "3.6.4",
+    "@repo/typescript-config": "workspace:*",
+    "typescript": "^5.9.3"
+  }
+}

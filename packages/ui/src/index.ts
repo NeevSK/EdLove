@@ -1,26 +1,19 @@
-export * from './theme/Theme';
+export { useTranslation } from 'react-i18next';
+export {
+  default as Animated,
+  FadeInDown,
+  FadeInUp,
+  FadeOutDown,
+  FadeOutUp,
+  SlideInDown,
+  SlideInUp,
+} from 'react-native-reanimated';
 export * from './context';
-export * from './hooks/useTheme';
-export * from './hooks/useThemedColors';
-export * from './gluestack';
-
-export * from './components/BreathAnimation';
-export * from './components/DailyResonanceCard';
-export * from './components/GlassCard';
-export { default as SanctuaryFlashList } from './components/SanctuaryFlashList';
-export type { SanctuaryFlashListProps } from './components/SanctuaryFlashList';
-export * from './components';
-
-export * from './utils/DeviceUtils';
-export * from './utils/haptics';
-export * from './utils/themeColors';
-export * from './utils/linking';
-export * from './utils/SanctuaryLocation';
-export * from './utils/colorUtils';
-export * from './utils/stringUtils';
-export * from './utils/dateTimeUtils';
-export * from './hooks/useAccessibility';
-export * from './hooks/useDemoBridge';
-export * from './hooks/useQRDeepLink';
-export * from './providers/ToastProvider';
-
+export * from './hooks';
+// Keep the root surface intentionally light. Heavy UI modules now live behind
+// explicit subpaths such as `@repo/ui/components/...` and `@repo/ui/screens/...`.
+export * from './primitives';
+export * from './providers';
+export * from './theme/Theme';
+export * from './tokens';
+export * from './utils';

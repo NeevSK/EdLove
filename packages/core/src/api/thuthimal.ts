@@ -1,33 +1,20 @@
 /**
- * Thuthimal API — Flower of Gratitude gift economy
+ * Thuthimal API \u2014 Flower of Gratitude gift economy
  *
- * Thuthimal (තුතිමල්) transforms subscription economics into a gratitude economy.
+ * Thuthimal (\u0DAD\u0DD4\u0DAD\u0DD2\u0DB8\u0DBD\u0DCA) transforms subscription economics into a gratitude economy.
  * Anyone (past students, alumni, communities) can gift Pro to a teacher/principal.
  * The gift is encoded as a one-time QR token and claimed by the recipient.
  *
  * See: apps/gurudevi-mobile/docs/Support/THUTHIMAL_README.md
  */
 
-import { supabase } from '../lib/supabase';
+import type { ThuthimalGift } from '../types';
 import { growthSignalsAPI } from './growthSignals';
-
-export interface ThuthimalGift {
-  id: string;
-  gift_token: string;
-  gifter_id: string;
-  gifter_name: string;
-  recipient_role: 'teacher' | 'principal';
-  recipient_id: string | null;
-  claimed: boolean;
-  claimed_at: string | null;
-  expires_at: string | null;
-  message: string | null;
-  created_at: string;
-}
+import { supabase } from './supabase';
 
 export interface CreateGiftInput {
   gifterName: string;
-  recipientRole: 'teacher' | 'principal';
+  recipientTier: 'teacher' | 'principal';
   /** Optional: specify a specific recipient by ID */
   recipientId?: string;
   /** Optional: ISO date string for expiry */
@@ -49,15 +36,15 @@ export const thuthimalAPI = {
    * Returns the generated gift_token UUID for encoding in a QR code.
    */
   async createGift(
-    gifterId: string,
-    input: CreateGiftInput,
+    input: CreateGiftInput & { gifter_id: string },
   ): Promise<{ gift_token: string }> {
+    const { gifter_id: gifterId } = input;
     const { data, error } = await supabase
       .from('thuthimal_gifts')
       .insert({
         gifter_id: gifterId,
         gifter_name: input.gifterName,
-        recipient_role: input.recipientRole,
+        recipient_tier: input.recipientTier,
         recipient_id: input.recipientId ?? null,
         expires_at: input.expiresAt ?? null,
         message: input.message ?? null,
@@ -73,7 +60,8 @@ export const thuthimalAPI = {
    * Claim a gift token on behalf of the recipient.
    * Uses server-side RPC with row-lock to prevent double-claim.
    */
-  async claimGift(giftToken: string, recipientId: string): Promise<ClaimResult> {
+  async claimGift(input: { gift_token: string; recipient_id: string }): Promise<ClaimResult> {
+    const { gift_token: giftToken, recipient_id: recipientId } = input;
     const { data, error } = await supabase.rpc('claim_thuthimal_gift', {
       p_token: giftToken,
       p_recipient: recipientId,
@@ -83,13 +71,19 @@ export const thuthimalAPI = {
 
     const result = data as ClaimResult;
 
-    // Growth signal: receiving a Thuthimal is the apex Blooming event —
+    // Growth signal: receiving a Thuthimal is the apex Blooming event \u2014
     // a past student honoring their teacher years later.
-    // This can advance the teacher to Pūrṇa Kamala (Full Lotus).
+    // This can advance the teacher to P\u016Br\u1E47a Kamala (Full Lotus).
     if (result.success) {
-      void growthSignalsAPI.emitSignal(recipientId, 'thuthimal_received', {
-        gifter_name: result.gifter_name,
-      }).catch(() => { });
+      void growthSignalsAPI
+        .emitSignal({
+          user_id: recipientId,
+          event_type: 'thuthimal_received',
+          event_metadata: {
+            gifter_name: result.gifter_name,
+          },
+        })
+        .catch(() => {});
     }
 
     return result;
@@ -113,15 +107,17 @@ export const thuthimalAPI = {
    * Preview an unclaimed gift token (for display before claiming).
    * Returns null if token is already claimed or expired.
    */
-  async previewGift(giftToken: string): Promise<Pick<ThuthimalGift, 'gifter_name' | 'recipient_role'> | null> {
+  async previewGift(
+    giftToken: string,
+  ): Promise<Pick<ThuthimalGift, 'gifter_name' | 'recipient_tier'> | null> {
     const { data, error } = await supabase
       .from('thuthimal_gifts')
-      .select('gifter_name, recipient_role')
+      .select('gifter_name, recipient_tier')
       .eq('gift_token', giftToken)
       .eq('claimed', false)
       .maybeSingle();
 
     if (error || !data) return null;
-    return data as Pick<ThuthimalGift, 'gifter_name' | 'recipient_role'>;
+    return data as Pick<ThuthimalGift, 'gifter_name' | 'recipient_tier'>;
   },
 };

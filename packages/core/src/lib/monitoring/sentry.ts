@@ -1,48 +1,42 @@
-import * as Sentry from '@sentry/react-native';
-
 /**
- * Initializes Sentry for the mobile application.
+ * Telemetry Gateway
+ *
+ * Provides a platform-agnostic interface for exception reporting and breadcrumbs.
+ * Delegates to TelemetryManager via the Adapter pattern.
  */
+import { telemetry } from '../../logic/managers/TelemetryManager';
+
 export const initSentry = () => {
-    if (__DEV__) {
-        console.log('[Sentry Mock] Initialization skipped in development');
-        return;
-    }
+  const dsn = process.env['EXPO_PUBLIC_SENTRY_DSN'];
+  if (!dsn) return;
 
-    const dsn = process.env.EXPO_PUBLIC_SENTRY_DSN;
-    if (!dsn) {
-        console.warn('[Sentry] DSN missing');
-        return;
-    }
-
-    Sentry.init({
-        dsn,
-        enableAutoSessionTracking: true,
-        debug: false,
-    });
+  telemetry.init({
+    dsn,
+    environment: process.env['EXPO_PUBLIC_SENTRY_ENVIRONMENT'] || 'production',
+    release: process.env['EXPO_PUBLIC_SENTRY_RELEASE'],
+  });
 };
 
-/**
- * Captures an exception and logs it to Sentry.
- */
 export const captureException = (error: any, context?: any) => {
-    console.error(error);
-    if (!__DEV__) {
-        Sentry.captureException(error, { extra: context });
-    }
+  telemetry.captureException(error, context);
 };
 
-/**
- * Adds a breadcrumb to the current Sentry session.
- */
 export const logBreadcrumb = (message: string, category?: string, data?: any) => {
-    if (__DEV__) {
-        console.log(`[Sentry Breadcrumb] ${category}: ${message}`, data);
-    } else {
-        Sentry.addBreadcrumb({
-            message,
-            category,
-            data,
-        });
-    }
+  telemetry.addBreadcrumb({ message, category, data });
+};
+
+export const setSentryUser = (user: {
+  id: string;
+  email?: string | null;
+  username?: string | null;
+}) => {
+  telemetry.setUser({
+    id: user.id,
+    email: user.email ?? undefined,
+    username: user.username ?? undefined,
+  });
+};
+
+export const clearSentryUser = () => {
+  telemetry.setUser(null);
 };

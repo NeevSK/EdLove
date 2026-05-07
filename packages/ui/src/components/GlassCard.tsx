@@ -1,57 +1,27 @@
-﻿import React, { useState } from 'react';
-import { View, ViewProps, LayoutChangeEvent, StyleSheet } from 'react-native';
-import { Theme } from '../theme/Theme';
-import { useTheme } from '../hooks/useTheme';
-import { LivingCard } from '../components-native/LivingCard';
+import type React from 'react';
+import type { LayoutChangeEvent, StyleProp, ViewStyle } from 'react-native';
+import { Box } from '../gluestack';
 
-interface GlassCardProps extends ViewProps {
-    children: React.ReactNode;
-    sx?: any; // For compatibility with existing patterns if needed
+interface GlassCardProps {
+  children: React.ReactNode;
+  style?: StyleProp<ViewStyle>;
+  onLayout?: (event: LayoutChangeEvent) => void;
+  className?: string;
 }
 
 /**
  * GlassCard - Implements the "Glass Protocol"
- * A translucent, layered card for sanctuary depth, now powered by Skia LivingCard.
+ * Hardened v3 implementation using NativeWind primitives.
  */
-export const GlassCard = ({ children, style, onLayout, ...props }: GlassCardProps) => {
-    const { phase } = useTheme();
-    const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
-
-    const handleLayout = (event: LayoutChangeEvent) => {
-        const { width, height } = event.nativeEvent.layout;
-        setDimensions({ width, height });
-        if (onLayout) onLayout(event);
-    };
-
-    const LivingCardAny = LivingCard as any;
-
-    return (
-        <View
-            style={[
-                {
-                    borderRadius: Theme.corners.generous,
-                    padding: Theme.spacing.md,
-                    overflow: 'hidden',
-                    backgroundColor: 'transparent',
-                },
-                style,
-            ]}
-            onLayout={handleLayout}
-            {...props}
-        >
-            {dimensions.width > 0 && (
-                <View style={StyleSheet.absoluteFill}>
-                    <LivingCardAny
-                        width={dimensions.width}
-                        height={dimensions.height}
-                        {...({ phase } as any)}
-                        cornerRadius={Theme.corners.generous}
-                    >
-                        {null}
-                    </LivingCardAny>
-                </View>
-            )}
-            {children}
-        </View>
-    );
+export const GlassCard = ({ children, style, onLayout, className, ...props }: GlassCardProps) => {
+  return (
+    <Box
+      className={`rounded-[32px] p-4 bg-phase-surface border border-white/10 shadow-xl ${className || ''}`}
+      style={style}
+      onLayout={onLayout}
+      {...props}
+    >
+      {children}
+    </Box>
+  );
 };

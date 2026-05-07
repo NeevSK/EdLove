@@ -3,19 +3,28 @@ interface Props {
 	title: string;
 	description: string;
 	tags?: string[];
-	variant?: 'blue' | 'red';
+	variant?: "blue" | "red";
 }
 
-const { title, description, tags = [], variant = 'blue' } = Astro.props;
+const { title, description, tags = [], variant = "blue" } = Astro.props;
 
-const variantClass = variant === 'blue' ? 'group-hover:text-glow-blue dark:group-hover:text-glow-blue' : 'group-hover:text-glow-red dark:group-hover:text-glow-red';
-const borderClass = variant === 'blue' ? 'group-hover:border-glow-blue/50' : 'group-hover:border-glow-red/50';
-const glowClass = variant === 'blue' ? 'dark:group-hover:shadow-[0_0_20px_rgba(6,182,212,0.2)]' : 'dark:group-hover:shadow-[0_0_20px_rgba(244,63,94,0.2)]';
+const _variantClass =
+	variant === "blue"
+		? "group-hover:text-glow-blue dark:group-hover:text-glow-blue"
+		: "group-hover:text-glow-red dark:group-hover:text-glow-red";
+const _borderClass =
+	variant === "blue"
+		? "group-hover:border-glow-blue/50"
+		: "group-hover:border-glow-red/50";
+const _glowClass =
+	variant === "blue"
+		? "dark:group-hover:shadow-[0_0_20px_rgba(6,182,212,0.2)]"
+		: "dark:group-hover:shadow-[0_0_20px_rgba(244,63,94,0.2)]";
 ---
 
-<div class={`group relative p-6 border border-ink/10 dark:border-tungsten/10 bg-tungsten/30 dark:bg-void/30 backdrop-blur-sm transition-all duration-500 ${borderClass} ${glowClass}`}>
+<div class={`group relative p-6 border border-ink/10 dark:border-tungsten/10 bg-tungsten/30 dark:bg-void/30 backdrop-blur-sm transition-all duration-500 ${_borderClass} ${_glowClass}`}>
 	<div class="flex justify-between items-start mb-4">
-		<h3 class={`text-xl font-serif dark:font-mono transition-colors duration-500 ${variantClass}`}>
+		<h3 class={`text-xl font-serif dark:font-mono transition-colors duration-500 ${_variantClass}`}>
 			{title}
 		</h3>
 		<div class={`w-2 h-2 rounded-full ${variant === 'blue' ? 'bg-glow-blue' : 'bg-glow-red'} opacity-50`}></div>
@@ -27,7 +36,7 @@ const glowClass = variant === 'blue' ? 'dark:group-hover:shadow-[0_0_20px_rgba(6
 	
 	{tags.length > 0 && (
 		<div class="flex flex-wrap gap-2">
-			{tags.map(tag => (
+			{tags.map((tag: any) => (
 				<span class="text-[10px] uppercase tracking-wider font-mono px-2 py-0.5 border border-ink/10 dark:border-tungsten/10 opacity-50 group-hover:opacity-100 transition-opacity">
 					#{tag}
 				</span>

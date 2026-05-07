@@ -1,0 +1,61 @@
+@import "tailwindcss";
+
+@theme {
+  /* Sanctuary Core Tokens (Web) */
+  --color-void-indigo: #0f0f1e;
+  --color-cream-silence: #FFF8E7;
+  --color-temple-stone: #F5F1E8;
+  --color-sanctuary-saffron: #E67E22;
+  --color-temple-gold: #F39C12;
+  --color-ember-red: #FF6347;
+  --color-sage-green: #8FBC8F;
+  --color-teal-water: #5F9EA0;
+  --color-peacock-blue: #1E88A8;
+  --color-mud-brown: #5D4E37;
+  --color-sacred-white: #FFF8F0;
+  --color-charcoal-truth: #2C3E50;
+
+  /* Premium Vellum / Saffron Architecture */
+  --color-background: var(--color-cream-silence);
+  --ink: var(--color-charcoal-truth);
+  --ink-soft: #7a7068;
+  --action: var(--color-sanctuary-saffron);
+  --water: #3a7a9a;
+
+  /* Motion */
+  --transition-smooth: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --transition-snap: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+  --font-sinhala: "Noto Sans Sinhala", ui-sans-serif, system-ui, sans-serif;
+  --font-tamil: "Noto Sans Tamil", ui-sans-serif, system-ui, sans-serif;
+  --font-content: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "IM Fell English", serif;
+}
+
+@layer base {
+	@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@400;500;600;700&family=Noto+Sans+Tamil:wght@400;500;600;700&display=swap");
+
+	body {
+		background-color: var(--color-cream-silence);
+		color: var(--color-charcoal-truth);
+		font-family: var(--font-content);
+		@apply transition-colors duration-300;
+	}
+
+	[lang="si"] {
+		font-family: var(--font-sinhala);
+		line-height: 1.8;
+	}
+
+	[lang="ta"] {
+		font-family: var(--font-tamil);
+		line-height: 1.7;
+	}
+}
+
+/* Custom Utilities */
+@layer utilities {
+	.text-glow {
+		text-shadow: 0 0 10px rgba(230, 126, 34, 0.3);
+	}
+}

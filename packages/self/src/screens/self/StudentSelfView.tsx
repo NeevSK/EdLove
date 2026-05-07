@@ -1,392 +1,78 @@
-/**
- * StudentSelfView Component
- * 
- * Student-focused wellbeing features emphasizing growth and reflection
- * Core: Mood check-in, Daily goals, Study rhythm
- * More Tools: Learning reflections, Progress tracker
- */
+import { useBanyanGrowth, useJourneyHistory } from "@repo/core/hooks";
+import { usePermissions, useStore } from "@repo/core/logic";
+import { useTranslation } from "react-i18next";
 
-import React, { useState } from 'react';
-import { useNavigation } from '@react-navigation/native';
-import { useUserRole, useStore } from '@repo/core';
+import ScreenWrapper from "@repo/ui/components/ScreenWrapper";
+import { VStack } from "@repo/ui/primitives";
+
+import { BaseSelfView } from "../../components/BaseSelfView";
+import WelcomeModal from "../../components/WelcomeModal";
+import { resolveFeatureContent } from "../../components/FeatureRegistry";
+import { useJournalEntries } from "../../hooks/useJournalEntries";
+import { useMoodLogs } from "../../hooks/useMoodLogs";
+import { useSanctuaryRegistry } from "../../hooks/useSanctuaryRegistry";
 import {
-    Box,
-    VStack,
-    HStack,
-    Text,
-    Heading,
-    ScrollView,
-    Pressable,
-    Input,
-    InputField,
-    Button,
-    ButtonText,
-    AdaptiveLayout
-} from '@repo/ui';
-import { Target, BookOpen, Flower, TrendingUp, Brain } from 'lucide-react-native';
-import { useTranslation } from 'react-i18next';
-import { Theme } from '@repo/ui';
-import { hapticLight } from '@repo/ui';
-import MoodLotus from '../../components/MoodLotus';
-import ShadowAgentDrawer from '../../components/ShadowAgentDrawer';
-import FireJournal from '../../components/FireJournal';
-import ProgressTree from '../../components/ProgressTree';
-import MyGradesView from '../../components/MyGradesView';
-import DailyRhythm from '../../components/DailyRhythm';
-import DailyContentCard from '../../components/DailyContentCard';
-import WelcomeModal from '../../components/WelcomeModal';
-import PulseDashboard from '../../components/PulseDashboard';
-import WindDownRitual from '../../components/WindDownRitual';
-import WisdomSeeds from '../../components/WisdomSeeds';
-import { useMoodLogs } from '../../hooks/useMoodLogs';
-import { useEnergyForecast } from '../../hooks/useEnergyForecast';
-import { SkeletonCard, PositiveInvitation, GlobalHeader } from '@repo/ui';
-import { useThemedColors, useBottomTabPadding } from '@repo/ui';
-import { ScreenWrapper } from '@repo/ui';
+	JournalSection,
+	MoodSection,
+	StudentPulse,
+} from "../../views/sections";
 
-// Student-specific core features — Pulse is the Entry Hall
-const STUDENT_CORE_FEATURES = [
-    { id: 'pulse', icon: TrendingUp, category: 'core' },
-    { id: 'mood', icon: Flower, category: 'core' },
-    { id: 'goals', icon: Target, category: 'core' },
-    { id: 'study', icon: BookOpen, category: 'core' },
-];
-
-const STUDENT_MORE_TOOLS = [
-    { id: 'reflection', icon: Brain, category: 'discover' },
-    { id: 'progress', icon: TrendingUp, category: 'discover' },
-];
-
+/**
+ * StudentSelfView - Refactored for 2026: Clean Injection Pattern.
+ */
 export default function StudentSelfView() {
-    const { t } = useTranslation();
-    const navigation = useNavigation<any>();
-    const { userId, role, isGuest } = useUserRole();
-    const user = useStore(state => state.user);
-    const [activeFeature, setActiveFeature] = useState('pulse');
-    const [showMoreTools, setShowMoreTools] = useState(false);
+	const { t } = useTranslation();
+	const { context } = usePermissions();
+	const userId = context.userId;
 
-    // We rely mostly on the offline store now for fast render
-    const userProfile = user ? {
-        id: user.id,
-        full_name: user.full_name || user.email?.split('@')[0],
-        email: user.email,
-        role: user.role || 'student',
-        avatar_url: user.avatar_url,
-        school_name: null, // Simplified, will add actual lookup if needed
-        orientation_seeds: user.orientation_seeds,
-    } : null;
+	const { domains: registeredDomains } = useSanctuaryRegistry();
 
-    // Remove the slow, manual loading effect
-    const loadingUser = false;
+	// Shared State/Data
+	const { logs: moodHistory, isLoading: loadingMoods } = useMoodLogs(userId ?? undefined);
+	const { entries: journalEntries, loading: loadingJournals } = useJournalEntries();
+	const { banyan, isLoading: banyanLoading } = useBanyanGrowth();
 
-    const justFinishedOnboarding = useStore((state) => state.justFinishedOnboarding);
-    const setJustFinishedOnboarding = useStore((state) => state.setJustFinishedOnboarding);
-    const colors = useThemedColors();
-    const bottomPadding = useBottomTabPadding();
+	const justFinishedOnboarding = useStore((state) => state.justFinishedOnboarding);
+	const setJustFinishedOnboarding = useStore((state) => state.setJustFinishedOnboarding);
 
+	const domainContent = registeredDomains.map((domain) => {
+		// Custom handling for the Journey domain (Holistic)
+		if (domain.id === "journey") {
+			return {
+				...domain,
+				content: (
+					<VStack space="lg" style={{ padding: 20 }}>
+						<JournalSection entries={journalEntries} loading={loadingJournals} />
+						<MoodSection logs={moodHistory} loading={loadingMoods} />
+						<StudentPulse banyan={banyan} loading={banyanLoading} />
+					</VStack>
+				),
+			};
+		}
 
-    const renderFeature = () => {
-        if (!userId && activeFeature !== 'pulse') {
-            return (
-                <PositiveInvitation
-                    type="guest"
-                    onAction={() => navigation.navigate('Auth' as never)}
-                />
-            );
-        }
+		// Use the Registry for other standard features
+		const features = domain.features.map((fId) => ({
+			id: fId,
+			label: fId.replace("_", " "), // Default label, registry might override
+			content: resolveFeatureContent(fId, userId ?? undefined),
+			// Specific history overrides if needed
+			historyContent: fId === "fire_journal" ? <JournalSection entries={journalEntries} /> : undefined,
+		}));
 
-        switch (activeFeature) {
-            case 'pulse':
-                return (
-                    <PulseDashboard
-                        onEnterDetails={() => setActiveFeature('mood')}
-                    />
-                );
-            case 'mood':
-                return <MoodLotus userId={userId ?? undefined} />;
-            case 'goals':
-                return (
-                    <VStack space="lg" sx={{ flex: 1 }}>
-                        <VStack space="xs">
-                            <Heading color={colors.text} size="lg">
-                                {t('student.dailyGoals')}
-                            </Heading>
-                            <Text color={colors.textSecondary} size="sm">
-                                {t('student.dailyGoalsDesc')}
-                            </Text>
-                        </VStack>
+		return { ...domain, features };
+	});
 
-                        <PositiveInvitation
-                            context="self"
-                            title={t('student.goalsComingSoon')}
-                            description={t('student.goalsComingSoonDesc')}
-                        />
-                    </VStack>
-                );
-            case 'study':
-                return (
-                    <VStack space="lg" sx={{ flex: 1 }}>
-                        <VStack space="xs">
-                            <Heading color={colors.text} size="lg">
-                                {t('student.studyRhythm')}
-                            </Heading>
-                            <Text color={colors.textSecondary} size="sm">
-                                {t('student.studyRhythmDesc')}
-                            </Text>
-                        </VStack>
-                        <DailyRhythm />
-                    </VStack>
-                );
-            case 'reflection':
-                return (
-                    <VStack space="lg" sx={{ flex: 1 }}>
-                        <VStack space="xs">
-                            <Heading color={colors.text} size="lg">
-                                {t('student.learningReflection')}
-                            </Heading>
-                            <Text color={colors.textSecondary} size="sm">
-                                {t('student.learningReflectionDesc')}
-                            </Text>
-                        </VStack>
-                        <FireJournal userId={userId ?? undefined} />
-                    </VStack>
-                );
-            case 'progress':
-                return (
-                    <VStack space="lg" sx={{ flex: 1 }}>
-                        <VStack space="xs">
-                            <Heading color={colors.text} size="lg">
-                                {t('student.myProgress')}
-                            </Heading>
-                            <Text color={colors.textSecondary} size="sm">
-                                {t('student.myProgressDesc')}
-                            </Text>
-                        </VStack>
-                        <ProgressTree userId={userId ?? undefined} />
-                        <Heading color={colors.textSecondary} size="sm" mt="$2">
-                            {t('student.myGrades')}
-                        </Heading>
-                        <MyGradesView userId={userId ?? undefined} />
-                    </VStack>
-                );
-            default:
-                return <MoodLotus userId={userId ?? undefined} />;
-        }
-    };
-
-    const allFeatures = showMoreTools
-        ? [...STUDENT_CORE_FEATURES, ...STUDENT_MORE_TOOLS]
-        : STUDENT_CORE_FEATURES;
-
-    return (
-        <ScreenWrapper scroll={false} noTopInset={true}>
-            <GlobalHeader isSelfView avatarUrl={userProfile?.avatar_url} />
-            <AdaptiveLayout
-                renderSidebar={() => (
-                    <VStack space="lg" sx={{ p: Theme.spacing.lg }}>
-                        {/* Daily Content Section */}
-                        <VStack space="md">
-                            <DailyContentCard type="motivation" />
-                            <DailyContentCard type="did_you_know" />
-                        </VStack>
-
-                        {/* Feature Grid (Vertical on Tablet) */}
-                        <VStack space="md" sx={{ mt: Theme.spacing.md }}>
-                            <Heading size="sm" color={colors.textSecondary}>{t('self.features')}</Heading>
-                            <Box sx={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
-                                {allFeatures.map((feature) => (
-                                    <Pressable
-                                        key={feature.id}
-                                        onPress={() => {
-                                            hapticLight();
-                                            setActiveFeature(feature.id);
-                                        }}
-                                        sx={{ width: '45%' }}
-                                    >
-                                        <VStack
-                                            alignItems="center"
-                                            justifyContent="center"
-                                            space="xs"
-                                            sx={{
-                                                height: 80,
-                                                borderRadius: Theme.corners.generous,
-                                                backgroundColor: activeFeature === feature.id
-                                                    ? Theme.colors.sanctuarySaffron
-                                                    : colors.secondary,
-                                                borderWidth: 1,
-                                                borderColor: activeFeature === feature.id
-                                                    ? Theme.colors.sanctuarySaffron
-                                                    : colors.border,
-                                            }}
-                                        >
-                                            <feature.icon
-                                                color={activeFeature === feature.id ? Theme.colors.white : colors.textSecondary}
-                                                size={24}
-                                            />
-                                            <Text
-                                                size="xs"
-                                                bold={activeFeature === feature.id}
-                                                color={activeFeature === feature.id ? Theme.colors.white : colors.text}
-                                                textAlign="center"
-                                            >
-                                                {t(`student.${feature.id}`)}
-                                            </Text>
-                                        </VStack>
-                                    </Pressable>
-                                ))}
-                            </Box>
-                        </VStack>
-                    </VStack>
-                )}
-                renderContent={() => (
-                    <Box p={Theme.spacing.xl}>
-                        <Box
-                            p={Theme.spacing.xl}
-                            sx={{
-                                backgroundColor: colors.secondary,
-                                borderRadius: Theme.corners.generous,
-                                minHeight: 500
-                            }}
-                        >
-                            {loadingUser ? (
-                                <VStack space="md">
-                                    <SkeletonCard height={40} />
-                                    <SkeletonCard height={150} />
-                                    <SkeletonCard height={40} />
-                                </VStack>
-                            ) : renderFeature()}
-                        </Box>
-                    </Box>
-                )}
-            >
-                <ScrollView
-                    sx={{ flex: 1 }}
-                    contentContainerStyle={{ paddingBottom: bottomPadding, paddingTop: Theme.spacing.lg }}
-                    showsVerticalScrollIndicator={false}
-                >
-
-                    {/* Daily Content Section */}
-                    <Box mb="$4">
-                        <DailyContentCard type="motivation" />
-                        <DailyContentCard type="did_you_know" />
-                    </Box>
-
-                    {/* Feature Carousel */}
-                    <Box sx={{ height: 100 }}>
-                        <ScrollView
-                            horizontal
-                            showsHorizontalScrollIndicator={false}
-                            contentContainerStyle={{ paddingHorizontal: Theme.spacing.md, gap: 12 }}
-                        >
-                            {allFeatures.map((feature) => (
-                                <Pressable
-                                    key={feature.id}
-                                    onPress={() => {
-                                        hapticLight();
-                                        setActiveFeature(feature.id);
-                                    }}
-                                >
-                                    <VStack
-                                        alignItems="center"
-                                        justifyContent="center"
-                                        space="xs"
-                                        sx={{
-                                            width: 100,
-                                            height: 80,
-                                            borderRadius: Theme.corners.generous,
-                                            backgroundColor: activeFeature === feature.id
-                                                ? Theme.colors.sanctuarySaffron
-                                                : colors.secondary,
-                                            borderWidth: 1,
-                                            borderColor: activeFeature === feature.id
-                                                ? Theme.colors.sanctuarySaffron
-                                                : colors.border,
-                                        }}
-                                    >
-                                        <feature.icon
-                                            color={activeFeature === feature.id ? Theme.colors.white : colors.textSecondary}
-                                            size={24}
-                                        />
-                                        <Text
-                                            size="xs"
-                                            bold={activeFeature === feature.id}
-                                            color={activeFeature === feature.id ? Theme.colors.white : colors.text}
-                                            textAlign="center"
-                                        >
-                                            {t(`student.${feature.id}`)}
-                                        </Text>
-                                    </VStack>
-                                </Pressable>
-                            ))}
-
-                            {/* More Tools Toggle */}
-                            <Pressable
-                                onPress={() => {
-                                    hapticLight();
-                                    setShowMoreTools(!showMoreTools);
-                                }}
-                            >
-                                <VStack
-                                    alignItems="center"
-                                    justifyContent="center"
-                                    space="xs"
-                                    sx={{
-                                        width: 100,
-                                        height: 80,
-                                        borderRadius: Theme.corners.generous,
-                                        backgroundColor: showMoreTools
-                                            ? Theme.colors.sanctuarySaffron
-                                            : colors.secondary,
-                                        borderWidth: 1,
-                                        borderColor: showMoreTools
-                                            ? Theme.colors.sanctuarySaffron
-                                            : colors.border,
-                                        borderStyle: 'dashed'
-                                    }}
-                                >
-                                    <Text fontSize="$2xl" color={showMoreTools ? Theme.colors.white : colors.text}>
-                                        {showMoreTools ? '−' : '+'}
-                                    </Text>
-                                    <Text
-                                        size="xs"
-                                        bold={showMoreTools}
-                                        color={showMoreTools ? Theme.colors.white : colors.textSecondary}
-                                        textAlign="center"
-                                    >
-                                        {showMoreTools ? t('self.lessTools') : t('self.moreTools')}
-                                    </Text>
-                                </VStack>
-                            </Pressable>
-                        </ScrollView>
-                    </Box>
-
-                    {/* Dynamic Content */}
-                    <Box mt="$6">
-                        <Box
-                            p={Theme.spacing.xl}
-                            sx={{
-                                backgroundColor: colors.secondary,
-                                borderRadius: Theme.corners.generous,
-                                minHeight: 300
-                            }}
-                        >
-                            {loadingUser ? (
-                                <VStack space="md">
-                                    <SkeletonCard height={40} />
-                                    <SkeletonCard height={150} />
-                                    <SkeletonCard height={40} />
-                                </VStack>
-                            ) : renderFeature()}
-                        </Box>
-                    </Box>
-                </ScrollView>
-            </AdaptiveLayout>
-
-            <ShadowAgentDrawer />
-            <WelcomeModal
-                isOpen={justFinishedOnboarding}
-                onClose={() => setJustFinishedOnboarding(false)}
-            />
-        </ScreenWrapper>
-    );
+	return (
+		<ScreenWrapper scroll={false} noTopInset={true}>
+			<BaseSelfView
+				perspective="student"
+				description={t("self.studentDescription", "Nurture your growth.")}
+				domains={domainContent as any}
+			/>
+			<WelcomeModal
+				isOpen={justFinishedOnboarding}
+				onClose={() => setJustFinishedOnboarding(false)}
+			/>
+		</ScreenWrapper>
+	);
 }

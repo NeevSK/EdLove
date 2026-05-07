@@ -1,129 +1,105 @@
-import React, { useEffect } from 'react';
+import { AlertCircle, CheckCircle, Info, X } from 'lucide-react-native';
+import { useCallback, useEffect } from 'react';
+import { Pressable } from '../primitives';
 import Animated, {
-    useAnimatedStyle,
-    useSharedValue,
-    withSpring,
-    withTiming,
-    runOnJS
+  runOnJS,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withTiming,
 } from 'react-native-reanimated';
-import { StyleSheet, TouchableOpacity } from 'react-native';
-import { Box, Text, HStack } from '../gluestack';
-import { CheckCircle, AlertCircle, Info, X } from 'lucide-react-native';
-import { Theme } from '../theme/Theme';
+import { Box } from './ui/box';
+import { HStack } from './ui/hstack';
+import { Text } from './ui/text';
 
 export type ToastType = 'success' | 'error' | 'info';
 
 interface SanctuaryToastProps {
-    message: string;
-    type?: ToastType;
-    visible: boolean;
-    onHide: () => void;
-    duration?: number;
+  message: string;
+  type?: ToastType;
+  visible: boolean;
+  onHide: () => void;
+  duration?: number;
 }
 
 export default function SanctuaryToast({
-    message,
-    type = 'info',
-    visible,
-    onHide,
-    duration = 3000
+  message,
+  type = 'info',
+  visible,
+  onHide,
+  duration = 3000,
 }: SanctuaryToastProps) {
-    const translateY = useSharedValue(100);
-    const opacity = useSharedValue(0);
+  const translateY = useSharedValue(100);
+  const opacity = useSharedValue(0);
 
-    const getIcon = () => {
-        switch (type) {
-            case 'success': return CheckCircle;
-            case 'error': return AlertCircle;
-            case 'info': return Info;
-        }
-    };
-
-    const getColor = () => {
-        switch (type) {
-            case 'success': return Theme.colors.sageGreen;
-            case 'error': return Theme.colors.emberRed;
-            case 'info': return Theme.colors.sanctuarySaffron;
-        }
-    };
-
-    const Icon = getIcon();
-    const color = getColor();
-
-    useEffect(() => {
-        if (visible) {
-            translateY.value = withSpring(0, { damping: 15 });
-            opacity.value = withTiming(1);
-
-            const timer = setTimeout(() => {
-                hide();
-            }, duration);
-
-            return () => clearTimeout(timer);
-        } else {
-            hide();
-        }
-    }, [visible]);
-
-    const hide = () => {
-        opacity.value = withTiming(0);
-        translateY.value = withTiming(100, {}, (finished) => {
-            if (finished && visible) {
-                runOnJS(onHide)();
-            }
-        });
-    };
-
-    const animatedStyle = useAnimatedStyle(() => ({
-        transform: [{ translateY: translateY.value }],
-        opacity: opacity.value
-    }));
-
-    if (!visible) return null;
-
-    return (
-        <Animated.View style={[styles.container, animatedStyle]}>
-            <Box sx={{
-                borderRadius: Theme.corners.medium,
-                backgroundColor: Theme.colors.shroud,
-                padding: Theme.spacing.md,
-                flexDirection: 'row',
-                alignItems: 'center',
-                gap: Theme.spacing.md,
-                borderWidth: 1,
-                borderColor: Theme.colors.glass.dark.border,
-                shadowColor: "#000",
-                shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: 0.3,
-                shadowRadius: 8,
-                elevation: 10,
-                width: '100%',
-                maxWidth: 400
-            }}>
-                <HStack sx={{ gap: '$md' as any, alignItems: 'center' }}>
-                    <Icon color={color} size={24} />
-                    <Text
-                        color={Theme.colors.sacredWhite}
-                        sx={{ fontSize: '$sm' as any, flex: 1, fontWeight: '500' }}
-                    >
-                        {message}
-                    </Text>
-                    <TouchableOpacity onPress={hide}>
-                        <X color={Theme.colors.mistGray} size={18} />
-                    </TouchableOpacity>
-                </HStack>
-            </Box>
-        </Animated.View>
-    );
-}
-
-const styles = StyleSheet.create({
-    container: {
-        position: 'absolute',
-        bottom: 100, // Above tabs/FAB
-        left: 20,
-        right: 20,
-        alignItems: 'center',
-        zIndex: Theme.zIndex.toast,
+  const getIconData = () => {
+    switch (type) {
+      case 'success':
+        return { icon: CheckCircle, color: '#10B981' }; // phase-reward
+      case 'error':
+        return { icon: AlertCircle, color: '#EF4444' }; // phase-danger
+      case 'info':
+        return { icon: Info, color: '#F6BF8C' }; // phase-accent
     }
-});
+  };
+
+  const { icon: Icon, color: iconColor } = getIconData();
+
+  const hide = useCallback(() => {
+    opacity.value = withTiming(0);
+    translateY.value = withTiming(100, {}, (finished) => {
+      if (finished && visible) {
+        runOnJS(onHide)();
+      }
+    });
+  }, [opacity, translateY, visible, onHide]);
+
+  useEffect(() => {
+    if (!visible) {
+      hide();
+      return;
+    }
+
+    translateY.value = withSpring(0, { damping: 15 });
+    opacity.value = withTiming(1);
+
+    const timer = setTimeout(() => {
+      hide();
+    }, duration);
+
+    return () => clearTimeout(timer);
+  }, [visible, translateY, opacity, hide, duration]);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: translateY.value }],
+    opacity: opacity.value,
+  }));
+
+  if (!visible) return null;
+
+  return (
+    <Animated.View
+      style={[
+        {
+          position: 'absolute',
+          bottom: 100,
+          left: 20,
+          right: 20,
+          alignItems: 'center',
+          zIndex: 1000,
+        },
+        animatedStyle,
+      ]}
+    >
+      <Box className="bg-phase-surface p-4 rounded-xl border border-white/10 shadow-xl w-full max-w-[400px]">
+        <HStack className="items-center gap-3">
+          <Icon color={iconColor} size={24} />
+          <Text className="text-white text-sm font-medium flex-1">{message}</Text>
+          <Pressable accessibilityRole="button" onPress={hide} className="p-1 active:opacity-60">
+            <X className="text-phase-text-secondary" size={18} color="#666" />
+          </Pressable>
+        </HStack>
+      </Box>
+    </Animated.View>
+  );
+}

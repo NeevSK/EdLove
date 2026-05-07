@@ -1,5 +1,6 @@
 export type {
-    CommunityStackParamList,
-    ClassroomStackParamList,
-    ProfileStackParamList,
-} from '@repo/core';
+	ClassroomStackParamList,
+	CommunityStackParamList,
+	FounderStackParamList,
+	ProfileStackParamList,
+} from "@repo/core/types";

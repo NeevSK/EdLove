@@ -1,542 +1,488 @@
-import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { BulkStudent } from '@repo/core';
+import type { BulkStudent } from "@repo/core/types";
+import { Plus, Save, Trash2, X } from "@repo/ui/icons";
+import { storage, StorageKeys } from "@repo/core/logic";
 import {
-    useThemedColors,
-    hapticLight,
-    hapticSuccess,
-    Box,
-    HStack,
-    VStack,
-    Text,
-    Heading,
-    Pressable,
-    Input,
-    InputField,
-    Button,
-    ButtonText,
-    Icon,
-    Toast,
-    ToastTitle,
-    useToast,
-    FormControl,
-    FormControlLabel,
-    FormControlLabelText,
-    Progress,
-    ProgressFilledTrack,
-    ScrollView,
-    Theme,
-    Textarea,
-    TextareaInput,
-} from '@repo/ui';
-import {
-    X,
-    User,
-    Hash,
-    FileText,
-    ChevronRight,
-    ChevronLeft,
-    Plus,
-    Trash2,
-    Save,
-} from 'lucide-react-native';
+	Box,
+	Button,
+	ButtonText,
+	Heading,
+	HStack,
+	Icon,
+	Input,
+	InputField,
+	Pressable,
+	ScrollView,
+	Text,
+	Textarea,
+	TextareaInput,
+	VStack,
+} from "@repo/ui/primitives";
+import { useToast } from "@repo/ui/providers";
+import { Theme } from "@repo/ui/theme";
+import { hapticLight, hapticSuccess } from "@repo/ui/utils/haptics";
+
+import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 interface BulkStudentCreationProps {
-    onStudentsCreated: (students: BulkStudent[]) => void;
-    onCancel: () => void;
+	onStudentsCreated: (students: BulkStudent[]) => void;
+	onCancel: () => void;
 }
 
-export default function BulkStudentCreation({ onStudentsCreated, onCancel }: BulkStudentCreationProps) {
-    const { t } = useTranslation();
-    const [totalCount, setTotalCount] = useState<string>('');
-    const [students, setStudents] = useState<BulkStudent[]>([]);
-    const [currentIndex, setCurrentIndex] = useState(0);
-    const [step, setStep] = useState<'count' | 'entry' | 'review'>('count');
-    const toast = useToast();
-    const colors = useThemedColors();
+type Step = "count" | "entry" | "review";
 
-    // Initialize student entries
-    const handleSetCount = () => {
-        const count = parseInt(totalCount);
+type DraftStudent = BulkStudent & { id: string };
 
-        if (isNaN(count) || count < 1 || count > 100) {
-            toast.show({
-                placement: 'bottom',
-                render: ({ id }: { id: string }) => (
-                    <Toast nativeID={id} action="error" variant="solid">
-                        <ToastTitle>{t('bulk_creation.errors.invalidNumber') || 'Please enter a number between 1 and 100'}</ToastTitle>
-                    </Toast>
-                ),
-            });
-            return;
-        }
+const createDraftStudent = (index: number): DraftStudent => ({
+	id: `draft-${index}-${globalThis.crypto?.randomUUID?.() ?? "draft"}`,
+	name: "",
+	index_number: "",
+	notes: "",
+});
 
-        hapticLight();
+export default function BulkStudentCreation({
+	onStudentsCreated,
+	onCancel,
+}: BulkStudentCreationProps) {
+	const { t } = useTranslation();
+	const toast = useToast();
+	const [totalCount, setTotalCount] = useState("");
+	const [students, setStudents] = useState<DraftStudent[]>([]);
+	const [currentIndex, setCurrentIndex] = useState(0);
+	const [step, setStep] = useState<Step>("count");
 
-        // Initialize array of empty students
-        const initialStudents: BulkStudent[] = Array.from({ length: count }, (_, i) => ({
-            name: '',
-            index_number: '',
-            notes: '',
-        }));
+	// Auto-save logic
+	useEffect(() => {
+		if (students.length > 0) {
+			storage.set(StorageKeys.DRAFT_STUDENTS, JSON.stringify({ students, step, currentIndex }));
+		}
+	}, [students, step, currentIndex]);
 
-        setStudents(initialStudents);
-        setCurrentIndex(0);
-        setStep('entry');
-    };
+	// Restore draft on mount
+	useEffect(() => {
+		const saved = storage.getString(StorageKeys.DRAFT_STUDENTS);
+		if (saved && students.length === 0) {
+			try {
+				const parsed = JSON.parse(saved);
+				if (parsed.students?.length > 0) {
+					setStudents(parsed.students);
+					setStep(parsed.step || "entry");
+					setCurrentIndex(parsed.currentIndex || 0);
+				}
+			} catch (e) {
+				console.error("Failed to restore student draft:", e);
+			}
+		}
+	}, [students.length]);
 
-    // Quick add: Save current and move to next
-    const handleQuickAdd = () => {
-        const current = students[currentIndex];
+	const currentStudent = students[currentIndex];
+	const validStudentsCount = useMemo(
+		() =>
+			students.filter(
+				(student) => student.name.trim() && student.index_number.trim(),
+			).length,
+		[students],
+	);
 
-        if (!current || !current.name.trim() || !current.index_number.trim()) {
-            toast.show({
-                placement: 'bottom',
-                render: ({ id }: { id: string }) => (
-                    <Toast nativeID={id} action="error" variant="solid">
-                        <ToastTitle>{t('bulk_creation.errors.requiredFields') || 'Name and Index are required'}</ToastTitle>
-                    </Toast>
-                ),
-            });
-            return;
-        }
+	const showError = (message: string) => {
+		toast.showToast({ message, type: "error" });
+	};
 
-        hapticLight();
+	const initializeStudents = () => {
+		const count = Number.parseInt(totalCount, 10);
+		if (!Number.isFinite(count) || count < 1 || count > 100) {
+			showError(
+				t("bulk_creation.errors.invalidNumber") ||
+					"Please enter a number between 1 and 100",
+			);
+			return;
+		}
 
-        if (currentIndex < students.length - 1) {
-            setCurrentIndex(currentIndex + 1);
-        } else {
-            // All students entered, go to review
-            setStep('review');
-        }
-    };
+		hapticLight();
+		setStudents(Array.from({ length: count }, (_, i) => createDraftStudent(i)));
+		setCurrentIndex(0);
+		setStep("entry");
+	};
 
-    // Skip to next student
-    const handleSkip = () => {
-        hapticLight();
-        if (currentIndex < students.length - 1) {
-            setCurrentIndex(currentIndex + 1);
-        }
-    };
+	const updateCurrentStudent = (field: keyof BulkStudent, value: string) => {
+		setStudents((prev) =>
+			prev.map((student, index) =>
+				index === currentIndex ? { ...student, [field]: value } : student,
+			),
+		);
+	};
 
-    // Go to previous student
-    const handlePrevious = () => {
-        hapticLight();
-        if (currentIndex > 0) {
-            setCurrentIndex(currentIndex - 1);
-        }
-    };
+	const moveToPrevious = () => {
+		hapticLight();
+		setCurrentIndex((index) => Math.max(0, index - 1));
+	};
 
-    // Update current student
-    const updateStudent = (field: keyof BulkStudent, value: string) => {
-        const updated = [...students];
-        const student = updated[currentIndex];
-        if (!student) return;
+	const moveToNext = () => {
+		const student = students[currentIndex];
+		if (!student?.name.trim() || !student.index_number.trim()) {
+			showError(
+				t("bulk_creation.errors.requiredFields") ||
+					"Name and Index are required",
+			);
+			return;
+		}
 
-        updated[currentIndex] = {
-            ...student,
-            [field]: value,
-        };
-        setStudents(updated);
-    };
+		hapticLight();
+		if (currentIndex < students.length - 1) {
+			setCurrentIndex((index) => index + 1);
+			return;
+		}
+		setStep("review");
+	};
 
-    // Remove a student from the list
-    const handleRemoveStudent = (index: number) => {
-        hapticLight();
-        const updated = students.filter((_, i) => i !== index);
-        setStudents(updated);
+	const skipStudent = () => {
+		hapticLight();
+		if (currentIndex < students.length - 1) {
+			setCurrentIndex((index) => index + 1);
+		}
+	};
 
-        if (updated.length === 0) {
-            setStep('count');
-            setTotalCount('');
-        } else if (currentIndex >= updated.length) {
-            setCurrentIndex(updated.length - 1);
-        }
-    };
+	const addOneMore = () => {
+		hapticLight();
+		setStudents((prev) => [...prev, createDraftStudent(prev.length)]);
+		setCurrentIndex(students.length);
+		setStep("entry");
+	};
 
-    // Add one more student
-    const handleAddOne = () => {
-        hapticLight();
-        setStudents([...students, { name: '', index_number: '', notes: '' }]);
-        setCurrentIndex(students.length); // Move to the new one
-        setStep('entry');
-    };
+	const removeStudent = (index: number) => {
+		hapticLight();
+		setStudents((prev) => {
+			const next = prev.filter((_, i) => i !== index);
+			if (next.length === 0) {
+				setStep("count");
+				setTotalCount("");
+				setCurrentIndex(0);
+			} else if (currentIndex >= next.length) {
+				setCurrentIndex(next.length - 1);
+			}
+			return next;
+		});
+	};
 
-    // Confirm and submit
-    const handleConfirm = () => {
-        // Filter out empty entries
-        const validStudents = students.filter(s => s.name.trim() && s.index_number.trim());
+	const confirmImport = () => {
+		const validStudents = students.filter(
+			(student) => student.name.trim() && student.index_number.trim(),
+		);
+		if (validStudents.length === 0) {
+			showError(
+				t("bulk_creation.errors.noValidStudents") || "No valid students to add",
+			);
+			return;
+		}
 
-        if (validStudents.length === 0) {
-            toast.show({
-                placement: 'bottom',
-                render: ({ id }: { id: string }) => (
-                    <Toast nativeID={id} action="error" variant="solid">
-                        <ToastTitle>{t('bulk_creation.errors.noValidStudents') || 'No valid students to add'}</ToastTitle>
-                    </Toast>
-                ),
-            });
-            return;
-        }
+		hapticSuccess();
+		storage.delete(StorageKeys.DRAFT_STUDENTS); // Clear on success
+		onStudentsCreated(validStudents.map(({ id: _id, ...student }) => student));
+	};
 
-        hapticSuccess();
-        onStudentsCreated(validStudents);
-    };
+	return (
+		<Box className="flex-1 bg-phase-canvas">
+			<HStack className="items-center justify-between border-b border-phase-border/40 px-6 py-5">
+				<VStack className="gap-1">
+					<Heading className="text-xl font-black text-phase-text-primary">
+						{t("bulk_creation.title") || "Bulk Add Students"}
+					</Heading>
+					<Text className="text-sm text-phase-text-secondary">
+						{t("bulk_creation.subtitle") ||
+							"Create students in one guided flow"}
+					</Text>
+				</VStack>
+				<Pressable
+					onPress={onCancel}
+					className="rounded-full bg-phase-surface-secondary p-3"
+				>
+					<Icon as={X} size={20} color="#1F2937" />
+				</Pressable>
+			</HStack>
 
-    const currentStudent = students[currentIndex];
-    const validStudentsCount = students.filter(s => s.name.trim() && s.index_number.trim()).length;
+			<ScrollView contentContainerClassName="px-6 py-6 pb-24">
+				{step === "count" && (
+					<VStack className="gap-5">
+						<Text className="text-center text-base font-medium text-phase-text-secondary">
+							{t("bulk_creation.howMany") ||
+								"How many students do you want to add?"}
+						</Text>
 
-    return (
-        <Box sx={{ flex: 1, backgroundColor: colors.primary }}>
-            {/* Header */}
-            <HStack
-                justifyContent="space-between"
-                alignItems="center"
-                sx={{
-                    paddingHorizontal: Theme.spacing.xl,
-                    paddingTop: 48,
-                    paddingBottom: Theme.spacing.md,
-                    borderBottomWidth: 1,
-                    borderBottomColor: colors.border
-                }}
-            >
-                <Heading sx={{ color: Theme.colors.sanctuarySaffron, fontSize: Theme.typography.fontSize.xl }}>
-                    {t('bulk_creation.title') || 'Bulk Add Students'}
-                </Heading>
-                <Pressable onPress={() => { hapticLight(); onCancel(); }}>
-                    <X size={24} color={colors.textSecondary} />
-                </Pressable>
-            </HStack>
+						<VStack className="gap-2">
+							<Text className="text-sm font-bold text-phase-text-primary">
+								{t("bulk_creation.countLabel") || "Student count"}
+							</Text>
+							<Input className="rounded-[20px] border border-phase-border/40 bg-phase-surface">
+								<InputField
+									placeholder={
+										t("bulk_creation.countPlaceholder") ||
+										"Enter number (e.g., 35)"
+									}
+									value={totalCount}
+									onChangeText={setTotalCount}
+									keyboardType="number-pad"
+									className="py-4 text-center text-2xl font-black text-phase-text-primary"
+								/>
+							</Input>
+						</VStack>
 
-            <ScrollView sx={{ flex: 1 }} contentContainerStyle={{ padding: Theme.spacing.xl, paddingBottom: 120 }}>
-                {/* Step 1: Enter total count */}
-                {step === 'count' && (
-                    <VStack sx={{ gap: Theme.spacing.md }}>
-                        <Text sx={{ color: colors.text, fontSize: Theme.typography.fontSize.md, textAlign: 'center' }}>
-                            {t('bulk_creation.howMany') || 'How many students do you want to add?'}
-                        </Text>
+						<Button
+							onPress={initializeStudents}
+							className="rounded-full bg-sanctuarySaffron"
+						>
+							<ButtonText className="font-black uppercase tracking-wider text-sanctuary-ink">
+								{t("bulk_creation.startEntry") || "Start Entry"}
+							</ButtonText>
+						</Button>
 
-                        <Input
-                            sx={{
-                                borderColor: colors.border,
-                                borderRadius: Theme.corners.comfortable,
-                                backgroundColor: colors.secondary,
-                            }}
-                        >
-                            <InputField
-                                placeholder={t('bulk_creation.countPlaceholder') || "Enter number (e.g., 35)"}
-                                value={totalCount}
-                                onChangeText={setTotalCount}
-                                keyboardType="number-pad"
-                                color={colors.text}
-                                placeholderTextColor={colors.textTertiary}
-                                sx={{
-                                    fontSize: 24,
-                                    textAlign: 'center'
-                                }}
-                            />
-                        </Input>
+						<Text className="text-center text-xs text-phase-text-tertiary">
+							{t("bulk_creation.maxLimit") || "Maximum 100 students at once"}
+						</Text>
+					</VStack>
+				)}
 
-                        <Button
-                            size="lg"
-                            onPress={handleSetCount}
-                            sx={{
-                                backgroundColor: Theme.colors.sanctuarySaffron,
-                                borderRadius: Theme.corners.comfortable,
-                            }}
-                        >
-                            <ButtonText sx={{ color: Theme.colors.sacredWhite }}>
-                                {t('bulk_creation.startEntry') || 'Start Entry'}
-                            </ButtonText>
-                        </Button>
+				{step === "entry" && currentStudent && (
+					<VStack className="gap-6">
+						<HStack className="items-center justify-between">
+							<Text className="text-xs font-black uppercase tracking-[0.2em] text-phase-text-tertiary">
+								{t("bulk_creation.progress", {
+									current: currentIndex + 1,
+									total: students.length,
+								}) || `Student ${currentIndex + 1} of ${students.length}`}
+							</Text>
+							<Text className="text-xs font-black uppercase tracking-[0.2em] text-sanctuarySaffron">
+								{t("bulk_creation.completedCount", {
+									count: validStudentsCount,
+								}) || `${validStudentsCount} completed`}
+							</Text>
+						</HStack>
 
-                        <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.xs, textAlign: 'center' }}>
-                            {t('bulk_creation.maxLimit') || 'Maximum 100 students at once'}
-                        </Text>
-                    </VStack>
-                )}
+						<Box className="h-1.5 overflow-hidden rounded-full bg-phase-surface-secondary">
+							<Box
+								className="h-full rounded-full bg-sanctuarySaffron"
+								style={{
+									width: `${((currentIndex + 1) / students.length) * 100}%`,
+								}}
+							/>
+						</Box>
 
-                {/* Step 2: Enter student details */}
-                {step === 'entry' && currentStudent && (
-                    <VStack sx={{ gap: Theme.spacing.md }}>
-                        {/* Progress */}
-                        <HStack justifyContent="space-between" alignItems="center">
-                            <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.xs }}>
-                                {t('bulk_creation.progress', { current: currentIndex + 1, total: students.length }) || `Student ${currentIndex + 1} of ${students.length}`}
-                            </Text>
-                            <Text sx={{ color: Theme.colors.sanctuarySaffron, fontSize: Theme.typography.fontSize.xs, fontWeight: '600' }}>
-                                {t('bulk_creation.completedCount', { count: validStudentsCount }) || `${validStudentsCount} completed`}
-                            </Text>
-                        </HStack>
+						<VStack className="gap-2">
+							<Text className="text-sm font-bold text-phase-text-primary">
+								{t("bulk_creation.studentName") || "Student Name *"}
+							</Text>
+							<Input className="rounded-[20px] border border-phase-border/40 bg-phase-surface">
+								<InputField
+									placeholder={
+										t("bulk_creation.namePlaceholder") || "Enter full name"
+									}
+									value={currentStudent.name}
+									onChangeText={(value) => updateCurrentStudent("name", value)}
+									className="py-4 text-phase-text-primary"
+								/>
+							</Input>
+						</VStack>
 
-                        {/* Progress Bar */}
-                        <Box
-                            sx={{
-                                height: 4,
-                                backgroundColor: colors.secondary,
-                                borderRadius: 2,
-                                overflow: 'hidden',
-                            }}
-                        >
-                            <Box
-                                sx={{
-                                    height: '100%',
-                                    width: `${((currentIndex + 1) / students.length) * 100}%`,
-                                    backgroundColor: Theme.colors.sanctuarySaffron,
-                                }}
-                            />
-                        </Box>
+						<VStack className="gap-2">
+							<Text className="text-sm font-bold text-phase-text-primary">
+								{t("bulk_creation.indexNumber") || "Index Number *"}
+							</Text>
+							<Input className="rounded-[20px] border border-phase-border/40 bg-phase-surface">
+								<InputField
+									placeholder={
+										t("bulk_creation.indexPlaceholder") || "Enter index number"
+									}
+									value={currentStudent.index_number}
+									onChangeText={(value) =>
+										updateCurrentStudent("index_number", value)
+									}
+									className="py-4 text-phase-text-primary"
+								/>
+							</Input>
+						</VStack>
 
-                        {/* Name Input */}
-                        <VStack sx={{ gap: Theme.spacing.xs }}>
-                            <Text sx={{ color: colors.text, fontSize: Theme.typography.fontSize.md, fontWeight: '600' }}>
-                                {t('bulk_creation.studentName') || 'Student Name *'}
-                            </Text>
-                            <Input
-                                sx={{
-                                    borderColor: colors.border,
-                                    borderRadius: Theme.corners.comfortable,
-                                    backgroundColor: colors.secondary,
-                                }}
-                            >
-                                <InputField
-                                    placeholder={t('bulk_creation.namePlaceholder') || "Enter full name"}
-                                    value={currentStudent.name}
-                                    onChangeText={(value: string) => updateStudent('name', value)}
-                                    color={colors.text}
-                                    placeholderTextColor={colors.textTertiary}
-                                />
-                            </Input>
-                        </VStack>
+						<VStack className="gap-2">
+							<Text className="text-sm font-bold text-phase-text-primary">
+								{t("bulk_creation.optionalNotes") || "Notes (Optional)"}
+							</Text>
+							<Textarea className="min-h-[110px] rounded-[20px] border border-phase-border/40 bg-phase-surface">
+								<TextareaInput
+									placeholder={
+										t("bulk_creation.notesPlaceholder") ||
+										"Add any notes about this student..."
+									}
+									value={currentStudent.notes}
+									onChangeText={(value) => updateCurrentStudent("notes", value)}
+									className="p-4 text-phase-text-primary"
+								/>
+							</Textarea>
+						</VStack>
 
-                        {/* Index Number Input */}
-                        <VStack sx={{ gap: Theme.spacing.xs }}>
-                            <Text sx={{ color: colors.text, fontSize: Theme.typography.fontSize.md, fontWeight: '600' }}>
-                                {t('bulk_creation.indexNumber') || 'Index Number *'}
-                            </Text>
-                            <Input
-                                sx={{
-                                    borderColor: colors.border,
-                                    borderRadius: Theme.corners.comfortable,
-                                    backgroundColor: colors.secondary,
-                                }}
-                            >
-                                <InputField
-                                    placeholder={t('bulk_creation.indexPlaceholder') || "Enter index number"}
-                                    value={currentStudent.index_number}
-                                    onChangeText={(value: string) => updateStudent('index_number', value)}
-                                    color={colors.text}
-                                    placeholderTextColor={colors.textTertiary}
-                                />
-                            </Input>
-                        </VStack>
+						<HStack className="gap-3">
+							<Button
+								variant="outline"
+								onPress={moveToPrevious}
+								isDisabled={currentIndex === 0}
+								className="flex-1 rounded-full border-phase-border/40"
+							>
+								<ButtonText className="font-black uppercase tracking-wider text-phase-text-secondary">
+									{t("bulk_creation.previous") || "Previous"}
+								</ButtonText>
+							</Button>
+							<Button
+								variant="outline"
+								onPress={skipStudent}
+								className="flex-1 rounded-full border-phase-border/40"
+							>
+								<ButtonText className="font-black uppercase tracking-wider text-phase-text-secondary">
+									{t("bulk_creation.skip") || "Skip"}
+								</ButtonText>
+							</Button>
+						</HStack>
 
-                        {/* Notes Input (Optional) */}
-                        <VStack sx={{ gap: Theme.spacing.xs }}>
-                            <Text sx={{ color: colors.text, fontSize: Theme.typography.fontSize.md }}>
-                                {t('bulk_creation.optionalNotes') || 'Notes (Optional)'}
-                            </Text>
-                            <Textarea
-                                sx={{
-                                    borderColor: colors.border,
-                                    borderRadius: Theme.corners.comfortable,
-                                    backgroundColor: colors.secondary,
-                                    minHeight: 80,
-                                }}
-                            >
-                                <TextareaInput
-                                    placeholder={t('bulk_creation.notesPlaceholder') || "Add any notes about this student..."}
-                                    value={currentStudent.notes}
-                                    onChangeText={(value: string) => updateStudent('notes', value)}
-                                    color={colors.text}
-                                    placeholderTextColor={colors.textTertiary}
-                                />
-                            </Textarea>
-                        </VStack>
+						<Button
+							onPress={moveToNext}
+							className="rounded-full bg-sanctuarySaffron"
+						>
+							<ButtonText className="font-black uppercase tracking-wider text-sanctuary-ink">
+								{currentIndex === students.length - 1
+									? t("bulk_creation.finishReview") || "Finish & Review"
+									: t("bulk_creation.saveNext") || "Save & Next"}
+							</ButtonText>
+						</Button>
 
-                        {/* Navigation Buttons */}
-                        <HStack sx={{ gap: Theme.spacing.md }}>
-                            <Button
-                                size="md"
-                                variant="outline"
-                                onPress={handlePrevious}
-                                isDisabled={currentIndex === 0}
-                                sx={{
-                                    flex: 1,
-                                    borderColor: colors.border,
-                                    borderRadius: Theme.corners.comfortable,
-                                }}
-                            >
-                                <ButtonText sx={{ color: colors.textSecondary }}>
-                                    {t('bulk_creation.previous') || '← Previous'}
-                                </ButtonText>
-                            </Button>
+						<Pressable
+							onPress={() => {
+								hapticLight();
+								setStep("review");
+							}}
+							className="items-center py-2"
+						>
+							<Text className="text-sm font-bold text-phase-text-secondary">
+								{t("bulk_creation.reviewAll", { count: validStudentsCount }) ||
+									`Review All (${validStudentsCount})`}
+							</Text>
+						</Pressable>
+					</VStack>
+				)}
 
-                            <Button
-                                size="md"
-                                variant="outline"
-                                onPress={handleSkip}
-                                sx={{
-                                    flex: 1,
-                                    borderColor: colors.border,
-                                    borderRadius: Theme.corners.comfortable,
-                                }}
-                            >
-                                <ButtonText sx={{ color: colors.textSecondary }}>
-                                    {t('bulk_creation.skip') || 'Skip →'}
-                                </ButtonText>
-                            </Button>
-                        </HStack>
+				{step === "review" && (
+					<VStack className="gap-6">
+						<Text className="text-center text-base font-medium text-phase-text-secondary">
+							{t("bulk_creation.reviewDesc") ||
+								"Review all students before adding to classroom"}
+						</Text>
+						<Text className="text-center text-lg font-black text-sanctuarySaffron">
+							{t("bulk_creation.validCount", { count: validStudentsCount }) ||
+								`${validStudentsCount} valid student(s)`}
+						</Text>
 
-                        {/* Save and Continue / Finish */}
-                        <Button
-                            size="lg"
-                            onPress={handleQuickAdd}
-                            sx={{
-                                backgroundColor: Theme.colors.sanctuarySaffron,
-                                borderRadius: Theme.corners.comfortable,
-                            }}
-                        >
-                            <ButtonText sx={{ color: Theme.colors.sacredWhite }}>
-                                {currentIndex === students.length - 1
-                                    ? (t('bulk_creation.finishReview') || 'Finish & Review')
-                                    : (t('bulk_creation.saveNext') || 'Save & Next →')}
-                            </ButtonText>
-                        </Button>
+						<VStack className="gap-3">
+							{students.map((student, index) => {
+								const isValid =
+									student.name.trim() && student.index_number.trim();
+								return (
+									<Box
+										key={student.id}
+										className={`rounded-[24px] border p-4 ${isValid ? "border-sageGreen/40" : "border-chestnutRed/40"} bg-phase-surface-secondary`}
+									>
+										<HStack className="items-start justify-between gap-4">
+											<VStack className="flex-1 gap-1">
+												<HStack className="items-center gap-2">
+													<Text className="text-xs font-bold text-phase-text-tertiary">
+														#{index + 1}
+													</Text>
+													<Text className="text-base font-black text-phase-text-primary">
+														{student.name ||
+															t("bulk_creation.noName") ||
+															"No name"}
+													</Text>
+												</HStack>
+												<Text className="text-xs text-phase-text-secondary">
+													{t("students.rollNumber") || "Index"}:{" "}
+													{student.index_number ||
+														t("bulk_creation.noIndex") ||
+														"No index"}
+												</Text>
+												{!!student.notes && (
+													<Text className="text-xs italic text-phase-text-secondary">
+														{student.notes}
+													</Text>
+												)}
+											</VStack>
+											<HStack className="items-center gap-3">
+												<Pressable
+													onPress={() => {
+														hapticLight();
+														setCurrentIndex(index);
+														setStep("entry");
+													}}
+												>
+													<Text className="text-sm font-bold text-sanctuarySaffron">
+														{t("common.edit") || "Edit"}
+													</Text>
+												</Pressable>
+												<Pressable onPress={() => removeStudent(index)}>
+													<Icon
+														as={Trash2}
+														size={18}
+														color={Theme.colors.emberRed}
+													/>
+												</Pressable>
+											</HStack>
+										</HStack>
+									</Box>
+								);
+							})}
+						</VStack>
 
-                        {/* Review Button (anytime) */}
-                        <Button
-                            size="md"
-                            variant="link"
-                            onPress={() => { hapticLight(); setStep('review'); }}
-                        >
-                            <ButtonText sx={{ color: colors.textTertiary }}>
-                                {t('bulk_creation.reviewAll', { count: validStudentsCount }) || `Review All (${validStudentsCount})`}
-                            </ButtonText>
-                        </Button>
-                    </VStack>
-                )}
+						<VStack className="gap-3">
+							<Button
+								variant="outline"
+								onPress={addOneMore}
+								className="rounded-full border-sanctuarySaffron"
+							>
+								<HStack className="items-center gap-2">
+									<Icon
+										as={Plus}
+										size={18}
+										color={Theme.colors.sanctuarySaffron}
+									/>
+									<ButtonText className="font-black uppercase tracking-wider text-sanctuarySaffron">
+										{t("bulk_creation.addOneMore") || "Add One More"}
+									</ButtonText>
+								</HStack>
+							</Button>
 
-                {/* Step 3: Review all students */}
-                {step === 'review' && (
-                    <VStack sx={{ gap: Theme.spacing.lg }}>
-                        <Text sx={{ color: colors.text, fontSize: Theme.typography.fontSize.md, textAlign: 'center' }}>
-                            {t('bulk_creation.reviewDesc') || 'Review all students before adding to classroom'}
-                        </Text>
+							<Button
+								onPress={confirmImport}
+								isDisabled={validStudentsCount === 0}
+								className="rounded-full bg-sanctuarySaffron"
+							>
+								<HStack className="items-center gap-2">
+									<Icon as={Save} size={18} color={Theme.colors.sanctuaryInk} />
+									<ButtonText className="font-black uppercase tracking-wider text-sanctuary-ink">
+										{t("bulk_creation.addStudentsAction", {
+											count: validStudentsCount,
+										}) || `Add ${validStudentsCount} Student(s)`}
+									</ButtonText>
+								</HStack>
+							</Button>
 
-                        <Text sx={{ color: Theme.colors.sanctuarySaffron, fontSize: Theme.typography.fontSize.lg, fontWeight: '600', textAlign: 'center' }}>
-                            {t('bulk_creation.validCount', { count: validStudentsCount }) || `${validStudentsCount} valid student(s)`}
-                        </Text>
-
-                        {/* Student List */}
-                        <VStack sx={{ gap: Theme.spacing.sm }}>
-                            {students.map((student, index) => {
-                                const isValid = student.name.trim() && student.index_number.trim();
-
-                                return (
-                                    <Box
-                                        key={index}
-                                        sx={{
-                                            padding: Theme.spacing.md,
-                                            backgroundColor: colors.secondary,
-                                            borderRadius: Theme.corners.comfortable,
-                                            borderLeftWidth: 4,
-                                            borderLeftColor: isValid ? Theme.colors.sageGreen : Theme.colors.emberRed,
-                                            opacity: isValid ? 1 : 0.6,
-                                            borderWidth: 1,
-                                            borderColor: colors.border,
-                                        }}
-                                    >
-                                        <HStack justifyContent="space-between" alignItems="flex-start">
-                                            <VStack sx={{ gap: Theme.spacing.xs, flex: 1 }}>
-                                                <HStack alignItems="center" sx={{ gap: Theme.spacing.xs }}>
-                                                    <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.xs }}>
-                                                        #{index + 1}
-                                                    </Text>
-                                                    <Text sx={{ color: colors.text, fontSize: Theme.typography.fontSize.md, fontWeight: '700' }}>
-                                                        {student.name || <Text sx={{ color: Theme.colors.emberRed }}>{t('bulk_creation.noName') || 'No name'}</Text>}
-                                                    </Text>
-                                                </HStack>
-                                                <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.xs }}>
-                                                    {t('students.rollNumber') || 'Index'}: {student.index_number || <Text sx={{ color: Theme.colors.emberRed }}>{t('bulk_creation.noIndex') || 'No index'}</Text>}
-                                                </Text>
-                                                {student.notes && (
-                                                    <Text sx={{ color: colors.textSecondary, fontSize: Theme.typography.fontSize.xs, fontStyle: 'italic' }}>
-                                                        {student.notes}
-                                                    </Text>
-                                                )}
-                                            </VStack>
-
-                                            <HStack sx={{ gap: Theme.spacing.md }}>
-                                                <Pressable
-                                                    onPress={() => {
-                                                        hapticLight();
-                                                        setCurrentIndex(index);
-                                                        setStep('entry');
-                                                    }}
-                                                >
-                                                    <Text sx={{ color: Theme.colors.sanctuarySaffron, fontSize: Theme.typography.fontSize.sm, fontWeight: '600' }}>
-                                                        {t('common.edit') || 'Edit'}
-                                                    </Text>
-                                                </Pressable>
-                                                <Pressable onPress={() => handleRemoveStudent(index)}>
-                                                    <Trash2 size={18} color={Theme.colors.emberRed} />
-                                                </Pressable>
-                                            </HStack>
-                                        </HStack>
-                                    </Box>
-                                );
-                            })}
-                        </VStack>
-
-                        {/* Action Buttons */}
-                        <VStack sx={{ gap: Theme.spacing.md }}>
-                            <Button
-                                size="lg"
-                                onPress={handleAddOne}
-                                variant="outline"
-                                sx={{
-                                    borderColor: Theme.colors.sanctuarySaffron,
-                                    borderRadius: Theme.corners.comfortable,
-                                    borderWidth: 1,
-                                }}
-                            >
-                                <Plus size={20} color={Theme.colors.sanctuarySaffron} style={{ marginRight: 8 }} />
-                                <ButtonText sx={{ color: Theme.colors.sanctuarySaffron }}>
-                                    {t('bulk_creation.addOneMore') || 'Add One More'}
-                                </ButtonText>
-                            </Button>
-
-                            <Button
-                                size="lg"
-                                onPress={handleConfirm}
-                                isDisabled={validStudentsCount === 0}
-                                sx={{
-                                    backgroundColor: validStudentsCount > 0
-                                        ? Theme.colors.sanctuarySaffron
-                                        : colors.border,
-                                    borderRadius: Theme.corners.comfortable,
-                                }}
-                            >
-                                <Save size={20} color={Theme.colors.sacredWhite} style={{ marginRight: 8 }} />
-                                <ButtonText sx={{ color: Theme.colors.sacredWhite }}>
-                                    {t('bulk_creation.addStudentsAction', { count: validStudentsCount }) || `Add ${validStudentsCount} Student(s)`}
-                                </ButtonText>
-                            </Button>
-
-                            <Button
-                                size="md"
-                                variant="link"
-                                onPress={() => { hapticLight(); setStep('entry'); }}
-                            >
-                                <ButtonText sx={{ color: colors.textSecondary }}>
-                                    {t('bulk_creation.backToEntry') || '← Back to Entry'}
-                                </ButtonText>
-                            </Button>
-                        </VStack>
-                    </VStack>
-                )}
-            </ScrollView>
-        </Box>
-    );
+							<Pressable
+								onPress={() => {
+									hapticLight();
+									setStep("entry");
+								}}
+								className="items-center py-2"
+							>
+								<Text className="text-sm font-bold text-phase-text-secondary">
+									{t("bulk_creation.backToEntry") || "Back to Entry"}
+								</Text>
+							</Pressable>
+						</VStack>
+					</VStack>
+				)}
+			</ScrollView>
+		</Box>
+	);
 }

@@ -1,78 +1,77 @@
-﻿/**
- * Web fallback for SanctuaryFlashList.
+/**
+ * Web implementation for SanctuaryFlashList.
  *
- * @shopify/flash-list is optimised for native recycler views and does not have
- * reliable web support.  On web Metro resolves this .web.tsx file instead of
- * SanctuaryFlashList.tsx, swapping FlashList for React Native's built-in
- * FlatList which works correctly on all platforms.
- *
- * The public API (props) is kept identical so every call site compiles without
- * changes.
+ * Sanctuary V3: Migrated to @shopify/flash-list v2.
+ * FlashList v2 is a JS-only solution and officially supports React Native for Web.
+ * This ensures identical performance behavior and component recycling across all platforms.
  */
-import React, { useCallback } from 'react';
-import { FlatList, RefreshControl, StyleProp, ViewStyle } from 'react-native';
-import { Theme } from '../theme/Theme';
-import { useThemedColors } from '../hooks/useThemedColors';
-import EmptyState from './EmptyState';
+
 import { BookOpen } from 'lucide-react-native';
+import React, { useCallback } from 'react';
+import { type StyleProp, type ViewStyle } from 'react-native';
+import { FlashList } from '@shopify/flash-list';
+import { RefreshControl } from '../primitives';
+import { useThemedColors } from '../hooks/useThemedColors';
+import { Theme } from '../theme/Theme';
+import EmptyState from './EmptyState';
 import type { SanctuaryFlashListProps } from './SanctuaryFlashList';
 
 function SanctuaryFlashListWeb<T>({
-    data,
-    renderItem,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    estimatedItemSize: _estimatedItemSize, // API compatibility only â€” FlatList doesn't require it
-    refreshing = false,
-    onRefresh,
-    emptyComponent,
-    refreshColor,
-    contentContainerStyle,
-    ListEmptyComponent,
-    ...props
+  data,
+  renderItem,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  estimatedItemSize, // Used in v2
+  refreshing = false,
+  onRefresh,
+  emptyComponent,
+  refreshColor,
+  contentContainerStyle,
+  ListEmptyComponent,
+  ...props
 }: SanctuaryFlashListProps<T>) {
-    const colors = useThemedColors();
+  const _colors = useThemedColors();
 
-    const renderEmpty = useCallback(() => {
-        if (emptyComponent) return emptyComponent;
+  const renderEmpty = useCallback(() => {
+    if (emptyComponent) return emptyComponent;
 
-        if (ListEmptyComponent) {
-            if (React.isValidElement(ListEmptyComponent)) return ListEmptyComponent;
-            const EmptyComp = ListEmptyComponent as any;
-            return <EmptyComp />;
-        }
-
-        return (
-            <EmptyState
-                icon={BookOpen}
-                title="Silence in the Sanctuary"
-                description="Your first discovery is waiting to be found here."
-            />
-        );
-    }, [emptyComponent, ListEmptyComponent]);
+    if (ListEmptyComponent) {
+      if (React.isValidElement(ListEmptyComponent)) return ListEmptyComponent;
+      const EmptyComp = ListEmptyComponent as any;
+      return <EmptyComp />;
+    }
 
     return (
-        <FlatList
-            {...(props as any)}
-            data={data}
-            renderItem={renderItem}
-            ListEmptyComponent={renderEmpty}
-            contentContainerStyle={[
-                { paddingBottom: Theme.spacing.xl },
-                contentContainerStyle as StyleProp<ViewStyle>,
-            ]}
-            refreshControl={
-                onRefresh ? (
-                    <RefreshControl
-                        refreshing={refreshing}
-                        onRefresh={onRefresh}
-                        tintColor={refreshColor || Theme.colors.sanctuarySaffron}
-                        colors={[refreshColor || Theme.colors.sanctuarySaffron]}
-                    />
-                ) : undefined
-            }
-        />
+      <EmptyState
+        icon={BookOpen}
+        title="Silence in the Sanctuary"
+        description="Your first discovery is waiting to be found here."
+      />
     );
+  }, [emptyComponent, ListEmptyComponent]);
+
+  return (
+    <FlashList
+      {...(props as any)}
+      data={data}
+      renderItem={renderItem}
+      estimatedItemSize={estimatedItemSize}
+      ListEmptyComponent={renderEmpty}
+      contentContainerStyle={[
+        { paddingBottom: Theme.spacing.xl },
+        contentContainerStyle as StyleProp<ViewStyle>,
+      ]}
+      refreshControl={
+        onRefresh ? (
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={refreshColor || Theme.colors.sanctuarySaffron}
+            colors={[refreshColor || Theme.colors.sanctuarySaffron]}
+          />
+        ) : undefined
+      }
+    />
+  );
 }
 
 export default SanctuaryFlashListWeb;
-

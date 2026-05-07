@@ -1,72 +1,58 @@
-import React from 'react';
-import { Box, Text, HStack, Spinner } from '../gluestack';
-import { Theme } from '../theme/Theme';
-import { WifiOff, RefreshCw } from 'lucide-react-native';
+import { useMutationQueue, useStore } from '@repo/core/logic';
+import { WifiOff } from 'lucide-react-native';
 import { Platform } from 'react-native';
+import Animated, { SlideInUp, SlideOutUp } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Animated, { SlideInDown, SlideOutUp } from 'react-native-reanimated';
-import { useNetInfo } from '@react-native-community/netinfo';
-import { useStore, useMutationQueue } from '@repo/core';
+import { Box, HStack, Spinner, Text } from '../gluestack';
 
 /**
  * NetworkStatusBanner
- * 
- * Displays:
- * 1. Offline Mode (Red)
- * 2. Syncing Mode (Blue/Saffron)
+ * Hardened v3 implementation.
  */
 export default function NetworkStatusBanner() {
-    const isOnline = useStore(state => state.isOnline);
-    const { isSyncing, queue } = useMutationQueue();
-    const insets = useSafeAreaInsets();
+  const isOnline = useStore((state) => state.isOnline);
+  const { isSyncing, queue } = useMutationQueue();
+  const insets = useSafeAreaInsets();
 
-    // If online and not syncing, show nothing
-    if (isOnline && !isSyncing) return null;
+  // If online and not syncing, show nothing
+  if (isOnline && !isSyncing) return null;
 
-    // Determine content based on state
-    const isOffline = !isOnline;
+  const isOffline = !isOnline;
 
-    const backgroundColor = isOffline
-        ? Theme.colors.emberRed
-        : Theme.colors.sanctuarySaffron;
-
-    return (
-        <Animated.View
-            entering={SlideInDown.duration(500)}
-            exiting={SlideOutUp.duration(500)}
-            style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                zIndex: Theme.zIndex.modal + 1,
-                paddingTop: Platform.OS !== 'web' ? insets.top : 0,
-            }}
-        >
-            <Box sx={{
-                backgroundColor: backgroundColor,
-                paddingVertical: 8,
-                paddingHorizontal: 16,
-                alignItems: 'center',
-            }}>
-                <HStack space="sm" alignItems="center">
-                    {isOffline ? (
-                        <>
-                            <WifiOff color={Theme.colors.white} size={16} />
-                            <Text color={Theme.colors.white} size="xs" bold>
-                                Offline Mode {queue.length > 0 ? `(${queue.length} pending actions)` : ''}
-                            </Text>
-                        </>
-                    ) : (
-                        <>
-                            <Spinner color={Theme.colors.white} size="small" />
-                            <Text color={Theme.colors.white} size="xs" bold>
-                                Syncing {queue.length} pending actions...
-                            </Text>
-                        </>
-                    )}
-                </HStack>
-            </Box>
-        </Animated.View>
-    );
+  return (
+    <Animated.View
+      entering={SlideInUp.duration(500)}
+      exiting={SlideOutUp.duration(500)}
+      style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 1000,
+        paddingTop: Platform.OS !== 'web' ? insets.top : 0,
+      }}
+    >
+      <Box
+        className={`${isOffline ? 'bg-phase-danger' : 'bg-phase-accent'} py-2 px-4 items-center`}
+      >
+        <HStack space="sm" className="items-center">
+          {isOffline ? (
+            <>
+              <WifiOff color="white" size={16} />
+              <Text className="text-white text-xs font-bold">
+                Offline Mode {queue.length > 0 ? `(${queue.length} pending actions)` : ''}
+              </Text>
+            </>
+          ) : (
+            <>
+              <Spinner className="text-white" size="small" />
+              <Text className="text-white text-xs font-bold">
+                Syncing {queue.length} pending actions...
+              </Text>
+            </>
+          )}
+        </HStack>
+      </Box>
+    </Animated.View>
+  );
 }

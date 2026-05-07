@@ -1,181 +1,263 @@
-import React, { useState, useEffect } from 'react';
+/**
+ * ENERGY FORECAST
+ * morning check-in: "What is your capacity today?"
+ * Visualizes internal batteries.
+ */
+
+import { supabase } from "@repo/core/api";
+import { useSafeMutation } from "@repo/core/hooks";
+import { usePermissions } from "@repo/core/logic";
+import { useNavigation } from "@react-navigation/native";
+
+import PositiveInvitation from "@repo/ui/components/PositiveInvitation";
+import { SkeletonCard } from "@repo/ui/components/SkeletonLoader";
 import {
-  Box,
-  VStack,
-  HStack,
-  Text,
-  Heading,
-  Pressable
-} from '@repo/ui';
-import { Battery } from 'lucide-react-native';
-import { useTranslation } from 'react-i18next';
-import { Theme } from '@repo/ui';
-import { useThemedColors } from '@repo/ui';
-import { supabase, useSafeMutation } from '@repo/core';
-import type { EnergyForecast as EnergyForecastType } from '../types/Wellbeing';
-import { hapticLight, hapticSuccess, SkeletonCard, PositiveInvitation } from '@repo/ui';
-import { useEnergyForecast } from '../hooks/useEnergyForecast';
-import { useNavigation } from '@react-navigation/native';
+	Box,
+	Heading,
+	HStack,
+	Icon,
+	Pressable,
+	Text,
+	VStack,
+} from "@repo/ui/primitives";
+import { hapticLight, hapticSuccess } from "@repo/ui/utils/haptics";
+
+import { Battery, BatteryLow, BatteryMedium, Zap } from "lucide-react-native";
+import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import Animated, { FadeIn, FadeInUp } from "react-native-reanimated";
+import { useEnergyForecast } from "../hooks/useEnergyForecast";
 
 interface EnergyForecastProps {
-  userId?: string;
+	userId?: string;
+	disabled?: boolean;
 }
 
-export default function EnergyForecast({ userId }: EnergyForecastProps) {
-  const navigation = useNavigation<any>();
-  const { t } = useTranslation();
-  const colors = useThemedColors();
+export default function EnergyForecast({
+	userId,
+	disabled: componentDisabled,
+}: EnergyForecastProps) {
+	const navigation = useNavigation<any>();
+	const { t } = useTranslation();
+	const { context } = usePermissions();
+	const activeUserId = userId || context.userId;
 
-  // Resilient Data Hook
-  const { forecasts, refreshData, isLoading: dataLoading } = useEnergyForecast(userId);
+	const {
+		forecasts,
+		refreshData,
+		isLoading: dataLoading,
+	} = useEnergyForecast(activeUserId ?? undefined);
+	const [selectedLevel, setSelectedLevel] = useState<number | null>(null);
 
-  const [todayForecast, setTodayForecast] = useState<EnergyForecastType | null>(null);
-  // Optimistic local selection — mirrors todayForecast.energy_level but updates instantly on tap
-  const [selectedLevel, setSelectedLevel] = useState<number | null>(null);
+	const today = new Date().toISOString().split("T")[0];
+	const currentForecast = useMemo(
+		() => forecasts.find((f) => f.forecast_date === today) ?? forecasts[0],
+		[forecasts, today],
+	);
+	const displayLevel = selectedLevel ?? currentForecast?.energy_level ?? null;
+	const lastUpdatedAt = currentForecast?.created_at ?? null;
 
-  const today = new Date().toISOString().split('T')[0];
+	const { mutate: saveEnergy, isLoading: isSaving } = useSafeMutation(
+		async (level: number) => {
+			const { error } = await supabase.from("energy_forecasts").upsert(
+				{
+					user_id: activeUserId,
+					energy_level: level,
+					forecast_date: today,
+				},
+				{
+					onConflict: "user_id,forecast_date",
+				},
+			);
+			if (error) throw error;
+		},
+		{
+			onSuccess: () => {
+				hapticSuccess();
+				void refreshData();
+			},
+		},
+	);
 
-  useEffect(() => {
-    if (forecasts.length > 0) {
-      const today = new Date().toISOString().split('T')[0];
-      const found = forecasts.find(f => f.forecast_date === today);
-      setTodayForecast(found || null);
-      if (found) setSelectedLevel(found.energy_level);
-    }
-  }, [forecasts]);
+	const handleSelectEnergy = async (level: number) => {
+		if (!activeUserId || componentDisabled) return;
+		hapticLight();
+		setSelectedLevel(level); // optimistic update
+		await saveEnergy(level);
+	};
 
-  const { mutate: saveEnergy, isLoading } = useSafeMutation(
-    async (level: number) => {
-      const { error } = await supabase
-        .from('energy_forecasts')
-        .upsert({
-          user_id: userId,
-          energy_level: level,
-          forecast_date: today
-        }, {
-          onConflict: 'user_id,forecast_date'
-        });
-      if (error) throw error;
-    },
-    {
-      onSuccess: () => {
-        hapticSuccess();
-        refreshData();
-      }
-    }
-  );
+	const energyLevels = [
+		{
+			level: 1,
+			label: t("self.energyDepleted") || "Depleted",
+			color: "text-emberRed",
+			bg: "bg-emberRed/10",
+			border: "border-emberRed/20",
+			emoji: "😵",
+			icon: BatteryLow,
+		},
+		{
+			level: 2,
+			label: t("self.energyLow") || "Low",
+			color: "text-amberGlow",
+			bg: "bg-amberGlow/10",
+			border: "border-amberGlow/20",
+			emoji: "😴",
+			icon: BatteryLow,
+		},
+		{
+			level: 3,
+			label: t("self.energyOkay") || "Steady",
+			color: "text-mistGray",
+			bg: "bg-mistGray/10",
+			border: "border-mistGray/20",
+			emoji: "😐",
+			icon: BatteryMedium,
+		},
+		{
+			level: 4,
+			label: t("self.energyGood") || "Good",
+			color: "text-emeraldGreen",
+			bg: "bg-emeraldGreen/10",
+			border: "border-emeraldGreen/20",
+			emoji: "😊",
+			icon: Battery,
+		},
+		{
+			level: 5,
+			label: t("self.energyEnergized") || "Full",
+			color: "text-sanctuarySaffron",
+			bg: "bg-sanctuarySaffron/10",
+			border: "border-sanctuarySaffron/20",
+			emoji: "⚡",
+			icon: Zap,
+		},
+	];
 
-  const handleSelectEnergy = async (level: 1 | 2 | 3 | 4 | 5) => {
-    if (!userId) return;
-    hapticLight();
-    setSelectedLevel(level); // optimistic update
-    await saveEnergy(level);
-  };
+	if (dataLoading && activeUserId) {
+		return (
+			<VStack className="p-lg gap-lg">
+				<SkeletonCard height={80} />
+				<HStack className="justify-between px-md">
+					{[1, 2, 3, 4, 5].map((i) => (
+						<SkeletonCard key={i} height={60} className="w-14" />
+					))}
+				</HStack>
+			</VStack>
+		);
+	}
 
-  const energyLevels = [
-    { level: 1, label: t('self.energyDepleted'), color: Theme.colors.emberRed, emoji: '😰' },
-    { level: 2, label: t('self.energyLow'), color: Theme.colors.emberOrange, emoji: '😔' },
-    { level: 3, label: t('self.energyOkay'), color: Theme.colors.templeGold, emoji: '😐' },
-    { level: 4, label: t('self.energyGood'), color: Theme.colors.sageGreen, emoji: '😊' },
-    { level: 5, label: t('self.energyEnergized'), color: Theme.colors.gurudeviBlue, emoji: '🌟' },
-  ];
+	if (!activeUserId) {
+		return (
+			<PositiveInvitation
+				type="guest"
+				onAction={() => navigation.navigate("Auth" as never)}
+			/>
+		);
+	}
 
-  if (dataLoading && userId) {
-    return (
-      <VStack space="lg" sx={{ flex: 1, padding: Theme.spacing.lg }}>
-        <SkeletonCard height={80} />
-        <SkeletonCard height={80} />
-        <SkeletonCard height={80} />
-      </VStack>
-    );
-  }
+	const currentEnergy = displayLevel ? energyLevels[displayLevel - 1] : null;
 
-  if (!userId) {
-    return (
-      <PositiveInvitation
-        type="guest"
-        onAction={() => navigation.navigate('Auth' as never)}
-      />
-    );
-  }
+	return (
+		<VStack className="gap-lg p-lg">
+			{/* Header */}
+			<VStack className="gap-1">
+				<HStack className="items-center gap-2">
+					<Icon
+						as={currentEnergy?.icon || Battery}
+						className={currentEnergy?.color || "text-sanctuarySaffron"}
+						size={24}
+					/>
+					<Heading className="text-sacredWhite" size="lg">
+						{t("self.energyForecast") || "Energy Forecast"}
+					</Heading>
+				</HStack>
+				<Text className="text-mistGray text-sm">
+					{t("self.energyForecastDesc") ||
+						"Visualise your internal batteries and capacity."}
+				</Text>
+			</VStack>
 
-  return (
-    <VStack space="lg" sx={{ flex: 1 }}>
-      <VStack space="xs">
-        <HStack space="sm" alignItems="center">
-          <Battery
-            color={(selectedLevel !== null && selectedLevel >= 1 && selectedLevel <= 5) ? energyLevels[selectedLevel - 1]?.color : colors.action}
-            size={24}
-          />
-          <Heading color={colors.text} size="lg">
-            {t('self.energyForecast')}
-          </Heading>
-        </HStack>
-        <Text color={colors.textSecondary} size="sm">
-          {t('self.energyForecastDesc')}
-        </Text>
-      </VStack>
+			{/* Picker Area */}
+			<Box className="bg-obsidian p-lg rounded-comfortable border border-white/5 shadow-sm">
+				<Text className="text-mistGray text-xs text-center mb-6 uppercase tracking-widest font-bold">
+					{t("self.capacityToday") || "Current Capacity"}
+				</Text>
 
-      {/* Emoji Energy Picker — always visible, current selection highlighted */}
-      <Box sx={{ paddingHorizontal: Theme.spacing.sm }}>
-        <Text color={colors.textSecondary} size="sm" textAlign="center" mb="$3">
-          {t('self.capacityToday')}
-        </Text>
-        <HStack justifyContent="space-between" alignItems="center">
-          {energyLevels.map((energy) => {
-            const isActive = selectedLevel === energy.level;
-            return (
-              <Pressable
-                key={energy.level}
-                onPress={() => handleSelectEnergy(energy.level as any)}
-                disabled={isLoading}
-                sx={{ alignItems: 'center' }}
-              >
-                <VStack alignItems="center" space="xs">
-                  <Box
-                    sx={{
-                      width: 54,
-                      height: 54,
-                      borderRadius: 27,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      backgroundColor: isActive ? energy.color + '33' : colors.secondary,
-                      borderWidth: 2,
-                      borderColor: isActive ? energy.color : colors.border,
-                    }}
-                  >
-                    <Text sx={{ fontSize: 26 }}>{energy.emoji}</Text>
-                  </Box>
-                  <Text
-                    sx={{
-                      fontSize: Theme.typography.fontSize.xs,
-                      color: isActive ? energy.color : colors.textTertiary,
-                      fontWeight: isActive ? '700' : '400',
-                    }}
-                  >
-                    {energy.label}
-                  </Text>
-                </VStack>
-              </Pressable>
-            );
-          })}
-        </HStack>
-      </Box>
+				<HStack className="justify-between items-center">
+					{energyLevels.map((energy) => {
+						const isActive = selectedLevel === energy.level;
+						return (
+							<Pressable
+								key={energy.level}
+								onPress={() => handleSelectEnergy(energy.level)}
+								disabled={isSaving || componentDisabled}
+								accessibilityRole="button"
+								className="items-center gap-2"
+							>
+								<Box
+									className={`w-14 h-14 rounded-full items-center justify-center transition-all duration-300 border-2 ${
+										isActive
+											? `${energy.bg} ${energy.border} scale-115`
+											: "bg-white/5 border-white/10"
+									}`}
+								>
+									<Text className="text-2xl">{energy.emoji}</Text>
+								</Box>
+								<Text
+									className={`text-[10px] uppercase font-bold tracking-wider ${
+										isActive ? energy.color : "text-dimGray"
+									}`}
+								>
+									{energy.label}
+								</Text>
+							</Pressable>
+						);
+					})}
+				</HStack>
+			</Box>
 
-      {/* Last updated timestamp */}
-      {todayForecast && (
-        <Box
-          p="$3"
-          sx={{
-            backgroundColor: colors.tertiary,
-            borderRadius: Theme.corners.comfortable
-          }}
-        >
-          <Text color={colors.textSecondary} size="sm" textAlign="center">
-            {t('self.checkedToday')} {new Date(todayForecast.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-          </Text>
-        </Box>
-      )}
-    </VStack>
-  );
+			{/* Status Feedback */}
+			{displayLevel && (
+				<Animated.View entering={FadeInUp.duration(400)}>
+					<Box
+						className={`p-md rounded-comfortable border ${currentEnergy?.bg} ${currentEnergy?.border} items-center`}
+					>
+						<HStack className="items-center gap-2">
+							<Icon
+								as={currentEnergy?.icon || Zap}
+								className={currentEnergy?.color}
+								size={14}
+							/>
+							<Text className={`text-sm font-bold ${currentEnergy?.color}`}>
+								{currentEnergy?.label} Resonance
+							</Text>
+						</HStack>
+					</Box>
+				</Animated.View>
+			)}
+
+			{/* Last updated timestamp */}
+			{lastUpdatedAt && (
+				<Animated.View entering={FadeIn}>
+					<Box className="bg-white/5 p-sm rounded-full border border-white/5">
+						<Text className="text-dimGray text-[10px] text-center italic">
+							{t("self.checkedToday") || "Resonance updated today at"}{" "}
+							{new Date(lastUpdatedAt).toLocaleTimeString([], {
+								hour: "2-digit",
+								minute: "2-digit",
+							})}
+						</Text>
+					</Box>
+				</Animated.View>
+			)}
+
+			{/* Guidance */}
+			<Box className="p-md bg-white/5 rounded-comfortable border border-white/5 mt-2">
+				<Text className="text-mistGray text-[11px] text-center italic">
+					GuruDevi: &ldquo;Honour your energy. It is the fuel for your purpose.&rdquo;
+				</Text>
+			</Box>
+		</VStack>
+	);
 }

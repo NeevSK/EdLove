@@ -1,20 +1,17 @@
 import { useMemo } from 'react';
-import { useEnvironment } from '../context';
-import { getThemeColors, ThemeColors } from '../utils/themeColors';
+import { type ThemeColors, toThemeColors } from '../utils/themeColors';
+import { useTheme } from './useTheme';
 
 /**
- * Hook to get theme-aware colors synchronised with the Environment Engine
- * This is the preferred way to consume colors in components.
+ * Legacy compatibility hook for components that still expect the older
+ * `ThemeColors` shape. New components should prefer `useTheme()`.
  */
 export function useThemedColors(): ThemeColors {
-    const { isDark, temporalPhase } = useEnvironment();
+  const theme = useTheme();
 
-    // Memoize to avoid unnecessary re-computations
-    const colors = useMemo(() => {
-        return getThemeColors(isDark, temporalPhase);
-    }, [isDark, temporalPhase]);
+  const colors = useMemo(() => toThemeColors(theme), [theme]);
 
-    return colors;
+  return colors;
 }
 
 export default useThemedColors;

@@ -1,131 +1,183 @@
-import { useState, useEffect } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useCallback, useEffect, useMemo, useReducer, useState } from 'react';
+import { storage } from '../lib/storage';
 
 const PERSISTENCE_KEY = 'GURUDEVI_SCHOOL_CREATION_STATE';
 
 export interface SchoolCreationState {
-    step: number;
-    basicInfo: {
-        name: string;
-        contactEmail: string;
-        contactPhone: string;
-        website?: string;
-    };
-    location: {
-        provinceId: string;
-        districtId: string;
-        city: string;
-        address: string;
-    };
-    demographics: {
-        studentType: 'mixed' | 'boys' | 'girls' | '';
-        religiousAffiliation: string;
-        studentCount: string;
-    };
-    hierarchy: {
-        levels: string[]; // e.g., ['Primary', 'Secondary', 'AL']
-        sections: { name: string; headName?: string }[];
-    };
+  step: number;
+  basicInfo: {
+    name: string;
+    handle: string;
+    officialType: string;
+    contactEmail: string;
+    contactPhone: string;
+    website?: string;
+  };
+  location: {
+    provinceId: string;
+    districtId: string;
+    city: string;
+    address: string;
+  };
+  demographics: {
+    studentType: 'mixed' | 'boys' | 'girls' | '';
+    religiousAffiliation: string;
+    studentCount: string;
+  };
+  hierarchy: {
+    levels: string[];
+    gradeRange: { start: number; end: number };
+    sections: { name: string; headName?: string }[];
+  };
 }
 
+type Action =
+  | { type: 'SET_STATE'; payload: SchoolCreationState }
+  | { type: 'UPDATE_STEP'; payload: number }
+  | {
+      type: 'UPDATE_BASIC_INFO';
+      payload: Partial<SchoolCreationState['basicInfo']>;
+    }
+  | {
+      type: 'UPDATE_LOCATION';
+      payload: Partial<SchoolCreationState['location']>;
+    }
+  | {
+      type: 'UPDATE_DEMOGRAPHICS';
+      payload: Partial<SchoolCreationState['demographics']>;
+    }
+  | {
+      type: 'UPDATE_HIERARCHY';
+      payload: Partial<SchoolCreationState['hierarchy']>;
+    }
+  | { type: 'RESET' };
+
 const initialState: SchoolCreationState = {
-    step: 1,
-    basicInfo: {
-        name: '',
-        contactEmail: '',
-        contactPhone: '',
-        website: '',
-    },
-    location: {
-        provinceId: '',
-        districtId: '',
-        city: '',
-        address: '',
-    },
-    demographics: {
-        studentType: '',
-        religiousAffiliation: 'secular',
-        studentCount: '',
-    },
-    hierarchy: {
-        levels: [],
-        sections: [],
-    },
+  step: 1,
+  basicInfo: {
+    name: '',
+    handle: '',
+    officialType: '',
+    contactEmail: '',
+    contactPhone: '',
+  },
+  location: {
+    provinceId: '',
+    districtId: '',
+    city: '',
+    address: '',
+  },
+  demographics: {
+    studentType: '',
+    religiousAffiliation: 'secular',
+    studentCount: '',
+  },
+  hierarchy: {
+    levels: [],
+    gradeRange: { start: 1, end: 13 },
+    sections: [],
+  },
 };
 
+function creationReducer(state: SchoolCreationState, action: Action): SchoolCreationState {
+  switch (action.type) {
+    case 'SET_STATE':
+      return action.payload;
+    case 'UPDATE_STEP':
+      return { ...state, step: action.payload };
+    case 'UPDATE_BASIC_INFO':
+      return { ...state, basicInfo: { ...state.basicInfo, ...action.payload } };
+    case 'UPDATE_LOCATION':
+      return { ...state, location: { ...state.location, ...action.payload } };
+    case 'UPDATE_DEMOGRAPHICS':
+      return {
+        ...state,
+        demographics: { ...state.demographics, ...action.payload },
+      };
+    case 'UPDATE_HIERARCHY':
+      return { ...state, hierarchy: { ...state.hierarchy, ...action.payload } };
+    case 'RESET':
+      return initialState;
+    default:
+      return state;
+  }
+}
+
 export function useSchoolCreation() {
-    const [state, setState] = useState<SchoolCreationState>(initialState);
-    const [isLoaded, setIsLoaded] = useState(false);
+  const [state, dispatch] = useReducer(creationReducer, initialState);
+  const [isLoaded, setIsLoaded] = useState(false);
 
-    // Load persisted state on mount
-    useEffect(() => {
-        const loadState = async () => {
-            try {
-                const savedState = await AsyncStorage.getItem(PERSISTENCE_KEY);
-                if (savedState) {
-                    setState(JSON.parse(savedState));
-                }
-            } catch (e) {
-                console.error('Failed to load school creation state', e);
-            } finally {
-                setIsLoaded(true);
-            }
-        };
-        loadState();
-    }, []);
-
-    // Persist state whenever it changes
-    useEffect(() => {
-        if (isLoaded) {
-            AsyncStorage.setItem(PERSISTENCE_KEY, JSON.stringify(state));
+  // Load persisted state on mount
+  useEffect(() => {
+    async function loadState() {
+      try {
+        const savedState = await storage.getStringAsync(PERSISTENCE_KEY);
+        if (savedState) {
+          dispatch({ type: 'SET_STATE', payload: JSON.parse(savedState) });
         }
-    }, [state, isLoaded]);
+      } catch (e) {
+        console.error('[useSchoolCreation] Load error:', e);
+      } finally {
+        setIsLoaded(true);
+      }
+    }
+    loadState().catch((e) => {
+      console.error('SchoolCreation: Failed to load state on mount', e);
+    });
+  }, []);
 
-    const updateStep = (step: number) => {
-        setState(prev => ({ ...prev, step }));
-    };
+  // Persist state changes
+  useEffect(() => {
+    if (isLoaded) {
+      storage.set(PERSISTENCE_KEY, JSON.stringify(state));
+    }
+  }, [state, isLoaded]);
 
-    const updateBasicInfo = (info: Partial<SchoolCreationState['basicInfo']>) => {
-        setState(prev => ({
-            ...prev,
-            basicInfo: { ...prev.basicInfo, ...info },
-        }));
-    };
+  const updateStep = useCallback((step: number) => {
+    dispatch({ type: 'UPDATE_STEP', payload: step });
+  }, []);
 
-    const updateLocation = (loc: Partial<SchoolCreationState['location']>) => {
-        setState(prev => ({
-            ...prev,
-            location: { ...prev.location, ...loc },
-        }));
-    };
+  const updateBasicInfo = useCallback((info: Partial<SchoolCreationState['basicInfo']>) => {
+    dispatch({ type: 'UPDATE_BASIC_INFO', payload: info });
+  }, []);
 
-    const updateDemographics = (demo: Partial<SchoolCreationState['demographics']>) => {
-        setState(prev => ({
-            ...prev,
-            demographics: { ...prev.demographics, ...demo },
-        }));
-    };
+  const updateLocation = useCallback((loc: Partial<SchoolCreationState['location']>) => {
+    dispatch({ type: 'UPDATE_LOCATION', payload: loc });
+  }, []);
 
-    const updateHierarchy = (hier: Partial<SchoolCreationState['hierarchy']>) => {
-        setState(prev => ({
-            ...prev,
-            hierarchy: { ...prev.hierarchy, ...hier },
-        }));
-    };
+  const updateDemographics = useCallback((demo: Partial<SchoolCreationState['demographics']>) => {
+    dispatch({ type: 'UPDATE_DEMOGRAPHICS', payload: demo });
+  }, []);
 
-    const resetProgress = async () => {
-        await AsyncStorage.removeItem(PERSISTENCE_KEY);
-        setState(initialState);
-    };
+  const updateHierarchy = useCallback((hier: Partial<SchoolCreationState['hierarchy']>) => {
+    dispatch({ type: 'UPDATE_HIERARCHY', payload: hier });
+  }, []);
 
-    return {
-        state,
-        isLoaded,
-        updateStep,
-        updateBasicInfo,
-        updateLocation,
-        updateDemographics,
-        updateHierarchy,
-        resetProgress,
-    };
+  const resetProgress = useCallback(async () => {
+    storage.delete(PERSISTENCE_KEY);
+    dispatch({ type: 'RESET' });
+  }, []);
+
+  return useMemo(
+    () => ({
+      state,
+      isLoaded,
+      updateStep,
+      updateBasicInfo,
+      updateLocation,
+      updateDemographics,
+      updateHierarchy,
+      resetProgress,
+    }),
+    [
+      state,
+      isLoaded,
+      updateStep,
+      updateBasicInfo,
+      updateLocation,
+      updateDemographics,
+      updateHierarchy,
+      resetProgress,
+    ],
+  );
 }

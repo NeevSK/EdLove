@@ -1,28 +1,110 @@
 ---
-import Footer from '../components/Footer.astro';
-import Navigation from '../components/Navigation.astro';
-import SidePanel from '../components/SidePanel.astro';
-import CenterModal from '../components/CenterModal.astro';
-import ScrollToTop from '../components/ScrollToTop.astro';
-import '../styles/global.css';
-import { ClientRouter } from 'astro:transitions';
+import "../styles/global.css";
+import { ClientRouter } from "astro:transitions";
+import CenterModal from "../components/CenterModal.astro";
+import Footer from "../components/Footer.astro";
+import Navigation from "../components/Navigation.astro";
+import ScrollToTop from "../components/ScrollToTop.astro";
+import SidePanel from "../components/SidePanel.astro";
+import StructuredData from "../components/StructuredData.astro";
+import {
+	defaultOgImage,
+	ORGANIZATION,
+	SITE_DESCRIPTION,
+	SITE_KEYWORDS,
+	SITE_NAME,
+	SITE_TITLE,
+	SITE_URL,
+} from "../lib/site";
 
 interface Props {
 	title?: string;
-	theme?: 'cosmic' | 'diagnostic' | 'library' | 'community' | 'gurudevi';
+	description?: string;
+	image?: string;
+	theme?: "cosmic" | "diagnostic" | "library" | "community" | "gurudevi";
+	noindex?: boolean;
+	structuredData?: Record<string, any> | Array<Record<string, any>>;
 }
 
-const { title = "EdLove | The Educational Transformation Ecosystem", theme } = Astro.props;
+const {
+	title = SITE_TITLE,
+	description = SITE_DESCRIPTION,
+	image,
+	theme,
+	noindex = false,
+	structuredData = [],
+} = Astro.props;
+
+const canonical = Astro.url.href;
+const ogImage = image ?? defaultOgImage(Astro.url.pathname);
+const locale = Astro.currentLocale ?? "en";
+const robotsContent = noindex ? "noindex, nofollow" : "index, follow";
+
+const baseStructuredData = [
+	{
+		"@context": "https://schema.org",
+		"@type": "Organization",
+		...ORGANIZATION,
+	},
+	{
+		"@context": "https://schema.org",
+		"@type": "WebSite",
+		name: SITE_NAME,
+		url: SITE_URL,
+		description: SITE_DESCRIPTION,
+		inLanguage: ["en", "si", "ta"],
+		publisher: {
+			"@type": "Organization",
+			name: ORGANIZATION.name,
+			url: ORGANIZATION.url,
+		},
+		potentialAction: {
+			"@type": "SearchAction",
+			target: `${SITE_URL}/knowledge.json?q={search_term_string}`,
+			"query-input": "required name=search_term_string",
+		},
+	},
+	{
+		"@context": "https://schema.org",
+		"@type": "WebPage",
+		name: title,
+		description,
+		url: canonical,
+		inLanguage: locale,
+		isPartOf: {
+			"@type": "WebSite",
+			name: SITE_NAME,
+			url: SITE_URL,
+		},
+	},
+]
+	.concat(Array.isArray(structuredData) ? structuredData : [structuredData])
+	.filter(Boolean);
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={locale}>
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="icon" href="/favicon.ico" />
 		<meta name="generator" content={Astro.generator} />
+		<meta name="description" content={description} />
+		<meta name="robots" content={robotsContent} />
+		<meta name="keywords" content={SITE_KEYWORDS.join(', ')} />
+		<link rel="canonical" href={canonical} />
+		<meta property="og:type" content="website" />
+		<meta property="og:site_name" content={SITE_NAME} />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:url" content={canonical} />
+		<meta property="og:image" content={ogImage} />
+		<meta property="og:locale" content={locale} />
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:title" content={title} />
+		<meta name="twitter:description" content={description} />
+		<meta name="twitter:image" content={ogImage} />
 		
 		<!-- Google Fonts: Inter (headings/sans) & Lora (body/serif) -->
 		<link rel="preconnect" href="https://fonts.googleapis.com">
@@ -30,6 +112,7 @@ const { title = "EdLove | The Educational Transformation Ecosystem", theme } = A
 		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
 		
 		<title>{title}</title>
+		<StructuredData data={baseStructuredData} />
 		<ClientRouter />
 	</head>
 	<body class:list={[
@@ -42,7 +125,7 @@ const { title = "EdLove | The Educational Transformation Ecosystem", theme } = A
 		<main class="flex-grow pt-[var(--spacing-nav-height)]">
 			<slot />
 		</main>
-        <ScrollToTop />
+		<ScrollToTop />
 		<Footer />
 	</body>
 </html>

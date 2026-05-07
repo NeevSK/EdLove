@@ -1,5 +1,5 @@
 /**
- * OpenAIVisionProvider — cloud OCR via GPT-4o Vision
+ * OpenAIVisionProvider  cloud OCR via GPT-4o Vision
  *
  * Best for: complex handwritten registers, mixed Sinhala/Tamil,
  * ambiguous table layouts, and degraded document quality.
@@ -10,31 +10,34 @@
  * Pro-gated: same as GoogleVisionProvider.
  */
 
-import { supabase } from '@repo/core';
-import type { OCRProvider, OCRRawResult } from '../types';
+import { supabase } from "@repo/core/api";
+
+import type { OCRProvider, OCRRawResult } from "../types";
 
 export class OpenAIVisionProvider implements OCRProvider {
-  readonly name = 'openai_vision' as const;
+	readonly name = "openai_vision" as const;
 
-  async recognize(imageUri: string): Promise<OCRRawResult> {
-    const base64 = await uriToBase64(imageUri);
+	async recognize(imageUri: string): Promise<OCRRawResult> {
+		const base64 = await uriToBase64(imageUri);
 
-    const { data, error } = await supabase.functions.invoke('ocr-proxy', {
-      body: { provider: 'openai_vision', imageBase64: base64 },
-    });
+		const { data, error } = await supabase.functions.invoke("ocr-proxy", {
+			body: { provider: "openai_vision", imageBase64: base64 },
+		});
 
-    if (error) throw new Error(`OpenAIVisionProvider: ${error.message}`);
-    if (!data) throw new Error('OpenAIVisionProvider: empty response from ocr-proxy');
+		if (error) throw new Error(`OpenAIVisionProvider: ${error.message}`);
+		if (!data)
+			throw new Error("OpenAIVisionProvider: empty response from ocr-proxy");
 
-    // ocr-proxy returns pre-normalized OCRRawResult
-    return data as OCRRawResult;
-  }
+		// ocr-proxy returns pre-normalized OCRRawResult
+		return data as OCRRawResult;
+	}
 }
 
-// ── Helpers ────────────────────────────────────────────────────────────────
+//  Helpers
 
 async function uriToBase64(uri: string): Promise<string> {
-  // @ts-ignore — expo-file-system/legacy sub-path types may be absent in some package configs
-  const { readAsStringAsync, EncodingType } = await import('expo-file-system/legacy');
-  return readAsStringAsync(uri, { encoding: EncodingType.Base64 });
+	const { readAsStringAsync, EncodingType } = await import(
+		"expo-file-system/legacy"
+	);
+	return readAsStringAsync(uri, { encoding: EncodingType.Base64 });
 }

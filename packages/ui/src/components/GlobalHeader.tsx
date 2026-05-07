@@ -1,302 +1,340 @@
-import React, { useState } from 'react';
-import { Dimensions, TouchableOpacity, Pressable } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useTranslation } from 'react-i18next';
+import { type TotalState, useNotifications, usePermissions, useStore } from '@repo/core/logic';
 import {
-    ChevronLeft,
-    Menu,
-    Search,
-    X,
-    Bell,
-    GraduationCap,
-    Crown,
-    School
+  Bell,
+  ChevronLeft,
+  Crown,
+  GraduationCap,
+  Menu,
+  School,
+  Search,
+  X,
 } from 'lucide-react-native';
-import { BlurView } from 'expo-blur';
-
-import {
-    Box,
-    VStack,
-    HStack,
-    Text
-} from '../gluestack';
-import { Theme } from '../theme/Theme';
-import { useTheme } from '../hooks/useTheme';
-import { useThemedColors } from '../hooks/useThemedColors';
+import type React from 'react';
+import { useCallback, useMemo, useReducer } from 'react';
+import { useTranslation } from 'react-i18next';
+import { TouchableOpacity } from 'react-native';
+import { Pressable } from '../primitives';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Box, HStack, Text, VStack } from '../gluestack';
 import { hapticLight } from '../utils/haptics';
-import { TemporalGlass } from '../components-native/TemporalGlass';
-import { UserAvatar } from './UserAvatar';
-import SanctuaryInput from './SanctuaryInput';
 import NotificationDrawer from './NotificationDrawer';
+import SanctuaryInput from './SanctuaryInput';
+import { UserAvatar } from './UserAvatar';
 
-import { useUserRole, useStore, useNotifications } from '@repo/core';
+// ──────────────────────────────────────────────────────────
+// TYPES & REDUCER
+// ──────────────────────────────────────────────────────────
 
 export interface GlobalHeaderProps {
-    title?: string;
-    subtitle?: string;
-    showBack?: boolean;
-    onBack?: () => void;
-    showMenu?: boolean;
-    showSearch?: boolean;
-    rightAction?: React.ReactNode;
-    userName?: string;
-    searchProps?: {
-        value: string;
-        onChangeText: (text: string) => void;
-        placeholder?: string;
-    };
-    isSelfView?: boolean;
-    avatarUrl?: string;
+  title?: string;
+  subtitle?: string;
+  showBack?: boolean;
+  onBack?: () => void;
+  showMenu?: boolean;
+  showSearch?: boolean;
+  rightAction?: React.ReactNode;
+  userName?: string;
+  searchProps?: {
+    value?: string;
+    onChangeText?: (text: string) => void;
+    placeholder?: string;
+  };
+  isSelfView?: boolean;
+  avatarUrl?: string;
 }
+
+interface HeaderState {
+  showNotifications: boolean;
+  isSearchActive: boolean;
+  internalSearchQuery: string;
+}
+
+type HeaderAction =
+  | { type: 'SET_NOTIFICATIONS'; show: boolean }
+  | { type: 'SET_SEARCH_ACTIVE'; active: boolean }
+  | { type: 'SET_SEARCH_QUERY'; query: string }
+  | { type: 'TOGGLE_SEARCH' };
+
+function headerReducer(state: HeaderState, action: HeaderAction): HeaderState {
+  switch (action.type) {
+    case 'SET_NOTIFICATIONS':
+      return { ...state, showNotifications: action.show };
+    case 'SET_SEARCH_ACTIVE':
+      return { ...state, isSearchActive: action.active };
+    case 'SET_SEARCH_QUERY':
+      return { ...state, internalSearchQuery: action.query };
+    case 'TOGGLE_SEARCH':
+      return { ...state, isSearchActive: !state.isSearchActive };
+    default:
+      return state;
+  }
+}
+
+// ──────────────────────────────────────────────────────────
+// MAIN COMPONENT
+// ──────────────────────────────────────────────────────────
 
 export default function GlobalHeader({
-    title,
-    subtitle,
-    showBack,
-    onBack,
-    showMenu = false,
-    showSearch = false,
-    rightAction,
-    userName,
-    searchProps,
-    isSelfView = false,
-    avatarUrl
+  title,
+  subtitle,
+  showBack,
+  onBack,
+  showMenu = false,
+  showSearch = false,
+  rightAction,
+  userName,
+  searchProps,
+  isSelfView = false,
+  avatarUrl,
 }: GlobalHeaderProps) {
-    const { t } = useTranslation();
-    const { role } = useUserRole(); // Get current role from store
-    const user = useStore((state: any) => state.user); // Get user details
-    const navigation = useNavigation<any>();
-    const colors = useThemedColors();
-    const { glass, text, accent, isDark, blurEnabled, phase } = useTheme();
-    const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
+  const { can } = usePermissions();
 
-    const [showNotifications, setShowNotifications] = useState(false);
-    const { notifications, unreadCount, isLoading: notifLoading, markAsRead, markAllRead } =
-        useNotifications(user?.id);
+  const user = useStore((state: TotalState) => state.user);
+  const navigation = useNavigation();
+  const insets = useSafeAreaInsets();
 
-    const [isSearchActive, setIsSearchActive] = useState(false);
-    // Use internal state if searchProps is not provided
-    const [internalSearchQuery, setInternalSearchQuery] = useState('');
+  const [state, dispatch] = useReducer(headerReducer, {
+    showNotifications: false,
+    isSearchActive: false,
+    internalSearchQuery: '',
+  });
 
-    const searchQuery = searchProps?.value ?? internalSearchQuery;
-    const setSearchQuery = searchProps?.onChangeText ?? setInternalSearchQuery;
+  const { showNotifications, isSearchActive, internalSearchQuery } = state;
 
-    // Get display name
-    const displayName = userName || (user?.user_metadata?.full_name?.split(' ')[0]) || '';
-    const userFullName = userName || user?.user_metadata?.full_name || '';
+  const {
+    notifications,
+    unreadCount,
+    isLoading: notifLoading,
+    isRealtimeConnected,
+    error,
+    markAsRead,
+    markAllRead,
+  } = useNotifications(user?.id);
 
-    // Get role icon and label
-    const getRoleContext = () => {
-        switch (role) {
-            case 'teacher':
-                return { icon: GraduationCap, label: 'Teacher' };
-            case 'principal':
-            case 'admin':
-                return { icon: Crown, label: 'Principal' };
-            case 'student':
-            default:
-                return { icon: School, label: 'Student' };
-        }
-    };
+  const searchQuery = searchProps?.value ?? internalSearchQuery;
 
-    const { icon: RoleIcon, label: RoleLabel } = getRoleContext();
+  const setSearchQuery = useCallback(
+    (text: string) => {
+      if (searchProps?.onChangeText) {
+        searchProps.onChangeText(text);
+      } else {
+        dispatch({ type: 'SET_SEARCH_QUERY', query: text });
+      }
+    },
+    [searchProps]
+  );
 
-    // Determine greeting based on time of day
-    const getGreetingDetails = () => {
-        const hour = new Date().getHours();
-        if (hour < 12) return { text: t('goodMorning'), emoji: '🌅' };
-        if (hour < 18) return { text: t('goodAfternoon'), emoji: '☀️' };
-        return { text: t('goodEvening'), emoji: '🏮' };
-    };
+  const displayName = userName || user?.full_name?.split(' ')[0] || '';
+  const userFullName = userName || user?.full_name || '';
 
-    const { text: greetingText, emoji } = getGreetingDetails();
+  const roleContext = useMemo(() => {
+    if (can('manage', 'AdminDashboard')) {
+      return { icon: Crown, emoji: '\u26A1', label: t('roles.admin') || 'Admin' };
+    }
+    if (can('manage', 'PrincipalDashboard')) {
+      return { icon: Crown, emoji: '\uD83C\uDFDB\uFE0F', label: t('roles.principal') || 'Principal' };
+    }
+    if (can('manage', 'SectionHeadDashboard')) {
+      return {
+        icon: GraduationCap,
+        emoji: '\uD83C\uDFD4\uFE0F',
+        label: t('roles.sectionHead') || 'Section Head',
+      };
+    }
+    if (can('manage', 'GradeHeadDashboard')) {
+      return { icon: GraduationCap, emoji: '\uD83C\uDF32', label: t('roles.gradeHead') || 'Grade Head' };
+    }
+    if (can('manage', 'TeacherDashboard')) {
+      return { icon: GraduationCap, emoji: '\uD83C\uDF31', label: t('roles.teacher') || 'Teacher' };
+    }
+    if (can('manage', 'StudentDashboard')) {
+      return { icon: School, emoji: '\uD83D\uDCDA', label: t('roles.student') || 'Student' };
+    }
+    return { icon: School, emoji: '\uD83C\uDF3F', label: t('roles.member') || 'Member' };
+  }, [can, t]);
 
-    const headerHeight = insets.top + (isSearchActive ? 120 : 80);
+  const greetingDetails = useMemo(() => {
+    const hour = new Date().getHours();
+    if (hour < 12) return { text: t('goodMorning'), emoji: '\uD83C\uDF05' };
+    if (hour < 18) return { text: t('goodAfternoon'), emoji: '\u2600\uFE0F' };
+    return { text: t('goodEvening'), emoji: '\uD83C\uDFEE' };
+  }, [t]);
 
-    return (
-        <Box sx={{
-            width: '100%',
-            height: headerHeight,
-            position: 'relative',
-        }}>
-            {/* GLASS BACKDROP */}
-            <Box sx={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                overflow: 'hidden',
-            }}>
-                <BlurView
-                    intensity={blurEnabled ? 36 : 0}
-                    tint={isDark ? 'dark' : 'light'}
-                    style={{ flex: 1, backgroundColor: glass.surface.bg }}
-                />
-                <TemporalGlass
-                    width={Dimensions.get('window').width}
-                    height={headerHeight}
-                    phase={phase}
-                    cornerRadius={0}
-                    style={{ position: 'absolute', top: 0, left: 0 }}
-                >
-                    <></>
-                </TemporalGlass>
-            </Box>
+  const handleToggleSearch = useCallback(() => {
+    hapticLight();
+    dispatch({ type: 'TOGGLE_SEARCH' });
+  }, []);
 
-            <VStack sx={{
-                flex: 1,
-                gap: '$md' as any,
-                paddingHorizontal: '$4' as any,
-                paddingTop: insets.top + 14,
-                paddingBottom: '$4' as any,
-            }}>
-                <HStack sx={{ gap: '$sm' as any, alignItems: 'center', justifyContent: 'space-between' }}>
-                    {/* LEFT: Greeting or Title */}
-                    <HStack sx={{ gap: '$sm' as any, alignItems: 'center' }}>
-                        {/* Only show Profile Icon/Menu if specifically requested */}
-                        {showBack ? (
-                            <Pressable onPress={onBack || (() => navigation.goBack())}>
-                                <Box sx={{
-                                    backgroundColor: glass.interact.bg,
-                                    padding: 8,
-                                    borderRadius: 12,
-                                }}>
-                                    <ChevronLeft size={24} color={text.primary} />
-                                </Box>
-                            </Pressable>
-                        ) : showMenu && (
-                            <Pressable onPress={() => navigation.openDrawer && navigation.openDrawer()}>
-                                <Menu color={text.primary} size={24} />
-                            </Pressable>
-                        )}
+  const handleOpenNotifications = useCallback(() => {
+    hapticLight();
+    dispatch({ type: 'SET_NOTIFICATIONS', show: true });
+  }, []);
 
-                        {isSelfView && (
-                            <Pressable
-                                onPress={() => navigation.navigate('Profile')}
-                            >
-                                <Box sx={{ marginRight: '$4' }}>
-                                    <UserAvatar
-                                        avatarUrl={avatarUrl || user?.user_metadata?.avatar_url}
-                                        fullName={userFullName}
-                                        role={role}
-                                        size={32}
-                                        borderRadius={12}
-                                    />
-                                </Box>
-                            </Pressable>
-                        )}
+  const handleCloseNotifications = useCallback(() => {
+    dispatch({ type: 'SET_NOTIFICATIONS', show: false });
+  }, []);
 
-                        <VStack>
-                            {(subtitle || (!title && greetingText)) && (
-                                <HStack sx={{ gap: 4, alignItems: 'center' }}>
-                                    <Text
-                                        color={text.secondary}
-                                        sx={{
-                                            fontSize: '$xs' as any,
-                                            letterSpacing: 0.5,
-                                            fontWeight: 'bold',
-                                            paddingBottom: 2, // Added to prevent clipping of descenders
-                                            fontFamily: Theme.typography.fontFamily.english
-                                        }}
-                                    >
-                                        {title ? subtitle : greetingText}
-                                    </Text>
-                                    {!title && (
-                                        <Text sx={{ fontSize: 14, marginTop: -2 }}>
-                                            {emoji}
-                                        </Text>
-                                    )}
-                                </HStack>
-                            )}
-                            <Text
-                                color={text.primary}
-                                sx={{
-                                    fontSize: '$lg' as any,
-                                    fontFamily: Theme.typography.fontFamily.english,
-                                    fontWeight: 'bold'
-                                }}
-                            >
-                                {title ? title : (isSelfView ? (role === 'student' ? userFullName : RoleLabel) : displayName)}
-                            </Text>
-                        </VStack>
-                    </HStack>
+  const handleBack = useCallback(() => {
+    if (onBack) {
+      onBack();
+    } else {
+      navigation.goBack();
+    }
+  }, [onBack, navigation]);
 
-                    {/* RIGHT: Actions */}
-                    <HStack sx={{ gap: '$md' as any, alignItems: 'center' }}>
-                        {showSearch && (
-                            <TouchableOpacity
-                                onPress={() => {
-                                    hapticLight();
-                                    setIsSearchActive(!isSearchActive);
-                                }}
-                            >
-                                <Box sx={{
-                                    padding: 8,
-                                    borderRadius: 20,
-                                    backgroundColor: isSearchActive ? glass.interact.bg : 'transparent'
-                                }}>
-                                    {isSearchActive ? (
-                                        <X size={22} color={text.primary} />
-                                    ) : (
-                                        <Search size={22} color={text.primary} />
-                                    )}
-                                </Box>
-                            </TouchableOpacity>
-                        )}
+  const handleOpenDrawer = useCallback(() => {
+    (navigation as any).openDrawer?.();
+  }, [navigation]);
 
-                        {rightAction ? rightAction : (
-                            <TouchableOpacity onPress={() => {
-                                hapticLight();
-                                setShowNotifications(true);
-                            }}>
-                                <Box sx={{ position: 'relative' }}>
-                                    <Bell size={24} color={text.primary} />
-                                    {/* Notification Dot */}
-                                    <Box sx={{
-                                        position: 'absolute',
-                                        top: 0,
-                                        right: 2,
-                                        width: 8,
-                                        height: 8,
-                                        borderRadius: 4,
-                                        backgroundColor: accent.action,
-                                        borderWidth: 1.5,
-                                        borderColor: glass.surface.bg // Matches the Porcelain header background
-                                    }} />
-                                </Box>
-                            </TouchableOpacity>
-                        )}
-                    </HStack>
+  const handleNavigateProfile = useCallback(() => {
+    (navigation as any).navigate('Profile');
+  }, [navigation]);
+
+  const headerHeight = insets.top + (isSearchActive ? 120 : 80);
+  const showFullNameAsPrimary = can('manage', 'StudentDashboard');
+
+  return (
+    <Box accessibilityRole="header" className="w-full relative" style={{ height: headerHeight }}>
+      <Box
+        className="absolute inset-0 bg-phase-canvas border-b border-white/5"
+        style={{ opacity: 0.95 }}
+      />
+
+      <VStack
+        className="flex-1 px-4"
+        style={{
+          gap: 12,
+          paddingTop: insets.top + 14,
+          paddingBottom: 16,
+        }}
+      >
+        <HStack className="items-center justify-between gap-2">
+          <HStack className="items-center gap-2">
+            {showBack ? (
+              <Pressable accessibilityRole="button" onPress={handleBack}>
+                <Box className="p-2 rounded-xl bg-phase-surface">
+                  <ChevronLeft size={24} className="text-phase-text-primary" />
+                </Box>
+              </Pressable>
+            ) : (
+              showMenu && (
+                <Pressable accessibilityRole="button" onPress={handleOpenDrawer}>
+                  <Menu className="text-phase-text-primary" size={24} />
+                </Pressable>
+              )
+            )}
+
+            {isSelfView && (
+              <Pressable accessibilityRole="button" onPress={handleNavigateProfile}>
+                <Box className="mr-2">
+                  <UserAvatar
+                    avatarUrl={avatarUrl || user?.avatar_url}
+                    fullName={userFullName}
+                    fallbackEmoji={roleContext.emoji}
+                    size={32}
+                    borderRadius={12}
+                  />
+                </Box>
+              </Pressable>
+            )}
+
+            <VStack className="gap-0.5">
+              {(subtitle || (!title && greetingDetails.text)) && (
+                <HStack className="items-center gap-1">
+                  <Text className="text-[10px] font-bold tracking-widest uppercase text-phase-text-secondary">
+                    {title ? subtitle : greetingDetails.text}
+                  </Text>
+                  {!title && <Text className="text-sm -mt-0.5">{greetingDetails.emoji}</Text>}
                 </HStack>
-
-                {/* EXPANDABLE SEARCH BAR */}
-                {isSearchActive && (
-                    <Box sx={{
-                        marginTop: Theme.spacing.sm,
-                    }}>
-                        <SanctuaryInput
-                            value={searchQuery}
-                            onChangeText={setSearchQuery}
-                            placeholder={searchProps?.placeholder ?? t('searchPlaceholder')}
-                            leftIcon={Search}
-                            autoFocus
-                        />
-                    </Box>
-                )}
-
-                <NotificationDrawer
-                    isVisible={showNotifications}
-                    onClose={() => setShowNotifications(false)}
-                    notifications={notifications}
-                    unreadCount={unreadCount}
-                    isLoading={notifLoading}
-                    onMarkRead={markAsRead}
-                    onMarkAllRead={markAllRead}
-                />
+              )}
+              <Text className="text-lg font-bold text-phase-text-primary">
+                {title
+                  ? title
+                  : isSelfView
+                    ? showFullNameAsPrimary
+                      ? userFullName
+                      : roleContext.label
+                    : displayName}
+              </Text>
             </VStack>
-        </Box>
-    );
-}
+          </HStack>
 
+          <HStack className="items-center gap-4">
+            {showSearch && (
+              <TouchableOpacity accessibilityRole="button" onPress={handleToggleSearch}>
+                <Box
+                  className={`p-2 rounded-full ${isSearchActive ? 'bg-phase-accent/20' : 'bg-transparent'}`}
+                >
+                  {isSearchActive ? (
+                    <X
+                      size={22}
+                      className={isSearchActive ? 'text-phase-accent' : 'text-phase-text-primary'}
+                    />
+                  ) : (
+                    <Search size={22} className="text-phase-text-primary" />
+                  )}
+                </Box>
+              </TouchableOpacity>
+            )}
+
+            {rightAction ? (
+              rightAction
+            ) : (
+              <TouchableOpacity accessibilityRole="button" onPress={handleOpenNotifications}>
+                <Box className="relative">
+                  <Bell
+                    size={24}
+                    className={
+                      error ? 'text-phase-text-secondary opacity-50' : 'text-phase-text-primary'
+                    }
+                  />
+                  {/* Notification Badge Logic - High Fidelity Feedback */}
+                  {(error || notifLoading || (unreadCount > 0 && !error)) && (
+                    <Box
+                      className={`absolute top-0 right-0.5 w-2.5 h-2.5 rounded-full border-2 border-phase-canvas ${
+                        error ? 'bg-red-500' : notifLoading ? 'bg-yellow-500' : 'bg-green-500'
+                      }`}
+                      style={{
+                        backgroundColor: error ? '#ef4444' : notifLoading ? '#f59e0b' : '#10b981',
+                        shadowColor: error ? '#ef4444' : notifLoading ? '#f59e0b' : '#10b981',
+                        shadowOffset: { width: 0, height: 0 },
+                        shadowOpacity: 0.9,
+                        shadowRadius: 6,
+                        elevation: 5,
+                      }}
+                    />
+                  )}
+                </Box>
+              </TouchableOpacity>
+            )}
+          </HStack>
+        </HStack>
+
+        {isSearchActive && (
+          <Box className="mt-2">
+            <SanctuaryInput
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              placeholder={searchProps?.placeholder ?? t('searchPlaceholder')}
+              leftIcon={Search}
+            />
+          </Box>
+        )}
+
+        <NotificationDrawer
+          isVisible={showNotifications}
+          onClose={handleCloseNotifications}
+          notifications={notifications}
+          unreadCount={unreadCount}
+          isLoading={notifLoading}
+          isRealtimeConnected={isRealtimeConnected}
+          error={error}
+          onMarkRead={markAsRead}
+          onMarkAllRead={markAllRead}
+        />
+      </VStack>
+    </Box>
+  );
+}

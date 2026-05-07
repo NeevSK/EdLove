@@ -1,34 +1,40 @@
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { LibraryScreen, PDFViewerScreen, VideoPlayerScreen, MapScreen, CuratorReviewScreen } from '@repo/library';
-import { useThemedColors, Theme } from '@repo/ui';
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import {
+	CuratorReviewScreen,
+	LibraryScreen,
+	MapScreen,
+	PDFViewerScreen,
+	VideoPlayerScreen,
+} from "@repo/library";
+import { useTheme } from "@repo/ui/primitives";
 
 const Stack = createNativeStackNavigator();
 
 export default function LibraryStackNavigator() {
-    const colors = useThemedColors();
+	const { scene } = useTheme();
 
-    return (
-        <Stack.Navigator
-            id="LibraryStack"
-            screenOptions={{
-                headerShown: false,
-                contentStyle: { backgroundColor: colors.primary },
-                gestureEnabled: true,
-            }}
-        >
-            <Stack.Screen name="LibraryHome" component={LibraryScreen} />
-            <Stack.Screen name="LibraryMap" component={MapScreen} />
-            <Stack.Screen name="CuratorReview" component={CuratorReviewScreen} />
-            <Stack.Screen
-                name="PDFViewer"
-                component={PDFViewerScreen}
-                options={{ gestureEnabled: false }}
-            />
-            <Stack.Screen
-                name="VideoPlayer"
-                component={VideoPlayerScreen}
-                options={{ gestureEnabled: false }}
-            />
-        </Stack.Navigator>
-    );
+	return (
+		<Stack.Navigator
+			id="LibraryStack"
+			screenOptions={{
+				headerShown: false,
+				contentStyle: { backgroundColor: scene.canvas.bg },
+				gestureEnabled: true,
+			}}
+		>
+			<Stack.Screen name="LibraryHome" component={LibraryScreen} />
+			<Stack.Screen name="LibraryMap" component={MapScreen} />
+			<Stack.Screen name="CuratorReview" component={CuratorReviewScreen} />
+			<Stack.Screen
+				name="PDFViewer"
+				component={PDFViewerScreen as any}
+				options={{ gestureEnabled: false }}
+			/>
+			<Stack.Screen
+				name="VideoPlayer"
+				component={VideoPlayerScreen as any}
+				options={{ gestureEnabled: false }}
+			/>
+		</Stack.Navigator>
+	);
 }

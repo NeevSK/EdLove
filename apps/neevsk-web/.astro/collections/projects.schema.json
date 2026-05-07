@@ -1,48 +1,42 @@
 {
-  "$ref": "#/definitions/projects",
-  "definitions": {
-    "projects": {
-      "type": "object",
-      "properties": {
-        "title": {
-          "type": "string"
-        },
-        "description": {
-          "type": "string"
-        },
-        "role": {
-          "type": "string"
-        },
-        "tech": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "link": {
-          "type": "string",
-          "format": "uri"
-        },
-        "order": {
-          "type": "number",
-          "default": 0
-        },
-        "draft": {
-          "type": "boolean",
-          "default": false
-        },
-        "$schema": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "title",
-        "description",
-        "role",
-        "tech"
-      ],
-      "additionalProperties": false
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "role": {
+      "type": "string"
+    },
+    "tech": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "link": {
+      "type": "string",
+      "format": "uri"
+    },
+    "order": {
+      "default": 0,
+      "type": "number"
+    },
+    "draft": {
+      "default": false,
+      "type": "boolean"
+    },
+    "$schema": {
+      "type": "string"
     }
   },
-  "$schema": "http://json-schema.org/draft-07/schema#"
+  "required": [
+    "title",
+    "description",
+    "role",
+    "tech"
+  ]
 }

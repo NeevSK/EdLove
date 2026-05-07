@@ -1,0 +1,45 @@
+{
+  "name": "apps-gurudevi-marketing-web",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "pnpm exec astro dev",
+    "build": "pnpm exec astro build",
+    "preview": "pnpm exec astro preview",
+    "astro": "pnpm exec astro",
+    "lint": "pnpm run lint:biome && pnpm run lint:eslint",
+    "check-types": "pnpm exec tsc --noEmit",
+    "lint:biome": "biome check .",
+    "lint:eslint": "eslint .",
+    "format": "biome format --write .",
+    "check-cycles": "node ../../scripts/refactor/sovereign-cycle-checker.mjs",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui",
+    "clean": "rm -rf .turbo node_modules dist"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.6.0",
+    "@astrojs/svelte": "^8.0.5",
+    "@astrojs/vercel": "^10.0.4",
+    "@repo/analytics": "workspace:*",
+    "@repo/core": "workspace:*",
+    "@repo/form-builder": "workspace:*",
+    "@repo/ui": "workspace:*",
+    "@supabase/supabase-js": "2.102.1",
+    "@tailwindcss/vite": "^4.1.18",
+    "astro": "^6.1.7",
+    "inngest": "^4.2.4",
+    "svelte": "^5.55.4",
+    "tailwindcss": "^4.1.18",
+    "typescript": "^5.9.3"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.14",
+    "@repo/eslint-config": "workspace:^",
+    "@repo/typescript-config": "workspace:*",
+    "vitest": "^2.1.9",
+    "vite-tsconfig-paths": "^6.1.1",
+    "eslint": "^9.38.0"
+  }
+}

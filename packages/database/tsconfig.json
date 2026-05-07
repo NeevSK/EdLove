@@ -1,0 +1,18 @@
+{
+  "extends": "../../packages/typescript-config/base.json",
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "lib": ["ESNext"],
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "zenstack/*": ["./zenstack/*"],
+      "@repo/schema": ["../schema/src/index.ts"]
+    }
+  },
+  "include": ["src/**/*", "zenstack/**/*"]
+}

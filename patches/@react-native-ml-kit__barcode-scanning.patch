@@ -1,0 +1,21 @@
+diff --git a/android/.gitignore b/android/.gitignore
+deleted file mode 100644
+index 6125af2eaa4be9a40d1bfc7e41a6051d36010251..0000000000000000000000000000000000000000
+diff --git a/android/.npmignore b/android/.npmignore
+deleted file mode 100644
+index 54b25fb5f27783a2b64096e7f6fe134641586cf9..0000000000000000000000000000000000000000
+diff --git a/index.ts b/index.ts
+index d0bd38d3e2693ed25d6d59bc659738925314b60a..3f67fd6d9d65a42813a22542240a8cccb3305e7b 100644
+--- a/index.ts
++++ b/index.ts
+@@ -33,8 +33,8 @@ const LINKING_ERROR =
+   '- You rebuilt the app after installing the package\n' +
+   '- You are not using Expo managed workflow\n';
+ 
+-const BarcodeScanning: IBarcodeScanning = NativeModules.BarcodeScanning
+-  ? NativeModules.BarcodeScanning
++const BarcodeScanning: IBarcodeScanning = NativeModules['BarcodeScanning']
++  ? NativeModules['BarcodeScanning']
+   : new Proxy(
+       {},
+       {

@@ -49,7 +49,7 @@ Expo SDK 55, React Native 0.83, React 19.2, New Architecture only (Legacy Archit
 react-native-reanimated 4 + react-native-worklets — for animations.
 Monorepo structure:
   apps/gurudevi-mobile — thin shell, navigation, screen composition
-  apps/gurudevi-web, apps/neevsk-web, apps/foundation-web — separate web apps
+  apps/gurudevi-marketingWeb, apps/neevsk-web, apps/foundation-web — separate web apps
   packages/ui — shared UI components (pure RN + dedicated mobile-only native boundary)
   packages/self, classroom, community, library, profile — feature modules
   packages/core — shared utilities (native deps as peerDependencies)

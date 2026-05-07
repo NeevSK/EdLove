@@ -1,0 +1,37 @@
+{
+  "name": "@repo/platform-mcp",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Unified Engineering Control Plane for Polymath Agents",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "start": "node dist/index.js",
+    "lint": "pnpm run lint:biome && pnpm run lint:eslint",
+    "lint:biome": "biome check .",
+    "lint:eslint": "eslint .",
+    "format": "biome format --write .",
+    "check-cycles": "node ../../scripts/refactor/sovereign-cycle-checker.mjs",
+    "check-types": "pnpm exec tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui",
+    "clean": "rm -rf .turbo node_modules dist"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.6.0",
+    "dotenv": "^16.4.7",
+    "zod": "4.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "typescript": "^5.9.3",
+    "@repo/eslint-config": "workspace:^",
+    "@repo/typescript-config": "workspace:*",
+    "vitest": "^2.1.9",
+    "vite-tsconfig-paths": "^6.1.1",
+    "eslint": "^9.38.0"
+  }
+}

@@ -1,136 +1,145 @@
-﻿import React from 'react';
-import { Button, ButtonText, ButtonSpinner, ButtonIcon } from '../gluestack';
-import { Theme } from '../theme/Theme';
-import { useTheme } from '../hooks/useTheme';
+import type React from 'react';
+import { Button, ButtonIcon, ButtonSpinner, ButtonText } from './ui/button';
 
 interface SanctuaryButtonProps {
-    onPress: () => void;
-    children: React.ReactNode; // The text or content
-    variant?: 'solid' | 'outline' | 'ghost' | 'link';
-    isLoading?: boolean;
-    isDisabled?: boolean; // Using Gluestack's isDisabled prop name
-    leftIcon?: React.ElementType;
-    rightIcon?: React.ElementType;
-    size?: 'xs' | 'sm' | 'md' | 'lg';
-    fullWidth?: boolean;
-    action?: 'primary' | 'secondary' | 'negative' | 'positive';
-    style?: any;
-    accessibilityLabel?: string;
-    accessibilityHint?: string;
+  onPress?: () => void;
+  children: React.ReactNode;
+  variant?: 'solid' | 'outline' | 'ghost' | 'link';
+  isLoading?: boolean;
+  isDisabled?: boolean;
+  leftIcon?: React.ElementType;
+  rightIcon?: React.ElementType;
+  size?: 'xs' | 'sm' | 'md' | 'lg';
+  fullWidth?: boolean;
+  action?: 'primary' | 'secondary' | 'negative' | 'positive';
+  style?: any;
+  accessibilityLabel?: string;
+  accessibilityHint?: string;
+  className?: string;
+  iconProps?: any;
 }
 
-export default function SanctuaryButton({
-    onPress,
-    children,
-    variant = 'solid',
-    isLoading = false,
-    isDisabled = false,
-    leftIcon,
-    rightIcon,
-    size = 'md',
-    fullWidth = false,
-    action = 'primary',
-    style,
-    accessibilityLabel,
-    accessibilityHint
+export function SanctuaryButton({
+  onPress,
+  children,
+  variant = 'solid',
+  isLoading = false,
+  isDisabled = false,
+  leftIcon,
+  rightIcon,
+  size = 'md',
+  fullWidth = false,
+  action = 'primary',
+  style,
+  accessibilityLabel,
+  accessibilityHint,
+  className = '',
+  iconProps,
 }: SanctuaryButtonProps) {
-    const { accent, glass, textOnAccent, textOnReward } = useTheme();
+  // Semantic Mapping using Phase Tokens
+  const getBgClass = () => {
+    if (variant === 'outline' || variant === 'ghost' || variant === 'link') return 'bg-transparent';
+    switch (action) {
+      case 'primary':
+        return 'bg-phase-accent';
+      case 'secondary':
+        return 'bg-phase-interactive';
+      case 'negative':
+        return 'bg-phase-danger';
+      case 'positive':
+        return 'bg-phase-reward';
+      default:
+        return 'bg-phase-accent';
+    }
+  };
 
-    // Determine colors based on action and variant
-    const getBgColor = () => {
-        if (variant === 'outline' || variant === 'ghost' || variant === 'link') return 'transparent';
+  const getTextClass = () => {
+    if (variant === 'solid') {
+      switch (action) {
+        case 'primary':
+          return 'text-phase-text-on-accent';
+        case 'secondary':
+          return 'text-phase-text-primary';
+        case 'negative':
+          return 'text-white';
+        case 'positive':
+          return 'text-phase-text-on-accent';
+        default:
+          return 'text-phase-text-on-accent';
+      }
+    }
+    switch (action) {
+      case 'primary':
+        return 'text-phase-accent';
+      case 'secondary':
+        return 'text-phase-text-primary';
+      case 'negative':
+        return 'text-phase-danger';
+      case 'positive':
+        return 'text-phase-reward';
+      default:
+        return 'text-phase-accent';
+    }
+  };
 
-        switch (action) {
-            case 'primary': return accent.action;
-            case 'secondary': return glass.surface.bg;
-            case 'negative': return accent.danger;
-            case 'positive': return accent.reward;
-            default: return accent.action;
-        }
-    };
+  const getBorderClass = () => {
+    if (variant !== 'outline') return 'border-transparent';
+    switch (action) {
+      case 'primary':
+        return 'border-phase-accent';
+      case 'secondary':
+        return 'border-phase-surface';
+      case 'negative':
+        return 'border-phase-danger';
+      case 'positive':
+        return 'border-phase-reward';
+      default:
+        return 'border-phase-accent';
+    }
+  };
 
-    const getTextColor = () => {
-        if (variant === 'solid') {
-            // Use WCAG-computed adaptive text color — handles bright phases like
-            // Temple Gold (#FDD925) that need dark ink text instead of sacredWhite.
-            switch (action) {
-                case 'primary': return textOnAccent;
-                case 'positive': return textOnReward;
-                case 'negative': return Theme.colors.sacredWhite;
-                case 'secondary': return accent.action;
-                default: return textOnAccent;
-            }
-        }
+  const sizeClasses = {
+    xs: 'h-8 px-2',
+    sm: 'h-9 px-3',
+    md: 'h-11 px-6',
+    lg: 'h-14 px-8',
+  };
 
-        switch (action) {
-            case 'primary': return accent.action;
-            case 'secondary': return accent.action;
-            case 'negative': return accent.danger;
-            case 'positive': return accent.reward;
-            default: return accent.action;
-        }
-    };
+  return (
+    <Button
+      className={`
+                ${fullWidth ? 'w-full' : 'w-auto'}
+                ${getBgClass()}
+                ${getBorderClass()}
+                ${variant === 'outline' ? 'border' : 'border-0'}
+                ${sizeClasses[size]}
+                ${isDisabled || isLoading ? 'opacity-40' : 'opacity-100'}
+                active:opacity-80
+                ${className}
+            `}
+      isDisabled={isDisabled || isLoading}
+      onPress={onPress}
+      style={style}
+      accessibilityLabel={
+        accessibilityLabel || (typeof children === 'string' ? children : undefined)
+      }
+      accessibilityHint={accessibilityHint}
+      accessibilityState={{
+        busy: isLoading,
+        disabled: isDisabled || isLoading,
+      }}
+    >
+      {isLoading ? (
+        <ButtonSpinner className={`mr-2 ${getTextClass()}`} />
+      ) : leftIcon ? (
+        <ButtonIcon as={leftIcon} className={`mr-2 ${getTextClass()}`} {...iconProps} />
+      ) : null}
 
-    const getBorderColor = () => {
-        if (variant !== 'outline') return 'transparent';
+      <ButtonText className={`font-semibold ${getTextClass()}`}>{children}</ButtonText>
 
-        switch (action) {
-            case 'primary': return accent.action;
-            case 'secondary': return accent.action;
-            case 'negative': return accent.danger;
-            case 'positive': return accent.reward;
-            default: return accent.action;
-        }
-    };
-
-    return (
-        <Button
-            {...({ size } as any)}
-            variant={variant === 'ghost' ? 'link' : variant}
-            action={action === 'negative' ? 'negative' : 'primary'} // Map to Gluestack actions somewhat
-            isDisabled={isDisabled || isLoading}
-            isFocusVisible={false}
-            onPress={onPress}
-            accessible={true}
-            accessibilityRole="button"
-            accessibilityLabel={accessibilityLabel || (typeof children === 'string' ? children : undefined)}
-            accessibilityHint={accessibilityHint}
-            accessibilityState={{
-                disabled: isDisabled || isLoading,
-                busy: isLoading
-            }}
-            sx={{
-                width: fullWidth ? '100%' : 'auto',
-                backgroundColor: getBgColor(),
-                borderColor: getBorderColor(),
-                borderRadius: Theme.corners.comfortable,
-                opacity: (isDisabled || isLoading) ? 0.6 : 1,
-                ':active': {
-                    opacity: 0.8,
-                    transform: [{ scale: 0.98 }]
-                },
-                // Custom handling for 'secondary' styling that might conflict with Gluestack defaults
-                ...(variant === 'solid' && action === 'secondary' ? { backgroundColor: glass.surface.bg } : {}),
-                ...style
-            }}
-        >
-            {isLoading ? (
-                <ButtonSpinner color={getTextColor()} sx={{ marginRight: '$2' as any }} />
-            ) : leftIcon ? (
-                <ButtonIcon as={leftIcon} color={getTextColor()} sx={{ marginRight: '$2' as any }} />
-            ) : null}
-
-            <ButtonText
-                color={getTextColor()}
-                sx={{ fontWeight: '$semibold', letterSpacing: 0.5 }}
-            >
-                {children}
-            </ButtonText>
-
-            {!isLoading && rightIcon && (
-                <ButtonIcon as={rightIcon} color={getTextColor()} sx={{ marginLeft: '$2' as any }} />
-            )}
-        </Button>
-    );
+      {!isLoading && rightIcon && (
+        <ButtonIcon as={rightIcon} className={`ml-2 ${getTextClass()}`} {...iconProps} />
+      )}
+    </Button>
+  );
 }
-

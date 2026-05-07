@@ -1,210 +1,151 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import {
-  View, Text, Image, TouchableOpacity,
-  StyleSheet, ActivityIndicator, Platform,
-} from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
-import * as ImageManipulator from 'expo-image-manipulator';
-import { supabase } from '@repo/core';
-import { useTheme, getInitialsFromName } from '@repo/ui';
-import { Camera } from 'lucide-react-native';
+import { UserAvatar } from "@repo/ui/components/UserAvatar";
+import { Box, Pressable, Spinner } from "@repo/ui/primitives";
 
-// expo-file-system/legacy has no web implementation.
-// On native we use it for local caching; on web we skip that layer entirely.
-let FileSystem: typeof import('expo-file-system/legacy') | null = null;
-if (Platform.OS !== 'web') {
-  FileSystem = require('expo-file-system/legacy');
+import * as ImageManipulator from "expo-image-manipulator";
+import * as ImagePicker from "expo-image-picker";
+import { Camera } from "lucide-react-native";
+import { useCallback, useEffect, useState } from "react";
+import { Platform } from "react-native";
+import { useProfileNavigation } from "../navigation";
+
+let FileSystem: typeof import("expo-file-system/legacy") | null = null;
+if (Platform.OS !== "web") {
+	FileSystem = require("expo-file-system/legacy");
 }
 
 interface AvatarDisplayProps {
-  userId: string;
-  avatarUrl?: string | null;
-  fullName?: string | null;
-  size?: number;
-  editable?: boolean;
-  onAvatarUpdated?: (newPublicUrl: string) => Promise<void>;
-  style?: object;
+	userId: string;
+	avatarUrl?: string | null;
+	fullName?: string | null;
+	size?: number;
+	editable?: boolean;
+	onAvatarSelected?: (localUri: string) => Promise<void>;
+	style?: any;
+	peekable?: boolean;
+	peekType?: "user" | "school" | "classroom" | "community";
 }
 
 function getCachePath(userId: string): string | null {
-  if (!FileSystem) return null;
-  return `${FileSystem.cacheDirectory ?? ''}avatar_${userId}.jpg`;
-}
-
-/**
- * Decode base64 string to Uint8Array for Supabase Storage upload.
- * Using atob if available (React Native >= 0.72 with Hermes), else manual decode.
- */
-function base64ToUint8Array(base64: string): Uint8Array {
-  const binary = atob(base64);
-  const bytes = new Uint8Array(binary.length);
-  for (let i = 0; i < binary.length; i++) {
-    bytes[i] = binary.charCodeAt(i);
-  }
-  return bytes;
+	if (!FileSystem) return null;
+	return `${FileSystem.cacheDirectory ?? ""}avatar_${userId}.jpg`;
 }
 
 export function AvatarDisplay({
-  userId,
-  avatarUrl,
-  fullName,
-  size = 80,
-  editable = false,
-  onAvatarUpdated,
-  style,
+	userId,
+	avatarUrl,
+	fullName,
+	size = 80,
+	editable = false,
+	onAvatarSelected,
+	style,
+	peekable = false,
+	peekType = "user",
 }: AvatarDisplayProps) {
-  const { accent, text } = useTheme();
-  const [localCachePath, setLocalCachePath] = useState<string | null>(null);
-  const [uploading, setUploading] = useState(false);
+	const { openPublicProfile } = useProfileNavigation();
+	const [localCachePath, setLocalCachePath] = useState<string | null>(null);
+	const [uploading, setUploading] = useState(false);
 
-  // Load local cache on mount (native only — FileSystem is not available on web)
-  useEffect(() => {
-    if (!userId || !FileSystem) return;
-    const cachePath = getCachePath(userId);
-    if (!cachePath) return;
-    FileSystem.getInfoAsync(cachePath).then(info => {
-      if (info.exists) setLocalCachePath(cachePath);
-    }).catch(() => {
-      // Cache read failure is non-fatal; avatar will fall back to remote URL
-    });
-  }, [userId]);
+	useEffect(() => {
+		if (!userId || !FileSystem) return;
+		const cachePath = getCachePath(userId);
+		if (!cachePath) return;
+		FileSystem.getInfoAsync(cachePath)
+			.then((info) => {
+				if (info.exists) setLocalCachePath(cachePath);
+			})
+			.catch(() => {});
+	}, [userId]);
 
-  const handlePickAndUpload = useCallback(async () => {
-    // 1. Request media library permission
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== 'granted') return;
+	const handlePickAndUpload = useCallback(async () => {
+		const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+		if (status !== "granted") return;
 
-    // 2. Open picker (square crop enforced)
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 0.9,
-    });
-    if (result.canceled || !result.assets?.[0]) return;
+		const result = await ImagePicker.launchImageLibraryAsync({
+			mediaTypes: ImagePicker.MediaTypeOptions.Images,
+			allowsEditing: true,
+			aspect: [1, 1],
+			quality: 0.9,
+		});
+		if (result.canceled || !result.assets?.[0]) return;
 
-    setUploading(true);
-    try {
-      // 3. Resize to 400×400 JPEG
-      const manipulated = await ImageManipulator.manipulateAsync(
-        result.assets[0].uri,
-        [{ resize: { width: 400, height: 400 } }],
-        { compress: 0.85, format: ImageManipulator.SaveFormat.JPEG }
-      );
+		setUploading(true);
+		try {
+			const manipulated = await ImageManipulator.manipulateAsync(
+				result.assets[0].uri,
+				[{ resize: { width: 400, height: 400 } }],
+				{ compress: 0.85, format: ImageManipulator.SaveFormat.JPEG },
+			);
 
-      // 4. Cache locally (native only — FileSystem not available on web)
-      const cachePath = FileSystem ? getCachePath(userId) : null;
-      if (FileSystem && cachePath) {
-        await FileSystem.copyAsync({ from: manipulated.uri, to: cachePath });
-        setLocalCachePath(cachePath);
-      }
+			const cachePath = FileSystem ? getCachePath(userId) : null;
+			if (FileSystem && cachePath) {
+				await FileSystem.copyAsync({ from: manipulated.uri, to: cachePath });
+				setLocalCachePath(cachePath);
+			}
 
-      // 5. Read as base64 for Supabase upload
-      let bytes: Uint8Array;
-      if (FileSystem) {
-        const base64 = await FileSystem.readAsStringAsync(manipulated.uri, {
-          encoding: FileSystem.EncodingType.Base64,
-        });
-        bytes = base64ToUint8Array(base64);
-      } else {
-        // On web, fetch the blob URL produced by expo-image-manipulator and convert.
-        // expo-image-manipulator returns a local object URL on web that is always fetchable.
-        const response = await fetch(manipulated.uri);
-        if (!response.ok) throw new Error(`[AvatarDisplay] Failed to read image for upload (web): ${response.status}`);
-        const blob = await response.blob();
-        const arrayBuffer = await blob.arrayBuffer();
-        bytes = new Uint8Array(arrayBuffer);
-      }
+			await onAvatarSelected?.(manipulated.uri);
+		} catch (error) {
+			console.warn("[AvatarDisplay] Avatar selection failed:", error);
+		} finally {
+			setUploading(false);
+		}
+	}, [userId, onAvatarSelected]);
 
-      // 6. Upload to Supabase Storage bucket 'avatars'
-      const fileName = `${userId}.jpg`;
-      const { error: uploadError } = await supabase.storage
-        .from('avatars')
-        .upload(fileName, bytes, {
-          contentType: 'image/jpeg',
-          upsert: true,
-        });
+	const handlePeek = useCallback(() => {
+		if (!peekable || !userId) return;
+		openPublicProfile?.({
+			id: userId,
+			type: peekType,
+		});
+	}, [peekable, userId, peekType, openPublicProfile]);
 
-      if (uploadError) throw uploadError;
+	const displayUri = localCachePath || avatarUrl || null;
 
-      // 7. Get public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from('avatars')
-        .getPublicUrl(fileName);
+	const content = (
+		<UserAvatar avatarUrl={displayUri} fullName={fullName} size={size} />
+	);
 
-      // 8. Notify caller to persist to profile
-      await onAvatarUpdated?.(publicUrl);
-    } catch (error) {
-      // Optimistic display already shown — user sees their photo.
-      // Upload will retry on next session via sync queue.
-      console.warn('[AvatarDisplay] Upload failed, keeping local cache:', error);
-    } finally {
-      setUploading(false);
-    }
-  }, [userId, onAvatarUpdated]);
+	const containerStyle = { width: size, height: size };
 
-  // Display source priority: local cache > remote URL > initials
-  const displayUri = localCachePath || avatarUrl || null;
-  const initials = getInitialsFromName(fullName);
-  const borderRadius = size / 2;
+	if (!editable) {
+		if (peekable) {
+			return (
+				<Pressable
+					className="rounded-full overflow-hidden"
+					style={[containerStyle, style]}
+					onPress={handlePeek}
+				>
+					{content}
+				</Pressable>
+			);
+		}
+		return (
+			<Box
+				className="rounded-full overflow-hidden"
+				style={[containerStyle, style]}
+			>
+				{content}
+			</Box>
+		);
+	}
 
-  const containerStyle = [
-    { width: size, height: size, borderRadius },
-    styles.container,
-    style,
-  ];
-
-  const content = displayUri ? (
-    <Image
-      source={{ uri: displayUri }}
-      style={[styles.image, { width: size, height: size, borderRadius }]}
-    />
-  ) : (
-    <View style={[styles.initialsContainer, { backgroundColor: accent.action, borderRadius }]}>
-      <Text style={[styles.initials, { fontSize: size * 0.35, color: text.inverse }]}>
-        {initials}
-      </Text>
-    </View>
-  );
-
-  if (!editable) {
-    return <View style={containerStyle}>{content}</View>;
-  }
-
-  return (
-    <TouchableOpacity style={containerStyle} onPress={handlePickAndUpload} activeOpacity={0.8}>
-      {content}
-      {/* Semi-transparent edit overlay with camera icon */}
-      <View style={[styles.editOverlay, { borderRadius }]}>
-        {uploading
-          ? <ActivityIndicator color="white" size="small" />
-          : <Camera size={size * 0.22} color="white" />
-        }
-      </View>
-    </TouchableOpacity>
-  );
+	return (
+		<Pressable
+			className="rounded-full overflow-hidden items-center justify-center"
+			style={[containerStyle, style]}
+			onPress={handlePickAndUpload}
+		>
+			{content}
+			{uploading ? (
+				<Box className="absolute inset-0 bg-black/40 items-center justify-center">
+					<Spinner className="text-white" size="small" />
+				</Box>
+			) : (
+				<Box className="absolute inset-0 bg-black/20 items-center justify-center">
+					<Box className="bg-black/30 p-2 rounded-full">
+						<Camera size={size * 0.25} color="white" />
+					</Box>
+				</Box>
+			)}
+		</Pressable>
+	);
 }
-
-const styles = StyleSheet.create({
-  container: {
-    overflow: 'hidden',
-  },
-  image: {
-    resizeMode: 'cover',
-  },
-  initialsContainer: {
-    width: '100%',
-    height: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  initials: {
-    fontWeight: '700',
-  },
-  editOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.35)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

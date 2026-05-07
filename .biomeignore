@@ -1,0 +1,17 @@
+**/report.json
+**/dist/**
+**/node_modules/**
+**/legacy/**
+**/*-legacy/**
+**/*_archive/**
+.geo_archive/**
+apps/gurudevi-mobile/archives/**
+apps/gurudevi-mobile/docs/Core/archive/**
+apps/gurudevi-mobile/supabase/migrations/archive/**
+docs/archive/**
+packages/self/src/components/archive/**
+packages/ui/src/archive/**
+reports/**
+**/*.log
+tmp/**
+.turbo/**

@@ -1,546 +1,412 @@
-﻿/**
+/**
  * REMINDERS MANAGER
  * CRUD functionality for gentle reminders
  * Default: "Drink water intermittently while teaching"
- * 
- * Philosophy:
- * - Gentle nudges, not nagging
- * - Teachers control their own reminders
- * - Default reminder for hydration (teaching is demanding!)
- * - Simple, caring interface
  */
 
-import React, { useState, useEffect } from 'react';
 import {
-    Box,
-    VStack,
-    HStack,
-    Text,
-    Heading,
-    Input,
-    InputField,
-    Button,
-    ButtonText,
-    Pressable,
-    Modal,
-    ModalBackdrop,
-    ModalContent,
-    ModalHeader,
-    ModalCloseButton,
-    ModalBody,
-    ModalFooter,
-} from '@repo/ui';
-import { Plus, Trash2, Edit, Bell, Droplet, Clock } from 'lucide-react-native';
-import { Theme, typography } from '@repo/ui';
-import { supabase } from '@repo/core';
-import { hapticLight, hapticMedium } from '@repo/ui';
-import { useTranslation } from 'react-i18next';
+	Box,
+	Button,
+	ButtonText,
+	Heading,
+	HStack,
+	Icon,
+	Input,
+	InputField,
+	Modal,
+	ModalBackdrop,
+	ModalBody,
+	ModalCloseButton,
+	ModalContent,
+	ModalFooter,
+	ModalHeader,
+	Pressable,
+	Text,
+	VStack,
+} from "@repo/ui/primitives";
+import { hapticLight, hapticMedium } from "@repo/ui/utils/haptics";
 
-interface Reminder {
-    id: string;
-    user_id: string;
-    title: string;
-    description?: string;
-    icon_type: string;
-    is_default: boolean;
-    is_active: boolean;
-    created_at: string;
-}
+import { Bell, Clock, Droplet, Edit, Plus, Trash2 } from "lucide-react-native";
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import {
+	createReminder,
+	fetchReminders as fetchReminderRecords,
+	type ReminderRecord,
+	deleteReminder as removeReminderRecord,
+	updateReminder,
+} from "../api/selfFeatureRepository";
+
+type Reminder = ReminderRecord;
 
 interface RemindersManagerProps {
-    userId?: string;
+	userId?: string;
 }
 
 const DEFAULT_REMINDER = {
-    title: 'Stay Hydrated',
-    description: 'Drink water intermittently while teaching',
-    icon_type: 'droplet',
-    is_default: true,
+	title: "Stay Hydrated",
+	description: "Drink water intermittently while teaching",
+	icon_type: "droplet",
+	is_default: true,
 };
 
 const ICON_MAP: Record<string, any> = {
-    droplet: Droplet,
-    bell: Bell,
-    clock: Clock,
+	droplet: Droplet,
+	bell: Bell,
+	clock: Clock,
 };
 
 export default function RemindersManager({ userId }: RemindersManagerProps) {
-    const [reminders, setReminders] = useState<Reminder[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [showCreateModal, setShowCreateModal] = useState(false);
-    const [editingReminder, setEditingReminder] = useState<Reminder | null>(null);
-    const { t } = useTranslation();
+	const [reminders, setReminders] = useState<Reminder[]>([]);
+	const [isLoading, setIsLoading] = useState(true);
+	const [showCreateModal, setShowCreateModal] = useState(false);
+	const [editingReminder, setEditingReminder] = useState<Reminder | null>(null);
+	const { t } = useTranslation();
 
-    // Form state
-    const [title, setTitle] = useState('');
-    const [description, setDescription] = useState('');
-    const [iconType, setIconType] = useState('bell');
+	// Form state
+	const [title, setTitle] = useState("");
+	const [description, setDescription] = useState("");
+	const [iconType, setIconType] = useState("bell");
 
-    useEffect(() => {
-        if (userId) {
-            fetchReminders();
-        }
-    }, [userId]);
+	useEffect(() => {
+		if (userId) {
+			fetchReminders();
+		}
+	}, [userId, fetchReminders]);
 
-    const fetchReminders = async () => {
-        try {
-            const { data, error } = await supabase
-                .from('reminders')
-                .select('*')
-                .eq('user_id', userId)
-                .order('created_at', { ascending: false });
+	async function fetchReminders() {
+		try {
+			if (!userId) return;
+			const data = await fetchReminderRecords(userId);
+			setReminders(data || []);
 
-            if (error) {
-                console.error('Error fetching reminders:', error);
-                // If table doesn't exist or error, create default
-                await createDefaultReminder();
-            } else {
-                setReminders(data || []);
+			if (!data || data.length === 0) {
+				await createDefaultReminder();
+			}
+		} catch (error) {
+			console.error("Error fetching reminders:", error);
+			await createDefaultReminder();
+		} finally {
+			setIsLoading(false);
+		}
+	}
 
-                // If no reminders exist, create default
-                if (!data || data.length === 0) {
-                    await createDefaultReminder();
-                }
-            }
-        } catch (error) {
-            console.error('Failed to fetch reminders:', error);
-        } finally {
-            setIsLoading(false);
-        }
-    };
+	async function createDefaultReminder() {
+		if (!userId) return;
 
-    const createDefaultReminder = async () => {
-        if (!userId) return;
+		try {
+			const data = await createReminder(userId, {
+				...DEFAULT_REMINDER,
+				is_active: true,
+			});
+			setReminders([data]);
+		} catch (error) {
+			console.error("Error creating default reminder:", error);
+		}
+	}
 
-        try {
-            const { data, error } = await supabase
-                .from('reminders')
-                .insert([
-                    {
-                        user_id: userId,
-                        ...DEFAULT_REMINDER,
-                        is_active: true,
-                        created_at: new Date().toISOString(),
-                    },
-                ])
-                .select()
-                .single();
+	const openCreateModal = () => {
+		setEditingReminder(null);
+		setTitle("");
+		setDescription("");
+		setIconType("bell");
+		setShowCreateModal(true);
+		hapticLight();
+	};
 
-            if (!error && data) {
-                setReminders([data]);
-            }
-        } catch (error) {
-            console.error('Error creating default reminder:', error);
-        }
-    };
+	const openEditModal = (reminder: Reminder) => {
+		setEditingReminder(reminder);
+		setTitle(reminder.title);
+		setDescription(reminder.description || "");
+		setIconType(reminder.icon_type);
+		setShowCreateModal(true);
+		hapticLight();
+	};
 
-    const openCreateModal = () => {
-        setEditingReminder(null);
-        setTitle('');
-        setDescription('');
-        setIconType('bell');
-        setShowCreateModal(true);
-        hapticLight();
-    };
+	const closeModal = () => {
+		setShowCreateModal(false);
+		setEditingReminder(null);
+		setTitle("");
+		setDescription("");
+		setIconType("bell");
+	};
 
-    const openEditModal = (reminder: Reminder) => {
-        setEditingReminder(reminder);
-        setTitle(reminder.title);
-        setDescription(reminder.description || '');
-        setIconType(reminder.icon_type);
-        setShowCreateModal(true);
-        hapticLight();
-    };
+	const saveReminder = async () => {
+		if (!userId || !title.trim()) return;
 
-    const closeModal = () => {
-        setShowCreateModal(false);
-        setEditingReminder(null);
-        setTitle('');
-        setDescription('');
-        setIconType('bell');
-    };
+		hapticMedium();
 
-    const saveReminder = async () => {
-        if (!userId || !title.trim()) return;
+		try {
+			if (editingReminder) {
+				await updateReminder(editingReminder.id, {
+					title: title.trim(),
+					description: description.trim(),
+					icon_type: iconType,
+				});
+				await fetchReminders();
+				closeModal();
+			} else {
+				await createReminder(userId, {
+					title: title.trim(),
+					description: description.trim(),
+					icon_type: iconType,
+					is_default: false,
+					is_active: true,
+				});
+				await fetchReminders();
+				closeModal();
+			}
+		} catch (error) {
+			console.error("Error saving reminder:", error);
+		}
+	};
 
-        hapticMedium();
+	const toggleReminder = async (reminder: Reminder) => {
+		hapticLight();
 
-        try {
-            if (editingReminder) {
-                // Update existing reminder
-                const { error } = await supabase
-                    .from('reminders')
-                    .update({
-                        title: title.trim(),
-                        description: description.trim(),
-                        icon_type: iconType,
-                    })
-                    .eq('id', editingReminder.id);
+		try {
+			await updateReminder(reminder.id, { is_active: !reminder.is_active });
+			setReminders(
+				reminders.map((r) =>
+					r.id === reminder.id ? { ...r, is_active: !r.is_active } : r,
+				),
+			);
+		} catch (error) {
+			console.error("Error toggling reminder:", error);
+		}
+	};
 
-                if (!error) {
-                    await fetchReminders();
-                    closeModal();
-                }
-            } else {
-                // Create new reminder
-                const { error } = await supabase
-                    .from('reminders')
-                    .insert([
-                        {
-                            user_id: userId,
-                            title: title.trim(),
-                            description: description.trim(),
-                            icon_type: iconType,
-                            is_default: false,
-                            is_active: true,
-                            created_at: new Date().toISOString(),
-                        },
-                    ]);
+	const deleteReminder = async (reminderId: string) => {
+		hapticMedium();
 
-                if (!error) {
-                    await fetchReminders();
-                    closeModal();
-                }
-            }
-        } catch (error) {
-            console.error('Error saving reminder:', error);
-        }
-    };
+		try {
+			await removeReminderRecord(reminderId);
+			setReminders(reminders.filter((r) => r.id !== reminderId));
+		} catch (error) {
+			console.error("Error deleting reminder:", error);
+		}
+	};
 
-    const toggleReminder = async (reminder: Reminder) => {
-        hapticLight();
+	if (isLoading) {
+		return null;
+	}
 
-        try {
-            const { error } = await supabase
-                .from('reminders')
-                .update({ is_active: !reminder.is_active })
-                .eq('id', reminder.id);
+	return (
+		<VStack className="p-lg gap-lg">
+			{/* Header */}
+			<HStack className="justify-between items-center">
+				<VStack className="gap-1 flex-1">
+					<Heading className="text-sacredWhite" size="lg">
+						{t("reminders.title") || "Reminders"}
+					</Heading>
+					<Text className="text-mistGray text-sm">
+						Gentle nudges for self-care
+					</Text>
+				</VStack>
+				<Button
+					size="sm"
+					onPress={openCreateModal}
+					className="rounded-full bg-sanctuarySaffron px-4"
+				>
+					<Icon as={Plus} className="text-sacredWhite" size={16} />
+					<ButtonText className="ml-1 text-sacredWhite">
+						{t("reminders.addReminder") || "Add"}
+					</ButtonText>
+				</Button>
+			</HStack>
 
-            if (!error) {
-                setReminders(reminders.map(r =>
-                    r.id === reminder.id ? { ...r, is_active: !r.is_active } : r
-                ));
-            }
-        } catch (error) {
-            console.error('Error toggling reminder:', error);
-        }
-    };
+			{/* Reminders List */}
+			<VStack className="gap-md">
+				{reminders.length === 0 ? (
+					<Box className="p-xl bg-ink rounded-comfortable items-center">
+						<Text className="text-mistGray text-md text-center">
+							{t("reminders.noReminders") || "No reminders set yet."}
+						</Text>
+					</Box>
+				) : (
+					reminders.map((reminder) => {
+						const IconComponent = ICON_MAP[reminder.icon_type] || Bell;
+						return (
+							<Box
+								key={reminder.id}
+								className={`p-md rounded-comfortable border-l-[3px] ${
+									reminder.is_active
+										? "bg-ink border-sanctuarySaffron opacity-100"
+										: "bg-obsidian border-dimGray opacity-60"
+								}`}
+							>
+								<HStack className="gap-4 items-center">
+									{/* Icon */}
+									<Pressable onPress={() => toggleReminder(reminder)}>
+										<Box className="w-10 h-10 rounded-full bg-obsidian items-center justify-center">
+											<Icon
+												as={IconComponent}
+												className={
+													reminder.is_active
+														? "text-sanctuarySaffron"
+														: "text-dimGray"
+												}
+												size={20}
+											/>
+										</Box>
+									</Pressable>
 
-    const deleteReminder = async (reminderId: string) => {
-        hapticMedium();
+									{/* Content */}
+									<VStack className="gap-1 flex-1">
+										<Text className="text-sacredWhite font-semibold text-md">
+											{reminder.title}
+										</Text>
+										{reminder.description ? (
+											<Text className="text-mistGray text-sm">
+												{reminder.description}
+											</Text>
+										) : null}
+										{reminder.is_default && (
+											<Text className="text-shadowViolet text-xs">
+												💧 Default reminder
+											</Text>
+										)}
+									</VStack>
 
-        try {
-            const { error } = await supabase
-                .from('reminders')
-                .delete()
-                .eq('id', reminderId);
+									{/* Actions */}
+									<HStack className="gap-2">
+										{!reminder.is_default && (
+											<>
+												<Pressable onPress={() => openEditModal(reminder)}>
+													<Box className="w-9 h-9 rounded-full bg-obsidian items-center justify-center">
+														<Icon
+															as={Edit}
+															className="text-mistGray"
+															size={16}
+														/>
+													</Box>
+												</Pressable>
+												<Pressable onPress={() => deleteReminder(reminder.id)}>
+													<Box className="w-9 h-9 rounded-full bg-obsidian items-center justify-center">
+														<Icon
+															as={Trash2}
+															className="text-emberRed"
+															size={16}
+														/>
+													</Box>
+												</Pressable>
+											</>
+										)}
+									</HStack>
+								</HStack>
+							</Box>
+						);
+					})
+				)}
+			</VStack>
 
-            if (!error) {
-                setReminders(reminders.filter(r => r.id !== reminderId));
-            }
-        } catch (error) {
-            console.error('Error deleting reminder:', error);
-        }
-    };
+			{/* Info */}
+			<Box className="p-md bg-ink rounded-comfortable">
+				<Text className="text-mistGray italic text-xs text-center">
+					🔔 Tap the icon to toggle reminders on/off
+				</Text>
+			</Box>
 
-    if (isLoading) {
-        return null;
-    }
+			{/* Create/Edit Modal */}
+			<Modal isOpen={showCreateModal} onClose={closeModal}>
+				<ModalBackdrop />
+				<ModalContent className="bg-obsidian max-w-[400px]">
+					<ModalHeader>
+						<Heading className="text-sacredWhite" size="lg">
+							{editingReminder ? "Edit Reminder" : "New Reminder"}
+						</Heading>
+						<ModalCloseButton />
+					</ModalHeader>
+					<ModalBody>
+						<VStack className="gap-4">
+							{/* Title */}
+							<VStack className="gap-1">
+								<Text className="text-starlightGray text-sm">Title</Text>
+								<Input className="bg-ink border-obsidian">
+									<InputField
+										value={title}
+										onChangeText={setTitle}
+										placeholder="e.g., Take a break"
+										className="text-sacredWhite"
+										placeholderTextColor="#6A6358"
+									/>
+								</Input>
+							</VStack>
 
-    return (
-        <VStack space="lg" sx={{ padding: Theme.spacing.lg }}>
-            {/* Header */}
-            <HStack justifyContent="space-between" alignItems="center">
-                <VStack space="xs" sx={{ flex: 1 }}>
-                    <Heading color={Theme.colors.sacredWhite} size="lg">
-                        {t('reminders.title')}
-                    </Heading>
-                    <Text color={Theme.colors.mistGray} size="sm">
-                        Gentle nudges for self-care
-                    </Text>
-                </VStack>
-                <Button
-                    size="sm"
-                    onPress={openCreateModal}
-                    sx={{
-                        borderRadius: Theme.corners.full,
-                        backgroundColor: Theme.colors.sanctuarySaffron,
-                        paddingHorizontal: Theme.spacing.md,
-                    }}
-                >
-                    <Plus color={Theme.colors.sacredWhite} size={16} style={{ marginRight: 4 }} />
-                    <ButtonText>{t('reminders.addReminder')}</ButtonText>
-                </Button>
-            </HStack>
+							{/* Description */}
+							<VStack className="gap-1">
+								<Text className="text-starlightGray text-sm">
+									Description (optional)
+								</Text>
+								<Input className="bg-ink border-obsidian min-h-[80px]">
+									<InputField
+										value={description}
+										onChangeText={setDescription}
+										placeholder="e.g., Every 2 hours during class"
+										className="text-sacredWhite"
+										placeholderTextColor="#6A6358"
+										multiline
+									/>
+								</Input>
+							</VStack>
 
-            {/* Reminders List */}
-            <VStack space="md">
-                {reminders.length === 0 ? (
-                    <Box
-                        sx={{
-                            padding: Theme.spacing.xl,
-                            backgroundColor: Theme.colors.ink,
-                            borderRadius: Theme.corners.comfortable,
-                            alignItems: 'center',
-                        }}
-                    >
-                        <Text color={Theme.colors.mistGray} size="md" textAlign="center">
-                            {t('reminders.noReminders')}
-                        </Text>
-                    </Box>
-                ) : (
-                    reminders.map((reminder) => {
-                        const Icon = ICON_MAP[reminder.icon_type] || Bell;
-                        return (
-                            <Box
-                                key={reminder.id}
-                                sx={{
-                                    padding: Theme.spacing.md,
-                                    backgroundColor: reminder.is_active
-                                        ? Theme.colors.ink
-                                        : Theme.colors.obsidian,
-                                    borderRadius: Theme.corners.comfortable,
-                                    borderLeftWidth: 3,
-                                    borderLeftColor: reminder.is_active
-                                        ? Theme.colors.sanctuarySaffron
-                                        : Theme.colors.dimGray,
-                                    opacity: reminder.is_active ? 1 : 0.6,
-                                }}
-                            >
-                                <HStack space="md" alignItems="center">
-                                    {/* Icon */}
-                                    <Pressable onPress={() => toggleReminder(reminder)}>
-                                        <Box
-                                            sx={{
-                                                width: 40,
-                                                height: 40,
-                                                borderRadius: 20,
-                                                backgroundColor: Theme.colors.obsidian,
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                            }}
-                                        >
-                                            <Icon
-                                                color={reminder.is_active ? Theme.colors.sanctuarySaffron : Theme.colors.dimGray}
-                                                size={20}
-                                            />
-                                        </Box>
-                                    </Pressable>
-
-                                    {/* Content */}
-                                    <VStack space="xs" sx={{ flex: 1 }}>
-                                        <Text
-                                            color={Theme.colors.sacredWhite}
-                                            size="md"
-                                            sx={{ fontWeight: typography.fontWeight.semibold }}
-                                        >
-                                            {reminder.title}
-                                        </Text>
-                                        {reminder.description && (
-                                            <Text color={Theme.colors.mistGray} size="sm">
-                                                {reminder.description}
-                                            </Text>
-                                        )}
-                                        {reminder.is_default && (
-                                            <Text color={Theme.colors.shadowViolet} size="xs">
-                                                💧 Default reminder
-                                            </Text>
-                                        )}
-                                    </VStack>
-
-                                    {/* Actions */}
-                                    <HStack space="xs">
-                                        {!reminder.is_default && (
-                                            <>
-                                                <Pressable onPress={() => openEditModal(reminder)}>
-                                                    <Box
-                                                        sx={{
-                                                            width: 36,
-                                                            height: 36,
-                                                            borderRadius: 18,
-                                                            backgroundColor: Theme.colors.obsidian,
-                                                            alignItems: 'center',
-                                                            justifyContent: 'center',
-                                                        }}
-                                                    >
-                                                        <Edit color={Theme.colors.mistGray} size={16} />
-                                                    </Box>
-                                                </Pressable>
-                                                <Pressable onPress={() => deleteReminder(reminder.id)}>
-                                                    <Box
-                                                        sx={{
-                                                            width: 36,
-                                                            height: 36,
-                                                            borderRadius: 18,
-                                                            backgroundColor: Theme.colors.obsidian,
-                                                            alignItems: 'center',
-                                                            justifyContent: 'center',
-                                                        }}
-                                                    >
-                                                        <Trash2 color={Theme.colors.emberRed} size={16} />
-                                                    </Box>
-                                                </Pressable>
-                                            </>
-                                        )}
-                                    </HStack>
-                                </HStack>
-                            </Box>
-                        );
-                    })
-                )}
-            </VStack>
-
-            {/* Info */}
-            <Box
-                sx={{
-                    padding: Theme.spacing.md,
-                    backgroundColor: Theme.colors.ink,
-                    borderRadius: Theme.corners.comfortable,
-                }}
-            >
-                <Text
-                    color={Theme.colors.mistGray}
-                    size="xs"
-                    textAlign="center"
-                    sx={{ fontStyle: 'italic' }}
-                >
-                    🔔 Tap the icon to toggle reminders on/off
-                </Text>
-            </Box>
-
-            {/* Create/Edit Modal */}
-            <Modal isOpen={showCreateModal} onClose={closeModal}>
-                <ModalBackdrop />
-                <ModalContent
-                    sx={{
-                        backgroundColor: Theme.colors.obsidian,
-                        maxWidth: 400,
-                    }}
-                >
-                    <ModalHeader>
-                        <Heading color={Theme.colors.sacredWhite} size="lg">
-                            {editingReminder ? 'Edit Reminder' : 'New Reminder'}
-                        </Heading>
-                        <ModalCloseButton />
-                    </ModalHeader>
-                    <ModalBody>
-                        <VStack space="md">
-                            {/* Title */}
-                            <VStack space="xs">
-                                <Text color={Theme.colors.starlightGray} size="sm">
-                                    Title
-                                </Text>
-                                <Input
-                                    variant="outline"
-                                    size="md"
-                                    sx={{
-                                        backgroundColor: Theme.colors.ink,
-                                        borderColor: Theme.colors.obsidian,
-                                    }}
-                                >
-                                    <InputField
-                                        value={title}
-                                        onChangeText={setTitle}
-                                        placeholder="e.g., Take a break"
-                                        color={Theme.colors.sacredWhite}
-                                        placeholderTextColor={Theme.colors.dimGray}
-                                    />
-                                </Input>
-                            </VStack>
-
-                            {/* Description */}
-                            <VStack space="xs">
-                                <Text color={Theme.colors.starlightGray} size="sm">
-                                    Description (optional)
-                                </Text>
-                                <Input
-                                    variant="outline"
-                                    size="md"
-                                    sx={{
-                                        backgroundColor: Theme.colors.ink,
-                                        borderColor: Theme.colors.obsidian,
-                                    }}
-                                >
-                                    <InputField
-                                        value={description}
-                                        onChangeText={setDescription}
-                                        placeholder="e.g., Every 2 hours during class"
-                                        color={Theme.colors.sacredWhite}
-                                        placeholderTextColor={Theme.colors.dimGray}
-                                        multiline
-                                    />
-                                </Input>
-                            </VStack>
-
-                            {/* Icon Type */}
-                            <VStack space="xs">
-                                <Text color={Theme.colors.starlightGray} size="sm">
-                                    Icon
-                                </Text>
-                                <HStack space="md">
-                                    {Object.keys(ICON_MAP).map((type) => {
-                                        const Icon = ICON_MAP[type];
-                                        const isSelected = iconType === type;
-                                        return (
-                                            <Pressable
-                                                key={type}
-                                                onPress={() => {
-                                                    setIconType(type);
-                                                    hapticLight();
-                                                }}
-                                            >
-                                                <Box
-                                                    sx={{
-                                                        width: 48,
-                                                        height: 48,
-                                                        borderRadius: 24,
-                                                        backgroundColor: isSelected
-                                                            ? Theme.colors.sanctuarySaffron
-                                                            : Theme.colors.ink,
-                                                        alignItems: 'center',
-                                                        justifyContent: 'center',
-                                                    }}
-                                                >
-                                                    <Icon
-                                                        color={isSelected ? Theme.colors.white : Theme.colors.mistGray}
-                                                        size={24}
-                                                    />
-                                                </Box>
-                                            </Pressable>
-                                        );
-                                    })}
-                                </HStack>
-                            </VStack>
-                        </VStack>
-                    </ModalBody>
-                    <ModalFooter>
-                        <HStack space="md" sx={{ width: '100%' }}>
-                            <Button
-                                flex={1}
-                                variant="outline"
-                                onPress={closeModal}
-                                sx={{
-                                    borderColor: Theme.colors.dimGray,
-                                }}
-                            >
-                                <ButtonText color={Theme.colors.mistGray}>Cancel</ButtonText>
-                            </Button>
-                            <Button
-                                flex={1}
-                                onPress={saveReminder}
-                                isDisabled={!title.trim()}
-                                sx={{
-                                    backgroundColor: Theme.colors.sanctuarySaffron,
-                                }}
-                            >
-                                <ButtonText>
-                                    {editingReminder ? 'Update' : 'Create'}
-                                </ButtonText>
-                            </Button>
-                        </HStack>
-                    </ModalFooter>
-                </ModalContent>
-            </Modal>
-        </VStack>
-    );
+							{/* Icon Type */}
+							<VStack className="gap-1">
+								<Text className="text-starlightGray text-sm">Icon</Text>
+								<HStack className="gap-4">
+									{Object.keys(ICON_MAP).map((type) => {
+										const IconComp = ICON_MAP[type];
+										const isSelected = iconType === type;
+										return (
+											<Pressable
+												key={type}
+												onPress={() => {
+													setIconType(type);
+													hapticLight();
+												}}
+											>
+												<Box
+													className={`w-12 h-12 rounded-full items-center justify-center ${
+														isSelected ? "bg-sanctuarySaffron" : "bg-ink"
+													}`}
+												>
+													<Icon
+														as={IconComp}
+														className={
+															isSelected ? "text-white" : "text-mistGray"
+														}
+														size={24}
+													/>
+												</Box>
+											</Pressable>
+										);
+									})}
+								</HStack>
+							</VStack>
+						</VStack>
+					</ModalBody>
+					<ModalFooter>
+						<HStack className="gap-4 w-full">
+							<Button
+								className="flex-1 border-dimGray"
+								variant="outline"
+								onPress={closeModal}
+							>
+								<ButtonText className="text-mistGray">Cancel</ButtonText>
+							</Button>
+							<Button
+								className="flex-1 bg-sanctuarySaffron"
+								onPress={saveReminder}
+								isDisabled={!title.trim()}
+							>
+								<ButtonText className="text-white">
+									{editingReminder ? "Update" : "Create"}
+								</ButtonText>
+							</Button>
+						</HStack>
+					</ModalFooter>
+				</ModalContent>
+			</Modal>
+		</VStack>
+	);
 }

@@ -61,7 +61,7 @@ gurudevi-monorepo/
 │   │       │       └── shaders/
 │   │       └── lib/              ← Mobile-specific utilities
 │   │
-│   ├── gurudevi-web/             ← App landing/marketing website
+│   ├── gurudevi-marketingWeb/             ← App landing/marketing website
 │   ├── neevsk-web/               ← Personal website
 │   └── foundation-web/           ← Foundation website
 │
@@ -265,7 +265,7 @@ If a web version of Gurudevi ever arrives — it imports only from '@gurudevi/ui
 ✅ packages/ui/src/components/         ← Pure RN lives here
 ❌ packages/self/src/components/       ← Never Skia here
 ❌ packages/classroom/src/components/  ← Never Skia here
-❌ apps/gurudevi-web/                  ← Never Skia here
+❌ apps/gurudevi-marketingWeb/                  ← Never Skia here
 ```
 
 Never scatter Skia components across feature packages. All Skia stays in packages/ui/components-native — one home, one import path, one boundary to maintain.

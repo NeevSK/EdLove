@@ -1,426 +1,518 @@
-﻿import React, { useState } from 'react';
+import { api } from "@repo/core/api";
+import { useSafeMutation } from "@repo/core/hooks";
+import { CLASSROOM_RESOURCE_SCOPE } from "@repo/core/lib";
+import { useStore } from "@repo/core/logic";
+import type {
+	InventoryCategory,
+	InventoryCondition,
+	InventoryItem,
+} from "@repo/core/types";
+import PositiveInvitation from "@repo/ui/components/PositiveInvitation";
+import { useThemedColors } from "@repo/ui/hooks";
+import { Monitor, Package, PenTool, Plus, Sofa, X } from "@repo/ui/icons";
 import {
-    VStack,
-    HStack,
-    Box,
-    Text,
-    Heading,
-    ScrollView,
-    Button,
-    ButtonText,
-    Pressable,
-    Modal,
-    ModalBackdrop,
-    ModalContent,
-    ModalHeader,
-    ModalCloseButton,
-    ModalBody,
-    ModalFooter,
-    Input,
-    InputField,
-    Textarea,
-    TextareaInput,
-    Icon,
-    CloseIcon
-} from '@repo/ui';
-import {
-    Package,
-    AlertTriangle,
-    Plus,
-    CheckCircle,
-    Clipboard,
-    Sofa,
-    PenTool,
-    Monitor
-} from 'lucide-react-native';
-import { useTranslation } from 'react-i18next';
-import { Theme } from '@repo/ui';
-import { useThemedColors } from '@repo/ui';
-import { hapticLight, hapticSuccess } from '@repo/ui';
-import { useInventory } from '../hooks/useInventory';
-import {
-    InventoryCategory,
-    InventoryCondition,
-    InventoryItem,
-    api,
-    useStore,
-    useSafeMutation,
-    supabase,
-    initPostHog,
-    trackEvent
-} from '@repo/core';
-import { PositiveInvitation } from '@repo/ui';
+	Box,
+	Button,
+	ButtonText,
+	Heading,
+	HStack,
+	Icon,
+	Input,
+	InputField,
+	Modal,
+	ModalBackdrop,
+	ModalBody,
+	ModalCloseButton,
+	ModalContent,
+	ModalFooter,
+	ModalHeader,
+	Pressable,
+	ScrollView,
+	Text,
+	Textarea,
+	TextareaInput,
+	VStack,
+} from "@repo/ui/primitives";
+import { Theme } from "@repo/ui/theme";
+import { hapticLight, hapticSuccess } from "@repo/ui/utils/haptics";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useInventory } from "../hooks/useInventory";
 
-const CATEGORIES: { id: InventoryCategory; labelKey: string; icon: any }[] = [
-    { id: 'furniture', labelKey: 'classroom.inventory.furniture', icon: Sofa },
-    { id: 'supplies', labelKey: 'classroom.inventory.supplies', icon: PenTool },
-    { id: 'equipment', labelKey: 'classroom.inventory.equipment', icon: Monitor },
+const CATEGORIES: {
+	id: InventoryCategory | "all";
+	labelKey: string;
+	icon: any;
+}[] = [
+	{ id: "all", labelKey: "classroom.inventory.all", icon: Package },
+	{ id: "furniture", labelKey: "classroom.inventory.furniture", icon: Sofa },
+	{ id: "supplies", labelKey: "classroom.inventory.supplies", icon: PenTool },
+	{ id: "equipment", labelKey: "classroom.inventory.equipment", icon: Monitor },
 ];
-
 interface InventoryViewProps {
-    classroomId: string;
+	classroomId: string;
 }
-
 export default function InventoryView({ classroomId }: InventoryViewProps) {
-    const { t } = useTranslation();
-    const colors = useThemedColors();
-    const { user } = useStore();
-    const showToast = useStore(state => state.showToast);
+	const { t } = useTranslation();
+	const colors = useThemedColors();
+	const { user } = useStore();
+	const showToast = useStore((state) => state.showToast);
+	const { items, isLoading, setItems } = useInventory(classroomId);
+	const [selectedCategory, setSelectedCategory] = useState<
+		InventoryCategory | "all"
+	>("all");
+	const [showReportModal, setShowReportModal] = useState(false);
+	const [showRequestModal, setShowRequestModal] = useState(false);
+	const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
+	const [requestName, setRequestName] = useState("");
+	const [requestQty, setRequestQty] = useState("");
+	const [requestReason, setRequestReason] = useState("");
+	const reportMutation = useSafeMutation(
+		async (variables: { id: string; condition: InventoryCondition }) => {
+			return api["inventory"].update(variables.id, {
+				condition: variables.condition,
+			});
+		},
+		{
+			onMutate: async ({ id, condition }) => {
+				setItems((prev) =>
+					prev.map((item) => (item.id === id ? { ...item, condition } : item)),
+				);
+			},
+			onSuccess: () => {
+				hapticSuccess();
+				showToast(
+					t("classroom.inventory.updateSuccess") || "Condition updated",
+					"success",
+				);
+			},
+		},
+	);
+	const requestMutation = useSafeMutation(
+		async (variables: {
+			item_name: string;
+			quantity: string;
+			reason: string;
+		}) => {
+			return (api["inventory"] as any).createRequest({
+				classroom_id: classroomId,
+				school_id: user?.school_id || "",
+				teacher_id: user?.id || "",
+				...CLASSROOM_RESOURCE_SCOPE,
+				item_name: variables.item_name,
+				quantity: parseInt(variables.quantity, 10) || 0,
+				reason: variables.reason,
+			});
+		},
+		{
+			onSuccess: () => {
+				hapticSuccess();
+				showToast(
+					t("classroom.inventory.requestSent") || "Request sent",
+					"success",
+				);
+				setRequestName("");
+				setRequestQty("");
+				setRequestReason("");
+			},
+		},
+	);
+	const filteredItems =
+		selectedCategory === "all"
+			? items
+			: items.filter((item) => item.category === selectedCategory);
+	const getConditionColor = (condition: InventoryCondition) => {
+		switch (condition) {
+			case "good":
+				return Theme.colors.sageGreen;
+			case "fair":
+				return Theme.colors.templeGold;
+			case "poor":
+				return Theme.colors.sanctuarySaffron;
+			case "broken":
+				return Theme.colors.emberRed;
+			default:
+				return Theme.colors.starlightGray;
+		}
+	};
+	const handleReportIssue = (item: InventoryItem) => {
+		setSelectedItem(item);
+		setShowReportModal(true);
+	};
+	return (
+		<Box className="flex-1">
+			<Box className="pb-4">
+				<ScrollView
+					horizontal
+					showsHorizontalScrollIndicator={false}
+					contentContainerStyle={{
+						paddingHorizontal: Theme.spacing.md,
+						gap: 8,
+					}}
+				>
+					{CATEGORIES.map((cat) => {
+						const IconComponent = cat.icon;
+						const isActive = selectedCategory === cat.id;
+						return (
+							<Pressable
+								key={cat.id}
+								onPress={() => {
+									hapticLight();
+									setSelectedCategory(cat.id);
+								}}
+								className={`px-4 py-1 rounded-full flex-row items-center gap-1.5 ${isActive ? "bg-[--sanctuarySaffron] border-[--sanctuarySaffron]" : "bg-transparent border-[--starlightGray]"}`}
+								style={{
+									borderWidth: 1,
+									borderColor: isActive
+										? Theme.colors.sanctuarySaffron
+										: colors.border,
+								}}
+							>
+								<IconComponent
+									size={14}
+									color={
+										isActive ? Theme.colors.sacredWhite : colors.textSecondary
+									}
+								/>
+								<Text
+									className={`text-[13px] ${isActive ? "text-[--sacredWhite] font-bold" : "text-[--starlightGray] font-normal"}`}
+									style={{
+										color: isActive
+											? Theme.colors.sacredWhite
+											: colors.textSecondary,
+									}}
+								>
+									{t(cat.labelKey) || cat.id}
+								</Text>
+							</Pressable>
+						);
+					})}
+				</ScrollView>
+			</Box>
 
-    // Resilient Data Hook
-    const { items, isLoading, setItems } = useInventory(classroomId);
+			<ScrollView showsVerticalScrollIndicator={false}>
+				<VStack className="px-4 gap-4 pb-[100px]">
+					{!user ? (
+						<PositiveInvitation
+							type="guest"
+							title={t("classroom.inventory.guestTitle") || "Limited Access"}
+							description={
+								t("classroom.inventory.guestDesc") ||
+								"Sign in to manage and report classroom inventory."
+							}
+						/>
+					) : filteredItems.length === 0 ? (
+						<Box className="p-10 items-center">
+							<Text className="text-[--starlightGray]">
+								{t("common.noItemsFound") || "No inventory items found"}
+							</Text>
+						</Box>
+					) : (
+						filteredItems.map((item) => (
+							<Pressable
+								key={item.id}
+								onPress={() => handleReportIssue(item)}
+								className="bg-[--vellum] rounded-xl p-4"
+								style={{ backgroundColor: colors.secondary }}
+							>
+								<HStack className="justify-between items-center">
+									<HStack className="gap-4 items-center">
+										<Box
+											className="w-10 h-10 rounded-xl items-center justify-center bg-[--silk]"
+											style={{ backgroundColor: colors.tertiary }}
+										>
+											<Icon as={Package} size={20} color={colors.text} />
+										</Box>
+										<VStack>
+											<Text
+												className="font-bold"
+												style={{ color: colors.text }}
+											>
+												{item.name}
+											</Text>
+											<Text
+												className="text-xs"
+												style={{ color: colors.textSecondary }}
+											>
+												{t("classroom.inventory.quantity", {
+													count: item.quantity,
+												}) || `${item.quantity} units`}
+											</Text>
+										</VStack>
+									</HStack>
 
-    const [selectedCategory, setSelectedCategory] = useState<InventoryCategory | 'all'>('all');
-    const [showReportModal, setShowReportModal] = useState(false);
-    const [showRequestModal, setShowRequestModal] = useState(false);
-    const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
+									<Box
+										className="px-2 py-0.5 rounded-sm"
+										style={{
+											backgroundColor: getConditionColor(item.condition),
+										}}
+									>
+										<Text className="text-[--sacredWhite] text-xs capitalize font-bold">
+											{item.condition}
+										</Text>
+									</Box>
+								</HStack>
+							</Pressable>
+						))
+					)}
+				</VStack>
+			</ScrollView>
 
-    // Form states
-    const [requestName, setRequestName] = useState('');
-    const [requestQty, setRequestQty] = useState('');
-    const [requestReason, setRequestReason] = useState('');
+			<Button
+				size="lg"
+				variant="solid"
+				action="primary"
+				onPress={() => {
+					hapticLight();
+					setShowRequestModal(true);
+				}}
+				className="absolute bottom-5 right-5 rounded-full bg-[--sanctuarySaffron] shadow-lg h-14 px-6"
+				style={{
+					shadowColor: "#000",
+					shadowOffset: { width: 0, height: 4 },
+					shadowOpacity: 0.3,
+					shadowRadius: 4.65,
+					elevation: 8,
+				}}
+			>
+				<HStack className="gap-2 items-center">
+					<ButtonText className="text-[--sacredWhite]">
+						{t("classroom.inventory.requestSupplies") || "Request Supplies"}
+					</ButtonText>
+					<Icon as={Plus} className="text-[--sacredWhite]" size={20} />
+				</HStack>
+			</Button>
 
-    // Mutations
-    const reportMutation = useSafeMutation(
-        (variables: { id: string; condition: InventoryCondition }) =>
-            api.inventory.update(variables.id, { condition: variables.condition }),
-        {
-            onMutate: ({ id, condition }) => {
-                setItems(prev => prev.map(item =>
-                    item.id === id ? { ...item, condition } : item
-                ));
-            },
-            onSuccess: () => {
-                hapticSuccess();
-                showToast(t('classroom.inventory.updateSuccess'), 'success');
-            }
-        }
-    );
+			{/* Report Issue Modal */}
+			<Modal isOpen={showReportModal} onClose={() => setShowReportModal(false)}>
+				<ModalBackdrop />
+				<ModalContent
+					className="bg-[--vellum]"
+					style={{ backgroundColor: colors.primary }}
+				>
+					<ModalHeader>
+						<Heading className="text-xl" style={{ color: colors.text }}>
+							{t("classroom.inventory.reportIssue") || "Report Condition"}
+						</Heading>
+						<ModalCloseButton>
+							<Icon as={X} style={{ color: colors.textSecondary }} />
+						</ModalCloseButton>
+					</ModalHeader>
+					<ModalBody>
+						<VStack className="gap-4">
+							<Text style={{ color: colors.textSecondary }}>
+								{t("classroom.inventory.reportIssueDesc") ||
+									"Updating condition for:"}{" "}
+								<Text className="font-bold" style={{ color: colors.text }}>
+									{selectedItem?.name}
+								</Text>
+							</Text>
 
-    const requestMutation = useSafeMutation(
-        (variables: { item_name: string; quantity: string; reason: string }) =>
-            api.inventory.createRequest({
-                classroom_id: classroomId,
-                school_id: user?.school_id || '', // Provided by store
-                teacher_id: user?.id || '',       // Provided by store
-                item_name: variables.item_name,
-                quantity: variables.quantity,
-                reason: variables.reason
-            }),
-        {
-            onSuccess: () => {
-                hapticSuccess();
-                showToast(t('classroom.inventory.requestSent'), 'success');
-                setRequestName('');
-                setRequestQty('');
-                setRequestReason('');
-            }
-        }
-    );
+							<Text
+								className="text-[13px] font-bold"
+								style={{ color: colors.text }}
+							>
+								{t("classroom.inventory.condition") || "Condition"}
+							</Text>
+							<HStack className="gap-2 flex-wrap">
+								{(["good", "fair", "poor", "broken"] as const).map((cond) => (
+									<Pressable
+										key={cond}
+										onPress={() => {
+											if (selectedItem) {
+												reportMutation.mutate({
+													id: selectedItem.id,
+													condition: cond,
+												});
+												setShowReportModal(false);
+											}
+										}}
+										className={`px-3 py-2 rounded-2xl ${cond === "broken" ? "bg-[--emberRed]" : "bg-[--silk] border border-[--starlightGray]"}`}
+										style={{
+											backgroundColor:
+												cond === "broken"
+													? Theme.colors.emberRed
+													: colors.tertiary,
+											opacity: reportMutation.isLoading ? 0.5 : 1,
+											borderColor: colors.border,
+										}}
+										disabled={reportMutation.isLoading}
+									>
+										<Text
+											className={`text-xs capitalize font-semibold ${cond === "broken" ? "text-white" : ""}`}
+											style={{
+												color: cond === "broken" ? "white" : colors.text,
+											}}
+										>
+											{cond}
+										</Text>
+									</Pressable>
+								))}
+							</HStack>
 
-    // Filter items
-    const filteredItems = selectedCategory === 'all'
-        ? items
-        : items.filter(item => item.category === selectedCategory);
+							<Text
+								className="text-[13px] mt-2 font-bold"
+								style={{ color: colors.text }}
+							>
+								{t("classroom.inventory.notes") || "Notes"}
+							</Text>
+							<Textarea>
+								<TextareaInput
+									placeholder={
+										t("classroom.inventory.damagePlaceholder") ||
+										"Describe any wear or damage..."
+									}
+									style={{ color: colors.text }}
+								/>
+							</Textarea>
+						</VStack>
+					</ModalBody>
+					<ModalFooter>
+						<Button
+							variant="outline"
+							action="secondary"
+							className="mr-2"
+							onPress={() => setShowReportModal(false)}
+						>
+							<ButtonText style={{ color: colors.text }}>
+								{t("common.cancel") || "Cancel"}
+							</ButtonText>
+						</Button>
+						<Button
+							action="primary"
+							onPress={() => setShowReportModal(false)}
+							className="bg-[--sanctuarySaffron]"
+							style={{ backgroundColor: Theme.colors.sanctuarySaffron }}
+						>
+							<ButtonText className="text-[--sacredWhite]">
+								{t("common.done") || "Done"}
+							</ButtonText>
+						</Button>
+					</ModalFooter>
+				</ModalContent>
+			</Modal>
 
-    const getConditionColor = (condition: InventoryCondition) => {
-        switch (condition) {
-            case 'good': return Theme.colors.sageGreen;
-            case 'fair': return Theme.colors.templeGold;
-            case 'poor': return Theme.colors.sanctuarySaffron;
-            case 'broken': return Theme.colors.emberRed;
-            default: return Theme.colors.starlightGray;
-        }
-    };
-
-    const handleReportIssue = (item: InventoryItem) => {
-        setSelectedItem(item);
-        setShowReportModal(true);
-    };
-
-    return (
-        <Box sx={{ flex: 1 }}>
-            {/* Category Filter */}
-            <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{ paddingHorizontal: Theme.spacing.md, gap: 8, paddingBottom: Theme.spacing.md }}
-            >
-                <Pressable
-                    onPress={() => setSelectedCategory('all')}
-                    sx={{
-                        paddingHorizontal: Theme.spacing.md,
-                        paddingVertical: Theme.spacing.xs,
-                        borderRadius: Theme.corners.full,
-                        backgroundColor: selectedCategory === 'all' ? Theme.colors.sanctuarySaffron : 'transparent',
-                        borderWidth: 1,
-                        borderColor: selectedCategory === 'all' ? Theme.colors.sanctuarySaffron : colors.border,
-                    }}
-                >
-                    <Text color={selectedCategory === 'all' ? Theme.colors.sacredWhite : colors.textSecondary} sx={{ fontSize: 13 }}>
-                        {t('classroom.inventory.all')}
-                    </Text>
-                </Pressable>
-                {CATEGORIES.map(cat => (
-                    <Pressable
-                        key={cat.id}
-                        onPress={() => setSelectedCategory(cat.id)}
-                        sx={{
-                            paddingHorizontal: Theme.spacing.md,
-                            paddingVertical: Theme.spacing.xs,
-                            borderRadius: Theme.corners.full,
-                            backgroundColor: selectedCategory === cat.id ? Theme.colors.sanctuarySaffron : 'transparent',
-                            borderWidth: 1,
-                            borderColor: selectedCategory === cat.id ? Theme.colors.sanctuarySaffron : colors.border,
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            gap: 4
-                        }}
-                    >
-                        <cat.icon size={14} color={selectedCategory === cat.id ? Theme.colors.sacredWhite : colors.textSecondary} />
-                        <Text color={selectedCategory === cat.id ? Theme.colors.sacredWhite : colors.textSecondary} sx={{ fontSize: 13 }}>
-                            {t(cat.labelKey)}
-                        </Text>
-                    </Pressable>
-                ))}
-            </ScrollView>
-
-            {/* Inventory List */}
-            <VStack sx={{ paddingHorizontal: Theme.spacing.md, gap: Theme.spacing.md }}>
-                {!user ? (
-                    <PositiveInvitation
-                        type="guest"
-                        title={t('classroom.inventory.guestTitle')}
-                        description={t('classroom.inventory.guestDesc')}
-                    />
-                ) : filteredItems.length === 0 ? (
-                    <Box sx={{ padding: 40, alignItems: 'center' }}>
-                        <Text color={colors.textSecondary}>{t('common.noItemsFound')}</Text>
-                    </Box>
-                ) : filteredItems.map(item => (
-                    <Pressable
-                        key={item.id}
-                        onPress={() => handleReportIssue(item)}
-                        sx={{
-                            backgroundColor: colors.secondary,
-                            borderRadius: Theme.corners.comfortable,
-                            padding: Theme.spacing.md,
-                        }}
-                    >
-                        <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                            <HStack sx={{ gap: Theme.spacing.md, alignItems: 'center' }}>
-                                <Box
-                                    sx={{
-                                        width: 40,
-                                        height: 40,
-                                        borderRadius: Theme.corners.comfortable,
-                                        backgroundColor: colors.tertiary,
-                                        alignItems: 'center',
-                                        justifyContent: 'center'
-                                    }}
-                                >
-                                    <Package size={20} color={colors.text} />
-                                </Box>
-                                <VStack>
-                                    <Text color={colors.text} sx={{ fontWeight: 'bold' }}>{item.name}</Text>
-                                    <Text color={colors.textSecondary} sx={{ fontSize: 12 }}>{t('classroom.inventory.quantity', { count: item.quantity })}</Text>
-                                </VStack>
-                            </HStack>
-
-                            <Box
-                                sx={{
-                                    paddingHorizontal: Theme.spacing.sm,
-                                    paddingVertical: Theme.spacing.xs,
-                                    backgroundColor: getConditionColor(item.condition),
-                                    borderRadius: Theme.corners.tight,
-                                }}
-                            >
-                                <Text color={Theme.colors.sacredWhite} sx={{ fontSize: 12, textTransform: 'capitalize', fontWeight: 'bold' }}>
-                                    {item.condition}
-                                </Text>
-                            </Box>
-                        </HStack>
-                    </Pressable>
-                ))}
-            </VStack>
-
-            {/* Request Supplies FAB */}
-            <Button
-                size="lg"
-                variant="solid"
-                action="primary"
-                onPress={() => setShowRequestModal(true)}
-                sx={{
-                    position: 'absolute',
-                    bottom: 20,
-                    right: 20,
-                    borderRadius: Theme.corners.full,
-                    backgroundColor: Theme.colors.sanctuarySaffron,
-                    shadowColor: "#000",
-                    shadowOffset: { width: 0, height: 4 },
-                    shadowOpacity: 0.3,
-                    shadowRadius: 4.65,
-                    elevation: 8,
-                }}
-            >
-                <ButtonText color={Theme.colors.sacredWhite} sx={{ marginRight: Theme.spacing.sm }}>{t('classroom.inventory.requestSupplies')}</ButtonText>
-                <Plus color={Theme.colors.sacredWhite} size={20} />
-            </Button>
-
-            {/* Report Issue Modal */}
-            <Modal
-                isOpen={showReportModal}
-                onClose={() => setShowReportModal(false)}
-            >
-                <ModalBackdrop />
-                <ModalContent sx={{ backgroundColor: colors.primary }}>
-                    <ModalHeader>
-                        <Heading color={colors.text} sx={{ fontSize: 20 }}>{t('classroom.inventory.reportIssue')}</Heading>
-                        <ModalCloseButton>
-                            <Icon as={CloseIcon} />
-                        </ModalCloseButton>
-                    </ModalHeader>
-                    <ModalBody>
-                        <Text color={colors.textSecondary} sx={{ marginBottom: Theme.spacing.md }}>
-                            {t('classroom.inventory.reportIssue')} for: <Text color={colors.text} sx={{ fontWeight: 'bold' }}>{selectedItem?.name}</Text>
-                        </Text>
-                        <VStack sx={{ gap: Theme.spacing.md }}>
-                            <Text color={colors.text} sx={{ fontSize: 13 }}>{t('classroom.inventory.condition')}</Text>
-                            <HStack sx={{ gap: Theme.spacing.sm, flexWrap: 'wrap' }}>
-                                {(['good', 'fair', 'poor', 'broken'] as const).map(cond => (
-                                    <Pressable
-                                        key={cond}
-                                        onPress={() => {
-                                            if (selectedItem) {
-                                                reportMutation.mutate({ id: selectedItem.id, condition: cond });
-                                                setShowReportModal(false);
-                                            }
-                                        }}
-                                        sx={{
-                                            paddingHorizontal: 12,
-                                            paddingVertical: 6,
-                                            borderRadius: 16,
-                                            backgroundColor: cond === 'broken' ? Theme.colors.emberRed : colors.tertiary,
-                                            opacity: reportMutation.isLoading ? 0.5 : 1
-                                        }}
-                                        disabled={reportMutation.isLoading}
-                                    >
-                                        <Text color={cond === 'broken' ? 'white' : colors.text} sx={{ fontSize: 12, textTransform: 'capitalize' }}>
-                                            {cond}
-                                        </Text>
-                                    </Pressable>
-                                ))}
-                            </HStack>
-
-                            <Text color={colors.text} sx={{ fontSize: 13, marginTop: 8 }}>{t('classroom.inventory.notes')}</Text>
-                            <Textarea>
-                                <TextareaInput placeholder={t('classroom.inventory.damagePlaceholder')} color={colors.text} />
-                            </Textarea>
-                        </VStack>
-                    </ModalBody>
-                    <ModalFooter>
-                        <Button
-                            variant="outline"
-                            action="secondary"
-                            sx={{ marginRight: Theme.spacing.sm }}
-                            onPress={() => setShowReportModal(false)}
-                        >
-                            <ButtonText>{t('common.cancel')}</ButtonText>
-                        </Button>
-                        <Button
-                            action="negative"
-                            onPress={() => {
-                                setShowReportModal(false);
-                                // Show toast logic here
-                            }}
-                        >
-                            <ButtonText>{t('classroom.inventory.reportDamage')}</ButtonText>
-                        </Button>
-                    </ModalFooter>
-                </ModalContent>
-            </Modal>
-
-            {/* Request Supplies Modal */}
-            <Modal
-                isOpen={showRequestModal}
-                onClose={() => setShowRequestModal(false)}
-            >
-                <ModalBackdrop />
-                <ModalContent sx={{ backgroundColor: colors.primary }}>
-                    <ModalHeader>
-                        <Heading color={colors.text} sx={{ fontSize: 20 }}>{t('classroom.inventory.requestSupplies')}</Heading>
-                        <ModalCloseButton>
-                            <Icon as={CloseIcon} />
-                        </ModalCloseButton>
-                    </ModalHeader>
-                    <ModalBody>
-                        <VStack sx={{ gap: Theme.spacing.md }}>
-                            <VStack sx={{ gap: 4 }}>
-                                <Text color={colors.text} sx={{ fontSize: 13 }}>{t('classroom.inventory.itemName')}</Text>
-                                <Input>
-                                    <InputField
-                                        placeholder={t('classroom.inventory.itemNamePlaceholder')}
-                                        color={colors.text}
-                                        value={requestName}
-                                        onChangeText={setRequestName}
-                                    />
-                                </Input>
-                            </VStack>
-                            <VStack sx={{ gap: 4 }}>
-                                <Text color={colors.text} sx={{ fontSize: 13 }}>
-                                    {String(t('classroom.inventory.quantity', { count: 0 }) || '').split(':')[0]?.trim() || ''}
-                                </Text>
-                                <Input>
-                                    <InputField
-                                        placeholder="e.g. 1 Box"
-                                        keyboardType="numeric"
-                                        color={colors.text}
-                                        value={requestQty}
-                                        onChangeText={setRequestQty}
-                                    />
-                                </Input>
-                            </VStack>
-                            <VStack sx={{ gap: 4 }}>
-                                <Text color={colors.text} sx={{ fontSize: 13 }}>{t('classroom.inventory.reason')}</Text>
-                                <Input>
-                                    <InputField
-                                        placeholder={t('classroom.inventory.reasonPlaceholder')}
-                                        color={colors.text}
-                                        value={requestReason}
-                                        onChangeText={setRequestReason}
-                                    />
-                                </Input>
-                            </VStack>
-                        </VStack>
-                    </ModalBody>
-                    <ModalFooter>
-                        <Button
-                            variant="outline"
-                            action="secondary"
-                            sx={{ marginRight: Theme.spacing.sm }}
-                            onPress={() => setShowRequestModal(false)}
-                        >
-                            <ButtonText>{t('common.cancel')}</ButtonText>
-                        </Button>
-                        <Button
-                            action="primary"
-                            onPress={() => {
-                                requestMutation.mutate({
-                                    item_name: requestName,
-                                    quantity: requestQty,
-                                    reason: requestReason
-                                });
-                                setShowRequestModal(false);
-                            }}
-                            sx={{ backgroundColor: Theme.colors.sanctuarySaffron }}
-                            disabled={!requestName || !requestQty || requestMutation.isLoading}
-                        >
-                            <ButtonText>{requestMutation.isLoading ? t('classroom.inventory.sending') : t('classroom.inventory.submit')}</ButtonText>
-                        </Button>
-                    </ModalFooter>
-                </ModalContent>
-            </Modal>
-
-        </Box>
-    );
+			{/* Request Supplies Modal */}
+			<Modal
+				isOpen={showRequestModal}
+				onClose={() => setShowRequestModal(false)}
+			>
+				<ModalBackdrop />
+				<ModalContent
+					className="bg-[--vellum]"
+					style={{ backgroundColor: colors.primary }}
+				>
+					<ModalHeader>
+						<Heading className="text-xl" style={{ color: colors.text }}>
+							{t("classroom.inventory.requestSupplies") || "Request Supplies"}
+						</Heading>
+						<ModalCloseButton>
+							<Icon as={X} style={{ color: colors.textSecondary }} />
+						</ModalCloseButton>
+					</ModalHeader>
+					<ModalBody>
+						<VStack className="gap-4">
+							<VStack className="gap-1">
+								<Text
+									className="text-[13px] font-bold"
+									style={{ color: colors.text }}
+								>
+									{t("classroom.inventory.itemName") || "Item Name"}
+								</Text>
+								<Input
+									className="h-12 bg-[--silk]"
+									style={{ backgroundColor: colors.secondary }}
+								>
+									<InputField
+										placeholder={
+											t("classroom.inventory.itemNamePlaceholder") ||
+											"e.g. Chalk, Notebooks"
+										}
+										style={{ color: colors.text }}
+										value={requestName}
+										onChangeText={setRequestName}
+									/>
+								</Input>
+							</VStack>
+							<VStack className="gap-1">
+								<Text
+									className="text-[13px] font-bold"
+									style={{ color: colors.text }}
+								>
+									{t("classroom.inventory.quantityLabel") || "Quantity"}
+								</Text>
+								<Input
+									className="h-12 bg-[--silk]"
+									style={{ backgroundColor: colors.secondary }}
+								>
+									<InputField
+										placeholder="e.g. 1 Box"
+										style={{ color: colors.text }}
+										value={requestQty}
+										onChangeText={setRequestQty}
+									/>
+								</Input>
+							</VStack>
+							<VStack className="gap-1">
+								<Text
+									className="text-[13px] font-bold"
+									style={{ color: colors.text }}
+								>
+									{t("classroom.inventory.reason") || "Reason for Request"}
+								</Text>
+								<Input
+									className="h-12 bg-[--silk]"
+									style={{ backgroundColor: colors.secondary }}
+								>
+									<InputField
+										placeholder={
+											t("classroom.inventory.reasonPlaceholder") ||
+											"e.g. Out of stock, New academic year"
+										}
+										style={{ color: colors.text }}
+										value={requestReason}
+										onChangeText={setRequestReason}
+									/>
+								</Input>
+							</VStack>
+						</VStack>
+					</ModalBody>
+					<ModalFooter>
+						<Button
+							variant="outline"
+							action="secondary"
+							className="mr-2"
+							onPress={() => setShowRequestModal(false)}
+						>
+							<ButtonText style={{ color: colors.text }}>
+								{t("common.cancel") || "Cancel"}
+							</ButtonText>
+						</Button>
+						<Button
+							action="primary"
+							onPress={() => {
+								requestMutation.mutate({
+									item_name: requestName,
+									quantity: requestQty,
+									reason: requestReason,
+								});
+								setShowRequestModal(false);
+							}}
+							className="bg-[--sanctuarySaffron]"
+							style={{ backgroundColor: Theme.colors.sanctuarySaffron }}
+							disabled={
+								!requestName || !requestQty || requestMutation.isLoading
+							}
+						>
+							<ButtonText className="text-[--sacredWhite]">
+								{requestMutation.isLoading
+									? t("classroom.inventory.sending")
+									: t("classroom.inventory.submit")}
+							</ButtonText>
+						</Button>
+					</ModalFooter>
+				</ModalContent>
+			</Modal>
+		</Box>
+	);
 }

@@ -1,259 +1,160 @@
-import React from 'react';
-import { View, StyleSheet, TouchableOpacity, Image, Platform, Share } from 'react-native';
-import { Box, HStack, VStack, Text, Avatar, AvatarFallbackText, AvatarImage } from '@repo/ui';
-import { MoreHorizontal, Heart, MessageCircle, Sparkles, Globe, Share2 } from 'lucide-react-native';
-import { SanctuaryCard, Theme, useThemedColors, LivingGlow } from '@repo/ui';
-import { formatDistanceToNow } from 'date-fns';
-import { MediaAsset } from '@repo/core';
-import * as Clipboard from 'expo-clipboard';
+import {
+	usePollLogic,
+	usePostLogic,
+	useSocialShieldHooks,
+} from "@repo/core/api/hooks";
+import { usePermissions } from "@repo/core/logic";
+import type { CommunityPost } from "@repo/core/types";
+import { PostCard as UIPostCard } from "@repo/ui/components/PostCard";
+import { useLotusToast } from "@repo/ui/hooks";
+import { hapticError, hapticSuccess } from "@repo/ui/primitives";
+import { confirmAction, shareAction } from "@repo/ui/utils";
 
-export type PostType = 'post' | 'text' | 'announcement' | 'poll';
+import React from "react";
+import { communityAPI } from "../api/community";
 
-import { CommunityPost } from '../index';
+const EMPTY_HANDLER = () => {};
 
 interface PostCardProps {
-    post: CommunityPost;
-    onPress?: () => void;
-    onLike?: () => void;
-    onResonate?: () => void;
-    onComment?: () => void;
-    onReport?: () => void;
-    /** Called when the author avatar/name is tapped — use to navigate to the author's public profile */
-    onAuthorPress?: () => void;
-    /** Called when the share button is tapped on native. On web, the post link is copied to clipboard automatically. */
-    onShare?: () => void;
-    isSample?: boolean;
-    currentUserId?: string;
+	post: CommunityPost;
+	onPress?: () => void;
+	onLike?: () => void;
+	onResonate?: () => void;
+	onComment?: () => void;
+	onReport?: () => void;
+	onAuthorPress?: () => void;
+	onShare?: () => void;
+	currentUserId?: string;
+	isSocialShieldEnabled?: boolean;
 }
 
-const MEDIA_HEIGHT = 260;
+export const PostCard = React.memo(function PostCard(props: PostCardProps) {
+	const { post, currentUserId, onLike, onResonate, onReport, onAuthorPress } =
+		props;
+	const { can, flags } = usePermissions();
+	const { blockMutation } = useSocialShieldHooks();
+	const { showToast } = useLotusToast();
 
-const PostCard = React.memo(function PostCard({
-    post,
-    onPress,
-    onLike,
-    onResonate,
-    onComment,
-    onReport,
-    onAuthorPress,
-    onShare,
-    isSample,
-    currentUserId
-}: PostCardProps) {
-    const {
-        author_name,
-        author_avatar,
-        content,
-        post_type,
-        created_at,
-        reactions = {},
-        comment_count,
-        media_url,
-        media_type,
-        is_anonymous,
-        id
-    } = post;
-    const colors = useThemedColors();
-    const [activeMediaIndex, setActiveMediaIndex] = React.useState(0);
+	const { state, handleLike, handleResonate, toggleMenu, closeMenu } =
+		usePostLogic(post, currentUserId);
+	const {
+		counts,
+		userVotes,
+		totalVotes,
+		isLoading: pollLoading,
+		isVoting,
+		handleVote,
+		refreshVotes,
+	} = usePollLogic(post.id, currentUserId, post.poll_data?.allow_multiple);
 
-    const isAnnouncement = post_type === 'announcement';
-    const totalReactions = Object.values(reactions).reduce((a, b) => a + b, 0);
+	// Map CommunityPost to Upstream PostContent interface
+	const postContent = {
+		id: post.id,
+		author: {
+			id: post.author_id,
+			name: post.author_name ?? "Unknown User",
+			avatar: post.author_avatar,
+		},
+		content: post.content,
+		type: post.post_type,
+		createdAt: post.created_at,
+		mediaUrl: post.media_url,
+		mediaType: post.media_type,
+		isAnonymous: post.is_anonymous,
+		pollData: post.poll_data,
+		urgency: post.urgency,
+		hasAcceptedAnswer: post.has_accepted_answer,
+		feedbackStatus: post.feedback_status,
+		feedbackResponse: post.feedback_response,
+		commentCount: post.comment_count,
+	};
 
-    const renderMediaContent = () => {
-        // Handle direct media_url if provided (new schema)
-        if (media_url && media_type === 'image') {
-            return (
-                <Box sx={{ marginTop: Theme.spacing.sm }}>
-                    <Box
-                        sx={{
-                            height: MEDIA_HEIGHT, // Keep original height for media display
-                            borderRadius: Theme.corners.comfortable,
-                            overflow: 'hidden',
-                            borderWidth: 1,
-                            borderColor: colors.overlay,
-                            backgroundColor: colors.secondary,
-                        }}
-                    >
-                        <Image
-                            source={{ uri: media_url }}
-                            style={StyleSheet.absoluteFill}
-                            resizeMode="cover"
-                        />
-                        <Box sx={{ ...StyleSheet.absoluteFillObject, backgroundColor: Theme.colors.glass.dark.highlight }} />
-                    </Box>
-                </Box>
-            );
-        }
-        return null;
-    };
+	const handleNativeShare = React.useCallback(async () => {
+		const shareUrl = `https://app.gurudevi.edlove.org/app?post=${post.id}`;
+		await shareAction({
+			title: `Post by ${post.is_anonymous ? "Anonymous" : post.author_name}`,
+			url: shareUrl,
+		});
+	}, [post.id, post.is_anonymous, post.author_name]);
 
-    // Optimistic local like state — re-sync when post data changes (e.g. feed refresh)
-    const [liked, setLiked] = React.useState(false);
-    const [localLikeCount, setLocalLikeCount] = React.useState(reactions['❤️'] || 0);
+	const handleBlock = React.useCallback(async () => {
+		if (!post.is_anonymous && post.author_id) {
+			try {
+				await blockMutation.mutateAsync(post.author_id);
+				hapticSuccess();
+				showToast({
+					message: "User has been blocked.",
+					type: "success",
+				});
+			} catch (_err) {
+				hapticError();
+				showToast({ message: "Failed to block user.", type: "error" });
+			}
+			closeMenu();
+		}
+	}, [post.is_anonymous, post.author_id, blockMutation, showToast, closeMenu]);
 
-    React.useEffect(() => {
-        setLocalLikeCount(reactions['❤️'] || 0);
-        setLiked(false);
-    }, [id, reactions['❤️']]);
+	const handleDelete = React.useCallback(async () => {
+		closeMenu();
+		const confirmed = await confirmAction(
+			"Delete Post",
+			"Are you sure you want to delete this post?",
+		);
 
-    const handleLike = async () => {
-        const prevLiked = liked;
-        const prevCount = localLikeCount;
-        const nowLiked = !liked;
-        setLiked(nowLiked);
-        setLocalLikeCount((prev) => Math.max(0, prev + (nowLiked ? 1 : -1)));
-        try {
-            await onLike?.();
-        } catch {
-            // Revert optimistic update on failure
-            setLiked(prevLiked);
-            setLocalLikeCount(prevCount);
-        }
-    };
+		if (!confirmed) return;
+		try {
+			await communityAPI.deletePost(post.id);
+		} catch (err) {
+			console.error("[PostContainer] delete failed:", err);
+		}
+	}, [post.id, closeMenu]);
 
-    const isLiked = liked;
-    const hasResonated = false;
+	const onLikeHandler = React.useCallback(
+		() => handleLike(onLike),
+		[handleLike, onLike],
+	);
+	const onResonateHandler = React.useCallback(() => {
+		handleResonate();
+		onResonate?.();
+	}, [handleResonate, onResonate]);
+	const onReportHandler = React.useCallback(() => {
+		onReport?.();
+		closeMenu();
+	}, [onReport, closeMenu]);
+	const onCommentHandler = props.onComment || EMPTY_HANDLER;
 
-    const handleShare = async () => {
-        // Include the post ID so the share link is post-specific (deep link ready)
-        const shareUrl = `https://app.gurudevi.edlove.org/app?post=${id}`;
-        if (Platform.OS === 'web') {
-            if (typeof navigator !== 'undefined' && navigator.share) {
-                try {
-                    await navigator.share({ title: `Post by ${is_anonymous ? 'Anonymous' : author_name}`, url: shareUrl });
-                } catch {
-                    // User cancelled or share unavailable — fall back to clipboard silently
-                    try { await Clipboard.setStringAsync(shareUrl); } catch { /* ignore */ }
-                }
-            } else {
-                await Clipboard.setStringAsync(shareUrl);
-            }
-        } else {
-            if (onShare) {
-                onShare();
-            } else {
-                Share.share({ message: shareUrl });
-            }
-        }
-    };
-
-    return (
-        <SanctuaryCard onPress={onPress} elevated={isAnnouncement}>
-            <VStack space="md">
-                {/* Header: Author & Meta */}
-                <HStack justifyContent="space-between" alignItems="center">
-                    <HStack space="md" alignItems="center">
-                        <TouchableOpacity
-                            onPress={!is_anonymous ? onAuthorPress : undefined}
-                            disabled={is_anonymous || !onAuthorPress}
-                            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                        >
-                            <Avatar size="sm" sx={{ backgroundColor: is_anonymous ? colors.secondary : colors.action }}>
-                                <AvatarFallbackText>{is_anonymous ? '?' : author_name}</AvatarFallbackText>
-                                {!is_anonymous && author_avatar && (
-                                    <AvatarImage source={{ uri: author_avatar }} alt={author_name} />
-                                )}
-                            </Avatar>
-                        </TouchableOpacity>
-                        <VStack>
-                            <HStack space="xs" alignItems="center">
-                                <Text color={colors.text} bold size="sm">
-                                    {is_anonymous ? 'Anonymous' : author_name}
-                                </Text>
-                            </HStack>
-                            <Text color={colors.textSecondary} size="xs">
-                                {formatDistanceToNow(new Date(created_at), { addSuffix: true })}
-                            </Text>
-                        </VStack>
-                    </HStack>
-
-                    <TouchableOpacity onPress={onReport}>
-                        <MoreHorizontal color={colors.textTertiary} size={20} />
-                    </TouchableOpacity>
-                </HStack>
-
-                {/* Content */}
-                <Text color={colors.textPrimary} size="md" sx={{ lineHeight: 22 }} numberOfLines={onPress ? 4 : undefined}>
-                    {content}
-                </Text>
-
-                {/* Media Content */}
-                {renderMediaContent()}
-
-                {/* Footer: Actions */}
-                <HStack justifyContent="space-between" alignItems="center" mt="$1">
-                    <HStack space="lg">
-                        {/* Like / Heart Reaction */}
-                        <TouchableOpacity onPress={handleLike} style={styles.actionButton}>
-                            <Heart
-                                size={20}
-                                color={isLiked ? colors.error : colors.textTertiary}
-                                fill={isLiked ? colors.error : 'none'}
-                            />
-                            {localLikeCount > 0 && (
-                                <Text color={isLiked ? colors.error : colors.textTertiary} size="xs" sx={{ marginLeft: 4 }}>
-                                    {localLikeCount}
-                                </Text>
-                            )}
-                        </TouchableOpacity>
-
-                        {/* Resonance Reaction */}
-                        <TouchableOpacity onPress={onResonate} style={styles.actionButton}>
-                            <LivingGlow active={hasResonated}>
-                                <Sparkles
-                                    size={20}
-                                    color={hasResonated ? colors.action : colors.textTertiary}
-                                />
-                            </LivingGlow>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity onPress={onComment} style={styles.actionButton}>
-                            <MessageCircle size={20} color={colors.textTertiary} />
-                            <Text color={colors.textTertiary} size="sm" sx={{ marginLeft: 4 }}>
-                                {comment_count}
-                            </Text>
-                        </TouchableOpacity>
-
-                        {/* Share button — clipboard on web, native share sheet otherwise */}
-                        <TouchableOpacity onPress={handleShare} style={styles.actionButton} accessibilityLabel="Share post">
-                            <Share2 size={18} color={colors.textTertiary} />
-                        </TouchableOpacity>
-                    </HStack>
-
-                    {/* Engagement Count */}
-                    {totalReactions > 0 && (
-                        <Text color={colors.textTertiary} size="xs">
-                            {totalReactions} Resonances
-                        </Text>
-                    )}
-
-                    {/* Announcement Badge */}
-                    <LivingGlow active={isAnnouncement}>
-                        <Box sx={{
-                            backgroundColor: isAnnouncement ? '$amber100' : colors.overlay,
-                            borderWidth: 1,
-                            borderColor: isAnnouncement ? '$amber400' : colors.action,
-                            paddingHorizontal: 8,
-                            paddingVertical: 2,
-                            borderRadius: Theme.corners.tight,
-                        }}>
-                            <Text color={isAnnouncement ? '$amber700' : colors.action} size="xs" bold>
-                                {isAnnouncement ? 'Sacred Bulletin' : 'Resonance'}
-                            </Text>
-                        </Box>
-                    </LivingGlow>
-                </HStack>
-            </VStack>
-        </SanctuaryCard>
-    );
+	return (
+		<UIPostCard
+			post={postContent}
+			currentUserId={currentUserId}
+			isLiked={state.isLiked ?? false}
+			likeCount={state.likeCount ?? 0}
+			hasResonated={state.hasResonated}
+			isResonating={state.isResonating}
+			isMenuOpen={state.isMenuOpen}
+			canDelete={can("delete", "Post")}
+			isSocialShieldEnabled={flags.isSocialShieldEnabled}
+			onPress={props.onPress}
+			onLike={onLikeHandler}
+			onResonate={onResonateHandler}
+			onComment={onCommentHandler}
+			onReport={onReportHandler}
+			onAuthorPress={onAuthorPress}
+			onShare={handleNativeShare}
+			onDelete={handleDelete}
+			onBlock={handleBlock}
+			toggleMenu={toggleMenu}
+			pollProps={{
+				counts,
+				userVotes: new Set(userVotes),
+				totalVotes,
+				isLoading: pollLoading,
+				isVoting,
+				onVote: handleVote,
+				onRefresh: refreshVotes,
+			}}
+		/>
+	);
 });
 
 export default PostCard;
-
-const styles = StyleSheet.create({
-    actionButton: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        padding: 4,
-    },
-});

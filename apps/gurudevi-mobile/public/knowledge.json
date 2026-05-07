@@ -1,0 +1,73 @@
+{
+  "site": {
+    "name": "Gurudevi Platform",
+    "url": "https://platform.gurudevi.edlove.org",
+    "description": "The active educational support platform for the Gurudevi Ecology."
+  },
+  "generatedAt": "2026-05-07T05:15:00Z",
+  "entries": [
+    {
+      "id": "welcome",
+      "title": "Welcome",
+      "subtitle": "Entry point to the sanctuary",
+      "category": "page",
+      "url": "https://platform.gurudevi.edlove.org/"
+    },
+    {
+      "id": "auth",
+      "title": "Authentication",
+      "subtitle": "Secure access to your personal sanctuary",
+      "category": "page",
+      "url": "https://platform.gurudevi.edlove.org/auth"
+    },
+    {
+      "id": "onboarding",
+      "title": "Onboarding",
+      "subtitle": "Bootstrap your personal workspace",
+      "category": "page",
+      "url": "https://platform.gurudevi.edlove.org/onboarding"
+    },
+    {
+      "id": "self",
+      "title": "Self Sanctuary",
+      "subtitle": "Personal wellbeing and reflective space",
+      "category": "app",
+      "url": "https://platform.gurudevi.edlove.org/app/self"
+    },
+    {
+      "id": "classroom",
+      "title": "Classroom Orchestration",
+      "subtitle": "Tools for teaching and learning resonance",
+      "category": "app",
+      "url": "https://platform.gurudevi.edlove.org/app/classroom"
+    },
+    {
+      "id": "community",
+      "title": "Community Resonance",
+      "subtitle": "Connect with fellow educators",
+      "category": "app",
+      "url": "https://platform.gurudevi.edlove.org/app/community"
+    },
+    {
+      "id": "library",
+      "title": "Knowledge Sanctuary",
+      "subtitle": "Curated educational resources and wisdom",
+      "category": "app",
+      "url": "https://platform.gurudevi.edlove.org/app/library"
+    },
+    {
+      "id": "profile",
+      "title": "Citizen Profile",
+      "subtitle": "Manage your identity and bonds",
+      "category": "app",
+      "url": "https://platform.gurudevi.edlove.org/app/profile"
+    },
+    {
+      "id": "ai-assistant",
+      "title": "AI Assistant",
+      "subtitle": "Pedagogical assistance and support",
+      "category": "tool",
+      "url": "https://platform.gurudevi.edlove.org/ai"
+    }
+  ]
+}

@@ -1,32 +1,33 @@
-﻿import React, { useCallback } from 'react';
-import { RefreshControl, StyleProp, ViewStyle } from 'react-native';
-import { FlashList, FlashListProps } from '@shopify/flash-list';
-import { Theme } from '../theme/Theme';
-import { useThemedColors } from '../hooks/useThemedColors';
-import EmptyState from './EmptyState';
+import { FlashList, type FlashListProps } from '@shopify/flash-list';
 import { BookOpen } from 'lucide-react-native';
+import React, { useCallback } from 'react';
+import { type StyleProp, type ViewStyle } from 'react-native';
+import { RefreshControl } from '../primitives';
+import { useThemedColors } from '../hooks/useThemedColors';
+import { Theme } from '../theme/Theme';
+import EmptyState from './EmptyState';
 
 export interface SanctuaryFlashListProps<T> extends Omit<FlashListProps<T>, 'refreshControl'> {
-    /** Estimated size of a single list item (RECOGNIZED BY RECYCLER) */
-    estimatedItemSize: number;
-    /** Whether the list is currently refreshing */
-    refreshing?: boolean;
-    /** Function to call when refreshing */
-    onRefresh?: () => void;
-    /** Optional empty state content */
-    emptyComponent?: React.ReactElement;
-    /** Color of the refresh spinner */
-    refreshColor?: string;
-    /** Style for the content container */
-    contentContainerStyle?: StyleProp<ViewStyle>;
+  /** Estimated size of a single list item (Optional in v2, Auto-calculated) */
+  estimatedItemSize?: number;
+  /** Whether the list is currently refreshing */
+  refreshing?: boolean;
+  /** Function to call when refreshing */
+  onRefresh?: () => void;
+  /** Optional empty state content */
+  emptyComponent?: React.ReactElement;
+  /** Color of the refresh spinner */
+  refreshColor?: string;
+  /** Style for the content container */
+  contentContainerStyle?: StyleProp<ViewStyle>;
 }
 
 /**
  * SanctuaryFlashList - A high-performance list component optimized for component recycling.
- * 
- * Philosophy: Performance is silent but essential for presence. 
+ *
+ * Philosophy: Performance is silent but essential for presence.
  * This component wraps @shopify/flash-list with Sanctuary-themed defaults.
- * 
+ *
  * @example
  * <SanctuaryFlashList
  *   data={resources}
@@ -35,61 +36,57 @@ export interface SanctuaryFlashListProps<T> extends Omit<FlashListProps<T>, 'ref
  * />
  */
 export function SanctuaryFlashList<T>({
-    data,
-    renderItem,
-    estimatedItemSize,
-    refreshing = false,
-    onRefresh,
-    emptyComponent,
-    refreshColor,
-    contentContainerStyle,
-    ListEmptyComponent,
-    ...props
+  data,
+  renderItem,
+  estimatedItemSize,
+  refreshing = false,
+  onRefresh,
+  emptyComponent,
+  refreshColor,
+  contentContainerStyle,
+  ListEmptyComponent,
+  ...props
 }: SanctuaryFlashListProps<T>) {
-    const colors = useThemedColors();
+  const _colors = useThemedColors();
 
-    const renderEmpty = useCallback(() => {
-        if (emptyComponent) return emptyComponent;
+  const renderEmpty = useCallback(() => {
+    if (emptyComponent) return emptyComponent;
 
-        if (ListEmptyComponent) {
-            if (React.isValidElement(ListEmptyComponent)) return ListEmptyComponent;
-            const EmptyComp = ListEmptyComponent as any;
-            return <EmptyComp />;
-        }
-
-        return (
-            <EmptyState
-                icon={BookOpen}
-                title="Silence in the Sanctuary"
-                description="Your first discovery is waiting to be found here."
-            />
-        );
-    }, [emptyComponent, ListEmptyComponent]);
+    if (ListEmptyComponent) {
+      if (React.isValidElement(ListEmptyComponent)) return ListEmptyComponent;
+      const EmptyComp = ListEmptyComponent as any;
+      return <EmptyComp />;
+    }
 
     return (
-        <FlashList
-            {...(props as any)}
-            data={data}
-            renderItem={renderItem}
-            estimatedItemSize={estimatedItemSize}
-            ListEmptyComponent={renderEmpty}
-            contentContainerStyle={[
-                { paddingBottom: Theme.spacing.xl },
-                contentContainerStyle
-            ]}
-            refreshControl={
-                onRefresh ? (
-                    <RefreshControl
-                        refreshing={refreshing}
-                        onRefresh={onRefresh}
-                        tintColor={refreshColor || Theme.colors.sanctuarySaffron}
-                        colors={[refreshColor || Theme.colors.sanctuarySaffron]}
-                    />
-                ) : undefined
-            }
-        />
+      <EmptyState
+        icon={BookOpen}
+        title="Silence in the Sanctuary"
+        description="Your first discovery is waiting to be found here."
+      />
     );
+  }, [emptyComponent, ListEmptyComponent]);
+
+  return (
+    <FlashList
+      {...(props as any)}
+      data={data}
+      renderItem={renderItem}
+      estimatedItemSize={estimatedItemSize}
+      ListEmptyComponent={renderEmpty}
+      contentContainerStyle={[{ paddingBottom: Theme.spacing.xl }, contentContainerStyle]}
+      refreshControl={
+        onRefresh ? (
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={refreshColor || Theme.colors.sanctuarySaffron}
+            colors={[refreshColor || Theme.colors.sanctuarySaffron]}
+          />
+        ) : undefined
+      }
+    />
+  );
 }
 
 export default SanctuaryFlashList;
-

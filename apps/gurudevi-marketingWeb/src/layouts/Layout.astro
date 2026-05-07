@@ -1,0 +1,125 @@
+---
+import "../styles/global.css";
+import {
+	defaultOgImage,
+	ORGANIZATION,
+	SITE_DESCRIPTION,
+	SITE_NAME,
+	SITE_TITLE,
+	SITE_URL,
+	SITE_KEYWORDS,
+} from "../lib/site";
+import SEO from "../components/SEO.astro";
+import StructuredData from "../components/StructuredData.astro";
+
+interface Props {
+	title?: string;
+	description?: string;
+	image?: string;
+	noindex?: boolean;
+	structuredData?: Record<string, any> | Array<Record<string, any>>;
+}
+
+const {
+	title = SITE_TITLE,
+	description = SITE_DESCRIPTION,
+	image,
+	noindex = false,
+	structuredData = [],
+} = Astro.props;
+
+const canonical = Astro.url.href;
+const ogImage = image ?? defaultOgImage(Astro.url.pathname);
+const robotsContent = noindex ? "noindex, nofollow" : "index, follow";
+const baseStructuredData = [
+	{
+		"@context": "https://schema.org",
+		"@type": "Organization",
+		...ORGANIZATION,
+	},
+	{
+		"@context": "https://schema.org",
+		"@type": "WebSite",
+		name: SITE_NAME,
+		url: SITE_URL,
+		description: SITE_DESCRIPTION,
+	},
+	{
+		"@context": "https://schema.org",
+		"@type": "WebPage",
+		name: title,
+		description,
+		url: canonical,
+	},
+]
+	.concat(Array.isArray(structuredData) ? structuredData : [structuredData])
+	.filter(Boolean);
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<SEO title={title} description={description} />
+		<meta name="robots" content={robotsContent} />
+		<meta name="keywords" content={SITE_KEYWORDS.join(', ')} />
+		<link rel="canonical" href={canonical} />
+		<meta property="og:type" content="website" />
+		<meta property="og:site_name" content={SITE_NAME} />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:url" content={canonical} />
+		<meta property="og:image" content={ogImage} />
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:title" content={title} />
+		<meta name="twitter:description" content={description} />
+		<meta name="twitter:image" content={ogImage} />
+		<StructuredData data={baseStructuredData} />
+		
+		<!-- Agentic Discovery -->
+		<link rel="alternate" type="application/json" href="/knowledge.json" title="Machine-Readable Knowledge Index" />
+		<link rel="author" type="text/plain" href="/llms.txt" title="LLM-Friendly Overview" />
+
+		<!-- Root Domain Cookie Setup -->
+		<script is:inline>
+			(function() {
+				// Set a platform context cookie on the root domain for cross-app awareness
+				const domain = window.location.hostname.includes('edlove.org') ? '.edlove.org' : window.location.hostname;
+				const expires = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toUTCString();
+				
+				// Platform identity
+				document.cookie = `gurudevi_marketing_visited=true; path=/; domain=${domain}; expires=${expires}; SameSite=Lax`;
+				
+				// Educational context hint for agents/scrapers
+				window.GURUDEVI_CONTEXT = {
+					ecology: 'edlove',
+					purpose: 'educational-support',
+					platform_url: 'https://platform.gurudevi.edlove.org'
+				};
+			})();
+		</script>
+
+		<script
+			is:inline
+			data-posthog-key={import.meta.env.PUBLIC_POSTHOG_KEY || import.meta.env.POSTHOG_API_KEY}
+		>
+			const publicPostHogKey = document.currentScript.getAttribute('data-posthog-key');
+			!function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.async=!0,p.src=s.api_host+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="capture identify alias people.set people.set_once set_config register register_once unregister opt_out_capturing has_opted_out_capturing opt_in_capturing set_group json_prop_setup get_group get_distinct_id self_describing_event_tracking register_for_session_recording_v2 unregister_for_session_recording_v2".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1.0)}(document,window.posthog||[]);
+			posthog.init(publicPostHogKey, {
+				api_host: '/ingest',
+				ui_host: 'https://eu.posthog.com',
+				person_profiles: 'always',
+				capture_pageview: true,
+				session_recording: {
+					maskAllInputs: true,
+					maskInputOptions: {
+						password: true,
+						email: true,
+					}
+				}
+			});
+		</script>
+	</head>
+	<body class="bg-cream-silence text-charcoal-truth min-h-screen flex flex-col">
+		<slot />
+	</body>
+</html>

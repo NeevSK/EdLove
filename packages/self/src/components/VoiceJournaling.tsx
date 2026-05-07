@@ -1,419 +1,241 @@
-﻿/**
- * VOICE JOURNALING
- * Speak pain, feel release (2 min → peace for hours)
- * Perfect for exhausted teachers who can't type
- * Respects "works on what they have" (voice > typing)
- * 
- * Features:
- * - Voice recording with visualization
- * - Playback and review
- * - Option to save or discard
- * - Integrates with venting space
+/**
+ * VOICE SANCTUARY
+ * Voice-based journaling for emotional release.
+ * Simple, focused, and intimate interface.
  */
 
-import React, { useState, useEffect } from 'react';
 import {
-    Box,
-    VStack,
-    HStack,
-    Text,
-    Heading,
-    Button,
-    ButtonText,
-    Pressable,
-} from '@repo/ui';
-import { StyleSheet, Platform } from 'react-native';
-import Animated, {
-    useAnimatedStyle,
-    useSharedValue,
-    withRepeat,
-    withTiming,
-    Easing,
-    cancelAnimation,
-} from 'react-native-reanimated';
-import { Mic, Square, Play, Trash2, Check } from 'lucide-react-native';
-import { useAudioRecorder, useAudioPlayer, AudioModule, RecordingPresets, useAudioPlayerStatus, setAudioModeAsync } from 'expo-audio';
-import { Theme, typography } from '@repo/ui';
-import { supabase } from '@repo/core';
-import { hapticLight, hapticMedium } from '@repo/ui';
-import { useTranslation } from 'react-i18next';
+	AnimatedView,
+	Box,
+	Button,
+	Heading,
+	HStack,
+	Icon,
+	Text,
+	VStack,
+} from "@repo/ui/primitives";
+import { hapticLight, hapticSuccess } from "@repo/ui/utils/haptics";
+
+import { Check, Mic, Square, Volume2, X } from "lucide-react-native";
+import type React from "react";
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import {
+	Easing,
+	FadeInUp,
+	interpolate,
+	useAnimatedStyle,
+	useSharedValue,
+	withRepeat,
+	withTiming,
+} from "react-native-reanimated";
+
+// Mock audio controller for now
+const audioController = {
+	start: async () => {
+		console.log("Recording started");
+	},
+	stop: async () => {
+		console.log("Recording stopped");
+		return { uri: "mock-uri", duration: 5000 };
+	},
+	play: async (uri: string) => {
+		console.log("Playing", uri);
+	},
+};
 
 interface VoiceJournalingProps {
-    userId?: string;
-    onComplete?: () => void;
+	userId?: string;
+	onFinished?: (uri: string) => void;
 }
 
-type RecordingState = 'idle' | 'recording' | 'recorded' | 'playing';
+export const VoiceJournaling: React.FC<VoiceJournalingProps> = ({
+	userId,
+	onFinished,
+}) => {
+	const { t } = useTranslation();
+	const [recordingState, setRecordingState] = useState<
+		"idle" | "recording" | "finished"
+	>("idle");
+	const [duration, setDuration] = useState(0);
 
-export default function VoiceJournaling({ userId, onComplete }: VoiceJournalingProps) {
-    const [recordingState, setRecordingState] = useState<RecordingState>('idle');
-    const [recordingDuration, setRecordingDuration] = useState(0);
-    const [recordingUri, setRecordingUri] = useState<string | null>(null);
-    const { t } = useTranslation();
+	// Animation shared values
+	const pulseScale = useSharedValue(1);
+	const audioGraph = [
+		useSharedValue(10),
+		useSharedValue(25),
+		useSharedValue(40),
+		useSharedValue(20),
+		useSharedValue(35),
+	];
 
-    // Expo Audio Hooks
-    const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
-    const [playerSource, setPlayerSource] = useState<string | null>(null);
-    const player = useAudioPlayer(playerSource);
-    const playerStatus = useAudioPlayerStatus(player);
+	useEffect(() => {
+		if (recordingState === "recording") {
+			pulseScale.value = withRepeat(
+				withTiming(1.2, { duration: 1000, easing: Easing.inOut(Easing.ease) }),
+				-1,
+				true,
+			);
 
-    // Animation values
-    const pulseScale = useSharedValue(1);
-    const waveHeight = useSharedValue(20);
+			// Random-ish animation for the wave
+			audioGraph.forEach((val, i) => {
+				val.value = withRepeat(
+					withTiming(15 + Math.random() * 40, {
+						duration: 400 + i * 100,
+						easing: Easing.inOut(Easing.ease),
+					}),
+					-1,
+					true,
+				);
+			});
 
-    useEffect(() => {
-        // setAudioModeAsync is iOS/Android only — skip on web
-        if (Platform.OS === 'web') return;
-        setAudioModeAsync({
-            playsInSilentMode: true,
-            interruptionMode: 'doNotMix',
-            allowsRecording: true,
-        });
-    }, []);
+			const interval = setInterval(() => {
+				setDuration((prev) => prev + 1);
+			}, 1000);
+			return () => clearInterval(interval);
+		} else {
+			pulseScale.value = withTiming(1);
+			audioGraph.forEach((val) => (val.value = withTiming(4)));
+		}
+		return;
+	}, [recordingState, pulseScale, audioGraph]);
 
-    useEffect(() => {
-        if (recordingState === 'recording') {
-            // Start pulse animation
-            pulseScale.value = withRepeat(
-                withTiming(1.3, {
-                    duration: 1000,
-                    easing: Easing.inOut(Easing.ease),
-                }),
-                -1,
-                true
-            );
+	const formatDuration = (seconds: number) => {
+		const mins = Math.floor(seconds / 60);
+		const secs = seconds % 60;
+		return `${mins}:${secs.toString().padStart(2, "0")}`;
+	};
 
-            // Animate wave height (simulating audio visualization)
-            waveHeight.value = withRepeat(
-                withTiming(60, {
-                    duration: 500,
-                    easing: Easing.inOut(Easing.ease),
-                }),
-                -1,
-                true
-            );
+	const handleStart = async () => {
+		hapticLight();
+		setRecordingState("recording");
+		setDuration(0);
+		await audioController.start();
+	};
 
-            // Track duration
-            const interval = setInterval(() => {
-                setRecordingDuration(d => d + 1);
-            }, 1000);
+	const handleStop = async () => {
+		hapticLight();
+		setRecordingState("finished");
+		await audioController.stop();
+	};
 
-            return () => {
-                clearInterval(interval);
-                cancelAnimation(pulseScale);
-                cancelAnimation(waveHeight);
-            };
-        } else {
-            cancelAnimation(pulseScale);
-            cancelAnimation(waveHeight);
-            pulseScale.value = withTiming(1);
-            waveHeight.value = withTiming(20);
-        }
-    }, [recordingState]);
+	const handleReset = () => {
+		hapticLight();
+		setRecordingState("idle");
+		setDuration(0);
+	};
 
-    // Handle playback finish
-    useEffect(() => {
-        if (playerStatus.didJustFinish) {
-            setRecordingState('recorded');
-        }
-    }, [playerStatus.didJustFinish]);
+	const handleConfirm = () => {
+		hapticSuccess();
+		onFinished?.("mock-uri");
+		handleReset();
+	};
 
-    const startRecording = async () => {
-        try {
-            // AudioModule.requestRecordingPermissionsAsync is native-only;
-            // browser microphone access goes through MediaRecorder instead.
-            if (Platform.OS !== 'web') {
-                const permission = await AudioModule.requestRecordingPermissionsAsync();
-                if (!permission.granted) return;
-            }
+	const pulseAnimatedStyle = useAnimatedStyle(() => ({
+		transform: [{ scale: pulseScale.value }],
+		opacity: interpolate(pulseScale.value, [1, 1.2], [0.3, 0.6]),
+	}));
 
-            hapticMedium();
-            await recorder.prepareToRecordAsync();
-            recorder.record();
-            setRecordingState('recording');
-            setRecordingDuration(0);
-        } catch (error) {
-            console.error('Failed to start recording:', error);
-        }
-    };
+	return (
+		<VStack className="p-lg gap-lg items-center bg-obsidian rounded-comfortable border border-white/5 shadow-xl">
+			<VStack className="items-center gap-1">
+				<Heading size="md" className="text-sacredWhite">
+					{t("self.voiceJournal") || "Voice Sanctuary"}
+				</Heading>
+				<Text className="text-mistGray text-xs italic">
+					{recordingState === "recording"
+						? t("self.recordingHint") || "The void is listening..."
+						: t("self.voiceJournalSubtitle") || "Speak your truth, let it go."}
+				</Text>
+			</VStack>
 
-    const stopRecording = async () => {
-        try {
-            hapticMedium();
-            await recorder.stop();
-            setRecordingUri(recorder.uri);
-            setRecordingState('recorded');
-        } catch (error) {
-            console.error('Failed to stop recording:', error);
-        }
-    };
+			{/* Recording Visual */}
+			<Box className="w-40 h-40 items-center justify-center relative my-4">
+				{recordingState === "recording" && (
+					<AnimatedView
+						style={[pulseAnimatedStyle]}
+						className="absolute w-32 h-32 rounded-full bg-sanctuarySaffron"
+					/>
+				)}
 
-    const playRecording = async () => {
-        if (!recordingUri) return;
+				<Button
+					onPress={recordingState === "recording" ? handleStop : handleStart}
+					className={`w-24 h-24 rounded-full items-center justify-center transition-all duration-300 shadow-lg ${
+						recordingState === "recording"
+							? "bg-emberRed scale-110 shadow-emberRed/30"
+							: "bg-sanctuarySaffron shadow-sanctuarySaffron/30"
+					}`}
+				>
+					<Icon
+						as={recordingState === "recording" ? Square : Mic}
+						className="text-white"
+						size={32}
+						fill={recordingState === "recording" ? "white" : "none"}
+					/>
+				</Button>
+			</Box>
 
-        try {
-            setPlayerSource(recordingUri);
-            setRecordingState('playing');
-            player.play();
-        } catch (error) {
-            console.error('Failed to play recording:', error);
-        }
-    };
+			{/* Waveform / Status */}
+			<VStack className="items-center gap-4 w-full">
+				{recordingState === "recording" && (
+					<HStack className="items-center gap-1.5 h-12">
+						{audioGraph.map((val, i) => (
+							<AnimatedView
+								key={i}
+								style={useAnimatedStyle(() => ({ height: val.value }))}
+								className="w-1 bg-sanctuarySaffron rounded-full"
+							/>
+						))}
+					</HStack>
+				)}
 
-    const saveRecording = async () => {
-        if (!recordingUri || !userId) return;
+				<VStack className="items-center">
+					<Text
+						className={`text-4xl font-black ${recordingState === "recording" ? "text-sanctuarySaffron" : "text-sacredWhite"}`}
+					>
+						{formatDuration(duration)}
+					</Text>
+					<Text className="text-mistGray text-xs mt-1">
+						{recordingState === "recording"
+							? t("self.recording") || "Active Recording"
+							: t("self.tapToStart") || "Tap the Mic to Begin"}
+					</Text>
+				</VStack>
+			</VStack>
 
-        try {
-            hapticMedium();
+			{/* Controls */}
+			{recordingState === "finished" && (
+				<AnimatedView entering={FadeInUp} className="w-full">
+					<HStack className="justify-center gap-6 mt-2">
+						<Button
+							onPress={handleReset}
+							variant="outline"
+							className="w-14 h-14 rounded-full border-white/10 bg-white/5 p-0 items-center justify-center"
+						>
+							<Icon as={X} size={24} className="text-mistGray" />
+						</Button>
 
-            const { error } = await supabase
-                .from('voice_journals')
-                .insert([
-                    {
-                        user_id: userId,
-                        duration_seconds: recordingDuration,
-                        created_at: new Date().toISOString(),
-                    },
-                ]);
+						<Button
+							onPress={handleConfirm}
+							className="w-14 h-14 rounded-full bg-emeraldGreen p-0 items-center justify-center shadow-lg shadow-emeraldGreen/30"
+						>
+							<Icon as={Check} size={24} className="text-white" />
+						</Button>
+					</HStack>
+				</AnimatedView>
+			)}
 
-            if (error) {
-                console.error('Failed to save voice journal:', error);
-            } else {
-                resetRecording();
-                onComplete?.();
-            }
-        } catch (error) {
-            console.error('Error saving voice journal:', error);
-        }
-    };
+			{/* Philosophy Note */}
+			<Box className="mt-4 p-md bg-white/5 rounded-comfort border border-white/5 w-full">
+				<HStack className="items-center gap-2 justify-center">
+					<Icon as={Volume2} size={12} className="text-dimGray" />
+					<Text className="text-dimGray text-[10px] italic">
+						Your voice is a vessel for healing. Release it.
+					</Text>
+				</HStack>
+			</Box>
+		</VStack>
+	);
+};
 
-    const discardRecording = async () => {
-        hapticLight();
-        resetRecording();
-    };
-
-    const resetRecording = () => {
-        setRecordingUri(null);
-        setPlayerSource(null);
-        setRecordingState('idle');
-        setRecordingDuration(0);
-    };
-
-    const pulseStyle = useAnimatedStyle(() => ({
-        transform: [{ scale: pulseScale.value }],
-    }));
-
-    const waveStyle = useAnimatedStyle(() => ({
-        height: waveHeight.value,
-    }));
-
-    const formatDuration = (seconds: number) => {
-        const mins = Math.floor(seconds / 60);
-        const secs = seconds % 60;
-        return `${mins}:${secs.toString().padStart(2, '0')}`;
-    };
-
-    return (
-        <VStack space="lg" sx={{ padding: Theme.spacing.lg }}>
-            {/* Header */}
-            <VStack space="xs">
-                <Heading color={Theme.colors.sacredWhite} size="lg">
-                    {t('voiceJournaling.title')}
-                </Heading>
-                <Text color={Theme.colors.mistGray} size="sm">
-                    {t('voiceJournaling.subtitle')}
-                </Text>
-            </VStack>
-
-            {/* Recording Visualization */}
-            <Box
-                sx={{
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    padding: Theme.spacing.xl,
-                    backgroundColor: Theme.colors.ink,
-                    borderRadius: Theme.corners.comfortable,
-                    minHeight: 200,
-                }}
-            >
-                {recordingState === 'idle' ? (
-                    <VStack space="md" sx={{ alignItems: 'center' }}>
-                        <Text style={{ fontSize: 64 }}>🎙️</Text>
-                        <Text color={Theme.colors.mistGray} size="sm" textAlign="center">
-                            Tap to start speaking
-                        </Text>
-                    </VStack>
-                ) : recordingState === 'recording' ? (
-                    <VStack space="lg" sx={{ alignItems: 'center' }}>
-                        <Animated.View style={pulseStyle}>
-                            <Box
-                                sx={{
-                                    width: 80,
-                                    height: 80,
-                                    borderRadius: 40,
-                                    backgroundColor: Theme.colors.emberRed,
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                }}
-                            >
-                                <Mic color={Theme.colors.sacredWhite} size={32} />
-                            </Box>
-                        </Animated.View>
-
-                        {/* Simple wave visualization */}
-                        <HStack space="xs" sx={{ alignItems: 'center' }}>
-                            {[...Array(5)].map((_, i) => (
-                                <Animated.View
-                                    key={i}
-                                    style={[
-                                        waveStyle,
-                                        {
-                                            width: 4,
-                                            backgroundColor: Theme.colors.sanctuarySaffron,
-                                            borderRadius: 2,
-                                        },
-                                    ]}
-                                />
-                            ))}
-                        </HStack>
-
-                        <Text
-                            color={Theme.colors.emberRed}
-                            size="xl"
-                            sx={{ fontWeight: typography.fontWeight.semibold }}
-                        >
-                            {formatDuration(recordingDuration)}
-                        </Text>
-                    </VStack>
-                ) : (
-                    <VStack space="md" sx={{ alignItems: 'center' }}>
-                        <Text style={{ fontSize: 64 }}>✓</Text>
-                        <Text
-                            color={Theme.colors.sageGreen}
-                            size="lg"
-                            sx={{ fontWeight: typography.fontWeight.medium }}
-                        >
-                            Recording complete
-                        </Text>
-                        <Text color={Theme.colors.mistGray} size="sm">
-                            {formatDuration(recordingDuration)}
-                        </Text>
-                    </VStack>
-                )}
-            </Box>
-
-            {/* Controls */}
-            <VStack space="md">
-                {recordingState === 'idle' && (
-                    <Button
-                        size="lg"
-                        action="primary"
-                        onPress={startRecording}
-                        sx={{
-                            borderRadius: Theme.corners.full,
-                            backgroundColor: Theme.colors.sanctuarySaffron,
-                        }}
-                    >
-                        <Mic
-                            color={Theme.colors.sacredWhite}
-                            size={20}
-                            style={{ marginRight: Theme.spacing.sm }}
-                        />
-                        <ButtonText>{t('voiceJournaling.startRecording')}</ButtonText>
-                    </Button>
-                )}
-
-                {recordingState === 'recording' && (
-                    <Button
-                        size="lg"
-                        action="primary"
-                        onPress={stopRecording}
-                        sx={{
-                            borderRadius: Theme.corners.full,
-                            backgroundColor: Theme.colors.emberRed,
-                        }}
-                    >
-                        <Square
-                            color={Theme.colors.sacredWhite}
-                            size={20}
-                            style={{ marginRight: Theme.spacing.sm }}
-                        />
-                        <ButtonText>{t('voiceJournaling.stopRecording')}</ButtonText>
-                    </Button>
-                )}
-
-                {(recordingState === 'recorded' || recordingState === 'playing') && (
-                    <HStack space="md" justifyContent="center">
-                        <Button
-                            size="md"
-                            variant="outline"
-                            onPress={discardRecording}
-                            isDisabled={recordingState === 'playing'}
-                            sx={{
-                                borderRadius: Theme.corners.full,
-                                borderColor: Theme.colors.dimGray,
-                            }}
-                        >
-                            <Trash2
-                                color={Theme.colors.dimGray}
-                                size={16}
-                                style={{ marginRight: Theme.spacing.xs }}
-                            />
-                            <ButtonText color={Theme.colors.dimGray}>{t('voiceJournaling.delete')}</ButtonText>
-                        </Button>
-
-                        <Button
-                            size="md"
-                            variant="outline"
-                            onPress={playRecording}
-                            isDisabled={recordingState === 'playing'}
-                            sx={{
-                                borderRadius: Theme.corners.full,
-                                borderColor: Theme.colors.sanctuarySaffron,
-                            }}
-                        >
-                            <Play
-                                color={Theme.colors.sanctuarySaffron}
-                                size={16}
-                                style={{ marginRight: Theme.spacing.xs }}
-                            />
-                            <ButtonText color={Theme.colors.sanctuarySaffron}>
-                                {recordingState === 'playing' ? t('voiceJournaling.playing') : t('voiceJournaling.play')}
-                            </ButtonText>
-                        </Button>
-
-                        <Button
-                            size="md"
-                            onPress={saveRecording}
-                            isDisabled={recordingState === 'playing'}
-                            sx={{
-                                borderRadius: Theme.corners.full,
-                                backgroundColor: Theme.colors.sageGreen,
-                            }}
-                        >
-                            <Check
-                                color={Theme.colors.sacredWhite}
-                                size={16}
-                                style={{ marginRight: Theme.spacing.xs }}
-                            />
-                            <ButtonText>{t('common.save')}</ButtonText>
-                        </Button>
-                    </HStack>
-                )}
-            </VStack>
-
-            {/* Privacy note */}
-            <Box
-                sx={{
-                    padding: Theme.spacing.md,
-                    backgroundColor: Theme.colors.obsidian,
-                    borderRadius: Theme.corners.comfortable,
-                }}
-            >
-                <Text color={Theme.colors.mistGray} size="xs" textAlign="center">
-                    🔒 Your voice recording is private and stored securely
-                </Text>
-            </Box>
-        </VStack>
-    );
-}
+export default VoiceJournaling;

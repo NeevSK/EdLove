@@ -11,21 +11,20 @@
  */
 
 module.exports = {
-    isAvailableAsync: async function () {
-        return typeof navigator !== 'undefined' && !!navigator.share;
-    },
-    shareAsync: async function (url, _options) {
-        if (typeof navigator !== 'undefined' && navigator.share) {
-            try {
-                await navigator.share({ url: url, title: _options?.dialogTitle });
-                return;
-            } catch {
-                // user cancelled or API not available — fall through
-            }
-        }
-        // Fallback: open in new tab
-        if (typeof window !== 'undefined') {
-            window.open(url, '_blank', 'noopener,noreferrer');
-        }
-    },
+	isAvailableAsync: async () =>
+		typeof navigator !== "undefined" && !!navigator.share,
+	shareAsync: async (url, _options) => {
+		if (typeof navigator !== "undefined" && navigator.share) {
+			try {
+				await navigator.share({ url: url, title: _options?.dialogTitle });
+				return;
+			} catch {
+				// user cancelled or API not available  fall through
+			}
+		}
+		// Fallback: open in new tab
+		if (typeof window !== "undefined") {
+			window.open(url, "_blank", "noopener,noreferrer");
+		}
+	},
 };

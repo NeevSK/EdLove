@@ -1,17 +1,28 @@
 ---
-const links = [
-  { name: "Cosmos", href: "/cosmos" },
-  { name: "Sri Lanka", href: "/sri-lanka" },
-  { name: "Gurudevi", href: "/gurudevi" },
-  { name: "Resources", href: "/resources" },
-  { name: "The Sangha", href: "/community" },
-  { name: "Library", href: "/library" },
+interface NavLink {
+	name: string;
+	href: string;
+}
+
+interface Language {
+	code: string;
+	label: string;
+	href: string;
+}
+
+const links: NavLink[] = [
+	{ name: "Cosmos", href: "/cosmos" },
+	{ name: "Sri Lanka", href: "/sri-lanka" },
+	{ name: "Gurudevi", href: "/gurudevi" },
+	{ name: "Resources", href: "/resources" },
+	{ name: "The Sangha", href: "/community" },
+	{ name: "Library", href: "/library" },
 ];
 
-const languages = [
-    { code: 'EN', label: 'English', href: '/' },
-    { code: 'SI', label: 'Sinhala', href: '/si' },
-    { code: 'TA', label: 'Tamil', href: '/ta' },
+const languages: Language[] = [
+	{ code: "EN", label: "English", href: "/" },
+	{ code: "SI", label: "Sinhala", href: "/si" },
+	{ code: "TA", label: "Tamil", href: "/ta" },
 ];
 ---
 
@@ -24,7 +35,7 @@ const languages = [
 
       <!-- Desktop Links -->
       <div class="hidden lg:flex items-center gap-6">
-          {links.map(link => (
+          {links.map((link: NavLink) => (
               <a 
                 href={link.href} 
                 class="font-heading text-[13px] font-medium text-[var(--color-midnightInk)]/70 hover:text-[var(--color-gold)] transition-all duration-300 relative group truncate"
@@ -36,7 +47,7 @@ const languages = [
               
           <!-- Language Switcher -->
           <div class="flex items-center gap-3 pl-6 border-l border-[var(--color-midnightInk)]/10 ml-2 shrink-0">
-              {languages.map((lang) => (
+              {languages.map((lang: Language) => (
                   <a href={lang.href} class="font-heading text-[10px] font-bold text-[var(--color-midnightInk)]/40 hover:text-[var(--color-gold)] transition-colors">
                       {lang.code}
                   </a>
@@ -77,7 +88,7 @@ const languages = [
       </button>
       
       <div class="flex flex-col items-center gap-6 w-full max-w-xs" id="mobile-links">
-          {links.map((link) => (
+          {links.map((link: NavLink) => (
             <a 
               href={link.href} 
               class="font-heading text-3xl font-bold text-[var(--color-midnightInk)] hover:text-[var(--color-gold)] transition-all active:scale-95"
@@ -89,7 +100,7 @@ const languages = [
           <div class="h-px w-12 bg-[var(--color-midnightInk)]/10 my-4"></div>
           
           <div class="flex flex-wrap justify-center gap-4">
-            {languages.map((lang) => (
+            {languages.map((lang: Language) => (
                 <a href={lang.href} class="px-4 py-2 rounded-full border border-black/5 font-heading text-sm font-bold text-[var(--color-midnightInk)]/40 hover:text-[var(--color-gold)] hover:bg-white transition-all">
                     {lang.label}
                 </a>
@@ -105,7 +116,7 @@ const languages = [
     const mobileMenu = document.getElementById('mobile-menu');
     const menuBackdrop = document.getElementById('mobile-menu-backdrop');
     const closeButton = document.getElementById('mobile-menu-close');
-    const header = document.getElementById('main-header');
+    // const header = document.getElementById('main-header');
     
     if (!menuButton || !mobileMenu) return;
 
@@ -134,10 +145,11 @@ const languages = [
 
     // Scroll effect for header
     window.addEventListener('scroll', () => {
+      const headerEl = document.getElementById('main-header');
       if (window.scrollY > 50) {
-        header?.classList.add('bg-[var(--color-warmPaper)]/80', 'backdrop-blur-md', 'shadow-sm');
+        headerEl?.classList.add('bg-[var(--color-warmPaper)]/80', 'backdrop-blur-md', 'shadow-sm');
       } else {
-        header?.classList.remove('bg-[var(--color-warmPaper)]/80', 'backdrop-blur-md', 'shadow-sm');
+        headerEl?.classList.remove('bg-[var(--color-warmPaper)]/80', 'backdrop-blur-md', 'shadow-sm');
       }
     });
 

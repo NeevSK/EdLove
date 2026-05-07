@@ -1,94 +1,145 @@
-﻿import React, { createContext, useContext, useState, useCallback, useRef, useEffect } from 'react';
-import { Box, Text, VStack } from '../gluestack';
-import { Theme } from '../theme/Theme';
-import { useThemedColors } from '../hooks/useThemedColors';
-import Animated, { FadeInUp, FadeOutUp } from 'react-native-reanimated';
+import type React from 'react';
+import { createContext, useCallback, useContext, useMemo, useReducer, useRef } from 'react';
+import Animated, { FadeInUp, FadeOutUp, Layout } from 'react-native-reanimated';
+import { Toast, ToastTitle } from '../components/ui/toast';
+import { VStack } from '../components/ui/vstack';
 
-type ToastType = 'success' | 'error' | 'info' | 'sanctuary';
+/**
+ * Toast State Excellence (2026 Standard)
+ *
+ * Implements a queue-based, high-performance feedback system.
+ * Uses a reducer for atomic state transitions and rigorous memoization.
+ */
 
-interface ToastOptions {
-    message: string;
-    type?: ToastType;
-    duration?: number;
+type ToastType = 'success' | 'error' | 'info' | 'sanctuary' | 'warning';
+
+interface ToastItem {
+  id: string;
+  message: string;
+  type: ToastType;
+  duration?: number;
 }
 
+type ToastAction = { type: 'ADD_TOAST'; payload: ToastItem } | { type: 'REMOVE_TOAST'; id: string };
+
 interface ToastContextType {
-    showToast: (options: ToastOptions) => void;
+  showToast: (options: Omit<ToastItem, 'id'>) => void;
+  removeToast: (id: string) => void;
 }
 
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
 
+function toastReducer(state: ToastItem[], action: ToastAction): ToastItem[] {
+  switch (action.type) {
+    case 'ADD_TOAST':
+      return [...state, action.payload];
+    case 'REMOVE_TOAST':
+      return state.filter((t) => t.id !== action.id);
+    default:
+      return state;
+  }
+}
+
 export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [toast, setToast] = useState<ToastOptions | null>(null);
-    const colors = useThemedColors();
-    // Track the active timer so rapid showToast calls don't leave orphaned timers
-    const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [toasts, dispatch] = useReducer(toastReducer, []);
+  const counterRef = useRef(0);
 
-    // Clear the pending dismiss timer on unmount to prevent state updates after unmount
-    useEffect(() => {
-        return () => {
-            if (timerRef.current !== null) clearTimeout(timerRef.current);
-        };
-    }, []);
+  const removeToast = useCallback((id: string) => {
+    dispatch({ type: 'REMOVE_TOAST', id });
+  }, []);
 
-    const showToast = useCallback(({ message, type = 'sanctuary', duration = 3000 }: ToastOptions) => {
-        // Clear any in-flight dismiss timer before starting a fresh one
-        if (timerRef.current !== null) {
-            clearTimeout(timerRef.current);
-        }
-        setToast({ message, type, duration });
-        timerRef.current = setTimeout(() => {
-            setToast(null);
-            timerRef.current = null;
-        }, duration);
-    }, []);
+  const showToast = useCallback(
+    ({ message, type = 'sanctuary', duration = 3000 }: Omit<ToastItem, 'id'>) => {
+      const id = `toast-${counterRef.current++}`;
+      dispatch({ type: 'ADD_TOAST', payload: { id, message, type, duration } });
 
-    const getToastStyles = (type: ToastType) => {
-        switch (type) {
-            // Use semantic theme tokens (Zero Fallback Rule â€” no raw hex values)
-            case 'success': return { bg: colors.success, icon: 'âœ¨' };
-            case 'error': return { bg: colors.error, icon: 'âš ï¸' };
-            case 'sanctuary': return { bg: Theme.colors.sanctuarySaffron, icon: 'ðŸ™' };
-            default: return { bg: colors.tertiary, icon: 'â„¹ï¸' };
-        }
-    };
+      setTimeout(() => {
+        removeToast(id);
+      }, duration);
+    },
+    [removeToast],
+  );
 
-    return (
-        <ToastContext.Provider value={{ showToast }}>
-            {children}
-            {toast && (
-                <Animated.View
-                    entering={FadeInUp}
-                    exiting={FadeOutUp}
-                    style={{
-                        position: 'absolute',
-                        top: 60,
-                        left: 20,
-                        right: 20,
-                        zIndex: 1000,
-                    }}
-                >
-                    <Box sx={{
-                        padding: Theme.spacing.md,
-                        borderRadius: Theme.corners.comfortable,
-                        backgroundColor: getToastStyles(toast.type!).bg,
-                        ...Theme.shadows.md
-                    }}>
-                        <VStack sx={{ alignItems: 'center', gap: 4 }}>
-                            <Text sx={{ color: Theme.colors.sacredWhite, fontWeight: '700', textAlign: 'center' }}>
-                                {getToastStyles(toast.type!).icon} {toast.message}
-                            </Text>
-                        </VStack>
-                    </Box>
-                </Animated.View>
-            )}
-        </ToastContext.Provider>
-    );
+  const contextValue = useMemo(() => ({ showToast, removeToast }), [showToast, removeToast]);
+
+  const mapTypeToVariant = (
+    type: ToastType,
+  ): 'success' | 'error' | 'warning' | 'info' | 'attention' => {
+    switch (type) {
+      case 'success':
+        return 'success';
+      case 'error':
+        return 'error';
+      case 'warning':
+        return 'warning';
+      case 'info':
+        return 'info';
+      case 'sanctuary':
+        return 'attention';
+      default:
+        return 'attention';
+    }
+  };
+
+  const getIcon = (type: ToastType) => {
+    switch (type) {
+      case 'success':
+        return '✨';
+      case 'error':
+        return '⚠️';
+      case 'warning':
+        return '🔸';
+      case 'info':
+        return 'ℹ️';
+      case 'sanctuary':
+        return '💫';
+      default:
+        return '💫';
+    }
+  };
+
+  return (
+    <ToastContext.Provider value={contextValue}>
+      {children}
+      <VStack
+        className="absolute top-12 left-4 right-4 z-[1000] gap-2"
+        style={{ pointerEvents: 'box-none' }}
+      >
+        {toasts.map((toast) => (
+          <Animated.View
+            key={toast.id}
+            entering={FadeInUp}
+            exiting={FadeOutUp}
+            layout={Layout.springify()}
+            className="w-full"
+            style={{ pointerEvents: 'auto' }}
+          >
+            <Toast action={mapTypeToVariant(toast.type)}>
+              <VStack className="flex-1">
+                <ToastTitle>
+                  {getIcon(toast.type)} {toast.message}
+                </ToastTitle>
+              </VStack>
+            </Toast>
+          </Animated.View>
+        ))}
+      </VStack>
+    </ToastContext.Provider>
+  );
 };
 
-export const useLotusToast = () => {
-    const context = useContext(ToastContext);
-    if (!context) throw new Error('useLotusToast must be used within ToastProvider');
-    return context;
+export const useSanctuaryToast = () => {
+  const context = useContext(ToastContext);
+  if (!context) throw new Error('useSanctuaryToast must be used within ToastProvider');
+
+  return useMemo(() => ({
+    ...context,
+    showToast: (options: { message: string; type?: ToastType; duration?: number }) =>
+      context.showToast({
+        type: 'sanctuary',
+        ...options,
+      } as ToastItem),
+  }), [context]);
 };
 
+export { useSanctuaryToast as useToast };

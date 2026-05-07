@@ -1,20 +1,26 @@
-export * from './api/library';
-export * from './types';
-export * from './hooks/useLibrary';
-export * from './components/ResourceList';
-export * from './components/AddResourceModal';
-export { default as LibraryScreen } from './screens/LibraryScreen';
-export { default as PDFViewerScreen } from './screens/PDFViewerScreen';
-export { default as VideoPlayerScreen } from './screens/VideoPlayerScreen';
+export {
+	AssetCreationModal as AddResourceModal,
+	CollectionCreationModal as AddCollectionModal,
+} from "@repo/ui/components/media/AssetCreationPortal";
+export { UniversalPerspective } from "@repo/ui/components/visualization/UniversalPerspective";
 
-export const LIBRARY_UI_CATEGORIES = [
-    { id: 'All', en: 'All' },
-    { id: 'video', en: 'Videos' },
-    { id: 'pdf', en: 'Documents' },
-    { id: 'link', en: 'Web Resources' },
-    { id: 'text', en: 'Articles' },
-    { id: 'note', en: 'Personal Notes' }
+export * from "./api";
+export * from "./components";
+export {
+	getOrderedShelfDefs,
+	SHELF_DEFS,
+	type ShelfDefinition,
+} from "./constants/shelf";
+export * from "./hooks";
+export * from "./screens";
+export * from "./types";
+export { buildLibraryExternalLinkOptions } from "./utils/externalLinks";
+
+export const LIBRARY_UI_CATEGORIES_LOCAL = [
+	{ id: "All", en: "All" },
+	{ id: "video", en: "Videos" },
+	{ id: "pdf", en: "Documents" },
+	{ id: "link", en: "Web Resources" },
+	{ id: "reading", en: "Articles" },
+	{ id: "note", en: "Personal Notes" },
 ];
-export { default as MapScreen } from './screens/MapScreen';
-export { default as CuratorReviewScreen } from './screens/CuratorReviewScreen';
-

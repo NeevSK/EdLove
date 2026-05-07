@@ -1,0 +1,102 @@
+import NetInfo from '@react-native-community/netinfo';
+import * as Device from 'expo-device';
+import * as Haptics from 'expo-haptics';
+import * as Location from 'expo-location';
+import { Linking, Platform, Share, StatusBar } from 'react-native';
+import type {
+  CoreRuntimeEnvironment,
+  DeviceMetadata,
+  HapticsProvider,
+  LinkingProvider,
+  LocationProvider,
+  NetworkProvider,
+  ShareOptions,
+  ShareProvider,
+  UIProvider,
+} from '../types/runtime';
+import { storage } from './storage';
+
+export const nativeStorageProvider = {
+  async getItem(key: string) {
+    return storage.getStringAsync(key);
+  },
+  async setItem(key: string, value: string) {
+    storage.set(key, value);
+  },
+  async removeItem(key: string) {
+    storage.delete(key);
+  },
+};
+
+export const nativeDeviceProvider = {
+  getMetadata(): DeviceMetadata {
+    const constants = (Platform.constants ?? {}) as Record<string, unknown>;
+    const brand = typeof constants['Brand'] === 'string' ? constants['Brand'].trim() : '';
+    const model = typeof constants['Model'] === 'string' ? constants['Model'].trim() : '';
+    const parts = [brand, model].filter(Boolean);
+
+    return {
+      modelName: parts.length > 0 ? parts.join(' ') : Platform.OS,
+      osVersion: Platform.Version == null ? null : String(Platform.Version),
+      platform: Platform.OS,
+    };
+  },
+  getTotalMemory: () => Device.totalMemory,
+};
+
+export const nativeHapticsProvider: HapticsProvider = {
+  impactLight: () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light),
+  impactMedium: () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium),
+  impactHeavy: () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy),
+  notificationSuccess: () => Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success),
+  notificationWarning: () => Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning),
+  notificationError: () => Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error),
+  selection: () => Haptics.selectionAsync(),
+};
+
+export const nativeLinkingProvider: LinkingProvider = {
+  openURL: (url: string) => Linking.openURL(url),
+  canOpenURL: (url: string) => Linking.canOpenURL(url),
+};
+
+export const nativeLocationProvider: LocationProvider = {
+  requestPermissionsAsync: () => Location.requestForegroundPermissionsAsync(),
+  watchPositionAsync: (options: any, callback: (location: any) => void) =>
+    Location.watchPositionAsync(options, callback),
+  Accuracy: Location.Accuracy,
+};
+
+export const nativeNetworkProvider: NetworkProvider = {
+  fetch: () => NetInfo.fetch(),
+};
+
+export const nativeShareProvider: ShareProvider = {
+  share: async (options: ShareOptions) => {
+    // React Native's Share.share expects ShareContent where message is mandatory for some platforms
+    await Share.share({
+      title: options.title,
+      message: options.message ?? '',
+      url: options.url,
+    });
+  },
+};
+
+export const nativeUIProvider: UIProvider = {
+  setStatusBarHidden: (hidden: boolean, animation?: 'none' | 'fade' | 'slide') =>
+    StatusBar.setHidden(hidden, animation),
+};
+
+export const nativeRuntimeEnvironment: CoreRuntimeEnvironment = {
+  storage: nativeStorageProvider as any, // Cast to any to avoid strict string|null vs string|undefined mismatch
+  device: nativeDeviceProvider,
+  haptics: nativeHapticsProvider,
+  linking: nativeLinkingProvider,
+  location: nativeLocationProvider,
+  network: nativeNetworkProvider,
+  share: nativeShareProvider,
+  ui: nativeUIProvider,
+  clipboard: {
+    getStringAsync: async () => '',
+    setStringAsync: async () => false,
+  },
+};

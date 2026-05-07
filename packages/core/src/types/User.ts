@@ -1,55 +1,88 @@
-import { UserRole } from '../constants/SriLankanSchools';
-export type { UserRole };
+import type { SocialLink } from './Social';
+import type { Membership, TenantKind } from './Tenancy';
+import type { Bond } from './Identity';
+
+export interface ProfileStats {
+  classes_taught?: number;
+  students_count?: number;
+  assignments_graded?: number;
+  attendance_streak?: number;
+  assignments_completed?: number;
+  assignments_count?: number;
+  guru_points?: number;
+}
 
 /**
  * User Profile Interface
- * Represents a Gurudevi user with role and school context
+ * Represents a Gurudevi user with authority and school context
  */
-export interface User {
-    id: string;                  // UUID from Supabase auth
-    email: string;               // User's email address
-    full_name: string;           // Display name
-    role: UserRole;              // User's role in the system
-    school_id: string;           // UUID of the school they belong to
-    created_at: string;          // ISO timestamp
-    updated_at?: string;         // ISO timestamp (optional)
-    avatar_url?: string;         // Profile picture URL (optional)
-    is_anonymous?: boolean;      // Flag for anonymous/guest users
-    profile_completed: boolean;  // Flag for "No Trust" barrier
-    bio?: string;                // User bio
-    role_label?: string;         // Personalized role label (e.g. "Physics Teacher")
-    index_number?: string;       // Mandatory for students
-    nic_number?: string;         // Mandatory for teachers
-    onboarding_completed?: boolean; // Flag indicating if user has completed onboarding
-    onboarding_completed_at?: string; // Timestamp when onboarding was completed
-    public_profile?: boolean;      // Visibility flag for community profile (optional — defaults to false if absent)
-    /**
-     * Private orientation fingerprint — 4-dimensional learning tendency vector.
-     * Set during onboarding orientation step and updated via behavioral inference.
-     * Never surfaced as a type label; used only for silent UX personalisation.
-     * Keys: depth_breadth | reflect_act | solo_social | steady_surge (all 0–100).
-     */
-    orientation_seeds?: {
-        depth_breadth: number;
-        reflect_act: number;
-        solo_social: number;
-        steady_surge: number;
-        source: 'seeded' | 'inferred' | 'mixed';
-        seeded_at?: string;
-        last_updated?: string;
-    } | null;
+export interface User extends ProfileStats {
+  id: string; // Internal Gurudevi User UUID (from public.users, resolved via auth_identities)
+  email?: string | null; // User's email address
+  full_name: string; // Display name
+  bonds?: Bond[]; // Sovereign Identity (ReBAC) Relationships
+  school_id?: string | null; // UUID of the school they belong to
+  username?: string | null; // Unique handle for the user
+  created_at: string | Date; // ISO timestamp or Date object
+  updated_at?: string | Date; // ISO timestamp or Date object (optional)
+  avatar_url?: string | null; // Profile picture URL (optional)
+  is_anonymous?: boolean | null; // Flag for anonymous/guest users
+  profile_completed: boolean; // Flag for "No Trust" barrier
+  bio?: string | null; // User bio
+  authority_label?: string | null; // Personalized authority label (e.g. "Physics Teacher")
+  index_number?: string | null; // Mandatory for students
+  nic_number?: string | null; // Mandatory for teachers
+  organization_name?: string | null; // Name of the user's organization/school
+  school_name?: string | null; // Alias for organization_name
+  tenant_kind?: TenantKind | null; // Distinguishes internal, customer, demo, and sandbox tenants
+  tier?: string | null;
+  features?: string[];
+  flags?: Record<string, boolean | string>;
+  onboarding_completed?: boolean | null; // Flag indicating if user has completed onboarding
+  onboarding_completed_at?: string | Date | null; // Timestamp when onboarding was completed
+  public_profile?: boolean | null; // Visibility flag for community profile (optional  defaults to false if absent)
+  section_id?: string | null;
+  grade_id?: string | null;
+  classroom_id?: string | null;
+
+  // Profile specific fields
+  is_thuthimal?: boolean;
+  thuthimal_gifter?: string;
+  thuthimal_gifted_at?: string;
+  level?: number;
+  phone?: string;
+  experience_years?: number;
+  subjects_taught?: string | string[];
+  qualifications?: string | string[];
+  social_links?: SocialLink[];
+
+  /**
+   * Private orientation fingerprint  4-dimensional learning tendency vector.
+   * Set during onboarding orientation step and updated via behavioral inference.
+   * Never surfaced as a type label; used only for silent UX personalisation.
+   * Keys: depth_breadth | reflect_act | solo_social | steady_surge (all 0100).
+   */
+  orientation_seeds?: {
+    depth_breadth: number;
+    reflect_act: number;
+    solo_social: number;
+    steady_surge: number;
+    source: 'seeded' | 'inferred' | 'mixed';
+    seeded_at?: string;
+    last_updated?: string;
+  } | null;
 }
 
 /**
  * Auth Session (from Supabase)
  */
 export interface AuthSession {
-    access_token: string;
-    refresh_token: string;
-    expires_in: number;
-    expires_at?: number;
-    token_type: string;
-    user: User;
+  access_token: string;
+  refresh_token: string;
+  expires_in: number;
+  expires_at?: number;
+  token_type: string;
+  user: User;
 }
 
 /**
@@ -57,17 +90,19 @@ export interface AuthSession {
  * Data required to create a new user account
  */
 export interface SignUpData {
-    email: string;
-    password: string;
-    full_name: string;
-    role: UserRole;
-    school_id?: string;          // Optional - can be selected or created during signup
+  email: string;
+  password: string;
+  avatar_url: string | null;
+  username: string | null;
+  full_name: string;
+  initialCapacity?: string; // Optional - used to seed the first bond
+  school_id?: string; // Optional - can be selected or created during signup
 }
 
 /**
  * Login Data
  */
 export interface LoginData {
-    email: string;
-    password: string;
+  email: string;
+  password: string;
 }

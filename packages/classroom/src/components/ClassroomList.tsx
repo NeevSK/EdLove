@@ -1,564 +1,518 @@
-/**
- * ClassroomList Component
- * 
- * Displays a list of classrooms based on user role:
- * - Teachers: Shows classrooms they teach
- * - Students: Shows classrooms they're enrolled in
- */
+import { api, identityAPI, MOCK_CLASSROOMS } from "@repo/core/api";
+import { useFeatureAccess } from "@repo/core/hooks";
+import { usePermissions, useStore } from "@repo/core/logic";
 
-import React, { useEffect, useState, useMemo, useCallback } from 'react';
+import PositiveInvitation from "@repo/ui/components/PositiveInvitation";
+import { SkeletonCard } from "@repo/ui/components/SkeletonLoader";
 import {
-    View,
-    FlatList,
-    TouchableOpacity,
-    ActivityIndicator,
-    StyleSheet,
-    ListRenderItemInfo,
-    GestureResponderEvent,
-} from 'react-native';
-import { Box, Text, Heading, VStack, HStack } from '@repo/ui';
-import { BookOpen, Users, ChevronRight, ClipboardCheck, Plus, Zap, Trash2, Edit2 } from 'lucide-react-native';
-import { Theme, typography } from '@repo/ui';
-import { api, Classroom, MOCK_CLASSROOMS } from '@repo/core';
-import { useUserRole, useStore, supabase } from '@repo/core';
-import { useToast, Toast, ToastTitle, ToastDescription } from '@repo/ui';
-import { hapticLight, hapticSuccess } from '@repo/ui';
-import { useTranslation } from 'react-i18next';
-import { useThemedColors } from '@repo/ui';
-import RoleInitialState from './RoleInitialState';
-import CreateClassroomModal from './CreateClassroomModal';
-import { useFeatureAccess } from '@repo/core';
-import { PositiveInvitation } from '@repo/ui';
-import { SkeletonCard } from '@repo/ui';
+	BookOpen,
+	ChevronRight,
+	ClipboardCheck,
+	Plus,
+	Users,
+	Zap,
+} from "@repo/ui/icons";
+import {
+	Box,
+	FlatList,
+	Heading,
+	HStack,
+	Icon,
+	Pressable,
+	Spinner,
+	Text,
+	VStack,
+} from "@repo/ui/primitives";
+import { useToast } from "@repo/ui/providers";
+import { hapticLight, hapticSuccess } from "@repo/ui/utils/haptics";
+
+import React, { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import CreateClassroomModal from "./CreateClassroomModal";
 
 interface ClassroomListProps {
-    onClassroomPress?: (classroom: Classroom) => void;
-    onDataLoaded?: (classrooms: Classroom[]) => void;
-    isNested?: boolean;
-    refreshTrigger?: number;
-    emptyContent?: React.ReactNode;
+	onClassroomPress?: (classroom: WorkspaceClassroom) => void;
+	onDataLoaded?: (classrooms: WorkspaceClassroom[]) => void;
+	isNested?: boolean;
+	refreshTrigger?: number;
+	emptyContent?: React.ReactNode;
+}
+
+type WorkspaceClassroom = Awaited<
+	ReturnType<(typeof api)["classrooms"]["getByTeacher"]>
+>[number];
+
+async function getSchoolScopedClassroomsForPrincipal(
+	userId: string,
+	pagination: { limit: number; offset: number },
+) {
+	const summary = await api["identity"].getClassroomRoleSummary(userId);
+	if (!summary.schoolId) {
+		return [];
+	}
+
+	return api["classrooms"].getBySchool(summary.schoolId, pagination);
 }
 
 export default function ClassroomList({
-    onClassroomPress,
-    onDataLoaded,
-    isNested = false,
-    refreshTrigger: externalRefreshTrigger = 0,
-    emptyContent
+	onClassroomPress,
+	onDataLoaded,
+	isNested = false,
+	refreshTrigger: externalRefreshTrigger = 0,
+	emptyContent,
 }: ClassroomListProps) {
-    const { role } = useUserRole();
-    const { isGuest } = useFeatureAccess();
-    // Only teachers and grade heads create classrooms — principals create the school
-    // structure (hierarchy/sections), students never create classrooms.
-    const canCreateClassroom = !isGuest && (role === 'teacher' || role === 'grade_head');
-    const [classrooms, setClassrooms] = useState<Classroom[]>([]);
-    const [loading, setLoading] = useState(true);
-    const { t } = useTranslation();
-    const colors = useThemedColors();
-    const styles = useMemo(() => StyleSheet.create({
-        container: {
-            flex: 1,
-            backgroundColor: colors.primary,
-        },
-        contentContainer: {
-            padding: Theme.spacing.md,
-        },
-        centerContainer: {
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-            padding: Theme.spacing.lg,
-        },
-        loadingText: {
-            fontSize: Theme.typography.fontSize.md,
-            color: colors.text,
-            marginTop: Theme.spacing.sm,
-        },
-        errorText: {
-            fontSize: Theme.typography.fontSize.md,
-            color: Theme.colors.emberRed,
-            textAlign: 'center',
-            marginBottom: Theme.spacing.md,
-        },
-        retryButton: {
-            backgroundColor: Theme.colors.sanctuarySaffron,
-            paddingVertical: Theme.spacing.sm,
-            paddingHorizontal: Theme.spacing.lg,
-            borderRadius: Theme.corners.comfortable,
-        },
-        retryButtonText: {
-            fontSize: Theme.typography.fontSize.md,
-            fontWeight: '600',
-            color: Theme.colors.sacredWhite,
-        },
-    }), [colors]);
-    const [error, setError] = useState<string | null>(null);
-    const [internalRefreshTrigger, setInternalRefreshTrigger] = useState(0);
-    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-    const [pendingInitialData, setPendingInitialData] = useState<any>(null);
-    const [page, setPage] = useState(0);
-    const [hasMore, setHasMore] = useState(true);
-    const [isFetchingMore, setIsFetchingMore] = useState(false);
-    const PAGE_SIZE = 10;
-    const toast = useToast();
-    const { isExplorerMode, dismissedSampleIds } = useStore();
+	const { can, context } = usePermissions();
+	const hasRoleContext = context.bonds.length > 0;
+	const { isGuest } = useFeatureAccess();
 
+	// Capability-based check for classroom creation
+	const canCreateClassroom = can("create", "Classroom");
+	const [classrooms, setClassrooms] = useState<WorkspaceClassroom[]>([]);
+	const [loading, setLoading] = useState(true);
+	const { t } = useTranslation();
+	const [error, setError] = useState<string | null>(null);
+	const [_internalRefreshTrigger, setInternalRefreshTrigger] = useState(0);
+	const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+	const [pendingInitialData, setPendingInitialData] = useState<any>(null);
+	const [page, setPage] = useState(0);
+	const [hasMore, setHasMore] = useState(true);
+	const [isFetchingMore, setIsFetchingMore] = useState(false);
+	const PAGE_SIZE = 10;
+	const toast = useToast();
+	const { dismissedSampleIds } = useStore();
 
-    useEffect(() => {
-        let isMounted = true;
-        const fetchClassrooms = async () => {
-            try {
-                if (isMounted) {
-                    setLoading(true);
-                    setError(null);
-                }
+	useEffect(() => {
+		let isMounted = true;
+		const fetchClassrooms = async () => {
+			try {
+				if (isMounted) {
+					setLoading(true);
+					setError(null);
+				}
 
-                let data: Classroom[] = [];
+				let data: WorkspaceClassroom[] = [];
 
-                if (isGuest) {
-                    if (role === 'teacher') {
-                        const sampleId = 'sample-c1';
-                        const sample = MOCK_CLASSROOMS.find((c: any) => c.id === sampleId);
-                        if (sample && !dismissedSampleIds.includes(sampleId)) {
-                            (sample as any).is_sample = true;
-                            data = [sample];
-                        }
-                    } else if (role === 'principal') {
-                        const sampleSchoolId = 'sample-school-1';
-                        const sampleSchool = MOCK_CLASSROOMS.find((c: any) => c.id === sampleSchoolId);
-                        if (sampleSchool && !dismissedSampleIds.includes(sampleSchoolId)) {
-                            (sampleSchool as any).is_sample = true;
-                            data = [sampleSchool];
-                        }
-                    } else if (role === 'student' || !role) {
-                        const sampleId = 'sample-c1';
-                        const sample = MOCK_CLASSROOMS.find((c: any) => c.id === sampleId);
-                        if (sample && !dismissedSampleIds.includes(sampleId)) {
-                            (sample as any).is_sample = true;
-                            data = [sample];
-                        }
-                    }
-                    setHasMore(false);
-                } else {
-                    const { data: { user } } = await supabase.auth.getUser();
-                    if (!user) {
-                        throw new Error('No authenticated user');
-                    }
+				if (isGuest) {
+					if (can("manage", "TeacherDashboard")) {
+						const sampleId = "sample-c1";
+						const sample = MOCK_CLASSROOMS.find((c: any) => c.id === sampleId);
+						if (sample && !dismissedSampleIds.includes(sampleId)) {
+							(sample as any).is_sample = true;
+							data = [sample];
+						}
+					} else if (can("manage", "PrincipalDashboard")) {
+						const sampleSchoolId = "sample-school-1";
+						const sampleSchool = MOCK_CLASSROOMS.find(
+							(c: any) => c.id === sampleSchoolId,
+						);
+						if (sampleSchool && !dismissedSampleIds.includes(sampleSchoolId)) {
+							(sampleSchool as any).is_sample = true;
+							data = [sampleSchool];
+						}
+					} else if (can("manage", "StudentDashboard") || !hasRoleContext) {
+						const sampleId = "sample-c1";
+						const sample = MOCK_CLASSROOMS.find((c: any) => c.id === sampleId);
+						if (sample && !dismissedSampleIds.includes(sampleId)) {
+							(sample as any).is_sample = true;
+							data = [sample];
+						}
+					}
+					setHasMore(false);
+				} else {
+					const userId = await identityAPI.getMyInternalId();
+					if (!userId) {
+						throw new Error("No internal identity found");
+					}
 
-                    const pagination = { limit: PAGE_SIZE, offset: 0 };
-                    let realData: Classroom[] = [];
+					const pagination = { limit: PAGE_SIZE, offset: 0 };
+					let realData: WorkspaceClassroom[] = [];
 
-                    if (role === 'teacher') {
-                        realData = await api.classrooms.getByTeacher(user.id, pagination);
-                    } else if (role === 'student') {
-                        realData = await api.classrooms.getByStudent(user.id, pagination);
-                    } else if (role === 'principal') {
-                        const schoolId = user.user_metadata?.school_id;
-                        if (schoolId) {
-                            realData = await api.classrooms.getBySchool(schoolId, pagination);
-                        }
-                    }
+					if (can("manage", "TeacherDashboard")) {
+						realData = await api["classrooms"].getByTeacher(userId, pagination);
+					} else if (can("manage", "StudentDashboard")) {
+						realData = await api["classrooms"].getByStudent(userId, pagination);
+					} else if (can("manage", "PrincipalDashboard")) {
+						realData = await getSchoolScopedClassroomsForPrincipal(
+							userId,
+							pagination,
+						);
+					}
 
-                    // If real data exists, use it and ignore samples
-                    if (realData.length > 0) {
-                        data = realData;
-                        setHasMore(realData.length === PAGE_SIZE);
-                    } else {
-                        // If no real data, try to show sample if not dismissed
-                        let sampleToShow: any = null;
-                        if (role === 'teacher' || role === 'student' || !role) {
-                            sampleToShow = MOCK_CLASSROOMS.find((c: any) => c.id === 'sample-c1');
-                        } else if (role === 'principal') {
-                            sampleToShow = MOCK_CLASSROOMS.find((c: any) => c.id === 'sample-school-1');
-                        }
+					// If real data exists, use it and ignore samples
+					if (realData.length > 0) {
+						data = realData;
+						setHasMore(realData.length === PAGE_SIZE);
+					} else {
+						// If no real data, try to show sample if not dismissed
+						let sampleToShow: any = null;
+						if (
+							can("manage", "TeacherDashboard") ||
+							can("manage", "StudentDashboard") ||
+							!hasRoleContext
+						) {
+							sampleToShow = MOCK_CLASSROOMS.find(
+								(c: any) => c.id === "sample-c1",
+							);
+						} else if (can("manage", "PrincipalDashboard")) {
+							sampleToShow = MOCK_CLASSROOMS.find(
+								(c: any) => c.id === "sample-school-1",
+							);
+						}
 
-                        if (sampleToShow && !dismissedSampleIds.includes(sampleToShow.id)) {
-                            (sampleToShow as any).is_sample = true;
-                            data = [sampleToShow];
-                        }
-                        setHasMore(false);
-                    }
+						if (sampleToShow && !dismissedSampleIds.includes(sampleToShow.id)) {
+							(sampleToShow as any).is_sample = true;
+							data = [sampleToShow];
+						}
+						setHasMore(false);
+					}
 
-                    setPage(1);
-                }
+					setPage(1);
+				}
 
-                if (isMounted) {
-                    setClassrooms(data);
-                    if (onDataLoaded) onDataLoaded(data);
-                }
-            } catch (err: any) {
-                console.error('[ClassroomList] Error fetching classrooms:', err);
-                if (isMounted) {
-                    setError(err.message || 'Failed to load classrooms');
-                }
-            } finally {
-                if (isMounted) {
-                    setLoading(false);
-                }
-            }
-        };
+				if (isMounted) {
+					setClassrooms(data);
+					if (onDataLoaded) onDataLoaded(data);
+				}
+			} catch (err: any) {
+				console.error("[ClassroomList] Error fetching classrooms:", err);
+				if (isMounted) {
+					setError(err.message || "Failed to load classrooms");
+				}
+			} finally {
+				if (isMounted) {
+					setLoading(false);
+				}
+			}
+		};
 
-        fetchClassrooms();
+		fetchClassrooms();
 
-        return () => {
-            isMounted = false;
-        };
-    }, [role, internalRefreshTrigger, externalRefreshTrigger, isGuest, dismissedSampleIds]);
+		return () => {
+			isMounted = false;
+		};
+	}, [hasRoleContext, isGuest, dismissedSampleIds, onDataLoaded, can]);
 
-    const handleRetry = () => {
-        setInternalRefreshTrigger(prev => prev + 1);
-    };
+	const handleRetry = () => {
+		setInternalRefreshTrigger((prev) => prev + 1);
+	};
 
-    const fetchMore = async () => {
-        if (loading || isFetchingMore || !hasMore || isGuest) return;
+	const fetchMore = async () => {
+		if (loading || isFetchingMore || !hasMore || isGuest) return;
 
-        try {
-            setIsFetchingMore(true);
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) return;
+		try {
+			setIsFetchingMore(true);
+			const userId = await identityAPI.getMyInternalId();
+			if (!userId) return;
 
-            const pagination = { limit: PAGE_SIZE, offset: page * PAGE_SIZE };
-            let newData: Classroom[] = [];
+			const pagination = { limit: PAGE_SIZE, offset: page * PAGE_SIZE };
+			let newData: WorkspaceClassroom[] = [];
 
-            if (role === 'teacher') {
-                newData = await api.classrooms.getByTeacher(user.id, pagination);
-            } else if (role === 'student') {
-                newData = await api.classrooms.getByStudent(user.id, pagination);
-            } else if (role === 'principal') {
-                const schoolId = user.user_metadata?.school_id;
-                if (schoolId) {
-                    newData = await api.classrooms.getBySchool(schoolId, pagination);
-                }
-            }
+			if (can("manage", "TeacherDashboard")) {
+				newData = await api["classrooms"].getByTeacher(userId, pagination);
+			} else if (can("manage", "StudentDashboard")) {
+				newData = await api["classrooms"].getByStudent(userId, pagination);
+			} else if (can("manage", "PrincipalDashboard")) {
+				newData = await getSchoolScopedClassroomsForPrincipal(
+					userId,
+					pagination,
+				);
+			}
 
-            if (newData.length > 0) {
-                setClassrooms(prev => [...prev, ...newData]);
-                setPage(prev => prev + 1);
-            }
-            setHasMore(newData.length === PAGE_SIZE);
-        } catch (err) {
-            console.error('[ClassroomList] Error fetching more:', err);
-        } finally {
-            setIsFetchingMore(false);
-        }
-    };
+			if (newData.length > 0) {
+				setClassrooms((prev) => [...prev, ...newData]);
+				setPage((prev) => prev + 1);
+			}
+			setHasMore(newData.length === PAGE_SIZE);
+		} catch (err) {
+			console.error("[ClassroomList] Error fetching more:", err);
+		} finally {
+			setIsFetchingMore(false);
+		}
+	};
 
-    const handleClassroomPress = useCallback((classroom: Classroom) => {
-        if (onClassroomPress) {
-            onClassroomPress(classroom);
-        }
-    }, [onClassroomPress]);
+	const handleClassroomPress = useCallback(
+		(classroom: WorkspaceClassroom) => {
+			if (onClassroomPress) {
+				onClassroomPress(classroom);
+			}
+		},
+		[onClassroomPress],
+	);
 
-    const renderClassroomCard = useCallback(({ item: classroom }: ListRenderItemInfo<Classroom>) => {
-        const studentCount = (classroom as any).student_count || 0;
+	const renderClassroomCard = useCallback(
+		({ item: classroom }: { item: WorkspaceClassroom }) => {
+			const studentCount = (classroom as any).student_count || 0;
 
-        return (
-            <ClassroomCard
-                classroom={classroom}
-                onPress={handleClassroomPress}
-                onClassroomPress={onClassroomPress}
-                studentCount={studentCount}
-                colors={colors}
-                setPendingInitialData={setPendingInitialData}
-                setIsCreateModalOpen={setIsCreateModalOpen}
-                toast={toast}
-                t={t}
-            />
-        );
-    }, [handleClassroomPress, onClassroomPress, colors, toast, t]);
+			return (
+				<ClassroomCard
+					classroom={classroom}
+					onPress={handleClassroomPress}
+					studentCount={studentCount}
+					setIsCreateModalOpen={setIsCreateModalOpen}
+					setPendingInitialData={setPendingInitialData}
+					toast={toast}
+					t={t}
+				/>
+			);
+		},
+		[handleClassroomPress, toast, t],
+	);
 
-    const keyExtractor = useCallback((item: Classroom) => item.id, []);
-    const ItemSeparator = useCallback(() => <View style={{ height: Theme.spacing.md }} />, []);
+	const keyExtractor = useCallback((item: WorkspaceClassroom) => item.id, []);
+	const ItemSeparator = useCallback(() => <Box className="h-4" />, []);
 
-    if (loading) {
-        return (
-            <VStack sx={{ width: '100%', padding: isNested ? 0 : Theme.spacing.md, gap: Theme.spacing.md }}>
-                <SkeletonCard height={80} />
-                <SkeletonCard height={80} />
-                <SkeletonCard height={80} />
-            </VStack>
-        );
-    }
+	if (loading) {
+		return (
+			<VStack className={`w-full gap-4 ${isNested ? "" : "p-4"}`}>
+				<SkeletonCard height={90} className="rounded-generous" />
+				<SkeletonCard height={90} className="rounded-generous" />
+				<SkeletonCard height={90} className="rounded-generous" />
+			</VStack>
+		);
+	}
 
-    if (error) {
-        return (
-            <View style={styles.centerContainer}>
-                <Text style={styles.errorText}>⚠️ {error}</Text>
-                <TouchableOpacity
-                    style={styles.retryButton}
-                    onPress={handleRetry}
-                >
-                    <Text style={styles.retryButtonText}>{t('classroom.retry')}</Text>
-                </TouchableOpacity>
-            </View>
-        );
-    }
+	if (error) {
+		return (
+			<Box className="flex-1 justify-center items-center p-8 gap-5">
+				<Box className="w-16 h-16 rounded-full bg-emberRed/10 items-center justify-center">
+					<Text className="text-2xl">⚠️</Text>
+				</Box>
+				<VStack className="gap-2 items-center">
+					<Heading size="xs" className="text-phaseText-primary font-bold">
+						Signal Interrupted
+					</Heading>
+					<Text className="text-phaseText-secondary text-center max-w-[240px] text-xs leading-5">
+						{error}
+					</Text>
+				</VStack>
+				<Pressable
+					className="bg-templeGold py-3 px-8 rounded-2xl shadow-sm active:opacity-80"
+					onPress={handleRetry}
+				>
+					<Text className="text-white font-bold text-sm">
+						{t("classroom.retry") || "Retry Sync"}
+					</Text>
+				</Pressable>
+			</Box>
+		);
+	}
 
-    if (isNested) {
-        return (
-            <VStack sx={{ width: '100%', gap: Theme.spacing.md }}>
-                {classrooms.length === 0 ? (
-                    emptyContent || (
-                        <PositiveInvitation
-                            context="classroom"
-                            onAction={() => {
-                                hapticLight();
-                                if (canCreateClassroom) {
-                                    setPendingInitialData(null);
-                                    setIsCreateModalOpen(true);
-                                }
-                            }}
-                        />
-                    )
-                ) : (
-                    classrooms.map((classroom) => (
-                        <ClassroomCard
-                            key={classroom.id}
-                            classroom={classroom}
-                            onPress={handleClassroomPress}
-                            onClassroomPress={onClassroomPress}
-                            studentCount={(classroom as any).student_count || 0}
-                            colors={colors}
-                            setPendingInitialData={setPendingInitialData}
-                            setIsCreateModalOpen={setIsCreateModalOpen}
-                            toast={toast}
-                            t={t}
-                        />
-                    ))
-                )}
+	if (isNested) {
+		return (
+			<VStack className="w-full gap-4">
+				{classrooms.length === 0
+					? emptyContent || (
+							<PositiveInvitation
+								context="classroom"
+								onAction={() => {
+									hapticLight();
+									if (canCreateClassroom) {
+										setPendingInitialData(null);
+										setIsCreateModalOpen(true);
+									}
+								}}
+							/>
+						)
+					: classrooms.map((classroom) => (
+							<ClassroomCard
+								key={classroom.id}
+								classroom={classroom}
+								onPress={handleClassroomPress}
+								studentCount={(classroom as any).student_count || 0}
+								setIsCreateModalOpen={setIsCreateModalOpen}
+								setPendingInitialData={setPendingInitialData}
+								toast={toast}
+								t={t}
+							/>
+						))}
 
-                <CreateClassroomModal
-                    isOpen={isCreateModalOpen}
-                    initialData={pendingInitialData}
-                    onClose={() => {
-                        setIsCreateModalOpen(false);
-                        setPendingInitialData(null);
-                    }}
-                    onSuccess={() => {
-                        hapticSuccess();
-                        setInternalRefreshTrigger(prev => prev + 1);
-                    }}
-                />
-            </VStack>
-        );
-    }
+				<CreateClassroomModal
+					isOpen={isCreateModalOpen}
+					initialData={pendingInitialData}
+					onClose={() => {
+						setIsCreateModalOpen(false);
+						setPendingInitialData(null);
+					}}
+					onSuccess={() => {
+						hapticSuccess();
+						setInternalRefreshTrigger((prev) => prev + 1);
+					}}
+				/>
+			</VStack>
+		);
+	}
 
-    return (
-        <Box sx={{ flex: 1, backgroundColor: colors.primary }}>
-            {classrooms.length === 0 ? (
-                <PositiveInvitation
-                    context="classroom"
-                    onAction={() => {
-                        hapticLight();
-                        if (canCreateClassroom) {
-                            setPendingInitialData(null);
-                            setIsCreateModalOpen(true);
-                        }
-                    }}
-                />
-            ) : (
-                <>
-                    <FlatList
-                        data={classrooms}
-                        renderItem={renderClassroomCard}
-                        keyExtractor={keyExtractor}
-                        ItemSeparatorComponent={ItemSeparator}
-                        style={styles.container}
-                        contentContainerStyle={styles.contentContainer}
-                        showsVerticalScrollIndicator={false}
-                        onEndReached={fetchMore}
-                        onEndReachedThreshold={0.5}
-                        ListFooterComponent={isFetchingMore ? <ActivityIndicator color={colors.action} style={{ padding: 10 }} /> : null}
-                        initialNumToRender={10}
-                        maxToRenderPerBatch={10}
-                        windowSize={5}
-                        removeClippedSubviews={true}
-                    />
+	return (
+		<Box className="flex-1 bg-phase-world">
+			{classrooms.length === 0 ? (
+				<Box className="flex-1 p-4">
+					<PositiveInvitation
+						context="classroom"
+						onAction={() => {
+							hapticLight();
+							if (canCreateClassroom) {
+								setPendingInitialData(null);
+								setIsCreateModalOpen(true);
+							}
+						}}
+					/>
+				</Box>
+			) : (
+				<>
+					<FlatList
+						data={classrooms}
+						renderItem={renderClassroomCard}
+						keyExtractor={keyExtractor}
+						ItemSeparatorComponent={ItemSeparator}
+						className="flex-1"
+						contentContainerStyle={{ padding: 16 }}
+						showsVerticalScrollIndicator={false}
+						onEndReached={fetchMore}
+						onEndReachedThreshold={0.5}
+						ListFooterComponent={
+							isFetchingMore ? (
+								<Spinner className="p-4" />
+							) : (
+								<Box className="h-20" />
+							)
+						}
+					/>
 
-                    {canCreateClassroom && (
-                        <TouchableOpacity
-                            onPress={() => {
-                                hapticLight();
-                                setPendingInitialData(null);
-                                setIsCreateModalOpen(true);
-                            }}
-                            style={{
-                                position: 'absolute',
-                                bottom: 20,
-                                right: 20,
-                                width: 56,
-                                height: 56,
-                                borderRadius: 28,
-                                backgroundColor: Theme.colors.sanctuarySaffron,
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                                ...Theme.shadows.md,
-                                zIndex: 10
-                            }}
-                        >
-                            <Plus size={24} color="white" />
-                        </TouchableOpacity>
-                    )}
-                </>
-            )}
+					{canCreateClassroom && (
+						<Pressable
+							onPress={() => {
+								hapticLight();
+								setPendingInitialData(null);
+								setIsCreateModalOpen(true);
+							}}
+							className="absolute bottom-10 right-6 w-16 h-16 rounded-[24px] bg-templeGold justify-center items-center shadow-lg z-10 active:scale-95"
+						>
+							<Icon as={Plus} size="sm" className="text-white" />
+						</Pressable>
+					)}
+				</>
+			)}
 
-            <CreateClassroomModal
-                isOpen={isCreateModalOpen}
-                initialData={pendingInitialData}
-                onClose={() => {
-                    setIsCreateModalOpen(false);
-                    setPendingInitialData(null);
-                }}
-                onSuccess={() => {
-                    hapticSuccess();
-                    setInternalRefreshTrigger(prev => prev + 1);
-                }}
-            />
-        </Box>
-    );
+			<CreateClassroomModal
+				isOpen={isCreateModalOpen}
+				initialData={pendingInitialData}
+				onClose={() => {
+					setIsCreateModalOpen(false);
+					setPendingInitialData(null);
+				}}
+				onSuccess={() => {
+					hapticSuccess();
+					setInternalRefreshTrigger((prev) => prev + 1);
+				}}
+			/>
+		</Box>
+	);
 }
 
 // Memoized ClassroomCard component
 interface ClassroomCardProps {
-    classroom: Classroom;
-    onPress: (classroom: Classroom) => void;
-    onClassroomPress?: (classroom: Classroom) => void;
-    studentCount: number;
-    colors: any;
-    setPendingInitialData: (data: any) => void;
-    setIsCreateModalOpen: (isOpen: boolean) => void;
-    toast: ReturnType<typeof useToast>;
-    t: (key: string) => string;
+	classroom: WorkspaceClassroom;
+	onPress: (classroom: WorkspaceClassroom) => void;
+	studentCount: number;
+	setPendingInitialData: (data: any) => void;
+	setIsCreateModalOpen: (isOpen: boolean) => void;
+	toast: any;
+	t: (key: string) => string;
 }
 
-const ClassroomCard = React.memo(({ classroom, onPress, onClassroomPress, studentCount, colors, setPendingInitialData, setIsCreateModalOpen, toast, t }: ClassroomCardProps) => {
-    const handlePress = useCallback(() => {
-        hapticLight();
-        onPress(classroom);
-    }, [classroom, onPress]);
+const ClassroomCard = React.memo(
+	({
+		classroom,
+		onPress,
+		studentCount,
+		setPendingInitialData,
+		setIsCreateModalOpen,
+		toast,
+		t,
+	}: ClassroomCardProps) => {
+		const handlePress = useCallback(() => {
+			hapticLight();
+			onPress(classroom);
+		}, [classroom, onPress]);
 
-    const dismissSample = useStore(state => state.dismissSample);
+		const handleAttendancePress = useCallback((e: any) => {
+			e.stopPropagation();
+			hapticLight();
+		}, []);
 
-    const handleAttendancePress = useCallback((e: GestureResponderEvent) => {
-        e.stopPropagation();
-        hapticLight();
-        console.log('Open attendance for:', classroom.id);
-    }, [classroom.id]);
+		return (
+			<Pressable
+				onPress={handlePress}
+				className="active:opacity-80 transition-all"
+			>
+				<Box className="rounded-generous p-5 border border-phase-canvas/20 bg-phase-surface shadow-sm overflow-hidden relative">
+					<HStack className="items-center gap-5">
+						<Box className="w-[60px] h-[60px] rounded-2xl justify-center items-center bg-templeGold/10 border border-templeGold/5">
+							<Icon as={BookOpen} size="sm" className="text-templeGold" />
+						</Box>
 
-    const handleDismiss = useCallback((e: GestureResponderEvent) => {
-        e.stopPropagation();
-        hapticLight();
-        dismissSample(classroom.id);
+						<VStack className="flex-1 gap-1.5">
+							<HStack className="items-center gap-2">
+								<Text className="text-base font-black text-phaseText-primary tracking-tight">
+									{classroom.name}
+								</Text>
+								{(classroom as any).is_sample && (
+									<Box className="bg-templeGold/10 px-2 py-0.5 rounded-full border border-templeGold/20 flex-row items-center gap-1">
+										<Icon as={Zap} size={8} className="text-templeGold" />
+										<Text className="text-[9px] text-templeGold font-black uppercase tracking-tighter">
+											{t("classroom.sample") || "Sample"}
+										</Text>
+									</Box>
+								)}
+							</HStack>
+							<HStack className="items-center gap-3">
+								<Text className="text-xs font-black text-templeGold uppercase tracking-widest">
+									{classroom.subject || t("classroom.noSubject") || "General"}
+								</Text>
+								<Box className="w-1 h-1 rounded-full bg-phaseText-secondary/40" />
+								<HStack className="items-center gap-1.5">
+									<Icon
+										as={Users}
+										size={10}
+										className="text-phaseText-secondary"
+									/>
+									<Text className="text-xs font-medium text-phaseText-secondary">
+										{studentCount}
+									</Text>
+								</HStack>
+							</HStack>
+						</VStack>
 
-        toast.show({
-            placement: "top",
-            render: ({ id }: { id: string }) => (
-                <Toast nativeID={"toast-" + id}>
-                    <VStack sx={{ gap: 4 }}>
-                        <ToastTitle>{t('common.sampleDismissed') || 'Sample Dismissed'}</ToastTitle>
-                        <ToastDescription>
-                            {t('common.sampleDismissedDesc') || 'This sample sanctuary has been removed from your view.'}
-                        </ToastDescription>
-                    </VStack>
-                </Toast>
-            ),
-        });
-    }, [classroom.id, dismissSample, toast, t]);
+						<HStack className="gap-3 items-center">
+							<Pressable
+								onPress={handleAttendancePress}
+								className="active:scale-90"
+							>
+								<Box className="p-3 rounded-2xl bg-phase-canvas">
+									<Icon
+										as={ClipboardCheck}
+										size="xs"
+										className="text-sageGreen"
+									/>
+								</Box>
+							</Pressable>
 
-    return (
-        <TouchableOpacity
-            onPress={handlePress}
-            activeOpacity={0.7}
-        >
-            <Box
-                sx={{
-                    borderRadius: Theme.corners.generous,
-                    padding: Theme.spacing.md,
-                    borderWidth: 1,
-                    backgroundColor: colors.secondary,
-                    borderColor: colors.border,
-                }}
-            >
-                <HStack alignItems="center" sx={{ gap: Theme.spacing.md }}>
-                    <Box sx={{
-                        width: 50,
-                        height: 50,
-                        borderRadius: Theme.corners.comfortable,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        backgroundColor: colors.tertiary
-                    }}>
-                        <BookOpen
-                            size={24}
-                            color={Theme.colors.sanctuarySaffron}
-                        />
-                    </Box>
-
-                    <VStack sx={{ flex: 1, gap: 4 }}>
-                        <HStack alignItems="center" sx={{ gap: 8 }}>
-                            <Text color={colors.text} sx={{ fontSize: 18, fontWeight: '700' }}>
-                                {classroom.name}
-                            </Text>
-                            {(classroom as any).is_sample && (
-                                <Box sx={{
-                                    backgroundColor: Theme.colors.amberGlow + '22',
-                                    paddingHorizontal: 6,
-                                    paddingVertical: 2,
-                                    borderRadius: 4,
-                                    borderWidth: 1,
-                                    borderColor: Theme.colors.amberGlow,
-                                    flexDirection: 'row',
-                                    alignItems: 'center',
-                                    gap: 2
-                                }}>
-                                    <Zap size={10} color={Theme.colors.amberGlow} fill={Theme.colors.amberGlow} />
-                                    <Text sx={{ fontSize: 10, color: Theme.colors.amberGlow, fontWeight: '700' }}>{t('classroom.sample')}</Text>
-                                </Box>
-                            )}
-                        </HStack>
-                        <HStack alignItems="center" sx={{ gap: 8 }}>
-                            <Text color={Theme.colors.sanctuarySaffron} sx={{ fontSize: 14, fontWeight: '700' }}>
-                                {classroom.subject || t('classroom.noSubject')}
-                            </Text>
-                            <Box
-                                sx={{
-                                    width: 4,
-                                    height: 4,
-                                    borderRadius: 2,
-                                    backgroundColor: colors.textTertiary,
-                                }}
-                            />
-                            <HStack alignItems="center" sx={{ gap: 4 }}>
-                                <Users size={14} color={colors.textSecondary} />
-                                <Text color={colors.textSecondary} sx={{ fontSize: 14 }}>
-                                    {studentCount}
-                                </Text>
-                            </HStack>
-                        </HStack>
-                    </VStack>
-
-                    <TouchableOpacity onPress={handleAttendancePress}>
-                        <Box sx={{
-                            padding: Theme.spacing.sm,
-                            borderRadius: Theme.corners.comfortable,
-                            backgroundColor: colors.tertiary,
-                        }}>
-                            <ClipboardCheck size={20} color={Theme.colors.sageGreen} />
-                        </Box>
-                    </TouchableOpacity>
-
-                    <ChevronRight
-                        size={20}
-                        color={colors.textSecondary}
-                    />
-                </HStack>
-            </Box>
-        </TouchableOpacity>
-    );
-}, (prevProps, nextProps) => {
-    return (
-        prevProps.classroom.id === nextProps.classroom.id &&
-        prevProps.classroom.updated_at === nextProps.classroom.updated_at &&
-        prevProps.studentCount === nextProps.studentCount
-    );
-});
+							<Icon
+								as={ChevronRight}
+								size="xs"
+								className="text-phaseText-secondary/40"
+							/>
+						</HStack>
+					</HStack>
+				</Box>
+			</Pressable>
+		);
+	},
+	(prevProps, nextProps) => {
+		return (
+			prevProps.classroom.id === nextProps.classroom.id &&
+			prevProps.classroom.updated_at === nextProps.classroom.updated_at &&
+			prevProps.studentCount === nextProps.studentCount
+		);
+	},
+);

@@ -1,403 +1,246 @@
-﻿/**
- * PrincipalSelfView Component
- *
- * Personal wellbeing sanctuary for principals.
- * Scope: Individual wellness only — mood, energy, personal decisions, leadership wisdom.
- *
- * Institutional features (school pulse, staff wellbeing aggregates) deliberately
- * live in PrincipalSchoolView so Self stays a genuine personal sanctuary.
- *
- * Core:    Personal Pulse (mood/energy overview), Energy Forecast, Decision Journal
- * Discover: Leadership Wisdom, Monthly Reflection
- */
+import { usePermissions, useStore } from "@repo/core/logic";
 
-import { supabase, useStore, useSafeMutation, useUserRole } from '@repo/core';
-import React, { useState } from 'react';
-import { useNavigation } from '@react-navigation/native';
+import PositiveInvitation from "@repo/ui/components/PositiveInvitation";
+import ScreenWrapper from "@repo/ui/components/ScreenWrapper";
+import { Box, VStack } from "@repo/ui/primitives";
+
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
+// Kernel Imports from @repo/self (Breaking require cycle)
+import { BaseSelfView } from "../../components/BaseSelfView";
+import DailyRhythm from "../../components/DailyRhythm";
+import DecisionJournalSection from "../../components/DecisionJournalSection";
+import { EnergyBarChart } from "../../components/EnergyBarChart";
+import { ImpactRipplesCard } from "../../components/ImpactRipplesCard";
+import MoodLotus from "../../components/MoodLotus";
+import { MoodPickerCard } from "../../components/MoodPickerCard";
+import { PulseDashboard } from "../../components/PulseDashboard";
+import ResonancePatternCard from "../../components/ResonancePatternCard";
+import VoiceJournaling from "../../components/VoiceJournaling";
+import { WarmMirrorCard } from "../../components/WarmMirrorCard";
+// Role Components
+import WelcomeModal from "../../components/WelcomeModal";
+import WisdomSeeds from "../../components/WisdomSeeds";
+import GovernanceHistoryTimeline from "../../components/GovernanceHistoryTimeline";
+import { useDecisionJournal } from "../../hooks/useDecisionJournal";
+import { useEnergyForecast } from "../../hooks/useEnergyForecast";
+import { useJournalEntries } from "../../hooks/useJournalEntries";
+import { useMoodLogs } from "../../hooks/useMoodLogs";
+import { useWellbeingEnrichment } from "../../hooks/useWellbeingEnrichment";
 import {
-    Box,
-    VStack,
-    HStack,
-    Text,
-    Heading,
-    ScrollView,
-    Pressable,
-    Input,
-    InputField,
-    Theme,
-    hapticLight,
-    SkeletonCard,
-    PositiveInvitation,
-    useThemedColors,
-    ScreenWrapper,
-    useBottomTabPadding,
-    AdaptiveLayout
-} from '@repo/ui';
-import { Battery, Activity, BookOpen, Lightbulb, Calendar } from 'lucide-react-native';
-import { useTranslation } from 'react-i18next';
-import ShadowAgentDrawer from '../../components/ShadowAgentDrawer';
-import EnergyForecast from '../../components/EnergyForecast';
-import DailyContentCard from '../../components/DailyContentCard';
-import ResonancePatternCard from '../../components/ResonancePatternCard';
-import WelcomeModal from '../../components/WelcomeModal';
-import DecisionJournalSection from '../../components/DecisionJournalSection';
-import { useMoodLogs } from '../../hooks/useMoodLogs';
-import { useEnergyForecast } from '../../hooks/useEnergyForecast';
-import PulseDashboard from '../../components/PulseDashboard';
-import { GlobalHeader } from '@repo/ui';
-
-// Principal core features — personal wellbeing only
-const PRINCIPAL_CORE_FEATURES = [
-    { id: 'pulse', icon: Activity, category: 'core' },
-    { id: 'energy', icon: Battery, category: 'core' },
-    { id: 'decisions', icon: BookOpen, category: 'core' },
-];
-
-// Discover tools — personal growth, not school management
-const PRINCIPAL_MORE_TOOLS = [
-    { id: 'wisdom', icon: Lightbulb, category: 'discover' },
-    { id: 'monthly', icon: Calendar, category: 'discover' },
-];
+	DecisionSection,
+	JournalSection,
+	MoodSection,
+	PrincipalPulse,
+} from "../../views/sections";
 
 export default function PrincipalSelfView() {
-    const { t } = useTranslation();
-    const navigation = useNavigation<any>();
-    const { userId, role, isGuest } = useUserRole();
-    const user = useStore(state => state.user);
-    const [activeFeature, setActiveFeature] = useState('pulse');
-    const [showMoreTools, setShowMoreTools] = useState(false);
+	const { t } = useTranslation();
+	// State & Kernel Hooks
+	const { context } = usePermissions();
+	const userId = context.userId;
+	const { warmMirrorText, ripples } = useWellbeingEnrichment(userId);
+	const {
+		logs: moodHistory,
+		addMoodLog,
+		isLoading: loadingMoods,
+	} = useMoodLogs(userId ?? undefined);
+	const { forecasts, isLoading: loadingEnergy } = useEnergyForecast(
+		userId ?? undefined,
+	);
 
-    // We rely mostly on the offline store now for fast render
-    const userProfile = user ? {
-        id: user.id,
-        full_name: user.full_name || user.email?.split('@')[0],
-        email: user.email,
-        role: user.role || 'principal',
-        avatar_url: user.avatar_url,
-        orientation_seeds: (user as any).orientation_seeds ?? null,
-        school_name: null // Simplified, will add actual lookup if needed
-    } : null;
+	// Derived State
+	const latestMood = moodHistory[0];
 
-    // Remove the slow, manual loading effect
-    const loadingUser = false;
+	// UI State
+	const [isMoodPickerOpen, setIsMoodPickerOpen] = useState(false);
+	const [isSavingMood, setIsSavingMood] = useState(false);
+	const justFinishedOnboarding = useStore(
+		(state) => state.justFinishedOnboarding,
+	);
+	const setJustFinishedOnboarding = useStore(
+		(state) => state.setJustFinishedOnboarding,
+	);
+	const { entries: journalEntries, loading: loadingJournals } =
+		useJournalEntries();
+	const { decisions, isLoading: loadingDecisions } = useDecisionJournal(
+		userId ?? undefined,
+	);
 
-    // Behavioral signal hooks — feed into ResonancePatternCard inference
-    const { logs: moodLogs } = useMoodLogs();
-    const { forecasts: energyForecasts } = useEnergyForecast(userId ?? undefined);
+	const holisticSection = (
+		<VStack space="lg" style={{ padding: 20 }}>
+			<JournalSection entries={journalEntries} loading={loadingJournals} />
+			<MoodSection logs={moodHistory} loading={loadingMoods} />
+			<PrincipalPulse
+				energy={null}
+				decisions={decisions}
+				loading={loadingDecisions}
+			/>
+			<DecisionSection decisions={decisions} loading={loadingDecisions} />
+		</VStack>
+	);
 
-    const justFinishedOnboarding = useStore((state) => state.justFinishedOnboarding);
-    const setJustFinishedOnboarding = useStore((state) => state.setJustFinishedOnboarding);
-    const colors = useThemedColors();
-    const bottomPadding = useBottomTabPadding();
+	const handleMoodSelect = async (
+		mood: Parameters<typeof addMoodLog>[0],
+		note: string,
+	) => {
+		setIsSavingMood(true);
+		try {
+			await addMoodLog(mood, note);
+			setIsMoodPickerOpen(false);
+		} finally {
+			setIsSavingMood(false);
+		}
+	};
 
+	return (
+		<ScreenWrapper scroll={false} noTopInset={true}>
+			<BaseSelfView
+				perspective="principal"
+				description={t(
+					"self.principalDescription",
+					"A restorative space for leadership clarity and personal rhythm.",
+				)}
+				domains={[
+					{
+						id: "journey",
+						title: "Journey Overview",
+						accentColor: "#F59E0B",
+						content: holisticSection,
+					},
+					{
+						id: "pulse",
+						title: "Inner Pulse",
+						accentColor: "#8B5CF6",
+						features: [
+							{
+								id: "pulse",
+								label: "Daily Pulse",
+								content: <PulseDashboard onEnterDetails={() => {}} />,
+							},
+							{
+								id: "voice",
+								label: "Voice Journal",
+								content: <VoiceJournaling userId={userId ?? undefined} />,
+							},
+							{
+								id: "mood_lotus",
+								label: "Mood Lotus",
+								content: <MoodLotus userId={userId ?? undefined} />,
+								historyContent: (
+									<MoodSection logs={moodHistory} loading={loadingMoods} />
+								),
+							},
+						],
+					},
+					{
+						id: "physical",
+						title: "Physical Sanctuary",
+						accentColor: "#3B82F6", // Water/Blue
+						features: [
+							{
+								id: "mood_picker",
+								label: "Mood Tracking",
+								content: (
+									<MoodPickerCard
+										isOpen={isMoodPickerOpen}
+										onToggle={() => setIsMoodPickerOpen(!isMoodPickerOpen)}
+										onSelect={handleMoodSelect}
+										isSaving={isSavingMood}
+										latestMood={latestMood}
+										isLoading={loadingMoods}
+										accent="water"
+									/>
+								),
+							},
+							{
+								id: "energy_forecast",
+								label: "Energy Rhythm",
+								content: (
+									<Box
+										style={{
+											padding: 24,
+											backgroundColor: "rgba(255,255,255,0.03)",
+											borderRadius: 16,
+										}}
+									>
+										<EnergyBarChart
+											bars={forecasts.slice().reverse()}
+											height={80}
+										/>
+									</Box>
+								),
+							},
+							{
+								id: "daily_rhythm",
+								label: "Daily Rhythm",
+								content: <DailyRhythm />,
+							},
+						],
+					},
+					{
+						id: "working",
+						title: "Working Rhythm",
+						accentColor: "#10B981", // Moss/Teal
+						features: [
+							{
+								id: "decisions",
+								label: "Decision Journal",
+								content: <DecisionJournalSection userId={userId} />,
+							},
+							{
+								id: "resonance",
+								label: "Resonance Patterns",
+								content: (
+									<ResonancePatternCard
+										orientationSeeds={null}
+										moodLogs={moodHistory}
+										energyForecasts={forecasts}
+									/>
+								),
+							},
+							{
+								id: "wisdom",
+								label: "Leadership Wisdom",
+								content: <WisdomSeeds userId={userId ?? undefined} />,
+							},
+							{
+								id: "monthly_reflection",
+								label: "Monthly Reflection",
+								content: (
+									<PositiveInvitation
+										context="self"
+										title={t(
+											"principal.monthlyComingSoon",
+											"Architect of Growth",
+										)}
+										description={t(
+											"principal.monthlyComingSoonDesc",
+											"A deep reflection module for your monthly milestones is on its way.",
+										)}
+									/>
+								),
+							},
+							{
+								id: "history",
+								label: "Governance History",
+								content: <GovernanceHistoryTimeline userId={userId ?? ""} />,
+							},
+						],
+					},
+				]}
+				sideBar={
+					<VStack space="lg">
+						<WarmMirrorCard text={warmMirrorText} />
+						<ImpactRipplesCard ripples={ripples} />
+					</VStack>
+				}
+			/>
 
-    const renderFeature = () => {
-        if (!userId && activeFeature !== 'pulse') {
-            return <PositiveInvitation type="guest" onAction={() => navigation.navigate('Auth' as never)} />;
-        }
-
-        switch (activeFeature) {
-            case 'pulse':
-                return (
-                    <PulseDashboard
-                        onEnterDetails={() => setActiveFeature('energy')}
-                    />
-                );
-            case 'energy':
-                return <EnergyForecast userId={userId ?? undefined} />;
-            case 'decisions':
-                return (
-                    <VStack space="lg" sx={{ flex: 1 }}>
-                        <VStack space="xs">
-                            <Heading color={colors.text} size="lg">
-                                {t('principal.decisionJournal')}
-                            </Heading>
-                            <Text color={colors.textSecondary} size="sm">
-                                {t('principal.decisionJournalDesc')}
-                            </Text>
-                        </VStack>
-
-                        <DecisionJournalSection userId={userId} colors={colors} t={t} />
-                    </VStack>
-                );
-            case 'wisdom':
-                return (
-                    <VStack space="lg" sx={{ flex: 1 }}>
-                        <VStack space="xs">
-                            <Heading color={colors.text} size="lg">
-                                {t('principal.leadershipWisdom')}
-                            </Heading>
-                            <Text color={colors.textSecondary} size="sm">
-                                {t('principal.leadershipWisdomDesc')}
-                            </Text>
-                        </VStack>
-
-                        <PositiveInvitation
-                            context="self"
-                            title={t('principal.wisdomComingSoon')}
-                            description={t('principal.wisdomComingSoonDesc')}
-                        />
-                    </VStack>
-                );
-            case 'monthly':
-                return (
-                    <VStack space="lg" sx={{ flex: 1 }}>
-                        <VStack space="xs">
-                            <Heading color={colors.text} size="lg">
-                                {t('principal.monthlyReflection')}
-                            </Heading>
-                            <Text color={colors.textSecondary} size="sm">
-                                {t('principal.monthlyReflectionDesc')}
-                            </Text>
-                        </VStack>
-
-                        <PositiveInvitation
-                            context="self"
-                            title={t('principal.monthlyComingSoon')}
-                            description={t('principal.monthlyComingSoonDesc')}
-                        />
-                    </VStack>
-                );
-            default:
-                return <EnergyForecast userId={userId ?? undefined} />;
-        }
-    };
-
-    const allFeatures = showMoreTools
-        ? [...PRINCIPAL_CORE_FEATURES, ...PRINCIPAL_MORE_TOOLS]
-        : PRINCIPAL_CORE_FEATURES;
-
-    return (
-        <ScreenWrapper scroll={false} noTopInset={true}>
-            <GlobalHeader isSelfView avatarUrl={userProfile?.avatar_url} />
-            <AdaptiveLayout
-                renderSidebar={() => (
-                    <VStack space="lg" sx={{ p: Theme.spacing.lg }}>
-                        {/* Daily Content Section */}
-                        <VStack space="md">
-                            <DailyContentCard type="motivation" />
-                            <DailyContentCard type="did_you_know" />
-                        </VStack>
-
-                        {/* Resonance Pattern */}
-                        {userProfile && (
-                            <Box sx={{ mt: Theme.spacing.md }}>
-                                <ResonancePatternCard
-                                    orientationSeeds={userProfile.orientation_seeds}
-                                    moodLogs={moodLogs}
-                                    energyForecasts={energyForecasts}
-                                />
-                            </Box>
-                        )}
-
-                        {/* Feature Grid (Vertical on Tablet) */}
-                        <VStack space="md" sx={{ mt: Theme.spacing.md }}>
-                            <Heading size="sm" color={colors.textSecondary}>{t('principal.features')}</Heading>
-                            <Box sx={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
-                                {allFeatures.map((feature) => (
-                                    <Pressable
-                                        key={feature.id}
-                                        onPress={() => {
-                                            hapticLight();
-                                            setActiveFeature(feature.id);
-                                        }}
-                                        sx={{ width: '45%' }}
-                                    >
-                                        <VStack
-                                            alignItems="center"
-                                            justifyContent="center"
-                                            space="xs"
-                                            sx={{
-                                                height: 80,
-                                                borderRadius: Theme.corners.generous,
-                                                backgroundColor: activeFeature === feature.id
-                                                    ? Theme.colors.sanctuarySaffron
-                                                    : colors.secondary,
-                                                borderWidth: 1,
-                                                borderColor: activeFeature === feature.id
-                                                    ? Theme.colors.sanctuarySaffron
-                                                    : colors.border,
-                                            }}
-                                        >
-                                            <feature.icon
-                                                color={activeFeature === feature.id ? Theme.colors.white : colors.textSecondary}
-                                                size={24}
-                                            />
-                                            <Text
-                                                size="xs"
-                                                bold={activeFeature === feature.id}
-                                                color={activeFeature === feature.id ? Theme.colors.white : colors.text}
-                                                textAlign="center"
-                                            >
-                                                {t(`principal.${feature.id}`)}
-                                            </Text>
-                                        </VStack>
-                                    </Pressable>
-                                ))}
-                            </Box>
-                        </VStack>
-                    </VStack>
-                )}
-                renderContent={() => (
-                    <Box p={Theme.spacing.xl}>
-                        <Box
-                            p={Theme.spacing.xl}
-                            sx={{
-                                backgroundColor: colors.secondary,
-                                borderRadius: Theme.corners.generous,
-                                minHeight: 500
-                            }}
-                        >
-                            {loadingUser ? (
-                                <VStack space="md">
-                                    <SkeletonCard height={40} />
-                                    <SkeletonCard height={150} />
-                                    <SkeletonCard height={40} />
-                                </VStack>
-                            ) : renderFeature()}
-                        </Box>
-                    </Box>
-                )}
-            >
-                <ScrollView
-                    sx={{ flex: 1 }}
-                    contentContainerStyle={{ paddingBottom: bottomPadding, paddingTop: Theme.spacing.lg }}
-                    showsVerticalScrollIndicator={false}
-                >
-
-                    {/* Daily Content Section */}
-                    <Box mb="$4">
-                        <DailyContentCard type="motivation" />
-                        <DailyContentCard type="did_you_know" />
-                    </Box>
-
-                    {/* Resonance Pattern */}
-                    {userProfile && (
-                        <Box sx={{ paddingHorizontal: Theme.spacing.md, marginBottom: Theme.spacing.md }}>
-                            <ResonancePatternCard
-                                orientationSeeds={userProfile.orientation_seeds}
-                                moodLogs={moodLogs}
-                                energyForecasts={energyForecasts}
-                            />
-                        </Box>
-                    )}
-
-                    {/* Feature Carousel */}
-                    <Box sx={{ height: 100 }}>
-                        <ScrollView
-                            horizontal
-                            showsHorizontalScrollIndicator={false}
-                            contentContainerStyle={{ paddingHorizontal: Theme.spacing.md, gap: 12 }}
-                        >
-                            {allFeatures.map((feature) => (
-                                <Pressable
-                                    key={feature.id}
-                                    onPress={() => {
-                                        hapticLight();
-                                        setActiveFeature(feature.id);
-                                    }}
-                                >
-                                    <VStack
-                                        alignItems="center"
-                                        justifyContent="center"
-                                        space="xs"
-                                        sx={{
-                                            width: 100,
-                                            height: 80,
-                                            borderRadius: Theme.corners.generous,
-                                            backgroundColor: activeFeature === feature.id
-                                                ? Theme.colors.sanctuarySaffron
-                                                : colors.secondary,
-                                            borderWidth: 1,
-                                            borderColor: activeFeature === feature.id
-                                                ? Theme.colors.sanctuarySaffron
-                                                : colors.border,
-                                        }}
-                                    >
-                                        <feature.icon
-                                            color={activeFeature === feature.id ? Theme.colors.white : colors.textSecondary}
-                                            size={24}
-                                        />
-                                        <Text
-                                            size="xs"
-                                            bold={activeFeature === feature.id}
-                                            color={activeFeature === feature.id ? Theme.colors.white : colors.text}
-                                            textAlign="center"
-                                        >
-                                            {t(`principal.${feature.id}`)}
-                                        </Text>
-                                    </VStack>
-                                </Pressable>
-                            ))}
-
-                            {/* More Tools Toggle */}
-                            <Pressable
-                                onPress={() => {
-                                    hapticLight();
-                                    setShowMoreTools(!showMoreTools);
-                                }}
-                            >
-                                <VStack
-                                    alignItems="center"
-                                    justifyContent="center"
-                                    space="xs"
-                                    sx={{
-                                        width: 100,
-                                        height: 80,
-                                        borderRadius: Theme.corners.generous,
-                                        backgroundColor: showMoreTools
-                                            ? Theme.colors.sanctuarySaffron
-                                            : colors.secondary,
-                                        borderWidth: 1,
-                                        borderColor: showMoreTools
-                                            ? Theme.colors.sanctuarySaffron
-                                            : colors.border,
-                                        borderStyle: 'dashed'
-                                    }}
-                                >
-                                    <Text fontSize="$2xl" color={showMoreTools ? Theme.colors.white : colors.text}>
-                                        {showMoreTools ? '−' : '+'}
-                                    </Text>
-                                    <Text
-                                        size="xs"
-                                        bold={showMoreTools}
-                                        color={showMoreTools ? Theme.colors.white : colors.textSecondary}
-                                        textAlign="center"
-                                    >
-                                        {showMoreTools ? t('self.lessTools') : t('self.moreTools')}
-                                    </Text>
-                                </VStack>
-                            </Pressable>
-                        </ScrollView>
-                    </Box>
-
-                    {/* Dynamic Content */}
-                    <Box mt="$6">
-                        <Box
-                            p={Theme.spacing.xl}
-                            sx={{
-                                backgroundColor: colors.secondary,
-                                borderRadius: Theme.corners.generous,
-                                minHeight: 300
-                            }}
-                        >
-                            {loadingUser ? (
-                                <VStack space="md">
-                                    <SkeletonCard height={40} />
-                                    <SkeletonCard height={150} />
-                                    <SkeletonCard height={40} />
-                                </VStack>
-                            ) : renderFeature()}
-                        </Box>
-                    </Box>
-                </ScrollView>
-            </AdaptiveLayout>
-
-            <ShadowAgentDrawer />
-            <WelcomeModal
-                isOpen={justFinishedOnboarding}
-                onClose={() => setJustFinishedOnboarding(false)}
-            />
-        </ScreenWrapper>
-    );
+			<WelcomeModal
+				isOpen={justFinishedOnboarding}
+				onClose={() => setJustFinishedOnboarding(false)}
+			/>
+		</ScreenWrapper>
+	);
 }

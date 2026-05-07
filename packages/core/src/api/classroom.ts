@@ -1,106 +1,50 @@
-﻿import { supabase } from '../lib/supabase';
-import { APIError, Lesson, Student } from './types';
-import { requireTeacherAccess, requireClassroomAccess, requireAuth } from '../lib/authorization';
+import type { ClassroomStudent, TeacherStats } from '../logic/schemas/classroom.schema';
+import { educationalServices } from './runtimes/educational.runtime';
+import type { Lesson } from '../types';
+import { educationalContract } from './educational.contract';
 
 // ============================================================================
 // LESSONS API
 // ============================================================================
 
 export const lessonsAPI = {
-    /**
-     * Get all lessons for a classroom
-     */
-    async getAll(classroomId: string): Promise<Lesson[]> {
-        await requireClassroomAccess(classroomId);
-        const { data, error } = await supabase
-            .from('lessons')
-            .select('*')
-            .eq('classroom_id', classroomId)
-            .order('order_index', { ascending: true });
+  /**
+   * @authority read Lesson
+   */
+  async getAll(classroomId: string): Promise<Lesson[]> {
+    return (await educationalServices.lessons.getAll(classroomId)) as unknown as Lesson[];
+  },
 
-        if (error) {
-            throw new APIError('Failed to fetch lessons', error.code, error);
-        }
+  /**
+   * @authority read Lesson
+   */
+  async getByDate(classroomId: string, date: string): Promise<Lesson[]> {
+    return (await educationalServices.lessons.getByDate(classroomId, date)) as unknown as Lesson[];
+  },
 
-        return data || [];
-    },
+  /**
+   * @authority create Lesson
+   */
+  async create(lesson: Omit<Lesson, 'id' | 'created_at' | 'updated_at'>): Promise<Lesson> {
+    return (await educationalServices.lessons.create({
+      ...lesson,
+      updated_at: new Date(),
+    } as Omit<Lesson, 'id' | 'created_at'>)) as unknown as Lesson;
+  },
 
-    async getByDate(classroomId: string, date: string): Promise<Lesson[]> {
-        await requireClassroomAccess(classroomId);
-        const { data, error } = await supabase
-            .from('lessons')
-            .select('*')
-            .eq('classroom_id', classroomId)
-            .gte('published_at', date)
-            .lt('published_at', date + 'T23:59:59Z');
+  /**
+   * @authority update Lesson
+   */
+  async update(id: string, updates: Partial<Lesson>): Promise<Lesson> {
+    return (await educationalServices.lessons.update(id, updates)) as unknown as Lesson;
+  },
 
-        if (error) {
-            throw new APIError('Failed to fetch lessons by date', error.code, error);
-        }
-
-        return data || [];
-    },
-
-    /**
-     * Create a new lesson
-     */
-    async create(lesson: Omit<Lesson, 'id' | 'created_at' | 'updated_at'>): Promise<Lesson> {
-        await requireClassroomAccess(lesson.classroom_id);
-        const { data, error } = await supabase
-            .from('lessons')
-            .insert([lesson])
-            .select()
-            .single();
-
-        if (error) {
-            throw new APIError('Failed to create lesson', error.code, error);
-        }
-
-        return data;
-    },
-
-    /**
-     * Update a lesson
-     */
-    async update(id: string, updates: Partial<Lesson>): Promise<Lesson> {
-        // First get lesson to find classroom_id
-        const { data: lesson } = await supabase
-            .from('lessons')
-            .select('classroom_id')
-            .eq('id', id)
-            .single();
-
-        if (lesson) {
-            await requireClassroomAccess(lesson.classroom_id);
-        }
-
-        const { data, error } = await supabase
-            .from('lessons')
-            .update(updates)
-            .eq('id', id)
-            .select()
-            .single();
-
-        if (error) {
-            throw new APIError('Failed to update lesson', error.code, error);
-        }
-
-        return data;
-    },
-
-    /**
-     * Delete a lesson
-     */
-    async delete(id: string): Promise<void> {
-        const { error } = await supabase
-            .from('lessons')
-            .delete()
-            .eq('id', id);
-
-        if (error) {
-            throw new APIError('Failed to delete lesson', error.code, error);
-        }
-    },
+  /**
+   * @authority delete Lesson
+   */
+  async delete(id: string): Promise<void> {
+    return educationalServices.lessons.delete(id);
+  },
 };
 
 // ============================================================================
@@ -108,124 +52,98 @@ export const lessonsAPI = {
 // ============================================================================
 
 export const studentsAPI = {
-    /**
-     * Get all students (optionally by class)
-     */
-    async getAll(classId?: string): Promise<Student[]> {
-        if (classId) {
-            await requireClassroomAccess(classId);
-        } else {
-            // If no classId, user must be authenticated. 
-            // RLS will handle the rest, but we should at least check session.
-            await requireAuth();
-        }
+  /**
+   * @authority read Classroom
+   */
+  async getAll(classroomId: string): Promise<ClassroomStudent[]> {
+    return (await educationalServices.students.getAll(
+      classroomId,
+    )) as unknown as ClassroomStudent[];
+  },
 
-        let query = supabase
-            .from('students')
-            .select('*')
-            .order('full_name', { ascending: true });
+  /**
+   * @authority update Classroom
+   */
+  async enroll(classroomId: string, studentId: string): Promise<ClassroomStudent> {
+    return (await educationalServices.students.enroll(
+      classroomId,
+      studentId,
+    )) as unknown as ClassroomStudent;
+  },
 
-        if (classId) {
-            query = query.eq('class_id', classId);
-        }
+  /**
+   * @authority update Classroom
+   */
+  async remove(classroomId: string, studentId: string): Promise<void> {
+    return educationalServices.students.remove(classroomId, studentId);
+  },
 
-        const { data, error } = await query;
+  /**
+   * @authority create Classroom
+   */
+  async create(student: {
+    full_name: string;
+    roll_number?: string;
+    notes?: string;
+    classroom_id: string;
+  }) {
+    return educationalServices.classroomStudents.add(
+      student.classroom_id,
+      '', // student_id not needed for shadow student creation
+      student.roll_number,
+      student.notes,
+    );
+  },
 
-        if (error) {
-            throw new APIError('Failed to fetch students', error.code, error);
-        }
+  /**
+   * @authority update Classroom
+   */
+  async update(id: string, updates: { roll_number?: string; notes?: string }) {
+    return educationalServices.classroomStudents.updateById(id, updates);
+  },
 
-        return data || [];
-    },
+  /**
+   * @authority read Classroom
+   */
+  async getTeacherStats(teacherId: string): Promise<TeacherStats> {
+    return educationalServices.classrooms.getTeacherStats(teacherId);
+  },
 
-    /**
-     * Get a single student
-     */
-    async getById(id: string): Promise<Student> {
-        const { data, error } = await supabase
-            .from('students')
-            .select('*')
-            .eq('id', id)
-            .single();
+  /**
+   * @authority read AcademicHistory
+   */
+  async getHistoricalAcademicRecords(studentId: string) {
+    return educationalServices.students.getHistoricalAcademicRecords(studentId);
+  },
 
-        if (error) {
-            throw new APIError('Failed to fetch student', error.code, error);
-        }
+  /**
+   * @authority read ProfessionalHistory
+   */
+  async getHistoricalProfessionalRecords(teacherId: string) {
+    return educationalServices.teachers.getHistoricalProfessionalRecords(teacherId);
+  },
 
-        return data;
-    },
+  /**
+   * @authority read GovernanceHistory
+   */
+  async getHistoricalGovernanceRecords(principalId: string) {
+    return educationalServices.teachers.getHistoricalGovernanceRecords(principalId);
+  },
 
-    /**
-     * Create a new student
-     */
-    async create(student: Omit<Student, 'id' | 'created_at'>): Promise<Student> {
-        const { data, error } = await supabase
-            .from('students')
-            .insert([student])
-            .select()
-            .single();
+  /**
+   * @authority read School
+   */
+  async getSchoolLegacyHistory(schoolId: string) {
+    return educationalServices.institutions.getSchoolLegacyHistory(schoolId);
+  },
 
-        if (error) {
-            throw new APIError('Failed to create student', error.code, error);
-        }
-
-        return data;
-    },
-
-    /**
-     * Update student information
-     */
-    async update(id: string, updates: Partial<Student>): Promise<Student> {
-        const { data, error } = await supabase
-            .from('students')
-            .update(updates)
-            .eq('id', id)
-            .select()
-            .single();
-
-        if (error) {
-            throw new APIError('Failed to update student', error.code, error);
-        }
-
-        return data;
-    },
-
-    /**
-     * Delete a student
-     */
-    async delete(id: string): Promise<void> {
-        const { error } = await supabase
-            .from('students')
-            .delete()
-            .eq('id', id);
-
-        if (error) {
-            throw new APIError('Failed to delete student', error.code, error);
-        }
-    },
-
-    /**
-     * Bulk create multiple students at once
-     * Used for OCR scanning or manual bulk entry
-     */
-    async bulkCreate(
-        students: Array<Omit<Student, 'id' | 'created_at'>>,
-        classroomId?: string
-    ): Promise<Student[]> {
-        // Add class_id to all students if provided
-        const studentsToInsert = classroomId
-            ? students.map(s => ({ ...s, class_id: classroomId }))
-            : students;
-
-        const { data, error } = await supabase
-            .from('students')
-            .insert(studentsToInsert)
-            .select();
-
-        if (error) {
-            throw new APIError('Failed to bulk create students', error.code, error);
-        }
-
-        return data || [];
-    },
+  /**
+   * @authority read Classroom
+   */
+  async getClassroomLegacyHistory(classroomId: string) {
+    return educationalServices.institutions.getClassroomLegacyHistory(classroomId);
+  },
 };
+
+// Satisfy linter
+void educationalContract;

@@ -1,161 +1,176 @@
-import { storage, StorageKeys, requireAuth, useStore, growthSignalsAPI } from '@repo/core';
-import { CommunityPost, CommunityGroup, Group, Post } from '../types';
-import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
-import { communityAPI } from '../api/community';
+import { identityAPI } from "@repo/core/api";
+import {
+	useCreatePostMutation,
+	useGroupsInfiniteQuery,
+	usePostsInfiniteQuery,
+} from "@repo/core/api/hooks";
+import { useStore, useTemporalStore } from "@repo/core/store";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useCallback, useMemo } from "react";
+import { communityAPI } from "../api/community";
 
-// Keys for React Query
 export const COMMUNITY_KEYS = {
-    all: ['community'] as const,
-    groups: () => [...COMMUNITY_KEYS.all, 'groups'] as const,
-    posts: (groupId?: string) => [...COMMUNITY_KEYS.all, 'posts', groupId || 'all'] as const,
+	all: ["community"] as const,
+	groups: () => [...COMMUNITY_KEYS.all, "groups"] as const,
+	posts: (groupId?: string, date?: string, scale?: string) =>
+		[
+			...COMMUNITY_KEYS.all,
+			"posts",
+			groupId || "all",
+			date || "now",
+			scale || "day",
+		] as const,
 };
 
-export const useCommunity = (groupId?: string) => {
-    const queryClient = useQueryClient();
-    const storeUser = useStore(state => state.user);
+export const useCommunity = (
+	groupId?: string,
+	options: { searchQuery?: string; isPublicOnly?: boolean } = {},
+) => {
+	const queryClient = useQueryClient();
+	const user = useStore((state) => state.user);
+	const viewDate = useTemporalStore((state) => state.viewDate);
+	const viewScale = useTemporalStore((state) => state.viewScale);
 
-    // Fetch Groups with Infinite Scroll
-    const groupsInfiniteQuery = useInfiniteQuery({
-        queryKey: COMMUNITY_KEYS.groups(),
-        queryFn: async ({ pageParam = 0 }) => {
-            return communityAPI.getGroups({ limit: 10, offset: pageParam });
-        },
-        initialPageParam: 0,
-        getNextPageParam: (lastPage, allPages) => {
-            return lastPage.length === 10 ? allPages.length * 10 : undefined;
-        }
-    });
+	const groupsInfiniteQuery = useGroupsInfiniteQuery({
+		schoolId: user?.school_id ?? undefined,
+		searchQuery: options.searchQuery,
+		isPublicOnly: options.isPublicOnly,
+	});
 
-    // Fetch Posts with Infinite Scroll
-    const postsInfiniteQuery = useInfiniteQuery({
-        queryKey: COMMUNITY_KEYS.posts(groupId || 'all'),
-        queryFn: async ({ pageParam = 0 }) => {
-            return communityAPI.getPosts({
-                limit: 10,
-                offset: pageParam,
-                groupId: groupId
-            });
-        },
-        initialPageParam: 0,
-        getNextPageParam: (lastPage, allPages) => {
-            return lastPage.length === 10 ? allPages.length * 10 : undefined;
-        }
-    });
+	const postsInfiniteQuery = usePostsInfiniteQuery(groupId || "all");
+	const createPostMutation = useCreatePostMutation();
 
-    // Create Post Mutation
-    const createPostMutation = useMutation({
-        mutationFn: async (input: any) => {
-            const user = await requireAuth();
-            const schoolId = storeUser?.school_id ?? user.school_id;
-            if (!schoolId) {
-                throw new Error('No school context — please complete your profile before posting.');
-            }
-            return communityAPI.createPost(input, user.id, storeUser?.role ?? 'teacher', schoolId);
-        },
-        onMutate: async (newPost) => {
-            // Optimistic Update
-            await queryClient.cancelQueries({ queryKey: COMMUNITY_KEYS.posts(newPost.group_id) });
+	const createGroupMutation = useMutation({
+		mutationFn: async (input: Record<string, unknown>) => {
+			const loggedInId = await identityAPI.getMyInternalId();
+			if (!loggedInId) throw new Error("Not authenticated");
+			return communityAPI.createGroupWithOwner(input, loggedInId);
+		},
+		onSuccess: () => {
+			void queryClient.invalidateQueries({ queryKey: COMMUNITY_KEYS.groups() });
+		},
+	});
 
-            const previousPosts = queryClient.getQueryData<Post[]>(COMMUNITY_KEYS.posts(newPost.group_id));
+	const joinGroupMutation = useMutation({
+		mutationFn: async ({
+			groupId: targetGroupId,
+			userId,
+			joinPolicy,
+		}: {
+			groupId: string;
+			userId: string;
+			joinPolicy?: string;
+		}) => communityAPI.joinGroup(targetGroupId, userId, joinPolicy || "member"),
+		onSuccess: () => {
+			void queryClient.invalidateQueries({ queryKey: COMMUNITY_KEYS.groups() });
+		},
+	});
 
-            if (previousPosts) {
-                queryClient.setQueryData<Post[]>(COMMUNITY_KEYS.posts(newPost.group_id), [
-                    {
-                        ...newPost,
-                        id: 'temp-id',
-                        created_at: new Date().toISOString(),
-                        reactions: {},
-                        author_name: 'Me',
-                        author_role: storeUser?.role ?? 'teacher',
-                        post_type: newPost.post_type || 'discussion',
-                        visibility: 'school',
-                        media_url: newPost.media_url,
-                        media_type: newPost.media_type,
-                        is_anonymous: false,
-                        comment_count: 0,
-                        view_count: 0,
-                        school_id: storeUser?.school_id ?? '',
-                        tags: [],
-                        updated_at: new Date().toISOString()
-                    } as Post,
-                    ...previousPosts,
-                ]);
-            }
+	const toggleReactionMutation = useMutation({
+		mutationFn: async ({
+			postId,
+			userId,
+		}: {
+			postId: string;
+			userId: string;
+		}) => communityAPI.togglePostReaction(postId, userId),
+		onSuccess: () => {
+			void queryClient.invalidateQueries({
+				queryKey: COMMUNITY_KEYS.posts(groupId || "all", viewDate, viewScale),
+			});
+		},
+	});
 
-            return { previousPosts };
-        },
-        onError: (err, newPost, context: any) => {
-            if (context?.previousPosts) {
-                queryClient.setQueryData(COMMUNITY_KEYS.posts(newPost.group_id), context.previousPosts);
-            }
-        },
-        onSettled: (data, error, variables) => {
-            queryClient.invalidateQueries({ queryKey: COMMUNITY_KEYS.posts(variables.group_id) });
-        },
-        onSuccess: (_data, _variables) => {
-            // Growth signal — post created, fire-and-forget
-            if (storeUser?.id) {
-                growthSignalsAPI.emitSignal(storeUser.id, 'community_post_created')
-                    .catch((err) => console.warn('[useCommunity] growth signal failed:', err));
-            }
-        },
-    });
+	const deletePostMutation = useMutation({
+		mutationFn: (postId: string) => communityAPI.deletePost(postId),
+		onSuccess: () => {
+			void queryClient.invalidateQueries({
+				queryKey: COMMUNITY_KEYS.posts(groupId || "all", viewDate, viewScale),
+			});
+		},
+	});
 
-    // Create Group Mutation — always uses createGroupWithOwner so creator gets owner rights
-    const createGroupMutation = useMutation({
-        mutationFn: async (input: any) => {
-            const user = await requireAuth();
-            return communityAPI.createGroupWithOwner(input, user.id);
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: COMMUNITY_KEYS.groups() });
-        }
-    });
+	const groups = useMemo(
+		() => groupsInfiniteQuery.data?.pages.flat() ?? [],
+		[groupsInfiniteQuery.data],
+	);
+	const posts = useMemo(
+		() => postsInfiniteQuery.data?.pages.flat() ?? [],
+		[postsInfiniteQuery.data],
+	);
 
-    // Join Group Mutation
-    const joinGroupMutation = useMutation({
-        mutationFn: async ({ groupId, userId, joinPolicy }: { groupId: string, userId: string, joinPolicy?: string }) => {
-            return communityAPI.joinGroup(groupId, userId, joinPolicy);
-        },
-        onSuccess: (_, variables) => {
-            queryClient.invalidateQueries({ queryKey: COMMUNITY_KEYS.groups() });
-            // Also invalidate specific group if we have query for it
-        }
-    });
+	const fetchGroups = useCallback(
+		() => groupsInfiniteQuery.refetch(),
+		[groupsInfiniteQuery],
+	);
+	const fetchPosts = useCallback(
+		(targetGroupId?: string) =>
+			queryClient.invalidateQueries({
+				queryKey: COMMUNITY_KEYS.posts(
+					targetGroupId || groupId || "all",
+					viewDate,
+					viewScale,
+				),
+			}),
+		[groupId, queryClient, viewDate, viewScale],
+	);
 
-    return {
-        groups: groupsInfiniteQuery.data?.pages.flat() || [],
-        isLoadingGroups: groupsInfiniteQuery.isLoading,
-        isFetchingNextGroups: groupsInfiniteQuery.isFetchingNextPage,
-        hasNextGroups: groupsInfiniteQuery.hasNextPage,
-        fetchNextGroups: groupsInfiniteQuery.fetchNextPage,
-
-        posts: postsInfiniteQuery.data?.pages.flat() || [],
-        isLoadingPosts: postsInfiniteQuery.isLoading,
-        isFetchingNextPosts: postsInfiniteQuery.isFetchingNextPage,
-        hasNextPosts: postsInfiniteQuery.hasNextPage,
-        fetchNextPosts: postsInfiniteQuery.fetchNextPage,
-
-        getPosts: (groupId?: string) => {
-            // Wrapper to access data if needed
-            return { data: [], isLoading: false };
-        },
-
-        fetchGroups: () => groupsInfiniteQuery.refetch(),
-        fetchPosts: (groupId?: string) => queryClient.invalidateQueries({ queryKey: COMMUNITY_KEYS.posts(groupId || 'all') }),
-
-        createPost: createPostMutation.mutateAsync,
-        isCreatingPost: createPostMutation.isPending,
-
-        createGroup: createGroupMutation.mutateAsync,
-        isCreatingGroup: createGroupMutation.isPending,
-
-        joinGroup: joinGroupMutation.mutateAsync,
-        isJoiningGroup: joinGroupMutation.isPending,
-
-        loading: groupsInfiniteQuery.isLoading || postsInfiniteQuery.isLoading,
-        error: (groupsInfiniteQuery.error || postsInfiniteQuery.error)
-            ? ((groupsInfiniteQuery.error || postsInfiniteQuery.error) as any)?.message || 'An error occurred'
-            : null,
-    };
+	return useMemo(
+		() => ({
+			groups,
+			isLoadingGroups: groupsInfiniteQuery.isLoading,
+			isFetchingNextGroups: groupsInfiniteQuery.isFetchingNextPage,
+			hasNextGroups: groupsInfiniteQuery.hasNextPage,
+			fetchNextGroups: groupsInfiniteQuery.fetchNextPage,
+			posts,
+			isLoadingPosts: postsInfiniteQuery.isLoading,
+			isFetchingNextPosts: postsInfiniteQuery.isFetchingNextPage,
+			hasNextPosts: postsInfiniteQuery.hasNextPage,
+			fetchNextPosts: postsInfiniteQuery.fetchNextPage,
+			fetchGroups,
+			fetchPosts,
+			createPost: createPostMutation.mutateAsync,
+			isCreatingPost: createPostMutation.isPending,
+			createGroup: createGroupMutation.mutateAsync,
+			isCreatingGroup: createGroupMutation.isPending,
+			joinGroup: joinGroupMutation.mutateAsync,
+			isJoiningGroup: joinGroupMutation.isPending,
+			toggleReaction: toggleReactionMutation.mutateAsync,
+			isTogglingReaction: toggleReactionMutation.isPending,
+			deletePost: deletePostMutation.mutateAsync,
+			isDeletingPost: deletePostMutation.isPending,
+			loading: groupsInfiniteQuery.isLoading || postsInfiniteQuery.isLoading,
+			error:
+				groupsInfiniteQuery.error || postsInfiniteQuery.error
+					? (groupsInfiniteQuery.error || postsInfiniteQuery.error)?.message ||
+						"An error occurred"
+					: null,
+		}),
+		[
+			createGroupMutation.isPending,
+			createGroupMutation.mutateAsync,
+			createPostMutation.isPending,
+			createPostMutation.mutateAsync,
+			deletePostMutation.isPending,
+			deletePostMutation.mutateAsync,
+			fetchGroups,
+			fetchPosts,
+			groups,
+			groupsInfiniteQuery.error,
+			groupsInfiniteQuery.fetchNextPage,
+			groupsInfiniteQuery.hasNextPage,
+			groupsInfiniteQuery.isFetchingNextPage,
+			groupsInfiniteQuery.isLoading,
+			joinGroupMutation.isPending,
+			joinGroupMutation.mutateAsync,
+			posts,
+			postsInfiniteQuery.error,
+			postsInfiniteQuery.fetchNextPage,
+			postsInfiniteQuery.hasNextPage,
+			postsInfiniteQuery.isFetchingNextPage,
+			postsInfiniteQuery.isLoading,
+			toggleReactionMutation.isPending,
+			toggleReactionMutation.mutateAsync,
+		],
+	);
 };

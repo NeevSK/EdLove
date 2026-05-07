@@ -1,34 +1,70 @@
-import { Platform } from 'react-native';
-import { LibraryScreen as NativeLibraryScreen } from '@repo/library';
-import { CommunityScreen as NativeCommunityScreen } from '@repo/community';
-import { ClassroomScreen as NativeClassroomScreen } from '@repo/classroom';
-import { SelfScreen as NativeSelfScreen } from '@repo/self';
-
-export { default as AuthScreen } from './AuthScreen';
-
-// --- Web Consensus Layer ---
-// Domain screens with web-aligned sanctuary shells reside in the app screens directory.
-// This allows for a unified desktop experience that transcends the mobile domain logic.
-
-import WebLibraryScreen from './LibraryScreen.web';
-import WebCommunityScreen from './CommunityScreen.web';
-import WebSelfScreen from './SelfScreen.web';
-import WebProfileScreen from './ProfileScreen.web';
-import WebClassroomScreen from './ClassroomScreen.web';
-import WebAppSettingsScreen from './AppSettingsScreen.web';
-import WebNotificationsScreen from './NotificationsScreen.web';
-
-// Conditional Exports
-export const LibraryScreen = Platform.OS === 'web' ? WebLibraryScreen : NativeLibraryScreen;
-export const CommunityScreen = Platform.OS === 'web' ? WebCommunityScreen : NativeCommunityScreen;
-export const ClassroomScreen = Platform.OS === 'web' ? WebClassroomScreen : NativeClassroomScreen;
-
-// Self and Profile require conditional import to avoid circular dependencies or web-only code in native
-export const SelfScreen = Platform.OS === 'web' ? WebSelfScreen : NativeSelfScreen;
-export const ProfileScreen = Platform.OS === 'web' ? WebProfileScreen : (require('./ProfileScreen').default);
-
-export { default as SchoolCreationScreen } from './SchoolCreationScreen';
-export { default as AIAssistantScreen } from './AIAssistantScreen';
-export { default as WelcomeScreen } from './WelcomeScreen.web';
-export const AppSettingsScreen = WebAppSettingsScreen;
-export const NotificationsScreen = WebNotificationsScreen;
+export { default as FounderDashboard } from "@repo/admin/screens/FounderDashboard";
+export { default as FounderDashboardWeb } from "@repo/admin/screens/FounderDashboard.web";
+export { default as FounderSchoolDashboard } from "@repo/admin/screens/FounderSchoolDashboard";
+export { FounderVisionScreen } from "@repo/admin";
+export { default as PrincipalDashboardWeb } from "@repo/admin/screens/PrincipalDashboard.web";
+export { PrincipalNativeWorkspace } from "@repo/admin";
+export { default as SchoolCreationScreen } from "@repo/admin/screens/SchoolCreationScreen";
+export { default as SchoolForestScreen } from "@repo/admin/screens/SchoolForestScreen.web";
+export { SchoolProfileScreen } from "@repo/admin";
+export { AIAssistantScreen, AIAssistantScreenWeb } from "@repo/ai";
+export {
+	AttendanceScreen,
+	AttendanceScreenWeb,
+	ClassroomDetailScreenWeb,
+	ClassroomProfileScreenWeb,
+	ClassroomScreen,
+	ClassroomScreenWeb,
+	DemoPlaygroundPanel as DemoPlaygroundPanelWeb,
+	GradebookScreen,
+	GradebookScreenWeb,
+	NoSchoolView,
+	StudentDashboard,
+	StudentProfileScreen,
+	TeacherDashboard,
+	TimetableScreen as TimetableScreenWeb,
+} from "@repo/classroom";
+export {
+	AnnouncementsScreen,
+	BaseChatScreen,
+	CommunityScreen,
+	CommunityScreenWeb,
+	DirectMessageScreen,
+	DirectMessagesListScreen,
+	GroupChatScreen,
+	GroupDetailsScreen,
+	GroupDetailsScreenWeb,
+	GroupsScreen,
+	InvitationWelcomeScreen,
+	InviteCodeEntry,
+	UserPublicProfileScreen,
+} from "@repo/community";
+export { FormBuilderScreenWeb, PublicFormScreenWeb } from "@repo/form-builder";
+export {
+	CollectionDetailScreenWeb,
+	LibraryScreen,
+	LibraryScreenWeb,
+} from "@repo/library";
+export {
+	FullProfileScreen,
+	FullProfileScreenWeb,
+	MuteHubScreen,
+	ProfileScreen,
+	ProfileScreenWeb,
+	PublicProfileScreenWeb,
+	ThuthimalClaimScreen,
+} from "@repo/profile";
+export { QRHandlerScreen } from "@repo/scanner-kit";
+export { PrivacyLedgerScreen, SelfScreen, SelfScreenWeb } from "@repo/self";
+export { default as AppSettingsScreen } from "@repo/ui/screens/AppSettingsScreen";
+export { default as AppSettingsScreenWeb } from "@repo/ui/screens/AppSettingsScreen";
+export { default as AuthScreenWeb } from "@repo/ui/screens/AuthScreen";
+export { default as ErrorMessageDemo } from "@repo/ui/screens/ErrorMessageDemo";
+export { default as NotificationsScreen } from "@repo/ui/screens/NotificationsScreen";
+export { default as NotificationsScreenWeb } from "@repo/ui/screens/NotificationsScreen";
+export { default as OnboardingScreen } from "@repo/ui/screens/OnboardingScreen";
+export { default as OnboardingScreenWeb } from "@repo/ui/screens/OnboardingScreen";
+export { OnboardingWrapper } from "@repo/ui/screens/OnboardingWrapper";
+export { default as WelcomeScreen } from "@repo/ui/screens/WelcomeScreen";
+export { default as WelcomeScreenWeb } from "@repo/ui/screens/WelcomeScreen";
+export { default as AuthScreen } from "./AuthScreen";

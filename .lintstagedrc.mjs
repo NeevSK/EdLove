@@ -1,3 +1,0 @@
-export default {
-    '**/*.{ts,tsx}': () => 'pnpm turbo run check-types',
-};

@@ -1,11 +1,11 @@
 ---
-const links = [
-  { href: '/', label: 'Home', theme: 'home' },
-  { href: '/personal', label: 'Personal', theme: 'nature' },
-  { href: '/intellectual', label: 'Intellectual', theme: 'twilight' },
-  { href: '/professional', label: 'Professional', theme: 'light-tech' },
-  { href: '/library', label: 'Library', theme: 'warm-archive' },
-  { href: '/connect', label: 'Connect', theme: 'digital-neon' },
+const _links = [
+	{ href: "/", label: "Home", theme: "home" },
+	{ href: "/personal", label: "Personal", theme: "nature" },
+	{ href: "/intellectual", label: "Intellectual", theme: "twilight" },
+	{ href: "/professional", label: "Professional", theme: "light-tech" },
+	{ href: "/library", label: "Library", theme: "warm-archive" },
+	{ href: "/connect", label: "Connect", theme: "digital-neon" },
 ];
 
 const { pathname } = Astro.url;
@@ -19,7 +19,7 @@ const { pathname } = Astro.url;
     </a>
 
     <div class="nav-links">
-      {links.map((link, index) => (
+      {_links.map((link: any, index: any) => (
         <a
           href={link.href}
           class:list={['nav-link', { active: pathname === link.href || (link.href !== '/' && pathname.startsWith(link.href)) }]}
@@ -295,7 +295,6 @@ const { pathname } = Astro.url;
 <script>
   // Scroll detection
   const nav = document.getElementById('main-nav');
-  let lastScroll = 0;
 
   window.addEventListener('scroll', () => {
     const currentScroll = window.pageYOffset;

@@ -1,24 +1,75 @@
 ---
 export interface Props {
-  title: string;
-  description?: string;
-  theme?: string;
+	title?: string;
+	description?: string;
+	theme?: string;
+	image?: string;
+	noindex?: boolean;
+	structuredData?: Record<string, any> | Array<Record<string, any>>;
 }
 
-const { title, description, theme = 'home' } = Astro.props;
-import Navigation from '../components/common/Navigation.astro';
-import Footer from '../components/common/Footer.astro';
-import CoherenceMeter from '../components/common/CoherenceMeter.astro';
-import '../styles/global.scss';
-import '../styles/animations.scss';
-import '../styles/backgrounds.scss';
-import '../styles/cursor.scss';
-import '../styles/themes/nature.scss';
-import '../styles/themes/twilight.scss';
-import '../styles/themes/light-tech.scss';
-import '../styles/themes/warm-archive.scss';
-import '../styles/themes/digital-neon.scss';
-import '../styles/creative-signatures.scss';
+const {
+	title = SITE_TITLE,
+	description = SITE_DESCRIPTION,
+	theme = "home",
+	image,
+	noindex = false,
+	structuredData = [],
+} = Astro.props;
+import "../styles/global.scss";
+import "../styles/animations.scss";
+import "../styles/backgrounds.scss";
+import "../styles/cursor.scss";
+import "../styles/themes/nature.scss";
+import "../styles/themes/twilight.scss";
+import "../styles/themes/light-tech.scss";
+import "../styles/themes/warm-archive.scss";
+import "../styles/themes/digital-neon.scss";
+import "../styles/creative-signatures.scss";
+import CoherenceMeter from "../components/common/CoherenceMeter.astro";
+import Footer from "../components/common/Footer.astro";
+import Navigation from "../components/common/Navigation.astro";
+import StructuredData from "../components/StructuredData.astro";
+import {
+	defaultOgImage,
+	PERSON,
+	SITE_DESCRIPTION,
+	SITE_KEYWORDS,
+	SITE_NAME,
+	SITE_TITLE,
+	SITE_URL,
+} from "../lib/site";
+
+const canonical = Astro.url.href;
+const _ogImage = image ?? defaultOgImage(Astro.url.pathname);
+const _robotsContent = noindex ? "noindex, nofollow" : "index, follow";
+const _baseStructuredData = [
+	{
+		"@context": "https://schema.org",
+		"@type": "Person",
+		...PERSON,
+	},
+	{
+		"@context": "https://schema.org",
+		"@type": "WebSite",
+		name: SITE_NAME,
+		url: SITE_URL,
+		description: SITE_DESCRIPTION,
+	},
+	{
+		"@context": "https://schema.org",
+		"@type": "WebPage",
+		name: title,
+		description,
+		url: canonical,
+	},
+]
+	.concat(
+		Array.isArray(structuredData)
+			? (structuredData as any[])
+			: ([structuredData] as any[]),
+	)
+	.filter(Boolean);
 ---
 
 <!DOCTYPE html>
@@ -26,12 +77,26 @@ import '../styles/creative-signatures.scss';
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{title} | NeevSK</title>
-    {description && <meta name="description" content={description} />}
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="robots" content={_robotsContent} />
+    <meta name="keywords" content={SITE_KEYWORDS.join(', ')} />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE_NAME} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={_ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={_ogImage} />
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Literata:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Space+Grotesk:wght@400;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Inconsolata:wght@400;700&family=DM+Serif+Display&family=EB+Garamond:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+    <StructuredData data={_baseStructuredData} />
   </head>
   <body>
     <Navigation />

@@ -1,217 +1,265 @@
-import React, { useEffect, useState } from 'react';
+import { reportingAPI } from "@repo/admin/reporting";
+import { api } from "@repo/core/api";
+import type { AttendanceReport } from "@repo/core/logic";
+import type { AcademicCycle } from "@repo/core/types";
+
+import GlobalHeader from "@repo/ui/components/GlobalHeader";
+import { SkeletonCard } from "@repo/ui/components/SkeletonLoader";
+import { Activity, AlertTriangle, TrendingUp } from "@repo/ui/icons";
 import {
-    VStack,
-    HStack,
-    Box,
-    Text,
-    Theme,
-    useThemedColors,
-    GlobalHeader,
-    ScrollView,
-    SkeletonCard,
-    hapticLight
-} from '@repo/ui';
-import {
-    TrendingUp,
-    Users,
-    AlertTriangle,
-    Calendar,
-    ChevronRight,
-    TrendingDown,
-    Activity
-} from 'lucide-react-native';
-import { api, AttendanceReport, AcademicCycle } from '@repo/core';
-import { useTranslation } from 'react-i18next';
-import { TouchableOpacity } from 'react-native';
+	Box,
+	Heading,
+	HStack,
+	Icon,
+	Pressable,
+	ScrollView,
+	Text,
+	VStack,
+} from "@repo/ui/primitives";
+import { hapticLight } from "@repo/ui/utils/haptics";
+
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 interface AttendanceReportScreenProps {
-    schoolId: string;
-    classroomId?: string;
-    onBack: () => void;
+	schoolId: string;
+	classroomId?: string;
+	onBack: () => void;
 }
 
-export default function AttendanceReportScreen({ schoolId, classroomId, onBack }: AttendanceReportScreenProps) {
-    const { t } = useTranslation();
-    const colors = useThemedColors();
-    const [report, setReport] = useState<AttendanceReport | null>(null);
-    const [cycles, setCycles] = useState<AcademicCycle[]>([]);
-    const [selectedCycleId, setSelectedCycleId] = useState<string | null>(null);
-    const [loading, setLoading] = useState(true);
+export default function AttendanceReportScreen({
+	schoolId,
+	classroomId,
+	onBack,
+}: AttendanceReportScreenProps) {
+	const { t } = useTranslation();
+	const [report, setReport] = useState<AttendanceReport | null>(null);
+	const [cycles, setCycles] = useState<AcademicCycle[]>([]);
+	const [selectedCycleId, setSelectedCycleId] = useState<string | null>(null);
+	const [loading, setLoading] = useState(true);
 
-    const fetchData = async (cycleId?: string) => {
-        setLoading(true);
-        try {
-            const allCycles = await api.academicCycles.getAll(schoolId);
-            setCycles(allCycles);
+	const fetchData = async (cycleId?: string) => {
+		setLoading(true);
+		try {
+			const allCycles = await api["academicCycles"].getAll(schoolId);
+			setCycles(allCycles);
 
-            const targetCycle = cycleId
-                ? allCycles.find(c => c.id === cycleId)
-                : allCycles.find(c => c.is_current) || allCycles[0];
+			const targetCycle = cycleId
+				? allCycles.find((c: AcademicCycle) => c.id === cycleId)
+				: allCycles.find((c: AcademicCycle) => c.is_current) || allCycles[0];
 
-            if (targetCycle) {
-                setSelectedCycleId(targetCycle.id);
-                const data = await api.staffManagement.getAttendanceReport(
-                    schoolId,
-                    targetCycle.start_date,
-                    targetCycle.end_date,
-                    classroomId
-                );
-                setReport(data);
-            }
-        } catch (error) {
-            console.error('Failed to fetch attendance report:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
+			if (targetCycle) {
+				setSelectedCycleId(targetCycle.id);
+				const data = await reportingAPI.getAttendanceReport(
+					schoolId,
+					targetCycle.start_date.toISOString(),
+					targetCycle.end_date.toISOString(),
+					classroomId,
+				);
+				setReport(data);
+			}
+		} catch (error) {
+			console.error("Failed to fetch attendance report:", error);
+		} finally {
+			setLoading(false);
+		}
+	};
 
-    useEffect(() => {
-        fetchData();
-    }, [schoolId]);
+	useEffect(() => {
+		fetchData();
+	}, [fetchData]);
 
-    const handleCycleSelect = (id: string) => {
-        hapticLight();
-        setSelectedCycleId(id);
-        fetchData(id);
-    };
+	const handleCycleSelect = (id: string) => {
+		hapticLight();
+		setSelectedCycleId(id);
+		fetchData(id);
+	};
 
-    if (loading && !report) {
-        return (
-            <Box sx={{ flex: 1, backgroundColor: colors.primary }}>
-                <GlobalHeader title="Attendance Report" onBack={onBack} />
-                <VStack space="lg" sx={{ padding: Theme.spacing.lg }}>
-                    <SkeletonCard height={150} />
-                    <SkeletonCard height={300} />
-                </VStack>
-            </Box>
-        );
-    }
+	if (loading && !report) {
+		return (
+			<Box className="flex-1 bg-phase-canvas">
+				<GlobalHeader title="Attendance Report" onBack={onBack} />
+				<VStack className="gap-6 p-6">
+					<SkeletonCard height={150} />
+					<SkeletonCard height={300} />
+				</VStack>
+			</Box>
+		);
+	}
 
-    const selectedCycle = cycles.find(c => c.id === selectedCycleId);
+	return (
+		<Box className="flex-1 bg-phase-canvas">
+			<GlobalHeader
+				title={
+					classroomId
+						? "Class Attendance"
+						: t("principal.attendance.reportTitle") ||
+							"Institutional Attendance"
+				}
+				onBack={onBack}
+			/>
 
-    return (
-        <Box sx={{ flex: 1, backgroundColor: colors.primary }}>
-            <GlobalHeader
-                title={classroomId ? 'Class Attendance' : (t('principal.attendance.reportTitle') || 'Institutional Attendance')}
-                onBack={onBack}
-            />
+			<ScrollView contentContainerClassName="p-6">
+				<VStack className="gap-8">
+					{/* Cycle Selector */}
+					<Box>
+						<Text className="text-[10px] font-black text-phaseText-secondary mb-3 uppercase tracking-widest">
+							Select Academic Cycle
+						</Text>
+						<ScrollView horizontal showsHorizontalScrollIndicator={false}>
+							<HStack className="gap-3">
+								{cycles.map((cycle) => (
+									<Pressable
+										key={cycle.id}
+										onPress={() => handleCycleSelect(cycle.id)}
+										className={`px-6 py-3 rounded-full border ${
+											selectedCycleId === cycle.id
+												? "bg-templeGold border-templeGold"
+												: "bg-phase-surface border-phase-canvas"
+										}`}
+									>
+										<Text
+											className={`text-sm font-black ${
+												selectedCycleId === cycle.id
+													? "text-white"
+													: "text-phaseText-primary"
+											}`}
+										>
+											{cycle.name}
+										</Text>
+									</Pressable>
+								))}
+							</HStack>
+						</ScrollView>
+					</Box>
 
-            <ScrollView contentContainerStyle={{ padding: Theme.spacing.lg }}>
-                <VStack space="xl">
-                    {/* Cycle Selector */}
-                    <Box>
-                        <Text sx={{ fontSize: 12, fontWeight: '700', color: colors.textSecondary, marginBottom: Theme.spacing.sm, textTransform: 'uppercase' }}>
-                            Select Academic Cycle
-                        </Text>
-                        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                            <HStack space="sm">
-                                {cycles.map(cycle => (
-                                    <TouchableOpacity key={cycle.id} onPress={() => handleCycleSelect(cycle.id)}>
-                                        <Box sx={{
-                                            paddingHorizontal: 16,
-                                            paddingVertical: 8,
-                                            borderRadius: 20,
-                                            backgroundColor: selectedCycleId === cycle.id ? colors.action : colors.secondary,
-                                            borderWidth: 1,
-                                            borderColor: selectedCycleId === cycle.id ? colors.action : colors.border
-                                        }}>
-                                            <Text sx={{ fontSize: 13, fontWeight: '600', color: selectedCycleId === cycle.id ? '#fff' : colors.text }}>
-                                                {cycle.name}
-                                            </Text>
-                                        </Box>
-                                    </TouchableOpacity>
-                                ))}
-                            </HStack>
-                        </ScrollView>
-                    </Box>
+					{/* Key Metrics */}
+					{report && (
+						<HStack className="gap-4">
+							<Box className="flex-1 bg-phase-surface p-5 rounded-generous border-0 shadow-sm">
+								<VStack className="gap-2">
+									<Icon as={Activity} size="md" className="text-templeGold" />
+									<Heading className="text-3xl font-black text-phaseText-primary">
+										{report.overallRate}%
+									</Heading>
+									<Text className="text-[10px] text-phaseText-secondary font-bold uppercase tracking-wider">
+										Average Rate
+									</Text>
+								</VStack>
+							</Box>
+							<Box className="flex-1 bg-phase-surface p-5 rounded-generous border-0 shadow-sm">
+								<VStack className="gap-2">
+									<Icon
+										as={AlertTriangle}
+										size="md"
+										className="text-emberRed"
+									/>
+									<Heading className="text-3xl font-black text-phaseText-primary">
+										{report.totalAbsences}
+									</Heading>
+									<Text className="text-[10px] text-phaseText-secondary font-bold uppercase tracking-wider">
+										Total Absences
+									</Text>
+								</VStack>
+							</Box>
+						</HStack>
+					)}
 
-                    {/* Key Metrics */}
-                    {report && (
-                        <HStack space="md">
-                            <Box sx={{ flex: 1, backgroundColor: colors.secondary, padding: 16, borderRadius: 16, borderWidth: 1, borderColor: colors.border }}>
-                                <VStack space="xs">
-                                    <Activity size={20} color={colors.action} />
-                                    <Text sx={{ fontSize: 24, fontWeight: '800', color: colors.text }}>{report.overallRate}%</Text>
-                                    <Text sx={{ fontSize: 11, color: colors.textSecondary }}>Average Rate</Text>
-                                </VStack>
-                            </Box>
-                            <Box sx={{ flex: 1, backgroundColor: colors.secondary, padding: 16, borderRadius: 16, borderWidth: 1, borderColor: colors.border }}>
-                                <VStack space="xs">
-                                    <AlertTriangle size={20} color={Theme.colors.amberGlow ?? '#ffcc00'} />
-                                    <Text sx={{ fontSize: 24, fontWeight: '800', color: colors.text }}>{report.totalAbsences}</Text>
-                                    <Text sx={{ fontSize: 11, color: colors.textSecondary }}>Total Absences</Text>
-                                </VStack>
-                            </Box>
-                        </HStack>
-                    )}
+					<Box className="bg-phase-surface p-6 rounded-generous border-0 shadow-sm">
+						<VStack className="gap-6">
+							<HStack className="justify-between items-center">
+								<Heading className="text-base font-black text-phaseText-primary">
+									Attendance Trend
+								</Heading>
+								<Icon as={TrendingUp} size="sm" className="text-templeGold" />
+							</HStack>
 
-                    {/* Trend Chart (Simple Bar Representation) */}
-                    <Box sx={{
-                        backgroundColor: colors.secondary,
-                        padding: 20,
-                        borderRadius: 20,
-                        borderWidth: 1,
-                        borderColor: colors.border
-                    }}>
-                        <VStack space="md">
-                            <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                                <Text sx={{ fontSize: 15, fontWeight: '700', color: colors.text }}>Attendance Trend</Text>
-                                <TrendingUp size={18} color={colors.success} />
-                            </HStack>
+							{report && report.trend.length > 0 ? (
+								<VStack className="gap-4">
+									<HStack className="h-[150px] items-end gap-2">
+										{report.trend.slice(-10).map((point, _i) => (
+											<VStack
+												key={point.date}
+												className="flex-1 items-center gap-1.5"
+											>
+												<Box
+													className={`w-full rounded-t-lg ${
+														point.rate > 90
+															? "bg-templeGold"
+															: point.rate > 75
+																? "bg-amberGlow"
+																: "bg-emberRed"
+													}`}
+													style={{ height: `${point.rate}%` }}
+												/>
+												<Text className="text-[8px] text-phaseText-tertiary font-black">
+													{point.date.split("-")[2]}
+												</Text>
+											</VStack>
+										))}
+									</HStack>
+									<Text className="text-[10px] text-phaseText-tertiary text-center font-bold uppercase">
+										Showing last 10 session days
+									</Text>
+								</VStack>
+							) : (
+								<Box className="h-[100px] justify-center items-center">
+									<Text className="text-phaseText-tertiary font-medium">
+										No data for this period
+									</Text>
+								</Box>
+							)}
+						</VStack>
+					</Box>
 
-                            {report && report.trend.length > 0 ? (
-                                <VStack space="sm">
-                                    <HStack sx={{ height: 150, alignItems: 'flex-end', gap: 4 }}>
-                                        {report.trend.slice(-10).map((point, i) => (
-                                            <VStack key={point.date} sx={{ flex: 1, alignItems: 'center' }} space="xs">
-                                                <Box sx={{
-                                                    width: '100%',
-                                                    height: `${point.rate}%`,
-                                                    backgroundColor: point.rate > 90 ? colors.success : (point.rate > 75 ? colors.warning : colors.error),
-                                                    borderRadius: 4
-                                                }} />
-                                                <Text sx={{ fontSize: 8, color: colors.textTertiary }}>{point.date.split('-')[2]}</Text>
-                                            </VStack>
-                                        ))}
-                                    </HStack>
-                                    <Text sx={{ fontSize: 10, color: colors.textTertiary, textAlign: 'center' }}>Showing last 10 session days</Text>
-                                </VStack>
-                            ) : (
-                                <Box sx={{ height: 100, justifyContent: 'center', alignItems: 'center' }}>
-                                    <Text sx={{ color: colors.textTertiary }}>No data for this period</Text>
-                                </Box>
-                            )}
-                        </VStack>
-                    </Box>
-
-                    {/* Daily Table */}
-                    <VStack space="sm">
-                        <Text sx={{ fontSize: 14, fontWeight: '700', color: colors.text, marginLeft: 4 }}>Attendance Log</Text>
-                        {report?.trend.slice().reverse().map((point) => (
-                            <Box key={point.date} sx={{ padding: 12, borderBottomWidth: 1, borderBottomColor: colors.border }}>
-                                <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <VStack>
-                                        <Text sx={{ fontSize: 14, fontWeight: '600', color: colors.text }}>{point.date}</Text>
-                                        <Text sx={{ fontSize: 11, color: colors.textSecondary }}>
-                                            {point.presentCount} present · {point.absentCount} absent
-                                        </Text>
-                                    </VStack>
-                                    <Box sx={{
-                                        paddingHorizontal: 10,
-                                        paddingVertical: 4,
-                                        borderRadius: 12,
-                                        backgroundColor: point.rate > 90 ? colors.success + '22' : colors.action + '22'
-                                    }}>
-                                        <Text sx={{ fontSize: 12, fontWeight: '700', color: point.rate > 90 ? colors.success : colors.action }}>
-                                            {point.rate}%
-                                        </Text>
-                                    </Box>
-                                </HStack>
-                            </Box>
-                        ))}
-                    </VStack>
-                </VStack>
-            </ScrollView>
-        </Box>
-    );
+					{/* Daily Table */}
+					<VStack className="gap-3">
+						<Heading className="text-sm font-black text-phaseText-primary ml-1 uppercase tracking-widest">
+							Attendance Log
+						</Heading>
+						<VStack className="bg-phase-surface rounded-generous overflow-hidden border-0 shadow-sm">
+							{report?.trend
+								.slice()
+								.reverse()
+								.map((point, index, array) => (
+									<Box
+										key={point.date}
+										className={`p-5 ${index !== array.length - 1 ? "border-b border-phase-canvas" : ""}`}
+									>
+										<HStack className="justify-between items-center">
+											<VStack className="gap-0.5">
+												<Text className="text-sm font-black text-phaseText-primary">
+													{point.date}
+												</Text>
+												<Text className="text-[11px] text-phaseText-secondary font-medium">
+													{point.presentCount} present &bull;{" "}
+													{point.absentCount} absent
+												</Text>
+											</VStack>
+											<Box
+												className={`px-4 py-1.5 rounded-full ${
+													point.rate > 90
+														? "bg-templeGold/15"
+														: "bg-phase-canvas"
+												}`}
+											>
+												<Text
+													className={`text-xs font-black ${
+														point.rate > 90
+															? "text-templeGold"
+															: "text-phaseText-primary"
+													}`}
+												>
+													{point.rate}%
+												</Text>
+											</Box>
+										</HStack>
+									</Box>
+								))}
+						</VStack>
+					</VStack>
+				</VStack>
+			</ScrollView>
+		</Box>
+	);
 }

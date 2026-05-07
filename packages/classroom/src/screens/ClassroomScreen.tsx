@@ -1,163 +1,196 @@
-﻿/**
- * ClassroomScreen Component
- * 
- * Role-aware routing screen that displays different views based on user role:
- * - Principal: School overview (all sections)
- * - Section Head: Section overview (Primary/Junior/Senior)
- * - Grade Head: Grade overview (all classes in grade)
- * - Teacher/Student: Classroom list (assigned classes)
- */
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { useFeatureAccess } from "@repo/core/hooks";
+import { FeatureGuard, usePermissions, useStore } from "@repo/core/logic";
 
-import { supabase, useUserRole, hasRole, ADMIN_ROLES, MANAGEMENT_ROLES, useRoleFeatures, useStore } from '@repo/core';
+import GlobalHeader from "@repo/ui/components/GlobalHeader";
+import PositiveInvitation from "@repo/ui/components/PositiveInvitation";
+import ScreenWrapper from "@repo/ui/components/ScreenWrapper";
+import { SkeletonCard } from "@repo/ui/components/SkeletonLoader";
+import { Box, VStack } from "@repo/ui/primitives";
+import { hapticLight } from "@repo/ui/utils/haptics";
 
-import React, { useEffect, useState } from 'react';
-import { Box, VStack, Theme, useThemedColors, SkeletonCard, GlobalHeader, ScreenWrapper, PositiveInvitation, hapticLight } from '@repo/ui';
-import PrincipalSchoolView from './PrincipalSchoolView';
-import SectionHeadView from './SectionHeadView';
-import GradeHeadView from './GradeHeadView';
-import FounderSchoolView from './FounderSchoolView';
-import FounderDashboard from './FounderDashboard';
-import { ClassroomList, TeacherDashboard, StudentDashboard, NoSchoolOnboarding } from '../components';
-import { useClassroomRoleData } from '../hooks';
-import { useTranslation } from 'react-i18next';
-import { useNavigation } from '@react-navigation/native';
-import { SanctuaryNudge } from '@repo/ui';
+import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import {
+	ClaimInviteModal,
+	ClassroomList,
+	CreateClassroomModal,
+} from "../components";
+import CreateSchoolModal from "../components/CreateSchoolModal";
+import { useClassroomRoleData } from "../hooks";
+import { ClassroomWorkspaceCanvas } from "../workspace/ClassroomWorkspaceCanvas";
+import { useClassroomWorkspaceInsights } from "../workspace/useClassroomWorkspaceInsights";
+import { useClassroomWorkspaceLayout } from "../workspace/useClassroomWorkspaceLayout";
+import { useClassroomWorkspaceSurfaces } from "../workspace/useClassroomWorkspaceSurfaces";
 
 export default function ClassroomScreen() {
-    const colors = useThemedColors();
-    const { t } = useTranslation();
-    const navigation = useNavigation<any>();
-    const { role } = useUserRole();
-    const { isGuest } = useRoleFeatures();
-    const storeSchoolId = useStore(state => state.user?.school_id);
-    const [refreshTrigger, setRefreshTrigger] = useState(0);
-    const { data: classroomData, loading, fetchRoleData } = useClassroomRoleData(refreshTrigger);
+	const { t } = useTranslation();
+	const navigation = useNavigation<any>();
+	const { can } = usePermissions();
+	const canForWorkspace = (action: string, subject: string, field?: string) =>
+		can(action as any, subject as any, field);
+	const { isGuest } = useFeatureAccess();
+	const { schoolId: storeSchoolId, userId: storeUserId } = useStore(
+		(state) => ({
+			schoolId: state.user?.school_id,
+			userId: state.user?.id,
+		}),
+	);
+	const { setBreathingOpen } = useStore();
+	const [refreshTrigger, _setRefreshTrigger] = useState(0);
+	const {
+		data: classroomData,
+		loading,
+		fetchRoleData,
+	} = useClassroomRoleData(refreshTrigger);
+	const [isCreateSchoolOpen, setIsCreateSchoolOpen] = useState(false);
+	const [isCreateClassroomOpen, setIsCreateClassroomOpen] = useState(false);
+	const [isClaimInviteOpen, setIsClaimInviteOpen] = useState(false);
+	const [isDemoModeTriggered, setIsDemoModeTriggered] = useState(false);
+	const surfaceInsights = useClassroomWorkspaceInsights({
+		userId: classroomData?.userId || storeUserId,
+		schoolId: classroomData?.schoolId || storeSchoolId,
+		can,
+	});
 
-    useEffect(() => {
-        fetchRoleData();
-    }, [role]);
+	useEffect(() => {
+		fetchRoleData();
+	}, [fetchRoleData]);
 
-    // 1. Loading state (only if no data at all)
-    if (loading && !classroomData) {
-        return (
-            <ScreenWrapper scroll={false} noTopInset={true}>
-                <VStack sx={{ gap: Theme.spacing.md, padding: Theme.spacing.lg }}>
-                    <SkeletonCard height={60} />
-                    <SkeletonCard height={200} />
-                    <SkeletonCard height={120} />
-                </VStack>
-            </ScreenWrapper>
-        );
-    }
+	useFocusEffect(
+		React.useCallback(() => {
+			fetchRoleData();
+		}, [fetchRoleData]),
+	);
 
-    // Nudge for incomplete profiles
-    const renderNudge = () => {
-        if (classroomData && !classroomData.profileCompleted && !isGuest) {
-            return (
-                <SanctuaryNudge
-                    title="Sanctuary Entry"
-                    description="Complete your profile to unlock full school features."
-                    actionLabel="Finish"
-                    onAction={() => navigation.navigate('Profile')}
-                    icon="🌿"
-                />
-            );
-        }
-        return null;
-    };
+	const workspaceSurfaces = useClassroomWorkspaceSurfaces({
+		can: canForWorkspace,
+		t,
+		isGuest,
+		classroomData,
+		schoolIdToUse: classroomData?.schoolId || storeSchoolId,
+		isDemoModeTriggered,
+		setIsDemoModeTriggered,
+		setIsCreateSchoolOpen,
+		setIsCreateClassroomOpen,
+		setIsClaimInviteOpen,
+		setBreathingOpen,
+		fetchRoleData,
+		navigation,
+		surfaceInsights,
+	});
+	const {
+		surfaces: arrangedWorkspaceSurfaces,
+		layout,
+		setSurfaceHidden,
+		setSurfacePinned,
+		setSurfaceZone,
+	} = useClassroomWorkspaceLayout(classroomData?.userId, workspaceSurfaces);
 
-    // 2. Role-based routing
-    if (classroomData) {
-        if (role === 'founder') return <FounderDashboard />;
-        if (role === 'principal' || role === 'developer' || role === 'admin') {
-            const schoolId = classroomData.schoolId || storeSchoolId || '';
-            // Surface NoSchoolOnboarding for principals who haven't created their school yet
-            if (!schoolId) {
-                return (
-                    <NoSchoolOnboarding
-                        userId={classroomData.userId}
-                        profileCompleted={classroomData.profileCompleted ?? false}
-                        onRefresh={fetchRoleData}
-                    />
-                );
-            }
-            return (
-                <PrincipalSchoolView
-                    schoolId={schoolId}
-                    userId={classroomData.userId}
-                    onRefresh={fetchRoleData}
-                />
-            );
-        }
-    }
+	const renderContent = () => {
+		if (loading && !classroomData) {
+			return (
+				<ScreenWrapper scroll={false} noTopInset={true}>
+					<VStack className="gap-4 p-4">
+						<SkeletonCard height={60} />
+						<SkeletonCard height={200} />
+						<SkeletonCard height={120} />
+					</VStack>
+				</ScreenWrapper>
+			);
+		}
 
+		if (classroomData && arrangedWorkspaceSurfaces.length > 0) {
+			return (
+				<Box className="flex-1">
+					<ScreenWrapper scroll={false} noTopInset={true}>
+						<Box className="flex-1 p-4">
+							<ClassroomWorkspaceCanvas
+								layout={layout}
+								surfaces={arrangedWorkspaceSurfaces}
+								onToggleHidden={setSurfaceHidden}
+								onTogglePinned={setSurfacePinned}
+								onMoveToNextZone={setSurfaceZone}
+							/>
+						</Box>
+					</ScreenWrapper>
+					<CreateSchoolModal
+						isOpen={isCreateSchoolOpen}
+						onClose={() => setIsCreateSchoolOpen(false)}
+						onSuccess={() => {
+							setIsCreateSchoolOpen(false);
+							fetchRoleData();
+						}}
+					/>
+					<CreateClassroomModal
+						isOpen={isCreateClassroomOpen}
+						mode="create"
+						onClose={() => setIsCreateClassroomOpen(false)}
+						onSuccess={() => {
+							setIsCreateClassroomOpen(false);
+							fetchRoleData();
+						}}
+					/>
+					<ClaimInviteModal
+						isOpen={isClaimInviteOpen}
+						onClose={() => setIsClaimInviteOpen(false)}
+						onSuccess={() => {
+							setIsClaimInviteOpen(false);
+							fetchRoleData();
+						}}
+					/>
+				</Box>
+			);
+		}
 
-    if (role === 'section_head') return <SectionHeadView schoolId={classroomData?.schoolId || undefined} userId={classroomData?.userId} />;
-    if (role === 'grade_head') return <GradeHeadView schoolId={classroomData?.schoolId || undefined} userId={classroomData?.userId} />;
+		return (
+			<FeatureGuard
+				action="read"
+				subject="ClassroomList"
+				fallback={
+					<ScreenWrapper scroll={false} noTopInset={true}>
+						<Box className="flex-1 p-4 gap-6">
+							<GlobalHeader
+								title={t("classroom.welcome") || "Welcome to Sanctuary"}
+								subtitle={undefined}
+							/>
+							<PositiveInvitation
+								type="guest"
+								onAction={() => {
+									hapticLight();
+									navigation.navigate("Auth" as never);
+								}}
+							/>
+						</Box>
+					</ScreenWrapper>
+				}
+			>
+				<ScreenWrapper scroll={false} noTopInset={true}>
+					<Box className="flex-1 p-4 gap-6">
+						<GlobalHeader
+							title={t("classroom.journeyTitle") || "Learning Journey"}
+							subtitle={t("classroom.mySanctuary") || "My Sanctuary"}
+						/>
+						<ClassroomList
+							refreshTrigger={refreshTrigger}
+							onClassroomPress={(classroom) => {
+								navigation.navigate(
+									"Classroom" as never,
+									{
+										screen: "ClassroomDashboard",
+										params: {
+											classroomId: classroom.id,
+											classroomName: classroom.name,
+										},
+									} as never,
+								);
+							}}
+						/>
+					</Box>
+				</ScreenWrapper>
+			</FeatureGuard>
+		);
+	};
 
-    // Teacher View
-    if (role === 'teacher') {
-        return (
-            <ScreenWrapper scroll={false} noTopInset={true}>
-                <GlobalHeader title="Classroom 💛" subtitle={undefined} />
-                <Box sx={{ flex: 1 }}>
-                    {renderNudge()}
-                    <TeacherDashboard
-                        schoolId={classroomData?.schoolId || undefined}
-                        userId={classroomData?.userId}
-                        onRefresh={fetchRoleData}
-                    />
-                </Box>
-            </ScreenWrapper>
-        );
-    }
-
-    // Student View (Instant Routing)
-    if ((role as any) === 'student' || (isGuest && (role as any) === 'student')) {
-        return (
-            <ScreenWrapper scroll={false} noTopInset={true}>
-                <GlobalHeader title={t('classroom.mySanctuaries') || 'My Sanctuaries'} subtitle={undefined} />
-                <Box sx={{ flex: 1 }}>
-                    {renderNudge()}
-                    <StudentDashboard
-                        schoolId={classroomData?.schoolId || undefined}
-                        userId={classroomData?.userId}
-                        onRefresh={fetchRoleData}
-                    />
-                </Box>
-            </ScreenWrapper>
-        );
-    }
-
-    // Default/Guest View
-    const headerTitle = isGuest ? (t('classroom.welcome') || 'Welcome to Sanctuary') : (t('classroom.journeyTitle') || 'Learning Journey');
-    const headerSubtitle = isGuest ? (t('classroom.explore') || 'Explore Sample Sanctuaries') : (t('classroom.mySanctuary') || 'My Sanctuary');
-
-    return (
-        <ScreenWrapper scroll={false} noTopInset={true}>
-            <GlobalHeader title={headerTitle} subtitle={isGuest ? undefined : headerSubtitle} />
-            <Box sx={{ flex: 1, padding: Theme.spacing.lg }}>
-                {renderNudge()}
-                <ClassroomList
-                    refreshTrigger={refreshTrigger}
-                    onClassroomPress={(classroom) => {
-                        navigation.navigate('Classroom' as any, {
-                            screen: 'ClassroomDetails',
-                            params: { classroomId: classroom.id, classroomName: classroom.name }
-                        });
-                    }}
-                />
-
-                {isGuest && (
-                    <PositiveInvitation
-                        type="guest"
-                        onAction={() => {
-                            hapticLight();
-                            navigation.navigate('Auth' as never);
-                        }}
-                    />
-                )}
-            </Box>
-        </ScreenWrapper>
-    );
+	return renderContent();
 }

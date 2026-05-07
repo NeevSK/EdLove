@@ -1,0 +1,213 @@
+diff --git a/dist/cjs/exports/Platform/index.js b/dist/cjs/exports/Platform/index.js
+index 5236129aeb117a706d30682ac0a98909da94d443..f6ad5e1e788fd8f36a6abc87aa03769e0f516304 100644
+--- a/dist/cjs/exports/Platform/index.js
++++ b/dist/cjs/exports/Platform/index.js
+@@ -23,6 +23,15 @@ var Platform = {
+   },
+   get Version() {
+     return '0.0.0';
++  },
++  get constants() {
++    return {
++      reactNativeVersion: {
++        major: 0,
++        minor: 74,
++        patch: 0
++      }
++    };
+   }
+ };
+ var _default = exports.default = Platform;
+diff --git a/dist/cjs/exports/UIManager/index.js b/dist/cjs/exports/UIManager/index.js
+index e2e38cb94954d1cb60e14a63b91871f769e536ea..538a1ffe9952407062e70d19475f6dcc60882049 100644
+--- a/dist/cjs/exports/UIManager/index.js
++++ b/dist/cjs/exports/UIManager/index.js
+@@ -127,7 +127,14 @@ var UIManager = {
+     onAnimationDidEnd();
+   },
+   // mocks
+-  setLayoutAnimationEnabledExperimental() {}
++  setLayoutAnimationEnabledExperimental() {},
++  getViewManagerConfig() {},
++  hasViewManagerConfig() {
++    return false;
++  },
++  dispatchViewManagerCommand() {}
+ };
++
++UIManager.default = UIManager;
+ var _default = exports.default = UIManager;
+ module.exports = exports.default;
+\ No newline at end of file
+diff --git a/dist/cjs/index.js b/dist/cjs/index.js
+index b6962700f4e31dfccfacb7e5267eb8a0e5515463..5b267232662f894914b0690ff6a14df16ed7da48 100644
+--- a/dist/cjs/index.js
++++ b/dist/cjs/index.js
+@@ -111,6 +111,20 @@ var _TouchableWithoutFeedback = _interopRequireDefault(require("./exports/Toucha
+ exports.TouchableWithoutFeedback = _TouchableWithoutFeedback.default;
+ var _View = _interopRequireDefault(require("./exports/View"));
+ exports.View = _View.default;
++var codegenNativeComponent = function(name) { return _View.default; };
++exports.codegenNativeComponent = codegenNativeComponent;
++var requireNativeComponent = function(name) { return _View.default; };
++exports.requireNativeComponent = requireNativeComponent;
++var codegenNativeCommands = function(options) {
++  var cmd = {};
++  if (options && options.supportedCommands) {
++    options.supportedCommands.forEach(function(command) {
++      cmd[command] = function() {};
++    });
++  }
++  return cmd;
++};
++exports.codegenNativeCommands = codegenNativeCommands;
+ var _VirtualizedList = _interopRequireDefault(require("./exports/VirtualizedList"));
+ exports.VirtualizedList = _VirtualizedList.default;
+ var _YellowBox = _interopRequireDefault(require("./exports/YellowBox"));
+diff --git a/dist/exports/Platform/index.js b/dist/exports/Platform/index.js
+index 605ebbd0007f9782f8b69f20699188e751b61bd1..f8bddcc1efe3fa1c841b88a46299def44fa6ca3d 100644
+--- a/dist/exports/Platform/index.js
++++ b/dist/exports/Platform/index.js
+@@ -19,6 +19,15 @@ var Platform = {
+   },
+   get Version() {
+     return '0.0.0';
++  },
++  get constants() {
++    return {
++      reactNativeVersion: {
++        major: 0,
++        minor: 74,
++        patch: 0
++      }
++    };
+   }
+ };
+ export default Platform;
+\ No newline at end of file
+diff --git a/dist/exports/UIManager/index.js b/dist/exports/UIManager/index.js
+index 9dd5f831325fd3d73039c3037198ad1088b86612..c4e530f448b937b0afe0f30090519ba5ae7adccb 100644
+--- a/dist/exports/UIManager/index.js
++++ b/dist/exports/UIManager/index.js
+@@ -122,6 +122,13 @@ var UIManager = {
+     onAnimationDidEnd();
+   },
+   // mocks
+-  setLayoutAnimationEnabledExperimental() {}
++  setLayoutAnimationEnabledExperimental() {},
++  getViewManagerConfig() {},
++  hasViewManagerConfig() {
++    return false;
++  },
++  dispatchViewManagerCommand() {}
+ };
++
++UIManager.default = UIManager;
+ export default UIManager;
+\ No newline at end of file
+diff --git a/dist/index.js b/dist/index.js
+index 4f699876d1902f758c3af4df5438e8ecc78bd6b4..53400117d79bfddf9950c22e5e7b52e96990ecb0 100644
+--- a/dist/index.js
++++ b/dist/index.js
+@@ -55,7 +55,21 @@ export { default as TouchableHighlight } from './exports/TouchableHighlight';
+ export { default as TouchableNativeFeedback } from './exports/TouchableNativeFeedback';
+ export { default as TouchableOpacity } from './exports/TouchableOpacity';
+ export { default as TouchableWithoutFeedback } from './exports/TouchableWithoutFeedback';
+-export { default as View } from './exports/View';
++import View from './exports/View';
++export { View };
++export const codegenNativeComponent = function(name) { return View; };
++export const requireNativeComponent = function(name) { return View; };
++export const codegenNativeCommands = function(options) {
++  var cmd = {};
++  if (options && options.supportedCommands) {
++    options.supportedCommands.forEach(function(command) {
++      cmd[command] = function() {
++        throw new Error('Native command ' + command + ' not implemented.');
++      };
++    });
++  }
++  return cmd;
++};
+ export { default as VirtualizedList } from './exports/VirtualizedList';
+ export { default as YellowBox } from './exports/YellowBox';
+ export { default as LogBox } from './exports/LogBox';
+diff --git a/src/exports/Platform/index.js b/src/exports/Platform/index.js
+index ef729649864c7512139f25e1878cf680fb85d97c..dc83a1ef125218b65d70ec1db38581664586950f 100644
+--- a/src/exports/Platform/index.js
++++ b/src/exports/Platform/index.js
+@@ -10,15 +10,24 @@
+ 
+ const Platform = {
+   OS: 'web',
+-  select: (obj: Object): any => ('web' in obj ? obj.web : obj.default),
+-  get isTesting(): boolean {
++  select: (obj) => ('web' in obj ? obj.web : obj.default),
++  get isTesting() {
+     if (process.env.NODE_ENV === 'test') {
+       return true;
+     }
+     return false;
+   },
+-  get Version(): string {
++  get Version() {
+     return '0.0.0';
++  },
++  get constants() {
++    return {
++      reactNativeVersion: {
++        major: 0,
++        minor: 74,
++        patch: 0
++      }
++    };
+   }
+ };
+ 
+diff --git a/src/exports/UIManager/index.js b/src/exports/UIManager/index.js
+index dd381315a10ed795179d603ecfdcc938565bac41..14232ed7fa8266e4800ec301535c0c1b7703b683 100644
+--- a/src/exports/UIManager/index.js
++++ b/src/exports/UIManager/index.js
+@@ -126,7 +126,14 @@ const UIManager = {
+   },
+ 
+   // mocks
+-  setLayoutAnimationEnabledExperimental() {}
++  setLayoutAnimationEnabledExperimental() {},
++  getViewManagerConfig() {},
++  hasViewManagerConfig() {
++    return false;
++  },
++  dispatchViewManagerCommand() {}
+ };
+ 
++UIManager.default = UIManager;
++
+ export default UIManager;
+diff --git a/src/index.js b/src/index.js
+index f1a6f23fca1cc5971412cdf39d95384a4663bc3e..9036f93ba6e09405233420047fec9e7ea417ca7e 100644
+--- a/src/index.js
++++ b/src/index.js
+@@ -56,7 +56,21 @@ export { default as TouchableHighlight } from './exports/TouchableHighlight';
+ export { default as TouchableNativeFeedback } from './exports/TouchableNativeFeedback';
+ export { default as TouchableOpacity } from './exports/TouchableOpacity';
+ export { default as TouchableWithoutFeedback } from './exports/TouchableWithoutFeedback';
+-export { default as View } from './exports/View';
++import View from './exports/View';
++export { View };
++export const codegenNativeComponent = function(name) { return View; };
++export const requireNativeComponent = function(name) { return View; };
++export const codegenNativeCommands = function(options) {
++  var cmd = {};
++  if (options && options.supportedCommands) {
++    options.supportedCommands.forEach(function(command) {
++      cmd[command] = function() {
++        throw new Error('Native command ' + command + ' not implemented.');
++      };
++    });
++  }
++  return cmd;
++};
+ export { default as VirtualizedList } from './exports/VirtualizedList';
+ export { default as YellowBox } from './exports/YellowBox';
+ export { default as LogBox } from './exports/LogBox';

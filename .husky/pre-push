@@ -1,0 +1,23 @@
+echo ">>> 🛂 SOVEREIGN GATE: Validating Global Push Integrity..."
+
+# PUSH_MODE handling: full (default) or min (TSC + Lint only)
+if [ "$PUSH_MODE" = "min" ]; then
+    echo ">>> ⚠️  PUSH MODE: MINIMUM (TSC + LINT ONLY)"
+    AuditCmd="pnpm exec commitlint --from=HEAD~1 --to=HEAD; pnpm run lint; pnpm run check-types"
+else
+    AuditCmd="pnpm exec commitlint --from=HEAD~1 --to=HEAD; pnpm run lint; pnpm run check-types; pnpm run check:hygiene; pnpm run identity:check; pnpm run i18n:check"
+fi
+
+node scripts/sovereign-audit.mjs --cmd "$AuditCmd" --log "reports/push_audit.md"
+
+if [ $? -ne 0 ]; then
+    echo ""
+    echo "❌ PUSH REJECTED: Architectural or Quality Violations Detected."
+    echo "📍 ACCESSIBLE REPORT: reports/push_audit.md"
+    echo "💡 TIP: Review the report to see exact errors or run 'pnpm run check-all' to debug locally."
+    exit 1
+fi
+
+echo ""
+echo "✅ PUSH APPROVED: Integrity Verified."
+exit 0

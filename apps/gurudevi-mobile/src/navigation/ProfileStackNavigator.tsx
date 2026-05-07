@@ -1,44 +1,40 @@
-import React from 'react';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { useTranslation } from 'react-i18next';
-import ProfileScreen from '../screens/ProfileScreen';
-import FullProfileScreen from '../screens/profile/FullProfileScreen';
-import { PrivacyLedgerScreen } from '@repo/self';
-import { useThemedColors } from '@repo/ui';
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { FullProfileScreen, ProfileScreen } from "@repo/profile";
+import { PrivacyLedgerScreen } from "@repo/self";
+import { useTheme } from "@repo/ui/primitives";
 
 const Stack = createNativeStackNavigator();
 
 export default function ProfileStackNavigator() {
-    const { t } = useTranslation();
-    const colors = useThemedColors();
+	const { scene } = useTheme();
 
-    return (
-        <Stack.Navigator
-            id="ProfileStack"
-            screenOptions={{
-                headerShown: false,
-                contentStyle: { backgroundColor: colors.secondary }, // contentStyle for native-stack
-            }}
-        >
-            <Stack.Screen name="ProfileMain" component={ProfileScreen} />
-            <Stack.Screen
-                name="FullProfile"
-                component={FullProfileScreen}
-                options={{
-                    headerShown: false,
-                    presentation: 'modal',
-                    animation: 'slide_from_bottom',
-                }}
-            />
-            <Stack.Screen
-                name="PrivacyLedger"
-                component={PrivacyLedgerScreen}
-                options={{
-                    headerShown: false,
-                    presentation: 'modal',
-                    animation: 'slide_from_bottom',
-                }}
-            />
-        </Stack.Navigator>
-    );
+	return (
+		<Stack.Navigator
+			id="ProfileStack"
+			screenOptions={{
+				headerShown: false,
+				contentStyle: { backgroundColor: scene.surface.bg }, // contentStyle for native-stack
+			}}
+		>
+			<Stack.Screen name="ProfileMain" component={ProfileScreen} />
+			<Stack.Screen
+				name="FullProfile"
+				component={FullProfileScreen as any}
+				options={{
+					headerShown: false,
+					presentation: "modal",
+					animation: "slide_from_bottom",
+				}}
+			/>
+			<Stack.Screen
+				name="PrivacyLedger"
+				component={PrivacyLedgerScreen}
+				options={{
+					headerShown: false,
+					presentation: "modal",
+					animation: "slide_from_bottom",
+				}}
+			/>
+		</Stack.Navigator>
+	);
 }

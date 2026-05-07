@@ -1,0 +1,9 @@
+appId: org.edlove.gurudevi
+---
+- launchApp
+- assertVisible: "Welcome"
+- tapOn: "Get Started"
+- assertVisible: "Create your workspace"
+- typeText: "Neev School"
+- tapOn: "Continue"
+- assertVisible: "Onboarding Complete"

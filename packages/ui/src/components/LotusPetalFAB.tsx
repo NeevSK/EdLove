@@ -1,55 +1,43 @@
-﻿/**
- * LOTUS PETAL FAB - Floating Action Button (Sanctuary Version)
- * 
- * A living UI component that represents the Agentic presence.
- */
-
-import React, { FC, useMemo, useEffect, useCallback, useState, useRef } from 'react';
-import { View, Pressable, StyleSheet, PanResponder, Dimensions, Image } from 'react-native';
+import { Wind } from 'lucide-react-native';
+import type React from 'react';
+import { type FC, useCallback, useEffect, useMemo, useRef, useState, memo } from 'react';
 import Animated, {
-    useAnimatedStyle,
-    withRepeat,
-    withTiming,
-    withSequence,
-    withSpring,
-    interpolate,
-    SharedValue,
-    Extrapolate,
-    useSharedValue,
-    Easing,
+  Easing,
+  type SharedValue,
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withSequence,
+  withSpring,
+  withTiming,
 } from 'react-native-reanimated';
-import * as Haptics from 'expo-haptics';
-import { Theme, typography } from '../theme/Theme';
-import { useThemedColors } from '../hooks/useThemedColors';
-import { useTheme } from '../hooks/useTheme';
-import { hapticLight } from '../utils/haptics';
+import { Dimensions, PanResponder, Platform } from '../primitives';
+import { useFAB } from '../context/FABContext';
+import { Box, HStack, Pressable, Text, VStack } from '../gluestack';
 import { useAccessibility } from '../hooks/useAccessibility';
-import { X } from 'lucide-react-native';
-import { Box, VStack, HStack, Text } from '../gluestack';
+import { hapticLight } from '../utils/haptics';
+import { useBottomTabPadding } from './ScreenWrapper';
 import { UniversalModal } from './UniversalModal';
 
 // ============================================================================
 // TYPES
 // ============================================================================
 
-export type TabType = 'self' | 'classroom' | 'community' | 'library' | 'profile' | 'section' | 'grade' | 'principal';
-
-export interface ActionItem {
-    label: string;
-    onPress: () => void;
-    icon?: React.ComponentType<{ size: number; color: string; strokeWidth: number }>;
-}
+import type { ActionItem, TabType } from '../types/fab';
 
 interface LotusPetalFABProps {
-    currentTab?: TabType;
-    onPress?: () => void;
-    icon?: React.ReactNode;
-    actions?: ActionItem[];
-    scrollY?: SharedValue<number>;
-    disabled?: boolean;
-    bottomInset?: number;
-    hasActiveGaps?: boolean; // New: Agent has a suggestion
-    gapPriority?: 'low' | 'medium' | 'high';
+  currentTab?: TabType;
+  onPress?: () => void;
+  icon?: React.ReactNode;
+  actions?: ActionItem[];
+  scrollY?: SharedValue<number>;
+  disabled?: boolean;
+  bottomInset?: number;
+  hasActiveGaps?: boolean;
+  gapPriority?: 'low' | 'medium' | 'high';
+  onBreathingReset?: () => void;
+  useGlobal?: boolean;
+  className?: string;
 }
 
 // ============================================================================
@@ -57,230 +45,334 @@ interface LotusPetalFABProps {
 // ============================================================================
 
 const FAB_SIZE = 56;
-const ACTION_DRAWER_HEIGHT = Dimensions.get('window').height * 0.4;
-
-type IconComponentType = React.ComponentType<{ size: number; color: string; strokeWidth: number }>;
+const FAB_EDGE_MARGIN = 24; // Equivalent to Theme.spacing.lg
+const FAB_DRAG_THRESHOLD = 8;
+const FAB_WEB_STORAGE_KEY = 'gurudevi_lotus_fab_position_v1';
 
 const fabConfig: Record<TabType, { emoji: string; label: string }> = {
-    self: { emoji: 'ðŸª·', label: 'Reflection' },
-    classroom: { emoji: 'âž•', label: 'Add' },
-    community: { emoji: 'ðŸ’¬', label: 'Community' },
-    library: { emoji: 'ðŸ“š', label: 'Library' },
-    profile: { emoji: 'ðŸ‘¤', label: 'Profile' },
-    section: { emoji: 'ðŸ¢', label: 'Section' },
-    grade: { emoji: 'ðŸ«', label: 'Grade' },
-    principal: { emoji: 'ðŸ‘‘', label: 'Management' }
+  self: { emoji: '🪷', label: 'Reflection' },
+  classroom: { emoji: '➕', label: 'Add' },
+  community: { emoji: '💬', label: 'Community' },
+  library: { emoji: '📚', label: 'Library' },
+  profile: { emoji: '👤', label: 'Profile' },
+  section: { emoji: '🏢', label: 'Section' },
+  grade: { emoji: '🏫', label: 'Grade' },
+  principal: { emoji: '👑', label: 'Management' },
+  founder: { emoji: '🏛️', label: 'Founder' },
+};
+
+// ============================================================================
+// ACTION ITEM COMPONENT (FOR MEMOIZATION)
+// ============================================================================
+
+const FABActionItem: FC<{ action: ActionItem; onPress: (a: ActionItem) => void }> = ({
+  action,
+  onPress,
+}) => {
+  const handlePress = useCallback(() => onPress(action), [action, onPress]);
+
+  return (
+    <Pressable
+      onPress={handlePress}
+      accessible={true}
+      accessibilityRole="button"
+      accessibilityLabel={action.label}
+      className="p-4 rounded-xl hover:bg-white/5 active:bg-white/10"
+    >
+      <HStack className="items-center gap-3">
+        {action.icon && <action.icon size={20} color="#F6BF8C" strokeWidth={2} />}
+        <Text className="text-phase-text-primary">{action.label}</Text>
+      </HStack>
+    </Pressable>
+  );
 };
 
 // ============================================================================
 // MAIN COMPONENT
 // ============================================================================
 
-export const LotusPetalFAB: FC<LotusPetalFABProps> = ({
-    currentTab = 'self',
-    onPress,
-    icon: customIcon,
-    actions,
-    scrollY,
-    disabled = false,
-    bottomInset = Theme.spacing.lg,
-    hasActiveGaps = false,
-    gapPriority = 'low',
-}) => {
-    const { isReduceMotionEnabled, announce } = useAccessibility();
+export const LotusPetalFAB: FC<LotusPetalFABProps> = memo(({
+  currentTab: propTab,
+  onPress: propPress,
+  icon: customIcon,
+  actions: propActions,
+  disabled = false,
+  bottomInset = 24,
+  hasActiveGaps: propGaps,
+  onBreathingReset: propReset,
+  useGlobal = true,
+  className,
+}: LotusPetalFABProps) => {
+  const { state: globalState } = useFAB();
+  const { isReduceMotionEnabled } = useAccessibility();
+  const bottomTabPadding = useBottomTabPadding();
 
-    const colors = useThemedColors();
-    const { glow, accent } = useTheme();
-    const config = useMemo(() => fabConfig[currentTab] || fabConfig.self, [currentTab]);
+  // Reconcile props with global state
+  const currentTab = (propTab || globalState.tabType) as TabType;
+  const actions = propActions || globalState.actions;
+  const hasActiveGaps = propGaps ?? globalState.hasActiveGaps;
+  const onPress = propPress || globalState.onPress;
+  const onBreathingReset = propReset || globalState.onBreathingReset;
+  const isVisible = useGlobal ? globalState.visible : true;
+  const icon = customIcon || globalState.icon;
 
-    // Reanimated Shared Values
-    const pressScale = useSharedValue(1);
-    const breathingScale = useSharedValue(1);
-    const pulseOpacity = useSharedValue(0.4);
+  const config = useMemo(() => fabConfig[currentTab] || fabConfig.self, [currentTab]);
 
-    const [isDrawerVisible, setIsDrawerVisible] = useState(false);
+  // Reanimated Shared Values
+  const pressScale = useSharedValue(1);
+  const breathingScale = useSharedValue(1);
+  const pulseOpacity = useSharedValue(0.4);
 
-    // Breathing Animation (matches ShadowAgent)
-    useEffect(() => {
-        if (!disabled && !isReduceMotionEnabled) {
-            breathingScale.value = withRepeat(
-                withTiming(1.1, { duration: 4000, easing: Easing.inOut(Easing.ease) }),
-                -1,
-                true
-            );
-            pulseOpacity.value = withRepeat(
-                withTiming(0.7, { duration: 4000, easing: Easing.inOut(Easing.ease) }),
-                -1,
-                true
-            );
-        }
-    }, [disabled, isReduceMotionEnabled]);
+  // Position Shared Values for Draggability
+  const positionX = useSharedValue(0);
+  const positionY = useSharedValue(0);
+  const dragStartX = useRef(0);
+  const dragStartY = useRef(0);
 
-    const containerStyle = useAnimatedStyle(() => ({
-        transform: [{ scale: pressScale.value }],
-    }));
+  const [isDrawerVisible, setIsDrawerVisible] = useState(false);
 
-    const breathingStyle = useAnimatedStyle(() => ({
-        transform: [{ scale: breathingScale.value }],
-        opacity: pulseOpacity.value,
-    }));
-
-    const handlePress = useCallback(() => {
-        if (disabled) return;
-        hapticLight();
-
-        if (actions && actions.length > 0) {
-            setIsDrawerVisible(true);
-            return;
-        }
-
-        if (onPress) {
-            pressScale.value = withSequence(
-                withTiming(0.9, { duration: 100 }),
-                withSpring(1)
-            );
-            onPress();
-        }
-    }, [disabled, onPress, actions]);
-
-    return (
-        <>
-            <Pressable
-                onPress={handlePress}
-                style={[styles.container, { bottom: bottomInset }]}
-                disabled={disabled}
-                accessible={true}
-                accessibilityRole="button"
-                accessibilityLabel={hasActiveGaps ? `Agent Insight Available: ${config.label}` : config.label}
-                accessibilityHint={actions && actions.length > 0 ? 'Double tap to open actions' : 'Double tap to activate'}
-                accessibilityState={{ disabled }}
-            >
-                <Animated.View style={[styles.fabWrapper, containerStyle]}>
-                    {/* Breathing Glow */}
-                    <Animated.View style={[styles.glow, breathingStyle, hasActiveGaps && styles.glowActive]} />
-
-                    {/* Simple Circle */}
-                    <Box
-                        sx={{
-                            width: FAB_SIZE,
-                            height: FAB_SIZE,
-                            borderRadius: Theme.corners.full,
-                            backgroundColor: Theme.colors.sanctuarySaffron,
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            shadowColor: glow.primary.color,
-                            shadowOpacity: glow.primary.opacity,
-                            shadowRadius: glow.primary.radius,
-                            shadowOffset: { width: 0, height: 0 },
-                            elevation: 10,
-                        }}
-                    >
-                        <Text style={styles.emojiText}>{hasActiveGaps ? 'â—' : config.emoji}</Text>
-                    </Box>
-                </Animated.View>
-            </Pressable>
-
-            {/* Simple Action Drawer Integration */}
-            <UniversalModal
-                isOpen={isDrawerVisible}
-                onClose={() => setIsDrawerVisible(false)}
-            >
-                <Pressable
-                    style={styles.modalOverlay}
-                    onPress={() => setIsDrawerVisible(false)}
-                >
-                    <Box
-                        sx={{
-                            backgroundColor: Theme.colors.shroud,
-                            borderTopLeftRadius: Theme.corners.generous,
-                            borderTopRightRadius: Theme.corners.generous,
-                            padding: Theme.spacing.xl,
-                            minHeight: ACTION_DRAWER_HEIGHT,
-                            width: '100%',
-                            marginTop: 'auto',
-                        }}
-                    >
-                        <Box sx={{
-                            width: 40,
-                            height: 4,
-                            backgroundColor: Theme.colors.starlightGray,
-                            borderRadius: 2,
-                            alignSelf: 'center',
-                            marginBottom: Theme.spacing.lg,
-                            opacity: 0.3
-                        }} />
-
-                        <VStack sx={{ gap: '$md' as any }}>
-                            <Text color={Theme.colors.sacredWhite} sx={{ fontSize: '$xl' as any, fontWeight: '600', marginBottom: '$2' as any }}>
-                                {config.label} Actions
-                            </Text>
-                            {actions?.map((action, idx) => (
-                                <Pressable
-                                    key={idx}
-                                    onPress={() => {
-                                        setIsDrawerVisible(false);
-                                        action.onPress();
-                                    }}
-                                    accessible={true}
-                                    accessibilityRole="button"
-                                    accessibilityLabel={action.label}
-                                    style={({ pressed }) => [
-                                        styles.actionItem,
-                                        pressed && { backgroundColor: 'rgba(255,255,255,0.05)' }
-                                    ]}
-                                >
-                                    <HStack alignItems="center" sx={{ gap: '$3' as any }}>
-                                        {action.icon && <action.icon size={20} color={Theme.colors.sanctuarySaffron} strokeWidth={2} />}
-                                        <Text color={Theme.colors.sacredWhite} sx={{ fontSize: '$md' as any }}>{action.label}</Text>
-                                    </HStack>
-                                </Pressable>
-                            ))}
-                        </VStack>
-                    </Box>
-                </Pressable>
-            </UniversalModal>
-        </>
-    );
-};
-
-const styles = StyleSheet.create({
-    container: {
-        position: 'absolute',
-        right: Theme.spacing.lg,
-        zIndex: Theme.zIndex.fab,
+  const clampFabToViewport = useCallback(
+    (x: number, y: number) => {
+      const windowDims = Dimensions.get('window');
+      const maxX = Math.max(FAB_EDGE_MARGIN, windowDims.width - FAB_SIZE - FAB_EDGE_MARGIN);
+      const maxY = Math.max(
+        FAB_EDGE_MARGIN,
+        windowDims.height - FAB_SIZE - FAB_EDGE_MARGIN - (bottomInset + bottomTabPadding),
+      );
+      return {
+        x: Math.max(FAB_EDGE_MARGIN, Math.min(maxX, x)),
+        y: Math.max(FAB_EDGE_MARGIN, Math.min(maxY, y)),
+      };
     },
-    fabWrapper: {
-        width: FAB_SIZE,
-        height: FAB_SIZE,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    glow: {
-        position: 'absolute',
-        width: FAB_SIZE * 1.3,
-        height: FAB_SIZE * 1.3,
-        borderRadius: FAB_SIZE,
-        backgroundColor: Theme.colors.sanctuarySaffron,
-        opacity: 0.4,
-    },
-    glowActive: {
-        backgroundColor: Theme.colors.lotusDeepPink,
-        opacity: 0.6,
-    },
-    emojiText: {
-        fontSize: 24,
-    },
-    modalOverlay: {
-        flex: 1,
-        backgroundColor: 'rgba(0, 0, 0, 0.6)',
-        justifyContent: 'flex-end',
-    },
-    actionItem: {
-        paddingVertical: Theme.spacing.md,
-        paddingHorizontal: Theme.spacing.sm,
-        borderRadius: Theme.corners.comfortable,
+    [bottomInset, bottomTabPadding],
+  );
+
+  const persistWebPosition = useCallback((x: number, y: number) => {
+    if (Platform.OS !== 'web') return;
+    try {
+      if (typeof window === 'undefined' || !window.localStorage) return;
+      window.localStorage.setItem(FAB_WEB_STORAGE_KEY, JSON.stringify({ x, y }));
+    } catch {
+      // Ignore storage failures
     }
+  }, []);
+
+  const setDefaultPosition = useCallback(() => {
+    const windowDims = Dimensions.get('window');
+    const preferredX = windowDims.width - FAB_SIZE - FAB_EDGE_MARGIN;
+    const preferredY =
+      windowDims.height - FAB_SIZE - FAB_EDGE_MARGIN - (bottomInset + bottomTabPadding);
+    const next = clampFabToViewport(preferredX, preferredY);
+    positionX.value = next.x;
+    positionY.value = next.y;
+  }, [bottomInset, bottomTabPadding, clampFabToViewport, positionX, positionY]);
+
+  const handlePress = useCallback(() => {
+    if (disabled) return;
+    hapticLight();
+
+    if (actions && actions.length > 0) {
+      setIsDrawerVisible(true);
+      return;
+    }
+
+    if (onPress) {
+      pressScale.value = withSequence(withTiming(0.9, { duration: 100 }), withSpring(1));
+      onPress();
+    }
+  }, [disabled, onPress, actions, pressScale]);
+
+  useEffect(() => {
+    let initialized = false;
+    if (Platform.OS === 'web') {
+      try {
+        if (typeof window !== 'undefined' && window.localStorage) {
+          const raw = window.localStorage.getItem(FAB_WEB_STORAGE_KEY);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (typeof parsed?.x === 'number' && typeof parsed?.y === 'number') {
+              const next = clampFabToViewport(parsed.x, parsed.y);
+              positionX.value = next.x;
+              positionY.value = next.y;
+              initialized = true;
+            }
+          }
+        }
+      } catch {
+        // Ignore and use default position
+      }
+    }
+
+    if (!initialized) {
+      setDefaultPosition();
+    }
+  }, [clampFabToViewport, positionX, positionY, setDefaultPosition]);
+
+  useEffect(() => {
+    const sub = Dimensions.addEventListener('change', () => {
+      const next = clampFabToViewport(positionX.value, positionY.value);
+      positionX.value = next.x;
+      positionY.value = next.y;
+      persistWebPosition(next.x, next.y);
+    });
+    return () => sub.remove();
+  }, [clampFabToViewport, persistWebPosition, positionX, positionY]);
+
+  // PanResponder for draggability
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponder: (_, gesture) => {
+        return (
+          Math.abs(gesture.dx) > FAB_DRAG_THRESHOLD || Math.abs(gesture.dy) > FAB_DRAG_THRESHOLD
+        );
+      },
+      onPanResponderGrant: () => {
+        dragStartX.current = positionX.value;
+        dragStartY.current = positionY.value;
+        pressScale.value = withSpring(1.1);
+        hapticLight();
+      },
+      onPanResponderMove: (_, gesture) => {
+        const next = clampFabToViewport(
+          dragStartX.current + gesture.dx,
+          dragStartY.current + gesture.dy,
+        );
+        positionX.value = next.x;
+        positionY.value = next.y;
+      },
+      onPanResponderRelease: (_, gesture) => {
+        pressScale.value = withSpring(1);
+
+        // Tap
+        if (
+          Math.abs(gesture.dx) < FAB_DRAG_THRESHOLD &&
+          Math.abs(gesture.dy) < FAB_DRAG_THRESHOLD
+        ) {
+          handlePress();
+          return;
+        }
+
+        const next = clampFabToViewport(positionX.value, positionY.value);
+        positionX.value = withSpring(next.x, { damping: 15 });
+        positionY.value = withSpring(next.y, { damping: 15 });
+        persistWebPosition(next.x, next.y);
+      },
+    }),
+  ).current;
+
+  // Breathing Animation
+  useEffect(() => {
+    if (!disabled && !isReduceMotionEnabled) {
+      breathingScale.value = withRepeat(
+        withTiming(1.1, { duration: 4000, easing: Easing.inOut(Easing.ease) }),
+        -1,
+        true,
+      );
+      pulseOpacity.value = withRepeat(
+        withTiming(0.7, { duration: 4000, easing: Easing.inOut(Easing.ease) }),
+        -1,
+        true,
+      );
+    }
+  }, [disabled, isReduceMotionEnabled, breathingScale, pulseOpacity]);
+
+  const containerStyle = useAnimatedStyle(() => ({
+    left: positionX.value,
+    top: positionY.value,
+    transform: [{ scale: pressScale.value }],
+  }));
+
+  const breathingStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: breathingScale.value }],
+    opacity: pulseOpacity.value,
+  }));
+
+  const closeDrawer = useCallback(() => setIsDrawerVisible(false), []);
+
+  const handleBreathingReset = useCallback(() => {
+    setIsDrawerVisible(false);
+    onBreathingReset?.();
+  }, [onBreathingReset]);
+
+  const handleActionPress = useCallback((action: ActionItem) => {
+    setIsDrawerVisible(false);
+    action.onPress();
+  }, []);
+
+  if (!isVisible) return null;
+
+  return (
+    <Box className="absolute inset-0 z-[1000] pointer-events-none">
+      <Animated.View
+        {...panResponder.panHandlers}
+        style={[containerStyle]}
+        className="absolute w-14 h-14 items-center justify-center pointer-events-auto"
+      >
+        {/* Breathing Glow */}
+        <Animated.View
+          style={breathingStyle}
+          className={`
+                        absolute w-[72px] h-[72px] rounded-full
+                        ${hasActiveGaps ? 'bg-phase-error opacity-60' : 'bg-phase-accent opacity-40'}
+                    `}
+        />
+
+        {/* Main FAB Circle */}
+        <Box
+          className={`
+                        w-14 h-14 rounded-full items-center justify-center bg-phase-accent
+                        shadow-xl shadow-black/30 border-2 border-white/10
+                        ${className || ''}
+                    `}
+        >
+          {hasActiveGaps ? (
+            <Text className="text-2xl">❗</Text>
+          ) : icon ? (
+            icon
+          ) : (
+            <Text className="text-2xl">{config.emoji}</Text>
+          )}
+        </Box>
+      </Animated.View>
+
+      {/* Action Drawer */}
+      <UniversalModal isOpen={isDrawerVisible} onClose={closeDrawer}>
+        <Pressable
+          accessibilityRole="button"
+          className="flex-1 bg-black/50 justify-end"
+          onPress={closeDrawer}
+        >
+          <Box className="bg-phase-surface rounded-t-[32px] p-8 min-h-[40vh] w-full mt-auto">
+            <Box className="w-10 h-1 bg-phase-text-secondary/30 rounded-full self-center mb-6" />
+
+            <VStack className="gap-4">
+              <Text className="text-xl font-bold text-phase-text-primary mb-2">
+                {config.label} Actions
+              </Text>
+
+              {onBreathingReset && (
+                <Pressable
+                  accessibilityRole="button"
+                  onPress={handleBreathingReset}
+                  className="p-4 rounded-xl bg-phase-success/10 active:bg-phase-success/20"
+                >
+                  <HStack className="items-center gap-3">
+                    <Wind size={20} color="#10B981" strokeWidth={2} />
+                    <Text className="text-phase-text-primary font-semibold">Breathing Reset</Text>
+                  </HStack>
+                </Pressable>
+              )}
+
+              {actions?.map((action: ActionItem, idx: number) => (
+                <FABActionItem key={idx} action={action} onPress={handleActionPress} />
+              ))}
+            </VStack>
+          </Box>
+        </Pressable>
+      </UniversalModal>
+    </Box>
+  );
 });
 
 export default LotusPetalFAB;
-

@@ -1,22 +1,26 @@
 // @ts-check
-import { defineConfig } from 'astro/config';
 
-import tailwindcss from '@tailwindcss/vite';
-import svelte from '@astrojs/svelte';
+import sitemap from "@astrojs/sitemap";
+import svelte from "@astrojs/svelte";
+
+import tailwindcss from "@tailwindcss/vite";
+import { defineConfig } from "astro/config";
 
 // https://astro.build/config
 export default defineConfig({
-  vite: {
-    plugins: [tailwindcss()]
-  },
+	site: "https://edlove.org",
 
-  integrations: [svelte()],
-  
-  i18n: {
-    defaultLocale: 'en',
-    locales: ['en', 'si', 'ta'],
-    routing: {
-      prefixDefaultLocale: false
-    }
-  }
+	vite: {
+		plugins: [/** @type {any} */ (tailwindcss())],
+	},
+
+	integrations: [svelte(), sitemap()],
+
+	i18n: {
+		defaultLocale: "en",
+		locales: ["en", "si", "ta"],
+		routing: {
+			prefixDefaultLocale: false,
+		},
+	},
 });

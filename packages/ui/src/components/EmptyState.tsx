@@ -1,76 +1,47 @@
-﻿import React from 'react';
-import { VStack, Text, Center, Box } from '../gluestack';
-import { Theme } from '../theme/Theme';
-import { useThemedColors } from '../hooks/useThemedColors';
-import SanctuaryButton from './SanctuaryButton';
-import { LucideIcon } from 'lucide-react-native';
+import type { LucideIcon } from 'lucide-react-native';
+import { Box, Center, Heading, Text, VStack } from '../gluestack';
+import { SanctuaryButton } from './SanctuaryButton';
 
 interface EmptyStateProps {
-    icon: LucideIcon;
-    title: string;
-    description: string;
-    actionLabel?: string;
-    onAction?: () => void;
-    minHeight?: number;
+  icon: LucideIcon;
+  title: string;
+  description: string;
+  actionLabel?: string;
+  onAction?: () => void;
+  minHeight?: number;
 }
 
 export default function EmptyState({
-    icon: Icon,
-    title,
-    description,
-    actionLabel,
-    onAction,
-    minHeight = 300
+  icon: Icon,
+  title,
+  description,
+  actionLabel,
+  onAction,
+  minHeight = 300,
 }: EmptyStateProps) {
-    const colors = useThemedColors();
+  return (
+    <Center style={{ minHeight }} className="p-8">
+      <VStack space="md" className="items-center max-w-[300px]">
+        <Box className="p-6 bg-phase-surface border border-phase-surface rounded-full mb-2">
+          <Icon size={48} className="text-phase-accent" strokeWidth={1.5} />
+        </Box>
 
-    return (
-        <Center sx={{
-            minHeight,
-            opacity: 1.0,
-            padding: Theme.spacing.xl
-        }}>
-            <VStack space="md" alignItems="center" maxWidth={300}>
-                <Box sx={{
-                    padding: Theme.spacing.lg,
-                    backgroundColor: colors.tertiary,
-                    borderRadius: Theme.corners.full,
-                    marginBottom: Theme.spacing.sm
-                }}>
-                    <Icon size={48} color={colors.action} strokeWidth={1.5} />
-                </Box>
+        <Heading size="xl" className="text-center text-phase-text-primary">
+          {title}
+        </Heading>
 
-                <Text
-                    color={colors.text}
-                    fontSize="$xl"
-                    fontWeight="$bold"
-                    textAlign="center"
-                >
-                    {title}
-                </Text>
+        <Text className="text-center text-phase-text-secondary text-base leading-6">
+          {description}
+        </Text>
 
-                <Text
-                    color={colors.textSecondary}
-                    textAlign="center"
-                    fontSize="$md"
-                    sx={{ lineHeight: 24 }}
-                >
-                    {description}
-                </Text>
-
-                {actionLabel && onAction && (
-                    <Box mt="$4">
-                        <SanctuaryButton
-                            onPress={onAction}
-                            size="md"
-                            variant="outline"
-                        >
-                            {actionLabel}
-                        </SanctuaryButton>
-                    </Box>
-                )}
-            </VStack>
-        </Center>
-    );
+        {actionLabel && onAction && (
+          <Box className="mt-4">
+            <SanctuaryButton onPress={onAction} size="md" variant="outline">
+              {actionLabel}
+            </SanctuaryButton>
+          </Box>
+        )}
+      </VStack>
+    </Center>
+  );
 }
-

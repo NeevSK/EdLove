@@ -2,241 +2,254 @@
  * SubmissionModal.web.tsx — Web platform override for SubmissionModal
  *
  * Replaces:
- *  - expo-image-picker  → <input type="file" accept="image/*">
+ *  - expo-image-picker  → <input type="file" accept="image/*"
  *  - Alert.alert        → window.confirm / window.alert (already handled in .tsx)
  *  - Native Modal       → same Modal primitive from @repo/ui (works on web)
  *
  * Metro resolves this file for web builds automatically.
  */
-import React, { useState, useRef } from 'react';
+
+import { handleAPIError } from "@repo/core/logic";
+import SanctuaryModal from "@repo/ui/components/SanctuaryModal";
+import { CheckCircle2, Send, X } from "@repo/ui/icons";
 import {
-    VStack,
-    HStack,
-    Text,
-    Heading,
-    Box,
-    Button,
-    ButtonText,
-    Modal,
-    ModalBackdrop,
-    ModalContent,
-    Spinner,
-    useTheme,
-} from '@repo/ui';
-import { useTranslation } from 'react-i18next';
-import { Theme } from '@repo/ui';
-import { handleAPIError } from '@repo/core';
+	Box,
+	Button,
+	ButtonText,
+	HStack,
+	Icon,
+	Image as ImageIcon,
+	Spinner,
+	Text,
+	VStack,
+} from "@repo/ui/primitives";
+import type React from "react";
+import { useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 interface SubmissionModalProps {
-    isOpen: boolean;
-    assignmentTitle: string;
-    onClose: () => void;
-    onSubmit: (content: string, photoUri?: string) => Promise<void>;
+	isOpen: boolean;
+	assignmentTitle: string;
+	onClose: () => void;
+	onSubmit: (content: string, photoUri?: string) => Promise<void>;
 }
 
 export default function SubmissionModal({
-    isOpen,
-    assignmentTitle,
-    onClose,
-    onSubmit,
+	isOpen,
+	assignmentTitle,
+	onClose,
+	onSubmit,
 }: SubmissionModalProps) {
-    const { t } = useTranslation();
-    const [content, setContent] = useState('');
-    const [photoDataUrl, setPhotoDataUrl] = useState<string | null>(null);
-    const [photoFileName, setPhotoFileName] = useState<string | null>(null);
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [showSuccess, setShowSuccess] = useState(false);
-    const { text, accent, glass, isDark } = useTheme();
-    const fileInputRef = useRef<HTMLInputElement>(null);
+	const { t } = useTranslation();
+	const [content, setContent] = useState("");
+	const [photoDataUrl, setPhotoDataUrl] = useState<string | null>(null);
+	const [photoFileName, setPhotoFileName] = useState<string | null>(null);
+	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [showSuccess, setShowSuccess] = useState(false);
+	const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-            setPhotoDataUrl(ev.target?.result as string);
-            setPhotoFileName(file.name);
-        };
-        reader.readAsDataURL(file);
-    };
+	const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const file = e.target.files?.[0];
+		if (!file) return;
+		const reader = new FileReader();
+		reader.onload = (ev) => {
+			setPhotoDataUrl(ev.target?.result as string);
+			setPhotoFileName(file.name);
+		};
+		reader.readAsDataURL(file);
+	};
 
-    const handleSubmit = async () => {
-        if (!content.trim() && !photoDataUrl) {
-            window.alert(
-                `${t('submission.emptyWarning') || 'Empty Submission'}\n\n${t('submission.emptyWarningDesc') || 'Please add some content or attach a photo before submitting.'}`
-            );
-            return;
-        }
-        setIsSubmitting(true);
-        try {
-            await onSubmit(content, photoDataUrl || undefined);
-            setShowSuccess(true);
-            setTimeout(() => {
-                setShowSuccess(false);
-                setContent('');
-                setPhotoDataUrl(null);
-                setPhotoFileName(null);
-                if (fileInputRef.current) fileInputRef.current.value = '';
-                onClose();
-            }, 2000);
-        } catch (error: any) {
-            handleAPIError(error);
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
+	const handleSubmit = async () => {
+		if (!content.trim() && !photoDataUrl) {
+			window.alert(
+				`${t("submission.emptyWarning") || "Empty Submission"}\n\n${t("submission.emptyWarningDesc") || "Please add some content or attach a photo before submitting."}`,
+			);
+			return;
+		}
+		setIsSubmitting(true);
+		try {
+			await onSubmit(content, photoDataUrl || undefined);
+			setShowSuccess(true);
+			setTimeout(() => {
+				setShowSuccess(false);
+				setContent("");
+				setPhotoDataUrl(null);
+				setPhotoFileName(null);
+				if (fileInputRef.current) fileInputRef.current.value = "";
+				onClose();
+			}, 2000);
+		} catch (error: any) {
+			handleAPIError(error);
+		} finally {
+			setIsSubmitting(false);
+		}
+	};
 
-    const handleCancel = () => {
-        if (content.trim() || photoDataUrl) {
-            if (!window.confirm(t('submission.cancelWarningDesc') || 'Your work will be lost. Are you sure?')) return;
-        }
-        setContent('');
-        setPhotoDataUrl(null);
-        setPhotoFileName(null);
-        if (fileInputRef.current) fileInputRef.current.value = '';
-        onClose();
-    };
+	const handleCancel = () => {
+		if (content.trim() || photoDataUrl) {
+			if (
+				!window.confirm(
+					t("submission.cancelWarningDesc") ||
+						"Your work will be lost. Are you sure?",
+				)
+			)
+				return;
+		}
+		setContent("");
+		setPhotoDataUrl(null);
+		setPhotoFileName(null);
+		if (fileInputRef.current) fileInputRef.current.value = "";
+		onClose();
+	};
 
-    if (showSuccess) {
-        return (
-            <Modal isOpen={isOpen} onClose={() => {}}>
-                <ModalBackdrop sx={{ backgroundColor: isDark ? 'rgba(107,100,128,0.65)' : 'rgba(107,100,128,0.45)' }} />
-                <ModalContent sx={{ backgroundColor: glass.modal.bg, borderColor: glass.modal.border, borderWidth: 1, padding: Theme.spacing.xl, alignItems: 'center', borderRadius: Theme.corners.generous }}>
-                    <VStack sx={{ gap: Theme.spacing.lg, alignItems: 'center' }}>
-                        <Text sx={{ fontSize: 64 }}>✅</Text>
-                        <Heading sx={{ color: accent.reward, fontSize: 32 }}>
-                            {t('submission.success') || 'Success!'}
-                        </Heading>
-                        <Text {...({ color: text.secondary } as any)} sx={{ textAlign: 'center' }}>
-                            {t('submission.successMessage') || 'Your work has been sent to the teacher.'}
-                        </Text>
-                    </VStack>
-                </ModalContent>
-            </Modal>
-        );
-    }
+	if (showSuccess) {
+		return (
+			<SanctuaryModal isOpen={isOpen} onClose={() => {}} title="">
+				<VStack className="items-center justify-center p-8 gap-6">
+					<Box className="w-24 h-24 bg-phase-reward/10 rounded-full items-center justify-center border border-phase-reward/20">
+						<Icon as={CheckCircle2} size="xl" className="text-phase-reward" />
+					</Box>
+					<VStack className="items-center gap-2">
+						<Text className="text-3xl font-black text-phaseText-primary tracking-tighter">
+							{t("submission.success") || "Success!"}
+						</Text>
+						<Text className="text-lg font-medium text-phaseText-secondary text-center leading-relaxed">
+							{t("submission.successMessage") ||
+								"Your work has been sent to the teacher."}
+						</Text>
+					</VStack>
+				</VStack>
+			</SanctuaryModal>
+		);
+	}
 
-    return (
-        <Modal isOpen={isOpen} onClose={handleCancel}>
-            <ModalBackdrop sx={{ backgroundColor: isDark ? 'rgba(107,100,128,0.65)' : 'rgba(107,100,128,0.45)' }} />
-            <ModalContent
-                sx={{
-                    backgroundColor: glass.modal.bg,
-                    borderColor: glass.modal.border,
-                    borderWidth: 1,
-                    borderRadius: Theme.corners.generous,
-                    maxWidth: 600,
-                    width: '100%',
-                    maxHeight: '90vh',
-                }}
-            >
-                <VStack sx={{ flex: 1, padding: Theme.spacing.lg, gap: Theme.spacing.lg }}>
-                    {/* Header */}
-                    <HStack sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                        <Heading sx={{ fontSize: 24, color: accent.action }}>
-                            {t('submission.title') || 'Submit Work'}
-                        </Heading>
-                        <Button variant="outline" size="sm" sx={{ borderColor: glass.interact.border, borderRadius: Theme.corners.comfortable }} onPress={handleCancel} disabled={isSubmitting}>
-                            <ButtonText {...({ color: text.secondary } as any)}>{t('common.cancel') || 'Cancel'}</ButtonText>
-                        </Button>
-                    </HStack>
+	return (
+		<SanctuaryModal
+			isOpen={isOpen}
+			onClose={handleCancel}
+			title={t("submission.title") || "Submit Work"}
+			footer={
+				<Button
+					className="w-full h-16 bg-templeGold rounded-[24px] shadow-lg shadow-templeGold/20 flex-row items-center justify-center gap-3"
+					onPress={handleSubmit}
+					disabled={isSubmitting}
+				>
+					{isSubmitting ? (
+						<HStack className="items-center gap-2">
+							<Spinner className="text-phaseText-inverse" size="small" />
+							<ButtonText className="text-phaseText-inverse font-bold text-lg">
+								{t("submission.submitting") || "Turning in..."}
+							</ButtonText>
+						</HStack>
+					) : (
+						<HStack className="items-center gap-2">
+							<Icon as={Send} size="sm" className="text-phaseText-inverse" />
+							<ButtonText className="text-phaseText-inverse font-bold text-lg">
+								{t("submission.turnIn") || "Turn In"}
+							</ButtonText>
+						</HStack>
+					)}
+				</Button>
+			}
+		>
+			<VStack className="gap-8 p-1">
+				{/* Assignment name */}
+				<Box className="p-5 bg-phase-surface rounded-[24px] border border-phase-border">
+					<Text className="text-xs font-bold text-phaseText-ghost uppercase tracking-wider mb-1">
+						{t("submission.assignmentLabel") || "Assignment"}
+					</Text>
+					<Text className="text-xl font-black text-phaseText-primary tracking-tight">
+						{assignmentTitle}
+					</Text>
+				</Box>
 
-                    {/* Assignment name */}
-                    <Box sx={{ padding: Theme.spacing.md, backgroundColor: glass.interact.bg, borderRadius: Theme.corners.comfortable, borderWidth: 1, borderColor: glass.interact.border }}>
-                        <Text {...({ color: text.secondary } as any)} sx={{ fontSize: 14 }}>
-                            {t('submission.assignmentLabel') || 'Assignment'}
-                        </Text>
-                        <Text {...({ color: text.primary } as any)} sx={{ fontSize: 18, fontWeight: '600' }}>
-                            {assignmentTitle}
-                        </Text>
-                    </Box>
+				{/* Text answer */}
+				<VStack className="gap-2 flex-1 min-h-[200px]">
+					<Text className="text-sm font-bold text-phaseText-secondary ml-1">
+						{t("submission.answerLabel") || "Your Answer"}
+					</Text>
+					<textarea
+						value={content}
+						onChange={(e) => setContent(e.target.value)}
+						placeholder={
+							t("submission.answerPlaceholder") || "Type your answer here..."
+						}
+						className="w-full min-h-[160px] rounded-[12px] border border-phase-border bg-phase-surface text-phaseText-primary text-[14px] p-[12px_16px] resize-y outline-none leading-[1.6]"
+						style={{ fontFamily: "var(--font-body)" }}
+					/>
+				</VStack>
 
-                    {/* Text answer */}
-                    <VStack sx={{ gap: Theme.spacing.sm }}>
-                        <Text {...({ color: text.secondary } as any)} sx={{ fontWeight: '600' }}>
-                            {t('submission.answerLabel') || 'Your Answer'}
-                        </Text>
-                        <textarea
-                            value={content}
-                            onChange={e => setContent(e.target.value)}
-                            placeholder={t('submission.answerPlaceholder') || 'Type your answer here…'}
-                            style={{
-                                width: '100%', minHeight: '160px', borderRadius: '12px',
-                                border: `1px solid ${glass.interact.border}`,
-                                background: glass.interact.bg,
-                                color: text.primary, fontSize: '14px',
-                                fontFamily: 'var(--font-body)', padding: '12px 16px',
-                                resize: 'vertical', outline: 'none', boxSizing: 'border-box',
-                                lineHeight: '1.6',
-                            }}
-                        />
-                    </VStack>
+				{/* Photo attachment — web file picker */}
+				<VStack className="gap-3">
+					<Text className="text-sm font-bold text-phaseText-secondary ml-1">
+						{t("submission.photoLabel") || "Attach Photo (Optional)"}
+					</Text>
 
-                    {/* Photo attachment — web file picker */}
-                    <VStack sx={{ gap: Theme.spacing.sm }}>
-                        <Text {...({ color: text.secondary } as any)} sx={{ fontWeight: '600' }}>
-                            {t('submission.photoLabel') || 'Attach Photo (Optional)'}
-                        </Text>
+					{/* Hidden file input */}
+					<input
+						ref={fileInputRef}
+						type="file"
+						accept="image/*"
+						style={{ display: "none" }}
+						onChange={handleFileChange}
+					/>
 
-                        {/* Hidden file input */}
-                        <input
-                            ref={fileInputRef}
-                            type="file"
-                            accept="image/*"
-                            style={{ display: 'none' }}
-                            onChange={handleFileChange}
-                        />
-
-                        {photoDataUrl ? (
-                            <VStack sx={{ gap: 8 }}>
-                                <img
-                                    src={photoDataUrl}
-                                    alt="Attachment preview"
-                                    style={{ width: '100%', maxHeight: '180px', objectFit: 'cover', borderRadius: '10px' }}
-                                />
-                                <Text {...({ color: text.secondary } as any)} sx={{ fontSize: 12 }}>
-                                    📎 {photoFileName}
-                                </Text>
-                                <Button variant="link" size="sm" onPress={() => { setPhotoDataUrl(null); setPhotoFileName(null); if (fileInputRef.current) fileInputRef.current.value = ''; }}>
-                                    <ButtonText {...({ color: accent.danger } as any)}>
-                                        {t('submission.removePhoto') || 'Remove Photo'}
-                                    </ButtonText>
-                                </Button>
-                            </VStack>
-                        ) : (
-                            <Button
-                                variant="outline"
-                                sx={{ borderColor: accent.action, borderRadius: Theme.corners.comfortable }}
-                                onPress={() => fileInputRef.current?.click()}
-                            >
-                                <ButtonText {...({ color: accent.action } as any)}>
-                                    🖼️ {t('submission.choosePhoto') || 'Choose Photo'}
-                                </ButtonText>
-                            </Button>
-                        )}
-                    </VStack>
-
-                    {/* Submit */}
-                    <Button
-                        sx={{ backgroundColor: accent.reward, padding: Theme.spacing.lg, borderRadius: Theme.corners.comfortable }}
-                        onPress={handleSubmit}
-                        disabled={isSubmitting}
-                    >
-                        {isSubmitting ? (
-                            <HStack sx={{ gap: Theme.spacing.sm, alignItems: 'center' }}>
-                                <Spinner {...({ color: text.inverse, size: 'small' } as any)} />
-                                <ButtonText {...({ color: text.inverse } as any)}>
-                                    {t('submission.submitting') || 'Turning in…'}
-                                </ButtonText>
-                            </HStack>
-                        ) : (
-                            <ButtonText {...({ color: text.inverse, fontWeight: '700', fontSize: 18 } as any)}>
-                                ✍️ {t('submission.turnIn') || 'Turn In'}
-                            </ButtonText>
-                        )}
-                    </Button>
-                </VStack>
-            </ModalContent>
-        </Modal>
-    );
+					{photoDataUrl ? (
+						<VStack className="gap-2">
+							<Box className="relative rounded-[24px] overflow-hidden border border-phase-border">
+								<img
+									src={photoDataUrl}
+									alt="Attachment preview"
+									className="w-full max-h-[180px] object-cover rounded-[10px]"
+								/>
+								<Button
+									variant="ghost"
+									action="negative"
+									className="absolute top-3 right-3 p-2 bg-black/60 rounded-full border border-white/20 h-auto"
+									onPress={() => {
+										setPhotoDataUrl(null);
+										setPhotoFileName(null);
+										if (fileInputRef.current) fileInputRef.current.value = "";
+									}}
+								>
+									<Icon as={X} size="xs" className="text-white" />
+								</Button>
+							</Box>
+							<HStack className="items-center gap-2">
+								<Text className="text-xs text-phaseText-secondary flex-1">
+									📎 {photoFileName}
+								</Text>
+								<Button
+									variant="ghost"
+									action="negative"
+									size="sm"
+									onPress={() => {
+										setPhotoDataUrl(null);
+										setPhotoFileName(null);
+										if (fileInputRef.current) fileInputRef.current.value = "";
+									}}
+								>
+									<ButtonText className="text-phase-danger font-bold text-xs">
+										{t("submission.removePhoto") || "Remove"}
+									</ButtonText>
+								</Button>
+							</HStack>
+						</VStack>
+					) : (
+						<Button
+							variant="outline"
+							action="primary"
+							className="h-14 rounded-[20px] flex-row items-center justify-center gap-2"
+							onPress={() => fileInputRef.current?.click()}
+						>
+							<Icon as={ImageIcon} size="sm" className="text-phase-accent" />
+							<ButtonText className="text-phase-accent font-bold">
+								{t("submission.choosePhoto") || "Choose Photo"}
+							</ButtonText>
+						</Button>
+					)}
+				</VStack>
+			</VStack>
+		</SanctuaryModal>
+	);
 }

@@ -1,50 +1,57 @@
-import React from 'react';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Theme, useTheme } from '@repo/ui';
-import { StackFallback } from '../components/web/WebScreenShimmer';
-import { LibraryStackParamList } from '@repo/core';
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import type { LibraryStackParamList } from "@repo/core/types";
+import { useTheme } from "@repo/ui/primitives";
+
+import React from "react";
+import { StackFallback } from "../components/web/WebScreenShimmer";
 
 // Web-specific screens — lazy loaded for code splitting
-const LibraryScreenWeb = React.lazy(() => import('../screens/LibraryScreen.web'));
+const LibraryScreenWeb = React.lazy(
+	() => import("@repo/library/screens/LibraryScreen.web"),
+);
 
 // Package screens (Metro auto-resolves .web.tsx for each)
-const PDFViewerScreen = React.lazy(() =>
-    import('@repo/library').then(m => ({ default: m.PDFViewerScreen }))
+const PDFViewerScreen = React.lazy(
+	() => import("@repo/library/screens/PDFViewerScreen.web"),
 );
-const VideoPlayerScreen = React.lazy(() =>
-    import('@repo/library').then(m => ({ default: m.VideoPlayerScreen }))
+const VideoPlayerScreen = React.lazy(
+	() => import("@repo/library/screens/VideoPlayerScreen.web"),
 );
-const MapScreen = React.lazy(() =>
-    import('@repo/library').then(m => ({ default: m.MapScreen }))
+const MapScreen = React.lazy(
+	() => import("@repo/library/screens/MapScreen.web"),
 );
-const CuratorReviewScreen = React.lazy(() =>
-    import('@repo/library').then(m => ({ default: m.CuratorReviewScreen }))
+const CuratorReviewScreen = React.lazy(
+	() => import("@repo/library/screens/CuratorReviewScreen"),
+);
+const CollectionDetailScreen = React.lazy(
+	() => import("@repo/library/screens/CollectionDetailScreen.web"),
 );
 
 const Stack = createNativeStackNavigator<LibraryStackParamList>();
 
 function ScreenFallback() {
-    return <StackFallback variant="cards" />;
+	return <StackFallback variant="cards" />;
 }
 
 export default function LibraryStackNavigatorWeb() {
-    const { gradientNodes } = useTheme();
+	const { gradientNodes } = useTheme();
 
-    return (
-        <React.Suspense fallback={<ScreenFallback />}>
-        <Stack.Navigator
-            id="LibraryStack"
-            screenOptions={{
-                headerShown: false,
-                contentStyle: { backgroundColor: gradientNodes[0] },
-            }}
-        >
-            <Stack.Screen name="LibraryHome" component={LibraryScreenWeb} />
-            <Stack.Screen name="PDFViewer" component={PDFViewerScreen} />
-            <Stack.Screen name="VideoPlayer" component={VideoPlayerScreen} />
-            <Stack.Screen name="LibraryMap" component={MapScreen} />
-            <Stack.Screen name="CuratorReview" component={CuratorReviewScreen} />
-        </Stack.Navigator>
-        </React.Suspense>
-    );
+	return (
+		<React.Suspense fallback={<ScreenFallback />}>
+			<Stack.Navigator
+				id="LibraryStack"
+				screenOptions={{
+					headerShown: false,
+					contentStyle: { backgroundColor: gradientNodes[0] },
+				}}
+			>
+				<Stack.Screen name="LibraryHome" component={LibraryScreenWeb} />
+				<Stack.Screen name="PDFViewer" component={PDFViewerScreen as any} />
+				<Stack.Screen name="VideoPlayer" component={VideoPlayerScreen as any} />
+				<Stack.Screen name="LibraryMap" component={MapScreen} />
+				<Stack.Screen name="CuratorReview" component={CuratorReviewScreen} />
+				<Stack.Screen name="CollectionDetail" component={CollectionDetailScreen} />
+			</Stack.Navigator>
+		</React.Suspense>
+	);
 }
