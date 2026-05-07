@@ -4,7 +4,7 @@ import "react-native-gesture-handler/jestSetup";
 // \u2500\u2500 Environment variables required by supabase.ts \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 // Must be set BEFORE any module is required (setupFilesAfterEnv runs before imports)
 process.env.EXPO_PUBLIC_SUPABASE_URL = "https://test.supabase.co";
-process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY = "test-anon-key";
+process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY = "test-publishable-key";
 
 // Mock expo-constants with ALL required exports
 jest.mock("expo-constants", () => {
@@ -14,7 +14,7 @@ jest.mock("expo-constants", () => {
 			expoConfig: {
 				extra: {
 					supabaseUrl: "https://test.supabase.co",
-					supabaseAnonKey: "test-key",
+					supabasePublishableKey: "test-key",
 				},
 			},
 		},

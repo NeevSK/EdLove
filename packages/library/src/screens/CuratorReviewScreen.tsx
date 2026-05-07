@@ -6,7 +6,6 @@ import GlobalHeader from "@repo/ui/components/GlobalHeader";
 import ScreenWrapper from "@repo/ui/components/ScreenWrapper";
 import {
 	Box,
-	FlatList,
 	HStack,
 	Pressable,
 	Icon as SanctuaryIcon,
@@ -15,6 +14,7 @@ import {
 	useTheme,
 	VStack,
 } from "@repo/ui/primitives";
+import SanctuaryFlashList from "@repo/ui/components/SanctuaryFlashList";
 
 import { Check, RefreshCw, Trash2, X } from "lucide-react-native";
 import { useCallback, useEffect, useMemo, useReducer } from "react";
@@ -350,11 +350,12 @@ export default function CuratorReviewScreen() {
 					<Spinner size="large" color={theme.accent.action} />
 				</Box>
 			) : (
-				<FlatList
+				<SanctuaryFlashList
 					data={activeData}
 					keyExtractor={(item) => item.id}
 					renderItem={activeRenderer}
 					contentContainerStyle={{ padding: 16 }}
+					estimatedItemSize={120}
 					ListEmptyComponent={
 						<Box className="mt-20 items-center">
 							<Text className="text-phaseText-secondary text-center">

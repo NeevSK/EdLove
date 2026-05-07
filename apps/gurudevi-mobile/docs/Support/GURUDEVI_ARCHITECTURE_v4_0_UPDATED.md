@@ -2611,7 +2611,7 @@ module.exports = function(api) {
 ### **.env**:
 ```bash
 EXPO_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-EXPO_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
+EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your-publishable-key-here
 ```
 
 ## 10.3 Day 3: Supabase Setup
@@ -2629,9 +2629,9 @@ import { createClient } from '@supabase/supabase-js';
 import 'react-native-url-polyfill/auto';
 
 const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY!;
+const supabasePublishableKey = process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY!;
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase = createClient(supabaseUrl, supabasePublishableKey);
 ```
 
 ## 10.4 Day 4: Fonts & Theme

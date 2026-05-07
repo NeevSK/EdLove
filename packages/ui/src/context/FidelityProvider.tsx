@@ -57,7 +57,7 @@ export function FidelityProvider({ children }: { children: ReactNode }) {
     [fidelityLevel, effectiveFidelity, setFidelityLevel],
   );
 
-  return <FidelityContext.Provider value={value}>{children}</FidelityContext.Provider>;
+  return <FidelityContext value={value}>{children}</FidelityContext>;
 }
 
 export function useFidelity() {

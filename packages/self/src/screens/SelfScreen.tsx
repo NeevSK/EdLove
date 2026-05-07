@@ -26,6 +26,8 @@ export default function SelfScreen() {
 	return (
 		<FeatureGuard feature="isSelfWorkspaceEnabled">
 			{(() => {
+				const role = context.activeBond?.capacity || context.role;
+
 				if (can("manage", "FounderDashboard")) {
 					return <FounderSelfView />;
 				}
@@ -38,18 +40,15 @@ export default function SelfScreen() {
 					return <PrincipalSelfView />;
 				}
 
-				if (can("manage", "TeacherDashboard")) {
+				if (can("manage", "TeacherDashboard") || role === "teacher") {
 					return <TeacherSelfView />;
 				}
 
-				if (
-					context.activeBond?.capacity === "guardian" ||
-					context.activeBond?.capacity === "parent"
-				) {
+				if (role === "guardian" || role === "parent") {
 					return <GuardianSelfView />;
 				}
 
-				if (can("manage", "StudentDashboard")) {
+				if (can("manage", "StudentDashboard") || role === "student") {
 					return <StudentSelfView />;
 				}
 

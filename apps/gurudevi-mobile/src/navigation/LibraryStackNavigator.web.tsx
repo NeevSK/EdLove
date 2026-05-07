@@ -1,11 +1,10 @@
-﻿import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import type { LibraryStackParamList } from "@repo/core/types";
 import { useTheme } from "@repo/ui/primitives";
 
 import React from "react";
 import { StackFallback } from "../components/web/WebScreenShimmer";
 
-// Web-specific screens — lazy loaded for code splitting
 // Web-specific screens — lazy loaded for code splitting
 const LibraryScreenWeb = React.lazy(
 	() => import("@repo/library/screens/LibraryScreen.web"),
@@ -23,6 +22,9 @@ const MapScreen = React.lazy(
 );
 const CuratorReviewScreen = React.lazy(
 	() => import("@repo/library/screens/CuratorReviewScreen"),
+);
+const CollectionDetailScreen = React.lazy(
+	() => import("@repo/library/screens/CollectionDetailScreen.web"),
 );
 
 const Stack = createNativeStackNavigator<LibraryStackParamList>();
@@ -48,6 +50,7 @@ export default function LibraryStackNavigatorWeb() {
 				<Stack.Screen name="VideoPlayer" component={VideoPlayerScreen as any} />
 				<Stack.Screen name="LibraryMap" component={MapScreen} />
 				<Stack.Screen name="CuratorReview" component={CuratorReviewScreen} />
+				<Stack.Screen name="CollectionDetail" component={CollectionDetailScreen} />
 			</Stack.Navigator>
 		</React.Suspense>
 	);

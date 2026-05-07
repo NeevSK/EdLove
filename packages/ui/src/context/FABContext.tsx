@@ -60,7 +60,7 @@ export const FABProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     [state, registerFAB, unregisterFAB, setVisibility],
   );
 
-  return <FABContext.Provider value={value}>{children}</FABContext.Provider>;
+  return <FABContext value={value}>{children}</FABContext>;
 };
 
 export const useFAB = () => {

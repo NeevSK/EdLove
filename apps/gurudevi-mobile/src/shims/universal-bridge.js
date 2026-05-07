@@ -20,24 +20,43 @@ const createProxyShim = (name, baseMock = { __esModule: true }) => {
 
 	const proxy = new Proxy(target, {
 		get: (obj, prop) => {
-			if (prop === "default") return proxy;
-			if (prop === "__esModule") return true;
-			if (prop === "$$typeof") return undefined; // Nuclear: Don't trick React into thinking this is a built-in element
-			if (prop === "prototype") return undefined; // Nuclear: Don't trick class inheritance
-
-			if (prop === "Provider" || prop === "Consumer") {
-				// If something.Provider is accessed, return a mock Context object
-				return { $$typeof: Symbol.for("react.provider"), _context: proxy };
-			}
-
-			if (prop in obj) return obj[prop];
 			if (typeof prop === "symbol") return obj[prop];
 
-			// If we are on web and someone requests a common native-only property, return safety
+			// 1. React 19 Compatibility: Explicitly handle internal checks
+			const reactInternals = new Set([
+				"$$typeof",
+				"prototype",
+				"displayName",
+				"childContextTypes",
+				"contextTypes",
+				"contextType",
+				"propTypes",
+				"getDerivedStateFromProps",
+				"getSnapshotBeforeUpdate",
+			]);
+			if (reactInternals.has(prop)) return obj[prop];
+
+			// 2. ESM/Module Interop
+			if (prop === "default") return proxy;
+			if (prop === "__esModule") return true;
+
+			// 3. Special React Native Bridge Mocks
+			if (prop === "Provider" || prop === "Consumer") {
+				return { $$typeof: Symbol.for("react.provider"), _context: proxy };
+			}
 			if (prop === "addListener" || prop === "removeListeners") return () => {};
 
-			// SELF-HEALING: return a new proxy for anything missing.
+			// 4. Return existing mocks or cached children
+			if (prop in obj) return obj[prop];
+
+			// 5. SELF-HEALING: return a new proxy for anything missing.
+			// Only heal PascalCase properties (Icons/Components) or camelCase (methods)
+			// Avoid healing internal lowercase/underscore props that might be logic checks.
 			const propStr = String(prop);
+			const isLikelyMethodOrComp = /^[a-zA-Z]/.test(propStr);
+			
+			if (!isLikelyMethodOrComp) return undefined;
+
 			const child = createProxyShim(`${name}.${propStr}`, {});
 			obj[prop] = child; // cache it
 			return child;

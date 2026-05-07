@@ -3,6 +3,11 @@ import type { UserContext } from '../..//schemas/user.schema';
 import type { AppAbility } from './base';
 
 export const defineStudentAbilities = (user: UserContext, { can }: AbilityBuilder<AppAbility>) => {
+  // HEAL 2026: Student sanctuary access for Wanderers
+  can('read', 'StudentPulse');
+  can('manage', 'StudentDashboard');
+  can('manage', 'Wellbeing');
+
   if (!user.school_id) return;
 
   const isActive = user.active_bond_status === 'active';

@@ -10,6 +10,12 @@ import { defineSectionHeadAbilities } from './abilities/sectionHead';
 import { defineStudentAbilities } from './abilities/student';
 import { defineTeacherAbilities } from './abilities/teacher';
 
+type UserBond = UserContext['bonds'][number];
+
+function hasBondStatus(bond: UserBond): bond is UserBond & { status: NonNullable<UserBond['status']> } {
+  return typeof bond.status === 'string' && bond.status.length > 0;
+}
+
 /**
  * composeUserAbilities: The 2026 Unified Composition Engine.
  * 1. Validates the UserContext via Zod ABI (Attribute-Based Identity).
@@ -92,10 +98,10 @@ export const composeUserAbilities = (rawContext: Partial<UserContext>): AppAbili
 
     // Create a contextual context for this specific bond to satisfy legacy definers
     // while moving towards relationship-scoped permissions.
-    const contextualUser = {
+    const contextualUser: UserContext = {
       ...user,
-      school_id: entity_type === 'SCHOOL' ? entity_id : user.school_id,
-      active_bond_status: bond.status,
+      school_id: (entity_type === 'SCHOOL' || entity_type === 'GUEST' || entity_type === 'PERSONAL') ? entity_id : user.school_id,
+      active_bond_status: hasBondStatus(bond) ? bond.status : 'active',
     };
 
     switch (capacity) {

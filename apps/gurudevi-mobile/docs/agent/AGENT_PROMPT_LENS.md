@@ -150,7 +150,7 @@ Produces a static site in `apps/gurudevi-mobile/dist/` — serves from any stati
 ### Environment Variables (required at build time)
 Set these as GitHub Secrets or in your hosting platform's dashboard:
 - `EXPO_PUBLIC_SUPABASE_URL`
-- `EXPO_PUBLIC_SUPABASE_ANON_KEY`
+- `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
 - `EXPO_PUBLIC_POSTHOG_API_KEY` (optional)
 - `EXPO_PUBLIC_SENTRY_DSN` (optional)
 

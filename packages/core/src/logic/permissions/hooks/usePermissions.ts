@@ -22,25 +22,28 @@ export const usePermissions = () => {
     const active_bond = activePerspective?.active_bond || null;
     const is_personal = schoolType === 'personal_workspace';
 
-    const rawContext = {
+    const rawContext: UserContext = {
       user_id: user?.id || null,
       userId: user?.id || null,
       email: user?.email || null,
       
       // Sovereign ReBAC Context
       // 1. The Reality: All bonds the user holds
-      bonds: available_bonds,
+      bonds: available_bonds as UserContext['bonds'],
       
       // 2. The Anchor: The primary identity from onboarding (first bond)
       primary_capacity: available_bonds[0]?.capacity || null,
       primaryCapacity: available_bonds[0]?.capacity || null,
 
       // 3. The Focus: The currently active bond
-      active_bond,
-      activeBond: active_bond,
+      active_bond: active_bond as UserContext['active_bond'],
+      activeBond: active_bond as UserContext['activeBond'],
       active_bond_status: active_bond?.status || 'active',
       role: active_bond?.capacity || null,
       traits: active_bond?.capacity ? [`role:${active_bond.capacity}`] : [],
+      tier: user?.tier || 'free',
+      features: user?.features || [],
+      flags: user?.flags || {},
 
       school_id: active_bond?.entity_type === 'SCHOOL' ? active_bond.entity_id : user?.school_id || null,
       schoolId: active_bond?.entity_type === 'SCHOOL' ? active_bond.entity_id : user?.school_id || null,

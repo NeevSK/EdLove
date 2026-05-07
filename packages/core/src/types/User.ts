@@ -35,6 +35,9 @@ export interface User extends ProfileStats {
   organization_name?: string | null; // Name of the user's organization/school
   school_name?: string | null; // Alias for organization_name
   tenant_kind?: TenantKind | null; // Distinguishes internal, customer, demo, and sandbox tenants
+  tier?: string | null;
+  features?: string[];
+  flags?: Record<string, boolean | string>;
   onboarding_completed?: boolean | null; // Flag indicating if user has completed onboarding
   onboarding_completed_at?: string | Date | null; // Timestamp when onboarding was completed
   public_profile?: boolean | null; // Visibility flag for community profile (optional  defaults to false if absent)

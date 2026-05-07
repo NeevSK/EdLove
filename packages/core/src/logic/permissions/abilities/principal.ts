@@ -1,5 +1,5 @@
 import type { AbilityBuilder } from '@casl/ability';
-import type { UserContext } from '../..//schemas/user.schema';
+import type { UserContext } from '../../schemas/user.schema';
 import type { AppAbility } from './base';
 
 export const definePrincipalAbilities = (
@@ -7,11 +7,15 @@ export const definePrincipalAbilities = (
   builder: AbilityBuilder<AppAbility>,
 ) => {
   const { can } = builder;
+  
+  // HEAL 2026: Core visibility even for Wanderers
+  can('read', 'PrincipalPulse');
+  can('manage', 'PrincipalDashboard');
+  can('manage', 'Wellbeing');
+
   if (!user.school_id) return;
 
-  can('read', 'PrincipalPulse');
   can('read', 'TeacherPulse');
-  can('manage', 'PrincipalDashboard');
   can('read', 'ClassroomList');
 
   // Institutional management

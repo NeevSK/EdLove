@@ -6,6 +6,7 @@ interface CreatePostModalProps {
 	isOpen: boolean;
 	onClose: () => void;
 	groupId?: string;
+	onSuccess?: () => void;
 }
 
 const EDUCATION_TAGS = [
@@ -23,6 +24,7 @@ export default function CreatePostModal({
 	isOpen,
 	onClose,
 	groupId = "general",
+	onSuccess,
 }: CreatePostModalProps) {
 	const { flags } = usePermissions();
 	const { state, actions } = useComposerLogic(groupId, onClose);
@@ -67,7 +69,10 @@ export default function CreatePostModal({
 			onSetCustomDate={actions.setPollCustomEndsAt}
 			onSetPollAnonymous={actions.setPollIsAnonymous}
 			onSetPollMultiple={actions.setPollAllowMultiple}
-			onSubmit={actions.handleSubmit}
+			onSubmit={async () => {
+				await actions.handleSubmit();
+				onSuccess?.();
+			}}
 		/>
 	);
 }

@@ -48,33 +48,42 @@ const LotusFallback = (props) => {
  */
 const IconProxy = new Proxy(LotusFallback, {
 	get: (target, prop) => {
-		// 1. Handle Module/React Interop
-		if (prop === "__esModule") return true;
-		if (prop === "default") return LucideWeb ? (LucideWeb.default || LucideWeb) : LotusFallback;
-		if (prop === "$$typeof") return undefined;
-		if (prop === "displayName") return "LucideIconShim";
 		if (typeof prop === "symbol") return target[prop];
 
-		// 2. Automatic Mapping
-		// Since lucide-react and lucide-react-native share naming conventions (PascalCase),
-		// we can resolve any icon dynamically.
-		if (LucideWeb) {
-			// Try the exact name (e.g. 'Heart')
-			if (LucideWeb[prop]) return LucideWeb[prop];
+		// 1. Standard Module/React Exports
+		if (prop === "default") return LucideWeb ? (LucideWeb.default || LucideWeb) : LotusFallback;
+		if (prop === "__esModule") return true;
+		if (prop === "$$typeof") return target[prop];
+		if (prop === "displayName") return "IconProxy";
 
-			// Try adding 'Icon' suffix if missing (e.g. 'HeartIcon' -> 'Heart')
-			const cleanName = prop.replace(/Icon$/, "");
-			if (LucideWeb[cleanName]) return LucideWeb[cleanName];
-			
-			// Try removing 'Icon' suffix if present (e.g. 'Heart' -> 'HeartIcon')
-			const iconName = `${prop}Icon`;
-			if (LucideWeb[iconName]) return LucideWeb[iconName];
+		// 2. Prevent React 19 Crashes
+		const reactInternals = new Set([
+			"childContextTypes",
+			"contextTypes",
+			"contextType",
+			"propTypes",
+			"getDerivedStateFromProps",
+			"getSnapshotBeforeUpdate",
+		]);
+		if (reactInternals.has(prop)) return undefined;
+
+		// 3. Icon Resolution Logic
+		try {
+			if (LucideWeb) {
+				if (LucideWeb[prop]) return LucideWeb[prop];
+				const normalized = prop.replace(/Icon$/, "");
+				if (LucideWeb[normalized]) return LucideWeb[normalized];
+			}
+		} catch (e) {
+			// Silent fallback
 		}
 
-		// 3. Resilience Fallback
-		// If the icon isn't found in the library, we return the brand-aligned Lotus
-		// instead of a warning symbol or crashing.
-		return LotusFallback;
+		// 4. Self-Healing Fallback for potential icons
+		if (typeof prop === "string" && /^[A-Z]/.test(prop)) {
+			return LotusFallback;
+		}
+
+		return target[prop];
 	},
 });
 

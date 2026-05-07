@@ -15,6 +15,7 @@ import {
 	Heading,
 	HStack,
 	Icon,
+	Input,
 	InputField,
 	ScrollView,
 	Spinner,
@@ -22,7 +23,7 @@ import {
 	Text,
 	VStack,
 } from "@repo/ui/primitives";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useReducer } from "react";
 import { useTranslation } from "react-i18next";
 import { communityAPI as community } from "../api/community";
 import type { AnnouncementWithAuthor } from "../types/Community";
@@ -32,48 +33,119 @@ interface AnnouncementsScreenProps {
 	userId: string;
 }
 
+type State = {
+	announcements: AnnouncementWithAuthor[];
+	isLoading: boolean;
+	showCreateModal: boolean;
+	newAnnouncementContent: string;
+	isPinned: boolean;
+	isCreating: boolean;
+	error: string | null;
+};
+
+type Action =
+	| { type: "LOAD_START" }
+	| { type: "LOAD_SUCCESS"; announcements: AnnouncementWithAuthor[] }
+	| { type: "LOAD_FAILURE"; error: string }
+	| { type: "SET_CREATE_MODAL"; open: boolean }
+	| { type: "SET_CONTENT"; content: string }
+	| { type: "SET_PINNED"; pinned: boolean }
+	| { type: "CREATE_START" }
+	| { type: "CREATE_SUCCESS" }
+	| { type: "CREATE_FAILURE"; error: string };
+
+function reducer(state: State, action: Action): State {
+	switch (action.type) {
+		case "LOAD_START":
+			return { ...state, isLoading: true, error: null };
+		case "LOAD_SUCCESS":
+			return { ...state, isLoading: false, announcements: action.announcements };
+		case "LOAD_FAILURE":
+			return { ...state, isLoading: false, error: action.error };
+		case "SET_CREATE_MODAL":
+			return {
+				...state,
+				showCreateModal: action.open,
+				newAnnouncementContent: action.open ? state.newAnnouncementContent : "",
+				isPinned: action.open ? state.isPinned : false,
+			};
+		case "SET_CONTENT":
+			return { ...state, newAnnouncementContent: action.content };
+		case "SET_PINNED":
+			return { ...state, isPinned: action.pinned };
+		case "CREATE_START":
+			return { ...state, isCreating: true, error: null };
+		case "CREATE_SUCCESS":
+			return {
+				...state,
+				isCreating: false,
+				showCreateModal: false,
+				newAnnouncementContent: "",
+				isPinned: false,
+			};
+		case "CREATE_FAILURE":
+			return { ...state, isCreating: false, error: action.error };
+		default:
+			return state;
+	}
+}
+
+const initialState: State = {
+	announcements: [],
+	isLoading: true,
+	showCreateModal: false,
+	newAnnouncementContent: "",
+	isPinned: false,
+	isCreating: false,
+	error: null,
+};
+
 export default function AnnouncementsScreen({
 	schoolId,
 	userId,
 }: AnnouncementsScreenProps) {
 	const { t } = useTranslation();
 	const { can } = usePermissions();
-	const [announcements, setAnnouncements] = useState<AnnouncementWithAuthor[]>(
-		[],
-	);
-	const [isLoading, setIsLoading] = useState(true);
-	const [showCreateModal, setShowCreateModal] = useState(false);
-	const [newAnnouncementContent, setNewAnnouncementContent] = useState("");
-	const [isPinned, setIsPinned] = useState(false);
-	const [isCreating, setIsCreating] = useState(false);
-	const [error, setError] = useState<string | null>(null);
+	const [state, dispatch] = useReducer(reducer, initialState);
 
-	const loadAnnouncements = React.useCallback(async () => {
-		setIsLoading(true);
-		setError(null);
+	const {
+		announcements,
+		isLoading,
+		showCreateModal,
+		newAnnouncementContent,
+		isPinned,
+		isCreating,
+		error,
+	} = state;
+
+	const loadAnnouncements = useCallback(async () => {
+		dispatch({ type: "LOAD_START" });
 		try {
 			const data = await community.getAnnouncements(schoolId);
-			setAnnouncements(data);
-		} catch (err: any) {
+			dispatch({ type: "LOAD_SUCCESS", announcements: data });
+		} catch (err: unknown) {
 			console.error("Failed to load announcements:", err);
-			setError(err.message || "Failed to load announcements");
-		} finally {
-			setIsLoading(false);
+			dispatch({
+				type: "LOAD_FAILURE",
+				error: (err as Error).message || "Failed to load announcements",
+			});
 		}
 	}, [schoolId]);
 
 	useEffect(() => {
-		loadAnnouncements();
+		void loadAnnouncements();
 	}, [loadAnnouncements]);
 
 	const handleCreateAnnouncement = async () => {
 		if (!newAnnouncementContent.trim()) {
-			setError("Announcement content cannot be empty");
+			dispatch({
+				type: "CREATE_FAILURE",
+				error: "Announcement content cannot be empty",
+			});
 			return;
 		}
 
-		setIsCreating(true);
-		setError(null);
+		dispatch({ type: "CREATE_START" });
 		try {
 			await community.createAnnouncement(
 				schoolId,
@@ -81,15 +153,14 @@ export default function AnnouncementsScreen({
 				newAnnouncementContent,
 				isPinned,
 			);
-			setNewAnnouncementContent("");
-			setIsPinned(false);
-			setShowCreateModal(false);
-			await loadAnnouncements();
-		} catch (err: any) {
+			dispatch({ type: "CREATE_SUCCESS" });
+			void loadAnnouncements();
+		} catch (err: unknown) {
 			console.error("Failed to create announcement:", err);
-			setError(err.message || "Failed to create announcement");
-		} finally {
-			setIsCreating(false);
+			dispatch({
+				type: "CREATE_FAILURE",
+				error: (err as Error).message || "Failed to create announcement",
+			});
 		}
 	};
 
@@ -148,7 +219,7 @@ export default function AnnouncementsScreen({
 								<SanctuaryButton
 									action="primary"
 									className="h-12 rounded-xl mt-2"
-									onPress={() => setShowCreateModal(true)}
+									onPress={() => dispatch({ type: "SET_CREATE_MODAL", open: true })}
 								>
 									<HStack className="items-center gap-2">
 										<Icon as={Plus} size="sm" className="text-white" />
@@ -265,11 +336,7 @@ export default function AnnouncementsScreen({
 
 			<SanctuaryModal
 				isOpen={showCreateModal}
-				onClose={() => {
-					setShowCreateModal(false);
-					setNewAnnouncementContent("");
-					setIsPinned(false);
-				}}
+				onClose={() => dispatch({ type: "SET_CREATE_MODAL", open: false })}
 				title="Draft Resonance"
 			>
 				<VStack className="gap-6 py-6 px-4">
@@ -278,17 +345,19 @@ export default function AnnouncementsScreen({
 							Announcement Content
 						</Text>
 						<Box className="bg-ink/5 rounded-2xl border border-border p-1">
-							<InputField
-								className="text-ink text-base py-3 px-4 min-h-[150px]"
-								placeholder={
-									t("announcements.contentPlaceholder") ||
-									"What needs to be heard?"
-								}
-								placeholderTextColor="#94a3b8"
-								value={newAnnouncementContent}
-								onChangeText={setNewAnnouncementContent}
-								multiline
-							/>
+							<Input className="min-h-[150px] border-none bg-transparent">
+								<InputField
+									className="text-ink text-base py-3 px-4 flex-1"
+									placeholder={
+										t("announcements.contentPlaceholder") ||
+										"What needs to be heard?"
+									}
+									placeholderTextColor="#94a3b8"
+									value={newAnnouncementContent}
+									onChangeText={(text) => dispatch({ type: "SET_CONTENT", content: text })}
+									multiline
+								/>
+							</Input>
 						</Box>
 					</VStack>
 
@@ -303,18 +372,14 @@ export default function AnnouncementsScreen({
 								{t("announcements.pinAnnouncement") || "Pin to Sanctuary Top"}
 							</Text>
 						</HStack>
-						<Switch value={isPinned} onValueChange={setIsPinned} />
+						<Switch value={isPinned} onValueChange={(val) => dispatch({ type: "SET_PINNED", pinned: val })} />
 					</HStack>
 
 					<HStack className="gap-3 mt-4">
 						<SanctuaryButton
 							action="secondary"
 							className="flex-1 h-14 rounded-2xl"
-							onPress={() => {
-								setShowCreateModal(false);
-								setNewAnnouncementContent("");
-								setIsPinned(false);
-							}}
+							onPress={() => dispatch({ type: "SET_CREATE_MODAL", open: false })}
 							isDisabled={isCreating}
 						>
 							<Text className="text-ink font-bold">Withdraw</Text>

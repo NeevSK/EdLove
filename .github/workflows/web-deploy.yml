@@ -36,6 +36,8 @@ jobs:
   build-web:
     name: Build Web
     runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.environment || (github.ref == 'refs/heads/main' && 'production' || 'preview') }}
 
     steps:
       - name: 🏗 Checkout
@@ -60,10 +62,15 @@ jobs:
 
       - name: 🌐 Build web bundle
         working-directory: apps/gurudevi-mobile
-        run: pnpm build:web
+        run: |
+          if [ -z "$EXPO_PUBLIC_SUPABASE_URL" ]; then
+            echo "❌ Error: EXPO_PUBLIC_SUPABASE_URL is not set. Check your GitHub Secrets."
+            exit 1
+          fi
+          pnpm build:web
         env:
           EXPO_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          EXPO_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
           EXPO_PUBLIC_POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
           EXPO_PUBLIC_POSTHOG_HOST: ${{ secrets.POSTHOG_HOST }}
           EXPO_PUBLIC_SENTRY_DSN: ${{ secrets.SENTRY_DSN }}

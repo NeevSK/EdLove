@@ -1,4 +1,5 @@
 import { useNavigation } from "@react-navigation/native";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { communityAPI } from "@repo/core/api";
 import { useManifestoHooks, useNotificationHooks } from "@repo/core/api/hooks";
 import { usePendingGateAction } from "@repo/core/hooks";
@@ -17,13 +18,14 @@ import CommunityHearth from "../components/CommunityHearth";
 import CreateGroupModal from "../components/CreateGroupModal";
 import CreatePostModal from "../components/CreatePostModal";
 import { PostCard } from "../components/PostCard";
+import { SanctuaryFlashList } from "@repo/ui/components/SanctuaryFlashList";
 import { useCommunity } from "../hooks/useCommunity";
 import { useCommunityGroups } from "../hooks/useCommunityGroups";
 import type {
-	AnnouncementWithAuthor,
 	CommunityPost,
 	DirectConversation,
 } from "../types";
+import type { CommunityStackParamList } from "@repo/core/types";
 import AnnouncementsScreen from "./AnnouncementsScreen";
 import {
 	type CommunityWorkspaceMode,
@@ -33,7 +35,6 @@ import {
 	getCommunityQuickPaths,
 	mapCommunitySurfaceSlots,
 } from "./communityWorkspace.shared";
-import type { CommunityStackParamList } from "@repo/core/types";
 
 type CommunityState = {
 	activeMode: CommunityWorkspaceMode;
@@ -106,6 +107,10 @@ function communityReducer(
 	}
 }
 
+type Navigation = NativeStackNavigationProp<
+	CommunityStackParamList & { Auth: undefined }
+>;
+
 const initialState: CommunityState = {
 	activeMode: "feed",
 	selectedFilter: "all",
@@ -121,7 +126,7 @@ const initialState: CommunityState = {
 };
 
 export default function CommunityScreenWeb() {
-	const navigation = useNavigation<any>(); // Keep any for web navigation compatibility
+	const navigation = useNavigation<Navigation>();
 	const { can } = usePermissions();
 	const { user, flags } = useStore();
 	const { isCommunityEnabled, isMessagingEnabled, isSocialShieldEnabled } =
@@ -162,7 +167,6 @@ export default function CommunityScreenWeb() {
 	});
 	const { manifestos } = useManifestoHooks(schoolId, user?.id);
 
-
 	const slots = useMemo(
 		() => mapCommunitySurfaceSlots("web", userId),
 		[userId],
@@ -181,6 +185,9 @@ export default function CommunityScreenWeb() {
 		() => getCommunityFilterOptions([...sanctuaryGroups, ...galaxyGroups]),
 		[galaxyGroups, sanctuaryGroups],
 	);
+	// Suppress unused warning if it's planned for future
+	void filters;
+
 	const modeOptions = useMemo(
 		() => getCommunityModeOptions(canReadAnnouncements, isMessagingEnabled),
 		[canReadAnnouncements, isMessagingEnabled],
@@ -193,8 +200,8 @@ export default function CommunityScreenWeb() {
 	const filteredPosts = useMemo(() => {
 		const query = searchQuery.trim().toLowerCase();
 		if (!query) return posts;
-		return posts.filter(
-			(post: any) =>
+		return (posts as CommunityPost[]).filter(
+			(post) =>
 				post.content?.toLowerCase().includes(query) ||
 				post.author_name?.toLowerCase().includes(query) ||
 				post.group_name?.toLowerCase().includes(query) ||
@@ -255,7 +262,7 @@ export default function CommunityScreenWeb() {
 				if (!cancelled)
 					dispatch({
 						type: "SET_ANNOUNCEMENT_COUNT",
-						count: (data as any[]).length,
+						count: (data as unknown[]).length,
 					});
 			})
 			.catch((error) => {
@@ -284,27 +291,6 @@ export default function CommunityScreenWeb() {
 		[navigation],
 	);
 
-	if (!isCommunityEnabled) {
-		return (
-			<Box className="flex-1 bg-phase-canvas">
-				<WebScreenHeader title="Community" />
-				<Box className="flex-1 items-center justify-center p-12">
-					<VStack space="xl" className="items-center max-w-md">
-						<Box className="w-16 h-16 bg-phase-warning/10 rounded-full items-center justify-center">
-							<Icon as={Info} size="xl" className="text-phase-warning" />
-						</Box>
-						<Heading className="text-center">Sanctuary Maintenance</Heading>
-						<Text className="text-center text-phase-text-secondary">
-							The community spaces are currently undergoing a structural
-							expansion. Please check back soon for a calmer, more resonant
-							experience.
-						</Text>
-					</VStack>
-				</Box>
-			</Box>
-		);
-	}
-
 	const renderGuestGate = (title: string, description: string) => (
 		<div className="community-empty-card">
 			<PositiveInvitation
@@ -318,48 +304,8 @@ export default function CommunityScreenWeb() {
 		</div>
 	);
 
-	const renderPostStream = () => {
-		if (!canReadFeed) {
-			return renderGuestGate(
-				"The hearth opens with citizenship",
-				"Create an account to join circles, post with intention, and let your community feed emerge.",
-			);
-		}
-
-		if (isLoadingPosts) {
-			return (
-				<div
-					className="community-empty-card"
-					style={{ textAlign: "center", padding: "48px 24px" }}
-				>
-					<Spinner />
-				</div>
-			);
-		}
-
-		if (filteredPosts.length === 0) {
-			return (
-				<div className="community-empty-card">
-					<h3>Start the next note</h3>
-					<p>
-						Your circles are ready for a first post, question, or shared
-						resource.
-					</p>
-					<button
-						className="premium-button"
-						onClick={() =>
-							canCreatePost
-								? dispatch({ type: "TOGGLE_CREATE_POST", show: true })
-								: openAuthFlow()
-						}
-					>
-						{canCreatePost ? "New Post" : "Create account"}
-					</button>
-				</div>
-			);
-		}
-
-		return filteredPosts.map((post: any) => (
+	const renderPostItem = useCallback(
+		({ item: post }: { item: CommunityPost }) => (
 			<PostCard
 				key={post.id}
 				post={post}
@@ -394,7 +340,45 @@ export default function CommunityScreenWeb() {
 					}
 				}}
 			/>
-		));
+		),
+		[
+			user,
+			isSocialShieldEnabled,
+			navigation,
+			handleOpenGroup,
+			dispatch,
+		],
+	);
+
+	const renderPostStream = () => {
+		if (!canReadFeed) {
+			return renderGuestGate(
+				"The Hearth opens with citizenship",
+				"The Community Hearth is currently in 'View Only' mode for Wanderers. Create an account to join circles, share your resonance, and contribute to the collective pulse.",
+			);
+		}
+
+		if (isLoadingPosts) {
+			return (
+				<div
+					className="community-empty-card"
+					style={{ textAlign: "center", padding: "48px 24px" }}
+				>
+					<Spinner />
+				</div>
+			);
+		}
+
+		return (
+			<div style={{ flex: 1, minHeight: "500px" }}>
+				<SanctuaryFlashList
+					data={filteredPosts as CommunityPost[]}
+					renderItem={renderPostItem}
+					keyExtractor={(item: CommunityPost) => item.id}
+					estimatedItemSize={240}
+				/>
+			</div>
+		);
 	};
 
 	const renderCircles = () => {
@@ -417,7 +401,7 @@ export default function CommunityScreenWeb() {
 
 		return (
 			<div className="community-circle-grid">
-				{visibleGroups.map((group: any) => (
+				{visibleGroups.map((group) => (
 					<button
 						key={group.id}
 						className="community-circle-card"
@@ -534,6 +518,27 @@ export default function CommunityScreenWeb() {
 		}
 	};
 
+	if (!isCommunityEnabled) {
+		return (
+			<Box className="flex-1 bg-phase-canvas">
+				<WebScreenHeader title="Community" />
+				<Box className="flex-1 items-center justify-center p-12">
+					<VStack space="xl" className="items-center max-w-md">
+						<Box className="w-16 h-16 bg-phase-warning/10 rounded-full items-center justify-center">
+							<Icon as={Info} size="xl" className="text-phase-warning" />
+						</Box>
+						<Heading className="text-center">Sanctuary Maintenance</Heading>
+						<Text className="text-center text-phase-text-secondary">
+							The community spaces are currently undergoing a structural
+							expansion. Please check back soon for a calmer, more resonant
+							experience.
+						</Text>
+					</VStack>
+				</Box>
+			</Box>
+		);
+	}
+
 	return (
 		<div className="sanctuary-screen community-screen">
 			<div className="sanctuary-container">
@@ -593,21 +598,29 @@ export default function CommunityScreenWeb() {
 						</section>
 
 						<section className="community-rail-card">
-							<span className="community-section-eyebrow">Joined circles</span>
+							<span className="community-section-eyebrow">
+								{sanctuaryGroups.length > 0 ? "Joined circles" : "Discover circles"}
+							</span>
 							<div className="community-chip-stack">
-								{sanctuaryGroups.slice(0, 4).map((group) => (
-									<button
-										key={group.id}
-										className={`community-chip ${selectedFilter === group.id ? "active" : ""}`}
-										onClick={() => {
-											dispatch({ type: "SET_FILTER", filter: group.id });
-											dispatch({ type: "SET_MODE", mode: "feed" });
-											fetchPosts(group.id);
-										}}
-									>
-										{group.name}
-									</button>
-								))}
+								{(sanctuaryGroups.length > 0 ? sanctuaryGroups : galaxyGroups)
+									.slice(0, 4)
+									.map((group) => (
+										<button
+											key={group.id}
+											className={`community-chip ${selectedFilter === group.id ? "active" : ""}`}
+											onClick={() => {
+												if (canReadFeed) {
+													dispatch({ type: "SET_FILTER", filter: group.id });
+													dispatch({ type: "SET_MODE", mode: "feed" });
+													void fetchPosts(group.id);
+												} else {
+													handleOpenGroup(group.id, group.name);
+												}
+											}}
+										>
+											{group.name}
+										</button>
+									))}
 							</div>
 						</section>
 
@@ -701,73 +714,6 @@ export default function CommunityScreenWeb() {
 							</div>
 						</section>
 
-						{(activeMode === "feed" || activeMode === "circles") && (
-							<section className="community-compose-card">
-								<div>
-									<span className="community-section-eyebrow">
-										Compose into the right circle
-									</span>
-									<h3>Contribution before utility.</h3>
-									<p>
-										New Post and New Group stay visible, but composition is
-										framed as contribution to shared resonance rather than just
-										pressing a tool button.
-									</p>
-								</div>
-								<div className="community-action-row">
-									<button
-										className="premium-button"
-										onClick={() =>
-											canCreatePost
-												? dispatch({ type: "TOGGLE_CREATE_POST", show: true })
-												: openAuthFlow()
-										}
-									>
-										New Post
-									</button>
-									<button
-										className="secondary-button"
-										onClick={() =>
-											canCreateGroup
-												? dispatch({ type: "TOGGLE_CREATE_GROUP", show: true })
-												: openAuthFlow()
-										}
-									>
-										New Group
-									</button>
-									{sanctuaryGroups[0] && (
-										<button
-											className="secondary-button"
-											onClick={() => {
-												const mainGroup = sanctuaryGroups[0];
-												if (mainGroup) {
-													handleOpenGroup(mainGroup.id, mainGroup.name);
-												}
-											}}
-										>
-											Open Circle
-										</button>
-									)}
-								</div>
-								<div className="community-filter-row">
-									{filters.map((filter) => (
-										<button
-											key={filter.value}
-											className={`community-inline-chip ${selectedFilter === filter.value ? "active" : ""}`}
-											onClick={() => {
-												dispatch({ type: "SET_FILTER", filter: filter.value });
-												fetchPosts(
-													filter.value === "all" ? undefined : filter.value,
-												);
-											}}
-										>
-											{filter.label}
-										</button>
-									))}
-								</div>
-							</section>
-						)}
-
 						<section className="community-main-stream">
 							{renderActiveSurface()}
 						</section>
@@ -776,28 +722,23 @@ export default function CommunityScreenWeb() {
 					<aside className="community-right-rail">
 						<section className="community-rail-card">
 							<span className="community-section-eyebrow">Context</span>
-						</section>
-						<section className="community-rail-card">
-							<strong>Community pulse</strong>
 							<p>
-								Live presence and school energy remain visible without stealing
-								the page.
+								Your personal community dashboard provides a tailored view of
+								what matters most right now.
 							</p>
 						</section>
 						<section className="community-rail-card">
-							<strong>Joined circles</strong>
-							<p>Fast routes into the groups you already belong to.</p>
-						</section>
-						<section className="community-rail-card">
-							<strong>Trust + safety</strong>
-							<p>
-								Shielding, reporting, and guest/citizen gating stay easy to
-								reach.
-							</p>
-						</section>
-						<section className="community-rail-card">
-							<strong>Messages</strong>
-							<p>Direct conversations remain one step away from the hearth.</p>
+							<span className="community-section-eyebrow">Hearth Pulse</span>
+							<div className="community-stat-list">
+								<div className="community-stat-item">
+									<strong>{pulse.membersSeen}</strong>
+									<span>Active today</span>
+								</div>
+								<div className="community-stat-item">
+									<strong>{pulse.circlesActive}</strong>
+									<span>Active circles</span>
+								</div>
+							</div>
 						</section>
 					</aside>
 				</div>
@@ -805,257 +746,290 @@ export default function CommunityScreenWeb() {
 
 			<CreatePostModal
 				isOpen={showCreatePost}
-				onClose={() => {
-					dispatch({ type: "TOGGLE_CREATE_POST", show: false });
-					fetchPosts(selectedFilter === "all" ? undefined : selectedFilter);
-				}}
-				groupId={selectedFilter !== "all" ? selectedFilter : undefined}
+				onClose={() => dispatch({ type: "TOGGLE_CREATE_POST", show: false })}
+				onSuccess={() => void fetchPosts()}
 			/>
 
 			<CreateGroupModal
 				isOpen={showCreateGroup}
-				onClose={() => {
-					dispatch({ type: "TOGGLE_CREATE_GROUP", show: false });
-					fetchGroups?.();
-				}}
+				onClose={() => dispatch({ type: "TOGGLE_CREATE_GROUP", show: false })}
+				onSuccess={() => void fetchGroups()}
 			/>
 
 			<CommentSheet
 				postId={commentPostId}
 				postAuthorId={commentPostAuthorId}
-				currentUserId={user?.id}
 				postType={commentPostType}
 				onClose={() => dispatch({ type: "CLOSE_COMMENTS" })}
 			/>
 
-			<style
-				dangerouslySetInnerHTML={{
-					__html: `
-                .community-screen .sanctuary-container {
-                    display: flex;
-                    flex-direction: column;
-                    gap: 24px;
+			<style>{`
+                .community-screen {
+                    background: var(--phase-canvas);
+                    min-height: 100vh;
+                    padding-bottom: 80px;
                 }
+
                 .community-layout {
                     display: grid;
-                    grid-template-columns: 218px minmax(0, 812px) 290px;
-                    gap: 24px;
-                    align-items: start;
+                    grid-template-columns: 240px 1fr 300px;
+                    gap: 32px;
+                    margin-top: 32px;
                 }
-                .community-left-rail,
-                .community-right-rail,
-                .community-center-column {
-                    display: flex;
-                    flex-direction: column;
-                    gap: 20px;
-                }
-                .community-rail-card,
-                .community-hearth-card,
-                .community-compose-card,
-                .community-empty-card {
+
+                .community-rail-card {
+                    background: white;
+                    border: 1px solid var(--border);
                     border-radius: 24px;
-                    border: 1px solid rgba(42, 35, 24, 0.08);
-                    background: linear-gradient(180deg, rgba(252, 247, 238, 0.98) 0%, rgba(248, 242, 232, 0.98) 100%);
-                    padding: 20px;
+                    padding: 24px;
+                    margin-bottom: 24px;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.02);
                 }
-                .community-hearth-card {
-                    padding: 28px;
-                }
-                .community-hearth-copy {
-                    display: grid;
-                    grid-template-columns: minmax(0, 1fr) 300px;
-                    gap: 20px;
-                    margin-bottom: 18px;
-                }
-                .community-hearth-copy h2,
-                .community-compose-card h3,
-                .community-empty-card h3 {
-                    margin: 8px 0;
-                    font-size: 24px;
-                    line-height: 1.2;
-                    color: #2d2418;
-                }
-                .community-hearth-copy p,
-                .community-compose-card p,
-                .community-empty-card p,
-                .community-rail-card p {
-                    margin: 0;
-                    color: rgba(45, 36, 24, 0.72);
-                    line-height: 1.6;
-                }
+
                 .community-section-eyebrow {
-                    display: inline-block;
+                    display: block;
                     font-size: 11px;
                     font-weight: 700;
-                    letter-spacing: 0.08em;
                     text-transform: uppercase;
-                    color: rgba(45, 36, 24, 0.58);
-                    margin-bottom: 10px;
+                    letter-spacing: 0.1em;
+                    color: var(--ink-light);
+                    margin-bottom: 16px;
                 }
-                .community-mode-stack,
-                .community-chip-stack,
-                .community-quick-paths,
-                .community-mode-inline,
-                .community-action-row,
-                .community-filter-row {
-                    display: flex;
-                    flex-wrap: wrap;
-                    gap: 10px;
-                }
-                .community-mode-button,
-                .community-inline-chip,
-                .community-chip {
-                    border: 1px solid rgba(42, 35, 24, 0.08);
-                    background: rgba(255, 255, 255, 0.8);
-                    color: #4d4030;
-                    border-radius: 999px;
-                    padding: 10px 14px;
-                    font-weight: 600;
-                    cursor: pointer;
-                }
-                .community-mode-button.active,
-                .community-inline-chip.active,
-                .community-chip.active {
-                    background: rgba(182, 224, 205, 0.45);
-                    color: #22594b;
-                }
-                .community-pulse-box {
-                    border-radius: 22px;
-                    background: rgba(227, 232, 255, 0.65);
-                    padding: 18px;
-                    display: flex;
-                    flex-direction: column;
-                    gap: 8px;
-                    color: #2d2418;
-                }
-                .community-search-row {
-                    display: flex;
-                    flex-wrap: wrap;
-                    gap: 14px;
-                    align-items: center;
-                }
-                .community-search-shell {
-                    flex: 1;
-                    min-width: 280px;
-                    display: flex;
-                    align-items: center;
-                    gap: 10px;
-                    border: 1px solid rgba(42, 35, 24, 0.08);
-                    background: rgba(255, 255, 255, 0.78);
-                    border-radius: 999px;
-                    padding: 12px 16px;
-                }
-                .community-search-shell input {
-                    width: 100%;
-                    background: transparent;
-                    border: none;
-                    outline: none;
-                    color: #2d2418;
-                    font-size: 14px;
-                }
+
                 .community-main-stream {
                     display: flex;
                     flex-direction: column;
                     gap: 18px;
+                    min-height: 100vh;
                 }
-                .community-circle-grid {
-                    display: grid;
-                    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-                    gap: 14px;
-                }
-                .community-circle-card {
+
+                .community-mode-stack {
                     display: flex;
-                    align-items: center;
-                    gap: 14px;
-                    width: 100%;
+                    flex-direction: column;
+                    gap: 8px;
+                }
+
+                .community-mode-button {
                     text-align: left;
-                    border: 1px solid rgba(42, 35, 24, 0.08);
-                    background: rgba(255, 255, 255, 0.84);
+                    padding: 12px 16px;
+                    border-radius: 12px;
+                    font-weight: 600;
+                    color: var(--ink);
+                    transition: all 0.2s;
+                    background: transparent;
+                    border: none;
+                }
+
+                .community-mode-button.active {
+                    background: var(--phase-interactive-light);
+                    color: var(--phase-interactive);
+                }
+
+                .community-chip-stack {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 8px;
+                }
+
+                .community-chip {
+                    padding: 8px 16px;
+                    background: var(--phase-canvas);
                     border-radius: 20px;
-                    padding: 16px;
+                    font-size: 13px;
+                    font-weight: 600;
+                    border: 1px solid var(--border);
                     cursor: pointer;
                 }
-                .community-circle-avatar,
-                .community-message-avatar {
-                    width: 46px;
-                    height: 46px;
-                    border-radius: 999px;
-                    background: rgba(182, 224, 205, 0.55);
-                    display: inline-flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-weight: 700;
-                    color: #22594b;
-                    flex-shrink: 0;
+
+                .community-chip.active {
+                    background: var(--ink);
+                    color: white;
+                    border-color: var(--ink);
                 }
-                .community-circle-copy,
-                .community-message-copy {
+
+                .community-hearth-card {
+                    background: white;
+                    border: 1px solid var(--border);
+                    border-radius: 32px;
+                    padding: 40px;
+                    margin-bottom: 32px;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 32px;
+                }
+
+                .community-hearth-copy {
+                    display: grid;
+                    grid-template-columns: 1fr 240px;
+                    gap: 40px;
+                }
+
+                .community-hearth-copy h2 {
+                    font-size: 32px;
+                    font-weight: 800;
+                    line-height: 1.1;
+                    margin-bottom: 16px;
+                }
+
+                .community-pulse-box {
+                    background: var(--phase-canvas);
+                    border-radius: 24px;
+                    padding: 24px;
                     display: flex;
                     flex-direction: column;
                     gap: 4px;
-                    min-width: 0;
                 }
-                .community-circle-copy span,
-                .community-message-copy span,
-                .community-circle-copy small {
-                    color: rgba(45, 36, 24, 0.68);
+
+                .community-search-row {
+                    display: grid;
+                    grid-template-columns: 1fr auto;
+                    gap: 16px;
+                    margin-bottom: 32px;
+                    align-items: center;
+                }
+
+                .community-search-shell {
+                    background: white;
+                    border: 1px solid var(--border);
+                    border-radius: 20px;
+                    padding: 0 20px;
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    height: 56px;
+                }
+
+                .community-search-shell input {
+                    border: none;
+                    flex: 1;
+                    font-size: 16px;
+                    outline: none;
+                    background: transparent;
+                }
+
+                .community-mode-inline {
+                    display: flex;
+                    gap: 8px;
+                }
+
+                .community-inline-chip {
+                    padding: 8px 20px;
+                    border-radius: 20px;
+                    font-size: 14px;
+                    font-weight: 600;
+                    background: white;
+                    border: 1px solid var(--border);
+                    cursor: pointer;
+                }
+
+                .community-inline-chip.active {
+                    background: var(--phase-interactive);
+                    color: white;
+                    border-color: var(--phase-interactive);
+                }
+
+                .community-empty-card {
+                    background: white;
+                    border: 1px solid var(--border);
+                    border-radius: 32px;
+                    padding: 60px 40px;
+                    text-align: center;
+                }
+
+                .community-circle-grid {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+                    gap: 20px;
+                }
+
+                .community-circle-card {
+                    background: white;
+                    border: 1px solid var(--border);
+                    border-radius: 24px;
+                    padding: 24px;
+                    display: flex;
+                    gap: 16px;
+                    text-align: left;
+                    transition: all 0.2s;
+                    cursor: pointer;
+                }
+
+                .community-circle-card:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+                }
+
+                .community-circle-avatar {
+                    width: 48px;
+                    height: 48px;
+                    background: var(--phase-interactive-light);
+                    color: var(--phase-interactive);
+                    border-radius: 14px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 20px;
+                    font-weight: 800;
+                    flex-shrink: 0;
+                }
+
+                .community-circle-copy {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 4px;
+                }
+
+                .community-circle-copy strong {
+                    font-size: 16px;
+                }
+
+                .community-circle-copy span {
+                    font-size: 13px;
+                    color: var(--ink-light);
                     line-height: 1.4;
                 }
-                .community-message-list {
+
+                .community-stat-list {
                     display: flex;
                     flex-direction: column;
-                    gap: 10px;
+                    gap: 16px;
                 }
-                .community-message-row,
-                .community-quick-path {
-                    border: 1px solid rgba(42, 35, 24, 0.08);
-                    background: rgba(255, 255, 255, 0.82);
-                    border-radius: 18px;
-                    padding: 16px;
+
+                .community-stat-item {
                     display: flex;
-                    align-items: center;
-                    gap: 14px;
-                    cursor: pointer;
-                    text-align: left;
-                    width: 100%;
-                }
-                .community-quick-path {
                     flex-direction: column;
-                    align-items: flex-start;
                 }
-                .community-message-row small {
-                    margin-left: auto;
-                    color: rgba(45, 36, 24, 0.58);
+
+                .community-stat-item strong {
+                    font-size: 24px;
+                    font-weight: 800;
                 }
-                .community-icon-row {
-                    display: flex;
-                    align-items: center;
-                    gap: 10px;
-                    color: rgba(45, 36, 24, 0.72);
-                    margin-top: 12px;
+
+                .community-stat-item span {
+                    font-size: 12px;
+                    text-transform: uppercase;
+                    letter-spacing: 0.05em;
+                    color: var(--ink-light);
                 }
-                @media (max-width: 1260px) {
+
+                @media (max-width: 1200px) {
                     .community-layout {
-                        grid-template-columns: 218px minmax(0, 1fr);
+                        grid-template-columns: 200px 1fr;
                     }
                     .community-right-rail {
                         display: none;
                     }
                 }
-                @media (max-width: 920px) {
+
+                @media (max-width: 900px) {
                     .community-layout {
                         grid-template-columns: 1fr;
                     }
                     .community-left-rail {
-                        order: 2;
-                    }
-                    .community-hearth-copy {
-                        grid-template-columns: 1fr;
+                        display: none;
                     }
                 }
-            `,
-				}}
-			/>
+            `}</style>
 		</div>
 	);
 }

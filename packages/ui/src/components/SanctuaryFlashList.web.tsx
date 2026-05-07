@@ -1,19 +1,16 @@
 /**
- * Web fallback for SanctuaryFlashList.
+ * Web implementation for SanctuaryFlashList.
  *
- * @shopify/flash-list is optimised for native recycler views and does not have
- * reliable web support.  On web Metro resolves this .web.tsx file instead of
- * SanctuaryFlashList.tsx, swapping FlashList for React Native's built-in
- * FlatList which works correctly on all platforms.
- *
- * The public API (props) is kept identical so every call site compiles without
- * changes.
+ * Sanctuary V3: Migrated to @shopify/flash-list v2.
+ * FlashList v2 is a JS-only solution and officially supports React Native for Web.
+ * This ensures identical performance behavior and component recycling across all platforms.
  */
 
 import { BookOpen } from 'lucide-react-native';
 import React, { useCallback } from 'react';
 import { type StyleProp, type ViewStyle } from 'react-native';
-import { FlatList, RefreshControl } from '../primitives';
+import { FlashList } from '@shopify/flash-list';
+import { RefreshControl } from '../primitives';
 import { useThemedColors } from '../hooks/useThemedColors';
 import { Theme } from '../theme/Theme';
 import EmptyState from './EmptyState';
@@ -23,7 +20,7 @@ function SanctuaryFlashListWeb<T>({
   data,
   renderItem,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  estimatedItemSize: _estimatedItemSize, // API compatibility only - FlatList doesn't require it
+  estimatedItemSize, // Used in v2
   refreshing = false,
   onRefresh,
   emptyComponent,
@@ -53,10 +50,11 @@ function SanctuaryFlashListWeb<T>({
   }, [emptyComponent, ListEmptyComponent]);
 
   return (
-    <FlatList
+    <FlashList
       {...(props as any)}
       data={data}
       renderItem={renderItem}
+      estimatedItemSize={estimatedItemSize}
       ListEmptyComponent={renderEmpty}
       contentContainerStyle={[
         { paddingBottom: Theme.spacing.xl },

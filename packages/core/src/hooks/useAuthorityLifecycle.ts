@@ -139,9 +139,10 @@ export function useAuthorityLifecycle() {
       } finally {
         setLoading(false);
         setAuthSessionResolved(true);
-        // If no session, automatically enter demo mode for seamless exploration
+        // If no session, rely on explorer mode for seamless exploration
+        // but keep demo mode off to allow functional personal workspaces
         if (!initialSession) {
-          setDemoMode(true);
+          // setDemoMode(false); // Already default false
         }
       }
     };
@@ -171,7 +172,8 @@ export function useAuthorityLifecycle() {
         setAvailableBonds([]);
         setSchoolType(null);
         setOnboardingCompleted(false);
-        setDemoMode(true);
+        // Keep demo mode off to allow anonymous functional usage
+        setDemoMode(false);
       } else if (currentSession) {
         setDemoMode(false);
       }

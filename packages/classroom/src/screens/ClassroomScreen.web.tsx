@@ -23,9 +23,9 @@ export default function ClassroomScreenWeb() {
 	const { user } = useStore();
 	const navigation = useNavigation<any>();
 
-	const isWanderer = !!context.isAnonymous;
-	const _hasContext = true; // Simplified for restoration context
 	const hasSchoolId = !!user?.school_id && user.school_id !== "mock-school";
+	const isWanderer = !!context.isAnonymous || !hasSchoolId;
+	const _hasContext = true; // Simplified for restoration context
 
 	const isTeacherLike = can("manage", "TeacherDashboard");
 	const isPrincipalLike = can("manage", "PrincipalDashboard");
@@ -39,7 +39,7 @@ export default function ClassroomScreenWeb() {
 
 	const hasBonds = context.bonds.length > 0;
 
-	if (!hasBonds || (!hasSchoolId && !isWanderer)) {
+	if (!hasBonds) {
 		return (
 			<ScreenWrapper>
 				<Box className="flex-1 items-center justify-center gap-5 text-center">

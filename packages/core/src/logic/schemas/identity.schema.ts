@@ -9,12 +9,14 @@ export const CapacitySchema = z.enum([
   'principal',
   'assistantPrincipal',
   'gradeHead',
+  'sectionHead',
   'parent',
   'guardian',
   'librarian',
   'nurse',
   'staff',
   'member',
+  'guest',
 ]);
 
 export const BondSchema = z.object({

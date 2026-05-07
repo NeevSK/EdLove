@@ -37,13 +37,15 @@ export default function SelfScreenWeb() {
 	};
 
 	const renderDashboard = () => {
+		const role = context.activeBond?.capacity || context.role;
+
 		if (can("manage", "FounderDashboard")) return <FounderSelfView />;
 		if (can("manage", "AdminDashboard")) return <AdminSelfView />;
 		if (can("manage", "PrincipalDashboard")) return <PrincipalSelfView />;
-		if (can("manage", "TeacherDashboard")) return <TeacherSelfView />;
-		if (context.activeBond?.capacity === "guardian" || context.activeBond?.capacity === "parent")
+		if (can("manage", "TeacherDashboard") || role === "teacher") return <TeacherSelfView />;
+		if (role === "guardian" || role === "parent")
 			return <GuardianSelfView />;
-		if (can("manage", "StudentDashboard")) return <StudentSelfView />;
+		if (can("manage", "StudentDashboard") || role === "student") return <StudentSelfView />;
 		return <StudentSelfView />;
 	};
 

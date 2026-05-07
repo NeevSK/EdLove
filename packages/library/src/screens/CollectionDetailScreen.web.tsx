@@ -19,6 +19,7 @@ import { LibraryThumbnailCard } from "../components/LibraryThumbnailCard";
 import { useCollection } from "../hooks/useLibrary";
 import type { LibraryResource } from "../types";
 import { buildLibraryExternalLinkOptions } from "../utils/externalLinks";
+import SanctuaryFlashList from "@repo/ui/components/SanctuaryFlashList";
 
 function LoadingState() {
 	return (
@@ -106,6 +107,19 @@ export default function CollectionDetailScreenWeb() {
 			? `https://img.youtube.com/vi/${match[1]}/mqdefault.jpg`
 			: undefined;
 	};
+
+	const renderResource = useCallback(
+		({ item }: { item: LibraryResource }) => (
+			<Box className="p-3">
+				<LibraryThumbnailCard
+					resource={item}
+					onPress={handleOpenResource}
+					onLongPress={handleOpenResourceOptions}
+				/>
+			</Box>
+		),
+		[handleOpenResource, handleOpenResourceOptions],
+	);
 
 	if (isLoading || !id) return <LoadingState />;
 
@@ -199,36 +213,20 @@ export default function CollectionDetailScreenWeb() {
 					</HStack>
 				</Box>
 
-				<Box className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-20">
-					{collection.resources.map((res: LibraryResource) => (
-						<LibraryThumbnailCard
-							key={res.id}
-							title={res.title}
-							type={res.type}
-							subject={res.subjects?.[0] ?? "General"}
-							thumbnailUrl={
-								res.media?.url ||
-								(res as any).thumbnail_url ||
-								(res.type === "video" || res.type === "movie_trailer"
-									? getYoutubeThumbnail(res.url)
-									: undefined)
-							}
-							endorsements={res.endorsements || 0}
-							verified={res.verified}
-							onPress={() => handleOpenResource(res)}
-							onLongPress={
-								res.url ? () => handleOpenResourceOptions(res) : undefined
-							}
-						/>
-					))}
-					{collection.resources.length === 0 && (
-						<Box className="col-span-full py-20 items-center">
+				<SanctuaryFlashList
+					data={collection.resources}
+					renderItem={renderResource}
+					keyExtractor={(item: LibraryResource) => item.id}
+					numColumns={4}
+					contentContainerStyle={{ paddingBottom: 80 }}
+					ListEmptyComponent={
+						<Box className="py-20 items-center">
 							<Text className="text-phaseText-muted italic">
 								{t("library.emptyCollection")}
 							</Text>
 						</Box>
-					)}
-				</Box>
+					}
+				/>
 			</VStack>
 		</Box>
 	);

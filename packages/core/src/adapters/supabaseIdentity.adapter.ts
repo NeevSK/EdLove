@@ -226,11 +226,8 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
     const { data: profile } = await supabase.from('users').select('is_anonymous').eq('id', userId).single();
     const isWanderer = profile?.is_anonymous;
     
-    const entity_type = isWanderer 
-      ? 'GUEST' 
-      : (context['schoolId'] ? 'SCHOOL' : 'PERSONAL');
-      
-    const entity_id = isWanderer ? 'GLOBAL' : (context['schoolId'] || 'PERSONAL_WORKSPACE');
+    const entity_type = context['schoolId'] ? 'SCHOOL' : 'PERSONAL';
+    const entity_id = context['schoolId'] || 'PERSONAL_WORKSPACE';
 
     const { error: bondError } = await supabase.from('bonds').insert({
       user_id: userId,

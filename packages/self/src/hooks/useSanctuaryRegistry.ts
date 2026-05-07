@@ -1,6 +1,6 @@
 import { usePermissions } from "@repo/core/logic";
-import { SANCTUARY_DOMAINS, type SelfDomain } from "../constants/selfRegistry";
-import React from "react";
+import { useMemo } from "react";
+import { SANCTUARY_DOMAINS } from "../constants/selfRegistry";
 
 /**
  * Hook to resolve available Sanctuary domains based on user traits and bonds.
@@ -8,10 +8,10 @@ import React from "react";
  */
 export function useSanctuaryRegistry() {
 	const { context } = usePermissions();
-	const traits = context.traits || [];
-	const role = context.role ?? context.active_bond?.capacity ?? null;
+	const role = (context.activeBond || context.active_bond)?.capacity || context.role;
 
-	const availableDomains = React.useMemo(() => {
+	const availableDomains = useMemo(() => {
+		const traits = context.traits || [];
 		return Object.values(SANCTUARY_DOMAINS).filter((domain) => {
 			// If no requirement, it's a base domain (Pulse, Journey, etc.)
 			if (!domain.traitRequirement) return true;
@@ -25,7 +25,7 @@ export function useSanctuaryRegistry() {
 			// Check for specific trait requirement
 			return traits.includes(domain.traitRequirement);
 		});
-	}, [role, traits]);
+	}, [role, context.traits]);
 
 	return {
 		domains: availableDomains,

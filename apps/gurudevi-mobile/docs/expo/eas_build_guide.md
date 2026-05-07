@@ -49,7 +49,7 @@ pnpm build:prod
 Set secrets in EAS (not in code):
 ```bash
 eas secret:create --scope project --name SUPABASE_URL --value "your-url"
-eas secret:create --scope project --name SUPABASE_ANON_KEY --value "your-key"
+eas secret:create --scope project --name SUPABASE_PUBLISHABLE_KEY --value "your-key"
 ```
 
 ## Troubleshooting
