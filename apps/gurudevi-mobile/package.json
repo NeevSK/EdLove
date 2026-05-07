@@ -1,6 +1,6 @@
 {
   "name": "gurudevi-mobile",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "main": "index.ts",
   "scripts": {
     "start": "pnpm exec cross-env NODE_OPTIONS=--max-old-space-size=8192 expo start",
