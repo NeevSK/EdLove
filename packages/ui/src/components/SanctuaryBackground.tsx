@@ -13,9 +13,9 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { useEffect, useRef } from 'react';
 import { StyleSheet } from 'react-native';
-import Reanimated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
-import { useTheme } from '../hooks/useTheme';
 import { View } from '../primitives';
+import { useTheme } from '../hooks/useTheme';
+import Reanimated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
 export function SanctuaryBackground() {
   const { gradientNodes, animationsEnabled } = useTheme();
@@ -56,7 +56,10 @@ export function SanctuaryBackground() {
         style={StyleSheet.absoluteFillObject}
       />
       {/* Layer 1: Current phase (fades in) */}
-      <Reanimated.View pointerEvents="none" style={[StyleSheet.absoluteFillObject, animatedStyle]}>
+      <Reanimated.View
+        pointerEvents="none"
+        style={[StyleSheet.absoluteFillObject, animatedStyle]}
+      >
         <LinearGradient
           colors={currentNodes.current}
           start={{ x: 0.2, y: 0 }}
