@@ -72,6 +72,7 @@ export { default as QRCodeGenerator } from './QRCodeGenerator';
 export * from './ResonantHeatmap';
 export { SanctuaryBackground } from './SanctuaryBackground';
 export { SanctuaryButton } from './SanctuaryButton';
+export { SanctuarySignal } from './SanctuarySignal';
 export { SanctuaryCard, SanctuaryCard as Card } from './SanctuaryCard';
 export type { SanctuaryCarouselProps } from './SanctuaryCarousel';
 export { SanctuaryCarousel } from './SanctuaryCarousel';

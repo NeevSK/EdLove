@@ -43,7 +43,7 @@ export default function ProfileScreenWeb({
   const { t } = useTranslation();
   const navigation = useProfileNavigation();
   const { can, context } = usePermissions();
-  const authority = context.activeBond?.capacity;
+  const authority = context.active_bond?.capacity;
   const { user } = useStore();
   const {
     profile,
@@ -360,7 +360,7 @@ export default function ProfileScreenWeb({
                   )}
                 </div>
 
-                {isOwnProfile && !context.isAnonymous && (
+                {isOwnProfile && !context.is_anonymous && (
                   <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                     <button type="button"
                       className="secondary-button"
@@ -426,7 +426,7 @@ export default function ProfileScreenWeb({
                   </div>
                 )}
 
-                {isOwnProfile && context.isAnonymous && (
+                {isOwnProfile && context.is_anonymous && (
                   <div style={{ marginTop: '12px' }}>
                     <CitizenGate
                       context="profile"
@@ -440,7 +440,7 @@ export default function ProfileScreenWeb({
               </div>
             </div>
 
-            {context.isAnonymous ? null : (
+            {context.is_anonymous ? null : (
               <div
                 className="profile-qr-panel"
                 style={{
@@ -507,7 +507,7 @@ export default function ProfileScreenWeb({
           </div>
         </div>
 
-        {editForm && !context.isAnonymous && (
+        {editForm && !context.is_anonymous && (
           <div
             className="sanctuary-card"
             style={{

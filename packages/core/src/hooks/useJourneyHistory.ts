@@ -32,7 +32,7 @@ export interface HolisticView {
  */
 export function useJourneyHistory(_section?: string, _feature?: string) {
   const { context } = usePermissions();
-  const { userId, activeBond } = context;
+  const { user_id: userId, active_bond: activeBond } = context;
   const { phase, viewDate, viewScale, timelineFocus } = useTemporalStore();
 
   // Fetch Mood Logs for the current context

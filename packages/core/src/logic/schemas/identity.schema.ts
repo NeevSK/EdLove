@@ -18,18 +18,22 @@ export const CapacitySchema = z.enum([
 ]);
 
 export const BondSchema = z.object({
-  id: z.string(),
-  userId: z.string(),
-  entityId: z.string(),
-  entityType: z.enum(['PLATFORM', 'SCHOOL', 'CLASSROOM', 'COMMUNITY']),
+  id: z.uuid(),
+  user_id: z.uuid(),
+  entity_id: z.string(),
+  entity_type: z.enum(['PLATFORM', 'SCHOOL', 'CLASSROOM', 'COMMUNITY', 'PERSONAL', 'GUEST']),
   capacity: CapacitySchema,
   status: z.enum(['active', 'archived', 'pending']).default('active'),
-  validFrom: z.string().optional(),
-  validUntil: z.string().optional(),
+  created_at: z.coerce.date().transform(d => d.toISOString()).optional(),
+  updated_at: z.coerce.date().transform(d => d.toISOString()).optional(),
+  valid_from: z.coerce.date().transform(d => d.toISOString()).optional(),
+  valid_until: z.coerce.date().transform(d => d.toISOString()).optional(),
   metadata: z.record(z.string(), z.any()).optional(),
-});
+}).catchall(z.unknown());
+
+export type Bond = z.infer<typeof BondSchema>;
 
 export const PerspectiveSchema = z.object({
-  activeBond: BondSchema,
-  availableBonds: z.array(BondSchema),
+  active_bond: BondSchema,
+  available_bonds: z.array(BondSchema),
 });

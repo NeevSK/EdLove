@@ -16,6 +16,7 @@ import { ImpactRipplesCard } from "../../components/ImpactRipplesCard";
 import JoyJar from "../../components/JoyJar";
 import MoodLotus from "../../components/MoodLotus";
 import { MoodPickerCard } from "../../components/MoodPickerCard";
+import { PulseDashboard } from "../../components/PulseDashboard";
 import RemindersManager from "../../components/RemindersManager";
 import { ResonanceTimeline } from "../../components/ResonanceTimeline";
 import SleepTracker from "../../components/SleepTracker";
@@ -57,22 +58,6 @@ export default function TeacherSelfView() {
 		currentScale: viewScale,
 	} = useJourneyHistory();
 
-	const personalLayer = (
-		<div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
-			<TemporalShield label="JOURNAL HISTORY">
-				<JournalSection entries={journalEntries} loading={journalLoading} />
-			</TemporalShield>
-			<MoodLotus userId={userId ?? undefined} />
-		</div>
-	);
-
-	const workingLayer = (
-		<div style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
-			<TeacherPulse banyan={banyan} loading={banyanLoading} />
-			<DailyRhythm />
-		</div>
-	);
-
 	const holisticSection = (
 		<div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
 			<JourneyHistoryCard
@@ -81,8 +66,13 @@ export default function TeacherSelfView() {
 				loading={journeyLoading}
 				scale={viewScale === "custom" ? "day" : viewScale}
 			/>
-			{workingLayer}
-			{personalLayer}
+			<TeacherPulse banyan={banyan} loading={banyanLoading} />
+			<TemporalShield label="JOURNAL HISTORY">
+				<JournalSection entries={journalEntries} loading={journalLoading} />
+			</TemporalShield>
+			<TemporalShield label="MOOD HISTORY">
+				<MoodSection logs={moodLogs} loading={moodLoading} />
+			</TemporalShield>
 		</div>
 	);
 
@@ -117,7 +107,7 @@ export default function TeacherSelfView() {
 						<Icon as={Users} size={16} /> <span>Educational Ecology</span>
 					</button>
 					<button className="sidebar-item" onClick={() => {}}>
-						<MessageSquare size={16} /> <span>Faculty Resonance</span>
+						<Icon as={MessageSquare} size={16} /> <span>Faculty Resonance</span>
 					</button>
 				</div>
 			</div>
@@ -145,19 +135,14 @@ export default function TeacherSelfView() {
 						historyContent: <ResonanceTimeline />,
 					},
 					{
-						id: "tools",
-						title: "Instructional Tools",
+						id: "pulse",
+						title: "Inner Pulse",
 						accentColor: "#8B5CF6",
 						features: [
 							{
-								id: "teacher_pulse",
-								label: "Instructional Pulse",
-								content: (
-									<TeacherPulse banyan={banyan} loading={banyanLoading} />
-								),
-								historyContent: (
-									<TeacherPulse banyan={banyan} loading={banyanLoading} />
-								),
+								id: "pulse",
+								label: "Daily Pulse",
+								content: <PulseDashboard onEnterDetails={() => {}} />,
 							},
 							{
 								id: "mood_lotus",
@@ -167,6 +152,18 @@ export default function TeacherSelfView() {
 									<MoodSection logs={moodLogs} loading={moodLoading} />
 								),
 							},
+							{
+								id: "wisdom",
+								label: "Wisdom Seeds",
+								content: <WisdomSeeds userId={userId ?? undefined} />,
+							},
+						],
+					},
+					{
+						id: "personal",
+						title: "Personal Sanctuary",
+						accentColor: "#EF4444",
+						features: [
 							{
 								id: "fire_journal",
 								label: "Fire Journal",
@@ -179,14 +176,9 @@ export default function TeacherSelfView() {
 								),
 							},
 							{
-								id: "daily_rhythm",
-								label: "Daily Rhythm",
-								content: <DailyRhythm />,
-							},
-							{
-								id: "professional_growth",
-								label: "Banyan Growth",
-								content: <SpotlightEmpty date={viewDate} />,
+								id: "voice",
+								label: "Voice Journal",
+								content: <VoiceJournaling userId={userId ?? undefined} />,
 							},
 							{
 								id: "joy_jar",
@@ -198,10 +190,34 @@ export default function TeacherSelfView() {
 								label: "Gratitude Glimmers",
 								content: <GratitudeGlimmers userId={userId ?? undefined} />,
 							},
+						],
+					},
+					{
+						id: "physical",
+						title: "Physical Rhythm",
+						accentColor: "#F59E0B",
+						features: [
 							{
-								id: "wisdom",
-								label: "Wisdom Seeds",
-								content: <WisdomSeeds userId={userId ?? undefined} />,
+								id: "sleep",
+								label: "Sleep Tracker",
+								content: <SleepTracker userId={userId ?? undefined} />,
+							},
+							{
+								id: "wind_down",
+								label: "Restorative Ritual",
+								content: <SpotlightEmpty date={viewDate} />,
+							},
+						],
+					},
+					{
+						id: "working",
+						title: "Working Rhythm",
+						accentColor: "#10B981",
+						features: [
+							{
+								id: "daily_rhythm",
+								label: "Daily Rhythm",
+								content: <DailyRhythm />,
 							},
 							{
 								id: "tomorrow",
@@ -209,19 +225,9 @@ export default function TeacherSelfView() {
 								content: <TomorrowPrep userId={userId ?? undefined} />,
 							},
 							{
-								id: "sleep",
-								label: "Sleep Tracker",
-								content: <SleepTracker userId={userId ?? undefined} />,
-							},
-							{
 								id: "reminders",
 								label: "Reminders",
 								content: <RemindersManager userId={userId ?? undefined} />,
-							},
-							{
-								id: "voice",
-								label: "Voice Journal",
-								content: <VoiceJournaling userId={userId ?? undefined} />,
 							},
 							{
 								id: "decisions",
@@ -229,7 +235,7 @@ export default function TeacherSelfView() {
 								content: <DecisionJournalSection userId={userId ?? ""} />,
 							},
 							{
-								id: "professional_history",
+								id: "history",
 								label: "Professional History",
 								content: <TeachingHistoryTimeline userId={userId ?? ""} />,
 							},
@@ -245,4 +251,3 @@ export default function TeacherSelfView() {
 		</TemporalProvider>
 	);
 }
-

@@ -1,34 +1,24 @@
-import {
-	useJourneyHistory,
-	useNaturePaths,
-	useStudentGoals,
-} from "@repo/core/hooks";
-import { usePermissions } from "@repo/core/logic";
-
-import { JourneyHistoryCard } from "@repo/ui/components/JourneyHistoryCard";
-import { TemporalProvider } from "@repo/ui/components/TemporalProvider";
-import { TemporalShield } from "@repo/ui/components/TemporalShield";
+import { useBanyanGrowth, useJourneyHistory } from "@repo/core/hooks";
+import { usePermissions, useStore } from "@repo/core/logic";
 import { useTranslation } from "react-i18next";
+
 import { BaseSelfView } from "../../components/BaseSelfView";
-import BreathGuide from "../../components/BreathGuide";
+import DailyRhythm from "../../components/DailyRhythm";
 import FireJournal from "../../components/FireJournal";
 import JoyJar from "../../components/JoyJar";
 import MoodLotus from "../../components/MoodLotus";
-import MyGradesView from "../../components/MyGradesView";
-import RemindersManager from "../../components/RemindersManager";
-import { ResonanceTimeline } from "../../components/ResonanceTimeline";
 import SleepTracker from "../../components/SleepTracker";
-import StudentGoals from "../../components/StudentGoals";
 import TomorrowPrep from "../../components/TomorrowPrep";
 import VoiceJournaling from "../../components/VoiceJournaling";
+import WelcomeModal from "../../components/WelcomeModal";
 import WisdomSeeds from "../../components/WisdomSeeds";
 import { useJournalEntries } from "../../hooks/useJournalEntries";
 import { useMoodLogs } from "../../hooks/useMoodLogs";
+import { useSanctuaryRegistry } from "../../hooks/useSanctuaryRegistry";
 import {
-	GoalSection,
 	JournalSection,
 	MoodSection,
-	NatureSection,
+	StudentPulse,
 } from "../../views/sections";
 
 export default function StudentSelfView() {
@@ -36,108 +26,55 @@ export default function StudentSelfView() {
 	const { context } = usePermissions();
 	const userId = context.userId;
 
-	const { entries: journalEntries, loading: loadingJournals } =
-		useJournalEntries();
-	const { logs: moodLogs, loading: loadingMoods } = useMoodLogs();
-	const { goals, isLoading: loadingGoals } = useStudentGoals();
-	const { paths, isLoading: loadingPaths } = useNaturePaths();
-	const {
-		events: journeyEvents,
-		holisticView,
-		isLoading: journeyLoading,
-		currentScale: viewScale,
-	} = useJourneyHistory();
+	const { domains: registeredDomains } = useSanctuaryRegistry();
 
-	const holisticSection = (
-		<div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
-			<JourneyHistoryCard
-				events={journeyEvents}
-				summary={holisticView.summary}
-				loading={journeyLoading}
-				scale={viewScale === "custom" ? "day" : viewScale}
-			/>
-			<TemporalShield label="JOURNAL HISTORY">
-				<JournalSection entries={journalEntries} loading={loadingJournals} />
-			</TemporalShield>
-			<TemporalShield label="MOOD HISTORY">
-				<MoodSection logs={moodLogs} loading={loadingMoods} />
-			</TemporalShield>
-			<GoalSection goals={goals} loading={loadingGoals} />
-			<NatureSection paths={paths} loading={loadingPaths} />
-		</div>
-	);
+	const { logs: moodLogs, loading: moodLoading } = useMoodLogs();
+	const { entries: journalEntries, loading: journalLoading } = useJournalEntries();
+	const { banyan, isLoading: banyanLoading } = useBanyanGrowth();
+	const { holisticView, isLoading: journeyLoading } = useJourneyHistory();
+
+	const justFinishedOnboarding = useStore((s) => s.justFinishedOnboarding);
+	const setJustFinishedOnboarding = useStore((s) => s.setJustFinishedOnboarding);
+
+	const domainContent = registeredDomains.map((domain) => {
+		const features = domain.features.map((fId) => {
+			switch (fId) {
+				case "daily_pulse":
+					return { id: fId, label: "Inner Pulse", content: <StudentPulse banyan={banyan} loading={banyanLoading} /> };
+				case "mood_lotus":
+					return { id: fId, label: "Mood Lotus", content: <MoodLotus userId={userId ?? undefined} />, historyContent: <MoodSection logs={moodLogs} loading={moodLoading} /> };
+				case "wisdom_seeds":
+					return { id: fId, label: "Wisdom Seeds", content: <WisdomSeeds userId={userId ?? undefined} /> };
+				case "study_rhythm":
+					return { id: fId, label: "Study Rhythm", content: <DailyRhythm /> };
+				case "sleep_tracker":
+					return { id: fId, label: "Sleep Tracker", content: <SleepTracker userId={userId ?? undefined} /> };
+				case "joy_jar":
+					return { id: fId, label: "Joy Jar", content: <JoyJar userId={userId ?? undefined} /> };
+				case "fire_journal":
+					return { id: fId, label: "Fire Journal", content: <FireJournal userId={userId ?? undefined} />, historyContent: <JournalSection entries={journalEntries} loading={journalLoading} /> };
+				case "voice_journal":
+					return { id: fId, label: "Voice Journal", content: <VoiceJournaling userId={userId ?? undefined} /> };
+				case "tomorrow_prep":
+					return { id: fId, label: "Tomorrow Prep", content: <TomorrowPrep userId={userId ?? undefined} /> };
+				default:
+					return { id: fId, label: fId, content: null };
+			}
+		});
+		return { ...domain, features };
+	});
 
 	return (
-		<TemporalProvider>
+		<>
 			<BaseSelfView
 				perspective="student"
-				description={t(
-					"self.studentDesc",
-					"A steady space to grow your mind and heart.",
-				)}
-				domains={[
-					{
-						id: "journey",
-						title: "Journey Overview",
-						accentColor: "#8B5CF6",
-						content: holisticSection,
-						historyContent: <ResonanceTimeline />,
-					},
-					{
-						id: "discovery",
-						title: "My Tools",
-						accentColor: "#10B981",
-						features: [
-							{
-								id: "mood_lotus",
-								label: "Mood Lotus",
-								content: <MoodLotus userId={userId ?? undefined} />,
-								historyContent: (
-									<MoodSection logs={moodLogs} loading={loadingMoods} />
-								),
-							},
-							{
-								id: "goals",
-								label: "Growth Goals",
-								content: <StudentGoals userId={userId ?? ""} />,
-								historyContent: (
-									<GoalSection goals={goals} loading={loadingGoals} />
-								),
-							},
-							{ id: "grades", label: "My Grades", content: <MyGradesView /> },
-							{ id: "breath", label: "Breath Guide", content: <BreathGuide /> },
-							{ id: "joy_jar", label: "Joy Jar", content: <JoyJar /> },
-							{ id: "wisdom", label: "Wisdom Seeds", content: <WisdomSeeds /> },
-							{
-								id: "sleep",
-								label: "Sleep Tracker",
-								content: <SleepTracker />,
-							},
-							{
-								id: "fire_journal",
-								label: "Fire Journal",
-								content: <FireJournal />,
-							},
-							{
-								id: "tomorrow",
-								label: "Tomorrow Prep",
-								content: <TomorrowPrep />,
-							},
-							{
-								id: "voice",
-								label: "Voice Journal",
-								content: <VoiceJournaling />,
-							},
-							{
-								id: "reminders",
-								label: "Reminders",
-								content: <RemindersManager />,
-							},
-						],
-					},
-				]}
+				description={t("self.studentDesc", "Cultivate your inner landscape.")}
+				domains={domainContent as any}
 			/>
-		</TemporalProvider>
+			<WelcomeModal
+				isOpen={justFinishedOnboarding}
+				onClose={() => setJustFinishedOnboarding(false)}
+			/>
+		</>
 	);
 }
-

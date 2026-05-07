@@ -123,7 +123,7 @@ export default function TeacherSelfView() {
 								content: <PulseDashboard onEnterDetails={() => {}} />,
 							},
 							{
-								id: "mood-lotus",
+								id: "mood_lotus",
 								label: "Mood Lotus",
 								content: <MoodLotus userId={userId ?? undefined} />,
 								historyContent: (
@@ -143,7 +143,7 @@ export default function TeacherSelfView() {
 						accentColor: "#EF4444",
 						features: [
 							{
-								id: "fire-journal",
+								id: "fire_journal",
 								label: "Fire Journal",
 								content: <FireJournal userId={userId ?? undefined} />,
 								historyContent: (
@@ -159,7 +159,7 @@ export default function TeacherSelfView() {
 								content: <VoiceJournaling userId={userId ?? undefined} />,
 							},
 							{
-								id: "mood-picker",
+								id: "mood_picker",
 								label: "Mood Tracking",
 								content: (
 									<MoodPickerCard
@@ -173,7 +173,7 @@ export default function TeacherSelfView() {
 								),
 							},
 							{
-								id: "joy-jar",
+								id: "joy_jar",
 								label: "Joy Jar",
 								content: <JoyJar userId={userId ?? undefined} />,
 							},
@@ -190,7 +190,7 @@ export default function TeacherSelfView() {
 						accentColor: "#F59E0B",
 						features: [
 							{
-								id: "energy-forecast",
+								id: "energy_forecast",
 								label: "Energy Rhythm",
 								content: (
 									<Box
@@ -208,7 +208,7 @@ export default function TeacherSelfView() {
 								),
 							},
 							{
-								id: "wind-down",
+								id: "wind_down",
 								label: "Restorative Ritual",
 								content: <WindDownRitual userId={userId ?? undefined} />,
 							},
@@ -225,7 +225,7 @@ export default function TeacherSelfView() {
 						accentColor: "#10B981",
 						features: [
 							{
-								id: "daily-rhythm",
+								id: "daily_rhythm",
 								label: "Working Pace",
 								content: <DailyRhythm />,
 							},

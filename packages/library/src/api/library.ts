@@ -343,17 +343,17 @@ const rawLibraryAPI = {
 					endorsements: 0,
 					bookmarks: 0,
 					verified: composeUserAbilities({
-						schoolId: creatorId,
-						isAnonymous: false,
+						school_id: creatorId,
+						is_anonymous: false,
 						bonds: [
-							{
-								id: `library:${creatorId}:${creatorRole}`,
-								userId: creatorId,
-								entityId: creatorId,
-								entityType: "SCHOOL",
-								capacity: toLibraryBondCapacity(creatorRole),
-								status: "active",
-							},
+						{
+							id: `library:${creatorId}:${creatorRole}`,
+							user_id: creatorId,
+							entity_id: creatorId,
+							entity_type: "SCHOOL",
+							capacity: toLibraryBondCapacity(creatorRole),
+							status: "active",
+						},
 						],
 					}).can("verify", "Library"), // Auto-verify for staff
 				},

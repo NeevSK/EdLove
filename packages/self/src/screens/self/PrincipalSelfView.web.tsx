@@ -131,8 +131,8 @@ export default function PrincipalSelfView() {
 						historyContent: <ResonanceTimeline />,
 					},
 					{
-						id: "tools",
-						title: "Leadership Tools",
+						id: "pulse",
+						title: "Inner Pulse",
 						accentColor: "#8B5CF6",
 						features: [
 							{
@@ -140,6 +140,21 @@ export default function PrincipalSelfView() {
 								label: "Personal Pulse",
 								content: <PulseDashboard onEnterDetails={() => {}} />,
 							},
+							{
+								id: "mood_lotus",
+								label: "Mood Lotus",
+								content: <MoodLotus userId={userId ?? undefined} />,
+								historyContent: (
+									<MoodSection logs={moodLogs} loading={moodLoading} />
+								),
+							},
+						],
+					},
+					{
+						id: "physical",
+						title: "Physical Sanctuary",
+						accentColor: "#3B82F6",
+						features: [
 							{
 								id: "energy_forecast",
 								label: "Energy Forecast",
@@ -152,7 +167,19 @@ export default function PrincipalSelfView() {
 								),
 							},
 							{
-								id: "decision_mirror",
+								id: "daily_rhythm",
+								label: "Daily Rhythm",
+								content: <DailyRhythm />,
+							},
+						],
+					},
+					{
+						id: "working",
+						title: "Working Rhythm",
+						accentColor: "#10B981",
+						features: [
+							{
+								id: "decisions",
 								label: "Decision Mirror",
 								content: <DecisionJournalSection userId={userId ?? ""} />,
 								historyContent: (
@@ -161,19 +188,6 @@ export default function PrincipalSelfView() {
 										loading={decisionLoading}
 									/>
 								),
-							},
-							{
-								id: "mood_lotus",
-								label: "Mood Lotus",
-								content: <MoodLotus userId={userId ?? undefined} />,
-								historyContent: (
-									<MoodSection logs={moodLogs} loading={moodLoading} />
-								),
-							},
-							{
-								id: "daily_rhythm",
-								label: "Daily Rhythm",
-								content: <DailyRhythm />,
 							},
 							{
 								id: "wisdom",
@@ -211,7 +225,7 @@ export default function PrincipalSelfView() {
 								),
 							},
 							{
-								id: "governance_history",
+								id: "history",
 								label: "Governance History",
 								content: <GovernanceHistoryTimeline userId={userId ?? ""} />,
 							},
@@ -227,4 +241,3 @@ export default function PrincipalSelfView() {
 		</TemporalProvider>
 	);
 }
-

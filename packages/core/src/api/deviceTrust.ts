@@ -635,4 +635,30 @@ export const deviceTrustAPI = {
       return null;
     }
   },
+
+  async getSecuritySummary() {
+    const [devices, events, sessions, currentDevice] = await Promise.all([
+      this.listMyDevices(),
+      this.listMySecurityAuditEvents(),
+      this.listMySecuritySessions(),
+      this.getCurrentDeviceTrust(),
+    ]);
+    return { devices, events, sessions, currentDevice };
+  },
+
+  async trustDevice(deviceId: string) {
+    await rpcSingle('trust_my_device', { p_device_id: deviceId });
+  },
+
+  async revokeAllSessions() {
+    return this.revokeMyOtherSecuritySessions(null);
+  },
+
+  async revokeSession(sessionId: string, reason = 'manual') {
+    return this.revokeMySecuritySession(sessionId, reason);
+  },
+
+  async unlinkDevice(deviceId: string, revokeSessions = true) {
+    return this.unlinkMyDevice(deviceId, revokeSessions);
+  },
 };

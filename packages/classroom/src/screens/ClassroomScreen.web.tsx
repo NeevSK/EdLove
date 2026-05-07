@@ -23,7 +23,7 @@ export default function ClassroomScreenWeb() {
 	const { user } = useStore();
 	const navigation = useNavigation<any>();
 
-	const isWanderer = context.isAnonymous;
+	const isWanderer = !!context.isAnonymous;
 	const _hasContext = true; // Simplified for restoration context
 	const hasSchoolId = !!user?.school_id && user.school_id !== "mock-school";
 
@@ -78,23 +78,8 @@ export default function ClassroomScreenWeb() {
 				/>
 
 				<Box className="mt-6">
-					{/* Path 1: Anonymous guest or wanderer */}
-					{isWanderer && (
-						<Box className="p-10 items-center opacity-80">
-							<Text className="text-4xl mb-4 text-phase-text-secondary opacity-50">
-								🔭
-							</Text>
-							<Heading size="md" className="font-black text-phase-text-primary">
-								Welcome, Wanderer
-							</Heading>
-							<Text className="text-phase-text-secondary text-center">
-								Exploring the public curriculum and library.
-							</Text>
-						</Box>
-					)}
-
-					{/* Path 2: 1st Class Citizen - Direct Component Resolution */}
-					{isCitizenReady && (
+					{/* 2026 Sovereign Pattern: Enable Guest Exploration via forceDemo */}
+					{(isCitizenReady || isWanderer) && (
 						<>
 							{isPrincipalLike && (
 								<PrincipalDashboardWebSurface
@@ -103,8 +88,8 @@ export default function ClassroomScreenWeb() {
 								/>
 							)}
 							{isTeacherLike && !isPrincipalLike && <TeacherDashboardWeb />}
-							{isStudentLike && !isTeacherLike && !isPrincipalLike && (
-								<StudentDashboardWeb />
+							{(isStudentLike || isWanderer) && !isTeacherLike && !isPrincipalLike && (
+								<StudentDashboardWeb forceDemo={isWanderer} />
 							)}
 						</>
 					)}

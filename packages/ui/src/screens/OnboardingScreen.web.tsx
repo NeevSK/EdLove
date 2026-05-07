@@ -4,10 +4,8 @@
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { authAPI, identityAPI, schoolAPI } from '@repo/core/api';
-import { getOnboardingState, type OnboardingState as DomainOnboardingState, type Capacity, identity } from '@repo/core/logic';
-import type { Bond } from '@repo/core/types';
-import { supabase } from '@repo/core/supabase';
-import React, { useCallback, useEffect, useMemo, useReducer, memo } from 'react';
+import { type Capacity, identity, useStore } from '@repo/core/logic';
+import React, { memo, useCallback, useEffect, useMemo, useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useWindowDimensions } from 'react-native';
 
@@ -50,20 +48,18 @@ const TRACKED_STEPS = [
 // ──────────────────────────────────────────────────────────
 
 interface OnboardingUIState {
-  domainState: DomainOnboardingState;
   currentStep: number;
   name: string;
-  activeBond: Bond | null;
   selectedCapacity: Capacity;
-  isCompleting: boolean;
-  completionError: string | null;
+  isProcessing: boolean;
+  error: string | null;
 }
 
 type OnboardingAction =
   | { type: 'SET_STEP'; step: number }
   | { type: 'SET_NAME'; name: string }
   | { type: 'SET_CAPACITY'; capacity: Capacity }
-  | { type: 'SET_COMPLETING'; isCompleting: boolean }
+  | { type: 'SET_PROCESSING'; isProcessing: boolean }
   | { type: 'SET_ERROR'; error: string | null }
   | { type: 'NEXT_STEP' }
   | { type: 'PREV_STEP' }
@@ -71,54 +67,22 @@ type OnboardingAction =
 
 function onboardingReducer(state: OnboardingUIState, action: OnboardingAction): OnboardingUIState {
   switch (action.type) {
-    case 'SET_STEP': {
-      const newState = { ...state, currentStep: action.step };
-      newState.domainState = getOnboardingState({
-        full_name: newState.name,
-        onboarding_completed: newState.isCompleting,
-      }, newState.activeBond);
-      return newState;
-    }
-    case 'SET_NAME': {
-      const newState = { ...state, name: action.name };
-      newState.domainState = getOnboardingState({
-        full_name: newState.name,
-        onboarding_completed: newState.isCompleting,
-      }, newState.activeBond);
-      return newState;
-    }
-    case 'SET_CAPACITY': {
-      const newState = { ...state, selectedCapacity: action.capacity };
-      newState.domainState = getOnboardingState({
-        full_name: newState.name,
-        onboarding_completed: newState.isCompleting,
-      }, newState.activeBond);
-      return newState;
-    }
-    case 'SET_COMPLETING': {
-      const newState = { ...state, isCompleting: action.isCompleting };
-      newState.domainState = getOnboardingState({
-        full_name: newState.name,
-        onboarding_completed: newState.isCompleting,
-      }, newState.activeBond);
-      return newState;
-    }
+    case 'SET_STEP':
+      return { ...state, currentStep: action.step };
+    case 'SET_NAME':
+      return { ...state, name: action.name, error: null };
+    case 'SET_CAPACITY':
+      return { ...state, selectedCapacity: action.capacity, error: null };
+    case 'SET_PROCESSING':
+      return { ...state, isProcessing: action.isProcessing };
     case 'SET_ERROR':
-      return { ...state, completionError: action.error };
+      return { ...state, error: action.error, isProcessing: false };
     case 'NEXT_STEP':
-      return { ...state, currentStep: Math.min(6, state.currentStep + 1) };
+      return { ...state, currentStep: Math.min(6, state.currentStep + 1), error: null };
     case 'PREV_STEP':
-      return { ...state, currentStep: Math.max(0, state.currentStep - 1) };
-    case 'RESTORE_PROGRESS': {
-      const combined = { ...state, ...action.progress };
-      return {
-        ...combined,
-        domainState: getOnboardingState({
-          full_name: combined.name,
-          onboarding_completed: combined.isCompleting,
-        }, combined.activeBond),
-      };
-    }
+      return { ...state, currentStep: Math.max(0, state.currentStep - 1), error: null };
+    case 'RESTORE_PROGRESS':
+      return { ...state, ...action.progress };
     default:
       return state;
   }
@@ -128,25 +92,28 @@ function onboardingReducer(state: OnboardingUIState, action: OnboardingAction): 
 // SUB-COMPONENTS
 // ──────────────────────────────────────────────────────────
 
-const LanguagePillRow = memo(({ 
-  currentLang, 
-  onLanguageChange 
-}: { 
-  currentLang: string; 
-  onLanguageChange: (code: string) => void;
-}) => (
-  <div className="ob-lang-row">
-    {LANGUAGES.map((lang) => (
-      <button
-        key={lang.code}
-        className={`ob-lang-pill ${currentLang?.startsWith(lang.code) ? 'active' : ''}`}
-        onClick={() => onLanguageChange(lang.code)}
-      >
-        {lang.label}
-      </button>
-    ))}
-  </div>
-));
+const LanguagePillRow = memo(
+  ({
+    currentLang,
+    onLanguageChange,
+  }: {
+    currentLang: string;
+    onLanguageChange: (code: string) => void;
+  }) => (
+    <div className="ob-lang-row">
+      {LANGUAGES.map((lang) => (
+        <button
+          key={lang.code}
+          className={`ob-lang-pill ${currentLang?.startsWith(lang.code) ? 'active' : ''}`}
+          onClick={() => onLanguageChange(lang.code)}
+        >
+          {lang.label}
+        </button>
+      ))}
+    </div>
+  ),
+);
+LanguagePillRow.displayName = 'LanguagePillRow';
 
 const ErrorBanner = memo(({ error }: { error: string | null }) => {
   if (!error) return null;
@@ -157,153 +124,155 @@ const ErrorBanner = memo(({ error }: { error: string | null }) => {
     </div>
   );
 });
+ErrorBanner.displayName = 'ErrorBanner';
 
-const NameStep = memo(({
-  t,
-  name,
-  onNameChange,
-  onNext,
-  error
-}: {
-  t: any;
-  name: string;
-  onNameChange: (val: string) => void;
-  onNext: () => void;
-  error: string | null;
-}) => (
-  <div className="ob-step">
-    <div className="ob-step-shell">
-      <div className="ob-step-meta">Step 1 · Arrival</div>
-      <div className="ob-step-icon">👋🏻</div>
-    </div>
-    <h2 className="ob-step-title">{t('onboarding.nameTitle')}</h2>
-    <p className="ob-step-subtitle">{t('onboarding.nameSubtitle')}</p>
-    <ErrorBanner error={error} />
-    <input
-      className="ob-input"
-      type="text"
-      placeholder={t('onboarding.namePlaceholder')}
-      value={name}
-      onChange={(e) => onNameChange(e.target.value)}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' && name.trim()) onNext();
-      }}
-      autoComplete="given-name"
-    />
-    <div className="ob-actions">
-      <button className="ob-btn-primary" onClick={onNext} disabled={!name.trim()}>
-        {t('onboarding.continue')} →
-      </button>
-    </div>
-  </div>
-));
-
-const IdentityStep = memo(({
-  t,
-  capacity,
-  isCompleting,
-  isAnonymous,
-  onCapacitySelect,
-  onBack,
-  onNext,
-  error
-}: {
-  t: any;
-  capacity: Capacity;
-  isCompleting: boolean;
-  isAnonymous: boolean;
-  onCapacitySelect: (val: Capacity) => void;
-  onBack: () => void;
-  onNext: () => void;
-  error: string | null;
-}) => (
-  <div className="ob-step">
-    <div className="ob-step-shell">
-      <div className="ob-step-meta">Step 2 · Belonging</div>
-      <div className="ob-step-icon">🎯</div>
-    </div>
-    <h2 className="ob-step-title">{t('onboarding.roleTitle')}</h2>
-    <p className="ob-step-subtitle">{t('onboarding.roleSubtitle')}</p>
-    <ErrorBanner error={error} />
-    <div className="ob-role-grid">
-      {CAPACITY_OPTIONS.map((r) => (
-        <button
-          key={r.value}
-          className={`ob-role-card ${capacity === r.value ? 'selected' : ''}`}
-          onClick={() => onCapacitySelect(r.value as Capacity)}
-        >
-          <span className="ob-role-emoji">{r.emoji}</span>
-          <span className="ob-role-name">{t(`identity.${r.value}`)}</span>
-          <span className="ob-role-desc">{t(r.descKey)}</span>
+const NameStep = memo(
+  ({
+    t,
+    name,
+    onNameChange,
+    onNext,
+    error,
+  }: {
+    t: (key: string) => string;
+    name: string;
+    onNameChange: (val: string) => void;
+    onNext: () => void;
+    error: string | null;
+  }) => (
+    <div className="ob-step">
+      <div className="ob-step-shell">
+        <div className="ob-step-meta">Step 1 · Arrival</div>
+        <div className="ob-step-icon">👋🏻</div>
+      </div>
+      <h2 className="ob-step-title">{t('onboarding.nameTitle')}</h2>
+      <p className="ob-step-subtitle">{t('onboarding.nameSubtitle')}</p>
+      <ErrorBanner error={error} />
+      <input
+        className="ob-input"
+        type="text"
+        placeholder={t('onboarding.namePlaceholder')}
+        value={name}
+        onChange={(e) => onNameChange(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' && name.trim()) onNext();
+        }}
+        autoComplete="given-name"
+      />
+      <div className="ob-actions">
+        <button className="ob-btn-primary" onClick={onNext} disabled={!name.trim()}>
+          {t('onboarding.continue')} →
         </button>
-      ))}
+      </div>
     </div>
-    <div className="ob-actions">
-      <button className="ob-btn-secondary" onClick={onBack}>
-        ← {t('onboarding.back')}
-      </button>
-      <button
-        className="ob-btn-primary"
-        onClick={onNext}
-        disabled={isCompleting}
-      >
-        {isCompleting
-          ? t('onboarding.saving')
-          : !isAnonymous && capacity
-            ? t('onboarding.complete')
-            : t('onboarding.continue')}{' '}
-        →
-      </button>
-    </div>
-  </div>
-));
+  ),
+);
+NameStep.displayName = 'NameStep';
 
-const TourStep = memo(({
-  t,
-  currentStep,
-  screen,
-  isCompleting,
-  onBack,
-  onNext,
-  onSkip,
-  error
-}: {
-  t: any;
-  currentStep: number;
-  screen: any;
-  isCompleting: boolean;
-  onBack: () => void;
-  onNext: () => void;
-  onSkip: () => void;
-  error: string | null;
-}) => (
-  <div className="ob-step">
-    <div className="ob-step-shell">
-      <div className="ob-step-meta">Sanctuary Tour</div>
-      <div className="ob-step-icon">{screen.emoji}</div>
+const IdentityStep = memo(
+  ({
+    t,
+    capacity,
+    isCompleting,
+    isAnonymous,
+    onCapacitySelect,
+    onBack,
+    onNext,
+    error,
+  }: {
+    t: (key: string) => string;
+    capacity: Capacity;
+    isCompleting: boolean;
+    isAnonymous: boolean;
+    onCapacitySelect: (val: Capacity) => void;
+    onBack: () => void;
+    onNext: () => void;
+    error: string | null;
+  }) => (
+    <div className="ob-step">
+      <div className="ob-step-shell">
+        <div className="ob-step-meta">Step 2 · Belonging</div>
+        <div className="ob-step-icon">🎯</div>
+      </div>
+      <h2 className="ob-step-title">{t('onboarding.roleTitle')}</h2>
+      <p className="ob-step-subtitle">{t('onboarding.roleSubtitle')}</p>
+      <ErrorBanner error={error} />
+      {isAnonymous && <div className="ob-anonymous-tag">(Anonymous Session)</div>}
+      <div className="ob-role-grid">
+        {CAPACITY_OPTIONS.map((r) => (
+          <button
+            key={r.value}
+            className={`ob-role-card ${capacity === r.value ? 'selected' : ''}`}
+            onClick={() => onCapacitySelect(r.value as Capacity)}
+          >
+            <span className="ob-role-emoji">{r.emoji}</span>
+            <span className="ob-role-name">{t(`identity.${r.value}`)}</span>
+            <span className="ob-role-desc">{t(r.descKey)}</span>
+          </button>
+        ))}
+      </div>
+      <div className="ob-actions">
+        <button className="ob-btn-secondary" onClick={onBack}>
+          ← {t('onboarding.back')}
+        </button>
+        <button className="ob-btn-primary" onClick={onNext} disabled={isCompleting}>
+          {isCompleting ? t('onboarding.saving') : t('onboarding.continue')} →
+        </button>
+      </div>
     </div>
-    <h2 className="ob-step-title">{screen.title}</h2>
-    <p className="ob-step-subtitle">{screen.subtitle}</p>
-    <ErrorBanner error={error} />
-    <div className="ob-tour-content">{screen.content}</div>
-    <div className="ob-actions">
-      <button className="ob-btn-secondary" onClick={onBack}>
-        ← {t('onboarding.back')}
-      </button>
-      <button className="ob-btn-primary" onClick={onNext} disabled={isCompleting}>
-        {isCompleting
-          ? t('onboarding.saving')
-          : currentStep === 6
-            ? t('onboarding.complete')
-            : t('onboarding.next')}{' '}
-        →
+  ),
+);
+IdentityStep.displayName = 'IdentityStep';
+
+const TourStep = memo(
+  ({
+    t,
+    currentStep,
+    screen,
+    isCompleting,
+    onBack,
+    onNext,
+    onSkip,
+    error,
+  }: {
+    t: (key: string) => string;
+    currentStep: number;
+    screen: { emoji: string; title: string; subtitle: string; content: string };
+    isCompleting: boolean;
+    onBack: () => void;
+    onNext: () => void;
+    onSkip: () => void;
+    error: string | null;
+  }) => (
+    <div className="ob-step">
+      <div className="ob-step-shell">
+        <div className="ob-step-meta">Sanctuary Tour</div>
+        <div className="ob-step-icon">{screen.emoji}</div>
+      </div>
+      <h2 className="ob-step-title">{screen.title}</h2>
+      <p className="ob-step-subtitle">{screen.subtitle}</p>
+      <ErrorBanner error={error} />
+      <div className="ob-tour-content">{screen.content}</div>
+      <div className="ob-actions">
+        <button className="ob-btn-secondary" onClick={onBack}>
+          ← {t('onboarding.back')}
+        </button>
+        <button className="ob-btn-primary" onClick={onNext} disabled={isCompleting}>
+          {isCompleting
+            ? t('onboarding.saving')
+            : currentStep === 6
+              ? t('onboarding.complete')
+              : t('onboarding.next')}{' '}
+          →
+        </button>
+      </div>
+      <button className="ob-btn-link" onClick={onSkip}>
+        {t('onboarding.skip')}
       </button>
     </div>
-    <button className="ob-btn-link" onClick={onSkip}>
-      {t('onboarding.skip')}
-    </button>
-  </div>
-));
+  ),
+);
+TourStep.displayName = 'TourStep';
 
 const Tracker = memo(({ currentStep }: { currentStep: number }) => (
   <div className="ob-tracker">
@@ -318,6 +287,7 @@ const Tracker = memo(({ currentStep }: { currentStep: number }) => (
     ))}
   </div>
 ));
+Tracker.displayName = 'Tracker';
 
 // ──────────────────────────────────────────────────────────
 // MAIN COMPONENT
@@ -336,16 +306,15 @@ export default memo(function OnboardingScreenWeb({
   const { width } = useWindowDimensions();
 
   const [state, dispatch] = useReducer(onboardingReducer, {
-    domainState: 'ARRIVAL',
     currentStep: 0,
     name: '',
-    activeBond: null,
     selectedCapacity: 'teacher' as Capacity,
-    isCompleting: false,
-    completionError: null,
+    isProcessing: false,
+    error: null,
   });
 
-  const { domainState, currentStep, name, activeBond, selectedCapacity, isCompleting, completionError } = state;
+  const { currentStep, name, selectedCapacity, isProcessing, error } = state;
+  const isOnline = useStore((s) => s.isOnline);
   const isNarrow = width < 900;
 
   // ── Restore saved progress or pre-fill from existing auth ────────────────────
@@ -357,7 +326,7 @@ export default memo(function OnboardingScreenWeb({
           const saved = await AsyncStorage.getItem('onboarding_progress');
           if (saved) {
             const progress = JSON.parse(saved);
-            if (progress.userId === internalId || !progress.userId || isAnonymous) {
+            if (progress.user_id === internalId || !progress.user_id || isAnonymous) {
               dispatch({
                 type: 'RESTORE_PROGRESS',
                 progress: {
@@ -377,13 +346,16 @@ export default memo(function OnboardingScreenWeb({
         }
 
         if (!internalId) {
-          console.log('🗝️ OnboardingScreen.web: No internalId found, initiating anonymous session...');
+          console.log(
+            '🗝️ OnboardingScreen.web: No internalId found, initiating anonymous session...',
+          );
           await authAPI.signInAnonymously();
           return initOnboarding();
         }
-        
+
         // USE NEW DOMAIN STATE API
-        const { state: initialDomainState, profile } = await identityAPI.getOnboardingStatus(internalId);
+        const { state: initialDomainState, profile } =
+          await identityAPI.getOnboardingStatus(internalId);
         const activePerspective = await identity.getActivePerspective();
 
         if (!profile) return;
@@ -391,22 +363,26 @@ export default memo(function OnboardingScreenWeb({
         // If already onboarded in DB, just finish locally
         if (initialDomainState === 'COMPLETED') {
           console.log('✅ Onboarding: Profile already marked as completed in DB, finalizing...');
-          const capacity = (activePerspective?.activeBond.capacity as Capacity) || 'teacher';
+          const capacity = (activePerspective?.active_bond.capacity as Capacity) || 'teacher';
           dispatch({ type: 'SET_NAME', name: profile.full_name || '' });
-          onComplete(profile.full_name || '', capacity, false);
+          onComplete(profile.full_name || '', capacity, isAnonymous);
           return;
         }
 
-        if (!profile.is_anonymous && profile.full_name) {
+        if (profile.full_name) {
           dispatch({ type: 'SET_NAME', name: profile.full_name });
-          dispatch({ type: 'SET_STEP', step: 1 });
+          if (initialDomainState === 'IDENTITY_SELECTION') {
+            dispatch({ type: 'SET_STEP', step: 1 });
+          } else if (initialDomainState === 'SANCTUARY_INIT') {
+            dispatch({ type: 'SET_STEP', step: 2 });
+          }
         }
       } catch (error) {
         console.error('[Onboarding] Initialization error:', error);
       }
     };
-    initOnboarding();
-  }, [isAnonymous]);
+    void initOnboarding();
+  }, [isAnonymous, onComplete]);
 
   // ── Tour content ────────────────────
   const tourScreens = useMemo(
@@ -445,50 +421,91 @@ export default memo(function OnboardingScreenWeb({
     [t],
   );
 
+  const showToast = useStore((s) => s.showToast);
+
   const handleCompleteOnboarding = useCallback(async () => {
-    dispatch({ type: 'SET_COMPLETING', isCompleting: true });
+    dispatch({ type: 'SET_PROCESSING', isProcessing: true });
+    showToast('Finalizing your sanctuary journey...', 'info', 2000);
     try {
-      const internalId = await identityAPI.getMyInternalId();
-      if (!internalId) throw new Error('Failed to resolve internal user ID');
-
-      // Check for existing profile
-      const existingProfile = await identityAPI.getProfile(internalId);
-
-      // 1. Create a default school (Personal Workspace) only if they don't have one
-      let schoolId = existingProfile?.school_id;
-      if (!schoolId) {
-        schoolId = await schoolAPI.initializePersonalWorkspace(internalId, name || 'My');
-      }
-
-      // 2. Create the initial Bond (ReBAC)
-      const { identity } = await import('@repo/core/logic');
-      await identity.createInitialBond(selectedCapacity, {
-        fullName: name,
-        schoolId,
-      });
-
       await AsyncStorage.removeItem('onboarding_progress');
       hapticSuccess();
-      onComplete(name, selectedCapacity, false);
-    } catch (error: any) {
-      console.error('❌ Error completing onboarding:', error);
+      showToast('Sanctuary entry granted! Welcome home.', 'success', 3000);
+      onComplete(name, selectedCapacity, isAnonymous);
+    } catch (err: unknown) {
+      console.error('❌ Error completing onboarding:', err);
       hapticError();
-      dispatch({ type: 'SET_COMPLETING', isCompleting: false });
+      const msg = err instanceof Error ? err.message : 'Failed to finalize onboarding.';
+      dispatch({ type: 'SET_ERROR', error: msg });
+      showToast(msg, 'error');
+    }
+  }, [name, selectedCapacity, onComplete, showToast, isAnonymous]);
+
+  const handleNext = useCallback(async () => {
+    if (isProcessing) return;
+    hapticLight();
+
+    // 🛡️ OFFLINE CHECK
+    if (!isOnline) {
+      hapticError();
       dispatch({
         type: 'SET_ERROR',
-        error: error?.message || 'Failed to save your profile. Please try again.',
+        error: 'No internet connection detected. Please try again when you are online.',
       });
+      return;
     }
-  }, [name, selectedCapacity, isAnonymous, onComplete]);
 
-  const handleNext = useCallback(() => {
-    if (currentStep === 6) {
-      handleCompleteOnboarding();
-    } else {
+    dispatch({ type: 'SET_PROCESSING', isProcessing: true });
+
+    try {
+      const internalId = await identityAPI.getMyInternalId();
+      if (!internalId) throw new Error('Identity not resolved. Please try again.');
+
+      if (currentStep === 0) {
+        // Sync Name
+        await identityAPI.updateProfile(internalId, { full_name: name });
+      } else if (currentStep === 1) {
+        // 1. Ensure user has a profile and potentially a school
+        const existingProfile = await identityAPI.getProfile(internalId);
+        let schoolId = existingProfile?.school_id;
+
+        // Wanderers (Anonymous) don't get a workspace yet.
+        // Second class citizens (Authenticated) get a personal workspace.
+        if (!schoolId && !isAnonymous) {
+          schoolId = await schoolAPI.initializePersonalWorkspace(internalId, name || 'My');
+        }
+
+        showToast(`Establishing your bond as ${selectedCapacity}...`, 'info', 1500);
+        await identity.createInitialBond(selectedCapacity, {
+          fullName: name || 'Gurudevi User',
+          schoolId,
+        });
+        showToast('Identity bond secured.', 'success', 1000);
+      } else if (currentStep === 6) {
+        await handleCompleteOnboarding();
+        return;
+      }
+
       dispatch({ type: 'NEXT_STEP' });
-      hapticLight();
+    } catch (err: unknown) {
+      console.error('[Onboarding] Step failed:', err);
+      hapticError();
+      dispatch({
+        type: 'SET_ERROR',
+        error: err instanceof Error ? err.message : 'Something went wrong. Please try again.',
+      });
+    } finally {
+      dispatch({ type: 'SET_PROCESSING', isProcessing: false });
     }
-  }, [currentStep, handleCompleteOnboarding]);
+  }, [
+    currentStep,
+    name,
+    selectedCapacity,
+    isProcessing,
+    isOnline,
+    handleCompleteOnboarding,
+    isAnonymous,
+    showToast,
+  ]);
 
   const handleBack = useCallback(() => {
     hapticLight();
@@ -497,27 +514,33 @@ export default memo(function OnboardingScreenWeb({
 
   const handleSkipTour = useCallback(() => {
     hapticLight();
-    handleCompleteOnboarding();
+    void handleCompleteOnboarding();
   }, [handleCompleteOnboarding]);
 
-  const handleNameChange = useCallback((val: string) => dispatch({ type: 'SET_NAME', name: val }), []);
+  const handleNameChange = useCallback(
+    (val: string) => dispatch({ type: 'SET_NAME', name: val }),
+    [],
+  );
   const handleCapacitySelect = useCallback((val: Capacity) => {
     dispatch({ type: 'SET_CAPACITY', capacity: val });
     hapticLight();
   }, []);
-  const handleLanguageChange = useCallback((code: string) => {
-    hapticLight();
-    i18n.changeLanguage(code);
-  }, [i18n]);
+  const handleLanguageChange = useCallback(
+    (code: string) => {
+      hapticLight();
+      void i18n.changeLanguage(code);
+    },
+    [i18n],
+  );
 
   // Save progress whenever step/name/role changes
   useEffect(() => {
     if (currentStep === 0 && !name) return;
-    identity.getMyInternalId().then((userId) => {
-      AsyncStorage.setItem(
+    void identity.getMyInternalId().then((userId) => {
+      void AsyncStorage.setItem(
         'onboarding_progress',
         JSON.stringify({
-          userId,
+          user_id: userId,
           step: currentStep,
           name,
           capacity: selectedCapacity,
@@ -532,67 +555,72 @@ export default memo(function OnboardingScreenWeb({
   }, [currentStep, tourScreens]);
 
   const renderCurrentStep = useCallback(() => {
-    if (domainState === 'ARRIVAL') {
+    if (currentStep === 0) {
       return (
-        <NameStep 
-          t={t} 
-          name={name} 
-          onNameChange={handleNameChange} 
-          onNext={handleNext} 
-          error={completionError} 
+        <NameStep
+          t={t}
+          name={name}
+          onNameChange={handleNameChange}
+          onNext={handleNext}
+          error={error}
         />
       );
     }
-    if (domainState === 'IDENTITY_SELECTION') {
+    if (currentStep === 1) {
       return (
-        <IdentityStep 
-          t={t} 
-          capacity={selectedCapacity} 
-          isCompleting={isCompleting} 
-          isAnonymous={isAnonymous} 
-          onCapacitySelect={handleCapacitySelect} 
-          onBack={handleBack} 
-          onNext={async () => {
-            if (!isAnonymous && selectedCapacity) {
-              handleCompleteOnboarding();
-            } else {
-              handleNext();
-            }
-          }} 
-          error={completionError} 
+        <IdentityStep
+          t={t}
+          capacity={selectedCapacity}
+          isCompleting={isProcessing}
+          isAnonymous={isAnonymous}
+          onCapacitySelect={handleCapacitySelect}
+          onBack={handleBack}
+          onNext={handleNext}
+          error={error}
         />
       );
     }
-    if (domainState === 'SANCTUARY_INIT' && currentTourScreen) {
+    if (currentStep >= 2 && currentStep <= 6 && currentTourScreen) {
       return (
-        <TourStep 
-          t={t} 
-          currentStep={currentStep} 
-          screen={currentTourScreen} 
-          isCompleting={isCompleting} 
-          onBack={handleBack} 
-          onNext={handleNext} 
-          onSkip={handleSkipTour} 
-          error={completionError} 
+        <TourStep
+          t={t}
+          currentStep={currentStep}
+          screen={currentTourScreen}
+          isCompleting={isProcessing}
+          onBack={handleBack}
+          onNext={handleNext}
+          onSkip={handleSkipTour}
+          error={error}
         />
       );
     }
     return null;
-  }, [domainState, t, name, handleNameChange, handleNext, completionError, selectedCapacity, isCompleting, isAnonymous, handleCapacitySelect, handleBack, handleCompleteOnboarding, currentStep, currentTourScreen, handleSkipTour]);
+  }, [
+    currentStep,
+    t,
+    name,
+    handleNameChange,
+    handleNext,
+    error,
+    selectedCapacity,
+    isProcessing,
+    isAnonymous,
+    handleCapacitySelect,
+    handleBack,
+    currentTourScreen,
+    handleSkipTour,
+  ]);
 
   return (
     <div className="ob-root">
       <div className="ob-atmosphere ob-atmosphere-one" />
       <div className="ob-atmosphere ob-atmosphere-two" />
-      
+
       {isNarrow ? (
         <div className="ob-narrow">
           <div className="ob-narrow-header">
             <span className="ob-brand-name">🪷 Gurudevi</span>
-            <LanguagePillRow 
-              currentLang={i18n.language} 
-              onLanguageChange={handleLanguageChange} 
-            />
+            <LanguagePillRow currentLang={i18n.language} onLanguageChange={handleLanguageChange} />
           </div>
           <div className="ob-progress-track" role="progressbar">
             <div
@@ -611,7 +639,11 @@ export default memo(function OnboardingScreenWeb({
                 <span className="ob-brand-name">Gurudevi</span>
               </div>
               <div>
-                <h1 className="ob-left-headline">Your Sacred<br />Sanctuary</h1>
+                <h1 className="ob-left-headline">
+                  Your Sacred
+                  <br />
+                  Sanctuary
+                </h1>
                 <p className="ob-left-tagline">
                   A healing ecosystem for educators — built in Sri Lanka, breathing worldwide.
                 </p>
@@ -626,9 +658,9 @@ export default memo(function OnboardingScreenWeb({
               </div>
               <Tracker currentStep={currentStep} />
               <div className="ob-lang-row ob-lang-bottom">
-                <LanguagePillRow 
-                  currentLang={i18n.language} 
-                  onLanguageChange={handleLanguageChange} 
+                <LanguagePillRow
+                  currentLang={i18n.language}
+                  onLanguageChange={handleLanguageChange}
                 />
               </div>
             </div>

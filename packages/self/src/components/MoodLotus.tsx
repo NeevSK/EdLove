@@ -18,6 +18,7 @@ import {
 	useSharedValue,
 	withSpring,
 } from "react-native-reanimated";
+import BreathGuide from "./BreathGuide";
 
 /**
  * MOOD LOTUS COMPONENT
@@ -42,6 +43,7 @@ export const MoodLotus: React.FC<MoodLotusProps> = ({
 }) => {
 	const { t } = useTranslation();
 	const [selectedMood, setSelectedMood] = useState<number | null>(null);
+	const [showBreath, setShowBreath] = useState(false);
 	const rotation = useSharedValue(0);
 
 	const moodOptions = [
@@ -99,53 +101,79 @@ export const MoodLotus: React.FC<MoodLotusProps> = ({
 	return (
 		<GlassCard className="p-xl rounded-[32px]">
 			<VStack className="items-center gap-xl">
-				<Heading size="md" className="text-sacredWhite font-bold text-center">
-					{t("self.moodHowAreYou") || "How is your inner lotus today?"}
-				</Heading>
-
-				<AnimatedView
-					style={[lotusStyle]}
-					className="items-center justify-center w-[120px] h-[120px]"
-				>
-					<Icon
-						as={Flower2}
-						size={80}
-						className={
-							selectedOption ? selectedOption.colorClass : "text-mistGray"
-						}
-						strokeWidth={1.5}
-					/>
-				</AnimatedView>
-
-				<HStack className="justify-center gap-4">
-					{moodOptions.map((option) => {
-						const isSelected = selectedMood === option.level;
-						return (
-							<VStack key={option.level} className="items-center gap-2">
-								<Pressable
-									onPress={() => handleMoodSelect(option.level)}
-									disabled={disabled}
-									className={`w-12 h-12 rounded-full items-center justify-center border-2 transition-all ${
-										isSelected
-											? `${option.bgClass} border-sanctuarySaffron`
-											: "bg-white/5 border-transparent"
-									}`}
-								>
-									<Icon
-										as={option.icon}
-										size={24}
-										className={isSelected ? option.colorClass : "text-mistGray"}
-									/>
-								</Pressable>
-								<Text
-									className={`text-[10px] text-center ${isSelected ? "text-sacredWhite font-semibold" : "text-mistGray font-normal"}`}
-								>
-									{option.label}
-								</Text>
-							</VStack>
-						);
-					})}
+				<HStack className="justify-between items-center w-full">
+					<VStack className="gap-1 flex-1">
+						<Text className="text-[10px] font-black uppercase tracking-[0.2em] text-mistGray/60">
+							Somatic Resonance
+						</Text>
+						<Heading size="md" className="text-sacredWhite font-black tracking-tighter">
+							{t("self.moodHowAreYou") || "Inner Lotus"}
+						</Heading>
+					</VStack>
+					<Pressable
+						onPress={() => setShowBreath(!showBreath)}
+						className={`px-3 py-1.5 rounded-full border transition-all ${showBreath ? "bg-sanctuarySaffron/10 border-sanctuarySaffron" : "bg-white/5 border-white/10"}`}
+					>
+						<HStack className="items-center gap-2">
+							<Icon as={Wind} size={12} className={showBreath ? "text-sanctuarySaffron" : "text-mistGray"} />
+							<Text className={`text-[10px] font-black uppercase tracking-widest ${showBreath ? "text-sanctuarySaffron" : "text-mistGray"}`}>
+								Breath
+							</Text>
+						</HStack>
+					</Pressable>
 				</HStack>
+
+				{showBreath ? (
+					<VStack className="w-full">
+						<BreathGuide onComplete={() => setShowBreath(false)} />
+					</VStack>
+				) : (
+					<>
+						<AnimatedView
+							style={[lotusStyle]}
+							className="items-center justify-center w-[120px] h-[120px]"
+						>
+							<Icon
+								as={Flower2}
+								size={80}
+								className={
+									selectedOption ? selectedOption.colorClass : "text-mistGray"
+								}
+								strokeWidth={1.5}
+							/>
+						</AnimatedView>
+
+						<HStack className="justify-center gap-4">
+							{moodOptions.map((option) => {
+								const isSelected = selectedMood === option.level;
+								return (
+									<VStack key={option.level} className="items-center gap-2">
+										<Pressable
+											onPress={() => handleMoodSelect(option.level)}
+											disabled={disabled}
+											className={`w-10 h-10 rounded-full items-center justify-center border-2 transition-all ${
+												isSelected
+													? `${option.bgClass} border-sanctuarySaffron shadow-lg`
+													: "bg-white/5 border-transparent"
+											}`}
+										>
+											<Icon
+												as={option.icon}
+												size={20}
+												className={isSelected ? option.colorClass : "text-mistGray"}
+											/>
+										</Pressable>
+										<Text
+											className={`text-[9px] text-center ${isSelected ? "text-sacredWhite font-semibold" : "text-mistGray font-normal"}`}
+										>
+											{option.label}
+										</Text>
+									</VStack>
+								);
+							})}
+						</HStack>
+					</>
+				)}
 			</VStack>
 		</GlassCard>
 	);

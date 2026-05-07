@@ -1,27 +1,71 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useReducer } from 'react';
 import { type DeviceAccountRecord, deviceAccounts } from '../accounts/deviceAccounts';
 
 export type { DeviceAccountRecord };
 
+type State = {
+  accounts: DeviceAccountRecord[];
+  activeAccountId: string | null;
+  loading: boolean;
+  busyAccountId: string | null;
+};
+
+type Action =
+  | { type: 'HYDRATE_START' }
+  | { type: 'HYDRATE_SUCCESS'; payload: { accounts: DeviceAccountRecord[]; activeAccountId: string | null } }
+  | { type: 'SET_BUSY'; payload: string | null }
+  | { type: 'REFRESH_SUCCESS'; payload: { accounts: DeviceAccountRecord[]; activeAccountId: string | null } };
+
+function accountsReducer(state: State, action: Action): State {
+  switch (action.type) {
+    case 'HYDRATE_START':
+      return { ...state, loading: true };
+    case 'HYDRATE_SUCCESS':
+      return {
+        ...state,
+        loading: false,
+        accounts: action.payload.accounts,
+        activeAccountId: action.payload.activeAccountId,
+      };
+    case 'SET_BUSY':
+      return { ...state, busyAccountId: action.payload };
+    case 'REFRESH_SUCCESS':
+      return {
+        ...state,
+        accounts: action.payload.accounts,
+        activeAccountId: action.payload.activeAccountId,
+      };
+    default:
+      return state;
+  }
+}
+
+const initialState: State = {
+  accounts: [],
+  activeAccountId: null,
+  loading: true,
+  busyAccountId: null,
+};
+
 export function useDeviceAccounts() {
-  const [accounts, setAccounts] = useState<DeviceAccountRecord[]>([]);
-  const [activeAccountId, setActiveAccountId] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [busyAccountId, setBusyAccountId] = useState<string | null>(null);
+  const [state, dispatch] = useReducer(accountsReducer, initialState);
 
   const refresh = useCallback(async () => {
     const [nextAccounts, nextActiveId] = await Promise.all([
       deviceAccounts.list(),
       deviceAccounts.getActiveAccountId(),
     ]);
-    setAccounts(nextAccounts);
-    setActiveAccountId(nextActiveId);
+    dispatch({
+      type: 'REFRESH_SUCCESS',
+      payload: { accounts: nextAccounts, activeAccountId: nextActiveId },
+    });
   }, []);
 
   useEffect(() => {
     let cancelled = false;
 
     (async () => {
+      dispatch({ type: 'HYDRATE_START' });
       try {
         const [nextAccounts, nextActiveId] = await Promise.all([
           deviceAccounts.list(),
@@ -29,16 +73,14 @@ export function useDeviceAccounts() {
         ]);
 
         if (cancelled) return;
-        setAccounts(nextAccounts);
-        setActiveAccountId(nextActiveId);
-      } finally {
-        if (!cancelled) {
-          setLoading(false);
-        }
+        dispatch({
+          type: 'HYDRATE_SUCCESS',
+          payload: { accounts: nextAccounts, activeAccountId: nextActiveId },
+        });
+      } catch (e) {
+        console.error('DeviceAccounts: Initial hydration failed', e);
       }
-    })().catch((e) => {
-      console.error('DeviceAccounts: Initial hydration failed', e);
-    });
+    })();
 
     return () => {
       cancelled = true;
@@ -47,12 +89,12 @@ export function useDeviceAccounts() {
 
   const switchAccount = useCallback(
     async (accountId: string) => {
-      setBusyAccountId(accountId);
+      dispatch({ type: 'SET_BUSY', payload: accountId });
       try {
         await deviceAccounts.switchTo(accountId);
         await refresh();
       } finally {
-        setBusyAccountId(null);
+        dispatch({ type: 'SET_BUSY', payload: null });
       }
     },
     [refresh],
@@ -60,60 +102,47 @@ export function useDeviceAccounts() {
 
   const removeAccount = useCallback(
     async (accountId: string) => {
-      setBusyAccountId(accountId);
+      dispatch({ type: 'SET_BUSY', payload: accountId });
       try {
         await deviceAccounts.removeAccount(accountId);
         await refresh();
       } finally {
-        setBusyAccountId(null);
+        dispatch({ type: 'SET_BUSY', payload: null });
       }
     },
     [refresh],
   );
 
   const signOutCurrentAccount = useCallback(async () => {
-    const currentId = activeAccountId;
-    setBusyAccountId(currentId);
+    const currentId = state.activeAccountId;
+    dispatch({ type: 'SET_BUSY', payload: currentId });
     try {
       await deviceAccounts.signOutCurrentAccount();
       await refresh();
     } finally {
-      setBusyAccountId(null);
+      dispatch({ type: 'SET_BUSY', payload: null });
     }
-  }, [activeAccountId, refresh]);
+  }, [state.activeAccountId, refresh]);
 
   const signOutAllAccounts = useCallback(async () => {
-    setBusyAccountId(activeAccountId);
+    dispatch({ type: 'SET_BUSY', payload: state.activeAccountId });
     try {
       await deviceAccounts.signOutAllAccounts();
       await refresh();
     } finally {
-      setBusyAccountId(null);
+      dispatch({ type: 'SET_BUSY', payload: null });
     }
-  }, [activeAccountId, refresh]);
+  }, [state.activeAccountId, refresh]);
 
   return useMemo(
     () => ({
-      accounts,
-      activeAccountId,
-      loading,
-      busyAccountId,
+      ...state,
       refresh,
       switchAccount,
       removeAccount,
       signOutCurrentAccount,
       signOutAllAccounts,
     }),
-    [
-      accounts,
-      activeAccountId,
-      loading,
-      busyAccountId,
-      refresh,
-      switchAccount,
-      removeAccount,
-      signOutCurrentAccount,
-      signOutAllAccounts,
-    ],
+    [state, refresh, switchAccount, removeAccount, signOutCurrentAccount, signOutAllAccounts],
   );
 }

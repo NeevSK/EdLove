@@ -1,28 +1,28 @@
 import "react-native-url-polyfill/auto";
 import "./src/i18n/config"; // Initialize i18n
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 // Lazy load Admin screens to break circularity and improve startup
-const AdminAuditLog = React.lazy(
+const AdminAuditLog = lazy(
 	() => import("@repo/admin/screens/AdminAuditLog"),
 );
-const AdminAuthorityRepair = React.lazy(
+const AdminAuthorityRepair = lazy(
 	() => import("@repo/admin/screens/AdminAuthorityRepair"),
 );
-const AdminDashboard = React.lazy(
+const AdminDashboard = lazy(
 	() => import("@repo/admin/screens/AdminDashboard"),
 );
-const AdminIncidentQueue = React.lazy(
+const AdminIncidentQueue = lazy(
 	() => import("@repo/admin/screens/AdminIncidentQueue"),
 );
-const AdminJobControl = React.lazy(
+const AdminJobControl = lazy(
 	() => import("@repo/admin/screens/AdminJobControl"),
 );
-const AdminReleaseControl = React.lazy(
+const AdminReleaseControl = lazy(
 	() => import("@repo/admin/screens/AdminReleaseControl"),
 );
-const AdminTenantDetail = React.lazy(
+const AdminTenantDetail = lazy(
 	() => import("@repo/admin/screens/AdminTenantDetail"),
 );
 
@@ -32,9 +32,7 @@ import {
 	posthogAnalytics as initTracker,
 	trackEvent,
 } from "@repo/analytics";
-import { authAPI, identityAPI } from "@repo/core/api";
-import type { SchoolType } from "@repo/core/constants";
-import { coreRuntime, useStore } from "@repo/core/logic";
+import { coreRuntime, useStore, GlobalProvider, useAuth } from "@repo/core/logic";
 import {
 	clearSentryUser,
 	initSentry,
@@ -43,7 +41,6 @@ import {
 } from "@repo/core/monitoring";
 import { nativeRuntimeEnvironment, supabase } from "@repo/core/native";
 import { SyncManager } from "@repo/core/sync";
-import { APIError, type AuthorityTier } from "@repo/core/types";
 import { useQRDeepLink } from "@repo/scanner-kit";
 import ErrorBoundary from "@repo/ui/components/ErrorBoundary";
 import NetworkStatusBanner from "@repo/ui/components/NetworkStatusBanner";
@@ -56,47 +53,39 @@ import { Box, Center, Spinner } from "@repo/ui/primitives";
 import { ToastProvider } from "@repo/ui/providers";
 import { sanctuarySaffron } from "@repo/ui/theme";
 
-import type { Session } from "@supabase/supabase-js";
+import { OnboardingWrapper } from "@repo/ui/screens/OnboardingWrapper";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import * as Font from "expo-font";
 import * as Linking from "expo-linking";
-import React, { Suspense, useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState, lazy } from "react";
 import { Platform } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import CommandPalette from "./src/components/web/CommandPalette";
 import { PWAInstallBanner } from "./src/components/web/PWAInstallBanner";
 import { fontAssets } from "./src/constants/Fonts";
 import { navigationRef } from "./src/navigation/navigationRef";
+import { useAppEntryGate } from "./src/navigation/useAppEntryGate";
 // Import screens and navigation
 import TabNavigator from "./src/navigation/TabNavigator";
 
 // Import screens and navigation from the local authoritative index
 // Lazy load app-level screens from direct paths (No Barrel Exports)
-const AIAssistantScreen = React.lazy(() =>
+const AIAssistantScreen = lazy(() =>
 	import("@repo/ai").then((m) => ({ default: m.AIAssistantScreen })),
 );
-const AppSettingsScreen = React.lazy(
-	() => import("@repo/ui/screens/AppSettingsScreen"),
-);
-const AuthScreen = React.lazy(() => import("./src/screens/AuthScreen"));
-const InvitationWelcomeScreen = React.lazy(() =>
+const AuthScreen = lazy(() => import("./src/screens/AuthScreen"));
+const InvitationWelcomeScreen = lazy(() =>
 	import("@repo/community").then((m) => ({
 		default: m.InvitationWelcomeScreen,
 	})),
 );
-const NotificationsScreen = React.lazy(
-	() => import("@repo/ui/screens/NotificationsScreen"),
-);
-const OnboardingScreen = React.lazy(
-	() => import("@repo/ui/screens/OnboardingScreen"),
-);
-const QRHandlerScreen = React.lazy(() =>
+const QRHandlerScreen = lazy(() =>
 	import("@repo/scanner-kit").then((m) => ({ default: m.QRHandlerScreen })),
 );
-const ThuthimalClaimScreen = React.lazy(() =>
+const ThuthimalClaimScreen = lazy(() =>
 	import("@repo/profile").then((m) => ({ default: m.ThuthimalClaimScreen })),
 );
-const WelcomeScreen = React.lazy(
+const WelcomeScreen = lazy(
 	() => import("@repo/ui/screens/WelcomeScreen"),
 );
 
@@ -104,7 +93,7 @@ import { LanguageUtils } from "./src/utils/LanguageUtils";
 import { updateWebPageTitle } from "./src/utils/useWebPageTitle";
 
 // Lazy load PublicFormScreen as it's web-only and large
-const PublicFormScreen = React.lazy(() =>
+const PublicFormScreen = lazy(() =>
 	import("@repo/form-builder").then((module) => ({
 		default: module.PublicFormScreenWeb,
 	})),
@@ -123,95 +112,85 @@ installMobileWorkflowEventBridge();
 // Root Stack for Modals
 const RootStack = createNativeStackNavigator();
 
-/**
- * UserProfile - Interface for raw database user rows from Supabase.
- */
-interface UserProfile {
-	id: string;
-	school_id: string | null;
-	onboarding_completed: boolean;
-	full_name: string | null;
-	email: string | null;
-	avatar_url: string | null;
-	is_anonymous: boolean;
-	profile_completed: boolean;
+function FullScreenFallback() {
+	return (
+		<Center className="flex-1 bg-obsidian">
+			<Spinner color={sanctuarySaffron} />
+		</Center>
+	);
 }
 
-// Module-level so AppContent can call it without prop-drilling.
-const fetchAndSetUserProfile = async (
-	internalUserId: string,
-	onComplete?: () => void,
-) => {
-	try {
-		const { data, error } = await supabase
-			.from("users")
-			.select(
-				"id, school_id, onboarding_completed, full_name, email, avatar_url, is_anonymous, profile_completed",
-			)
-			.eq("id", internalUserId)
-			.maybeSingle();
+function WelcomeRouteScreen() {
+	return (
+		<ErrorBoundary name="Welcome Screen">
+			<Suspense fallback={<FullScreenFallback />}>
+				<WelcomeScreen
+					onLogin={() => navigationRef.isReady() && navigationRef.navigate("Auth" as never)}
+					onGuest={() => navigationRef.isReady() && navigationRef.navigate("Onboarding" as never)}
+				/>
+			</Suspense>
+		</ErrorBoundary>
+	);
+}
 
-		const userProfile = data as UserProfile | null;
+function AuthRouteScreen() {
+	const navigation = useNavigation<{ goBack: () => void }>();
 
-		if (error) {
-			console.warn("⚠️ Profile: Table fetch returned error:", error.message);
-			if (onComplete) onComplete();
-			return;
-		}
+	return (
+		<Suspense fallback={<FullScreenFallback />}>
+			<AuthScreen
+				onSuccess={() => navigationRef.isReady() && navigationRef.navigate("Onboarding" as never)}
+				onBack={() => navigation.goBack()}
+			/>
+		</Suspense>
+	);
+}
 
-		if (userProfile) {
-			const store = useStore.getState();
-			store.setUser(userProfile as any);
+function OnboardingRouteScreen() {
+	return (
+		<ErrorBoundary name="Onboarding Screen">
+			<Suspense fallback={<FullScreenFallback />}>
+				<OnboardingWrapper />
+			</Suspense>
+		</ErrorBoundary>
+	);
+}
 
-			const isEffectivelyOnboarded =
-				!!userProfile.onboarding_completed;
+function MainTabsRouteScreen() {
+	return (
+		<ErrorBoundary name="Main Tabs">
+			<TabNavigator />
+		</ErrorBoundary>
+	);
+}
 
-			if (isEffectivelyOnboarded) {
-				if (!store.onboardingCompleted) {
-					store.setOnboardingCompleted(true);
-				}
-			}
+function AdminDashboardRouteScreen() {
+	return (
+		<Suspense fallback={<FullScreenFallback />}>
+			<AdminDashboard />
+		</Suspense>
+	);
+}
 
-			if (!isEffectivelyOnboarded && navigationRef.isReady()) {
-				const rootState = navigationRef.current?.getRootState();
-				const currentRoute = rootState?.routes?.[rootState?.index ?? -1]?.name;
-				if (currentRoute === "Welcome") {
-					navigationRef.navigate("Onboarding" as never);
-				}
-			}
+function InvitationRouteScreen() {
+	return (
+		<Suspense fallback={<FullScreenFallback />}>
+			<InvitationWelcomeScreen />
+		</Suspense>
+	);
+}
 
-			if (userProfile.school_id) {
-				const { data: schoolData } = await supabase
-					.from("schools")
-					.select("type")
-					.eq("id", userProfile.school_id)
-					.single();
-
-				if (schoolData) {
-					store.setSchoolType(schoolData.type as SchoolType | null);
-				}
-			} else {
-				store.setSchoolType(null);
-			}
-		}
-	} catch (error) {
-		console.warn("❌ Profile: Fetching encountered an error:", error);
-	} finally {
-		if (onComplete) onComplete();
-	}
-};
+function PublicFormRouteScreen() {
+	return (
+		<Suspense fallback={<Center className="flex-1"><Spinner /></Center>}>
+			<PublicFormScreen />
+		</Suspense>
+	);
+}
 
 function App() {
-	const [session, setSession] = useState<Session | null>(null);
-	const [loading, setLoading] = useState(true);
-	const [isProfileLoading, setIsProfileLoading] = useState(false);
 	const [fontsLoaded, setFontsLoaded] = useState(false);
-	const [currentTab, setCurrentTab] = useState<
-		"self" | "classroom" | "community" | "library" | "profile"
-	>("self");
-	const onboardingCompleted = useStore((state) => state.onboardingCompleted);
 	const currentUser = useStore((state) => state.user);
-	const [showWelcome, setShowWelcome] = useState(true);
 	const toast = useStore((state) => state.toast);
 	const hideToast = useStore((state) => state.hideToast);
 
@@ -223,16 +202,26 @@ function App() {
 		coreRuntime.register(nativeRuntimeEnvironment);
 
 		initSentry();
-		initPostHog(process.env["EXPO_PUBLIC_POSTHOG_API_KEY"]!, {
-			host:
-				process.env["EXPO_PUBLIC_POSTHOG_HOST"] || "https://eu.i.posthog.com",
+		const posthogApiKey = process.env["EXPO_PUBLIC_POSTHOG_API_KEY"];
+		const posthogHost =
+			process.env["EXPO_PUBLIC_POSTHOG_HOST"] || "https://eu.i.posthog.com";
+
+		if (!posthogApiKey) {
+			console.warn(
+				"[PostHog] Missing EXPO_PUBLIC_POSTHOG_API_KEY. Analytics initialization skipped.",
+			);
+			return;
+		}
+
+		void initPostHog(posthogApiKey, {
+			host: posthogHost,
 		}).then(() => {
 			trackEvent("app_initialized", { platform: Platform.OS });
 		});
 	}, []);
 
 	useEffect(() => {
-		LanguageUtils.init();
+		void LanguageUtils.init();
 	}, []);
 
 	useEffect(() => {
@@ -250,7 +239,7 @@ function App() {
 		identifyUser(currentUser.id, {
 			email: currentUser.email ?? undefined,
 			full_name: currentUser.full_name ?? undefined,
-			capacity: (useStore.getState() as any).activeBond?.capacity ?? undefined,
+			capacity: (useStore.getState() as { activeBond?: { capacity?: string } }).activeBond?.capacity ?? undefined,
 			school_id: currentUser.school_id ?? undefined,
 		});
 	}, [
@@ -265,92 +254,11 @@ function App() {
 			try {
 				await Font.loadAsync(fontAssets);
 				setFontsLoaded(true);
-			} catch (_error) {
+			} catch {
 				setFontsLoaded(true);
 			}
 		}
-		loadFonts();
-	}, []);
-
-	useEffect(() => {
-		const checkSession = async () => {
-			try {
-				const session = await authAPI.getAuthSession();
-				setSession(session);
-				useStore.getState().setAuthSession(session);
-				if (session) {
-					setShowWelcome(false);
-					if (session.user) {
-						setIsProfileLoading(true);
-						identityAPI
-							.getMyInternalId()
-							.then((internalId) => {
-								if (internalId) {
-									fetchAndSetUserProfile(internalId, () =>
-										setIsProfileLoading(false),
-									);
-								} else {
-									setIsProfileLoading(false);
-								}
-							})
-							.catch(() => {
-								setIsProfileLoading(false);
-							});
-					}
-				}
-			} catch (error) {
-				if (error instanceof APIError) {
-					if (
-						error.message?.includes("Refresh Token") ||
-						(error as any).status === 400
-					) {
-						await supabase.auth.signOut({ scope: "local" });
-						setSession(null);
-						useStore.getState().setAuthSession(null);
-					}
-				}
-			} finally {
-				setLoading(false);
-				useStore.getState().setAuthSessionResolved(true);
-			}
-		};
-
-		checkSession();
-
-		const {
-			data: { subscription },
-		} = supabase.auth.onAuthStateChange(async (event, session) => {
-			setSession(session);
-			useStore.getState().setAuthSession(session);
-			useStore.getState().setAuthSessionResolved(true);
-
-			if (session?.user) {
-				setIsProfileLoading(true);
-				identityAPI
-					.getMyInternalId()
-					.then((internalId) => {
-						if (internalId) {
-							fetchAndSetUserProfile(internalId, () =>
-								setIsProfileLoading(false),
-							);
-						} else {
-							setIsProfileLoading(false);
-						}
-					})
-					.catch(() => {
-						setIsProfileLoading(false);
-					});
-			} else if (event === "SIGNED_OUT") {
-				setIsProfileLoading(false);
-				identityAPI.clearCache();
-				const store = useStore.getState();
-				store.setUser(null);
-				store.setSchoolType(null);
-				store.setOnboardingCompleted(false);
-			}
-		});
-
-		return () => subscription.unsubscribe();
+		void loadFonts();
 	}, []);
 
 	useEffect(() => {
@@ -374,7 +282,7 @@ function App() {
 					if (
 						error &&
 						(error.message?.includes("Refresh Token") ||
-							(error as any).status === 400)
+							(error as { status?: number }).status === 400)
 					) {
 						await supabase.auth.signOut({ scope: "local" });
 					}
@@ -385,104 +293,57 @@ function App() {
 		const subscription = Linking.addEventListener("url", (event) =>
 			handleDeepLink(event.url),
 		);
-		Linking.getInitialURL().then((url) => {
-			if (url) handleDeepLink(url);
+		void Linking.getInitialURL().then((url) => {
+			if (url) void handleDeepLink(url);
 		});
 		return () => subscription.remove();
 	}, []);
 
 	useQRDeepLink((payload: unknown) => {
-		if (navigationRef.isReady() && session) {
+		if (navigationRef.isReady()) {
 			navigationRef.navigate("QRHandler", { payload });
 		}
 	});
 
-	if (loading || !fontsLoaded) {
+	if (!fontsLoaded) {
 		return (
 			<SafeAreaProvider>
 				<GluestackUIProvider>
-					<Center className="flex-1 bg-obsidian">
-						<Spinner size="large" color={sanctuarySaffron} />
-					</Center>
+					<FullScreenFallback />
 				</GluestackUIProvider>
 			</SafeAreaProvider>
 		);
 	}
 
-	const isNewUser = !onboardingCompleted;
-	const needsWelcome = showWelcome && isNewUser;
-
 	return (
 		<ErrorBoundary name="Absolute Root">
 			<QueryClientProvider client={queryClient}>
 				<EnvironmentProvider>
-					<GluestackUIProvider>
-						<SanctuaryGlobalStyles />
-						<FABProvider>
-							<Box className="flex-1">
-								<AppContent
-									currentTab={currentTab}
-									setCurrentTab={setCurrentTab}
-									session={session}
-									needsWelcome={needsWelcome}
-									onboardingCompleted={onboardingCompleted}
-									isProfileLoading={isProfileLoading}
-									showWelcome={showWelcome}
-									setShowWelcome={setShowWelcome}
-									toast={toast}
-									hideToast={hideToast}
-								/>
-							</Box>
-						</FABProvider>
-					</GluestackUIProvider>
+					<GlobalProvider>
+						<GluestackUIProvider>
+							<SanctuaryGlobalStyles />
+							<FABProvider>
+								<Box className="flex-1">
+									<AppContent
+										toast={toast}
+										hideToast={hideToast}
+									/>
+								</Box>
+							</FABProvider>
+						</GluestackUIProvider>
+					</GlobalProvider>
 				</EnvironmentProvider>
 			</QueryClientProvider>
 		</ErrorBoundary>
 	);
 }
 
-function OnboardingWrapper({ session }: { session: Session | null }) {
-	const storeUser = useStore((state) => state.user);
-	return (
-		<OnboardingScreen
-			isAnonymous={
-				storeUser?.is_anonymous === true ||
-				session?.user?.is_anonymous === true ||
-				!session?.user?.email
-			}
-			onComplete={(name: string, role: AuthorityTier | null) => {
-				const store = useStore.getState();
-				if (name) store.setUser({ ...(store.user as any), full_name: name });
-				// Role/capacity selection is handled via Bonds/perspective switching now.
-				store.setOnboardingCompleted(true);
-				identityAPI.getMyInternalId().then((internalId) => {
-					if (internalId) fetchAndSetUserProfile(internalId);
-				});
-			}}
-		/>
-	);
-}
+// Removed local OnboardingWrapper in favor of @repo/ui version
 
 function AppContent({
-	currentTab,
-	setCurrentTab,
-	session,
-	needsWelcome,
-	onboardingCompleted,
-	isProfileLoading,
-	showWelcome,
-	setShowWelcome,
 	toast,
 	hideToast,
 }: {
-	currentTab: string;
-	setCurrentTab: (tab: any) => void;
-	session: Session | null;
-	needsWelcome: boolean;
-	onboardingCompleted: boolean;
-	isProfileLoading: boolean;
-	showWelcome: boolean;
-	setShowWelcome: (show: boolean) => void;
 	toast: {
 		message: string;
 		type: "success" | "error" | "info";
@@ -490,49 +351,34 @@ function AppContent({
 	} | null;
 	hideToast: () => void;
 }) {
-	const handleTabChange = React.useCallback(
-		(tab: string) => {
-			setCurrentTab(tab as any);
-		},
-		[setCurrentTab],
-	);
+	const { session, loading, isProfileLoading } = useAuth();
+	const onboardingCompleted = useStore((state) => state.onboardingCompleted);
 
-	useEffect(() => {
-		if (Platform.OS === "web" && navigationRef.isReady()) {
-			const state = navigationRef.current?.getRootState();
-			const currentRoute = state?.routes?.[state?.index ?? -1]?.name;
-			const allowedRoutes = [
-				"Welcome",
-				"Onboarding",
-				"Auth",
-				"QRHandler",
-				"InvitationWelcome",
-				"PublicForm",
-			];
-			const hasValidSession = !!session;
+	const WelcomeWrapper = WelcomeRouteScreen;
 
-			if (
-				!hasValidSession &&
-				!onboardingCompleted &&
-				!allowedRoutes.includes(currentRoute || "")
-			) {
-				navigationRef.current?.reset({
-					index: 0,
-					routes: [{ name: "Welcome" }],
-				});
-			}
-		}
-	}, [onboardingCompleted, session]);
+	// ✅ 2026 Sovereign Pattern: Stabilize screen components to prevent re-mount loops
+	const AuthWrapper = AuthRouteScreen;
 
-	useEffect(() => {
-		if (isProfileLoading) return;
-		if (!session || onboardingCompleted || !navigationRef.isReady()) return;
-		const rootState = navigationRef.current?.getRootState();
-		const currentRoute = rootState?.routes?.[rootState?.index ?? -1]?.name;
-		if (currentRoute === "Welcome") {
-			navigationRef.navigate("Onboarding" as never);
-		}
-	}, [session, onboardingCompleted, isProfileLoading]);
+	const OnboardingWrapperComponent = OnboardingRouteScreen;
+
+	const MainWrapper = MainTabsRouteScreen;
+
+	const AdminDashboardWrapper = AdminDashboardRouteScreen;
+
+	const InvitationWrapper = InvitationRouteScreen;
+
+	const PublicFormWrapper = PublicFormRouteScreen;
+
+	useAppEntryGate({
+		navigationRef,
+		session,
+		isProfileLoading,
+		onboardingCompleted,
+	});
+
+	if (loading) {
+		return <FullScreenFallback />;
+	}
 
 	return (
 		<SafeAreaProvider>
@@ -591,345 +437,150 @@ function AppContent({
 							<RootStack.Navigator
 								id="RootStack"
 								screenOptions={{ headerShown: false }}
-								initialRouteName={onboardingCompleted ? "Main" : "Welcome"}
+								initialRouteName="Welcome"
 							>
-								{!onboardingCompleted ? (
-									<>
-										<RootStack.Screen name="Welcome">
-											{() => (
-												<ErrorBoundary name="Welcome Screen">
-													<Suspense
-														fallback={
-															<Center className="flex-1 bg-obsidian">
-																<Spinner color={sanctuarySaffron} />
-															</Center>
-														}
-													>
-														<WelcomeScreen
-															onLogin={() =>
-																navigationRef.isReady() &&
-																navigationRef.navigate("Auth" as never)
-															}
-															onGuest={() =>
-																navigationRef.isReady() &&
-																navigationRef.navigate("Onboarding" as never)
-															}
-														/>
-													</Suspense>
-												</ErrorBoundary>
-											)}
-										</RootStack.Screen>
-										<RootStack.Screen
-											name="Auth"
-											options={{ presentation: "card" }}
+								<RootStack.Screen name="Welcome" component={WelcomeWrapper} />
+								<RootStack.Screen
+									name="Auth"
+									options={{ presentation: "card" }}
+									component={AuthWrapper}
+								/>
+								<RootStack.Screen
+									name="Onboarding"
+									component={OnboardingWrapperComponent}
+								/>
+								<RootStack.Screen
+									name="InvitationWelcome"
+									options={{ presentation: "modal" }}
+									component={InvitationWrapper}
+								/>
+								<RootStack.Screen
+									name="PublicForm"
+									options={{ headerShown: false }}
+									component={PublicFormWrapper}
+								/>
+								<RootStack.Screen name="Main" component={MainWrapper} />
+								<RootStack.Screen
+									name="AdminDashboard"
+									component={AdminDashboardWrapper}
+								/>
+								<RootStack.Screen name="AdminIncidentQueue">
+									{() => (
+										<Suspense
+											fallback={
+												<Center className="flex-1 bg-obsidian">
+													<Spinner />
+												</Center>
+											}
 										>
-											{(props: any) => (
-												<Suspense
-													fallback={
-														<Center className="flex-1 bg-obsidian">
-															<Spinner color={sanctuarySaffron} />
-														</Center>
-													}
-												>
-													<AuthScreen
-														onSuccess={() => {
-															identityAPI.getMyInternalId().then((id) => {
-																if (id) fetchAndSetUserProfile(id);
-															});
-															if (navigationRef.isReady())
-																navigationRef.navigate("Onboarding" as never);
-														}}
-														onBack={() => props.navigation.goBack()}
-													/>
-												</Suspense>
-											)}
-										</RootStack.Screen>
-										<RootStack.Screen name="Onboarding">
-											{() => (
-												<ErrorBoundary name="Onboarding Screen">
-													<Suspense
-														fallback={
-															<Center className="flex-1 bg-obsidian">
-																<Spinner color={sanctuarySaffron} />
-															</Center>
-														}
-													>
-														<OnboardingWrapper session={session} />
-													</Suspense>
-												</ErrorBoundary>
-											)}
-										</RootStack.Screen>
-										<RootStack.Screen
-											name="InvitationWelcome"
-											options={{ presentation: "modal" }}
+											<AdminIncidentQueue />
+										</Suspense>
+									)}
+								</RootStack.Screen>
+								<RootStack.Screen name="AdminTenantDetail">
+									{() => (
+										<Suspense
+											fallback={
+												<Center className="flex-1 bg-obsidian">
+													<Spinner />
+												</Center>
+											}
 										>
-											{() => (
-												<Suspense
-													fallback={
-														<Center className="flex-1 bg-obsidian">
-															<Spinner color={sanctuarySaffron} />
-														</Center>
-													}
-												>
-													<InvitationWelcomeScreen />
-												</Suspense>
-											)}
-										</RootStack.Screen>
-										<RootStack.Screen
-											name="PublicForm"
-											options={{ headerShown: false }}
+											<AdminTenantDetail />
+										</Suspense>
+									)}
+								</RootStack.Screen>
+								<RootStack.Screen name="AdminAuthorityRepair">
+									{() => (
+										<Suspense
+											fallback={
+												<Center className="flex-1 bg-obsidian">
+													<Spinner />
+												</Center>
+											}
 										>
-											{() => (
-												<Suspense
-													fallback={
-														<Center className="flex-1">
-															<Spinner />
-														</Center>
-													}
-												>
-													<PublicFormScreen />
-												</Suspense>
-											)}
-										</RootStack.Screen>
-									</>
-								) : (
-									<>
-										<RootStack.Screen name="Main">
-											{() => (
-												<ErrorBoundary name="Main Tabs">
-													<TabNavigator onTabChange={handleTabChange} />
-												</ErrorBoundary>
-											)}
-										</RootStack.Screen>
-										<RootStack.Screen name="AdminDashboard">
-											{() => (
-												<Suspense
-													fallback={
-														<Center className="flex-1 bg-obsidian">
-															<Spinner />
-														</Center>
-													}
-												>
-													<AdminDashboard />
-												</Suspense>
-											)}
-										</RootStack.Screen>
-										<RootStack.Screen name="AdminIncidentQueue">
-											{() => (
-												<Suspense
-													fallback={
-														<Center className="flex-1 bg-obsidian">
-															<Spinner />
-														</Center>
-													}
-												>
-													<AdminIncidentQueue />
-												</Suspense>
-											)}
-										</RootStack.Screen>
-										<RootStack.Screen name="AdminTenantDetail">
-											{() => (
-												<Suspense
-													fallback={
-														<Center className="flex-1 bg-obsidian">
-															<Spinner />
-														</Center>
-													}
-												>
-													<AdminTenantDetail />
-												</Suspense>
-											)}
-										</RootStack.Screen>
-										<RootStack.Screen name="AdminAuthorityRepair">
-											{() => (
-												<Suspense
-													fallback={
-														<Center className="flex-1 bg-obsidian">
-															<Spinner />
-														</Center>
-													}
-												>
-													<AdminAuthorityRepair />
-												</Suspense>
-											)}
-										</RootStack.Screen>
-										<RootStack.Screen name="AdminJobControl">
-											{() => (
-												<Suspense
-													fallback={
-														<Center className="flex-1 bg-obsidian">
-															<Spinner />
-														</Center>
-													}
-												>
-													<AdminJobControl />
-												</Suspense>
-											)}
-										</RootStack.Screen>
-										<RootStack.Screen name="AdminAuditLog">
-											{() => (
-												<Suspense
-													fallback={
-														<Center className="flex-1 bg-obsidian">
-															<Spinner />
-														</Center>
-													}
-												>
-													<AdminAuditLog />
-												</Suspense>
-											)}
-										</RootStack.Screen>
-										<RootStack.Screen name="AdminReleaseControl">
-											{() => (
-												<Suspense
-													fallback={
-														<Center className="flex-1 bg-obsidian">
-															<Spinner />
-														</Center>
-													}
-												>
-													<AdminReleaseControl />
-												</Suspense>
-											)}
-										</RootStack.Screen>
-										<RootStack.Screen
-											name="AIAssistant"
-											options={{ presentation: "modal" }}
+											<AdminAuthorityRepair />
+										</Suspense>
+									)}
+								</RootStack.Screen>
+								<RootStack.Screen name="AdminJobControl">
+									{() => (
+										<Suspense
+											fallback={
+												<Center className="flex-1 bg-obsidian">
+													<Spinner />
+												</Center>
+											}
 										>
-											{() => (
-												<Suspense
-													fallback={
-														<Center className="flex-1 bg-obsidian">
-															<Spinner />
-														</Center>
-													}
-												>
-													<AIAssistantScreen />
-												</Suspense>
-											)}
-										</RootStack.Screen>
-										<RootStack.Screen
-											name="Auth"
-											options={{ presentation: "modal" }}
+											<AdminJobControl />
+										</Suspense>
+									)}
+								</RootStack.Screen>
+								<RootStack.Screen name="AdminAuditLog">
+									{() => (
+										<Suspense
+											fallback={
+												<Center className="flex-1 bg-obsidian">
+													<Spinner />
+												</Center>
+											}
 										>
-											{(props: any) => (
-												<Suspense
-													fallback={
-														<Center className="flex-1 bg-obsidian">
-															<Spinner />
-														</Center>
-													}
-												>
-													<AuthScreen
-														onSuccess={() => {
-															identityAPI.getMyInternalId().then((id) => {
-																if (id) fetchAndSetUserProfile(id);
-															});
-															props.navigation.goBack();
-														}}
-														onBack={() => props.navigation.goBack()}
-													/>
-												</Suspense>
-											)}
-										</RootStack.Screen>
-										<RootStack.Screen
-											name="QRHandler"
-											options={{ presentation: "modal" }}
+											<AdminAuditLog />
+										</Suspense>
+									)}
+								</RootStack.Screen>
+								<RootStack.Screen name="AdminReleaseControl">
+									{() => (
+										<Suspense
+											fallback={
+												<Center className="flex-1 bg-obsidian">
+													<Spinner />
+												</Center>
+											}
 										>
-											{() => (
-												<Suspense
-													fallback={
-														<Center className="flex-1 bg-obsidian">
-															<Spinner />
-														</Center>
-													}
-												>
-													<QRHandlerScreen />
-												</Suspense>
-											)}
-										</RootStack.Screen>
-										<RootStack.Screen
-											name="AppSettings"
-											options={{ presentation: "modal" }}
+											<AdminReleaseControl />
+										</Suspense>
+									)}
+								</RootStack.Screen>
+								<RootStack.Screen name="AIAssistant">
+									{() => (
+										<Suspense
+											fallback={
+												<Center className="flex-1 bg-obsidian">
+													<Spinner />
+												</Center>
+											}
 										>
-											{() => (
-												<Suspense
-													fallback={
-														<Center className="flex-1 bg-obsidian">
-															<Spinner />
-														</Center>
-													}
-												>
-													<AppSettingsScreen />
-												</Suspense>
-											)}
-										</RootStack.Screen>
-										<RootStack.Screen
-											name="Notifications"
-											options={{ presentation: "modal" }}
+											<AIAssistantScreen />
+										</Suspense>
+									)}
+								</RootStack.Screen>
+								<RootStack.Screen name="QRHandler">
+									{() => (
+										<Suspense
+											fallback={
+												<Center className="flex-1 bg-obsidian">
+													<Spinner />
+												</Center>
+											}
 										>
-											{() => (
-												<Suspense
-													fallback={
-														<Center className="flex-1 bg-obsidian">
-															<Spinner />
-														</Center>
-													}
-												>
-													<NotificationsScreen />
-												</Suspense>
-											)}
-										</RootStack.Screen>
-										<RootStack.Screen
-											name="ThuthimalClaim"
-											options={{ presentation: "modal" }}
+											<QRHandlerScreen />
+										</Suspense>
+									)}
+								</RootStack.Screen>
+								<RootStack.Screen name="ThuthimalClaim">
+									{() => (
+										<Suspense
+											fallback={
+												<Center className="flex-1 bg-obsidian">
+													<Spinner />
+												</Center>
+											}
 										>
-											{() => (
-												<Suspense
-													fallback={
-														<Center className="flex-1 bg-obsidian">
-															<Spinner />
-														</Center>
-													}
-												>
-													<ThuthimalClaimScreen />
-												</Suspense>
-											)}
-										</RootStack.Screen>
-										<RootStack.Screen
-											name="InvitationWelcome"
-											options={{ presentation: "modal" }}
-										>
-											{() => (
-												<Suspense
-													fallback={
-														<Center className="flex-1 bg-obsidian">
-															<Spinner />
-														</Center>
-													}
-												>
-													<InvitationWelcomeScreen />
-												</Suspense>
-											)}
-										</RootStack.Screen>
-										<RootStack.Screen
-											name="PublicForm"
-											options={{ headerShown: false }}
-										>
-											{() => (
-												<Suspense
-													fallback={
-														<Center className="flex-1">
-															<Spinner />
-														</Center>
-													}
-												>
-													<PublicFormScreen />
-												</Suspense>
-											)}
-										</RootStack.Screen>
-									</>
-								)}
+											<ThuthimalClaimScreen />
+										</Suspense>
+									)}
+								</RootStack.Screen>
 							</RootStack.Navigator>
 						</NavigationContainer>
 						<SyncManager

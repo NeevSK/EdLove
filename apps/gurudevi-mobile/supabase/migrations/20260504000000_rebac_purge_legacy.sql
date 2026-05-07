@@ -41,7 +41,7 @@ DROP TRIGGER IF EXISTS tr_user_profile_sync ON public.users;
 DROP FUNCTION IF EXISTS public.handle_user_profile_sync();
 
 -- Drop the unified view that exposed legacy roles.
-DROP VIEW IF EXISTS public.unified_user_profiles;
+DROP VIEW IF EXISTS public.unified_user_profiles CASCADE;
 
 -- 3. REFACTOR MANUAL RLS POLICIES
 -- Update Teacher Profiles RLS
@@ -122,10 +122,21 @@ USING (
 -- 4. THE FINAL PURGE: DROP LEGACY COLUMNS
 -- WARNING: This is destructive. Only execute after logic is migrated.
 ALTER TABLE public.users 
-DROP COLUMN IF EXISTS authority,
-DROP COLUMN IF EXISTS role,
-DROP COLUMN IF EXISTS school_role,
-DROP COLUMN IF EXISTS platform_roles,
-DROP COLUMN IF EXISTS work_roles;
+DROP COLUMN IF EXISTS authority CASCADE,
+DROP COLUMN IF EXISTS role CASCADE,
+DROP COLUMN IF EXISTS school_role CASCADE,
+DROP COLUMN IF EXISTS platform_roles CASCADE,
+DROP COLUMN IF EXISTS work_roles CASCADE,
+DROP COLUMN IF EXISTS language CASCADE,
+DROP COLUMN IF EXISTS theme CASCADE,
+DROP COLUMN IF EXISTS onboarding_completed CASCADE,
+DROP COLUMN IF EXISTS profile_completed CASCADE,
+DROP COLUMN IF EXISTS invitations_remaining CASCADE,
+DROP COLUMN IF EXISTS invitations_sent CASCADE,
+DROP COLUMN IF EXISTS gender CASCADE,
+DROP COLUMN IF EXISTS date_of_birth CASCADE,
+DROP COLUMN IF EXISTS is_thuthimal CASCADE,
+DROP COLUMN IF EXISTS thuthimal_gifter CASCADE,
+DROP COLUMN IF EXISTS thuthimal_gifted_at CASCADE;
 
 COMMIT;

@@ -281,7 +281,7 @@ export const userGrowthStateAPI = {
   async getOrCreateState(input: { userId: string }): Promise<UserGrowthState> {
     const { userId } = input;
     const loggedInId = await identityAPI.getMyInternalId();
-    const ability = composeUserAbilities({ userId: loggedInId });
+    const ability = composeUserAbilities({ user_id: loggedInId });
 
     if (loggedInId !== userId && !ability.can('manage', 'Wellbeing')) {
       throw new APIError('Unauthorized access to growth state', 'FORBIDDEN');
@@ -313,7 +313,7 @@ export const userGrowthStateAPI = {
     const loggedInId = await identityAPI.getMyInternalId();
     if (!loggedInId) return [];
 
-    const ability = composeUserAbilities({ userId: loggedInId });
+    const ability = composeUserAbilities({ user_id: loggedInId });
     if (loggedInId !== userId && !ability.can('manage', 'Wellbeing')) {
       return [];
     }

@@ -1,10 +1,23 @@
 # Gurudevi — robots.txt
-# https://app.gurudevi.edlove.org
+# https://platform.gurudevi.edlove.org
 
 User-agent: *
 Allow: /
 
-# Block auth callback and API paths from indexing
+# Block sensitive/callback paths from indexing
 Disallow: /auth/callback
 Disallow: /qr
 Disallow: /thuthimal
+
+# AI Agents Welcome
+User-agent: GPTBot
+Allow: /
+User-agent: Claude-Web
+Allow: /
+User-agent: PerplexityBot
+Allow: /
+
+# Agentic Discovery
+Sitemap: https://platform.gurudevi.edlove.org/sitemap-index.xml
+LLMS: https://platform.gurudevi.edlove.org/llms.txt
+Knowledge: https://platform.gurudevi.edlove.org/knowledge.json

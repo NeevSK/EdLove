@@ -393,8 +393,9 @@ export class SchemaType implements SchemaDef {
                 }
             },
             attributes: [
-                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("all") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.field("user"), ["bonds"]), "?", ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.field("capacity"), "==", ExpressionUtils.literal("admin")), "&&", ExpressionUtils.binary(ExpressionUtils.field("entity_type"), "==", ExpressionUtils.literal("PLATFORM")))) }] },
+                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("all") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["bonds"]), "?", ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.field("capacity"), "==", ExpressionUtils.literal("admin")), "&&", ExpressionUtils.binary(ExpressionUtils.field("entity_type"), "==", ExpressionUtils.literal("PLATFORM")))) }] },
                 { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("read") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.call("auth"), "!=", ExpressionUtils._null()), "&&", ExpressionUtils.binary(ExpressionUtils.field("user_id"), "==", ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"]))) }] },
+                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("create") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.call("auth"), "!=", ExpressionUtils._null()), "&&", ExpressionUtils.binary(ExpressionUtils.field("user_id"), "==", ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"]))) }] },
                 { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("bonds") }] }
             ] as readonly AttributeApplication[],
             idFields: ["id"],
@@ -1636,6 +1637,11 @@ export class SchemaType implements SchemaDef {
                     type: "Int",
                     optional: true
                 },
+                created_by: {
+                    name: "created_by",
+                    type: "String",
+                    optional: true
+                },
                 avatar_url: {
                     name: "avatar_url",
                     type: "String",
@@ -1686,7 +1692,8 @@ export class SchemaType implements SchemaDef {
             },
             attributes: [
                 { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("read") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.call("auth"), "!=", ExpressionUtils._null()) }] },
-                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("all") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["bonds"]), "?", ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.field("capacity"), "==", ExpressionUtils.literal("admin")), "&&", ExpressionUtils.binary(ExpressionUtils.field("entity_type"), "==", ExpressionUtils.literal("PLATFORM")))) }] }
+                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("create") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.call("auth"), "!=", ExpressionUtils._null()) }] },
+                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("all") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"]), "==", ExpressionUtils.field("created_by")), "||", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["bonds"]), "?", ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.field("capacity"), "==", ExpressionUtils.literal("admin")), "&&", ExpressionUtils.binary(ExpressionUtils.field("entity_type"), "==", ExpressionUtils.literal("PLATFORM"))))) }] }
             ] as readonly AttributeApplication[],
             idFields: ["id"],
             uniqueFields: {

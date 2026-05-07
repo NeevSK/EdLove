@@ -124,7 +124,7 @@ export default function PrincipalSelfView() {
 								content: <VoiceJournaling userId={userId ?? undefined} />,
 							},
 							{
-								id: "mood-lotus",
+								id: "mood_lotus",
 								label: "Mood Lotus",
 								content: <MoodLotus userId={userId ?? undefined} />,
 								historyContent: (
@@ -139,7 +139,7 @@ export default function PrincipalSelfView() {
 						accentColor: "#3B82F6", // Water/Blue
 						features: [
 							{
-								id: "mood-picker",
+								id: "mood_picker",
 								label: "Mood Tracking",
 								content: (
 									<MoodPickerCard
@@ -154,7 +154,7 @@ export default function PrincipalSelfView() {
 								),
 							},
 							{
-								id: "energy-forecast",
+								id: "energy_forecast",
 								label: "Energy Rhythm",
 								content: (
 									<Box
@@ -172,7 +172,7 @@ export default function PrincipalSelfView() {
 								),
 							},
 							{
-								id: "daily-rhythm",
+								id: "daily_rhythm",
 								label: "Daily Rhythm",
 								content: <DailyRhythm />,
 							},
@@ -205,7 +205,7 @@ export default function PrincipalSelfView() {
 								content: <WisdomSeeds userId={userId ?? undefined} />,
 							},
 							{
-								id: "monthly",
+								id: "monthly_reflection",
 								label: "Monthly Reflection",
 								content: (
 									<PositiveInvitation

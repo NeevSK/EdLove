@@ -9,7 +9,7 @@ import { usePermissions } from '../logic/permissions/hooks/usePermissions';
  */
 export const useNaturePaths = () => {
   const { context } = usePermissions();
-  const userId = context.userId;
+  const userId = context.user_id;
   const [paths, setPaths] = useState<{
     river_stage: RiverStage;
     crystal_tier: CrystalTier;

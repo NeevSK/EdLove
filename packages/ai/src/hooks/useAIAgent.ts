@@ -30,7 +30,7 @@ export function useAIAgent() {
 	const [activeGaps, setActiveGaps] = useState<CoordinationGap[]>([]);
 	const [lastTimetableDraft, setLastTimetableDraft] = useState<any>(null);
 	const { can } = usePermissions();
-	const userRole = useStore((state) => state.activeBond?.capacity ?? null);
+	const userRole = useStore((state) => state.active_bond?.capacity ?? null);
 	const user = useStore((state) => state.user);
 
 	/**

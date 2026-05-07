@@ -9,7 +9,7 @@ import { usePermissions } from '../logic/permissions/hooks/usePermissions';
  */
 export function useBanyanGrowth() {
   const { context } = usePermissions();
-  const userId = context.userId;
+  const userId = context.user_id;
   const [banyan, setBanyan] = useState<{
     banyan_stage: BanyanStage;
     peer_mentored_count: number;

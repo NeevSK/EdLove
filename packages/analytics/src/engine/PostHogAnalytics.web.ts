@@ -11,6 +11,12 @@ export class PostHogAnalytics {
 		},
 	) {
 		if (this.isInitialized) return;
+		if (!apiKey) {
+			console.warn(
+				"[PostHog Web] Missing API key. Initialization skipped.",
+			);
+			return;
+		}
 
 		try {
 			posthog.init(apiKey, {
@@ -35,6 +41,10 @@ export class PostHogAnalytics {
 		} catch (error) {
 			console.error("[PostHog Web] track failed:", error);
 		}
+	}
+
+	capture(event: string, properties?: Record<string, any>) {
+		this.track(event, properties);
 	}
 
 	identify(userId: string, properties?: Record<string, any>) {

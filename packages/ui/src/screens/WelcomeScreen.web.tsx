@@ -20,7 +20,6 @@
 
 import { authAPI } from '@repo/core/auth';
 import { handleAPIError } from '@repo/core/logic';
-import { useRouter } from 'expo-router';
 import { useCallback, useMemo, useReducer, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -30,9 +29,9 @@ import {
   StyleSheet,
   Text,
   View,
+  VStack,
   useWindowDimensions,
 } from '../primitives';
-import { VStack } from '../gluestack-legacy';
 import { useTheme } from '../hooks/useTheme';
 import { Theme } from '../theme/Theme';
 import { hapticError, hapticLight, hapticSuccess } from '../utils/haptics';
@@ -112,7 +111,7 @@ const LeftPanel = memo(({ isNarrow }: { isNarrow: boolean }) => {
       {/* Logo */}
       <View style={styles.logoRow}>
         <View style={styles.logoCircle}>
-          <Text style={styles.logoGlyph}>🚷</Text>
+          <Text style={styles.logoGlyph}>🪷</Text>
         </View>
         <Text style={[styles.logoName, { color: text.primary }]}>Gurudevi</Text>
       </View>
@@ -159,12 +158,13 @@ const LeftPanel = memo(({ isNarrow }: { isNarrow: boolean }) => {
         ]}
       >
         <Text style={[styles.quoteText, { color: text.secondary }]}>
-          "Education is a living ecology,{'\n'}not a linear process."
+          &quot;Education is a living ecology,{'\n'}not a linear process.&quot;
         </Text>
       </View>
     </View>
   );
 });
+LeftPanel.displayName = 'LeftPanel';
 
 interface RightPanelProps {
   i18nLanguage: string;
@@ -202,9 +202,9 @@ const RightPanel = memo(
   }: RightPanelProps) => {
     const { text, glass, accent } = useTheme();
 
-    const handlePrivacyPress = useCallback((e: any) => {
+    const handlePrivacyPress = useCallback((e: { stopPropagation: () => void }) => {
       e.stopPropagation();
-      openExternalURL('https://neevsk.org/privacy', {
+      void openExternalURL('https://neevsk.org/privacy', {
         title: 'Privacy Pact',
         sourceLabel: 'Welcome',
         sourceBadge: 'External policy',
@@ -264,7 +264,7 @@ const RightPanel = memo(
           {/* Greeting */}
           <Text style={[styles.cardTitle, { color: text.primary }]}>Welcome to the Sanctuary</Text>
           <Text style={[styles.cardSubtitle, { color: text.secondary }]}>
-            Choose how you'd like to begin your journey.
+            Choose how you&apos;d like to begin your journey.
           </Text>
           {/* Explore button */}
           <Pressable
@@ -312,6 +312,7 @@ const RightPanel = memo(
             accessibilityRole="checkbox"
             accessibilityState={{ checked: acceptedTerms }}
             accessibilityLabel="Accept Terms and Privacy Pact"
+            accessibilityHint="Toggle acceptance of terms and privacy policy to enable exploration"
             style={styles.termsRow}
           >
             <View
@@ -331,6 +332,7 @@ const RightPanel = memo(
                 onPress={handlePrivacyPress}
                 accessibilityRole="link"
                 accessibilityLabel="Read Privacy Pact"
+                accessibilityHint="Opens the privacy policy in a new window"
               >
                 <Text
                   style={{
@@ -352,6 +354,7 @@ const RightPanel = memo(
     );
   },
 );
+RightPanel.displayName = 'RightPanel';
 
 interface WelcomeScreenProps {
   onLogin?: () => void;
@@ -487,6 +490,7 @@ export const WelcomeScreen = memo(({ onLogin, onGuest }: WelcomeScreenProps) => 
     </View>
   );
 });
+WelcomeScreen.displayName = 'WelcomeScreen';
 
 export default WelcomeScreen;
 

@@ -36,7 +36,7 @@ export function useStaffPresence(userId?: string, schoolId?: string) {
 		if (!userId) return;
 
 		const channel = supabase
-			.channel(`staff_attendance:${userId}`)
+			.channel(`staff_attendance:${userId}-${Math.random().toString(36).slice(2, 9)}`)
 			.on(
 				"postgres_changes",
 				{

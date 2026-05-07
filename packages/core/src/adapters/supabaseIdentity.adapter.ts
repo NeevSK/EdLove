@@ -127,13 +127,13 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
 
     return (data || []).map((b: any) => ({
       id: b.id,
-      userId: b.user_id,
-      entityId: b.entity_id,
-      entityType: b.entity_type,
+      user_id: b.user_id,
+      entity_id: b.entity_id,
+      entity_type: b.entity_type,
       capacity: b.capacity as Capacity,
       status: (b.status ?? 'active') as Bond['status'],
-      validFrom: b.valid_from ?? b.validFrom,
-      validUntil: b.valid_until ?? b.validUntil,
+      valid_from: b.valid_from,
+      valid_until: b.valid_until,
       metadata: b.metadata,
     }));
   }
@@ -145,7 +145,7 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
     const bonds = await this.getBonds(userId);
     
     if (contextId) {
-      return bonds.some(b => b.entityId === contextId && b.capacity === capacity);
+      return bonds.some(b => b.entity_id === contextId && b.capacity === capacity);
     }
 
     return bonds.some(b => b.capacity === capacity);
@@ -164,9 +164,9 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
     if (persisted) {
       try {
         const parsed = JSON.parse(persisted);
-        const activeBond = bonds.find(b => b.id === parsed.activeBond?.id);
+        const activeBond = bonds.find(b => b.id === parsed.active_bond?.id);
         if (activeBond) {
-          this.activePerspective = { activeBond, availableBonds: bonds };
+          this.activePerspective = { active_bond: activeBond, available_bonds: bonds };
           return this.activePerspective;
         }
       } catch (e) {
@@ -176,8 +176,8 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
 
     // Default to the first bond as the active perspective if none set
     this.activePerspective = {
-      activeBond: bonds[0]!,
-      availableBonds: bonds,
+      active_bond: bonds[0]!,
+      available_bonds: bonds,
     };
     storage.set(`active_perspective_${userId}`, JSON.stringify(this.activePerspective));
 
@@ -189,15 +189,15 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
     if (!userId) throw new Error('Not authenticated');
 
     const bonds = await this.getBonds(userId);
-    const targetBond = bonds.find(b => b.entityId === entityId && b.capacity === capacity);
+    const targetBond = bonds.find(b => b.entity_id === entityId && b.capacity === capacity);
 
     if (!targetBond) {
       throw new Error(`User does not have a Bond for Entity ${entityId} with Capacity ${capacity}`);
     }
 
     this.activePerspective = {
-      activeBond: targetBond,
-      availableBonds: bonds,
+      active_bond: targetBond,
+      available_bonds: bonds,
     };
     storage.set(`active_perspective_${userId}`, JSON.stringify(this.activePerspective));
   }
@@ -219,10 +219,23 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
     if (profileError) throw new APIError('Failed to update profile during onboarding', profileError.code, profileError);
 
     // Create the formal Bond
+    // 1. Wanderer/Guest (Anonymous) -> GUEST bond to GLOBAL
+    // 2. 2nd Class Citizen (Authenticated, no school) -> PERSONAL bond to Personal Workspace
+    // 3. 1st Class Citizen (Authenticated, has school) -> SCHOOL bond
+    
+    const { data: profile } = await supabase.from('users').select('is_anonymous').eq('id', userId).single();
+    const isWanderer = profile?.is_anonymous;
+    
+    const entity_type = isWanderer 
+      ? 'GUEST' 
+      : (context['schoolId'] ? 'SCHOOL' : 'PERSONAL');
+      
+    const entity_id = isWanderer ? 'GLOBAL' : (context['schoolId'] || 'PERSONAL_WORKSPACE');
+
     const { error: bondError } = await supabase.from('bonds').insert({
       user_id: userId,
-      entity_id: context['schoolId'] || 'GLOBAL',
-      entity_type: context['schoolId'] ? 'SCHOOL' : 'PLATFORM',
+      entity_id,
+      entity_type,
       capacity: orientation,
       metadata: context['metadata'] || {},
     });

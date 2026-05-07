@@ -1,7 +1,8 @@
-import { authAPI } from '@repo/core/auth';
-import { handleAPIError, validateForm, validators } from '@repo/core/logic';
+import { authAPI, identityAPI } from '@repo/core/api';
+import { useIdentity } from '@repo/core/hooks';
+import { coreRuntime, handleAPIError, type Capacity, validateForm, validators, type User } from '@repo/core/logic';
 
-import { useReducer, useCallback, memo, useMemo } from 'react';
+import { useReducer, useCallback, memo, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BreathAnimation } from '../components/BreathAnimation';
 import { LivingGlow } from '../components/LivingGlow';
@@ -36,6 +37,7 @@ interface AuthState {
   password: string;
   loading: boolean;
   errors: Record<string, string>;
+  currentUser: User | null;
 }
 
 type AuthAction =
@@ -44,7 +46,8 @@ type AuthAction =
   | { type: 'SET_PASSWORD'; password: string }
   | { type: 'SET_LOADING'; loading: boolean }
   | { type: 'SET_ERRORS'; errors: Record<string, string> }
-  | { type: 'TOGGLE_EMAIL_FORM'; show: boolean };
+  | { type: 'TOGGLE_EMAIL_FORM'; show: boolean }
+  | { type: 'SET_USER'; user: User | null };
 
 function authReducer(state: AuthState, action: AuthAction): AuthState {
   switch (action.type) {
@@ -60,6 +63,8 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
       return { ...state, errors: action.errors };
     case 'TOGGLE_EMAIL_FORM':
       return { ...state, showEmailForm: action.show, errors: {} };
+    case 'SET_USER':
+      return { ...state, currentUser: action.user };
     default:
       return state;
   }
@@ -76,9 +81,9 @@ export const AuthScreenWeb = memo(({
   initialMode,
 }: AuthScreenProps) => {
   const { t } = useTranslation();
-  const { scene, accent, text } = useTheme();
-  const _surfaceToken = scene.surface;
+  useTheme();
   const { showToast } = useSanctuaryToast();
+  const { profile: myProfile } = useIdentity();
 
   const [state, dispatch] = useReducer(authReducer, {
     mode: initialMode === 'login' ? 'login' : 'signup',
@@ -87,9 +92,38 @@ export const AuthScreenWeb = memo(({
     password: '',
     loading: false,
     errors: {},
+    currentUser: null,
   });
 
-  const { mode, showEmailForm, email, password, loading, errors } = state;
+  const { mode, showEmailForm, email, password, loading, errors, currentUser } = state;
+
+  useEffect(() => {
+    dispatch({ type: 'SET_USER', user: myProfile || null });
+  }, [myProfile]);
+
+  const applyPendingInvite = useCallback(async (successMessage: string) => {
+    const internalId = await identityAPI.getMyInternalId();
+    if (!internalId) return;
+
+    const pendingInvite = await coreRuntime.storage.getItem('pending_invite');
+    if (!pendingInvite) return;
+
+    try {
+      const invite = JSON.parse(pendingInvite) as { school_id?: string };
+      if (!invite.school_id) return;
+
+      await identityAPI.updateProfile(internalId, {
+        school_id: invite.school_id,
+      });
+      await coreRuntime.storage.removeItem('pending_invite');
+      showToast({
+        message: successMessage,
+        type: 'success',
+      });
+    } catch (error) {
+      console.error('Failed to apply pending invite on web auth:', error);
+    }
+  }, [showToast]);
 
 
   const modeCopy = useMemo(() => 
@@ -113,24 +147,42 @@ export const AuthScreenWeb = memo(({
           email: 'Sign in with Email',
         }, [mode]);
 
+  const getErrorMessage = useCallback((error: unknown, fallback: string) => {
+    const apiError = handleAPIError(error);
+    if (typeof apiError === 'string') return apiError;
+    if (
+      apiError &&
+      typeof apiError === 'object' &&
+      'message' in apiError &&
+      typeof apiError.message === 'string'
+    ) {
+      return apiError.message;
+    }
+    return error instanceof Error ? error.message : fallback;
+  }, []);
+
   const handleGoogleAuth = useCallback(async () => {
     dispatch({ type: 'SET_LOADING', loading: true });
     dispatch({ type: 'SET_ERRORS', errors: {} });
     try {
-      await authAPI.signInWithOAuth('google', window.location.origin);
-    } catch (err: any) {
-      const apiError = handleAPIError(err);
+      const redirectUrl = window.location.origin;
+      const session = await authAPI.getAuthSession().catch(() => null);
+      const isAnonymousSession = session?.user?.is_anonymous || !session?.user?.email;
+
+      if (isAnonymousSession && session?.user) {
+        await authAPI.linkOAuthIdentity('google', redirectUrl);
+      } else {
+        await authAPI.signInWithOAuth('google', redirectUrl);
+      }
+    } catch (err: unknown) {
       showToast({
-        message:
-          typeof apiError === 'string'
-            ? apiError
-            : (apiError as any).message || 'Google sign-in failed',
+        message: getErrorMessage(err, 'Google sign-in failed'),
         type: 'error',
       });
     } finally {
       dispatch({ type: 'SET_LOADING', loading: false });
     }
-  }, [showToast]);
+  }, [getErrorMessage, showToast]);
 
   const handleEmailAuth = useCallback(async () => {
     dispatch({ type: 'SET_LOADING', loading: true });
@@ -152,36 +204,48 @@ export const AuthScreenWeb = memo(({
 
     try {
       if (mode === 'signup') {
-        await authAPI.signUp(email, password);
-        showToast({
-          message: t('auth.checkEmail') || 'Check your email to confirm your account',
-          type: 'success',
-        });
+        const isAnonymousUser = currentUser?.is_anonymous || !currentUser?.email;
+
+        if (isAnonymousUser) {
+          const existingName =
+            (currentUser?.full_name && String(currentUser.full_name).trim()) || 'Sanctuary User';
+          await authAPI.linkAnonymousToEmail(
+            email,
+            password,
+            existingName,
+            'teacher' as Capacity,
+          );
+          await applyPendingInvite('Welcome to your new school sanctuary!');
+          onSuccess?.();
+        } else {
+          await authAPI.signUp(email, password);
+          showToast({
+            message: t('auth.checkEmail') || 'Check your email to confirm your account',
+            type: 'success',
+          });
+        }
       } else {
         await authAPI.signIn(email, password);
+        await applyPendingInvite('Reconnected to your school sanctuary!');
         onSuccess?.();
       }
-    } catch (err: any) {
-      const apiError = handleAPIError(err);
+    } catch (err: unknown) {
       showToast({
-        message:
-          typeof apiError === 'string'
-            ? apiError
-            : (apiError as any).message || 'Authentication failed',
+        message: getErrorMessage(err, 'Authentication failed'),
         type: 'error',
       });
     } finally {
       dispatch({ type: 'SET_LOADING', loading: false });
     }
-  }, [email, password, mode, t, showToast, onSuccess]);
+  }, [email, password, mode, t, showToast, onSuccess, currentUser, applyPendingInvite, getErrorMessage]);
 
   const handleGuest = useCallback(async () => {
     dispatch({ type: 'SET_LOADING', loading: true });
     try {
       onContinueAsGuest?.();
-    } catch (err: any) {
+    } catch (err: unknown) {
       showToast({
-        message: err.message || 'Guest mode failed',
+        message: err instanceof Error ? err.message : 'Guest mode failed',
         type: 'error',
       });
     } finally {

@@ -41,7 +41,7 @@ export default function FullProfileScreenWeb() {
     uploadAvatar,
   } = useProfile(initialProfile?.id);
   const profile = liveProfile || initialProfile;
-  const completionCapacity = (context.activeBond?.capacity || context.primaryCapacity) ?? null;
+  const completionCapacity = (context.active_bond?.capacity || context.primary_capacity) ?? null;
   useProfileCompletion(profile, completionCapacity as any);
   const { links: socialLinks } = useSocialLinks(profile?.id);
 
@@ -54,7 +54,7 @@ export default function FullProfileScreenWeb() {
   if (!profile) return null;
 
   const isOtherProfile = currentUserId !== undefined && currentUserId !== profile.id;
-  const profileCapacity = (profile as any)?.activeBond?.capacity || (profile as any)?.capacity || '';
+  const profileCapacity = (profile as any)?.active_bond?.capacity || (profile as any)?.capacity || '';
   const isTeacherProfile = ['teacher', 'principal', 'gradeHead', 'sectionHead', 'grade_head', 'section_head'].includes(
     profileCapacity || '',
   );

@@ -77,7 +77,7 @@ export const FullProfileScreen = ({ route, navigation }: FullProfileProps) => {
     uploadAvatar,
   } = useProfile(initialProfile?.id);
   const profile = liveProfile || initialProfile;
-  const completionCapacity = (context.activeBond?.capacity || context.primaryCapacity) ?? null;
+  const completionCapacity = (context.active_bond?.capacity || context.primary_capacity) ?? null;
   const completionResult = useProfileCompletion(profile, completionCapacity as any);
   const { links: socialLinks } = useSocialLinks(profile?.id);
 
@@ -117,7 +117,7 @@ export const FullProfileScreen = ({ route, navigation }: FullProfileProps) => {
   if (!profile) return null;
 
   const isOtherProfile = currentUserId !== undefined && currentUserId !== profile.id;
-  const profileRole = ((profile as any)?.activeBond?.capacity ?? (profile as any)?.capacity ?? '').toString();
+  const profileRole = ((profile as any)?.active_bond?.capacity ?? (profile as any)?.capacity ?? '').toString();
   const isStudentProfile = profileRole === 'student';
   const isTeacherProfile = [
     'teacher',

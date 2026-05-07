@@ -28,7 +28,7 @@ export default function AIAssistantScreen() {
 	const { t } = useTranslation();
 	const { context } = usePermissions();
 	const { user } = useStore();
-	const userId = context.userId;
+	const userId = context.user_id;
 	const {
 		messages,
 		isThinking,
@@ -302,7 +302,7 @@ export default function AIAssistantScreen() {
 							border: "1px solid var(--border-light)",
 						}}
 					>
-						{context.activeBond?.capacity ?? context.primaryCapacity ?? "member"}
+						{context.active_bond?.capacity ?? context.primary_capacity ?? "member"}
 					</div>
 				</div>
 

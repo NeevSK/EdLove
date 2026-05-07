@@ -79,21 +79,21 @@ export const identityAPI = {
       identity.getActivePerspective(),
     ]);
 
-    const activeBond = activePerspective?.activeBond || null;
+    const active_bond = activePerspective?.active_bond || null;
 
     // A "real class count" is now a count of Classroom Bonds
-    const realClassCount = bonds.filter(b => b.entityType === 'CLASSROOM').length;
+    const realClassCount = bonds.filter(b => b.entity_type === 'CLASSROOM').length;
 
     return {
-      userId,
-      schoolId: profile.school_id,
-      profileCompleted: !!profile.profile_completed,
-      onboardingCompleted: !!profile.onboarding_completed,
-      onboardingState: getOnboardingState(profile, activeBond),
-      realClassCount,
+      user_id: userId,
+      school_id: profile.school_id,
+      profile_completed: !!profile.profile_completed,
+      onboarding_completed: !!profile.onboarding_completed,
+      onboarding_state: getOnboardingState(profile, active_bond),
+      real_class_count: realClassCount,
       profile: {
         ...profile,
-        activeBond,
+        active_bond,
       },
     };
   },
@@ -105,7 +105,7 @@ export const identityAPI = {
     const profile = await identity.getProfile(userId);
     const perspective = await identity.getActivePerspective();
     return {
-      state: getOnboardingState(profile, perspective?.activeBond),
+      state: getOnboardingState(profile, perspective?.active_bond),
       profile,
     };
   },

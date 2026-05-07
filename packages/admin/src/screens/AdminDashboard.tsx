@@ -49,8 +49,9 @@ export default function AdminDashboard({ userId }: AdminDashboardProps) {
 	const workspace = useAdminWorkspaceLayout(resolvedUserId, surfaces);
 
 	const isAdmin =
-		context.bonds.some((b) => b.capacity === "admin" && b.status === "active") ||
-		context.hasGlobalAccess;
+		(context.bonds ?? []).some(
+			(b) => b.capacity === "admin" && b.status === "active",
+		) || context.has_global_access;
 
 	if (!isAdmin) {
 		return (

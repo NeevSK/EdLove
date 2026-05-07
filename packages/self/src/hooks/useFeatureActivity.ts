@@ -5,6 +5,7 @@ import { useCallback } from "react";
 
 const USAGE_STATS_KEY = "self_feature_usage_stats";
 const PINNED_FEATURES_KEY = "self_pinned_features";
+const IMPRESSIONS_KEY = "self_feature_impressions";
 
 interface FeatureStats {
 	[featureId: string]: {
@@ -20,7 +21,7 @@ interface FeatureStats {
  */
 export function useFeatureActivity() {
 	const { context } = usePermissions();
-	const { userId } = context;
+	const userId = context.userId ?? context.user_id ?? null;
 
 	const getStats = useCallback((): FeatureStats => {
 		if (!userId) return {};
@@ -45,6 +46,17 @@ export function useFeatureActivity() {
 		},
 		[userId, getStats],
 	);
+
+	/** Track when a feature is rendered but not necessarily interacted with (2026 Pattern) */
+	const trackFeatureImpression = useCallback((featureId: string) => {
+		console.debug(`[Telemetry] Feature Impression: ${featureId}`);
+		// In production, this would sync with a server-side telemetry service
+	}, []);
+
+	/** Track when a feature hits a fault state */
+	const trackFeatureError = useCallback((featureId: string, error: any) => {
+		console.error(`[Telemetry] Feature Error [${featureId}]:`, error);
+	}, []);
 
 	const getPinnedFeatures = useCallback((): string[] => {
 		if (!userId) return [];
@@ -73,6 +85,8 @@ export function useFeatureActivity() {
 	return {
 		getStats,
 		trackFeatureAccess,
+		trackFeatureImpression,
+		trackFeatureError,
 		getPinnedFeatures,
 		togglePin,
 	};

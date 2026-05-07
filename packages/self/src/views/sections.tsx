@@ -385,6 +385,49 @@ export const GoalSection: React.FC<{ goals: GoalItem[]; loading?: boolean }> = (
 	);
 };
 
+export const StudentPulse: React.FC<{
+	banyan?: BanyanSummary | null;
+	loading?: boolean;
+}> = ({ banyan, loading }) => {
+	const { ability } = usePermissions();
+	if (!ability.can("manage", "StudentDashboard")) return null;
+
+	return (
+		<Box className="p-6 bg-indigo-400/5 rounded-2xl border border-indigo-400/10 mb-4">
+			<HStack className="items-center mb-4 gap-2">
+				<Icon as={Zap} size={18} className="text-indigo-400" />
+				<Text className="text-sm font-black uppercase tracking-widest text-indigo-400">
+					Learning Pulse
+				</Text>
+			</HStack>
+			{loading ? (
+				<VStack className="py-5 items-center justify-center">
+					<Spinner className="text-indigo-400" />
+				</VStack>
+			) : (
+				<VStack className="gap-2">
+					<HStack className="justify-between items-center">
+						<Text className="text-mistGray text-xs uppercase tracking-wider font-bold">
+							Banyan Stage
+						</Text>
+						<Text className="text-indigo-400 font-black text-xs uppercase">
+							{banyan?.banyan_stage?.replace(/_/g, " ") || "Seedling"}
+						</Text>
+					</HStack>
+					<HStack className="justify-between items-center">
+						<Text className="text-mistGray text-xs uppercase tracking-wider font-bold">
+							Peer Ripples
+						</Text>
+						<Text className="text-sacredWhite font-bold text-xs">
+							{banyan?.peer_mentored_count || 0} active
+						</Text>
+					</HStack>
+				</VStack>
+			)}
+		</Box>
+	);
+};
+
 export const NatureSection: React.FC<{ paths: NaturePath | null; loading?: boolean }> = ({
 	paths,
 	loading,

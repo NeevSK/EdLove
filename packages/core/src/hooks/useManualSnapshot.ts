@@ -21,7 +21,7 @@ export interface SnapshotMoment {
  */
 export function useManualSnapshot() {
   const { context } = usePermissions();
-  const userId = context.userId;
+  const userId = context.user_id;
   const { viewDate } = useTemporalStore();
   const { trackSnapshot } = useTracking();
   const [isSaving, setIsSaving] = useState(false);

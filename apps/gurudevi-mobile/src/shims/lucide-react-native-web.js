@@ -2,70 +2,86 @@
 /**
  * Lucide React Native Shim for Web
  *
- * Provides a self-healing proxy for lucide-react-native icons.
- * This prevents crashes when an icon is imported but the package is not correctly resolved.
+ * Provides a self-healing, intelligent proxy for lucide-react-native icons.
+ * This approach is highly resilient as it automatically maps ANY icon name
+ * to its web-equivalent in 'lucide-react' without manual mapping.
  */
 const _React = require("react");
-const _bridge = require("./universal-bridge");
 
-// Generic placeholder icon if the proxy fails or needs a base
-const GenericIcon = (props) => {
-	const { size = 24, color = "currentColor", strokeWidth = 2, ...rest } = props;
+// Try to load the real lucide-react package
+let LucideWeb = null;
+try {
+	LucideWeb = require("lucide-react");
+} catch (e) {
+	// Silent fallback to maintain a clean console as requested
+}
+
+/**
+ * Lotus Fallback Icon
+ * Instead of a warning '!', we use the brand-aligned Lotus emoji.
+ */
+const LotusFallback = (props) => {
+	const { size = 24, ...rest } = props;
 	return (
-		<svg
-			width={size}
-			height={size}
-			viewBox="0 0 24 24"
-			fill="none"
-			stroke={color}
-			strokeWidth={strokeWidth}
-			strokeLinecap="round"
-			strokeLinejoin="round"
+		<span
+			style={{
+				fontSize: `${size}px`,
+				lineHeight: 1,
+				display: 'inline-flex',
+				alignItems: 'center',
+				justifyContent: 'center',
+				width: size,
+				height: size,
+			}}
 			{...rest}
 		>
-			<circle cx="12" cy="12" r="10" />
-			<line x1="12" y1="8" x2="12" y2="12" />
-			<line x1="12" y1="16" x2="12.01" y2="16" />
-		</svg>
+			🪷
+		</span>
 	);
 };
 
-// Explicitly defined icons for performance/correctness
-const MOCKED_ICONS = {
-	default: GenericIcon,
-	User: GenericIcon,
-	School: GenericIcon,
-	Heart: GenericIcon,
-	Users: GenericIcon,
-	Library: GenericIcon,
-	Bell: GenericIcon,
-	X: GenericIcon, // Added X as it's a common cause of crashes in TabNavigator
-};
-
-// Create a specialized proxy that is itself a component (a function)
-const IconProxy = new Proxy(GenericIcon, {
+/**
+ * The Intelligent Proxy
+ * This is the "Brain" of the shim. It intercepts ALL property access on the module.
+ * If you import { Heart } or { UserIcon } from 'lucide-react-native',
+ * this proxy automatically resolves them.
+ */
+const IconProxy = new Proxy(LotusFallback, {
 	get: (target, prop) => {
+		// 1. Handle Module/React Interop
 		if (prop === "__esModule") return true;
-
-		// Handle common React/Babel interop properties
-		if (prop === "default") return GenericIcon;
+		if (prop === "default") return LucideWeb ? (LucideWeb.default || LucideWeb) : LotusFallback;
 		if (prop === "$$typeof") return undefined;
 		if (prop === "displayName") return "LucideIconShim";
-
 		if (typeof prop === "symbol") return target[prop];
 
-		// If the icon is explicitly mocked in our list, return it.
-		if (MOCKED_ICONS[prop]) return MOCKED_ICONS[prop];
+		// 2. Automatic Mapping
+		// Since lucide-react and lucide-react-native share naming conventions (PascalCase),
+		// we can resolve any icon dynamically.
+		if (LucideWeb) {
+			// Try the exact name (e.g. 'Heart')
+			if (LucideWeb[prop]) return LucideWeb[prop];
 
-		// If the property exists on the function itself (like 'prototype'), return it.
-		if (prop in target) return target[prop];
+			// Try adding 'Icon' suffix if missing (e.g. 'HeartIcon' -> 'Heart')
+			const cleanName = prop.replace(/Icon$/, "");
+			if (LucideWeb[cleanName]) return LucideWeb[cleanName];
+			
+			// Try removing 'Icon' suffix if present (e.g. 'Heart' -> 'HeartIcon')
+			const iconName = `${prop}Icon`;
+			if (LucideWeb[iconName]) return LucideWeb[iconName];
+		}
 
-		// SELF-HEALING: Return the GenericIcon component for ANY missing icon request.
-		return GenericIcon;
+		// 3. Resilience Fallback
+		// If the icon isn't found in the library, we return the brand-aligned Lotus
+		// instead of a warning symbol or crashing.
+		return LotusFallback;
 	},
 });
 
-// Support both CJS and ESM interop
+// Export the proxy as the module itself
 module.exports = IconProxy;
 module.exports.default = IconProxy;
 module.exports.__esModule = true;
+
+
+

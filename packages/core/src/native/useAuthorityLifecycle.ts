@@ -76,7 +76,7 @@ export function useAuthorityLifecycle() {
           identifyUser(profile.id, {
             email: profile.email,
             full_name: profile.full_name,
-            capacity: bonds.profile.activeBond?.capacity || null,
+            capacity: bonds.profile.active_bond?.capacity || null,
             school_id: profile.school_id,
           });
         }
@@ -195,7 +195,7 @@ export function useAuthorityLifecycle() {
     }
 
     const channel = supabase
-      .channel(`user-profile-sync-${currentUser.id}`)
+      .channel(`user-profile-sync-${currentUser.id}-${Math.random().toString(36).slice(2, 9)}`)
       .on(
         'postgres_changes',
         {
@@ -212,7 +212,7 @@ export function useAuthorityLifecycle() {
           // Detect privilege change
           // NOTE: capacity lives on the Bond, not the User record.
           // Read the current active capacity from the auth store's activeBond.
-          const oldCapacity = useAuthStore.getState().activeBond?.capacity;
+          const oldCapacity = useAuthStore.getState().active_bond?.capacity;
           const newCapacity = (payload.new as { capacity?: string })?.capacity;
           const capacityChanged = Boolean(newCapacity && newCapacity !== oldCapacity);
 

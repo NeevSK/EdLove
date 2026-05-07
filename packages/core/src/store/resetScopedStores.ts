@@ -47,23 +47,33 @@ const uiScopedDefaults: Partial<UISlice> = {
 };
 
 const featureScopedDefaults = resolveFeatureFlags({
+  user_id: null,
   userId: null,
   email: null,
   // Sovereign ReBAC fields — required by UserContext schema
   bonds: [],
+  primary_capacity: null,
   primaryCapacity: null,
+  active_bond: null,
   activeBond: null,
-  activeBondStatus: 'active',
+  active_bond_status: 'active',
+  role: null,
+  traits: [],
+  school_id: null,
   schoolId: null,
-  tenancyName: null,
+  tenancy_name: null,
   tenancy: null,
-  tenantKind: 'customer',
+  tenant_kind: 'customer',
   tier: 'free',
+  is_anonymous: true,
   isAnonymous: true,
-  hasGlobalAccess: false,
-  isPersonal: false,
+  has_global_access: false,
+  is_personal: false,
   features: [],
   flags: {},
+  section_id: null,
+  grade_id: null,
+  classroom_id: null,
 });
 
 /**

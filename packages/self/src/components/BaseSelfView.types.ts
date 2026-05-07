@@ -1,4 +1,4 @@
-﻿import type { TemporalScale } from "@repo/core/store";
+import type { TemporalScale } from "@repo/core/store";
 import type React from "react";
 
 export interface SelfViewFeature {
@@ -7,23 +7,22 @@ export interface SelfViewFeature {
 	content: React.ReactNode;
 	historyContent?: React.ReactNode;
 	icon?: string;
-	category?: "pulse" | "wisdom" | "reflection" | "rhythm" | "growth" | "ritual";
+	category?: string;
 	summary?: string;
 	historySummary?: string;
 	supportedScales?: TemporalScale[];
-	timing?: {
-		startTime?: string; // HH:mm
-		endTime?: string;
-		preferredPhase?: "morning" | "afternoon" | "night";
-	};
 	domainColor?: string;
 	domainId?: string;
+	energyVibe?: [string, string];
+	timing?: {
+		preferredPhase?: "morning" | "afternoon" | "night";
+	};
 }
 
 export interface SelfViewDomain {
 	id: string;
 	title: string;
-	accentColor: string; // The "vibe" color (e.g., Amber, Lotus, Teal)
+	accentColor: string;
 	features?: SelfViewFeature[];
 	content?: React.ReactNode;
 	historyContent?: React.ReactNode;
@@ -32,18 +31,12 @@ export interface SelfViewDomain {
 }
 
 export interface BaseSelfViewProps {
-	perspective: string;
+	perspective: "student" | "teacher" | "principal" | "guardian" | "founder" | "admin" | "wanderer";
 	title?: string;
 	description?: string;
-
-	/** The primary content domains (Personal, Working, etc.) */
 	domains: SelfViewDomain[];
-
-	/** Additional layers (usually for Web sidebar or Mobile bottom) */
 	sideBar?: React.ReactNode;
 	reminders?: React.ReactNode;
-
-	/** Universal Expansions (Legacy support or explicit placement) */
 	morningRitual?: React.ReactNode;
 	nightRitual?: React.ReactNode;
 	voiceJournal?: React.ReactNode;

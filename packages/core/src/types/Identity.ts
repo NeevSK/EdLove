@@ -26,13 +26,13 @@ export type Capacity =
  */
 export interface Bond {
   id: string;
-  userId: string;
-  entityId: string; // Could be a School ID, Classroom ID, or 'GLOBAL'
-  entityType: 'PLATFORM' | 'SCHOOL' | 'CLASSROOM' | 'COMMUNITY';
+  user_id: string;
+  entity_id: string; // Could be a School ID, Classroom ID, or 'GLOBAL'
+  entity_type: 'PLATFORM' | 'SCHOOL' | 'CLASSROOM' | 'COMMUNITY' | 'PERSONAL' | 'GUEST';
   capacity: Capacity;
   status: 'active' | 'archived' | 'pending';
-  validFrom?: string;
-  validUntil?: string;
+  valid_from?: string;
+  valid_until?: string;
   metadata?: Record<string, unknown>;
 }
 
@@ -41,6 +41,6 @@ export interface Bond {
  * Represents the "Authority in Reality".
  */
 export interface Perspective {
-  activeBond: Bond;
-  availableBonds: Bond[];
+  active_bond: Bond;
+  available_bonds: Bond[];
 }

@@ -4,7 +4,7 @@ import type { AppAbility } from './base';
 
 export const defineAdminAbilities = (user: UserContext, builder: AbilityBuilder<AppAbility>) => {
   const { can } = builder;
-  if (user.hasGlobalAccess) {
+  if (user.has_global_access) {
     can('manage', 'all');
     can('manage', 'PrincipalDashboard');
     can('manage', 'AdminDashboard');
@@ -13,11 +13,11 @@ export const defineAdminAbilities = (user: UserContext, builder: AbilityBuilder<
   }
 
   // 2. Specific Admin capabilities (if not global)
-  if (user.activeBond?.capacity === 'admin') {
-    can('manage', 'School', { id: user.schoolId } as any);
-    can('manage', 'Staff', { schoolId: user.schoolId } as any);
-    can('read', 'Inventory', { schoolId: user.schoolId } as any);
-    can('manage', 'Inventory', { schoolId: user.schoolId } as any);
+  if (user.active_bond?.capacity === 'admin') {
+    can('manage', 'School', { id: user.school_id } as any);
+    can('manage', 'Staff', { school_id: user.school_id } as any);
+    can('read', 'Inventory', { school_id: user.school_id } as any);
+    can('manage', 'Inventory', { school_id: user.school_id } as any);
     can('manage', 'Library');
     can('manage', 'LibraryReview');
     can('read', 'LibrarySearch');

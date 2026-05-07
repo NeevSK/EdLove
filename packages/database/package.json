@@ -25,12 +25,12 @@
     "clean": "rm -rf .turbo node_modules dist"
   },
   "dependencies": {
+    "@repo/schema": "workspace:*",
     "@zenstackhq/orm": "3.6.4",
     "kysely": "0.28.16",
-    "pg": "^8.13.3",
     "zod": "4.3.6",
-    "@zenstackhq/schema": "3.6.4",
-    "@repo/schema": "workspace:*"
+    "pg": "^8.13.3",
+    "@zenstackhq/schema": "3.6.4"
   },
   "devDependencies": {
     "@types/pg": "^8.20.0",

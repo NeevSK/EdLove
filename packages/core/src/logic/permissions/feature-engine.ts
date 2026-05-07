@@ -170,56 +170,56 @@ export const resolveFeatureFlags = (
   const isPaidTier = ['pro', 'premium', 'gold', 'silver'].includes(
     context.tier?.toLowerCase() || '',
   );
-  const capacity = context.activeBond?.capacity || null;
+  const capacity = context.active_bond?.capacity || null;
   const isAdmin = ['admin', 'founder', 'developer'].includes(capacity || '');
 
   flags.isProMember = isPaidTier || isAdmin;
 
-  if (context.features.includes('OCR') || isAdmin) flags.canUseOCR = true;
-  if (context.features.includes('AI_ASSISTANT') || isAdmin) flags.isAIAssistantEnabled = true;
-  if (context.features.includes('STAFF_MANAGEMENT')) flags.isStaffManagementEnabled = true;
-  if (context.features.includes('STUDENT_REPORTING')) flags.isStudentReportingEnabled = true;
-  if (context.features.includes('BETA_TESTER')) flags.isNewOnboardingEnabled = true;
+  if ((context.features || []).includes('OCR') || isAdmin) flags.canUseOCR = true;
+  if ((context.features || []).includes('AI_ASSISTANT') || isAdmin) flags.isAIAssistantEnabled = true;
+  if ((context.features || []).includes('STAFF_MANAGEMENT')) flags.isStaffManagementEnabled = true;
+  if ((context.features || []).includes('STUDENT_REPORTING')) flags.isStudentReportingEnabled = true;
+  if ((context.features || []).includes('BETA_TESTER')) flags.isNewOnboardingEnabled = true;
   if (
-    context.features.includes('GUARDIAN_WORKSPACE') ||
-    context.features.includes('BETA_GUARDIAN_WORKSPACE')
+    (context.features || []).includes('GUARDIAN_WORKSPACE') ||
+    (context.features || []).includes('BETA_GUARDIAN_WORKSPACE')
   ) {
     flags.isGuardianWorkspaceEnabled = true;
   }
   if (
-    context.features.includes('STUDENT_REWARDS_WORKSPACE') ||
-    context.features.includes('BETA_STUDENT_WORKSPACE')
+    (context.features || []).includes('STUDENT_REWARDS_WORKSPACE') ||
+    (context.features || []).includes('BETA_STUDENT_WORKSPACE')
   ) {
     flags.isStudentRewardsWorkspaceEnabled = true;
   }
   if (
-    context.features.includes('STUDENT_GOALS_WORKSPACE') ||
-    context.features.includes('BETA_STUDENT_WORKSPACE')
+    (context.features || []).includes('STUDENT_GOALS_WORKSPACE') ||
+    (context.features || []).includes('BETA_STUDENT_WORKSPACE')
   ) {
     flags.isStudentGoalsWorkspaceEnabled = true;
   }
   if (
-    context.features.includes('STUDENT_GRADES_WORKSPACE') ||
-    context.features.includes('BETA_STUDENT_WORKSPACE')
+    (context.features || []).includes('STUDENT_GRADES_WORKSPACE') ||
+    (context.features || []).includes('BETA_STUDENT_WORKSPACE')
   ) {
     flags.isStudentGradesWorkspaceEnabled = true;
   }
   if (
-    context.features.includes('STUDENT_PROGRESS_WORKSPACE') ||
-    context.features.includes('BETA_STUDENT_WORKSPACE')
+    (context.features || []).includes('STUDENT_PROGRESS_WORKSPACE') ||
+    (context.features || []).includes('BETA_STUDENT_WORKSPACE')
   ) {
     flags.isStudentProgressWorkspaceEnabled = true;
   }
   if (
-    context.features.includes('STUDENT_ASSIGNMENT_QUEUE') ||
-    context.features.includes('BETA_STUDENT_WORKSPACE')
+    (context.features || []).includes('STUDENT_ASSIGNMENT_QUEUE') ||
+    (context.features || []).includes('BETA_STUDENT_WORKSPACE')
   ) {
     flags.isStudentAssignmentQueueEnabled = true;
   }
 
-  if (context.features.includes('COMMUNITY')) flags.isCommunityEnabled = true;
-  if (context.features.includes('DIRECT_MESSAGING')) flags.isMessagingEnabled = true;
-  if (context.features.includes('SOCIAL_SHIELD')) flags.isSocialShieldEnabled = true;
+  if ((context.features || []).includes('COMMUNITY')) flags.isCommunityEnabled = true;
+  if ((context.features || []).includes('DIRECT_MESSAGING')) flags.isMessagingEnabled = true;
+  if ((context.features || []).includes('SOCIAL_SHIELD')) flags.isSocialShieldEnabled = true;
 
   // 3. Capacity/Persona Logic
   if (capacity === 'student') {
@@ -274,9 +274,10 @@ export const resolveFeatureFlags = (
   // 5. User Specific Override (Flag Injection from Context)
   // This allows us to push a specific flag to a specific user via the flags map in UserContext
   if (context.flags) {
-    Object.keys(context.flags).forEach((key) => {
+    const flagsToProcess = context.flags;
+    Object.keys(flagsToProcess).forEach((key) => {
       if (key in flags) {
-        (flags as any)[key] = context.flags[key];
+        (flags as any)[key] = flagsToProcess[key];
       }
     });
   }

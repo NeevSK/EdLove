@@ -2,6 +2,7 @@ import { AuthorityInterceptor } from '../logic/permissions/AuthorityInterceptor'
 import { composeUserAbilities } from '../logic/permissions/composer';
 import { type TenantKind, UserContextSchema } from '../logic/schemas/user.schema';
 import { useStore } from '../store/useStore';
+import { interceptApiCall } from './demoProvider';
 
 /**
  * createPOAProxy
@@ -15,7 +16,7 @@ export function createPOAProxy<T extends object>(
   target: T,
   contract?: Record<string, any>,
   methodMapping: Record<string, string> = {},
-  options: { strictUnmappedMethods?: boolean } = {},
+  options: { strictUnmappedMethods?: boolean; ignoredMethods?: string[] } = {},
 ): T {
   return new Proxy(target, {
     get(obj: T, prop: string | symbol) {
@@ -23,26 +24,30 @@ export function createPOAProxy<T extends object>(
 
       if (typeof originalMethod === 'function' && typeof prop === 'string') {
         return async (...args: unknown[]) => {
+          if (options.ignoredMethods?.includes(prop)) {
+            return originalMethod.apply(obj, args);
+          }
+
           // 1. Resolve User Context from Store
           const state = useStore.getState();
           const user = state.user;
-          const activeBond = state.activeBond;
+          const active_bond = state.active_bond;
           const schoolType = state.schoolType;
 
           const context = UserContextSchema.parse({
-            userId: user?.id || null,
+            user_id: user?.id || null,
             email: user?.email || null,
-            schoolId: user?.school_id || null,
-            activeBond,
-            tenancyName: user?.organization_name || null,
+            school_id: user?.school_id || null,
+            active_bond: active_bond,
+            tenancy_name: user?.organization_name || null,
             tenancy: {
               kind: (user?.tenant_kind || 'customer') as TenantKind,
-              isPersonal: schoolType === 'personal_workspace',
+              is_personal: schoolType === 'personal_workspace',
             },
-            tenantKind: (user?.tenant_kind || 'customer') as TenantKind,
-            isAnonymous: !user || !!user?.is_anonymous,
-            hasGlobalAccess: !!activeBond && ['founder', 'developer', 'admin'].includes(activeBond.capacity),
-            isPersonal: schoolType === 'personal_workspace',
+            tenant_kind: (user?.tenant_kind || 'customer') as TenantKind,
+            is_anonymous: !user || !!user?.is_anonymous,
+            has_global_access: !!active_bond && ['founder', 'developer', 'admin'].includes(active_bond.capacity),
+            is_personal: schoolType === 'personal_workspace',
           });
 
           // 2. Compose Ability
@@ -68,7 +73,11 @@ export function createPOAProxy<T extends object>(
             }
           }
 
-          // 4. Execute original method
+          // 4. Check for Demo Interception
+          const intercepted = interceptApiCall(moduleName, prop, args as any[]);
+          if (intercepted) return intercepted;
+
+          // 5. Execute original method
           return originalMethod.apply(obj, args);
         };
       }

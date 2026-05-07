@@ -30,6 +30,7 @@ export function useAuthorityLifecycle() {
   const setOnboardingCompleted = useStore((state) => state.setOnboardingCompleted);
   const setAuthSession = useStore((state) => state.setAuthSession);
   const setAuthSessionResolved = useStore((state) => state.setAuthSessionResolved);
+  const setDemoMode = useStore((state) => state.setDemoMode);
 
   const fetchAndSetUserProfile = useCallback(
     async (internalUserId: string) => {
@@ -78,7 +79,7 @@ export function useAuthorityLifecycle() {
           identifyUser(profile.id, {
             email: profile.email,
             full_name: profile.full_name,
-            active_perspective: perspective?.activeBond?.capacity || null,
+            active_perspective: perspective?.active_bond?.capacity || null,
             total_bonds: bonds.length,
             school_id: profile.school_id,
           });
@@ -112,8 +113,9 @@ export function useAuthorityLifecycle() {
 
     // 2. Initial Session Check
     const checkSession = async () => {
+      let initialSession: Session | null = null;
       try {
-        const initialSession = await authAPI.getAuthSession();
+        initialSession = await authAPI.getAuthSession();
         setSession(initialSession);
         setAuthSession(initialSession);
 
@@ -137,6 +139,10 @@ export function useAuthorityLifecycle() {
       } finally {
         setLoading(false);
         setAuthSessionResolved(true);
+        // If no session, automatically enter demo mode for seamless exploration
+        if (!initialSession) {
+          setDemoMode(true);
+        }
       }
     };
 
@@ -165,6 +171,9 @@ export function useAuthorityLifecycle() {
         setAvailableBonds([]);
         setSchoolType(null);
         setOnboardingCompleted(false);
+        setDemoMode(true);
+      } else if (currentSession) {
+        setDemoMode(false);
       }
     });
 
@@ -190,7 +199,7 @@ export function useAuthorityLifecycle() {
     }
 
     const channel = supabase
-      .channel(`user-profile-sync-${currentUser.id}`)
+      .channel(`user-profile-sync-${currentUser.id}-${Math.random().toString(36).slice(2, 9)}`)
       .on(
         'postgres_changes',
         {

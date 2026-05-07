@@ -1,4 +1,4 @@
-import { Lock, Shield, Smartphone } from 'lucide-react-native';
+import { Lock, Shield, Smartphone } from '../icons';
 import { useCallback, useEffect, useMemo, useReducer } from 'react';
 import { Box, HStack, Text, VStack } from '../gluestack';
 import { Theme } from '../theme/Theme';

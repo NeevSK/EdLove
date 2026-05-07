@@ -229,8 +229,8 @@ importers:
         specifier: ^12.0.1
         version: 12.0.1(jiti@2.6.1)
       supabase:
-        specifier: ^2.95.3
-        version: 2.95.3
+        specifier: ^2.98.2
+        version: 2.98.2
       syncpack:
         specifier: ^13.0.0
         version: 13.0.4(typescript@5.9.3)
@@ -635,6 +635,9 @@ importers:
       jsqr:
         specifier: ^1.4.0
         version: 1.4.0
+      lucide-react:
+        specifier: ^0.474.0
+        version: 0.474.0(react@19.1.0)
       lucide-react-native:
         specifier: ^0.563.0
         version: 0.563.0(react-native-svg@15.15.3(react-native@0.83.6(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0))(react-native@0.83.6(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.1.0))(react@19.1.0)
@@ -802,8 +805,8 @@ importers:
         specifier: 19.1.0
         version: 19.1.0(react@19.1.0)
       supabase:
-        specifier: ^2.95.3
-        version: 2.95.3
+        specifier: ^2.98.2
+        version: 2.98.2
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -16082,8 +16085,8 @@ packages:
     engines: {node: '>=16 || 14 >=14.17'}
     hasBin: true
 
-  supabase@2.95.3:
-    resolution: {integrity: sha512-KsAEOmmZsnO8WYP8nI9LhXwLExcGgoPpIUrFnxm56eDsAaeBUiGJRMG6nerMuv/rDvqFByco16Po3IhUnFPpmQ==}
+  supabase@2.98.2:
+    resolution: {integrity: sha512-COSz57JyuUGbj75GSGM5mmyz/behBiYSiJ4A9qJVVC/vNp9bYS+9RCTXBtEt8kgqDDYWZsOmzk+mPbIBdr9bPg==}
     engines: {npm: '>=8'}
     hasBin: true
 
@@ -34887,7 +34890,7 @@ snapshots:
       tinyglobby: 0.2.15
       ts-interface-checker: 0.1.13
 
-  supabase@2.95.3:
+  supabase@2.98.2:
     dependencies:
       bin-links: 6.0.0
       https-proxy-agent: 9.0.0

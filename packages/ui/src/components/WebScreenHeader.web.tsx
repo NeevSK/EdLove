@@ -42,7 +42,7 @@ export const WebScreenHeader: React.FC<WebScreenHeaderProps> = ({
       (user as any)?.user_metadata?.full_name?.split(' ')[0] ||
       user?.full_name?.split(' ')[0] ||
       '';
-    const capacity = context.activeBond?.capacity || '';
+    const capacity = context.active_bond?.capacity || '';
     const roleLabel = capacity ? capacity.charAt(0).toUpperCase() + capacity.slice(1) : '';
 
     if (can('manage', 'TeacherDashboard') || can('manage', 'PrincipalDashboard')) {

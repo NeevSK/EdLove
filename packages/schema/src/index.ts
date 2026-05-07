@@ -19,4 +19,6 @@ import { createSchemaFactory } from '@zenstackhq/zod';
 import { schema } from './generated/orm/schema';
 
 const factory = createSchemaFactory(schema);
-export const { makeModelSchema, makeTypeSchema, makeEnumSchema } = factory;
+export const makeModelSchema = factory.makeModelSchema.bind(factory);
+export const makeTypeSchema = factory.makeTypeSchema.bind(factory);
+export const makeEnumSchema = factory.makeEnumSchema.bind(factory);

@@ -148,8 +148,10 @@ export const InteractiveRadarChart: React.FC<InteractiveRadarChartProps> = ({
 
       {/* Glow Effect Overlay (subtle) */}
       <View
-        style={[styles.glow, { width: size * 0.6, height: size * 0.6, borderRadius: size * 0.3 }]}
-        pointerEvents="none"
+        style={[
+          styles.glow,
+          { width: size * 0.6, height: size * 0.6, borderRadius: size * 0.3, pointerEvents: 'none' },
+        ]}
       />
     </View>
   );

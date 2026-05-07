@@ -11,10 +11,40 @@
     <meta name="theme-color" content="#D4843A" />
 
     <!-- \u2500\u2500 Open Graph \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 -->
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content="Gurudevi \u2014 A Sanctuary for Teachers" />
-    <meta property="og:description" content="Mending the teaching-learning impedance match through care." />
     <meta property="og:image" content="/og-image.png" />
+
+    <!-- \u2500\u2500 Agentic & Machine-Readable Discovery \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 -->
+    <link rel="alternate" type="application/json" href="/knowledge.json" title="Machine-Readable Knowledge Index" />
+    <link rel="author" type="text/plain" href="/llms.txt" title="LLM-Friendly Overview" />
+    
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Gurudevi-Web Platform",
+        "url": "https://platform.gurudevi.edlove.org",
+        "description": "A sacred space for teachers \u2014 wellbeing, classroom tools, and community.",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://platform.gurudevi.edlove.org/app/library?q={search_term_string}",
+          "query-input": "required name=search_term_string"
+        }
+      }
+    </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "NeevSK",
+        "url": "https://gurudevi.edlove.org",
+        "logo": "https://gurudevi.edlove.org/favicon.ico",
+        "sameAs": [
+          "https://github.com/edlove-org",
+          "https://platform.gurudevi.edlove.org"
+        ]
+      }
+    </script>
 
     <!-- \u2500\u2500 Zero-Flash Theme Init \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 -->
     <script>
@@ -38,6 +68,22 @@
           
           document.documentElement.style.setProperty('--color-background', background);
           document.documentElement.style.setProperty('--ink', ink);
+
+          // \u2500\u2500 Agentic Context Initialization \u2500\u2500
+          window.GURUDEVI_CONTEXT = {
+            ecology: 'edlove',
+            purpose: 'educational-support-platform',
+            environment: 'production',
+            capabilities: [
+              'classroom-orchestration',
+              'teacher-wellbeing',
+              'community-resonance',
+              'knowledge-sanctuary',
+              'ai-pedagogical-assistance'
+            ],
+            manifesto: 'https://gurudevi.edlove.org/about',
+            agent_policy: 'empower'
+          };
         } catch (e) {}
       })();
     </script>

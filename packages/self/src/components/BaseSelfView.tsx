@@ -1,9 +1,12 @@
-import { useTemporalStore } from "@repo/core/logic";
+import { useTemporalStore, usePermissions } from "@repo/core/logic";
 import type { TemporalScale } from "@repo/core/store";
+import { useNavigation } from "@react-navigation/native";
 
 import FeatureInfoIcon from "@repo/ui/components/FeatureInfoIcon";
 import GlobalHeader from "@repo/ui/components/GlobalHeader";
+import SanctuaryFlashList from "@repo/ui/components/SanctuaryFlashList";
 import { TemporalNavigator } from "@repo/ui/components/TemporalNavigator";
+import PositiveInvitation from "@repo/ui/components/PositiveInvitation";
 import {
 	Box,
 	HStack,
@@ -13,21 +16,22 @@ import {
 	VStack,
 } from "@repo/ui/primitives";
 
-import React from "react";
+import React, { useCallback, useMemo } from "react";
 import {
 	FEATURE_DISCOVERY_DATA,
 	FEATURE_EMOJIS,
+	SANCTUARY_DOMAINS,
 } from "../constants/selfRegistry";
 import { useDynamicSelfFeatures } from "../hooks/useDynamicSelfFeatures";
 import { useFeatureActivity } from "../hooks/useFeatureActivity";
 import type { BaseSelfViewProps, SelfViewFeature } from "./BaseSelfView.types";
+import { FeatureErrorBoundary } from "./FeatureErrorBoundary";
 
 const TEMPORAL_SCALES = ["day", "week", "month", "year"] as const;
 
 /**
  * BaseSelfView - The architectural kernel for GuruDevi Self sections on Mobile.
- * Present-focused by default, with a shell-owned temporal layer that can surface
- * feature history when a domain or feature opts in.
+ * Refactored for 2026: URL Resonance, Energy Sensing, and FlashList v2.
  */
 export function BaseSelfView({
 	perspective,
@@ -38,18 +42,21 @@ export function BaseSelfView({
 	nightRitual,
 	voiceJournal,
 }: BaseSelfViewProps) {
-	const surfaceBgClass =
-		perspective === "student" ? "bg-[#F5F3FF]" : "bg-[#FFF7ED]";
+	const navigation = useNavigation<any>();
+	
 	const { viewMode, setViewMode, viewScale, setScale } = useTemporalStore();
 	const isHistoryMode = viewMode === "timeline";
+	const { context } = usePermissions();
+	const isAnonymous = context.is_anonymous;
 
-	const allFeatures = React.useMemo(
+	const allFeatures = useMemo(
 		() => [
 			...domains.flatMap((domain) =>
 				(domain.features || []).map((feature) => ({
 					...feature,
 					domainId: domain.id,
 					domainColor: domain.accentColor,
+					energyVibe: SANCTUARY_DOMAINS[domain.id]?.energyVibe,
 				})),
 			),
 			...(domains.some((domain) => domain.content)
@@ -64,7 +71,7 @@ export function BaseSelfView({
 								domains.find((domain) => domain.content)?.content,
 							domainId: "journey",
 							domainColor: "#8B5CF6",
-							supportedScales: [...TEMPORAL_SCALES] as TemporalScale[],
+							energyVibe: ["#ECFDF5", "#D1FAE5"] as [string, string],
 						},
 					]
 				: []),
@@ -77,6 +84,7 @@ export function BaseSelfView({
 							historyContent: sideBar,
 							domainId: "reflections",
 							domainColor: "#8B5CF6",
+							energyVibe: ["#F5F3FF", "#EDE9FE"] as [string, string],
 						},
 					]
 				: []),
@@ -89,6 +97,7 @@ export function BaseSelfView({
 							historyContent: reminders,
 							domainId: "reminders",
 							domainColor: "#F59E0B",
+							energyVibe: ["#FFFBEB", "#FEF3C7"] as [string, string],
 						},
 					]
 				: []),
@@ -108,32 +117,121 @@ export function BaseSelfView({
 			?.id ??
 		sortedFeatures[0]?.id;
 
-	const activeFeature =
-		sortedFeatures.find((f) => f.id === activeFeatureIdResolved) ||
-		sortedFeatures[0];
+	const activeFeature = useMemo(
+		() =>
+			sortedFeatures.find((f) => f.id === activeFeatureIdResolved) ||
+			sortedFeatures[0],
+		[sortedFeatures, activeFeatureIdResolved],
+	);
 
-	const getEmoji = (feature: SelfViewFeature) =>
-		FEATURE_EMOJIS[feature.id as keyof typeof FEATURE_EMOJIS] || "\u2728";
+	// Energy Sensing: Derive background from active feature's vibe
+	const backgroundStyle = useMemo(() => {
+		const baseColor = perspective === "student" ? "#F5F3FF" : "#FFF7ED";
+		const activeVibe = activeFeature?.energyVibe?.[0] || baseColor;
+		return {
+			backgroundColor: activeVibe,
+		};
+	}, [activeFeature, perspective]);
 
-	const handleFeaturePress = (featureId: string) => {
-		setActiveFeatureId(featureId);
-		trackFeatureAccess(featureId);
-	};
+	const getEmoji = useCallback(
+		(feature: SelfViewFeature) =>
+			FEATURE_EMOJIS[feature.id as keyof typeof FEATURE_EMOJIS] || "✨",
+		[],
+	);
+
+	const handleFeaturePress = useCallback(
+		(featureId: string) => {
+			setActiveFeatureId(featureId);
+			trackFeatureAccess(featureId);
+		},
+		[trackFeatureAccess],
+	);
+
+	const renderFeatureItem = useCallback(
+		({ item: feature }: { item: SelfViewFeature & { domainColor?: string } }) => {
+			const isActive = activeFeatureIdResolved === feature.id;
+			const isPinned = pinned.includes(feature.id);
+			const isInsight = feature.id === "mirrors" || feature.id === "reminders";
+			const hasHistory = Boolean(feature.historyContent);
+
+			return (
+				<Pressable
+					onPress={() => handleFeaturePress(feature.id)}
+					onLongPress={() => togglePin(feature.id)}
+					accessibilityRole="button"
+					className="items-center w-[72px]"
+				>
+					<Box
+						className="w-16 h-16 rounded-full p-[3px] justify-center items-center mb-1 border-2"
+						style={{
+							borderColor: feature.domainColor,
+							borderStyle: isInsight ? "dashed" : "solid",
+							opacity: isActive ? 1 : 0.4,
+						}}
+					>
+						<Box
+							className="w-full h-full rounded-[30px] bg-white justify-center items-center shadow-sm"
+							style={
+								isActive
+									? {
+											shadowColor: feature.domainColor,
+											shadowOpacity: 0.3,
+										}
+									: { shadowOpacity: 0.05 }
+							}
+						>
+							<Text className="text-2xl">{getEmoji(feature)}</Text>
+							{isPinned && (
+								<Box
+									className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full justify-center items-center border-2 border-white shadow-sm"
+									style={{ backgroundColor: feature.domainColor }}
+								>
+									<Text className="text-[10px] text-white">📌</Text>
+								</Box>
+							)}
+							{hasHistory && (
+								<Box className="absolute -bottom-1.5 -right-0.5 w-[18px] h-[18px] rounded-full justify-center items-center bg-[#EBE5FA] border border-white">
+									<Text className="text-[8px] text-[#5B3FD6]">⏳</Text>
+								</Box>
+							)}
+						</Box>
+					</Box>
+					<Box
+						className={`w-1 h-1 rounded-full mb-1 ${isActive ? "" : "bg-transparent"}`}
+						style={isActive ? { backgroundColor: feature.domainColor } : {}}
+					/>
+					<Text
+						numberOfLines={1}
+						className={`text-[9px] text-center uppercase tracking-wider font-bold ${
+							isActive ? "text-black" : "text-black/40"
+						}`}
+					>
+						{feature.label}
+					</Text>
+				</Pressable>
+			);
+		},
+		[activeFeatureIdResolved, pinned, togglePin, handleFeaturePress, getEmoji],
+	);
 
 	const renderFeatureContent = (
 		feature?: SelfViewFeature & { domainColor?: string },
 	) => {
 		if (!feature) return null;
-		if (!isHistoryMode) return feature.content;
+		
+		const content = isHistoryMode 
+			? feature.historyContent ?? <HistoryScaffold feature={feature} viewScale={viewScale} />
+			: feature.content;
+
 		return (
-			feature.historyContent ?? (
-				<HistoryScaffold feature={feature} viewScale={viewScale} />
-			)
+			<FeatureErrorBoundary featureName={feature.label}>
+				{content}
+			</FeatureErrorBoundary>
 		);
 	};
 
 	return (
-		<VStack className={`flex-1 ${surfaceBgClass}`}>
+		<VStack className="flex-1 transition-all duration-700" style={backgroundStyle}>
 			<GlobalHeader
 				isSelfView={true}
 				subtitle={perspective.toUpperCase()}
@@ -156,82 +254,17 @@ export function BaseSelfView({
 				{voiceJournal && <Box className="px-lg pt-sm">{voiceJournal}</Box>}
 				{morningRitual && <Box className="px-lg pt-sm">{morningRitual}</Box>}
 
-				<Box className="py-md bg-transparent">
-					<ScrollView
+				<Box className="py-md bg-transparent min-h-[110px]">
+					<SanctuaryFlashList
+						data={sortedFeatures}
+						renderItem={renderFeatureItem}
 						horizontal
 						showsHorizontalScrollIndicator={false}
-						contentContainerStyle={{ paddingHorizontal: 20, gap: 12 }}
-					>
-						{sortedFeatures.map((feature) => {
-							const isActive = activeFeatureIdResolved === feature.id;
-							const isPinned = pinned.includes(feature.id);
-							const isInsight =
-								feature.id === "mirrors" || feature.id === "reminders";
-							const hasHistory = Boolean(feature.historyContent);
-
-							return (
-								<Pressable
-									key={feature.id}
-									onPress={() => handleFeaturePress(feature.id)}
-									onLongPress={() => togglePin(feature.id)}
-									accessibilityRole="button"
-									className="items-center w-[72px]"
-								>
-									<Box
-										className={`w-16 h-16 rounded-full p-[3px] justify-center items-center mb-1 border-2 ${
-											isActive ? "" : "border-black/5"
-										}`}
-										style={
-											isActive
-												? { borderColor: feature.domainColor }
-												: { borderStyle: isInsight ? "dashed" : "solid" }
-										}
-									>
-										<Box
-											className="w-full h-full rounded-[30px] bg-white justify-center items-center shadow-sm"
-											style={
-												isActive
-													? {
-															shadowColor: feature.domainColor,
-															shadowOpacity: 0.3,
-														}
-													: { shadowOpacity: 0.05 }
-											}
-										>
-											<Text className="text-2xl">{getEmoji(feature)}</Text>
-											{isPinned && (
-												<Box
-													className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full justify-center items-center border-2 border-white shadow-sm"
-													style={{ backgroundColor: feature.domainColor }}
-												>
-													<Text className="text-[10px] text-white">📌</Text>
-												</Box>
-											)}
-											{hasHistory && (
-												<Box className="absolute -bottom-1.5 -right-0.5 w-[18px] h-[18px] rounded-full justify-center items-center bg-[#EBE5FA] border border-white">
-													<Text className="text-[8px] text-[#5B3FD6]">⏳</Text>
-												</Box>
-											)}
-										</Box>
-									</Box>
-									<Box
-										className={`w-1 h-1 rounded-full mb-1 ${isActive ? "" : "bg-transparent"}`}
-										style={
-											isActive ? { backgroundColor: feature.domainColor } : {}
-										}
-									/>
-									<Text
-										numberOfLines={1}
-										className={`text-[9px] text-center uppercase tracking-wider font-bold ${
-											isActive ? "text-black" : "text-black/40"
-										}`}
-									>
-										{feature.label}
-									</Text>
-								</Pressable>
-							);
-						})}
-					</ScrollView>
+						contentContainerStyle={{ paddingHorizontal: 20 }}
+						estimatedItemSize={72}
+						keyExtractor={(item) => item.id}
+						getItemType={(item) => (item.id === "mirrors" ? "insight" : "regular")}
+					/>
 				</Box>
 
 				<Box className="px-md pt-md min-h-[400px]">
@@ -252,18 +285,6 @@ export function BaseSelfView({
 										}
 										color={activeFeature.domainColor}
 									/>
-									{activeFeature.id !== "holistic_history" && (
-										<Pressable
-											onPress={() => {
-												setViewMode("timeline");
-												handleFeaturePress("holistic_history");
-											}}
-											accessibilityRole="button"
-											className="p-1 ml-1"
-										>
-											<Text className="text-lg">⏳</Text>
-										</Pressable>
-									)}
 								</HStack>
 								<Text className="text-[10px] text-black/35 font-bold tracking-widest uppercase">
 									{isHistoryMode
@@ -277,6 +298,18 @@ export function BaseSelfView({
 				</Box>
 
 				{nightRitual && <Box className="px-lg pt-sm">{nightRitual}</Box>}
+
+				{isAnonymous && (
+					<Box className="mt-8 border-t border-black/5 pt-8">
+						<PositiveInvitation
+							type="guest"
+							context="self"
+							onAction={() => {
+								navigation.navigate("Auth");
+							}}
+						/>
+					</Box>
+				)}
 			</ScrollView>
 		</VStack>
 	);
@@ -324,7 +357,7 @@ function TemporalShellControls({
 				>
 					<Text
 						className={`text-[11px] font-bold uppercase tracking-wider ${
-							isHistoryMode ? "text-[#29A17D]" : "text-[#6E594F]"
+							isHistoryMode ? "text-[#5B3FD6]" : "text-[#6E594F]"
 						}`}
 					>
 						History

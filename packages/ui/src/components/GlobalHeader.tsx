@@ -107,6 +107,8 @@ export default function GlobalHeader({
     notifications,
     unreadCount,
     isLoading: notifLoading,
+    isRealtimeConnected,
+    error,
     markAsRead,
     markAllRead,
   } = useNotifications(user?.id);
@@ -194,7 +196,7 @@ export default function GlobalHeader({
   const showFullNameAsPrimary = can('manage', 'StudentDashboard');
 
   return (
-    <Box className="w-full relative" style={{ height: headerHeight }}>
+    <Box accessibilityRole="header" className="w-full relative" style={{ height: headerHeight }}>
       <Box
         className="absolute inset-0 bg-phase-canvas border-b border-white/5"
         style={{ opacity: 0.95 }}
@@ -282,9 +284,27 @@ export default function GlobalHeader({
             ) : (
               <TouchableOpacity accessibilityRole="button" onPress={handleOpenNotifications}>
                 <Box className="relative">
-                  <Bell size={24} className="text-phase-text-primary" />
-                  {unreadCount > 0 && (
-                    <Box className="absolute top-0 right-0.5 w-2.5 h-2.5 rounded-full border-2 bg-phase-accent border-phase-canvas" />
+                  <Bell
+                    size={24}
+                    className={
+                      error ? 'text-phase-text-secondary opacity-50' : 'text-phase-text-primary'
+                    }
+                  />
+                  {/* Notification Badge Logic - High Fidelity Feedback */}
+                  {(error || notifLoading || (unreadCount > 0 && !error)) && (
+                    <Box
+                      className={`absolute top-0 right-0.5 w-2.5 h-2.5 rounded-full border-2 border-phase-canvas ${
+                        error ? 'bg-red-500' : notifLoading ? 'bg-yellow-500' : 'bg-green-500'
+                      }`}
+                      style={{
+                        backgroundColor: error ? '#ef4444' : notifLoading ? '#f59e0b' : '#10b981',
+                        shadowColor: error ? '#ef4444' : notifLoading ? '#f59e0b' : '#10b981',
+                        shadowOffset: { width: 0, height: 0 },
+                        shadowOpacity: 0.9,
+                        shadowRadius: 6,
+                        elevation: 5,
+                      }}
+                    />
                   )}
                 </Box>
               </TouchableOpacity>
@@ -309,6 +329,8 @@ export default function GlobalHeader({
           notifications={notifications}
           unreadCount={unreadCount}
           isLoading={notifLoading}
+          isRealtimeConnected={isRealtimeConnected}
+          error={error}
           onMarkRead={markAsRead}
           onMarkAllRead={markAllRead}
         />
