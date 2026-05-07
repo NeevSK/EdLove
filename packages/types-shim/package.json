@@ -1,6 +1,6 @@
 {
   "name": "@repo/types-shim",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A dummy shim to satisfy legacy @types/react-native peer dependencies",
   "private": true,
   "types": "index.d.ts",

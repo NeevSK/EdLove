@@ -1,6 +1,6 @@
 {
   "name": "@intuitui-labs/lk-edu-geo",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Sri Lanka educational and administrative geo data",
   "type": "module",
   "exports": {

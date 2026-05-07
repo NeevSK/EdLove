@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/package",
   "name": "@repo/ui",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "main": "src/index.ts",
   "license": "MIT",
   "sideEffects": false,
@@ -194,7 +194,12 @@
     "./providers/*": "./src/providers/*",
     "./screens": "./src/screens/index.ts",
     "./screens/*": "./src/screens/*",
-    "./screens/AppSettingsScreen": "./src/screens/AppSettingsScreen.tsx",
+    "./screens/AppSettingsScreen": {
+      "browser": "./src/screens/AppSettingsScreen.web.tsx",
+      "react-native": "./src/screens/AppSettingsScreen.tsx",
+      "default": "./src/screens/AppSettingsScreen.tsx"
+    },
+    "./screens/AppSettingsScreen.web": "./src/screens/AppSettingsScreen.web.tsx",
     "./screens/AuthScreen": {
       "browser": "./src/screens/AuthScreen.web.tsx",
       "react-native": "./src/screens/AuthScreen.tsx",

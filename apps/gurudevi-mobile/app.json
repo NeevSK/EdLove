@@ -79,6 +79,9 @@
 			"themeColor": "#D4843A",
 			"backgroundColor": "#F5EDD6"
 		},
+		"experiments": {
+			"baseUrl": "/"
+		},
 		"extra": {
 			"eas": {
 				"projectId": "1701dfb9-c59e-45c6-a391-58c061a0b8ce"
