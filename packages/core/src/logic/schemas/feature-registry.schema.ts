@@ -16,7 +16,7 @@ export const FeatureStateSchema = z.object({
   is_enabled: z.boolean(),
   is_locked: z.boolean(), // Locked features require citizenship/payment
   lock_reason: z.enum(['CITIZENSHIP_REQUIRED', 'PAYMENT_REQUIRED', 'GLOBAL_OFF']).optional(),
-  metadata: z.record(z.unknown()).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
 });
 
 /**

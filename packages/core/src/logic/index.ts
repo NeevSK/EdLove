@@ -20,11 +20,6 @@ export {
   validateInviteCode,
 } from '../lib/inviteCodes';
 export {
-  type InviteCodeData,
-  incrementInviteCodeUsage,
-  validateInviteCode,
-} from '../lib/inviteCodes';
-export {
   clearPendingGateAction,
   getPendingGateAction,
   type PendingGateAction,

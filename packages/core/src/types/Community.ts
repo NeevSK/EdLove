@@ -54,6 +54,12 @@ export interface PollData {
   ends_at?: string | null;
 }
 
+export interface PollStatus {
+  counts: Record<string, number>;
+  totalVotes: number;
+  userVotes: string[];
+}
+
 // ============================================================================
 // COMMUNITY POST TYPES
 // ============================================================================

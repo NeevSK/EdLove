@@ -45,6 +45,7 @@ export type {
   ManifestoVibe,
   PollData,
   PollOption,
+  PollStatus,
   Post,
   PostType,
   PostVisibility,

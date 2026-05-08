@@ -43,8 +43,10 @@ export class PushNotificationManager {
         
         // Extract URL from notification data payload
         // Expo payload structure: response.notification.request.content.data
-        const data = response.notification?.request?.content?.data as Record<string, any>;
-        const targetUrl = data?.url;
+        const data = response.notification?.request?.content?.data as
+          | Record<string, unknown>
+          | undefined;
+        const targetUrl = typeof data?.['url'] === 'string' ? data['url'] : undefined;
 
         if (targetUrl) {
           console.log('PushNotificationManager: Routing to deep link', targetUrl);

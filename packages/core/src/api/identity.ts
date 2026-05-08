@@ -1,5 +1,5 @@
 import { getOnboardingState } from '../logic/domains/profile/onboarding';
-import { type User } from '../logic/schemas/user.schema';
+import type { User } from '../types/User';
 import { identity } from '../logic/managers/factory';
 import { APIError } from '../types/API';
 

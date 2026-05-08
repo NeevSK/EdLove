@@ -29,7 +29,7 @@
     "gn-divisions",
     "educational-zones"
   ],
-  "packageManager": "pnpm@10.30.2",
+  "packageManager": "pnpm@10.33.0",
   "scripts": {
     "build": "pnpm exec tsup src/index.ts --format esm,cjs --dts --clean",
     "test": "vitest run",

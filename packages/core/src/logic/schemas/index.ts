@@ -9,7 +9,6 @@ export * from './grading.schema';
 export * from './growth.schema';
 export * from './guardian.schema';
 export * from './inventory_item.schema';
-export * from './lesson.schema';
 export * from './library.schema';
 export * from './material.schema';
 export * from './payments.schema';

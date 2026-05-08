@@ -110,7 +110,7 @@ export function useAuthorityLifecycle() {
     // 2. Initial Session Check
     const checkSession = async () => {
       try {
-        const initialSession = await authAPI.getAuthSession();
+        const initialSession = (await authAPI.getAuthSession()) as Session | null;
         setSession(initialSession);
         setAuthSession(initialSession);
 

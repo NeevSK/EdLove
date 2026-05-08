@@ -46,9 +46,18 @@ export async function GET() {
 			collectionNames.map(async (collection) => {
 				const items = await getCollection(
 					collection,
-					({ data }) => !data.draft,
+					({ data }: { data: { draft?: boolean } }) => !data.draft,
 				);
-				return items.map((entry) => {
+				return items.map(
+					(entry: {
+						id: string;
+						data: {
+							title: string;
+							subtitle: string;
+							category?: string | null;
+							tags?: string[];
+						};
+					}) => {
 					const cleanId = normalizeId(entry.id);
 					const pathname = collectionPath(collection, cleanId);
 
@@ -62,7 +71,8 @@ export async function GET() {
 						tags: "tags" in entry.data ? entry.data.tags : [],
 						url: absoluteUrl(pathname),
 					};
-				});
+					},
+				);
 			}),
 		)
 	).flat();

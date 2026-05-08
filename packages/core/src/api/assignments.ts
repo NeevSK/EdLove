@@ -60,14 +60,14 @@ export const assignmentsAPI = {
   async create(
     assignment: Omit<Assignment, 'id' | 'created_at' | 'updated_at'>,
   ): Promise<Assignment> {
-    return educational.assignments.create(assignment) as unknown as Assignment;
+    return educational.assignments.create(assignment as any) as unknown as Assignment;
   },
 
   /**
    * @authority update Assignment
    */
   async update(id: string, updates: Partial<Assignment>): Promise<Assignment> {
-    return educational.assignments.update(id, updates) as unknown as Assignment;
+    return educational.assignments.update(id, updates as any) as unknown as Assignment;
   },
 
   /**

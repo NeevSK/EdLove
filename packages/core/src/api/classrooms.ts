@@ -48,6 +48,6 @@ export const classroomsAPI = {
   },
 
   async getTeacherStats(teacherId: string): Promise<TeacherStats> {
-    return educational.classrooms.getTeacherStats(teacherId) as TeacherStats;
+    return (await educational.classrooms.getTeacherStats(teacherId)) as TeacherStats;
   },
 };

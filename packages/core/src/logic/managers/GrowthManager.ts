@@ -47,6 +47,14 @@ const WHISPERED_MOMENT_SPECS: WhisperedMomentSpec[] = [
 export class GrowthManager {
   constructor(private growthPort: IGrowthPort) {}
 
+  emitSilent(input: {
+    user_id: string;
+    event_type: GrowthSignalType;
+    event_metadata?: Record<string, unknown>;
+  }): void {
+    void this.emitSignal(input).catch(() => {});
+  }
+
   async emitSignal(input: {
     user_id: string;
     event_type: GrowthSignalType;

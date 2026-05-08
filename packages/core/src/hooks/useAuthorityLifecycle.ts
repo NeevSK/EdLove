@@ -112,12 +112,12 @@ export function useAuthorityLifecycle() {
       });
 
     // 2. Initial Session Check
-    const checkSession = async () => {
-      let initialSession: Session | null = null;
-      try {
-        initialSession = await authAPI.getAuthSession();
-        setSession(initialSession);
-        setAuthSession(initialSession);
+      const checkSession = async () => {
+        let initialSession: Session | null = null;
+        try {
+          initialSession = (await authAPI.getAuthSession()) as Session | null;
+          setSession(initialSession);
+          setAuthSession(initialSession);
 
         if (initialSession?.user) {
           const internalId = await identityAPI.getMyInternalId();

@@ -26,6 +26,8 @@ describe('POA Exhaustive Verification: Every Role, Every Power', () => {
     has_global_access: false,
     is_personal: false,
     tier: 'free',
+    citizenship: 'WANDERER',
+    pricing_tier: 'FREE',
     features: [],
     flags: {},
     section_id: null,

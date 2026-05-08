@@ -10,7 +10,6 @@ export { isDemo } from './api/demo';
 export { deviceTrustAPI } from './api/deviceTrust';
 export { accountPin, validateAccountPin } from './lib/accountPin';
 export { marksToGPA } from './lib/grading';
-export { marksToGPA } from './lib/grading';
 export {
   CLASSROOM_RESOURCE_SCOPE,
   INSTITUTIONAL_RESOURCE_SCOPE,
@@ -261,4 +260,3 @@ export { useWorkspaceLayoutSync } from './native/useWorkspaceLayoutSync';
 export { z };
 export * from './constants/SriLankanSchools';
 export * from './hooks';
-

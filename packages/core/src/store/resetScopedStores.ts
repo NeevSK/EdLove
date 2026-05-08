@@ -65,6 +65,8 @@ const featureScopedDefaults = resolveFeatureFlags({
   tenancy: null,
   tenant_kind: 'customer',
   tier: 'free',
+  citizenship: 'WANDERER',
+  pricing_tier: 'FREE',
   is_anonymous: true,
   isAnonymous: true,
   has_global_access: false,

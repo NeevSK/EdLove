@@ -36,6 +36,8 @@ export interface User extends ProfileStats {
   school_name?: string | null; // Alias for organization_name
   tenant_kind?: TenantKind | null; // Distinguishes internal, customer, demo, and sandbox tenants
   tier?: string | null;
+  citizenship?: 'WANDERER' | 'SECOND_CLASS' | 'FIRST_CLASS' | string | null;
+  pricing_tier?: 'FREE' | 'PRO' | 'INSTITUTIONAL' | string | null;
   features?: string[];
   flags?: Record<string, boolean | string>;
   onboarding_completed?: boolean | null; // Flag indicating if user has completed onboarding

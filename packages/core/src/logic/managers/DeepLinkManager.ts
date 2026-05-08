@@ -43,7 +43,7 @@ export class DeepLinkManager {
       const params = Object.fromEntries(parsedUrl.searchParams.entries());
 
       // 1. Auth Callback Check
-      if (url.includes('auth/callback') || params.access_token) {
+      if (url.includes('auth/callback') || params['access_token']) {
         return this.handleAuthCallback(params);
       }
 
@@ -52,7 +52,7 @@ export class DeepLinkManager {
         const inviteCode = url.split('invite/classroom/')[1]?.split(/[?#]/)[0];
         return {
           type: DeepLinkType.CLASSROOM_INVITE,
-          params: { inviteCode, ...params },
+          params: inviteCode ? { inviteCode, ...params } : params,
           isHandled: false, // Shell needs to navigate
         };
       }
@@ -74,8 +74,8 @@ export class DeepLinkManager {
   }
 
   private async handleAuthCallback(params: Record<string, string>): Promise<DeepLinkResult> {
-    const access_token = params.access_token;
-    const refresh_token = params.refresh_token;
+    const access_token = params['access_token'];
+    const refresh_token = params['refresh_token'];
 
     if (access_token && refresh_token) {
       try {

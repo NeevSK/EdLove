@@ -3,15 +3,16 @@ import { IdentityManager } from './IdentityManager';
 import { GrowthManager } from './GrowthManager';
 import { CommunityManager } from './CommunityManager';
 import { composeUserAbilities } from '../permissions/composer';
-import { marksToGPA } from '../../../lib/grading';
-import { APIError } from '../../../types/API';
+import { marksToGPA } from '../../lib/grading';
+import { APIError } from '../../types/API';
+import type { LessonMaterial } from '../../types/LessonMaterial';
 import { 
   Classroom, Lesson, Assignment, AssignmentSubmission, ClassroomGroup, 
   ClassroomStudent, StudentAssignment, StudentSubmissionSummary, 
   TeacherStats, StudentAcademicRecord, TeacherProfessionalRecord, 
-  PrincipalGovernanceRecord, SchoolLegacyRecord, ClassroomLegacyRecord,
-  EnrollmentRecord, Grade, ClassroomGradingSettings, Attendance
-} from '../../schemas/classroom.schema';
+  PrincipalGovernanceRecord, SchoolLegacyRecord, ClassroomLegacyRecord
+} from '../schemas/classroom.schema';
+import type { ClassroomGradingSettings } from '../schemas/grading.schema';
 
 /**
  * EducationalManager
@@ -94,7 +95,7 @@ export class EducationalManager {
         void this.growth.emitSilent({
           user_id: myId,
           event_type: 'assignment_created',
-          event_metadata: { classroom_id: assignment.classroom_id },
+          event_metadata: { classroom_id: assignment['classroom_id'] },
         });
       }
       return created;

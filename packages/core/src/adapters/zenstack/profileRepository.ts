@@ -9,6 +9,7 @@ import type {
   ProfileRepository,
   ProfileTemporalReadOptions,
   PulseMetrics,
+  UserPreferences,
   UserRewardsSnapshot,
   WhisperedMomentSnapshot,
   UserGrowthState,
@@ -384,6 +385,27 @@ export const createZenStackProfileRepository = (
           }),
         ),
       );
+    },
+    async getUserPreferences(userId) {
+      const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+        .from('user_preferences')
+        .select('*')
+        .eq('user_id', userId)
+        .maybeSingle();
+
+      if (error) throw new APIError('Failed to fetch user preferences', error.code, error);
+      return (data as UserPreferences | null) ?? null;
+    },
+    async updateUserPreferences(userId, updates) {
+      const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+        .from('user_preferences')
+        .update(updates)
+        .eq('user_id', userId)
+        .select()
+        .single();
+
+      if (error) throw new APIError('Failed to update user preferences', error.code, error);
+      return data as UserPreferences;
     },
 
     async getCommunityProfile(communityId) {

@@ -42,6 +42,14 @@ export const usePermissions = () => {
       role: active_bond?.capacity || null,
       traits: active_bond?.capacity ? [`role:${active_bond.capacity}`] : [],
       tier: user?.tier || 'free',
+      citizenship:
+        user?.citizenship === 'SECOND_CLASS' || user?.citizenship === 'FIRST_CLASS'
+          ? user.citizenship
+          : 'WANDERER',
+      pricing_tier:
+        user?.pricing_tier === 'PRO' || user?.pricing_tier === 'INSTITUTIONAL'
+          ? user.pricing_tier
+          : 'FREE',
       features: user?.features || [],
       flags: user?.flags || {},
 
