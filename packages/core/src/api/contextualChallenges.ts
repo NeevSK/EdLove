@@ -31,7 +31,7 @@
  */
 
 import { getCurrentTimeMillis } from '../utils/temporal';
-import { supabase } from './supabase';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from './supabase';
 
 // \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 // TYPES
@@ -210,7 +210,7 @@ export const contextualChallengesAPI = {
    * Used by the Teacher's Classroom view and Student's home screen.
    */
   async getClassChallenge(classroomId: string): Promise<Challenge | null> {
-    const { data } = await supabase
+    const { data } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('contextual_challenges')
       .select('*')
       .eq('classroom_id', classroomId)
@@ -254,7 +254,7 @@ export const contextualChallengesAPI = {
       feedback_given: 'Every student received care. The nourishing is complete. \uD83E\uDEB7',
     };
 
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('contextual_challenges')
       .insert({
         type: 'class_collective_pulse',
@@ -288,7 +288,7 @@ export const contextualChallengesAPI = {
    * Used by the School Forest view (principal) and Teacher's home screen.
    */
   async getSchoolChallenge(schoolId: string): Promise<Challenge | null> {
-    const { data } = await supabase
+    const { data } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('contextual_challenges')
       .select('*')
       .eq('school_id', schoolId)
@@ -316,7 +316,7 @@ export const contextualChallengesAPI = {
     const now = new Date();
     const endsAt = new Date(now.getTime() + durationDays * 86400000);
 
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('contextual_challenges')
       .insert({
         type: 'school_season_challenge',
@@ -350,7 +350,7 @@ export const contextualChallengesAPI = {
    * Returns null if the user has not set one, or has not opted in.
    */
   async getPersonalCompass(userId: string): Promise<PersonalCompass | null> {
-    const { data } = await supabase
+    const { data } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('personal_compasses')
       .select('*')
       .eq('user_id', userId)
@@ -376,7 +376,7 @@ export const contextualChallengesAPI = {
   ): Promise<PersonalCompass> {
     try {
       // Expire any current active compass
-      await supabase
+      await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
         .from('personal_compasses')
         .update({ status: 'expired', updated_at: new Date().toISOString() })
         .eq('user_id', userId)
@@ -387,7 +387,7 @@ export const contextualChallengesAPI = {
     const now = new Date();
     const endsAt = new Date(now.getTime() + durationDays * 86400000);
 
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('personal_compasses')
       .insert({
         user_id: userId,
@@ -412,7 +412,7 @@ export const contextualChallengesAPI = {
    */
   async clearPersonalCompass(userId: string): Promise<void> {
     try {
-      await supabase
+      await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
         .from('personal_compasses')
         .update({ status: 'expired', updated_at: new Date().toISOString() })
         .eq('user_id', userId)
@@ -448,7 +448,7 @@ export const contextualChallengesAPI = {
     if (classroomId) {
       updates.push(
         (async () => {
-          const { data } = await supabase
+          const { data } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
             .from('contextual_challenges')
             .select('id, current_count, target_count')
             .eq('classroom_id', classroomId)
@@ -459,7 +459,7 @@ export const contextualChallengesAPI = {
           if (!data) return;
           const newCount = (data.current_count ?? 0) + 1;
           const isComplete = newCount >= data.target_count;
-          const { error } = await supabase
+          const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
             .from('contextual_challenges')
             .update({
               current_count: newCount,
@@ -477,7 +477,7 @@ export const contextualChallengesAPI = {
     if (schoolId) {
       updates.push(
         (async () => {
-          const { data } = await supabase
+          const { data } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
             .from('contextual_challenges')
             .select('id, current_count, target_count')
             .eq('school_id', schoolId)
@@ -489,7 +489,7 @@ export const contextualChallengesAPI = {
           if (!data) return;
           const newCount = (data.current_count ?? 0) + 1;
           const isComplete = newCount >= data.target_count;
-          const { error } = await supabase
+          const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
             .from('contextual_challenges')
             .update({
               current_count: newCount,
@@ -506,7 +506,7 @@ export const contextualChallengesAPI = {
     // Check personal compass
     updates.push(
       (async () => {
-        const { data } = await supabase
+        const { data } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
           .from('personal_compasses')
           .select('id, current_count, target_count')
           .eq('user_id', userId)
@@ -518,7 +518,7 @@ export const contextualChallengesAPI = {
         const newCount = (data.current_count ?? 0) + 1;
         const isComplete = newCount >= data.target_count;
         try {
-          const { error } = await supabase
+          const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
             .from('personal_compasses')
             .update({
               current_count: newCount,
@@ -594,7 +594,7 @@ export const contextualChallengesAPI = {
     const now = getCurrentTimeMillis();
     const thirtyDaysAgo = new Date(now - 30 * 86400000).toISOString();
 
-    const query = supabase
+    const query = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('contextual_challenges')
       .select('*')
       .eq('school_id', schoolId)

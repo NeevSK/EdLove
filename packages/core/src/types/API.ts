@@ -1,12 +1,17 @@
-// API-specific types and errors
+import { SovereignError } from './Errors';
 
-export class APIError extends Error {
+export class APIError extends SovereignError {
   constructor(
     message: string,
-    public code?: string,
+    public code: string = 'API_ERROR',
     public details?: any,
   ) {
-    super(message);
+    super({
+      title: message,
+      code,
+      devDetails: details,
+      status: 400,
+    });
     this.name = 'APIError';
   }
 }

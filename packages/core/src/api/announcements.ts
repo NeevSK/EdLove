@@ -1,4 +1,4 @@
-import { supabase } from './supabase';
+import { community } from '../logic/managers/factory';
 
 /**
  * Announcements API
@@ -10,39 +10,7 @@ export const announcementAPI = {
    * @authority read Group
    */
   async getAnnouncements(schoolId: string) {
-    const { data, error } = await supabase
-      .from('announcements')
-      .select(`
-                *,
-                author:users!announcements_author_id_fkey(
-                    full_name,
-                    avatar_url
-                )
-            `)
-      .eq('school_id', schoolId)
-      .order('is_pinned', { ascending: false })
-      .order('created_at', { ascending: false });
-
-    if (error) throw error;
-
-    interface AnnouncementRow {
-      id: string;
-      school_id: string;
-      author_id: string;
-      content: string;
-      is_pinned: boolean;
-      created_at: string;
-      author: {
-        full_name: string | null;
-        avatar_url: string | null;
-      } | null;
-    }
-
-    return (data as unknown as AnnouncementRow[] || []).map((announcement) => ({
-      ...announcement,
-      author_name: announcement.author?.full_name,
-      author_avatar: announcement.author?.avatar_url,
-    }));
+    return community.getAnnouncements(schoolId);
   },
 
   /**
@@ -54,21 +22,11 @@ export const announcementAPI = {
     content: string,
     isPinned: boolean = false,
   ) {
-    const { data, error } = await supabase
-      .from('announcements')
-      .insert([
-        {
-          school_id: schoolId,
-          author_id: authorId,
-          content: content,
-          is_pinned: isPinned,
-          created_at: new Date().toISOString(),
-        },
-      ])
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data;
+    return community.createAnnouncement({
+      schoolId,
+      authorId,
+      content,
+      isPinned,
+    });
   },
 };

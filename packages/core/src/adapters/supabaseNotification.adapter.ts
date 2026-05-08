@@ -1,4 +1,4 @@
-import { supabase } from '../api/supabase';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../api/supabase';
 import { AppNotification } from '../hooks/useNotifications';
 import { INotificationPort } from '../logic/ports/notification.port';
 
@@ -7,7 +7,7 @@ import { INotificationPort } from '../logic/ports/notification.port';
  */
 export class SupabaseNotificationAdapter implements INotificationPort {
   async getNotifications(userId: string, limit: number = 20): Promise<AppNotification[]> {
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('notifications')
       .select('id, type, title, body, is_read, reference_id, reference_type, created_at')
       .eq('user_id', userId)
@@ -19,7 +19,7 @@ export class SupabaseNotificationAdapter implements INotificationPort {
   }
 
   async getUnreadCount(userId: string): Promise<number> {
-    const { count, error } = await supabase
+    const { count, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('notifications')
       .select('*', { count: 'exact', head: true })
       .eq('user_id', userId)
@@ -30,7 +30,7 @@ export class SupabaseNotificationAdapter implements INotificationPort {
   }
 
   async markAsRead(userId: string, notificationId: string): Promise<void> {
-    const { error } = await supabase
+    const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('notifications')
       .update({ is_read: true })
       .eq('id', notificationId)
@@ -40,7 +40,7 @@ export class SupabaseNotificationAdapter implements INotificationPort {
   }
 
   async markAllRead(userId: string): Promise<void> {
-    const { error } = await supabase
+    const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('notifications')
       .update({ is_read: true })
       .eq('user_id', userId)
@@ -55,7 +55,7 @@ export class SupabaseNotificationAdapter implements INotificationPort {
     onUpdate: (notification: AppNotification) => void,
     onStatusChange: (status: 'CONNECTED' | 'DISCONNECTED' | 'ERROR') => void
   ): () => void {
-    const channel = supabase
+    const channel = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .channel(`notifications:global:${userId}`)
       .on(
         'postgres_changes',
@@ -84,7 +84,7 @@ export class SupabaseNotificationAdapter implements INotificationPort {
       });
 
     return () => {
-      supabase.removeChannel(channel).catch(() => {});
+      __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.removeChannel(channel).catch(() => {});
     };
   }
 }

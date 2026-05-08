@@ -7,6 +7,7 @@ export * from './hooks/useInstitutionalHistory';
 export * from './hooks/usePrincipalGovernanceHistory';
 export * from './hooks/useProfile';
 export * from './hooks/useProfileCompletion';
+export * from './hooks/useNotificationPreferences';
 export * from './hooks/useProfileHistory';
 export * from './hooks/useSchoolProfile';
 export * from './hooks/useSchoolPulse';

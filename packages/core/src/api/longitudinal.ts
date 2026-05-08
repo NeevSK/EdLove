@@ -8,14 +8,14 @@ import type {
 import { StudentLongitudinalEventSchema } from '../logic/schemas/temporal.schema';
 import { APIError } from '../types/API';
 import { longitudinalContract } from './longitudinal.contract';
-import { supabase } from './supabase';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from './supabase';
 
 async function listEvents(
   studentId: string,
   viewDate: string,
   entityTypes?: LongitudinalEntityType[],
 ): Promise<StudentLongitudinalEvent[]> {
-  let query = supabase
+  let query = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
     .from('student_longitudinal_events')
     .select('*')
     .eq('student_id', studentId)

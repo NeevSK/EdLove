@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
-import { supabase } from '../api/supabase';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../api/supabase';
 import { usePermissions } from '../logic/permissions/hooks/usePermissions';
 import { applyTemporalFilter } from '../logic/utils/temporalUtils';
 import { useTemporalStore } from '../store/useTemporalStore';
@@ -41,7 +41,7 @@ export function useJourneyHistory(_section?: string, _feature?: string) {
     queryFn: async () => {
       if (!userId) return [];
 
-      let query = supabase.from('mood_logs').select('*').eq('user_id', userId);
+      let query = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('mood_logs').select('*').eq('user_id', userId);
       query = applyTemporalFilter(query, {
         column: 'created_at',
         mode: 'event_time',
@@ -69,7 +69,7 @@ export function useJourneyHistory(_section?: string, _feature?: string) {
     queryKey: ['journey_history_journal', userId, viewDate, viewScale],
     queryFn: async () => {
       if (!userId) return [];
-      let query = supabase.from('journal_entries').select('*').eq('user_id', userId);
+      let query = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('journal_entries').select('*').eq('user_id', userId);
       query = applyTemporalFilter(query, {
         column: 'created_at',
         mode: 'event_time',
@@ -97,7 +97,7 @@ export function useJourneyHistory(_section?: string, _feature?: string) {
     queryFn: async () => {
       if (!userId) return [];
 
-      let query = supabase
+      let query = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
         .from('user_growth_state_versions')
         .select('id, operation, recorded_at, snapshot')
         .eq('user_id', userId);
@@ -143,7 +143,7 @@ export function useJourneyHistory(_section?: string, _feature?: string) {
     queryFn: async () => {
       if (!userId) return [];
 
-      let query = supabase
+      let query = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
         .from('user_rewards_versions')
         .select('id, operation, recorded_at, snapshot')
         .eq('user_id', userId);
@@ -176,7 +176,7 @@ export function useJourneyHistory(_section?: string, _feature?: string) {
     queryFn: async () => {
       if (!userId) return [];
 
-      let query = supabase
+      let query = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
         .from('whispered_moments')
         .select('id, moment_key, moment_name_en, moment_name_si, awarded_at')
         .eq('user_id', userId);

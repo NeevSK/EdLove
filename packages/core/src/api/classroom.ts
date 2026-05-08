@@ -1,49 +1,30 @@
 import type { ClassroomStudent, TeacherStats } from '../logic/schemas/classroom.schema';
-import { educationalServices } from './runtimes/educational.runtime';
+import { educational } from '../logic/managers/factory';
 import type { Lesson } from '../types';
-import { educationalContract } from './educational.contract';
 
 // ============================================================================
 // LESSONS API
 // ============================================================================
 
 export const lessonsAPI = {
-  /**
-   * @authority read Lesson
-   */
   async getAll(classroomId: string): Promise<Lesson[]> {
-    return (await educationalServices.lessons.getAll(classroomId)) as unknown as Lesson[];
+    return educational.lessons.getAll(classroomId) as unknown as Lesson[];
   },
 
-  /**
-   * @authority read Lesson
-   */
   async getByDate(classroomId: string, date: string): Promise<Lesson[]> {
-    return (await educationalServices.lessons.getByDate(classroomId, date)) as unknown as Lesson[];
+    return educational.lessons.getByDate(classroomId, date) as unknown as Lesson[];
   },
 
-  /**
-   * @authority create Lesson
-   */
   async create(lesson: Omit<Lesson, 'id' | 'created_at' | 'updated_at'>): Promise<Lesson> {
-    return (await educationalServices.lessons.create({
-      ...lesson,
-      updated_at: new Date(),
-    } as Omit<Lesson, 'id' | 'created_at'>)) as unknown as Lesson;
+    return educational.lessons.create(lesson as Omit<Lesson, 'id' | 'created_at'>) as unknown as Lesson;
   },
 
-  /**
-   * @authority update Lesson
-   */
   async update(id: string, updates: Partial<Lesson>): Promise<Lesson> {
-    return (await educationalServices.lessons.update(id, updates)) as unknown as Lesson;
+    return educational.lessons.update(id, updates) as unknown as Lesson;
   },
 
-  /**
-   * @authority delete Lesson
-   */
   async delete(id: string): Promise<void> {
-    return educationalServices.lessons.delete(id);
+    return educational.lessons.delete(id);
   },
 };
 
@@ -52,98 +33,57 @@ export const lessonsAPI = {
 // ============================================================================
 
 export const studentsAPI = {
-  /**
-   * @authority read Classroom
-   */
   async getAll(classroomId: string): Promise<ClassroomStudent[]> {
-    return (await educationalServices.students.getAll(
-      classroomId,
-    )) as unknown as ClassroomStudent[];
+    return educational.students.getAll(classroomId) as unknown as ClassroomStudent[];
   },
 
-  /**
-   * @authority update Classroom
-   */
   async enroll(classroomId: string, studentId: string): Promise<ClassroomStudent> {
-    return (await educationalServices.students.enroll(
-      classroomId,
-      studentId,
-    )) as unknown as ClassroomStudent;
+    return educational.students.enroll(classroomId, studentId) as unknown as ClassroomStudent;
   },
 
-  /**
-   * @authority update Classroom
-   */
   async remove(classroomId: string, studentId: string): Promise<void> {
-    return educationalServices.students.remove(classroomId, studentId);
+    return educational.students.remove(classroomId, studentId);
   },
 
-  /**
-   * @authority create Classroom
-   */
   async create(student: {
     full_name: string;
     roll_number?: string;
     notes?: string;
     classroom_id: string;
   }) {
-    return educationalServices.classroomStudents.add(
+    return educational.classroomStudents.addShadowStudent(
       student.classroom_id,
-      '', // student_id not needed for shadow student creation
+      student.full_name,
       student.roll_number,
       student.notes,
     );
   },
 
-  /**
-   * @authority update Classroom
-   */
   async update(id: string, updates: { roll_number?: string; notes?: string }) {
-    return educationalServices.classroomStudents.updateById(id, updates);
+    return educational.classroomStudents.updateById(id, updates);
   },
 
-  /**
-   * @authority read Classroom
-   */
   async getTeacherStats(teacherId: string): Promise<TeacherStats> {
-    return educationalServices.classrooms.getTeacherStats(teacherId);
+    return educational.classrooms.getTeacherStats(teacherId);
   },
 
-  /**
-   * @authority read AcademicHistory
-   */
   async getHistoricalAcademicRecords(studentId: string) {
-    return educationalServices.students.getHistoricalAcademicRecords(studentId);
+    return educational.students.getHistoricalAcademicRecords(studentId);
   },
 
-  /**
-   * @authority read ProfessionalHistory
-   */
   async getHistoricalProfessionalRecords(teacherId: string) {
-    return educationalServices.teachers.getHistoricalProfessionalRecords(teacherId);
+    return educational.teachers.getHistoricalProfessionalRecords(teacherId);
   },
 
-  /**
-   * @authority read GovernanceHistory
-   */
   async getHistoricalGovernanceRecords(principalId: string) {
-    return educationalServices.teachers.getHistoricalGovernanceRecords(principalId);
+    return educational.teachers.getHistoricalGovernanceRecords(principalId);
   },
 
-  /**
-   * @authority read School
-   */
   async getSchoolLegacyHistory(schoolId: string) {
-    return educationalServices.institutions.getSchoolLegacyHistory(schoolId);
+    return educational.institutions.getSchoolLegacyHistory(schoolId);
   },
 
-  /**
-   * @authority read Classroom
-   */
   async getClassroomLegacyHistory(classroomId: string) {
-    return educationalServices.institutions.getClassroomLegacyHistory(classroomId);
+    return educational.institutions.getClassroomLegacyHistory(classroomId);
   },
 };
-
-// Satisfy linter
-void educationalContract;

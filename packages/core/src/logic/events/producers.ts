@@ -1,8 +1,6 @@
-import type { Inngest } from 'inngest';
+import type { IEventBusPort } from '../ports/eventBus.port';
 import type { Classroom, Student, StudentGrade, User } from '../schemas';
 import type { Attendance } from '../schemas/attendance.schema';
-
-type SendableInngestClient = Pick<Inngest.Any, 'send'>;
 
 export interface WorkflowCorrelationMetadata {
   correlationId?: string;
@@ -81,17 +79,18 @@ export interface StudentSupportRequestedPayload {
  * shapes in many places.
  */
 export async function sendWellbeingMoodLogged(
-  client: SendableInngestClient,
+  bus: IEventBusPort,
   input: WellbeingMoodLoggedPayload,
 ) {
-  return client.send({
-    id: input.eventId,
+  return bus.publish({
     name: 'wellbeing/mood.logged',
     data: {
       studentId: input.studentId,
       moodScore: input.moodScore,
       schoolId: input.schoolId,
       loggedAt: input.loggedAt,
+    },
+    metadata: {
       correlationId: input.correlationId,
       causationId: input.causationId,
       tenantId: input.tenantId,
@@ -99,42 +98,53 @@ export async function sendWellbeingMoodLogged(
   });
 }
 
-export async function sendUserCreated(client: SendableInngestClient, input: UserCreatedPayload) {
-  return client.send({
-    id: input.id,
+export async function sendUserCreated(bus: IEventBusPort, input: UserCreatedPayload) {
+  return bus.publish({
     name: 'user/created',
     data: input,
+    metadata: {
+      correlationId: input.correlationId,
+      causationId: input.causationId,
+      tenantId: input.tenantId,
+    },
   });
 }
 
-export async function sendUserUpdated(client: SendableInngestClient, input: UserUpdatedPayload) {
-  return client.send({
-    id: input.id,
+export async function sendUserUpdated(bus: IEventBusPort, input: UserUpdatedPayload) {
+  return bus.publish({
     name: 'user/updated',
     data: input,
+    metadata: {
+      correlationId: input.correlationId,
+      causationId: input.causationId,
+      tenantId: input.tenantId,
+    },
   });
 }
 
 export async function sendSchoolClassroomCreated(
-  client: SendableInngestClient,
+  bus: IEventBusPort,
   input: SchoolClassroomCreatedPayload,
 ) {
-  return client.send({
-    id: input.id,
+  return bus.publish({
     name: 'school/classroom.created',
     data: input,
+    metadata: {
+      correlationId: input.correlationId,
+      causationId: input.causationId,
+      tenantId: input.tenantId,
+    },
   });
 }
 
 export async function sendSchoolAttendanceRecorded(
-  client: SendableInngestClient,
+  bus: IEventBusPort,
   input: SchoolAttendanceRecordedPayload,
 ) {
-  return client.send({
-    id: input.id,
+  return bus.publish({
     name: 'school/attendance.recorded',
-    data: {
-      ...input,
+    data: input,
+    metadata: {
       correlationId: input.correlationId,
       causationId: input.causationId,
       tenantId: input.tenantId,
@@ -143,33 +153,40 @@ export async function sendSchoolAttendanceRecorded(
 }
 
 export async function sendSchoolGradePublished(
-  client: SendableInngestClient,
+  bus: IEventBusPort,
   input: SchoolGradePublishedPayload,
 ) {
-  return client.send({
-    id: input.id,
+  return bus.publish({
     name: 'school/grade.published',
     data: input,
+    metadata: {
+      correlationId: input.correlationId,
+      causationId: input.causationId,
+      tenantId: input.tenantId,
+    },
   });
 }
 
 export async function sendStudentOnboarded(
-  client: SendableInngestClient,
+  bus: IEventBusPort,
   input: StudentOnboardedPayload,
 ) {
-  return client.send({
-    id: input.id,
+  return bus.publish({
     name: 'student/onboarded',
     data: input,
+    metadata: {
+      correlationId: input.correlationId,
+      causationId: input.causationId,
+      tenantId: input.tenantId,
+    },
   });
 }
 
 export async function sendSyncMutationQueued(
-  client: SendableInngestClient,
+  bus: IEventBusPort,
   input: SyncMutationQueuedPayload,
 ) {
-  return client.send({
-    id: input.eventId ?? input.mutationId,
+  return bus.publish({
     name: 'sync/mutation-queued',
     data: {
       mutationId: input.mutationId,
@@ -178,18 +195,20 @@ export async function sendSyncMutationQueued(
       idempotencyKey: input.idempotencyKey,
       payload: input.payload,
       tenantId: input.tenantId,
+    },
+    metadata: {
       correlationId: input.correlationId,
       causationId: input.causationId,
+      tenantId: input.tenantId,
     },
   });
 }
 
 export async function sendTeacherSummaryRequested(
-  client: SendableInngestClient,
+  bus: IEventBusPort,
   input: TeacherSummaryRequestedPayload,
 ) {
-  return client.send({
-    id: input.runId,
+  return bus.publish({
     name: 'agent/teacher-summary.requested',
     data: {
       runId: input.runId,
@@ -203,6 +222,8 @@ export async function sendTeacherSummaryRequested(
       focusPrompt: input.focusPrompt,
       reviewMode: input.reviewMode ?? 'draft_only',
       evidenceScopes: input.evidenceScopes,
+    },
+    metadata: {
       correlationId: input.correlationId,
       causationId: input.causationId,
       tenantId: input.tenantId,
@@ -211,11 +232,10 @@ export async function sendTeacherSummaryRequested(
 }
 
 export async function sendStudentSupportRequested(
-  client: SendableInngestClient,
+  bus: IEventBusPort,
   input: StudentSupportRequestedPayload,
 ) {
-  return client.send({
-    id: input.runId,
+  return bus.publish({
     name: 'agent/student-support.requested',
     data: {
       runId: input.runId,
@@ -231,6 +251,8 @@ export async function sendStudentSupportRequested(
       focusPrompt: input.focusPrompt,
       reviewMode: input.reviewMode ?? 'draft_only',
       evidenceScopes: input.evidenceScopes,
+    },
+    metadata: {
       correlationId: input.correlationId,
       causationId: input.causationId,
       tenantId: input.tenantId,

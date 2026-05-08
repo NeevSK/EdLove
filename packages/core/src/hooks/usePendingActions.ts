@@ -11,7 +11,7 @@
  */
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { supabase } from '../api/supabase';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../api/supabase';
 
 export interface PendingAttendanceItem {
   classroomId: string;
@@ -50,7 +50,7 @@ export function usePendingActions(teacherId: string | null | undefined): Pending
 
     try {
       //  1. Classrooms owned by this teacher
-      const { data: classrooms, error: clsErr } = await supabase
+      const { data: classrooms, error: clsErr } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
         .from('classrooms')
         .select('id, name')
         .eq('teacher_id', teacherId)
@@ -65,7 +65,7 @@ export function usePendingActions(teacherId: string | null | undefined): Pending
       const classroomIds = classrooms.map((c) => c.id);
 
       //  2. Classrooms that already have attendance today
-      const { data: markedToday } = await supabase
+      const { data: markedToday } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
         .from('attendance')
         .select('classroom_id')
         .in('classroom_id', classroomIds)
@@ -81,7 +81,7 @@ export function usePendingActions(teacherId: string | null | undefined): Pending
       setAttendancePending(pending);
 
       //  3. Assignments due today or overdue with ungraded submissions
-      const { data: assignments } = await supabase
+      const { data: assignments } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
         .from('assignments')
         .select('id, title, classroom_id, due_date')
         .in('classroom_id', classroomIds)
@@ -96,7 +96,7 @@ export function usePendingActions(teacherId: string | null | undefined): Pending
       const assignmentIds = assignments.map((a) => a.id);
 
       // Submissions with no grade (graded_at IS NULL or grade IS NULL)
-      const { data: ungraded } = await supabase
+      const { data: ungraded } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
         .from('submissions')
         .select('assignment_id')
         .in('assignment_id', assignmentIds)

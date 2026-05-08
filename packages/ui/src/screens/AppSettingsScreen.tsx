@@ -22,6 +22,7 @@ import { ScrollView } from '../components/ui/scroll-view';
 import { Switch } from '../components/ui/switch';
 import { Heading, Text } from '../components/ui/text';
 import { VStack } from '../components/ui/vstack';
+import { NotificationSettingsPanel } from '../components/NotificationSettingsPanel';
 import { useEnvironment } from '../context';
 import { useTheme } from '../hooks/useTheme';
 import { useSanctuaryToast } from '../providers/ToastProvider';
@@ -433,6 +434,12 @@ const AppSettingsScreen = memo(function AppSettingsScreen({ navigation }: any) {
           description={t('profile.privacy.preview_desc', 'View your own public profile card')}
           onPress={handlePreviewProfile}
         />
+
+        <SectionHeader
+          title={t('settings.notificationPreferences', 'Notifications')}
+          description={t('settings.notification_desc', 'Manage channel delivery and topic alerts')}
+        />
+        <NotificationSettingsPanel />
 
         <SectionHeader
           title={t('profile.account.actions', 'Device security')}

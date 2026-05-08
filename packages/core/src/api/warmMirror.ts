@@ -21,7 +21,7 @@
 import { composeUserAbilities } from '../logic/permissions/composer';
 import { APIError } from '../types/API';
 import { identityAPI } from './identity';
-import { supabase } from './supabase';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from './supabase';
 
 // \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 // TYPES
@@ -80,7 +80,7 @@ export const warmMirrorAPI = {
     const periodStart = since ?? new Date(now - 7 * 24 * 60 * 60 * 1000).toISOString();
 
     // 1. Days present \u2014 distinct calendar days with any growth_event
-    const { data: growthEvents } = await supabase
+    const { data: growthEvents } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('growth_events')
       .select('created_at')
       .eq('user_id', userId)
@@ -92,7 +92,7 @@ export const warmMirrorAPI = {
     const days_present = distinctDays.size;
 
     // 2. Quiet self-care moments
-    const { count: quietCount } = await supabase
+    const { count: quietCount } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('growth_events')
       .select('id', { count: 'exact', head: true })
       .eq('user_id', userId)
@@ -101,7 +101,7 @@ export const warmMirrorAPI = {
     const quiet_moments = quietCount ?? 0;
 
     // 3. Impact ripples delivered this period
-    const { count: ripplesCount } = await supabase
+    const { count: ripplesCount } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('impact_ripples')
       .select('id', { count: 'exact', head: true })
       .eq('recipient_user_id', userId)
@@ -113,7 +113,7 @@ export const warmMirrorAPI = {
     // PostgREST has no direct string-length filter, so we fetch this teacher's feedback
     // text and measure length in application code. The user_id filter keeps the
     // result set small (only this teacher's grades in this period).
-    const { data: gradingData } = await supabase
+    const { data: gradingData } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('grades')
       .select('feedback')
       .eq('user_id', userId)
@@ -124,7 +124,7 @@ export const warmMirrorAPI = {
     ).length;
 
     // 5. Resources/lessons that reached others (via resource_saved or resource_read ripples)
-    const { data: reachRipples } = await supabase
+    const { data: reachRipples } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('impact_ripples')
       .select('source_entity_id')
       .eq('recipient_user_id', userId)
@@ -136,7 +136,7 @@ export const warmMirrorAPI = {
     ).size;
 
     // 6. Posts that sparked a conversation (post_sparked ripples)
-    const { count: postsCount } = await supabase
+    const { count: postsCount } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('impact_ripples')
       .select('id', { count: 'exact', head: true })
       .eq('recipient_user_id', userId)
@@ -146,7 +146,7 @@ export const warmMirrorAPI = {
     const posts_that_sparked = postsCount ?? 0;
 
     // 7. Days since joined (from the user's growth state)
-    const { data: growthState } = await supabase
+    const { data: growthState } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('user_growth_state')
       .select('created_at')
       .eq('user_id', userId)

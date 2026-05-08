@@ -55,3 +55,5 @@ export type Receipt = $ModelResult<$Schema, "Receipt">;
 export type ClassroomNote = $ModelResult<$Schema, "ClassroomNote">;
 export type StudentLongitudinalEvent = $ModelResult<$Schema, "StudentLongitudinalEvent">;
 export type SentinelAuditLog = $ModelResult<$Schema, "SentinelAuditLog">;
+export type FeatureFlag = $ModelResult<$Schema, "FeatureFlag">;
+export type SchoolRegistry = $ModelResult<$Schema, "SchoolRegistry">;

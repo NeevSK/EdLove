@@ -53,6 +53,7 @@ import ProfileSkeleton from '../components/ProfileSkeleton';
 import ThuthimalBadge from '../components/ThuthimalBadge';
 import { useProfile } from '../hooks/useProfile';
 import { useProfileCompletion } from '../hooks/useProfileCompletion';
+import { NotificationSettingsPanel } from '@repo/ui/components/NotificationSettingsPanel';
 import { toFullProfileParams, useProfileNavigation, type ProfileNavigationCapabilities } from '../navigation';
 import type { UserProfile } from '../types';
 
@@ -516,6 +517,14 @@ export const ProfileScreen = () => {
 
             <Animated.View entering={FadeInDown.delay(600).duration(500)}>
               <AppExperienceSection t={t} cardWidth={cardWidth} />
+            </Animated.View>
+
+            <Animated.View entering={FadeInDown.delay(650).duration(500)}>
+              <Center>
+                <Box style={{ width: cardWidth }}>
+                   <NotificationSettingsPanel />
+                </Box>
+              </Center>
             </Animated.View>
 
             <Animated.View entering={FadeInDown.delay(700).duration(500)}>

@@ -2,6 +2,10 @@ import NetInfo from '@react-native-community/netinfo';
 import * as Device from 'expo-device';
 import * as Haptics from 'expo-haptics';
 import * as Location from 'expo-location';
+import * as SecureStore from 'expo-secure-store';
+import * as BackgroundTask from 'expo-background-task';
+import * as TaskManager from 'expo-task-manager';
+import * as Notifications from 'expo-notifications';
 import { Linking, Platform, Share, StatusBar } from 'react-native';
 import type {
   CoreRuntimeEnvironment,
@@ -13,7 +17,13 @@ import type {
   ShareOptions,
   ShareProvider,
   UIProvider,
+  SecureStorageProvider,
+  SecureStorageOptions,
+  BackgroundTaskProvider,
+  BackgroundTaskOptions,
 } from '../types/runtime';
+import { BackgroundTaskResult, BackgroundTaskStatus } from '../types/runtime';
+import * as Font from 'expo-font';
 import { storage } from './storage';
 
 export const nativeStorageProvider = {
@@ -57,6 +67,9 @@ export const nativeHapticsProvider: HapticsProvider = {
 export const nativeLinkingProvider: LinkingProvider = {
   openURL: (url: string) => Linking.openURL(url),
   canOpenURL: (url: string) => Linking.canOpenURL(url),
+  addEventListener: (type: 'url', handler: (event: { url: string }) => void) =>
+    Linking.addEventListener(type, handler),
+  getInitialURL: () => Linking.getInitialURL(),
 };
 
 export const nativeLocationProvider: LocationProvider = {
@@ -72,7 +85,6 @@ export const nativeNetworkProvider: NetworkProvider = {
 
 export const nativeShareProvider: ShareProvider = {
   share: async (options: ShareOptions) => {
-    // React Native's Share.share expects ShareContent where message is mandatory for some platforms
     await Share.share({
       title: options.title,
       message: options.message ?? '',
@@ -86,8 +98,95 @@ export const nativeUIProvider: UIProvider = {
     StatusBar.setHidden(hidden, animation),
 };
 
+export const nativeSecureStorageProvider: SecureStorageProvider = {
+  getItemAsync: (key: string, options?: SecureStorageOptions) =>
+    SecureStore.getItemAsync(key, {
+      requireAuthentication: options?.requireAuthentication,
+    }),
+  setItemAsync: (key: string, value: string, options?: SecureStorageOptions) =>
+    SecureStore.setItemAsync(key, value, {
+      requireAuthentication: options?.requireAuthentication,
+      keychainAccessible: SecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
+    }),
+  deleteItemAsync: (key: string) => SecureStore.deleteItemAsync(key),
+};
+
+export const nativeBackgroundTaskProvider: BackgroundTaskProvider = {
+  defineTask: (name: string, task: () => Promise<BackgroundTaskResult>) => {
+    TaskManager.defineTask(name, async () => {
+      const result = await task();
+      switch (result) {
+        case BackgroundTaskResult.NewData:
+          return BackgroundTask.BackgroundTaskResult.NewData;
+        case BackgroundTaskResult.NoData:
+          return BackgroundTask.BackgroundTaskResult.NoData;
+        case BackgroundTaskResult.Failed:
+          return BackgroundTask.BackgroundTaskResult.Failed;
+        default:
+          return BackgroundTask.BackgroundTaskResult.NoData;
+      }
+    });
+  },
+  registerTaskAsync: (name: string, options?: BackgroundTaskOptions) =>
+    BackgroundTask.registerTaskAsync(name, options),
+  unregisterTaskAsync: (name: string) => BackgroundTask.unregisterTaskAsync(name),
+  getStatusAsync: async () => {
+    const status = await BackgroundTask.getStatusAsync();
+    switch (status) {
+      case BackgroundTask.BackgroundTaskStatus.Available:
+        return BackgroundTaskStatus.Available;
+      case BackgroundTask.BackgroundTaskStatus.Restricted:
+        return BackgroundTaskStatus.Restricted;
+      case BackgroundTask.BackgroundTaskStatus.Denied:
+        return BackgroundTaskStatus.Denied;
+      default:
+        return BackgroundTaskStatus.Denied;
+    }
+  },
+  isTaskRegisteredAsync: (name: string) => TaskManager.isTaskRegisteredAsync(name),
+  triggerTaskWorkerForTestingAsync: (name: string) =>
+    BackgroundTask.triggerTaskWorkerForTestingAsync(name),
+};
+
+export const nativeAssetProvider = {
+  async loadAsync(assets: any) {
+    return Font.loadAsync(assets);
+  },
+};
+
+export const nativeNotificationProvider: any = {
+  getPushTokenAsync: async () => {
+    if (!Device.isDevice) return null;
+    const token = await Notifications.getExpoPushTokenAsync();
+    return token.data;
+  },
+  getPermissionsAsync: async () => {
+    const { status, canAskAgain, expires } = await Notifications.getPermissionsAsync();
+    return { status: status as any, canAskAgain, expires };
+  },
+  requestPermissionsAsync: async () => {
+    const { status, canAskAgain, expires } = await Notifications.requestPermissionsAsync();
+    return { status: status as any, canAskAgain, expires };
+  },
+  setBadgeCountAsync: (count: number) => Notifications.setBadgeCountAsync(count),
+  getBadgeCountAsync: () => Notifications.getBadgeCountAsync(),
+  
+  addPushTokenListener: (callback: (token: string) => void) => {
+    const subscription = Notifications.addPushTokenListener((token) => callback(token.data));
+    return () => subscription.remove();
+  },
+  addNotificationReceivedListener: (callback: (notification: any) => void) => {
+    const subscription = Notifications.addNotificationReceivedListener(callback);
+    return () => subscription.remove();
+  },
+  addNotificationResponseReceivedListener: (callback: (response: any) => void) => {
+    const subscription = Notifications.addNotificationResponseReceivedListener(callback);
+    return () => subscription.remove();
+  },
+};
+
 export const nativeRuntimeEnvironment: CoreRuntimeEnvironment = {
-  storage: nativeStorageProvider as any, // Cast to any to avoid strict string|null vs string|undefined mismatch
+  storage: nativeStorageProvider as any,
   device: nativeDeviceProvider,
   haptics: nativeHapticsProvider,
   linking: nativeLinkingProvider,
@@ -99,4 +198,8 @@ export const nativeRuntimeEnvironment: CoreRuntimeEnvironment = {
     getStringAsync: async () => '',
     setStringAsync: async () => false,
   },
+  secureStorage: nativeSecureStorageProvider,
+  backgroundTask: nativeBackgroundTaskProvider,
+  asset: nativeAssetProvider,
+  notification: nativeNotificationProvider,
 };

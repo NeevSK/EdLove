@@ -44,52 +44,51 @@ export const composeUserAbilities = (rawContext: Partial<UserContext>): AppAbili
   const builder = new AbilityBuilder<AppAbility>(AppAbility);
   const { can } = builder;
 
-  // 1. Guest / Wanderer (Always available, even if offline/no school)
-  can('read', 'Library');
-  can('read', 'LibraryResource');
-  can('read', 'LibrarySearch');
-  can('read', 'CommunityFeed');
-  can('read', 'Post');
-  
-  // HEAL: Anonymous guests must be able to resolve their own identity profile
+  // 1. UNIVERSAL SOVEREIGNTY: Every user has a Personal Workspace by default.
+  // This enables private tutoring/teaching usage without institutional bonds.
+  can('manage', 'School', { type: 'personal_workspace' });
+  can('manage', 'Classroom', { type: 'personal' });
+  can('manage', 'Wellbeing');
+  can('manage', 'Library'); // Personal bookmarks/collections
   can('resolve', 'User');
   can('read', 'User');
   can('update', 'User');
 
-  // 2. 1st Class Citizen (Authenticated + Attached to School)
-  if (user.school_id && !user.is_anonymous) {
-    can('manage', 'Library');
+  // 1. Wanderer (no signup, local SQLite only)
+  if (user.citizenship === 'WANDERER') {
+    can('read', 'LibraryResource');
+    can('read', 'LibrarySearch');
+    can('read', 'CommunityFeed');
+    can('read', 'Post');
+  }
+
+  // 2. AUTHENTICATED CITIZENS (2nd & 1st Class)
+  if (user.citizenship === 'SECOND_CLASS' || user.citizenship === 'FIRST_CLASS') {
+    can('read', 'Ecosystem');
+    can('purchase', 'ProFeatures');
+    can('access', 'ProFeatures', { tier: 'pro' });
+    can('join', 'Classroom');
+    can('join', 'School');
+
+    // Community Full Access
     can('read', 'CommunityGroups');
     can('read', 'DirectMessages');
     can('read', 'Group');
     can('read', 'Post');
     can('create', 'Post');
-    can('create', 'Group');
-    can('update', 'Group');
-    can('read', 'User');
-    can('update', 'User');
-    can('create', 'User');
-    can('resolve', 'User');
-    can('read', 'School', { id: user.school_id });
-    // Coexistence: Every user has a personal sanctuary
-    can('manage', 'School', { type: 'personal_workspace' });
-    can('create', 'School');
-  } else if (!user.school_id && !user.is_anonymous) {
-    // 3. 2nd Class Citizen (Authenticated but NO school yet)
-    // Limited to onboarding and public exploration
-    can('read', 'Ecosystem');
-    can('manage', 'Wellbeing');
-    can('read', 'User');
-    can('update', 'User');
-    can('resolve', 'User');
-    can('create', 'School'); // HEAL: Allow creating Personal Workspaces
-    can('manage', 'School', { type: 'personal_workspace' }); 
-    can('read', 'School', { type: 'personal_workspace' });  } else if (!user.is_anonymous) {
-    // Authenticated but no specific 1st/2nd class categorization yet (fallback)
-    can('manage', 'Wellbeing');
-    can('read', 'User');
-    can('update', 'User');
-    can('resolve', 'User');
+    can('create', 'Comment');
+    can('manage', 'Post', { creator_id: user.user_id });
+
+    if (user.citizenship === 'SECOND_CLASS') {
+      can('create', 'School'); // Can create "Unofficial" schools/groups
+      can('create', 'Group');
+      can('manage', 'Group', { creator_id: user.user_id });
+    } else {
+      // 1st Class specific
+      if (user.school_id || user.schoolId) {
+        can('read', 'School', { id: user.school_id || user.schoolId });
+      }
+    }
   }
 
   // 2. Load Abilities based on the Union of Identity (All Bonds)

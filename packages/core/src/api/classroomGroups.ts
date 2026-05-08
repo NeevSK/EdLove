@@ -1,6 +1,5 @@
 import type { ClassroomGroup as ClassroomGroupRecord } from '../logic/schemas/classroom.schema';
-import { educationalServices } from './runtimes/educational.runtime';
-import { educationalContract } from './educational.contract';
+import { educational } from '../logic/managers/factory';
 
 export type ClassroomGroup = ClassroomGroupRecord;
 
@@ -9,7 +8,7 @@ export const classroomGroupsAPI = {
    * @authority read ClassroomGroup
    */
   async getAll(classroomId: string): Promise<ClassroomGroup[]> {
-    return educationalServices.classroomGroups.getAll(classroomId);
+    return educational.classroomGroups.getAll(classroomId);
   },
 
   /**
@@ -24,7 +23,7 @@ export const classroomGroupsAPI = {
       color?: string | null;
     },
   ): Promise<ClassroomGroup> {
-    return educationalServices.classroomGroups.create(classroomId, input);
+    return educational.classroomGroups.create(classroomId, input);
   },
 
   /**
@@ -39,15 +38,13 @@ export const classroomGroupsAPI = {
       color?: string | null;
     },
   ): Promise<ClassroomGroup> {
-    return educationalServices.classroomGroups.update(id, updates);
+    return educational.classroomGroups.update(id, updates);
   },
 
   /**
    * @authority delete ClassroomGroup
    */
   async delete(id: string): Promise<void> {
-    return educationalServices.classroomGroups.delete(id);
+    return educational.classroomGroups.delete(id);
   },
 };
-
-void educationalContract;

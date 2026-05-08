@@ -13,7 +13,10 @@ export * from './hooks';
 // Keep the root surface intentionally light. Heavy UI modules now live behind
 // explicit subpaths such as `@repo/ui/components/...` and `@repo/ui/screens/...`.
 export * from './primitives';
-export * from './providers';
+export * from './providers/index';
+export { NotificationSettingsPanel } from './components/NotificationSettingsPanel';
+export { useNotificationPreferences } from './hooks/useNotificationPreferences';
+export * from './screens/index';
 export * from './theme/Theme';
 export * from './tokens';
 export * from './utils';

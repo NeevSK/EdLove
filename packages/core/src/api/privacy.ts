@@ -1,5 +1,5 @@
 import { identityAPI } from './identity';
-import { supabase } from './supabase';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from './supabase';
 
 export interface PrivacyLedgerEntry {
   id: string;
@@ -19,7 +19,7 @@ export const privacyAPI = {
     const myId = await identityAPI.getMyInternalId();
     if (!myId) throw new Error('Not authenticated');
 
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('privacy_ledger_entries')
       .select('*')
       .eq('user_id', myId)
@@ -41,7 +41,7 @@ export const privacyAPI = {
     const myId = await identityAPI.getMyInternalId();
     if (!myId) throw new Error('Not authenticated');
 
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('privacy_ledger_entries')
       .insert([
         {

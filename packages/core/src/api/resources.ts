@@ -2,14 +2,14 @@ import { resolveResourceOwnerContext } from '../lib/inventoryScope';
 import type { ClassroomResource, ResourceOwnerContext } from '../types';
 import { APIError } from '../types/API';
 import { educationalContract } from './educational.contract';
-import { supabase } from './supabase';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from './supabase';
 
 export const resourcesAPI = {
   /**
    * @authority read Material
    */
   async getAll(classroomId: string): Promise<ClassroomResource[]> {
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('classroom_resources')
       .select('*')
       .eq('classroom_id', classroomId)
@@ -44,7 +44,7 @@ export const resourcesAPI = {
     }
 
     const { owner_context, ...classroomResource } = resource as any;
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('classroom_resources')
       .insert([classroomResource])
       .select()
@@ -61,7 +61,7 @@ export const resourcesAPI = {
    * @authority update Material
    */
   async update(id: string, updates: Partial<ClassroomResource>): Promise<ClassroomResource> {
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('classroom_resources')
       .update(updates)
       .eq('id', id)
@@ -86,7 +86,7 @@ export const resourcesAPI = {
    * @authority delete Material
    */
   async delete(id: string): Promise<void> {
-    const { error } = await supabase.from('classroom_resources').delete().eq('id', id);
+    const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('classroom_resources').delete().eq('id', id);
 
     if (error) {
       throw new APIError('Failed to delete resource', error.code, error);

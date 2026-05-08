@@ -8,11 +8,13 @@ import { NativeNetworkAdapter } from '../adapters/native/NativeNetworkAdapter';
 import { SentryTelemetryAdapter } from '../adapters/native/SentryTelemetryAdapter';
 import { WebNetworkAdapter } from '../adapters/WebNetworkAdapter';
 import { startNetworkBusAdapter } from '../adapters/NetworkBusAdapter';
+import { SimulatorDeviceIdentityAdapter } from '../adapters/native/SimulatorDeviceIdentityAdapter';
 import { cryptoManager } from '../logic/managers/CryptoManager';
 import { networkManager } from '../logic/managers/NetworkManager';
 // Managers
 import { storage } from '../logic/managers/StorageManager';
 import { telemetry } from '../logic/managers/TelemetryManager';
+import { deviceIdentity } from '../logic/managers/DeviceIdentityManager';
 
 import { Runtime } from './runtime';
 
@@ -30,6 +32,7 @@ export async function bootstrapPlatform() {
     cryptoManager.registerAdapter(new NativeCryptoAdapter());
     telemetry.registerAdapter(new SentryTelemetryAdapter());
     networkManager.registerAdapter(new NativeNetworkAdapter());
+    deviceIdentity.registerAdapter(new SimulatorDeviceIdentityAdapter());
   } else {
     networkManager.registerAdapter(new WebNetworkAdapter());
   }

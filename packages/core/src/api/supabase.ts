@@ -25,7 +25,7 @@ if (!supabaseUrl || !supabasePublishableKey) {
  * Scope: ONLY applies to requests made by this specific Supabase client
  * instance, NOT to global fetch. This is intentional and safe.
  */
-export const supabase = createClient(supabaseUrl, supabasePublishableKey, {
+export const __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ = createClient(supabaseUrl, supabasePublishableKey, {
   auth: {
     // Wrap StorageManager to satisfy Supabase's GoTrue storage interface
     storage: {

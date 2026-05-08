@@ -2,7 +2,7 @@ import { useNavigation } from "@react-navigation/native";
 import { authAPI } from "@repo/core/api";
 import { useAccountDeletion } from "@repo/core/hooks";
 import { useStore } from "@repo/core/logic";
-import { DeleteAccountModal, LogoutModal } from "@repo/ui/components";
+import { DeleteAccountModal, LogoutModal, NotificationSettingsPanel } from "@repo/ui/components";
 import { WebScreenHeader } from "@repo/ui/components";
 import { useEnvironment } from "@repo/ui/context";
 import { useThemedColors } from "@repo/ui/hooks";
@@ -248,6 +248,9 @@ export default function AppSettingsScreenWeb() {
 								</div>
 							</button>
 						</div>
+					</div>
+					<div className="sanctuary-card" style={{ padding: "24px" }}>
+						<NotificationSettingsPanel />
 					</div>
 					<div
 						className="sanctuary-card"

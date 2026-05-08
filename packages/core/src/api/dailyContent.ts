@@ -1,7 +1,7 @@
 import { withResilience } from '../offline/resilience';
 import { APIError } from '../types/API';
 import { getCurrentTimeMillis } from '../utils/temporal';
-import { supabase } from './supabase';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from './supabase';
 
 // ============================================================================
 // DAILY CONTENT API (Motivation & "Did You Know?")
@@ -29,7 +29,7 @@ export const dailyContentAPI = {
     return withResilience(
       async () => {
         // Fetch motivation quote
-        const { data: motivationData, error: motivationError } = await supabase
+        const { data: motivationData, error: motivationError } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
           .rpc('get_daily_content_for_today', { content_type: 'motivation' })
           .single();
 
@@ -38,7 +38,7 @@ export const dailyContentAPI = {
         }
 
         // Fetch "did you know" fact
-        const { data: didYouKnowData, error: didYouKnowError } = await supabase
+        const { data: didYouKnowData, error: didYouKnowError } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
           .rpc('get_daily_content_for_today', { content_type: 'did_you_know' })
           .single();
 
@@ -65,7 +65,7 @@ export const dailyContentAPI = {
    * Get content for a specific date
    */
   async getContentForDate(date: string): Promise<DailyContent[]> {
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('daily_content')
       .select('*')
       .eq('date', date)
@@ -84,7 +84,7 @@ export const dailyContentAPI = {
    */
   async getRecentContent(days: number = 7): Promise<DailyContent[]> {
     const now = getCurrentTimeMillis();
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('daily_content')
       .select('*')
       .eq('active', true)

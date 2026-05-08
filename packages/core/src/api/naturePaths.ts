@@ -18,7 +18,7 @@
  *   All path advance checks are fire-and-forget, just like growthSignals.
  */
 
-import { supabase } from './supabase';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from './supabase';
 
 // \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 // TYPES
@@ -169,7 +169,7 @@ export const naturePathsAPI = {
     if (!next) return;
 
     try {
-      await supabase
+      await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
         .from('user_growth_state')
         .update({ banyan_stage: next, updated_at: new Date().toISOString() })
         .eq('user_id', userId);
@@ -204,7 +204,7 @@ export const naturePathsAPI = {
     if (!next) return;
 
     try {
-      await supabase
+      await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
         .from('user_growth_state')
         .update({ river_stage: next, updated_at: new Date().toISOString() })
         .eq('user_id', userId);
@@ -239,7 +239,7 @@ export const naturePathsAPI = {
   ): Promise<void> {
     // 1. Record the crystal
     try {
-      await supabase.from('crystal_discoveries').insert({
+      await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('crystal_discoveries').insert({
         user_id: userId,
         crystal_type: crystalType,
         subject_tags: subjectTags,
@@ -256,7 +256,7 @@ export const naturePathsAPI = {
     }
 
     // 2. Update counters and check for tier advancement
-    const { data: state } = await supabase
+    const { data: state } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('user_growth_state')
       .select('crystal_tier, crystals_found_count, fractal_moments_count')
       .eq('user_id', userId)
@@ -274,7 +274,7 @@ export const naturePathsAPI = {
     );
 
     try {
-      await supabase
+      await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
         .from('user_growth_state')
         .update({
           crystals_found_count: newCrystalsFound,
@@ -296,7 +296,7 @@ export const naturePathsAPI = {
    * Used to render the Crystal Collection view in the student's home screen.
    */
   async getCrystalCollection(userId: string): Promise<CrystalDiscovery[]> {
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('crystal_discoveries')
       .select('*')
       .eq('user_id', userId)
@@ -319,7 +319,7 @@ export const naturePathsAPI = {
     crystals_found_count: number;
     fractal_moments_count: number;
   } | null> {
-    const { data } = await supabase
+    const { data } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('user_growth_state')
       .select('river_stage, crystal_tier, crystals_found_count, fractal_moments_count')
       .eq('user_id', userId)
@@ -343,7 +343,7 @@ export const naturePathsAPI = {
     peer_mentored_count: number;
     circles_facilitated_count: number;
   } | null> {
-    const { data } = await supabase
+    const { data } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('user_growth_state')
       .select('banyan_stage, peer_mentored_count, circles_facilitated_count')
       .eq('user_id', userId)

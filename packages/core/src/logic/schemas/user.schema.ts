@@ -64,6 +64,8 @@ export const UserContextSchema = z.object({
   is_personal: z.boolean().nullish().default(false),
 
   tier: z.string().nullish().default('free'),
+  citizenship: z.enum(['WANDERER', 'SECOND_CLASS', 'FIRST_CLASS']).default('WANDERER'),
+  pricing_tier: z.enum(['FREE', 'PRO', 'INSTITUTIONAL']).default('FREE'),
   features: z.array(z.string()).nullish().transform((value) => value ?? []),
   flags: z
     .record(z.string(), z.union([z.boolean(), z.string()]))

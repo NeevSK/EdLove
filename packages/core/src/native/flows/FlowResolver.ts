@@ -1,4 +1,4 @@
-import { supabase } from '../../api/supabase';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../../api/supabase';
 // Note: We'll use dynamic imports or passing refs for communityAPI to avoid circular deps if necessary,
 // but for now let's assume core is the base.
 import type { AuthorityTier, QRPayload } from '../../types';
@@ -96,7 +96,7 @@ export class FlowResolver {
     // Resolve handle if present
     if (handle?.startsWith('@')) {
       const h = handle.slice(1);
-      const { data: school } = await supabase
+      const { data: school } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
         .from('schools')
         .select('id, community_group_id')
         .eq('handle', h)
@@ -108,7 +108,7 @@ export class FlowResolver {
     }
 
     // 1. Update user's school association
-    const { error: userError } = await supabase
+    const { error: userError } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('users')
       .update({ school_id: finalSchoolId })
       .eq('id', userId);
@@ -116,7 +116,7 @@ export class FlowResolver {
     if (userError) throw userError;
 
     // 2. Join the automated school community group
-    const { error: groupError } = await supabase.from('group_members').upsert({
+    const { error: groupError } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('group_members').upsert({
       group_id: finalGroupId,
       user_id: userId,
       status: 'active',
@@ -140,12 +140,12 @@ export class FlowResolver {
     let finalClassroomId = classroomId;
     if (handle?.startsWith('@')) {
       const h = handle.slice(1);
-      const { data: cls } = await supabase.from('classrooms').select('id').eq('handle', h).single();
+      const { data: cls } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('classrooms').select('id').eq('handle', h).single();
       if (cls) finalClassroomId = cls.id;
     }
 
     // Look up the user's role so we can route correctly
-    const { data: userData } = await supabase
+    const { data: userData } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('users')
       .select('role')
       .eq('id', userId)
@@ -155,7 +155,7 @@ export class FlowResolver {
 
     if (role === 'student') {
       // Students join via the classroom_students membership table
-      const { error } = await supabase
+      const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
         .from('classroom_students')
         .upsert(
           { classroom_id: finalClassroomId, student_id: userId },
@@ -164,7 +164,7 @@ export class FlowResolver {
       if (error) throw error;
     } else {
       // Teachers/staff: only claim teacher_id if the classroom has no teacher yet.
-      const { data: classroom, error: fetchError } = await supabase
+      const { data: classroom, error: fetchError } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
         .from('classrooms')
         .select('teacher_id')
         .eq('id', finalClassroomId)
@@ -174,7 +174,7 @@ export class FlowResolver {
 
       if (!classroom?.teacher_id) {
         // Unclaimed classroom  claim atomically, only if still null
-        const { data: claimed, error: updateError } = await supabase
+        const { data: claimed, error: updateError } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
           .from('classrooms')
           .update({ teacher_id: userId })
           .eq('id', finalClassroomId)
@@ -208,7 +208,7 @@ export class FlowResolver {
     let finalGroupId = groupId;
     if (handle?.startsWith('@')) {
       const h = handle.slice(1);
-      const { data: group } = await supabase
+      const { data: group } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
         .from('community_groups')
         .select('id')
         .eq('handle', h)
@@ -216,7 +216,7 @@ export class FlowResolver {
       if (group) finalGroupId = group.id;
     }
 
-    const { error } = await supabase.from('group_members').upsert({
+    const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('group_members').upsert({
       group_id: finalGroupId,
       user_id: userId,
       status: 'active',
@@ -243,7 +243,7 @@ export class FlowResolver {
       }
 
       // Atomic RPC call
-      const { data, error } = await supabase.rpc('claim_invite_code', {
+      const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.rpc('claim_invite_code', {
         p_invite_code: inviteCode,
         p_user_id: userId,
       });

@@ -3,13 +3,14 @@ import { composeUserAbilities } from '../logic/permissions/composer';
 import { type TenantKind, UserContextSchema } from '../logic/schemas/user.schema';
 import { useStore } from '../store/useStore';
 import { interceptApiCall } from './demoProvider';
+import { SovereignError, ErrorCategory } from '../types/Errors';
 
 /**
  * createPOAProxy
  *
  * The Single Source of Truth for Authority Enforcement.
  * This proxy wraps API modules and automatically validates the 'metadata.authority'
- * defined in ts-rest contracts against the user's current CASL ability.
+ * defined in Hono routes against the user's current CASL ability.
  */
 export function createPOAProxy<T extends object>(
   moduleName: string,
@@ -53,11 +54,10 @@ export function createPOAProxy<T extends object>(
           // 2. Compose Ability
           const ability = composeUserAbilities(context);
 
-          // 3. Resolve Authority Metadata from Contract
-          // Try mapping, then exact match, or fallback to the method name itself in the contract router
+          // 3. Resolve Authority Metadata from Sovereign Port
           const contractKey = methodMapping[prop] || prop;
-          const contractEntry = contract?.[contractKey] as Record<string, unknown> | undefined;
-          const metadata = contractEntry?.['metadata'];
+          const route = contract?.[contractKey] as any;
+          const metadata = route?.metadata;
 
           if (metadata && typeof metadata === 'object' && 'authority' in metadata) {
             if (__DEV__) {
@@ -67,9 +67,13 @@ export function createPOAProxy<T extends object>(
             await AuthorityInterceptor.enforce(ability, metadata);
           } else {
             if (options.strictUnmappedMethods) {
-              throw new Error(
-                `POA contract coverage missing for ${moduleName}.${prop} (expected contract route "${contractKey}")`,
-              );
+              throw new SovereignError({
+                title: 'Contract Violation',
+                detail: `POA contract coverage missing for ${moduleName}.${prop} (expected contract route "${contractKey}")`,
+                status: 500,
+                category: ErrorCategory.AUTHORIZATION,
+                code: 'MISSING_CONTRACT_COVERAGE',
+              });
             }
           }
 

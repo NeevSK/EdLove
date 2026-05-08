@@ -13,7 +13,7 @@
 import { APIError } from '../types/API';
 import type { PrincipalNote } from '../types/PrincipalNote';
 import { identityAPI } from './identity';
-import { supabase } from './supabase';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from './supabase';
 
 export type { PrincipalNote };
 
@@ -27,7 +27,7 @@ export const principalNotesAPI = {
     const myId = await identityAPI.getMyInternalId();
     if (!myId) throw new APIError('Not authenticated', 'AUTH_REQUIRED');
 
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('principal_notes')
       .select(`
                 *,
@@ -51,7 +51,7 @@ export const principalNotesAPI = {
     const myId = await identityAPI.getMyInternalId();
     if (!myId) throw new APIError('Not authenticated', 'AUTH_REQUIRED');
 
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('principal_notes')
       .select('*')
       .eq('school_id', schoolId)
@@ -78,7 +78,7 @@ export const principalNotesAPI = {
     const myId = await identityAPI.getMyInternalId();
     if (!myId) throw new APIError('Not authenticated', 'AUTH_REQUIRED');
 
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('principal_notes')
       .insert([
         {
@@ -103,7 +103,7 @@ export const principalNotesAPI = {
     id: string,
     updates: Partial<Pick<PrincipalNote, 'content' | 'is_pinned' | 'is_done'>>,
   ): Promise<PrincipalNote> {
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('principal_notes')
       .update({ ...updates, updated_at: new Date().toISOString() })
       .eq('id', id)
@@ -118,7 +118,7 @@ export const principalNotesAPI = {
    * Delete a note. Only the author can delete (enforced by RLS).
    */
   async delete(id: string): Promise<void> {
-    const { error } = await supabase.from('principal_notes').delete().eq('id', id);
+    const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('principal_notes').delete().eq('id', id);
 
     if (error) throw new APIError('Failed to delete principal note', error.code, error);
   },

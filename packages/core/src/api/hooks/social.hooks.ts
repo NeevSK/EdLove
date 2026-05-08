@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 import { useStore } from '../../store/useStore';
+import { identityAPI } from '../identity';
 import { socialAPI } from '../social';
-import { supabase } from '../supabase';
 
 /**
  * Hook for social shielding (blocking, reporting) promoted to @repo/core.
@@ -26,26 +26,14 @@ export function useSocialShieldHooks() {
   const blockMutation = useMutation({
     mutationFn: async (blockedId: string) => {
       if (!user) throw new Error('Unauthorized');
-      const { error } = await supabase
-        .from('user_blocks')
-        .insert([{ blocker_id: user.id, blocked_id: blockedId }]);
-
-      if (error) throw error;
-      return { success: true };
+      return identityAPI.blockUser(user.id, blockedId);
     },
   });
 
   const unblockMutation = useMutation({
     mutationFn: async (blockedId: string) => {
       if (!user) throw new Error('Unauthorized');
-      const { error } = await supabase
-        .from('user_blocks')
-        .delete()
-        .eq('blocker_id', user.id)
-        .eq('blocked_id', blockedId);
-
-      if (error) throw error;
-      return { success: true };
+      return identityAPI.unblockUser(user.id, blockedId);
     },
   });
 

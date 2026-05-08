@@ -8,7 +8,7 @@ import {
 } from '../lib/sync/deviceSecurityIntents';
 import { APIError } from '../types/API';
 import { identityAPI } from './identity';
-import { supabase } from './supabase';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from './supabase';
 
 const DEVICE_INSTALL_ID_KEY = 'gurudevi-device-install-id';
 const SERVER_DEVICE_ID_KEY = 'gurudevi-server-device-id';
@@ -219,7 +219,7 @@ function unwrapRpcRows<T>(data: T[] | T | null) {
 }
 
 async function rpcSingle<T>(fn: string, params: Record<string, unknown>) {
-  const { data, error } = await supabase.rpc(fn, params);
+  const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.rpc(fn, params);
 
   if (error) {
     throw new APIError(`Failed to call ${fn}`, error.code, error);
@@ -229,7 +229,7 @@ async function rpcSingle<T>(fn: string, params: Record<string, unknown>) {
 }
 
 async function rpcList<T>(fn: string, params: Record<string, unknown> = {}) {
-  const { data, error } = await supabase.rpc(fn, params);
+  const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.rpc(fn, params);
 
   if (error) {
     throw new APIError(`Failed to call ${fn}`, error.code, error);
@@ -423,7 +423,7 @@ export const deviceTrustAPI = {
   }) {
     const resolvedAccountId = await requireAccountId();
     const revokeSessions = input.revokeSessions ?? true;
-    const { data, error } = await supabase.rpc('unlink_my_device', {
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.rpc('unlink_my_device', {
       p_device_id: input.deviceId,
       p_revoke_sessions: revokeSessions,
     });
@@ -499,7 +499,7 @@ export const deviceTrustAPI = {
     idempotencyKey?: string | null;
   }) {
     const reason = input.reason ?? 'manual';
-    const { data, error } = await supabase.rpc('revoke_my_other_security_sessions', {
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.rpc('revoke_my_other_security_sessions', {
       p_keep_session_id: input.keepSessionId ?? null,
       p_reason: reason,
     });
@@ -536,7 +536,7 @@ export const deviceTrustAPI = {
     idempotencyKey?: string | null;
   }) {
     const reason = input.reason ?? 'signed_out_locally';
-    const { data, error } = await supabase.rpc('revoke_my_install_security_sessions', {
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.rpc('revoke_my_install_security_sessions', {
       p_install_id: input.installId,
       p_reason: reason,
     });
@@ -593,7 +593,7 @@ export const deviceTrustAPI = {
       idempotency_key: input.idempotencyKey ?? (input.metadata?.['idempotency_key'] as string | null) ?? null,
     };
 
-    const { data, error } = await supabase.rpc('log_my_device_audit', {
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.rpc('log_my_device_audit', {
       p_action: input.action,
       p_device_id: deviceId,
       p_account_id: resolvedAccountId,

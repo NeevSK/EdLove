@@ -21,7 +21,7 @@ import {
 } from '../logic/schemas/staff.schema';
 import { attendanceProjectionServices } from './runtimes/attendanceProjection.runtime';
 import type { AttendanceReport } from '../types/Attendance';
-import { supabase } from './supabase';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from './supabase';
 
 export type {
   CalendarEvent,
@@ -55,7 +55,7 @@ export const staffManagementAPI = {
       total: 0,
     };
     try {
-      const { data, error } = await supabase
+      const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
         .from('staff_attendance')
         .select('status')
         .eq('school_id', schoolId)
@@ -84,7 +84,7 @@ export const staffManagementAPI = {
     try {
       const targetDate = viewDate || todayISO();
 
-      const { data: users, error: usersError } = await supabase
+      const { data: users, error: usersError } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
         .from('users')
         .select('id, full_name, role, avatar_url')
         .eq('school_id', schoolId)
@@ -100,13 +100,13 @@ export const staffManagementAPI = {
       const userIds = users.map((user) => user.id);
 
       const [attendanceResult, classroomResult] = await Promise.all([
-        supabase
+        __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
           .from('staff_attendance')
           .select('user_id, status')
           .eq('school_id', schoolId)
           .eq('date', targetDate)
           .in('user_id', userIds),
-        supabase
+        __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
           .from('classrooms')
           .select('teacher_id')
           .eq('school_id', schoolId)
@@ -157,7 +157,7 @@ export const staffManagementAPI = {
     reason?: string,
   ): Promise<boolean> {
     try {
-      const { error } = await supabase.from('staff_leaves').insert({
+      const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('staff_leaves').insert({
         school_id: schoolId,
         user_id: userId,
         leave_type: leaveType,
@@ -178,7 +178,7 @@ export const staffManagementAPI = {
 
   async getPendingLeaves(schoolId: string): Promise<StaffLeaveDTO[]> {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
         .from('staff_leaves')
         .select('*')
         .eq('school_id', schoolId)
@@ -206,13 +206,13 @@ export const staffManagementAPI = {
 
   async approveLeave(leaveId: string, principalId: string, approve: boolean): Promise<boolean> {
     try {
-      const { data: leave } = await supabase
+      const { data: leave } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
         .from('staff_leaves')
         .select('user_id, leave_type, start_date, end_date')
         .eq('id', leaveId)
         .maybeSingle();
 
-      const { error } = await supabase
+      const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
         .from('staff_leaves')
         .update({
           status: approve ? 'approved' : 'rejected',
@@ -232,7 +232,7 @@ export const staffManagementAPI = {
             ? leave.start_date
             : `${leave.start_date} - ${leave.end_date}`;
 
-        void supabase
+        void __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
           .from('notifications')
           .insert({
             user_id: leave.user_id,
@@ -278,7 +278,7 @@ export const staffManagementAPI = {
   ): Promise<CalendarEvent[]> {
     try {
       const targetDate = viewDate || todayISO();
-      const { data, error } = await supabase
+      const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
         .from('institutional_calendar')
         .select('*')
         .eq('school_id', schoolId)
@@ -317,7 +317,7 @@ export const staffManagementAPI = {
     },
   ): Promise<boolean> {
     try {
-      const { error } = await supabase.from('institutional_calendar').insert({
+      const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('institutional_calendar').insert({
         school_id: schoolId,
         created_by: principalId,
         title: event.title,

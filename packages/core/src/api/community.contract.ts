@@ -139,6 +139,18 @@ export const communityContract = c.router({
     responses: { 200: z.array(z.string()) },
     metadata: authority('create', 'Post'),
   },
+  getPollStatus: {
+    method: 'GET',
+    path: '/community/posts/:postId/poll',
+    responses: {
+      200: z.object({
+        counts: z.record(z.string(), z.number()),
+        totalVotes: z.number(),
+        userVotes: z.array(z.string()),
+      }),
+    },
+    metadata: authority('read', 'Post'),
+  },
 
   getMessages: {
     method: 'GET',

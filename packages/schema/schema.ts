@@ -85,6 +85,18 @@ export class SchemaType implements SchemaDef {
                     attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal(false) }] }] as readonly AttributeApplication[],
                     default: false as FieldDefault
                 },
+                citizenship: {
+                    name: "citizenship",
+                    type: "String",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal("WANDERER") }] }] as readonly AttributeApplication[],
+                    default: "WANDERER" as FieldDefault
+                },
+                pricing_tier: {
+                    name: "pricing_tier",
+                    type: "String",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal("FREE") }] }] as readonly AttributeApplication[],
+                    default: "FREE" as FieldDefault
+                },
                 experience_years: {
                     name: "experience_years",
                     type: "Int",
@@ -1923,6 +1935,11 @@ export class SchemaType implements SchemaDef {
                     type: "Boolean",
                     attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal(true) }] }] as readonly AttributeApplication[],
                     default: true as FieldDefault
+                },
+                notification_settings: {
+                    name: "notification_settings",
+                    type: "Json",
+                    optional: true
                 },
                 updated_at: {
                     name: "updated_at",
@@ -4025,6 +4042,202 @@ export class SchemaType implements SchemaDef {
             idFields: ["id"],
             uniqueFields: {
                 id: { type: "String" }
+            }
+        },
+        FeatureFlag: {
+            name: "FeatureFlag",
+            fields: {
+                id: {
+                    name: "id",
+                    type: "String",
+                    id: true,
+                    attributes: [{ name: "@id" }, { name: "@default", args: [{ name: "value", value: ExpressionUtils.call("uuid") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("uuid") as FieldDefault
+                },
+                key: {
+                    name: "key",
+                    type: "String",
+                    unique: true,
+                    attributes: [{ name: "@unique" }] as readonly AttributeApplication[]
+                },
+                description: {
+                    name: "description",
+                    type: "String",
+                    optional: true
+                },
+                tenant_kinds: {
+                    name: "tenant_kinds",
+                    type: "String",
+                    array: true
+                },
+                citizenships: {
+                    name: "citizenships",
+                    type: "String",
+                    array: true
+                },
+                pricing_tiers: {
+                    name: "pricing_tiers",
+                    type: "String",
+                    array: true
+                },
+                capacities: {
+                    name: "capacities",
+                    type: "String",
+                    array: true
+                },
+                is_enabled: {
+                    name: "is_enabled",
+                    type: "Boolean",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal(true) }] }] as readonly AttributeApplication[],
+                    default: true as FieldDefault
+                },
+                is_development: {
+                    name: "is_development",
+                    type: "Boolean",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal(false) }] }] as readonly AttributeApplication[],
+                    default: false as FieldDefault
+                },
+                created_at: {
+                    name: "created_at",
+                    type: "DateTime",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.call("now") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("now") as FieldDefault
+                },
+                updated_at: {
+                    name: "updated_at",
+                    type: "DateTime",
+                    updatedAt: true,
+                    attributes: [{ name: "@updatedAt" }] as readonly AttributeApplication[]
+                }
+            },
+            attributes: [
+                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("read") }, { name: "condition", value: ExpressionUtils.literal(true) }] },
+                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("all") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["bonds"]), "?", ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.field("capacity"), "==", ExpressionUtils.literal("admin")), "&&", ExpressionUtils.binary(ExpressionUtils.field("entity_type"), "==", ExpressionUtils.literal("PLATFORM")))), "||", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["bonds"]), "?", ExpressionUtils.binary(ExpressionUtils.field("capacity"), "==", ExpressionUtils.literal("founder")))) }] },
+                { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("feature_flags") }] }
+            ] as readonly AttributeApplication[],
+            idFields: ["id"],
+            uniqueFields: {
+                id: { type: "String" },
+                key: { type: "String" }
+            }
+        },
+        SchoolRegistry: {
+            name: "SchoolRegistry",
+            fields: {
+                id: {
+                    name: "id",
+                    type: "String",
+                    id: true,
+                    attributes: [{ name: "@id" }, { name: "@default", args: [{ name: "value", value: ExpressionUtils.call("uuid") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("uuid") as FieldDefault
+                },
+                census_id: {
+                    name: "census_id",
+                    type: "String",
+                    unique: true,
+                    attributes: [{ name: "@unique" }] as readonly AttributeApplication[]
+                },
+                name: {
+                    name: "name",
+                    type: "String"
+                },
+                address: {
+                    name: "address",
+                    type: "String",
+                    optional: true
+                },
+                tel_no: {
+                    name: "tel_no",
+                    type: "String",
+                    optional: true
+                },
+                email: {
+                    name: "email",
+                    type: "String",
+                    optional: true
+                },
+                province: {
+                    name: "province",
+                    type: "String",
+                    optional: true
+                },
+                district: {
+                    name: "district",
+                    type: "String",
+                    optional: true
+                },
+                zone: {
+                    name: "zone",
+                    type: "String",
+                    optional: true
+                },
+                division: {
+                    name: "division",
+                    type: "String",
+                    optional: true
+                },
+                medium: {
+                    name: "medium",
+                    type: "String",
+                    optional: true
+                },
+                gender: {
+                    name: "gender",
+                    type: "String",
+                    optional: true
+                },
+                category: {
+                    name: "category",
+                    type: "String",
+                    optional: true
+                },
+                type: {
+                    name: "type",
+                    type: "String",
+                    optional: true
+                },
+                grade_span: {
+                    name: "grade_span",
+                    type: "String",
+                    optional: true
+                },
+                total_students: {
+                    name: "total_students",
+                    type: "Int",
+                    optional: true
+                },
+                difficulty_level: {
+                    name: "difficulty_level",
+                    type: "String",
+                    optional: true
+                },
+                properties: {
+                    name: "properties",
+                    type: "Json",
+                    optional: true
+                },
+                created_at: {
+                    name: "created_at",
+                    type: "DateTime",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.call("now") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("now") as FieldDefault
+                },
+                updated_at: {
+                    name: "updated_at",
+                    type: "DateTime",
+                    updatedAt: true,
+                    attributes: [{ name: "@updatedAt" }] as readonly AttributeApplication[]
+                }
+            },
+            attributes: [
+                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("read") }, { name: "condition", value: ExpressionUtils.literal(true) }] },
+                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("all") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["bonds"]), "?", ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.field("capacity"), "==", ExpressionUtils.literal("admin")), "&&", ExpressionUtils.binary(ExpressionUtils.field("entity_type"), "==", ExpressionUtils.literal("PLATFORM")))), "||", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["bonds"]), "?", ExpressionUtils.binary(ExpressionUtils.field("capacity"), "==", ExpressionUtils.literal("founder")))) }] },
+                { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("school_registry") }] }
+            ] as readonly AttributeApplication[],
+            idFields: ["id"],
+            uniqueFields: {
+                id: { type: "String" },
+                census_id: { type: "String" }
             }
         }
     } as const;

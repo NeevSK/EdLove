@@ -1,5 +1,5 @@
 import { identityAPI } from '../api/identity';
-import { supabase } from '../api/supabase';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../api/supabase';
 import { composeUserAbilities } from '../logic/permissions/composer';
 import { APIError } from '../types/API';
 
@@ -21,7 +21,7 @@ export async function requireClassroomAccess(classroomId: string, capability: st
   const userId = await requireAuth();
 
   // Fetch classroom context for POA check
-  const { data: classroom, error } = await supabase
+  const { data: classroom, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
     .from('classrooms')
     .select('teacher_id, school_id')
     .eq('id', classroomId)

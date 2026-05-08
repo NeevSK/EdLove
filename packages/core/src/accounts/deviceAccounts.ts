@@ -1,7 +1,7 @@
 import type { Session } from '@supabase/supabase-js';
 import { deviceTrustAPI } from '../api/deviceTrust';
 import { identityAPI } from '../api/identity';
-import { supabase } from '../api/supabase';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../api/supabase';
 import { accountPin } from '../lib/accountPin';
 import { getActiveAccountId, setActiveAccountId } from '../lib/accountScope';
 import { storage } from '../lib/storage';
@@ -173,7 +173,7 @@ export const deviceAccounts = {
     resetScopedStores();
     await rehydrateScopedStores();
 
-    const { error } = await supabase.auth.setSession({
+    const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.auth.setSession({
       access_token: storedSession.access_token,
       refresh_token: storedSession.refresh_token,
     });
@@ -247,14 +247,14 @@ export const deviceAccounts = {
     await setActiveAccount(null);
     resetScopedStores();
     await rehydrateScopedStores();
-    await supabase.auth.signOut({ scope: 'local' });
+    await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.auth.signOut({ scope: 'local' });
     return nextAccounts;
   },
 
   async signOutCurrentAccount() {
     const activeAccountId = getActiveAccountId();
     if (!activeAccountId) {
-      await supabase.auth.signOut({ scope: 'local' });
+      await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.auth.signOut({ scope: 'local' });
       identityAPI.clearCache();
       resetScopedStores();
       await rehydrateScopedStores();
@@ -317,6 +317,6 @@ export const deviceAccounts = {
     await setActiveAccount(null);
     resetScopedStores();
     await rehydrateScopedStores();
-    await supabase.auth.signOut({ scope: 'local' });
+    await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.auth.signOut({ scope: 'local' });
   },
 };

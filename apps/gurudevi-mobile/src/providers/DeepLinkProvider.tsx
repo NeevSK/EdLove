@@ -1,12 +1,17 @@
-import { useAuth } from "@repo/core/logic";
-import { supabase } from "@repo/core/native";
-
+import { useAuth, deepLink, DeepLinkType } from "@repo/core/logic";
 import { useQRDeepLink } from "@repo/scanner-kit";
-import * as Linking from "expo-linking";
+import { coreRuntime } from "@repo/core/logic";
 import type React from "react";
 import { type ReactNode, useEffect } from "react";
 import { navigationRef } from "../navigation/navigationRef";
 
+/**
+ * DeepLinkProvider
+ * 
+ * Future-Proof Sovereign Interceptor for Deep Links.
+ * This provider listens to native 'url' events and dispatches them to the 
+ * sovereign DeepLinkManager in core logic.
+ */
 export const DeepLinkProvider: React.FC<{ children: ReactNode }> = ({
 	children,
 }) => {
@@ -14,39 +19,33 @@ export const DeepLinkProvider: React.FC<{ children: ReactNode }> = ({
 
 	useEffect(() => {
 		// Sovereign Web Guard: Early return using web-native check
-		if (typeof window !== "undefined") return;
+		if (coreRuntime.device.getMetadata().platform === 'web') return;
 
-		const handleDeepLink = async (url: string) => {
-			if (url.includes("auth/callback")) {
-				const getParam = (name: string) => {
-					const match = url.match(new RegExp(`[#?&]${name}=([^&]*)`));
-					return match ? match[1] : null;
-				};
-
-				const access_token = getParam("access_token");
-				const refresh_token = getParam("refresh_token");
-
-				if (access_token && refresh_token) {
-					const { error } = await supabase.auth.setSession({
-						access_token,
-						refresh_token,
-					});
-					if (
-						error &&
-						(error.message?.includes("Refresh Token") ||
-							(error as { status?: number }).status === 400)
-					) {
-						await supabase.auth.signOut({ scope: "local" });
+		const handleURL = async (url: string) => {
+			const result = await deepLink.handleURL(url);
+			
+			// If the manager didn't fully handle it (e.g. it's a navigation link)
+			// we can perform shell-specific actions here.
+			if (!result.isHandled) {
+				if (result.type === DeepLinkType.CLASSROOM_INVITE) {
+					// Example: Navigate to a specific screen
+					if (navigationRef.isReady()) {
+						const nav = navigationRef as unknown as {
+							navigate: (name: string, params?: object) => void;
+						};
+						nav.navigate("ClassroomInvite", { code: result.params.inviteCode });
 					}
 				}
 			}
 		};
 
-		const subscription = Linking.addEventListener("url", (event) =>
-			handleDeepLink(event.url),
+		const subscription = coreRuntime.linking.addEventListener("url", (event) =>
+			handleURL(event.url),
 		);
-		Linking.getInitialURL().then((url) => {
-			if (url) handleDeepLink(url);
+
+		// Handle cold start
+		coreRuntime.linking.getInitialURL().then((url) => {
+			if (url) handleURL(url);
 		});
 
 		return () => subscription.remove();
@@ -54,7 +53,6 @@ export const DeepLinkProvider: React.FC<{ children: ReactNode }> = ({
 
 	useQRDeepLink((payload) => {
 		if (navigationRef.isReady() && session) {
-			// Cast to a simpler interface to satisfy TSC while avoiding broad 'any'
 			const nav = navigationRef as unknown as {
 				navigate: (name: string, params?: object) => void;
 			};

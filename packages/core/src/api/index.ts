@@ -46,7 +46,8 @@ import { historyAPI } from './history';
 import { formTemplatesAPI } from './formTemplates';
 import { profileAPI } from './profile';
 import { socialAPI } from './social';
-import { supabase } from './supabase';
+import { mediaAPI } from './media';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from './supabase';
 import { educationalContract } from './educational.contract';
 import { founderContract } from './founder.contract';
 import { gradingContract } from './grading.contract';
@@ -170,7 +171,8 @@ export {
   socialAPI,
   communityAPI,
   studentsAPI,
-  supabase,
+  mediaAPI,
+  __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__,
   tasksAPI,
 };
 
@@ -182,7 +184,7 @@ export const api: Record<string, any> = {
   auth: authAPI,
   circles: circleAPI,
   identity: identityAPI,
-  supabase,
+  supabase: __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__,
   tasks: tasksAPI,
   notes: notesWithPOA,
   lessons: lessonsAPI,
@@ -245,6 +247,7 @@ export const api: Record<string, any> = {
   forms: formTemplatesAPI,
   socialAPI,
   profile: profileAPI,
+  media: mediaAPI,
 };
 
 export default api;

@@ -1,9 +1,9 @@
-﻿/**
+/**
  * Device Detection Utilities
  * Detect device capabilities and adapt app behavior accordingly
  */
 
-import * as Device from "expo-device";
+import { coreRuntime } from "@repo/core/logic";
 
 /**
  * Device Tier based on RAM and performance capabilities
@@ -30,7 +30,7 @@ export interface DeviceConfig {
  * high: >4GB RAM
  */
 export function getDeviceTier(): DeviceTier {
-	const totalMemory = Device.totalMemory ?? 0;
+	const totalMemory = coreRuntime.device.getTotalMemory?.() ?? 0;
 	const GB = 1024 * 1024 * 1024;
 
 	if (totalMemory > 4 * GB) return "high";
@@ -83,16 +83,18 @@ export function getDeviceConfig(tier?: DeviceTier): DeviceConfig {
  */
 export async function getDeviceInfo() {
 	const tier = getDeviceTier();
+	const metadata = coreRuntime.device.getMetadata();
+	const totalMemory = coreRuntime.device.getTotalMemory?.() ?? null;
 
 	return {
 		tier,
-		brand: Device.brand,
-		manufacturer: Device.manufacturer,
-		modelName: Device.modelName,
-		osName: Device.osName,
-		osVersion: Device.osVersion,
-		totalMemory: Device.totalMemory,
-		supportedCpuArchitectures: Device.supportedCpuArchitectures,
+		brand: "", // Not in metadata port yet, but we can extend it if needed
+		manufacturer: "",
+		modelName: metadata.modelName,
+		osName: metadata.platform,
+		osVersion: metadata.osVersion,
+		totalMemory,
+		supportedCpuArchitectures: [],
 	};
 }
 

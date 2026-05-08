@@ -50,4 +50,49 @@ export interface IIdentityPort {
    * Onboarding: Creates the inaugural Bond for a new user.
    */
   createInitialBond(orientation: Capacity, context: Record<string, any>): Promise<void>;
+
+  /**
+   * Profiles: Updates the user's profile.
+   */
+  updateProfile(userId: string, updates: Partial<User>): Promise<void>;
+
+  /**
+   * Relationships: Blocks another user.
+   */
+  blockUser(blockerId: string, blockedId: string): Promise<void>;
+
+  /**
+   * Relationships: Unblocks another user.
+   */
+  unblockUser(blockerId: string, blockedId: string): Promise<void>;
+
+  /**
+   * Notifications: Creates a notification for a user.
+   */
+  createNotification(userId: string, type: string, title: string, message: string, metadata?: any): Promise<void>;
+
+  /**
+   * Notifications: Retrieves notifications for a user.
+   */
+  getNotifications(userId: string): Promise<any[]>;
+
+  /**
+   * Notifications: Updates the read status of a notification.
+   */
+  updateNotificationStatus(notificationId: string, isRead: boolean): Promise<void>;
+
+  /**
+   * Profiles: Completes the user profile.
+   */
+  completeProfile(userId: string, data: any): Promise<void>;
+
+  /**
+   * Push Notifications: Registers a device push token for a user.
+   */
+  registerPushToken(userId: string, token: string, deviceId: string, platform: string): Promise<void>;
+
+  /**
+   * Push Notifications: Unregisters a device push token.
+   */
+  unregisterPushToken(userId: string, deviceId: string): Promise<void>;
 }

@@ -1,5 +1,5 @@
 import type { ManifestoVibe, SanctuaryManifesto } from '../types/Community';
-import { supabase } from './supabase';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from './supabase';
 
 /**
  * Sacred Missions API for managing school-wide manifestos and endorsements.
@@ -10,7 +10,7 @@ export const sacredMissionsAPI = {
    * Fetch manifestos for a school
    */
   async getManifestos(schoolId: string, userId?: string) {
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('sanctuary_manifestos')
       .select(`
         *,
@@ -25,7 +25,7 @@ export const sacredMissionsAPI = {
     // If userId provided, check if user has endorsed
     let userEndorsements: string[] = [];
     if (userId) {
-      const { data: endData } = await supabase
+      const { data: endData } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
         .from('manifesto_endorsements')
         .select('manifesto_id')
         .eq('user_id', userId);
@@ -53,7 +53,7 @@ export const sacredMissionsAPI = {
     vibe: ManifestoVibe;
     target_date?: string;
   }) {
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('sanctuary_manifestos')
       .insert(input)
       .select()
@@ -67,7 +67,7 @@ export const sacredMissionsAPI = {
    * Endorse a manifesto
    */
   async endorseManifesto(manifestoId: string, userId: string, commitmentText?: string) {
-    const { error } = await supabase.from('manifesto_endorsements').upsert({
+    const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('manifesto_endorsements').upsert({
       manifesto_id: manifestoId,
       user_id: userId,
       commitment_text: commitmentText,
@@ -81,7 +81,7 @@ export const sacredMissionsAPI = {
    * Remove endorsement
    */
   async unendorseManifesto(manifestoId: string, userId: string) {
-    const { error } = await supabase
+    const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('manifesto_endorsements')
       .delete()
       .eq('manifesto_id', manifestoId)

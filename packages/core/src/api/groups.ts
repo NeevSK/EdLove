@@ -7,14 +7,14 @@
 import type { StudentGroup } from '../types';
 import { APIError } from '../types/API';
 import { communityContract } from './community.contract';
-import { supabase } from './supabase';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from './supabase';
 
 export const groupsAPI = {
   /**
    * @authority read Group
    */
   async getAll(classroomId: string): Promise<StudentGroup[]> {
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('student_groups')
       .select('*')
       .eq('classroom_id', classroomId)
@@ -33,7 +33,7 @@ export const groupsAPI = {
   async create(
     group: Omit<StudentGroup, 'id' | 'created_at' | 'updated_at'>,
   ): Promise<StudentGroup> {
-    const { data, error } = await supabase.from('student_groups').insert([group]).select().single();
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('student_groups').insert([group]).select().single();
 
     if (error) {
       throw new APIError('Failed to create group', error.code, error);
@@ -46,7 +46,7 @@ export const groupsAPI = {
    * @authority update Group
    */
   async update(id: string, updates: Partial<StudentGroup>): Promise<StudentGroup> {
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('student_groups')
       .update(updates)
       .eq('id', id)
@@ -64,7 +64,7 @@ export const groupsAPI = {
    * @authority delete Group
    */
   async delete(id: string): Promise<void> {
-    const { error } = await supabase.from('student_groups').delete().eq('id', id);
+    const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('student_groups').delete().eq('id', id);
 
     if (error) {
       throw new APIError('Failed to delete group', error.code, error);

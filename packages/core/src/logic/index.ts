@@ -15,9 +15,10 @@ export {
 export { useTemporalHeatmap } from '../hooks/useTemporalHeatmap';
 export { accountPin } from '../lib/accountPin';
 export {
-  type CloudinaryUploadResponse,
-  uploadToCloudinary,
-} from '../lib/cloudinary';
+  type InviteCodeData,
+  incrementInviteCodeUsage,
+  validateInviteCode,
+} from '../lib/inviteCodes';
 export {
   type InviteCodeData,
   incrementInviteCodeUsage,
@@ -58,7 +59,19 @@ export * from './permissions/composer';
 export * from './permissions/feature-engine';
 export * from './permissions/guards/FeatureGuard';
 export * from './permissions/guards/RouteGuard';
-export { identity, notification } from './managers/factory';
+export { 
+  identity, 
+  notification, 
+  auth, 
+  globalConfig, 
+  educational, 
+  community, 
+  profile,
+  growth,
+  deepLink,
+  deviceIdentity
+} from './managers/factory';
+export { DeepLinkType } from './managers/DeepLinkManager';
 export * from './permissions/hooks/usePermissions';
 export * from './runtimeRegistry';
 export * from './schemas';

@@ -23,7 +23,7 @@ import { getTemporalRange } from '../logic/utils/temporalUtils';
 import { APIError } from '../types/API';
 import { identityAPI } from './identity';
 import type { BanyanStage, CrystalTier, RiverStage } from './naturePaths';
-import { supabase } from './supabase';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from './supabase';
 
 export type BhumiStage = 'bijam' | 'mula' | 'nala' | 'patra' | 'kamala' | 'purna_kamala';
 
@@ -122,7 +122,7 @@ export const userGrowthStateAPI = {
    * Every user starts as Bijam \u2014 a seed in the mud.
    */
   async getOrCreate(userId: string): Promise<UserGrowthState> {
-    const { data: existing } = await supabase
+    const { data: existing } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('user_growth_state')
       .select('*')
       .eq('user_id', userId)
@@ -130,7 +130,7 @@ export const userGrowthStateAPI = {
 
     if (existing) return existing as UserGrowthState;
 
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('user_growth_state')
       .insert({ user_id: userId })
       .select()
@@ -146,7 +146,7 @@ export const userGrowthStateAPI = {
    * Non-throwing: returns 'bijam' on any error.
    */
   async getBhumiStage(userId: string): Promise<BhumiStage> {
-    const { data } = await supabase
+    const { data } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('user_growth_state')
       .select('bhumi_stage')
       .eq('user_id', userId)
@@ -159,7 +159,7 @@ export const userGrowthStateAPI = {
    * Used by Warm Mirror data aggregation.
    */
   async getFullState(userId: string): Promise<UserGrowthState | null> {
-    const { data } = await supabase
+    const { data } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('user_growth_state')
       .select('*')
       .eq('user_id', userId)
@@ -168,7 +168,7 @@ export const userGrowthStateAPI = {
   },
 
   async getStateAsOf(userId: string, asOf: string): Promise<UserGrowthState | null> {
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('user_growth_state_versions')
       .select('snapshot')
       .eq('user_id', userId)
@@ -182,7 +182,7 @@ export const userGrowthStateAPI = {
   },
 
   async getStateHistory(userId: string, limit = 50) {
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('user_growth_state_versions')
       .select('id, operation, recorded_at, recorded_by, snapshot')
       .eq('user_id', userId)
@@ -204,7 +204,7 @@ export const userGrowthStateAPI = {
 
     // Atomic DB-side increment via dedicated RPC (avoids read-then-write race condition).
     // The RPC does UPDATE ... SET col = COALESCE(col,0)+1 in a single round-trip.
-    const { data: updatedRow, error } = await supabase
+    const { data: updatedRow, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .rpc('increment_growth_dimension', {
         p_user_id: userId,
         p_column: column,
@@ -222,7 +222,7 @@ export const userGrowthStateAPI = {
         return;
       }
       const currentValue = (state[column] as number) ?? 0;
-      const { error: fallbackError, data: fallbackRow } = await supabase
+      const { error: fallbackError, data: fallbackRow } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
         .from('user_growth_state')
         .update({
           [column]: currentValue + 1,
@@ -240,7 +240,7 @@ export const userGrowthStateAPI = {
       const nextStageFallback = meetsTransitionCriteria(row.bhumi_stage, row);
       if (nextStageFallback) {
         try {
-          await supabase
+          await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
             .from('user_growth_state')
             .update({
               bhumi_stage: nextStageFallback,
@@ -259,7 +259,7 @@ export const userGrowthStateAPI = {
     const nextStage = meetsTransitionCriteria(row.bhumi_stage, row);
     if (nextStage) {
       try {
-        await supabase
+        await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
           .from('user_growth_state')
           .update({
             bhumi_stage: nextStage,
@@ -318,7 +318,7 @@ export const userGrowthStateAPI = {
       return [];
     }
 
-    let query = supabase
+    let query = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('whispered_moments')
       .select('moment_key, moment_name_en, moment_name_si, awarded_at')
       .eq('user_id', userId);

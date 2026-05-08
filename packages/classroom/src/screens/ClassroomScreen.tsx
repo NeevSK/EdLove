@@ -26,7 +26,7 @@ import { useClassroomWorkspaceSurfaces } from "../workspace/useClassroomWorkspac
 export default function ClassroomScreen() {
 	const { t } = useTranslation();
 	const navigation = useNavigation<any>();
-	const { can } = usePermissions();
+	const { can, context } = usePermissions();
 	const canForWorkspace = (action: string, subject: string, field?: string) =>
 		can(action as any, subject as any, field);
 	const { isGuest } = useFeatureAccess();
@@ -78,6 +78,9 @@ export default function ClassroomScreen() {
 		fetchRoleData,
 		navigation,
 		surfaceInsights,
+		citizenship: context.citizenship || "WANDERER",
+		isPro: context.pricing_tier === "PRO",
+		userCapabilities: context.features || [],
 	});
 	const {
 		surfaces: arrangedWorkspaceSurfaces,

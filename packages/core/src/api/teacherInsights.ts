@@ -11,8 +11,7 @@ import type {
   TeacherStudentPotentialUpsert,
   TeacherStudentPotentialZod,
 } from '../logic/schemas/teacher-insights.schema';
-import { teacherInsightsServices } from './runtimes/teacherInsights.runtime';
-import { teacherInsightsContract } from './teacherInsights.contract';
+import { teacherInsights } from '../logic/managers/factory';
 
 export const teacherInsightsAPI = {
   /**
@@ -22,21 +21,21 @@ export const teacherInsightsAPI = {
     teacherId: string,
     type?: TeacherPrivateNoteZod['type'],
   ): Promise<TeacherPrivateNoteZod[]> {
-    return teacherInsightsServices.listPrivateNotes(teacherId, type);
+    return teacherInsights.listPrivateNotes(teacherId, type);
   },
 
   /**
    * @authority create TeacherInsight
    */
   async createPrivateNote(input: TeacherPrivateNoteCreate): Promise<TeacherPrivateNoteZod> {
-    return teacherInsightsServices.createPrivateNote(input);
+    return teacherInsights.createPrivateNote(input);
   },
 
   /**
    * @authority delete TeacherInsight
    */
   async deletePrivateNote(id: string): Promise<{ success: true }> {
-    await teacherInsightsServices.deletePrivateNote(id);
+    await teacherInsights.deletePrivateNote(id);
     return { success: true };
   },
 
@@ -44,7 +43,7 @@ export const teacherInsightsAPI = {
    * @authority read TeacherInsight
    */
   async listStudentObservations(classroomId: string): Promise<TeacherStudentObservationZod[]> {
-    return teacherInsightsServices.listStudentObservations(classroomId);
+    return teacherInsights.listStudentObservations(classroomId);
   },
 
   /**
@@ -53,7 +52,7 @@ export const teacherInsightsAPI = {
   async listStudentObservationsForEnrollment(
     classroomStudentId: string,
   ): Promise<TeacherStudentObservationZod[]> {
-    return teacherInsightsServices.listStudentObservationsForEnrollment(classroomStudentId);
+    return teacherInsights.listStudentObservationsForEnrollment(classroomStudentId);
   },
 
   /**
@@ -62,7 +61,7 @@ export const teacherInsightsAPI = {
   async listStudentObservationsForStudent(
     studentId: string,
   ): Promise<TeacherStudentObservationZod[]> {
-    return teacherInsightsServices.listStudentObservationsForStudent(studentId);
+    return teacherInsights.listStudentObservationsForStudent(studentId);
   },
 
   /**
@@ -71,7 +70,7 @@ export const teacherInsightsAPI = {
   async createStudentObservation(
     input: TeacherStudentObservationCreate,
   ): Promise<TeacherStudentObservationZod> {
-    return teacherInsightsServices.createStudentObservation(input);
+    return teacherInsights.createStudentObservation(input);
   },
 
   /**
@@ -81,14 +80,14 @@ export const teacherInsightsAPI = {
     id: string,
     acceptDeclaration: boolean,
   ): Promise<TeacherStudentObservationZod> {
-    return teacherInsightsServices.finalizeStudentObservation(id, acceptDeclaration);
+    return teacherInsights.finalizeStudentObservation(id, acceptDeclaration);
   },
 
   /**
    * @authority delete TeacherInsight
    */
   async deleteStudentObservation(id: string): Promise<{ success: true }> {
-    await teacherInsightsServices.deleteStudentObservation(id);
+    await teacherInsights.deleteStudentObservation(id);
     return { success: true };
   },
 
@@ -100,7 +99,7 @@ export const teacherInsightsAPI = {
     update: TeacherInsightShareUpdate,
     actorId: string,
   ): Promise<TeacherStudentObservationZod> {
-    return teacherInsightsServices.shareStudentObservation(id, update, actorId);
+    return teacherInsights.shareStudentObservation(id, update, actorId);
   },
 
   /**
@@ -110,7 +109,7 @@ export const teacherInsightsAPI = {
     id: string,
     actorId: string,
   ): Promise<TeacherStudentObservationZod> {
-    return teacherInsightsServices.revokeStudentObservationShare(id, actorId);
+    return teacherInsights.revokeStudentObservationShare(id, actorId);
   },
 
   /**
@@ -121,7 +120,7 @@ export const teacherInsightsAPI = {
     promotion: TeacherInsightPromotion,
     actorId: string,
   ): Promise<{ success: true; recordedAt: string }> {
-    return teacherInsightsServices.promoteStudentObservation(id, promotion, actorId);
+    return teacherInsights.promoteStudentObservation(id, promotion, actorId);
   },
 
   /**
@@ -131,7 +130,7 @@ export const teacherInsightsAPI = {
     studentId: string,
     classroomId: string,
   ): Promise<TeacherStudentPotentialZod | null> {
-    return teacherInsightsServices.getStudentPotential(studentId, classroomId);
+    return teacherInsights.getStudentPotential(studentId, classroomId);
   },
 
   /**
@@ -140,7 +139,7 @@ export const teacherInsightsAPI = {
   async upsertStudentPotential(
     input: TeacherStudentPotentialUpsert,
   ): Promise<TeacherStudentPotentialZod> {
-    return teacherInsightsServices.upsertStudentPotential(input);
+    return teacherInsights.upsertStudentPotential(input);
   },
 
   /**
@@ -150,7 +149,7 @@ export const teacherInsightsAPI = {
     insightType: TeacherInsightTargetType,
     insightId: string,
   ): Promise<TeacherInsightAuditEvent[]> {
-    return teacherInsightsServices.getInsightAuditTrail(insightType, insightId);
+    return teacherInsights.getInsightAuditTrail(insightType, insightId);
   },
 
   /**
@@ -160,8 +159,6 @@ export const teacherInsightsAPI = {
     insightType: TeacherInsightTargetType,
     insightId: string,
   ): Promise<TeacherInsightLifecycleEvent[]> {
-    return teacherInsightsServices.getInsightTimeline(insightType, insightId);
+    return teacherInsights.getInsightTimeline(insightType, insightId);
   },
 };
-
-void teacherInsightsContract;

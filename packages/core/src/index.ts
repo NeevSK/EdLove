@@ -9,10 +9,7 @@ export { isDemo } from './api/demo';
 // 4. API & Business Logic (Named exports for better tree-shaking)
 export { deviceTrustAPI } from './api/deviceTrust';
 export { accountPin, validateAccountPin } from './lib/accountPin';
-export {
-  type CloudinaryUploadResponse,
-  uploadToCloudinary,
-} from './lib/cloudinary';
+export { marksToGPA } from './lib/grading';
 export { marksToGPA } from './lib/grading';
 export {
   CLASSROOM_RESOURCE_SCOPE,
@@ -148,6 +145,7 @@ export * from './types';
 import { z } from 'zod';
 
 export * from './api';
+export { mediaAPI } from './api/media';
 export {
   useStudentAssignmentsQuery,
   useStudentClassroomsQuery,

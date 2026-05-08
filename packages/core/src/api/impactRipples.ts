@@ -27,7 +27,7 @@
  * \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
  */
 
-import { supabase } from './supabase';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from './supabase';
 
 // \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 // TYPES
@@ -164,7 +164,7 @@ export const impactRipplesAPI = {
     const messages = WARM_MESSAGES[input.rippleType];
 
     try {
-      await supabase.from('impact_ripples').insert({
+      await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('impact_ripples').insert({
         recipient_user_id: input.recipientUserId,
         ripple_type: input.rippleType,
         school_id: input.schoolId ?? null,
@@ -191,7 +191,7 @@ export const impactRipplesAPI = {
    * Used by the notification delivery system to batch ripples 3\u20134\u00D7 per day.
    */
   async getPendingRipples(userId: string): Promise<ImpactRipple[]> {
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('impact_ripples')
       .select('*')
       .eq('recipient_user_id', userId)
@@ -212,7 +212,7 @@ export const impactRipplesAPI = {
    */
   async markDelivered(rippleId: string): Promise<void> {
     try {
-      await supabase
+      await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
         .from('impact_ripples')
         .update({
           delivered: true,
@@ -232,7 +232,7 @@ export const impactRipplesAPI = {
    * Returns the last N delivered ripples within the specified window.
    */
   async getDeliveredSince(userId: string, since: string): Promise<ImpactRipple[]> {
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('impact_ripples')
       .select('*')
       .eq('recipient_user_id', userId)

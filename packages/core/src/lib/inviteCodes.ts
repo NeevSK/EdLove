@@ -1,4 +1,4 @@
-import { supabase } from '../api/supabase';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../api/supabase';
 import { generateRandomString } from '../utils/random';
 
 /**
@@ -44,7 +44,7 @@ export async function validateInviteCode(code: string): Promise<{
     }
 
     // Query database
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('invite_codes')
       .select(`
         id,
@@ -101,7 +101,7 @@ export async function validateInviteCode(code: string): Promise<{
 export async function incrementInviteCodeUsage(code: string): Promise<void> {
   try {
     // Fetch current count
-    const { data: currentData } = await supabase
+    const { data: currentData } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('invite_codes')
       .select('uses_count')
       .eq('code', code.toUpperCase())
@@ -109,7 +109,7 @@ export async function incrementInviteCodeUsage(code: string): Promise<void> {
 
     if (currentData) {
       // Increment and update
-      const { error } = await supabase
+      const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
         .from('invite_codes')
         .update({ uses_count: currentData.uses_count + 1 })
         .eq('code', code.toUpperCase());
@@ -139,7 +139,7 @@ export async function generateInviteCodesForSchool(
     const teacherCode = generateInviteCode('teacher');
     const studentCode = generateInviteCode('student');
 
-    const { error } = await supabase.from('invite_codes').insert([
+    const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('invite_codes').insert([
       {
         school_id: schoolId,
         code: teacherCode,

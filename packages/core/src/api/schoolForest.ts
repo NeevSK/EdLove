@@ -26,7 +26,7 @@ import { composeUserAbilities } from '../logic/permissions/composer';
 import { APIError } from '../types/API';
 import { identityAPI } from './identity';
 import { impactRipplesAPI } from './impactRipples';
-import { supabase } from './supabase';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from './supabase';
 
 // \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 // TYPES
@@ -242,7 +242,7 @@ export const schoolForestAPI = {
     const now = new Date();
 
     // Fetch pre-computed forest state
-    const { data: forestRows } = await supabase
+    const { data: forestRows } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('school_forest_state')
       .select('*')
       .eq('school_id', schoolId);
@@ -286,7 +286,7 @@ export const schoolForestAPI = {
     const fourteenDaysAgo = new Date(now.getTime() - 14 * 86400000).toISOString();
 
     // Get all teachers in this school
-    const { data: teachers } = await supabase
+    const { data: teachers } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('users')
       .select('id')
       .eq('school_id', schoolId)
@@ -306,14 +306,14 @@ export const schoolForestAPI = {
     const teacherIds: string[] = teachers.map((t: { id: string }) => t.id);
 
     // Batch query: growth events for ALL teachers in one request (avoids N+1)
-    const { data: allSignals } = await supabase
+    const { data: allSignals } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('growth_events')
       .select('user_id, dimension, created_at')
       .in('user_id', teacherIds)
       .gte('created_at', fourteenDaysAgo);
 
     // Batch query: growth state for ALL teachers in one request (avoids N+1)
-    const { data: allGrowthStates } = await supabase
+    const { data: allGrowthStates } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('user_growth_state')
       .select('user_id, created_at, blooming_signals')
       .in('user_id', teacherIds);
@@ -395,7 +395,7 @@ export const schoolForestAPI = {
     const now = new Date();
     const sevenDaysAgo = new Date(now.getTime() - 7 * 86400000).toISOString();
 
-    const { data: teachers } = await supabase
+    const { data: teachers } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('users')
       .select('id')
       .eq('school_id', schoolId)
@@ -415,7 +415,7 @@ export const schoolForestAPI = {
 
     // Fetch growth signals for all teachers in this school via user_id join
     const teacherIds: string[] = (teachers ?? []).map((t: { id: string }) => t.id);
-    const { data: signalsByTeacher } = await supabase
+    const { data: signalsByTeacher } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('growth_events')
       .select('user_id, dimension')
       .in('user_id', teacherIds)
@@ -481,7 +481,7 @@ export const schoolForestAPI = {
     const messages = GIFT_MESSAGES[giftType];
 
     try {
-      await supabase.from('gratitude_gifts').insert({
+      await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('gratitude_gifts').insert({
         sender_user_id: principalUserId,
         recipient_user_id: recipientUserId,
         school_id: schoolId ?? null,
@@ -523,7 +523,7 @@ export const schoolForestAPI = {
         throw new APIError('Unauthorized to view others gifts', 'FORBIDDEN');
       }
     }
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('gratitude_gifts')
       .select('*')
       .eq('recipient_user_id', recipientUserId)
@@ -542,7 +542,7 @@ export const schoolForestAPI = {
    */
   async markGiftDelivered(giftId: string): Promise<void> {
     try {
-      await supabase
+      await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
         .from('gratitude_gifts')
         .update({ delivered: true, delivered_at: new Date().toISOString() })
         .eq('id', giftId);

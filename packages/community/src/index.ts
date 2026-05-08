@@ -28,3 +28,6 @@ export { default as UserPublicProfileScreen } from "./screens/UserPublicProfileS
 
 // Types
 export * from "./types";
+
+// Constants
+export * from "./constants/communityRegistry";

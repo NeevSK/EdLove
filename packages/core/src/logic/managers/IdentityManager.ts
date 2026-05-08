@@ -45,4 +45,40 @@ export class IdentityManager implements IIdentityPort {
   async createInitialBond(orientation: Capacity, context: Record<string, any>): Promise<void> {
     return this.adapter.createInitialBond(orientation, context);
   }
+
+  async createNotification(userId: string, type: string, title: string, message: string, metadata?: any): Promise<void> {
+    return this.adapter.createNotification(userId, type, title, message, metadata);
+  }
+
+  async getNotifications(userId: string): Promise<any[]> {
+    return this.adapter.getNotifications(userId);
+  }
+
+  async updateNotificationStatus(notificationId: string, isRead: boolean): Promise<void> {
+    return this.adapter.updateNotificationStatus(notificationId, isRead);
+  }
+
+  async completeProfile(userId: string, data: any): Promise<void> {
+    return this.adapter.completeProfile(userId, data);
+  }
+
+  async updateProfile(userId: string, updates: Partial<User>): Promise<void> {
+    return this.adapter.updateProfile(userId, updates);
+  }
+
+  async blockUser(blockerId: string, blockedId: string): Promise<void> {
+    return this.adapter.blockUser(blockerId, blockedId);
+  }
+
+  async unblockUser(blockerId: string, blockedId: string): Promise<void> {
+    return this.adapter.unblockUser(blockerId, blockedId);
+  }
+
+  async registerPushToken(userId: string, token: string, deviceId: string, platform: string): Promise<void> {
+    return this.adapter.registerPushToken(userId, token, deviceId, platform);
+  }
+
+  async unregisterPushToken(userId: string, deviceId: string): Promise<void> {
+    return this.adapter.unregisterPushToken(userId, deviceId);
+  }
 }

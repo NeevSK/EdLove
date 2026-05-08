@@ -1,6 +1,6 @@
 import type { QueryClient } from '@tanstack/react-query';
 import { identityAPI } from '../api/identity';
-import { supabase } from '../api/supabase';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../api/supabase';
 import { getActiveAccountId, setActiveAccountId } from '../lib/accountScope';
 import { DeviceTrustEngine } from '../lib/security/deviceTrust';
 import { useMutationQueue } from '../lib/sync/useMutationQueue';
@@ -110,7 +110,7 @@ export async function globalLogoutAndPurge(queryClient?: QueryClient) {
     queryClient.clear();
   }
 
-  await supabase.auth.signOut({ scope: 'local' });
+  await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.auth.signOut({ scope: 'local' });
 
   // 4. Memory Purge
   setActiveAccountId(null);

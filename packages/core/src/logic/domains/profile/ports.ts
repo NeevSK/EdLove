@@ -65,6 +65,30 @@ export interface ProfileJourneySnapshot {
   whispered_moments: WhisperedMomentSnapshot[];
 }
 
+export interface UserPreferences {
+  id: string;
+  user_id: string;
+  favorite_features: string[];
+  hidden_features: string[];
+  notification_settings: {
+    channels: {
+      push: boolean;
+      email: boolean;
+      in_app: boolean;
+    };
+    categories: Record<string, { push: boolean; email: boolean }>;
+    quiet_hours: {
+      enabled: boolean;
+      start: string;
+      end: string;
+    };
+  } | null;
+  enable_contextual_prompts: boolean;
+  enable_usage_tracking: boolean;
+  updated_at: string;
+  created_at: string;
+}
+
 export interface ProfileJourneyEvent {
   id: string;
   timestamp: string;
@@ -101,6 +125,9 @@ export interface ProfileRepository {
   upsertSocialLink(link: Partial<SocialLink>): Promise<SocialLink>;
   deleteSocialLink(linkId: string): Promise<void>;
   updateSocialLinksOrder(links: { id: string; order_index: number }[]): Promise<void>;
+
+  getUserPreferences(userId: string): Promise<UserPreferences | null>;
+  updateUserPreferences(userId: string, updates: Partial<UserPreferences>): Promise<UserPreferences>;
 
   getCommunityProfile(communityId: string): Promise<CommunityProfile | null>;
   getCommunityProfileAsOf(communityId: string, asOf: string): Promise<CommunityProfile | null>;

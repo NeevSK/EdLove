@@ -1,8 +1,7 @@
 import { getOnboardingState } from '../logic/domains/profile/onboarding';
-import { type User, UserSchema } from '../logic/schemas/user.schema';
+import { type User } from '../logic/schemas/user.schema';
 import { identity } from '../logic/managers/factory';
 import { APIError } from '../types/API';
-import { supabase } from './supabase';
 
 // State is managed by the adapter now
 
@@ -30,30 +29,17 @@ export const identityAPI = {
   },
 
   /**
-   * Fetches the full user profile from the `users` table.
+   * Fetches the full user profile from the identity port.
    */
   async getProfile(userId: string): Promise<User> {
-    const { data, error } = await supabase.from('users').select('*').eq('id', userId).single();
-
-    if (error) {
-      throw new APIError('Failed to fetch user profile', error.code, error);
-    }
-
-    return UserSchema.parse(data);
+    return identity.getProfile(userId);
   },
 
   /**
-   * Updates the user's profile in the `users` table.
+   * Updates the user's profile via the identity port.
    */
   async updateProfile(userId: string, updates: Partial<User>) {
-    // Validate updates against partial UserSchema
-    const validatedUpdates = UserSchema.partial().parse(updates);
-
-    const { error } = await supabase.from('users').update(validatedUpdates).eq('id', userId);
-
-    if (error) {
-      throw new APIError('Failed to update user profile', error.code, error);
-    }
+    return identity.updateProfile(userId, updates);
   },
 
   async getBonds(userId: string) {
@@ -111,10 +97,23 @@ export const identityAPI = {
   },
 
   /**
+   * Blocks a user.
+   */
+  async blockUser(blockerId: string, blockedId: string) {
+    return identity.blockUser(blockerId, blockedId);
+  },
+
+  /**
+   * Unblocks a user.
+   */
+  async unblockUser(blockerId: string, blockedId: string) {
+    return identity.unblockUser(blockerId, blockedId);
+  },
+
+  /**
    * Clears the identity cache (e.g., on logout).
    */
   clearCache() {
-    // Adapter handles its own cache clearing via auth subscription if needed,
-    // but we can expose it if added to port. For now, no-op.
+    // Adapter handles its own cache clearing
   },
 };

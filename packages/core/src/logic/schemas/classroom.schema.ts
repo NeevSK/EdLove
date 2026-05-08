@@ -13,6 +13,11 @@ export const ClassroomSchema = makeModelSchema('Classroom');
  */
 export const AssignmentSchema = makeModelSchema('Assignment');
 
+/**
+ * LessonSchema - A unit of instruction.
+ */
+export const LessonSchema = makeModelSchema('Lesson');
+
 export const StudentAssignmentSchema = AssignmentSchema.extend({
   classroom: z.string().optional().nullable(),
   submitted: z.boolean().default(false),
@@ -161,6 +166,7 @@ export const ClassroomLegacyRecordSchema = z.object({
 
 export type Classroom = z.infer<typeof ClassroomSchema>;
 export type Assignment = z.infer<typeof AssignmentSchema>;
+export type Lesson = z.infer<typeof LessonSchema>;
 export type StudentAssignment = z.infer<typeof StudentAssignmentSchema>;
 export type AssignmentSubmission = z.infer<typeof AssignmentSubmissionSchema>;
 export type StudentSubmissionSummary = z.infer<typeof StudentSubmissionSummarySchema>;

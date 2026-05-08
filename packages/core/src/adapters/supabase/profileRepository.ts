@@ -1,5 +1,5 @@
-import { supabase } from '../../api/supabase';
-import { uploadToCloudinary } from '../../lib/cloudinary';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../../api/supabase';
+import { mediaAPI } from '../../api/media';
 import type {
   CommunityProfile,
   ProfileHistoryEntry,
@@ -21,6 +21,25 @@ const RISING_THRESHOLD = 1.2;
 const FAILING_THRESHOLD = 0.5;
 const RESONANCE_ACTIVITY_ANCHOR = 50;
 const PARTICIPATION_SCALE_FACTOR = 10;
+
+const DEFAULT_NOTIFICATION_SETTINGS = {
+  channels: {
+    push: true,
+    email: false,
+    in_app: true
+  },
+  categories: {
+    community: { push: true, email: false },
+    academic: { push: true, email: true },
+    security: { push: true, email: true },
+    direct_messages: { push: true, email: false }
+  },
+  quiet_hours: {
+    enabled: false,
+    start: "22:00",
+    end: "07:00"
+  }
+};
 
 const getPreviousRange = (start: string, end: string) => {
   const startMs = new Date(start).getTime();
@@ -80,13 +99,13 @@ const mapWhisperedMoments = (rows: WhisperedMomentRow[] | null | undefined): Whi
 
 export const createSupabaseProfileRepository = (): ProfileRepository => ({
   async getUserProfile(userId) {
-    const { data, error } = await supabase.from('users').select('*').eq('id', userId).maybeSingle();
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('users').select('*').eq('id', userId).maybeSingle();
     if (error) throw new APIError('Failed to fetch user profile', error.code, error);
     if (!data) return null;
     return normalizeUser(data);
   },
   async getUserProfileAsOf(userId, asOf) {
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('user_profile_versions')
       .select('snapshot')
       .eq('user_id', userId)
@@ -99,7 +118,7 @@ export const createSupabaseProfileRepository = (): ProfileRepository => ({
     return normalizeUser(data.snapshot);
   },
   async getUserProfileHistory(userId, limit = 20) {
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('user_profile_versions')
       .select('id, operation, recorded_at, recorded_by, snapshot')
       .eq('user_id', userId)
@@ -116,7 +135,7 @@ export const createSupabaseProfileRepository = (): ProfileRepository => ({
     const viewScale = normalizeTemporalScale(options.viewScale);
 
     if (asOf) {
-      const { data: rewardsVersion, error: rewardsError } = await supabase
+      const { data: rewardsVersion, error: rewardsError } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
         .from('user_rewards_versions')
         .select('snapshot')
         .eq('user_id', userId)
@@ -131,7 +150,7 @@ export const createSupabaseProfileRepository = (): ProfileRepository => ({
           rewardsError,
         );
 
-      const { data: growthVersion, error: growthError } = await supabase
+      const { data: growthVersion, error: growthError } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
         .from('user_growth_state_versions')
         .select('snapshot')
         .eq('user_id', userId)
@@ -146,7 +165,7 @@ export const createSupabaseProfileRepository = (): ProfileRepository => ({
           growthError,
         );
 
-      let whisperedQuery = supabase
+      let whisperedQuery = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
         .from('whispered_moments')
         .select('moment_key, moment_name_en, moment_name_si, awarded_at')
         .eq('user_id', userId);
@@ -182,9 +201,9 @@ export const createSupabaseProfileRepository = (): ProfileRepository => ({
       { data: growth, error: growthError },
       { data: whisperedRows, error: whisperedError },
     ] = await Promise.all([
-      supabase.from('user_rewards').select('*').eq('user_id', userId).maybeSingle(),
-      supabase.from('user_growth_state').select('*').eq('user_id', userId).maybeSingle(),
-      supabase
+      __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('user_rewards').select('*').eq('user_id', userId).maybeSingle(),
+      __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('user_growth_state').select('*').eq('user_id', userId).maybeSingle(),
+      __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
         .from('whispered_moments')
         .select('moment_key, moment_name_en, moment_name_si, awarded_at')
         .eq('user_id', userId)
@@ -220,7 +239,7 @@ export const createSupabaseProfileRepository = (): ProfileRepository => ({
       { data: growthRows, error: growthError },
       { data: momentRows, error: momentError },
     ] = await Promise.all([
-      supabase
+      __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
         .from('user_rewards_versions')
         .select('id, operation, recorded_at, snapshot')
         .eq('user_id', userId)
@@ -228,7 +247,7 @@ export const createSupabaseProfileRepository = (): ProfileRepository => ({
         .lte('recorded_at', end)
         .order('recorded_at', { ascending: false })
         .limit(limit),
-      supabase
+      __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
         .from('user_growth_state_versions')
         .select('id, operation, recorded_at, snapshot')
         .eq('user_id', userId)
@@ -236,7 +255,7 @@ export const createSupabaseProfileRepository = (): ProfileRepository => ({
         .lte('recorded_at', end)
         .order('recorded_at', { ascending: false })
         .limit(limit),
-      supabase
+      __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
         .from('whispered_moments')
         .select('id, moment_key, moment_name_en, moment_name_si, awarded_at')
         .eq('user_id', userId)
@@ -306,7 +325,7 @@ export const createSupabaseProfileRepository = (): ProfileRepository => ({
       .slice(0, limit);
   },
   async updateUserProfile(userId, updates) {
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('users')
       .update(updates)
       .eq('id', userId)
@@ -316,7 +335,7 @@ export const createSupabaseProfileRepository = (): ProfileRepository => ({
     return normalizeUser(data);
   },
   async getAnonymousFlag(userId) {
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('users')
       .select('is_anonymous')
       .eq('id', userId)
@@ -326,7 +345,7 @@ export const createSupabaseProfileRepository = (): ProfileRepository => ({
   },
   async uploadAvatarAsset(localUri) {
     try {
-      return await uploadToCloudinary(localUri, 'image');
+      return await mediaAPI.upload(localUri, { resourceType: 'image' });
     } catch (error: unknown) {
       const err = error as { code?: string; message?: string };
       throw new APIError('Failed to upload avatar', err?.code || 'UPLOAD_ERROR', error);
@@ -334,7 +353,7 @@ export const createSupabaseProfileRepository = (): ProfileRepository => ({
   },
 
   async getSocialLinks(userId) {
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('user_social_links')
       .select('*')
       .eq('user_id', userId)
@@ -343,21 +362,49 @@ export const createSupabaseProfileRepository = (): ProfileRepository => ({
     return (data || []) as SocialLink[];
   },
   async upsertSocialLink(link) {
-    const { data, error } = await supabase.from('user_social_links').upsert(link).select().single();
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('user_social_links').upsert(link).select().single();
     if (error) throw new APIError('Failed to upsert social link', error.code, error);
     return data as SocialLink;
   },
   async deleteSocialLink(linkId) {
-    const { error } = await supabase.from('user_social_links').delete().eq('id', linkId);
+    const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('user_social_links').delete().eq('id', linkId);
     if (error) throw new APIError('Failed to delete social link', error.code, error);
   },
   async updateSocialLinksOrder(links) {
-    const { error } = await supabase.from('user_social_links').upsert(links);
+    const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('user_social_links').upsert(links);
     if (error) throw new APIError('Failed to update social links order', error.code, error);
   },
 
+  async getUserPreferences(userId) {
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+      .from('user_preferences')
+      .select('*')
+      .eq('user_id', userId)
+      .maybeSingle();
+      
+    if (error) throw new APIError('Failed to fetch user preferences', error.code, error);
+    if (!data) return null;
+
+    return {
+      ...data,
+      notification_settings: data.notification_settings || DEFAULT_NOTIFICATION_SETTINGS
+    };
+  },
+
+  async updateUserPreferences(userId, updates) {
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+      .from('user_preferences')
+      .update(updates)
+      .eq('user_id', userId)
+      .select()
+      .single();
+
+    if (error) throw new APIError('Failed to update user preferences', error.code, error);
+    return data;
+  },
+
   async getCommunityProfile(communityId) {
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('community_groups')
       .select('id, name, description, visibility, creator_id')
       .eq('id', communityId)
@@ -366,7 +413,7 @@ export const createSupabaseProfileRepository = (): ProfileRepository => ({
     return (data as CommunityProfile | null) ?? null;
   },
   async getCommunityProfileAsOf(communityId, asOf) {
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('community_profile_versions')
       .select('snapshot')
       .eq('community_id', communityId)
@@ -379,7 +426,7 @@ export const createSupabaseProfileRepository = (): ProfileRepository => ({
     return (data?.snapshot as CommunityProfile | undefined) ?? null;
   },
   async getCommunityProfileHistory(communityId, limit = 20) {
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('community_profile_versions')
       .select('id, operation, recorded_at, recorded_by, snapshot')
       .eq('community_id', communityId)
@@ -389,7 +436,7 @@ export const createSupabaseProfileRepository = (): ProfileRepository => ({
     return (data || []) as ProfileHistoryEntry<CommunityProfile>[];
   },
   async updateCommunityProfile(communityId, field, value) {
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('community_groups')
       .update({ [field]: value, updated_at: new Date().toISOString() })
       .eq('id', communityId)
@@ -414,29 +461,29 @@ export const createSupabaseProfileRepository = (): ProfileRepository => ({
       { count: groupCount },
       { count: classroomCount },
     ] = await Promise.all([
-      supabase
+      __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
         .from('community_posts')
         .select('id', { count: 'exact', head: true })
         .eq('school_id', schoolId)
         .gte('created_at', periodStart)
         .lte('created_at', periodEnd),
-      supabase
+      __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
         .from('community_posts')
         .select('id', { count: 'exact', head: true })
         .eq('school_id', schoolId)
         .gte('created_at', previousStart)
         .lte('created_at', previousEnd),
-      supabase
+      __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
         .from('library_items')
         .select('id', { count: 'exact', head: true })
         .eq('school_id', schoolId)
         .gte('created_at', periodStart)
         .lte('created_at', periodEnd),
-      supabase
+      __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
         .from('community_groups')
         .select('id', { count: 'exact', head: true })
         .eq('school_id', schoolId),
-      supabase
+      __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
         .from('classrooms')
         .select('id', { count: 'exact', head: true })
         .eq('school_id', schoolId),

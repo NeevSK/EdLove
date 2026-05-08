@@ -2,7 +2,6 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import { useStore } from '../../store/useStore';
 import { communityAPI } from '../community';
-import { supabase } from '../supabase';
 
 export const pollKeys = {
   all: ['community', 'polls'] as const,
@@ -20,38 +19,10 @@ export function usePollHooks(postId: string) {
   const query = useQuery({
     queryKey: pollKeys.detail(postId),
     queryFn: async () => {
-      // Fetch vote counts
-      const { data: countData, error: countError } = await supabase
-        .from('community_poll_votes')
-        .select('option_id')
-        .eq('post_id', postId);
-
-      if (countError) throw countError;
-
-      const counts: Record<string, number> = {};
-      let total = 0;
-      (countData ?? []).forEach((v) => {
-        counts[v.option_id] = (counts[v.option_id] ?? 0) + 1;
-        total++;
-      });
-
-      // Fetch current user votes if logged in
-      let userVotes: string[] = [];
-      if (user?.id) {
-        const { data: myVotesData, error: myVotesError } = await supabase
-          .from('community_poll_votes')
-          .select('option_id')
-          .eq('post_id', postId)
-          .eq('user_id', user.id);
-
-        if (myVotesError) throw myVotesError;
-        userVotes = (myVotesData ?? []).map((v) => v.option_id);
-      }
-
+      const data = await communityAPI.getPollStatus(postId);
       return {
-        counts,
-        totalVotes: total,
-        userVotes: new Set(userVotes),
+        ...data,
+        userVotes: new Set(data.userVotes),
       };
     },
     enabled: !!postId,

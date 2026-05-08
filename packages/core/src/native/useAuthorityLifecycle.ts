@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Platform } from 'react-native';
 import { authAPI } from '../api/auth';
 import { identityAPI } from '../api/identity';
-import { supabase } from '../api/supabase';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../api/supabase';
 import type { SchoolType } from '../constants/SriLankanSchools';
 import { identifyUser, initPostHog, trackEvent } from '../lib/monitoring/posthog';
 import { clearSentryUser, initSentry, setSentryUser } from '../lib/monitoring/sentry';
@@ -53,7 +53,7 @@ export function useAuthorityLifecycle() {
           }
 
           if (profile.school_id) {
-            const { data: schoolData } = await supabase
+            const { data: schoolData } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
               .from('schools')
               .select('type')
               .eq('id', profile.school_id)
@@ -126,7 +126,7 @@ export function useAuthorityLifecycle() {
             error.message?.includes('Refresh Token') ||
             (error as { status?: number }).status === 400
           ) {
-            await supabase.auth.signOut({ scope: 'local' });
+            await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.auth.signOut({ scope: 'local' });
             setSession(null);
             setAuthSession(null);
           }
@@ -144,7 +144,7 @@ export function useAuthorityLifecycle() {
     // 3. Auth State Change Listener
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, currentSession) => {
+    } = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.auth.onAuthStateChange(async (event, currentSession) => {
       setSession(currentSession);
       setAuthSession(currentSession);
       setAuthSessionResolved(true);
@@ -194,7 +194,7 @@ export function useAuthorityLifecycle() {
       console.log('\uD83C\uDF38 Auth: Subscribing to profile changes for:', currentUser.id);
     }
 
-    const channel = supabase
+    const channel = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .channel(`user-profile-sync-${currentUser.id}-${Math.random().toString(36).slice(2, 9)}`)
       .on(
         'postgres_changes',
@@ -223,7 +223,7 @@ export function useAuthorityLifecycle() {
             // Force a new JWT with updated custom claims so that
             // RLS-dependent API calls inside refreshProfile() succeed.
             try {
-              await supabase.auth.refreshSession();
+              await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.auth.refreshSession();
             } catch (e) {
               console.error('Auth: JWT refresh failed after capacity change', e);
             }
@@ -237,7 +237,7 @@ export function useAuthorityLifecycle() {
       .subscribe();
 
     return () => {
-      supabase.removeChannel(channel).catch((e) => {
+      __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.removeChannel(channel).catch((e) => {
         console.error('Auth: Failed to remove channel during cleanup', e);
       });
     };

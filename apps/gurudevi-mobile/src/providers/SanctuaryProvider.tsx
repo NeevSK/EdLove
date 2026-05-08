@@ -13,7 +13,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type React from "react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { config } from "../../gluestack-ui.config";
-import { dispatchQueuedMutationToInngest } from "../lib/inngestEvents";
+import { dispatchQueuedMutationToSovereignBus } from "../lib/inngestEvents";
 import { useAssets } from "./AssetProvider";
 import { DeepLinkProvider } from "./DeepLinkProvider";
 
@@ -76,7 +76,7 @@ export function SanctuaryProvider({ children }: SanctuaryProviderProps) {
 										>
 											<Box className="flex-1">{children}</Box>
 											<SyncManager
-												dispatchQueuedMutation={dispatchQueuedMutationToInngest}
+												dispatchQueuedMutation={dispatchQueuedMutationToSovereignBus}
 											/>
 										</AnalyticsProvider>
 									</ExternalLinkProvider>

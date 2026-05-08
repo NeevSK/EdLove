@@ -1,5 +1,5 @@
 import { getTemporalRange } from '../logic/utils/temporalUtils';
-import { supabase } from './supabase';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from './supabase';
 
 /**
  * Growth Signals API \u2014 internal tracking of aliveness dimensions.
@@ -26,7 +26,7 @@ export const rewardsAPI = {
    * Returns null if no record exists yet.
    */
   async getRewards(userId: string) {
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('user_rewards')
       .select('*')
       .eq('user_id', userId)
@@ -40,7 +40,7 @@ export const rewardsAPI = {
   },
 
   async getRewardsAsOf(userId: string, asOf: string) {
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('user_rewards_versions')
       .select('snapshot')
       .eq('user_id', userId)
@@ -57,7 +57,7 @@ export const rewardsAPI = {
   },
 
   async getRewardsHistory(userId: string, limit = 50) {
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('user_rewards_versions')
       .select('id, operation, recorded_at, recorded_by, snapshot')
       .eq('user_id', userId)
@@ -77,7 +77,7 @@ export const rewardsAPI = {
     viewScale: 'day' | 'week' | 'month' | 'year' | 'custom' = 'day',
   ) {
     const { start, end } = getTemporalRange(viewDate, viewScale === 'custom' ? 'day' : viewScale);
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('user_rewards_versions')
       .select('id, operation, recorded_at, recorded_by, snapshot')
       .eq('user_id', userId)
@@ -99,7 +99,7 @@ export const rewardsAPI = {
     const existing = await this.getRewards(userId);
     if (existing) return existing;
 
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('user_rewards')
       .insert([
         {
@@ -126,7 +126,7 @@ export const rewardsAPI = {
     const rewards = await this.getRewards(userId);
 
     if (!rewards) {
-      const { data, error } = await supabase
+      const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
         .from('user_rewards')
         .insert([
           {
@@ -140,7 +140,7 @@ export const rewardsAPI = {
       if (error) throw error;
       return data;
     } else {
-      const { data, error } = await supabase
+      const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
         .from('user_rewards')
         .update({
           points: (rewards.points || 0) + points,
@@ -166,7 +166,7 @@ export const rewardsAPI = {
     const updatedBadges = [...currentBadges, badge];
 
     if (!rewards) {
-      const { data, error } = await supabase
+      const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
         .from('user_rewards')
         .insert([
           {
@@ -180,7 +180,7 @@ export const rewardsAPI = {
       if (error) throw error;
       return data;
     } else {
-      const { data, error } = await supabase
+      const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
         .from('user_rewards')
         .update({
           badges: updatedBadges,
@@ -205,7 +205,7 @@ export const rewardsAPI = {
    */
   async checkAndAwardAchievements(userId: string) {
     // Fetch feature usage
-    const { data: usage } = await supabase
+    const { data: usage } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('feature_usage_log')
       .select('feature_name')
       .eq('user_id', userId);
@@ -228,7 +228,7 @@ export const rewardsAPI = {
 
     if (newBadges.length > 0) {
       const updatedBadges = [...badges, ...newBadges];
-      const { data, error } = await supabase
+      const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
         .from('user_rewards')
         .update({
           badges: updatedBadges,

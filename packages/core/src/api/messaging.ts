@@ -1,7 +1,7 @@
 import { applyTemporalFilter } from '../logic/utils/temporalUtils';
 import type { TemporalScale } from '../store/useTemporalStore';
 import { identityAPI } from './identity';
-import { supabase } from './supabase';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from './supabase';
 
 /**
  * Messaging API
@@ -16,7 +16,7 @@ export const messagingAPI = {
     const userId = await identityAPI.getMyInternalId();
     if (!userId) throw new Error('Not authenticated');
 
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('direct_conversations')
       .select(`
                 *,
@@ -42,7 +42,7 @@ export const messagingAPI = {
    * @authority create User
    */
   async getOrCreateDirectConversation(targetUserId: string): Promise<string> {
-    const { data, error } = await supabase.rpc('get_or_create_direct_conversation', {
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.rpc('get_or_create_direct_conversation', {
       target_user_id: targetUserId,
     });
 
@@ -59,7 +59,7 @@ export const messagingAPI = {
     viewDate?: string,
     viewScale?: TemporalScale,
   ) {
-    let query = supabase
+    let query = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('direct_messages')
       .select('*, author:users!direct_messages_author_id_fkey(full_name, avatar_url)')
       .eq('conversation_id', conversationId);
@@ -87,7 +87,7 @@ export const messagingAPI = {
     const userId = await identityAPI.getMyInternalId();
     if (!userId) throw new Error('Not authenticated');
 
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('direct_messages')
       .insert([
         {

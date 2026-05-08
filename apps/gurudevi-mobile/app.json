@@ -112,7 +112,8 @@
 			"expo-router",
 			"expo-sharing",
 			"expo-sqlite",
-			"expo-video"
+			"expo-video",
+			"expo-notifications"
 		],
 		"owner": "neevsk",
 		"runtimeVersion": {

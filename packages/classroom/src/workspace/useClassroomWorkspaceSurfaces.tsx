@@ -10,11 +10,15 @@ import { useMemo } from "react";
 import { StudentOnboardingView, TeacherOnboardingView } from "../components";
 import StudentDashboard from "../screens/StudentDashboard";
 import TeacherDashboard from "../screens/TeacherDashboard";
+import { ADMIN_REGISTRY } from "@repo/admin";
+import { appendAdminWorkspaceSurfaces } from "@repo/admin/hooks";
+import { useFeatureRegistry } from "@repo/core/hooks/useFeatureRegistry";
 import type {
 	ClassroomWorkspaceSurface,
 	ClassroomWorkspaceSurfaceId,
-} from "../types/workspace";
-import { appendPrincipalWorkspaceSurfaces } from "./usePrincipalWorkspaceSurfaces";
+	DomainFeature,
+} from "@repo/core/types/workspace";
+import { CLASSROOM_REGISTRY } from "../constants/classroomRegistry";
 
 type UseClassroomWorkspaceSurfacesArgs = {
 	can: (action: string, subject: string, field?: string) => boolean;
@@ -45,6 +49,15 @@ type UseClassroomWorkspaceSurfacesArgs = {
 			}
 		>
 	>;
+	citizenship: string; // 'WANDERER' | 'SECOND_CLASS' | 'FIRST_CLASS'
+	isPro: boolean;
+	userCapabilities: string[];
+};
+
+const CITIZENSHIP_MAP: Record<string, number> = {
+	WANDERER: 0,
+	SECOND_CLASS: 1,
+	FIRST_CLASS: 2,
 };
 
 export function useClassroomWorkspaceSurfaces({
@@ -62,7 +75,17 @@ export function useClassroomWorkspaceSurfaces({
 	fetchRoleData,
 	navigation,
 	surfaceInsights,
+	citizenship,
+	isPro,
+	userCapabilities,
 }: UseClassroomWorkspaceSurfacesArgs) {
+	const citizenshipLevel = CITIZENSHIP_MAP[citizenship] ?? 0;
+
+	const classroomGated = useFeatureRegistry(CLASSROOM_REGISTRY, {
+		citizenship: citizenshipLevel,
+		isPro,
+		capabilities: userCapabilities,
+	});
 	const renderNudge = () => {
 		if (classroomData && !classroomData.profileCompleted && !isGuest) {
 			return (
@@ -145,7 +168,7 @@ export function useClassroomWorkspaceSurfaces({
 
 		const surfaces: ClassroomWorkspaceSurface[] = [];
 
-		appendPrincipalWorkspaceSurfaces(surfaces, {
+		appendAdminWorkspaceSurfaces(surfaces, {
 			can,
 			isGuest,
 			isDemoModeTriggered,
@@ -156,9 +179,14 @@ export function useClassroomWorkspaceSurfaces({
 			surfaceInsights,
 			onTryDemo: () => setIsDemoModeTriggered(true),
 			onCreateSchool: () => setIsCreateSchoolOpen(true),
+			citizenship,
+			isPro,
+			userCapabilities,
 		});
 
-		if (can("manage", "TeacherDashboard")) {
+		// --- Teacher Dashboard ---
+		const teacherGate = classroomGated.teacher_dashboard;
+		if (teacherGate.visible) {
 			const teacherContent =
 				classroomData.realClassCount === 0 && !isDemoModeTriggered ? (
 					<TeacherOnboardingView
@@ -183,16 +211,9 @@ export function useClassroomWorkspaceSurfaces({
 				);
 
 			surfaces.push({
-				surfaceId: "teacher",
-				workspaceId: "classroom",
-				capabilityKey: "TeacherDashboard",
-				ownerPackage: "classroom",
-				defaultZone: "work",
-				defaultOrder: 40,
-				mobileSupport: true,
-				webSupport: true,
-				title: "Teacher Studio",
-				subtitle: "Daily classroom authorship",
+				...teacherGate.feature,
+				title: teacherGate.feature.label,
+				subtitle: teacherGate.feature.description,
 				summary:
 					surfaceInsights?.teacher?.summary ??
 					"Assignments, lessons, attendance, grading, and teacher-owned pedagogical signals.",
@@ -202,10 +223,14 @@ export function useClassroomWorkspaceSurfaces({
 					"Write owner",
 				],
 				content: teacherContent,
+				isLocked: teacherGate.locked,
+				lockReason: teacherGate.reason,
 			});
 		}
 
-		if (can("manage", "StudentDashboard")) {
+		// --- Student Dashboard ---
+		const studentGate = classroomGated.student_dashboard;
+		if (studentGate.visible) {
 			const studentContent =
 				classroomData.realClassCount === 0 && !isDemoModeTriggered ? (
 					<StudentOnboardingView
@@ -233,16 +258,9 @@ export function useClassroomWorkspaceSurfaces({
 				);
 
 			surfaces.push({
-				surfaceId: "student",
-				workspaceId: "classroom",
-				capabilityKey: "StudentDashboard",
-				ownerPackage: "classroom",
-				defaultZone: "work",
-				defaultOrder: 50,
-				mobileSupport: true,
-				webSupport: true,
-				title: "Student Journey",
-				subtitle: "Learning, submissions, and personal progress",
+				...studentGate.feature,
+				title: studentGate.feature.label,
+				subtitle: studentGate.feature.description,
 				summary:
 					surfaceInsights?.student?.summary ??
 					"Student-facing classroom flow across lessons, assignments, notes, and longitudinal story.",
@@ -252,6 +270,8 @@ export function useClassroomWorkspaceSurfaces({
 					"Student-owned",
 				],
 				content: studentContent,
+				isLocked: studentGate.locked,
+				lockReason: studentGate.reason,
 			});
 		}
 

@@ -14,10 +14,8 @@ import type {
   PublishedStudentGradesSnapshot,
   SchoolGradingCompletion,
 } from '../logic/schemas/grading.schema';
-import { educationalServices } from './runtimes/educational.runtime';
+import { educational, audit } from '../logic/managers/factory';
 import { gradingProjectionServices } from './runtimes/gradingProjection.runtime';
-import { gradingContract } from './grading.contract';
-import { supabase } from './supabase';
 
 type GradingAuditContext = {
   actorId?: string;
@@ -38,7 +36,7 @@ const logGradingAudit = async ({
 }) => {
   if (!executorId) return;
 
-  const { error } = await supabase.from('audit_logs').insert({
+  await audit.log({
     action,
     entity_id: entityId,
     target_id: entityId,
@@ -46,28 +44,16 @@ const logGradingAudit = async ({
     executor_id: executorId,
     metadata: metadata ?? {},
   });
-
-  if (error) {
-    console.warn('Failed to record grading audit event', error);
-  }
 };
 
 const getGradeLifecycleRows = async (gradeIds: string[]): Promise<GradeLifecycleAuditRow[]> => {
   if (gradeIds.length === 0) return [];
 
-  const { data, error } = await supabase
-    .from('audit_logs')
-    .select('action, entity_id, created_at, metadata')
-    .eq('entity_type', 'grade')
-    .in('entity_id', gradeIds)
-    .in('action', [...GRADE_LIFECYCLE_ACTIONS]);
-
-  if (error) {
-    console.warn('Failed to fetch grade lifecycle rows', error);
-    return [];
-  }
-
-  return (data ?? []) as GradeLifecycleAuditRow[];
+  return audit.getLogs({
+    entityType: 'grade',
+    actions: [...GRADE_LIFECYCLE_ACTIONS],
+    limit: 100, // Reasonable limit for lifecycle tracking
+  }).then(logs => logs.filter(log => gradeIds.includes(log.entity_id)) as unknown as GradeLifecycleAuditRow[]);
 };
 
 const getAnnotatedGrades = async (grades: Grade[]): Promise<GradePublicationSnapshot[]> => {
@@ -93,8 +79,6 @@ const buildPublicationSnapshot = ({
   publication_action: action,
 });
 
-const getCurrentViewDate = () => new Date().toISOString().slice(0, 10);
-
 export const gradingAPI = {
   /**
    * @authority create Grade
@@ -105,14 +89,14 @@ export const gradingAPI = {
     marks: number,
     assignmentId?: string,
     feedback?: string,
-    audit?: GradingAuditContext,
+    auditCtx?: GradingAuditContext,
   ): Promise<Grade> {
-    const existing = (await educationalServices.grading.getClassroomGrades(classroomId)).find(
+    const existing = (await educational.grading.getClassroomGrades(classroomId)).find(
       (grade) =>
         grade.student_id === studentId && (grade.assignment_id ?? null) === (assignmentId ?? null),
     );
 
-    const saved = await educationalServices.grading.submitGrade(
+    const saved = await educational.grading.submitGrade(
       studentId,
       classroomId,
       marks,
@@ -123,7 +107,7 @@ export const gradingAPI = {
     await logGradingAudit({
       action: 'grade_draft_saved',
       entityId: saved.id,
-      executorId: audit?.actorId,
+      executorId: auditCtx?.actorId,
       metadata: {
         snapshot: {
           ...saved,
@@ -138,8 +122,8 @@ export const gradingAPI = {
         assignmentId: assignmentId ?? null,
         previousMarks: existing?.marks ?? null,
         nextMarks: marks,
-        reason: audit?.reason ?? null,
-        accessKind: audit?.accessKind ?? 'teacher_authoring',
+        reason: auditCtx?.reason ?? null,
+        accessKind: auditCtx?.accessKind ?? 'teacher_authoring',
       },
     });
 
@@ -149,36 +133,35 @@ export const gradingAPI = {
       published_at: null,
       published_by: null,
       publication_action: 'grade_draft_saved',
-    };
+    } as Grade;
   },
-
 
   /**
    * @authority publish Grade
    */
-  async publishGrade(gradeId: string, audit?: GradingAuditContext): Promise<Grade> {
-    const grade = await educationalServices.grading.getById(gradeId);
+  async publishGrade(gradeId: string, auditCtx?: GradingAuditContext): Promise<Grade> {
+    const grade = await educational.grading.getById(gradeId);
     const publishedAt = new Date();
 
     await logGradingAudit({
       action: 'grade_published',
       entityId: grade.id,
-      executorId: audit?.actorId,
+      executorId: auditCtx?.actorId,
       metadata: {
         snapshot: buildPublicationSnapshot({
           grade,
           publishedAt,
-          publishedBy: audit?.actorId,
+          publishedBy: auditCtx?.actorId,
           action: 'grade_published',
         }),
         publicationState: 'published',
         publishedAt,
-        publishedBy: audit?.actorId ?? null,
+        publishedBy: auditCtx?.actorId ?? null,
         classroomId: grade.classroom_id,
         studentId: grade.student_id,
         assignmentId: grade.assignment_id ?? null,
-        reason: audit?.reason ?? 'grade_publish',
-        accessKind: audit?.accessKind ?? 'teacher_authoring',
+        reason: auditCtx?.reason ?? 'grade_publish',
+        accessKind: auditCtx?.accessKind ?? 'teacher_authoring',
       },
     });
 
@@ -186,9 +169,9 @@ export const gradingAPI = {
       ...grade,
       publication_state: 'published',
       published_at: publishedAt,
-      published_by: audit?.actorId ?? null,
+      published_by: auditCtx?.actorId ?? null,
       publication_action: 'grade_published',
-    };
+    } as Grade;
 
     void emitSchoolGradePublishedFromBridge({
       ...publishedGrade,
@@ -209,33 +192,33 @@ export const gradingAPI = {
     gradeId: string,
     marks: number,
     feedback?: string,
-    audit?: GradingAuditContext,
+    auditCtx?: GradingAuditContext,
   ): Promise<Grade> {
-    const previous = await educationalServices.grading.getById(gradeId);
-    const revised = await educationalServices.grading.reviseGrade(gradeId, marks, feedback);
+    const previous = await educational.grading.getById(gradeId);
+    const revised = await educational.grading.reviseGrade(gradeId, marks, feedback);
     const publishedAt = new Date();
 
     await logGradingAudit({
       action: 'grade_revised',
       entityId: revised.id,
-      executorId: audit?.actorId,
+      executorId: auditCtx?.actorId,
       metadata: {
         snapshot: buildPublicationSnapshot({
           grade: revised,
           publishedAt,
-          publishedBy: audit?.actorId,
+          publishedBy: auditCtx?.actorId,
           action: 'grade_revised',
         }),
         publicationState: 'published',
         publishedAt,
-        publishedBy: audit?.actorId ?? null,
+        publishedBy: auditCtx?.actorId ?? null,
         classroomId: revised.classroom_id,
         studentId: revised.student_id,
         assignmentId: revised.assignment_id ?? null,
         previousMarks: previous.marks,
         nextMarks: revised.marks,
-        reason: audit?.reason ?? 'grade_revision',
-        accessKind: audit?.accessKind ?? 'teacher_authoring',
+        reason: auditCtx?.reason ?? 'grade_revision',
+        accessKind: auditCtx?.accessKind ?? 'teacher_authoring',
       },
     });
 
@@ -243,9 +226,9 @@ export const gradingAPI = {
       ...revised,
       publication_state: 'published',
       published_at: publishedAt,
-      published_by: audit?.actorId ?? null,
+      published_by: auditCtx?.actorId ?? null,
       publication_action: 'grade_revised',
-    };
+    } as Grade;
   },
 
   /**
@@ -255,33 +238,33 @@ export const gradingAPI = {
     gradeId: string,
     marks: number,
     feedback?: string,
-    audit?: GradingAuditContext,
+    auditCtx?: GradingAuditContext,
   ): Promise<Grade> {
-    const previous = await educationalServices.grading.getById(gradeId);
-    const overridden = await educationalServices.grading.reviseGrade(gradeId, marks, feedback);
+    const previous = await educational.grading.getById(gradeId);
+    const overridden = await educational.grading.reviseGrade(gradeId, marks, feedback);
     const publishedAt = new Date();
 
     await logGradingAudit({
       action: 'grade_overridden',
       entityId: overridden.id,
-      executorId: audit?.actorId,
+      executorId: auditCtx?.actorId,
       metadata: {
         snapshot: buildPublicationSnapshot({
           grade: overridden,
           publishedAt,
-          publishedBy: audit?.actorId,
+          publishedBy: auditCtx?.actorId,
           action: 'grade_overridden',
         }),
         publicationState: 'published',
         publishedAt,
-        publishedBy: audit?.actorId ?? null,
+        publishedBy: auditCtx?.actorId ?? null,
         classroomId: overridden.classroom_id,
         studentId: overridden.student_id,
         assignmentId: overridden.assignment_id ?? null,
         previousMarks: previous.marks,
         nextMarks: overridden.marks,
-        reason: audit?.reason ?? 'grade_override',
-        accessKind: audit?.accessKind ?? 'institutional_read',
+        reason: auditCtx?.reason ?? 'grade_override',
+        accessKind: auditCtx?.accessKind ?? 'institutional_read',
       },
     });
 
@@ -289,19 +272,18 @@ export const gradingAPI = {
       ...overridden,
       publication_state: 'published',
       published_at: publishedAt,
-      published_by: audit?.actorId ?? null,
+      published_by: auditCtx?.actorId ?? null,
       publication_action: 'grade_overridden',
-    };
+    } as Grade;
   },
-
 
   /**
    * @authority read Grade
    */
   async getGradebookSnapshot(classroomId: string, viewDate: string): Promise<GradebookSnapshot> {
     const [grades, gradingSettings] = await Promise.all([
-      educationalServices.grading.getClassroomGrades(classroomId),
-      educationalServices.grading.getGradingSettings(classroomId),
+      educational.grading.getClassroomGrades(classroomId),
+      educational.grading.getGradingSettings(classroomId),
     ]);
     const annotated = await getAnnotatedGrades(grades);
 
@@ -325,7 +307,7 @@ export const gradingAPI = {
     },
   ): Promise<Grade[]> {
     const grades = await getAnnotatedGrades(
-      await educationalServices.grading.getReportCard(studentId),
+      await educational.grading.getReportCard(studentId),
     );
     return grades.filter((grade) => {
       if (options?.classroomId && grade.classroom_id !== options.classroomId) return false;
@@ -343,7 +325,7 @@ export const gradingAPI = {
     viewDate: string,
     options?: { classroomId?: string },
   ): Promise<PublishedStudentGradesSnapshot> {
-    const grades = await educationalServices.grading.getReportCard(studentId);
+    const grades = await educational.grading.getReportCard(studentId);
     const lifecycleRows = await getGradeLifecycleRows(grades.map((grade) => grade.id));
     const published = selectLatestPublishedSnapshots(lifecycleRows).filter((grade) => {
       if (grade.student_id !== studentId) return false;
@@ -356,7 +338,7 @@ export const gradingAPI = {
       studentId,
       viewDate,
       grades: published,
-    };
+    } as PublishedStudentGradesSnapshot;
   },
 
   /**
@@ -365,19 +347,19 @@ export const gradingAPI = {
   async getSchoolGradingCompletion(
     schoolId: string,
     viewDate: string,
-    audit?: GradingAuditContext,
+    auditCtx?: GradingAuditContext,
   ): Promise<SchoolGradingCompletion> {
     const result = await gradingProjectionServices.getSchoolGradingCompletion(schoolId, viewDate);
 
     await logGradingAudit({
       action: 'grading_completion_read',
       entityId: schoolId,
-      executorId: audit?.actorId,
+      executorId: auditCtx?.actorId,
       metadata: {
         schoolId,
         viewDate,
-        reason: audit?.reason ?? null,
-        accessKind: audit?.accessKind ?? 'institutional_read',
+        reason: auditCtx?.reason ?? null,
+        accessKind: auditCtx?.accessKind ?? 'institutional_read',
       },
     });
 
@@ -390,7 +372,7 @@ export const gradingAPI = {
   async getSchoolPublishedGradingCompletion(
     schoolId: string,
     viewDate: string,
-    audit?: GradingAuditContext,
+    auditCtx?: GradingAuditContext,
   ): Promise<PublishedSchoolGradingCompletion> {
     const result = await gradingProjectionServices.getSchoolPublishedGradingCompletion(
       schoolId,
@@ -400,12 +382,12 @@ export const gradingAPI = {
     await logGradingAudit({
       action: 'grading_published_completion_read',
       entityId: schoolId,
-      executorId: audit?.actorId,
+      executorId: auditCtx?.actorId,
       metadata: {
         schoolId,
         viewDate,
-        reason: audit?.reason ?? null,
-        accessKind: audit?.accessKind ?? 'institutional_read',
+        reason: auditCtx?.reason ?? null,
+        accessKind: auditCtx?.accessKind ?? 'institutional_read',
       },
     });
 
@@ -416,7 +398,7 @@ export const gradingAPI = {
    * @authority read Classroom
    */
   async getGradingSettings(classroomId: string): Promise<ClassroomGradingSettings> {
-    return educationalServices.grading.getGradingSettings(classroomId);
+    return educational.grading.getGradingSettings(classroomId);
   },
 
   /**
@@ -426,7 +408,7 @@ export const gradingAPI = {
     classroomId: string,
     settings: Partial<ClassroomGradingSettings>,
   ): Promise<ClassroomGradingSettings> {
-    return educationalServices.grading.updateGradingSettings(classroomId, settings);
+    return educational.grading.updateGradingSettings(classroomId, settings);
   },
 
   /**
@@ -437,7 +419,6 @@ export const gradingAPI = {
       action: 'grade_deleted',
       entityId: gradeId,
     });
-    return educationalServices.grading.deleteGrade(gradeId);
+    return educational.grading.deleteGrade(gradeId);
   },
 };
-

@@ -1,5 +1,5 @@
 import { authAPI } from '../api/auth';
-import { supabase } from '../api/supabase';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../api/supabase';
 import { GuestDataManager } from './guestDataManager';
 
 export interface SyncProgress {
@@ -87,7 +87,7 @@ export class GuestDataSync {
           start_time: period.start_time,
           end_time: period.end_time,
         }));
-        const { error } = await supabase.from('timetable').insert(timetableRows);
+        const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('timetable').insert(timetableRows);
         if (!error) {
           synced.timetable = timetableRows.length;
         } else {
@@ -107,7 +107,7 @@ export class GuestDataSync {
           note: log.note,
           created_at: log.timestamp,
         }));
-        const { error } = await supabase.from('mood_logs').insert(moodRows);
+        const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('mood_logs').insert(moodRows);
         if (!error) {
           synced.moodLogs = moodRows.length;
         } else {
@@ -125,7 +125,7 @@ export class GuestDataSync {
           content: entry.content,
           created_at: entry.timestamp,
         }));
-        const { error } = await supabase.from('journal_entries').insert(journalRows);
+        const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('journal_entries').insert(journalRows);
         if (!error) {
           synced.journalEntries = journalRows.length;
         } else {
@@ -144,7 +144,7 @@ export class GuestDataSync {
           notes: student.notes,
           // Note: class_id would need to be set separately if creating a classroom
         }));
-        const { error } = await supabase.from('students').insert(studentRows);
+        const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('students').insert(studentRows);
         if (!error) {
           synced.students = studentRows.length;
         } else {

@@ -1,4 +1,4 @@
-datasource db {
+﻿datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
@@ -37,6 +37,8 @@ model User {
   public_profile Boolean? @default(true)
   profile_completed Boolean? @default(false)
   is_anonymous Boolean? @default(false)
+  citizenship String @default("WANDERER") // WANDERER, SECOND_CLASS, FIRST_CLASS
+  pricing_tier String @default("FREE") // FREE, PRO, INSTITUTIONAL
   experience_years Int?
   subjects_taught String[]
   qualifications String[]
@@ -87,12 +89,15 @@ model User {
   audit_logs SentinelAuditLog[] @relation("AuditLogs")
   bonds      Bond[]
 
-  // Only the user themselves or a platform admin can update profile details
+  // SOVEREIGNTY: Wanderers can manage their local-only profile
+  @@allow('all', auth() == null && is_anonymous == true)
+  
+  // Only the user themselves or a platform admin can update profile details in the cloud
   @@allow('all', auth() != null && auth().id == id)
   @@allow('all', auth() != null && auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
   
-  // Everyone can read basic profile info
-  @@allow('read', auth() != null)
+  // Everyone can read basic profile info (Discovery)
+  @@allow('read', true)
 
   @@map("users")
 }
@@ -170,8 +175,12 @@ model Classroom {
   notes            ClassroomNote[]
 
   // Permissions
-  @@allow('read', auth() != null)
-  @@allow('all', auth().id == teacher_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  // Wanderers can manage their local-only classrooms
+  @@allow('all', auth() == null)
+  
+  // Official/Cloud Access
+  @@allow('read', true)
+  @@allow('all', auth() != null && (auth().id == teacher_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
 }
 
 model ClassroomStudent {
@@ -331,7 +340,7 @@ model CommunityReaction {
   id          String @id @default(uuid())
   post_id     String
   user_id     String
-  emoji       String @default("❤️")
+  emoji       String @default("â¤ï¸")
   
   post        Post   @relation(fields: [post_id], references: [id])
   user        User   @relation(fields: [user_id], references: [id])
@@ -471,7 +480,8 @@ model MoodLog {
   created_at DateTime @default(now())
   user       User     @relation(fields: [user_id], references: [id])
 
-  @@allow('all', auth().id == user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@allow('all', auth() == null)
+  @@allow('all', auth() != null && (auth().id == user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
   @@map("mood_logs")
 }
 
@@ -483,7 +493,8 @@ model FireJournalEntry {
   created_at      DateTime @default(now())
   user            User     @relation(fields: [user_id], references: [id])
 
-  @@allow('all', auth().id == user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@allow('all', auth() == null)
+  @@allow('all', auth() != null && (auth().id == user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
   @@map("fire_journal")
 }
 
@@ -497,11 +508,13 @@ model UserPreferences {
   evening_wind_down_time    String?
   enable_contextual_prompts Boolean  @default(true)
   enable_usage_tracking     Boolean  @default(true)
+  notification_settings     Json?
   updated_at                DateTime @updatedAt
   created_at                DateTime @default(now())
   user                      User     @relation(fields: [user_id], references: [id])
 
-  @@allow('all', auth().id == user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@allow('all', auth() == null)
+  @@allow('all', auth() != null && (auth().id == user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
   @@map("user_preferences")
 }
 
@@ -572,7 +585,8 @@ model ResourceEngagement {
   resource        LibraryResource @relation(fields: [resource_id], references: [id])
 
   @@allow('read', auth().id == user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
-  @@allow('all', auth().id == user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@allow('all', auth() == null)
+  @@allow('all', auth() != null && (auth().id == user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
   @@map("resource_engagements")
 }
 
@@ -679,7 +693,8 @@ model UserGrowthState {
   user                        User     @relation(fields: [user_id], references: [id])
 
   @@allow('read', auth().id == user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
-  @@allow('all', auth().id == user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@allow('all', auth() == null)
+  @@allow('all', auth() != null && (auth().id == user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
   @@map("user_growth_state")
 }
 
@@ -768,7 +783,8 @@ model StaffLeave {
   school       School   @relation(fields: [school_id], references: [id])
   user         User     @relation(fields: [user_id], references: [id])
 
-  @@allow('all', auth().id == user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@allow('all', auth() == null)
+  @@allow('all', auth() != null && (auth().id == user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
   @@allow('read', auth() != null && school_id == auth().school_id)
   @@map("staff_leaves")
 }
@@ -811,7 +827,8 @@ model Guardian {
   school             School   @relation(fields: [school_id], references: [id])
   students           StudentGuardianRelationship[]
 
-  @@allow('all', auth().id == user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@allow('all', auth() == null)
+  @@allow('all', auth() != null && (auth().id == user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
   @@allow('read', auth() != null)
   @@map("guardians")
 }
@@ -1029,4 +1046,55 @@ model SentinelAuditLog {
 
   @@allow('all', auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
   @@map("sentinel_audit_logs")
+}
+
+model FeatureFlag {
+  id          String   @id @default(uuid())
+  key         String   @unique
+  description String?
+  
+  // Rules for enabling the flag
+  tenant_kinds String[] // e.g. ["SCHOOL", "PERSONAL"]
+  citizenships String[] // e.g. ["WANDERER", "SECOND_CLASS", "FIRST_CLASS"]
+  pricing_tiers String[] // e.g. ["FREE", "PRO", "INSTITUTIONAL"]
+  capacities   String[] // e.g. ["teacher", "principal"]
+  
+  is_enabled   Boolean  @default(true)
+  is_development Boolean @default(false)
+  
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  @@allow('read', true) // Everyone can read flags to know what's available
+  @@allow('all', auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'] || auth().bonds?[capacity == 'founder'])
+  
+  @@map("feature_flags")
+}
+
+model SchoolRegistry {
+  id               String   @id @default(uuid())
+  census_id        String   @unique
+  name             String
+  address          String?
+  tel_no           String?
+  email            String?
+  province         String?
+  district         String?
+  zone             String?
+  division         String?
+  medium           String?
+  gender           String?
+  category         String?
+  type             String?
+  grade_span       String?
+  total_students   Int?
+  difficulty_level String?
+  properties       Json?
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+
+  @@allow('read', true)
+  @@allow('all', auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'] || auth().bonds?[capacity == 'founder'])
+  
+  @@map("school_registry")
 }

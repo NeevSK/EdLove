@@ -1,4 +1,4 @@
-import { supabase } from './supabase';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from './supabase';
 
 export interface PresenceFallbackCountOptions {
   targetRoles: string[];
@@ -21,7 +21,7 @@ export async function fetchPresenceFallbackCount(
 ): Promise<number> {
   const now = Date.now();
   const fiveMinutesAgo = new Date(now - (options.windowMs ?? 5 * 60 * 1000)).toISOString();
-  let query = supabase
+  let query = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
     .from('users')
     .select('id', { count: 'exact', head: true })
     .gte('last_seen_at', fiveMinutesAgo);
@@ -39,7 +39,7 @@ export async function fetchPresenceFallbackCount(
 }
 
 export async function markUserPresenceSeen(userId: string): Promise<void> {
-  const { error } = await supabase
+  const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
     .from('users')
     .update({ last_seen_at: new Date().toISOString() })
     .eq('id', userId);
@@ -48,8 +48,8 @@ export async function markUserPresenceSeen(userId: string): Promise<void> {
 }
 
 export function startPresenceSession(options: PresenceSessionOptions): () => void {
-  const selfChannel = supabase.channel(`presence:self:${options.userRole}`);
-  const watcherChannel = supabase.channel(options.channelName);
+  const selfChannel = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.channel(`presence:self:${options.userRole}`);
+  const watcherChannel = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.channel(options.channelName);
 
   selfChannel.subscribe(async (status) => {
     if (status !== 'SUBSCRIBED') return;
@@ -84,10 +84,10 @@ export function startPresenceSession(options: PresenceSessionOptions): () => voi
     });
 
   return () => {
-    supabase.removeChannel(selfChannel).catch((e) => {
+    __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.removeChannel(selfChannel).catch((e) => {
       console.error('Presence: Failed to remove self channel', e);
     });
-    supabase.removeChannel(watcherChannel).catch((e) => {
+    __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.removeChannel(watcherChannel).catch((e) => {
       console.error('Presence: Failed to remove watcher channel', e);
     });
   };

@@ -9,7 +9,7 @@ import type { Group } from '../types';
 import { growthSignalsAPI } from './growthSignals';
 import { identityAPI } from './identity';
 import { impactRipplesAPI } from './impactRipples';
-import { supabase } from './supabase';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from './supabase';
 
 /**
  * Circles API (formerly Groups)
@@ -28,7 +28,7 @@ export const circleAPI = {
     is_public?: boolean;
     type?: string;
   }) {
-    let query = supabase
+    let query = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('community_groups')
       .select('*')
       .range(filters.offset, filters.offset + filters.limit - 1)
@@ -56,7 +56,7 @@ export const circleAPI = {
    * @authority create Group
    */
   async createGroupWithOwner(group: Partial<Group>, userId: string) {
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('community_groups')
       .insert([
         {
@@ -70,7 +70,7 @@ export const circleAPI = {
 
     if (error) throw error;
 
-    await supabase.from('group_members').insert([
+    await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('group_members').insert([
       {
         group_id: data.id,
         user_id: userId,
@@ -94,13 +94,13 @@ export const circleAPI = {
    * @authority create Group
    */
   async joinGroup(groupId: string, userId: string, authorityTier: string) {
-    const { data: group } = await supabase
+    const { data: group } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('community_groups')
       .select('creator_id')
       .eq('id', groupId)
       .maybeSingle();
 
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('group_members')
       .insert([
         {
@@ -141,7 +141,7 @@ export const circleAPI = {
    * @authority read Group
    */
   async getGroupById(groupId: string) {
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('community_groups')
       .select('*')
       .eq('id', groupId)
@@ -160,7 +160,7 @@ export const circleAPI = {
     viewDate?: string,
     viewScale?: TemporalScale,
   ) {
-    let query = supabase
+    let query = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('group_messages')
       .select('*, author:users!group_messages_author_id_fkey(full_name, avatar_url)')
       .eq('group_id', groupId);
@@ -189,7 +189,7 @@ export const circleAPI = {
     const myId = await identityAPI.getMyInternalId();
     if (!myId) throw new Error('Not authenticated');
 
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('group_messages')
       .insert([{ group_id: groupId, author_id: myId, content: content.trim() }])
       .select('*, author:users!group_messages_author_id_fkey(full_name, avatar_url)')
@@ -212,7 +212,7 @@ export const circleAPI = {
    * @authority update Group
    */
   async handleMemberRequest(groupId: string, userId: string, status: 'active' | 'rejected') {
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('group_members')
       .update({ status })
       .eq('group_id', groupId)
@@ -228,7 +228,7 @@ export const circleAPI = {
    * @authority update Group
    */
   async updateJoiningPolicy(groupId: string, newPolicy: string) {
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('community_groups')
       .update({ join_policy: newPolicy })
       .eq('id', groupId)

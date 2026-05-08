@@ -24,3 +24,4 @@ export * from './teacher-insights.schema';
 export * from './temporal.schema';
 export * from './user.schema';
 export * from './workspace-layout.schema';
+export * from './feature-registry.schema';
