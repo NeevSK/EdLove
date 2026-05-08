@@ -60,7 +60,10 @@ export function useNotificationHooks() {
 
     return () => {
       void subscription.unsubscribe().catch((error) => {
-        console.error('[notifications] Failed to unsubscribe realtime subscription', error);
+        console.error(
+          '[notifications] Failed to unsubscribe realtime subscription; a stale channel may remain active until the next reconnect.',
+          error,
+        );
       });
     };
   }, [userId, queryClient]);
