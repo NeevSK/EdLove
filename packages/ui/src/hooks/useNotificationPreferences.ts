@@ -1,6 +1,5 @@
-import { useStore } from '@repo/core/logic';
+import { profile, type UserPreferences, useStore } from '@repo/core/logic';
 import { useEffect, useState, useCallback } from 'react';
-import type { UserPreferences } from '@repo/core/logic';
 
 /**
  * useNotificationPreferences
@@ -9,31 +8,30 @@ import type { UserPreferences } from '@repo/core/logic';
  * Handles fetching, local state updates, and persistence.
  */
 export const useNotificationPreferences = () => {
-  const profileManager = useStore((state) => state.profile);
-  const userId = useStore((state) => state.session?.user?.id);
+  const userId = useStore((state) => state.user?.id);
   const [preferences, setPreferences] = useState<UserPreferences | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
   const fetchPreferences = useCallback(async () => {
-    if (!userId || !profileManager) return;
+    if (!userId) return;
     setLoading(true);
     try {
-      const prefs = await profileManager.getUserPreferences(userId);
+      const prefs = await profile.getUserPreferences(userId);
       setPreferences(prefs);
     } catch (error) {
       console.error('[useNotificationPreferences] Fetch failed:', error);
     } finally {
       setLoading(false);
     }
-  }, [userId, profileManager]);
+  }, [userId]);
 
   useEffect(() => {
     void fetchPreferences();
   }, [fetchPreferences]);
 
   const updatePreference = async (updates: Partial<UserPreferences>) => {
-    if (!userId || !profileManager || !preferences) return;
+    if (!userId || !preferences) return;
     
     // Optimistic Update
     const previousPrefs = preferences;
@@ -42,7 +40,7 @@ export const useNotificationPreferences = () => {
     
     setSaving(true);
     try {
-      await profileManager.updateUserPreferences(userId, updates);
+      await profile.updateUserPreferences(userId, updates);
     } catch (error) {
       console.error('[useNotificationPreferences] Update failed:', error);
       setPreferences(previousPrefs); // Rollback

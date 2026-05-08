@@ -1,7 +1,7 @@
 	ClassroomWorkspaceSurface,
 	PrincipalInsight,
 	DomainFeature,
-} from "@repo/core/types/workspace";
+} from "@repo/core/types/Workspace";
 import { useFeatureRegistry } from "@repo/core/hooks/useFeatureRegistry";
 import React from "react";
 import { ADMIN_REGISTRY } from "../constants/adminRegistry";

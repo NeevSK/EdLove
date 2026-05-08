@@ -1,4 +1,5 @@
 export * from './useCommunityProfile';
+export * from './useNotificationPreferences';
 export * from './useProfile';
 export * from './useProfileCompletion';
 export * from './useSchoolProfile';

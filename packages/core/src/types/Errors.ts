@@ -58,8 +58,12 @@ export class SovereignError extends Error {
       ...details,
     };
 
+    const isDevelopment =
+      (typeof __DEV__ !== 'undefined' && __DEV__) ||
+      (typeof process !== 'undefined' && process.env?.NODE_ENV === 'development');
+
     // Auto-sanitize dev details if not in development
-    if (typeof __DEV__ !== 'undefined' && !__DEV__) {
+    if (!isDevelopment) {
       delete this.details.devDetails;
     }
   }

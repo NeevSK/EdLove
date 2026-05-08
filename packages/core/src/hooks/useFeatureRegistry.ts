@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import type { DomainFeature, ResolvedWorkspaceSurface } from "../types/workspace";
+import type { DomainFeature } from "../types/Workspace";
 
 /**
  * useFeatureRegistry - The "Bouncer" for UI visibility and gating.
@@ -31,7 +31,7 @@ export function useFeatureRegistry(
 				const hasCapability = userContext.capabilities.includes(
 					feature.capabilityKey,
 				);
-				const isProLocked = feature.isPro && !userContext.isPro;
+				const isProLocked = Boolean(feature.isPro) && !userContext.isPro;
 
 				// A feature is "Visible but Locked" if it's pro or requires citizenship elevation.
 				// This encourages the "Upgrade" path without hiding the feature.

@@ -59,7 +59,9 @@ export function useNotificationHooks() {
     );
 
     return () => {
-      subscription.unsubscribe();
+      void subscription.unsubscribe().catch((error) => {
+        console.error('[notifications] Failed to unsubscribe realtime subscription', error);
+      });
     };
   }, [userId, queryClient]);
 

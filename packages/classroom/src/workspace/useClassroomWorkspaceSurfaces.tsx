@@ -17,7 +17,7 @@ import type {
 	ClassroomWorkspaceSurface,
 	ClassroomWorkspaceSurfaceId,
 	DomainFeature,
-} from "@repo/core/types/workspace";
+} from "@repo/core/types/Workspace";
 import { CLASSROOM_REGISTRY } from "../constants/classroomRegistry";
 
 type UseClassroomWorkspaceSurfacesArgs = {
