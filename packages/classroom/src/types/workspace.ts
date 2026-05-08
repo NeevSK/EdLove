@@ -1,1 +1,1 @@
-export * from "@repo/core/types/workspace";
+export * from "@repo/core/types/Workspace";
