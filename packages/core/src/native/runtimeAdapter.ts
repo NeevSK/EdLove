@@ -1,3 +1,5 @@
+/// <reference path="../types/external-modules.d.ts" />
+
 import NetInfo from '@react-native-community/netinfo';
 import * as Device from 'expo-device';
 import * as Haptics from 'expo-haptics';

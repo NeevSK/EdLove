@@ -169,7 +169,7 @@ const AuthScreen = memo(({ onSuccess, onBack, initialMode, Scanner }: AuthScreen
 
   // Sync internal profile to reducer state
   useEffect(() => {
-    dispatch({ type: 'SET_USER', user: myProfile || null });
+    dispatch({ type: 'SET_USER', user: (myProfile as unknown as User) || null });
   }, [myProfile]);
 
   // ─── Browser callback handling ─────────────────────────────────────────────

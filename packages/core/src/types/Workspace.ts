@@ -10,6 +10,7 @@ export type WorkspaceOwnerPackage =
   | 'classroom'
   | 'community'
   | 'admin'
+  | 'library'
   | 'people'
   | 'workforce'
   | 'core'

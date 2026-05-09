@@ -1,3 +1,4 @@
+import type {
 	ClassroomWorkspaceSurface,
 	PrincipalInsight,
 	DomainFeature,
@@ -52,8 +53,8 @@ export function appendAdminWorkspaceSurfaces(
 	});
 
 	// --- Principal Dashboard ---
-	const principalGate = adminGated.principal_dashboard;
-	if (principalGate.visible) {
+	const principalGate = adminGated["principal_dashboard"];
+	if (principalGate?.visible) {
 		const principalContent =
 			!schoolIdToUse && !isDemoModeTriggered ? (
 				<PrincipalOnboardingView
@@ -83,14 +84,12 @@ export function appendAdminWorkspaceSurfaces(
 				"Governance",
 			],
 			content: principalContent,
-			isLocked: principalGate.locked,
-			lockReason: principalGate.reason,
-		});
+		} as ClassroomWorkspaceSurface);
 	}
 
 	// --- Section Head Dashboard ---
-	const sectionHeadGate = adminGated.section_head;
-	if (sectionHeadGate.visible) {
+	const sectionHeadGate = adminGated["section_head"];
+	if (sectionHeadGate?.visible) {
 		surfaces.push({
 			...sectionHeadGate.feature,
 			title: sectionHeadGate.feature.label,
@@ -105,14 +104,12 @@ export function appendAdminWorkspaceSurfaces(
 					userId={classroomData.userId}
 				/>
 			),
-			isLocked: sectionHeadGate.locked,
-			lockReason: sectionHeadGate.reason,
-		});
+		} as ClassroomWorkspaceSurface);
 	}
 
 	// --- Grade Head Dashboard ---
-	const gradeHeadGate = adminGated.grade_head;
-	if (gradeHeadGate.visible) {
+	const gradeHeadGate = adminGated["grade_head"];
+	if (gradeHeadGate?.visible) {
 		surfaces.push({
 			...gradeHeadGate.feature,
 			title: gradeHeadGate.feature.label,
@@ -127,8 +124,6 @@ export function appendAdminWorkspaceSurfaces(
 					userId={classroomData.userId}
 				/>
 			),
-			isLocked: gradeHeadGate.locked,
-			lockReason: gradeHeadGate.reason,
-		});
+		} as ClassroomWorkspaceSurface);
 	}
 }

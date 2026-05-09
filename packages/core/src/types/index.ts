@@ -167,6 +167,7 @@ export type {
   PerspectiveViewProps,
 } from './visualization';
 export type {
+  DomainFeature,
   ResolvedWorkspaceSurface,
   WorkspaceLayout,
   WorkspaceOwnerPackage,

@@ -1,1 +1,1 @@
-export { useNotificationPreferences } from '@repo/ui/hooks/useNotificationPreferences';
+export { useNotificationPreferences } from '@repo/ui';

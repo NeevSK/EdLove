@@ -137,9 +137,7 @@ export function useProfile(userId?: string) {
       if (!targetId) return { success: false };
 
       try {
-        const updatedProfile = await profileAPI.uploadAvatar(targetId, {
-          local_uri: localUri,
-        });
+        const updatedProfile = await profileAPI.uploadAvatar(targetId, localUri);
         if (profile) {
           dispatch({
             type: 'FETCH_SUCCESS',

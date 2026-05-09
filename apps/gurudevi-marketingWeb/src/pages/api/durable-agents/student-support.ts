@@ -3,7 +3,7 @@ import {
 	studentSupportRequestedPayloadSchema,
 	uuidv7,
 } from "@repo/core/logic";
-import { inngest } from "../../../lib/inngest";
+import { eventBus } from "../../../lib/inngest";
 import { supabaseAdmin } from "../../../lib/supabase";
 
 const requestSchema = studentSupportRequestedPayloadSchema.extend({
@@ -75,7 +75,7 @@ export async function POST({ request }: { request: Request }) {
 			{ status: 500 },
 		);
 	}
-	await sendStudentSupportRequested(inngest, payload);
+	await sendStudentSupportRequested(eventBus, payload);
 	return Response.json(
 		{
 			runId: payload.runId,

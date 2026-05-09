@@ -139,16 +139,14 @@ export const NotificationSettingsPanel = () => {
                     <HStack className="flex-1 justify-between items-center bg-phase-surface p-3 rounded-2xl">
                       <Text size="sm" className="text-phase-text-secondary font-medium">Push</Text>
                       <Switch 
-                        size="sm"
-                        value={settings.categories[category].push} 
+                        value={settings.categories[category]?.push ?? false} 
                         onValueChange={() => toggleCategory(category, 'push')} 
                       />
                     </HStack>
                     <HStack className="flex-1 justify-between items-center bg-phase-surface p-3 rounded-2xl">
                       <Text size="sm" className="text-phase-text-secondary font-medium">Email</Text>
                       <Switch 
-                        size="sm"
-                        value={settings.categories[category].email} 
+                        value={settings.categories[category]?.email ?? false} 
                         onValueChange={() => toggleCategory(category, 'email')} 
                       />
                     </HStack>

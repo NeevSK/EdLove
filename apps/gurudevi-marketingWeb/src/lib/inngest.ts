@@ -12,4 +12,26 @@ export const inngest = new Inngest({
 	eventKey: import.meta.env["INNGEST_EVENT_KEY"],
 });
 
+export const eventBus = {
+	async publish<T>(event: {
+		name: string;
+		data: T;
+		metadata?: {
+			correlationId?: string;
+			causationId?: string;
+			tenantId?: string;
+		};
+	}) {
+		await inngest.send({
+			name: event.name as any,
+			data: {
+				...(event.data as Record<string, unknown>),
+				correlationId: event.metadata?.correlationId,
+				causationId: event.metadata?.causationId,
+				tenantId: event.metadata?.tenantId,
+			},
+		});
+	},
+};
+
 export default inngest;

@@ -60,7 +60,7 @@ export class SovereignError extends Error {
 
     const isDevelopment =
       (typeof __DEV__ !== 'undefined' && __DEV__) ||
-      (typeof process !== 'undefined' && process.env?.NODE_ENV === 'development');
+      (typeof process !== 'undefined' && process.env?.['NODE_ENV'] === 'development');
 
     // Auto-sanitize dev details if not in development
     if (!isDevelopment) {

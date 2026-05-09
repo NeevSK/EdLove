@@ -37,7 +37,10 @@ export function CommentSheet({
 	const uiComments = comments.map((c) => ({
 		id: c.id,
 		content: c.content,
-		createdAt: c.created_at,
+		createdAt:
+			typeof c.created_at === "string"
+				? c.created_at
+				: c.created_at.toISOString(),
 		isAnonymous: c.is_anonymous,
 		isOfficial: c.is_official_answer,
 		upvotes: c.upvotes,

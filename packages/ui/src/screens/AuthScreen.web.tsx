@@ -98,7 +98,7 @@ export const AuthScreenWeb = memo(({
   const { mode, showEmailForm, email, password, loading, errors, currentUser } = state;
 
   useEffect(() => {
-    dispatch({ type: 'SET_USER', user: myProfile || null });
+    dispatch({ type: 'SET_USER', user: (myProfile as unknown as User) || null });
   }, [myProfile]);
 
   const applyPendingInvite = useCallback(async (successMessage: string) => {

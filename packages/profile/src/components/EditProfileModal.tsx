@@ -157,9 +157,10 @@ export default function EditProfileModal({
 
       if (avatarUrl?.startsWith('file://')) {
         try {
-          const updatedProfile = (await profileAPI.uploadAvatar(currentProfile.id, {
-            local_uri: avatarUrl,
-          })) as UserProfile;
+          const updatedProfile = (await profileAPI.uploadAvatar(
+            currentProfile.id,
+            avatarUrl,
+          )) as UserProfile;
           updates['avatar_url'] = updatedProfile['avatar_url'];
         } catch (uploadError) {
           handleAPIError(uploadError);

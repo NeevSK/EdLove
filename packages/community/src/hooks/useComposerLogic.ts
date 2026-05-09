@@ -1,8 +1,8 @@
 import { identityAPI } from "@repo/core/api";
+import { uploadToCloudinary } from "@repo/core/lib/cloudinary";
 import {
 	composerReducer,
 	initialComposerState,
-	uploadToCloudinary,
 	usePermissions,
 } from "@repo/core/logic";
 import * as ImagePicker from "expo-image-picker";

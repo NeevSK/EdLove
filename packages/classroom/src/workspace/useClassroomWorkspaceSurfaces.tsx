@@ -11,7 +11,7 @@ import { StudentOnboardingView, TeacherOnboardingView } from "../components";
 import StudentDashboard from "../screens/StudentDashboard";
 import TeacherDashboard from "../screens/TeacherDashboard";
 import { ADMIN_REGISTRY } from "@repo/admin";
-import { appendAdminWorkspaceSurfaces } from "@repo/admin/hooks";
+import { appendAdminWorkspaceSurfaces } from "@repo/admin";
 import { useFeatureRegistry } from "@repo/core/hooks/useFeatureRegistry";
 import type {
 	ClassroomWorkspaceSurface,
@@ -185,8 +185,8 @@ export function useClassroomWorkspaceSurfaces({
 		});
 
 		// --- Teacher Dashboard ---
-		const teacherGate = classroomGated.teacher_dashboard;
-		if (teacherGate.visible) {
+		const teacherGate = classroomGated["teacher_dashboard"];
+		if (teacherGate?.visible) {
 			const teacherContent =
 				classroomData.realClassCount === 0 && !isDemoModeTriggered ? (
 					<TeacherOnboardingView
@@ -223,14 +223,12 @@ export function useClassroomWorkspaceSurfaces({
 					"Write owner",
 				],
 				content: teacherContent,
-				isLocked: teacherGate.locked,
-				lockReason: teacherGate.reason,
-			});
+			} as ClassroomWorkspaceSurface);
 		}
 
 		// --- Student Dashboard ---
-		const studentGate = classroomGated.student_dashboard;
-		if (studentGate.visible) {
+		const studentGate = classroomGated["student_dashboard"];
+		if (studentGate?.visible) {
 			const studentContent =
 				classroomData.realClassCount === 0 && !isDemoModeTriggered ? (
 					<StudentOnboardingView
@@ -270,9 +268,7 @@ export function useClassroomWorkspaceSurfaces({
 					"Student-owned",
 				],
 				content: studentContent,
-				isLocked: studentGate.locked,
-				lockReason: studentGate.reason,
-			});
+			} as ClassroomWorkspaceSurface);
 		}
 
 		return surfaces;
