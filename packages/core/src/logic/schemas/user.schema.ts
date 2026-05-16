@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { makeModelSchema } from '@repo/schema';
-import { BondSchema, CapacitySchema } from './identity.schema';
+import { BondSchema, CapacitySchema, IdentityStateSchema } from './identity.schema';
 
 const sanctuaryDateTime = z.coerce.date().transform((d) => d.toISOString());
 
@@ -14,6 +14,8 @@ export const UserSchema = makeModelSchema('User').extend({
   deleted_at: sanctuaryDateTime.optional().nullable(),
   onboarding_completed_at: sanctuaryDateTime.optional().nullable(),
   last_seen_at: sanctuaryDateTime.optional().nullable(),
+  display_name: z.string().nullish().default(null),
+  identity_state: IdentityStateSchema.nullish().default('anonymous'),
 }).catchall(z.unknown());
 
 export type User = z.infer<typeof UserSchema>;
@@ -37,7 +39,7 @@ export const UserContextSchema = z.object({
   active_bond: BondSchema.nullish().default(null),
   activeBond: BondSchema.nullish().default(null),
   active_bond_status: z.string().nullish().default(null),
-  role: CapacitySchema.nullish().default(null),
+  capacity: CapacitySchema.nullish().default(null),
   traits: z.array(z.string()).nullish().default([]),
   
   school_id: z.string().uuid().nullish().default(null), // Null if 2nd class citizen
@@ -81,6 +83,7 @@ if ((import.meta as any).vitest) {
   it('validates a correct user object', () => {
     const validUser = {
       id: '550e8400-e29b-41d4-a716-446655440000',
+      display_name: 'John Doe',
       full_name: 'John Doe',
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
@@ -91,6 +94,7 @@ if ((import.meta as any).vitest) {
   it('fails on invalid uuid', () => {
     const invalidUser = {
       id: 'not-a-uuid',
+      display_name: 'John Doe',
       full_name: 'John Doe',
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),

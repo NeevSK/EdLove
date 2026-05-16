@@ -215,7 +215,7 @@ const AppSettingsScreen = memo(function AppSettingsScreen({ navigation }: any) {
       screen: 'UserProfile',
       params: {
         userId: user?.id,
-        userName: user?.full_name,
+        userName: user?.display_name,
       },
     });
   }, [navigation, user]);

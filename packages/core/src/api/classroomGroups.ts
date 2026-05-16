@@ -5,14 +5,14 @@ export type ClassroomGroup = ClassroomGroupRecord;
 
 export const classroomGroupsAPI = {
   /**
-   * @authority read ClassroomGroup
+   * @policy read ClassroomGroup
    */
   async getAll(classroomId: string): Promise<ClassroomGroup[]> {
     return educational.classroomGroups.getAll(classroomId);
   },
 
   /**
-   * @authority create ClassroomGroup
+   * @policy create ClassroomGroup
    */
   async create(
     classroomId: string,
@@ -27,7 +27,7 @@ export const classroomGroupsAPI = {
   },
 
   /**
-   * @authority update ClassroomGroup
+   * @policy update ClassroomGroup
    */
   async update(
     id: string,
@@ -42,9 +42,10 @@ export const classroomGroupsAPI = {
   },
 
   /**
-   * @authority delete ClassroomGroup
+   * @policy delete ClassroomGroup
    */
   async delete(id: string): Promise<void> {
     return educational.classroomGroups.delete(id);
   },
 };
+

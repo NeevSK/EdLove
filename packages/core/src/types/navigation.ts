@@ -56,7 +56,7 @@ export type FullProfileParams = {
   id: string;
   userId?: string;
   full_name: string;
-  role?: string;
+  capacity?: string;
   school_name?: string;
   avatar_url?: string | null;
   bio?: string | null;

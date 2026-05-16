@@ -16,7 +16,7 @@ const c = initContract();
 const principalWorkspaceAuthority = (
   action: 'create' | 'read' | 'update' | 'delete',
   subject: string,
-) => POAMetadataSchema.parse({ authority: { action, subject } });
+) => POAMetadataSchema.parse({ policy: { action, subject } });
 
 export const principalWorkspaceContract = c.router({
   listInviteCodes: {
@@ -39,7 +39,7 @@ export const principalWorkspaceContract = c.router({
     method: 'POST',
     path: '/principal-workspace/:schoolId/invites',
     body: z.object({
-      role: PrincipalInviteRoleSchema,
+      capacity: PrincipalInviteRoleSchema,
       createdBy: z.string().min(1),
     }),
     responses: {
@@ -122,3 +122,4 @@ export const principalWorkspaceContract = c.router({
     metadata: principalWorkspaceAuthority('read', 'PrincipalObservation'),
   },
 });
+

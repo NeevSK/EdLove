@@ -17,7 +17,7 @@ export const MUTATION_REGISTRY: Record<string, MutationFunction> = {
     // Core API doesn't have community directly, it's injected
     // In this resonant version, we assume 'api' has been unified.
     // If community is a separate package, this handler serves as the bridge.
-    return (api as any).community.createPost(vars, vars.author_id, vars.role, vars.school_id);
+    return (api as any).community.createPost(vars, vars.author_id, vars.capacity, vars.school_id);
   },
 
   // Inventory

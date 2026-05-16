@@ -112,14 +112,14 @@ export const createSchoolRepository = (supabase: SupabaseClient) => ({
     return data || [];
   },
 
-  async generateInviteCode(schoolId: string, role: string, createdBy: string) {
+  async generateInviteCode(schoolId: string, capacity: string, createdBy: string) {
     const code = Math.random().toString(36).substring(2, 8).toUpperCase();
     const { data, error } = await supabase
       .from('invite_codes')
       .insert([
         {
           school_id: schoolId,
-          role,
+          capacity,
           code,
           created_by: createdBy,
           used: false,

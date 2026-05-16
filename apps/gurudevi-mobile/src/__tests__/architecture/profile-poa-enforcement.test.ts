@@ -55,8 +55,8 @@ describe("profile POA enforcement", () => {
 			user: {
 				id: USER_ID,
 				email: "teacher@example.com",
-				roles: ["teacher"],
-				authority: "teacher",
+				capacitys: ["teacher"],
+				capacity: "teacher",
 				school_id: SCHOOL_ID,
 				is_anonymous: false,
 			},
@@ -67,9 +67,8 @@ describe("profile POA enforcement", () => {
 			.spyOn(profileServices, "updateProfile")
 			.mockResolvedValue({
 				id: USER_ID,
-				full_name: "Teacher",
-				role: "teacher",
-				authority: "teacher",
+				display_name: "Teacher",
+				capacity: "teacher",
 				bio: "updated",
 			});
 

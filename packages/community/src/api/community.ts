@@ -123,7 +123,7 @@ const rawCommunityAPI = {
 	async createPost(
 		post: any,
 		userId: string,
-		userAuthority: string,
+		userCapacity: string,
 		schoolId: string,
 	) {
 		const { data, error } = await supabase
@@ -132,7 +132,7 @@ const rawCommunityAPI = {
 				{
 					...post,
 					author_id: userId,
-					author_authority: userAuthority,
+					author_capacity: userCapacity,
 					school_id: schoolId,
 					created_at: new Date().toISOString(),
 					updated_at: new Date().toISOString(),
@@ -143,7 +143,7 @@ const rawCommunityAPI = {
 		if (error) throw error;
 		return data as Post;
 	},
-	async createGroup(group: any, userId: string, _userAuthority: string) {
+	async createGroup(group: any, userId: string, _userCapacity: string) {
 		const { data, error } = await supabase
 			.from("community_groups")
 			.insert([
@@ -457,7 +457,7 @@ const rawCommunityAPI = {
                 *,
                 user:users!community_group_members_user_id_fkey(
                     full_name,
-                    authority:role,
+                    capacity,
                     avatar_url,
                     index_number,
                     nic_number
@@ -475,7 +475,7 @@ const rawCommunityAPI = {
                 *,
                 user:users!community_group_members_user_id_fkey(
                     full_name,
-                    authority:role,
+                    capacity,
                     avatar_url,
                     index_number,
                     nic_number
@@ -487,10 +487,10 @@ const rawCommunityAPI = {
 		if (error) throw error;
 		return (data || []).map((member: any) => ({
 			...member,
-			capacity: member.capacity || member.role || "member",
+			capacity: member.capacity || "member",
 		}));
 	},
-	async updateMemberAuthority(
+	async updateMemberCapacity(
 		groupId: string,
 		userId: string,
 		newCapacity: "admin" | "member",
@@ -557,7 +557,7 @@ const rawCommunityAPI = {
 				.from("users")
 				.select("id")
 				.eq("school_id", reporterData.school_id)
-				.eq("role", "principal")
+				.eq("capacity", "principal")
 				.limit(1)
 				.single();
 			assignedHandlerId = principal?.id || null;
@@ -633,7 +633,7 @@ const rawCommunityAPI = {
                     id,
                     full_name,
                     avatar_url,
-                    authority:role
+                    capacity
                 )
             `)
 			.eq("post_id", postId);
@@ -678,7 +678,7 @@ const rawCommunityAPI = {
 						? "Anonymous"
 						: (c.author?.full_name ?? "Unknown"),
 					author_avatar: c.is_anonymous ? null : (c.author?.avatar_url ?? null),
-					author_authority: c.author?.authority ?? "student",
+					author_capacity: c.author?.capacity ?? "student",
 				}) as Comment,
 		);
 	},
@@ -691,7 +691,7 @@ const rawCommunityAPI = {
 		if (!myId) throw new Error("Authentication required");
 		const { data: me } = await supabase
 			.from("users")
-			.select("full_name, avatar_url, role")
+			.select("full_name, avatar_url, capacity")
 			.eq("id", myId)
 			.maybeSingle();
 		const { data, error } = await supabase
@@ -732,7 +732,7 @@ const rawCommunityAPI = {
 			author_id: data.author_id,
 			author_name: isAnonymous ? "Anonymous" : (me?.full_name ?? "Me"),
 			author_avatar: isAnonymous ? null : (me?.avatar_url ?? null),
-			author_authority: (me as any)?.authority ?? "student",
+			author_capacity: (me as any)?.capacity ?? "student",
 		} as Comment;
 	},
 	async deleteComment(commentId: string): Promise<void> {

@@ -1,7 +1,12 @@
 import { EducationalRepository } from '../domains/educational/ports';
-import { IdentityManager } from './IdentityManager';
+import { ISessionPort } from '../ports/session.port';
+
+import { INotificationPort } from '../ports/notification.port';
+import { ProfileManager } from './ProfileManager';
 import { GrowthManager } from './GrowthManager';
 import { CommunityManager } from './CommunityManager';
+
+
 import { composeUserAbilities } from '../permissions/composer';
 import { marksToGPA } from '../../lib/grading';
 import { APIError } from '../../types/API';
@@ -23,10 +28,14 @@ import type { ClassroomGradingSettings } from '../schemas/grading.schema';
 export class EducationalManager {
   constructor(
     private repo: EducationalRepository,
-    private identity: IdentityManager,
+    private session: ISessionPort,
     private growth: GrowthManager,
-    private community: CommunityManager
+    private community: CommunityManager,
+    private notification: INotificationPort,
+    private profile: ProfileManager
   ) {}
+
+
 
   public classrooms = {
     getByTeacher: (teacherId: string, params?: { limit?: number; offset?: number }) => 
@@ -65,7 +74,8 @@ export class EducationalManager {
     getSubmissionHistory: (studentId: string, classroomId?: string) =>
       this.repo.getStudentSubmissionHistory(studentId, classroomId),
     submitSubmission: async (assignmentId: string, content?: string, photoUrl?: string | null) => {
-      const myId = await this.identity.getMyInternalId();
+      const myId = await this.session.getUserId();
+
       if (!myId) throw new APIError('Authentication required to submit assignment', 'UNAUTHORIZED');
 
       const submission = await this.repo.createAssignmentSubmission({
@@ -90,7 +100,8 @@ export class EducationalManager {
     },
     create: async (assignment: Omit<Assignment, 'id' | 'created_at' | 'updated_at'>) => {
       const created = await this.repo.createAssignment(assignment);
-      const myId = await this.identity.getMyInternalId();
+      const myId = await this.session.getUserId();
+
       if (myId) {
         void this.growth.emitSilent({
           user_id: myId,
@@ -132,7 +143,8 @@ export class EducationalManager {
     addShadowStudent: (classroomId: string, fullName: string, rollNumber?: string, notes?: string) =>
       this.repo.addShadowStudent(classroomId, fullName, rollNumber, notes),
     claimStudent: async (inviteCode: string) => {
-      const myId = await this.identity.getMyInternalId();
+      const myId = await this.session.getUserId();
+
       if (!myId) throw new APIError('Authentication required to claim record', 'UNAUTHORIZED');
       return this.repo.claimStudent(inviteCode, myId);
     },
@@ -143,8 +155,8 @@ export class EducationalManager {
     update: (classroomId: string, studentId: string, updates: { roll_number?: string; notes?: string }) =>
       this.repo.updateEnrollmentRecord(classroomId, studentId, updates),
     remove: (id: string) => this.repo.deleteEnrollmentRecord(id),
-    requestJoin: (userId: string, classroomId: string, role: string, subjectLabel?: string) =>
-      this.repo.requestClassroomJoin(userId, classroomId, role, subjectLabel),
+    requestJoin: (userId: string, classroomId: string, capacity: string, subjectLabel?: string) =>
+      this.repo.requestClassroomJoin(userId, classroomId, capacity, subjectLabel),
     handleRequest: async (requestId: string, status: string) => {
       // 1. Update status
       const result = await this.repo.updateClassroomJoinRequest(requestId, status);
@@ -165,7 +177,7 @@ export class EducationalManager {
         const ability = composeUserAbilities({
           user_id: request.user_id,
           active_bond: {
-            capacity: request.role as any,
+            capacity: request.capacity as any,
             entity_id: request.classroom_id,
             entity_type: 'CLASSROOM',
           } as any,
@@ -181,12 +193,13 @@ export class EducationalManager {
           }
         }
 
-        await this.identity.createNotification(
+        await this.notification.createNotification(
           request.user_id,
           'join_request_approved',
           'Classroom Joined',
           'You have been admitted to the classroom sanctuary.'
         );
+
       } else if (status === 'rejected') {
         if (group) {
           await this.community.updateMembership(group.id, request.user_id, { status: 'rejected' });
@@ -224,8 +237,8 @@ export class EducationalManager {
     createSection: (schoolId: string, name: string) => this.repo.createSection(schoolId, name),
     createGrade: (sectionId: string, number: number) => this.repo.createGrade(sectionId, number),
     getInviteCodes: (schoolId: string) => this.repo.getInviteCodes(schoolId),
-    generateInviteCode: (schoolId: string, role: string, createdBy: string) => 
-      this.repo.generateInviteCode(schoolId, role, createdBy),
+    generateInviteCode: (schoolId: string, capacity: string, createdBy: string) => 
+      this.repo.generateInviteCode(schoolId, capacity, createdBy),
 
     // Academic Cycles
     getAcademicCycles: (schoolId: string) => this.repo.getAcademicCycles(schoolId),
@@ -234,21 +247,23 @@ export class EducationalManager {
     updateAcademicCycle: (id: string, schoolId: string, data: any) => 
       this.repo.updateAcademicCycle(id, schoolId, data),
     deleteAcademicCycle: (id: string) => this.repo.deleteAcademicCycle(id),
-    requestJoin: (userId: string, schoolId: string, role: string) =>
-      this.repo.requestSchoolJoin(userId, schoolId, role),
+    requestJoin: (userId: string, schoolId: string, capacity: string) =>
+      this.repo.requestSchoolJoin(userId, schoolId, capacity),
     handleRequest: async (requestId: string, status: string) => {
       const result = await this.repo.updateSchoolJoinRequest(requestId, status);
       
       if (status === 'approved' && result) {
         // Orchestrate side-effects: update user school and notify
-        await this.identity.updateProfile(result.user_id, { school_id: result.school_id });
+        await this.profile.updateProfile(result.user_id, { school_id: result.school_id });
+
         
-        await this.identity.createNotification(
+        await this.notification.createNotification(
           result.user_id,
           'join_request_approved',
           'School Joined',
           'Your request to join the school has been approved.'
         );
+
       }
       
       return result;
@@ -275,7 +290,8 @@ export class EducationalManager {
 
   public grading = {
     submitGrade: async (studentId: string, classroomId: string, marks: number, assignmentId?: string, feedback?: string) => {
-      const myId = await this.identity.getMyInternalId();
+      const myId = await this.session.getUserId();
+
       if (!myId) throw new APIError('Failed to submit grade', 'UNAUTHORIZED');
 
       const { grade, gpa } = marksToGPA(marks);

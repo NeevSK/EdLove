@@ -7,7 +7,8 @@ import { APIError } from '../types/API';
  * requireAuth  Ensures the user is authenticated.
  */
 export async function requireAuth() {
-  const userId = await identityAPI.getMyInternalId();
+  const identity = await identityAPI.identifyActiveCitizen();
+  const userId = identity?.id;
   if (!userId) {
     throw new APIError('Not authenticated', 'UNAUTHENTICATED');
   }

@@ -15,7 +15,7 @@ import { POAMetadataSchema } from './contract';
 const c = initContract();
 
 const guardianAuthority = (action: 'create' | 'read' | 'update' | 'delete', subject: string) =>
-  POAMetadataSchema.parse({ authority: { action, subject } });
+  POAMetadataSchema.parse({ policy: { action, subject } });
 
 export const guardianContract = c.router({
   createGuardianProfile: {
@@ -98,3 +98,4 @@ export const guardianContract = c.router({
     metadata: guardianAuthority('update', 'GuardianNotificationSettings'),
   },
 });
+

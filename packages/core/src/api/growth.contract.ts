@@ -12,11 +12,11 @@ const c = initContract();
 
 const growthAuthority = (
   action: 'manage' | 'create' | 'read' | 'update' | 'delete' | 'submit' | 'verify',
-) => POAMetadataSchema.parse({ authority: { action, subject: 'Growth' } });
+) => POAMetadataSchema.parse({ policy: { action, subject: 'Growth' } });
 
 const manifestoAuthority = (
   action: 'manage' | 'create' | 'read' | 'update' | 'delete' | 'submit' | 'verify',
-) => POAMetadataSchema.parse({ authority: { action, subject: 'Manifesto' } });
+) => POAMetadataSchema.parse({ policy: { action, subject: 'Manifesto' } });
 
 export const growthContract = c.router({
   // --- MANIFESTOS & MISSIONS ---
@@ -97,3 +97,4 @@ export const growthContract = c.router({
     metadata: growthAuthority('create'),
   },
 });
+

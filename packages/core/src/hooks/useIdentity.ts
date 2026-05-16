@@ -7,51 +7,37 @@ import { identityAPI } from '../api/identity';
  * Sovereign Identity Hook
  *
  * This is the primary gateway for getting the current logged-in user's
- * internal ID and profile. It abstracts away the Supabase auth layer.
+ * identity context. It abstracts away the Supabase auth layer and uses
+ * the siphoned Sanctuary API.
  */
 export function useIdentity() {
   const {
-    data: internalId,
-    isLoading: isLoadingId,
-    error: idError,
-    refetch: refetchId,
+    data: identity,
+    isLoading,
+    error,
+    refetch,
   } = useQuery({
-    queryKey: ['identity', 'my-internal-id'],
-    queryFn: () => identityAPI.getMyInternalId(),
-    staleTime: Infinity, // ID shouldn't change during session
+    queryKey: ['identity', 'active-citizen'],
+    queryFn: () => identityAPI.identifyActiveCitizen(),
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
-
-  const {
-    data: profile,
-    isLoading: isLoadingProfile,
-    error: profileError,
-    refetch: refetchProfile,
-  } = useQuery({
-    queryKey: ['identity', 'profile', internalId],
-    queryFn: () => (internalId ? identityAPI.getProfile(internalId) : null),
-    enabled: !!internalId,
-  });
-
-  const isLoading = isLoadingId || isLoadingProfile;
-  const error = idError || profileError;
 
   const refresh = useCallback(async () => {
-    await refetchId();
-    await refetchProfile();
-  }, [refetchId, refetchProfile]);
+    await refetch();
+  }, [refetch]);
 
   const signOut = useCallback(() => authAPI.signOut(), []);
 
   return useMemo(
     () => ({
-      internalId,
-      profile,
+      internalId: identity?.id,
+      profile: identity,
       isLoading,
       error,
-      isAuthenticated: !!internalId,
+      isAuthenticated: !!identity,
       refresh,
       signOut,
     }),
-    [internalId, profile, isLoading, error, refresh, signOut],
+    [identity, isLoading, error, refresh, signOut],
   );
 }

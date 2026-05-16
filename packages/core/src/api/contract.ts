@@ -1,10 +1,10 @@
 import { z } from 'zod';
 
 /**
- * POA Metadata - The shared contract for authority markers.
+ * POA Metadata - The shared contract for policy markers.
  */
 export const POAMetadataSchema = z.object({
-  authority: z.object({
+  policy: z.object({
     action: z.enum(['manage', 'create', 'read', 'update', 'delete', 'submit', 'verify', 'grade', 'resolve', 'publish', 'override']),
     subject: z.string(),
   }),
@@ -45,8 +45,10 @@ export type SovereignContract = Record<string, SovereignRoute>;
  * This is the ONLY place that should know about @hono/zod-openapi.
  */
 import { createRoute } from '@hono/zod-openapi';
+import { hc } from 'hono/client';
 
 export function adaptToHono(route: SovereignRoute) {
+  // ... (existing adaptToHono code)
   return createRoute({
     method: route.method,
     path: route.path,
@@ -69,4 +71,12 @@ export function adaptToHono(route: SovereignRoute) {
     ),
     metadata: route.metadata,
   });
+}
+
+/**
+ * createSovereignClient
+ * Creates a type-safe RPC client for the Sovereign API.
+ */
+export function createSovereignClient<T extends import('hono').Hono<any, any, any>>(baseUrl: string) {
+  return hc<T>(baseUrl);
 }

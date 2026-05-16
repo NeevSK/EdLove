@@ -13,7 +13,7 @@ const c = initContract();
 const classroomNoteAuthority = (
   action: 'create' | 'read' | 'update' | 'delete',
   subject = 'ClassroomNote',
-) => POAMetadataSchema.parse({ authority: { action, subject } });
+) => POAMetadataSchema.parse({ policy: { action, subject } });
 
 export const classroomNotesContract = c.router({
   listVisibleNotes: {
@@ -81,3 +81,4 @@ export const classroomNotesContract = c.router({
     metadata: classroomNoteAuthority('read'),
   },
 });
+

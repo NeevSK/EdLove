@@ -7,7 +7,6 @@ import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../api/supabase';
 import type { SchoolType } from '../constants/SriLankanSchools';
 import { identifyUser, initPostHog, trackEvent } from '../lib/monitoring/posthog';
 import { clearSentryUser, initSentry, setSentryUser } from '../lib/monitoring/sentry';
-import { getAuthorityLabel } from '../lib/permissions';
 import { useStore } from '../store/useStore';
 import type { User } from '../types';
 import { APIError } from '../types/API';
@@ -33,33 +32,35 @@ export function useAuthorityLifecycle() {
   const setDemoMode = useStore((state) => state.setDemoMode);
 
   const fetchAndSetUserProfile = useCallback(
-    async (internalUserId: string) => {
+    async () => {
       setIsProfileLoading(true);
       try {
         // 1. Resolve Sovereign Identity (Bonds & Perspectives)
-        const [profile, bonds, perspective] = await Promise.all([
-          identityAPI.getProfile(internalUserId),
-          identityAPI.getBonds(internalUserId),
-          identityAPI.getActivePerspective(),
-        ]);
+        // [SOVEREIGN-SIPHON] unified into identifyActiveCitizen
+        const identity = await identityAPI.identifyActiveCitizen();
 
-        if (profile) {
+        if (identity) {
           // 2. Update Store with ReBAC data
-          setUser(profile as unknown as User);
-          setAvailableBonds(bonds);
-          setPerspective(perspective);
+          setUser(identity as unknown as User);
+          setAvailableBonds(identity.available_bonds);
+          
+          // Re-calculate perspective from bonds
+          setPerspective({ 
+            active_bond: identity.active_bond, 
+            available_bonds: identity.available_bonds 
+          });
 
           // 3. Handle Onboarding & School Logic
-          const isEffectivelyOnboarded = !!profile.onboarding_completed && bonds.length > 0;
+          const isEffectivelyOnboarded = !!identity.onboarding_completed && identity.available_bonds.length > 0;
           if (isEffectivelyOnboarded) {
             setOnboardingCompleted(true);
           }
 
-          if (profile.school_id) {
+          if (identity.school_id) {
             const { data: schoolData } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
               .from('schools')
               .select('type')
-              .eq('id', profile.school_id)
+              .eq('id', identity.school_id)
               .single();
 
             if (schoolData) {
@@ -71,17 +72,17 @@ export function useAuthorityLifecycle() {
 
           // 4. Monitoring identification (Relationship-aware)
           setSentryUser({
-            id: profile.id,
-            email: profile.email,
-            username: profile.full_name,
+            id: identity.id,
+            email: identity.email,
+            username: identity.display_name,
           });
 
-          identifyUser(profile.id, {
-            email: profile.email,
-            full_name: profile.full_name,
-            active_perspective: perspective?.active_bond?.capacity || null,
-            total_bonds: bonds.length,
-            school_id: profile.school_id,
+          identifyUser(identity.id, {
+            email: identity.email,
+            display_name: identity.display_name,
+            active_perspective: identity.active_bond?.capacity || null,
+            total_bonds: identity.available_bonds.length,
+            school_id: identity.school_id,
           });
         }
       } catch (error) {
@@ -94,10 +95,7 @@ export function useAuthorityLifecycle() {
   );
 
   const refreshProfile = useCallback(async () => {
-    const internalId = await identityAPI.getMyInternalId();
-    if (internalId) {
-      await fetchAndSetUserProfile(internalId);
-    }
+    await fetchAndSetUserProfile();
   }, [fetchAndSetUserProfile]);
 
   useEffect(() => {
@@ -112,18 +110,15 @@ export function useAuthorityLifecycle() {
       });
 
     // 2. Initial Session Check
-      const checkSession = async () => {
-        let initialSession: Session | null = null;
-        try {
-          initialSession = (await authAPI.getAuthSession()) as Session | null;
-          setSession(initialSession);
-          setAuthSession(initialSession);
+    const checkSession = async () => {
+      let initialSession: Session | null = null;
+      try {
+        initialSession = (await authAPI.getAuthSession()) as Session | null;
+        setSession(initialSession);
+        setAuthSession(initialSession);
 
         if (initialSession?.user) {
-          const internalId = await identityAPI.getMyInternalId();
-          if (internalId) {
-            await fetchAndSetUserProfile(internalId);
-          }
+          await fetchAndSetUserProfile();
         }
       } catch (error) {
         if (error instanceof APIError) {
@@ -139,11 +134,6 @@ export function useAuthorityLifecycle() {
       } finally {
         setLoading(false);
         setAuthSessionResolved(true);
-        // If no session, rely on explorer mode for seamless exploration
-        // but keep demo mode off to allow functional personal workspaces
-        if (!initialSession) {
-          // setDemoMode(false); // Already default false
-        }
       }
     };
 
@@ -160,19 +150,14 @@ export function useAuthorityLifecycle() {
       setAuthSessionResolved(true);
 
       if (currentSession?.user) {
-        const internalId = await identityAPI.getMyInternalId();
-        if (internalId) {
-          await fetchAndSetUserProfile(internalId);
-        }
+        await fetchAndSetUserProfile();
       } else if (event === 'SIGNED_OUT') {
         clearSentryUser();
-        identityAPI.clearCache();
         setUser(null);
         setPerspective(null);
         setAvailableBonds([]);
         setSchoolType(null);
         setOnboardingCompleted(false);
-        // Keep demo mode off to allow anonymous functional usage
         setDemoMode(false);
       } else if (currentSession) {
         setDemoMode(false);
@@ -196,12 +181,8 @@ export function useAuthorityLifecycle() {
   useEffect(() => {
     if (!currentUser?.id) return;
 
-    if (__DEV__) {
-      console.log('\uD83C\uDF38 Auth: Subscribing to profile changes for:', currentUser.id);
-    }
-
     const channel = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
-      .channel(`user-profile-sync-${currentUser.id}-${Math.random().toString(36).slice(2, 9)}`)
+      .channel(`user-profile-sync-${currentUser.id}`)
       .on(
         'postgres_changes',
         {
@@ -210,11 +191,7 @@ export function useAuthorityLifecycle() {
           table: 'users',
           filter: `id=eq.${currentUser.id}`,
         },
-        (payload) => {
-          if (__DEV__) {
-            console.log('\uD83C\uDF38 Auth: Profile update received:', payload.new);
-          }
-          // Force a profile refresh on remote change
+        () => {
           refreshProfile().catch((e) => {
             console.error('Auth: Profile refresh failed after remote update', e);
           });

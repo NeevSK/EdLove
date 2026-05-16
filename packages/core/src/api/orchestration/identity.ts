@@ -11,13 +11,13 @@ const identityCoverage = assertContractCoverage(
     moduleName: 'identity',
     contract: identityContract,
     methodMapping: {
-      resolveInternalId: 'resolveIdentity',
-      getMyInternalId: 'resolveIdentity',
-      updateProfile: 'updateProfile',
+      identifyActiveCitizen: 'identifyActiveCitizen',
+      fetchUserProfile: 'fetchUserProfile',
+      modifyUserProfile: 'modifyUserProfile',
+      resolveWorkspaceContext: 'resolveWorkspaceContext',
     },
     internalMethods: [
       'linkIdentity',
-      'clearCache',
       'getBonds',
       'getActivePerspective',
       'switchPerspective',

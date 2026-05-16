@@ -132,7 +132,7 @@ export class DeepLinkManager {
         AdminDashboard: 'admin',
         AdminIncidentQueue: 'admin/incidents',
         AdminTenantDetail: 'admin/tenants',
-        AdminAuthorityRepair: 'admin/authority',
+        AdminPolicyRepair: 'admin/policy',
         AdminJobControl: 'admin/actions',
         AdminAuditLog: 'admin/audit',
         AdminReleaseControl: 'admin/release',

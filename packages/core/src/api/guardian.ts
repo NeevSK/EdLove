@@ -13,21 +13,21 @@ import { guardianContract } from './guardian.contract';
 
 export const guardianAPI = {
   /**
-   * @authority create GuardianProfile
+   * @policy create GuardianProfile
    */
   async createProfile(data: GuardianProfileCreate): Promise<GuardianIdentity> {
     return guardianServices.createProfile(data);
   },
 
   /**
-   * @authority read GuardianProfile
+   * @policy read GuardianProfile
    */
   async getProfile(guardianId: string): Promise<GuardianIdentity> {
     return guardianServices.getProfile(guardianId);
   },
 
   /**
-   * @authority update GuardianProfile
+   * @policy update GuardianProfile
    */
   async updateProfile(
     guardianId: string,
@@ -37,28 +37,28 @@ export const guardianAPI = {
   },
 
   /**
-   * @authority read GuardianDashboard
+   * @policy read GuardianDashboard
    */
   async getStudents(guardianId: string): Promise<GuardianStudentOverview[]> {
     return guardianServices.getStudents(guardianId);
   },
 
   /**
-   * @authority read GuardianRelationship
+   * @policy read GuardianRelationship
    */
   async getStudentGuardians(studentId: string): Promise<GuardianIdentity[]> {
     return guardianServices.getStudentGuardians(studentId);
   },
 
   /**
-   * @authority read GuardianDashboard
+   * @policy read GuardianDashboard
    */
   async getDashboard(guardianId: string): Promise<GuardianDashboard> {
     return guardianServices.getDashboard(guardianId);
   },
 
   /**
-   * @authority update GuardianVerification
+   * @policy update GuardianVerification
    */
   async verifyGuardian(
     guardianId: string,
@@ -69,7 +69,7 @@ export const guardianAPI = {
   },
 
   /**
-   * @authority create GuardianRelationship
+   * @policy create GuardianRelationship
    */
   async linkGuardianToStudent(
     guardianId: string,
@@ -86,7 +86,7 @@ export const guardianAPI = {
   },
 
   /**
-   * @authority update GuardianRelationship
+   * @policy update GuardianRelationship
    */
   async updatePermissions(
     guardianId: string,
@@ -98,7 +98,7 @@ export const guardianAPI = {
   },
 
   /**
-   * @authority delete GuardianRelationship
+   * @policy delete GuardianRelationship
    */
   async terminateRelationship(guardianId: string, studentId: string): Promise<{ success: true }> {
     await guardianServices.terminateRelationship(guardianId, studentId);
@@ -106,7 +106,7 @@ export const guardianAPI = {
   },
 
   /**
-   * @authority update GuardianNotificationSettings
+   * @policy update GuardianNotificationSettings
    */
   async updateNotificationSettings(
     guardianId: string,
@@ -118,3 +118,4 @@ export const guardianAPI = {
 };
 
 void guardianContract;
+

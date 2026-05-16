@@ -3,7 +3,7 @@
 // Educational Ecology Support System
 // ============================================================================
 
-import type { Announcement, AuthorityTier, User } from "@repo/core/types";
+import type { Announcement, Capacity, User } from "@repo/core/types";
 
 export interface AnnouncementWithAuthor extends Announcement {
 	author_name?: string;
@@ -102,7 +102,7 @@ export interface CommunityPost {
 	id: string;
 	author_id: string;
 	author_name?: string;
-	author_authority?: AuthorityTier;
+	author_capacity?: Capacity;
 	author_tier?: string;
 	author_avatar?: string;
 	content: string;
@@ -154,7 +154,7 @@ export interface Comment {
 	post_id: string;
 	author_id: string;
 	author_name: string;
-	author_authority: AuthorityTier;
+	author_capacity: Capacity;
 	author_avatar?: string | null;
 	content: string;
 	is_anonymous: boolean;
@@ -173,7 +173,7 @@ export interface PostFilters {
 	post_type?: PostType;
 	visibility?: PostVisibility;
 	subject?: string;
-	author_authority?: AuthorityTier;
+	author_capacity?: Capacity;
 	tags?: string[];
 	has_answer?: boolean;
 	feedback_status?: FeedbackStatus;
@@ -377,7 +377,7 @@ export interface CommunityGroup {
 	// Visibility & Access
 	visibility: PostVisibility;
 	is_public: boolean;
-	allowed_authorities?: AuthorityTier[]; // If specified, only these authorities can see/join
+	allowed_capacities?: Capacity[]; // If specified, only these capacities can see/join
 
 	// Membership
 	member_count: number;
@@ -408,7 +408,7 @@ export interface GroupMember {
 	group_id: string;
 	user_id: string;
 	user_name: string;
-	user_authority: AuthorityTier;
+	user_capacity: Capacity;
 	user_avatar?: string;
 
 	capacity: "owner" | "admin" | "member";
@@ -426,7 +426,7 @@ export interface GroupJoinRequest {
 	group_id: string;
 	user_id: string;
 	user_name: string;
-	user_authority: AuthorityTier;
+	user_capacity: Capacity;
 	message?: string;
 	status: "pending" | "approved" | "rejected";
 	created_at: Date;
@@ -455,7 +455,7 @@ export interface CreateGroupInput {
 	type: GroupType;
 	join_policy: GroupJoinPolicy;
 	visibility: PostVisibility;
-	allowed_authorities?: AuthorityTier[];
+	allowed_capacities?: Capacity[];
 	allow_posts?: boolean;
 	allow_announcements?: boolean;
 	require_post_approval?: boolean;

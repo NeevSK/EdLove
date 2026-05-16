@@ -272,10 +272,10 @@ export const createEnrollmentRepository = (supabase: SupabaseClient) => ({
     }));
   },
 
-  async requestSchoolJoin(userId: string, schoolId: string, role: string) {
+  async requestSchoolJoin(userId: string, schoolId: string, capacity: string) {
     const { data, error } = await supabase
       .from('school_join_requests')
-      .insert([{ user_id: userId, school_id: schoolId, role, status: 'pending' }])
+      .insert([{ user_id: userId, school_id: schoolId, capacity, status: 'pending' }])
       .select()
       .single();
     if (error) throw new APIError('Failed to request school join', error.code, error);
@@ -293,14 +293,14 @@ export const createEnrollmentRepository = (supabase: SupabaseClient) => ({
     return data;
   },
 
-  async requestClassroomJoin(userId: string, classroomId: string, role: string, subjectLabel?: string) {
+  async requestClassroomJoin(userId: string, classroomId: string, capacity: string, subjectLabel?: string) {
     const { data, error } = await supabase
       .from('classroom_join_requests')
       .insert([
         {
           user_id: userId,
           classroom_id: classroomId,
-          role,
+          capacity,
           subject_label: subjectLabel,
           status: 'pending',
         },

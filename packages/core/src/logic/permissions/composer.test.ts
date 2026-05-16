@@ -16,7 +16,7 @@ describe('POA Exhaustive Verification: Every Role, Every Power', () => {
     active_bond: null,
     activeBond: null,
     active_bond_status: 'active',
-    role: null,
+    capacity: null,
     traits: [],
     tenancy: { kind: 'customer', is_personal: false },
     tenancy_name: 'Test School',

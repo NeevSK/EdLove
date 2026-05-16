@@ -39,8 +39,8 @@ export const usePermissions = () => {
       active_bond: active_bond as UserContext['active_bond'],
       activeBond: active_bond as UserContext['activeBond'],
       active_bond_status: active_bond?.status || 'active',
-      role: active_bond?.capacity || null,
-      traits: active_bond?.capacity ? [`role:${active_bond.capacity}`] : [],
+      capacity: active_bond?.capacity || null,
+      traits: active_bond?.capacity ? [`capacity:${active_bond.capacity}`] : [],
       tier: user?.tier || 'free',
       citizenship:
         user?.citizenship === 'SECOND_CLASS' || user?.citizenship === 'FIRST_CLASS'

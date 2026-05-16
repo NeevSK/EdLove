@@ -1,15 +1,19 @@
 import { User } from '../../types/User';
 import { Bond, Perspective, Capacity } from '../../types/Identity';
+import { Identity } from '../../api/identity.generated';
 
 /**
  * IIdentityPort: The Sovereign Identity Interface.
  * Decouples the application logic from the underlying Auth provider (Supabase, DID, etc.).
+ * [LOUD-FAILURE] Renamed from getMyInternalId to identifyActiveCitizen.
+ * [LOUD-FAILURE] Updated return type to include context (Bonds/Perspectives).
  */
 export interface IIdentityPort {
   /**
-   * Resolves the internal platform UUID for the current authenticated user.
+   * Resolves the full sovereign identity for the current authenticated user.
+   * Includes active bond and available perspectives.
    */
-  getMyInternalId(): Promise<string | null>;
+  identifyActiveCitizen(): Promise<Identity | null>;
 
   /**
    * Resolves the internal user ID from a provider and provider-specific user ID.
@@ -67,32 +71,12 @@ export interface IIdentityPort {
   unblockUser(blockerId: string, blockedId: string): Promise<void>;
 
   /**
-   * Notifications: Creates a notification for a user.
-   */
-  createNotification(userId: string, type: string, title: string, message: string, metadata?: any): Promise<void>;
-
-  /**
-   * Notifications: Retrieves notifications for a user.
-   */
-  getNotifications(userId: string): Promise<any[]>;
-
-  /**
-   * Notifications: Updates the read status of a notification.
-   */
-  updateNotificationStatus(notificationId: string, isRead: boolean): Promise<void>;
-
-  /**
    * Profiles: Completes the user profile.
    */
   completeProfile(userId: string, data: any): Promise<void>;
 
   /**
-   * Push Notifications: Registers a device push token for a user.
+   * Onboarding: Marks the onboarding journey as officially completed.
    */
-  registerPushToken(userId: string, token: string, deviceId: string, platform: string): Promise<void>;
-
-  /**
-   * Push Notifications: Unregisters a device push token.
-   */
-  unregisterPushToken(userId: string, deviceId: string): Promise<void>;
+  completeOnboarding(userId: string): Promise<void>;
 }

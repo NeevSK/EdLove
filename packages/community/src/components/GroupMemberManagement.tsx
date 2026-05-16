@@ -169,7 +169,7 @@ export default function GroupMemberManagement({
 		async (targetUserId: string, newCapacity: "admin" | "member") => {
 			try {
 				dispatch({ type: "SET_LOADING", payload: true });
-				await communityAPI.updateMemberAuthority(
+				await communityAPI.updateMemberCapacity(
 					groupId,
 					targetUserId,
 					newCapacity,
@@ -186,7 +186,7 @@ export default function GroupMemberManagement({
 			} catch (error) {
 				console.error(error);
 				showToast({
-					message: "Higher authority required for this shift.",
+					message: "Higher capacity required for this shift.",
 					type: "error",
 				});
 			} finally {
@@ -336,7 +336,7 @@ export default function GroupMemberManagement({
 										<HStack className="gap-1 items-center">
 											<Icon as={Shield} size="xs" className="text-ink/40" />
 											<Text className="text-xs text-ink/40">
-												{request.user_authority?.toUpperCase() || "USER"}
+												{request.user_capacity?.toUpperCase() || "USER"}
 											</Text>
 										</HStack>
 										<HStack className="gap-2 items-center mt-2">

@@ -5,7 +5,8 @@ import { usePermissions } from '../logic/permissions/hooks/usePermissions';
 import { applyTemporalFilter } from '../logic/utils/temporalUtils';
 import { useTemporalStore } from '../store/useTemporalStore';
 
-import type { UserGrowthState } from '../api/userGrowthState';
+import type { UserGrowthState } from '../types/Growth';
+
 import type { UserRewardsSnapshot } from '../logic/domains/profile/ports';
 
 export interface JourneyEvent {
@@ -27,7 +28,7 @@ export interface HolisticView {
 /**
  * useJourneyHistory
  *
- * Aggregates role-specific feature history into a consolidated stream.
+ * Aggregates capacity-specific feature history into a consolidated stream.
  * Supports Daily/Weekly holistic views.
  */
 export function useJourneyHistory(_section?: string, _feature?: string) {

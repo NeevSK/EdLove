@@ -11,7 +11,7 @@ export interface StudentGoal {
 /**
  * useStudentGoals
  *
- * Fetches the user's focus goals for the Student role.
+ * Fetches the user's focus goals for the Student capacity.
  */
 export const useStudentGoals = (userId?: string) => {
   const [goals, setGoals] = useState<StudentGoal[]>([]);

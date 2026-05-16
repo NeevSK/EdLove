@@ -1,6 +1,8 @@
 import { CoreRuntimeEnvironment, PushNotificationProvider } from '../../types/runtime';
-import { IIdentityPort } from '../ports/identity.port';
+import { IPushNotificationPort } from '../ports/pushNotification.port';
+
 import { DeepLinkManager } from './DeepLinkManager';
+
 
 /**
  * PushNotificationManager: Orchestrates native push notifications.
@@ -11,11 +13,12 @@ export class PushNotificationManager {
 
   constructor(
     coreRuntime: CoreRuntimeEnvironment,
-    private identity: IIdentityPort,
+    private pushPort: IPushNotificationPort,
     private deepLink: DeepLinkManager
   ) {
     this.runtime = coreRuntime.notification;
   }
+
 
   /**
    * Initializes push notifications for the current user.
@@ -29,8 +32,9 @@ export class PushNotificationManager {
       // 1. Setup Token Listener for refresh edge cases
       this.runtime.addPushTokenListener(async (newToken) => {
         console.log('PushNotificationManager: Token refreshed', newToken);
-        await this.identity.registerPushToken(userId, newToken, deviceId, 'mobile');
+        await this.pushPort.registerPushToken(userId, newToken, deviceId, 'mobile');
       });
+
 
       // 2. Setup Notification Listeners
       this.runtime.addNotificationReceivedListener((notification) => {
@@ -67,8 +71,9 @@ export class PushNotificationManager {
       // Platform is usually detected via runtime or injected
       const platform = 'mobile'; // Default for now, can be refined
 
-      await this.identity.registerPushToken(userId, token, deviceId, platform);
+      await this.pushPort.registerPushToken(userId, token, deviceId, platform);
       return true;
+
     } catch (error) {
       console.error('PushNotificationManager: Initialization failed', error);
       return false;
@@ -80,7 +85,8 @@ export class PushNotificationManager {
    */
   async cleanup(userId: string, deviceId: string): Promise<void> {
     try {
-      await this.identity.unregisterPushToken(userId, deviceId);
+      await this.pushPort.unregisterPushToken(userId, deviceId);
+
       await this.runtime.setBadgeCountAsync(0);
     } catch (error) {
       console.error('PushNotificationManager: Cleanup failed', error);

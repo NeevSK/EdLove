@@ -15,7 +15,7 @@ import { teacherInsights } from '../logic/managers/factory';
 
 export const teacherInsightsAPI = {
   /**
-   * @authority read TeacherInsight
+   * @policy read TeacherInsight
    */
   async listPrivateNotes(
     teacherId: string,
@@ -25,14 +25,14 @@ export const teacherInsightsAPI = {
   },
 
   /**
-   * @authority create TeacherInsight
+   * @policy create TeacherInsight
    */
   async createPrivateNote(input: TeacherPrivateNoteCreate): Promise<TeacherPrivateNoteZod> {
     return teacherInsights.createPrivateNote(input);
   },
 
   /**
-   * @authority delete TeacherInsight
+   * @policy delete TeacherInsight
    */
   async deletePrivateNote(id: string): Promise<{ success: true }> {
     await teacherInsights.deletePrivateNote(id);
@@ -40,14 +40,14 @@ export const teacherInsightsAPI = {
   },
 
   /**
-   * @authority read TeacherInsight
+   * @policy read TeacherInsight
    */
   async listStudentObservations(classroomId: string): Promise<TeacherStudentObservationZod[]> {
     return teacherInsights.listStudentObservations(classroomId);
   },
 
   /**
-   * @authority read TeacherInsight
+   * @policy read TeacherInsight
    */
   async listStudentObservationsForEnrollment(
     classroomStudentId: string,
@@ -56,7 +56,7 @@ export const teacherInsightsAPI = {
   },
 
   /**
-   * @authority read TeacherInsight
+   * @policy read TeacherInsight
    */
   async listStudentObservationsForStudent(
     studentId: string,
@@ -65,7 +65,7 @@ export const teacherInsightsAPI = {
   },
 
   /**
-   * @authority create TeacherInsight
+   * @policy create TeacherInsight
    */
   async createStudentObservation(
     input: TeacherStudentObservationCreate,
@@ -74,7 +74,7 @@ export const teacherInsightsAPI = {
   },
 
   /**
-   * @authority update TeacherInsight
+   * @policy update TeacherInsight
    */
   async finalizeStudentObservation(
     id: string,
@@ -84,7 +84,7 @@ export const teacherInsightsAPI = {
   },
 
   /**
-   * @authority delete TeacherInsight
+   * @policy delete TeacherInsight
    */
   async deleteStudentObservation(id: string): Promise<{ success: true }> {
     await teacherInsights.deleteStudentObservation(id);
@@ -92,7 +92,7 @@ export const teacherInsightsAPI = {
   },
 
   /**
-   * @authority update TeacherInsight
+   * @policy update TeacherInsight
    */
   async shareStudentObservation(
     id: string,
@@ -103,7 +103,7 @@ export const teacherInsightsAPI = {
   },
 
   /**
-   * @authority update TeacherInsight
+   * @policy update TeacherInsight
    */
   async revokeStudentObservationShare(
     id: string,
@@ -113,7 +113,7 @@ export const teacherInsightsAPI = {
   },
 
   /**
-   * @authority create TeacherInsightPromotion
+   * @policy create TeacherInsightPromotion
    */
   async promoteStudentObservation(
     id: string,
@@ -124,7 +124,7 @@ export const teacherInsightsAPI = {
   },
 
   /**
-   * @authority read TeacherInsight
+   * @policy read TeacherInsight
    */
   async getStudentPotential(
     studentId: string,
@@ -134,7 +134,7 @@ export const teacherInsightsAPI = {
   },
 
   /**
-   * @authority update TeacherInsight
+   * @policy update TeacherInsight
    */
   async upsertStudentPotential(
     input: TeacherStudentPotentialUpsert,
@@ -143,7 +143,7 @@ export const teacherInsightsAPI = {
   },
 
   /**
-   * @authority read TeacherInsightAudit
+   * @policy read TeacherInsightAudit
    */
   async getInsightAuditTrail(
     insightType: TeacherInsightTargetType,
@@ -153,7 +153,7 @@ export const teacherInsightsAPI = {
   },
 
   /**
-   * @authority read TeacherInsight
+   * @policy read TeacherInsight
    */
   async getInsightTimeline(
     insightType: TeacherInsightTargetType,
@@ -162,3 +162,4 @@ export const teacherInsightsAPI = {
     return teacherInsights.getInsightTimeline(insightType, insightId);
   },
 };
+

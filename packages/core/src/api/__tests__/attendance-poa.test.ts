@@ -53,7 +53,7 @@ describe('Attendance POA Orchestration', () => {
   });
 
   it('should record attendance when authorized', async () => {
-    const result = await attendanceAPI.record(
+    const result = await attendanceAPI.recordAttendance(
       'class-1',
       'student-1',
       'present',
@@ -65,7 +65,7 @@ describe('Attendance POA Orchestration', () => {
   it('should prevent mutation in past phase', async () => {
     useTemporalStore.setState({ phase: 'past' });
     await expect(
-      attendanceAPI.record('class-1', 'student-1', 'present', '2026-05-02'),
+      attendanceAPI.recordAttendance('class-1', 'student-1', 'present', '2026-05-02'),
     ).rejects.toThrow('Cannot modify history');
   });
 });

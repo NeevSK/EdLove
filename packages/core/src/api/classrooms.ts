@@ -1,53 +1,69 @@
-import type { Classroom, TeacherStats } from '../logic/schemas/classroom.schema';
-import { educational } from '../logic/managers/factory';
-import type { PaginationParams } from '../types';
+import { 
+  createSovereignClient, 
+  SOVEREIGN_API_URL, 
+  type AppType 
+} from './base';
+import { APIError } from '../types/API';
 
 /**
- * Classrooms API
+ * CLASSROOMS API (Sovereign RPC Proxy)
  * 
- * Thin delegation layer to the Sovereign Educational Manager.
+ * This module siphons Classroom structural requests to the Sanctuary API.
  */
+
+const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
+
 export const classroomsAPI = {
-  async getByTeacher(teacherId: string, params: PaginationParams = {}): Promise<Classroom[]> {
-    return educational.classrooms.getByTeacher(teacherId, params) as unknown as Classroom[];
+  async getByTeacher(teacher_id: string, params: { limit?: number; offset?: number } = {}) {
+    const res = await client.api.educational.classrooms['by-teacher'].$get({
+      query: {
+        teacher_id,
+        limit: params.limit?.toString(),
+        offset: params.offset?.toString(),
+      },
+    });
+
+    if (!res.ok) {
+      throw new APIError('Failed to fetch classrooms by teacher', res.status.toString());
+    }
+
+    return await res.json();
   },
 
-  async getByStudent(studentId: string, params: PaginationParams = {}): Promise<Classroom[]> {
-    return educational.classrooms.getByStudent(studentId, params) as unknown as Classroom[];
+  async getByStudent(student_id: string) {
+    const res = await client.api.educational.classrooms['by-student'].$get({
+      query: { student_id },
+    });
+
+    if (!res.ok) {
+      throw new APIError('Failed to fetch classrooms by student', res.status.toString());
+    }
+
+    return await res.json();
   },
 
-  async getBySchool(schoolId: string, params: PaginationParams = {}): Promise<Classroom[]> {
-    return educational.classrooms.getBySchool(schoolId, params) as unknown as Classroom[];
+  async getTeacherStats(id: string) {
+    const res = await client.api.educational.classrooms.stats.teacher[':id'].$get({
+      param: { id },
+    });
+
+    if (!res.ok) {
+      throw new APIError('Failed to fetch teacher statistics', res.status.toString());
+    }
+
+    return await res.json();
   },
 
-  async getAvailableByGrade(gradeId: string): Promise<Classroom[]> {
-    return educational.classrooms.getAvailableByGrade(gradeId) as unknown as Classroom[];
-  },
+  async getById(id: string) {
+    const res = await client.api.educational.classrooms[':id'].$get({
+      param: { id },
+    });
 
-  async getById(id: string): Promise<Classroom> {
-    return educational.classrooms.getById(id) as unknown as Classroom;
-  },
+    if (!res.ok) {
+      if (res.status === 404) return null;
+      throw new APIError('Failed to fetch classroom', res.status.toString());
+    }
 
-  async create(classroom: Omit<Classroom, 'id' | 'created_at' | 'updated_at'>): Promise<Classroom> {
-    return educational.classrooms.create(classroom) as unknown as Classroom;
-  },
-
-  async update(id: string, updates: Partial<Classroom>): Promise<Classroom> {
-    return educational.classrooms.update(id, updates) as unknown as Classroom;
-  },
-
-  async delete(id: string): Promise<void> {
-    return educational.classrooms.delete(id);
-  },
-
-  async getTeacherClassrooms(
-    teacherId: string,
-    params: PaginationParams = {},
-  ): Promise<Classroom[]> {
-    return educational.classrooms.getByTeacher(teacherId, params) as unknown as Classroom[];
-  },
-
-  async getTeacherStats(teacherId: string): Promise<TeacherStats> {
-    return (await educational.classrooms.getTeacherStats(teacherId)) as TeacherStats;
+    return await res.json();
   },
 };

@@ -19,7 +19,8 @@ export function useRewards(
 
   useEffect(() => {
     const getUserId = async () => {
-      const internalId = options.userId || (await identityAPI.getMyInternalId());
+      const identity = await identityAPI.identifyActiveCitizen();
+      const internalId = options.userId || identity?.id;
       if (internalId) setUserId(internalId);
     };
     getUserId().catch((e) => {

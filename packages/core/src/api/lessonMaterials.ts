@@ -8,7 +8,7 @@ import type { LessonMaterial } from '../types';
 export const lessonMaterialsAPI = {
   /**
    * Get all materials for a classroom
-   * @authority read Material
+   * @policy read Material
    */
   async getAll(classroomId: string): Promise<LessonMaterial[]> {
     return educational.lessonMaterials.getAll(classroomId) as unknown as LessonMaterial[];
@@ -16,7 +16,7 @@ export const lessonMaterialsAPI = {
 
   /**
    * Get materials for a specific lesson
-   * @authority read Material
+   * @policy read Material
    */
   async getByLesson(lessonId: string): Promise<LessonMaterial[]> {
     return educational.lessonMaterials.getByLesson(lessonId) as unknown as LessonMaterial[];
@@ -24,7 +24,7 @@ export const lessonMaterialsAPI = {
 
   /**
    * Create new material
-   * @authority create Material
+   * @policy create Material
    */
   async create(
     material: Omit<LessonMaterial, 'id' | 'created_at' | 'updated_at'>,
@@ -34,7 +34,7 @@ export const lessonMaterialsAPI = {
 
   /**
    * Update material
-   * @authority update Material
+   * @policy update Material
    */
   async update(id: string, updates: Partial<LessonMaterial>): Promise<LessonMaterial> {
     return educational.lessonMaterials.update(id, updates) as unknown as LessonMaterial;
@@ -42,9 +42,10 @@ export const lessonMaterialsAPI = {
 
   /**
    * Delete material
-   * @authority delete Material
+   * @policy delete Material
    */
   async delete(id: string): Promise<void> {
     return educational.lessonMaterials.delete(id);
   },
 };
+

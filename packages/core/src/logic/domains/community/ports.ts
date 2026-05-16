@@ -21,7 +21,7 @@ export interface ICommunityRepository {
   createPost(params: {
     post: Partial<Post>;
     userId: string;
-    authorityTier: string;
+    capacity: string;
     schoolId: string;
   }): Promise<Post>;
 

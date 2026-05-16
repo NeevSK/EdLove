@@ -25,9 +25,9 @@ describe('Grading POA Orchestration', () => {
     useAuthStore.setState({
       user: {
         id: '550e8400-e29b-41d4-a716-446655440000',
-        role: 'teacher',
+        capacity: 'teacher',
         roles: ['teacher'],
-        authority: 'teacher',
+        policy: 'teacher',
       } as any,
     });
     useTemporalStore.setState({
@@ -41,3 +41,4 @@ describe('Grading POA Orchestration', () => {
     // Logic test would go here once storage is mocked
   });
 });
+

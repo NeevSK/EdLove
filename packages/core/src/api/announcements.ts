@@ -7,14 +7,14 @@ import { community } from '../logic/managers/factory';
  */
 export const announcementAPI = {
   /**
-   * @authority read Group
+   * @policy read Group
    */
   async getAnnouncements(schoolId: string) {
     return community.getAnnouncements(schoolId);
   },
 
   /**
-   * @authority create Group
+   * @policy create Group
    */
   async createAnnouncement(
     schoolId: string,
@@ -30,3 +30,4 @@ export const announcementAPI = {
     });
   },
 };
+

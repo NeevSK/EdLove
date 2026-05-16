@@ -51,6 +51,7 @@ interface OnboardingUIState {
   currentStep: number;
   name: string;
   selectedCapacity: Capacity;
+  schoolId: string | null;
   isProcessing: boolean;
   error: string | null;
 }
@@ -59,6 +60,7 @@ type OnboardingAction =
   | { type: 'SET_STEP'; step: number }
   | { type: 'SET_NAME'; name: string }
   | { type: 'SET_CAPACITY'; capacity: Capacity }
+  | { type: 'SET_SCHOOL_ID'; schoolId: string | null }
   | { type: 'SET_PROCESSING'; isProcessing: boolean }
   | { type: 'SET_ERROR'; error: string | null }
   | { type: 'NEXT_STEP' }
@@ -73,6 +75,8 @@ function onboardingReducer(state: OnboardingUIState, action: OnboardingAction): 
       return { ...state, name: action.name, error: null };
     case 'SET_CAPACITY':
       return { ...state, selectedCapacity: action.capacity, error: null };
+    case 'SET_SCHOOL_ID':
+      return { ...state, schoolId: action.schoolId };
     case 'SET_PROCESSING':
       return { ...state, isProcessing: action.isProcessing };
     case 'SET_ERROR':
@@ -148,7 +152,7 @@ const NameStep = memo(
       <h2 className="ob-step-title">{t('onboarding.nameTitle')}</h2>
       <p className="ob-step-subtitle">{t('onboarding.nameSubtitle')}</p>
       <ErrorBanner error={error} />
-      <input
+        <input
         className="ob-input"
         type="text"
         placeholder={t('onboarding.namePlaceholder')}
@@ -157,10 +161,18 @@ const NameStep = memo(
         onKeyDown={(e) => {
           if (e.key === 'Enter' && name.trim()) onNext();
         }}
-        autoComplete="given-name"
+        autoFocus
+        autoComplete="name"
       />
+      <p className="ob-input-hint">
+        {name.trim().length > 0 && name.trim().length < 2
+          ? "Your name is a bit short. Try adding another character."
+          : name === 'Guest User'
+          ? "Please choose a name other than 'Guest User'."
+          : "Use the display name you want people to see inside the app."}
+      </p>
       <div className="ob-actions">
-        <button className="ob-btn-primary" onClick={onNext} disabled={!name.trim()}>
+        <button className="ob-btn-primary" onClick={onNext} disabled={name.trim().length < 2 || name === 'Guest User'}>
           {t('onboarding.continue')} →
         </button>
       </div>
@@ -309,6 +321,7 @@ export default memo(function OnboardingScreenWeb({
     currentStep: 0,
     name: '',
     selectedCapacity: 'teacher' as Capacity,
+    schoolId: null,
     isProcessing: false,
     error: null,
   });
@@ -336,6 +349,7 @@ export default memo(function OnboardingScreenWeb({
                     typeof progress.step === 'number' && progress.step >= 0 && progress.step < 7
                       ? progress.step
                       : 0,
+                  schoolId: progress.schoolId || null,
                 },
               });
               return;
@@ -364,13 +378,18 @@ export default memo(function OnboardingScreenWeb({
         if (initialDomainState === 'COMPLETED') {
           console.log('✅ Onboarding: Profile already marked as completed in DB, finalizing...');
           const capacity = (activePerspective?.active_bond.capacity as Capacity) || 'teacher';
-          dispatch({ type: 'SET_NAME', name: profile.full_name || '' });
-          onComplete(profile.full_name || '', capacity, isAnonymous);
+          const resolvedName = profile.display_name || '';
+          dispatch({ type: 'SET_NAME', name: resolvedName });
+          onComplete(resolvedName, capacity, isAnonymous);
           return;
         }
 
-        if (profile.full_name) {
-          dispatch({ type: 'SET_NAME', name: profile.full_name });
+        const resolvedName = profile.display_name;
+        if (resolvedName && resolvedName !== 'Guest User') {
+          dispatch({ type: 'SET_NAME', name: resolvedName });
+          if (profile.school_id) {
+            dispatch({ type: 'SET_SCHOOL_ID', schoolId: profile.school_id });
+          }
           if (initialDomainState === 'IDENTITY_SELECTION') {
             dispatch({ type: 'SET_STEP', step: 1 });
           } else if (initialDomainState === 'SANCTUARY_INIT') {
@@ -379,6 +398,10 @@ export default memo(function OnboardingScreenWeb({
         }
       } catch (error) {
         console.error('[Onboarding] Initialization error:', error);
+        showToast(
+          `Initialization Error: ${(error as Error)?.message || 'Something went wrong'}. Please check your connection or refresh the page.`,
+          'error',
+        );
       }
     };
     void initOnboarding();
@@ -427,6 +450,10 @@ export default memo(function OnboardingScreenWeb({
     dispatch({ type: 'SET_PROCESSING', isProcessing: true });
     showToast('Finalizing your sanctuary journey...', 'info', 2000);
     try {
+      const internalId = await identity.getMyInternalId();
+      if (internalId) {
+        await identityAPI.completeOnboarding(internalId);
+      }
       await AsyncStorage.removeItem('onboarding_progress');
       hapticSuccess();
       showToast('Sanctuary entry granted! Welcome home.', 'success', 3000);
@@ -434,9 +461,10 @@ export default memo(function OnboardingScreenWeb({
     } catch (err: unknown) {
       console.error('❌ Error completing onboarding:', err);
       hapticError();
-      const msg = err instanceof Error ? err.message : 'Failed to finalize onboarding.';
-      dispatch({ type: 'SET_ERROR', error: msg });
-      showToast(msg, 'error');
+      const baseMsg = err instanceof Error ? err.message : 'Failed to finalize onboarding.';
+      const guidedMsg = `${baseMsg} Please check your connection and try again to enter the sanctuary.`;
+      dispatch({ type: 'SET_ERROR', error: guidedMsg });
+      showToast(guidedMsg, 'error', 5000);
     }
   }, [name, selectedCapacity, onComplete, showToast, isAnonymous]);
 
@@ -462,21 +490,24 @@ export default memo(function OnboardingScreenWeb({
 
       if (currentStep === 0) {
         // Sync Name
-        await identityAPI.updateProfile(internalId, { full_name: name });
+        showToast('Syncing your identity...', 'info', 1000);
+        await identityAPI.updateProfile(internalId, { display_name: name });
       } else if (currentStep === 1) {
         // 1. Ensure user has a profile and potentially a school
         const existingProfile = await identityAPI.getProfile(internalId);
-        let schoolId = existingProfile?.school_id;
+        let schoolId = state.schoolId || existingProfile?.school_id;
 
         // Wanderers (Anonymous) don't get a workspace yet.
         // Second class citizens (Authenticated) get a personal workspace.
         if (!schoolId && !isAnonymous) {
+          showToast('Building your personal sanctuary...', 'info', 2000);
           schoolId = await schoolAPI.initializePersonalWorkspace(internalId, name || 'My');
+          dispatch({ type: 'SET_SCHOOL_ID', schoolId });
         }
 
         showToast(`Establishing your bond as ${selectedCapacity}...`, 'info', 1500);
         await identity.createInitialBond(selectedCapacity, {
-          fullName: name || 'Gurudevi User',
+          displayName: name || 'Gurudevi User',
           schoolId,
         });
         showToast('Identity bond secured.', 'success', 1000);
@@ -489,10 +520,14 @@ export default memo(function OnboardingScreenWeb({
     } catch (err: unknown) {
       console.error('[Onboarding] Step failed:', err);
       hapticError();
+      const baseMsg = err instanceof Error ? err.message : 'Something went wrong.';
+      const guidedMsg = `${baseMsg} Please check your connection and try again.`;
+      
       dispatch({
         type: 'SET_ERROR',
-        error: err instanceof Error ? err.message : 'Something went wrong. Please try again.',
+        error: guidedMsg,
       });
+      showToast(guidedMsg, 'error', 4000);
     } finally {
       dispatch({ type: 'SET_PROCESSING', isProcessing: false });
     }
@@ -544,6 +579,7 @@ export default memo(function OnboardingScreenWeb({
           step: currentStep,
           name,
           capacity: selectedCapacity,
+          schoolId: state.schoolId,
         }),
       ).catch(() => {});
     });
@@ -1122,5 +1158,12 @@ const ONBOARDING_STYLES = `
         font-size: 13px;
         font-weight: 600;
         color: #991B1B;
+    }
+    .ob-input-hint {
+        font-size: 13px;
+        color: var(--ink-secondary, #6B6480);
+        margin-top: 8px;
+        margin-bottom: 0;
+        min-height: 20px;
     }
 `;

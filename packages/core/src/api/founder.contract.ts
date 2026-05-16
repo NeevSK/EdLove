@@ -14,7 +14,7 @@ import { POAMetadataSchema } from './contract';
 const c = initContract();
 
 const founderAuthority = (action: 'create' | 'read' | 'update' | 'delete', subject: string) =>
-  POAMetadataSchema.parse({ authority: { action, subject } });
+  POAMetadataSchema.parse({ policy: { action, subject } });
 
 export const founderContract = c.router({
   getEcosystemStats: {
@@ -91,3 +91,4 @@ export const founderContract = c.router({
     metadata: founderAuthority('read', 'FounderDashboard'),
   },
 });
+

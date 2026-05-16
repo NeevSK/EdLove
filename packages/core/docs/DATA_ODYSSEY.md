@@ -1,93 +1,206 @@
-# The Data Odyssey: A Sovereign Journey 🗺️
+# The Data Odyssey: Canonical Data Flow
 
-This document outlines the bidirectional flow of data within the Polymath Platform, from the physical storage in Supabase to the pixels in the Sanctuary UI.
+This document explains how data moves through the platform and where each layer owns truth.
+It is aligned with the legacy-free architecture:
 
-## 1. The Architectural Pillars
-The platform is built on a **Unified Authorization Fabric** that ensures security-in-depth across multiple layers.
+- `Bond` is the atomic relationship record.
+- `Capacity` is the canonical contextual identity.
+- `Perspective` is the active runtime lens.
+- `ReBAC` owns human relationship truth.
+- `POA` owns the intent-to-execution contract boundary.
+- `CASL` derives concrete abilities from context.
+- `MCP` exposes delegated tools to agents.
 
-1.  **ZenStack (The Law)**: Source of truth for models and access policies (`schema.zmodel`).
-2.  **Hexagonal Architecture (The Structure)**: Decouples business logic from infrastructure via Ports and Adapters.
-3.  **ReBAC (The Bonds)**: Relationship-Based Access Control defines *who* you are in relation to *what* (e.g., Teacher of School X).
-4.  **Citizenship (The Persona)**: A lifecycle-based grouping of access (Wanderer, 2nd Class, 1st Class).
-5.  **POA (Permission-Oriented Architecture)**: API calls are proxied and checked against **ts-rest** contracts BEFORE execution.
-6.  **The Shadow DB (PowerSync)**: Local-first SQLite sync for offline-first resilience.
-7.  **The Pulse (Inngest)**: Asynchronous event bus for background workflows and agentic tasks.
-8.  **Agentic Sight (MCP)**: The Model Context Protocol bridge that allows AI agents to "see" and "act" within the platform safely.
-9.  **The Watchtower (Sentry/PostHog)**: Unified observability for errors and behavioral signals.
+The goal is simple:
 
----
+- smooth for valid users
+- restrictive for everything outside the current capacity and scope
+- loud when something tries to cross a boundary it should not cross
+- no silent fallback to `role` or `authority`
 
-## 2. The Outbound Journey (Database ➡️ UI)
-How data is retrieved and secured for the user.
+## 1. Architectural Pillars
 
-### Step 1: The Physical Guard (RLS)
-The database (PostgreSQL) uses **Row Level Security**. Even if an API is compromised, the DB itself will only return rows belonging to the authenticated `auth.uid()`.
+The platform is built on a layered trust model:
 
-### Step 2: The Policy Wrapper (ZenStack)
-The `ZenStack` generated client applies the `@@allow` rules from the ZModel. It acts as an ORM-level filter that ensures complex business rules (like "Teachers can see students in their classroom") are enforced.
+1. `Supabase RLS`: the database line of defense.
+2. `ZenStack`: model-level policy enforcement.
+3. `ReBAC`: relationship truth through bonds and capacities.
+4. `POA`: contract boundary for API execution.
+5. `CASL`: ability derivation for UI and local decisions.
+6. `PowerSync`: filtered offline sync.
+7. `Inngest`: asynchronous workflow and event orchestration.
+8. `MCP`: delegated tool access for agents.
+9. `Sentry` and `PostHog`: observability and behavioral traceability.
 
-### Step 3: The Identity Resolution (Adapter)
-The `SupabaseIdentityAdapter` resolves the user's **Bonds** and **Citizenship**. This context is injected into the request lifecycle.
+These layers complement each other:
 
-### Step 4: Data Normalization (Zod)
-Before data reaches the UI, it passes through **Zod schemas**. This ensures that even if the DB contains extra "leaky" fields, only the fields defined in the public contract are sent to the device.
+- ReBAC decides what relationship context exists.
+- POA decides whether the requested action is allowed to cross the API boundary.
+- CASL decides whether the current context may perform a specific action on a subject.
+- MCP decides which tools an agent may use under delegated scope.
+- RLS and ZenStack remain the last data-level guards.
 
-### Step 5: The Presentation Gate (CASL)
-The UI converts Bonds into a **CASL Ability** instance. React hooks like `useAbility` use this to hide/show UI elements (buttons, tabs, screens) instantly.
+## 2. Outbound Journey
 
----
+Outbound means data flowing from the database toward the UI.
 
-## 3. The Inbound Journey (UI ➡️ Database)
-How an action is validated and persisted.
+### Step 1: Database Defense
 
-### Step 1: The UI Spark
-A user clicks "Create Post." The UI checks `ability.can('create', 'Post')` to enable the button.
+PostgreSQL RLS blocks rows that are not visible to the authenticated principal.
+This is the final storage-layer filter, not the only guard.
 
-### Step 2: The POA Proxy (The Interceptor)
-The request hits the `POAProxy`. It looks up the **Contract Metadata** (e.g., `authority: { action: 'create', subject: 'Post' }`).
-*   It calls the **Composer** to build the current user's Ability.
-*   The **AuthorityInterceptor** enforces the rule. If you aren't a 1st Class citizen or don't have the Bond, the request dies here.
+### Step 2: Model Policy
 
-### Step 3: Validation (Zod)
-The incoming payload is validated against the input Zod schema. This prevents injection and ensures data integrity.
+ZenStack applies schema-level access rules before data leaves the server.
+If a query is not allowed by the model, it should fail instead of returning partial truth.
 
-### Step 4: Execution & Persistence
-The core service executes the logic using the `ZenStack` client, which performs a final policy check before writing to the DB.
+### Step 3: Relationship Resolution
 
----
+The identity adapter resolves:
 
-## 4. The 2026 Error Strategy (Sovereign Error)
-To prevent "Schema Leakage," we use a tiered error reporting system:
+- the current user
+- their bonds
+- the active perspective
+- the capacities available in that context
 
-| Audience | Detail Level | Purpose |
-| :--- | :--- | :--- |
-| **User** | Generic & Warm | "Something went wrong. We've notified the architects." |
-| **Developer** | Verbose & Raw | Full stack traces, Zod issues, and SQL hints (only in `__DEV__`). |
-| **AI Agent** | Semantic & Actionable | Error codes like `INSUFFICIENT_CITIZENSHIP` with a `retry_after` or `upgrade_path`. |
----
+This is the source of runtime identity truth.
 
-## 5. The Shadow Odyssey (Local Sync 🔄)
-For a 2026 Sovereign App, "Offline" isn't an error state; it's a feature.
-*   **PowerSync**: Acts as the bridge between Supabase (Postgres) and the local device (SQLite).
-*   **Filtered Sync**: PowerSync only syncs the data your **Bonds** allow you to see. It respects RLS at the sync level.
-*   **Latency Compensation**: When you create a post, it's written to SQLite instantly. PowerSync then handles the background "Odyssey" to the cloud.
+### Step 4: Contract Shaping
 
----
+Data is mapped into the public response contracts.
+This step removes private fields and normalizes shape.
 
-## 6. The Asynchronous Pulse (Inngest & Events ⚡)
-Not all data flows are immediate.
-*   **Inngest**: Our event-driven workflow engine. When a `user/created` event fires, Inngest triggers the onboarding "journey."
-*   **Message Bus**: Coordinates internal state updates. If a grade is published, the event bus ensures the "Student" UI updates without a refresh.
+The contract must not reintroduce `role` or `authority` as a hidden compatibility layer.
 
----
+### Step 5: Ability Derivation
 
-## 7. Agentic Sight (The MCP Bridge 🤖)
-The platform is designed for both Humans and AI.
-*   **MCP (Model Context Protocol)**: Exposes the platform's state and tools to AI agents.
-*   **Actionable Errors**: When an agent fails a POA check, the `SovereignError` provides an `agentAction` payload, telling the agent exactly how to recover (e.g., "Request teacher bond for Classroom X").
+CASL turns the current context into concrete abilities.
+UI components should only render what the current capacity and abilities allow.
 
----
+That means:
 
-## 8. The Watchtower (Observability 👁️)
-*   **Sentry**: Captures the "Odyssey's" failures. It receives the `DiagnosticDetails` from `SovereignError`, allowing architects to see the raw crash while the user remains safe.
-*   **PostHog**: Tracks the "Sovereignty Journey." We see how many "Wanderers" are upgrading to "2nd Class" and where the "1st Class" users are finding the most value.
+- buttons disappear when the capacity cannot act
+- tabs disappear when the perspective does not support them
+- screens remain inaccessible when no bond authorizes them
+
+## 3. Inbound Journey
+
+Inbound means a user or agent trying to change state.
+
+### Step 1: Intent
+
+The UI or agent requests an action such as create, update, invite, or publish.
+
+### Step 2: POA Boundary
+
+The request enters the POA proxy.
+The proxy inspects the contract metadata for the operation and checks the current ability context.
+
+The contract should describe the intended action and subject explicitly.
+
+Example:
+
+```ts
+{
+  action: "create",
+  subject: "Post",
+}
+```
+
+If the current bond and capacity do not satisfy the contract, the request should fail loudly.
+
+### Step 3: Payload Validation
+
+Zod validates the incoming payload.
+This prevents malformed or unexpected data from entering the system.
+
+### Step 4: Business Execution
+
+The service executes the approved change.
+It may call ZenStack-backed repositories or other bounded adapters, but it must not bypass the policy boundary.
+
+### Step 5: Persistence
+
+The final write lands in the database through the same layered defense:
+
+- contract
+- ability
+- model policy
+- RLS
+
+If any of these disagree, the action should fail instead of being bridged.
+
+## 4. Local Sync
+
+PowerSync is the offline-friendly shadow path.
+
+It should behave like a filtered mirror, not a second source of truth.
+
+Rules:
+
+- only sync rows visible to the current bond/capacity
+- never widen access beyond the server-side policy
+- queue local writes and reconcile them through the same contract path
+
+This keeps the experience smooth for users while staying restrictive for unauthorized access.
+
+## 5. Asynchronous Work
+
+Inngest handles background workflows.
+
+Examples:
+
+- onboarding steps
+- notification fan-out
+- analytics side effects
+- agent follow-up work
+
+Inngest should not own authorization.
+It can react to approved events, but the event itself must already be valid.
+
+## 6. Agentic MCP
+
+MCP is the tool surface for agents.
+
+The agent does not get privilege by being an agent.
+It gets a scoped grant.
+
+Every tool call must be checked against:
+
+- the human principal
+- the active perspective
+- the granted scope
+- the current policy
+- the allowed tool contract
+
+If an agent tries to call a tool outside its scope, the failure should be explicit and traceable.
+
+## 7. Observability
+
+Observability should tell us where leakage or mismatch happens.
+
+- Sentry captures errors and contract failures.
+- PostHog captures user behavior and funnel transitions.
+
+These signals are for healing the system, not for widening trust.
+
+## 8. Integrity Rules
+
+The data pipeline is considered healthy only when all of these are true:
+
+- the same capacity is seen by read paths, UI paths, and write guards
+- the active perspective is explicit
+- no runtime path falls back to `role` or `authority`
+- the offline mirror does not widen access
+- agent tools are delegated, scoped, and audited
+- legacy compatibility is not used to hide misalignment
+
+## 9. Alignment With SSOT
+
+This document should be read together with:
+
+- `apps/gurudevi-mobile/docs/architecture/legacy-free-agentic-mcp-ssot.md`
+- `apps/gurudevi-mobile/docs/decisions/011-legacy-free-agentic-mcp-implementation-plan.md`
+
+Those docs define the canonical identity and delegation model.
+This document defines how data flows through that model.

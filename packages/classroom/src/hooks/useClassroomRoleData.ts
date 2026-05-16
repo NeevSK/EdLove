@@ -13,9 +13,9 @@ export interface ClassroomRoleData {
 type SyncableLocalUser = {
 	profile_completed?: boolean;
 	school_id?: string | null;
-	authority?: string | null;
-	platform_authorities?: unknown;
-	school_authority?: unknown;
+	capacity?: string | null;
+	platform_capacities?: unknown;
+	school_capacity?: unknown;
 	work_capacities?: unknown;
 	tenant_kind?: unknown;
 	full_name?: string | null;
@@ -75,7 +75,7 @@ export function useClassroomRoleData(_refreshTrigger: number = 0) {
 
 		try {
 			// 2. Background Sync: Fetch from the core API boundary
-			const summary = await api["identity"].getClassroomRoleSummary(userId);
+			const summary = await api["identity"].getClassroomCapacitySummary(userId);
 			const profileCheck = { data: summary.profile };
 			const realClassCount = summary.realClassCount;
 
@@ -86,11 +86,11 @@ export function useClassroomRoleData(_refreshTrigger: number = 0) {
 					const hasSignificantChanges =
 					serverUser.profile_completed !== syncedLocalUser.profile_completed ||
 					serverUser.school_id !== syncedLocalUser.school_id ||
-					serverUser.role !== syncedLocalUser.authority ||
-					JSON.stringify(serverUser.platform_roles) !==
-						JSON.stringify(syncedLocalUser.platform_authorities) ||
-					serverUser.school_role !== syncedLocalUser.school_authority ||
-					JSON.stringify(serverUser.work_roles) !==
+					serverUser.capacity !== syncedLocalUser.capacity ||
+					JSON.stringify(serverUser.platform_capacities) !==
+						JSON.stringify(syncedLocalUser.platform_capacities) ||
+					serverUser.school_capacity !== syncedLocalUser.school_capacity ||
+					JSON.stringify(serverUser.work_capacities) !==
 						JSON.stringify(syncedLocalUser.work_capacities) ||
 					serverUser.tenant_kind !== syncedLocalUser.tenant_kind ||
 					serverUser.full_name !== syncedLocalUser.full_name ||

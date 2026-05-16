@@ -45,6 +45,9 @@ interface EditProfileModalProps {
 
 type EditState = {
   fullName: string;
+  firstName: string;
+  lastName: string;
+  username: string;
   phone: string;
   bio: string;
   loading: boolean;
@@ -68,7 +71,10 @@ function editReducer(state: EditState, action: EditAction): EditState {
     case 'INITIALIZE':
       return {
         ...state,
-        fullName: action.payload.full_name || '',
+        fullName: action.payload.display_name || '',
+        firstName: action.payload.first_name || '',
+        lastName: action.payload.last_name || '',
+        username: action.payload.username || '',
         phone: action.payload.phone || '',
         bio: action.payload.bio || '',
         selectedCapacity: action.payload.bonds?.[0]?.capacity || 'student',
@@ -87,6 +93,9 @@ function editReducer(state: EditState, action: EditAction): EditState {
 
 const initialState: EditState = {
   fullName: '',
+  firstName: '',
+  lastName: '',
+  username: '',
   phone: '',
   bio: '',
   loading: false,
@@ -111,7 +120,7 @@ export default function EditProfileModal({
   const { ability } = usePermissions();
   const [state, dispatch] = useReducer(editReducer, initialState);
 
-  const { fullName, phone, bio, loading, selectedCapacity, avatarUrl, nicNumber, indexNumber } = state;
+  const { fullName, firstName, lastName, username, phone, bio, loading, selectedCapacity, avatarUrl, nicNumber, indexNumber } = state;
 
   useEffect(() => {
     if (currentProfile) {
@@ -148,7 +157,10 @@ export default function EditProfileModal({
       const isStudent = ability.can('update', 'StudentProfile');
 
       const updates: Record<string, unknown> = {
-        ['full_name']: fullName,
+        ['display_name']: fullName,
+        ['first_name']: firstName,
+        ['last_name']: lastName,
+        ['username']: username || null,
         ['phone']: phone,
         ['bio']: bio,
         ['nic_number']: isStaff ? nicNumber : null,
@@ -255,6 +267,67 @@ export default function EditProfileModal({
                       {t('profile.tapToChange') || 'Change Avatar'}
                     </Text>
                   </Center>
+
+                  <VStack space="sm">
+                    <Text className="text-phase-text-tertiary text-[10px] font-bold uppercase tracking-[2px] ml-1">
+                      {t('profile.firstName') || 'FIRST NAME'}
+                    </Text>
+                    <Input
+                      className="h-16 rounded-3xl bg-phase-surface/30 border-phase-surface/50 px-2"
+                      isDisabled={loading}
+                    >
+                      <InputField
+                        className="text-phase-text-primary font-bold"
+                        value={firstName}
+                        onChangeText={(text) =>
+                          dispatch({ type: 'SET_FIELD', field: 'firstName', value: text })
+                        }
+                        placeholder={t('profile.firstNamePlaceholder') || 'First name'}
+                        placeholderTextColor="#9DA1A3"
+                      />
+                    </Input>
+                  </VStack>
+
+                  <VStack space="sm">
+                    <Text className="text-phase-text-tertiary text-[10px] font-bold uppercase tracking-[2px] ml-1">
+                      {t('profile.lastName') || 'LAST NAME'}
+                    </Text>
+                    <Input
+                      className="h-16 rounded-3xl bg-phase-surface/30 border-phase-surface/50 px-2"
+                      isDisabled={loading}
+                    >
+                      <InputField
+                        className="text-phase-text-primary font-bold"
+                        value={lastName}
+                        onChangeText={(text) =>
+                          dispatch({ type: 'SET_FIELD', field: 'lastName', value: text })
+                        }
+                        placeholder={t('profile.lastNamePlaceholder') || 'Last name'}
+                        placeholderTextColor="#9DA1A3"
+                      />
+                    </Input>
+                  </VStack>
+
+                  <VStack space="sm">
+                    <Text className="text-phase-text-tertiary text-[10px] font-bold uppercase tracking-[2px] ml-1">
+                      {t('profile.username') || 'USERNAME'}
+                    </Text>
+                    <Input
+                      className="h-16 rounded-3xl bg-phase-surface/30 border-phase-surface/50 px-2"
+                      isDisabled={loading}
+                    >
+                      <InputField
+                        className="text-phase-text-primary font-bold"
+                        value={username}
+                        onChangeText={(text) =>
+                          dispatch({ type: 'SET_FIELD', field: 'username', value: text })
+                        }
+                        placeholder={t('profile.handlePlaceholder') || 'your-handle'}
+                        placeholderTextColor="#9DA1A3"
+                        autoCapitalize="none"
+                      />
+                    </Input>
+                  </VStack>
 
                   <VStack space="sm">
                     <Text className="text-phase-text-tertiary text-[10px] font-bold uppercase tracking-[2px] ml-1">

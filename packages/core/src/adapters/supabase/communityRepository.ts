@@ -39,7 +39,7 @@ export class SupabaseCommunityRepository implements ICommunityRepository {
   async createPost(params: {
     post: Partial<Post>;
     userId: string;
-    authorityTier: string;
+    capacity: string;
     schoolId: string;
   }): Promise<Post> {
     const { data, error } = await this.client
@@ -48,7 +48,7 @@ export class SupabaseCommunityRepository implements ICommunityRepository {
         {
           ...params.post,
           author_id: params.userId,
-          author_tier: params.authorityTier,
+          author_tier: params.capacity,
           school_id: params.schoolId,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
@@ -87,7 +87,7 @@ export class SupabaseCommunityRepository implements ICommunityRepository {
   async getComments(postId: string, limit = 60, options: { viewDate?: string; viewScale?: any } = {}): Promise<Comment[]> {
     let query = this.client
       .from('community_comments')
-      .select('*, author:users!community_comments_author_id_fkey(full_name, avatar_url, role)')
+      .select('*, author:users!community_comments_author_id_fkey(full_name, avatar_url, capacity)')
       .eq('post_id', postId);
 
     if (options.viewDate) {
@@ -121,7 +121,7 @@ export class SupabaseCommunityRepository implements ICommunityRepository {
         content: params.content.trim(),
         is_anonymous: params.isAnonymous ?? false,
       })
-      .select('*, author:users!community_comments_author_id_fkey(full_name, avatar_url, role)')
+      .select('*, author:users!community_comments_author_id_fkey(full_name, avatar_url, capacity)')
       .single();
 
     if (error) throw new APIError('Failed to create comment', error.code, error);

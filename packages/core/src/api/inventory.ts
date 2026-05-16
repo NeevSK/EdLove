@@ -16,7 +16,7 @@ import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from './supabase';
 export const inventoryAPI = {
   /**
    * Get all inventory items for a classroom
-   * @authority read Inventory
+   * @policy read Inventory
    */
   async getAll(classroomId: string): Promise<InventoryItem[]> {
     const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
@@ -34,7 +34,7 @@ export const inventoryAPI = {
 
   /**
    * Update an inventory item
-   * @authority update Inventory
+   * @policy update Inventory
    */
   async update(id: string, updates: Partial<InventoryItem>): Promise<InventoryItem> {
     const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
@@ -53,7 +53,7 @@ export const inventoryAPI = {
 
   /**
    * Get aggregated resource needs for a school
-   * @authority read Inventory
+   * @policy read Inventory
    */
   async getSchoolResourceNeeds(schoolId: string): Promise<any[]> {
     const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
@@ -70,7 +70,7 @@ export const inventoryAPI = {
   },
   /**
    * Create an inventory request
-   * @authority create Inventory
+   * @policy create Inventory
    */
   async createRequest(vars: { item_id: string; quantity: number; notes?: string }): Promise<any> {
     const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
@@ -93,7 +93,7 @@ export const inventoryAPI = {
 
   /**
    * Get all inventory requests for a school
-   * @authority read Inventory
+   * @policy read Inventory
    */
   async getSchoolRequests(schoolId: string): Promise<any[]> {
     const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
@@ -114,3 +114,4 @@ export const inventoryAPI = {
 
 // Satisfy linter for POA metadata linking
 void operationsContract;
+

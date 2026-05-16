@@ -49,7 +49,7 @@ export interface FeatureFlags {
   isMessagingEnabled: boolean;
   isSocialShieldEnabled: boolean;
 
-  // Development / In-Progress Flags (Strictly off in Prod unless developer role)
+  // Development / In-Progress Flags (Strictly off in Prod unless developer capacity)
   isDevelopingAI: boolean;
   isDevelopingAnalyticsDashboard: boolean;
   isDevelopingVoiceNavigation: boolean;

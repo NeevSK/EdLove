@@ -1,9 +1,8 @@
 import { useMemo } from 'react';
 import { usePermissions } from '../logic/permissions/hooks/usePermissions';
-import type { AuthorityTier } from '../types/Authority';
 import { useFeatureAccess } from './useFeatureAccess';
 
-export interface AuthorityFeatures {
+export interface CapacityFeatures {
   // Visibility flags
   showClassroom: boolean;
   showCommunity: boolean;
@@ -22,15 +21,15 @@ export interface AuthorityFeatures {
 }
 
 /**
- * Hook to provide authority-specific feature sets, accounting for anonymity.
+ * Hook to provide capacity-specific feature sets, accounting for anonymity.
  * This should be the primary interface for UI-level feature gating.
  */
-export function useAuthorityFeatures(): AuthorityFeatures {
-  const { can, context } = usePermissions();
+export function useCapacityFeatures(): CapacityFeatures {
+  const { context } = usePermissions();
   const isUserAnonymous = !context.user_id;
   const { isGuest } = useFeatureAccess();
 
-  // Combining store anonymity with feature-level guest status
+  // Combining store anonymity with feature-level anonymous status
   const isAnonymous = isUserAnonymous || isGuest;
   const capacity = context.active_bond?.capacity || null;
 
@@ -73,7 +72,7 @@ export function useAuthorityFeatures(): AuthorityFeatures {
           canInteract: true,
         };
       default:
-        // Guests or undefined authority
+        // Guests or undefined capacity
         return {
           ...base,
           showManagement: false,

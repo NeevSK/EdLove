@@ -19,7 +19,7 @@ const c = initContract();
 const teacherInsightAuthority = (
   action: 'create' | 'read' | 'update' | 'delete',
   subject: string,
-) => POAMetadataSchema.parse({ authority: { action, subject } });
+) => POAMetadataSchema.parse({ policy: { action, subject } });
 
 export const teacherInsightsContract = c.router({
   listPrivateNotes: {
@@ -169,3 +169,4 @@ export const teacherInsightsContract = c.router({
     metadata: teacherInsightAuthority('read', 'TeacherInsight'),
   },
 });
+

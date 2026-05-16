@@ -1,7 +1,7 @@
 import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../../api/supabase';
 // Note: We'll use dynamic imports or passing refs for communityAPI to avoid circular deps if necessary,
 // but for now let's assume core is the base.
-import type { AuthorityTier, QRPayload } from '../../types';
+import type { Capacity, QRPayload } from '../../types';
 
 export type FlowOutcome = 'success' | 'error' | 'pending_auth' | 'redirect';
 
@@ -49,7 +49,7 @@ export class FlowResolver {
           return await FlowResolver.executeClaimInvite(
             payload.invite_code,
             payload.school_id,
-            payload.authority as AuthorityTier,
+          payload.capacity as Capacity,
             userId,
           );
 
@@ -144,16 +144,16 @@ export class FlowResolver {
       if (cls) finalClassroomId = cls.id;
     }
 
-    // Look up the user's role so we can route correctly
+    // Look up the user's capacity so we can route correctly
     const { data: userData } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('users')
-      .select('role')
+      .select('capacity')
       .eq('id', userId)
       .single();
 
-    const role = userData?.role ?? 'student';
+    const capacity = userData?.capacity ?? 'student';
 
-    if (role === 'student') {
+    if (capacity === 'student') {
       // Students join via the classroom_students membership table
       const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
         .from('classroom_students')
@@ -234,7 +234,7 @@ export class FlowResolver {
   private static async executeClaimInvite(
     inviteCode: string,
     _schoolId: string,
-    role: AuthorityTier,
+    capacity: Capacity,
     userId: string,
   ): Promise<FlowResult> {
     try {
@@ -258,7 +258,7 @@ export class FlowResolver {
 
       return {
         outcome: 'success',
-        message: `Welcome to the school as a ${role}!`,
+        message: `Welcome to the school as a ${capacity}!`,
         intent: 'GOTO_CLASSROOM',
       };
     } catch (error: any) {

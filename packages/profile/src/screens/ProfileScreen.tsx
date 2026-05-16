@@ -78,7 +78,7 @@ const IdentitySection = ({
 }: IdentitySectionProps) => {
   const { context } = usePermissions();
   const isWanderer = context.is_anonymous;
-  const capacity = context.active_bond?.capacity || context.primary_capacity || 'guest';
+  const capacity = context.active_bond?.capacity || context.primary_capacity || 'member';
 
   return (
     <Center>
@@ -259,7 +259,7 @@ export const ProfileScreen = () => {
   const { profile, loading, refreshing, refresh, logout } = useProfile();
 
   const { context } = usePermissions();
-  const capacity = context.active_bond?.capacity || context.primary_capacity || 'guest';
+  const capacity = context.active_bond?.capacity || context.primary_capacity || 'member';
   const completionCapacity = (context.active_bond?.capacity || context.primary_capacity) ?? null;
   const completionResult = useProfileCompletion(profile, completionCapacity as any);
   const bottomPadding = useBottomTabPadding();

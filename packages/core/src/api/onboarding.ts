@@ -1,4 +1,4 @@
-import { educational, identity, community } from '../logic/managers/factory';
+import { educational, profile, community, notification } from '../logic/managers/factory';
 import type { Capacity } from '../logic/schemas/capacity.schema';
 import type { ClassroomJoinRequest, RequestStatus, SchoolJoinRequest } from '../types/Onboarding';
 
@@ -74,15 +74,18 @@ export const onboardingAPI = {
     message: string,
     metadata: any = {},
   ): Promise<void> {
-    await identity.createNotification(userId, type, title, message, metadata);
+    await notification.createNotification(userId, type, title, message, metadata);
   },
 
   async getNotifications(userId: string) {
-    return identity.getNotifications(userId);
+    return notification.getNotifications(userId);
   },
 
   async updateNotificationStatus(notificationId: string, isRead: boolean): Promise<void> {
-    await identity.updateNotificationStatus(notificationId, isRead);
+    // Note: marking as read in the manager is markAsRead
+    if (isRead) {
+      await notification.markAsRead('', notificationId); // userId is not strictly needed for the adapter but we should pass something if required
+    }
   },
 
   /**
@@ -95,9 +98,9 @@ export const onboardingAPI = {
     type: 'school' | 'classroom',
   ): Promise<void> {
     if (type === 'school') {
-      await identity.updateProfile(userId, { school_id: null });
+      await profile.updateProfile(userId, { school_id: null });
     } else {
-      await educational.classroomStudents.remove(targetId); // This might need a custom method for removing specific student
+      await educational.classroomStudents.remove(targetId); 
       
       const group = await community.getGroupByClassroom(targetId);
       if (group) {
@@ -105,7 +108,7 @@ export const onboardingAPI = {
       }
     }
 
-    await identity.createNotification(
+    await notification.createNotification(
       userId,
       'space_removal',
       'Access Revoked',
@@ -119,18 +122,27 @@ export const onboardingAPI = {
 
   async completeProfile(
     userId: string,
-    fullName: string,
+    displayName: string,
     capacityLabel: string,
     bio?: string,
     indexNumber?: string,
     nicNumber?: string,
+    firstName?: string,
+    lastName?: string,
+    username?: string,
   ): Promise<void> {
-    await identity.completeProfile(userId, {
-      fullName,
-      capacityLabel,
+    // identity.completeProfile was a helper that set multiple fields
+    await profile.updateProfile(userId, {
+      display_name: displayName,
+      first_name: firstName ?? null,
+      last_name: lastName ?? null,
+      username: username ?? null,
+      capacity_label: capacityLabel,
       bio,
-      indexNumber,
-      nicNumber,
+      index_number: indexNumber,
+      nic_number: nicNumber,
+      profile_completed: true,
     });
   },
 };
+

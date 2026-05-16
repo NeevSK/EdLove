@@ -233,19 +233,19 @@ function App() {
 		setSentryUser({
 			id: currentUser.id,
 			email: currentUser.email ?? undefined,
-			username: currentUser.full_name ?? undefined,
+			username: currentUser.display_name ?? undefined,
 		});
 
 		identifyUser(currentUser.id, {
 			email: currentUser.email ?? undefined,
-			full_name: currentUser.full_name ?? undefined,
+			display_name: currentUser.display_name ?? undefined,
 			capacity: (useStore.getState() as { activeBond?: { capacity?: string } }).activeBond?.capacity ?? undefined,
 			school_id: currentUser.school_id ?? undefined,
 		});
 	}, [
 		currentUser?.id,
 		currentUser?.email,
-		currentUser?.full_name,
+		currentUser?.display_name,
 		currentUser?.school_id,
 	]);
     

@@ -21,13 +21,13 @@ jest.mock("react-i18next", () => ({
 			const map: Record<string, string> = {
 				"onboarding.nameTitle": "Welcome! What should we call you?",
 				"onboarding.namePlaceholder": "Enter your name",
-				"onboarding.roleTitle": "What is your role?",
+				"onboarding.capacityTitle": "What is your capacity?",
 				"onboarding.continue": "Continue",
 				"onboarding.back": "Back",
 				"onboarding.next": "Next",
 				"onboarding.skip": "Skip",
-				"role.teacher": "Teacher",
-				"role.student": "Student",
+				"capacity.teacher": "Teacher",
+				"capacity.student": "Student",
 			};
 			return map[key] || fallback || key;
 		},
@@ -40,7 +40,7 @@ jest.mock("@repo/core/api", () => ({
 		getState: () => ({
 			onboardingCompleted: false,
 			setTeacherName: jest.fn(),
-			setUserRole: jest.fn(),
+			setUserCapacity: jest.fn(),
 			setOnboardingCompleted: jest.fn(),
 			setJustFinishedOnboarding: jest.fn(),
 		}),

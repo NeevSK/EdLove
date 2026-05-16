@@ -92,7 +92,7 @@ function syncReducer(state: State, action: Action): State {
 }
 
 /**
- * GuestDataSyncModal - Hardened v3 implementation with State Machine.
+ * AnonymousDataSyncModal - Hardened v3 implementation with State Machine.
  */
 export default function GuestDataSyncModal({
   isOpen,
@@ -211,7 +211,7 @@ export default function GuestDataSyncModal({
             </HStack>
             <Text className="text-phase-text-secondary text-sm">
               {t('sync.skipWarningBody') ||
-                `Skipping will permanently discard ${state.summary.total} item${state.summary.total !== 1 ? 's' : ''} from your guest session. This cannot be undone.`}
+                `Skipping will permanently discard ${state.summary.total} item${state.summary.total !== 1 ? 's' : ''} from your anonymous session. This cannot be undone.`}
             </Text>
             <HStack className="gap-2">
               <SanctuaryButton
@@ -238,7 +238,7 @@ export default function GuestDataSyncModal({
           <>
             <Text className="text-phase-text-secondary text-sm">
               {t('sync.description') ||
-                'We found data from your guest session. Would you like to sync it to your new account?'}
+                'We found data from your anonymous session. Would you like to sync it to your new account?'}
             </Text>
 
             <Box className="bg-phase-surface rounded-xl border border-white/5 p-4">

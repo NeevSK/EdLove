@@ -1,120 +1,129 @@
-import { initContract } from '@ts-rest/core';
 import { z } from 'zod';
 import {
   FireJournalEntrySchema,
   MoodLogSchema,
   UserPreferencesSchema,
 } from '../logic/schemas/self.schema';
-import { POAMetadataSchema } from './contract';
+import { type SovereignContract } from './contract';
 
-const c = initContract();
+const wellbeingAuthority = (action: 'create' | 'read' | 'update' | 'delete') => ({
+  policy: { action, subject: 'Wellbeing' },
+}) as const;
+
+const userAuthority = (action: 'read' | 'update') => ({
+  policy: { action, subject: 'User' },
+}) as const;
 
 /**
- * Self (Wellbeing & Profile) Contract
- * Authoritative POA endpoints for personal state.
+ * Self (Wellbeing & Profile) Port
+ * Framework-agnostic definition of personal ecology.
  */
-export const selfContract = c.router({
+export const selfContract: SovereignContract = {
   logMood: {
-    method: 'POST',
+    method: 'post',
     path: '/self/mood',
-    body: MoodLogSchema.omit({ id: true, created_at: true }),
-    responses: {
-      201: MoodLogSchema,
+    request: {
+      body: MoodLogSchema.omit({ id: true, created_at: true }),
     },
-    metadata: POAMetadataSchema.parse({
-      authority: {
-        action: 'create',
-        subject: 'Wellbeing',
+    responses: {
+      201: {
+        schema: MoodLogSchema,
+        description: 'Mood logged successfully',
       },
-    }),
+    },
+    metadata: wellbeingAuthority('create'),
   },
+
   getMoodHistory: {
-    method: 'GET',
+    method: 'get',
     path: '/self/mood',
-    query: z.object({
-      userId: z.string(),
-      limit: z.coerce.number().optional(),
-    }),
-    responses: {
-      200: z.array(MoodLogSchema),
+    request: {
+      query: z.strictObject({
+        userId: z.uuid(),
+        limit: z.coerce.number().optional(),
+      }),
     },
-    metadata: POAMetadataSchema.parse({
-      authority: {
-        action: 'read',
-        subject: 'Wellbeing',
+    responses: {
+      200: {
+        schema: z.array(MoodLogSchema),
+        description: 'Retrieve mood history',
       },
-    }),
+    },
+    metadata: wellbeingAuthority('read'),
   },
+
   burnJournal: {
-    method: 'POST',
+    method: 'post',
     path: '/self/journal/burn',
-    body: z.object({ content: z.string() }),
-    responses: {
-      201: FireJournalEntrySchema,
+    request: {
+      body: z.strictObject({ content: z.string() }),
     },
-    metadata: POAMetadataSchema.parse({
-      authority: {
-        action: 'create',
-        subject: 'Wellbeing',
+    responses: {
+      201: {
+        schema: FireJournalEntrySchema,
+        description: 'Journal entry burned successfully',
       },
-    }),
+    },
+    metadata: wellbeingAuthority('create'),
   },
+
   getJournalHistory: {
-    method: 'GET',
+    method: 'get',
     path: '/self/journal',
-    query: z.object({
-      userId: z.string(),
-      limit: z.coerce.number().optional(),
-    }),
-    responses: {
-      200: z.array(FireJournalEntrySchema),
+    request: {
+      query: z.strictObject({
+        userId: z.uuid(),
+        limit: z.coerce.number().optional(),
+      }),
     },
-    metadata: POAMetadataSchema.parse({
-      authority: {
-        action: 'read',
-        subject: 'Wellbeing',
+    responses: {
+      200: {
+        schema: z.array(FireJournalEntrySchema),
+        description: 'Retrieve journal history',
       },
-    }),
+    },
+    metadata: wellbeingAuthority('read'),
   },
+
   getTodayMood: {
-    method: 'GET',
+    method: 'get',
     path: '/self/mood/today',
-    query: z.object({ userId: z.string() }),
-    responses: {
-      200: MoodLogSchema.nullable(),
+    request: {
+      query: z.strictObject({ userId: z.uuid() }),
     },
-    metadata: POAMetadataSchema.parse({
-      authority: {
-        action: 'read',
-        subject: 'Wellbeing',
+    responses: {
+      200: {
+        schema: MoodLogSchema.nullable(),
+        description: 'Retrieve today\'s mood log',
       },
-    }),
+    },
+    metadata: wellbeingAuthority('read'),
   },
+
   getPreferences: {
-    method: 'GET',
+    method: 'get',
     path: '/self/preferences',
     responses: {
-      200: UserPreferencesSchema,
-    },
-    metadata: POAMetadataSchema.parse({
-      authority: {
-        action: 'read',
-        subject: 'User',
+      200: {
+        schema: UserPreferencesSchema,
+        description: 'Retrieve user preferences',
       },
-    }),
+    },
+    metadata: userAuthority('read'),
   },
+
   updatePreferences: {
-    method: 'PATCH',
+    method: 'patch',
     path: '/self/preferences',
-    body: UserPreferencesSchema.partial(),
-    responses: {
-      200: UserPreferencesSchema,
+    request: {
+      body: UserPreferencesSchema.partial(),
     },
-    metadata: POAMetadataSchema.parse({
-      authority: {
-        action: 'update',
-        subject: 'User',
+    responses: {
+      200: {
+        schema: UserPreferencesSchema,
+        description: 'User preferences updated successfully',
       },
-    }),
+    },
+    metadata: userAuthority('update'),
   },
-});
+} as const;

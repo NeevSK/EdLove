@@ -49,7 +49,7 @@ export default function InviteManager({
 	const toast = useToast();
 	const [qrCodeData, setQrCodeData] = useState<{
 		code: string;
-		role: string;
+		capacity: string;
 	} | null>(null);
 	const loadInviteCodes = async () => {
 		setIsLoading(true);
@@ -67,12 +67,12 @@ export default function InviteManager({
 	useEffect(() => {
 		loadInviteCodes();
 	}, [loadInviteCodes]);
-	const handleGenerateCode = async (role: UserRole) => {
+	const handleGenerateCode = async (capacity: UserRole) => {
 		setIsGenerating(true);
 		setError(null);
 		try {
 			hapticLight();
-			await api["school"].generateInviteCode(schoolId, role, userId);
+			await api["school"].generateInviteCode(schoolId, capacity, userId);
 			await loadInviteCodes();
 		} catch (err: any) {
 			const apiError = handleAPIError(err, true);
@@ -93,8 +93,8 @@ export default function InviteManager({
 			handleAPIError(err);
 		}
 	};
-	const getRoleConfig = (role: string) => {
-		switch (role) {
+	const getCapacityConfig = (capacity: string) => {
+		switch (capacity) {
 			case "teacher":
 				return {
 					color: "text-phase-interactive",
@@ -270,7 +270,7 @@ export default function InviteManager({
 						) : (
 							<VStack className="gap-5">
 								{inviteCodes.map((invite) => {
-									const config = getRoleConfig(invite.role);
+									const config = getCapacityConfig(invite.capacity);
 									return (
 										<Box
 											key={invite.code}
@@ -330,7 +330,7 @@ export default function InviteManager({
 														hapticLight();
 														setQrCodeData({
 															code: invite.code,
-															role: invite.role,
+															capacity: invite.capacity,
 														});
 													}}
 													className="w-12 h-12 rounded-[18px] bg-phase-interactive items-center justify-center shadow-md active:scale-95 transition-all"
@@ -358,7 +358,7 @@ export default function InviteManager({
 							</ModalHeading>
 							{qrCodeData && (
 								<Text className="text-[11px] font-bold text-phaseText-muted uppercase tracking-[2px]">
-									{qrCodeData.role} • IDENTITY VERIFIED
+									{qrCodeData.capacity} • IDENTITY VERIFIED
 								</Text>
 							)}
 						</VStack>
@@ -371,7 +371,7 @@ export default function InviteManager({
 										value={QRBuilder.invite(
 											qrCodeData.code,
 											schoolId,
-											qrCodeData.role,
+											qrCodeData.capacity,
 										)}
 										size={220}
 										color="#000000"
@@ -387,7 +387,7 @@ export default function InviteManager({
 										{qrCodeData.code}
 									</Text>
 									<Text className="text-[10px] font-black text-phaseText-muted uppercase tracking-[3px] opacity-60">
-										Scan to establish authority
+										Scan to establish capacity
 									</Text>
 								</VStack>
 							</VStack>

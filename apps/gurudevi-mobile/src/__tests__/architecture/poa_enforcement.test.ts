@@ -13,7 +13,7 @@ describe("POA enforcement", () => {
 		jest.restoreAllMocks();
 	});
 
-	it("throws Forbidden before classroomsAPI.create reaches Supabase without authority", async () => {
+	it("throws Forbidden before classroomsAPI.create reaches Supabase without capacity", async () => {
 		jest.spyOn(useStore, "getState").mockReturnValue({
 			user: null,
 			schoolType: null,
@@ -52,8 +52,8 @@ describe("POA enforcement", () => {
 			user: {
 				id: TEACHER_ID,
 				email: "teacher@example.com",
-				roles: ["teacher"],
-				authority: "teacher",
+				capacitys: ["teacher"],
+				capacity: "teacher",
 				school_id: SCHOOL_ID,
 				is_anonymous: false,
 			},

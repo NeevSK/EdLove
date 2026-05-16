@@ -172,57 +172,9 @@ const AuthScreen = memo(({ onSuccess, onBack, initialMode, Scanner }: AuthScreen
     dispatch({ type: 'SET_USER', user: (myProfile as unknown as User) || null });
   }, [myProfile]);
 
-  // ─── Browser callback handling ─────────────────────────────────────────────
-  useEffect(() => {
-    // Only run on web to avoid conflicts with deep linking handlers in Expo go
-    if (coreRuntime.device.getMetadata().platform !== 'web') return;
-
-    const getUrlParam = (name: string) => {
-      const search = new URLSearchParams(window.location.search);
-      if (search.has(name)) return search.get(name);
-      const hashSearch = new URLSearchParams(window.location.hash.substring(1));
-      return hashSearch.get(name);
-    };
-    const errorCode = getUrlParam('error_code');
-    const errorDesc = getUrlParam('error_description');
-    if (!errorCode) return;
-
-    if (errorCode === 'identity_already_exists') {
-      dispatch({ type: 'SET_MODE', isSignUp: false, showEmailAuth: true });
-      setTimeout(() => {
-        showToast({
-          message:
-            t('auth.identityAlreadyExists') ||
-            'This account already exists. Please sign in instead.',
-          type: 'error',
-        });
-      }, 300);
-      try {
-        const cleanUrl = window.location.origin + window.location.pathname;
-        window.history.replaceState(null, '', cleanUrl);
-      } catch (_) { /* ignore */ }
-    } else if (errorCode) {
-      setTimeout(() => {
-        showToast({
-          message: decodeURIComponent(errorDesc ?? errorCode).replace(/\+/g, ' '),
-          type: 'error',
-        });
-      }, 300);
-      try {
-        const cleanUrl = window.location.origin + window.location.pathname;
-        window.history.replaceState(null, '', cleanUrl);
-      } catch (_) { /* ignore */ }
-    }
-  }, [t, showToast]);
-
-  const isRealUser = currentUser?.email && !currentUser.is_anonymous;
-  const shouldHideGeneralAuth = isRealUser;
-
   // ─── Native redirect URI (used by expo-auth-session) ───────────────────────
   const getRedirectUrl = useCallback(() => {
-    if (coreRuntime.device.getMetadata().platform === 'web') {
-      return window.location.origin;
-    }
+    // Mobile always uses deep link scheme
     return AuthSession.makeRedirectUri({
       scheme: 'gurudevi',
       path: 'auth-callback',
@@ -233,53 +185,13 @@ const AuthScreen = memo(({ onSuccess, onBack, initialMode, Scanner }: AuthScreen
     async (provider: 'google') => {
       dispatch({ type: 'SET_LOADING', loading: true });
       hapticLight();
+      showToast({ message: 'Opening Google sign-in...', type: 'info', duration: 2000 });
 
       const redirectUrl = getRedirectUrl();
       const session = await authAPI.getAuthSession().catch(() => null);
       const isAnon = session?.user?.is_anonymous || !session?.user?.email;
 
-      // ── Web platform: classic browser-redirect flow ───────────
-      if (coreRuntime.device.getMetadata().platform === 'web') {
-        if (isAnon && session?.user) {
-          try {
-            await authAPI.linkOAuthIdentity(provider, redirectUrl);
-          } catch (error: any) {
-            if (error.message.includes('already linked')) {
-              showToast({
-                message:
-                  t('auth.alreadyLinked') ||
-                  'This Google account is already linked to another sanctuary soul. Please login instead.',
-                type: 'error',
-              });
-            } else {
-              handleAPIError(error);
-            }
-          }
-          dispatch({ type: 'SET_LOADING', loading: false });
-          return;
-        }
-
-        try {
-          await authAPI.signInWithOAuth(provider, redirectUrl);
-        } catch (error: unknown) {
-          console.error('Email Auth Error:', error);
-          hapticError();
-          dispatch({ type: 'SET_LOADING', loading: false });
-
-          const apiErrors = handleAPIError(error);
-          if (apiErrors) {
-            dispatch({ type: 'SET_ERRORS', errors: { message: apiErrors.message } });
-          } else {
-            showToast({
-              message: (error as Error)?.message || t('auth.errorGeneric'),
-              type: 'error',
-            });
-          }
-        }
-        return;
-      }
-
-      // ── Native platform: use expo-auth-session ───
+      // ── Native platform logic: use expo-auth-session ───
       try {
         const oauthOptions =
           isAnon && session?.user
@@ -290,7 +202,7 @@ const AuthScreen = memo(({ onSuccess, onBack, initialMode, Scanner }: AuthScreen
 
         if (!oauthUrl) {
           showToast({
-            message: 'Could not reach Google sign-in. Please try again.',
+            message: 'Could not reach Google sign-in. Please check your connection.',
             type: 'error',
           });
           dispatch({ type: 'SET_LOADING', loading: false });
@@ -305,7 +217,13 @@ const AuthScreen = memo(({ onSuccess, onBack, initialMode, Scanner }: AuthScreen
           const access_token = params['access_token'] || url.hash.match(/access_token=([^&]+)/)?.[1];
           const refresh_token =
             params['refresh_token'] || url.hash.match(/refresh_token=([^&]+)/)?.[1];
+            
           if (!access_token || !refresh_token) {
+            console.error('Missing tokens in auth response');
+            showToast({
+              message: 'Authentication failed: Could not retrieve secure tokens. Please try again.',
+              type: 'error',
+            });
             dispatch({ type: 'SET_LOADING', loading: false });
             return;
           }
@@ -314,6 +232,8 @@ const AuthScreen = memo(({ onSuccess, onBack, initialMode, Scanner }: AuthScreen
 
           hapticSuccess();
           const internalId = await identityAPI.getMyInternalId();
+          
+          // Apply pending school invite if any
           if (internalId) {
             const pendingInvite = await coreRuntime.storage.getItem('pending_invite');
             if (pendingInvite) {
@@ -334,6 +254,7 @@ const AuthScreen = memo(({ onSuccess, onBack, initialMode, Scanner }: AuthScreen
               }
             }
           }
+
           const hasGuestData = await GuestDataSync.hasGuestData();
           if (isAnon && hasGuestData && internalId) {
             dispatch({
@@ -343,6 +264,7 @@ const AuthScreen = memo(({ onSuccess, onBack, initialMode, Scanner }: AuthScreen
             });
             dispatch({ type: 'SET_SYNC_MODAL', isOpen: true });
           } else {
+            showToast({ message: 'Success! Welcome back to the sanctuary.', type: 'success' });
             if (onSuccess) onSuccess();
           }
         }
@@ -355,7 +277,11 @@ const AuthScreen = memo(({ onSuccess, onBack, initialMode, Scanner }: AuthScreen
             type: 'error',
           });
         } else {
-          handleAPIError(error);
+          const apiError = handleAPIError(error);
+          showToast({
+            message: (apiError as any)?.message || 'Google sign-in failed. Please try again.',
+            type: 'error',
+          });
         }
       }
       dispatch({ type: 'SET_LOADING', loading: false });
@@ -380,20 +306,21 @@ const AuthScreen = memo(({ onSuccess, onBack, initialMode, Scanner }: AuthScreen
     dispatch({ type: 'SET_LOADING', loading: true });
     try {
       if (isSignUp) {
+        showToast({ message: 'Creating your identity...', type: 'info', duration: 2000 });
         const currentSession = await authAPI.getAuthSession().catch(() => null);
         const isAnon = currentSession?.user?.is_anonymous || !currentSession?.user?.email;
 
         if (isAnon && currentSession?.user) {
           const existingName =
-            (currentUser?.full_name && String(currentUser.full_name).trim()) || 'Sanctuary User';
+            (currentUser?.display_name && String(currentUser.display_name).trim()) || 'Sanctuary User';
           await authAPI.linkAnonymousToEmail(email, password, existingName, 'teacher' as Capacity);
 
           const internalId = await identityAPI.getMyInternalId();
 
           hapticSuccess();
-          showToast({ message: t('auth.signupSuccess'), type: 'success' });
+          showToast({ message: t('auth.signupSuccess') || 'Welcome! Your identity is now secured.', type: 'success' });
 
-          // Check for guest data to sync
+          // Check for anonymous data to sync
           const hasGuestData = await GuestDataSync.hasGuestData();
           if (hasGuestData && internalId) {
             dispatch({
@@ -408,9 +335,10 @@ const AuthScreen = memo(({ onSuccess, onBack, initialMode, Scanner }: AuthScreen
         } else {
           await authAPI.signUp(email, password);
           hapticSuccess();
-          showToast({ message: t('auth.checkEmail'), type: 'success' });
+          showToast({ message: t('auth.checkEmail') || 'Identity initiated. Please check your email to confirm.', type: 'success' });
         }
       } else {
+        showToast({ message: 'Welcome back! Reconnecting...', type: 'info', duration: 2000 });
         await authAPI.signIn(email, password);
 
         hapticSuccess();
@@ -435,17 +363,24 @@ const AuthScreen = memo(({ onSuccess, onBack, initialMode, Scanner }: AuthScreen
             }
           }
         }
+        showToast({ message: 'Access granted to your sanctuary.', type: 'success', duration: 2000 });
         if (onSuccess) onSuccess();
       }
     } catch (error: any) {
       hapticError();
       const apiError = handleAPIError(error);
+      const baseMsg = typeof apiError === 'string'
+        ? apiError
+        : (apiError as any).message || 'An authentication error occurred';
+      
+      const guidedMsg = isSignUp 
+        ? `${baseMsg}. If you already have an account, try logging in instead.`
+        : `${baseMsg}. Please check your credentials and connection.`;
+
       showToast({
-        message:
-          typeof apiError === 'string'
-            ? apiError
-            : (apiError as any).message || 'An authentication error occurred',
+        message: guidedMsg,
         type: 'error',
+        duration: 5000,
       });
     } finally {
       dispatch({ type: 'SET_LOADING', loading: false });
@@ -493,15 +428,19 @@ const AuthScreen = memo(({ onSuccess, onBack, initialMode, Scanner }: AuthScreen
       });
       return;
     }
-    const result = await FlowResolver.resolveQR(JSON.parse(data), userId);
-    if (result.outcome === 'error') {
-      showToast({
-        message: result.message || 'Unrecognized QR',
-        type: 'error',
-      });
-      return;
+    try {
+      const result = await FlowResolver.resolveQR(JSON.parse(data), userId);
+      if (result.outcome === 'error') {
+        showToast({
+          message: result.message || 'Unrecognized QR',
+          type: 'error',
+        });
+        return;
+      }
+      showToast({ message: result.message, type: 'success' });
+    } catch (e) {
+      showToast({ message: 'Invalid QR code format', type: 'error' });
     }
-    showToast({ message: result.message, type: 'success' });
   }, [showToast]);
 
   const handleSyncComplete = useCallback(() => {
@@ -611,45 +550,43 @@ const AuthScreen = memo(({ onSuccess, onBack, initialMode, Scanner }: AuthScreen
                 </VStack>
               </Box>
 
-              {!shouldHideGeneralAuth && (
-                <HStack
-                  className="p-1 rounded-full items-center self-center border border-phase-border"
-                  style={{ backgroundColor: `${accent.muted}20` }}
+              <HStack
+                className="p-1 rounded-full items-center self-center border border-phase-border"
+                style={{ backgroundColor: `${accent.muted}20` }}
+              >
+                <Button
+                  variant="ghost"
+                  className="px-6 py-2 rounded-full h-auto"
+                  style={{
+                    backgroundColor: isSignUp ? accent.action : 'transparent',
+                  }}
+                  onPress={handleSignUpMode}
                 >
-                  <Button
-                    variant="ghost"
-                    className="px-6 py-2 rounded-full h-auto"
-                    style={{
-                      backgroundColor: isSignUp ? accent.action : 'transparent',
-                    }}
-                    onPress={handleSignUpMode}
+                  <ButtonText
+                    className="text-sm font-bold"
+                    style={{ color: isSignUp ? '#000' : text.secondary }}
                   >
-                    <ButtonText
-                      className="text-sm font-bold"
-                      style={{ color: isSignUp ? '#000' : text.secondary }}
-                    >
-                      {t('auth.signup') || 'Sign Up'}
-                    </ButtonText>
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    className="px-6 py-2 rounded-full h-auto"
-                    style={{
-                      backgroundColor: !isSignUp ? accent.action : 'transparent',
-                    }}
-                    onPress={handleLoginMode}
+                    {t('auth.signup') || 'Sign Up'}
+                  </ButtonText>
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="px-6 py-2 rounded-full h-auto"
+                  style={{
+                    backgroundColor: !isSignUp ? accent.action : 'transparent',
+                  }}
+                  onPress={handleLoginMode}
+                >
+                  <ButtonText
+                    className="text-sm font-bold"
+                    style={{ color: !isSignUp ? '#000' : text.secondary }}
                   >
-                    <ButtonText
-                      className="text-sm font-bold"
-                      style={{ color: !isSignUp ? '#000' : text.secondary }}
-                    >
-                      {t('auth.login') || 'Log In'}
-                    </ButtonText>
-                  </Button>
-                </HStack>
-              )}
+                    {t('auth.login') || 'Log In'}
+                  </ButtonText>
+                </Button>
+              </HStack>
 
-              {!showEmailAuth && !shouldHideGeneralAuth && (
+              {!showEmailAuth && (
                 <BreathAnimation delay={400}>
                   <VStack className="gap-5">
                     <VStack className="gap-1">
@@ -770,7 +707,7 @@ const AuthScreen = memo(({ onSuccess, onBack, initialMode, Scanner }: AuthScreen
                 </BreathAnimation>
               )}
 
-              {!shouldHideGeneralAuth && !showEmailAuth && !isSignUp && (
+              {!showEmailAuth && !isSignUp && (
                 <Box
                   className="px-4 py-3 rounded-xl border"
                   style={{
@@ -779,7 +716,7 @@ const AuthScreen = memo(({ onSuccess, onBack, initialMode, Scanner }: AuthScreen
                   }}
                 >
                   <Text className="text-phase-secondary text-sm">
-                    You can still continue gently as a guest and create an account later when you
+                    You can continue as an anonymous explorer and create an account later when you
                     want your sanctuary identity to persist.
                   </Text>
                 </Box>

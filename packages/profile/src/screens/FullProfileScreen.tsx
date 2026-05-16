@@ -86,7 +86,7 @@ export const FullProfileScreen = ({ route, navigation }: FullProfileProps) => {
   const [showThuthimalModal, setShowThuthimalModal] = useState(false);
 
   const currentUserId = currentUser?.id;
-  const currentUserName = currentUser?.full_name || currentUser?.email || '';
+  const currentUserName = currentUser?.display_name || currentUser?.email || '';
 
   const barOpacity = useSharedValue(1);
   const barAnimStyle = useAnimatedStyle(() => ({
@@ -166,10 +166,10 @@ export const FullProfileScreen = ({ route, navigation }: FullProfileProps) => {
           </Center>
 
           <Center className="mt-4">
-            <AvatarDisplay
-              userId={profile.id}
-              avatarUrl={profile.avatar_url}
-              fullName={profile.full_name}
+                <AvatarDisplay
+                  userId={profile.id}
+                  avatarUrl={profile.avatar_url}
+                  fullName={profile.display_name}
               size={80}
               editable={!isOtherProfile}
               onAvatarSelected={async (localUri) => {
@@ -233,9 +233,25 @@ export const FullProfileScreen = ({ route, navigation }: FullProfileProps) => {
                 <EditableItem
                   icon={UserIcon}
                   label={t('profile.fullName')}
-                  value={profile.full_name}
-                  field="full_name"
+                  value={profile.display_name}
+                  field="display_name"
                   placeholder="Enter full name"
+                  onSave={isOtherProfile ? async () => {} : handleSave}
+                />
+                <EditableItem
+                  icon={UserIcon}
+                  label={t('profile.firstName') || 'First name'}
+                  value={profile.first_name ?? undefined}
+                  field="first_name"
+                  placeholder="Enter first name"
+                  onSave={isOtherProfile ? async () => {} : handleSave}
+                />
+                <EditableItem
+                  icon={UserIcon}
+                  label={t('profile.lastName') || 'Last name'}
+                  value={profile.last_name ?? undefined}
+                  field="last_name"
+                  placeholder="Enter last name"
                   onSave={isOtherProfile ? async () => {} : handleSave}
                 />
                 <EditableItem
@@ -375,7 +391,7 @@ export const FullProfileScreen = ({ route, navigation }: FullProfileProps) => {
             <Box style={{ width: cardWidth }}>
               <ContactLinktree
                 links={socialLinks || []}
-                userName={profile.full_name}
+                userName={profile.display_name}
                 bio={profile.bio ?? undefined}
                 userId={profile.id}
                 isOwnProfile={!isOtherProfile}
@@ -427,7 +443,7 @@ export const FullProfileScreen = ({ route, navigation }: FullProfileProps) => {
           isOpen={showThuthimalModal}
           onClose={() => setShowThuthimalModal(false)}
           recipientId={profile.id}
-          recipientName={profile.full_name}
+          recipientName={profile.display_name}
           recipientTier={profileRole}
           giverId={currentUserId}
           giverName={currentUserName}

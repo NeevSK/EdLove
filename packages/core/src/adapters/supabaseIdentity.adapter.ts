@@ -4,6 +4,8 @@ import { User } from '../types/User';
 import { IIdentityPort } from '../logic/ports/identity.port';
 import { APIError } from '../types/API';
 import { storage } from '../lib/storage';
+import { Identity } from '../api/identity.generated';
+
 /**
  * SupabaseIdentityAdapter: The bridge between Supabase Auth/DB and the Identity Port.
  * This adapter maps legacy RBAC fields and relational ReBAC tables into the unified Bond model.
@@ -61,7 +63,11 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
     }
   }
 
-  async getMyInternalId(): Promise<string | null> {
+  /**
+   * [LOUD-FAILURE] Implementation of identifyActiveCitizen.
+   * Resolves ID, Profile, and Active Perspective into a unified Identity object.
+   */
+  async identifyActiveCitizen(): Promise<Identity | null> {
     const { data } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.auth.getUser();
     const user = data?.user;
     if (!user) {
@@ -74,31 +80,45 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
       this.cachedInternalId = null;
     }
 
-    if (this.cachedInternalId) return this.cachedInternalId;
-
-    const internalId = await this.resolveInternalId('__INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__', authUid);
-    this.cachedAuthUid = authUid;
+    let internalId = this.cachedInternalId;
 
     if (!internalId) {
-      const { data: legacyUser } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
-        .from('users')
-        .select('id')
-        .eq('id', authUid)
-        .maybeSingle();
+      internalId = await this.resolveInternalId('__INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__', authUid);
+      this.cachedAuthUid = authUid;
 
-      if (legacyUser) {
-        await this.linkIdentity(legacyUser.id, '__INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__', authUid);
-        this.cachedInternalId = legacyUser.id;
-        return legacyUser.id;
+      if (!internalId) {
+        const { data: legacyUser } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+          .from('users')
+          .select('id')
+          .eq('id', authUid)
+          .maybeSingle();
+
+        if (legacyUser) {
+          await this.linkIdentity(legacyUser.id, '__INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__', authUid);
+          internalId = legacyUser.id;
+        } else {
+          await this.linkIdentity(authUid, '__INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__', authUid);
+          internalId = authUid;
+        }
       }
-
-      await this.linkIdentity(authUid, '__INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__', authUid);
-      this.cachedInternalId = authUid;
-      return authUid;
+      this.cachedInternalId = internalId;
     }
 
-    this.cachedInternalId = internalId;
-    return internalId;
+    if (!internalId) return null;
+
+    // Resolve full identity context
+    const profile = await this.getProfile(internalId);
+    const perspective = await this.getActivePerspective();
+
+    if (!perspective) return null;
+
+    return {
+      id: internalId,
+      email: profile.email || '',
+      name: profile.display_name || undefined,
+      active_bond: perspective.active_bond,
+      available_bonds: perspective.available_bonds,
+    };
   }
 
   async getProfile(userId: string): Promise<User> {
@@ -139,10 +159,10 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
   }
 
   async hasCapacity(capacity: Capacity, contextId?: string): Promise<boolean> {
-    const userId = await this.getMyInternalId();
-    if (!userId) return false;
+    const identity = await this.identifyActiveCitizen();
+    if (!identity) return false;
 
-    const bonds = await this.getBonds(userId);
+    const bonds = await this.getBonds(identity.id);
     
     if (contextId) {
       return bonds.some(b => b.entity_id === contextId && b.capacity === capacity);
@@ -154,8 +174,20 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
   async getActivePerspective(): Promise<Perspective | null> {
     if (this.activePerspective) return this.activePerspective;
 
-    const userId = await this.getMyInternalId();
-    if (!userId) return null;
+    const { data } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.auth.getUser();
+    if (!data?.user) return null;
+    
+    // We need the internal ID to fetch bonds
+    // Use a local ID lookup to avoid infinite recursion if identifyActiveCitizen calls getActivePerspective
+    let userId = this.cachedInternalId;
+    if (!userId) {
+       const authUid = data.user.id;
+       userId = await this.resolveInternalId('__INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__', authUid);
+       if (!userId) {
+          // Fallback to authUid if not linked yet
+          userId = authUid;
+       }
+    }
 
     const bonds = await this.getBonds(userId);
     if (bonds.length === 0) return null;
@@ -185,8 +217,9 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
   }
 
   async switchPerspective(entityId: string, capacity: Capacity): Promise<void> {
-    const userId = await this.getMyInternalId();
-    if (!userId) throw new Error('Not authenticated');
+    const identity = await this.identifyActiveCitizen();
+    if (!identity) throw new Error('Not authenticated');
+    const userId = identity.id;
 
     const bonds = await this.getBonds(userId);
     const targetBond = bonds.find(b => b.entity_id === entityId && b.capacity === capacity);
@@ -203,8 +236,9 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
   }
 
   async createInitialBond(orientation: Capacity, context: Record<string, any>): Promise<void> {
-    const userId = await this.getMyInternalId();
-    if (!userId) throw new Error('Not authenticated');
+    const identity = await this.identifyActiveCitizen();
+    if (!identity) throw new Error('Not authenticated');
+    const userId = identity.id;
 
     // 1. Resolve current state (Identity elevation level)
     const { data: profile } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
@@ -238,9 +272,11 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
     const { error: profileError } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('users')
       .update({
-        full_name: context['fullName'] || 'Gurudevi User',
-        onboarding_completed: true,
-        onboarding_completed_at: new Date().toISOString(),
+        display_name: context['displayName'] || 'Gurudevi User',
+        first_name: context['firstName'] ?? null,
+        last_name: context['lastName'] ?? null,
+        username: context['username'] ?? null,
+        identity_state: isSupabaseAnonymous ? 'anonymous' : 'identifying', // Transitioning state
         school_id: schoolId,
         citizenship,
       })
@@ -249,20 +285,20 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
     if (profileError) throw new APIError('Failed to update profile during onboarding', profileError.code, profileError);
 
     // Create the formal Bond
-    // 1. Wanderer/Guest (Anonymous) -> GUEST bond to GLOBAL
+    // 1. Wanderer/Anonymous -> PLATFORM bond to GLOBAL
     // 2. 2nd Class Citizen (Authenticated, no school) -> PERSONAL bond to Personal Workspace
     // 3. 1st Class Citizen (Authenticated, has school) -> SCHOOL bond
     
-    const entity_type = citizenship === 'FIRST_CLASS' ? 'SCHOOL' : (citizenship === 'SECOND_CLASS' ? 'PERSONAL' : 'GUEST');
+    const entity_type = citizenship === 'FIRST_CLASS' ? 'SCHOOL' : (citizenship === 'SECOND_CLASS' ? 'PERSONAL' : 'PLATFORM');
     const entity_id = schoolId || (citizenship === 'WANDERER' ? 'GLOBAL' : 'PERSONAL_WORKSPACE');
 
-    const { error: bondError } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('bonds').insert({
+    const { error: bondError } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('bonds').upsert({
       user_id: userId,
       entity_id,
       entity_type,
       capacity: orientation,
       metadata: context['metadata'] || {},
-    });
+    }, { onConflict: 'user_id,entity_id,capacity' });
 
     if (bondError) throw new APIError('Failed to create formal bond', bondError.code, bondError);
 
@@ -271,7 +307,16 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
   }
 
   async updateProfile(userId: string, updates: Partial<User>): Promise<void> {
-    const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('users').update(updates).eq('id', userId);
+    const normalizedUpdates: Record<string, unknown> = { ...updates };
+    if ('first_name' in normalizedUpdates || 'last_name' in normalizedUpdates || 'display_name' in normalizedUpdates) {
+      const firstName = typeof normalizedUpdates['first_name'] === 'string' ? normalizedUpdates['first_name'] : null;
+      const lastName = typeof normalizedUpdates['last_name'] === 'string' ? normalizedUpdates['last_name'] : null;
+      const displayName = typeof normalizedUpdates['display_name'] === 'string' ? normalizedUpdates['display_name'] : '';
+      const resolvedName = displayName || [firstName, lastName].filter(Boolean).join(' ') || 'Gurudevi User';
+      normalizedUpdates['display_name'] = resolvedName;
+    }
+
+    const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('users').update(normalizedUpdates).eq('id', userId);
     if (error) throw new APIError('Failed to update profile', error.code, error);
   }
 
@@ -291,44 +336,16 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
     if (error) throw new APIError('Failed to unblock user', error.code, error);
   }
 
-  async createNotification(
-    userId: string,
-    type: string,
-    title: string,
-    message: string,
-    metadata: any = {},
-  ): Promise<void> {
-    const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
-      .from('notifications')
-      .insert([{ user_id: userId, type, title, message, metadata }]);
-    if (error) throw new APIError('Failed to create notification', error.code, error);
-  }
-
-  async getNotifications(userId: string): Promise<any[]> {
-    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
-      .from('notifications')
-      .select('*')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false });
-
-    if (error) throw new APIError('Failed to fetch notifications', error.code, error);
-    return data || [];
-  }
-
-  async updateNotificationStatus(notificationId: string, isRead: boolean): Promise<void> {
-    const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
-      .from('notifications')
-      .update({ is_read: isRead })
-      .eq('id', notificationId);
-    if (error) throw new APIError('Failed to update notification status', error.code, error);
-  }
-
   async completeProfile(userId: string, data: any): Promise<void> {
     const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('users')
       .update({
-        full_name: data.fullName,
-        authority_label: data.capacityLabel,
+        display_name: data.displayName || [data.firstName, data.lastName].filter(Boolean).join(' ') || 'Gurudevi User',
+        first_name: data.firstName ?? null,
+        last_name: data.lastName ?? null,
+        username: data.username ?? null,
+        identity_state: 'onboarded',
+        capacity_label: data.capacityLabel,
         bio: data.bio,
         index_number: data.indexNumber,
         nic_number: data.nicNumber,
@@ -338,34 +355,16 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
 
     if (error) throw new APIError('Failed to complete profile', error.code, error);
   }
-
-  async registerPushToken(userId: string, token: string, deviceId: string, platform: string): Promise<void> {
-    const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('user_push_tokens').upsert(
-      {
-        user_id: userId,
-        push_token: token,
-        device_id: deviceId,
-        platform,
-        last_seen_at: new Date().toISOString(),
-      },
-      {
-        onConflict: 'device_id',
-      },
-    );
-
-    if (error) {
-      throw new APIError('Failed to register push token', error.code, error);
-    }
-  }
-
-  async unregisterPushToken(_userId: string, deviceId: string): Promise<void> {
+  async completeOnboarding(userId: string): Promise<void> {
     const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
-      .from('user_push_tokens')
-      .delete()
-      .eq('device_id', deviceId);
+      .from('users')
+      .update({
+        onboarding_completed: true,
+        onboarding_completed_at: new Date().toISOString(),
+        identity_state: 'onboarded',
+      })
+      .eq('id', userId);
 
-    if (error) {
-      throw new APIError('Failed to unregister push token', error.code, error);
-    }
+    if (error) throw new APIError('Failed to complete onboarding', error.code, error);
   }
 }

@@ -24,7 +24,7 @@ const CARD_HEIGHT = 220;
  */
 export interface IdentityData {
   id: string;
-  full_name: string;
+  display_name?: string;
   username?: string;
   capacity: string;
   avatar_url?: string;
@@ -142,11 +142,7 @@ export default function IdentityCard({
     <Center className="h-full">
       <Box className="p-4 bg-white rounded-xl">
         <QRCodeGenerator
-          value={
-            data.id
-              ? QRBuilder.userInvite(data.id, data.capacity || 'unknown', data.username || undefined)
-              : 'gurudevi-guest'
-          }
+          value={data.id ? QRBuilder.userInvite(data.id, data.capacity || 'member', data.username || undefined) : 'anonymous-user'}
           size={120}
         />
       </Box>
@@ -182,7 +178,7 @@ export default function IdentityCard({
           <HStack className="items-center h-full p-6 gap-4">
             <UserAvatar
               avatarUrl={data.avatar_url}
-              fullName={data.full_name}
+              fullName={data.display_name || 'Anonymous User'}
               fallbackEmoji={roleContext.emoji}
               size={80}
             />
@@ -195,7 +191,7 @@ export default function IdentityCard({
                 <roleContext.icon size={14} className={roleContext.colorClass} />
               </HStack>
               <Text className="text-xl font-bold text-phase-text-primary" numberOfLines={1}>
-                {data.full_name || 'Guest User'}
+                {data.display_name || 'Anonymous User'}
               </Text>
               <Text className="text-xs text-phase-text-secondary" numberOfLines={1}>
                 {data.school_name || t('profile.noSchoolConnected')}

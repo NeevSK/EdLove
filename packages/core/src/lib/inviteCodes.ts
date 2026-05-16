@@ -9,7 +9,7 @@ export interface InviteCodeData {
   id: string;
   school_id: string;
   code: string;
-  role: 'teacher' | 'student' | 'principal';
+  capacity: 'teacher' | 'student' | 'principal';
   school_name?: string;
   school_type?: string;
   is_active: boolean;
@@ -18,7 +18,7 @@ export interface InviteCodeData {
 }
 
 /**
- * Validate invite code format
+ * Validate invite code format.
  * Format: GURU-ABC123-TEACH or GURU-ABC123-STUDY
  */
 export function validateInviteCodeFormat(code: string): boolean {
@@ -50,7 +50,7 @@ export async function validateInviteCode(code: string): Promise<{
         id,
         school_id,
         code,
-        role,
+        capacity,
         is_active,
         uses_count,
         max_uses,
@@ -143,13 +143,13 @@ export async function generateInviteCodesForSchool(
       {
         school_id: schoolId,
         code: teacherCode,
-        role: 'teacher',
+        capacity: 'teacher',
         created_by: createdBy,
       },
       {
         school_id: schoolId,
         code: studentCode,
-        role: 'student',
+        capacity: 'student',
         created_by: createdBy,
       },
     ]);
@@ -170,16 +170,16 @@ export async function generateInviteCodesForSchool(
  * Generate a random invite code (client-side)
  * Format: GURU-ABC123-TEACH
  */
-function generateInviteCode(role: 'teacher' | 'student'): string {
-  const suffix = role === 'teacher' ? 'TEACH' : 'STUDY';
+function generateInviteCode(capacity: 'teacher' | 'student'): string {
+  const suffix = capacity === 'teacher' ? 'TEACH' : 'STUDY';
   const randomPart = generateRandomString(6).toUpperCase();
   return `GURU-${randomPart}-${suffix}`;
 }
 
 /**
- * Extract role from invite code
+ * Extract capacity from invite code
  */
-export function getRoleFromCode(code: string): 'teacher' | 'student' | null {
+export function getCapacityFromCode(code: string): 'teacher' | 'student' | null {
   if (code.endsWith('-TEACH')) return 'teacher';
   if (code.endsWith('-STUDY')) return 'student';
   return null;

@@ -24,13 +24,13 @@ export function useSchoolInvites(schoolId: string) {
 	}, [loadInviteCodes]);
 
 	const generateCode = async (
-		role: "teacher" | "principal",
+		capacity: "teacher" | "principal",
 		userId: string,
 	) => {
 		if (!schoolId || !userId) return;
 		setGenerating(true);
 		try {
-			const code = await invitesAPI.generateInviteCode(schoolId, role, userId);
+			const code = await invitesAPI.generateInviteCode(schoolId, capacity, userId);
 			setInviteCodes((prev) => [code, ...prev]);
 			return code;
 		} catch (err) {

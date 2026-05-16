@@ -4,6 +4,7 @@ import { assignmentsAPI as rawAssignmentsAPI } from '../assignments';
 import { classroomGroupsAPI as rawClassroomGroupsAPI } from '../classroomGroups';
 import { classroomStudentsAPI as rawClassroomStudentsAPI } from '../classroomStudents';
 import { lessonMaterialsAPI as rawLessonMaterialsAPI } from '../lessonMaterials';
+import { classroomNotesAPI as rawClassroomNotesAPI } from '../classroomNotes';
 import { educationalContract } from '../educational.contract';
 import { assertContractCoverage, defineContractCoverage } from '../contractCoverage';
 import { createTemporalPOAProxy } from '../temporalPOAProxy';
@@ -170,5 +171,29 @@ export const lessonMaterialsAPI = createTemporalPOAProxy(
   rawLessonMaterialsAPI,
   lessonMaterialsCoverage.contract,
   lessonMaterialsCoverage.methodMapping,
+  { strictUnmappedMethods: true },
+);
+
+const classroomNotesCoverage = assertContractCoverage(
+  rawClassroomNotesAPI,
+  defineContractCoverage({
+    moduleName: 'classroomNotes',
+    contract: educationalContract,
+    methodMapping: {
+      getAll: 'getClassroomNotes',
+      getSnapshotAsOf: 'getClassroomNoteSnapshot',
+      create: 'createClassroomNote',
+      update: 'updateClassroomNote',
+      delete: 'deleteClassroomNote',
+      getTimeline: 'getClassroomNoteTimeline',
+    },
+  }),
+);
+
+export const classroomNotesAPI = createTemporalPOAProxy(
+  'classroomNotes',
+  rawClassroomNotesAPI,
+  classroomNotesCoverage.contract,
+  classroomNotesCoverage.methodMapping,
   { strictUnmappedMethods: true },
 );

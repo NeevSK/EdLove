@@ -125,7 +125,7 @@ export const PrincipalGovernanceRecordSchema = z.object({
   school_id: z.string().uuid(),
   school_name: z.string().optional().nullable(),
   academic_year: z.string(),
-  role: z.string(),
+  capacity: z.string(),
   staff_count: z.number().default(0),
   student_count: z.number().default(0),
   key_initiatives: z.array(z.string()).default([]),

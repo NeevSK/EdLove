@@ -147,23 +147,10 @@ export const AuthScreenWeb = memo(({
           email: 'Sign in with Email',
         }, [mode]);
 
-  const getErrorMessage = useCallback((error: unknown, fallback: string) => {
-    const apiError = handleAPIError(error);
-    if (typeof apiError === 'string') return apiError;
-    if (
-      apiError &&
-      typeof apiError === 'object' &&
-      'message' in apiError &&
-      typeof apiError.message === 'string'
-    ) {
-      return apiError.message;
-    }
-    return error instanceof Error ? error.message : fallback;
-  }, []);
-
   const handleGoogleAuth = useCallback(async () => {
     dispatch({ type: 'SET_LOADING', loading: true });
     dispatch({ type: 'SET_ERRORS', errors: {} });
+    showToast({ message: 'Opening Google sign-in...', type: 'info', duration: 2000 });
     try {
       const redirectUrl = window.location.origin;
       const session = await authAPI.getAuthSession().catch(() => null);
@@ -175,14 +162,15 @@ export const AuthScreenWeb = memo(({
         await authAPI.signInWithOAuth('google', redirectUrl);
       }
     } catch (err: unknown) {
+      const apiError = handleAPIError(err);
       showToast({
-        message: getErrorMessage(err, 'Google sign-in failed'),
+        message: (apiError as any)?.message || 'Google sign-in failed. Please try again.',
         type: 'error',
       });
     } finally {
       dispatch({ type: 'SET_LOADING', loading: false });
     }
-  }, [getErrorMessage, showToast]);
+  }, [showToast]);
 
   const handleEmailAuth = useCallback(async () => {
     dispatch({ type: 'SET_LOADING', loading: true });
@@ -204,11 +192,12 @@ export const AuthScreenWeb = memo(({
 
     try {
       if (mode === 'signup') {
+        showToast({ message: 'Creating your identity...', type: 'info', duration: 2000 });
         const isAnonymousUser = currentUser?.is_anonymous || !currentUser?.email;
 
         if (isAnonymousUser) {
           const existingName =
-            (currentUser?.full_name && String(currentUser.full_name).trim()) || 'Sanctuary User';
+            (currentUser?.display_name && String(currentUser.display_name).trim()) || 'Sanctuary User';
           await authAPI.linkAnonymousToEmail(
             email,
             password,
@@ -216,28 +205,41 @@ export const AuthScreenWeb = memo(({
             'teacher' as Capacity,
           );
           await applyPendingInvite('Welcome to your new school sanctuary!');
+          showToast({ message: 'Welcome! Your identity is now secured.', type: 'success' });
           onSuccess?.();
         } else {
           await authAPI.signUp(email, password);
           showToast({
-            message: t('auth.checkEmail') || 'Check your email to confirm your account',
+            message: t('auth.checkEmail') || 'Identity initiated. Please check your email to confirm.',
             type: 'success',
           });
         }
       } else {
+        showToast({ message: 'Welcome back! Reconnecting...', type: 'info', duration: 2000 });
         await authAPI.signIn(email, password);
         await applyPendingInvite('Reconnected to your school sanctuary!');
+        showToast({ message: 'Access granted to your sanctuary.', type: 'success', duration: 2000 });
         onSuccess?.();
       }
     } catch (err: unknown) {
+      const apiError = handleAPIError(err);
+      const baseMsg = typeof apiError === 'string'
+        ? apiError
+        : (apiError as any).message || 'An authentication error occurred';
+      
+      const guidedMsg = mode === 'signup' 
+        ? `${baseMsg}. If you already have an account, try logging in instead.`
+        : `${baseMsg}. Please check your credentials and connection.`;
+
       showToast({
-        message: getErrorMessage(err, 'Authentication failed'),
+        message: guidedMsg,
         type: 'error',
+        duration: 5000,
       });
     } finally {
       dispatch({ type: 'SET_LOADING', loading: false });
     }
-  }, [email, password, mode, t, showToast, onSuccess, currentUser, applyPendingInvite, getErrorMessage]);
+  }, [email, password, mode, t, showToast, onSuccess, currentUser, applyPendingInvite]);
 
   const handleGuest = useCallback(async () => {
     dispatch({ type: 'SET_LOADING', loading: true });

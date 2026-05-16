@@ -47,6 +47,7 @@ interface OnboardingUIState {
   currentStep: number;
   name: string;
   selectedCapacity: Capacity;
+  schoolId: string | null;
   isProcessing: boolean;
   error: string | null;
 }
@@ -55,6 +56,7 @@ type OnboardingAction =
   | { type: 'SET_STEP'; step: number }
   | { type: 'SET_NAME'; name: string }
   | { type: 'SET_CAPACITY'; capacity: Capacity }
+  | { type: 'SET_SCHOOL_ID'; schoolId: string | null }
   | { type: 'SET_PROCESSING'; isProcessing: boolean }
   | { type: 'SET_ERROR'; error: string | null }
   | { type: 'NEXT_STEP' }
@@ -69,6 +71,8 @@ function onboardingReducer(state: OnboardingUIState, action: OnboardingAction): 
       return { ...state, name: action.name, error: null };
     case 'SET_CAPACITY':
       return { ...state, selectedCapacity: action.capacity, error: null };
+    case 'SET_SCHOOL_ID':
+      return { ...state, schoolId: action.schoolId };
     case 'SET_PROCESSING':
       return { ...state, isProcessing: action.isProcessing };
     case 'SET_ERROR':
@@ -176,7 +180,7 @@ const NameStep = memo(
     <StepShell
       currentStep={0}
       step="STEP 1 · ARRIVAL"
-      title={t('onboarding.nameTitle') || 'Welcome! What should we call you?'}
+      title={t('onboarding.nameTitle') || 'Welcome! What should we call you in Gurudevi?'}
       subtitle={t('onboarding.nameSubtitle') || "Let's start your journey with a name."}
     >
       <VStack className="gap-6">
@@ -188,10 +192,20 @@ const NameStep = memo(
             onChangeText={onNameChange}
             className="text-phase-text-primary"
             editable={!isLoading}
+            autoFocus
+            autoComplete="name"
+            returnKeyType="next"
+            onSubmitEditing={() => {
+              if (canProceed) onNext();
+            }}
           />
         </Input>
         <Text className="text-phase-text-secondary text-sm">
-          This name becomes the gentle way Gurudevi addresses you across your sanctuary surfaces.
+          {name.trim().length > 0 && name.trim().length < 2
+            ? "Your name is a bit short. Try adding another character."
+            : name === 'Guest User'
+            ? "Please choose a name other than 'Guest User'."
+            : t('onboarding.nameHint') || "Use the display name you want people to see inside the app."}
         </Text>
         <Button
           size="lg"
@@ -404,6 +418,7 @@ const OnboardingScreen = memo(function OnboardingScreen({
     currentStep: 0,
     name: '',
     selectedCapacity: 'teacher' as Capacity,
+    schoolId: null,
     isProcessing: false,
     error: null,
   });
@@ -433,6 +448,7 @@ const OnboardingScreen = memo(function OnboardingScreen({
                   typeof progress.step === 'number' && progress.step >= 0 && progress.step < 7
                     ? progress.step
                     : 0,
+                schoolId: progress.schoolId || null,
               },
             });
             return;
@@ -461,13 +477,18 @@ const OnboardingScreen = memo(function OnboardingScreen({
         if (initialDomainState === 'COMPLETED') {
           console.log('✅ Onboarding: Profile already marked as completed in DB, finalizing...');
           const capacity = (activePerspective?.active_bond.capacity as Capacity) || 'teacher';
-          dispatch({ type: 'SET_NAME', name: profile.full_name || '' });
-          onComplete(profile.full_name || '', capacity, isAnonymous);
+          const resolvedName = profile.display_name || '';
+          dispatch({ type: 'SET_NAME', name: resolvedName });
+          onComplete(resolvedName, capacity, isAnonymous);
           return;
         }
 
-        if (profile.full_name) {
-          dispatch({ type: 'SET_NAME', name: profile.full_name });
+        const resolvedName = profile.display_name;
+        if (resolvedName && resolvedName !== 'Guest User') {
+          dispatch({ type: 'SET_NAME', name: resolvedName });
+          if (profile.school_id) {
+            dispatch({ type: 'SET_SCHOOL_ID', schoolId: profile.school_id });
+          }
           if (initialDomainState === 'IDENTITY_SELECTION') {
             dispatch({ type: 'SET_STEP', step: 1 });
           } else if (initialDomainState === 'SANCTUARY_INIT') {
@@ -477,7 +498,7 @@ const OnboardingScreen = memo(function OnboardingScreen({
       } catch (err) {
         console.error('[Onboarding] Initialization failure:', err);
         showToast(
-          (err as Error)?.message || 'We encountered a bump on the path to the sanctuary. Please try again.',
+          `Initialization Error: ${(err as Error)?.message || 'Something went wrong'}. Please check your connection or sign out and try again.`,
           'error',
         );
       }
@@ -523,7 +544,7 @@ const OnboardingScreen = memo(function OnboardingScreen({
 
   const canProceed = useMemo(() => {
     if (isProcessing) return false;
-    if (currentStep === 0) return name.trim().length > 0;
+    if (currentStep === 0) return name.trim().length >= 2 && name !== 'Guest User';
     return true;
   }, [currentStep, name, isProcessing]);
 
@@ -539,6 +560,7 @@ const OnboardingScreen = memo(function OnboardingScreen({
             step: currentStep,
             name,
             capacity: selectedCapacity,
+            schoolId: state.schoolId,
           }),
         ).catch((err) => {
           console.warn('[Onboarding] Failed to save progress:', err);
@@ -552,8 +574,13 @@ const OnboardingScreen = memo(function OnboardingScreen({
     dispatch({ type: 'SET_PROCESSING', isProcessing: true });
     showToast('Finalizing your sanctuary journey...', 'info', 2000);
     try {
-      // Since we now sync name and bond in previous steps,
-      // we just need to ensure everything is finalized.
+      const internalId = await identityAPI.getMyInternalId();
+      if (!internalId) throw new Error('Identity not resolved. Please try again.');
+
+      // 1. Mark journey as completed in DB
+      await identityAPI.completeOnboarding(internalId);
+
+      // 2. Finalize persistence
       await AsyncStorage.removeItem('onboarding_progress');
       hapticSuccess();
       showToast('Sanctuary entry granted! Welcome home.', 'success', 3000);
@@ -561,9 +588,10 @@ const OnboardingScreen = memo(function OnboardingScreen({
     } catch (err) {
       console.error('Error completing onboarding:', err);
       hapticError();
-      const msg = err instanceof Error ? err.message : 'Failed to finalize onboarding.';
-      dispatch({ type: 'SET_ERROR', error: msg });
-      showToast(msg, 'error');
+      const baseMsg = err instanceof Error ? err.message : 'Failed to finalize onboarding.';
+      const guidedMsg = `${baseMsg} Please check your connection and try again to enter the sanctuary.`;
+      dispatch({ type: 'SET_ERROR', error: guidedMsg });
+      showToast(guidedMsg, 'error', 5000);
     }
   }, [name, selectedCapacity, onComplete, showToast, isAnonymous]);
 
@@ -589,27 +617,30 @@ const OnboardingScreen = memo(function OnboardingScreen({
 
       if (currentStep === 0) {
         // STEP 0 -> 1: Sync Name to DB
-        console.log('💾 [Onboarding] Syncing name to DB (anonymous:', isAnonymous, '):', name);
-        await identityAPI.updateProfile(internalId, { full_name: name });
+        showToast('Syncing your identity...', 'info', 1000);
+        await identityAPI.updateProfile(internalId, { display_name: name });
         console.log('✅ [Onboarding] Name synced.');
       } else if (currentStep === 1) {
         // STEP 1 -> 2: Identity Selection & Initial Bond Creation
         console.log('🏗️ [Onboarding] Initializing Bond for capacity:', selectedCapacity);
 
-        // 1. Ensure user has a profile and potentially a school
+        // Ensure user has a profile and potentially a school
         const existingProfile = await identityAPI.getProfile(internalId);
-        let schoolId = existingProfile?.school_id;
+        let schoolId = state.schoolId || existingProfile?.school_id;
 
         // Wanderers (Anonymous) don't get a workspace yet.
         // Second class citizens (Authenticated) get a personal workspace.
         if (!schoolId && !isAnonymous) {
+          showToast('Building your personal sanctuary...', 'info', 2000);
           schoolId = await schoolAPI.initializePersonalWorkspace(internalId, name || 'My');
+          dispatch({ type: 'SET_SCHOOL_ID', schoolId });
           console.log('🏫 [Onboarding] Personal workspace initialized:', schoolId);
         }
 
         // 2. Create the Bond
         showToast(`Establishing your bond as ${selectedCapacity}...`, 'info', 1500);
         await identity.createInitialBond(selectedCapacity, {
+          displayName: name || 'Gurudevi User',
           fullName: name || 'Gurudevi User',
           schoolId: schoolId,
         });
@@ -625,10 +656,14 @@ const OnboardingScreen = memo(function OnboardingScreen({
     } catch (err) {
       console.error('[Onboarding] Step transition failed:', err);
       hapticError();
+      const baseMsg = err instanceof Error ? err.message : 'Something went wrong.';
+      const guidedMsg = `${baseMsg} Please check your connection and try again.`;
+      
       dispatch({
         type: 'SET_ERROR',
-        error: err instanceof Error ? err.message : 'Something went wrong. Please try again.',
+        error: guidedMsg,
       });
+      showToast(guidedMsg, 'error', 4000);
     } finally {
       dispatch({ type: 'SET_PROCESSING', isProcessing: false });
     }

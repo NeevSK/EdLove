@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { type CrystalTier, naturePathsAPI, type RiverStage } from '../api/naturePaths';
+import { type CrystalTier, type RiverStage } from '../types/Growth';
+import { growth } from '../logic';
+
 import { usePermissions } from '../logic/permissions/hooks/usePermissions';
 
 /**
@@ -22,14 +24,22 @@ export const useNaturePaths = () => {
     if (!userId) return;
     setIsLoading(true);
     try {
-      const state = await naturePathsAPI.getStudentPathState(userId);
-      setPaths(state);
+      const state = await growth.getGrowthState(userId);
+      if (state) {
+        setPaths({
+          river_stage: state.river_stage,
+          crystal_tier: state.crystal_tier,
+          crystals_found_count: state.crystals_found_count,
+          fractal_moments_count: state.fractal_moments_count,
+        });
+      }
     } catch (error) {
       console.error('[useNaturePaths] Error fetching paths:', error);
     } finally {
       setIsLoading(false);
     }
   }, [userId]);
+
 
   useEffect(() => {
     refreshPaths().catch((e) => {

@@ -1,118 +1,89 @@
-import { profile } from '../logic/managers/factory';
-import { SocialLink } from '../types';
-import { TemporalScale } from '../store/useTemporalStore';
+import { 
+  createSovereignClient, 
+  SOVEREIGN_API_URL, 
+  type AppType 
+} from './base';
+import { APIError } from '../types';
 
 /**
- * PROFILE API (Sovereign Architecture)
+ * PROFILE API (Sovereign RPC Proxy)
  * 
- * Thin delegation layer to the Global Profile Manager.
+ * This module siphons Profile requests to the Sanctuary API.
+ * It maintains the legacy signature but shifts the transport to RPC.
  */
+
+const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
+
 export const profileAPI = {
-  async getUserProfile(userId: string) {
-    return profile.getUserProfile(userId);
+  async getUserProfile(id: string) {
+    const res = await client.api.profile.users[':id'].$get({
+      param: { id },
+    });
+
+    if (!res.ok) {
+      if (res.status === 404) return null;
+      throw new APIError('Failed to fetch user profile', res.status.toString());
+    }
+
+    return await res.json();
   },
 
-  async getUserProfileAsOf(userId: string, at: string) {
-    return profile.getUserProfileAsOf(userId, at);
-  },
+  async updateProfile(id: string, updates: Record<string, any>) {
+    const res = await client.api.profile.users[':id'].$patch({
+      param: { id },
+      json: updates,
+    });
 
-  async getUserProfileHistory(userId: string, limit?: number) {
-    return profile.getUserProfileHistory(userId, limit);
+    if (!res.ok) {
+      throw new APIError('Failed to update profile', res.status.toString());
+    }
+
+    return await res.json();
   },
 
   async getJourneySnapshot(
-    userId: string,
+    id: string,
     params?: {
       at?: string;
       view_date?: string;
-      view_scale?: TemporalScale;
+      view_scale?: any;
     },
   ) {
-    return profile.getJourneySnapshot(userId, {
-      asOf: params?.at,
-      viewDate: params?.view_date,
-      viewScale: params?.view_scale,
+    const res = await client.api.profile.users[':id'].journey.$get({
+      param: { id },
+      query: {
+        at: params?.at,
+        view_date: params?.view_date,
+        view_scale: params?.view_scale,
+      },
     });
-  },
 
-  async getJourneyHistory(
-    userId: string,
-    params: {
-      view_date: string;
-      view_scale?: TemporalScale;
-      limit?: number;
-    },
-  ) {
-    return profile.getJourneyHistory(userId, {
-      viewDate: params.view_date,
-      viewScale: params.view_scale,
-      limit: params.limit,
-    });
-  },
+    if (!res.ok) {
+      throw new APIError('Failed to fetch journey snapshot', res.status.toString());
+    }
 
-  async updateProfile(userId: string, updates: Record<string, any>) {
-    return profile.updateProfile(userId, updates);
-  },
-
-  async isAnonymous(userId: string) {
-    const isAnonymous = await profile.isAnonymous(userId);
-    return { is_anonymous: isAnonymous };
-  },
-
-  async uploadAvatar(userId: string, localUri: string) {
-    return profile.uploadAvatar(userId, localUri);
-  },
-
-  async getSocialLinks(userId: string) {
-    return profile.getSocialLinks(userId);
-  },
-
-  async upsertSocialLink(userId: string, link: Partial<SocialLink>) {
-    return profile.upsertSocialLink(userId, link);
-  },
-
-  async deleteSocialLink(linkId: string) {
-    return profile.deleteSocialLink(linkId);
-  },
-
-  async updateSocialLinksOrder(
-    _userId: string,
-    params: { links: { id: string; order_index: number }[] },
-  ) {
-    await profile.updateSocialLinksOrder(_userId, params.links);
-    return { ok: true };
-  },
-
-  async getCommunityProfile(communityId: string) {
-    return profile.getCommunityProfile(communityId);
-  },
-
-  async getCommunityProfileAsOf(communityId: string, at: string) {
-    return profile.getCommunityProfileAsOf(communityId, at);
-  },
-
-  async getCommunityProfileHistory(communityId: string, limit?: number) {
-    return profile.getCommunityProfileHistory(communityId, limit);
-  },
-
-  async updateCommunityProfile(
-    communityId: string,
-    field: 'name' | 'description',
-    value: string,
-  ) {
-    return profile.updateCommunityProfile(communityId, field, value);
+    return await res.json();
   },
 
   async getSchoolPulse(
-    schoolId: string,
+    id: string,
     params: {
       view_date: string;
-      view_scale?: TemporalScale;
+      view_scale?: any;
     },
   ) {
-    return profile.getSchoolPulse(schoolId, {
-      viewDate: params.view_date,
-      viewScale: params.view_scale,
+    const res = await client.api.profile.schools[':id'].pulse.$get({
+      param: { id },
+      query: {
+        view_date: params.view_date,
+        view_scale: params.view_scale,
+      },
     });
+
+    if (!res.ok) {
+      throw new APIError('Failed to fetch school pulse', res.status.toString());
+    }
+
+    return await res.json();
   },
 };

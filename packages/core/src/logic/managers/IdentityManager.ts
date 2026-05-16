@@ -1,17 +1,32 @@
 import { IIdentityPort } from '../ports/identity.port';
+import { ISessionPort } from '../ports/session.port';
+
 import { Bond, Perspective, Capacity } from '../../types/Identity';
 import { User } from '../../types/User';
+import { Identity } from '../../api/identity.generated';
 
 /**
  * IdentityManager: The Sovereign Orchestrator.
  * This is the "Brain" of the Hexagonal IAM.
  * It coordinates one or more Adapters to fulfill the Identity Port.
  */
-export class IdentityManager implements IIdentityPort {
+export class IdentityManager implements IIdentityPort, ISessionPort {
+
   constructor(private adapter: IIdentityPort) {}
 
-  async getMyInternalId(): Promise<string | null> {
-    return this.adapter.getMyInternalId();
+  /**
+   * [LOUD-FAILURE] Renamed from getMyInternalId
+   */
+  async identifyActiveCitizen(): Promise<Identity | null> {
+    return this.adapter.identifyActiveCitizen();
+  }
+
+  /**
+   * Legacy session port support - redirects to identifyActiveCitizen
+   */
+  async getUserId(): Promise<string | null> {
+    const identity = await this.identifyActiveCitizen();
+    return identity?.id ?? null;
   }
 
   async resolveInternalId(provider: string, providerUserId: string): Promise<string | null> {
@@ -46,18 +61,6 @@ export class IdentityManager implements IIdentityPort {
     return this.adapter.createInitialBond(orientation, context);
   }
 
-  async createNotification(userId: string, type: string, title: string, message: string, metadata?: any): Promise<void> {
-    return this.adapter.createNotification(userId, type, title, message, metadata);
-  }
-
-  async getNotifications(userId: string): Promise<any[]> {
-    return this.adapter.getNotifications(userId);
-  }
-
-  async updateNotificationStatus(notificationId: string, isRead: boolean): Promise<void> {
-    return this.adapter.updateNotificationStatus(notificationId, isRead);
-  }
-
   async completeProfile(userId: string, data: any): Promise<void> {
     return this.adapter.completeProfile(userId, data);
   }
@@ -74,11 +77,7 @@ export class IdentityManager implements IIdentityPort {
     return this.adapter.unblockUser(blockerId, blockedId);
   }
 
-  async registerPushToken(userId: string, token: string, deviceId: string, platform: string): Promise<void> {
-    return this.adapter.registerPushToken(userId, token, deviceId, platform);
-  }
-
-  async unregisterPushToken(userId: string, deviceId: string): Promise<void> {
-    return this.adapter.unregisterPushToken(userId, deviceId);
+  async completeOnboarding(userId: string): Promise<void> {
+    return this.adapter.completeOnboarding(userId);
   }
 }

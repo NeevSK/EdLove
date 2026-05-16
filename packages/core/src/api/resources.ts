@@ -1,97 +1,48 @@
-import { resolveResourceOwnerContext } from '../lib/inventoryScope';
-import type { ClassroomResource, ResourceOwnerContext } from '../types';
+import { 
+  createSovereignClient, 
+  SOVEREIGN_API_URL, 
+  type AppType 
+} from './base';
 import { APIError } from '../types/API';
-import { educationalContract } from './educational.contract';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from './supabase';
+
+/**
+ * RESOURCES API (Sovereign RPC Proxy)
+ * 
+ * Siphons classroom resources to the Sanctuary API.
+ * [BREAKING] Purged direct Supabase access.
+ * [BREAKING] Renamed getAll -> getClassroomResources.
+ */
+
+const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
 
 export const resourcesAPI = {
   /**
-   * @authority read Material
+   * Fetches resources for a classroom.
+   * [LOUD-FAILURE] Renamed from getAll.
    */
-  async getAll(classroomId: string): Promise<ClassroomResource[]> {
-    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
-      .from('classroom_resources')
-      .select('*')
-      .eq('classroom_id', classroomId)
-      .order('is_pinned', { ascending: false })
-      .order('created_at', { ascending: false });
-
-    if (error) {
-      throw new APIError('Failed to fetch resources', error.code, error);
-    }
-
-    return data || [];
-  },
-
-  /**
-   * @authority create Material
-   */
-  async create(
-    resource: Omit<ClassroomResource, 'id' | 'created_at' | 'updated_at'> & {
-      owner_context?: ResourceOwnerContext;
-    },
-  ): Promise<ClassroomResource> {
-    const ownerContext = resolveResourceOwnerContext({
-      ownerContext: resource.owner_context,
-      classroomId: resource.classroom_id,
+  async getClassroomResources(classroomId: string) {
+    const res = await client.api.educational.classrooms[':classroomId'].resources.$get({
+      param: { classroomId },
     });
 
-    if (ownerContext !== 'classroom') {
-      throw new APIError(
-        'Institution-owned items must be created through admin inventory, not classroom resources.',
-        'INVALID_SCOPE',
-      );
+    if (!res.ok) {
+      throw new APIError('Failed to fetch resources', res.status.toString());
     }
 
-    const { owner_context, ...classroomResource } = resource as any;
-    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
-      .from('classroom_resources')
-      .insert([classroomResource])
-      .select()
-      .single();
-
-    if (error) {
-      throw new APIError('Failed to create resource', error.code, error);
-    }
-
-    return data;
+    return await res.json();
   },
 
   /**
-   * @authority update Material
+   * [LOUD-FAILURE] Method removed. Use Sanctuary API directly for creation.
    */
-  async update(id: string, updates: Partial<ClassroomResource>): Promise<ClassroomResource> {
-    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
-      .from('classroom_resources')
-      .update(updates)
-      .eq('id', id)
-      .select()
-      .single();
-
-    if (error) {
-      throw new APIError('Failed to update resource', error.code, error);
-    }
-
-    return data;
+  async create(): Promise<never> {
+    throw new Error('resourcesAPI.create is DEPRECATED. Use Sanctuary API directly.');
   },
 
   /**
-   * Toggle pin status
+   * [LOUD-FAILURE] Method removed.
    */
-  async togglePin(id: string, isPinned: boolean): Promise<ClassroomResource> {
-    return this.update(id, { is_pinned: isPinned });
-  },
-
-  /**
-   * @authority delete Material
-   */
-  async delete(id: string): Promise<void> {
-    const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('classroom_resources').delete().eq('id', id);
-
-    if (error) {
-      throw new APIError('Failed to delete resource', error.code, error);
-    }
+  async delete(): Promise<never> {
+    throw new Error('resourcesAPI.delete is DEPRECATED.');
   },
 };
-
-void [educationalContract];

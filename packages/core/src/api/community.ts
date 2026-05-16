@@ -1,13 +1,18 @@
-import { community } from '../logic/managers/factory';
-import { identityAPI } from './identity';
-import { Post, Comment } from '../types';
-import { TemporalScale } from '../store/useTemporalStore';
+import { 
+  createSovereignClient, 
+  SOVEREIGN_API_URL, 
+  type AppType 
+} from './base';
+import { APIError } from '../types/API';
 
 /**
- * Community API (Posts & Comments)
+ * COMMUNITY API (Sovereign RPC Proxy)
  * 
- * Thin delegation layer to the Sovereign Community Manager.
+ * This module siphons Community requests (Posts, Reactions, Comments, Polls) to the Sanctuary API.
  */
+
+const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
+
 export const communityAPI = {
   /**
    * Retrieves a list of posts based on filters.
@@ -16,100 +21,165 @@ export const communityAPI = {
     limit: number;
     offset: number;
     groupId?: string;
-    viewDate?: string;
-    viewScale?: TemporalScale;
-  }): Promise<Post[]> {
-    return community.getPosts(filters);
+  }) {
+    const res = await client.api.community.posts.$get({
+      query: {
+        groupId: filters.groupId,
+        limit: filters.limit.toString(),
+        offset: filters.offset.toString(),
+      },
+    });
+
+    if (!res.ok) {
+      throw new APIError('Failed to fetch posts', res.status.toString());
+    }
+
+    return await res.json();
   },
 
   /**
    * Creates a new post.
    */
-  async createPost(post: Partial<Post>, userId: string, authorityTier: string, schoolId: string): Promise<Post> {
-    return community.createPost({ post, userId, authorityTier, schoolId });
+  async createPost(params: {
+    group_id: string;
+    content: string;
+    post_type: string;
+    visibility: string;
+    author_tier: string;
+  }) {
+    const res = await client.api.community.posts.$post({
+      json: params,
+    });
+
+    if (!res.ok) {
+      throw new APIError('Failed to create post', res.status.toString());
+    }
+
+    return await res.json();
   },
 
   /**
    * Toggles a reaction on a post.
    */
-  async togglePostReaction(postId: string, userId: string): Promise<boolean> {
-    return community.togglePostReaction(postId, userId);
-  },
-
-  /**
-   * Gets the current status of a poll.
-   */
-  async getPollStatus(postId: string) {
-    const myId = await identityAPI.getMyInternalId();
-    return community.getPollStatus(postId, myId || undefined);
-  },
-
-  /**
-   * Votes in a poll.
-   */
-  async voteInPoll(
-    postId: string,
-    optionId: string,
-    allowMultiple: boolean = false,
-  ): Promise<string[]> {
-    const myId = await identityAPI.getMyInternalId();
-    if (!myId) throw new Error('Authentication required');
-
-    return community.voteInPoll({
-      postId,
-      optionId,
-      userId: myId,
-      allowMultiple,
+  async togglePostReaction(postId: string, userId: string) {
+    const res = await client.api.community.posts[':postId'].reactions.$post({
+      param: { postId },
+      json: { user_id: userId },
     });
+
+    if (!res.ok) {
+      throw new APIError('Failed to toggle reaction', res.status.toString());
+    }
+
+    const { active } = await res.json();
+    return active;
   },
 
   /**
    * Retrieves comments for a post.
    */
-  async getComments(
-    postId: string,
-    limit = 60,
-    options: { viewDate?: string; viewScale?: TemporalScale } = {},
-  ): Promise<Comment[]> {
-    return community.getComments(postId, limit, options);
+  async getComments(postId: string, limit?: number) {
+    const res = await client.api.community.posts[':postId'].comments.$get({
+      param: { postId },
+      query: { limit: limit?.toString() },
+    });
+
+    if (!res.ok) {
+      throw new APIError('Failed to fetch comments', res.status.toString());
+    }
+
+    return await res.json();
   },
 
   /**
    * Creates a comment on a post.
    */
-  async createComment(postId: string, content: string, isAnonymous = false): Promise<Comment> {
-    const myId = await identityAPI.getMyInternalId();
-    if (!myId) throw new Error('Authentication required');
-
-    return community.createComment({
-      postId,
-      content,
-      userId: myId,
-      isAnonymous,
+  async createComment(postId: string, params: { content: string; author_tier: string }) {
+    const res = await client.api.community.posts[':postId'].comments.$post({
+      param: { postId },
+      json: params,
     });
+
+    if (!res.ok) {
+      throw new APIError('Failed to create comment', res.status.toString());
+    }
+
+    return await res.json();
   },
 
   /**
    * Deletes a comment.
    */
-  async deleteComment(commentId: string): Promise<void> {
-    return community.deleteComment(commentId);
+  async deleteComment(commentId: string) {
+    const res = await client.api.community.comments[':commentId'].$delete({
+      param: { commentId },
+    });
+
+    if (!res.ok) {
+      throw new APIError('Failed to delete comment', res.status.toString());
+    }
+
+    return await res.json();
   },
 
   /**
-   * Toggles an upvote on a comment.
+   * Toggles upvote on a comment.
    */
-  async toggleCommentUpvote(commentId: string): Promise<boolean> {
-    const myId = await identityAPI.getMyInternalId();
-    if (!myId) throw new Error('Authentication required');
+  async toggleCommentUpvote(commentId: string) {
+    const res = await client.api.community.comments[':commentId'].upvote.$post({
+      param: { commentId },
+    });
 
-    return community.toggleCommentUpvote(commentId, myId);
+    if (!res.ok) {
+      throw new APIError('Failed to toggle upvote', res.status.toString());
+    }
+
+    return await res.json();
   },
 
   /**
-   * Marks or unmarks a comment as an official answer.
+   * Marks a comment as the official answer.
    */
-  async markOfficialAnswer(commentId: string, isOfficial: boolean): Promise<void> {
-    return community.markOfficialAnswer(commentId, isOfficial);
+  async markOfficialAnswer(commentId: string) {
+    const res = await client.api.community.comments[':commentId'].official.$post({
+      param: { commentId },
+    });
+
+    if (!res.ok) {
+      throw new APIError('Failed to mark official answer', res.status.toString());
+    }
+
+    return await res.json();
+  },
+
+  /**
+   * Retrieves poll status for a post.
+   */
+  async getPollStatus(postId: string) {
+    const res = await client.api.community.polls[':postId'].$get({
+      param: { postId },
+    });
+
+    if (!res.ok) {
+      throw new APIError('Failed to fetch poll status', res.status.toString());
+    }
+
+    return await res.json();
+  },
+
+  /**
+   * Votes in a poll.
+   */
+  async voteInPoll(postId: string, optionId: string) {
+    const res = await client.api.community.polls[':postId'].vote.$post({
+      param: { postId },
+      json: { option_id: optionId },
+    });
+
+    if (!res.ok) {
+      throw new APIError('Failed to record vote', res.status.toString());
+    }
+
+    return await res.json();
   },
 };

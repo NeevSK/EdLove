@@ -13,7 +13,7 @@ export const socialAPI = {
   // --- Community Resonance & Notifications ---
 
   /**
-   * @authority read Post
+   * @policy read Post
    */
   async getCommunityResonance(
     userId: string,
@@ -47,13 +47,14 @@ export const socialAPI = {
   },
 
   /**
-   * @authority read User
+   * @policy read User
    */
   async getNotifications(
     limit = 30,
     options: { viewDate?: string; viewScale?: TemporalScale } = {},
   ) {
-    const myId = await identityAPI.getMyInternalId();
+    const identity = await identityAPI.identifyActiveCitizen();
+    const myId = identity?.id;
     if (!myId) return [];
 
     let query = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('notifications').select('*').eq('user_id', myId);
@@ -75,10 +76,11 @@ export const socialAPI = {
   },
 
   /**
-   * @authority read User
+   * @policy read User
    */
   async getUnreadNotificationCount() {
-    const myId = await identityAPI.getMyInternalId();
+    const identity = await identityAPI.identifyActiveCitizen();
+    const myId = identity?.id;
     if (!myId) return 0;
 
     const { count, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
@@ -92,7 +94,7 @@ export const socialAPI = {
   },
 
   /**
-   * @authority update User
+   * @policy update User
    */
   async markNotificationRead(notificationId: string) {
     const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
@@ -103,10 +105,11 @@ export const socialAPI = {
   },
 
   /**
-   * @authority update User
+   * @policy update User
    */
   async markAllNotificationsRead() {
-    const myId = await identityAPI.getMyInternalId();
+    const identity = await identityAPI.identifyActiveCitizen();
+    const myId = identity?.id;
     if (!myId) return;
 
     const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
@@ -123,7 +126,8 @@ export const socialAPI = {
    * Blocks a user.
    */
   async blockUser(targetUserId: string): Promise<void> {
-    const myId = await identityAPI.getMyInternalId();
+    const identity = await identityAPI.identifyActiveCitizen();
+    const myId = identity?.id;
     if (!myId) throw new Error('Authentication required');
 
     const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('user_blocks').insert([
@@ -140,7 +144,8 @@ export const socialAPI = {
    * Unblocks a user.
    */
   async unblockUser(targetUserId: string): Promise<void> {
-    const myId = await identityAPI.getMyInternalId();
+    const identity = await identityAPI.identifyActiveCitizen();
+    const myId = identity?.id;
     if (!myId) throw new Error('Authentication required');
 
     const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
@@ -156,7 +161,8 @@ export const socialAPI = {
    * Checks if a blocking relationship exists between the current user and target user.
    */
   async isBlockingActive(targetUserId: string): Promise<boolean> {
-    const myId = await identityAPI.getMyInternalId();
+    const identity = await identityAPI.identifyActiveCitizen();
+    const myId = identity?.id;
     if (!myId) return false;
 
     const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
@@ -175,7 +181,8 @@ export const socialAPI = {
    * Fetches the list of users blocked by the current user.
    */
   async getMutedUsers() {
-    const myId = await identityAPI.getMyInternalId();
+    const identity = await identityAPI.identifyActiveCitizen();
+    const myId = identity?.id;
     if (!myId) return [];
 
     const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
@@ -186,7 +193,7 @@ export const socialAPI = {
                     id, 
                     full_name, 
                     avatar_url,
-                    authority:role
+                    capacity
                 )
             `)
       .eq('blocker_id', myId);
@@ -196,7 +203,7 @@ export const socialAPI = {
   },
 
   /**
-   * @authority create User
+   * @policy create User
    */
   async reportContent(
     params: {

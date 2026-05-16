@@ -31,7 +31,7 @@ export const createFeatureSlice: StateCreator<FeatureSlice> = (set, get) => ({
     active_bond: null,
     activeBond: null,
     active_bond_status: 'active',
-    role: null,
+    capacity: null,
     traits: [],
     school_id: null,
     schoolId: null,

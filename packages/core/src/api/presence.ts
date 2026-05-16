@@ -1,7 +1,7 @@
 import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from './supabase';
 
 export interface PresenceFallbackCountOptions {
-  targetRoles: string[];
+  targetCapacities: string[];
   isCumulative: boolean;
   userId?: string;
   windowMs?: number;
@@ -9,7 +9,7 @@ export interface PresenceFallbackCountOptions {
 
 export interface PresenceSessionOptions {
   userId: string;
-  userRole: string;
+  userCapacity: string;
   userVibe?: string;
   channelName: string;
   onCountChange: (count: number) => void;
@@ -27,8 +27,8 @@ export async function fetchPresenceFallbackCount(
     .gte('last_seen_at', fiveMinutesAgo);
 
   if (!options.isCumulative) {
-    query = query.in('role', options.targetRoles);
-  } else if (options.userId && options.userId !== 'guest') {
+    query = query.in('capacity', options.targetCapacities);
+  } else if (options.userId && options.userId !== 'anonymous') {
     query = query.neq('id', options.userId);
   }
 
@@ -48,7 +48,7 @@ export async function markUserPresenceSeen(userId: string): Promise<void> {
 }
 
 export function startPresenceSession(options: PresenceSessionOptions): () => void {
-  const selfChannel = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.channel(`presence:self:${options.userRole}`);
+  const selfChannel = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.channel(`presence:self:${options.userCapacity}`);
   const watcherChannel = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.channel(options.channelName);
 
   selfChannel.subscribe(async (status) => {

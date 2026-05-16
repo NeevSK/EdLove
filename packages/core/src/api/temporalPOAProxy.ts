@@ -11,15 +11,15 @@ export interface TemporalPOAProxyOptions {
  *
  * Order matters:
  * - POA remains the outermost guard, preserving the SSOT flow.
- * - Temporal behavior runs only after API-surface authority is approved.
+ * - Temporal behavior runs only after API-surface policy is approved.
  */
-export function createTemporalPOAProxy<T extends object>(
+export function createTemporalPOAProxy(
   moduleName: string,
-  target: T,
+  target: any,
   contract?: ContractShape,
   methodMapping: Record<string, string> = {},
   options: TemporalPOAProxyOptions = {},
-): T {
+): any {
   return createPOAProxy(
     moduleName,
     createTemporalProxy(moduleName, target),

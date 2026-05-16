@@ -1,5 +1,5 @@
 /**
- * Capacity: The functional role within a Bond.
+ * Capacity: The functional capacity within a Bond.
  * Replaces the concept of a "Global Role".
  */
 export type Capacity =
@@ -18,7 +18,6 @@ export type Capacity =
   | 'nurse'
   | 'staff'
   | 'member'
-  | 'guest';
 
 /**
  * Bond: A relationship between a User and an Entity.
@@ -28,7 +27,7 @@ export interface Bond {
   id: string;
   user_id: string;
   entity_id: string; // Could be a School ID, Classroom ID, or 'GLOBAL'
-  entity_type: 'PLATFORM' | 'SCHOOL' | 'CLASSROOM' | 'COMMUNITY' | 'PERSONAL' | 'GUEST';
+  entity_type: 'PLATFORM' | 'SCHOOL' | 'CLASSROOM' | 'COMMUNITY' | 'PERSONAL';
   capacity: Capacity;
   status: 'active' | 'archived' | 'pending';
   valid_from?: string;

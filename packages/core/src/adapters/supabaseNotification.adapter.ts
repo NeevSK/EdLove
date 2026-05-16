@@ -1,11 +1,12 @@
 import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../api/supabase';
-import { AppNotification } from '../hooks/useNotifications';
+import { AppNotification, NotificationStatus } from '../types';
 import { INotificationPort } from '../logic/ports/notification.port';
 
 /**
  * SupabaseNotificationAdapter: Implementation of INotificationPort using Supabase.
  */
 export class SupabaseNotificationAdapter implements INotificationPort {
+
   async getNotifications(userId: string, limit: number = 20): Promise<AppNotification[]> {
     const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('notifications')
@@ -17,6 +18,21 @@ export class SupabaseNotificationAdapter implements INotificationPort {
     if (error) throw error;
     return (data || []) as AppNotification[];
   }
+
+  async createNotification(
+    userId: string,
+    type: string,
+    title: string,
+    message: string,
+    metadata: any = {}
+  ): Promise<void> {
+    const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+      .from('notifications')
+      .insert([{ user_id: userId, type, title, body: message, metadata }]);
+    
+    if (error) throw error;
+  }
+
 
   async getUnreadCount(userId: string): Promise<number> {
     const { count, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
@@ -53,8 +69,9 @@ export class SupabaseNotificationAdapter implements INotificationPort {
     userId: string,
     onInsert: (notification: AppNotification) => void,
     onUpdate: (notification: AppNotification) => void,
-    onStatusChange: (status: 'CONNECTED' | 'DISCONNECTED' | 'ERROR') => void
+    onStatusChange: (status: NotificationStatus) => void
   ): () => void {
+
     const channel = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .channel(`notifications:global:${userId}`)
       .on(

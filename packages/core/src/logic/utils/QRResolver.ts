@@ -58,7 +58,7 @@ export function resolveQR(raw: string): QRResolveResult {
         v: 1,
         action: 'user_invite',
         inviter_id: trimmed,
-        inviter_authority: 'unknown',
+        inviter_capacity: 'unknown',
       },
     };
   }
@@ -137,9 +137,8 @@ function buildPayloadFromParams(
     }
 
     case 'claim_invite': {
-      const { invite_code, school_id, role, authority } = params;
-      const finalAuthority = authority || role;
-      if (!invite_code || !school_id || !finalAuthority)
+      const { invite_code, school_id, capacity } = params;
+      if (!invite_code || !school_id || !capacity)
         return { ok: false, error: 'invalid', raw };
       return {
         ok: true,
@@ -148,14 +147,13 @@ function buildPayloadFromParams(
           action,
           invite_code,
           school_id,
-          authority: finalAuthority,
+          capacity,
         },
       };
     }
 
     case 'user_invite': {
-      const { inviter_id, inviter_role, inviter_authority, username } = params;
-      const finalInviterAuthority = inviter_authority || inviter_role || 'unknown';
+      const { inviter_id, inviter_capacity, username } = params;
       if (!inviter_id) return { ok: false, error: 'invalid', raw };
       return {
         ok: true,
@@ -163,7 +161,7 @@ function buildPayloadFromParams(
           v: 1,
           action,
           inviter_id,
-          inviter_authority: finalInviterAuthority,
+          inviter_capacity: inviter_capacity || 'unknown',
           username,
         },
       };

@@ -43,9 +43,9 @@ export {
   setPendingGateAction,
 } from './lib/pendingGateAction';
 export {
-  getAuthorityLabel,
-  getSchoolRoleForUser,
-  getWorkRolesForUser,
+  getCapacityLabel,
+  getSchoolCapacityForUser,
+  getWorkCapacitiesForUser,
 } from './lib/permissions';
 export { StorageKeys, storage } from './lib/storage';
 export { SafeZustandStorage } from './lib/storageWrapper';

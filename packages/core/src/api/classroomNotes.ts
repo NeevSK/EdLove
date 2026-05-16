@@ -1,27 +1,28 @@
 import type { ClassroomNoteLifecycleEvent } from '../logic/schemas/classroom-note.schema';
 import { APIError } from '../types/API';
 import type { ClassroomNote } from '../types/ClassroomNote';
-import { educational, identity } from '../logic/managers/factory';
+import { educational } from '../logic/managers/factory';
+import { identityAPI } from './identity';
 
 export type { ClassroomNote };
 
 export const classroomNotesAPI = {
   /**
-   * @authority read ClassroomNote
+   * @policy read ClassroomNote
    */
   async getAll(classroomId: string): Promise<ClassroomNote[]> {
     return educational.classroomNotes.getAll(classroomId) as Promise<ClassroomNote[]>;
   },
 
   /**
-   * @authority read ClassroomNote
+   * @policy read ClassroomNote
    */
   async getSnapshotAsOf(classroomId: string, viewDate: string): Promise<ClassroomNote[]> {
     return educational.classroomNotes.getSnapshotAsOf(classroomId, viewDate) as Promise<ClassroomNote[]>;
   },
 
   /**
-   * @authority create ClassroomNote
+   * @policy create ClassroomNote
    */
   async create(note: {
     classroom_id: string;
@@ -29,18 +30,18 @@ export const classroomNotesAPI = {
     note_type: ClassroomNote['note_type'];
     visibility: ClassroomNote['visibility'];
   }): Promise<ClassroomNote> {
-    const myId = await identity.getMyInternalId();
-    if (!myId) throw new APIError('Not authenticated', 'AUTH_REQUIRED');
+    const identity = await identityAPI.identifyActiveCitizen();
+    if (!identity) throw new APIError('Not authenticated', 'AUTH_REQUIRED');
     
-    return educational.classroomNotes.create(myId, {
+    return educational.classroomNotes.create(identity.id, {
       ...note,
-      author_id: myId,
+      author_id: identity.id,
       is_pinned: false,
     }) as Promise<ClassroomNote>;
   },
 
   /**
-   * @authority update ClassroomNote
+   * @policy update ClassroomNote
    */
   async update(
     id: string,
@@ -50,14 +51,14 @@ export const classroomNotesAPI = {
   },
 
   /**
-   * @authority delete ClassroomNote
+   * @policy delete ClassroomNote
    */
   async delete(id: string): Promise<void> {
     await educational.classroomNotes.delete(id);
   },
 
   /**
-   * @authority read ClassroomNote
+   * @policy read ClassroomNote
    */
   async getTimeline(id: string): Promise<ClassroomNoteLifecycleEvent[]> {
     return educational.classroomNotes.getTimeline(id) as Promise<ClassroomNoteLifecycleEvent[]>;

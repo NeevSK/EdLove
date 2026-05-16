@@ -46,14 +46,14 @@ const normalizeUser = (record: ZenStackUser | null | undefined): User | null => 
     id: record.id,
     email: record.email ?? '',
     full_name: record.full_name ?? '',
-    // Legacy authority removed in favor of ReBAC Bonds
+    // ReBAC Bonds now carry the canonical capacity context
     school_id: record.school_id ?? null,
     profile_completed: !!record.profile_completed,
     onboarding_completed: !!record.onboarding_completed,
     created_at: record.created_at instanceof Date ? record.created_at.toISOString() : (record.created_at as unknown as string) || new Date().toISOString(),
     updated_at: record.updated_at instanceof Date ? record.updated_at.toISOString() : (record.updated_at as unknown as string) || new Date().toISOString(),
     onboarding_completed_at: record.onboarding_completed_at instanceof Date ? record.onboarding_completed_at.toISOString() : (record.onboarding_completed_at as unknown as string),
-  } as User;
+  } as unknown as User;
 };
 
 const normalizeTemporalScale = (viewScale?: ProfileTemporalReadOptions['viewScale']) =>

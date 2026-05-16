@@ -1,4 +1,4 @@
-import type { AuthorityTier } from "@repo/core/types";
+import type { Capacity } from "@repo/core/types";
 import {
 	Box,
 	Heading,
@@ -20,7 +20,7 @@ import {
 import { useTranslation } from "react-i18next";
 
 interface UserStatsCardProps {
-	role: AuthorityTier;
+	capacity: Capacity;
 	stats?: {
 		classesTaught?: number;
 		studentsCount?: number;
@@ -33,9 +33,9 @@ interface UserStatsCardProps {
 
 /**
  * USER STATS CARD
- * Sanctuary V3 standard for displaying role-based statistics.
+ * Sanctuary V3 standard for displaying capacity-based statistics.
  */
-export default function UserStatsCard({ role, stats }: UserStatsCardProps) {
+export default function UserStatsCard({ capacity, stats }: UserStatsCardProps) {
 	const { t } = useTranslation();
 
 	// Sanctuary V3 Standard Colors
@@ -45,9 +45,9 @@ export default function UserStatsCard({ role, stats }: UserStatsCardProps) {
 		warning: "#FFAB00",
 	};
 
-	// Dynamic content based on role
-	const getRoleBasedContent = () => {
-		switch (role) {
+	// Dynamic content based on capacity
+	const getCapacityBasedContent = () => {
+		switch (capacity) {
 			case "teacher":
 			case "sectionHead":
 			case "gradeHead":
@@ -176,7 +176,7 @@ export default function UserStatsCard({ role, stats }: UserStatsCardProps) {
 		}
 	};
 
-	const content = getRoleBasedContent();
+	const content = getCapacityBasedContent();
 
 	return (
 		<Box className="bg-phase-canvas border border-phase-surface rounded-[32px] overflow-hidden shadow-lg mb-6">

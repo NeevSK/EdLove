@@ -49,7 +49,7 @@ export default function ClassroomScreenWeb() {
 					</Heading>
 					<Text className="text-phase-text-secondary max-w-[400px]">
 						{!hasBonds
-							? "Let's get you set up. Choose your role to get started."
+						? "Let's get you set up. Choose your capacity to get started."
 							: "Welcome! To access your classroom workspace, please join your school first."}
 					</Text>
 					<Pressable

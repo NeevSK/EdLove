@@ -50,7 +50,7 @@
 		"afternoon": "Afternoon",
 		"evening": "Evening"
 	},
-	"role": {
+	"capacity": {
 		"teacher": "ගුරුවරයා",
 		"student": "ශිෂ්‍යයා",
 		"principal": "විදුහල්පතිවරයා",
@@ -131,8 +131,8 @@
 		"classroom": "පන්තිය",
 		"selectGrade": "ශ්‍රේණිය තෝරන්න",
 		"selectSection": "අංශය තෝරන්න",
-		"roleClassTeacher": "පන්ති භාර ගුරුවරයා",
-		"roleSubjectTeacher": "විෂය භාර ගුරුවරයා",
+		"capacityClassTeacher": "පන්ති භාර ගුරුවරයා",
+		"capacitySubjectTeacher": "විෂය භාර ගුරුවරයා",
 		"optional": "(විකල්ප)",
 		"inventory": {
 			"title": "බඩු බාහිරාදිය",
@@ -172,7 +172,7 @@
 		"joinCommunity": "ගුරු පවුලට එකතු වෙන්න",
 		"processing": "සකසමින්...",
 		"checkEmail": "ඔබගේ විද්‍යුත් තැපෑල පරීක්ෂා කරන්න!",
-		"role": "භූමිකාව",
+		"capacity": "භූමිකාව",
 		"teacher": "ගුරුවරයා",
 		"student": "ශිෂ්‍යයා",
 		"principal": "විදුහල්පතිවරයා",
@@ -574,7 +574,7 @@
 		"fullName": "සම්පූර්ණ නම",
 		"phone": "දුරකථන අංකය",
 		"bio": "හැඳින්වීම",
-		"role": "භූමිකාව",
+		"capacity": "භූමිකාව",
 		"school": "පාසල",
 		"notSetYet": "තවම සකසා නැත",
 		"guestUser": "අමුත්තා",
@@ -609,8 +609,8 @@
 		"deleteFailedTitle": "Deletion Failed",
 		"deleteFailedMessage": "We could not delete your account. Please try again later.",
 		"subtitle": "Sanctuary Profile",
-		"guestTitle": "Guest Explorer",
-		"guestDesc": "You are exploring as a guest. Create an account to save your sanctuary permanently.",
+		"guestTitle": "Anonymous Explorer",
+		"guestDesc": "You are exploring anonymously. Create an account to save your sanctuary permanently.",
 		"bio_title": "Resonance Story",
 		"no_bio_fallback": "This resident has not yet shared their resonance manifesto with the sanctuary.",
 		"fullProfile": "Profile Details",
@@ -748,14 +748,14 @@
 		}
 	},
 	"onboarding": {
-		"nameTitle": "සාදරයෙන් පිළිගනිමු! අපි ඔබට කුමක් කිව යුතුද?",
-		"nameSubtitle": "ඔබේ නමෙන් පටන් ගනිමු",
-		"namePlaceholder": "ඔබේ සම්පූර්ණ නම ඇතුළත් කරන්න",
+    "nameTitle": "සාදරයෙන් පිළිගනිමු! Gurudevi තුළ ඔබට කුමක් කියමුද?",
+    "nameSubtitle": "ඇප් එක තුළ දෘශ්‍යමාන විය යුතු නමෙන් ආරම්භ කරමු.",
+    "namePlaceholder": "අපි භාවිතා කරන නම ඇතුළත් කරන්න",
 		"nameHint": "ගුරුදෙවි ප්‍රජාව තුළ ඔබව හඳුන්වනු ලබන්නේ මෙලෙසිනි",
-		"roleTitle": "ඔබේ භූමිකාව කුමක්ද?",
-		"roleSubtitle": "මෙය ඔබගේ අත්දැකීම් පුද්ගලීකරණය කිරීමට අපට උපකාරී වේ",
-		"selectRole": "ඔබේ භූමිකාව තෝරන්න",
-		"roleHint": "කණගාටු වෙන්න එපා, ඔබට මෙය පසුව සැකසුම් තුළ යාවත්කාලීන කළ හැකිය",
+		"capacityTitle": "ඔබේ භූමිකාව කුමක්ද?",
+		"capacitySubtitle": "මෙය ඔබගේ අත්දැකීම් පුද්ගලීකරණය කිරීමට අපට උපකාරී වේ",
+		"selectCapacity": "ඔබේ භූමිකාව තෝරන්න",
+		"capacityHint": "කණගාටු වෙන්න එපා, ඔබට මෙය පසුව සැකසුම් තුළ යාවත්කාලීන කළ හැකිය",
 		"welcomeTitle": "ගුරුදෙවි වෙත සාදරයෙන් පිළිගනිමු",
 		"welcomeSubtitle": "ආදරයෙන් ඉපිදුණු, ආදරෙන් ගොඩනගන ලද.",
 		"sectionsTitle": "ස්ථාවර අංශ පහක්",
@@ -786,7 +786,7 @@
 		"skip": "මඟ හරින්න",
 		"complete": "සම්පූර්ණයි",
 		"continue": "ඉදිරියට යන්න",
-		"roleDesc": {
+		"capacityDesc": {
 			"teacher": "පන්ති කාමර හා සිසු යහපැවැත්ම කළමනාකරණය කරන්න",
 			"student": "ඉගෙනුම් ප්‍රගතිය හා පෞද්ගලික වර්ධනය නිරීක්ෂණය කරන්න",
 			"principal": "පාසල් මෙහෙයුම් හා කාර්ය මණ්ඩලය අධීක්ෂණය කරන්න"
@@ -998,7 +998,7 @@
 	"invitationWelcome": {
 		"invited": "ඔබට ඇරයුමක් ලැබිලා!",
 		"welcomeTo": "{{schoolName}} වෙත සාදරයෙන් පිළිගනිමු",
-		"role": "භූමිකාව",
+		"capacity": "භූමිකාව",
 		"joinButton": "එකතු වෙමු!",
 		"joinFailed": "දෝෂයකි",
 		"joinFailedDesc": "ඔබේ විස්තර යාවත්කාලීන කිරීම අසාර්ථකයි. නැවත උත්සාහ කරන්න.",

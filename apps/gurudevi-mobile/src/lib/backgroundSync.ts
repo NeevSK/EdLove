@@ -1,7 +1,7 @@
 /**
  * Background Sync Task — Sovereignty Refactor
  *
- * Architecture role:
+ * Architecture capacity:
  *  - "Sovereign Heartbeat" that drains the Mutation Queue even when the app is
  *    minimised or killed.
  *  - Emits events to the SovereignBus so the foreground UI can react when the

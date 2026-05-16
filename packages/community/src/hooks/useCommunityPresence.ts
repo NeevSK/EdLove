@@ -15,7 +15,7 @@ export function useCommunityPresence({
 	userVibe = "active",
 }: UseCommunityPresenceOptions) {
 	const { can, context } = usePermissions();
-	const userRole =
+	const userCapacity =
 		context.activeBond?.capacity ?? context.primaryCapacity ?? "guest";
 	const [onlineCount, setOnlineCount] = useState(0);
 	const [isLoading, setIsLoading] = useState(true);
@@ -24,7 +24,7 @@ export function useCommunityPresence({
 	const presenceConfig = useMemo(() => {
 		if (can("read", "PrincipalPulse") || can("manage", "PrincipalDashboard")) {
 			return {
-				targetRoles: [
+				targetCapacities: [
 					"teacher",
 					"student",
 					"section_head",
@@ -40,7 +40,7 @@ export function useCommunityPresence({
 
 		if (can("read", "TeacherPulse") || can("manage", "TeacherDashboard")) {
 			return {
-				targetRoles: ["teacher", "section_head", "grade_head", "principal"],
+				targetCapacities: ["teacher", "section_head", "grade_head", "principal"],
 				channelName: "presence:educators",
 				isCumulative: false,
 				perspective: "teacher" as const,
@@ -48,7 +48,7 @@ export function useCommunityPresence({
 		}
 
 		return {
-			targetRoles: ["student"],
+			targetCapacities: ["student"],
 			channelName: "presence:students",
 			isCumulative: false,
 			perspective: "student" as const,
@@ -58,7 +58,7 @@ export function useCommunityPresence({
 	const refreshFallbackCount = useCallback(async () => {
 		try {
 			const count = await fetchPresenceFallbackCount({
-				targetRoles: presenceConfig.targetRoles,
+				targetCapacities: presenceConfig.targetCapacities,
 				isCumulative: presenceConfig.isCumulative,
 				userId,
 			});
@@ -70,7 +70,7 @@ export function useCommunityPresence({
 		} finally {
 			setIsLoading(false);
 		}
-	}, [presenceConfig.isCumulative, presenceConfig.targetRoles, userId]);
+	}, [presenceConfig.isCumulative, presenceConfig.targetCapacities, userId]);
 
 	useEffect(() => {
 		void refreshFallbackCount();
@@ -78,7 +78,7 @@ export function useCommunityPresence({
 
 		const cleanupSession = startPresenceSession({
 			userId,
-			userRole,
+			userCapacity,
 			userVibe,
 			channelName: presenceConfig.channelName,
 			onCountChange: setOnlineCount,
@@ -97,7 +97,7 @@ export function useCommunityPresence({
 		presenceConfig.channelName,
 		refreshFallbackCount,
 		userId,
-		userRole,
+		userCapacity,
 		userVibe,
 	]);
 

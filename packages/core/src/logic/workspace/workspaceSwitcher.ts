@@ -66,20 +66,20 @@ export function resolveWorkspaceSwitcherTargets({
       },
       enabled: founderEnabled,
       status: currentWorkspace === 'founder' ? 'current' : 'available',
-      reason: founderEnabled ? undefined : 'Founder authority is not active for this actor.',
+      reason: founderEnabled ? undefined : 'Founder capacity is not active for this actor.',
     },
     {
       id: 'admin',
       title: 'Admin workspace',
       description:
-        'Platform-system operations, tenant health, authority repair, and audit-driven interventions.',
+        'Platform-system operations, tenant health, policy repair, and audit-driven interventions.',
       destination: {
         kind: 'route',
         name: 'AdminDashboard',
       },
       enabled: adminEnabled,
       status: currentWorkspace === 'admin' ? 'current' : 'available',
-      reason: adminEnabled ? undefined : 'Admin authority is not active for this actor.',
+      reason: adminEnabled ? undefined : 'Admin capacity is not active for this actor.',
     },
     {
       id: 'principal',
@@ -150,8 +150,8 @@ export function resolveWorkspaceSwitcherTargets({
       reason: guardianEnabled
         ? undefined
         : canManageGuardianDashboard && !hasMountedGuardianWorkspace
-          ? 'Guardian authority exists, but the workspace route is not mounted yet.'
-          : 'Guardian authority is not active for this actor.',
+          ? 'Guardian capacity exists, but the workspace route is not mounted yet.'
+          : 'Guardian capacity is not active for this actor.',
     },
   ];
 }

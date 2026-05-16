@@ -1,6 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
 import { useStore } from '../../store/useStore';
-import { identityAPI } from '../identity';
 import { socialAPI } from '../social';
 
 /**
@@ -26,14 +25,14 @@ export function useSocialShieldHooks() {
   const blockMutation = useMutation({
     mutationFn: async (blockedId: string) => {
       if (!user) throw new Error('Unauthorized');
-      return identityAPI.blockUser(user.id, blockedId);
+      return socialAPI.blockUser(blockedId);
     },
   });
 
   const unblockMutation = useMutation({
     mutationFn: async (blockedId: string) => {
       if (!user) throw new Error('Unauthorized');
-      return identityAPI.unblockUser(user.id, blockedId);
+      return socialAPI.unblockUser(blockedId);
     },
   });
 

@@ -36,42 +36,43 @@ describe('teacher insights POA coverage', () => {
     expect(coverage.contract).toBe(teacherInsightsContract);
   });
 
-  test('teacher insights routes carry authority metadata', () => {
-    expect(teacherInsightsContract.listPrivateNotes.metadata?.authority).toEqual({
+  test('teacher insights routes carry policy metadata', () => {
+    expect(teacherInsightsContract.listPrivateNotes.metadata?.policy).toEqual({
       action: 'read',
       subject: 'TeacherInsight',
     });
-    expect(teacherInsightsContract.createPrivateNote.metadata?.authority).toEqual({
+    expect(teacherInsightsContract.createPrivateNote.metadata?.policy).toEqual({
       action: 'create',
       subject: 'TeacherInsight',
     });
-    expect(teacherInsightsContract.finalizeStudentObservation.metadata?.authority).toEqual({
+    expect(teacherInsightsContract.finalizeStudentObservation.metadata?.policy).toEqual({
       action: 'update',
       subject: 'TeacherInsight',
     });
-    expect(teacherInsightsContract.deleteStudentObservation.metadata?.authority).toEqual({
+    expect(teacherInsightsContract.deleteStudentObservation.metadata?.policy).toEqual({
       action: 'delete',
       subject: 'TeacherInsight',
     });
-    expect(teacherInsightsContract.shareStudentObservation.metadata?.authority).toEqual({
+    expect(teacherInsightsContract.shareStudentObservation.metadata?.policy).toEqual({
       action: 'update',
       subject: 'TeacherInsight',
     });
-    expect(teacherInsightsContract.promoteStudentObservation.metadata?.authority).toEqual({
+    expect(teacherInsightsContract.promoteStudentObservation.metadata?.policy).toEqual({
       action: 'create',
       subject: 'TeacherInsightPromotion',
     });
-    expect(teacherInsightsContract.getInsightAuditTrail.metadata?.authority).toEqual({
+    expect(teacherInsightsContract.getInsightAuditTrail.metadata?.policy).toEqual({
       action: 'read',
       subject: 'TeacherInsightAudit',
     });
-    expect(teacherInsightsContract.getInsightTimeline.metadata?.authority).toEqual({
+    expect(teacherInsightsContract.getInsightTimeline.metadata?.policy).toEqual({
       action: 'read',
       subject: 'TeacherInsight',
     });
-    expect(teacherInsightsContract.upsertStudentPotential.metadata?.authority).toEqual({
+    expect(teacherInsightsContract.upsertStudentPotential.metadata?.policy).toEqual({
       action: 'update',
       subject: 'TeacherInsight',
     });
   });
 });
+

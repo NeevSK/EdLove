@@ -51,14 +51,13 @@ export interface JoinGroupPayload {
   handle?: string;
 }
 
-/** Claim a role-specific school invite code */
+/** Claim a capacity-specific school invite code */
 export interface ClaimInvitePayload {
   v: typeof QR_VERSION;
   action: 'claim_invite';
   invite_code: string;
   school_id: string;
-  authority: string;
-  role?: string;
+  capacity: string;
 }
 
 /** Personal referral QR shown on user identity card back */
@@ -66,8 +65,7 @@ export interface UserInvitePayload {
   v: typeof QR_VERSION;
   action: 'user_invite';
   inviter_id: string;
-  inviter_authority: string;
-  inviter_role?: string;
+  inviter_capacity: string;
   username?: string;
 }
 

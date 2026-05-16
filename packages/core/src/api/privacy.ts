@@ -16,13 +16,13 @@ export const privacyAPI = {
    * Fetch privacy ledger entries for the current user
    */
   async getPrivacyLedger() {
-    const myId = await identityAPI.getMyInternalId();
-    if (!myId) throw new Error('Not authenticated');
+    const identity = await identityAPI.identifyActiveCitizen();
+    if (!identity) throw new Error('Not authenticated');
 
     const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('privacy_ledger_entries')
       .select('*')
-      .eq('user_id', myId)
+      .eq('user_id', identity.id)
       .order('created_at', { ascending: false });
 
     if (error) throw error;
@@ -38,15 +38,15 @@ export const privacyAPI = {
     description: string;
     metadata?: any;
   }) {
-    const myId = await identityAPI.getMyInternalId();
-    if (!myId) throw new Error('Not authenticated');
+    const identity = await identityAPI.identifyActiveCitizen();
+    if (!identity) throw new Error('Not authenticated');
 
     const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('privacy_ledger_entries')
       .insert([
         {
           ...input,
-          user_id: myId,
+          user_id: identity.id,
         },
       ])
       .select()

@@ -41,15 +41,13 @@ export class AuthManager {
     return this.authPort.signUp({
       email,
       password,
-      options: { data: { full_name: fullName } }
+      options: { data: { display_name: fullName } }
     });
   }
 
   async signInAnonymously() {
     return this.authPort.signInAnonymously({
       data: {
-        full_name: 'Guest User',
-        capacity: 'student' as Capacity,
         is_anonymous: true,
         citizenship: 'WANDERER',
       }
@@ -62,7 +60,7 @@ export class AuthManager {
       email,
       password,
       data: {
-        full_name: fullName,
+        display_name: fullName,
         capacity,
         is_anonymous: false,
         citizenship: 'SECOND_CLASS',
@@ -72,13 +70,14 @@ export class AuthManager {
     if (!user) throw new APIError('Auth update returned no user', 'AUTH_ERROR');
 
     // 2. Resolve Internal Identity
-    const internalId = await this.identityPort.getMyInternalId();
-    if (!internalId) throw new APIError('Cannot resolve user identity after linking', 'IDENTITY_ERROR');
+    const identity = await this.identityPort.identifyActiveCitizen();
+    if (!identity) throw new APIError('Cannot resolve user identity after linking', 'IDENTITY_ERROR');
+    const internalId = identity.id;
 
     // 3. Update Domain Profile
     await this.identityPort.updateProfile(internalId, {
       email,
-      full_name: fullName,
+      display_name: fullName,
       is_anonymous: false,
       citizenship: 'SECOND_CLASS',
       onboarding_completed: true,
@@ -92,9 +91,9 @@ export class AuthManager {
   }
 
   async isAnonymous(): Promise<boolean> {
-    const userId = await this.identityPort.getMyInternalId();
-    if (!userId) return false;
-    const profile = await this.identityPort.getProfile(userId);
+    const identity = await this.identityPort.identifyActiveCitizen();
+    if (!identity) return false;
+    const profile = await this.identityPort.getProfile(identity.id);
     return profile?.is_anonymous ?? false;
   }
 

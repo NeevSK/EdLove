@@ -43,7 +43,8 @@ export const studentPotentialAPI = {
     studentId: string,
     classroomId: string,
   ): Promise<StudentPotentialAnalysis | null> {
-    const myId = await identityAPI.getMyInternalId();
+    const identity = await identityAPI.identifyActiveCitizen();
+    const myId = identity?.id;
     if (!myId) return null;
     const data = await teacherInsightsAPI.getStudentPotential(studentId, classroomId);
     if (!data) return null;

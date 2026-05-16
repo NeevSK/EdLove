@@ -193,7 +193,7 @@ export interface EducationalRepository {
   createSection(schoolId: string, name: string): Promise<any>;
   createGrade(sectionId: string, number: number): Promise<any>;
   getInviteCodes(schoolId: string): Promise<any[]>;
-  generateInviteCode(schoolId: string, role: string, createdBy: string): Promise<any>;
+  generateInviteCode(schoolId: string, capacity: string, createdBy: string): Promise<any>;
 
   // Academic Cycles
   getAcademicCycles(schoolId: string): Promise<any[]>;
@@ -211,9 +211,9 @@ export interface EducationalRepository {
   getNoteTimeline(id: string): Promise<any[]>;
 
   // Join Requests
-  requestSchoolJoin(userId: string, schoolId: string, role: string): Promise<any>;
+  requestSchoolJoin(userId: string, schoolId: string, capacity: string): Promise<any>;
   updateSchoolJoinRequest(requestId: string, status: string): Promise<any>;
-  requestClassroomJoin(userId: string, classroomId: string, role: string, subjectLabel?: string): Promise<any>;
+  requestClassroomJoin(userId: string, classroomId: string, capacity: string, subjectLabel?: string): Promise<any>;
   updateClassroomJoinRequest(requestId: string, status: string): Promise<any>;
   getClassroomJoinRequest(requestId: string): Promise<any>;
 }

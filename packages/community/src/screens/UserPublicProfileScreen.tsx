@@ -34,14 +34,14 @@ type Nav = NativeStackNavigationProp<CommunityStackParamList, "UserProfile">;
 interface PublicUser {
 	id: string;
 	full_name: string;
-	authority: string;
+	capacity: string;
 	avatar_url?: string | null;
 	bio?: string | null;
 	school_name?: string | null;
 	public_profile?: boolean;
 }
 
-const AUTHORITY_LABELS: Record<string, string> = {
+const CAPACITY_LABELS: Record<string, string> = {
 	student: "Student",
 	teacher: "Teacher",
 	grade_head: "Grade Head",
@@ -85,9 +85,7 @@ export default function UserPublicProfileScreen() {
 
 			const { data: userData } = await supabase
 				.from("users")
-				.select(
-					"id, full_name, authority, avatar_url, public_profile, bio, school:schools(name)",
-				)
+				.select("id, full_name, capacity, avatar_url, public_profile, bio, school:schools(name)")
 				.eq("id", userId)
 				.single();
 
@@ -95,7 +93,7 @@ export default function UserPublicProfileScreen() {
 				setUser({
 					id: userData.id,
 					full_name: userData.full_name,
-					authority: userData.authority,
+					capacity: userData.capacity,
 					avatar_url: userData.avatar_url,
 					bio: userData.bio,
 					public_profile: userData.public_profile ?? true,
@@ -130,8 +128,8 @@ export default function UserPublicProfileScreen() {
 		fetchProfile();
 	}, [fetchProfile]);
 
-	const authorityLabel =
-		AUTHORITY_LABELS[user?.authority ?? ""] ?? user?.authority ?? "";
+	const capacityLabel =
+		CAPACITY_LABELS[user?.capacity ?? ""] ?? user?.capacity ?? "";
 	const isPrivate =
 		user && user.public_profile === false && currentUserId !== userId;
 
@@ -169,7 +167,7 @@ export default function UserPublicProfileScreen() {
 		<ScreenWrapper noTopInset scroll={false} className="bg-phase-canvas">
 			<GlobalHeader
 				title={user?.full_name ?? userName ?? "Profile"}
-				subtitle={authorityLabel}
+				subtitle={capacityLabel}
 				showBack
 				onBack={() => navigation.goBack()}
 			/>
@@ -210,7 +208,7 @@ export default function UserPublicProfileScreen() {
 											className="text-phase-interactive"
 										/>
 										<Text className="text-phase-interactive text-[12px] font-bold">
-											{authorityLabel}
+											{capacityLabel}
 										</Text>
 									</HStack>
 

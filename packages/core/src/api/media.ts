@@ -1,4 +1,4 @@
-import { media } from '../logic/managers/factory';
+import { media } from '../logic/managers/media.factory';
 import { FileUploadOptions } from '../logic/ports/storage.port';
 
 /**

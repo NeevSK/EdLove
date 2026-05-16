@@ -1,93 +1,40 @@
-# 💠 Sovereign Identity Fabric: Truthful Audit (2026.05)
+# Sovereign Identity Fabric: Historical Audit
 
-This document serves as the authoritative technical reference for the **Gurudevi Sovereign Identity Fabric**. It documents the end-to-end flow of identity, authority, and onboarding logic across the entire stack.
+This document is a historical audit of the older identity and onboarding model.
+It is retained for investigation and migration history only.
+
+Canonical references:
+
+- `apps/gurudevi-mobile/docs/architecture/legacy-free-agentic-mcp-ssot.md`
+- `packages/core/docs/DATA_ODYSSEY.md`
+- `docs/architecture/authorization.md`
+
+The old terminology in this file should be treated as archival context, not runtime truth.
 
 ---
 
-## 🏛️ 1. Database & RLS Layer (Foundation)
-The identity fabric is anchored in two primary Supabase tables, governed by **Row Level Security (RLS)**.
+## 1. Database & RLS Layer (Foundation)
+The identity fabric was originally anchored in Supabase tables and RLS policies.
 
 ### `users` Table
-- **Purpose**: Primary identity storage.
-- **Key Columns**: `id` (UUID), `is_anonymous` (Boolean), `school_id` (UUID, nullable), `onboarding_completed` (Boolean).
-- **RLS Policies**:
-  - `SELECT`: Allowed for all authenticated users (Self-read).
-  - `UPDATE`: Restricted to the user themselves (`public.get_my_id() = id`).
-  - **Critical Note**: Anonymous users are mapped to a temporary internal ID to allow profile updates during guest exploration.
+- Purpose: primary identity storage.
+- Key columns historically included `id`, `is_anonymous`, `school_id`, and `onboarding_completed`.
 
 ### `bonds` Table
-- **Purpose**: Atomic unit of **Relationship-Based Access Control (ReBAC)**.
-- **Columns**: `user_id`, `entity_id`, `entity_type` (PLATFORM, SCHOOL, PERSONAL), `capacity` (admin, teacher, student).
-- **RLS Policies**:
-  - `INSERT`: Enabled for authenticated users to bootstrap their own identity (`public.get_my_id() = user_id`).
-  - `SELECT`: Allowed for the user themselves or Platform Admins.
+- Purpose: atomic unit of ReBAC.
+- Historical columns included `user_id`, `entity_id`, `entity_type`, and `capacity`.
 
 ---
 
-## 📜 2. ZenStack / Model Layer (Policy)
-Access rules are declaratively defined in `schema.zmodel` and compiled into CASL-compatible policies.
-
-```prisma
-model Bond {
-  // Access Control: Platform Admins or the user themselves can manage their bonds
-  @@allow('all', auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
-  @@allow('read', auth() != null && user_id == auth().id)
-  @@allow('create', auth() != null && user_id == auth().id)
-}
-```
+## 2. Policy Layer
+Access rules were historically defined in `schema.zmodel` and translated into policy checks.
 
 ---
 
-## 🛡️ 3. Zod Layer (Validation & Runtime Context)
-`packages/core/src/logic/schemas/user.schema.ts` defines the authoritative runtime shape of a user's context.
-
-- **Naming Convention**: Strict `snake_case` (e.g., `user_id`, `active_bond`).
-- **UserContextSchema**:
-  - `bonds`: The "Union of Identity" (All active relationships).
-  - `active_bond`: The current "Perspective" (The lens through which the user acts).
-  - `is_anonymous`: Boolean flag for "Wanderer" status.
+## 3. Runtime Context
+The runtime context now belongs to the canonical SSOT docs and should be read there.
 
 ---
 
-## 🔑 4. Policy-Oriented Authority (POA) (The Gatekeeper)
-Authority is enforced via a proxy layer (`createPOAProxy`) that intercepts API calls and validates them against the **Authority Contract**.
-
-- **Gatekeeper**: `poaProxy.ts`
-- **Contract**: `identity.contract.ts` defines required actions (`read`, `update`, `resolve`).
-- **Internal Bypass**: Methods like `getActivePerspective` or `getBonds` are added to `ignoredMethods` to allow the identity system to bootstrap itself without triggering circular authority checks.
-
----
-
-## 🧠 5. API Orchestration (The Brain)
-`packages/core/src/api/orchestration/identity.ts` coordinates identity resolution.
-
-- **`getOnboardingStatus(id)`**:
-  - State Machine: `ARRIVAL` -> `IDENTITY_SELECTION` -> `SANCTUARY_INIT` -> `COMPLETED`.
-  - Determines if the user is a "Wanderer" or a "Citizen" based on auth status and bond presence.
-
----
-
-## 🎨 6. UI Layer: Onboarding Logic (Interface)
-Implemented with functional parity in `OnboardingScreen.tsx` (Native) and `OnboardingScreen.web.tsx`.
-
-### The "Wanderer" (Guest) Logic
-1. **Entrance**: User taps "Explore as Guest".
-2. **Identity Selection**: User chooses a role (e.g., Teacher).
-3. **The Gate**: 
-   - `if (isAnonymous)` -> Skip `initializePersonalWorkspace`.
-   - Wanderers are bound to `entity_id: 'GLOBAL'` with `entity_type: 'GUEST'`.
-4. **Resumption**: If a user reloads the app, the UI fetches `getOnboardingStatus` and resumes the correct step automatically.
-
-### The "Citizen" (Authenticated) Logic
-1. **Entrance**: User signs up/logs in via Google or Email.
-2. **Workspace Initialization**: 
-   - `if (!isAnonymous)` -> Call `initializePersonalWorkspace`.
-   - Creates a **Personal Workspace** for the user immediately.
-3. **Promotion**: Once the user joins a school, they are promoted to a `SCHOOL` bond.
-
----
-
-## ⚠️ 7. Critical Implementation Rules
-1. **No CamelCase**: Identity attributes in DB/API/Zod MUST be `snake_case`.
-2. **Prop vs Profile**: Always use the `isAnonymous` prop passed to UI screens rather than re-fetching `profile.is_anonymous` to prevent race conditions during hydration.
-3. **Contract Coverage**: Every new identity-related API method MUST be either in `identity.contract.ts` or `ignoredMethods` in the orchestration proxy.
+## 4. Migration Rule
+If this file conflicts with the canonical docs, the canonical docs win.

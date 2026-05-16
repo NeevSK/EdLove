@@ -24,7 +24,7 @@ export const erpContract = c.router({
       200: z.array(AccountSchema),
     },
     metadata: POAMetadataSchema.parse({
-      authority: {
+      policy: {
         action: 'read',
         subject: 'Accounting',
       },
@@ -42,7 +42,7 @@ export const erpContract = c.router({
       200: z.array(FinancialTransactionSchema),
     },
     metadata: POAMetadataSchema.parse({
-      authority: {
+      policy: {
         action: 'read',
         subject: 'Accounting',
       },
@@ -56,7 +56,7 @@ export const erpContract = c.router({
       201: FinancialTransactionSchema,
     },
     metadata: POAMetadataSchema.parse({
-      authority: {
+      policy: {
         action: 'create',
         subject: 'Accounting',
       },
@@ -77,7 +77,7 @@ export const erpContract = c.router({
       201: PaymentIntentSchema,
     },
     metadata: POAMetadataSchema.parse({
-      authority: {
+      policy: {
         action: 'create',
         subject: 'Payments',
       },
@@ -94,7 +94,7 @@ export const erpContract = c.router({
       200: z.array(InvoiceSchema),
     },
     metadata: POAMetadataSchema.parse({
-      authority: {
+      policy: {
         action: 'read',
         subject: 'Payments',
       },
@@ -107,10 +107,11 @@ export const erpContract = c.router({
       200: ReceiptSchema,
     },
     metadata: POAMetadataSchema.parse({
-      authority: {
+      policy: {
         action: 'read',
         subject: 'Payments',
       },
     }),
   },
 });
+

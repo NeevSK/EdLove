@@ -91,7 +91,8 @@ async function rpcSingle<T>(fn: string, params: Record<string, unknown>) {
 }
 
 async function requireAccountId(accountId?: string) {
-  const resolved = accountId ?? (await identityAPI.getMyInternalId());
+  const identity = await identityAPI.identifyActiveCitizen();
+  const resolved = accountId ?? identity?.id;
   if (!resolved) {
     throw new APIError('No authenticated account is available for device trust operations.');
   }

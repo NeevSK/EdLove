@@ -43,7 +43,7 @@ async function listEvents(
 
 export const longitudinalAPI = {
   /**
-   * @authority read Student
+   * @policy read Student
    */
   async getStudentTimeline(
     studentId: string,
@@ -59,7 +59,7 @@ export const longitudinalAPI = {
   },
 
   /**
-   * @authority read Student
+   * @policy read Student
    */
   async getStudentSnapshotAsOf(
     studentId: string,
@@ -80,3 +80,4 @@ export const longitudinalAPI = {
 };
 
 void longitudinalContract;
+

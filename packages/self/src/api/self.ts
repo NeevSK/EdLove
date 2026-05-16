@@ -1,23 +1,25 @@
 import {
-	assertContractCoverage,
-	createPOAProxy,
-	defineContractCoverage,
+	createSovereignClient,
+	SOVEREIGN_API_URL,
+	type AppType,
 	growthSignalsAPI,
-	selfContract,
-	supabase,
 } from "@repo/core/api";
 
 import { APIError } from "@repo/core/types";
+import type { MoodLog, FireJournalEntry } from "../types";
 
-import type { FireJournalEntry, MoodLog } from "../types";
+// Create the type-safe RPC client
+const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
 
-// ============================================================================
-// SELF API (Wellbeing & Reflection)
-// ============================================================================
-
-const rawSelfAPI = {
+/**
+ * SELF API (Sovereign Hono Proxy)
+ * 
+ * This module no longer talks to Supabase directly. 
+ * It acts as a lightweight RPC proxy to the Sanctuary API on Railway.
+ */
+export const selfAPI = {
 	/**
-	 * @authority create Wellbeing
+	 * Log a new mood signal via the Remote API.
 	 */
 	async logMood(
 		userId: string,
@@ -25,31 +27,23 @@ const rawSelfAPI = {
 		note?: string,
 		mood?: MoodLog["mood"],
 	): Promise<MoodLog> {
-		// AuthorityInterceptor handles authentication and authorization check
+		const res = await client.api.self.mood.$post({
+			json: {
+				user_id: userId,
+				mood_score: score,
+				mood,
+				note,
+			},
+		});
 
-		// Validate mood score (1-5)
-		if (score < 1 || score > 5) {
-			throw new APIError("Mood score must be between 1 and 5", "INVALID_SCORE");
+		if (!res.ok) {
+			const error = await res.json() as any;
+			throw new APIError(error.message || "Failed to log mood", res.status.toString());
 		}
 
-		const { data, error } = await supabase
-			.from("mood_logs")
-			.insert([
-				{
-					user_id: userId,
-					mood_score: score,
-					mood,
-					note,
-				},
-			])
-			.select()
-			.single();
+		const data = await res.json() as MoodLog;
 
-		if (error) {
-			throw new APIError("Failed to log mood", error.code, error);
-		}
-
-		// Growth signal: teacher chose to check in with themselves (Presence  Tier 2 Care Signal)
+		// Emit growth signal (Side effect remains in client for now)
 		growthSignalsAPI.emitSilent({
 			user_id: userId,
 			event_type: "mood_checkin",
@@ -60,50 +54,37 @@ const rawSelfAPI = {
 	},
 
 	/**
-	 * @authority read Wellbeing
+	 * Retrieve mood history.
 	 */
 	async getMoodHistory(userId: string, limit: number = 30): Promise<MoodLog[]> {
-		const { data, error } = await supabase
-			.from("mood_logs")
-			.select("*")
-			.eq("user_id", userId)
-			.order("created_at", { ascending: false })
-			.limit(limit);
+		const res = await client.api.self.mood.$get({
+			query: { userId, limit: limit.toString() },
+		});
 
-		if (error) {
-			throw new APIError("Failed to fetch mood history", error.code, error);
+		if (!res.ok) {
+			throw new APIError("Failed to fetch mood history", res.status.toString());
 		}
 
-		return data || [];
+		return await res.json() as MoodLog[];
 	},
 
 	/**
-	 * @authority create Wellbeing
+	 * Release a journal entry to the flames.
 	 */
 	async burnJournal(
 		userId: string,
 		content: string,
 	): Promise<FireJournalEntry> {
-		// Only store preview (first 50 characters) for privacy
-		const contentPreview = content.substring(0, 50);
+		const res = await client.api.self.journal.burn.$post({
+			json: { content },
+		});
 
-		const { data, error } = await supabase
-			.from("fire_journal")
-			.insert([
-				{
-					user_id: userId,
-					content_preview: contentPreview,
-					is_burned: true,
-				},
-			])
-			.select()
-			.single();
-
-		if (error) {
-			throw new APIError("Failed to burn journal entry", error.code, error);
+		if (!res.ok) {
+			throw new APIError("Failed to burn journal entry", res.status.toString());
 		}
 
-		// Growth signal: teacher processed difficult emotions (Presence  Tier 2 Care Signal)
+		const data = await res.json() as FireJournalEntry;
+
 		growthSignalsAPI.emitSilent({
 			user_id: userId,
 			event_type: "fire_journal_entry",
@@ -114,71 +95,36 @@ const rawSelfAPI = {
 	},
 
 	/**
-	 * @authority read Wellbeing
+	 * Retrieve burned history.
 	 */
 	async getBurnedHistory(
 		userId: string,
 		limit: number = 10,
 	): Promise<FireJournalEntry[]> {
-		const { data, error } = await supabase
-			.from("fire_journal")
-			.select("id, user_id, content_preview, is_burned, created_at")
-			.eq("user_id", userId)
-			.eq("is_burned", true)
-			.order("created_at", { ascending: false })
-			.limit(limit);
+		const res = await client.api.self.journal.$get({
+			query: { userId, limit: limit.toString() },
+		});
 
-		if (error) {
-			throw new APIError("Failed to fetch burned history", error.code, error);
+		if (!res.ok) {
+			throw new APIError("Failed to fetch burned history", res.status.toString());
 		}
 
-		return data || [];
+		return await res.json() as FireJournalEntry[];
 	},
 
 	/**
-	 * @authority read Wellbeing
+	 * Retrieve today's mood.
 	 */
 	async getTodayMood(userId: string): Promise<MoodLog | null> {
-		const today = new Date();
-		today.setHours(0, 0, 0, 0);
+		const res = await client.api.self.mood.today.$get({
+			query: { userId },
+		});
 
-		const { data, error } = await supabase
-			.from("mood_logs")
-			.select("*")
-			.eq("user_id", userId)
-			.gte("created_at", today.toISOString())
-			.order("created_at", { ascending: false })
-			.limit(1)
-			.single();
-
-		if (error) {
-			if (error.code === "PGRST116") {
-				return null; // No mood logged today
-			}
-			throw new APIError("Failed to fetch today mood", error.code, error);
+		if (!res.ok) {
+			if (res.status === 404) return null;
+			throw new APIError("Failed to fetch today mood", res.status.toString());
 		}
 
-		return data;
+		return await res.json() as MoodLog;
 	},
 };
-
-const selfCoverage = assertContractCoverage(
-	rawSelfAPI,
-	defineContractCoverage({
-		moduleName: "self",
-		contract: selfContract,
-		methodMapping: {
-			getBurnedHistory: "getJournalHistory",
-		},
-	}),
-);
-
-export const selfAPI = createPOAProxy(
-	"self",
-	rawSelfAPI,
-	selfCoverage.contract,
-	selfCoverage.methodMapping,
-	{ strictUnmappedMethods: true },
-);
-
-void [selfContract];

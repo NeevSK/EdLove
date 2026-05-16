@@ -138,7 +138,7 @@ function normalizeDeviceSecurityEventRow(
     createdAt: row.created_at,
     accountId: row.account_id ?? null,
     device:
-          row.device_id && row.install_id
+      row.device_id && row.install_id
         ? {
             deviceId: row.device_id,
             installId: row.install_id,
@@ -272,12 +272,13 @@ async function runQueuedDeviceSecurityMutation<T>(
 }
 
 async function requireAccountId(accountId?: string) {
-  const resolved = accountId ?? (await identityAPI.getMyInternalId());
-  if (!resolved) {
+  if (accountId) return accountId;
+  const identity = await identityAPI.identifyActiveCitizen();
+  if (!identity) {
     throw new APIError('No authenticated account is available for device trust operations.');
   }
 
-  return resolved;
+  return identity.id;
 }
 
 export const deviceTrustAPI = {

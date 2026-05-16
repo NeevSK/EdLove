@@ -10,8 +10,6 @@ import { teacherInsightsAPI as rawTeacherInsightsAPI } from '../teacherInsights'
 import { teacherInsightsContract } from '../teacherInsights.contract';
 import { longitudinalAPI as rawLongitudinalAPI } from '../longitudinal';
 import { longitudinalContract } from '../longitudinal.contract';
-import { classroomNotesAPI as rawClassroomNotesAPI } from '../classroomNotes';
-import { classroomNotesContract } from '../classroomNotes.contract';
 import { assertContractCoverage, defineContractCoverage } from '../contractCoverage';
 import { createPOAProxy } from '../poaProxy';
 import { createTemporalPOAProxy } from '../temporalPOAProxy';
@@ -137,29 +135,5 @@ export const longitudinalAPI = createTemporalPOAProxy(
   rawLongitudinalAPI,
   longitudinalCoverage.contract,
   longitudinalCoverage.methodMapping,
-  { strictUnmappedMethods: true },
-);
-
-const classroomNotesCoverage = assertContractCoverage(
-  rawClassroomNotesAPI,
-  defineContractCoverage({
-    moduleName: 'classroomNotes',
-    contract: classroomNotesContract,
-    methodMapping: {
-      getAll: 'listVisibleNotes',
-      getSnapshotAsOf: 'getVisibleNotesSnapshot',
-      create: 'createClassroomNote',
-      update: 'updateClassroomNote',
-      delete: 'deleteClassroomNote',
-      getTimeline: 'getClassroomNoteTimeline',
-    },
-  }),
-);
-
-export const notesWithPOA = createTemporalPOAProxy(
-  'classroomNotes',
-  rawClassroomNotesAPI,
-  classroomNotesCoverage.contract,
-  classroomNotesCoverage.methodMapping,
   { strictUnmappedMethods: true },
 );

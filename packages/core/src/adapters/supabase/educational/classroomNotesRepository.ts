@@ -23,10 +23,10 @@ type ClassroomNoteRow = Record<string, unknown> & {
   is_pinned: boolean;
   created_at: string;
   updated_at: string;
-  author?: { full_name: string; role: string };
+  author?: { full_name: string; capacity: string };
 };
 
-const selectNoteFields = '*, author:users(full_name, role)';
+const selectNoteFields = '*, author:users(full_name, capacity)';
 
 const sortNotes = (notes: ClassroomNoteRecord[]) =>
   [...notes].sort((left, right) => {

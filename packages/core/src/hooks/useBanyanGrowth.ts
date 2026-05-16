@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { type BanyanStage, naturePathsAPI } from '../api/naturePaths';
+import { type BanyanStage } from '../types/Growth';
+import { growth } from '../logic';
+
 import { usePermissions } from '../logic/permissions/hooks/usePermissions';
 
 /**
@@ -21,14 +23,21 @@ export function useBanyanGrowth() {
     if (!userId) return;
     setIsLoading(true);
     try {
-      const state = await naturePathsAPI.getBanyanState(userId);
-      setBanyan(state);
+      const state = await growth.getGrowthState(userId);
+      if (state) {
+        setBanyan({
+          banyan_stage: state.banyan_stage,
+          peer_mentored_count: state.peer_mentored_count,
+          circles_facilitated_count: state.circles_facilitated_count,
+        });
+      }
     } catch (error) {
       console.error('[useBanyanGrowth] Error fetching Banyan state:', error);
     } finally {
       setIsLoading(false);
     }
   }, [userId]);
+
 
   useEffect(() => {
     refreshBanyan().catch((e) => {

@@ -49,7 +49,7 @@ export default function FullProfileScreenWeb() {
   const [showThuthimalModal, setShowThuthimalModal] = useState(false);
 
   const currentUserId = currentUser?.id;
-  const currentUserName = currentUser?.full_name || currentUser?.email || '';
+  const currentUserName = currentUser?.display_name || currentUser?.email || '';
 
   if (!profile) return null;
 
@@ -86,10 +86,10 @@ export default function FullProfileScreenWeb() {
         <Box className="max-w-[800px] mx-auto w-full p-6">
           <VStack space="2xl">
             <HStack space="xl" className="items-center">
-              <AvatarDisplay
-                userId={profile.id}
-                avatarUrl={profile.avatar_url}
-                fullName={profile.full_name}
+                <AvatarDisplay
+                  userId={profile.id}
+                  avatarUrl={profile.avatar_url}
+                  fullName={profile.display_name}
                 size={120}
                 editable={!isOtherProfile}
                 onAvatarSelected={async (localUri) => {
@@ -101,7 +101,7 @@ export default function FullProfileScreenWeb() {
                 }}
               />
               <VStack>
-                <Heading size="xl">{profile.full_name}</Heading>
+                <Heading size="xl">{profile.display_name}</Heading>
                 <Text className="text-text-tertiary">@{profile.username || 'no-handle'}</Text>
                 {isTeacherProfile && profile.school_id ? (
                   <StaffPresencePulse userId={profile.id} schoolId={profile.school_id} />
@@ -117,8 +117,24 @@ export default function FullProfileScreenWeb() {
                 <EditableItem
                   icon={UserIcon}
                   label={t('profile.fullName')}
-                  value={profile.full_name}
-                  field="full_name"
+                  value={profile.display_name}
+                  field="display_name"
+                  onSave={handleSave}
+                  disabled={isOtherProfile}
+                />
+                <EditableItem
+                  icon={UserIcon}
+                  label={t('profile.firstName') || 'First name'}
+                  value={profile.first_name ?? undefined}
+                  field="first_name"
+                  onSave={handleSave}
+                  disabled={isOtherProfile}
+                />
+                <EditableItem
+                  icon={UserIcon}
+                  label={t('profile.lastName') || 'Last name'}
+                  value={profile.last_name ?? undefined}
+                  field="last_name"
                   onSave={handleSave}
                   disabled={isOtherProfile}
                 />
@@ -133,9 +149,9 @@ export default function FullProfileScreenWeb() {
               </VStack>
             </Box>
 
-            <ContactLinktree
-              links={socialLinks || []}
-              userName={profile.full_name}
+              <ContactLinktree
+                links={socialLinks || []}
+                userName={profile.display_name}
               bio={profile.bio ?? undefined}
               userId={profile.id}
               isOwnProfile={!isOtherProfile}
@@ -166,7 +182,7 @@ export default function FullProfileScreenWeb() {
           isOpen={showThuthimalModal}
           onClose={() => setShowThuthimalModal(false)}
           recipientId={profile.id}
-          recipientName={profile.full_name ?? 'this person'}
+          recipientName={profile.display_name ?? 'this person'}
           recipientTier={(profileCapacity || 'teacher') as any}
           giverId={currentUserId}
           giverName={currentUserName}

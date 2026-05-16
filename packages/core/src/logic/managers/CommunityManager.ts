@@ -1,6 +1,6 @@
 import { ICommunityRepository, PostFilters } from '../domains/community/ports';
 import { Post, Comment, PollStatus } from '../../types';
-import { growthSignalsAPI } from '../../api/growthSignals';
+import { GrowthManager } from './GrowthManager';
 
 /**
  * CommunityManager
@@ -9,7 +9,8 @@ import { growthSignalsAPI } from '../../api/growthSignals';
  * Orchestrates repository access and cross-domain side-effects (e.g. Growth Signals).
  */
 export class CommunityManager {
-  constructor(private repo: ICommunityRepository) {}
+  constructor(private repo: ICommunityRepository, private growth: GrowthManager) {}
+
 
   async getPosts(filters: PostFilters): Promise<Post[]> {
     return this.repo.getPosts(filters);
@@ -18,13 +19,13 @@ export class CommunityManager {
   async createPost(params: {
     post: Partial<Post>;
     userId: string;
-    authorityTier: string;
+    capacity: string;
     schoolId: string;
   }): Promise<Post> {
     const post = await this.repo.createPost(params);
 
     // Side-effect: Emit growth signal
-    void growthSignalsAPI.emitSilent({
+    void this.growth.emitSilent({
       user_id: params.userId,
       event_type: 'community_post_created',
       event_metadata: {
@@ -32,6 +33,7 @@ export class CommunityManager {
         school_id: params.schoolId,
       },
     });
+
 
     return post;
   }

@@ -14,7 +14,7 @@ import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from './supabase';
 export const accountingAPI = {
   /**
    * Get all accounts for the current school/tenancy
-   * @authority read Accounting
+   * @policy read Accounting
    */
   async getAccounts(): Promise<z.infer<typeof AccountSchema>[]> {
     const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
@@ -31,7 +31,7 @@ export const accountingAPI = {
 
   /**
    * Record a financial transaction
-   * @authority create Accounting
+   * @policy create Accounting
    */
   async recordTransaction(
     tx: Omit<z.infer<typeof FinancialTransactionSchema>, 'id'>,
@@ -52,7 +52,7 @@ export const accountingAPI = {
 export const paymentsAPI = {
   /**
    * Create a payment intent for specified provider
-   * @authority create Payments
+   * @policy create Payments
    */
   async createPaymentIntent(vars: {
     amount: number;
@@ -73,7 +73,7 @@ export const paymentsAPI = {
 
   /**
    * Get invoices for a customer
-   * @authority read Payments
+   * @policy read Payments
    */
   async getInvoices(customerId?: string): Promise<z.infer<typeof InvoiceSchema>[]> {
     let query = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('billing_invoices').select('*');
@@ -93,3 +93,4 @@ export const paymentsAPI = {
 
 // Satisfy contract coverage checks
 void erpContract;
+

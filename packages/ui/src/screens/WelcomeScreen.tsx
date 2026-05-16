@@ -229,7 +229,7 @@ const WelcomeScreen = memo(({ onLogin, onGuest }: WelcomeScreenProps) => {
                   BEGIN QUIETLY
                 </Text>
                 <Text className="text-phase-text-secondary text-sm leading-relaxed">
-                  Enter as a guest to explore the sanctuary, or return to the account that already
+                  Enter as an anonymous explorer to explore the sanctuary, or return to the account that already
                   holds your path.
                 </Text>
               </VStack>

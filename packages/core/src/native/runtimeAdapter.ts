@@ -174,9 +174,10 @@ export const nativeNotificationProvider: any = {
   getBadgeCountAsync: () => Notifications.getBadgeCountAsync(),
   
   addPushTokenListener: (callback: (token: string) => void) => {
-    const subscription = Notifications.addPushTokenListener((token) => callback(token.data));
+    const subscription = Notifications.addPushTokenListener((token: any) => callback(token.data));
     return () => subscription.remove();
   },
+
   addNotificationReceivedListener: (callback: (notification: any) => void) => {
     const subscription = Notifications.addNotificationReceivedListener(callback);
     return () => subscription.remove();

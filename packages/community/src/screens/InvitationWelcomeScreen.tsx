@@ -12,7 +12,7 @@ import Animated, { FadeInDown } from "react-native-reanimated";
 interface InvitationWelcomeScreenProps {
 	route?: {
 		params: {
-			role: string;
+			capacity: string;
 			schoolName: string;
 		};
 	};
@@ -24,7 +24,7 @@ export default function InvitationWelcomeScreen({
 	const navigation = useNavigation<any>();
 	const { showToast } = useSanctuaryToast();
 	const { t } = useTranslation();
-	const role = route?.params?.role || "User";
+	const capacity = route?.params?.capacity || "User";
 	const schoolName = route?.params?.schoolName || "the Sanctuary";
 
 	const handleJoin = async () => {
@@ -35,7 +35,7 @@ export default function InvitationWelcomeScreen({
 				const { error } = await supabase
 					.from("users")
 					.update({
-						role: role.toLowerCase(),
+						capacity: capacity.toLowerCase(),
 						organization_name: schoolName,
 						onboarding_completed: true,
 						onboarding_completed_at: new Date().toISOString(),
@@ -111,10 +111,10 @@ export default function InvitationWelcomeScreen({
 								</Box>
 								<VStack className="gap-0.5">
 									<Text className="text-ink/40 text-[10px] font-bold uppercase tracking-widest text-left">
-										{t("invitationWelcome.role") || "Sovereign Role"}
+										{t("invitationWelcome.capacity") || "Sovereign Capacity"}
 									</Text>
 									<Text className="text-ink text-lg font-black text-left">
-										{role.charAt(0).toUpperCase() + role.slice(1)}
+										{capacity.charAt(0).toUpperCase() + capacity.slice(1)}
 									</Text>
 								</VStack>
 							</HStack>

@@ -19,7 +19,7 @@ function hasBondStatus(bond: UserBond): bond is UserBond & { status: NonNullable
 /**
  * composeUserAbilities: The 2026 Unified Composition Engine.
  * 1. Validates the UserContext via Zod ABI (Attribute-Based Identity).
- * 2. Merges decentralized role-based abilities via CASL.
+ * 2. Merges decentralized capacity-based abilities via CASL.
  * 3. Returns a consistent Ability instance for Client (Pure) or Server (Prisma).
  */
 export const composeUserAbilities = (rawContext: Partial<UserContext>): AppAbility => {
@@ -99,7 +99,7 @@ export const composeUserAbilities = (rawContext: Partial<UserContext>): AppAbili
     // while moving towards relationship-scoped permissions.
     const contextualUser: UserContext = {
       ...user,
-      school_id: (entity_type === 'SCHOOL' || entity_type === 'GUEST' || entity_type === 'PERSONAL') ? entity_id : user.school_id,
+      school_id: (entity_type === 'SCHOOL' || entity_type === 'PERSONAL') ? entity_id : user.school_id,
       active_bond_status: hasBondStatus(bond) ? bond.status : 'active',
     };
 

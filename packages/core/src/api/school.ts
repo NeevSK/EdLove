@@ -123,7 +123,7 @@ export const schoolAPI = {
   /**
    * Generate a new invite code for a school
    */
-  async generateInviteCode(schoolId: string, role: string, createdBy: string): Promise<any> {
-    return educational.institutions.generateInviteCode(schoolId, role, createdBy);
+  async generateInviteCode(schoolId: string, capacity: string, createdBy: string): Promise<any> {
+    return educational.institutions.generateInviteCode(schoolId, capacity, createdBy);
   },
 };

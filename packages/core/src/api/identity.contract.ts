@@ -1,6 +1,6 @@
-import { createRoute, z } from '@hono/zod-openapi';
-import { POAMetadataSchema, type POAMetadata } from './contract';
+import { z } from 'zod';
 import { FacetedProfileSchema, IdentitySchema } from './identity.generated';
+import { type SovereignContract } from './contract';
 
 export const OnboardingStateSchema = z.enum([
   'ARRIVAL',
@@ -9,7 +9,7 @@ export const OnboardingStateSchema = z.enum([
   'COMPLETED',
 ]);
 
-export const ClassroomRoleSummarySchema = z.object({
+export const ClassroomRoleSummarySchema = z.strictObject({
   user_id: z.uuid(),
   school_id: z.uuid().nullable(),
   profile_completed: z.boolean(),
@@ -19,125 +19,72 @@ export const ClassroomRoleSummarySchema = z.object({
   profile: FacetedProfileSchema,
 });
 
-const userAuthority = (action: 'resolve' | 'read' | 'update') =>
-  POAMetadataSchema.parse({ authority: { action, subject: 'User' } }) as POAMetadata;
+const userAuthority = (action: 'resolve' | 'read' | 'update') => ({
+  policy: { action, subject: 'User' }
+}) as const;
 
-export const identityContract = {
-  resolveIdentity: createRoute({
+/**
+ * Identity & Profile Port (Sovereign RPC)
+ * Framework-agnostic definition of the Identity API.
+ * [LOUD-FAILURE] Renamed methods to force architectural compliance.
+ */
+export const identityContract: SovereignContract = {
+  identifyActiveCitizen: {
     method: 'get',
     path: '/identity/resolve',
+    request: {},
     responses: {
       200: {
-        content: { 'application/json': { schema: IdentitySchema } },
-        description: 'Resolve the current user identity and roles',
+        schema: IdentitySchema,
+        description: 'Resolve current identity',
       },
     },
     metadata: userAuthority('resolve'),
-  }),
-  getProfile: createRoute({
+  },
+
+  fetchUserProfile: {
     method: 'get',
-    path: '/identity/profile/{id}',
+    path: '/identity/profile/:id',
     request: {
-      params: z.object({ id: z.string() }),
+      params: z.strictObject({ id: z.uuid() }),
     },
     responses: {
       200: {
-        content: { 'application/json': { schema: IdentitySchema } },
-        description: 'Get a user profile by ID',
+        schema: IdentitySchema,
+        description: 'Get user profile',
       },
     },
     metadata: userAuthority('read'),
-  }),
-  getClassroomRoleSummary: createRoute({
+  },
+
+  resolveWorkspaceContext: {
     method: 'get',
-    path: '/identity/classroom-role-summary/{id}',
+    path: '/identity/classroom-capacity-summary/:id',
     request: {
-      params: z.object({ id: z.string() }),
+      params: z.strictObject({ id: z.uuid() }),
     },
     responses: {
       200: {
-        content: { 'application/json': { schema: ClassroomRoleSummarySchema } },
-        description: 'Get classroom workspace role summary for a user',
+        schema: ClassroomRoleSummarySchema,
+        description: 'Get capacity summary',
       },
     },
     metadata: userAuthority('read'),
-  }),
-  updateProfile: createRoute({
+  },
+
+  modifyUserProfile: {
     method: 'patch',
-    path: '/identity/profile/{id}',
+    path: '/identity/profile/:id',
     request: {
-      params: z.object({ id: z.string() }),
-      body: {
-        content: { 'application/json': { schema: IdentitySchema.partial() } },
-      },
+      params: z.strictObject({ id: z.uuid() }),
+      body: IdentitySchema.partial(),
     },
     responses: {
       200: {
-        content: { 'application/json': { schema: IdentitySchema } },
-        description: 'Update a user profile',
+        schema: IdentitySchema,
+        description: 'Update user profile',
       },
     },
     metadata: userAuthority('update'),
-  }),
-  getOnboardingStatus: createRoute({
-    method: 'get',
-    path: '/identity/onboarding-status/{id}',
-    request: {
-      params: z.object({ id: z.string() }),
-    },
-    responses: {
-      200: {
-        content: {
-          'application/json': {
-            schema: z.object({
-              state: OnboardingStateSchema,
-              profile: IdentitySchema,
-            }),
-          },
-        },
-        description: 'Get the explicit onboarding state for a user',
-      },
-    },
-    metadata: userAuthority('read'),
-  }),
-  blockUser: createRoute({
-    method: 'post',
-    path: '/identity/blocks',
-    request: {
-      body: {
-        content: {
-          'application/json': {
-            schema: z.object({
-              blocker_id: z.string().uuid(),
-              blocked_id: z.string().uuid(),
-            }),
-          },
-        },
-      },
-    },
-    responses: {
-      201: {
-        content: { 'application/json': { schema: z.object({ success: z.boolean() }) } },
-        description: 'User blocked successfully',
-      },
-    },
-    metadata: userAuthority('update'),
-  }),
-  unblockUser: createRoute({
-    method: 'delete',
-    path: '/identity/blocks',
-    request: {
-      query: z.object({
-        blocker_id: z.string().uuid(),
-        blocked_id: z.string().uuid(),
-      }),
-    },
-    responses: {
-      200: {
-        content: { 'application/json': { schema: z.object({ success: z.boolean() }) } },
-        description: 'User unblocked successfully',
-      },
-    },
-    metadata: userAuthority('update'),
-  }),
+  },
 } as const;

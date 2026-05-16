@@ -1,4 +1,4 @@
-﻿datasource db {
+datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
@@ -175,12 +175,13 @@ model Classroom {
   notes            ClassroomNote[]
 
   // Permissions
-  // Wanderers can manage their local-only classrooms
-  @@allow('all', auth() == null)
-  
-  // Official/Cloud Access
-  @@allow('read', true)
-  @@allow('all', auth() != null && (auth().id == teacher_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
+  // Official/Cloud Access: Teachers, School Admins, and Platform Admins
+  @@allow('read', auth() != null)
+  @@allow('all', auth() != null && (
+    auth().id == teacher_id || 
+    auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'] ||
+    auth().bonds?[entity_id == this.school_id && (capacity == 'principal' || capacity == 'section_head')]
+  ))
 }
 
 model ClassroomStudent {
@@ -242,7 +243,10 @@ model Grade {
 
   // Permissions
   @@allow('read', auth().id == student_id || auth().id == graded_by || classroom.teacher_id == auth().id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
-  @@allow('all', auth().id == graded_by || classroom.teacher_id == auth().id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@allow('all', auth().id == graded_by || classroom.teacher_id == auth().id || 
+    auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'] ||
+    auth().bonds?[entity_id == this.classroom.school_id && (capacity == 'principal' || capacity == 'section_head' || capacity == 'grade_head')]
+  )
 }
 
 model ClassroomGradingSettings {
@@ -340,7 +344,7 @@ model CommunityReaction {
   id          String @id @default(uuid())
   post_id     String
   user_id     String
-  emoji       String @default("â¤ï¸")
+  emoji       String @default("❤️")
   
   post        Post   @relation(fields: [post_id], references: [id])
   user        User   @relation(fields: [user_id], references: [id])
@@ -406,8 +410,8 @@ model AttendanceRecord {
   student      User      @relation("StudentAttendance", fields: [student_id], references: [id])
 
   // Permissions: Teachers and Admins can manage attendance for their classroom
-  @@allow('read', classroom.teacher_id == auth().id || auth().id == student_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
-  @@allow('all', classroom.teacher_id == auth().id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@allow('read', auth() != null && (classroom.teacher_id == auth().id || auth().id == student_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'] || auth().bonds?[entity_id == this.classroom.school_id && (capacity == 'principal' || capacity == 'section_head')]))
+  @@allow('all', auth() != null && (classroom.teacher_id == auth().id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'] || auth().bonds?[entity_id == this.classroom.school_id && (capacity == 'principal' || capacity == 'section_head')]))
 }
 
 model School {
@@ -480,7 +484,6 @@ model MoodLog {
   created_at DateTime @default(now())
   user       User     @relation(fields: [user_id], references: [id])
 
-  @@allow('all', auth() == null)
   @@allow('all', auth() != null && (auth().id == user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
   @@map("mood_logs")
 }
@@ -493,7 +496,6 @@ model FireJournalEntry {
   created_at      DateTime @default(now())
   user            User     @relation(fields: [user_id], references: [id])
 
-  @@allow('all', auth() == null)
   @@allow('all', auth() != null && (auth().id == user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
   @@map("fire_journal")
 }
@@ -513,7 +515,6 @@ model UserPreferences {
   created_at                DateTime @default(now())
   user                      User     @relation(fields: [user_id], references: [id])
 
-  @@allow('all', auth() == null)
   @@allow('all', auth() != null && (auth().id == user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
   @@map("user_preferences")
 }
@@ -585,7 +586,6 @@ model ResourceEngagement {
   resource        LibraryResource @relation(fields: [resource_id], references: [id])
 
   @@allow('read', auth().id == user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
-  @@allow('all', auth() == null)
   @@allow('all', auth() != null && (auth().id == user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
   @@map("resource_engagements")
 }
@@ -693,7 +693,6 @@ model UserGrowthState {
   user                        User     @relation(fields: [user_id], references: [id])
 
   @@allow('read', auth().id == user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
-  @@allow('all', auth() == null)
   @@allow('all', auth() != null && (auth().id == user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
   @@map("user_growth_state")
 }
@@ -705,7 +704,7 @@ model SanctuaryManifesto {
   title       String
   content     String
   vibe        String?
-  status      String   @default("active")
+  status      String   // active, proposed
   target_date DateTime?
   metadata    Json?
   created_at  DateTime @default(now())
@@ -783,9 +782,8 @@ model StaffLeave {
   school       School   @relation(fields: [school_id], references: [id])
   user         User     @relation(fields: [user_id], references: [id])
 
-  @@allow('all', auth() == null)
-  @@allow('all', auth() != null && (auth().id == user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
-  @@allow('read', auth() != null && school_id == auth().school_id)
+  @@allow('all', auth() != null && (auth().id == user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'] || auth().bonds?[entity_id == this.school_id && capacity == 'principal']))
+  @@allow('read', auth() != null && (school_id == auth().school_id || auth().bonds?[entity_id == this.school_id]))
   @@map("staff_leaves")
 }
 
@@ -802,7 +800,7 @@ model CalendarEvent {
 
   school       School   @relation(fields: [school_id], references: [id])
 
-  @@allow('read', is_public || school_id == auth().school_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@allow('read', auth() != null && (is_public || auth().bonds?[entity_id == this.school_id] || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
   @@allow('all', auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
   @@map("calendar_events")
 }
@@ -827,7 +825,6 @@ model Guardian {
   school             School   @relation(fields: [school_id], references: [id])
   students           StudentGuardianRelationship[]
 
-  @@allow('all', auth() == null)
   @@allow('all', auth() != null && (auth().id == user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
   @@allow('read', auth() != null)
   @@map("guardians")
