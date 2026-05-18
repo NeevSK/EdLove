@@ -152,3 +152,27 @@ When modifying or introducing new authorization logic:
 > [!WARNING]
 > **3. Never import @cedar-policy in packages/core/src/logic/permissions/localEvaluator.native.ts:**
 > The mobile evaluator must remain lightweight, executing pure synchronous checks on the `permissionSnapshots` SQLite table to prevent compile-time crashes.
+
+---
+
+## 8. Sovereign Authorization Invariants
+
+To keep semantic and operational drift completely bounded and controlled, the engineering team must strictly enforce the following architectural invariants:
+
+### Invariant 1: Authoritative Single-Source Generation
+* **Rule:** The `generateSnapshot` engine must exclusively derive capabilities by calling the canonical Cedar `check()` function.
+* **Why:** This ensures that the snapshot is a mathematical projection of the exact same rules that run on the server, avoiding any manual logic duplication or ad hoc client-side reinterpretation.
+
+### Invariant 2: Defensive Default-Deny Fallback
+* **Rule:** If a requested resource or action is missing from the precomputed snapshot matrix (e.g. dynamic runtime attributes or new features), the local evaluator must immediately **fail safe** and **deny access**.
+* **Why:** In local-first software, the absent state of a permission must never translate to "granted." It must default to a strict deny, pushing the user to verify via online check on reconnection.
+
+### Invariant 3: Expiry and Degradation of Trust Lease
+* **Rule:** A Permission Snapshot has a strict temporal lease (e.g. 24 hours). Once `expiresAt` is surpassed:
+  * The local evaluator must downgrade the device trust level to `stale` or `restricted`.
+  * Write mutations for critical resources (e.g., modifying Grades or Attendance) must be blocked locally until a fresh, server-signed snapshot is obtained.
+* **Why:** Prevents "Airplane Mode" authorization bypasses and limits the window of opportunity for physically compromised or stolen offline devices.
+
+### Invariant 4: Dual-Gate Invariance
+* **Rule:** No mutation committed to the PowerSync outbox is authoritative. Every synced write **MUST** be intercepted by the edge Hono middleware and verified through a real-time Cedar `check()` before SQL execution.
+* **Why:** The server is the ultimate security boundary. Local client-side checks only exist for user convenience and immediate UI reactivity; they can never be trusted as the system's authority.
