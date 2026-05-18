@@ -195,6 +195,20 @@ app.use('/api/*', async (c, next) => {
     );
   }
 
+  // 🛡️ Sentinel Audit Log Interceptor: Log high-privilege platform administrator actions
+  if (capacity === 'admin') {
+    console.info(
+      `[🛡️ SENTINEL AUDIT LOG] Platform Admin Action Authorized:
+       - Operator ID: "${user.id}"
+       - Action: "${cedarAction}"
+       - Target Resource: "${resourceType}::${resourceId}"
+       - Path: "${method} ${urlPath}"
+       - Device Trust: "${deviceTrust}"
+       - Network Zone: "${networkZone}"
+       - Status: APPROVED & AUDITED`
+    );
+  }
+
   await next();
 });
 
