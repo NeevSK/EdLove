@@ -1,0 +1,146 @@
+entity User {
+  id: String,
+  school_id: String,
+  capacity: String,
+  grade_id?: String,
+  section_id?: String,
+  classroom_ids?: Set<String>,
+  child_student_ids?: Set<String>
+};
+
+entity School {
+  id: String
+};
+
+entity Classroom {
+  id: String,
+  school_id: String,
+  teacher_id?: String,
+  grade_id?: String,
+  section_id?: String
+};
+
+entity AttendanceRecord {
+  id: String,
+  school_id?: String,
+  classroom_id?: String,
+  student_id?: String,
+  grade_id?: String,
+  section_id?: String
+};
+
+entity Grade {
+  id: String,
+  school_id?: String,
+  classroom_id?: String,
+  student_id?: String,
+  graded_by?: String
+};
+
+entity Assignment {
+  id: String,
+  school_id?: String,
+  classroom_id?: String,
+  teacher_id?: String
+};
+
+entity Lesson {
+  id: String,
+  school_id?: String,
+  classroom_id?: String,
+  teacher_id?: String
+};
+
+entity Material {
+  id: String,
+  school_id?: String,
+  classroom_id?: String,
+  teacher_id?: String
+};
+
+entity StaffLeave {
+  id: String,
+  school_id?: String,
+  user_id?: String
+};
+
+entity MoodLog {
+  id: String,
+  school_id?: String,
+  user_id?: String
+};
+
+entity FireJournal {
+  id: String,
+  school_id?: String,
+  user_id?: String
+};
+
+entity InventoryItem {
+  id: String,
+  school_id?: String,
+  classroom_id?: String,
+  teacher_id?: String
+};
+
+entity Group {
+  id: String,
+  school_id?: String,
+  creator_id?: String
+};
+
+entity Post {
+  id: String,
+  school_id?: String,
+  author_id?: String
+};
+
+entity Ledger {
+  id: String,
+  school_id?: String
+};
+
+entity Guardian {
+  id: String,
+  school_id?: String,
+  user_id?: String
+};
+
+entity SentinelAuditLog {
+  id: String,
+  school_id?: String,
+  actor_id?: String
+};
+
+entity JoyMoments {
+  id: String,
+  school_id?: String,
+  user_id?: String
+};
+
+entity GratitudeEntries {
+  id: String,
+  school_id?: String,
+  user_id?: String
+};
+
+entity EnergyForecasts {
+  id: String,
+  school_id?: String,
+  user_id?: String
+};
+
+type SecurityContext = {
+  device_trust?: String,
+  network_zone?: String
+};
+
+action "read", "create", "update", "delete" appliesTo {
+  principal: [User],
+  resource: [
+    School, Classroom, AttendanceRecord, Grade, Assignment, Lesson, Material,
+    StaffLeave, MoodLog, FireJournal, InventoryItem, Group, Post, Ledger,
+    Guardian, SentinelAuditLog, JoyMoments, GratitudeEntries, EnergyForecasts
+  ],
+  context: SecurityContext
+};
