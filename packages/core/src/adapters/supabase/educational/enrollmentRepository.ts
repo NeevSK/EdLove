@@ -271,4 +271,64 @@ export const createEnrollmentRepository = (supabase: SupabaseClient) => ({
       teacher_name: record.teacher?.full_name,
     }));
   },
+
+  async requestSchoolJoin(userId: string, schoolId: string, capacity: string) {
+    const { data, error } = await supabase
+      .from('school_join_requests')
+      .insert([{ user_id: userId, school_id: schoolId, capacity, status: 'pending' }])
+      .select()
+      .single();
+    if (error) throw new APIError('Failed to request school join', error.code, error);
+    return data;
+  },
+
+  async updateSchoolJoinRequest(requestId: string, status: string) {
+    const { data, error } = await supabase
+      .from('school_join_requests')
+      .update({ status, updated_at: new Date().toISOString() })
+      .eq('id', requestId)
+      .select()
+      .single();
+    if (error) throw new APIError('Failed to update school join request', error.code, error);
+    return data;
+  },
+
+  async requestClassroomJoin(userId: string, classroomId: string, capacity: string, subjectLabel?: string) {
+    const { data, error } = await supabase
+      .from('classroom_join_requests')
+      .insert([
+        {
+          user_id: userId,
+          classroom_id: classroomId,
+          capacity,
+          subject_label: subjectLabel,
+          status: 'pending',
+        },
+      ])
+      .select()
+      .single();
+    if (error) throw new APIError('Failed to request classroom join', error.code, error);
+    return data;
+  },
+
+  async updateClassroomJoinRequest(requestId: string, status: string) {
+    const { data, error } = await supabase
+      .from('classroom_join_requests')
+      .update({ status, updated_at: new Date().toISOString() })
+      .eq('id', requestId)
+      .select()
+      .single();
+    if (error) throw new APIError('Failed to update classroom join request', error.code, error);
+    return data;
+  },
+
+  async getClassroomJoinRequest(requestId: string) {
+    const { data, error } = await supabase
+      .from('classroom_join_requests')
+      .select('*')
+      .eq('id', requestId)
+      .single();
+    if (error) throw new APIError('Failed to fetch classroom join request', error.code, error);
+    return data;
+  },
 });

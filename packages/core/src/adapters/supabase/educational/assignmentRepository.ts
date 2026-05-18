@@ -181,4 +181,25 @@ export const createAssignmentRepository = (supabase: SupabaseClient) => ({
     const { error } = await supabase.from('assignments').delete().eq('id', id);
     if (error) throw new APIError('Failed to delete assignment', error.code, error);
   },
+  async getRecentGradesOverviewForStudent(studentId: string, limit = 4) {
+    const { data, error } = await supabase
+      .from('submissions')
+      .select('id, grade, feedback, submitted_at, assignments(title), classrooms(name)')
+      .eq('student_id', studentId)
+      .not('grade', 'is', null)
+      .order('submitted_at', { ascending: false })
+      .limit(limit);
+
+    if (error) throw new APIError('Failed to fetch recent grades', error.code, error);
+
+    return ((data as Record<string, any>[] | null) ?? []).map((row) => ({
+      ...row,
+      assignments: Array.isArray(row['assignments'])
+        ? row['assignments'][0]
+        : row['assignments'] || null,
+      classrooms: Array.isArray(row['classrooms'])
+        ? row['classrooms'][0]
+        : row['classrooms'] || null,
+    }));
+  },
 });

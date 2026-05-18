@@ -12,6 +12,8 @@ export const definePrincipalAbilities = (
   can('read', 'PrincipalPulse');
   can('manage', 'PrincipalDashboard');
   can('manage', 'Wellbeing');
+  can('read', 'ClassroomList');
+  can('read', 'LibrarySearch');
 
   if (!user.school_id) return;
 

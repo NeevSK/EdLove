@@ -12,7 +12,7 @@ Our architecture is inspired by Google's **Zanzibar** global authorization syste
 
 ## 3. Key Concepts
 *   **Bond:** A relationship between a User and an Entity (e.g., School, Classroom).
-*   **Capacity:** The functional role within a Bond (e.g., Teacher, Student).
+*   **Capacity:** The functional capacity within a Bond (e.g., Teacher, Student).
 *   **Perspective:** The UI focus. Even though you *are* a Teacher and a Parent, you may choose to *focus* on your School right now.
 
 ## 4. Architectural Implementation

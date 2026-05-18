@@ -1,5 +1,5 @@
 Feature: Auth Refinement
-  Assisting users with account discovery and role initialization
+  Assisting users with account discovery and capacity initialization
 
   Scenario: Attempting signup with an existing email
     Given I am a user with an existing account "test@example.com"
@@ -15,7 +15,7 @@ Feature: Auth Refinement
     Given I have successfully signed up as a new user
     And I am on the first onboarding screen
     When I enter my name "Sovereign Founder"
-    And I select the role "Founder"
+    And I select the capacity "Founder"
     And I complete the onboarding
-    Then my profile in the database should be updated with role "founder"
+    Then my profile in the database should be updated with capacity "founder"
     And I should be redirected to the "Main" sanctuary view

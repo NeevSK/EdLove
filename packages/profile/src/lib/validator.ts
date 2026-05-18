@@ -52,7 +52,7 @@ export const ProfileValidator = {
 				break;
 			}
 
-			case "full_name":
+			case "display_name":
 				if (stringValue.length < 3) {
 					return {
 						isValid: false,

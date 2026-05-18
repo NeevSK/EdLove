@@ -6,8 +6,8 @@ import { User } from '../../../types';
  */
 export type OnboardingState = 
   | 'ARRIVAL'           // Step 0: User has landed, needs to enter name
-  | 'IDENTITY_SELECTION' // Step 1: Name is set, needs to select role
-  | 'SANCTUARY_INIT'     // Step 2-6: Role is set, completing the sanctuary tour
+  | 'IDENTITY_SELECTION' // Step 1: Name is set, needs to select capacity
+  | 'SANCTUARY_INIT'     // Step 2-6: Capacity is set, completing the sanctuary tour
   | 'COMPLETED';         // Onboarding finished, profile synced
 
 export const OnboardingStates = {
@@ -25,7 +25,7 @@ import type { Bond } from '../../../types/Identity';
  */
 export function getOnboardingState(
   user: {
-    full_name?: string | null;
+    display_name?: string | null;
     onboarding_completed?: boolean | null;
   } | null | undefined,
   activeBond: Bond | null | undefined,
@@ -37,7 +37,8 @@ export function getOnboardingState(
   }
 
   // Step 0 -> 1 Transition: Name entry
-  if (!user.full_name || user.full_name.trim() === '') {
+  const name = user.display_name?.trim();
+  if (!name || name === '' || name === 'Guest User') {
     return 'ARRIVAL';
   }
 

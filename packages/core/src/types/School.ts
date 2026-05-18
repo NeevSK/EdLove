@@ -1,4 +1,4 @@
-import type { Capacity as AuthorityTier } from '../logic/schemas/capacity.schema';
+import type { Capacity } from '../logic/schemas/capacity.schema';
 import type { TenantKind } from './Tenancy';
 
 export interface School {
@@ -48,8 +48,7 @@ export interface Announcement {
 export interface InviteCode {
   code: string;
   school_id: string;
-  role: AuthorityTier; // Canonical role name
-  authority: AuthorityTier; // Legacy/DB field compatibility
+  capacity: Capacity; // Canonical contextual capacity name
   created_by: string;
   used: boolean;
   created_at: Date;

@@ -177,7 +177,7 @@ POA hardening per lane
 For every stabilized lane:
 
 - contract coverage
-- authority metadata
+- policy metadata
 - focused tests
 - audit rules
 

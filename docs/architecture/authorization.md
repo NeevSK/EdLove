@@ -1,33 +1,70 @@
 # Authorization Flow & Responsibilities
 
-This document details the five-layer authorization flow in the Gurudevi platform.
+This document explains how authorization works in the legacy-free architecture.
+It complements the canonical SSOT docs and should be read as the execution model
+for `ReBAC`, `POA`, `CASL`, and `MCP`.
 
-## 1. The Five Layers
+## 1. Layer Stack
 
-### Layer 1: IdentityAPI (Authentication)
-- **Responsibility**: Manages user identity, authentication, and session management.
-- **Output**: Issues a JWT containing basic user identity and claims.
+### Layer 1: Identity State
 
-### Layer 2: BFF (Backend-for-Frontend)
-- **Responsibility**: Token validation and ability serialization.
-- **Action**: On authentication, fetches the user's full permission set from ZenStack policies and serializes it as a CASL-compatible payload.
-- **Delivery**: Passes the permission payload to the client.
+- Owns lifecycle state such as anonymous, onboarded, and verified.
+- Does not decide permissions.
+- Provides the session envelope for the rest of the stack.
 
-### Layer 3: CASL (Client-side Authorization)
-- **Responsibility**: UI/UX control and offline security.
-- **Logic**: Uses the permission payload from the BFF to enable/disable UI elements via `ability.can()`.
-- **Capability**: Must work without network access to support teacher offline workflows.
+### Layer 2: ReBAC
 
-### Layer 4: ZenStack v3 (Server-side Authorization)
-- **Responsibility**: Transparent query enforcement and data-level security.
-- **Implementation**: Access policies are embedded in the `ZModel` schema.
-- **Mechanism**: All server queries run through a ZenStack enhanced Prisma client that automatically filters data based on user context.
+- Owns bonds, capacities, and perspective selection.
+- Answers who the user is in relation to a specific entity.
+- Is the source of contextual identity truth.
 
-### Layer 5: Supabase RLS (Database Defense in Depth)
-- **Responsibility**: Final line of defense.
-- **Implementation**: Row Level Security policies in PostgreSQL.
-- **Consistency**: RLS should mirror core data access rules defined in ZenStack for maximum security.
+### Layer 3: POA
 
-## 2. Shared Logic
-- **Single Source of Truth**: All permissions are derived from Zod schemas and ZModel definitions.
-- **Rule over Role**: Permissions are checked against specific actions and subjects (e.g., `can update Lesson`), not raw roles.
+- Owns the contract boundary between intent and execution.
+- Validates the declared action and subject before the request proceeds.
+- Must fail loudly when the current capacity does not satisfy the contract.
+
+### Layer 4: CASL
+
+- Owns concrete ability evaluation.
+- Answers whether this context can perform this action on this subject.
+- Drives UI gating and local decision-making.
+
+### Layer 5: ZenStack and RLS
+
+- Own the final server-side and database-side policy enforcement.
+- Prevent queries or writes that violate the declared model.
+- Provide defense in depth after POA and CASL have already narrowed the path.
+
+### Layer 6: MCP
+
+- Owns delegated tool exposure for agents.
+- Never grants privilege by itself.
+- Only exposes tools and resources that have been scoped by policy.
+
+## 2. Responsibility Split
+
+- ReBAC decides the relationship truth.
+- POA decides whether the requested action can enter execution.
+- CASL decides whether the current context can act.
+- ZenStack and RLS ensure the server and database agree.
+- MCP exposes the tool surface for delegated work.
+
+## 3. Integrity Rules
+
+- No runtime path should read `role` or `authority` as source of truth.
+- No compatibility alias should silently widen access.
+- All authorization failures should be explicit and easy to trace.
+- The UI may only render from derived abilities, not raw legacy fields.
+- Agents must operate under a scoped grant, not a hidden privileged identity.
+
+## 4. Legacy Boundary
+
+If a storage adapter or migration script still needs old data names, that is a temporary boundary concern only.
+It must not leak into runtime permissions, UI branching, or agent tool access.
+
+## 5. Canonical References
+
+- `apps/gurudevi-mobile/docs/architecture/legacy-free-agentic-mcp-ssot.md`
+- `apps/gurudevi-mobile/docs/decisions/011-legacy-free-agentic-mcp-implementation-plan.md`
+- `packages/core/docs/DATA_ODYSSEY.md`

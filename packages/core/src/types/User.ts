@@ -14,12 +14,15 @@ export interface ProfileStats {
 
 /**
  * User Profile Interface
- * Represents a Gurudevi user with authority and school context
+ * Represents a Gurudevi user with contextual identity and school context
  */
 export interface User extends ProfileStats {
   id: string; // Internal Gurudevi User UUID (from public.users, resolved via auth_identities)
   email?: string | null; // User's email address
-  full_name: string; // Display name
+  display_name: string; // Canonical in-app display name
+  full_name?: string | null; // Legacy mirror for older persisted rows only
+  first_name?: string | null; // Preferred first name
+  last_name?: string | null; // Preferred last name
   bonds?: Bond[]; // Sovereign Identity (ReBAC) Relationships
   school_id?: string | null; // UUID of the school they belong to
   username?: string | null; // Unique handle for the user
@@ -27,15 +30,18 @@ export interface User extends ProfileStats {
   updated_at?: string | Date; // ISO timestamp or Date object (optional)
   avatar_url?: string | null; // Profile picture URL (optional)
   is_anonymous?: boolean | null; // Flag for anonymous/guest users
-  profile_completed: boolean; // Flag for "No Trust" barrier
+  identity_state?: 'anonymous' | 'onboarded' | 'verified' | string | null;
+  profile_completed?: boolean; // Flag for "No Trust" barrier
   bio?: string | null; // User bio
-  authority_label?: string | null; // Personalized authority label (e.g. "Physics Teacher")
+  capacity_label?: string | null; // Personalized capacity label (e.g. "Physics Teacher")
   index_number?: string | null; // Mandatory for students
   nic_number?: string | null; // Mandatory for teachers
   organization_name?: string | null; // Name of the user's organization/school
   school_name?: string | null; // Alias for organization_name
   tenant_kind?: TenantKind | null; // Distinguishes internal, customer, demo, and sandbox tenants
   tier?: string | null;
+  citizenship?: 'WANDERER' | 'SECOND_CLASS' | 'FIRST_CLASS' | string | null;
+  pricing_tier?: 'FREE' | 'PRO' | 'INSTITUTIONAL' | string | null;
   features?: string[];
   flags?: Record<string, boolean | string>;
   onboarding_completed?: boolean | null; // Flag indicating if user has completed onboarding

@@ -48,7 +48,7 @@ export function installMobileWorkflowEventBridge() {
 	});
 }
 
-export async function dispatchQueuedMutationToInngest(
+export async function dispatchQueuedMutationToSovereignBus(
 	mutation: QueuedMutation,
 ): Promise<QueuedMutationDispatchResult> {
 	if (!REMOTE_SYNC_MUTATIONS.has(mutation.name)) {

@@ -16,14 +16,19 @@ export const CapacitySchema = z.enum([
   'nurse',
   'staff',
   'member',
-  'guest',
+]);
+
+export const IdentityStateSchema = z.enum([
+  'anonymous',
+  'onboarded',
+  'verified',
 ]);
 
 export const BondSchema = z.object({
   id: z.uuid(),
   user_id: z.uuid(),
   entity_id: z.string(),
-  entity_type: z.enum(['PLATFORM', 'SCHOOL', 'CLASSROOM', 'COMMUNITY', 'PERSONAL', 'GUEST']),
+  entity_type: z.enum(['PLATFORM', 'SCHOOL', 'CLASSROOM', 'COMMUNITY', 'PERSONAL']),
   capacity: CapacitySchema,
   status: z.enum(['active', 'archived', 'pending']).default('active'),
   created_at: z.coerce.date().transform(d => d.toISOString()).optional(),

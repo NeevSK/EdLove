@@ -28,7 +28,6 @@ const {
   attendance: attendanceAPI,
 } = api;
 
-import { classroomNotesContract } from './classroomNotes.contract';
 import { communityContract } from './community.contract';
 import { assertContractCoverage } from './contractCoverage';
 import { educationalContract } from './educational.contract';
@@ -56,9 +55,10 @@ const modules: Array<{
     api: identityAPI,
     contract: identityContract,
     mapping: {
-      resolveInternalId: 'resolveIdentity',
-      getMyInternalId: 'resolveIdentity',
-      updateProfile: 'updateProfile',
+      identifyActiveCitizen: 'identifyActiveCitizen',
+      fetchUserProfile: 'fetchUserProfile',
+      modifyUserProfile: 'modifyUserProfile',
+      resolveWorkspaceContext: 'resolveWorkspaceContext',
     },
     internal: ['linkIdentity', 'clearCache'],
   },
@@ -248,10 +248,10 @@ const modules: Array<{
   {
     name: 'classroomNotes',
     api: classroomNotesAPI,
-    contract: classroomNotesContract,
+    contract: educationalContract,
     mapping: {
-      getAll: 'listVisibleNotes',
-      getSnapshotAsOf: 'getVisibleNotesSnapshot',
+      getAll: 'getClassroomNotes',
+      getSnapshotAsOf: 'getClassroomNoteSnapshot',
       create: 'createClassroomNote',
       update: 'updateClassroomNote',
       delete: 'deleteClassroomNote',

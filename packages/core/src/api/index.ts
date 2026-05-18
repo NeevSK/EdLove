@@ -46,7 +46,9 @@ import { historyAPI } from './history';
 import { formTemplatesAPI } from './formTemplates';
 import { profileAPI } from './profile';
 import { socialAPI } from './social';
-import { supabase } from './supabase';
+import { mediaAPI } from './media';
+import { libraryAPI } from './library';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from './supabase';
 import { educationalContract } from './educational.contract';
 import { founderContract } from './founder.contract';
 import { gradingContract } from './grading.contract';
@@ -62,6 +64,18 @@ import { resourcesAPI } from './resources';
 import { tasksAPI } from './teacher';
 import { teacherInsightsContract } from './teacherInsights.contract';
 import { thuthimalAPI } from './thuthimal';
+
+export * from './base';
+
+export { selfHandlers } from './handlers/self';
+export { profileHandlers } from './handlers/profile';
+export { communityHandlers } from './handlers/community';
+export { educationalHandlers } from './handlers/educational';
+export { gradingHandlers } from './handlers/grading';
+export { operationsHandlers } from './handlers/operations';
+export { identityHandlers } from './handlers/identity';
+export { adminHandlers } from './handlers/admin';
+export { libraryHandlers } from './handlers/library';
 
 // --- Orchestrated APIs (Extracted Domains) ---
 import { identityAPI } from './orchestration/identity';
@@ -79,6 +93,7 @@ import {
   classroomGroupsAPI,
   classroomStudentsAPI,
   lessonMaterialsAPI,
+  classroomNotesAPI,
 } from './orchestration/educational';
 import { accountingAPI, paymentsAPI } from './orchestration/erp';
 import { communityAPI } from './orchestration/community';
@@ -89,7 +104,6 @@ import {
   principalWorkspaceAPI,
   teacherInsightsAPI,
   longitudinalAPI,
-  notesWithPOA,
 } from './orchestration/specialized';
 
 // --- Re-exports (Types & Contracts) ---
@@ -158,7 +172,7 @@ export {
   lessonMaterialsAPI,
   lessonsAPI,
   messagingAPI,
-  notesWithPOA as classroomNotesAPI,
+  classroomNotesAPI,
   gradingAPI,
   onboardingAPI,
   presenceAPI,
@@ -170,7 +184,10 @@ export {
   socialAPI,
   communityAPI,
   studentsAPI,
-  supabase,
+  mediaAPI,
+  libraryAPI,
+  __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__,
+  __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ as supabase,
   tasksAPI,
 };
 
@@ -182,9 +199,9 @@ export const api: Record<string, any> = {
   auth: authAPI,
   circles: circleAPI,
   identity: identityAPI,
-  supabase,
+  supabase: __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__,
   tasks: tasksAPI,
-  notes: notesWithPOA,
+  notes: classroomNotesAPI,
   lessons: lessonsAPI,
   students: studentsAPI,
   attendance: attendanceAPI,
@@ -213,7 +230,7 @@ export const api: Record<string, any> = {
   dailyContent: dailyContentAPI,
   thuthimal: proAPI,
   pro: proAPI,
-  classroomNotes: notesWithPOA,
+  classroomNotes: classroomNotesAPI,
   principalNotes: principalNotesAPI,
   community: communityAPI,
   messaging: messagingAPI,
@@ -245,6 +262,8 @@ export const api: Record<string, any> = {
   forms: formTemplatesAPI,
   socialAPI,
   profile: profileAPI,
+  media: mediaAPI,
+  library: libraryAPI,
 };
 
 export default api;

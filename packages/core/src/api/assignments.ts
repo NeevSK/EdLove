@@ -1,119 +1,80 @@
 import type {
-  Assignment as AssignmentRecord,
   StudentAssignment,
   StudentSubmissionSummary,
 } from '../logic/schemas/classroom.schema';
-import { educationalServices } from './runtimes/educational.runtime';
+import { educational } from '../logic/managers/factory';
 import type { Assignment } from '../types';
-import { educationalContract } from './educational.contract';
-import { supabase } from './supabase';
-
-type RecentGradeOverviewRow = {
-  id: string;
-  grade: number;
-  feedback: string | null;
-  submitted_at: string;
-  assignments: { title: string } | null;
-  classrooms: { name: string } | null;
-};
 
 export const assignmentsAPI = {
   /**
-   * @authority read Assignment
+   * @policy read Assignment
    */
   async getAll(classroomId: string): Promise<Assignment[]> {
-    return (await educationalServices.assignments.getAll(classroomId)) as unknown as Assignment[];
+    return educational.assignments.getAll(classroomId) as unknown as Assignment[];
   },
 
   /**
-   * @authority read Assignment
+   * @policy read Assignment
    */
   async getByLesson(lessonId: string): Promise<Assignment[]> {
-    return (await educationalServices.assignments.getByLesson(lessonId)) as unknown as Assignment[];
+    return educational.assignments.getByLesson(lessonId) as unknown as Assignment[];
   },
 
   /**
-   * @authority read Assignment
+   * @policy read Assignment
    */
   async getUpcomingForStudent(studentId: string): Promise<StudentAssignment[]> {
-    return educationalServices.assignments.getUpcomingForStudent(studentId);
+    return educational.assignments.getUpcomingForStudent(studentId);
   },
 
   /**
-   * @authority read AssignmentSubmission
+   * @policy read AssignmentSubmission
    */
   async getSubmissionHistoryForStudent(
     studentId: string,
     classroomId?: string,
   ): Promise<StudentSubmissionSummary[]> {
-    return educationalServices.assignments.getSubmissionHistory(studentId, classroomId);
+    return educational.assignments.getSubmissionHistory(studentId, classroomId);
   },
 
   /**
-   * Convenience query used by UI surfaces (keeps Supabase usage out of feature packages).
-   *
-   * @authority read AssignmentSubmission
+   * @policy read AssignmentSubmission
    */
   async getRecentGradesOverviewForStudent(
     studentId: string,
     limit = 4,
-  ): Promise<RecentGradeOverviewRow[]> {
-    const { data, error } = await supabase
-      .from('submissions')
-      .select('id, grade, feedback, submitted_at, assignments(title), classrooms(name)')
-      .eq('student_id', studentId)
-      .not('grade', 'is', null)
-      .order('submitted_at', { ascending: false })
-      .limit(limit);
-
-    if (error) throw error;
-
-    // Supabase returns joined relations as arrays in some configurations.
-    // We map them to the single object shape expected by the UI.
-    return ((data as Record<string, any>[] | null) ?? [])
-      .filter((row) => typeof row['grade'] === 'number')
-      .map((row) => ({
-        ...row,
-        assignments: Array.isArray(row['assignments']) ? row['assignments'][0] : row['assignments'] || null,
-        classrooms: Array.isArray(row['classrooms']) ? row['classrooms'][0] : row['classrooms'] || null,
-      })) as RecentGradeOverviewRow[];
+  ) {
+    return educational.assignments.getRecentGradesOverviewForStudent(studentId, limit);
   },
 
   /**
-   * @authority create AssignmentSubmission
+   * @policy create AssignmentSubmission
    */
   async submitSubmission(assignmentId: string, content?: string, photoUrl?: string | null) {
-    return educationalServices.assignments.submitSubmission(assignmentId, content, photoUrl);
+    return educational.assignments.submitSubmission(assignmentId, content, photoUrl);
   },
 
   /**
-   * @authority create Assignment
+   * @policy create Assignment
    */
   async create(
     assignment: Omit<Assignment, 'id' | 'created_at' | 'updated_at'>,
   ): Promise<Assignment> {
-    return (await educationalServices.assignments.create(
-      assignment as Omit<AssignmentRecord, 'id' | 'created_at' | 'updated_at'>,
-    )) as unknown as Assignment;
+    return educational.assignments.create(assignment as any) as unknown as Assignment;
   },
 
   /**
-   * @authority update Assignment
+   * @policy update Assignment
    */
   async update(id: string, updates: Partial<Assignment>): Promise<Assignment> {
-    return (await educationalServices.assignments.update(
-      id,
-      updates as Partial<AssignmentRecord>,
-    )) as unknown as Assignment;
+    return educational.assignments.update(id, updates as any) as unknown as Assignment;
   },
 
   /**
-   * @authority delete Assignment
+   * @policy delete Assignment
    */
   async delete(id: string): Promise<void> {
-    return educationalServices.assignments.delete(id);
+    return educational.assignments.delete(id);
   },
 };
 
-// Satisfy linter for architectural linking
-void educationalContract;

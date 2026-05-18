@@ -1,8 +1,8 @@
 import { supabase } from "@repo/core/api";
-import type { SchoolRole, User, WorkRole } from "@repo/core/types";
+import type { Capacity, User } from "@repo/core/types";
 export interface PeopleDirectoryEntry extends User {
-	schoolRole: SchoolRole | null;
-	workRoles: WorkRole[];
+	schoolCapacity: Capacity | null;
+	workCapacities: Capacity[];
 	personKind: "staff" | "student";
 }
 interface BondSeed {
@@ -18,13 +18,13 @@ function mapDirectoryEntry(user: User, bond: BondSeed): PeopleDirectoryEntry {
 		created_at: user.created_at || new Date().toISOString(),
 		updated_at: user.updated_at || new Date().toISOString(),
 	};
-	const schoolRole = (bond.capacity as unknown as SchoolRole) ?? null;
-	return {
-		...userWithTimestamps,
-		schoolRole,
-		workRoles: [],
-		personKind: schoolRole === "student" ? "student" : "staff",
-	} as PeopleDirectoryEntry;
+	const schoolCapacity = (bond.capacity as Capacity) ?? null;
+		return {
+			...userWithTimestamps,
+			schoolCapacity,
+			workCapacities: [],
+			personKind: schoolCapacity === "student" ? "student" : "staff",
+		} as unknown as PeopleDirectoryEntry;
 }
 export const peopleDirectoryAPI = {
 	async listBySchool(
@@ -80,8 +80,8 @@ export const peopleDirectoryAPI = {
 		if (!schoolId) {
 			return {
 				...(userRow as User),
-				schoolRole: null,
-				workRoles: [],
+				schoolCapacity: null,
+				workCapacities: [],
 				personKind: "staff",
 			} as PeopleDirectoryEntry;
 		}

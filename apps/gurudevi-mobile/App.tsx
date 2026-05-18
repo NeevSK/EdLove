@@ -32,14 +32,14 @@ import {
 	posthogAnalytics as initTracker,
 	trackEvent,
 } from "@repo/analytics";
-import { coreRuntime, useStore, GlobalProvider, useAuth } from "@repo/core/logic";
+import { coreRuntime, useStore, GlobalProvider, useAuth, pushNotification } from "@repo/core/logic";
 import {
 	clearSentryUser,
 	initSentry,
 	injectPostHog,
 	setSentryUser,
 } from "@repo/core/monitoring";
-import { nativeRuntimeEnvironment, supabase } from "@repo/core/native";
+import { nativeRuntimeEnvironment } from "@repo/core/native";
 import { SyncManager } from "@repo/core/sync";
 import { useQRDeepLink } from "@repo/scanner-kit";
 import ErrorBoundary from "@repo/ui/components/ErrorBoundary";
@@ -55,7 +55,6 @@ import { sanctuarySaffron } from "@repo/ui/theme";
 
 import { OnboardingWrapper } from "@repo/ui/screens/OnboardingWrapper";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import * as Font from "expo-font";
 import * as Linking from "expo-linking";
 import React, { Suspense, useEffect, useState, lazy } from "react";
 import { Platform } from "react-native";
@@ -195,28 +194,29 @@ function App() {
 	const hideToast = useStore((state) => state.hideToast);
 
 	useEffect(() => {
-		// Inject the native tracker into the Core bridge to maintain "Core Purity"
-		injectPostHog(initTracker);
+		// 1. Unified Sovereign Bootstrap
+		// Registers all core managers (Storage, Crypto, Telemetry)
+		// AND injects the native runtime adapters (Device, Linking, Haptics)
+		void bootstrapPlatform().then(() => {
+			coreRuntime.register(nativeRuntimeEnvironment);
+			
+			// 2. Telemetry Injection
+			injectPostHog(initTracker);
+			initSentry();
+			
+			const posthogApiKey = process.env["EXPO_PUBLIC_POSTHOG_API_KEY"];
+			if (posthogApiKey) {
+				const posthogHost = process.env["EXPO_PUBLIC_POSTHOG_HOST"] || "https://eu.i.posthog.com";
+				void initPostHog(posthogApiKey, { host: posthogHost }).then(() => {
+					trackEvent("app_initialized", { platform: coreRuntime.device.getMetadata().platform });
+				});
+			}
 
-		// Inject Platform-Specific Runtime Adapters (Sovereign Core Purity)
-		coreRuntime.register(nativeRuntimeEnvironment);
-
-		initSentry();
-		const posthogApiKey = process.env["EXPO_PUBLIC_POSTHOG_API_KEY"];
-		const posthogHost =
-			process.env["EXPO_PUBLIC_POSTHOG_HOST"] || "https://eu.i.posthog.com";
-
-		if (!posthogApiKey) {
-			console.warn(
-				"[PostHog] Missing EXPO_PUBLIC_POSTHOG_API_KEY. Analytics initialization skipped.",
-			);
-			return;
-		}
-
-		void initPostHog(posthogApiKey, {
-			host: posthogHost,
-		}).then(() => {
-			trackEvent("app_initialized", { platform: Platform.OS });
+			// 3. Sovereign Asset Loading (Fonts, etc.)
+			// Decoupled via coreRuntime.asset port
+			void coreRuntime.asset.loadAsync(fontAssets).then(() => {
+				setFontsLoaded(true);
+			});
 		});
 	}, []);
 
@@ -233,70 +233,42 @@ function App() {
 		setSentryUser({
 			id: currentUser.id,
 			email: currentUser.email ?? undefined,
-			username: currentUser.full_name ?? undefined,
+			username: currentUser.display_name ?? undefined,
 		});
 
 		identifyUser(currentUser.id, {
 			email: currentUser.email ?? undefined,
-			full_name: currentUser.full_name ?? undefined,
+			display_name: currentUser.display_name ?? undefined,
 			capacity: (useStore.getState() as { activeBond?: { capacity?: string } }).activeBond?.capacity ?? undefined,
 			school_id: currentUser.school_id ?? undefined,
 		});
 	}, [
 		currentUser?.id,
 		currentUser?.email,
-		currentUser?.full_name,
+		currentUser?.display_name,
 		currentUser?.school_id,
 	]);
+    
+    useEffect(() => {
+		if (!currentUser?.id) return;
+        
+        // Initialize Push Notifications
+        const initPush = async () => {
+            const deviceId = coreRuntime.storage.getString('device_id') || `dev_${Math.random().toString(36).substring(7)}`;
+            if (!coreRuntime.storage.contains('device_id')) {
+                coreRuntime.storage.set('device_id', deviceId);
+            }
+            
+            await pushNotification.initialize(currentUser.id, deviceId);
+        };
+        
+        void initPush();
+	}, [currentUser?.id]);
 
-	useEffect(() => {
-		async function loadFonts() {
-			try {
-				await Font.loadAsync(fontAssets);
-				setFontsLoaded(true);
-			} catch {
-				setFontsLoaded(true);
-			}
-		}
-		void loadFonts();
-	}, []);
 
 	useEffect(() => {
 		if (Platform.OS === "web") return;
-
-		const handleDeepLink = async (url: string) => {
-			if (url.includes("auth/callback")) {
-				const getParam = (name: string) => {
-					const match = url.match(new RegExp(`[#?&]${name}=([^&]*)`));
-					return match ? match[1] : null;
-				};
-
-				const access_token = getParam("access_token");
-				const refresh_token = getParam("refresh_token");
-
-				if (access_token && refresh_token) {
-					const { error } = await supabase.auth.setSession({
-						access_token,
-						refresh_token,
-					});
-					if (
-						error &&
-						(error.message?.includes("Refresh Token") ||
-							(error as { status?: number }).status === 400)
-					) {
-						await supabase.auth.signOut({ scope: "local" });
-					}
-				}
-			}
-		};
-
-		const subscription = Linking.addEventListener("url", (event) =>
-			handleDeepLink(event.url),
-		);
-		void Linking.getInitialURL().then((url) => {
-			if (url) void handleDeepLink(url);
-		});
-		return () => subscription.remove();
+		// Removed legacy deep link handler in favor of DeepLinkProvider
 	}, []);
 
 	useQRDeepLink((payload: unknown) => {
@@ -396,42 +368,8 @@ function AppContent({
 								updateWebPageTitle(state);
 							}}
 							linking={{
-								prefixes: [
-									"gurudevi://",
-									"https://platform.gurudevi.edlove.org",
-									"http://localhost:4000",
-								],
-								config: {
-									screens: {
-										Welcome: "",
-										Onboarding: "onboarding",
-										Auth: "auth",
-										AIAssistant: "ai",
-										QRHandler: "qr",
-										ThuthimalClaim: "thuthimal",
-										InvitationWelcome: "invite",
-										AdminDashboard: "admin",
-										AdminIncidentQueue: "admin/incidents",
-										AdminTenantDetail: "admin/tenants",
-										AdminAuthorityRepair: "admin/authority",
-										AdminJobControl: "admin/actions",
-										AdminAuditLog: "admin/audit",
-										AdminReleaseControl: "admin/release",
-										Main: {
-											path: "app",
-											screens: {
-												Self: "self",
-												Profile: "profile",
-												Classroom: "classroom",
-												Community: "community",
-												Library: "library",
-												NotificationsPanel: "notifications",
-												SettingsPanel: "settings",
-											},
-										},
-										PublicForm: "f/:slug",
-									},
-								},
+								prefixes: deepLink.getPrefixes(),
+								config: deepLink.getNavigationConfig(),
 							}}
 						>
 							<RootStack.Navigator

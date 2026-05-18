@@ -9,10 +9,6 @@ export { isDemo } from './api/demo';
 // 4. API & Business Logic (Named exports for better tree-shaking)
 export { deviceTrustAPI } from './api/deviceTrust';
 export { accountPin, validateAccountPin } from './lib/accountPin';
-export {
-  type CloudinaryUploadResponse,
-  uploadToCloudinary,
-} from './lib/cloudinary';
 export { marksToGPA } from './lib/grading';
 export {
   CLASSROOM_RESOURCE_SCOPE,
@@ -47,9 +43,9 @@ export {
   setPendingGateAction,
 } from './lib/pendingGateAction';
 export {
-  getAuthorityLabel,
-  getSchoolRoleForUser,
-  getWorkRolesForUser,
+  getCapacityLabel,
+  getSchoolCapacityForUser,
+  getWorkCapacitiesForUser,
 } from './lib/permissions';
 export { StorageKeys, storage } from './lib/storage';
 export { SafeZustandStorage } from './lib/storageWrapper';
@@ -148,6 +144,7 @@ export * from './types';
 import { z } from 'zod';
 
 export * from './api';
+export { mediaAPI } from './api/media';
 export {
   useStudentAssignmentsQuery,
   useStudentClassroomsQuery,
@@ -263,4 +260,3 @@ export { useWorkspaceLayoutSync } from './native/useWorkspaceLayoutSync';
 export { z };
 export * from './constants/SriLankanSchools';
 export * from './hooks';
-

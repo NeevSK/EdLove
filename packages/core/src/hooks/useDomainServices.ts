@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { supabase } from '../api/supabase';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../api/supabase';
 import { createDomainServices } from '../logic/domains/factory';
 import { useStore } from '../store/useStore';
 
@@ -12,7 +12,7 @@ import { useStore } from '../store/useStore';
 export function useDomainServices() {
   return useMemo(
     () =>
-      createDomainServices(supabase, {
+      createDomainServices(__INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__, {
         educationalSideEffects: {
           getCurrentUserId: async () => useStore.getState().user?.id || null,
           emitGrowthSignal: async (userId, signal, payload) => {

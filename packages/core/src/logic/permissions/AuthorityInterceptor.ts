@@ -1,25 +1,32 @@
 import type { POAMetadata } from '../../api/contract';
 import type { AppAbility } from './abilities/base';
+import { SovereignError, ErrorCategory } from '../../types/Errors';
 
 /**
  * AuthorityInterceptor (BFF Layer - L4)
  *
- * In 2026, the BFF uses this pattern to automatically enforce POA based on ts-rest metadata.
- * This ensures that even if a route handler is exposed, it cannot be executed without authority.
+ * In 2026, the BFF uses this pattern to automatically enforce POA based on Hono metadata.
+ * This ensures that even if a route handler is exposed, it cannot be executed without policy approval.
  */
 export class AuthorityInterceptor {
   /**
-   * Enforce authority for a given route and user ability.
-   * @throws ForbiddenError if authority check fails.
+   * Enforce policy for a given route and user ability.
+   * @throws ForbiddenError if policy check fails.
    */
   static async enforce(ability: AppAbility, metadata: unknown) {
-    if (!metadata || typeof metadata !== 'object' || !('authority' in metadata)) {
-      // Default to deny if no authority is defined (Safe by default)
+    if (!metadata || typeof metadata !== 'object' || !('policy' in metadata)) {
+      // Default to deny if no policy is defined (Safe by default)
       console.warn('Endpoint missing POA metadata. Access denied.');
-      throw new Error('Forbidden: No authority defined for this protocol.');
+      throw new SovereignError({
+        title: 'Protocol Violation',
+        detail: 'No policy defined for this protocol.',
+        status: 403,
+        category: ErrorCategory.AUTHORIZATION,
+        code: 'MISSING_POA_METADATA',
+      });
     }
 
-    const { action, subject } = (metadata as { authority: POAMetadata['authority'] }).authority;
+    const { action, subject } = (metadata as { policy: POAMetadata['policy'] }).policy;
 
     // API-surface POA is intentionally coarse: if the user has any matching rule for the
     // action/subject pair, we allow the request to proceed to deeper data-policy checks
@@ -48,7 +55,7 @@ export class AuthorityInterceptor {
     );
 
     if (!isAllowed) {
-      throw new Error(`Forbidden: User does not have ${action} permission on ${subject}.`);
+      throw SovereignError.unauthorized(action, subject);
     }
 
     return true;

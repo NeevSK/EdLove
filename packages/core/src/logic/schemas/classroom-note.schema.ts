@@ -13,7 +13,7 @@ export const ClassroomNoteVisibilitySchema = z.enum(['private', 'class']);
 
 export const ClassroomNoteAuthorSchema = z.object({
   full_name: z.string(),
-  role: z.string(),
+  capacity: z.string(),
 });
 
 /**

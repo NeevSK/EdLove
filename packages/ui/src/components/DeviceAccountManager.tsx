@@ -84,12 +84,12 @@ const AccountCard = React.memo(({
   <Box className={`rounded-[24px] border p-4 shadow-sm transition-all ${isActive ? 'border-phase-primary bg-phase-world' : 'border-phase-border bg-phase-surface'}`}>
     <HStack className="items-start gap-4">
       <Box className="h-12 w-12 items-center justify-center rounded-[18px] bg-phase-accent/10 border border-phase-border">
-        <Text className="text-sm font-bold text-phase-primary">{getInitials(account.fullName, account.email)}</Text>
+        <Text className="text-sm font-bold text-phase-primary">{getInitials(account.displayName ?? "", account.email)}</Text>
       </Box>
       <VStack className="flex-1 gap-1">
         <HStack className="items-center gap-2">
           <Text className="text-base font-bold text-phase-primary" numberOfLines={1}>
-            {account.fullName || account.email || 'Anonymous'}
+            {account.displayName || account.email || 'Anonymous'}
           </Text>
           {isActive && (
             <Box className="rounded-full bg-phase-primary px-2 py-0.5">
@@ -279,7 +279,7 @@ export default function DeviceAccountManager({ compact = false }: { compact?: bo
       <AccountPinModal
         isOpen={!!pinAction}
         mode={pinAction?.mode ?? 'verify'}
-        accountLabel={pinAction?.account.fullName || pinAction?.account.email}
+        accountLabel={pinAction?.account.displayName || pinAction?.account.email}
         allowClose={!pinBusy}
         isLoading={pinBusy}
         onClose={() => dispatch({ type: 'setPinAction', value: null })}

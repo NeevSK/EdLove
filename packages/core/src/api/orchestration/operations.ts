@@ -19,8 +19,8 @@ const attendanceCoverage = assertContractCoverage(
     moduleName: 'attendance',
     contract: operationsContract,
     methodMapping: {
-      getByDate: 'getAttendance',
-      record: 'recordAttendance',
+      fetchClassroomAttendance: 'getAttendance',
+      upsertAttendanceRecord: 'recordAttendance',
       batchRecord: 'batchRecordAttendance',
       getForStudent: 'getAttendanceForStudent',
       getClassroomAttendanceSnapshot: 'getClassroomAttendanceSnapshot',

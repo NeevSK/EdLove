@@ -46,7 +46,7 @@ async function getSchoolScopedClassroomsForPrincipal(
 	userId: string,
 	pagination: { limit: number; offset: number },
 ) {
-	const summary = await api["identity"].getClassroomRoleSummary(userId);
+	const summary = await api["identity"].getClassroomCapacitySummary(userId);
 	if (!summary.schoolId) {
 		return [];
 	}

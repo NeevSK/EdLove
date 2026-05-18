@@ -10,6 +10,8 @@ export const defineTeacherAbilities = (user: UserContext, builder: AbilityBuilde
   can('read', 'TeacherPulse');
   can('manage', 'TeacherDashboard');
   can('manage', 'Wellbeing');
+  can('read', 'ClassroomList'); // Global view visibility
+  can('read', 'LibrarySearch');
 
   if (!user.school_id) return;
 

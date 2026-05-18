@@ -13,7 +13,7 @@ export interface PrincipalWorkspaceServices {
   listInviteCodes(schoolId: string): Promise<InviteCodeZod[]>;
   generateInviteCode(
     schoolId: string,
-    role: PrincipalInviteRole,
+    capacity: PrincipalInviteRole,
     createdBy: string,
   ): Promise<InviteCodeZod>;
   listObservationsByDate(
@@ -43,8 +43,8 @@ export const createPrincipalWorkspaceServices = (
   repository: PrincipalWorkspaceRepository,
 ): PrincipalWorkspaceServices => ({
   listInviteCodes: (schoolId) => repository.listInviteCodes(schoolId),
-  generateInviteCode: (schoolId, role, createdBy) =>
-    repository.generateInviteCode(schoolId, role, createdBy),
+  generateInviteCode: (schoolId, capacity, createdBy) =>
+    repository.generateInviteCode(schoolId, capacity, createdBy),
   listObservationsByDate: (principalId, viewDate, limit = 10) =>
     repository.listObservationsByDate(principalId, viewDate, limit),
   listRecentObservations: (principalId, limit = 5) =>

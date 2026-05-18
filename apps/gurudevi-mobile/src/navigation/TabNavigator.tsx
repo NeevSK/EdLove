@@ -110,9 +110,8 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
 	const { t } = useTranslation();
 	const { context, flags } = usePermissions();
 	
-	// ✅ 2026 Sovereign Pattern: Derive Focus (activeBond) with Anchor (primaryCapacity) fallback.
-	// This ensures the UI reflects the user's soul even when no specific school is focused.
-	const role = useMemo(
+	// Derive the contextual capacity for labels and navigation.
+	const capacity = useMemo(
 		() => context.active_bond?.capacity || context.primary_capacity,
 		[context.active_bond, context.primary_capacity]
 	);
@@ -132,12 +131,12 @@ export default function TabNavigator({ onTabChange }: TabNavigatorProps) {
 
 	// ✅ Memoized Label Logic (Referential Stability)
 	const classroomLabel = useMemo(() => {
-		if (role === "principal") return t("tabs.mySchool") || "My School";
-		if (role === "founder") return t("tabs.school");
-		if (role === "sectionHead") return t("tabs.section");
-		if (role === "gradeHead") return t("tabs.grade") || t("tabs.classroom");
+		if (capacity === "principal") return t("tabs.mySchool") || "My School";
+		if (capacity === "founder") return t("tabs.school");
+		if (capacity === "sectionHead") return t("tabs.section");
+		if (capacity === "gradeHead") return t("tabs.grade") || t("tabs.classroom");
 		return t("tabs.classroom");
-	}, [role, t]);
+	}, [capacity, t]);
 
 	return (
 		<Box className="flex-1">

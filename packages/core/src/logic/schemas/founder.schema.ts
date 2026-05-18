@@ -65,8 +65,7 @@ export const GlobalUserSchema = z.object({
   id: z.string().uuid(),
   email: z.string().email(),
   full_name: z.string(),
-  authority: z.string(),
-  role: z.string().optional(), // UI uses u.role
+  capacity: z.string(),
   avatar_url: z.string().url().nullable().optional(),
   created_at: z.string(),
   schools: z

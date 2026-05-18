@@ -430,7 +430,7 @@ function TeacherJoinSchool({
 				dispatch({ type: "CODE_FAILURE", error: res.error || "Invalid code" });
 				return;
 			}
-			const role = (
+			const capacity = (
 				context.activeBond?.capacity ?? context.primaryCapacity ?? "teacher"
 			) as
 				| "student"
@@ -447,11 +447,12 @@ function TeacherJoinSchool({
 				| "librarian"
 				| "nurse"
 				| "guest";
-			await onboardingAPI.requestSchoolJoin(user.id, res.data.school_id, role);
+			await onboardingAPI.requestSchoolJoin(user.id, res.data.school_id, capacity);
 			await incrementInviteCodeUsage(state.code.trim());
-			const roleSummary = await api["identity"].getClassroomRoleSummary(user.id);
+			const capacitySummary =
+				await api["identity"].getClassroomCapacitySummary(user.id);
 			const schoolId =
-				roleSummary.schoolId || roleSummary.profile.school_id || null;
+				capacitySummary.schoolId || capacitySummary.profile.school_id || null;
 
 			if (schoolId) {
 				useStore.getState().setUser({ ...user, school_id: schoolId });

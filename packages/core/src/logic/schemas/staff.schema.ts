@@ -17,7 +17,7 @@ export const StaffPresenceSummarySchema = z.object({
 export const TeacherCarouselItemSchema = z.object({
   userId: z.uuid(),
   fullName: z.string().min(1),
-  role: z.string(),
+  capacity: z.string(),
   todayStatus: z.string().nullable().optional(),
   classroomCount: z.number().int().min(0).default(0),
   avatarUrl: z.url().nullable().optional().or(z.string().length(0)),

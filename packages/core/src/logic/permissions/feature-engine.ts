@@ -49,7 +49,7 @@ export interface FeatureFlags {
   isMessagingEnabled: boolean;
   isSocialShieldEnabled: boolean;
 
-  // Development / In-Progress Flags (Strictly off in Prod unless developer role)
+  // Development / In-Progress Flags (Strictly off in Prod unless developer capacity)
   isDevelopingAI: boolean;
   isDevelopingAnalyticsDashboard: boolean;
   isDevelopingVoiceNavigation: boolean;
@@ -166,14 +166,30 @@ export const resolveFeatureFlags = (
   if (envFlags.MESSAGING === false) flags.isMessagingEnabled = false;
   if (envFlags.SOCIAL_SHIELD === false) flags.isSocialShieldEnabled = false;
 
-  // 2. Entitlement Level (Tier & Features Array)
-  const isPaidTier = ['pro', 'premium', 'gold', 'silver'].includes(
-    context.tier?.toLowerCase() || '',
-  );
+  // 2. Entitlement Level (Pricing Tier, Citizenship & Features Array)
+  const isPaidTier = context.pricing_tier === 'PRO' || context.pricing_tier === 'INSTITUTIONAL';
+  const isInstitutional = context.pricing_tier === 'INSTITUTIONAL';
+  const isWanderer = context.citizenship === 'WANDERER';
+  
   const capacity = context.active_bond?.capacity || null;
   const isAdmin = ['admin', 'founder', 'developer'].includes(capacity || '');
 
   flags.isProMember = isPaidTier || isAdmin;
+
+  // Wanderer specific overrides
+  if (isWanderer) {
+    flags.isPaymentsEnabled = false;
+    flags.isAccountingEnabled = false;
+    flags.isStaffManagementEnabled = false;
+  }
+
+  // Institutional features
+  if (isInstitutional || isAdmin) {
+    flags.isInventoryEnabled = true;
+    flags.isPaymentsEnabled = true;
+    flags.isAccountingEnabled = true;
+    flags.isStaffManagementEnabled = true;
+  }
 
   if ((context.features || []).includes('OCR') || isAdmin) flags.canUseOCR = true;
   if ((context.features || []).includes('AI_ASSISTANT') || isAdmin) flags.isAIAssistantEnabled = true;

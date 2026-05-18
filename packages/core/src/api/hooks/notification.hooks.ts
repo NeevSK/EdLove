@@ -3,7 +3,7 @@ import { useEffect, useMemo } from 'react';
 import { useStore } from '../../store/useStore';
 import type { Notification } from '../../types/Community';
 import { socialAPI } from '../social';
-import { supabase } from '../supabase';
+import { realtime } from '../../logic/managers/factory';
 
 export const notificationKeys = {
   all: ['notifications'] as const,
@@ -39,51 +39,31 @@ export function useNotificationHooks() {
   useEffect(() => {
     if (!userId) return;
 
-    const channel = supabase
-      .channel(`notifications-${userId}-${Math.random().toString(36).slice(2, 9)}`)
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'notifications',
-          filter: `user_id=eq.${userId}`,
-        },
-        (payload: { new: Notification }) => {
-          queryClient.setQueryData<Notification[]>(notificationKeys.list(userId), (prev) => [
-            payload.new as Notification,
-            ...(prev ?? []),
-          ]);
-          queryClient.setQueryData<number>(
-            notificationKeys.count(userId),
-            (prev) => (prev ?? 0) + 1,
-          );
-        },
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'notifications',
-          filter: `user_id=eq.${userId}`,
-        },
-        async () => {
-          await Promise.all([
-            queryClient.invalidateQueries({
-              queryKey: notificationKeys.list(userId),
-            }),
-            queryClient.invalidateQueries({
-              queryKey: notificationKeys.count(userId),
-            }),
-          ]);
-        },
-      )
-      .subscribe();
+    const subscription = realtime.subscribe<Notification>(
+      `notifications-${userId}-${Math.random().toString(36).slice(2, 9)}`,
+      {
+        event: 'INSERT',
+        table: 'notifications',
+        filter: `user_id=eq.${userId}`,
+      },
+      (payload) => {
+        queryClient.setQueryData<Notification[]>(notificationKeys.list(userId), (prev) => [
+          payload.new as Notification,
+          ...(prev ?? []),
+        ]);
+        queryClient.setQueryData<number>(
+          notificationKeys.count(userId),
+          (prev) => (prev ?? 0) + 1,
+        );
+      }
+    );
 
     return () => {
-      supabase.removeChannel(channel).catch((e) => {
-        console.error('Notifications: Failed to remove channel during cleanup', e);
+      void subscription.unsubscribe().catch((error) => {
+        console.error(
+          '[notifications] Failed to unsubscribe realtime subscription; a stale channel may remain active until the next reconnect.',
+          error,
+        );
       });
     };
   }, [userId, queryClient]);

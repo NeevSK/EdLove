@@ -1,31 +1,28 @@
 /**
- * Background Sync Task — Expo SDK 55 / May 2026
+ * Background Sync Task — Sovereignty Refactor
  *
- * Uses `expo-background-task` (which replaced the deprecated `expo-background-fetch`).
- * Backed by WorkManager (Android) and BGTaskScheduler (iOS) for true OS-level scheduling.
- *
- * Architecture role:
+ * Architecture capacity:
  *  - "Sovereign Heartbeat" that drains the Mutation Queue even when the app is
  *    minimised or killed.
  *  - Emits events to the SovereignBus so the foreground UI can react when the
  *    app is next opened.
+ *
+ * Uses coreRuntime.backgroundTask (Hexagonal Port) instead of direct expo-background-task.
  */
-import * as TaskManager from 'expo-task-manager';
-import * as BackgroundTask from 'expo-background-task';
-import { useMutationQueue } from '@repo/core/logic';
+import { useMutationQueue, coreRuntime } from '@repo/core/logic';
 import { MUTATION_REGISTRY, sovereignBus } from '@repo/core/sync';
+import { BackgroundTaskResult, BackgroundTaskStatus } from '@repo/core/types';
 
 export const BACKGROUND_SYNC_TASK = 'GURUDEVI_BACKGROUND_SYNC';
 
 // ─── Task Definition ──────────────────────────────────────────────────────────
-// Must be defined at the module top-level (not inside a function or component).
 
-TaskManager.defineTask(BACKGROUND_SYNC_TASK, async () => {
+coreRuntime.backgroundTask.defineTask(BACKGROUND_SYNC_TASK, async () => {
   const { queue, removeFromQueue, setSyncing } = useMutationQueue.getState();
 
   // Nothing to do
   if (queue.length === 0) {
-    return BackgroundTask.BackgroundTaskResult.NoData;
+    return BackgroundTaskResult.NoData;
   }
 
   console.log(`[BackgroundSync] Pulse: draining ${queue.length} items`);
@@ -42,7 +39,6 @@ TaskManager.defineTask(BACKGROUND_SYNC_TASK, async () => {
     try {
       const mutationFn = MUTATION_REGISTRY[item.name];
       if (!mutationFn) {
-        // Unknown mutation — will be caught by foreground SyncManager for DLQ routing
         continue;
       }
       await mutationFn(item.variables);
@@ -59,30 +55,30 @@ TaskManager.defineTask(BACKGROUND_SYNC_TASK, async () => {
   sovereignBus.emit('background:pulse', { itemsDrained: drained });
 
   return drained > 0
-    ? BackgroundTask.BackgroundTaskResult.NewData
-    : BackgroundTask.BackgroundTaskResult.NoData;
+    ? BackgroundTaskResult.NewData
+    : BackgroundTaskResult.NoData;
 });
 
 // ─── Registration ─────────────────────────────────────────────────────────────
 
 export async function registerBackgroundSync(): Promise<void> {
   try {
-    const status = await BackgroundTask.getStatusAsync();
+    const status = await coreRuntime.backgroundTask.getStatusAsync();
 
     if (
-      status === BackgroundTask.BackgroundTaskStatus.Restricted ||
-      status === BackgroundTask.BackgroundTaskStatus.Denied
+      status === BackgroundTaskStatus.Restricted ||
+      status === BackgroundTaskStatus.Denied
     ) {
       console.warn('[BackgroundSync] OS has restricted background tasks. Falling back to foreground-only sync.');
       return;
     }
 
-    const isRegistered = await TaskManager.isTaskRegisteredAsync(BACKGROUND_SYNC_TASK);
+    const isRegistered = await coreRuntime.backgroundTask.isTaskRegisteredAsync(BACKGROUND_SYNC_TASK);
     if (!isRegistered) {
-      await BackgroundTask.registerTaskAsync(BACKGROUND_SYNC_TASK, {
-        minimumInterval: 15, // minutes — OS may defer; this is a suggestion
-        stopOnTerminate: false, // Android: keep alive after app close
-        startOnBoot: true,     // Android: restart after reboot
+      await coreRuntime.backgroundTask.registerTaskAsync(BACKGROUND_SYNC_TASK, {
+        minimumInterval: 15, // minutes
+        stopOnTerminate: false,
+        startOnBoot: true,
       });
       console.log('✅ [BackgroundSync] Task registered.');
     }
@@ -93,7 +89,7 @@ export async function registerBackgroundSync(): Promise<void> {
 
 export async function unregisterBackgroundSync(): Promise<void> {
   try {
-    await BackgroundTask.unregisterTaskAsync(BACKGROUND_SYNC_TASK);
+    await coreRuntime.backgroundTask.unregisterTaskAsync(BACKGROUND_SYNC_TASK);
   } catch {
     // Silently ignore if not registered
   }
@@ -101,9 +97,8 @@ export async function unregisterBackgroundSync(): Promise<void> {
 
 /**
  * Development only: manually trigger the task to test without waiting for OS.
- * Call this from a dev menu or __DEV__ block.
  */
 export async function triggerBackgroundSyncForTesting(): Promise<void> {
   if (!__DEV__) return;
-  await BackgroundTask.triggerTaskWorkerForTestingAsync(BACKGROUND_SYNC_TASK);
+  await coreRuntime.backgroundTask.triggerTaskWorkerForTestingAsync?.(BACKGROUND_SYNC_TASK);
 }

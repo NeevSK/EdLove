@@ -1,320 +1,244 @@
-import { initContract } from '@ts-rest/core';
 import { z } from 'zod';
+import { type SovereignContract } from './contract';
 import {
   CommunityGroupSchema,
   CommunityPostSchema,
   GroupMemberSchema,
   GroupMessageSchema,
 } from '../logic/schemas/community.schema';
-import { POAMetadataSchema } from './contract';
 
-const c = initContract();
-
-const authority = (
+const communityAuthority = (
   action: 'create' | 'read' | 'update' | 'delete',
-  subject: 'Group' | 'Post' | 'User',
-) => POAMetadataSchema.parse({ authority: { action, subject } });
+  subject: 'Group' | 'Post' | 'User' | 'Comment' | 'Poll'
+) => ({
+  policy: { action, subject },
+}) as const;
 
-export const communityContract = c.router({
-  getAnnouncements: {
-    method: 'GET',
-    path: '/community/announcements',
-    query: z.object({ school_id: z.string() }),
-    responses: { 200: z.array(z.any()) },
-    metadata: authority('read', 'Group'),
-  },
-  createAnnouncement: {
-    method: 'POST',
-    path: '/community/announcements',
-    body: z.object({
-      school_id: z.string(),
-      author_id: z.string(),
-      content: z.string(),
-      is_pinned: z.boolean().optional(),
-    }),
-    responses: { 201: z.any() },
-    metadata: authority('create', 'Group'),
-  },
-
+/**
+ * Community Domain Port
+ * Framework-agnostic definition of the Community API.
+ * [LOUD-FAILURE] Renamed and expanded for ReBAC compliance.
+ */
+export const communityContract: SovereignContract = {
   getGroups: {
-    method: 'GET',
+    method: 'get',
     path: '/community/groups',
-    query: z.object({
-      limit: z.coerce.number().default(20),
-      offset: z.coerce.number().default(0),
-      school_id: z.string().optional(),
-      search: z.string().optional(),
-      is_public: z.boolean().optional(),
-      type: z.string().optional(),
-    }),
-    responses: { 200: z.array(CommunityGroupSchema) },
-    metadata: authority('read', 'Group'),
+    request: {
+      query: z.strictObject({
+        limit: z.coerce.number().default(20),
+        offset: z.coerce.number().default(0),
+        school_id: z.uuid().optional(),
+        search: z.string().optional(),
+        is_public: z.boolean().optional(),
+        type: z.string().optional(),
+      }),
+    },
+    responses: {
+      200: { schema: z.array(CommunityGroupSchema), description: 'Retrieve groups' },
+    },
+    metadata: communityAuthority('read', 'Group'),
   },
-  createGroup: {
-    method: 'POST',
-    path: '/community/groups',
-    body: z.object({
-      name: z.string(),
-      description: z.string().optional(),
-      school_id: z.string().optional(),
-      creator_id: z.string().optional(),
-      type: z.string().optional(),
-      visibility: z.string().optional(),
-      join_policy: z.string().optional(),
-      is_public: z.boolean().optional(),
-    }),
-    responses: { 201: CommunityGroupSchema },
-    metadata: authority('create', 'Group'),
-  },
-  joinGroup: {
-    method: 'POST',
-    path: '/community/groups/:groupId/join',
-    body: z.object({
-      user_id: z.string(),
-      authority_tier: z.string(),
-    }),
-    responses: { 201: GroupMemberSchema },
-    metadata: authority('create', 'Group'),
-  },
+
   getGroup: {
-    method: 'GET',
+    method: 'get',
     path: '/community/groups/:groupId',
-    responses: { 200: CommunityGroupSchema },
-    metadata: authority('read', 'Group'),
+    request: {
+      params: z.strictObject({ groupId: z.uuid() }),
+    },
+    responses: {
+      200: { schema: CommunityGroupSchema, description: 'Retrieve group details' },
+    },
+    metadata: communityAuthority('read', 'Group'),
   },
-  handleMemberRequest: {
-    method: 'POST',
-    path: '/community/groups/:groupId/members/:userId/status',
-    body: z.object({ status: z.enum(['active', 'rejected']) }),
-    responses: { 200: GroupMemberSchema },
-    metadata: authority('update', 'Group'),
+
+  createGroup: {
+    method: 'post',
+    path: '/community/groups',
+    request: {
+      body: z.strictObject({
+        name: z.string(),
+        description: z.string().optional(),
+        school_id: z.uuid().optional(),
+        type: z.string().optional(),
+        visibility: z.string().optional(),
+        is_public: z.boolean().optional(),
+      }),
+    },
+    responses: {
+      201: { schema: CommunityGroupSchema, description: 'Group created' },
+    },
+    metadata: communityAuthority('create', 'Group'),
   },
-  updateJoiningPolicy: {
-    method: 'PATCH',
-    path: '/community/groups/:groupId/policy',
-    body: z.object({ policy: z.string() }),
-    responses: { 200: CommunityGroupSchema },
-    metadata: authority('update', 'Group'),
+
+  joinGroup: {
+    method: 'post',
+    path: '/community/groups/:groupId/join',
+    request: {
+      params: z.strictObject({ groupId: z.uuid() }),
+      body: z.strictObject({
+        user_id: z.uuid(),
+        capacity: z.string(),
+      }),
+    },
+    responses: {
+      201: { schema: GroupMemberSchema, description: 'Joined group' },
+    },
+    metadata: communityAuthority('create', 'Group'),
   },
 
   getPosts: {
-    method: 'GET',
+    method: 'get',
     path: '/community/posts',
-    query: z.object({
-      groupId: z.string().optional(),
-      viewDate: z.string().optional(),
-      viewScale: z.enum(['day', 'week', 'month', 'year', 'custom']).optional(),
-      limit: z.coerce.number().default(20),
-      offset: z.coerce.number().default(0),
-    }),
-    responses: { 200: z.array(CommunityPostSchema) },
-    metadata: authority('read', 'Post'),
-  },
-  createPost: {
-    method: 'POST',
-    path: '/community/posts',
-    body: z.object({
-      post: z.record(z.string(), z.any()),
-      user_id: z.string(),
-      authority_tier: z.string(),
-      school_id: z.string(),
-    }),
-    responses: { 201: CommunityPostSchema },
-    metadata: authority('create', 'Post'),
-  },
-  toggleReaction: {
-    method: 'POST',
-    path: '/community/posts/:postId/reactions',
-    body: z.object({ user_id: z.string(), emoji: z.string().optional() }),
-    responses: { 200: z.object({ active: z.boolean() }) },
-    metadata: authority('create', 'Post'),
-  },
-  voteInPoll: {
-    method: 'POST',
-    path: '/community/posts/:postId/poll/vote',
-    body: z.object({
-      optionId: z.string(),
-      allowMultiple: z.boolean().optional(),
-    }),
-    responses: { 200: z.array(z.string()) },
-    metadata: authority('create', 'Post'),
-  },
-
-  getMessages: {
-    method: 'GET',
-    path: '/community/groups/:groupId/messages',
-    query: z.object({
-      limit: z.coerce.number().optional(),
-      viewDate: z.string().optional(),
-      viewScale: z.enum(['day', 'week', 'month', 'year', 'custom']).optional(),
-    }),
-    responses: { 200: z.array(GroupMessageSchema) },
-    metadata: authority('read', 'Group'),
-  },
-  sendMessage: {
-    method: 'POST',
-    path: '/community/groups/:groupId/messages',
-    body: z.object({ content: z.string() }),
-    responses: { 201: GroupMessageSchema },
-    metadata: authority('create', 'Group'),
-  },
-
-  getDirectConversations: {
-    method: 'GET',
-    path: '/community/direct/conversations',
-    responses: { 200: z.array(z.any()) },
-    metadata: authority('read', 'User'),
-  },
-  getOrCreateDirectConversation: {
-    method: 'POST',
-    path: '/community/direct/conversations',
-    body: z.object({ target_user_id: z.string() }),
-    responses: { 201: z.object({ id: z.string() }) },
-    metadata: authority('create', 'User'),
-  },
-  getDirectMessages: {
-    method: 'GET',
-    path: '/community/direct/conversations/:conversationId/messages',
-    query: z.object({
-      limit: z.coerce.number().optional(),
-      viewDate: z.string().optional(),
-      viewScale: z.enum(['day', 'week', 'month', 'year', 'custom']).optional(),
-    }),
-    responses: { 200: z.array(z.any()) },
-    metadata: authority('read', 'User'),
-  },
-  sendDirectMessage: {
-    method: 'POST',
-    path: '/community/direct/conversations/:conversationId/messages',
-    body: z.object({ content: z.string() }),
-    responses: { 201: z.any() },
-    metadata: authority('create', 'User'),
-  },
-  getCommunityResonance: {
-    method: 'GET',
-    path: '/community/resonance/:userId',
-    query: z.object({
-      viewDate: z.string().optional(),
-      viewScale: z.enum(['day', 'week', 'month', 'year', 'custom']).optional(),
-    }),
-    responses: {
-      200: z.object({
-        likes: z.number(),
-        comments: z.number(),
-        shares: z.number(),
+    request: {
+      query: z.strictObject({
+        groupId: z.uuid().optional(),
+        limit: z.coerce.number().default(20),
+        offset: z.coerce.number().default(0),
       }),
     },
-    metadata: authority('read', 'Post'),
+    responses: {
+      200: { schema: z.array(CommunityPostSchema), description: 'Retrieve posts' },
+    },
+    metadata: communityAuthority('read', 'Post'),
   },
+
+  createPost: {
+    method: 'post',
+    path: '/community/posts',
+    request: {
+      body: z.strictObject({
+        group_id: z.uuid(),
+        content: z.string(),
+        post_type: z.string().default('discussion'),
+        visibility: z.string().default('school'),
+        author_tier: z.string(),
+      }),
+    },
+    responses: {
+      201: { schema: CommunityPostSchema, description: 'Post created' },
+    },
+    metadata: communityAuthority('create', 'Post'),
+  },
+
+  toggleReaction: {
+    method: 'post',
+    path: '/community/posts/:postId/reactions',
+    request: {
+      params: z.strictObject({ postId: z.uuid() }),
+      body: z.strictObject({ 
+        user_id: z.uuid(), 
+        emoji: z.string().optional() 
+      }),
+    },
+    responses: {
+      200: { schema: z.strictObject({ active: z.boolean() }), description: 'Reaction toggled' },
+    },
+    metadata: communityAuthority('create', 'Post'),
+  },
+
   getComments: {
-    method: 'GET',
+    method: 'get',
     path: '/community/posts/:postId/comments',
-    query: z.object({
-      limit: z.coerce.number().optional(),
-      viewDate: z.string().optional(),
-      viewScale: z.enum(['day', 'week', 'month', 'year', 'custom']).optional(),
-    }),
-    responses: { 200: z.array(z.any()) },
-    metadata: authority('read', 'Post'),
+    request: {
+      params: z.strictObject({ postId: z.uuid() }),
+      query: z.strictObject({ limit: z.coerce.number().optional() }),
+    },
+    responses: {
+      200: { schema: z.array(z.any()), description: 'Retrieve comments' },
+    },
+    metadata: communityAuthority('read', 'Comment'),
   },
+
   createComment: {
-    method: 'POST',
+    method: 'post',
     path: '/community/posts/:postId/comments',
-    body: z.object({
-      content: z.string(),
-      isAnonymous: z.boolean().optional(),
-    }),
-    responses: { 201: z.any() },
-    metadata: authority('create', 'Post'),
+    request: {
+      params: z.strictObject({ postId: z.uuid() }),
+      body: z.strictObject({ content: z.string(), author_tier: z.string() }),
+    },
+    responses: {
+      201: { schema: z.any(), description: 'Comment created' },
+    },
+    metadata: communityAuthority('create', 'Comment'),
   },
+
   deleteComment: {
-    method: 'DELETE',
+    method: 'delete',
     path: '/community/comments/:commentId',
-    responses: { 204: z.undefined() },
-    metadata: authority('delete', 'Post'),
+    request: {
+      params: z.strictObject({ commentId: z.uuid() }),
+    },
+    responses: {
+      200: { schema: z.strictObject({ success: z.boolean() }), description: 'Comment deleted' },
+    },
+    metadata: communityAuthority('delete', 'Comment'),
   },
+
   toggleCommentUpvote: {
-    method: 'POST',
+    method: 'post',
     path: '/community/comments/:commentId/upvote',
-    body: z.any().optional(),
-    responses: { 200: z.object({ active: z.boolean() }) },
-    metadata: authority('update', 'Post'),
+    request: {
+      params: z.strictObject({ commentId: z.uuid() }),
+    },
+    responses: {
+      200: { schema: z.strictObject({ active: z.boolean() }), description: 'Upvote toggled' },
+    },
+    metadata: communityAuthority('create', 'Comment'),
   },
+
   markOfficialAnswer: {
-    method: 'PATCH',
+    method: 'post',
     path: '/community/comments/:commentId/official',
-    body: z.object({ isOfficial: z.boolean() }),
-    responses: { 204: z.undefined() },
-    metadata: authority('update', 'Post'),
+    request: {
+      params: z.strictObject({ commentId: z.uuid() }),
+    },
+    responses: {
+      200: { schema: z.strictObject({ success: z.boolean() }), description: 'Marked official' },
+    },
+    metadata: communityAuthority('update', 'Comment'),
   },
+
+  getPollStatus: {
+    method: 'get',
+    path: '/community/polls/:postId',
+    request: {
+      params: z.strictObject({ postId: z.uuid() }),
+    },
+    responses: {
+      200: { schema: z.any(), description: 'Retrieve poll status' },
+    },
+    metadata: communityAuthority('read', 'Poll'),
+  },
+
+  voteInPoll: {
+    method: 'post',
+    path: '/community/polls/:postId/vote',
+    request: {
+      params: z.strictObject({ postId: z.uuid() }),
+      body: z.strictObject({ option_id: z.uuid() }),
+    },
+    responses: {
+      200: { schema: z.any(), description: 'Vote recorded' },
+    },
+    metadata: communityAuthority('create', 'Poll'),
+  },
+
   reportContent: {
-    method: 'POST',
+    method: 'post',
     path: '/community/report',
-    body: z.object({
-      postId: z.string().optional(),
-      groupId: z.string().optional(),
-      targetUserId: z.string().optional(),
-      reason: z.string(),
-      report_target: z.enum(['teacher', 'principal', 'platform']),
-    }),
-    responses: { 201: z.any() },
-    metadata: authority('create', 'User'),
+    request: {
+      body: z.strictObject({
+        postId: z.uuid().optional(),
+        groupId: z.uuid().optional(),
+        targetUserId: z.uuid().optional(),
+        reason: z.string(),
+        report_target: z.enum(['teacher', 'principal', 'platform']),
+        reporter_id: z.uuid(),
+      }),
+    },
+    responses: {
+      200: { schema: z.strictObject({ success: z.boolean() }), description: 'Content reported' },
+    },
+    metadata: communityAuthority('create', 'Post'),
   },
-  getNotifications: {
-    method: 'GET',
-    path: '/community/notifications',
-    query: z.object({
-      limit: z.coerce.number().optional(),
-      viewDate: z.string().optional(),
-      viewScale: z.enum(['day', 'week', 'month', 'year', 'custom']).optional(),
-    }),
-    responses: { 200: z.array(z.any()) },
-    metadata: authority('read', 'User'),
-  },
-  getUnreadNotificationCount: {
-    method: 'GET',
-    path: '/community/notifications/unread/count',
-    responses: { 200: z.object({ count: z.number() }) },
-    metadata: authority('read', 'User'),
-  },
-  markNotificationRead: {
-    method: 'PATCH',
-    path: '/community/notifications/:notificationId/read',
-    body: z.any().optional(),
-    responses: { 204: z.undefined() },
-    metadata: authority('update', 'User'),
-  },
-  markAllNotificationsRead: {
-    method: 'PATCH',
-    path: '/community/notifications/read-all',
-    body: z.any().optional(),
-    responses: { 204: z.undefined() },
-    metadata: authority('update', 'User'),
-  },
-  blockUser: {
-    method: 'POST',
-    path: '/community/users/block',
-    body: z.object({ target_user_id: z.string() }),
-    responses: { 201: z.any() },
-    metadata: authority('create', 'User'),
-  },
-  unblockUser: {
-    method: 'POST',
-    path: '/community/users/unblock',
-    body: z.object({ target_user_id: z.string() }),
-    responses: { 204: z.undefined() },
-    metadata: authority('delete', 'User'),
-  },
-  isBlockingActive: {
-    method: 'GET',
-    path: '/community/users/:targetUserId/blocking-status',
-    responses: { 200: z.object({ active: z.boolean() }) },
-    metadata: authority('read', 'User'),
-  },
-  getMutedUsers: {
-    method: 'GET',
-    path: '/community/users/muted',
-    responses: { 200: z.array(z.any()) },
-    metadata: authority('read', 'User'),
-  },
-});
+} as const;

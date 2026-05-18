@@ -1,5 +1,5 @@
 export { useAccountDeletion } from './useAccountDeletion';
-export { useAuthorityFeatures } from './useAuthorityFeatures';
+export { useCapacityFeatures } from './useAuthorityFeatures';
 export { useBanyanGrowth } from './useBanyanGrowth';
 export { useClassroomCreation } from './useClassroomCreation';
 export { useDeviceAccounts } from './useDeviceAccounts';
@@ -20,7 +20,8 @@ export { useJourneyHistory } from './useJourneyHistory';
 export { useManualSnapshot } from './useManualSnapshot';
 export { type DownloadState, useMediaDownloader } from './useMediaDownloader';
 export { useNaturePaths } from './useNaturePaths';
-export { type AppNotification, useNotifications } from './useNotifications';
+export { useNotifications } from './useNotifications';
+
 export { usePendingActions } from './usePendingActions';
 export { usePendingGateAction } from './usePendingGateAction';
 export { useRewards } from './useRewards';

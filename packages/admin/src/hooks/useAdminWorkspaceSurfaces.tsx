@@ -1,13 +1,17 @@
-import GradeHeadDashboard from "@repo/admin/screens/GradeHeadDashboard";
-import PrincipalDashboard from "@repo/admin/screens/PrincipalDashboard";
-import SectionHeadDashboard from "@repo/admin/screens/SectionHeadDashboard";
-import { PrincipalOnboardingView } from "../components";
 import type {
 	ClassroomWorkspaceSurface,
 	PrincipalInsight,
-} from "../types/workspace";
+	DomainFeature,
+} from "@repo/core/types/Workspace";
+import { useFeatureRegistry } from "@repo/core/hooks/useFeatureRegistry";
+import React from "react";
+import { ADMIN_REGISTRY } from "../constants/adminRegistry";
+import { PrincipalOnboardingView } from "../components";
+import GradeHeadDashboard from "../screens/GradeHeadDashboard";
+import PrincipalDashboard from "../screens/PrincipalDashboard";
+import SectionHeadDashboard from "../screens/SectionHeadDashboard";
 
-export function appendPrincipalWorkspaceSurfaces(
+export function appendAdminWorkspaceSurfaces(
 	surfaces: ClassroomWorkspaceSurface[],
 	{
 		can,
@@ -20,6 +24,9 @@ export function appendPrincipalWorkspaceSurfaces(
 		surfaceInsights,
 		onTryDemo,
 		onCreateSchool,
+		citizenship,
+		isPro,
+		userCapabilities,
 	}: {
 		can: (action: string, subject: string, field?: string) => boolean;
 		isGuest: boolean;
@@ -31,9 +38,23 @@ export function appendPrincipalWorkspaceSurfaces(
 		surfaceInsights?: PrincipalInsight;
 		onTryDemo: () => void;
 		onCreateSchool: () => void;
+		citizenship: string;
+		isPro: boolean;
+		userCapabilities: string[];
 	},
 ) {
-	if (can("manage", "PrincipalDashboard")) {
+	const citizenshipLevel =
+		citizenship === "FIRST_CLASS" ? 2 : citizenship === "SECOND_CLASS" ? 1 : 0;
+
+	const adminGated = useFeatureRegistry(ADMIN_REGISTRY, {
+		citizenship: citizenshipLevel,
+		isPro,
+		capabilities: userCapabilities,
+	});
+
+	// --- Principal Dashboard ---
+	const principalGate = adminGated["principal_dashboard"];
+	if (principalGate?.visible) {
 		const principalContent =
 			!schoolIdToUse && !isDemoModeTriggered ? (
 				<PrincipalOnboardingView
@@ -51,16 +72,9 @@ export function appendPrincipalWorkspaceSurfaces(
 			);
 
 		surfaces.push({
-			surfaceId: "principal",
-			workspaceId: "classroom",
-			capabilityKey: "PrincipalDashboard",
-			ownerPackage: "admin",
-			defaultZone: "institution",
-			defaultOrder: 10,
-			mobileSupport: true,
-			webSupport: true,
-			title: "Principal Shell",
-			subtitle: "Official school governance workspace",
+			...principalGate.feature,
+			title: principalGate.feature.label,
+			subtitle: principalGate.feature.description,
 			summary:
 				surfaceInsights?.principal?.summary ??
 				"Institutional pulse, observations, approvals, and published academic oversight.",
@@ -70,21 +84,16 @@ export function appendPrincipalWorkspaceSurfaces(
 				"Governance",
 			],
 			content: principalContent,
-		});
+		} as ClassroomWorkspaceSurface);
 	}
 
-	if (can("manage", "SectionHeadDashboard")) {
+	// --- Section Head Dashboard ---
+	const sectionHeadGate = adminGated["section_head"];
+	if (sectionHeadGate?.visible) {
 		surfaces.push({
-			surfaceId: "section-head",
-			workspaceId: "classroom",
-			capabilityKey: "SectionHeadDashboard",
-			ownerPackage: "classroom",
-			defaultZone: "work",
-			defaultOrder: 20,
-			mobileSupport: true,
-			webSupport: true,
-			title: "Section Head Desk",
-			subtitle: "Section-level academic coordination",
+			...sectionHeadGate.feature,
+			title: sectionHeadGate.feature.label,
+			subtitle: sectionHeadGate.feature.description,
 			summary:
 				"Mixed teaching and coordination capability within the classroom holon.",
 			temporalLabel: "Work",
@@ -95,21 +104,16 @@ export function appendPrincipalWorkspaceSurfaces(
 					userId={classroomData.userId}
 				/>
 			),
-		});
+		} as ClassroomWorkspaceSurface);
 	}
 
-	if (can("manage", "GradeHeadDashboard")) {
+	// --- Grade Head Dashboard ---
+	const gradeHeadGate = adminGated["grade_head"];
+	if (gradeHeadGate?.visible) {
 		surfaces.push({
-			surfaceId: "grade-head",
-			workspaceId: "classroom",
-			capabilityKey: "GradeHeadDashboard",
-			ownerPackage: "classroom",
-			defaultZone: "work",
-			defaultOrder: 30,
-			mobileSupport: true,
-			webSupport: true,
-			title: "Grade Head Deck",
-			subtitle: "Grade-level academic stewardship",
+			...gradeHeadGate.feature,
+			title: gradeHeadGate.feature.label,
+			subtitle: gradeHeadGate.feature.description,
 			summary:
 				"Cross-class coordination for grade-wide rhythms, issues, and academic flow.",
 			temporalLabel: "Work",
@@ -120,6 +124,6 @@ export function appendPrincipalWorkspaceSurfaces(
 					userId={classroomData.userId}
 				/>
 			),
-		});
+		} as ClassroomWorkspaceSurface);
 	}
 }

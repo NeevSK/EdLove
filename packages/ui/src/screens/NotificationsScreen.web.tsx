@@ -1,4 +1,5 @@
-import { type AppNotification, useNotifications, useStore } from '@repo/core/logic';
+import type { AppNotification } from '@repo/core/types';
+import { useNotifications, useStore } from '@repo/core/logic';
 import { formatDistanceToNow } from 'date-fns';
 import { Bell, CheckCircle2, Inbox, Info, Shield, Sparkles } from 'lucide-react-native';
 import React, { useCallback, memo } from 'react';

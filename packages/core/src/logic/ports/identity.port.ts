@@ -1,15 +1,19 @@
 import { User } from '../../types/User';
 import { Bond, Perspective, Capacity } from '../../types/Identity';
+import { Identity } from '../../api/identity.generated';
 
 /**
  * IIdentityPort: The Sovereign Identity Interface.
  * Decouples the application logic from the underlying Auth provider (Supabase, DID, etc.).
+ * [LOUD-FAILURE] Renamed from getMyInternalId to identifyActiveCitizen.
+ * [LOUD-FAILURE] Updated return type to include context (Bonds/Perspectives).
  */
 export interface IIdentityPort {
   /**
-   * Resolves the internal platform UUID for the current authenticated user.
+   * Resolves the full sovereign identity for the current authenticated user.
+   * Includes active bond and available perspectives.
    */
-  getMyInternalId(): Promise<string | null>;
+  identifyActiveCitizen(): Promise<Identity | null>;
 
   /**
    * Resolves the internal user ID from a provider and provider-specific user ID.
@@ -50,4 +54,29 @@ export interface IIdentityPort {
    * Onboarding: Creates the inaugural Bond for a new user.
    */
   createInitialBond(orientation: Capacity, context: Record<string, any>): Promise<void>;
+
+  /**
+   * Profiles: Updates the user's profile.
+   */
+  updateProfile(userId: string, updates: Partial<User>): Promise<void>;
+
+  /**
+   * Relationships: Blocks another user.
+   */
+  blockUser(blockerId: string, blockedId: string): Promise<void>;
+
+  /**
+   * Relationships: Unblocks another user.
+   */
+  unblockUser(blockerId: string, blockedId: string): Promise<void>;
+
+  /**
+   * Profiles: Completes the user profile.
+   */
+  completeProfile(userId: string, data: any): Promise<void>;
+
+  /**
+   * Onboarding: Marks the onboarding journey as officially completed.
+   */
+  completeOnboarding(userId: string): Promise<void>;
 }

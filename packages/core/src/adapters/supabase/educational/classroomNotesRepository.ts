@@ -1,6 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { selectLatestTemporalRecordsAsOf } from '../../lib/temporalEvents';
-import type { ClassroomNotesRepository } from '../../logic/domains/classroomNotes/ports';
+import { selectLatestTemporalRecordsAsOf } from '../../../lib/temporalEvents';
+import type { ClassroomNotesRepository } from '../../../logic/domains/classroomNotes/ports';
 import {
   type ClassroomNoteCreate,
   ClassroomNoteCreateSchema,
@@ -10,8 +10,8 @@ import {
   ClassroomNoteSchema,
   type ClassroomNoteUpdate,
   ClassroomNoteUpdateSchema,
-} from '../../logic/schemas/classroom-note.schema';
-import { APIError } from '../../types/API';
+} from '../../../logic/schemas/classroom-note.schema';
+import { APIError } from '../../../types/API';
 
 type ClassroomNoteRow = Record<string, unknown> & {
   id: string;
@@ -23,10 +23,10 @@ type ClassroomNoteRow = Record<string, unknown> & {
   is_pinned: boolean;
   created_at: string;
   updated_at: string;
-  author?: { full_name: string; role: string };
+  author?: { full_name: string; capacity: string };
 };
 
-const selectNoteFields = '*, author:users(full_name, role)';
+const selectNoteFields = '*, author:users(full_name, capacity)';
 
 const sortNotes = (notes: ClassroomNoteRecord[]) =>
   [...notes].sort((left, right) => {

@@ -1,6 +1,5 @@
 import type { QueryClient } from '@tanstack/react-query';
-import { identityAPI } from '../api/identity';
-import { supabase } from '../api/supabase';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../api/supabase';
 import { getActiveAccountId, setActiveAccountId } from '../lib/accountScope';
 import { DeviceTrustEngine } from '../lib/security/deviceTrust';
 import { useMutationQueue } from '../lib/sync/useMutationQueue';
@@ -50,14 +49,13 @@ const featureScopedDefaults = resolveFeatureFlags({
   user_id: null,
   userId: null,
   email: null,
-  // Sovereign ReBAC fields — required by UserContext schema
   bonds: [],
   primary_capacity: null,
   primaryCapacity: null,
   active_bond: null,
   activeBond: null,
   active_bond_status: 'active',
-  role: null,
+  capacity: null,
   traits: [],
   school_id: null,
   schoolId: null,
@@ -65,6 +63,8 @@ const featureScopedDefaults = resolveFeatureFlags({
   tenancy: null,
   tenant_kind: 'customer',
   tier: 'free',
+  citizenship: 'WANDERER',
+  pricing_tier: 'FREE',
   is_anonymous: true,
   isAnonymous: true,
   has_global_access: false,
@@ -96,7 +96,6 @@ export async function globalLogoutAndPurge(queryClient?: QueryClient) {
       const MMKV = mmkvModule.MMKV;
       if (MMKV) {
         const storeId = `gurudevi-tenant-${currentAccountId}`;
-        // We mount without the encryption key just to run clearAll()
         const store = new MMKV({ id: storeId });
         store.clearAll();
       }
@@ -110,11 +109,10 @@ export async function globalLogoutAndPurge(queryClient?: QueryClient) {
     queryClient.clear();
   }
 
-  await supabase.auth.signOut({ scope: 'local' });
+  await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.auth.signOut({ scope: 'local' });
 
   // 4. Memory Purge
   setActiveAccountId(null);
-  identityAPI.clearCache();
 
   resetScopedStores();
 }

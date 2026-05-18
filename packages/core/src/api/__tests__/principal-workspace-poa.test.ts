@@ -29,38 +29,39 @@ describe('principal workspace POA coverage', () => {
     expect(coverage.contract).toBe(principalWorkspaceContract);
   });
 
-  test('principal workspace routes carry authority metadata', () => {
-    expect(principalWorkspaceContract.listInviteCodes.metadata?.authority).toEqual({
+  test('principal workspace routes carry policy metadata', () => {
+    expect(principalWorkspaceContract.listInviteCodes.metadata?.policy).toEqual({
       action: 'read',
       subject: 'SchoolInvite',
     });
-    expect(principalWorkspaceContract.generateInviteCode.metadata?.authority).toEqual({
+    expect(principalWorkspaceContract.generateInviteCode.metadata?.policy).toEqual({
       action: 'create',
       subject: 'SchoolInvite',
     });
-    expect(principalWorkspaceContract.listObservationsByDate.metadata?.authority).toEqual({
+    expect(principalWorkspaceContract.listObservationsByDate.metadata?.policy).toEqual({
       action: 'read',
       subject: 'PrincipalObservation',
     });
-    expect(principalWorkspaceContract.createObservation.metadata?.authority).toEqual({
+    expect(principalWorkspaceContract.createObservation.metadata?.policy).toEqual({
       action: 'create',
       subject: 'PrincipalObservation',
     });
-    expect(principalWorkspaceContract.recordInviteEvent.metadata?.authority).toEqual({
+    expect(principalWorkspaceContract.recordInviteEvent.metadata?.policy).toEqual({
       action: 'update',
       subject: 'SchoolInvite',
     });
-    expect(principalWorkspaceContract.recordObservationFollowUp.metadata?.authority).toEqual({
+    expect(principalWorkspaceContract.recordObservationFollowUp.metadata?.policy).toEqual({
       action: 'update',
       subject: 'PrincipalObservation',
     });
-    expect(principalWorkspaceContract.getGovernanceTimeline.metadata?.authority).toEqual({
+    expect(principalWorkspaceContract.getGovernanceTimeline.metadata?.policy).toEqual({
       action: 'read',
       subject: 'PrincipalObservation',
     });
-    expect(principalWorkspaceContract.getGovernanceSnapshotAsOf.metadata?.authority).toEqual({
+    expect(principalWorkspaceContract.getGovernanceSnapshotAsOf.metadata?.policy).toEqual({
       action: 'read',
       subject: 'PrincipalObservation',
     });
   });
 });
+

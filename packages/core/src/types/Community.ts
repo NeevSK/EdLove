@@ -3,7 +3,7 @@
 // Centralized for platform-wide reuse
 // ============================================================================
 
-import type { AuthorityTier } from './Authority';
+import type { Capacity } from './Authority';
 import type { Announcement } from './School'; // Announcements are in School.ts
 import type { User } from './User';
 
@@ -54,6 +54,12 @@ export interface PollData {
   ends_at?: string | null;
 }
 
+export interface PollStatus {
+  counts: Record<string, number>;
+  totalVotes: number;
+  userVotes: string[];
+}
+
 // ============================================================================
 // COMMUNITY POST TYPES
 // ============================================================================
@@ -83,7 +89,7 @@ export interface CommunityPost {
   id: string;
   author_id: string;
   author_name?: string;
-  author_authority?: AuthorityTier;
+  author_capacity?: Capacity;
   author_avatar?: string;
   content: string;
 
@@ -136,7 +142,7 @@ export interface PostFilters {
   post_type?: PostType;
   visibility?: PostVisibility;
   subject?: string;
-  author_authority?: AuthorityTier;
+  author_capacity?: Capacity;
   tags?: string[];
   has_answer?: boolean;
   feedback_status?: FeedbackStatus;
@@ -173,7 +179,7 @@ export interface Comment {
   post_id: string;
   author_id: string;
   author_name: string;
-  author_authority: AuthorityTier;
+  author_capacity: Capacity;
   author_avatar?: string | null;
   content: string;
   is_anonymous: boolean;
@@ -230,7 +236,7 @@ export interface CommunityGroup {
 
   visibility: PostVisibility;
   is_public: boolean;
-  allowed_authorities?: AuthorityTier[];
+  allowed_capacities?: Capacity[];
 
   member_count: number;
   max_members?: number;
@@ -262,7 +268,7 @@ export interface GroupMember {
   group_id: string;
   user_id: string;
   user_name: string;
-  user_authority: AuthorityTier;
+  user_capacity: Capacity;
   user_avatar?: string;
 
   capacity: 'owner' | 'admin' | 'member';
@@ -270,7 +276,7 @@ export interface GroupMember {
   is_moderator: boolean;
   status: 'active' | 'pending' | 'banned';
   joined_at: Date;
-  role?: 'owner' | 'admin' | 'member';
+  member_capacity?: 'owner' | 'admin' | 'member';
   user?: User;
   memberId?: string; // For permission context
 }
@@ -280,7 +286,7 @@ export interface GroupJoinRequest {
   group_id: string;
   user_id: string;
   user_name: string;
-  user_authority: AuthorityTier;
+  user_capacity: Capacity;
   message?: string;
   status: 'pending' | 'approved' | 'rejected';
   created_at: Date;

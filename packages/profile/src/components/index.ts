@@ -14,3 +14,4 @@ export { SocialSanctuary } from "./SocialSanctuary";
 export { default as SupportSection } from "./SupportSection";
 export { default as ThuthimalBadge } from "./ThuthimalBadge";
 export { default as UserStatsCard } from "./UserStatsCard";
+export { NotificationSettingsPanel } from "./NotificationSettingsPanel";

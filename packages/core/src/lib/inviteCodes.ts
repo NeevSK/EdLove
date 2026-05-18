@@ -1,4 +1,4 @@
-import { supabase } from '../api/supabase';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../api/supabase';
 import { generateRandomString } from '../utils/random';
 
 /**
@@ -9,7 +9,7 @@ export interface InviteCodeData {
   id: string;
   school_id: string;
   code: string;
-  role: 'teacher' | 'student' | 'principal';
+  capacity: 'teacher' | 'student' | 'principal';
   school_name?: string;
   school_type?: string;
   is_active: boolean;
@@ -18,7 +18,7 @@ export interface InviteCodeData {
 }
 
 /**
- * Validate invite code format
+ * Validate invite code format.
  * Format: GURU-ABC123-TEACH or GURU-ABC123-STUDY
  */
 export function validateInviteCodeFormat(code: string): boolean {
@@ -44,13 +44,13 @@ export async function validateInviteCode(code: string): Promise<{
     }
 
     // Query database
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('invite_codes')
       .select(`
         id,
         school_id,
         code,
-        role,
+        capacity,
         is_active,
         uses_count,
         max_uses,
@@ -101,7 +101,7 @@ export async function validateInviteCode(code: string): Promise<{
 export async function incrementInviteCodeUsage(code: string): Promise<void> {
   try {
     // Fetch current count
-    const { data: currentData } = await supabase
+    const { data: currentData } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('invite_codes')
       .select('uses_count')
       .eq('code', code.toUpperCase())
@@ -109,7 +109,7 @@ export async function incrementInviteCodeUsage(code: string): Promise<void> {
 
     if (currentData) {
       // Increment and update
-      const { error } = await supabase
+      const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
         .from('invite_codes')
         .update({ uses_count: currentData.uses_count + 1 })
         .eq('code', code.toUpperCase());
@@ -139,17 +139,17 @@ export async function generateInviteCodesForSchool(
     const teacherCode = generateInviteCode('teacher');
     const studentCode = generateInviteCode('student');
 
-    const { error } = await supabase.from('invite_codes').insert([
+    const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('invite_codes').insert([
       {
         school_id: schoolId,
         code: teacherCode,
-        role: 'teacher',
+        capacity: 'teacher',
         created_by: createdBy,
       },
       {
         school_id: schoolId,
         code: studentCode,
-        role: 'student',
+        capacity: 'student',
         created_by: createdBy,
       },
     ]);
@@ -170,16 +170,16 @@ export async function generateInviteCodesForSchool(
  * Generate a random invite code (client-side)
  * Format: GURU-ABC123-TEACH
  */
-function generateInviteCode(role: 'teacher' | 'student'): string {
-  const suffix = role === 'teacher' ? 'TEACH' : 'STUDY';
+function generateInviteCode(capacity: 'teacher' | 'student'): string {
+  const suffix = capacity === 'teacher' ? 'TEACH' : 'STUDY';
   const randomPart = generateRandomString(6).toUpperCase();
   return `GURU-${randomPart}-${suffix}`;
 }
 
 /**
- * Extract role from invite code
+ * Extract capacity from invite code
  */
-export function getRoleFromCode(code: string): 'teacher' | 'student' | null {
+export function getCapacityFromCode(code: string): 'teacher' | 'student' | null {
   if (code.endsWith('-TEACH')) return 'teacher';
   if (code.endsWith('-STUDY')) return 'student';
   return null;

@@ -55,7 +55,7 @@ export default function ProfileScreenWeb({
   const completionResult = useProfileCompletion(profile, (authority as any) ?? null);
   const [copiedLink, setCopiedLink] = useState(false);
   const [editForm, setEditForm] = useState<{
-    full_name: string;
+    display_name: string;
     bio: string;
     phone: string;
     username: string;
@@ -67,7 +67,7 @@ export default function ProfileScreenWeb({
 
   const openInlineEdit = () =>
     setEditForm({
-      full_name: profile?.full_name ?? '',
+      display_name: profile?.display_name ?? '',
       bio: profile?.bio ?? '',
       phone: profile?.phone ?? '',
       username: profile?.username ?? '',
@@ -79,8 +79,8 @@ export default function ProfileScreenWeb({
     if (!editForm || !profile) return;
     setIsSaving(true);
     try {
-      if (editForm.full_name !== profile.full_name)
-        await updateField('full_name', editForm.full_name);
+      if (editForm.display_name !== profile.display_name)
+        await updateField('display_name', editForm.display_name);
       if (editForm.bio !== (profile.bio ?? '')) await updateField('bio', editForm.bio);
       if (editForm.phone !== (profile.phone ?? '')) await updateField('phone', editForm.phone);
       if (editForm.username !== (profile.username ?? ''))
@@ -190,7 +190,7 @@ export default function ProfileScreenWeb({
                 <AvatarDisplay
                   userId={profile.id}
                   avatarUrl={profile.avatar_url}
-                  fullName={profile.full_name}
+                  fullName={profile.display_name}
                   size={88}
                   editable={isOwnProfile}
                   onAvatarSelected={async (localUri: string) => {
@@ -222,7 +222,7 @@ export default function ProfileScreenWeb({
                       color: 'var(--ink)',
                     }}
                   >
-                    {profile.full_name}
+                    {profile.display_name}
                   </h1>
                   {profile.is_thuthimal && (
                     <span
@@ -464,7 +464,7 @@ export default function ProfileScreenWeb({
                     padding: '8px',
                   }}
                 >
-                  <QRCodeGenerator value={profilePublicUrl} size={104} label={profile.full_name} />
+                  <QRCodeGenerator value={profilePublicUrl} size={104} label={profile.display_name} />
                 </div>
                 <p
                   style={{
@@ -562,10 +562,10 @@ export default function ProfileScreenWeb({
                   Display Name
                 </label>
                 <input
-                  id="edit-full-name"
-                  value={editForm.full_name}
+                  id="edit-display-name"
+                  value={editForm.display_name}
                   onChange={(e) =>
-                    setEditForm((f) => (f ? { ...f, full_name: e.target.value } : f))
+                    setEditForm((f) => (f ? { ...f, display_name: e.target.value } : f))
                   }
                   style={{
                     width: '100%',
@@ -915,7 +915,7 @@ export default function ProfileScreenWeb({
               </div>
               <ContactLinktree
                 links={socialLinks || []}
-                userName={profile.full_name}
+                userName={profile.display_name}
                 userId={profile.id}
                 isOwnProfile={isOwnProfile}
                 editable={isOwnProfile}

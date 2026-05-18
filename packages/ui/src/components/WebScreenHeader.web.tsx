@@ -39,8 +39,8 @@ export const WebScreenHeader: React.FC<WebScreenHeaderProps> = ({
   let displayTimeText = timeText || greetingText;
   if (showPersonalizedGreeting) {
     const userName =
-      (user as any)?.user_metadata?.full_name?.split(' ')[0] ||
-      user?.full_name?.split(' ')[0] ||
+      (user as any)?.user_metadata?.display_name?.split(' ')[0] ||
+      user?.display_name?.split(' ')[0] ||
       '';
     const capacity = context.active_bond?.capacity || '';
     const roleLabel = capacity ? capacity.charAt(0).toUpperCase() + capacity.slice(1) : '';

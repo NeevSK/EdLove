@@ -22,7 +22,7 @@ import type {
   PowerSyncBackendConnector,
   PowerSyncCredentials,
 } from './powersync-shim';
-import { supabase } from '../../api/supabase';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../../api/supabase';
 import { sovereignBus } from '../../lib/sync/eventBus';
 
 const POWERSYNC_URL = process.env['EXPO_PUBLIC_POWERSYNC_URL'] ?? '';
@@ -70,7 +70,7 @@ export class SupabasePowerSyncConnector implements PowerSyncBackendConnector {
     const {
       data: { session },
       error,
-    } = await supabase.auth.getSession();
+    } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.auth.getSession();
 
     if (error || !session) {
       throw new Error('[PowerSync] No active Supabase session. Cannot connect.');
@@ -104,7 +104,7 @@ export class SupabasePowerSyncConnector implements PowerSyncBackendConnector {
 
         // ── Bulk PUT (upsert) ────────────────────────────────────────────────
         if (puts.length > 0) {
-          const { error } = await supabase.from(table).upsert(puts);
+          const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from(table).upsert(puts);
           if (error) throw error;
         }
 
@@ -114,7 +114,7 @@ export class SupabasePowerSyncConnector implements PowerSyncBackendConnector {
         if (patches.length > 0) {
           const results = await Promise.allSettled(
             patches.map(({ id, data }) =>
-              supabase.from(table).update(data).eq('id', id),
+              __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from(table).update(data).eq('id', id),
             ),
           );
           const failed = results.find((r) => r.status === 'rejected');
@@ -123,7 +123,7 @@ export class SupabasePowerSyncConnector implements PowerSyncBackendConnector {
 
         // ── Bulk DELETE ──────────────────────────────────────────────────────
         if (deletes.length > 0) {
-          const { error } = await supabase.from(table).delete().in('id', deletes);
+          const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from(table).delete().in('id', deletes);
           if (error) throw error;
         }
       }

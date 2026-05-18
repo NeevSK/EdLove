@@ -4,7 +4,7 @@ import {
 	syncMutationQueuedEvent,
 	v7 as uuidv7,
 } from "@repo/core/logic";
-import { inngest } from "../../lib/inngest";
+import { eventBus, inngest } from "../../lib/inngest";
 import { supabaseAdmin } from "../../lib/supabase";
 import { insertWorkerAuditLog } from "../lib/workerObservability";
 
@@ -81,7 +81,7 @@ async function executeRemoteMutation(
 				status,
 				date,
 			);
-			await sendSchoolAttendanceRecorded(inngest, {
+			await sendSchoolAttendanceRecorded(eventBus, {
 				...record,
 				correlationId: metadata?.correlationId,
 				causationId: metadata?.causationId,
@@ -114,7 +114,7 @@ export const syncMutationQueued = inngest.createFunction(
 		name: "Sync Queued Mutation",
 		triggers: [syncMutationQueuedEvent],
 	},
-	async ({ event, step }) => {
+	async ({ event, step }: any) => {
 		const {
 			mutationId,
 			action,

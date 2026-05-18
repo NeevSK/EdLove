@@ -133,7 +133,7 @@ export default function TabNavigator({
 	const { t } = useTranslation();
 	const { context } = usePermissions();
 	const bonds = context.bonds ?? [];
-	const role = (
+	const capacity = (
 		bonds.find((b) => b.status === "active")?.capacity ?? bonds[0]?.capacity
 	) as string | undefined;
 	const userId = context.user_id;
@@ -269,10 +269,10 @@ export default function TabNavigator({
 	}, [activeTab, t]);
 
 	const getClassroomLabel = () => {
-		if (role === "principal") return t("tabs.mySchool");
-		if (role === "founder") return t("tabs.school");
-		if (role === "sectionHead") return t("tabs.section");
-		if (role === "gradeHead") return t("tabs.grade");
+		if (capacity === "principal") return t("tabs.mySchool");
+		if (capacity === "founder") return t("tabs.school");
+		if (capacity === "sectionHead") return t("tabs.section");
+		if (capacity === "gradeHead") return t("tabs.grade");
 		return t("tabs.classroom");
 	};
 
@@ -283,8 +283,8 @@ export default function TabNavigator({
 
 	const getMobileLabel = (route: string) => {
 		if (route === "Classroom") {
-			if (role === "principal") return t("tabs.school");
-			if (role === "founder") return t("tabs.platform");
+			if (capacity === "principal") return t("tabs.school");
+			if (capacity === "founder") return t("tabs.platform");
 			return t("tabs.class");
 		}
 		return t(TAB_CONFIG.find((c) => c.name === route)?.mobileLabelKey ?? route);
@@ -547,7 +547,7 @@ export default function TabNavigator({
 											color: "var(--ink)",
 										}}
 									>
-										{role?.split("_").join(" ") || "Guest"}
+										{capacity?.split("_").join(" ") || "Guest"}
 									</span>
 									<span
 										className="profile-status"

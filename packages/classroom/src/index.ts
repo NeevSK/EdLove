@@ -1,8 +1,10 @@
-﻿export * from "./analytics";
+export * from "./analytics";
 export * from "./components";
 export { default as QuickAnalytics } from "./components/QuickAnalytics";
 export { default as RoleInitialState } from "./components/IdentityInitialState";
 export * from "./hooks";
+export * from "./constants/classroomRegistry";
+
 export { default as AttendanceReportScreen } from "./screens/AttendanceReportScreen";
 export { default as AttendanceScreen } from "./screens/AttendanceScreen";
 export { default as AttendanceScreenWeb } from "./screens/AttendanceScreen.web";

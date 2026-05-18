@@ -3,7 +3,7 @@
 // ============================================================================
 import type { TemporalScale } from "@repo/core/store";
 import type {
-	AuthorityTier,
+	Capacity,
 	BaseResource,
 	LinkRelationship,
 	ResourceFormat,
@@ -40,7 +40,7 @@ export interface LibraryResource extends BaseResource {
 	visibility: ResourceVisibility;
 	creator_id: string;
 	creator_name: string;
-	creator_role: AuthorityTier;
+	creator_capacity: Capacity;
 	// Quality indicators
 	verified: boolean;
 	is_community: boolean;
@@ -114,7 +114,7 @@ export interface ResourceFilters {
 	visibility?: ResourceVisibility;
 	source?: "core" | "community";
 	verified_only?: boolean;
-	creator_role?: AuthorityTier;
+	creator_capacity?: Capacity;
 	tags?: string[];
 	search?: string;
 	sort_by?:

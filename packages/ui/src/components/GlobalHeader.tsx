@@ -126,8 +126,8 @@ export default function GlobalHeader({
     [searchProps]
   );
 
-  const displayName = userName || user?.full_name?.split(' ')[0] || '';
-  const userFullName = userName || user?.full_name || '';
+  const displayName = userName || user?.display_name?.split(' ')[0] || '';
+  const userFullName = userName || user?.display_name || '';
 
   const roleContext = useMemo(() => {
     if (can('manage', 'AdminDashboard')) {

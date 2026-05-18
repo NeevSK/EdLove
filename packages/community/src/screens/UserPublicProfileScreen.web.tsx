@@ -77,9 +77,7 @@ export default function UserPublicProfileScreen() {
 		try {
 			const { data, error } = await supabase
 				.from("users")
-				.select(
-					"id, full_name, authority:role, avatar_url, public_profile, username, bio, school:schools(name)",
-				)
+				.select("id, full_name, capacity, avatar_url, public_profile, username, bio, school:schools(name)")
 				.eq("id", userId)
 				.single();
 
@@ -186,7 +184,7 @@ export default function UserPublicProfileScreen() {
 							/>
 							<InfoRow
 								icon={<Shield size={16} />}
-								text={user?.authority?.toUpperCase() || "MEMBER"}
+								text={user?.capacity?.toUpperCase() || "MEMBER"}
 							/>
 						</VStack>
 
@@ -238,7 +236,7 @@ export default function UserPublicProfileScreen() {
 								onClose={() => setShowThuthimal(false)}
 								recipientId={userId}
 								recipientName={user?.full_name ?? userName}
-								recipientTier={user?.authority ?? "teacher"}
+								recipientTier={user?.capacity ?? "teacher"}
 								giverId={currentUser.id}
 								giverName={currentUser.full_name ?? "A Colleague"}
 							/>

@@ -54,6 +54,7 @@ export * from './media/UniversalDocumentPortal';
 export type { VideoPlayerProps } from './media/VideoPlayer';
 export { VideoPlayer } from './media/VideoPlayer';
 export { default as NetworkStatusBanner } from './NetworkStatusBanner';
+export { NotificationSettingsPanel } from './NotificationSettingsPanel';
 export { default as NotificationDrawer } from './NotificationDrawer';
 export type { PollData, PollOption } from './PollWidget';
 export { PollWidget } from './PollWidget';

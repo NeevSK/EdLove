@@ -21,4 +21,4 @@ export const UserPreferencesSchema = makeModelSchema('UserPreferences');
 
 export type MoodLog = z.infer<typeof MoodLogSchema>;
 export type FireJournalEntry = z.infer<typeof FireJournalEntrySchema>;
-export type UserPreferences = z.infer<typeof UserPreferencesSchema>;
+export type SelfUserPreferences = z.infer<typeof UserPreferencesSchema>;

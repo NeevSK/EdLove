@@ -16,7 +16,7 @@ export interface SanctuaryTab<T extends string = string> {
 	label: string;
 	/**
 	 * Active background colour.  Defaults to 'var(--moss)'.
-	 * Set to a specific CSS colour for role-branded tabs (e.g. Founder uses saffron).
+	 * Set to a specific CSS colour for capacity-branded tabs (e.g. Founder uses saffron).
 	 */
 	activeColor?: string;
 	/**

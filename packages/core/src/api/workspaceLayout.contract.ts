@@ -10,7 +10,7 @@ import { POAMetadataSchema } from './contract';
 const c = initContract();
 
 const workspaceLayoutAuthority = (action: 'read' | 'update' | 'delete', subject: string) =>
-  POAMetadataSchema.parse({ authority: { action, subject } });
+  POAMetadataSchema.parse({ policy: { action, subject } });
 
 export const workspaceLayoutContract = c.router({
   getWorkspaceLayout: {
@@ -40,3 +40,4 @@ export const workspaceLayoutContract = c.router({
     metadata: workspaceLayoutAuthority('delete', 'WorkspaceLayout'),
   },
 });
+

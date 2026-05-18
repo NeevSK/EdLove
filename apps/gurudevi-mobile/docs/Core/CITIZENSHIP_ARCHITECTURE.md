@@ -1,65 +1,111 @@
-# Citizenship & Identity Architecture: The Sovereignty Journey
+# Citizenship & Identity Architecture
 
-## 🎯 1. The Core Principle: "No One is a Stranger, No One is Idle"
-The Gurudevi Sanctuary is designed as a progressive journey of participation. Access is governed not just by "Authentication" (Login), but by **"Citizenship"** (Participation Level).
+This document describes the current canonical identity model for `gurudevi-mobile`.
+It is intentionally aligned with the identity contract in `packages/core/docs/IDENTITY_CONTRACT_AND_MIGRATION_PLAN.md`.
 
-### The Onboarding Gate (Hard Constraint)
-*   **Zero-Entry Default**: No user (Anon or Auth) can access the core application features without completing **Onboarding**.
-*   **Mandatory Role Selection**: During onboarding, the user *must* choose their primary archetype (Student, Teacher, or Principal). This choice is stored immediately in the `users` table to drive the UI context.
+## Core Model
 
----
+The platform now treats identity as four separate axes:
 
-## 🗺️ 2. The Citizenship Lifecycle
-We distinguish between four distinct states of being within the platform:
+- `identity_state`: whether the session is `anonymous`, `onboarded`, or `verified`
+- `display_name`: the name shown in app UI
+- `first_name` / `last_name`: structured profile identity
+- `capacity`: the user’s real domain role in ReBAC
 
-| Level | Name | Auth Status | Profile Status | Access Level |
-| :--- | :--- | :--- | :--- | :--- |
-| **0** | **Wanderer** | Supabase Anon | None | Public Nodes only (Pre-Onboarding). |
-| **1** | **Traveler (Guest)** | Anon / Session | Role Chosen | **Onboarded Guest**. Has a `users` record but no permanent credentials. Access to personal workspace. |
-| **2** | **Citizen** | Authenticated | Profile Created | **2nd Class Citizen**. Permanent identity, personal "Sanctum" workspace, but no institutional ties. |
-| **3** | **Professional** | Authenticated | Institutional Link | **1st Class Citizen**. Fully integrated into a School/Classroom tenant. |
+## Key Rules
 
----
+- `identity_state` is the only guest/anonymous marker.
+- `guest` is not a capacity or role in the canonical model.
+- `display_name` is the user-facing name.
+- `full_name` is a compatibility mirror only.
+- `username` is a public handle, not a display name or role.
+- `capacity` must represent a real persona such as `student`, `teacher`, `principal`, `admin`, or `member`.
 
-## 🏛️ 3. Workspace Topology
-Every "Onboarded" user (Level 1+) operates within a dual-workspace environment:
+## Citizenship Lifecycle
 
-### A. The "Personal Sanctum" (Personal Workspace)
-*   **Ownership**: 100% User-Owned.
-*   **Scope**: Personal notes, private bookmarks, growth reflections, and private learning nodes.
-*   **Discovery**: Hidden from all other users and schools.
-*   **Implementation**: Effectively items where `school_id IS NULL` and `creator_id = auth.uid()`.
+Citizenship still describes participation depth, but it is separate from guest state:
 
-### B. The "Official Grounds" (Institutional Workspace)
-*   **Ownership**: School/Classroom-Owned.
-*   **Scope**: Official curricula, institutional announcements, classroom grades, and school-wide events.
-*   **Governance**: Subject to School Policy and Principal oversight.
-*   **Implementation**: Items linked to a specific `school_id` or `classroom_id`.
+| Level | Name | Meaning |
+| :--- | :--- | :--- |
+| 0 | Wanderer | Anonymous session, local-first or pre-onboarding state |
+| 1 | 2nd Class | Authenticated user with private cloud sync |
+| 2 | 1st Class | Authenticated user with institutional bonds |
 
----
+This lifecycle is about participation and data residency, not about role.
 
-## 🛠️ 4. Technical Implementation Guidelines
+## What Onboarding Owns
 
-### Identity Persistence
-*   **Anon Users**: Even anonymous users receive a record in the `users` table. This allows the system to remember their chosen role and onboarding progress across a single session or device life.
-*   **The "Upgrade" Path**: When an Anon Traveler authenticates (Citizen), their existing `users` record and session data should be merged/promoted to the permanent Auth identity to maintain continuity.
+Onboarding now owns:
 
-### Truth Determination
-The **Truth** of a user's role is a computed hierarchy:
-1.  **Does an active `school_membership` exist?** → User is a **Professional** in that context.
-2.  **Does a `teacher_profile` / `student_profile` exist?** → User is a **Citizen** of that archetype.
-3.  **Does `onboarding_completed` = true?** → User is a **Traveler/Guest**.
+- `display_name`
+- initial bond / capacity selection
 
-### Row Level Security (RLS)
-The RLS policies must strictly enforce the **Citizenship Boundary**:
-*   `SELECT` on Institutional data requires Level 3 (Institutional) membership.
-*   `SELECT` on Personal data requires `auth.uid() = creator_id`.
-*   `SELECT` on Community/Public data is open to Level 1+.
+Onboarding does not own:
 
----
+- `first_name`
+- `last_name`
+- `username`
+- guest state
 
-## 📝 5. Summary Technical Map
-*   **Table: `users`** -> Identity Bucket (Anon path to Auth path).
-*   **Table: `user_growth_state`** -> Citizenship tier tracking (`bhumi_stage`).
-*   **Table: `school_memberships`** -> The Institutional "First Class" ticket.
-*   **View: `unified_user_profiles`** -> The query interface that abstracts all of the above.
+## What Profile Completion Owns
+
+Profile completion now owns:
+
+- `first_name`
+- `last_name`
+- `username`
+
+## What Auth Bootstrap Owns
+
+Auth bootstrap now owns:
+
+- `identity_state`
+- initial auth metadata
+
+It should not invent a guest role or a guest capacity.
+
+## What the Database Owns
+
+Database triggers and migrations should:
+
+- normalize `display_name`
+- mirror `full_name` only for compatibility
+- preserve `first_name`, `last_name`, and `username`
+- keep `identity_state` authoritative for anonymous vs onboarded state
+
+## What UI Should Show
+
+- Show `display_name` in greetings, cards, and headers.
+- Show `first_name` / `last_name` in profile completion and structured forms.
+- Show `username` as the public handle.
+- Never surface `guest` as a role choice.
+
+## Relationship to Citizenship
+
+Citizenship is still useful as a participation model:
+
+- Wanderer: anonymous session
+- 2nd Class: authenticated, personal cloud
+- 1st Class: authenticated, institution-bound
+
+But citizenship is not the same thing as role, and it is not the same thing as session state.
+
+## Decision Summary
+
+- `identity_state` wins for anonymous/onboarded/verified state.
+- `display_name` wins for visible UI name.
+- `first_name` + `last_name` win for structured identity.
+- `capacity` wins for permissions and domain behavior.
+- `username` wins for public handle references.
+
+## Current Architectural Direction
+
+The implementation now follows a pure model:
+
+- no guest capacity
+- no guest role
+- no guest bond type
+- anonymous users are modeled by `identity_state`
+- onboarding collects display name first
+- structured identity is completed later
+

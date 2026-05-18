@@ -6,7 +6,7 @@
 
 import { APIError } from '../types/API';
 import { identityAPI } from './identity';
-import { supabase } from './supabase';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from './supabase';
 import { teacherInsightsAPI } from './teacherInsights';
 
 export interface StudentPotentialAnalysis {
@@ -43,7 +43,8 @@ export const studentPotentialAPI = {
     studentId: string,
     classroomId: string,
   ): Promise<StudentPotentialAnalysis | null> {
-    const myId = await identityAPI.getMyInternalId();
+    const identity = await identityAPI.identifyActiveCitizen();
+    const myId = identity?.id;
     if (!myId) return null;
     const data = await teacherInsightsAPI.getStudentPotential(studentId, classroomId);
     if (!data) return null;
@@ -55,7 +56,7 @@ export const studentPotentialAPI = {
    * Get all analyses for a student across all classrooms
    */
   async getAllForStudent(studentId: string): Promise<StudentPotentialAnalysis[]> {
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('student_potential_analysis')
       .select(`
                 *,
@@ -89,7 +90,7 @@ export const studentPotentialAPI = {
     analysis: Partial<StudentPotentialAnalysis>,
   ): Promise<string> {
     try {
-      const response = await supabase.functions.invoke('ai-assistant', {
+      const response = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.functions.invoke('ai-assistant', {
         body: {
           message: `Analyze potential for student "${studentName}" based on these dimensions: Cognitive: ${analysis.cognitive_flow}%, Emotional: ${analysis.emotional_resonance}%, Social: ${analysis.social_weaving}%, Creative: ${analysis.creative_spark}%, Practical: ${analysis.practical_mastery}%. Current Silver Lining: "${analysis.silver_lining || 'None recorded'}". Provide 3 nurturing intervention suggestions.`,
           context: {

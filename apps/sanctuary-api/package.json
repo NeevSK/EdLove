@@ -1,0 +1,27 @@
+{
+  "name": "@repo/sanctuary-api",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsup src/index.ts --format esm --clean",
+    "start": "node dist/index.js",
+    "lint": "biome check src",
+    "format": "biome format src --write"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.19.2",
+    "@hono/zod-openapi": "^0.18.4",
+    "@repo/core": "workspace:*",
+    "@repo/database": "workspace:*",
+    "hono": "^4.7.4",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "tsup": "^8.4.0",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.2"
+  }
+}

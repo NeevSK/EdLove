@@ -26,7 +26,7 @@ export const GroupMemberSchema = makeModelSchema('GroupMember');
  */
 export const CommunityPostSchema = makeModelSchema('Post').extend({
   author_name: z.string().optional(),
-  author_authority: z.string().optional(),
+  author_capacity: z.string().optional(),
   reaction_count: z.number().default(0),
   comment_count: z.number().default(0),
   view_count: z.number().default(0),

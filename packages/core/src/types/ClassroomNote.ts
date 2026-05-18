@@ -11,5 +11,5 @@ export interface ClassroomNote {
   created_at: Date;
   updated_at: Date;
   /** Joined from users table when fetching */
-  author?: { full_name: string; role: string };
+  author?: { full_name: string; capacity: string };
 }

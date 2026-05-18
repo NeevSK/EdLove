@@ -14,6 +14,7 @@ export {
 export * from "./hooks";
 export * from "./screens";
 export * from "./types";
+export * from "./constants/libraryRegistry";
 export { buildLibraryExternalLinkOptions } from "./utils/externalLinks";
 
 export const LIBRARY_UI_CATEGORIES_LOCAL = [

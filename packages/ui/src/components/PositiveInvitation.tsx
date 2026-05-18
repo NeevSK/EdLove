@@ -11,7 +11,7 @@ interface PositiveInvitationProps {
   icon?: React.ElementType;
   actionLabel?: string;
   onAction?: () => void;
-  type?: 'empty' | 'guest';
+  type?: 'empty' | 'anonymous';
   context?: 'self' | 'library' | 'classroom' | 'community';
 }
 
@@ -27,7 +27,7 @@ const PositiveInvitation: React.FC<PositiveInvitationProps> = ({
   const { t } = useTranslation();
 
   const getMessages = () => {
-    if (type === 'guest') {
+    if (type === 'anonymous') {
       return {
         title: t('invitation.guestTitle'),
         desc: t('invitation.guestDesc'),

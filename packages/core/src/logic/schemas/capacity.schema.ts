@@ -16,7 +16,6 @@ export const CapacitySchema = z.enum([
   'nurse',
   'staff',
   'member',
-  'guest', // Wanderer
 ]);
 
 export type Capacity = z.infer<typeof CapacitySchema>;

@@ -28,7 +28,10 @@ export type Actions =
   | 'send'
   | 'verify'
   | 'grade'
-  | 'resolve';
+  | 'resolve'
+  | 'purchase'
+  | 'access'
+  | 'join';
 
 export type Subjects =
   | 'StudentProfile'
@@ -93,6 +96,10 @@ export type Subjects =
   | 'StudentAcademicRecord'
   | 'AcademicHistory'
   | 'TeachingHistory'
+  | 'StaffManagement'
+  | 'TrustNetwork'
+  | 'LibraryArchive'
+  | 'ProFeatures'
   | 'all';
 
 /**

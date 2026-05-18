@@ -15,14 +15,7 @@ export type {
   AttendanceStatus,
   StudentAttendance,
 } from './Attendance';
-export type {
-  AuthorityTier,
-  PlatformAuthority,
-  SchoolAuthority,
-  SchoolRole,
-  WorkCapacity,
-  WorkRole,
-} from './Authority';
+export type { Capacity } from './Authority';
 export type { Classroom, ClassroomStudent, StudentAcademicRecord } from './Classroom';
 export type { ClassroomNote } from './ClassroomNote';
 export type {
@@ -45,6 +38,7 @@ export type {
   ManifestoVibe,
   PollData,
   PollOption,
+  PollStatus,
   Post,
   PostType,
   PostVisibility,
@@ -96,7 +90,7 @@ export type {
   CapabilityResource,
   PolicyDecision,
 } from './Policy';
-export type { Bond, Perspective, Capacity } from './Identity';
+export type { Bond, Perspective } from './Identity';
 export type { PrincipalNote } from './PrincipalNote';
 export {
   type ClaimInvitePayload,
@@ -166,6 +160,7 @@ export type {
   PerspectiveViewProps,
 } from './visualization';
 export type {
+  DomainFeature,
   ResolvedWorkspaceSurface,
   WorkspaceLayout,
   WorkspaceOwnerPackage,
@@ -182,3 +177,6 @@ export { APIError };
 export type DeviceInfo = DeviceMetadata & { uniqueId: string };
 export type AppConfig = { env: string; apiHost: string };
 export type AppContext = { user?: User; schoolId?: string };
+export type { AppNotification, NotificationStatus } from './notifications';
+export * from './Growth';
+

@@ -22,7 +22,7 @@ export const longitudinalContract = c.router({
       entityTypes: z.array(LongitudinalEntityTypeSchema).optional(),
     }),
     metadata: POAMetadataSchema.parse({
-      authority: {
+      policy: {
         action: 'read',
         subject: 'Student',
       },
@@ -41,7 +41,7 @@ export const longitudinalContract = c.router({
       entityTypes: z.array(LongitudinalEntityTypeSchema).optional(),
     }),
     metadata: POAMetadataSchema.parse({
-      authority: {
+      policy: {
         action: 'read',
         subject: 'Student',
       },
@@ -49,3 +49,4 @@ export const longitudinalContract = c.router({
     summary: 'Retrieve the latest effective longitudinal records for a student as of a view date',
   },
 });
+

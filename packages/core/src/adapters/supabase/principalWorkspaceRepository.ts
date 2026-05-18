@@ -20,16 +20,11 @@ import { CapacitySchema } from '../../logic/schemas/capacity.schema';
 import { getTemporalRange } from '../../logic/utils/temporalUtils';
 import { APIError } from '../../types/API';
 
-const inviteRoleToAuthority = (role: PrincipalInviteRole) => {
-  if (role === 'teacher') return 'teacher' as const;
-  return 'principal' as const;
-};
-
 const normalizeInviteCode = (row: Record<string, unknown>): InviteCodeZod =>
   InviteCodeSchema.parse({
     code: row['code'],
     school_id: row['school_id'],
-    authority: CapacitySchema.parse((row['authority'] ?? row['role'] ?? 'teacher') as string),
+    capacity: CapacitySchema.parse((row['capacity'] ?? 'teacher') as string),
     created_by: row['created_by'],
     used: Boolean(row['used'] ?? !row['is_active']) || Number(row['uses_count'] ?? 0) > 0,
     created_at: row['created_at'],
@@ -85,9 +80,7 @@ export const createSupabasePrincipalWorkspaceRepository = (
     async listInviteCodes(schoolId) {
       const { data, error } = await supabase
         .from('invite_codes')
-        .select(
-          'code, school_id, authority, role, created_by, used, is_active, uses_count, created_at, expires_at',
-        )
+        .select('code, school_id, capacity, created_by, used, is_active, uses_count, created_at, expires_at')
         .eq('school_id', schoolId)
         .order('created_at', { ascending: false });
 
@@ -95,14 +88,12 @@ export const createSupabasePrincipalWorkspaceRepository = (
       return (data ?? []).map((row) => normalizeInviteCode(row as Record<string, unknown>));
     },
 
-    async generateInviteCode(schoolId, role, createdBy) {
-      const authority = inviteRoleToAuthority(role);
-      const code = `GURU-${Math.random().toString(36).substring(2, 8).toUpperCase().padEnd(6, '0')}-${role === 'teacher' ? 'TEACH' : 'ADMIN'}`;
+    async generateInviteCode(schoolId, capacity, createdBy) {
+      const code = `GURU-${Math.random().toString(36).substring(2, 8).toUpperCase().padEnd(6, '0')}-${capacity === 'teacher' ? 'TEACH' : 'ADMIN'}`;
       const payload = {
         school_id: schoolId,
         code,
-        authority,
-        role,
+        capacity,
         created_by: createdBy,
         used: false,
         is_active: true,
@@ -111,9 +102,7 @@ export const createSupabasePrincipalWorkspaceRepository = (
       const { data, error } = await supabase
         .from('invite_codes')
         .insert(payload)
-        .select(
-          'code, school_id, authority, role, created_by, used, is_active, uses_count, created_at, expires_at',
-        )
+        .select('code, school_id, capacity, created_by, used, is_active, uses_count, created_at, expires_at')
         .single();
 
       if (error) throw new APIError('Failed to generate invite code', error.code, error);

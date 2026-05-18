@@ -1,6 +1,6 @@
 import { api } from '../../api';
 import { deviceTrustAPI } from '../../api/deviceTrust';
-import { supabase } from '../../api/supabase';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../../api/supabase';
 
 /**
  * Mutation Registry
@@ -17,7 +17,7 @@ export const MUTATION_REGISTRY: Record<string, MutationFunction> = {
     // Core API doesn't have community directly, it's injected
     // In this resonant version, we assume 'api' has been unified.
     // If community is a separate package, this handler serves as the bridge.
-    return (api as any).community.createPost(vars, vars.author_id, vars.role, vars.school_id);
+    return (api as any).community.createPost(vars, vars.author_id, vars.capacity, vars.school_id);
   },
 
   // Inventory
@@ -38,12 +38,12 @@ export const MUTATION_REGISTRY: Record<string, MutationFunction> = {
 
   // Self/Wellbeing (Direct Supabase access)
   saveJournalEntry: async (vars) => {
-    const { error } = await supabase.from('journal_entries').insert(vars);
+    const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('journal_entries').insert(vars);
     if (error) throw error;
     return true;
   },
   saveDecision: async (vars) => {
-    const { error } = await supabase.from('decision_journals').insert(vars);
+    const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('decision_journals').insert(vars);
     if (error) throw error;
     return true;
   },

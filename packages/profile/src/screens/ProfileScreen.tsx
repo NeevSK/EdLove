@@ -53,6 +53,7 @@ import ProfileSkeleton from '../components/ProfileSkeleton';
 import ThuthimalBadge from '../components/ThuthimalBadge';
 import { useProfile } from '../hooks/useProfile';
 import { useProfileCompletion } from '../hooks/useProfileCompletion';
+import { NotificationSettingsPanel } from '@repo/ui/components/NotificationSettingsPanel';
 import { toFullProfileParams, useProfileNavigation, type ProfileNavigationCapabilities } from '../navigation';
 import type { UserProfile } from '../types';
 
@@ -77,7 +78,7 @@ const IdentitySection = ({
 }: IdentitySectionProps) => {
   const { context } = usePermissions();
   const isWanderer = context.is_anonymous;
-  const capacity = context.active_bond?.capacity || context.primary_capacity || 'guest';
+  const capacity = context.active_bond?.capacity || context.primary_capacity || 'member';
 
   return (
     <Center>
@@ -258,7 +259,7 @@ export const ProfileScreen = () => {
   const { profile, loading, refreshing, refresh, logout } = useProfile();
 
   const { context } = usePermissions();
-  const capacity = context.active_bond?.capacity || context.primary_capacity || 'guest';
+  const capacity = context.active_bond?.capacity || context.primary_capacity || 'member';
   const completionCapacity = (context.active_bond?.capacity || context.primary_capacity) ?? null;
   const completionResult = useProfileCompletion(profile, completionCapacity as any);
   const bottomPadding = useBottomTabPadding();
@@ -516,6 +517,14 @@ export const ProfileScreen = () => {
 
             <Animated.View entering={FadeInDown.delay(600).duration(500)}>
               <AppExperienceSection t={t} cardWidth={cardWidth} />
+            </Animated.View>
+
+            <Animated.View entering={FadeInDown.delay(650).duration(500)}>
+              <Center>
+                <Box style={{ width: cardWidth }}>
+                   <NotificationSettingsPanel />
+                </Box>
+              </Center>
             </Animated.View>
 
             <Animated.View entering={FadeInDown.delay(700).duration(500)}>

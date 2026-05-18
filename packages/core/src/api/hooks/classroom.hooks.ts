@@ -7,7 +7,6 @@ import {
 } from '../../logic/schemas/classroom.schema';
 import { assignmentsAPI } from '../assignments';
 import { classroomsAPI } from '../classrooms';
-import { supabase } from '../supabase';
 
 /**
  * useTeacherClassroomsQuery  Fetch all sanctuaries managed by a teacher.
@@ -47,35 +46,7 @@ export function useTeacherStatsQuery(teacherId?: string) {
     queryKey: ['teacher-stats', teacherId],
     queryFn: async () => {
       if (!teacherId) return TeacherStatsSchema.parse({});
-
-      // 1. Get classroom IDs
-      const { data: classrooms } = await supabase
-        .from('classrooms')
-        .select('id')
-        .eq('teacher_id', teacherId);
-
-      const ids = classrooms?.map((c: any) => c.id) || [];
-
-      // 2. Count total unique students
-      const { count: studentCount } = await supabase
-        .from('classroom_students')
-        .select('*', { count: 'exact', head: true })
-        .in('classroom_id', ids);
-
-      // 3. Count pending assignments
-      const today = new Date().toISOString().split('T')[0];
-      const { count: assignmentCount } = await supabase
-        .from('assignments')
-        .select('*', { count: 'exact', head: true })
-        .in('classroom_id', ids)
-        .gte('due_date', today);
-
-      return TeacherStatsSchema.parse({
-        total_students: studentCount || 0,
-        average_attendance: 94, // Placeholder until attendance system is logic-complete
-        pending_assignments: assignmentCount || 0,
-        active_classrooms: ids.length,
-      });
+      return classroomsAPI.getTeacherStats(teacherId);
     },
     enabled: !!teacherId,
   });

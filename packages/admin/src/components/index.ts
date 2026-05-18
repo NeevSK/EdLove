@@ -23,3 +23,4 @@ export { default as StaffPresencePulse } from "./principal/StaffPulse";
 export { default as StudentEnrollmentPulse } from "./principal/StudentEnrollmentPulse";
 export { default as TeacherCarousel } from "./principal/TeacherCarousel";
 export { default as CreateSchoolModal } from "./school/CreateSchoolModal";
+export { default as PrincipalOnboardingView } from "./onboarding/PrincipalOnboardingView";

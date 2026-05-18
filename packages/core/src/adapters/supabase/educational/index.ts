@@ -8,6 +8,8 @@ import { createMaterialRepository } from './materialRepository';
 import { createAttendanceRepository } from './attendanceRepository';
 import { createGradingRepository } from './gradingRepository';
 import { createStatsRepository } from './statsRepository';
+import { createSchoolRepository } from './schoolRepository';
+import { createSupabaseClassroomNotesRepository } from './classroomNotesRepository';
 
 export const createSupabaseEducationalRepository = (
   supabase: SupabaseClient,
@@ -20,6 +22,8 @@ export const createSupabaseEducationalRepository = (
   const attendance = createAttendanceRepository(supabase);
   const grading = createGradingRepository(supabase);
   const stats = createStatsRepository(supabase);
+  const schools = createSchoolRepository(supabase);
+  const classroomNotes = createSupabaseClassroomNotesRepository(supabase);
 
   return {
     ...classrooms,
@@ -30,5 +34,7 @@ export const createSupabaseEducationalRepository = (
     ...attendance,
     ...grading,
     ...stats,
+    ...schools,
+    ...classroomNotes,
   };
 };

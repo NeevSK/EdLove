@@ -9,15 +9,11 @@ export { useDeviceSecurity } from '../hooks/useDeviceSecurity';
 export { useManualSnapshot } from '../hooks/useManualSnapshot';
 // Logic Hooks & Utilities
 export {
-  type AppNotification,
   useNotifications,
 } from '../hooks/useNotifications';
+
 export { useTemporalHeatmap } from '../hooks/useTemporalHeatmap';
 export { accountPin } from '../lib/accountPin';
-export {
-  type CloudinaryUploadResponse,
-  uploadToCloudinary,
-} from '../lib/cloudinary';
 export {
   type InviteCodeData,
   incrementInviteCodeUsage,
@@ -39,7 +35,7 @@ export { type TotalState, useStore } from '../store/useStore';
 export { type TemporalScale, useTemporalStore } from '../store/useTemporalStore';
 export type { APIError } from '../types/API';
 // Types (Agnostic / logic-layer)
-export type { AuthorityTier, Bond } from '../types';
+export type { Capacity, Bond } from '../types';
 export type { LessonMaterial } from '../types/LessonMaterial';
 export * from './apiInterceptor';
 export * from './domains';
@@ -58,7 +54,19 @@ export * from './permissions/composer';
 export * from './permissions/feature-engine';
 export * from './permissions/guards/FeatureGuard';
 export * from './permissions/guards/RouteGuard';
-export { identity, notification } from './managers/factory';
+export { 
+  identity, 
+  notification, 
+  auth, 
+  globalConfig, 
+  educational, 
+  community, 
+  profile,
+  growth,
+  deepLink,
+  deviceIdentity
+} from './managers/factory';
+export { DeepLinkType } from './managers/DeepLinkManager';
 export * from './permissions/hooks/usePermissions';
 export * from './runtimeRegistry';
 export * from './schemas';

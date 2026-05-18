@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { supabase } from '../api/supabase';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../api/supabase';
 
 export interface StudentGoal {
   id: string;
@@ -11,7 +11,7 @@ export interface StudentGoal {
 /**
  * useStudentGoals
  *
- * Fetches the user's focus goals for the Student role.
+ * Fetches the user's focus goals for the Student capacity.
  */
 export const useStudentGoals = (userId?: string) => {
   const [goals, setGoals] = useState<StudentGoal[]>([]);
@@ -23,7 +23,7 @@ export const useStudentGoals = (userId?: string) => {
     const fetchGoals = async () => {
       setIsLoading(true);
       try {
-        const { data } = await supabase
+        const { data } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
           .from('student_goals')
           .select('*')
           .eq('user_id', userId)

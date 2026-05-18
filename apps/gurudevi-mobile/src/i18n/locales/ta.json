@@ -50,7 +50,7 @@
 		"afternoon": "Afternoon",
 		"evening": "Evening"
 	},
-	"role": {
+	"capacity": {
 		"teacher": "ஆசிரியர்",
 		"student": "மாணவர்",
 		"principal": "அதிபர்",
@@ -86,7 +86,7 @@
 		"joinCommunity": "ஆசிரியர் குடும்பத்தில் சேருங்கள்",
 		"processing": "செயலாக்குகிறது...",
 		"checkEmail": "உங்கள் மின்னஞ்சலைச் சரிபார்க்கவும்!",
-		"role": "பாத்திரம்",
+		"capacity": "பாத்திரம்",
 		"teacher": "ஆசிரியர்",
 		"student": "மாணவர்",
 		"principal": "அதிபர்",
@@ -556,7 +556,7 @@
 		"fullName": "முழு பெயர்",
 		"phone": "தொலைபேசி எண்",
 		"bio": "சுயவிவரம்",
-		"role": "பங்கு",
+		"capacity": "பங்கு",
 		"school": "பள்ளி",
 		"notSetYet": "இன்னும் அமைக்கப்படவில்லை",
 		"guestUser": "விருந்தினர்",
@@ -591,8 +591,8 @@
 		"deleteFailedTitle": "Deletion Failed",
 		"deleteFailedMessage": "We could not delete your account. Please try again later.",
 		"subtitle": "Sanctuary Profile",
-		"guestTitle": "Guest Explorer",
-		"guestDesc": "You are exploring as a guest. Create an account to save your sanctuary permanently.",
+		"guestTitle": "Anonymous Explorer",
+		"guestDesc": "You are exploring anonymously. Create an account to save your sanctuary permanently.",
 		"bio_title": "Resonance Story",
 		"no_bio_fallback": "This resident has not yet shared their resonance manifesto with the sanctuary.",
 		"fullProfile": "Profile Details",
@@ -763,14 +763,14 @@
 		}
 	},
 	"onboarding": {
-		"nameTitle": "வரவேற்கிறோம்! உங்களை எப்படி அழைக்கலாம்?",
-		"nameSubtitle": "உங்கள் பெயருடன் தொடங்குவோம்",
-		"namePlaceholder": "உங்கள் முழுப் பெயரை உள்ளிடவும்",
+    "nameTitle": "வரவேற்கிறோம்! Gurudevi-யில் உங்களை எப்படி அழைக்கலாம்?",
+    "nameSubtitle": "ஆப்பில் காட்ட வேண்டிய பெயருடன் தொடங்குவோம்.",
+    "namePlaceholder": "நாங்கள் பயன்படுத்த வேண்டிய பெயரை உள்ளிடவும்",
 		"nameHint": "குருதேவி சமூகத்தில் நீங்கள் இப்படித்தான் அறியப்படுவீர்கள்",
-		"roleTitle": "உங்கள் பொறுப்பு என்ன?",
-		"roleSubtitle": "இது உங்கள் அனுபவத்தைத் தனிப்பயனாக்க உதவும்",
-		"selectRole": "உங்கள் பொறுப்பைத் தேர்ந்தெடுக்கவும்",
-		"roleHint": "கவலைப்பட வேண்டாம், இதைச் சரிசெய்தலில் பின்னர் மாற்றலாம்",
+		"capacityTitle": "உங்கள் பொறுப்பு என்ன?",
+		"capacitySubtitle": "இது உங்கள் அனுபவத்தைத் தனிப்பயனாக்க உதவும்",
+		"selectCapacity": "உங்கள் பொறுப்பைத் தேர்ந்தெடுக்கவும்",
+		"capacityHint": "கவலைப்பட வேண்டாம், இதைச் சரிசெய்தலில் பின்னர் மாற்றலாம்",
 		"welcomeTitle": "குருதேவிக்கு வரவேற்கிறோம்",
 		"welcomeSubtitle": "அன்பில் பிறந்து, அன்பால் உருவான கல்வி",
 		"sectionsTitle": "ஐந்து நிலையான பிரிவுகள்",
@@ -793,7 +793,7 @@
 		"skip": "தவிர்",
 		"complete": "நிறைவு செய்",
 		"continue": "தொடரவும்",
-		"roleDesc": {
+		"capacityDesc": {
 			"teacher": "வகுப்பறைகளையும் மாணவர் நலனையும் நிர்வகிக்கவும்",
 			"student": "கற்றல் முன்னேற்றத்தையும் தனிப்பட்ட வளர்ச்சியையும் கண்காணிக்கவும்",
 			"principal": "பள்ளி நடவடிக்கைகளையும் ஊழியர்களையும் மேற்பார்வையிடவும்"
@@ -972,7 +972,7 @@
 	"invitationWelcome": {
 		"invited": "நீங்கள் அழைக்கப்பட்டுள்ளீர்கள்",
 		"welcomeTo": "{{schoolName}} வரவேற்கிறோம்",
-		"role": "பங்கு",
+		"capacity": "பங்கு",
 		"joinButton": "புகலிடத்தில் சேரவும்",
 		"joinFailed": "சேர முடியவில்லை",
 		"joinFailedDesc": "உங்கள் சுயவிவரத்தை புதுப்பிக்க முடியவில்லை. மீண்டும் முயற்சிக்கவும்.",

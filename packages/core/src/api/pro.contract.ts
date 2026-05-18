@@ -11,7 +11,7 @@ const c = initContract();
 
 const proAuthority = (
   action: 'manage' | 'create' | 'read' | 'update' | 'delete' | 'submit' | 'verify',
-) => POAMetadataSchema.parse({ authority: { action, subject: 'Pro' } });
+) => POAMetadataSchema.parse({ policy: { action, subject: 'Pro' } });
 
 export const proContract = c.router({
   // --- ENTITLEMENTS ---
@@ -72,3 +72,4 @@ export const proContract = c.router({
     metadata: proAuthority('update'),
   },
 });
+

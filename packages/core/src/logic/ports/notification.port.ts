@@ -1,4 +1,5 @@
-import { AppNotification } from '../../hooks/useNotifications';
+import { AppNotification, NotificationStatus } from '../../types';
+
 
 /**
  * INotificationPort: The Sovereign Notification Interface.
@@ -9,6 +10,12 @@ export interface INotificationPort {
    * Fetches the initial batch of notifications for a user.
    */
   getNotifications(userId: string, limit?: number): Promise<AppNotification[]>;
+
+  /**
+   * Creates a notification for a user.
+   */
+  createNotification(userId: string, type: string, title: string, message: string, metadata?: any): Promise<void>;
+
 
   /**
    * Resolves the unread count for a user.
@@ -33,6 +40,6 @@ export interface INotificationPort {
     userId: string,
     onInsert: (notification: AppNotification) => void,
     onUpdate: (notification: AppNotification) => void,
-    onStatusChange: (status: 'CONNECTED' | 'DISCONNECTED' | 'ERROR') => void
+    onStatusChange: (status: NotificationStatus) => void
   ): () => void;
 }

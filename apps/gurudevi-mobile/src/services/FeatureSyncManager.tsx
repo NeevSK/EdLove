@@ -1,5 +1,4 @@
-﻿import { useStore } from "@repo/core/logic";
-import { supabase } from "@repo/core/native";
+import { useStore, globalConfig } from "@repo/core/logic";
 
 import { useEffect } from "react";
 
@@ -17,32 +16,8 @@ export const FeatureSyncManager = () => {
 		// 1. Initial, Fetch, of, Global, Configs (Kill, Switches)
 		const fetchGlobalConfigs = async () => {
 			try {
-				const { data, error } = await supabase
-					.from("global_configs")
-					.select("key, value, is_active");
-
-				if (error) {
-					console.error(
-						"❌ FeatureSync: Failed, to, fetch, global, configs:",
-						error,
-					);
-					return;
-				}
-
-				if (data) {
-					const configs = data.reduce(
-						(acc, curr) => {
-							// Only, include, active, configs
-							if (curr.is_active) {
-								acc[curr.key] = curr.value || "true";
-							}
-							return acc;
-						},
-						{} as Record<string, string>,
-					);
-
-					setGlobalConfigs(configs);
-				}
+				const configs = await globalConfig.getAllActive();
+				setGlobalConfigs(configs);
 			} catch (e) {
 				console.error("❌ FeatureSync: Unexpected, error:", e);
 			}
@@ -53,23 +28,13 @@ export const FeatureSyncManager = () => {
 		// 2. Subscribe, to Realtime, Changes for Global Config
 		// This, allows an, admin to, flip a "Kill, Switch" in, the Supabase, Dashboard
 		// and, have it, propagate to, all users, in < 200ms.
-		const channel = supabase
-			.channel("global-config-updates")
-			.on(
-				"postgres_changes",
-				{ event: "*", schema: "public", table: "global_configs" },
-				(payload) => {
-					console.log(
-						"🔔 FeatureSync: Global, Config, Change, Detected",
-						payload,
-					);
-					fetchGlobalConfigs();
-				},
-			)
-			.subscribe();
+		const unsubscribe = globalConfig.subscribe(() => {
+			console.log("🔔 FeatureSync: Global, Config, Change, Detected");
+			fetchGlobalConfigs();
+		});
 
 		return () => {
-			supabase.removeChannel(channel);
+			unsubscribe();
 		};
 	}, [setGlobalConfigs]);
 

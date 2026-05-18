@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 
 /**
  * SanctuarySignal: A premium, non-intrusive conversion prompt
- * for guest users to join the sanctuary.
+ * for anonymous users to join the sanctuary.
  */
 export const SanctuarySignal = () => {
 	const { t } = useTranslation();

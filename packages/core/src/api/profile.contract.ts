@@ -1,19 +1,20 @@
-import { initContract } from '@ts-rest/core';
 import { z } from 'zod';
-import { POAMetadataSchema } from './contract';
+import { type SovereignContract } from './contract';
 
-const c = initContract();
-
-const authority = (
+const profileAuthority = (
   action: 'create' | 'read' | 'update' | 'delete',
-  subject: 'User' | 'Group' | 'School',
-) => POAMetadataSchema.parse({ authority: { action, subject } });
+  subject: 'User' | 'Group' | 'School'
+) => ({
+  policy: { action, subject },
+}) as const;
 
-const SocialLinkSchema = z.object({
+// --- Sovereign Schemas (Zod v4 functional API) ---
+
+const SocialLinkSchema = z.strictObject({
   id: z.uuid(),
   user_id: z.uuid(),
   platform: z.string(),
-  url: z.url(),
+  url: z.string(), // z.url() is deprecated in v4, use refinements if needed
   is_public: z.boolean(),
   privacy_level: z.string(),
   order_index: z.number(),
@@ -22,7 +23,8 @@ const SocialLinkSchema = z.object({
 });
 
 const UserProfileSchema = z.record(z.string(), z.any());
-const RewardsSnapshotSchema = z.object({
+
+const RewardsSnapshotSchema = z.strictObject({
   id: z.uuid().optional(),
   user_id: z.uuid().optional(),
   points: z.number(),
@@ -30,20 +32,24 @@ const RewardsSnapshotSchema = z.object({
   created_at: z.iso.datetime().nullable().optional(),
   updated_at: z.iso.datetime().nullable().optional(),
 });
+
 const UserGrowthStateSchema = z.record(z.string(), z.any());
-const WhisperedMomentSchema = z.object({
+
+const WhisperedMomentSchema = z.strictObject({
   key: z.string(),
   name_en: z.string(),
   name_si: z.string(),
   awarded_at: z.iso.datetime(),
 });
-const JourneySnapshotSchema = z.object({
+
+const JourneySnapshotSchema = z.strictObject({
   as_of: z.string().nullable(),
   rewards: RewardsSnapshotSchema.nullable(),
   growth: UserGrowthStateSchema.nullable(),
   whispered_moments: z.array(WhisperedMomentSchema),
 });
-const JourneyEventSchema = z.object({
+
+const JourneyEventSchema = z.strictObject({
   id: z.uuid(),
   timestamp: z.iso.datetime(),
   source: z.enum(['reward', 'growth', 'moment']),
@@ -52,14 +58,16 @@ const JourneyEventSchema = z.object({
   metadata: z.record(z.string(), z.any()).optional(),
   snapshot: z.record(z.string(), z.any()).optional(),
 });
-const ProfileHistoryEntrySchema = z.object({
+
+const ProfileHistoryEntrySchema = z.strictObject({
   id: z.uuid(),
   operation: z.enum(['insert', 'update', 'delete']),
   recorded_at: z.iso.datetime(),
   recorded_by: z.uuid().nullable().optional(),
   snapshot: z.record(z.string(), z.any()),
 });
-const CommunityProfileSchema = z.object({
+
+const CommunityProfileSchema = z.strictObject({
   id: z.uuid(),
   name: z.string(),
   description: z.string().nullable().optional(),
@@ -68,7 +76,7 @@ const CommunityProfileSchema = z.object({
   creator_id: z.uuid().nullable().optional(),
 });
 
-const PulseMetricsSchema = z.object({
+const PulseMetricsSchema = z.strictObject({
   resonance_score: z.number(),
   aggregated_mood: z.enum(['joy', 'peace', 'focus', 'struggle', 'unknown']),
   trend: z.enum(['rising', 'stable', 'failing']),
@@ -77,137 +85,65 @@ const PulseMetricsSchema = z.object({
   interaction_volume: z.number(),
 });
 
-export const profileContract = c.router({
+/**
+ * Profile Domain Port
+ */
+export const profileContract: SovereignContract = {
   getUserProfile: {
-    method: 'GET',
+    method: 'get',
     path: '/profile/users/:id',
-    responses: { 200: UserProfileSchema.nullable() },
-    metadata: authority('read', 'User'),
+    request: {
+      params: z.strictObject({ id: z.uuid() }),
+    },
+    responses: {
+      200: { schema: UserProfileSchema.nullable(), description: 'User profile retrieved' },
+    },
+    metadata: profileAuthority('read', 'User'),
   },
-  getUserProfileAsOf: {
-    method: 'GET',
-    path: '/profile/users/:id/as-of',
-    query: z.object({ at: z.string() }),
-    responses: { 200: UserProfileSchema.nullable() },
-    metadata: authority('read', 'User'),
+
+  updateProfile: {
+    method: 'patch',
+    path: '/profile/users/:id',
+    request: {
+      params: z.strictObject({ id: z.uuid() }),
+      body: z.record(z.string(), z.any()),
+    },
+    responses: {
+      200: { schema: UserProfileSchema, description: 'User profile updated' },
+    },
+    metadata: profileAuthority('update', 'User'),
   },
-  getUserProfileHistory: {
-    method: 'GET',
-    path: '/profile/users/:id/history',
-    query: z.object({ limit: z.coerce.number().optional() }),
-    responses: { 200: z.array(ProfileHistoryEntrySchema) },
-    metadata: authority('read', 'User'),
-  },
+
   getJourneySnapshot: {
-    method: 'GET',
+    method: 'get',
     path: '/profile/users/:id/journey',
-    query: z
-      .object({
+    request: {
+      params: z.strictObject({ id: z.uuid() }),
+      query: z.strictObject({
         at: z.string().optional(),
         view_date: z.string().optional(),
         view_scale: z.enum(['day', 'week', 'month', 'year', 'custom']).optional(),
-      })
-      .optional(),
-    responses: { 200: JourneySnapshotSchema },
-    metadata: authority('read', 'User'),
+      }),
+    },
+    responses: {
+      200: { schema: JourneySnapshotSchema, description: 'Journey snapshot retrieved' },
+    },
+    metadata: profileAuthority('read', 'User'),
   },
-  getJourneyHistory: {
-    method: 'GET',
-    path: '/profile/users/:id/journey/history',
-    query: z.object({
-      view_date: z.string(),
-      view_scale: z.enum(['day', 'week', 'month', 'year', 'custom']).optional(),
-      limit: z.coerce.number().optional(),
-    }),
-    responses: { 200: z.array(JourneyEventSchema) },
-    metadata: authority('read', 'User'),
-  },
-  updateProfile: {
-    method: 'PATCH',
-    path: '/profile/users/:id',
-    body: z.record(z.string(), z.any()),
-    responses: { 200: UserProfileSchema },
-    metadata: authority('update', 'User'),
-  },
-  isAnonymous: {
-    method: 'GET',
-    path: '/profile/users/:id/anonymous',
-    responses: { 200: z.object({ is_anonymous: z.boolean() }) },
-    metadata: authority('read', 'User'),
-  },
-  uploadAvatar: {
-    method: 'POST',
-    path: '/profile/users/:id/avatar',
-    body: z.object({ local_uri: z.string() }),
-    responses: { 200: UserProfileSchema },
-    metadata: authority('update', 'User'),
-  },
-  getSocialLinks: {
-    method: 'GET',
-    path: '/profile/users/:id/social-links',
-    responses: { 200: z.array(SocialLinkSchema) },
-    metadata: authority('read', 'User'),
-  },
-  upsertSocialLink: {
-    method: 'PUT',
-    path: '/profile/users/:id/social-links',
-    body: z.record(z.string(), z.any()),
-    responses: { 200: SocialLinkSchema },
-    metadata: authority('update', 'User'),
-  },
-  deleteSocialLink: {
-    method: 'DELETE',
-    path: '/profile/social-links/:id',
-    responses: { 204: z.void() },
-    metadata: authority('delete', 'User'),
-  },
-  updateSocialLinksOrder: {
-    method: 'POST',
-    path: '/profile/users/:id/social-links/order',
-    body: z.object({
-      links: z.array(z.object({ id: z.uuid(), order_index: z.number() })),
-    }),
-    responses: { 200: z.object({ ok: z.boolean() }) },
-    metadata: authority('update', 'User'),
-  },
-  getCommunityProfile: {
-    method: 'GET',
-    path: '/profile/communities/:id',
-    responses: { 200: CommunityProfileSchema.nullable() },
-    metadata: authority('read', 'Group'),
-  },
-  getCommunityProfileAsOf: {
-    method: 'GET',
-    path: '/profile/communities/:id/as-of',
-    query: z.object({ at: z.string() }),
-    responses: { 200: CommunityProfileSchema.nullable() },
-    metadata: authority('read', 'Group'),
-  },
-  getCommunityProfileHistory: {
-    method: 'GET',
-    path: '/profile/communities/:id/history',
-    query: z.object({ limit: z.coerce.number().optional() }),
-    responses: { 200: z.array(ProfileHistoryEntrySchema) },
-    metadata: authority('read', 'Group'),
-  },
-  updateCommunityProfile: {
-    method: 'PATCH',
-    path: '/profile/communities/:id',
-    body: z.object({
-      field: z.enum(['name', 'description']),
-      value: z.string(),
-    }),
-    responses: { 200: CommunityProfileSchema },
-    metadata: authority('update', 'Group'),
-  },
+
   getSchoolPulse: {
-    method: 'GET',
+    method: 'get',
     path: '/profile/schools/:id/pulse',
-    query: z.object({
-      view_date: z.string(),
-      view_scale: z.enum(['day', 'week', 'month', 'year', 'custom']).optional(),
-    }),
-    responses: { 200: PulseMetricsSchema },
-    metadata: authority('read', 'School'),
+    request: {
+      params: z.strictObject({ id: z.uuid() }),
+      query: z.strictObject({
+        view_date: z.string(),
+        view_scale: z.enum(['day', 'week', 'month', 'year', 'custom']).optional(),
+      }),
+    },
+    responses: {
+      200: { schema: PulseMetricsSchema, description: 'School pulse metrics retrieved' },
+    },
+    metadata: profileAuthority('read', 'School'),
   },
-});
+} as const;

@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { handleAPIError } from '@repo/core/logic';
-import type { AuthorityTier } from '@repo/core/types';
+import type { Capacity } from '@repo/core/types';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { PROFILE_SECTIONS } from '../config/profileSections';
 import { isFieldFilled } from '../lib/isFieldFilled';
@@ -21,7 +21,7 @@ export interface ProfileCompletionResult {
 
 export function useProfileCompletion(
   profile: UserProfile | null,
-  role: AuthorityTier | null,
+  capacity: Capacity | null,
 ): ProfileCompletionResult {
   // Default true prevents flash-showing overlay on mount for already-completed profiles
   const [hasSeenCelebration, setHasSeenCelebration] = useState(true);
@@ -48,20 +48,20 @@ export function useProfileCompletion(
   }, []);
 
   const computed = useMemo(() => {
-    if (!profile || !role) {
+    if (!profile || !capacity) {
       return {
         percentage: 0,
         isComplete: false,
-        nextHint: 'Add your full name to complete',
+        nextHint: 'Add your first and last name to complete',
         sectionBreakdown: {} as ProfileCompletionResult['sectionBreakdown'],
       };
     }
 
-    // 1. Filter sections by countInCompletion and role eligibility
+    // 1. Filter sections by countInCompletion and capacity eligibility
     const eligibleSections = PROFILE_SECTIONS.filter((section) => {
       if (!section.countInCompletion) return false;
-      if (section.roles === 'all') return true;
-      return (section.roles as AuthorityTier[]).includes(role);
+      if (section.capacities === 'all') return true;
+      return (section.capacities as Capacity[]).includes(capacity);
     });
 
     let totalWeight = 0;
@@ -71,10 +71,10 @@ export function useProfileCompletion(
     let topUnfilled: { label: string; weight: number } | null = null;
 
     for (const section of eligibleSections) {
-      // 2. Filter fields by onlyForRoles
+      // 2. Filter fields by onlyForCapacities
       const eligibleFields = section.fields.filter((f) => {
-        if (!f.onlyForRoles) return true;
-        return f.onlyForRoles.includes(role);
+        if (!f.onlyForCapacities) return true;
+        return f.onlyForCapacities.includes(capacity);
       });
 
       let sectionTotalWeight = 0;
@@ -112,7 +112,7 @@ export function useProfileCompletion(
       nextHint: topUnfilled ? `Add your ${topUnfilled.label} to complete` : '🎉 Profile complete!',
       sectionBreakdown,
     };
-  }, [profile, role]);
+  }, [profile, capacity]);
 
   return {
     ...computed,
