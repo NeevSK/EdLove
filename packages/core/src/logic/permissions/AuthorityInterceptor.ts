@@ -1,7 +1,7 @@
 import type { POAMetadata } from '../../api/contract';
 import { ErrorCategory, SovereignError } from '../../types/Errors';
-import { checkLocalPermission } from './localEvaluator';
 import type { UserContext } from '../schemas/user.schema';
+import { checkLocalPermission } from './localEvaluator';
 
 /**
  * AuthorityInterceptor (BFF Layer - L4)

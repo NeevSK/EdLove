@@ -31,7 +31,8 @@ import {
 } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
-import React, { useReducer } from 'react';
+import type React from 'react';
+import { useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useInventory } from '../hooks/useInventory';
 
@@ -261,7 +262,10 @@ export default function InventoryView({ classroomId }: InventoryViewProps) {
                 className="bg-[--vellum] rounded-xl p-4"
                 style={{ backgroundColor: colors.secondary }}
                 accessibilityRole="button"
-                accessibilityLabel={t('classroom.inventory.reportIssueFor', { name: item.name }) || `Report issue for ${item.name}`}
+                accessibilityLabel={
+                  t('classroom.inventory.reportIssueFor', { name: item.name }) ||
+                  `Report issue for ${item.name}`
+                }
               >
                 <HStack className="justify-between items-center">
                   <HStack className="gap-4 items-center">

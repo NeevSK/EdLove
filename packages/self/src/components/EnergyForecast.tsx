@@ -46,7 +46,8 @@ export default function EnergyForecast({
     () => forecasts.find((f) => f.forecast_date === today) ?? forecasts[0],
     [forecasts, today],
   );
-  const displayLevel = selectedLevel ?? (currentForecast?.energy_level as 1 | 2 | 3 | 4 | 5 | undefined) ?? null;
+  const displayLevel =
+    selectedLevel ?? (currentForecast?.energy_level as 1 | 2 | 3 | 4 | 5 | undefined) ?? null;
   const lastUpdatedAt = currentForecast?.created_at ?? null;
 
   const { mutate: saveEnergy, isLoading: isSaving } = useSafeMutation(

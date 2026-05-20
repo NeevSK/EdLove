@@ -177,7 +177,7 @@ function forestWeather(trees: TeacherTree[]): SchoolForestState['forest_weather'
 function forestNarrative(
   weather: SchoolForestState['forest_weather'],
   trees: TeacherTree[],
- ): string {
+): string {
   const total = trees.length;
   const active = trees.filter((t) => t.tree_health !== 'seedling').length;
   const needsRain = trees.filter((t) => t.needs_rain).length;

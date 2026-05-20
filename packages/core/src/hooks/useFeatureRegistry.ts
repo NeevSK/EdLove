@@ -28,12 +28,12 @@ export function useFeatureRegistry(
     return Object.entries(registry).reduce(
       (acc, [key, feature]) => {
         const hasCitizenship = userContext.citizenship >= feature.citizenshipRequired;
-        
+
         // Evaluate dynamic capability via Cedar/CASL context if provided, fallback to capabilities array
         const hasCapability = userContext.can
           ? userContext.can('read', feature.capabilityKey)
           : userContext.capabilities.includes(feature.capabilityKey);
-          
+
         const isProLocked = Boolean(feature.isPro) && !userContext.isPro;
 
         // A feature is "Visible but Locked" if it's pro or requires citizenship elevation.

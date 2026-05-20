@@ -12,12 +12,6 @@ import {
   setWorkspaceSurfacePinned,
   setWorkspaceSurfaceZone,
 } from '../logic/workspace/canvas';
-import type {
-  ResolvedWorkspaceSurface,
-  WorkspaceLayout,
-  WorkspaceSurfaceDefinition,
-  WorkspaceZoneId,
-} from '../types';
 import {
   buildWorkspaceLayoutStorageKey,
   choosePreferredWorkspaceLayout,
@@ -27,6 +21,12 @@ import {
   type WorkspaceLayoutPlatformKind,
   type WorkspaceLayoutScreenClass,
 } from '../logic/workspace/layoutSync';
+import type {
+  ResolvedWorkspaceSurface,
+  WorkspaceLayout,
+  WorkspaceSurfaceDefinition,
+  WorkspaceZoneId,
+} from '../types';
 
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
@@ -304,7 +304,9 @@ export function useWorkspaceLayoutSync<
 
   const setSurfaceOrder = useCallback(
     (order: TSurfaceId[]) =>
-      setLayoutState((current: WorkspaceLayout<TSurfaceId> | null) => (current ? setWorkspaceSurfaceOrder(current, order) : current)),
+      setLayoutState((current: WorkspaceLayout<TSurfaceId> | null) =>
+        current ? setWorkspaceSurfaceOrder(current, order) : current,
+      ),
     [],
   );
 

@@ -1,8 +1,8 @@
-import { useMemo, useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useAuthStore } from '../../../store/useAuthStore';
 import { useFeatureStore } from '../../../store/useFeatureStore';
-import { useTenantStore } from '../../../store/useTenantStore';
 import { usePermissionStore } from '../../../store/usePermissionStore';
+import { useTenantStore } from '../../../store/useTenantStore';
 import { type TenantKind, type UserContext, UserContextSchema } from '../../schemas/user.schema';
 import type { Actions, SubjectType } from '../abilities/base';
 
@@ -58,10 +58,7 @@ export const usePermissions = () => {
       isPersonal,
       sectionId: null,
       gradeId: null,
-      classroomId:
-        activeBond?.entity_type === 'CLASSROOM'
-          ? activeBond.entity_id
-          : null,
+      classroomId: activeBond?.entity_type === 'CLASSROOM' ? activeBond.entity_id : null,
     };
 
     // Strict validation via Zod

@@ -288,7 +288,11 @@ export function useStudentDashboardSurfaces({
             />
             {isGuest && (
               <Box className="mt-4">
-                <PositiveInvitation type="anonymous" context="classroom" onAction={onOpenGuestAuth} />
+                <PositiveInvitation
+                  type="anonymous"
+                  context="classroom"
+                  onAction={onOpenGuestAuth}
+                />
               </Box>
             )}
           </VStack>

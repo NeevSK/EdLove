@@ -1,4 +1,4 @@
-import { ValidationEngine, ValidationResult } from '../validation/ValidationEngine';
+import { ValidationEngine, type ValidationResult } from '../validation/ValidationEngine';
 
 export interface FormFieldConfig<T = any> {
   label?: string;

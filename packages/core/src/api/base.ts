@@ -21,4 +21,3 @@ export const SOVEREIGN_API_URL =
 export const createSovereignClient = <T = any>(url: string): any => {
   return createSovereignClientRaw<any>(url);
 };
-

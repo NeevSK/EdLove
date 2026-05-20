@@ -1,13 +1,13 @@
-import type { SupabaseClient } from '@supabase/supabase-js';
 import {
-  FormStorage,
-  FormAnalytics,
-  FormSchema,
-  FormResponse,
-  AggregatedStats,
+  type AggregatedStats,
   AnalyticsEngine,
-  FieldDefinition,
+  type FieldDefinition,
+  type FormAnalytics,
+  type FormResponse,
+  type FormSchema,
+  type FormStorage,
 } from '@intuitui-labs/form-builder-engine';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import { APIError } from '../../types/API';
 
 /**
@@ -116,10 +116,7 @@ export class SupabaseFormsAdapter implements FormStorage, FormAnalytics {
    * Delete a form schema from the Supabase database.
    */
   async delete(id: string): Promise<void> {
-    const { error } = await this.supabase
-      .from('form_templates')
-      .delete()
-      .eq('id', id);
+    const { error } = await this.supabase.from('form_templates').delete().eq('id', id);
 
     if (error) {
       throw new APIError('Failed to delete form template from Supabase', error.code, error);
@@ -140,9 +137,7 @@ export class SupabaseFormsAdapter implements FormStorage, FormAnalytics {
       submitted_at: response.submittedAt,
     };
 
-    const { error } = await this.supabase
-      .from('form_responses')
-      .insert([responseData]);
+    const { error } = await this.supabase.from('form_responses').insert([responseData]);
 
     if (error) {
       throw new APIError('Failed to record form response in Supabase', error.code, error);

@@ -50,7 +50,8 @@ export function useAuthorityLifecycle() {
         });
 
         // 3. Handle Onboarding & School Logic
-        const isEffectivelyOnboarded = !!identity.onboarding_completed && identity.availableBonds.length > 0;
+        const isEffectivelyOnboarded =
+          !!identity.onboarding_completed && identity.availableBonds.length > 0;
         if (isEffectivelyOnboarded) {
           setOnboardingCompleted(true);
         }

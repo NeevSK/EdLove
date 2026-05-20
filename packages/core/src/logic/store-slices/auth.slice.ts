@@ -66,7 +66,8 @@ export const createAuthSlice: StateCreator<AuthSlice, [], [], AuthSlice> = (set)
       availableBonds: bonds,
       activeBond: bonds[0] || null,
     }),
-  setPerspective: (perspective) => set({ perspective, activeBond: perspective?.activeBond || null }),
+  setPerspective: (perspective) =>
+    set({ perspective, activeBond: perspective?.activeBond || null }),
   authSession: null,
   authSessionResolved: false,
   setAuthSession: (authSession) => set({ authSession }),

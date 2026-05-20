@@ -1,7 +1,7 @@
 import { authAPI } from '../api/auth';
+import { createSovereignClient, SOVEREIGN_API_URL } from '../api/base';
 import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../api/supabase';
 import { GuestDataManager } from './guestDataManager';
-import { createSovereignClient, SOVEREIGN_API_URL } from '../api/base';
 
 export interface SyncProgress {
   total: number;
@@ -89,7 +89,10 @@ export class GuestDataSync {
       if (guestData.timetable.length > 0) {
         guestData.timetable.forEach((period) => {
           crudBatch.push({
-            id: (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') ? crypto.randomUUID() : 'temp-id-' + Math.random().toString(36).substr(2, 9),
+            id:
+              typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+                ? crypto.randomUUID()
+                : 'temp-id-' + Math.random().toString(36).substr(2, 9),
             op: 'PUT',
             table: 'timetable',
             opData: {
@@ -111,7 +114,10 @@ export class GuestDataSync {
       if (guestData.moodLogs.length > 0) {
         guestData.moodLogs.forEach((log) => {
           crudBatch.push({
-            id: (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') ? crypto.randomUUID() : 'temp-id-' + Math.random().toString(36).substr(2, 9),
+            id:
+              typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+                ? crypto.randomUUID()
+                : 'temp-id-' + Math.random().toString(36).substr(2, 9),
             op: 'PUT',
             table: 'mood_logs',
             opData: {
@@ -128,7 +134,10 @@ export class GuestDataSync {
       if (guestData.journalEntries.length > 0) {
         guestData.journalEntries.forEach((entry) => {
           crudBatch.push({
-            id: (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') ? crypto.randomUUID() : 'temp-id-' + Math.random().toString(36).substr(2, 9),
+            id:
+              typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+                ? crypto.randomUUID()
+                : 'temp-id-' + Math.random().toString(36).substr(2, 9),
             op: 'PUT',
             table: 'fire_journal',
             opData: {
@@ -144,7 +153,10 @@ export class GuestDataSync {
       if (guestData.students.length > 0) {
         guestData.students.forEach((student) => {
           crudBatch.push({
-            id: (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') ? crypto.randomUUID() : 'temp-id-' + Math.random().toString(36).substr(2, 9),
+            id:
+              typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+                ? crypto.randomUUID()
+                : 'temp-id-' + Math.random().toString(36).substr(2, 9),
             op: 'PUT',
             table: 'classroom_student',
             opData: {
@@ -169,15 +181,18 @@ export class GuestDataSync {
         }
 
         const client = createSovereignClient(SOVEREIGN_API_URL);
-        const res = await client.api.powersync.upload.$post({
-          json: {
-            crud: crudBatch,
+        const res = await client.api.powersync.upload.$post(
+          {
+            json: {
+              crud: crudBatch,
+            },
           },
-        }, {
-          headers: {
-            'Authorization': `Bearer ${session.access_token}`,
+          {
+            headers: {
+              Authorization: `Bearer ${session.access_token}`,
+            },
           },
-        });
+        );
 
         if (!res.ok) {
           const err = (await res.json()) as any;

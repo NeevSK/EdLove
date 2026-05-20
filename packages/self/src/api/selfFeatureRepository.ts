@@ -1,7 +1,17 @@
 import { supabase } from '@repo/core/api';
 import { applyTemporalFilter, getTemporalRange } from '@repo/core/logic';
 
-import type { DailyPrepItem, Goal, GratitudeEntry, JoyMoment, SleepLog, DecisionLog, Period, WisdomNote, JournalEntry } from '../types';
+import type {
+  DailyPrepItem,
+  DecisionLog,
+  Goal,
+  GratitudeEntry,
+  JournalEntry,
+  JoyMoment,
+  Period,
+  SleepLog,
+  WisdomNote,
+} from '../types';
 
 export interface ReminderRecord {
   id: string;
@@ -317,10 +327,7 @@ export async function fetchDecisionLogs(
   return data ?? [];
 }
 
-export async function createDecisionLog(
-  userId: string,
-  text: string,
-): Promise<DecisionLog | null> {
+export async function createDecisionLog(userId: string, text: string): Promise<DecisionLog | null> {
   const { data, error } = await supabase
     .from('decision_journals')
     .insert({
@@ -363,10 +370,7 @@ export async function createTimetablePeriod(
   return data;
 }
 
-export async function updateTimetablePeriod(
-  id: string,
-  updates: Partial<Period>,
-): Promise<void> {
+export async function updateTimetablePeriod(id: string, updates: Partial<Period>): Promise<void> {
   const { error } = await supabase.from('timetable').update(updates).eq('id', id);
   if (error) throw error;
 }
@@ -394,10 +398,7 @@ export async function fetchWisdomNotes(
   return data ?? [];
 }
 
-export async function createWisdomNote(
-  userId: string,
-  insight: string,
-): Promise<WisdomNote> {
+export async function createWisdomNote(userId: string, insight: string): Promise<WisdomNote> {
   const { data, error } = await supabase
     .from('wisdom_notes')
     .insert({
@@ -431,10 +432,7 @@ export async function fetchJournalEntries(
   return data ?? [];
 }
 
-export async function createJournalEntry(
-  userId: string,
-  content: string,
-): Promise<JournalEntry> {
+export async function createJournalEntry(userId: string, content: string): Promise<JournalEntry> {
   const { data, error } = await supabase
     .from('journal_entries')
     .insert([{ content, user_id: userId }])
@@ -444,4 +442,3 @@ export async function createJournalEntry(
   if (error) throw error;
   return data;
 }
-

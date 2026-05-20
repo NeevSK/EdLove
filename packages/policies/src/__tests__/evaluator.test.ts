@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { check, generateSnapshot } from '../index';
 
 describe('Sovereign Authorization Engine', () => {
@@ -8,22 +8,22 @@ describe('Sovereign Authorization Engine', () => {
       id: 'admin-1',
       attributes: {
         school_id: 'school-a',
-        capacity: 'admin'
-      }
+        capacity: 'admin',
+      },
     };
 
     const classroomResource = {
       type: 'Classroom',
       id: 'classroom-1',
       attributes: {
-        school_id: 'school-b'
-      }
+        school_id: 'school-b',
+      },
     };
 
     const res = check({
       principal: adminUser,
       action: 'delete',
-      resource: classroomResource
+      resource: classroomResource,
     });
 
     expect(res.permitted).toBe(true);
@@ -35,39 +35,43 @@ describe('Sovereign Authorization Engine', () => {
       id: 'principal-1',
       attributes: {
         school_id: 'school-a',
-        capacity: 'principal'
-      }
+        capacity: 'principal',
+      },
     };
 
     const sameSchoolClassroom = {
       type: 'Classroom',
       id: 'classroom-1',
       attributes: {
-        school_id: 'school-a'
-      }
+        school_id: 'school-a',
+      },
     };
 
     const otherSchoolClassroom = {
       type: 'Classroom',
       id: 'classroom-2',
       attributes: {
-        school_id: 'school-b'
-      }
+        school_id: 'school-b',
+      },
     };
 
     // Allowed same school
-    expect(check({
-      principal: principalUser,
-      action: 'create',
-      resource: sameSchoolClassroom
-    }).permitted).toBe(true);
+    expect(
+      check({
+        principal: principalUser,
+        action: 'create',
+        resource: sameSchoolClassroom,
+      }).permitted,
+    ).toBe(true);
 
     // Denied other school
-    expect(check({
-      principal: principalUser,
-      action: 'create',
-      resource: otherSchoolClassroom
-    }).permitted).toBe(false);
+    expect(
+      check({
+        principal: principalUser,
+        action: 'create',
+        resource: otherSchoolClassroom,
+      }).permitted,
+    ).toBe(false);
   });
 
   it('should restrict teacher to classrooms they teach', () => {
@@ -77,8 +81,8 @@ describe('Sovereign Authorization Engine', () => {
       attributes: {
         school_id: 'school-a',
         capacity: 'teacher',
-        classroom_ids: ['classroom-1']
-      }
+        classroom_ids: ['classroom-1'],
+      },
     };
 
     const taughtClassroom = {
@@ -86,8 +90,8 @@ describe('Sovereign Authorization Engine', () => {
       id: 'classroom-1',
       attributes: {
         school_id: 'school-a',
-        teacher_id: 'teacher-1'
-      }
+        teacher_id: 'teacher-1',
+      },
     };
 
     const otherClassroom = {
@@ -95,23 +99,27 @@ describe('Sovereign Authorization Engine', () => {
       id: 'classroom-2',
       attributes: {
         school_id: 'school-a',
-        teacher_id: 'teacher-2'
-      }
+        teacher_id: 'teacher-2',
+      },
     };
 
     // Allowed taught classroom
-    expect(check({
-      principal: teacherUser,
-      action: 'update',
-      resource: taughtClassroom
-    }).permitted).toBe(true);
+    expect(
+      check({
+        principal: teacherUser,
+        action: 'update',
+        resource: taughtClassroom,
+      }).permitted,
+    ).toBe(true);
 
     // Denied other classroom
-    expect(check({
-      principal: teacherUser,
-      action: 'update',
-      resource: otherClassroom
-    }).permitted).toBe(false);
+    expect(
+      check({
+        principal: teacherUser,
+        action: 'update',
+        resource: otherClassroom,
+      }).permitted,
+    ).toBe(false);
   });
 
   it('should restrict student to enrolled classrooms and self-scoped grades/attendance', () => {
@@ -121,8 +129,8 @@ describe('Sovereign Authorization Engine', () => {
       attributes: {
         school_id: 'school-a',
         capacity: 'student',
-        classroom_ids: ['classroom-1']
-      }
+        classroom_ids: ['classroom-1'],
+      },
     };
 
     const ownGrade = {
@@ -131,8 +139,8 @@ describe('Sovereign Authorization Engine', () => {
       attributes: {
         school_id: 'school-a',
         classroom_id: 'classroom-1',
-        student_id: 'student-1'
-      }
+        student_id: 'student-1',
+      },
     };
 
     const otherGrade = {
@@ -141,30 +149,36 @@ describe('Sovereign Authorization Engine', () => {
       attributes: {
         school_id: 'school-a',
         classroom_id: 'classroom-1',
-        student_id: 'student-2'
-      }
+        student_id: 'student-2',
+      },
     };
 
     // Read own grade allowed
-    expect(check({
-      principal: studentUser,
-      action: 'read',
-      resource: ownGrade
-    }).permitted).toBe(true);
+    expect(
+      check({
+        principal: studentUser,
+        action: 'read',
+        resource: ownGrade,
+      }).permitted,
+    ).toBe(true);
 
     // Read other grade denied
-    expect(check({
-      principal: studentUser,
-      action: 'read',
-      resource: otherGrade
-    }).permitted).toBe(false);
+    expect(
+      check({
+        principal: studentUser,
+        action: 'read',
+        resource: otherGrade,
+      }).permitted,
+    ).toBe(false);
 
     // Write own grade denied
-    expect(check({
-      principal: studentUser,
-      action: 'create',
-      resource: ownGrade
-    }).permitted).toBe(false);
+    expect(
+      check({
+        principal: studentUser,
+        action: 'create',
+        resource: ownGrade,
+      }).permitted,
+    ).toBe(false);
   });
 
   it('should check GAP rules for parents reading child academic data', () => {
@@ -174,8 +188,8 @@ describe('Sovereign Authorization Engine', () => {
       attributes: {
         school_id: 'school-a',
         capacity: 'parent',
-        child_student_ids: ['student-1']
-      }
+        child_student_ids: ['student-1'],
+      },
     };
 
     const childGrade = {
@@ -183,8 +197,8 @@ describe('Sovereign Authorization Engine', () => {
       id: 'grade-1',
       attributes: {
         school_id: 'school-a',
-        student_id: 'student-1'
-      }
+        student_id: 'student-1',
+      },
     };
 
     const otherGrade = {
@@ -192,32 +206,36 @@ describe('Sovereign Authorization Engine', () => {
       id: 'grade-2',
       attributes: {
         school_id: 'school-a',
-        student_id: 'student-2'
-      }
+        student_id: 'student-2',
+      },
     };
 
     // Allowed for parent's child
     const resOwn = check({
       principal: parentUser,
       action: 'read',
-      resource: childGrade
+      resource: childGrade,
     });
     expect(resOwn.permitted).toBe(true);
-    expect(resOwn.gaps).toContain('GAP: Read Grades for own child only (currently missing in ZenStack)');
+    expect(resOwn.gaps).toContain(
+      'GAP: Read Grades for own child only (currently missing in ZenStack)',
+    );
 
     // Denied for other student
-    expect(check({
-      principal: parentUser,
-      action: 'read',
-      resource: otherGrade
-    }).permitted).toBe(false);
+    expect(
+      check({
+        principal: parentUser,
+        action: 'read',
+        resource: otherGrade,
+      }).permitted,
+    ).toBe(false);
   });
 
   it('should generate a robust offline permission snapshot', () => {
     const principalUser = {
       id: 'principal-1',
       school_id: 'school-a',
-      capacity: 'principal'
+      capacity: 'principal',
     };
 
     const snapshot = generateSnapshot(principalUser);

@@ -69,7 +69,8 @@ app.use('/api/*', async (c, next) => {
       return c.json(
         {
           error: 'Unauthorized',
-          message: 'Authoritative cryptographic identity verification failed (Invalid or Expired JWT).',
+          message:
+            'Authoritative cryptographic identity verification failed (Invalid or Expired JWT).',
         },
         401,
       );
@@ -92,8 +93,8 @@ app.use('/api/*', async (c, next) => {
   // A. Resolve attributes for Principal
   let school_id = '';
   let capacity = 'Wanderer';
-  let grade_id: string | undefined = undefined;
-  let section_id: string | undefined = undefined;
+  let grade_id: string | undefined;
+  let section_id: string | undefined;
   let classroom_ids: string[] = [];
   let child_student_ids: string[] = [];
 
@@ -104,7 +105,9 @@ app.use('/api/*', async (c, next) => {
   const clientHeaderSectionId = c.req.header('x-section-id') || undefined;
 
   const xClassroomIds = c.req.header('x-classroom-ids');
-  const clientHeaderClassroomIds = xClassroomIds ? xClassroomIds.split(',').map((id) => id.trim()) : [];
+  const clientHeaderClassroomIds = xClassroomIds
+    ? xClassroomIds.split(',').map((id) => id.trim())
+    : [];
 
   const xChildIds = c.req.header('x-child-student-ids');
   const clientHeaderChildIds = xChildIds ? xChildIds.split(',').map((id) => id.trim()) : [];
@@ -141,7 +144,9 @@ app.use('/api/*', async (c, next) => {
   } else {
     // Database is active: prevent administrative privilege escalation via unverified client headers
     if (clientHeaderCapacity === 'admin' && capacity !== 'admin') {
-      console.warn(`[🛡️ SENTINEL SECURITY ALERT] Blocked header privilege escalation attempt by user "${user.id}"`);
+      console.warn(
+        `[🛡️ SENTINEL SECURITY ALERT] Blocked header privilege escalation attempt by user "${user.id}"`,
+      );
       return c.json(
         {
           error: 'Forbidden',
@@ -222,7 +227,7 @@ app.use('/api/*', async (c, next) => {
   }
 
   // Attempt to parse classroom_id safely by cloning the request body (prevents stream lockout)
-  let bodyClassroomId: string | undefined = undefined;
+  let bodyClassroomId: string | undefined;
   if (method === 'POST' || method === 'PUT' || method === 'PATCH') {
     try {
       const cloned = c.req.raw.clone();
@@ -233,7 +238,8 @@ app.use('/api/*', async (c, next) => {
     }
   }
 
-  const deviceTrust = c.req.header('x-device-trust') || c.req.header('x-device-status') || 'standard';
+  const deviceTrust =
+    c.req.header('x-device-trust') || c.req.header('x-device-status') || 'standard';
   const networkZone = c.req.header('x-network-zone') || 'trusted';
 
   // C. Perform Cedar authorization check
@@ -258,11 +264,11 @@ app.use('/api/*', async (c, next) => {
         ...(resourceType !== 'School' && { school_id }),
         ...(bodyClassroomId && { classroom_id: bodyClassroomId }),
         ...((resourceType === 'MoodLog' ||
-             resourceType === 'FireJournal' ||
-             resourceType === 'JoyMoments' ||
-             resourceType === 'GratitudeEntries' ||
-             resourceType === 'EnergyForecasts' ||
-             resourceType === 'User') && { user_id: user.id }),
+          resourceType === 'FireJournal' ||
+          resourceType === 'JoyMoments' ||
+          resourceType === 'GratitudeEntries' ||
+          resourceType === 'EnergyForecasts' ||
+          resourceType === 'User') && { user_id: user.id }),
       },
     },
     context: {
@@ -293,7 +299,7 @@ app.use('/api/*', async (c, next) => {
        - Path: "${method} ${urlPath}"
        - Device Trust: "${deviceTrust}"
        - Network Zone: "${networkZone}"
-       - Status: APPROVED & AUDITED`
+       - Status: APPROVED & AUDITED`,
     );
   }
 
@@ -393,7 +399,10 @@ identityApp.openapi(
   adaptToHono(identityContract.resolveWorkspaceContext),
   identityHandlers.getClassroomCapacitySummary,
 );
-identityApp.openapi(adaptToHono(identityContract.modifyUserProfile), identityHandlers.updateProfile);
+identityApp.openapi(
+  adaptToHono(identityContract.modifyUserProfile),
+  identityHandlers.updateProfile,
+);
 
 // Sovereign Routes (Vertical Slice: ADMIN)
 const adminApp = new OpenAPIHono();

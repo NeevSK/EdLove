@@ -2,7 +2,6 @@ import { APIError } from '../types/API';
 import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from './base';
 import type { StudentAttendancePulse } from './staffManagement';
 
-
 /**
  * ATTENDANCE API (Sovereign RPC Proxy)
  *

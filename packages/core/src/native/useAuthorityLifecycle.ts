@@ -8,8 +8,8 @@ import type { SchoolType } from '../constants/SriLankanSchools';
 import { identifyUser, initPostHog, trackEvent } from '../lib/monitoring/posthog';
 import { clearSentryUser, initSentry, setSentryUser } from '../lib/monitoring/sentry';
 import { useAuthStore } from '../store/useAuthStore';
-import { useStore } from '../store/useStore';
 import { usePermissionStore } from '../store/usePermissionStore';
+import { useStore } from '../store/useStore';
 import type { User } from '../types';
 import { APIError } from '../types/API';
 
@@ -50,9 +50,12 @@ export function useAuthorityLifecycle() {
         });
 
         // Load cryptographic permission snapshots asynchronously
-        usePermissionStore.getState().loadPermissions(identity.id).catch((err) => {
-          console.error('[AuthorityLifecycle] Failed to load permissions snapshot:', err);
-        });
+        usePermissionStore
+          .getState()
+          .loadPermissions(identity.id)
+          .catch((err) => {
+            console.error('[AuthorityLifecycle] Failed to load permissions snapshot:', err);
+          });
 
         const isEffectivelyOnboarded = !!identity.onboarding_completed;
         if (isEffectivelyOnboarded) {

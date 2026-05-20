@@ -5,8 +5,6 @@
  */
 
 import { useNavigation } from '@react-navigation/native';
-import { useProgressTree } from '../hooks/useProgressTree';
-
 import {
   AnimatedView,
   Box,
@@ -18,7 +16,6 @@ import {
   Text,
   VStack,
 } from '@repo/ui/primitives';
-
 import { Flower2, Leaf, Shapes, Sparkles, Sprout, TreePine } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -31,6 +28,7 @@ import {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
+import { useProgressTree } from '../hooks/useProgressTree';
 
 interface ProgressTreeProps {
   userId?: string;

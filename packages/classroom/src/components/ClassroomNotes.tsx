@@ -51,7 +51,8 @@ import {
 } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
 
-import React, { useEffect, useMemo, useReducer } from 'react';
+import type React from 'react';
+import { useEffect, useMemo, useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // ─── Types ──────────────────────────────────────────────────────────────────

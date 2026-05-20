@@ -1,15 +1,15 @@
+import {
+  type AggregatedStats,
+  AnalyticsEngine,
+  type FormAnalytics,
+  type FormResponse,
+  type FormSchema,
+  type FormStorage,
+  type FormSync,
+} from '@intuitui-labs/form-builder-engine';
 import { eq } from 'drizzle-orm';
 import { getDrizzleDB } from './database';
-import { formTemplates, formResponses } from './schema';
-import {
-  FormStorage,
-  FormAnalytics,
-  FormSync,
-  FormSchema,
-  FormResponse,
-  AggregatedStats,
-  AnalyticsEngine,
-} from '@intuitui-labs/form-builder-engine';
+import { formResponses, formTemplates } from './schema';
 
 /**
  * PowerSyncFormsAdapter
@@ -18,7 +18,6 @@ import {
  * Provides client-side local-first, sub-millisecond query performance and continuous offline sync.
  */
 export class PowerSyncFormsAdapter implements FormStorage, FormAnalytics, FormSync {
-  
   // ─── FormStorage Port Implementation (Offline-First Local DB) ───────────────
 
   /**
@@ -39,12 +38,10 @@ export class PowerSyncFormsAdapter implements FormStorage, FormAnalytics, FormSy
       updatedAt: form.updatedAt,
     };
 
-    await db.insert(formTemplates)
-      .values(templateData)
-      .onConflictDoUpdate({
-        target: formTemplates.id,
-        set: templateData,
-      });
+    await db.insert(formTemplates).values(templateData).onConflictDoUpdate({
+      target: formTemplates.id,
+      set: templateData,
+    });
   }
 
   /**
@@ -52,7 +49,8 @@ export class PowerSyncFormsAdapter implements FormStorage, FormAnalytics, FormSy
    */
   async load(id: string): Promise<FormSchema> {
     const db = getDrizzleDB();
-    const templates = await db.select()
+    const templates = await db
+      .select()
       .from(formTemplates)
       .where(eq(formTemplates.id, id))
       .limit(1);
@@ -84,7 +82,8 @@ export class PowerSyncFormsAdapter implements FormStorage, FormAnalytics, FormSy
    */
   async list(tenantId: string): Promise<FormSchema[]> {
     const db = getDrizzleDB();
-    const templates = await db.select()
+    const templates = await db
+      .select()
       .from(formTemplates)
       .where(eq(formTemplates.ownerId, tenantId));
 
@@ -110,8 +109,7 @@ export class PowerSyncFormsAdapter implements FormStorage, FormAnalytics, FormSy
    */
   async delete(id: string): Promise<void> {
     const db = getDrizzleDB();
-    await db.delete(formTemplates)
-      .where(eq(formTemplates.id, id));
+    await db.delete(formTemplates).where(eq(formTemplates.id, id));
   }
 
   // ─── FormAnalytics Port Implementation (Local Response Engine) ──────────────
@@ -129,8 +127,7 @@ export class PowerSyncFormsAdapter implements FormStorage, FormAnalytics, FormSy
       submittedAt: response.submittedAt,
     };
 
-    await db.insert(formResponses)
-      .values(responseData);
+    await db.insert(formResponses).values(responseData);
   }
 
   /**
@@ -141,7 +138,8 @@ export class PowerSyncFormsAdapter implements FormStorage, FormAnalytics, FormSy
     const schema = await this.load(formId);
     const fields = schema.pages.flatMap((page) => page.fields);
 
-    const rawResponses = await db.select()
+    const rawResponses = await db
+      .select()
       .from(formResponses)
       .where(eq(formResponses.templateId, formId));
 
@@ -165,7 +163,8 @@ export class PowerSyncFormsAdapter implements FormStorage, FormAnalytics, FormSy
     const schema = await this.load(formId);
     const fields = schema.pages.flatMap((page) => page.fields);
 
-    const rawResponses = await db.select()
+    const rawResponses = await db
+      .select()
       .from(formResponses)
       .where(eq(formResponses.templateId, formId));
 
@@ -195,8 +194,7 @@ export class PowerSyncFormsAdapter implements FormStorage, FormAnalytics, FormSy
    */
   async pull(since: Date): Promise<FormSchema[]> {
     const db = getDrizzleDB();
-    const templates = await db.select()
-      .from(formTemplates);
+    const templates = await db.select().from(formTemplates);
 
     return templates
       .map((template) => ({

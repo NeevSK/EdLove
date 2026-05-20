@@ -26,7 +26,8 @@ import ScreenWrapper, { useBottomTabPadding } from '@repo/ui/components/ScreenWr
 import { useRegisterFAB } from '@repo/ui/context';
 import { Info, Plus } from '@repo/ui/icons';
 import { Box, Heading, HStack, Icon, ScrollView, Spinner, Text, VStack } from '@repo/ui/primitives';
-import React, { useEffect, useMemo, useReducer, useCallback } from 'react';
+import type React from 'react';
+import { useCallback, useEffect, useMemo, useReducer } from 'react';
 import { Platform } from 'react-native';
 import { CommentSheet } from '../components/CommentSheet';
 import CommunityHearth from '../components/CommunityHearth';
@@ -74,7 +75,10 @@ type CommunityScreenAction =
   | { type: 'SET_SHOW_CREATE_GROUP'; payload: boolean }
   | { type: 'OPEN_COMMENT_SHEET'; payload: { postId: string; authorId?: string; type?: string } }
   | { type: 'CLOSE_COMMENT_SHEET' }
-  | { type: 'OPEN_REPORT_MODAL'; payload: { postId: string; targetUserId?: string; targetUserName?: string } }
+  | {
+      type: 'OPEN_REPORT_MODAL';
+      payload: { postId: string; targetUserId?: string; targetUserName?: string };
+    }
   | { type: 'CLOSE_REPORT_MODAL' }
   | { type: 'SET_CONVERSATIONS'; payload: DirectConversation[] }
   | { type: 'SET_LOADING_MESSAGES'; payload: boolean };
@@ -319,15 +323,12 @@ export default function CommunityScreen() {
     dispatch({ type: 'OPEN_COMMENT_SHEET', payload: { postId: id, authorId, type } });
   }, []);
 
-  const handlePostReport = useCallback(
-    (id: string, authorId?: string, authorName?: string) => {
-      dispatch({
-        type: 'OPEN_REPORT_MODAL',
-        payload: { postId: id, targetUserId: authorId, targetUserName: authorName },
-      });
-    },
-    [],
-  );
+  const handlePostReport = useCallback((id: string, authorId?: string, authorName?: string) => {
+    dispatch({
+      type: 'OPEN_REPORT_MODAL',
+      payload: { postId: id, targetUserId: authorId, targetUserName: authorName },
+    });
+  }, []);
 
   const handleAuthorPress = useCallback(
     (authorId?: string, isAnonymous?: boolean) => {
@@ -713,7 +714,10 @@ export default function CommunityScreen() {
           groupId={state.selectedFilter !== 'all' ? state.selectedFilter : undefined}
         />
 
-        <CreateGroupModal isOpen={state.showCreateGroup && !isPastView} onClose={handleCloseGroupModal} />
+        <CreateGroupModal
+          isOpen={state.showCreateGroup && !isPastView}
+          onClose={handleCloseGroupModal}
+        />
 
         <SocialShieldModal
           isOpen={state.report.showModal}

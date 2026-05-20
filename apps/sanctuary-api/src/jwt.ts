@@ -15,7 +15,10 @@ const JWKS_CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours
 let activeJwksFetch: Promise<void> | null = null;
 
 // Memory cache for cryptographically verified tokens to prevent signature validation CPU saturation
-const tokenVerificationCache = new Map<string, { payload: VerifiedJwtPayload; expiresAt: number }>();
+const tokenVerificationCache = new Map<
+  string,
+  { payload: VerifiedJwtPayload; expiresAt: number }
+>();
 const VERIFIED_TOKEN_CACHE_MAX_AGE = 5 * 60 * 1000; // 5 minutes cache lifetime
 
 /**
@@ -73,7 +76,10 @@ async function getPublicKeyFromJwks(kid: string): Promise<crypto.KeyObject | nul
             jwksLastFetched = Date.now();
           }
         } catch (err) {
-          console.warn('[JWT] ⚠️ Could not fetch or parse JWKS from Supabase. Offline/mock mode may apply:', err);
+          console.warn(
+            '[JWT] ⚠️ Could not fetch or parse JWKS from Supabase. Offline/mock mode may apply:',
+            err,
+          );
         }
       })();
     }
@@ -90,8 +96,12 @@ async function getPublicKeyFromJwks(kid: string): Promise<crypto.KeyObject | nul
  */
 export async function verifySupabaseJwt(token: string): Promise<VerifiedJwtPayload | null> {
   // Support local development & integration test bypass in non-production environments
-  const isTestOrDev = process.env['NODE_ENV'] === 'test' || process.env['NODE_ENV'] === 'development';
-  if (isTestOrDev && (token === 'admin-user-1' || token === 'student-user-1' || token === 'teacher-user-1')) {
+  const isTestOrDev =
+    process.env['NODE_ENV'] === 'test' || process.env['NODE_ENV'] === 'development';
+  if (
+    isTestOrDev &&
+    (token === 'admin-user-1' || token === 'student-user-1' || token === 'teacher-user-1')
+  ) {
     console.log(`[JWT] 🧪 Bypassing cryptographic check for integration test identity: "${token}"`);
     return { sub: token, role: 'authenticated' };
   }
@@ -129,7 +139,9 @@ export async function verifySupabaseJwt(token: string): Promise<VerifiedJwtPaylo
 
     // Assert authentic cryptographic algorithms (RS256 or ES256)
     if (header.alg !== 'RS256' && header.alg !== 'ES256') {
-      console.warn(`[JWT] ❌ Rejected non-asymmetric algorithm: "${header.alg}". Must be RS256 or ES256.`);
+      console.warn(
+        `[JWT] ❌ Rejected non-asymmetric algorithm: "${header.alg}". Must be RS256 or ES256.`,
+      );
       return null;
     }
 
@@ -162,7 +174,10 @@ export async function verifySupabaseJwt(token: string): Promise<VerifiedJwtPaylo
           publicKey = crypto.createPublicKey(envKey);
         }
       } catch (err) {
-        console.error('[JWT] ❌ Failed to load static public key from SUPABASE_JWT_PUBLIC_KEY:', err);
+        console.error(
+          '[JWT] ❌ Failed to load static public key from SUPABASE_JWT_PUBLIC_KEY:',
+          err,
+        );
       }
     }
 
@@ -184,11 +199,13 @@ export async function verifySupabaseJwt(token: string): Promise<VerifiedJwtPaylo
       'sha256', // RS256 & ES256 both use SHA-256 hash
       dataToVerify,
       publicKey,
-      signature
+      signature,
     );
 
     if (!isVerified) {
-      console.warn('[JWT] ❌ Asymmetric signature verification failed. Cryptographic identity spoofing suspected.');
+      console.warn(
+        '[JWT] ❌ Asymmetric signature verification failed. Cryptographic identity spoofing suspected.',
+      );
       return null;
     }
 
@@ -203,7 +220,7 @@ export async function verifySupabaseJwt(token: string): Promise<VerifiedJwtPaylo
     // Cache the verified token signature to optimize next executions
     const cacheExpiresAt = Math.min(
       Date.now() + VERIFIED_TOKEN_CACHE_MAX_AGE,
-      verifiedPayload.exp ? verifiedPayload.exp * 1000 : Date.now() + VERIFIED_TOKEN_CACHE_MAX_AGE
+      verifiedPayload.exp ? verifiedPayload.exp * 1000 : Date.now() + VERIFIED_TOKEN_CACHE_MAX_AGE,
     );
     tokenVerificationCache.set(tokenHash, { payload: verifiedPayload, expiresAt: cacheExpiresAt });
 

@@ -1,4 +1,4 @@
-import { FieldDefinition, FormResponse } from '../schema/FormSchema';
+import type { FieldDefinition, FormResponse } from '../schema/FormSchema';
 
 export interface FieldAnalytics {
   fieldId: string;
@@ -86,10 +86,7 @@ export const AnalyticsEngine = {
   toXLSX(fields: FieldDefinition[], responses: FormResponse[]): string {
     const headers = ['Submitted At', ...fields.map((f) => f.label ?? f.name ?? f.id)];
     const rows = responses.map((r) => {
-      return [
-        new Date(r.submittedAt).toLocaleString(),
-        ...fields.map((f) => r.data[f.name] ?? ''),
-      ];
+      return [new Date(r.submittedAt).toLocaleString(), ...fields.map((f) => r.data[f.name] ?? '')];
     });
 
     const xmlHeader = `<?xml version="1.0"?><?mso-application progid="Excel.Sheet"?>
@@ -124,7 +121,10 @@ ${row.map((val) => `    <Cell><Data ss:Type="${typeof val === 'number' ? 'Number
    * Generates a QR Code URL for a given form slug without strict browser dependencies
    */
   getQRCodeURL(slug: string, baseUrl?: string): string {
-    const origin = baseUrl || (typeof window !== 'undefined' ? window.location?.origin : '') || 'https://sovereign.gurudevi.org';
+    const origin =
+      baseUrl ||
+      (typeof window !== 'undefined' ? window.location?.origin : '') ||
+      'https://sovereign.gurudevi.org';
     const publicURL = `${origin}/form/${slug}`;
     return `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(publicURL)}&bgcolor=FFFFFF&color=333333&qzone=2&margin=0`;
   },

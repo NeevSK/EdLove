@@ -18,7 +18,14 @@ import {
   posthogAnalytics as initTracker,
   trackEvent,
 } from '@repo/analytics';
-import { coreRuntime, deepLink, GlobalProvider, pushNotification, useAuth, useStore } from '@repo/core/logic';
+import {
+  coreRuntime,
+  deepLink,
+  GlobalProvider,
+  pushNotification,
+  useAuth,
+  useStore,
+} from '@repo/core/logic';
 import { clearSentryUser, initSentry, injectPostHog, setSentryUser } from '@repo/core/monitoring';
 import { bootstrapPlatform, nativeRuntimeEnvironment, storage } from '@repo/core/native';
 import { SyncManager } from '@repo/core/sync';
@@ -236,8 +243,7 @@ function App() {
     // Initialize Push Notifications
     const initPush = async () => {
       const deviceId =
-        storage.getString('device_id') ||
-        `dev_${Math.random().toString(36).substring(7)}`;
+        storage.getString('device_id') || `dev_${Math.random().toString(36).substring(7)}`;
       if (!storage.contains('device_id')) {
         storage.set('device_id', deviceId);
       }

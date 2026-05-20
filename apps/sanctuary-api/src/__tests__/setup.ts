@@ -73,8 +73,16 @@ const mockAsset = {
 
 const mockNotification = {
   getPushTokenAsync: async () => 'mock-push-token',
-  getPermissionsAsync: async () => ({ status: 'granted' as const, canAskAgain: true, expires: 'never' as const }),
-  requestPermissionsAsync: async () => ({ status: 'granted' as const, canAskAgain: true, expires: 'never' as const }),
+  getPermissionsAsync: async () => ({
+    status: 'granted' as const,
+    canAskAgain: true,
+    expires: 'never' as const,
+  }),
+  requestPermissionsAsync: async () => ({
+    status: 'granted' as const,
+    canAskAgain: true,
+    expires: 'never' as const,
+  }),
   setBadgeCountAsync: async () => {},
   getBadgeCountAsync: async () => 0,
   addPushTokenListener: () => () => {},

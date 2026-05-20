@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import { check } from '../engine/evaluator';
-import type { UserContext, PermissionSnapshot } from './types';
+import type { PermissionSnapshot, UserContext } from './types';
 
 /**
  * Runs Cedar check() for every meaningful permission combination and generates
@@ -30,7 +30,7 @@ export function generateSnapshot(user: UserContext, secret?: string): Permission
     'SentinelAuditLog',
     'JoyMoments',
     'GratitudeEntries',
-    'EnergyForecasts'
+    'EnergyForecasts',
   ];
 
   const allowedAttributes: Record<string, string[]> = {
@@ -52,7 +52,7 @@ export function generateSnapshot(user: UserContext, secret?: string): Permission
     SentinelAuditLog: ['school_id', 'actor_id'],
     JoyMoments: ['school_id', 'user_id'],
     GratitudeEntries: ['school_id', 'user_id'],
-    EnergyForecasts: ['school_id', 'user_id']
+    EnergyForecasts: ['school_id', 'user_id'],
   };
 
   const allPossibleAttributes: Record<string, any> = {
@@ -66,7 +66,7 @@ export function generateSnapshot(user: UserContext, secret?: string): Permission
     grade_id: user.grade_id || '',
     section_id: user.section_id || '',
     classroom_id: user.classroom_ids?.[0] || 'dummy-classroom-id',
-    graded_by: user.id
+    graded_by: user.id,
   };
 
   const actions = ['read', 'create', 'update', 'delete'];
@@ -95,14 +95,14 @@ export function generateSnapshot(user: UserContext, secret?: string): Permission
             grade_id: user.grade_id,
             section_id: user.section_id,
             child_student_ids: user.child_student_ids || [],
-          }
+          },
         },
         action,
         resource: {
           type: resourceType,
           id: `dummy-${resourceType.toLowerCase()}-id`,
-          attributes: resourceAttributes
-        }
+          attributes: resourceAttributes,
+        },
       });
       permissions[resourceType][action] = res.permitted;
     }
@@ -116,17 +116,14 @@ export function generateSnapshot(user: UserContext, secret?: string): Permission
     userId: user.id,
     schoolId: user.school_id,
     permissions,
-    temporalHints
+    temporalHints,
   };
 
   const key = secret || process.env['SNAPSHOT_SECRET'] || 'default-fallback-secret-for-development';
-  const signature = crypto
-    .createHmac('sha256', key)
-    .update(JSON.stringify(payload))
-    .digest('hex');
+  const signature = crypto.createHmac('sha256', key).update(JSON.stringify(payload)).digest('hex');
 
   return {
     ...payload,
-    signature
+    signature,
   };
 }

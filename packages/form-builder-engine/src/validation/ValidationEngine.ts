@@ -34,10 +34,13 @@ export const ValidationEngine = {
     value: any,
     required: boolean,
     validatorName?: 'email' | 'nonEmpty' | 'number',
-    label: string = 'Field'
+    label: string = 'Field',
   ): ValidationResult {
     // 1. Check required
-    if (required && (value === undefined || value === null || (typeof value === 'string' && value.trim() === ''))) {
+    if (
+      required &&
+      (value === undefined || value === null || (typeof value === 'string' && value.trim() === ''))
+    ) {
       return { isValid: false, error: `${label} is required` };
     }
 
@@ -59,5 +62,5 @@ export const ValidationEngine = {
     }
 
     return { isValid: true };
-  }
+  },
 };

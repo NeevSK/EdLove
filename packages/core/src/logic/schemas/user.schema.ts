@@ -52,7 +52,10 @@ export const UserContextSchema = z.preprocess(
     email: z.string().email().nullish().default(null),
 
     // Sovereign ReBAC Context
-    bonds: z.array(BondSchema).nullish().transform((value) => value ?? []),
+    bonds: z
+      .array(BondSchema)
+      .nullish()
+      .transform((value) => value ?? []),
 
     primaryCapacity: z.string().nullish().default(null),
     activeBond: BondSchema.nullish().default(null),
@@ -82,8 +85,14 @@ export const UserContextSchema = z.preprocess(
     tier: z.string().nullish().default('free'),
     citizenship: z.enum(['WANDERER', 'SECOND_CLASS', 'FIRST_CLASS']).default('WANDERER'),
     pricing_tier: z.enum(['FREE', 'PRO', 'INSTITUTIONAL']).default('FREE'),
-    features: z.array(z.string()).nullish().transform((value) => value ?? []),
-    flags: z.record(z.string(), z.union([z.boolean(), z.string()])).nullish().transform((value) => value ?? {}),
+    features: z
+      .array(z.string())
+      .nullish()
+      .transform((value) => value ?? []),
+    flags: z
+      .record(z.string(), z.union([z.boolean(), z.string()]))
+      .nullish()
+      .transform((value) => value ?? {}),
   }),
 );
 

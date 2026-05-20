@@ -2,16 +2,16 @@ import { eq } from 'drizzle-orm';
 import { getDrizzleDB, registerPermissionValidator } from '../../adapters/powersync/database';
 import { permissionSnapshots } from '../../adapters/powersync/schema';
 import type { UserContext } from '../schemas/user.schema';
-import type { SubjectType, Actions } from './abilities/base';
+import type { Actions, SubjectType } from './abilities/base';
 import { verifySnapshotSignature } from './signature';
 
 /**
  * checkLocalPermission (.native implementation)
- * 
+ *
  * Production-grade mobile permission evaluator.
  * It bypasses WASM/Cedar completely, reading the cryptographically signed
  * PermissionSnapshot from the local SQLite (PowerSync) database instead.
- * 
+ *
  * Yields O(1) lightning-fast checks with zero memory overhead or Metro static WASM bundle crashes!
  */
 export async function checkLocalPermission(params: {
@@ -23,10 +23,13 @@ export async function checkLocalPermission(params: {
   try {
     const legacyContext = params.userContext as any;
     const db = getDrizzleDB();
-    
+
     // 2. Fetch the latest cryptographically signed capability snapshot from SQLite
     const snapshotRecord = await db.query.permissionSnapshots.findFirst({
-      where: eq(permissionSnapshots.userId, params.userContext.userId || legacyContext.user_id || ''),
+      where: eq(
+        permissionSnapshots.userId,
+        params.userContext.userId || legacyContext.user_id || '',
+      ),
     });
 
     if (!snapshotRecord) {
@@ -38,20 +41,27 @@ export async function checkLocalPermission(params: {
     // If the snapshot has expired or has a broken signature, fail secure.
     const isSignatureValid = await verifySnapshotSignature(snapshotRecord);
     if (!isSignatureValid) {
-      console.error('[LocalEvaluator.native] Cryptographic Tamper Detected on mobile permission snapshot!');
+      console.error(
+        '[LocalEvaluator.native] Cryptographic Tamper Detected on mobile permission snapshot!',
+      );
       return false;
     }
 
     const expiresAt = new Date(snapshotRecord.expiresAt);
     if (expiresAt < new Date()) {
-      console.warn('[LocalEvaluator.native] Mobile permission snapshot has expired. Access denied.');
+      console.warn(
+        '[LocalEvaluator.native] Mobile permission snapshot has expired. Access denied.',
+      );
       return false;
     }
 
     // 4. Extract permission map and evaluate
-    const permissions = JSON.parse(snapshotRecord.permissions) as Record<string, Record<string, boolean>>;
+    const permissions = JSON.parse(snapshotRecord.permissions) as Record<
+      string,
+      Record<string, boolean>
+    >;
     const isAllowed = permissions[params.resourceType as string]?.[params.action as string];
-    
+
     if (isAllowed !== undefined) {
       return isAllowed;
     }

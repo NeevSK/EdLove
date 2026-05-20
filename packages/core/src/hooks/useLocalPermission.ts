@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
-import { checkLocalPermission } from '../logic/permissions/localEvaluator';
+import { useEffect, useState } from 'react';
+import type { Actions, SubjectType } from '../logic/permissions/abilities/base';
 import { usePermissions } from '../logic/permissions/hooks/usePermissions';
-import type { SubjectType, Actions } from '../logic/permissions/abilities/base';
+import { checkLocalPermission } from '../logic/permissions/localEvaluator';
 
 /**
  * useLocalPermission
@@ -19,7 +19,7 @@ export function useLocalPermission(
   action: Actions,
   resourceType: SubjectType,
   resourceId: string,
-  trigger?: any
+  trigger?: any,
 ) {
   const { context } = usePermissions();
   const [isAllowed, setIsAllowed] = useState<boolean | null>(null);

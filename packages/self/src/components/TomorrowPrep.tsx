@@ -42,7 +42,14 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
   const { t } = useTranslation();
 
   // Resilient Data Hook
-  const { prepItems: items, refreshData, isLoading, addPrepItem, updatePrepItem, removePrepItem } = useTomorrowPrep(userId);
+  const {
+    prepItems: items,
+    refreshData,
+    isLoading,
+    addPrepItem,
+    updatePrepItem,
+    removePrepItem,
+  } = useTomorrowPrep(userId);
 
   const [showForm, setShowForm] = useState(false);
   const [itemText, setItemText] = useState('');

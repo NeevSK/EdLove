@@ -12,10 +12,11 @@
 
 import { APIError } from '../types/API';
 import type { PrincipalNote } from '../types/PrincipalNote';
+
 export type { PrincipalNote };
+
 import { identityAPI } from './identity';
 import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from './supabase';
-
 
 export const principalNotesAPI = {
   /**

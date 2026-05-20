@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs';
-import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
 import { createRequire } from 'module';
+import { dirname, join } from 'path';
+import { fileURLToPath } from 'url';
 import type { AuthRequest, AuthResponse } from './types';
 
 const require = createRequire(import.meta.url);
@@ -80,12 +80,16 @@ export function check(request: AuthRequest): AuthResponse {
         id: request.principal.id,
         school_id: request.principal.attributes.school_id,
         capacity: request.principal.attributes.capacity,
-        ...(request.principal.attributes.grade_id && { grade_id: request.principal.attributes.grade_id }),
-        ...(request.principal.attributes.section_id && { section_id: request.principal.attributes.section_id }),
+        ...(request.principal.attributes.grade_id && {
+          grade_id: request.principal.attributes.grade_id,
+        }),
+        ...(request.principal.attributes.section_id && {
+          section_id: request.principal.attributes.section_id,
+        }),
         classroom_ids: request.principal.attributes.classroom_ids || [],
         child_student_ids: request.principal.attributes.child_student_ids || [],
       },
-      parents: []
+      parents: [],
     };
 
     // Build resource entity
@@ -93,9 +97,9 @@ export function check(request: AuthRequest): AuthResponse {
       uid: { type: request.resource.type, id: request.resource.id },
       attrs: {
         id: request.resource.id,
-        ...request.resource.attributes
+        ...request.resource.attributes,
       },
-      parents: []
+      parents: [],
     };
 
     // Call Cedar WebAssembly function
@@ -108,16 +112,19 @@ export function check(request: AuthRequest): AuthResponse {
       slice: {
         policies: concatenatedPolicies,
         entities: [principalEntity, resourceEntity],
-        templateInstantiations: null
-      }
+        templateInstantiations: null,
+      },
     });
 
     if (authResult.type === 'failure') {
-      console.warn('[AUDIT] Cedar authorization compilation/evaluation failure:', authResult.errors);
+      console.warn(
+        '[AUDIT] Cedar authorization compilation/evaluation failure:',
+        authResult.errors,
+      );
       return {
         permitted: false,
         reason: 'CedarEvaluationFailure',
-        gaps: []
+        gaps: [],
       };
     }
 
@@ -133,22 +140,22 @@ export function check(request: AuthRequest): AuthResponse {
     if (!permitted) {
       console.warn(
         `[AUDIT] Permission DENIED: Principal "${request.principal.id}" (${request.principal.type}) ` +
-        `attempted to "${request.action}" resource "${request.resource.type}::${request.resource.id}". ` +
-        `Reason: ${reason}`
+          `attempted to "${request.action}" resource "${request.resource.type}::${request.resource.id}". ` +
+          `Reason: ${reason}`,
       );
     }
 
     return {
       permitted,
       reason,
-      gaps
+      gaps,
     };
   } catch (error) {
     console.error('Graceful error handling in check():', error);
     return {
       permitted: false,
       reason: `EvaluatorError: ${error instanceof Error ? error.message : String(error)}`,
-      gaps: []
+      gaps: [],
     };
   }
 }

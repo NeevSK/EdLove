@@ -40,7 +40,12 @@ export default function WisdomSeeds({ userId }: WisdomSeedsProps) {
   const activeUserId = userId || context?.userId;
 
   // Resilient Data Hook
-  const { notes = [], refreshData, isLoading, addWisdomNote } = useWisdom(activeUserId ?? undefined);
+  const {
+    notes = [],
+    refreshData,
+    isLoading,
+    addWisdomNote,
+  } = useWisdom(activeUserId ?? undefined);
 
   const [showForm, setShowForm] = useState(false);
   const [insight, setInsight] = useState('');

@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import crypto from 'node:crypto';
-import { verifySupabaseJwt, setTestPublicKey, clearJwkCache } from '../jwt';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { clearJwkCache, setTestPublicKey, verifySupabaseJwt } from '../jwt';
 
 describe('Asymmetric JWT Verification Engine', () => {
   let rsaPrivateKey: crypto.KeyObject;
@@ -34,7 +34,12 @@ describe('Asymmetric JWT Verification Engine', () => {
     clearJwkCache();
   });
 
-  function signToken(payload: any, privateKey: crypto.KeyObject, kid: string, alg = 'RS256'): string {
+  function signToken(
+    payload: any,
+    privateKey: crypto.KeyObject,
+    kid: string,
+    alg = 'RS256',
+  ): string {
     const header = {
       alg,
       typ: 'JWT',

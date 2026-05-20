@@ -1,5 +1,5 @@
-import { create } from 'zustand';
 import { eq } from 'drizzle-orm';
+import { create } from 'zustand';
 import { getDrizzleDB } from '../adapters/powersync/database';
 import { permissionSnapshots } from '../adapters/powersync/schema';
 import { verifySnapshotSignature } from '../logic/permissions/signature';

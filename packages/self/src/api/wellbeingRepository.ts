@@ -1,9 +1,9 @@
+import { moodLogs } from '@repo/core/adapters/powersync/schema';
 import { supabase } from '@repo/core/api';
 import { applyTemporalFilter, getTemporalRange } from '@repo/core/logic';
-import { Platform } from 'react-native';
 import { getDrizzleDB } from '@repo/core/powersync';
-import { moodLogs } from '@repo/core/adapters/powersync/schema';
-import { eq, desc } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
+import { Platform } from 'react-native';
 
 import type { FireJournalEntry, MoodLog } from '../types';
 import { selfAPI } from './self';
@@ -58,7 +58,10 @@ export async function fetchMoodHistoryForView(
         created_at: entry.createdAt,
       }));
     } catch (err) {
-      console.warn('[WellbeingRepository] Local Drizzle mood log fetch failed. Falling back to RPC API.', err);
+      console.warn(
+        '[WellbeingRepository] Local Drizzle mood log fetch failed. Falling back to RPC API.',
+        err,
+      );
     }
   }
 
@@ -133,7 +136,10 @@ export async function createMoodLog(
         created_at: createdAt,
       };
     } catch (err) {
-      console.warn('[WellbeingRepository] Local SQLite insert failed. Falling back to RPC API.', err);
+      console.warn(
+        '[WellbeingRepository] Local SQLite insert failed. Falling back to RPC API.',
+        err,
+      );
     }
   }
 

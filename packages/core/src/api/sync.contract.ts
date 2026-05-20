@@ -1,9 +1,10 @@
 import { z } from 'zod';
 import type { SovereignContract } from './contract';
 
-const syncAuthority = (action: 'update') => ({
-  policy: { action, subject: 'User' },
-}) as const;
+const syncAuthority = (action: 'update') =>
+  ({
+    policy: { action, subject: 'User' },
+  }) as const;
 
 /**
  * PowerSync / Outbox Synchronization Contract (Sovereign RPC)
@@ -21,7 +22,7 @@ export const syncContract = {
             op: z.enum(['PUT', 'PATCH', 'DELETE']),
             table: z.string(),
             opData: z.record(z.string(), z.any()).optional(),
-          })
+          }),
         ),
       }),
     },

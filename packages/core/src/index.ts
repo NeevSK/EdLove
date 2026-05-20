@@ -133,8 +133,8 @@ export { AuthProvider, useAuth } from './providers/AuthProvider';
 export { GlobalProvider } from './providers/GlobalProvider';
 export type { FeatureSlice } from './store/slices/feature.slice';
 export { useAuthStore } from './store/useAuthStore';
-export { usePermissionStore } from './store/usePermissionStore';
 export { useFeatureStore } from './store/useFeatureStore';
+export { usePermissionStore } from './store/usePermissionStore';
 // 2. Logic State & Storage (Zustand & Supabase)
 export { type TotalState, useStore } from './store/useStore';
 export { type TemporalScale, useTemporalStore } from './store/useTemporalStore';
@@ -144,13 +144,19 @@ export * from './types';
 
 import { z } from 'zod';
 
+export {
+  AnalyticsEngine as formAnalytics,
+  FormHydrator,
+  FormManager,
+  type FormState,
+} from '@intuitui-labs/form-builder-engine';
 export * from './api';
 export {
-  POAMetadataSchema,
+  adaptToHono,
   type POAMetadata,
-  type SovereignRoute,
+  POAMetadataSchema,
   type SovereignContract,
-  adaptToHono
+  type SovereignRoute,
 } from './api/contract';
 export * from './constants/SriLankanSchools';
 export * from './hooks';
@@ -173,17 +179,9 @@ export type {
   EntityMode,
   EntityType,
 } from './logic/entities/entity-protocol';
-export {
-  AnalyticsEngine as formAnalytics,
-  FormHydrator,
-  type FormState,
-  FormManager,
-} from '@intuitui-labs/form-builder-engine';
 export { GPACalculator } from './logic/grading/GPACalculator';
 export * from './logic/permissions';
-export type {
-  Attendance,
-} from './logic/schemas/attendance.schema';
+export type { Attendance } from './logic/schemas/attendance.schema';
 export {
   type AttendanceReport,
   AttendanceSchema,

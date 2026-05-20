@@ -8,7 +8,9 @@ export const clearSentryUser = () => {};
 export const requireNativeModule = () => ({});
 export const requireOptionalNativeModule = () => ({});
 export class EventEmitter {
-  addListener() { return { remove: () => {} }; }
+  addListener() {
+    return { remove: () => {} };
+  }
   removeAllListeners() {}
   emit() {}
 }

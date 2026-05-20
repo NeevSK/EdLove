@@ -45,7 +45,9 @@ export default function GratitudeGlimmers({
   const { context } = usePermissions();
   const activeUserId = userId || context.userId;
 
-  const { entries, refreshData, isLoading, addGratitudeEntry } = useGratitude(activeUserId ?? undefined);
+  const { entries, refreshData, isLoading, addGratitudeEntry } = useGratitude(
+    activeUserId ?? undefined,
+  );
 
   const [showForm, setShowForm] = useState(false);
   const [content, setContent] = useState('');

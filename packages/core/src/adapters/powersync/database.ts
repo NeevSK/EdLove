@@ -14,24 +14,22 @@
  *   const rows = await db.select().from(students);
  */
 import { wrapPowerSyncWithDrizzle } from '@powersync/drizzle-driver';
+import { useStore } from '../../store/useStore';
+import { ErrorCategory, SovereignError } from '../../types/Errors';
 import { PowerSyncDatabase } from './powersync-shim';
 import { AppSchema } from './schema';
-import { useStore } from '../../store/useStore';
-import { SovereignError, ErrorCategory } from '../../types/Errors';
 
 let _instance: PowerSyncDatabase | null = null;
 let _drizzleInstance: ReturnType<typeof wrapPowerSyncWithDrizzle<typeof AppSchema>> | null = null;
 
 let _permissionValidator: ((params: any) => Promise<boolean>) | null = null;
 
-export function registerPermissionValidator(
-  validator: (params: any) => Promise<boolean>
-): void {
+export function registerPermissionValidator(validator: (params: any) => Promise<boolean>): void {
   _permissionValidator = validator;
 }
 
 /**
- * Creates an isomorphic Proxy over the Drizzle database instance to intercept 
+ * Creates an isomorphic Proxy over the Drizzle database instance to intercept
  * all asynchronous mutations, verifying them against offline Cedar snapshots before execution.
  */
 function createSecureDrizzleProxy(db: any): any {
@@ -41,7 +39,7 @@ function createSecureDrizzleProxy(db: any): any {
       const originalValue = Reflect.get(target, prop, receiver);
 
       if (prop === 'insert' || prop === 'update' || prop === 'delete') {
-        return function (tableObj: any) {
+        return (tableObj: any) => {
           const tableName = tableObj?._?.name || tableObj?.name || 'unknown_table';
           const action = prop === 'insert' ? 'create' : prop === 'update' ? 'update' : 'delete';
           const builder = originalValue.apply(target, [tableObj]);
@@ -51,7 +49,7 @@ function createSecureDrizzleProxy(db: any): any {
               const originalBuilderValue = Reflect.get(builderTarget, builderProp, builderReceiver);
 
               if (builderProp === 'execute' || builderProp === 'then') {
-                return function (...args: any[]) {
+                return (...args: any[]) => {
                   if (!_permissionValidator) {
                     // Fallback to bypass for non-mobile environments (e.g. Hono server shims, test runners)
                     if (builderProp === 'then') {
@@ -70,10 +68,11 @@ function createSecureDrizzleProxy(db: any): any {
                     isAnonymous: !state.user || !!state.user?.is_anonymous,
                   };
 
-                  const resourceType = tableName
-                    .charAt(0)
-                    .toUpperCase() + 
-                    tableName.slice(1).replace(/_([a-z])/g, (_: string, letter: string) => letter.toUpperCase());
+                  const resourceType =
+                    tableName.charAt(0).toUpperCase() +
+                    tableName
+                      .slice(1)
+                      .replace(/_([a-z])/g, (_: string, letter: string) => letter.toUpperCase());
 
                   return _permissionValidator({
                     action: action as any,
@@ -98,14 +97,16 @@ function createSecureDrizzleProxy(db: any): any {
                   });
                 };
               }
-              return typeof originalBuilderValue === 'function' ? originalBuilderValue.bind(builderTarget) : originalBuilderValue;
-            }
+              return typeof originalBuilderValue === 'function'
+                ? originalBuilderValue.bind(builderTarget)
+                : originalBuilderValue;
+            },
           });
         };
       }
 
       if (prop === 'transaction') {
-        return function (callback: any, config: any) {
+        return (callback: any, config: any) => {
           const secureCallback = async (tx: any) => {
             const secureTx = createSecureDrizzleProxy(tx);
             return callback(secureTx);
@@ -115,7 +116,7 @@ function createSecureDrizzleProxy(db: any): any {
       }
 
       return typeof originalValue === 'function' ? originalValue.bind(target) : originalValue;
-    }
+    },
   });
 }
 
@@ -154,10 +155,7 @@ export function getDrizzleDB(): ReturnType<typeof wrapPowerSyncWithDrizzle<typeo
  * Injects the real native React Native JSI C++ database and Drizzle instances
  * at runtime when booting the mobile client. This bypasses the mock server shims.
  */
-export function injectNativePowerSyncDB(
-  nativeDb: any,
-  nativeDrizzleDb: any,
-): void {
+export function injectNativePowerSyncDB(nativeDb: any, nativeDrizzleDb: any): void {
   _instance = nativeDb;
   _drizzleInstance = createSecureDrizzleProxy(nativeDrizzleDb) as any;
 }

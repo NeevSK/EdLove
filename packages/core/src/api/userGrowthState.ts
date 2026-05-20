@@ -1,7 +1,6 @@
 import { growth } from '../logic';
 import type { UserGrowthState } from '../types/Growth';
 
-
 /**
  * userGrowthStateAPI (Legacy Proxy)
  *

@@ -11,16 +11,16 @@ import { and, desc, eq } from 'drizzle-orm';
 import { getDrizzleDB } from './database';
 import { useQuery, useStatus } from './powersync-react-shim';
 import {
-  attendance,
-  classrooms,
-  moodLogs,
-  schools,
-  students,
   type Attendance,
+  attendance,
   type Classroom,
+  classrooms,
   type MoodLog,
+  moodLogs,
   type School,
   type Student,
+  schools,
+  students,
 } from './schema';
 
 // ─── Generic Reactive Query Hooks ────────────────────────────────────────────
@@ -44,9 +44,7 @@ export function usePowerSyncQuery<T = Record<string, unknown>>(
  *
  * Provides absolute compile-time type safety from the DB to the UI render tree.
  */
-export function useDrizzleQuery<T>(
-  query: { toSQL(): { sql: string; params: unknown[] } },
-): T[] {
+export function useDrizzleQuery<T>(query: { toSQL(): { sql: string; params: unknown[] } }): T[] {
   const { sql: compiledSql, params } = query.toSQL();
   return usePowerSyncQuery<T>(compiledSql, params);
 }
@@ -70,12 +68,7 @@ export function useAttendanceForClassroom(classroomId: string, date: string): At
   const query = db
     .select()
     .from(attendance)
-    .where(
-      and(
-        eq(attendance.classroomId, classroomId),
-        eq(attendance.date, date),
-      ),
-    )
+    .where(and(eq(attendance.classroomId, classroomId), eq(attendance.date, date)))
     .orderBy(attendance.studentId);
 
   return useDrizzleQuery<Attendance>(query);
@@ -90,12 +83,7 @@ export function useStudentsInClassroom(classroomId: string): Student[] {
   const query = db
     .select()
     .from(students)
-    .where(
-      and(
-        eq(students.classroomId, classroomId),
-        eq(students.isActive, true),
-      ),
-    )
+    .where(and(eq(students.classroomId, classroomId), eq(students.isActive, true)))
     .orderBy(students.fullName);
 
   return useDrizzleQuery<Student>(query);
@@ -124,12 +112,7 @@ export function useClassroomsForSchool(schoolId: string): Classroom[] {
   const query = db
     .select()
     .from(classrooms)
-    .where(
-      and(
-        eq(classrooms.schoolId, schoolId),
-        eq(classrooms.isActive, true),
-      ),
-    )
+    .where(and(eq(classrooms.schoolId, schoolId), eq(classrooms.isActive, true)))
     .orderBy(classrooms.name);
 
   return useDrizzleQuery<Classroom>(query);
@@ -140,11 +123,7 @@ export function useClassroomsForSchool(schoolId: string): Classroom[] {
  */
 export function useSchool(schoolId: string): School | null {
   const db = getDrizzleDB();
-  const query = db
-    .select()
-    .from(schools)
-    .where(eq(schools.id, schoolId))
-    .limit(1);
+  const query = db.select().from(schools).where(eq(schools.id, schoolId)).limit(1);
 
   const rows = useDrizzleQuery<School>(query);
   return rows[0] || null;

@@ -6,7 +6,6 @@ import type {
   PersonalCompass,
 } from '../types/Growth';
 
-
 /**
  * contextualChallengesAPI (Legacy Proxy)
  *

@@ -5,7 +5,22 @@
  * Tree-shaking will eliminate unused exports.
  */
 
-export { disconnectPowerSync, getPowerSyncDB, getDrizzleDB, injectNativePowerSyncDB } from './database';
+export {
+  disconnectPowerSync,
+  getDrizzleDB,
+  getPowerSyncDB,
+  injectNativePowerSyncDB,
+} from './database';
+export {
+  useAttendanceForClassroom,
+  useDrizzleQuery,
+  useMoodLogsForUser,
+  usePowerSyncQuery,
+  usePowerSyncStatus,
+  useStudentsInClassroom,
+} from './hooks';
+export { PowerSyncGate } from './PowerSyncGate';
+export { SupabasePowerSyncConnector } from './SupabasePowerSyncConnector';
 export type {
   Attendance,
   Classroom,
@@ -13,14 +28,4 @@ export type {
   School,
   Student,
 } from './schema';
-export {
-  useAttendanceForClassroom,
-  useMoodLogsForUser,
-  usePowerSyncQuery,
-  useDrizzleQuery,
-  usePowerSyncStatus,
-  useStudentsInClassroom,
-} from './hooks';
-export { PowerSyncGate } from './PowerSyncGate';
-export { SupabasePowerSyncConnector } from './SupabasePowerSyncConnector';
 export { AppSchema } from './schema';

@@ -5,7 +5,6 @@ import type {
   WorkspaceZoneId,
 } from '../../types';
 
-
 export const WORKSPACE_CANVAS_ZONES = [
   'today',
   'work',

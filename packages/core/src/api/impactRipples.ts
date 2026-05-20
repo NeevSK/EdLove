@@ -1,7 +1,6 @@
 import { growth } from '../logic';
 import type { CreateRippleInput, ImpactRipple } from '../types/Growth';
 
-
 /**
  * impactRipplesAPI (Legacy Proxy)
  */

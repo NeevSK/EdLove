@@ -11,74 +11,90 @@
  *
  * @see https://docs.powersync.com/usage/use-case-examples/drizzle
  */
-import { sqliteTable, text, integer, index } from 'drizzle-orm/sqlite-core';
+import { index, integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 
 // ─── Attendance ───────────────────────────────────────────────────────────────
-export const attendance = sqliteTable('attendance', {
-  id: text('id').primaryKey(),
-  studentId: text('student_id').notNull(),
-  classroomId: text('classroom_id').notNull(),
-  date: text('date').notNull(), // ISO date string (YYYY-MM-DD)
-  status: text('status').notNull(), // 'present' | 'absent' | 'late' | 'excused'
-  markedBy: text('marked_by').notNull(),
-  note: text('note'),
-  createdAt: text('created_at').notNull(),
-  updatedAt: text('updated_at').notNull(),
-  occurredAt: text('occurred_at'),
-  academicCycleId: text('academic_cycle_id'),
-}, (table) => [
-  // Compound index on classroom and date for lightning-fast attendance sheets
-  index('attendance_classroom_date_idx').on(table.classroomId, table.date),
-  index('attendance_student_idx').on(table.studentId),
-]);
+export const attendance = sqliteTable(
+  'attendance',
+  {
+    id: text('id').primaryKey(),
+    studentId: text('student_id').notNull(),
+    classroomId: text('classroom_id').notNull(),
+    date: text('date').notNull(), // ISO date string (YYYY-MM-DD)
+    status: text('status').notNull(), // 'present' | 'absent' | 'late' | 'excused'
+    markedBy: text('marked_by').notNull(),
+    note: text('note'),
+    createdAt: text('created_at').notNull(),
+    updatedAt: text('updated_at').notNull(),
+    occurredAt: text('occurred_at'),
+    academicCycleId: text('academic_cycle_id'),
+  },
+  (table) => [
+    // Compound index on classroom and date for lightning-fast attendance sheets
+    index('attendance_classroom_date_idx').on(table.classroomId, table.date),
+    index('attendance_student_idx').on(table.studentId),
+  ],
+);
 
 // ─── Students (People) ────────────────────────────────────────────────────────
-export const students = sqliteTable('students', {
-  id: text('id').primaryKey(),
-  fullName: text('full_name').notNull(),
-  classroomId: text('classroom_id').notNull(),
-  schoolId: text('school_id').notNull(),
-  gradeId: text('grade_id'),
-  sectionId: text('section_id'),
-  admissionNumber: text('admission_number'),
-  // Mode boolean handles 0/1 integer conversion automatically at the database level!
-  isActive: integer('is_active', { mode: 'boolean' }).notNull().default(true),
-  createdAt: text('created_at').notNull(),
-  updatedAt: text('updated_at').notNull(),
-}, (table) => [
-  index('students_classroom_idx').on(table.classroomId),
-  index('students_school_idx').on(table.schoolId),
-]);
+export const students = sqliteTable(
+  'students',
+  {
+    id: text('id').primaryKey(),
+    fullName: text('full_name').notNull(),
+    classroomId: text('classroom_id').notNull(),
+    schoolId: text('school_id').notNull(),
+    gradeId: text('grade_id'),
+    sectionId: text('section_id'),
+    admissionNumber: text('admission_number'),
+    // Mode boolean handles 0/1 integer conversion automatically at the database level!
+    isActive: integer('is_active', { mode: 'boolean' }).notNull().default(true),
+    createdAt: text('created_at').notNull(),
+    updatedAt: text('updated_at').notNull(),
+  },
+  (table) => [
+    index('students_classroom_idx').on(table.classroomId),
+    index('students_school_idx').on(table.schoolId),
+  ],
+);
 
 // ─── Classrooms ───────────────────────────────────────────────────────────────
-export const classrooms = sqliteTable('classrooms', {
-  id: text('id').primaryKey(),
-  name: text('name').notNull(),
-  schoolId: text('school_id').notNull(),
-  gradeId: text('grade_id'),
-  sectionId: text('section_id'),
-  teacherId: text('teacher_id'),
-  academicYear: text('academic_year').notNull(),
-  isActive: integer('is_active', { mode: 'boolean' }).notNull().default(true),
-  createdAt: text('created_at').notNull(),
-  updatedAt: text('updated_at').notNull(),
-}, (table) => [
-  index('classrooms_school_idx').on(table.schoolId),
-  index('classrooms_teacher_idx').on(table.teacherId),
-]);
+export const classrooms = sqliteTable(
+  'classrooms',
+  {
+    id: text('id').primaryKey(),
+    name: text('name').notNull(),
+    schoolId: text('school_id').notNull(),
+    gradeId: text('grade_id'),
+    sectionId: text('section_id'),
+    teacherId: text('teacher_id'),
+    academicYear: text('academic_year').notNull(),
+    isActive: integer('is_active', { mode: 'boolean' }).notNull().default(true),
+    createdAt: text('created_at').notNull(),
+    updatedAt: text('updated_at').notNull(),
+  },
+  (table) => [
+    index('classrooms_school_idx').on(table.schoolId),
+    index('classrooms_teacher_idx').on(table.teacherId),
+  ],
+);
 
 // ─── Moods / Wellbeing ────────────────────────────────────────────────────────
-export const moodLogs = sqliteTable('mood_logs', {
-  id: text('id').primaryKey(),
-  userId: text('user_id').notNull(),
-  moodScore: integer('mood_score').notNull(),
-  mood: text('mood'),
-  note: text('note'),
-  createdAt: text('created_at').notNull(),
-}, (table) => [
-  index('mood_logs_user_idx').on(table.userId),
-  index('mood_logs_created_idx').on(table.createdAt),
-]);
+export const moodLogs = sqliteTable(
+  'mood_logs',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id').notNull(),
+    moodScore: integer('mood_score').notNull(),
+    mood: text('mood'),
+    note: text('note'),
+    createdAt: text('created_at').notNull(),
+  },
+  (table) => [
+    index('mood_logs_user_idx').on(table.userId),
+    index('mood_logs_created_idx').on(table.createdAt),
+  ],
+);
 
 // ─── Schools (needed for context) ─────────────────────────────────────────────
 export const schools = sqliteTable('schools', {
@@ -91,56 +107,66 @@ export const schools = sqliteTable('schools', {
 });
 
 // ─── Cedar Policies (Local PDP Distribution) ──────────────────────────────────
-export const cedarPolicies = sqliteTable('cedar_policies', {
-  id: text('id').primaryKey(), // policy ID
-  name: text('name').notNull(), // e.g. 'school/principal.cedar'
-  content: text('content').notNull(), // Cedar DSL string
-  updatedAt: text('updated_at').notNull(),
-}, (table) => [
-  index('cedar_policies_name_idx').on(table.name),
-]);
+export const cedarPolicies = sqliteTable(
+  'cedar_policies',
+  {
+    id: text('id').primaryKey(), // policy ID
+    name: text('name').notNull(), // e.g. 'school/principal.cedar'
+    content: text('content').notNull(), // Cedar DSL string
+    updatedAt: text('updated_at').notNull(),
+  },
+  (table) => [index('cedar_policies_name_idx').on(table.name)],
+);
 
 // ─── Cryptographically Signed Permission Snapshots ─────────────────────────────
-export const permissionSnapshots = sqliteTable('permission_snapshots', {
-  id: text('id').primaryKey(), // user-school compound id
-  userId: text('user_id').notNull(),
-  schoolId: text('school_id').notNull(),
-  generatedAt: text('generated_at').notNull(),
-  expiresAt: text('expires_at').notNull(),
-  permissions: text('permissions').notNull(), // Serialized JSON: Record<Resource, Record<Action, boolean>>
-  temporalHints: text('temporal_hints'),       // Optional temporal lease details/hints (JSON string or null)
-  signature: text('signature').notNull(),      // HMAC SHA-256 Server Cryptographic Signature
-}, (table) => [
-  index('permission_snapshots_user_idx').on(table.userId),
-]);
+export const permissionSnapshots = sqliteTable(
+  'permission_snapshots',
+  {
+    id: text('id').primaryKey(), // user-school compound id
+    userId: text('user_id').notNull(),
+    schoolId: text('school_id').notNull(),
+    generatedAt: text('generated_at').notNull(),
+    expiresAt: text('expires_at').notNull(),
+    permissions: text('permissions').notNull(), // Serialized JSON: Record<Resource, Record<Action, boolean>>
+    temporalHints: text('temporal_hints'), // Optional temporal lease details/hints (JSON string or null)
+    signature: text('signature').notNull(), // HMAC SHA-256 Server Cryptographic Signature
+  },
+  (table) => [index('permission_snapshots_user_idx').on(table.userId)],
+);
 
 // ─── Form Templates ───────────────────────────────────────────────────────────
-export const formTemplates = sqliteTable('form_templates', {
-  id: text('id').primaryKey(),
-  ownerId: text('owner_id').notNull(),
-  title: text('title').notNull(),
-  description: text('description'),
-  config: text('config').notNull(), // Serialised JSON string of FieldDefinition[]
-  isPublished: integer('is_published', { mode: 'boolean' }).notNull().default(false),
-  slug: text('slug'),
-  category: text('category'),
-  createdAt: text('created_at').notNull(),
-  updatedAt: text('updated_at').notNull(),
-}, (table) => [
-  index('form_templates_owner_idx').on(table.ownerId),
-  index('form_templates_slug_idx').on(table.slug),
-]);
+export const formTemplates = sqliteTable(
+  'form_templates',
+  {
+    id: text('id').primaryKey(),
+    ownerId: text('owner_id').notNull(),
+    title: text('title').notNull(),
+    description: text('description'),
+    config: text('config').notNull(), // Serialised JSON string of FieldDefinition[]
+    isPublished: integer('is_published', { mode: 'boolean' }).notNull().default(false),
+    slug: text('slug'),
+    category: text('category'),
+    createdAt: text('created_at').notNull(),
+    updatedAt: text('updated_at').notNull(),
+  },
+  (table) => [
+    index('form_templates_owner_idx').on(table.ownerId),
+    index('form_templates_slug_idx').on(table.slug),
+  ],
+);
 
 // ─── Form Responses ───────────────────────────────────────────────────────────
-export const formResponses = sqliteTable('form_responses', {
-  id: text('id').primaryKey(),
-  templateId: text('template_id').notNull(),
-  responderId: text('responder_id'),
-  data: text('data').notNull(), // Serialised JSON string of response object
-  submittedAt: text('submitted_at').notNull(),
-}, (table) => [
-  index('form_responses_template_idx').on(table.templateId),
-]);
+export const formResponses = sqliteTable(
+  'form_responses',
+  {
+    id: text('id').primaryKey(),
+    templateId: text('template_id').notNull(),
+    responderId: text('responder_id'),
+    data: text('data').notNull(), // Serialised JSON string of response object
+    submittedAt: text('submitted_at').notNull(),
+  },
+  (table) => [index('form_responses_template_idx').on(table.templateId)],
+);
 
 // ─── Shared Database Schema Object ────────────────────────────────────────────
 export const AppSchema = {

@@ -76,12 +76,14 @@ export function usePrincipalWorkspaceSurfaces({
     (<VStack sx=
   gap: Theme.spacing.lg
 	/),>(<PulseDashboard schoolId=
-  schoolId;
-  />;
+  schoolId
+  /;>;
   ),
     (<ResourceNeedsDashboard schoolId=
 	schoolId
-  /),>(<DashboardEcho schoolId={schoolId} />
+  /),>(<DashboardEcho schoolId=
+  schoolId;
+  />;
   )
   )
   VStack

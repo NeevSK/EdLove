@@ -17,9 +17,9 @@
  * the Message Bus (Path 2 / useMutationQueue). This is intentional.
  */
 
+import { createSovereignClient, SOVEREIGN_API_URL } from '../../api/base';
 import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../../api/supabase';
 import { sovereignBus } from '../../lib/sync/eventBus';
-import { createSovereignClient, SOVEREIGN_API_URL } from '../../api/base';
 import type {
   AbstractPowerSyncDatabase,
   CrudEntry,
@@ -74,22 +74,27 @@ export class SupabasePowerSyncConnector implements PowerSyncBackendConnector {
 
       const client = createSovereignClient(SOVEREIGN_API_URL);
 
-      console.log(`[PowerSync] Uploading transactional batch of ${batch.crud.length} mutations through Sanctuary API.`);
+      console.log(
+        `[PowerSync] Uploading transactional batch of ${batch.crud.length} mutations through Sanctuary API.`,
+      );
 
-      const res = await client.api.powersync.upload.$post({
-        json: {
-          crud: batch.crud.map((c) => ({
-            id: c.id,
-            op: c.op,
-            table: c.table,
-            opData: c.opData,
-          })),
+      const res = await client.api.powersync.upload.$post(
+        {
+          json: {
+            crud: batch.crud.map((c) => ({
+              id: c.id,
+              op: c.op,
+              table: c.table,
+              opData: c.opData,
+            })),
+          },
         },
-      }, {
-        headers: {
-          'Authorization': `Bearer ${session.access_token}`,
+        {
+          headers: {
+            Authorization: `Bearer ${session.access_token}`,
+          },
         },
-      });
+      );
 
       if (!res.ok) {
         const errorData = (await res.json()) as any;
@@ -108,4 +113,3 @@ export class SupabasePowerSyncConnector implements PowerSyncBackendConnector {
     }
   }
 }
-

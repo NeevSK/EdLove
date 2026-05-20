@@ -58,17 +58,17 @@ export {
   growth,
   identity,
   notification,
-  pushNotification,
   profile,
+  pushNotification,
 } from './managers/factory';
 export * from './mediaReducer';
 export * from './permissions/feature-engine';
 export * from './permissions/guards/FeatureGuard';
 export * from './permissions/guards/RouteGuard';
 export * from './permissions/hooks/usePermissions';
+export type { IEventBusPort } from './ports/eventBus.port';
 export * from './runtimeRegistry';
 export * from './schemas';
 export * from './store-slices';
 export * from './utils';
 export * from './workspace/index';
-export type { IEventBusPort } from './ports/eventBus.port';

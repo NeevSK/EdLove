@@ -13,19 +13,21 @@
  *
  * @see https://docs.powersync.com/usage/use-case-examples/drizzle
  */
-import { AppSchema, injectNativePowerSyncDB } from '@repo/core/powersync';
-import { wrapPowerSyncWithDrizzle, DrizzleAppSchema } from '@powersync/drizzle-driver';
+
+import { DrizzleAppSchema, wrapPowerSyncWithDrizzle } from '@powersync/drizzle-driver';
 import { OPSqliteOpenFactory } from '@powersync/op-sqlite';
-import { PowerSyncDatabase } from '@powersync/react-native';
 import { PowerSyncContext } from '@powersync/react';
+import { PowerSyncDatabase } from '@powersync/react-native';
+import { AppSchema, injectNativePowerSyncDB } from '@repo/core/powersync';
 import * as Crypto from 'expo-crypto';
 import * as SecureStore from 'expo-secure-store';
-import React, { type PropsWithChildren, useEffect, useState, useRef } from 'react';
+import React, { type PropsWithChildren, useEffect, useRef, useState } from 'react';
 
 const SQLCIPHER_KEY_STORAGE_KEY = 'gurudevi-sqlite-cipher-key';
 
 let _nativePowerSyncInstance: PowerSyncDatabase | null = null;
-let _nativeDrizzleInstance: ReturnType<typeof wrapPowerSyncWithDrizzle<typeof AppSchema>> | null = null;
+let _nativeDrizzleInstance: ReturnType<typeof wrapPowerSyncWithDrizzle<typeof AppSchema>> | null =
+  null;
 
 /**
  * Retrieves the device's SQLCipher database encryption key from SecureStore.
@@ -118,11 +120,7 @@ export function PowerSyncProvider({ children }: PowerSyncProviderProps) {
     return null;
   }
 
-  return (
-    <PowerSyncContext.Provider value={dbRef.current}>
-      {children}
-    </PowerSyncContext.Provider>
-  );
+  return <PowerSyncContext.Provider value={dbRef.current}>{children}</PowerSyncContext.Provider>;
 }
 
 /**

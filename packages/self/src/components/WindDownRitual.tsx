@@ -182,7 +182,10 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
   if (!userId) {
     return (
       <Box className="flex-1 p-lg">
-        <PositiveInvitation type="anonymous" onAction={() => navigation.navigate('Auth' as never)} />
+        <PositiveInvitation
+          type="anonymous"
+          onAction={() => navigation.navigate('Auth' as never)}
+        />
       </Box>
     );
   }

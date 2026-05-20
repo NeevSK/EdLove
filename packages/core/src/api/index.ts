@@ -104,11 +104,20 @@ import {
   teacherInsightsAPI,
 } from './orchestration/specialized';
 
+export type { CalendarEvent } from '@repo/schema';
+export type { ClassroomNote } from '../types/ClassroomNote';
+export type {
+  BanyanStage,
+  BhumiStage,
+  CrystalTier,
+  ImpactRipple,
+  RippleSourceEntityType,
+  RippleType,
+  RiverStage,
+  UserGrowthState,
+} from '../types/Growth';
 // --- Re-exports (Types & Contracts) ---
 export * from './admin.contract';
-export * from './pro.contract';
-export * from './growth.contract';
-export * from './workspaceLayout.contract';
 export * from './announcements';
 export * from './assignments';
 export * from './circles';
@@ -122,6 +131,7 @@ export * from './erp';
 export * from './erp.contract';
 export * from './founder.contract';
 export * from './grading.contract';
+export * from './growth.contract';
 export * from './growthSignals';
 export * from './guardian';
 export * from './guardian.contract';
@@ -142,14 +152,15 @@ export * from './principalNotes';
 export * from './principalWorkspace';
 export * from './principalWorkspace.contract';
 export * from './privacy';
+export * from './pro.contract';
 export * from './profile.contract';
 export * from './sacredMissions';
 export * from './schoolForest';
 export * from './self.contract';
-export * from './sync.contract';
 export * from './staffManagement';
 export * from './studentObservations';
 export * from './studentPotential';
+export * from './sync.contract';
 export * from './teacherInsights';
 export * from './teacherInsights.contract';
 export * from './temporalPOAProxy';
@@ -157,10 +168,7 @@ export * from './temporalProxy';
 export * from './thuthimal';
 export * from './userGrowthState';
 export * from './warmMirror';
-export type { BhumiStage, BanyanStage, RiverStage, CrystalTier, UserGrowthState, ImpactRipple, RippleType, RippleSourceEntityType } from '../types/Growth';
-export type { CalendarEvent } from '@repo/schema';
-export type { ClassroomNote } from '../types/ClassroomNote';
-
+export * from './workspaceLayout.contract';
 
 export {
   __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__,

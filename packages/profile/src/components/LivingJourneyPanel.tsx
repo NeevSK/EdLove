@@ -475,7 +475,9 @@ export default function LivingJourneyPanel({ userId }: LivingJourneyPanelProps) 
             <PathRow
               emoji="🌳"
               pathName={t('journey.banyanPath')}
-              stageLabel={banyan.replace(/_/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase())}
+              stageLabel={banyan
+                .replace(/_/g, ' ')
+                .replace(/\b\w/g, (l: string) => l.toUpperCase())}
               narrative={BANYAN_NARRATIVES[banyan] ?? ''}
             />
           )}

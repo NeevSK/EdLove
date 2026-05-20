@@ -1,10 +1,10 @@
 import { eq } from 'drizzle-orm';
 import { getDrizzleDB, registerPermissionValidator } from '../../adapters/powersync/database';
-import { classrooms, schools, cedarPolicies } from '../../adapters/powersync/schema';
-import { DeviceTrustEngine } from '../../lib/security/deviceTrust';
+import { cedarPolicies, classrooms, schools } from '../../adapters/powersync/schema';
 import { deviceTrustAPI } from '../../api/deviceTrust';
+import { DeviceTrustEngine } from '../../lib/security/deviceTrust';
 import type { UserContext } from '../schemas/user.schema';
-import type { SubjectType, Actions } from './abilities/base';
+import type { Actions, SubjectType } from './abilities/base';
 
 // Context definition for Cedar dynamic validation
 export interface CedarEvaluationContext {
@@ -24,7 +24,7 @@ let cachedPolicySize = 0;
 let isCacheValid = false;
 
 // Max allowable local policy size (e.g. 100KB) to prevent Hermes/Android WASM memory crashes.
-const MAX_LOCAL_POLICY_SIZE_BYTES = 100 * 1024; 
+const MAX_LOCAL_POLICY_SIZE_BYTES = 100 * 1024;
 
 /**
  * Retrieves dynamic attributes for a resource directly from the local SQLite/PowerSync cache.
@@ -32,7 +32,7 @@ const MAX_LOCAL_POLICY_SIZE_BYTES = 100 * 1024;
  */
 export async function getLocalResourceAttributes(
   resourceType: string,
-  resourceId: string
+  resourceId: string,
 ): Promise<Record<string, any>> {
   const db = getDrizzleDB();
 
@@ -62,7 +62,10 @@ export async function getLocalResourceAttributes(
         return {};
     }
   } catch (error) {
-    console.warn(`[LocalEvaluator] Failed to fetch dynamic attributes for ${resourceType}::${resourceId}:`, error);
+    console.warn(
+      `[LocalEvaluator] Failed to fetch dynamic attributes for ${resourceType}::${resourceId}:`,
+      error,
+    );
     return {};
   }
 }
@@ -73,7 +76,7 @@ export async function getLocalResourceAttributes(
  */
 export async function verifyLocalPolicySignature(
   policySet: string,
-  signatureHex?: string
+  signatureHex?: string,
 ): Promise<boolean> {
   // Real implementation will use expo-crypto or isomorphic-webcrypto to verify against public keys.
   // Returns true if signature matches the server-signed hash.
@@ -91,7 +94,7 @@ export async function verifyLocalPolicySignature(
 
 /**
  * checkLocalPermission
- * 
+ *
  * The authoritative entrypoint for offline-first local permission checks.
  * Combines:
  * 1. Pre-existing DeviceTrust status (DeviceTrustEngine / deviceTrustAPI)
@@ -115,19 +118,23 @@ export async function checkLocalPermission(params: {
     // 3. Retrieve policies from SQLite and manage compilation cache / safety bounds
     const db = getDrizzleDB();
     const localPolicies = await db.select().from(cedarPolicies);
-    
+
     if (localPolicies.length === 0) {
-      console.warn('[LocalEvaluator] No local Cedar policies found in SQLite. Denying access by default.');
+      console.warn(
+        '[LocalEvaluator] No local Cedar policies found in SQLite. Denying access by default.',
+      );
       return false; // Defensive Default-Deny Fallback
     }
 
     // Build or fetch cached policies
-    const rawPolicyString = localPolicies.map(p => p.content).join('\n\n');
+    const rawPolicyString = localPolicies.map((p) => p.content).join('\n\n');
     const policySizeBytes = Buffer.byteLength(rawPolicyString, 'utf8');
 
     // Safe Boundary check to protect lower-end Android memory
     if (policySizeBytes > MAX_LOCAL_POLICY_SIZE_BYTES) {
-      console.warn(`[LocalEvaluator] Local policy size (${policySizeBytes}B) exceeds safety limit (${MAX_LOCAL_POLICY_SIZE_BYTES}B). Denying.`);
+      console.warn(
+        `[LocalEvaluator] Local policy size (${policySizeBytes}B) exceeds safety limit (${MAX_LOCAL_POLICY_SIZE_BYTES}B). Denying.`,
+      );
       return false; // Fail-secure
     }
 
@@ -136,11 +143,13 @@ export async function checkLocalPermission(params: {
       cachedPolicyString = rawPolicyString;
       cachedPolicySize = policySizeBytes;
       isCacheValid = true;
-      
+
       // Perform security signature verification
       const isSignatureValid = await verifyLocalPolicySignature(rawPolicyString);
       if (!isSignatureValid) {
-        console.error('[LocalEvaluator] CRYPTOGRAPHIC TAMPER DETECTED: Policy signatures do not match! Failing safe.');
+        console.error(
+          '[LocalEvaluator] CRYPTOGRAPHIC TAMPER DETECTED: Policy signatures do not match! Failing safe.',
+        );
         return false; // Fail-secure on cryptographic mismatch
       }
     }
@@ -148,7 +157,7 @@ export async function checkLocalPermission(params: {
     // 4. Fetch target resource dynamic attributes (handles offline-created items)
     const resourceAttributes = await getLocalResourceAttributes(
       params.resourceType as string,
-      params.resourceId
+      params.resourceId,
     );
     const classroomId = params.userContext.classroomId || legacyContext.classroom_id || null;
 
@@ -156,15 +165,15 @@ export async function checkLocalPermission(params: {
     const contextPayload: CedarEvaluationContext = {
       device: {
         is_trusted: isTrusted,
-        trust_status: trustStatus
-      }
+        trust_status: trustStatus,
+      },
     };
 
     // 6. Execute local Cedar WASM validation dynamically if available
     try {
       // @ts-expect-error - Dynamic Cedar WASM web entrypoint load for browser/React-Native compatibility
       const { evaluate } = await import('@cedar-policy/cedar-wasm/web');
-      
+
       const decision = await evaluate({
         policies: cachedPolicyString,
         schema: '',
@@ -172,7 +181,7 @@ export async function checkLocalPermission(params: {
           principal: { type: 'User', id: params.userContext.userId || legacyContext.user_id || '' },
           action: { type: 'Action', id: params.action },
           resource: { type: params.resourceType as string, id: params.resourceId },
-          context: contextPayload as any
+          context: contextPayload as any,
         },
         entities: [
           {
@@ -182,19 +191,22 @@ export async function checkLocalPermission(params: {
               capacity: params.userContext.capacity || '',
               classroom_ids: classroomId ? [classroomId] : [],
             },
-            parents: []
+            parents: [],
           },
           {
             uid: { type: params.resourceType as string, id: params.resourceId },
             attrs: resourceAttributes,
-            parents: []
-          }
-        ]
+            parents: [],
+          },
+        ],
       });
 
       return decision.decision === 'Allow';
     } catch (wasmError) {
-      console.error('[LocalEvaluator] WASM Engine failed or not loaded. Denying access by default.', wasmError);
+      console.error(
+        '[LocalEvaluator] WASM Engine failed or not loaded. Denying access by default.',
+        wasmError,
+      );
       return false; // Fail-secure on WASM errors
     }
   } catch (error) {

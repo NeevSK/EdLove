@@ -43,7 +43,9 @@ interface SleepTrackerProps {
 export default function SleepTracker({ userId, disabled: componentDisabled }: SleepTrackerProps) {
   const { context } = usePermissions();
   const activeUserId = userId || context.userId;
-  const { sleepLogs, refreshData, isLoading, addSleepLog } = useSleepTracker(activeUserId ?? undefined);
+  const { sleepLogs, refreshData, isLoading, addSleepLog } = useSleepTracker(
+    activeUserId ?? undefined,
+  );
   const { t, i18n } = useTranslation();
 
   const [sleepQuality, setSleepQuality] = useState(3);

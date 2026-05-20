@@ -4,7 +4,6 @@ import { APIError } from '../types/API';
 import type { ClassroomNote } from '../types/ClassroomNote';
 import { identityAPI } from './identity';
 
-
 export const classroomNotesAPI = {
   /**
    * @policy read ClassroomNote

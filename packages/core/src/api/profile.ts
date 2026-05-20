@@ -1,7 +1,7 @@
-import { APIError } from '../types';
-import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from './base';
 import { profile } from '../logic/managers/factory';
 import type { SocialLink } from '../types';
+import { APIError } from '../types';
+import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from './base';
 
 /**
  * PROFILE API (Sovereign RPC Proxy)

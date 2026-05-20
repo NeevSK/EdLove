@@ -557,7 +557,7 @@ onPress={() => navigation.navigate('AppSettings')}/>
 {
   t;
 }
-/;;;;>;
+/;;;;;>;
 }
 colors =
 {
@@ -576,7 +576,7 @@ cardWidth={cardWidth} />
 {
   t;
 }
-/;;;;>;
+/;;;;;>;
 }
 colors =
 {
@@ -595,14 +595,14 @@ cardWidth={cardWidth} />
 {
   width;
 }
-/ :;;;;>Wacddhirt;
+/ :;;;;;>Wacddhirt;
 }
 >
                                     <AccountActions t=
 {
   t;
 }
-/;;;;>;
+/;;;;;>;
 }
 colors =
 {
@@ -631,7 +631,7 @@ Animated.View > <Animated.View entering=
         borderWidth: 1,
         borderColor: colors.border,
 }
-/;>;
+/;;>;
 ),
   (
     <TouchableOpacity
@@ -742,4 +742,4 @@ isLoading={isLoggingOut}
     />
 )
 Box
-ScreenWrapper;
+ScreenWrapper

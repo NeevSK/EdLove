@@ -1,5 +1,5 @@
-import { defineConfig } from 'vitest/config';
 import path from 'path';
+import { defineConfig } from 'vitest/config';
 
 const shimPath = path.resolve(__dirname, './src/__tests__/dummyShim.ts');
 
@@ -83,7 +83,8 @@ export default defineConfig({
     },
     env: {
       EXPO_PUBLIC_SUPABASE_URL: 'http://localhost:54321',
-      EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY: 'sb_publishable_placeholder_for_vitest_integration_tests',
+      EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY:
+        'sb_publishable_placeholder_for_vitest_integration_tests',
     },
     setupFiles: [path.resolve(__dirname, './src/__tests__/setup.ts')],
   },

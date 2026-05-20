@@ -42,7 +42,9 @@ export function useTeacherAssignmentsPulse() {
     queryFn: async () => {
       // Fetch all classrooms first
       const classrooms = await classroomsAPI.getTeacherClassrooms(userId!);
-      const allAssignments = await Promise.all(classrooms.map((c: any) => assignmentsAPI.getAll(c.id)));
+      const allAssignments = await Promise.all(
+        classrooms.map((c: any) => assignmentsAPI.getAll(c.id)),
+      );
       return allAssignments.flat() as Assignment[];
     },
     enabled: !!userId,

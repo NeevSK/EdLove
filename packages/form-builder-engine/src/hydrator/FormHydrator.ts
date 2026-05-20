@@ -1,4 +1,4 @@
-import { FormManager, FormConfig } from '../manager/FormManager';
+import { type FormConfig, FormManager } from '../manager/FormManager';
 import { ValidationEngine } from '../validation/ValidationEngine';
 
 export class FormHydrator {
@@ -11,11 +11,11 @@ export class FormHydrator {
     onSubmit: (values: T) => Promise<void> | void,
   ): FormManager<T> {
     const fields: any = {};
-    
+
     // Handle both array of fields and object-based fields mapping for compatibility
-    const jsonFields = Array.isArray(json.fields) 
-      ? json.fields 
-      : json.fields 
+    const jsonFields = Array.isArray(json.fields)
+      ? json.fields
+      : json.fields
         ? Object.entries(json.fields).map(([name, f]: [string, any]) => ({ name, ...f }))
         : [];
 
@@ -34,7 +34,9 @@ export class FormHydrator {
     return new FormManager<T>(config);
   }
 
-  private static mapValidator(validatorName: string): (val: any) => { isValid: boolean; error?: string } {
+  private static mapValidator(
+    validatorName: string,
+  ): (val: any) => { isValid: boolean; error?: string } {
     const validatorMap: Record<string, any> = {
       email: ValidationEngine.email,
       nonEmpty: (val: any) => ValidationEngine.nonEmpty(val, 'Field'),
