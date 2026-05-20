@@ -1,20 +1,20 @@
 import Constants, { ExecutionEnvironment } from 'expo-constants';
 import { Platform } from 'react-native';
+import { startNetworkBusAdapter } from '../adapters/NetworkBusAdapter';
 // Adapters
 import { AsyncStorageAdapter } from '../adapters/native/AsyncStorageAdapter';
 import { FallbackMMKVStorageAdapter } from '../adapters/native/FallbackMMKVStorageAdapter';
 import { NativeCryptoAdapter } from '../adapters/native/NativeCryptoAdapter';
 import { NativeNetworkAdapter } from '../adapters/native/NativeNetworkAdapter';
 import { SentryTelemetryAdapter } from '../adapters/native/SentryTelemetryAdapter';
-import { WebNetworkAdapter } from '../adapters/WebNetworkAdapter';
-import { startNetworkBusAdapter } from '../adapters/NetworkBusAdapter';
 import { SimulatorDeviceIdentityAdapter } from '../adapters/native/SimulatorDeviceIdentityAdapter';
+import { WebNetworkAdapter } from '../adapters/WebNetworkAdapter';
 import { cryptoManager } from '../logic/managers/CryptoManager';
+import { deviceIdentity } from '../logic/managers/DeviceIdentityManager';
 import { networkManager } from '../logic/managers/NetworkManager';
 // Managers
 import { storage } from '../logic/managers/StorageManager';
 import { telemetry } from '../logic/managers/TelemetryManager';
-import { deviceIdentity } from '../logic/managers/DeviceIdentityManager';
 
 import { Runtime } from './runtime';
 

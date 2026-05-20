@@ -1,12 +1,12 @@
 {
-	"extends": "../../packages/typescript-config/base.json",
-	"compilerOptions": {
-		"outDir": "./dist",
-		"baseUrl": ".",
-		"jsx": "react-jsx",
-		"paths": {
-			"@intuitui-labs/lk-edu-geo": ["../lk-edu-geo/src/index.ts"]
-		}
-	},
-	"include": ["src/**/*"]
+  "extends": "../../packages/typescript-config/base.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "baseUrl": ".",
+    "jsx": "react-jsx",
+    "paths": {
+      "@intuitui-labs/lk-edu-geo": ["../lk-edu-geo/src/index.ts"]
+    }
+  },
+  "include": ["src/**/*"]
 }

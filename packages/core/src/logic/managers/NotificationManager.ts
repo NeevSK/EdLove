@@ -1,6 +1,5 @@
-import { INotificationPort } from '../ports/notification.port';
-import { AppNotification, NotificationStatus } from '../../types';
-
+import type { AppNotification, NotificationStatus } from '../../types';
+import type { INotificationPort } from '../ports/notification.port';
 
 /**
  * NotificationManager: The Domain Orchestrator for Notifications.
@@ -19,13 +18,12 @@ export class NotificationManager implements INotificationPort {
     type: string,
     title: string,
     message: string,
-    metadata?: any
+    metadata?: any,
   ): Promise<void> {
     return this.adapter.createNotification(userId, type, title, message, metadata);
   }
 
   async getUnreadCount(userId: string): Promise<number> {
-
     return this.adapter.getUnreadCount(userId);
   }
 
@@ -41,7 +39,7 @@ export class NotificationManager implements INotificationPort {
     userId: string,
     onInsert: (notification: AppNotification) => void,
     onUpdate: (notification: AppNotification) => void,
-    onStatusChange: (status: NotificationStatus) => void
+    onStatusChange: (status: NotificationStatus) => void,
   ): () => void {
     return this.adapter.subscribe(userId, onInsert, onUpdate, onStatusChange);
   }

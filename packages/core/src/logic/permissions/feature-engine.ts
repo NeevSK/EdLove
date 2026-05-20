@@ -170,8 +170,9 @@ export const resolveFeatureFlags = (
   const isPaidTier = context.pricing_tier === 'PRO' || context.pricing_tier === 'INSTITUTIONAL';
   const isInstitutional = context.pricing_tier === 'INSTITUTIONAL';
   const isWanderer = context.citizenship === 'WANDERER';
-  
-  const capacity = context.active_bond?.capacity || null;
+
+  const activeBond = context.activeBond || null;
+  const capacity = activeBond?.capacity || null;
   const isAdmin = ['admin', 'founder', 'developer'].includes(capacity || '');
 
   flags.isProMember = isPaidTier || isAdmin;
@@ -192,9 +193,11 @@ export const resolveFeatureFlags = (
   }
 
   if ((context.features || []).includes('OCR') || isAdmin) flags.canUseOCR = true;
-  if ((context.features || []).includes('AI_ASSISTANT') || isAdmin) flags.isAIAssistantEnabled = true;
+  if ((context.features || []).includes('AI_ASSISTANT') || isAdmin)
+    flags.isAIAssistantEnabled = true;
   if ((context.features || []).includes('STAFF_MANAGEMENT')) flags.isStaffManagementEnabled = true;
-  if ((context.features || []).includes('STUDENT_REPORTING')) flags.isStudentReportingEnabled = true;
+  if ((context.features || []).includes('STUDENT_REPORTING'))
+    flags.isStudentReportingEnabled = true;
   if ((context.features || []).includes('BETA_TESTER')) flags.isNewOnboardingEnabled = true;
   if (
     (context.features || []).includes('GUARDIAN_WORKSPACE') ||
@@ -283,7 +286,10 @@ export const resolveFeatureFlags = (
     flags.isPowerSyncEnabled = true;
   }
 
-  if (globalConfigs['DISABLE_BACKGROUND_SYNC'] === 'true' || globalConfigs['DISABLE_BACKGROUND_SYNC'] === true) {
+  if (
+    globalConfigs['DISABLE_BACKGROUND_SYNC'] === 'true' ||
+    globalConfigs['DISABLE_BACKGROUND_SYNC'] === true
+  ) {
     flags.isBackgroundSyncEnabled = false;
   }
 

@@ -1,7 +1,7 @@
-import { SITE_DESCRIPTION, SITE_URL } from "../lib/site";
+import { SITE_DESCRIPTION, SITE_URL } from '../lib/site';
 
 export function GET() {
-	const body = `# Gurudevi
+  const body = `# Gurudevi
 
 > ${SITE_DESCRIPTION}
 
@@ -30,9 +30,9 @@ export function GET() {
 - All web applications under edlove.org share a root-domain security and context boundary.
 `;
 
-	return new Response(body, {
-		headers: {
-			"Content-Type": "text/plain; charset=utf-8",
-		},
-	});
+  return new Response(body, {
+    headers: {
+      'Content-Type': 'text/plain; charset=utf-8',
+    },
+  });
 }

@@ -1,16 +1,12 @@
-import React from 'react';
+import type React from 'react';
 import { StyleSheet } from 'react-native';
-import { 
-  Gesture, 
-  GestureDetector, 
-  GestureHandlerRootView 
-} from 'react-native-gesture-handler';
-import Animated, { 
-  useAnimatedStyle, 
-  useSharedValue, 
+import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
+import Animated, {
+  runOnJS,
+  useAnimatedStyle,
+  useSharedValue,
   withSpring,
   withTiming,
-  runOnJS
 } from 'react-native-reanimated';
 
 interface DraggableCanvasSurfaceProps {
@@ -22,7 +18,7 @@ interface DraggableCanvasSurfaceProps {
 
 /**
  * DRAGGABLE CANVAS SURFACE
- * 
+ *
  * A universal, high-fidelity wrapper for workspace surfaces.
  * Uses Reanimated 4 and Gesture Handler for 60FPS fluid rearrangement.
  */
@@ -56,7 +52,7 @@ export const DraggableCanvasSurface: React.FC<DraggableCanvasSurfaceProps> = ({
     })
     .onEnd(() => {
       if (!isDragging.value) return;
-      
+
       if (onDragEnd) {
         runOnJS(onDragEnd)(id, { x: translateX.value, y: translateY.value });
       }
@@ -87,9 +83,7 @@ export const DraggableCanvasSurface: React.FC<DraggableCanvasSurfaceProps> = ({
   return (
     <GestureHandlerRootView style={styles.container}>
       <GestureDetector gesture={composed}>
-        <Animated.View style={[styles.wrapper, animatedStyle]}>
-          {children}
-        </Animated.View>
+        <Animated.View style={[styles.wrapper, animatedStyle]}>{children}</Animated.View>
       </GestureDetector>
     </GestureHandlerRootView>
   );

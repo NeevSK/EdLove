@@ -1,6 +1,5 @@
 import { useEffect, useRef } from 'react';
 import { StyleSheet, type ViewStyle } from 'react-native';
-import { Text } from '../primitives';
 import Reanimated, {
   useAnimatedStyle,
   useSharedValue,
@@ -9,6 +8,7 @@ import Reanimated, {
   withTiming,
 } from 'react-native-reanimated';
 import { Box, HStack, VStack } from '../gluestack';
+import { Text } from '../primitives';
 
 export interface SanctuaryProgressBarProps {
   percentage: number; // 0–100

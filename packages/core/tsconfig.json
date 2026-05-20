@@ -12,7 +12,8 @@
       "@/*": ["src/*"],
       "@powersync/react-native": ["src/adapters/powersync/powersync-shim.ts"],
       "@powersync/react": ["src/adapters/powersync/powersync-react-shim.ts"],
-      "@repo/sanctuary-api": ["../../apps/sanctuary-api/src/index.ts"]
+      "@repo/sanctuary-api": ["../../apps/sanctuary-api/src/index.ts"],
+      "@intuitui-labs/form-builder-engine": ["../form-builder-engine/src"]
     },
     "types": ["vitest/importMeta", "vitest/globals", "@repo/types-shim"]
   },

@@ -1,769 +1,689 @@
-import { useNavigation } from "@react-navigation/native";
-import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { communityAPI } from "@repo/core/api";
-import { useManifestoHooks, useNotificationHooks } from "@repo/core/api/hooks";
-import { usePendingGateAction } from "@repo/core/hooks";
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { communityAPI } from '@repo/core/api';
+import { useManifestoHooks, useNotificationHooks } from '@repo/core/api/hooks';
+import { usePendingGateAction } from '@repo/core/hooks';
+import { setPendingGateAction, usePermissions, useStore } from '@repo/core/logic';
+import type { CommunityStackParamList } from '@repo/core/types';
+import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
+import { SanctuaryFlashList } from '@repo/ui/components/SanctuaryFlashList';
+import { WebScreenHeader } from '@repo/ui/components/WebScreenHeader.web';
+import { Bell, Compass, Info, Plus, Shield, Users2 } from '@repo/ui/icons';
+import { Box, Heading, Icon, Spinner, Text, VStack } from '@repo/ui/primitives';
+import { useCallback, useEffect, useMemo, useReducer } from 'react';
+import { CommentSheet } from '../components/CommentSheet';
+import CommunityHearth from '../components/CommunityHearth';
+import CreateGroupModal from '../components/CreateGroupModal';
+import CreatePostModal from '../components/CreatePostModal';
+import { PostCard } from '../components/PostCard';
+import { useCommunity } from '../hooks/useCommunity';
+import { useCommunityGroups } from '../hooks/useCommunityGroups';
+import type { CommunityPost, DirectConversation } from '../types';
+import AnnouncementsScreen from './AnnouncementsScreen';
 import {
-	setPendingGateAction,
-	usePermissions,
-	useStore,
-} from "@repo/core/logic";
-import PositiveInvitation from "@repo/ui/components/PositiveInvitation";
-import { WebScreenHeader } from "@repo/ui/components/WebScreenHeader.web";
-import { Bell, Compass, Info, Plus, Shield, Users2 } from "@repo/ui/icons";
-import { Box, Heading, Icon, Spinner, Text, VStack } from "@repo/ui/primitives";
-import { useCallback, useEffect, useMemo, useReducer } from "react";
-import { CommentSheet } from "../components/CommentSheet";
-import CommunityHearth from "../components/CommunityHearth";
-import CreateGroupModal from "../components/CreateGroupModal";
-import CreatePostModal from "../components/CreatePostModal";
-import { PostCard } from "../components/PostCard";
-import { SanctuaryFlashList } from "@repo/ui/components/SanctuaryFlashList";
-import { useCommunity } from "../hooks/useCommunity";
-import { useCommunityGroups } from "../hooks/useCommunityGroups";
-import type {
-	CommunityPost,
-	DirectConversation,
-} from "../types";
-import type { CommunityStackParamList } from "@repo/core/types";
-import AnnouncementsScreen from "./AnnouncementsScreen";
-import {
-	type CommunityWorkspaceMode,
-	deriveCommunityPulse,
-	getCommunityFilterOptions,
-	getCommunityModeOptions,
-	getCommunityQuickPaths,
-	mapCommunitySurfaceSlots,
-} from "./communityWorkspace.shared";
+  type CommunityWorkspaceMode,
+  deriveCommunityPulse,
+  getCommunityFilterOptions,
+  getCommunityModeOptions,
+  getCommunityQuickPaths,
+  mapCommunitySurfaceSlots,
+} from './communityWorkspace.shared';
 
 type CommunityState = {
-	activeMode: CommunityWorkspaceMode;
-	selectedFilter: string;
-	searchQuery: string;
-	showCreatePost: boolean;
-	showCreateGroup: boolean;
-	commentPostId: string | null;
-	commentPostAuthorId: string | undefined;
-	commentPostType: string | undefined;
-	conversations: DirectConversation[];
-	loadingMessages: boolean;
-	announcementCount: number;
+  activeMode: CommunityWorkspaceMode;
+  selectedFilter: string;
+  searchQuery: string;
+  showCreatePost: boolean;
+  showCreateGroup: boolean;
+  commentPostId: string | null;
+  commentPostAuthorId: string | undefined;
+  commentPostType: string | undefined;
+  conversations: DirectConversation[];
+  loadingMessages: boolean;
+  announcementCount: number;
 };
 
 type CommunityAction =
-	| { type: "SET_MODE"; mode: CommunityWorkspaceMode }
-	| { type: "SET_FILTER"; filter: string }
-	| { type: "SET_SEARCH"; query: string }
-	| { type: "TOGGLE_CREATE_POST"; show: boolean }
-	| { type: "TOGGLE_CREATE_GROUP"; show: boolean }
-	| {
-			type: "OPEN_COMMENTS";
-			postId: string;
-			authorId?: string;
-			postType?: string;
-	  }
-	| { type: "CLOSE_COMMENTS" }
-	| { type: "SET_CONVERSATIONS"; conversations: DirectConversation[] }
-	| { type: "SET_LOADING_MESSAGES"; loading: boolean }
-	| { type: "SET_ANNOUNCEMENT_COUNT"; count: number };
+  | { type: 'SET_MODE'; mode: CommunityWorkspaceMode }
+  | { type: 'SET_FILTER'; filter: string }
+  | { type: 'SET_SEARCH'; query: string }
+  | { type: 'TOGGLE_CREATE_POST'; show: boolean }
+  | { type: 'TOGGLE_CREATE_GROUP'; show: boolean }
+  | {
+      type: 'OPEN_COMMENTS';
+      postId: string;
+      authorId?: string;
+      postType?: string;
+    }
+  | { type: 'CLOSE_COMMENTS' }
+  | { type: 'SET_CONVERSATIONS'; conversations: DirectConversation[] }
+  | { type: 'SET_LOADING_MESSAGES'; loading: boolean }
+  | { type: 'SET_ANNOUNCEMENT_COUNT'; count: number };
 
-function communityReducer(
-	state: CommunityState,
-	action: CommunityAction,
-): CommunityState {
-	switch (action.type) {
-		case "SET_MODE":
-			return { ...state, activeMode: action.mode };
-		case "SET_FILTER":
-			return { ...state, selectedFilter: action.filter };
-		case "SET_SEARCH":
-			return { ...state, searchQuery: action.query };
-		case "TOGGLE_CREATE_POST":
-			return { ...state, showCreatePost: action.show };
-		case "TOGGLE_CREATE_GROUP":
-			return { ...state, showCreateGroup: action.show };
-		case "OPEN_COMMENTS":
-			return {
-				...state,
-				commentPostId: action.postId,
-				commentPostAuthorId: action.authorId,
-				commentPostType: action.postType,
-			};
-		case "CLOSE_COMMENTS":
-			return {
-				...state,
-				commentPostId: null,
-				commentPostAuthorId: undefined,
-				commentPostType: undefined,
-			};
-		case "SET_CONVERSATIONS":
-			return { ...state, conversations: action.conversations };
-		case "SET_LOADING_MESSAGES":
-			return { ...state, loadingMessages: action.loading };
-		case "SET_ANNOUNCEMENT_COUNT":
-			return { ...state, announcementCount: action.count };
-		default:
-			return state;
-	}
+function communityReducer(state: CommunityState, action: CommunityAction): CommunityState {
+  switch (action.type) {
+    case 'SET_MODE':
+      return { ...state, activeMode: action.mode };
+    case 'SET_FILTER':
+      return { ...state, selectedFilter: action.filter };
+    case 'SET_SEARCH':
+      return { ...state, searchQuery: action.query };
+    case 'TOGGLE_CREATE_POST':
+      return { ...state, showCreatePost: action.show };
+    case 'TOGGLE_CREATE_GROUP':
+      return { ...state, showCreateGroup: action.show };
+    case 'OPEN_COMMENTS':
+      return {
+        ...state,
+        commentPostId: action.postId,
+        commentPostAuthorId: action.authorId,
+        commentPostType: action.postType,
+      };
+    case 'CLOSE_COMMENTS':
+      return {
+        ...state,
+        commentPostId: null,
+        commentPostAuthorId: undefined,
+        commentPostType: undefined,
+      };
+    case 'SET_CONVERSATIONS':
+      return { ...state, conversations: action.conversations };
+    case 'SET_LOADING_MESSAGES':
+      return { ...state, loadingMessages: action.loading };
+    case 'SET_ANNOUNCEMENT_COUNT':
+      return { ...state, announcementCount: action.count };
+    default:
+      return state;
+  }
 }
 
-type Navigation = NativeStackNavigationProp<
-	CommunityStackParamList & { Auth: undefined }
->;
+type Navigation = NativeStackNavigationProp<CommunityStackParamList & { Auth: undefined }>;
 
 const initialState: CommunityState = {
-	activeMode: "feed",
-	selectedFilter: "all",
-	searchQuery: "",
-	showCreatePost: false,
-	showCreateGroup: false,
-	commentPostId: null,
-	commentPostAuthorId: undefined,
-	commentPostType: undefined,
-	conversations: [],
-	loadingMessages: false,
-	announcementCount: 0,
+  activeMode: 'feed',
+  selectedFilter: 'all',
+  searchQuery: '',
+  showCreatePost: false,
+  showCreateGroup: false,
+  commentPostId: null,
+  commentPostAuthorId: undefined,
+  commentPostType: undefined,
+  conversations: [],
+  loadingMessages: false,
+  announcementCount: 0,
 };
 
 export default function CommunityScreenWeb() {
-	const navigation = useNavigation<Navigation>();
-	const { can } = usePermissions();
-	const { user, flags } = useStore();
-	const { isCommunityEnabled, isMessagingEnabled, isSocialShieldEnabled } =
-		flags;
-	const pending = usePendingGateAction();
-	const { unreadCount } = useNotificationHooks();
+  const navigation = useNavigation<Navigation>();
+  const { can } = usePermissions();
+  const { user, flags } = useStore();
+  const { isCommunityEnabled, isMessagingEnabled, isSocialShieldEnabled } = flags;
+  const pending = usePendingGateAction();
+  const { unreadCount } = useNotificationHooks();
 
-	const userId = user?.id ?? "guest";
-	const schoolId = user?.school_id ?? undefined;
-	const canReadFeed = can("read", "CommunityFeed");
-	const canReadGroups = can("read", "CommunityGroups");
-	const canReadMessages = can("read", "DirectMessages");
-	const canCreatePost = can("create", "Post");
-	const canCreateGroup = can("create", "Group");
-	const canReadAnnouncements = Boolean(schoolId) && can("read", "Group");
+  const userId = user?.id ?? 'guest';
+  const schoolId = user?.school_id ?? undefined;
+  const canReadFeed = can('read', 'CommunityFeed');
+  const canReadGroups = can('read', 'CommunityGroups');
+  const canReadMessages = can('read', 'DirectMessages');
+  const canCreatePost = can('create', 'Post');
+  const canCreateGroup = can('create', 'Group');
+  const canReadAnnouncements = Boolean(schoolId) && can('read', 'Group');
 
-	const [state, dispatch] = useReducer(communityReducer, initialState);
-	const {
-		activeMode,
-		selectedFilter,
-		searchQuery,
-		showCreatePost,
-		showCreateGroup,
-		commentPostId,
-		commentPostAuthorId,
-		commentPostType,
-		conversations,
-		loadingMessages,
-	} = state;
+  const [state, dispatch] = useReducer(communityReducer, initialState);
+  const {
+    activeMode,
+    selectedFilter,
+    searchQuery,
+    showCreatePost,
+    showCreateGroup,
+    commentPostId,
+    commentPostAuthorId,
+    commentPostType,
+    conversations,
+    loadingMessages,
+  } = state;
 
-	const { posts, isLoadingPosts, fetchPosts, fetchGroups } = useCommunity(
-		selectedFilter !== "all" ? selectedFilter : undefined,
-	);
+  const { posts, isLoadingPosts, fetchPosts, fetchGroups } = useCommunity(
+    selectedFilter !== 'all' ? selectedFilter : undefined,
+  );
 
-	const { sanctuaryGroups, galaxyGroups } = useCommunityGroups({
-		schoolId,
-		searchQuery,
-	});
-	const { manifestos } = useManifestoHooks(schoolId, user?.id);
+  const { sanctuaryGroups, galaxyGroups } = useCommunityGroups({
+    schoolId,
+    searchQuery,
+  });
+  const { manifestos } = useManifestoHooks(schoolId, user?.id);
 
-	const slots = useMemo(
-		() => mapCommunitySurfaceSlots("web", userId),
-		[userId],
-	);
-	const pulse = useMemo(
-		() =>
-			deriveCommunityPulse(
-				posts as unknown as CommunityPost[],
-				[...sanctuaryGroups, ...galaxyGroups],
-				manifestos,
-				conversations,
-			),
-		[conversations, galaxyGroups, manifestos, posts, sanctuaryGroups],
-	);
-	const filters = useMemo(
-		() => getCommunityFilterOptions([...sanctuaryGroups, ...galaxyGroups]),
-		[galaxyGroups, sanctuaryGroups],
-	);
-	// Suppress unused warning if it's planned for future
-	void filters;
+  const slots = useMemo(() => mapCommunitySurfaceSlots('web', userId), [userId]);
+  const pulse = useMemo(
+    () =>
+      deriveCommunityPulse(
+        posts as unknown as CommunityPost[],
+        [...sanctuaryGroups, ...galaxyGroups],
+        manifestos as any,
+        conversations,
+      ),
+    [conversations, galaxyGroups, manifestos, posts, sanctuaryGroups],
+  );
+  const filters = useMemo(
+    () => getCommunityFilterOptions([...sanctuaryGroups, ...galaxyGroups]),
+    [galaxyGroups, sanctuaryGroups],
+  );
+  // Suppress unused warning if it's planned for future
+  void filters;
 
-	const modeOptions = useMemo(
-		() => getCommunityModeOptions(canReadAnnouncements, isMessagingEnabled),
-		[canReadAnnouncements, isMessagingEnabled],
-	);
-	const quickPaths = useMemo(
-		() => getCommunityQuickPaths(canReadAnnouncements),
-		[canReadAnnouncements],
-	);
+  const modeOptions = useMemo(
+    () => getCommunityModeOptions(canReadAnnouncements, isMessagingEnabled),
+    [canReadAnnouncements, isMessagingEnabled],
+  );
+  const quickPaths = useMemo(
+    () => getCommunityQuickPaths(canReadAnnouncements),
+    [canReadAnnouncements],
+  );
 
-	const filteredPosts = useMemo(() => {
-		const query = searchQuery.trim().toLowerCase();
-		if (!query) return posts;
-		return (posts as CommunityPost[]).filter(
-			(post) =>
-				post.content?.toLowerCase().includes(query) ||
-				post.author_name?.toLowerCase().includes(query) ||
-				post.group_name?.toLowerCase().includes(query) ||
-				post.tags?.some((tag: string) => tag.toLowerCase().includes(query)),
-		);
-	}, [posts, searchQuery]);
+  const filteredPosts = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+    if (!query) return posts;
+    return (posts as CommunityPost[]).filter(
+      (post) =>
+        post.content?.toLowerCase().includes(query) ||
+        post.author_name?.toLowerCase().includes(query) ||
+        post.group_name?.toLowerCase().includes(query) ||
+        post.tags?.some((tag: string) => tag.toLowerCase().includes(query)),
+    );
+  }, [posts, searchQuery]);
 
-	useEffect(() => {
-		if (!pending.action || !isCommunityEnabled) return;
-		if (
-			pending.action.kind === "community_open_create_group" &&
-			canCreateGroup
-		) {
-			dispatch({ type: "TOGGLE_CREATE_GROUP", show: true });
-			pending.clear().catch(() => {});
-		}
-	}, [canCreateGroup, pending, isCommunityEnabled]);
+  useEffect(() => {
+    if (!pending.action || !isCommunityEnabled) return;
+    if (pending.action.kind === 'community_open_create_group' && canCreateGroup) {
+      dispatch({ type: 'TOGGLE_CREATE_GROUP', show: true });
+      pending.clear().catch(() => {});
+    }
+  }, [canCreateGroup, pending, isCommunityEnabled]);
 
-	useEffect(() => {
-		if (
-			!isCommunityEnabled ||
-			activeMode !== "messages" ||
-			!canReadMessages
-		)
-			return;
-		let cancelled = false;
-		dispatch({ type: "SET_LOADING_MESSAGES", loading: true });
-		communityAPI
-			.getDirectConversations()
-			.then((data) => {
-				if (!cancelled)
-					dispatch({
-						type: "SET_CONVERSATIONS",
-						conversations: data as DirectConversation[],
-					});
-			})
-			.catch((error) => {
-				console.error(
-					"[CommunityScreen.web] Failed to load direct conversations",
-					error,
-				);
-			})
-			.finally(() => {
-				if (!cancelled)
-					dispatch({ type: "SET_LOADING_MESSAGES", loading: false });
-			});
-		return () => {
-			cancelled = true;
-		};
-	}, [activeMode, canReadMessages, isCommunityEnabled]);
+  useEffect(() => {
+    if (!isCommunityEnabled || activeMode !== 'messages' || !canReadMessages) return;
+    let cancelled = false;
+    dispatch({ type: 'SET_LOADING_MESSAGES', loading: true });
+    communityAPI
+      .getDirectConversations()
+      .then((data: any) => {
+        if (!cancelled)
+          dispatch({
+            type: 'SET_CONVERSATIONS',
+            conversations: data as DirectConversation[],
+          });
+      })
+      .catch((error: any) => {
+        console.error('[CommunityScreen.web] Failed to load direct conversations', error);
+      })
+      .finally(() => {
+        if (!cancelled) dispatch({ type: 'SET_LOADING_MESSAGES', loading: false });
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [activeMode, canReadMessages, isCommunityEnabled]);
 
-	useEffect(() => {
-		if (!isCommunityEnabled || !canReadAnnouncements || !schoolId) return;
-		let cancelled = false;
-		communityAPI
-			.getAnnouncements(schoolId)
-			.then((data) => {
-				if (!cancelled)
-					dispatch({
-						type: "SET_ANNOUNCEMENT_COUNT",
-						count: (data as unknown[]).length,
-					});
-			})
-			.catch((error) => {
-				console.error(
-					"[CommunityScreen.web] Failed to load announcements",
-					error,
-				);
-			});
-		return () => {
-			cancelled = true;
-		};
-	}, [canReadAnnouncements, schoolId, isCommunityEnabled]);
+  useEffect(() => {
+    if (!isCommunityEnabled || !canReadAnnouncements || !schoolId) return;
+    let cancelled = false;
+    communityAPI
+      .getAnnouncements(schoolId)
+      .then((data: any) => {
+        if (!cancelled)
+          dispatch({
+            type: 'SET_ANNOUNCEMENT_COUNT',
+            count: (data as unknown[]).length,
+          });
+      })
+      .catch((error: any) => {
+        console.error('[CommunityScreen.web] Failed to load announcements', error);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [canReadAnnouncements, schoolId, isCommunityEnabled]);
 
-	const openAuthFlow = useCallback(() => {
-		setPendingGateAction({
-			kind: "community_open_create_group",
-			createdAt: Date.now(),
-		}).catch(() => {});
-		navigation.navigate("Auth");
-	}, [navigation]);
+  const openAuthFlow = useCallback(() => {
+    setPendingGateAction({
+      kind: 'community_open_create_group',
+      createdAt: Date.now(),
+    }).catch(() => {});
+    navigation.navigate('Auth');
+  }, [navigation]);
 
-	const handleOpenGroup = useCallback(
-		(groupId: string, groupName?: string) => {
-			navigation.navigate("GroupDetails", { groupId, groupName });
-		},
-		[navigation],
-	);
+  const handleOpenGroup = useCallback(
+    (groupId: string, groupName?: string) => {
+      navigation.navigate('GroupDetails', { groupId, groupName });
+    },
+    [navigation],
+  );
 
-	const renderGuestGate = (title: string, description: string) => (
-		<div className="community-empty-card">
-			<PositiveInvitation
-				title={title}
-				description={description}
-				type="guest"
-				context="community"
-				actionLabel="Create account"
-				onAction={openAuthFlow}
-			/>
-		</div>
-	);
+  const renderGuestGate = (title: string, description: string) => (
+    <div className="community-empty-card">
+      <PositiveInvitation
+        title={title}
+        description={description}
+        type="anonymous"
+        context="community"
+        actionLabel="Create account"
+        onAction={openAuthFlow}
+      />
+    </div>
+  );
 
-	const renderPostItem = useCallback(
-		({ item: post }: { item: CommunityPost }) => (
-			<PostCard
-				key={post.id}
-				post={post}
-				currentUserId={user?.id}
-				isSocialShieldEnabled={isSocialShieldEnabled}
-				onPress={() => {
-					if (post.group_id)
-						handleOpenGroup(post.group_id, post.group_name ?? "Circle");
-				}}
-				onLike={() => {
-					if (user?.id)
-						communityAPI
-							.togglePostReaction(post.id, user.id)
-							.catch((err) =>
-								console.error("[CommunityScreen.web] Like failed", err),
-							);
-				}}
-				onComment={() => {
-					dispatch({
-						type: "OPEN_COMMENTS",
-						postId: post.id,
-						authorId: post.author_id ?? undefined,
-						postType: post.post_type,
-					});
-				}}
-				onAuthorPress={() => {
-					if (post.author_id && !post.is_anonymous && navigation?.navigate) {
-						navigation.navigate("PublicProfile", {
-							id: post.author_id,
-							type: "user",
-						});
-					}
-				}}
-			/>
-		),
-		[
-			user,
-			isSocialShieldEnabled,
-			navigation,
-			handleOpenGroup,
-			dispatch,
-		],
-	);
+  const renderPostItem = useCallback(
+    ({ item: post }: { item: CommunityPost }) => (
+      <PostCard
+        key={post.id}
+        post={post}
+        currentUserId={user?.id}
+        isSocialShieldEnabled={isSocialShieldEnabled}
+        onPress={() => {
+          if (post.group_id) handleOpenGroup(post.group_id, post.group_name ?? 'Circle');
+        }}
+        onLike={() => {
+          if (user?.id)
+            communityAPI
+              .togglePostReaction(post.id, user.id)
+              .catch((err: any) => console.error('[CommunityScreen.web] Like failed', err));
+        }}
+        onComment={() => {
+          dispatch({
+            type: 'OPEN_COMMENTS',
+            postId: post.id,
+            authorId: post.author_id ?? undefined,
+            postType: post.post_type,
+          });
+        }}
+        onAuthorPress={() => {
+          if (post.author_id && !post.is_anonymous && navigation?.navigate) {
+            navigation.navigate('PublicProfile', {
+              id: post.author_id,
+              type: 'user',
+            });
+          }
+        }}
+      />
+    ),
+    [user, isSocialShieldEnabled, navigation, handleOpenGroup, dispatch],
+  );
 
-	const renderPostStream = () => {
-		if (!canReadFeed) {
-			return renderGuestGate(
-				"The Hearth opens with citizenship",
-				"The Community Hearth is currently in 'View Only' mode for Wanderers. Create an account to join circles, share your resonance, and contribute to the collective pulse.",
-			);
-		}
+  const renderPostStream = () => {
+    if (!canReadFeed) {
+      return renderGuestGate(
+        'The Hearth opens with citizenship',
+        "The Community Hearth is currently in 'View Only' mode for Wanderers. Create an account to join circles, share your resonance, and contribute to the collective pulse.",
+      );
+    }
 
-		if (isLoadingPosts) {
-			return (
-				<div
-					className="community-empty-card"
-					style={{ textAlign: "center", padding: "48px 24px" }}
-				>
-					<Spinner />
-				</div>
-			);
-		}
+    if (isLoadingPosts) {
+      return (
+        <div className="community-empty-card" style={{ textAlign: 'center', padding: '48px 24px' }}>
+          <Spinner />
+        </div>
+      );
+    }
 
-		return (
-			<div style={{ flex: 1, minHeight: "500px" }}>
-				<SanctuaryFlashList
-					data={filteredPosts as CommunityPost[]}
-					renderItem={renderPostItem}
-					keyExtractor={(item: CommunityPost) => item.id}
-					estimatedItemSize={240}
-				/>
-			</div>
-		);
-	};
+    return (
+      <div style={{ flex: 1, minHeight: '500px' }}>
+        <SanctuaryFlashList
+          data={filteredPosts as CommunityPost[]}
+          renderItem={renderPostItem}
+          keyExtractor={(item: CommunityPost) => item.id}
+          estimatedItemSize={240}
+        />
+      </div>
+    );
+  };
 
-	const renderCircles = () => {
-		if (!canReadGroups) {
-			return renderGuestGate(
-				"Circles are part of belonging",
-				"Create an account to discover groups, join your sanctuary circles, and contribute to shared resonance.",
-			);
-		}
+  const renderCircles = () => {
+    if (!canReadGroups) {
+      return renderGuestGate(
+        'Circles are part of belonging',
+        'Create an account to discover groups, join your sanctuary circles, and contribute to shared resonance.',
+      );
+    }
 
-		const visibleGroups = searchQuery
-			? [...sanctuaryGroups, ...galaxyGroups].filter(
-					(group) =>
-						group.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-						group.description
-							?.toLowerCase()
-							.includes(searchQuery.toLowerCase()),
-				)
-			: [...sanctuaryGroups, ...galaxyGroups];
+    const visibleGroups = searchQuery
+      ? [...sanctuaryGroups, ...galaxyGroups].filter(
+          (group) =>
+            group.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            group.description?.toLowerCase().includes(searchQuery.toLowerCase()),
+        )
+      : [...sanctuaryGroups, ...galaxyGroups];
 
-		return (
-			<div className="community-circle-grid">
-				{visibleGroups.map((group) => (
-					<button
-						key={group.id}
-						className="community-circle-card"
-						onClick={() => handleOpenGroup(group.id, group.name)}
-					>
-						<div className="community-circle-avatar">
-							{group.name.charAt(0).toUpperCase()}
-						</div>
-						<div className="community-circle-copy">
-							<strong>{group.name}</strong>
-							<span>
-								{group.description ||
-									"Shared resonance and practical conversation."}
-							</span>
-							<small>{group.member_count} members</small>
-						</div>
-					</button>
-				))}
-			</div>
-		);
-	};
+    return (
+      <div className="community-circle-grid">
+        {visibleGroups.map((group) => (
+          <button
+            key={group.id}
+            className="community-circle-card"
+            onClick={() => handleOpenGroup(group.id, group.name)}
+          >
+            <div className="community-circle-avatar">{group.name.charAt(0).toUpperCase()}</div>
+            <div className="community-circle-copy">
+              <strong>{group.name}</strong>
+              <span>{group.description || 'Shared resonance and practical conversation.'}</span>
+              <small>{group.member_count} members</small>
+            </div>
+          </button>
+        ))}
+      </div>
+    );
+  };
 
-	const renderMessages = () => {
-		if (!canReadMessages) {
-			return renderGuestGate(
-				"Messages become available with citizenship",
-				"Create an account to continue 1:1 conversations from within the community shell.",
-			);
-		}
+  const renderMessages = () => {
+    if (!canReadMessages) {
+      return renderGuestGate(
+        'Messages become available with citizenship',
+        'Create an account to continue 1:1 conversations from within the community shell.',
+      );
+    }
 
-		if (loadingMessages) {
-			return (
-				<div
-					className="community-empty-card"
-					style={{ textAlign: "center", padding: "48px 24px" }}
-				>
-					<Spinner />
-				</div>
-			);
-		}
+    if (loadingMessages) {
+      return (
+        <div className="community-empty-card" style={{ textAlign: 'center', padding: '48px 24px' }}>
+          <Spinner />
+        </div>
+      );
+    }
 
-		if (conversations.length === 0) {
-			return (
-				<div className="community-empty-card">
-					<h3>No direct conversations yet</h3>
-					<p>
-						Messages stay close by, but they only appear once you begin a 1:1
-						thread.
-					</p>
-				</div>
-			);
-		}
+    if (conversations.length === 0) {
+      return (
+        <div className="community-empty-card">
+          <h3>No direct conversations yet</h3>
+          <p>Messages stay close by, but they only appear once you begin a 1:1 thread.</p>
+        </div>
+      );
+    }
 
-		return (
-			<div className="community-message-list">
-				{conversations.map((conversation) => (
-					<button
-						key={conversation.id}
-						className="community-message-row"
-						onClick={() => {
-							navigation.navigate("DirectMessage", {
-								conversationId: conversation.id,
-								userName: conversation.other_user_name,
-							});
-						}}
-					>
-						<div className="community-message-avatar">
-							{conversation.other_user_name
-								.split(" ")
-								.map((word) => word[0])
-								.join("")
-								.slice(0, 2)
-								.toUpperCase()}
-						</div>
-						<div className="community-message-copy">
-							<strong>{conversation.other_user_name}</strong>
-							<span>Continue the conversation from the hearth.</span>
-						</div>
-						<small>
-							{new Date(conversation.updated_at).toLocaleDateString()}
-						</small>
-					</button>
-				))}
-			</div>
-		);
-	};
+    return (
+      <div className="community-message-list">
+        {conversations.map((conversation) => (
+          <button
+            key={conversation.id}
+            className="community-message-row"
+            onClick={() => {
+              navigation.navigate('DirectMessage', {
+                conversationId: conversation.id,
+                userName: conversation.other_user_name,
+              });
+            }}
+          >
+            <div className="community-message-avatar">
+              {conversation.other_user_name
+                .split(' ')
+                .map((word) => word[0])
+                .join('')
+                .slice(0, 2)
+                .toUpperCase()}
+            </div>
+            <div className="community-message-copy">
+              <strong>{conversation.other_user_name}</strong>
+              <span>Continue the conversation from the hearth.</span>
+            </div>
+            <small>{new Date(conversation.updated_at).toLocaleDateString()}</small>
+          </button>
+        ))}
+      </div>
+    );
+  };
 
-	const renderAnnouncements = () => {
-		if (!canReadAnnouncements || !schoolId || !user?.id) {
-			return renderGuestGate(
-				"Announcements require school attachment",
-				"Attach to a sanctuary and accept your invitation to receive school-wide guidance here.",
-			);
-		}
+  const renderAnnouncements = () => {
+    if (!canReadAnnouncements || !schoolId || !user?.id) {
+      return renderGuestGate(
+        'Announcements require school attachment',
+        'Attach to a sanctuary and accept your invitation to receive school-wide guidance here.',
+      );
+    }
 
-		return (
-			<AnnouncementsScreen
-				schoolId={schoolId}
-				userId={user.id}
-			/>
-		);
-	};
+    return <AnnouncementsScreen schoolId={schoolId} userId={user.id} />;
+  };
 
-	const renderActiveSurface = () => {
-		switch (activeMode) {
-			case "circles":
-				return renderCircles();
-			case "messages":
-				return renderMessages();
-			case "announcements":
-				return renderAnnouncements();
-			default:
-				return renderPostStream();
-		}
-	};
+  const renderActiveSurface = () => {
+    switch (activeMode) {
+      case 'circles':
+        return renderCircles();
+      case 'messages':
+        return renderMessages();
+      case 'announcements':
+        return renderAnnouncements();
+      default:
+        return renderPostStream();
+    }
+  };
 
-	if (!isCommunityEnabled) {
-		return (
-			<Box className="flex-1 bg-phase-canvas">
-				<WebScreenHeader title="Community" />
-				<Box className="flex-1 items-center justify-center p-12">
-					<VStack space="xl" className="items-center max-w-md">
-						<Box className="w-16 h-16 bg-phase-warning/10 rounded-full items-center justify-center">
-							<Icon as={Info} size="xl" className="text-phase-warning" />
-						</Box>
-						<Heading className="text-center">Sanctuary Maintenance</Heading>
-						<Text className="text-center text-phase-text-secondary">
-							The community spaces are currently undergoing a structural
-							expansion. Please check back soon for a calmer, more resonant
-							experience.
-						</Text>
-					</VStack>
-				</Box>
-			</Box>
-		);
-	}
+  if (!isCommunityEnabled) {
+    return (
+      <Box className="flex-1 bg-phase-canvas">
+        <WebScreenHeader title="Community" />
+        <Box className="flex-1 items-center justify-center p-12">
+          <VStack space="xl" className="items-center max-w-md">
+            <Box className="w-16 h-16 bg-phase-warning/10 rounded-full items-center justify-center">
+              <Icon as={Info} size="xl" className="text-phase-warning" />
+            </Box>
+            <Heading className="text-center">Sanctuary Maintenance</Heading>
+            <Text className="text-center text-phase-text-secondary">
+              The community spaces are currently undergoing a structural expansion. Please check
+              back soon for a calmer, more resonant experience.
+            </Text>
+          </VStack>
+        </Box>
+      </Box>
+    );
+  }
 
-	return (
-		<div className="sanctuary-screen community-screen">
-			<div className="sanctuary-container">
-				<WebScreenHeader
-					title="The Heart becomes the center of community."
-					note="Same capabilities, wiser order: pulse first, conversation second, circles and messages close by, trust visible but quiet."
-					timeText="Community workspace"
-					actions={
-						<div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-							<button
-								className="premium-button"
-								onClick={() =>
-									canCreatePost
-										? dispatch({ type: "TOGGLE_CREATE_POST", show: true })
-										: openAuthFlow()
-								}
-							>
-								<Plus size={15} />
-								New Post
-							</button>
-							<button
-								className="secondary-button"
-								onClick={() =>
-									canCreateGroup
-										? dispatch({ type: "TOGGLE_CREATE_GROUP", show: true })
-										: openAuthFlow()
-								}
-							>
-								<Users2 size={15} />
-								New Group
-							</button>
-							<button className="secondary-button" aria-label="Notifications">
-								<Bell size={15} />
-								{unreadCount > 0 ? `${unreadCount}` : "0"}
-							</button>
-						</div>
-					}
-				/>
+  return (
+    <div className="sanctuary-screen community-screen">
+      <div className="sanctuary-container">
+        <WebScreenHeader
+          title="The Heart becomes the center of community."
+          note="Same capabilities, wiser order: pulse first, conversation second, circles and messages close by, trust visible but quiet."
+          timeText="Community workspace"
+          actions={
+            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+              <button
+                className="premium-button"
+                onClick={() =>
+                  canCreatePost
+                    ? dispatch({ type: 'TOGGLE_CREATE_POST', show: true })
+                    : openAuthFlow()
+                }
+              >
+                <Plus size={15} />
+                New Post
+              </button>
+              <button
+                className="secondary-button"
+                onClick={() =>
+                  canCreateGroup
+                    ? dispatch({ type: 'TOGGLE_CREATE_GROUP', show: true })
+                    : openAuthFlow()
+                }
+              >
+                <Users2 size={15} />
+                New Group
+              </button>
+              <button className="secondary-button" aria-label="Notifications">
+                <Bell size={15} />
+                {unreadCount > 0 ? `${unreadCount}` : '0'}
+              </button>
+            </div>
+          }
+        />
 
-				<div className="community-layout">
-					<aside className="community-left-rail">
-						<section className="community-rail-card">
-							<span className="community-section-eyebrow">
-								{slots.modes ? "Modes" : "Community"}
-							</span>
-							<div className="community-mode-stack">
-								{modeOptions.map((mode) => (
-									<button
-										key={mode.key}
-										className={`community-mode-button ${activeMode === mode.key ? "active" : ""}`}
-										onClick={() => dispatch({ type: "SET_MODE", mode: mode.key })}
-									>
-										{mode.label}
-									</button>
-								))}
-							</div>
-						</section>
+        <div className="community-layout">
+          <aside className="community-left-rail">
+            <section className="community-rail-card">
+              <span className="community-section-eyebrow">
+                {slots.modes ? 'Modes' : 'Community'}
+              </span>
+              <div className="community-mode-stack">
+                {modeOptions.map((mode) => (
+                  <button
+                    key={mode.key}
+                    className={`community-mode-button ${activeMode === mode.key ? 'active' : ''}`}
+                    onClick={() => dispatch({ type: 'SET_MODE', mode: mode.key })}
+                  >
+                    {mode.label}
+                  </button>
+                ))}
+              </div>
+            </section>
 
-						<section className="community-rail-card">
-							<span className="community-section-eyebrow">
-								{sanctuaryGroups.length > 0 ? "Joined circles" : "Discover circles"}
-							</span>
-							<div className="community-chip-stack">
-								{(sanctuaryGroups.length > 0 ? sanctuaryGroups : galaxyGroups)
-									.slice(0, 4)
-									.map((group) => (
-										<button
-											key={group.id}
-											className={`community-chip ${selectedFilter === group.id ? "active" : ""}`}
-											onClick={() => {
-												if (canReadFeed) {
-													dispatch({ type: "SET_FILTER", filter: group.id });
-													dispatch({ type: "SET_MODE", mode: "feed" });
-													void fetchPosts(group.id);
-												} else {
-													handleOpenGroup(group.id, group.name);
-												}
-											}}
-										>
-											{group.name}
-										</button>
-									))}
-							</div>
-						</section>
+            <section className="community-rail-card">
+              <span className="community-section-eyebrow">
+                {sanctuaryGroups.length > 0 ? 'Joined circles' : 'Discover circles'}
+              </span>
+              <div className="community-chip-stack">
+                {(sanctuaryGroups.length > 0 ? sanctuaryGroups : galaxyGroups)
+                  .slice(0, 4)
+                  .map((group) => (
+                    <button
+                      key={group.id}
+                      className={`community-chip ${selectedFilter === group.id ? 'active' : ''}`}
+                      onClick={() => {
+                        if (canReadFeed) {
+                          dispatch({ type: 'SET_FILTER', filter: group.id });
+                          dispatch({ type: 'SET_MODE', mode: 'feed' });
+                          void fetchPosts(group.id);
+                        } else {
+                          handleOpenGroup(group.id, group.name);
+                        }
+                      }}
+                    >
+                      {group.name}
+                    </button>
+                  ))}
+              </div>
+            </section>
 
-						<section className="community-rail-card">
-							<span className="community-section-eyebrow">Trust</span>
-							<p>
-								Social shield and positive safety cues stay visible in the
-								shell.
-							</p>
-							<div className="community-icon-row">
-								<Shield size={16} />
-								<span>Safety and reporting remain one step away.</span>
-							</div>
-						</section>
+            <section className="community-rail-card">
+              <span className="community-section-eyebrow">Trust</span>
+              <p>Social shield and positive safety cues stay visible in the shell.</p>
+              <div className="community-icon-row">
+                <Shield size={16} />
+                <span>Safety and reporting remain one step away.</span>
+              </div>
+            </section>
 
-						<section className="community-rail-card">
-							<span className="community-section-eyebrow">Quick path</span>
-							<div className="community-quick-paths">
-								{quickPaths.map((path) => (
-									<button
-										key={path.key}
-										className="community-quick-path"
-										onClick={() =>
-											dispatch({
-												type: "SET_MODE",
-												mode: path.key as CommunityWorkspaceMode,
-											})
-										}
-									>
-										<strong>{path.title}</strong>
-										<span>{path.description}</span>
-									</button>
-								))}
-							</div>
-						</section>
-					</aside>
+            <section className="community-rail-card">
+              <span className="community-section-eyebrow">Quick path</span>
+              <div className="community-quick-paths">
+                {quickPaths.map((path) => (
+                  <button
+                    key={path.key}
+                    className="community-quick-path"
+                    onClick={() =>
+                      dispatch({
+                        type: 'SET_MODE',
+                        mode: path.key as CommunityWorkspaceMode,
+                      })
+                    }
+                  >
+                    <strong>{path.title}</strong>
+                    <span>{path.description}</span>
+                  </button>
+                ))}
+              </div>
+            </section>
+          </aside>
 
-					<main className="community-center-column">
-						<section className="community-hearth-card">
-							<div className="community-hearth-copy">
-								<div>
-									<span className="community-section-eyebrow">
-										The Community Hearth
-									</span>
-									<h2>
-										Presence, welcome, manifestos, and spotlight belong
-										together.
-									</h2>
-									<p>
-										The school should feel emotionally alive before it feels
-										operational. That is why the hearth remains first.
-									</p>
-								</div>
+          <main className="community-center-column">
+            <section className="community-hearth-card">
+              <div className="community-hearth-copy">
+                <div>
+                  <span className="community-section-eyebrow">The Community Hearth</span>
+                  <h2>Presence, welcome, manifestos, and spotlight belong together.</h2>
+                  <p>
+                    The school should feel emotionally alive before it feels operational. That is
+                    why the hearth remains first.
+                  </p>
+                </div>
 
-								<div className="community-pulse-box">
-									<span className="community-section-eyebrow">
-										Community pulse
-									</span>
-									<strong>
-										{pulse.membersSeen} school members seen this cycle
-									</strong>
-									<span>{pulse.circlesActive} circles active</span>
-									<span>{pulse.newPostsToday} new posts today</span>
-								</div>
-							</div>
-							<CommunityHearth manifestos={manifestos} userId={userId} />
-						</section>
+                <div className="community-pulse-box">
+                  <span className="community-section-eyebrow">Community pulse</span>
+                  <strong>{pulse.membersSeen} school members seen this cycle</strong>
+                  <span>{pulse.circlesActive} circles active</span>
+                  <span>{pulse.newPostsToday} new posts today</span>
+                </div>
+              </div>
+              <CommunityHearth manifestos={manifestos as any} userId={userId} />
+            </section>
 
-						<section className="community-search-row">
-							<div className="community-search-shell">
-								<Compass size={16} />
-								<input
-									value={searchQuery}
-									onChange={(event) =>
-										dispatch({ type: "SET_SEARCH", query: event.target.value })
-									}
-									placeholder="Search posts, circles, members, announcements..."
-									aria-label="Search community"
-								/>
-							</div>
-							<div className="community-mode-inline">
-								{modeOptions.map((mode) => (
-									<button
-										key={mode.key}
-										className={`community-inline-chip ${activeMode === mode.key ? "active" : ""}`}
-										onClick={() => dispatch({ type: "SET_MODE", mode: mode.key })}
-									>
-										{mode.label}
-									</button>
-								))}
-							</div>
-						</section>
+            <section className="community-search-row">
+              <div className="community-search-shell">
+                <Compass size={16} />
+                <input
+                  value={searchQuery}
+                  onChange={(event) => dispatch({ type: 'SET_SEARCH', query: event.target.value })}
+                  placeholder="Search posts, circles, members, announcements..."
+                  aria-label="Search community"
+                />
+              </div>
+              <div className="community-mode-inline">
+                {modeOptions.map((mode) => (
+                  <button
+                    key={mode.key}
+                    className={`community-inline-chip ${activeMode === mode.key ? 'active' : ''}`}
+                    onClick={() => dispatch({ type: 'SET_MODE', mode: mode.key })}
+                  >
+                    {mode.label}
+                  </button>
+                ))}
+              </div>
+            </section>
 
-						<section className="community-main-stream">
-							{renderActiveSurface()}
-						</section>
-					</main>
+            <section className="community-main-stream">{renderActiveSurface()}</section>
+          </main>
 
-					<aside className="community-right-rail">
-						<section className="community-rail-card">
-							<span className="community-section-eyebrow">Context</span>
-							<p>
-								Your personal community dashboard provides a tailored view of
-								what matters most right now.
-							</p>
-						</section>
-						<section className="community-rail-card">
-							<span className="community-section-eyebrow">Hearth Pulse</span>
-							<div className="community-stat-list">
-								<div className="community-stat-item">
-									<strong>{pulse.membersSeen}</strong>
-									<span>Active today</span>
-								</div>
-								<div className="community-stat-item">
-									<strong>{pulse.circlesActive}</strong>
-									<span>Active circles</span>
-								</div>
-							</div>
-						</section>
-					</aside>
-				</div>
-			</div>
+          <aside className="community-right-rail">
+            <section className="community-rail-card">
+              <span className="community-section-eyebrow">Context</span>
+              <p>
+                Your personal community dashboard provides a tailored view of what matters most
+                right now.
+              </p>
+            </section>
+            <section className="community-rail-card">
+              <span className="community-section-eyebrow">Hearth Pulse</span>
+              <div className="community-stat-list">
+                <div className="community-stat-item">
+                  <strong>{pulse.membersSeen}</strong>
+                  <span>Active today</span>
+                </div>
+                <div className="community-stat-item">
+                  <strong>{pulse.circlesActive}</strong>
+                  <span>Active circles</span>
+                </div>
+              </div>
+            </section>
+          </aside>
+        </div>
+      </div>
 
-			<CreatePostModal
-				isOpen={showCreatePost}
-				onClose={() => dispatch({ type: "TOGGLE_CREATE_POST", show: false })}
-				onSuccess={() => void fetchPosts()}
-			/>
+      <CreatePostModal
+        isOpen={showCreatePost}
+        onClose={() => dispatch({ type: 'TOGGLE_CREATE_POST', show: false })}
+        onSuccess={() => void fetchPosts()}
+      />
 
-			<CreateGroupModal
-				isOpen={showCreateGroup}
-				onClose={() => dispatch({ type: "TOGGLE_CREATE_GROUP", show: false })}
-				onSuccess={() => void fetchGroups()}
-			/>
+      <CreateGroupModal
+        isOpen={showCreateGroup}
+        onClose={() => dispatch({ type: 'TOGGLE_CREATE_GROUP', show: false })}
+        onSuccess={() => void fetchGroups()}
+      />
 
-			<CommentSheet
-				postId={commentPostId}
-				postAuthorId={commentPostAuthorId}
-				postType={commentPostType}
-				onClose={() => dispatch({ type: "CLOSE_COMMENTS" })}
-			/>
+      <CommentSheet
+        postId={commentPostId}
+        postAuthorId={commentPostAuthorId}
+        postType={commentPostType}
+        onClose={() => dispatch({ type: 'CLOSE_COMMENTS' })}
+      />
 
-			<style>{`
+      <style>{`
                 .community-screen {
                     background: var(--phase-canvas);
                     min-height: 100vh;
@@ -1030,6 +950,6 @@ export default function CommunityScreenWeb() {
                     }
                 }
             `}</style>
-		</div>
-	);
+    </div>
+  );
 }

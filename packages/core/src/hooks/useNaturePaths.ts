@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { type CrystalTier, type RiverStage } from '../types/Growth';
 import { growth } from '../logic';
-
 import { usePermissions } from '../logic/permissions/hooks/usePermissions';
+import type { CrystalTier, RiverStage } from '../types/Growth';
 
 /**
  * useNaturePaths
@@ -11,7 +10,7 @@ import { usePermissions } from '../logic/permissions/hooks/usePermissions';
  */
 export const useNaturePaths = () => {
   const { context } = usePermissions();
-  const userId = context.user_id;
+  const userId = context.userId;
   const [paths, setPaths] = useState<{
     river_stage: RiverStage;
     crystal_tier: CrystalTier;
@@ -39,7 +38,6 @@ export const useNaturePaths = () => {
       setIsLoading(false);
     }
   }, [userId]);
-
 
   useEffect(() => {
     refreshPaths().catch((e) => {

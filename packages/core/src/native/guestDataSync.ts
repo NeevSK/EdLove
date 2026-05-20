@@ -1,6 +1,7 @@
 import { authAPI } from '../api/auth';
 import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../api/supabase';
 import { GuestDataManager } from './guestDataManager';
+import { createSovereignClient, SOVEREIGN_API_URL } from '../api/base';
 
 export interface SyncProgress {
   total: number;
@@ -15,7 +16,10 @@ export type SyncProgressCallback = (progress: SyncProgress) => void;
  * Guest Data Sync Service
  *
  * Handles migration of locally stored guest data to Supabase when a user creates an account.
- * This service ensures seamless data continuity during the guest \u2192 authenticated user transition.
+ * This service ensures seamless data continuity during the guest → authenticated user transition.
+ *
+ * 2026 Resilient Refactor: Routes all guest migration data in a single transactional
+ * RPC payload to Sanctuary API, maintaining absolute double-gate middleware compliance.
  */
 export class GuestDataSync {
   /**
@@ -74,87 +78,119 @@ export class GuestDataSync {
         }
       };
 
-      // 1. Sync Timetable \u2014 batch insert for all periods
-      updateProgress('Syncing timetable periods...');
+      const crudBatch: Array<{
+        id: string;
+        op: 'PUT';
+        table: string;
+        opData: Record<string, any>;
+      }> = [];
+
+      // 1. Stage Timetable
       if (guestData.timetable.length > 0) {
-        const timetableRows = guestData.timetable.map((period) => ({
-          user_id: userId,
-          day_of_week: period.day_of_week,
-          period_number: period.period_number,
-          subject: period.subject,
-          class_name: period.class_name,
-          type: period.type,
-          start_time: period.start_time,
-          end_time: period.end_time,
-        }));
-        const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('timetable').insert(timetableRows);
-        if (!error) {
-          synced.timetable = timetableRows.length;
-        } else {
-          errors.push(`Timetable: ${error.message}`);
-        }
-        completed += guestData.timetable.length;
-        updateProgress('Syncing timetable periods...');
+        guestData.timetable.forEach((period) => {
+          crudBatch.push({
+            id: (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') ? crypto.randomUUID() : 'temp-id-' + Math.random().toString(36).substr(2, 9),
+            op: 'PUT',
+            table: 'timetable',
+            opData: {
+              user_id: userId,
+              day_of_week: period.day_of_week,
+              period_number: period.period_number,
+              subject: period.subject,
+              class_name: period.class_name,
+              type: period.type,
+              start_time: period.start_time,
+              end_time: period.end_time,
+            },
+          });
+        });
       }
 
-      // 2. Sync Mood Logs \u2014 batch insert
-      updateProgress('Syncing mood logs...');
+      // 2. Stage Mood Logs
       const moodMap = ['joyful', 'calm', 'curious', 'anxious', 'frustrated', 'sad'];
       if (guestData.moodLogs.length > 0) {
-        const moodRows = guestData.moodLogs.map((log) => ({
-          user_id: userId,
-          mood: moodMap[log.mood],
-          note: log.note,
-          created_at: log.timestamp,
-        }));
-        const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('mood_logs').insert(moodRows);
-        if (!error) {
-          synced.moodLogs = moodRows.length;
-        } else {
-          errors.push(`Mood logs: ${error.message}`);
-        }
-        completed += guestData.moodLogs.length;
-        updateProgress('Syncing mood logs...');
+        guestData.moodLogs.forEach((log) => {
+          crudBatch.push({
+            id: (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') ? crypto.randomUUID() : 'temp-id-' + Math.random().toString(36).substr(2, 9),
+            op: 'PUT',
+            table: 'mood_logs',
+            opData: {
+              user_id: userId,
+              mood: moodMap[log.mood],
+              note: log.note,
+              created_at: log.timestamp,
+            },
+          });
+        });
       }
 
-      // 3. Sync Journal Entries \u2014 batch insert
-      updateProgress('Syncing journal entries...');
+      // 3. Stage Journal Entries
       if (guestData.journalEntries.length > 0) {
-        const journalRows = guestData.journalEntries.map((entry) => ({
-          user_id: userId,
-          content: entry.content,
-          created_at: entry.timestamp,
-        }));
-        const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('journal_entries').insert(journalRows);
-        if (!error) {
-          synced.journalEntries = journalRows.length;
-        } else {
-          errors.push(`Journal entries: ${error.message}`);
-        }
-        completed += guestData.journalEntries.length;
-        updateProgress('Syncing journal entries...');
+        guestData.journalEntries.forEach((entry) => {
+          crudBatch.push({
+            id: (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') ? crypto.randomUUID() : 'temp-id-' + Math.random().toString(36).substr(2, 9),
+            op: 'PUT',
+            table: 'fire_journal',
+            opData: {
+              user_id: userId,
+              content: entry.content,
+              created_at: entry.timestamp,
+            },
+          });
+        });
       }
 
-      // 4. Sync Students \u2014 batch insert (teachers only)
-      updateProgress('Syncing students...');
+      // 4. Stage Students
       if (guestData.students.length > 0) {
-        const studentRows = guestData.students.map((student) => ({
-          full_name: student.name,
-          index_number: student.index_number,
-          notes: student.notes,
-          // Note: class_id would need to be set separately if creating a classroom
-        }));
-        const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('students').insert(studentRows);
-        if (!error) {
-          synced.students = studentRows.length;
-        } else {
-          errors.push(`Students: ${error.message}`);
-        }
-        completed += guestData.students.length;
-        updateProgress('Syncing students...');
+        guestData.students.forEach((student) => {
+          crudBatch.push({
+            id: (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') ? crypto.randomUUID() : 'temp-id-' + Math.random().toString(36).substr(2, 9),
+            op: 'PUT',
+            table: 'classroom_student',
+            opData: {
+              full_name: student.name,
+              index_number: student.index_number,
+              notes: student.notes,
+            },
+          });
+        });
       }
 
-      // Final progress update
+      if (crudBatch.length > 0) {
+        updateProgress('Migrating user data payload through Sanctuary Gateway...');
+
+        const {
+          data: { session },
+          error: sessionError,
+        } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.auth.getSession();
+
+        if (sessionError || !session) {
+          throw new Error('No active authenticated session. Cannot migrate guest data.');
+        }
+
+        const client = createSovereignClient(SOVEREIGN_API_URL);
+        const res = await client.api.powersync.upload.$post({
+          json: {
+            crud: crudBatch,
+          },
+        }, {
+          headers: {
+            'Authorization': `Bearer ${session.access_token}`,
+          },
+        });
+
+        if (!res.ok) {
+          const err = (await res.json()) as any;
+          throw new Error(err.message || `Sanctuary migration aborted with status ${res.status}`);
+        }
+
+        synced.timetable = guestData.timetable.length;
+        synced.moodLogs = guestData.moodLogs.length;
+        synced.journalEntries = guestData.journalEntries.length;
+        synced.students = guestData.students.length;
+        completed = totalItems;
+      }
+
       updateProgress('Sync complete!');
 
       // Clear guest data after successful sync

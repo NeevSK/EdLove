@@ -1,29 +1,35 @@
 {
-	"files": ["eslint.config.js", "commitlint.config.js"],
-	"references": [
-		{ "path": "./packages/analytics" },
-		{ "path": "./packages/ui" },
-		{ "path": "./packages/graphics" },
-		{ "path": "./packages/admin" },
-		{ "path": "./packages/classroom" },
-		{ "path": "./packages/core" },
-		{ "path": "./packages/schema" },
-		{ "path": "./packages/database" },
-		{ "path": "./packages/self" }
-	],
-	"compilerOptions": {
-		"baseUrl": ".",
-		"resolveJsonModule": true,
-		"paths": {
-			"@repo/analytics": ["./packages/analytics/src"],
-			"@repo/ui": ["./packages/ui/src"],
-			"@repo/graphics": ["./packages/graphics/src"],
-			"@repo/admin": ["./packages/admin/src"],
-			"@repo/classroom": ["./packages/classroom/src"],
-			"@repo/core": ["./packages/core/src"],
-			"@repo/schema": ["./packages/schema/src"],
-			"@repo/database": ["./packages/database/src"],
-			"@repo/self": ["./packages/self/src"]
-		}
-	}
+  "files": ["eslint.config.js", "commitlint.config.js"],
+  "references": [
+    { "path": "./packages/analytics" },
+    { "path": "./packages/ui" },
+    { "path": "./packages/graphics" },
+    { "path": "./packages/admin" },
+    { "path": "./packages/classroom" },
+    { "path": "./packages/core" },
+    { "path": "./packages/schema" },
+    { "path": "./packages/database" },
+    { "path": "./packages/self" },
+    { "path": "./packages/form-builder-engine" },
+    { "path": "./packages/form-builder" }
+  ],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "resolveJsonModule": true,
+    "paths": {
+      "@repo/analytics": ["./packages/analytics/src"],
+      "@repo/ui": ["./packages/ui/src"],
+      "@repo/graphics": ["./packages/graphics/src"],
+      "@repo/admin": ["./packages/admin/src"],
+      "@repo/classroom": ["./packages/classroom/src"],
+      "@repo/core": ["./packages/core/src"],
+      "@repo/schema": ["./packages/schema/src"],
+      "@repo/database": ["./packages/database/src"],
+      "@repo/self": ["./packages/self/src"],
+      "@intuitui-labs/form-builder-engine": ["./packages/form-builder-engine/src"],
+      "@repo/form-builder": ["./packages/form-builder/src"],
+      "@repo/policies": ["./packages/policies/src"],
+      "@repo/sanctuary-api": ["./apps/sanctuary-api/src/index.ts"]
+    }
+  }
 }

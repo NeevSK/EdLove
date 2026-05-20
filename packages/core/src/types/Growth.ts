@@ -1,6 +1,6 @@
 /**
  * Growth Domain Types
- * 
+ *
  * Centralizes all types related to the Gurudevi Growth Model, including
  * nature paths, bhumi stages, and contextual challenges.
  */
@@ -14,31 +14,18 @@ export type BhumiStage = 'bijam' | 'mula' | 'nala' | 'patra' | 'kamala' | 'purna
  * Banyan (Vata) path stages \u2014 the tree that becomes a forest.
  * For teachers who mentor; for principals as their primary path.
  */
-export type BanyanStage =
-  | 'sapling'
-  | 'roots_spreading'
-  | 'canopy'
-  | 'shade_giver'
-  | 'forest_maker';
+export type BanyanStage = 'sapling' | 'roots_spreading' | 'canopy' | 'shade_giver' | 'forest_maker';
 
 /**
  * River (Ganga) path stages \u2014 learning that flows and shapes what it touches.
  * For students (primary) and teachers' curricular contribution.
  */
-export type RiverStage =
-  | 'trickle'
-  | 'stream'
-  | 'river'
-  | 'delta';
+export type RiverStage = 'trickle' | 'stream' | 'river' | 'delta';
 
 /**
  * Crystal (Spatika) tiers \u2014 student knowledge as discovered crystals and fractals.
  */
-export type CrystalTier =
-  | 'spark'
-  | 'cluster'
-  | 'cave'
-  | 'fractal';
+export type CrystalTier = 'spark' | 'cluster' | 'cave' | 'fractal';
 
 export interface CrystalDiscovery {
   id: string;
@@ -103,11 +90,7 @@ export type ChallengeType =
   | 'school_season_challenge'
   | 'personal_compass';
 
-export type ChallengeStatus =
-  | 'active'
-  | 'completed'
-  | 'expired'
-  | 'draft';
+export type ChallengeStatus = 'active' | 'completed' | 'expired' | 'draft';
 
 export interface Challenge {
   id: string;
@@ -218,4 +201,3 @@ export interface SanctuaryManifesto {
   created_at: string;
   updated_at: string;
 }
-

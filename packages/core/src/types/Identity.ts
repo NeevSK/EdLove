@@ -17,7 +17,7 @@ export type Capacity =
   | 'librarian'
   | 'nurse'
   | 'staff'
-  | 'member'
+  | 'member';
 
 /**
  * Bond: A relationship between a User and an Entity.
@@ -40,6 +40,6 @@ export interface Bond {
  * Represents the "Authority in Reality".
  */
 export interface Perspective {
-  active_bond: Bond;
-  available_bonds: Bond[];
+  activeBond?: Bond;
+  availableBonds?: Bond[];
 }

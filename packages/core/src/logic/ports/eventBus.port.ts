@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 /**
  * IEventBusPort
- * 
+ *
  * Framework-agnostic port for publishing domain events.
  * Decouples the core from Inngest, RabbitMQ, or any specific message bus.
  */

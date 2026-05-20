@@ -1,6 +1,5 @@
 import { AlertCircle, CheckCircle, Info, X } from 'lucide-react-native';
 import { useCallback, useEffect } from 'react';
-import { Pressable } from '../primitives';
 import Animated, {
   runOnJS,
   useAnimatedStyle,
@@ -8,6 +7,7 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
+import { Pressable } from '../primitives';
 import { Box } from './ui/box';
 import { HStack } from './ui/hstack';
 import { Text } from './ui/text';

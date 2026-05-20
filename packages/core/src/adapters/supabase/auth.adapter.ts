@@ -1,5 +1,5 @@
-import { IAuthPort, AuthSession, AuthUser } from '../../logic/ports/auth.port';
 import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../../api/supabase';
+import type { AuthSession, AuthUser, IAuthPort } from '../../logic/ports/auth.port';
 import { APIError } from '../../types/API';
 
 export class SupabaseAuthAdapter implements IAuthPort {
@@ -25,7 +25,11 @@ export class SupabaseAuthAdapter implements IAuthPort {
     return data as any;
   }
 
-  async signInWithOAuth(params: { provider: 'google'; redirectTo?: string; skipBrowserRedirect?: boolean }) {
+  async signInWithOAuth(params: {
+    provider: 'google';
+    redirectTo?: string;
+    skipBrowserRedirect?: boolean;
+  }) {
     const { data, error } = await this.client.auth.signInWithOAuth({
       provider: params.provider,
       options: {
@@ -38,7 +42,11 @@ export class SupabaseAuthAdapter implements IAuthPort {
     return data;
   }
 
-  async linkOAuthIdentity(params: { provider: 'google'; redirectTo?: string; skipBrowserRedirect?: boolean }) {
+  async linkOAuthIdentity(params: {
+    provider: 'google';
+    redirectTo?: string;
+    skipBrowserRedirect?: boolean;
+  }) {
     const { data, error } = await this.client.auth.linkIdentity({
       provider: params.provider,
       options: {
@@ -57,7 +65,11 @@ export class SupabaseAuthAdapter implements IAuthPort {
     return data as any;
   }
 
-  async signUp(params: { email: string; password: string; options?: { data?: Record<string, any> } }) {
+  async signUp(params: {
+    email: string;
+    password: string;
+    options?: { data?: Record<string, any> };
+  }) {
     const { data, error } = await this.client.auth.signUp(params);
     if (error) throw new APIError('Failed to sign up', error.code, error);
     return data as any;

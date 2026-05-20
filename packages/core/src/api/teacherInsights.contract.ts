@@ -169,4 +169,3 @@ export const teacherInsightsContract = c.router({
     metadata: teacherInsightAuthority('read', 'TeacherInsight'),
   },
 });
-

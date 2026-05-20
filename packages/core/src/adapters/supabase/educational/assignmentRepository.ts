@@ -1,16 +1,16 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { z } from 'zod';
-import {
-  AssignmentSchema,
-  AssignmentSubmissionSchema,
-  StudentAssignmentSchema,
-  StudentSubmissionSummarySchema,
-} from '../../../logic/schemas/classroom.schema';
 import type {
   Assignment,
   AssignmentSubmission,
   StudentAssignment,
   StudentSubmissionSummary,
+} from '../../../logic/schemas/classroom.schema';
+import {
+  AssignmentSchema,
+  AssignmentSubmissionSchema,
+  StudentAssignmentSchema,
+  StudentSubmissionSummarySchema,
 } from '../../../logic/schemas/classroom.schema';
 import { APIError } from '../../../types/API';
 
@@ -90,7 +90,9 @@ export const createAssignmentRepository = (supabase: SupabaseClient) => ({
     return assignmentRows.map((assignment, index) =>
       StudentAssignmentSchema.parse({
         ...assignment,
-        classroom: (data?.[index] as { classrooms?: { name: string } | null } | undefined)?.classrooms?.name ?? null,
+        classroom:
+          (data?.[index] as { classrooms?: { name: string } | null } | undefined)?.classrooms
+            ?.name ?? null,
         submitted: submittedIds.has(assignment.id),
       }),
     ) as StudentAssignment[];
@@ -128,7 +130,7 @@ export const createAssignmentRepository = (supabase: SupabaseClient) => ({
       } | null;
     }
 
-    return (data as unknown as RawSubmissionRow[] || []).map((item) =>
+    return ((data as unknown as RawSubmissionRow[]) || []).map((item) =>
       StudentSubmissionSummarySchema.parse({
         id: item.id,
         assignment_id: item.assignment_id,

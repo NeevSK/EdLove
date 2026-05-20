@@ -1,10 +1,10 @@
-import { IFileStoragePort, FileUploadOptions } from '../ports/storage.port';
+import type { FileUploadOptions, IFileStoragePort } from '../ports/storage.port';
 
 /**
  * MediaManager
- * 
+ *
  * Orchestrates file and asset storage operations.
- * Allows the application to be agnostic of the underlying storage provider 
+ * Allows the application to be agnostic of the underlying storage provider
  * (Cloudinary, Supabase Storage, S3, etc).
  */
 export class MediaManager {

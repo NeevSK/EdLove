@@ -60,7 +60,7 @@ module.exports = {
       from: { path: '^packages/(core|types-shim)/src/' },
       to: {
         path: '^packages/',
-        pathNot: '^packages/(core|database|schema|types-shim|eslint-config|typescript-config)/',
+        pathNot: '^packages/(core|database|schema|types-shim|eslint-config|typescript-config|form-builder-engine)/',
       },
     },
     {
@@ -83,7 +83,7 @@ module.exports = {
       to: {
         path: '^packages/',
         pathNot:
-          '^packages/(core|types-shim|ui|graphics|scanner-kit|ai|analytics|form-builder|trube-art|lk-edu-geo|eslint-config|typescript-config)/',
+          '^packages/(core|types-shim|ui|graphics|scanner-kit|ai|analytics|form-builder|trube-art|lk-edu-geo|eslint-config|typescript-config|form-builder-engine)/',
       },
     },
     {
@@ -137,7 +137,7 @@ module.exports = {
         'Apps and Domain packages must not import directly from the Database. Use @repo/core/types instead.',
       from: {
         path: '^(apps/|packages/(?!core|database|types-shim))',
-        pathNot: '\\.test\\.ts$',
+        pathNot: ['\\.test\\.ts$', '^apps/sanctuary-api/'],
       },
       to: {
         path: '^packages/database/',

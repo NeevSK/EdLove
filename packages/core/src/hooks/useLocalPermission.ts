@@ -1,0 +1,54 @@
+import { useState, useEffect } from 'react';
+import { checkLocalPermission } from '../logic/permissions/localEvaluator';
+import { usePermissions } from '../logic/permissions/hooks/usePermissions';
+import type { SubjectType, Actions } from '../logic/permissions/abilities/base';
+
+/**
+ * useLocalPermission
+ *
+ * Reactive React hook to perform live offline-first authorization checks.
+ * The snapshot evaluator is the local source of truth. The hook no longer
+ * uses a CASL-style synchronous fallback.
+ *
+ * @param action - The action (e.g. 'read', 'create', 'update', 'delete')
+ * @param resourceType - The resource category (e.g. 'Classroom', 'School', 'Grade')
+ * @param resourceId - The unique ID of the target resource
+ * @param trigger - Optional value to trigger a recheck (e.g. local record state)
+ */
+export function useLocalPermission(
+  action: Actions,
+  resourceType: SubjectType,
+  resourceId: string,
+  trigger?: any
+) {
+  const { context } = usePermissions();
+  const [isAllowed, setIsAllowed] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    let active = true;
+
+    async function evaluateLocalPDP() {
+      const allowed = await checkLocalPermission({
+        action,
+        resourceType,
+        resourceId,
+        userContext: context,
+      });
+
+      if (active) {
+        setIsAllowed(allowed);
+      }
+    }
+
+    evaluateLocalPDP();
+
+    return () => {
+      active = false;
+    };
+  }, [action, resourceType, resourceId, context, trigger]);
+
+  return {
+    isLoading: isAllowed === null,
+    isAllowed: isAllowed ?? false,
+  };
+}

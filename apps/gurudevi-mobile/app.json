@@ -1,126 +1,126 @@
 {
-	"expo": {
-		"name": "gurudevi-mobile",
-		"slug": "gurudevi-mobile",
-		"version": "1.0.2",
-		"orientation": "portrait",
-		"icon": "./assets/icon.png",
-		"userInterfaceStyle": "light",
-		"scheme": "gurudevi",
-		"splash": {
-			"image": "./assets/splash-icon.png",
-			"resizeMode": "contain",
-			"backgroundColor": "#ffffff"
-		},
-		"ios": {
-			"supportsTablet": true,
-			"bundleIdentifier": "org.edlove.gurudevi",
-			"buildNumber": "1"
-		},
-		"android": {
-			"package": "org.edlove.gurudevi",
-			"versionCode": 23,
-			"adaptiveIcon": {
-				"foregroundImage": "./assets/adaptive-icon.png",
-				"backgroundColor": "#ffffff"
-			},
-			"predictiveBackGestureEnabled": false,
-			"intentFilters": [
-				{
-					"action": "VIEW",
-					"autoVerify": true,
-					"data": [
-						{
-							"scheme": "gurudevi",
-							"host": "auth",
-							"pathPrefix": "/callback"
-						}
-					],
-					"category": ["BROWSABLE", "DEFAULT"]
-				},
-				{
-					"action": "VIEW",
-					"autoVerify": true,
-					"data": [
-						{
-							"scheme": "gurudevi",
-							"host": "qr"
-						}
-					],
-					"category": ["BROWSABLE", "DEFAULT"]
-				},
-				{
-					"action": "VIEW",
-					"autoVerify": true,
-					"data": [
-						{
-							"scheme": "https",
-							"host": "platform.gurudevi.edlove.org",
-							"pathPrefix": "/qr"
-						},
-						{
-							"scheme": "https",
-							"host": "platform.gurudevi.edlove.org",
-							"pathPrefix": "/p"
-						}
-					],
-					"category": ["BROWSABLE", "DEFAULT"]
-				}
-			]
-		},
-		"web": {
-			"favicon": "./assets/favicon.png",
-			"bundler": "metro",
-			"baseUrl": "/",
-			"name": "Gurudevi",
-			"shortName": "Gurudevi",
-			"lang": "en",
-			"display": "standalone",
-			"themeColor": "#D4843A",
-			"backgroundColor": "#F5EDD6"
-		},
-		"experiments": {
-			"baseUrl": "/"
-		},
-		"extra": {
-			"eas": {
-				"projectId": "1701dfb9-c59e-45c6-a391-58c061a0b8ce"
-			}
-		},
-		"plugins": [
-			"expo-font",
-			"./plugins/withAndroidCruncherDisabled",
-			"./plugins/withGradleProperties",
-			"expo-localization",
-			"expo-asset",
-			"expo-audio",
-			"expo-secure-store",
-			[
-				"@sentry/react-native/expo",
-				{
-					"url": "https://sentry.io/",
-					"project": "gurudevi-mobile",
-					"organization": "intuitui-labs",
-					"uploadNativeSymbols": false,
-					"autoUploadNativeSymbols": false,
-					"autoUpload": false,
-					"uploadSourceMaps": false
-				}
-			],
-			"expo-web-browser",
-			"expo-image",
-			"expo-router",
-			"expo-sharing",
-			"expo-sqlite",
-			"expo-video",
-			"expo-notifications"
-		],
-		"owner": "neevsk",
-		"runtimeVersion": {
-			"policy": "appVersion"
-		},
-		"updates": {
-			"url": "https://u.expo.dev/1701dfb9-c59e-45c6-a391-58c061a0b8ce"
-		}
-	}
+  "expo": {
+    "name": "gurudevi-mobile",
+    "slug": "gurudevi-mobile",
+    "version": "1.0.2",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "scheme": "gurudevi",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "org.edlove.gurudevi",
+      "buildNumber": "1"
+    },
+    "android": {
+      "package": "org.edlove.gurudevi",
+      "versionCode": 23,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "predictiveBackGestureEnabled": false,
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "gurudevi",
+              "host": "auth",
+              "pathPrefix": "/callback"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        },
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "gurudevi",
+              "host": "qr"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        },
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "https",
+              "host": "platform.gurudevi.edlove.org",
+              "pathPrefix": "/qr"
+            },
+            {
+              "scheme": "https",
+              "host": "platform.gurudevi.edlove.org",
+              "pathPrefix": "/p"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro",
+      "baseUrl": "/",
+      "name": "Gurudevi",
+      "shortName": "Gurudevi",
+      "lang": "en",
+      "display": "standalone",
+      "themeColor": "#D4843A",
+      "backgroundColor": "#F5EDD6"
+    },
+    "experiments": {
+      "baseUrl": "/"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "1701dfb9-c59e-45c6-a391-58c061a0b8ce"
+      }
+    },
+    "plugins": [
+      "expo-font",
+      "./plugins/withAndroidCruncherDisabled",
+      "./plugins/withGradleProperties",
+      "expo-localization",
+      "expo-asset",
+      "expo-audio",
+      "expo-secure-store",
+      [
+        "@sentry/react-native/expo",
+        {
+          "url": "https://sentry.io/",
+          "project": "gurudevi-mobile",
+          "organization": "intuitui-labs",
+          "uploadNativeSymbols": false,
+          "autoUploadNativeSymbols": false,
+          "autoUpload": false,
+          "uploadSourceMaps": false
+        }
+      ],
+      "expo-web-browser",
+      "expo-image",
+      "expo-router",
+      "expo-sharing",
+      "expo-sqlite",
+      "expo-video",
+      "expo-notifications"
+    ],
+    "owner": "neevsk",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/1701dfb9-c59e-45c6-a391-58c061a0b8ce"
+    }
+  }
 }

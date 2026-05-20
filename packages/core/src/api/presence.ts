@@ -48,7 +48,9 @@ export async function markUserPresenceSeen(userId: string): Promise<void> {
 }
 
 export function startPresenceSession(options: PresenceSessionOptions): () => void {
-  const selfChannel = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.channel(`presence:self:${options.userCapacity}`);
+  const selfChannel = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.channel(
+    `presence:self:${options.userCapacity}`,
+  );
   const watcherChannel = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.channel(options.channelName);
 
   selfChannel.subscribe(async (status) => {

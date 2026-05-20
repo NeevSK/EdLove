@@ -1,5 +1,5 @@
-import { z } from 'zod';
 import { makeModelSchema } from '@repo/schema';
+import { z } from 'zod';
 
 /**
  * ClassroomSchema - A sacred space for learning.
@@ -143,10 +143,12 @@ export const SchoolLegacyRecordSchema = z.object({
   avg_performance: z.number().optional().nullable(),
   graduation_rate: z.number().optional().nullable(),
   milestones: z.array(z.string()).default([]),
-  leadership: z.object({
-    principal_id: z.string().uuid().optional(),
-    principal_name: z.string().optional(),
-  }).optional(),
+  leadership: z
+    .object({
+      principal_id: z.string().uuid().optional(),
+      principal_name: z.string().optional(),
+    })
+    .optional(),
   created_at: z.string(),
   updated_at: z.string(),
 });

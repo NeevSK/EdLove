@@ -1,6 +1,10 @@
 import { create } from 'zustand';
+import type {
+  DeviceSecurityEvent,
+  DeviceSecuritySession,
+  DeviceTrustSummary,
+} from '../api/deviceTrust';
 import { deviceSecurity } from '../logic/managers/factory';
-import type { DeviceTrustSummary, DeviceSecurityEvent, DeviceSecuritySession } from '../api/deviceTrust';
 
 interface DeviceSecurityState {
   devices: DeviceTrustSummary[];
@@ -54,7 +58,9 @@ export const useDeviceSecurityStore = create<DeviceSecurityState>((set, get) => 
       await deviceSecurity.revokeSession(sessionId);
       // Optimistic update
       set((state) => ({
-        sessions: state.sessions.map((s) => s.sessionId === sessionId ? { ...s, status: 'revoked' } : s),
+        sessions: state.sessions.map((s) =>
+          s.sessionId === sessionId ? { ...s, status: 'revoked' } : s,
+        ),
         loading: false,
       }));
       // Actual refresh

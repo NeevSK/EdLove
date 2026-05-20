@@ -1,4 +1,12 @@
-export { ActivityIndicator, StyleSheet, useWindowDimensions, Platform, Dimensions, PanResponder } from 'react-native';
+export {
+  ActivityIndicator,
+  Dimensions,
+  PanResponder,
+  Platform,
+  StyleSheet,
+  useWindowDimensions,
+} from 'react-native';
+export { Card } from './card';
 export {
   default as SkeletonLoader,
   SkeletonAvatar,
@@ -10,7 +18,6 @@ export * from './components/ui/avatar';
 export * from './components/ui/badge';
 export * from './components/ui/box';
 export * from './components/ui/button';
-export { Card } from './card';
 export * from './components/ui/center';
 export * from './components/ui/checkbox';
 export * from './components/ui/divider';

@@ -3,33 +3,37 @@ import type { UserContext } from '../..//schemas/user.schema';
 import type { AppAbility } from './base';
 
 export const defineStudentAbilities = (user: UserContext, { can }: AbilityBuilder<AppAbility>) => {
+  const schoolId = user.schoolId;
+  const userId = user.userId;
+  const activeBondStatus = user.activeBond?.status ?? null;
+
   // HEAL 2026: Student sanctuary access for Wanderers
   can('read', 'StudentPulse');
   can('manage', 'StudentDashboard');
   can('manage', 'Wellbeing');
 
-  if (!user.school_id) return;
+  if (!schoolId) return;
 
-  const isActive = user.active_bond_status === 'active';
-  const isArchived = user.active_bond_status === 'archived';
+  const isActive = activeBondStatus === 'active';
+  const isArchived = activeBondStatus === 'archived';
 
   // --- CORE VISIBILITY (Shared) ---
-  can('read', 'School', { id: user.school_id } as any);
-  can('read', 'StudentProfile', { user_id: user.user_id } as any);
+  can('read', 'School', { id: schoolId } as any);
+  can('read', 'StudentProfile', { user_id: userId } as any);
 
   // --- ACTIVE POWERS ---
   if (isActive) {
     can('read', 'Classroom', {
-      members: { $elemMatch: { user_id: user.user_id } },
+      members: { $elemMatch: { user_id: userId } },
     } as any);
-    can('update', 'StudentProfile', { user_id: user.user_id } as any);
+    can('update', 'StudentProfile', { user_id: userId } as any);
     can('read', 'StudentPulse');
     can('manage', 'StudentDashboard');
     can('read', 'ClassroomList');
-    can('read', 'Lesson', { school_id: user.school_id } as any);
-    can('read', 'Material', { school_id: user.school_id } as any);
+    can('read', 'Lesson', { school_id: schoolId } as any);
+    can('read', 'Material', { school_id: schoolId } as any);
     can('read', 'Grade');
-    can('create', 'AssignmentSubmission', { student_id: user.user_id } as any);
+    can('create', 'AssignmentSubmission', { student_id: userId } as any);
 
     // Community & Library access
     can('read', 'CommunityFeed');
@@ -42,6 +46,9 @@ export const defineStudentAbilities = (user: UserContext, { can }: AbilityBuilde
   if (isArchived) {
     // Archived students can only see their past record at this school
     can('read', 'AcademicHistory');
-    can('read', 'StudentAcademicRecord', { student_id: user.user_id, school_id: user.school_id } as any);
+    can('read', 'StudentAcademicRecord', {
+      student_id: userId,
+      school_id: schoolId,
+    } as any);
   }
 };

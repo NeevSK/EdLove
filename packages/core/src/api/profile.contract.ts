@@ -1,12 +1,13 @@
 import { z } from 'zod';
-import { type SovereignContract } from './contract';
+import type { SovereignContract } from './contract';
 
 const profileAuthority = (
   action: 'create' | 'read' | 'update' | 'delete',
-  subject: 'User' | 'Group' | 'School'
-) => ({
-  policy: { action, subject },
-}) as const;
+  subject: 'User' | 'Group' | 'School',
+) =>
+  ({
+    policy: { action, subject },
+  }) as const;
 
 // --- Sovereign Schemas (Zod v4 functional API) ---
 
@@ -88,7 +89,7 @@ const PulseMetricsSchema = z.strictObject({
 /**
  * Profile Domain Port
  */
-export const profileContract: SovereignContract = {
+export const profileContract = {
   getUserProfile: {
     method: 'get',
     path: '/profile/users/:id',
@@ -146,4 +147,4 @@ export const profileContract: SovereignContract = {
     },
     metadata: profileAuthority('read', 'School'),
   },
-} as const;
+} as const satisfies SovereignContract;

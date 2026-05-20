@@ -2,7 +2,7 @@ import { type IDeviceIdentity, TrustLevel } from '../interfaces/deviceIdentity.p
 
 /**
  * DeviceIdentityManager
- * 
+ *
  * Orchestrates the "Adaptive Trust" flow.
  * Allows the platform to "Step Up" security contextually (e.g., only when accessing grades).
  */
@@ -49,25 +49,27 @@ export class DeviceIdentityManager {
    */
   async stepUp(requiredLevel: TrustLevel, challenge?: string): Promise<boolean> {
     const currentLevel = await this.getTrustLevel();
-    
+
     if (currentLevel >= requiredLevel) {
       return true;
     }
 
     if (__DEV__) {
-      console.log(`[DeviceIdentity] Stepping up: ${TrustLevel[currentLevel]} -> ${TrustLevel[requiredLevel]}`);
+      console.log(
+        `[DeviceIdentity] Stepping up: ${TrustLevel[currentLevel]} -> ${TrustLevel[requiredLevel]}`,
+      );
     }
 
     switch (requiredLevel) {
       case TrustLevel.HARDWARE:
         await this.getAdapter().generateHardwareKey(this.KEY_ALIAS);
         break;
-      
+
       case TrustLevel.ATTESTED:
         if (!challenge) throw new Error('A server challenge is required for ATTESTED trust level.');
         await this.getAdapter().getAttestation(this.KEY_ALIAS, challenge);
         break;
-      
+
       default:
         break;
     }

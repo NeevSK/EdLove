@@ -1,4 +1,4 @@
-import React from 'react';
+import type React from 'react';
 import { Text, View } from 'react-native';
 import type { SafeActionProgress } from '../hooks/useSafeAction';
 import { Progress, ProgressFilledTrack } from './ui/progress';
@@ -15,10 +15,7 @@ interface LifecycleMonitorProps {
  * A high-fidelity progress tracker that provides visibility into
  * the internal steps of an agentic or complex async action.
  */
-export const LifecycleMonitor: React.FC<LifecycleMonitorProps> = ({
-  progress,
-  className,
-}) => {
+export const LifecycleMonitor: React.FC<LifecycleMonitorProps> = ({ progress, className }) => {
   if (!progress) return null;
 
   const isError = progress.status === 'error';
@@ -53,9 +50,7 @@ export const LifecycleMonitor: React.FC<LifecycleMonitorProps> = ({
 
       {progress.percentage !== undefined && (
         <Progress value={progress.percentage} size="xs" className="bg-phase-interactive/5">
-          <ProgressFilledTrack
-            className={isError ? 'bg-phase-danger' : 'bg-phase-accent'}
-          />
+          <ProgressFilledTrack className={isError ? 'bg-phase-danger' : 'bg-phase-accent'} />
         </Progress>
       )}
     </View>

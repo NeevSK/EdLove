@@ -1,41 +1,30 @@
 {
-	"compilerOptions": {
-		"strict": true,
-		"skipLibCheck": true,
-		"skipDefaultLibCheck": true,
-		"noEmit": true,
-		"lib": ["es2020", "dom"],
-		"target": "es2020",
-		"jsx": "react-jsx",
-		"module": "esnext",
-		"moduleResolution": "bundler",
-		"resolveJsonModule": true,
-		"allowSyntheticDefaultImports": true,
-		"esModuleInterop": true,
-		"paths": {
-			"@/*": ["./src/*"]
-		},
-		"types": [
-			"react",
-			"react-native",
-			"jest",
-			"@tanstack/react-query",
-			"@repo/types-shim"
-		]
-	},
-	"include": [
-		"src/**/*",
-		"App.tsx",
-		"gluestack-ui.config.ts",
-		"nativewind-env.d.ts"
-	],
-	"exclude": [
-		"node_modules",
-		".expo",
-		"dist",
-		"src/__tests__/**",
-		"src/**/*.test.ts",
-		"src/**/*.test.tsx"
-	],
-	"extends": "../../packages/typescript-config/base.json"
+  "compilerOptions": {
+    "strict": true,
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "noEmit": true,
+    "lib": ["es2020", "dom"],
+    "target": "es2020",
+    "jsx": "react-jsx",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "types": ["react", "react-native", "jest", "@tanstack/react-query", "@repo/types-shim"]
+  },
+  "include": ["src/**/*", "App.tsx", "gluestack-ui.config.ts", "nativewind-env.d.ts"],
+  "exclude": [
+    "node_modules",
+    ".expo",
+    "dist",
+    "src/__tests__/**",
+    "src/**/*.test.ts",
+    "src/**/*.test.tsx"
+  ],
+  "extends": "../../packages/typescript-config/base.json"
 }

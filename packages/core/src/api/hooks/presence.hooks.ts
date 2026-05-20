@@ -23,7 +23,3 @@ export function usePresenceHooks() {
   };
 }
 
-/**
- * Re-exporting core presence logic from the API layer for easy hook consumption.
- */
-export { presenceAPI } from '../presence';

@@ -1,5 +1,5 @@
 import { profileAPI } from '@repo/core/api';
-import { handleAPIError, type Capacity, usePermissions, useAuth } from '@repo/core/logic';
+import { type Capacity, handleAPIError, useAuth, usePermissions } from '@repo/core/logic';
 import {
   Box,
   Button,
@@ -117,10 +117,22 @@ export default function EditProfileModal({
   currentProfile,
 }: EditProfileModalProps) {
   const { t } = useTranslation();
-  const { ability } = usePermissions();
+  const { can } = usePermissions();
   const [state, dispatch] = useReducer(editReducer, initialState);
 
-  const { fullName, firstName, lastName, username, phone, bio, loading, selectedCapacity, avatarUrl, nicNumber, indexNumber } = state;
+  const {
+    fullName,
+    firstName,
+    lastName,
+    username,
+    phone,
+    bio,
+    loading,
+    selectedCapacity,
+    avatarUrl,
+    nicNumber,
+    indexNumber,
+  } = state;
 
   useEffect(() => {
     if (currentProfile) {
@@ -153,8 +165,8 @@ export default function EditProfileModal({
     hapticLight();
 
     try {
-      const isStaff = ability.can('update', 'TeacherProfile');
-      const isStudent = ability.can('update', 'StudentProfile');
+      const isStaff = can('update', 'TeacherProfile');
+      const isStudent = can('update', 'StudentProfile');
 
       const updates: Record<string, unknown> = {
         ['display_name']: fullName,
@@ -186,10 +198,7 @@ export default function EditProfileModal({
 
       // Capacity updates are restricted to platform admins in V3
       // Normal users update their profile, but their capacity is managed via Bonds
-      if (
-        selectedCapacity &&
-        ability.can('manage', 'all')
-      ) {
+      if (selectedCapacity && can('manage', 'all')) {
         // POA: In a real ReBAC system, this would involve a Bond update API
         // For now, we'll track this as a requirement for the Bond Manager
       }
@@ -395,7 +404,7 @@ export default function EditProfileModal({
                     </Input>
                   </VStack>
 
-                  {ability.can('update', 'TeacherProfile') && (
+                  {can('update', 'TeacherProfile') && (
                     <VStack space="sm">
                       <Text className="text-phase-text-tertiary text-[10px] font-bold uppercase tracking-[2px] ml-1">
                         {t('profile.nicNumber') || 'NIC NUMBER'}
@@ -417,7 +426,7 @@ export default function EditProfileModal({
                     </VStack>
                   )}
 
-                  {ability.can('update', 'StudentProfile') && (
+                  {can('update', 'StudentProfile') && (
                     <VStack space="sm">
                       <Text className="text-phase-text-tertiary text-[10px] font-bold uppercase tracking-[2px] ml-1">
                         {t('profile.indexNumber') || 'INDEX NUMBER'}
@@ -439,7 +448,7 @@ export default function EditProfileModal({
                     </VStack>
                   )}
 
-                  {ability.can('manage', 'all') && (
+                  {can('manage', 'all') && (
                     <Box>
                       <Text className="text-phase-text-tertiary text-[10px] font-bold uppercase tracking-[2px] ml-1 mb-2">
                         {t('profile.role') || 'Sovereign Identity'}

@@ -1,5 +1,5 @@
-import { z } from 'zod';
 import { makeModelSchema } from '@repo/schema';
+import type { z } from 'zod';
 
 /**
  * AccountSchema - A leaf or branch in the chart of accounts.

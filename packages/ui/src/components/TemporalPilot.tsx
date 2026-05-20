@@ -3,8 +3,8 @@ import { Calendar, Layout as LayoutIcon, Search, Wifi, WifiOff, Zap } from 'luci
 import type React from 'react';
 import { useState } from 'react';
 import { Modal } from 'react-native';
-import { Pressable } from '../primitives';
 import { Box, HStack, Text } from '../gluestack';
+import { Pressable } from '../primitives';
 import { TemporalScrubber } from './TemporalScrubber';
 
 /**

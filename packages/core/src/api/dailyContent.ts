@@ -29,18 +29,20 @@ export const dailyContentAPI = {
     return withResilience(
       async () => {
         // Fetch motivation quote
-        const { data: motivationData, error: motivationError } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
-          .rpc('get_daily_content_for_today', { content_type: 'motivation' })
-          .single();
+        const { data: motivationData, error: motivationError } =
+          await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+            .rpc('get_daily_content_for_today', { content_type: 'motivation' })
+            .single();
 
         if (motivationError && motivationError.code !== 'PGRST116') {
           console.warn('Failed to fetch motivation:', motivationError);
         }
 
         // Fetch "did you know" fact
-        const { data: didYouKnowData, error: didYouKnowError } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
-          .rpc('get_daily_content_for_today', { content_type: 'did_you_know' })
-          .single();
+        const { data: didYouKnowData, error: didYouKnowError } =
+          await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+            .rpc('get_daily_content_for_today', { content_type: 'did_you_know' })
+            .single();
 
         if (didYouKnowError && didYouKnowError.code !== 'PGRST116') {
           console.warn('Failed to fetch did you know:', didYouKnowError);

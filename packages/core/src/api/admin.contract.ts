@@ -1,25 +1,26 @@
 import { z } from 'zod';
-import { 
-  StaffLeaveSchema, 
-  StaffPresenceSummarySchema, 
-  TeacherCarouselItemSchema,
-  CalendarEventSchema
-} from '../logic/schemas/staff.schema';
 import { SchoolSchema, SectionSchema } from '../logic/schemas/school.schema';
-import { type SovereignContract } from './contract';
+import {
+  CalendarEventSchema,
+  StaffLeaveSchema,
+  StaffPresenceSummarySchema,
+  TeacherCarouselItemSchema,
+} from '../logic/schemas/staff.schema';
+import type { SovereignContract } from './contract';
 
 const adminAuthority = (
   action: 'create' | 'read' | 'update' | 'delete',
-  subject: 'Staff' | 'School' | 'Calendar'
-) => ({
-  policy: { action, subject },
-}) as const;
+  subject: 'Staff' | 'School' | 'Calendar',
+) =>
+  ({
+    policy: { action, subject },
+  }) as const;
 
 /**
  * Admin & Staff Port (Sovereign RPC)
  * Framework-agnostic definition of the Admin API.
  */
-export const adminContract: SovereignContract = {
+export const adminContract = {
   getStaffPresence: {
     method: 'get',
     path: '/admin/schools/:schoolId/staff-presence',
@@ -76,4 +77,70 @@ export const adminContract: SovereignContract = {
     },
     metadata: adminAuthority('read', 'School'),
   },
-} as const;
+
+  getPendingLeaves: {
+    method: 'get',
+    path: '/admin/schools/:schoolId/pending-leaves',
+    request: {
+      params: z.strictObject({ schoolId: z.uuid() }),
+    },
+    responses: {
+      200: { schema: z.array(StaffLeaveSchema), description: 'Pending staff leaves' },
+    },
+    metadata: adminAuthority('read', 'Staff'),
+  },
+
+  approveLeave: {
+    method: 'post',
+    path: '/admin/leaves/:leaveId/approve',
+    request: {
+      params: z.strictObject({ leaveId: z.uuid() }),
+      body: z.strictObject({
+        reviewedBy: z.uuid(),
+        approved: z.boolean(),
+      }),
+    },
+    responses: {
+      200: { schema: z.object({ success: z.boolean() }), description: 'Leave status updated' },
+    },
+    metadata: adminAuthority('update', 'Staff'),
+  },
+
+  getUpcomingCalendarEvents: {
+    method: 'get',
+    path: '/admin/schools/:schoolId/calendar-events',
+    request: {
+      params: z.strictObject({ schoolId: z.uuid() }),
+      query: z.strictObject({
+        limit: z.coerce.number().optional(),
+        viewDate: z.string().optional(),
+      }),
+    },
+    responses: {
+      200: { schema: z.array(CalendarEventSchema), description: 'Upcoming calendar events' },
+    },
+    metadata: adminAuthority('read', 'Calendar'),
+  },
+
+  createCalendarEvent: {
+    method: 'post',
+    path: '/admin/schools/:schoolId/calendar-events',
+    request: {
+      params: z.strictObject({ schoolId: z.uuid() }),
+      body: z.strictObject({
+        principalId: z.uuid(),
+        event: z.strictObject({
+          title: z.string(),
+          type: z.string(),
+          start_date: z.string(),
+          end_date: z.string().optional(),
+          is_public: z.boolean().optional(),
+        }),
+      }),
+    },
+    responses: {
+      201: { schema: z.object({ success: z.boolean() }), description: 'Calendar event created' },
+    },
+    metadata: adminAuthority('create', 'Calendar'),
+  },
+} as const satisfies SovereignContract;

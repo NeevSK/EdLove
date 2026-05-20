@@ -1,9 +1,9 @@
 import { profile, type UserPreferences, useStore } from '@repo/core/logic';
-import { useEffect, useState, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 /**
  * useNotificationPreferences
- * 
+ *
  * Sovereign hook for managing granular notification settings.
  * Handles fetching, local state updates, and persistence.
  */
@@ -32,12 +32,12 @@ export const useNotificationPreferences = () => {
 
   const updatePreference = async (updates: Partial<UserPreferences>) => {
     if (!userId || !preferences) return;
-    
+
     // Optimistic Update
     const previousPrefs = preferences;
     const newPrefs = { ...preferences, ...updates };
     setPreferences(newPrefs);
-    
+
     setSaving(true);
     try {
       await profile.updateUserPreferences(userId, updates);
@@ -51,30 +51,30 @@ export const useNotificationPreferences = () => {
 
   const toggleChannel = async (channel: 'push' | 'email' | 'in_app') => {
     if (!preferences?.notification_settings) return;
-    
+
     const settings = { ...preferences.notification_settings };
-    settings.channels = { 
-      ...settings.channels, 
-      [channel]: !settings.channels[channel] 
+    settings.channels = {
+      ...settings.channels,
+      [channel]: !settings.channels[channel],
     };
-    
+
     await updatePreference({ notification_settings: settings });
   };
 
   const toggleCategory = async (category: string, channel: 'push' | 'email') => {
     if (!preferences?.notification_settings) return;
-    
+
     const settings = { ...preferences.notification_settings };
     const categorySettings = settings.categories[category] || { push: true, email: false };
-    
+
     settings.categories = {
       ...settings.categories,
       [category]: {
         ...categorySettings,
-        [channel]: !categorySettings[channel]
-      }
+        [channel]: !categorySettings[channel],
+      },
     };
-    
+
     await updatePreference({ notification_settings: settings });
   };
 
@@ -84,6 +84,6 @@ export const useNotificationPreferences = () => {
     saving,
     toggleChannel,
     toggleCategory,
-    refresh: fetchPreferences
+    refresh: fetchPreferences,
   };
 };

@@ -1,5 +1,5 @@
-import { useCallback, useState } from 'react';
 import { SovereignError } from '@repo/core/lib';
+import { useCallback, useState } from 'react';
 import { useErrorResolution } from '../providers/ErrorResolutionProvider';
 import { useToast } from '../providers/ToastProvider';
 
@@ -55,16 +55,15 @@ export function useSafeAction<TArgs extends any[], TResult>(
         options.onSuccess?.(result);
         return result;
       } catch (error: any) {
-        setProgress({ 
-          message: error?.message || 'Action failed', 
-          status: 'error' 
+        setProgress({
+          message: error?.message || 'Action failed',
+          status: 'error',
         });
 
         if (error instanceof SovereignError) {
           resolveError(error);
         } else {
-          const message =
-            options.errorMessage || error?.message || 'An unexpected error occurred';
+          const message = options.errorMessage || error?.message || 'An unexpected error occurred';
 
           showToast({
             message,

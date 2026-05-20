@@ -1,6 +1,7 @@
+import type { UserGrowthState } from '@repo/schema';
 import type { TemporalScale } from '../../../store';
 import type { SocialLink, User } from '../../../types';
-import type { UserGrowthState } from '@repo/schema';
+
 export type { UserGrowthState };
 
 export interface CommunityProfile {
@@ -127,7 +128,10 @@ export interface ProfileRepository {
   updateSocialLinksOrder(links: { id: string; order_index: number }[]): Promise<void>;
 
   getUserPreferences(userId: string): Promise<UserPreferences | null>;
-  updateUserPreferences(userId: string, updates: Partial<UserPreferences>): Promise<UserPreferences>;
+  updateUserPreferences(
+    userId: string,
+    updates: Partial<UserPreferences>,
+  ): Promise<UserPreferences>;
 
   getCommunityProfile(communityId: string): Promise<CommunityProfile | null>;
   getCommunityProfileAsOf(communityId: string, asOf: string): Promise<CommunityProfile | null>;

@@ -1,4 +1,4 @@
-import { type Context } from 'hono';
+import type { Context } from 'hono';
 
 /**
  * Identity Domain Handlers (Hono + ZenStack ReBAC)
@@ -15,9 +15,9 @@ export const identityHandlers = {
       where: { id: user.id },
       include: {
         bonds: {
-          select: { capacity: true, entity_id: true, entity_type: true }
-        }
-      }
+          select: { capacity: true, entity_id: true, entity_type: true },
+        },
+      },
     });
 
     if (!identity) return c.json({ message: 'Identity not found' }, 404);
@@ -35,9 +35,9 @@ export const identityHandlers = {
       where: { id },
       include: {
         bonds: {
-          select: { capacity: true, entity_id: true, entity_type: true }
-        }
-      }
+          select: { capacity: true, entity_id: true, entity_type: true },
+        },
+      },
     });
 
     if (!profile) return c.json({ message: 'Profile not found' }, 404);
@@ -53,23 +53,26 @@ export const identityHandlers = {
 
     const [user, classrooms] = await Promise.all([
       db.user.findUnique({ where: { id } }),
-      db.classroom.findMany({ 
+      db.classroom.findMany({
         where: { teacher_id: id },
-        select: { id: true }
-      })
+        select: { id: true },
+      }),
     ]);
 
     if (!user) return c.json({ message: 'User not found' }, 404);
 
-    return c.json({
-      user_id: id,
-      school_id: null, // To be determined by active bond
-      profile_completed: !!user.full_name,
-      onboarding_completed: user.onboarding_completed,
-      onboarding_state: user.onboarding_state,
-      real_class_count: classrooms.length,
-      profile: user,
-    }, 200);
+    return c.json(
+      {
+        user_id: id,
+        school_id: null, // To be determined by active bond
+        profile_completed: !!user.full_name,
+        onboarding_completed: user.onboarding_completed,
+        onboarding_state: user.onboarding_state,
+        real_class_count: classrooms.length,
+        profile: user,
+      },
+      200,
+    );
   },
 
   /**

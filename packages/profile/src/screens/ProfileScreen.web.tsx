@@ -43,7 +43,7 @@ export default function ProfileScreenWeb({
   const { t } = useTranslation();
   const navigation = useProfileNavigation();
   const { can, context } = usePermissions();
-  const authority = context.active_bond?.capacity;
+  const authority = context.activeBond?.capacity;
   const { user } = useStore();
   const {
     profile,
@@ -360,9 +360,10 @@ export default function ProfileScreenWeb({
                   )}
                 </div>
 
-                {isOwnProfile && !context.is_anonymous && (
+                {isOwnProfile && !context.isAnonymous && (
                   <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                    <button type="button"
+                    <button
+                      type="button"
                       className="secondary-button"
                       style={{
                         display: 'inline-flex',
@@ -374,7 +375,8 @@ export default function ProfileScreenWeb({
                       <Edit3 size={16} />
                       {t('profile.viewEditProfile')}
                     </button>
-                    <button type="button"
+                    <button
+                      type="button"
                       className="secondary-button"
                       style={{
                         display: 'inline-flex',
@@ -385,7 +387,8 @@ export default function ProfileScreenWeb({
                     >
                       Full Profile
                     </button>
-                    <button type="button"
+                    <button
+                      type="button"
                       className="secondary-button"
                       style={{
                         display: 'inline-flex',
@@ -396,7 +399,8 @@ export default function ProfileScreenWeb({
                     >
                       Settings
                     </button>
-                    <button type="button"
+                    <button
+                      type="button"
                       className="secondary-button"
                       style={{
                         display: 'inline-flex',
@@ -407,7 +411,8 @@ export default function ProfileScreenWeb({
                     >
                       Privacy Ledger
                     </button>
-                    <button type="button"
+                    <button
+                      type="button"
                       className="secondary-button"
                       style={{
                         display: 'inline-flex',
@@ -426,7 +431,7 @@ export default function ProfileScreenWeb({
                   </div>
                 )}
 
-                {isOwnProfile && context.is_anonymous && (
+                {isOwnProfile && context.isAnonymous && (
                   <div style={{ marginTop: '12px' }}>
                     <CitizenGate
                       context="profile"
@@ -440,7 +445,7 @@ export default function ProfileScreenWeb({
               </div>
             </div>
 
-            {context.is_anonymous ? null : (
+            {context.isAnonymous ? null : (
               <div
                 className="profile-qr-panel"
                 style={{
@@ -464,7 +469,11 @@ export default function ProfileScreenWeb({
                     padding: '8px',
                   }}
                 >
-                  <QRCodeGenerator value={profilePublicUrl} size={104} label={profile.display_name} />
+                  <QRCodeGenerator
+                    value={profilePublicUrl}
+                    size={104}
+                    label={profile.display_name}
+                  />
                 </div>
                 <p
                   style={{
@@ -478,7 +487,8 @@ export default function ProfileScreenWeb({
                 >
                   Scan to view profile
                 </p>
-                <button type="button"
+                <button
+                  type="button"
                   style={{
                     background: 'none',
                     border: 'none',
@@ -507,7 +517,7 @@ export default function ProfileScreenWeb({
           </div>
         </div>
 
-        {editForm && !context.is_anonymous && (
+        {editForm && !context.isAnonymous && (
           <div
             className="sanctuary-card"
             style={{
@@ -525,7 +535,8 @@ export default function ProfileScreenWeb({
               }}
             >
               <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '800' }}>Edit Profile</h3>
-              <button type="button"
+              <button
+                type="button"
                 onClick={cancelEdit}
                 style={{
                   background: 'none',
@@ -698,7 +709,8 @@ export default function ProfileScreenWeb({
               />
             </div>
             <div style={{ display: 'flex', gap: '12px' }}>
-              <button type="button"
+              <button
+                type="button"
                 className="premium-button"
                 onClick={saveEdit}
                 disabled={isSaving}

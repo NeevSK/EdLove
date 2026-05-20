@@ -81,4 +81,3 @@ export const classroomNotesContract = c.router({
     metadata: classroomNoteAuthority('read'),
   },
 });
-

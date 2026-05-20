@@ -1,6 +1,6 @@
 import { requireTeacherAccess } from '../lib/authorization';
-import { type Task, type TeacherNote } from '../types';
 import { teacher, teacherInsights } from '../logic/managers/factory';
+import type { Task, TeacherNote } from '../types';
 
 // ============================================================================
 // TASKS API
@@ -34,7 +34,7 @@ export const tasksAPI = {
    * Update task details
    */
   async update(id: string, updates: Partial<Task>): Promise<Task> {
-    // Note: Manager handles fetch for ownership check if needed, 
+    // Note: Manager handles fetch for ownership check if needed,
     // but here we follow the existing pattern of fetching and then requiring access.
     const task = await teacher.tasks.getById(id);
     await requireTeacherAccess(task.teacher_id);

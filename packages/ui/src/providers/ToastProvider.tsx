@@ -132,14 +132,17 @@ export const useSanctuaryToast = () => {
   const context = useContext(ToastContext);
   if (!context) throw new Error('useSanctuaryToast must be used within ToastProvider');
 
-  return useMemo(() => ({
-    ...context,
-    showToast: (options: { message: string; type?: ToastType; duration?: number }) =>
-      context.showToast({
-        type: 'sanctuary',
-        ...options,
-      } as ToastItem),
-  }), [context]);
+  return useMemo(
+    () => ({
+      ...context,
+      showToast: (options: { message: string; type?: ToastType; duration?: number }) =>
+        context.showToast({
+          type: 'sanctuary',
+          ...options,
+        } as ToastItem),
+    }),
+    [context],
+  );
 };
 
 export { useSanctuaryToast as useToast };

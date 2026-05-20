@@ -1,41 +1,38 @@
 ---
-import { getCollection, render } from "astro:content";
-import CinematicBackground from "../../components/CinematicBackground.astro";
-import ExpandableContent from "../../components/ExpandableContent.astro";
-import Layout from "../../layouts/Layout.astro";
-import { absoluteUrl } from "../../lib/site";
+import { getCollection, render } from 'astro:content';
+import CinematicBackground from '../../components/CinematicBackground.astro';
+import ExpandableContent from '../../components/ExpandableContent.astro';
+import Layout from '../../layouts/Layout.astro';
+import { absoluteUrl } from '../../lib/site';
 
-const libraryEntries = await getCollection(
-	"library",
-	({ data }) => !data.draft,
-);
+const libraryEntries = await getCollection('library', ({ data }) => !data.draft);
 
 const thinkers = libraryEntries
-	.filter((e) => e.data.category === "thinker")
-	.sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
+  .filter((e) => e.data.category === 'thinker')
+  .sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
 const frameworks = libraryEntries
-	.filter((e) => e.data.category === "framework")
-	.sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
+  .filter((e) => e.data.category === 'framework')
+  .sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
 const stories = libraryEntries
-	.filter((e) => e.data.category === "story")
-	.sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
+  .filter((e) => e.data.category === 'story')
+  .sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
 
 const structuredData = {
-	"@context": "https://schema.org",
-	"@type": "CollectionPage",
-	name: "The Epistemic Core | EdLove",
-	description:
-		"A browsable library of thinkers, frameworks, and stories shaping the educational transformation ecosystem.",
-	url: absoluteUrl("/library"),
-	mainEntity: {
-		"@type": "ItemList",
-		itemListElement: libraryEntries.map((entry, index) => ({
-			"@type": "ListItem",
-			position: index + 1,
-			name: entry.data.title,
-			url: absoluteUrl("/library"),
-		})),
-	},
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: 'The Epistemic Core | EdLove',
+  description:
+    'A browsable library of thinkers, frameworks, and stories shaping the educational transformation ecosystem.',
+  url: absoluteUrl('/library'),
+  mainEntity: {
+    '@type': 'ItemList',
+    itemListElement: libraryEntries.map((entry, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: entry.data.title,
+      url: absoluteUrl('/library'),
+    })),
+  },
 };
 ---
 

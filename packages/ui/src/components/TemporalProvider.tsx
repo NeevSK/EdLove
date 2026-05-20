@@ -52,10 +52,7 @@ export const TemporalProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         {value.intensity > 0 && (
           <View
             pointerEvents="none"
-            style={[
-              StyleSheet.absoluteFillObject,
-              { backgroundColor: value.colorShift },
-            ]}
+            style={[StyleSheet.absoluteFillObject, { backgroundColor: value.colorShift }]}
           />
         )}
       </View>

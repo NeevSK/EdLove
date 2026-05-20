@@ -41,8 +41,7 @@ export function usePollHooks(postId: string) {
       ...query.data,
       isLoading: query.isLoading,
       isVoting: voteMutation.isPending,
-      handleVote: (optionId: string, _allowMultiple = false) =>
-        voteMutation.mutate({ optionId }),
+      handleVote: (optionId: string, _allowMultiple = false) => voteMutation.mutate({ optionId }),
       refreshVotes: () => {
         void queryClient.invalidateQueries({ queryKey: pollKeys.detail(postId) });
       },

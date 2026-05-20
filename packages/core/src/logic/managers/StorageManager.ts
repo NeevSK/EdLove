@@ -1,5 +1,3 @@
-import type { IStorage } from '../interfaces/storage.port';
-
 /**
  * StorageManager - The Sovereign Dispatcher for KV Storage.
  *
@@ -7,6 +5,7 @@ import type { IStorage } from '../interfaces/storage.port';
  * core logic free from native pollution.
  */
 import { MemoryStorageAdapter } from '../../adapters/MemoryStorageAdapter';
+import type { IStorage } from '../interfaces/storage.port';
 
 /**
  * StorageManager - The Sovereign Dispatcher for KV Storage.

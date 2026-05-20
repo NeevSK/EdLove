@@ -1,12 +1,10 @@
 import { growth } from '../logic';
-import { type CrystalTier, type RiverStage, type BanyanStage, type CrystalDiscovery } from '../types/Growth';
-export * from '../types/Growth';
-
+import type { BanyanStage, CrystalDiscovery, CrystalTier, RiverStage } from '../types/Growth';
 
 
 /**
  * naturePathsAPI (Legacy Proxy)
- * 
+ *
  * Superseded by GrowthManager. Now redirects to the sovereign Growth domain.
  * This file is kept temporarily for backward compatibility.
  */
@@ -28,7 +26,7 @@ export const naturePathsAPI = {
       banyan_stage: state.banyan_stage,
       peer_mentored_count: state.peer_mentored_count,
       circles_facilitated_count: state.circles_facilitated_count,
-      blooming_signals: state.blooming_signals
+      blooming_signals: state.blooming_signals,
     });
   },
 
@@ -48,7 +46,7 @@ export const naturePathsAPI = {
       river_stage: state.river_stage,
       lessons_completed_count: state.lessons_completed_count,
       reflections_submitted_count: state.reflections_submitted_count,
-      weaving_signals: state.weaving_signals
+      weaving_signals: state.weaving_signals,
     });
   },
 

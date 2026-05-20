@@ -78,7 +78,7 @@ export const coreRuntime = {
       );
     return runtime.clipboard;
   },
-  
+
   get secureStorage() {
     if (!runtime)
       throw new Error(

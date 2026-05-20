@@ -1,6 +1,6 @@
 import { authAPI } from '@repo/core/auth';
 import { LanguageUtils } from '@repo/core/logic';
-import { useState, useCallback, memo, useMemo } from 'react';
+import { memo, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image } from 'react-native';
 import ScreenWrapper from '../components/ScreenWrapper';
@@ -51,7 +51,9 @@ const LanguagePill = memo(({ lang, isActive, onPress, t }: LanguagePillProps) =>
       accessibilityLabel={t('accessibility.switchLanguage', {
         lang: lang.label,
       })}
-      accessibilityHint={t('accessibility.switchLanguageHint') || 'Changes the application language'}
+      accessibilityHint={
+        t('accessibility.switchLanguageHint') || 'Changes the application language'
+      }
       accessibilityState={{ selected: isActive }}
       className={`px-2.5 py-1.5 rounded-2xl ${isActive ? 'bg-phase-accent' : 'bg-transparent'}`}
     >
@@ -105,7 +107,10 @@ const WelcomeScreen = memo(({ onLogin, onGuest }: WelcomeScreenProps) => {
     } catch (error) {
       console.error('Guest login failed:', error);
       showToast({
-        message: (error as Error)?.message || t('auth.guestLoginFailed') || 'We could not open the sanctuary doors for you right now. Please try again.',
+        message:
+          (error as Error)?.message ||
+          t('auth.guestLoginFailed') ||
+          'We could not open the sanctuary doors for you right now. Please try again.',
         type: 'error',
       });
       setIsConnecting(false);
@@ -229,8 +234,8 @@ const WelcomeScreen = memo(({ onLogin, onGuest }: WelcomeScreenProps) => {
                   BEGIN QUIETLY
                 </Text>
                 <Text className="text-phase-text-secondary text-sm leading-relaxed">
-                  Enter as an anonymous explorer to explore the sanctuary, or return to the account that already
-                  holds your path.
+                  Enter as an anonymous explorer to explore the sanctuary, or return to the account
+                  that already holds your path.
                 </Text>
               </VStack>
 

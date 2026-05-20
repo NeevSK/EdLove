@@ -1,15 +1,15 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { EducationalRepository } from '../../../logic/domains/educational/ports';
-import { createClassroomRepository } from './classroomRepository';
-import { createLessonRepository } from './lessonRepository';
 import { createAssignmentRepository } from './assignmentRepository';
-import { createEnrollmentRepository } from './enrollmentRepository';
-import { createMaterialRepository } from './materialRepository';
 import { createAttendanceRepository } from './attendanceRepository';
-import { createGradingRepository } from './gradingRepository';
-import { createStatsRepository } from './statsRepository';
-import { createSchoolRepository } from './schoolRepository';
 import { createSupabaseClassroomNotesRepository } from './classroomNotesRepository';
+import { createClassroomRepository } from './classroomRepository';
+import { createEnrollmentRepository } from './enrollmentRepository';
+import { createGradingRepository } from './gradingRepository';
+import { createLessonRepository } from './lessonRepository';
+import { createMaterialRepository } from './materialRepository';
+import { createSchoolRepository } from './schoolRepository';
+import { createStatsRepository } from './statsRepository';
 
 export const createSupabaseEducationalRepository = (
   supabase: SupabaseClient,

@@ -20,19 +20,19 @@
 
 import { authAPI } from '@repo/core/auth';
 import { handleAPIError } from '@repo/core/logic';
-import { useCallback, useMemo, useReducer, memo } from 'react';
+import { memo, useCallback, useMemo, useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useTheme } from '../hooks/useTheme';
 import {
   ActivityIndicator,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
+  useWindowDimensions,
   View,
   VStack,
-  useWindowDimensions,
 } from '../primitives';
-import { useTheme } from '../hooks/useTheme';
 import { Theme } from '../theme/Theme';
 import { hapticError, hapticLight, hapticSuccess } from '../utils/haptics';
 import { openExternalURL } from '../utils/linking';

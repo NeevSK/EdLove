@@ -7,8 +7,8 @@ import type {
   PrincipalObservationFollowUpCreate,
   PrincipalObservationZod,
 } from '../logic/schemas/principal-workspace.schema';
-import { principalWorkspaceServices } from './runtimes/principalWorkspace.runtime';
 import { principalWorkspaceContract } from './principalWorkspace.contract';
+import { principalWorkspaceServices } from './runtimes/principalWorkspace.runtime';
 
 export type { PrincipalGovernanceEventZod } from '../logic/schemas/principal-workspace.schema';
 
@@ -103,4 +103,3 @@ export const principalWorkspaceAPI = {
 };
 
 void principalWorkspaceContract;
-

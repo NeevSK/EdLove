@@ -1,13 +1,9 @@
-import { 
-  createSovereignClient, 
-  SOVEREIGN_API_URL, 
-  type AppType 
-} from './base';
 import { APIError } from '../types/API';
+import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from './base';
 
 /**
  * LIBRARY API (Sovereign RPC Proxy)
- * 
+ *
  * Siphons Global Library & Media access to the Sanctuary API.
  * [BREAKING] Purged legacy Supabase library managers.
  */
@@ -63,9 +59,9 @@ export const libraryAPI = {
    * Records user engagement with a resource.
    */
   async recordEngagement(
-    resourceId: string, 
+    resourceId: string,
     engagementType: 'view' | 'use' | 'endorse' | 'bookmark',
-    classroomId?: string
+    classroomId?: string,
   ) {
     const res = await client.api.library.resources[':id'].engage.$post({
       param: { id: resourceId },

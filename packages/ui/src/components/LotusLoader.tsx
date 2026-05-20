@@ -1,6 +1,5 @@
 import { Flower } from 'lucide-react-native';
 import { useEffect } from 'react';
-import { ActivityIndicator } from '../primitives';
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -10,6 +9,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { Center, Text, VStack } from '../gluestack';
+import { ActivityIndicator } from '../primitives';
 
 interface LotusLoaderProps {
   size?: 'sm' | 'md' | 'lg';

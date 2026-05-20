@@ -9,6 +9,7 @@ import { identifyUser, initPostHog, trackEvent } from '../lib/monitoring/posthog
 import { clearSentryUser, initSentry, setSentryUser } from '../lib/monitoring/sentry';
 import { useAuthStore } from '../store/useAuthStore';
 import { useStore } from '../store/useStore';
+import { usePermissionStore } from '../store/usePermissionStore';
 import type { User } from '../types';
 import { APIError } from '../types/API';
 
@@ -31,66 +32,68 @@ export function useAuthorityLifecycle() {
   const setAuthSession = useStore((state) => state.setAuthSession);
   const setAuthSessionResolved = useStore((state) => state.setAuthSessionResolved);
 
-  const fetchAndSetUserProfile = useCallback(
-    async () => {
-      setIsProfileLoading(true);
-      try {
-        // 1. Resolve Sovereign Identity (Bonds & Perspectives)
-        // [SOVEREIGN-SIPHON] unified into identifyActiveCitizen
-        const identity = await identityAPI.identifyActiveCitizen();
+  const fetchAndSetUserProfile = useCallback(async () => {
+    setIsProfileLoading(true);
+    try {
+      // 1. Resolve Sovereign Identity (Bonds & Perspectives)
+      // [SOVEREIGN-SIPHON] unified into identifyActiveCitizen
+      const identity = await identityAPI.identifyActiveCitizen();
 
-        if (identity) {
-          // 2. Update store
-          setUser(identity as any);
-          setAvailableBonds(identity.available_bonds);
-          
-          setPerspective({ 
-            active_bond: identity.active_bond, 
-            available_bonds: identity.available_bonds 
-          });
-          
-          const isEffectivelyOnboarded = !!identity.onboarding_completed;
-          if (isEffectivelyOnboarded) {
-            setOnboardingCompleted(true);
-          }
+      if (identity) {
+        // 2. Update store
+        setUser(identity as any);
+        setAvailableBonds(identity.availableBonds);
 
-          if (identity.school_id) {
-            const { data: schoolData } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
-              .from('schools')
-              .select('type')
-              .eq('id', identity.school_id)
-              .single();
+        setPerspective({
+          activeBond: identity.activeBond,
+          availableBonds: identity.availableBonds,
+        });
 
-            if (schoolData) {
-              setSchoolType(schoolData.type as SchoolType | null);
-            }
-          } else {
-            setSchoolType(null);
-          }
+        // Load cryptographic permission snapshots asynchronously
+        usePermissionStore.getState().loadPermissions(identity.id).catch((err) => {
+          console.error('[AuthorityLifecycle] Failed to load permissions snapshot:', err);
+        });
 
-          // Monitoring identification
-          setSentryUser({
-            id: identity.id,
-            email: identity.email,
-            username: identity.display_name,
-          });
-
-          identifyUser(identity.id, {
-            email: identity.email,
-            display_name: identity.display_name,
-            capacity: identity.active_bond?.capacity || null,
-            total_bonds: identity.available_bonds.length,
-            school_id: identity.school_id,
-          });
+        const isEffectivelyOnboarded = !!identity.onboarding_completed;
+        if (isEffectivelyOnboarded) {
+          setOnboardingCompleted(true);
         }
-      } catch (error) {
-        console.warn('❌ Profile: Fetching encountered an error:', error);
-      } finally {
-        setIsProfileLoading(false);
+
+        if (identity.schoolId) {
+          const { data: schoolData } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+            .from('schools')
+            .select('type')
+            .eq('id', identity.schoolId)
+            .single();
+
+          if (schoolData) {
+            setSchoolType(schoolData.type as SchoolType | null);
+          }
+        } else {
+          setSchoolType(null);
+        }
+
+        // Monitoring identification
+        setSentryUser({
+          id: identity.id,
+          email: identity.email,
+          username: identity.display_name,
+        });
+
+        identifyUser(identity.id, {
+          email: identity.email,
+          display_name: identity.display_name,
+          capacity: identity.activeBond?.capacity || null,
+          total_bonds: identity.availableBonds.length,
+          school_id: identity.schoolId,
+        });
       }
-    },
-    [setUser, setPerspective, setAvailableBonds, setSchoolType, setOnboardingCompleted],
-  );
+    } catch (error) {
+      console.warn('❌ Profile: Fetching encountered an error:', error);
+    } finally {
+      setIsProfileLoading(false);
+    }
+  }, [setUser, setPerspective, setAvailableBonds, setSchoolType, setOnboardingCompleted]);
 
   const refreshProfile = useCallback(async () => {
     await fetchAndSetUserProfile();
@@ -141,22 +144,25 @@ export function useAuthorityLifecycle() {
     // 3. Auth State Change Listener
     const {
       data: { subscription },
-    } = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.auth.onAuthStateChange(async (event, currentSession) => {
-      setSession(currentSession);
-      setAuthSession(currentSession);
-      setAuthSessionResolved(true);
+    } = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.auth.onAuthStateChange(
+      async (event, currentSession) => {
+        setSession(currentSession);
+        setAuthSession(currentSession);
+        setAuthSessionResolved(true);
 
-      if (currentSession?.user) {
-        await fetchAndSetUserProfile();
-      } else if (event === 'SIGNED_OUT') {
-        clearSentryUser();
-        setUser(null);
-        setPerspective(null);
-        setAvailableBonds([]);
-        setSchoolType(null);
-        setOnboardingCompleted(false);
-      }
-    });
+        if (currentSession?.user) {
+          await fetchAndSetUserProfile();
+        } else if (event === 'SIGNED_OUT') {
+          clearSentryUser();
+          setUser(null);
+          setPerspective(null);
+          setAvailableBonds([]);
+          setSchoolType(null);
+          setOnboardingCompleted(false);
+          usePermissionStore.getState().clearPermissions();
+        }
+      },
+    );
 
     return () => subscription.unsubscribe();
   }, [
@@ -187,7 +193,7 @@ export function useAuthorityLifecycle() {
         },
         async (payload) => {
           // Detect privilege change
-          const oldCapacity = useAuthStore.getState().active_bond?.capacity;
+          const oldCapacity = useAuthStore.getState().activeBond?.capacity;
           const newCapacity = (payload.new as { capacity?: string })?.capacity;
           const capacityChanged = Boolean(newCapacity && newCapacity !== oldCapacity);
 

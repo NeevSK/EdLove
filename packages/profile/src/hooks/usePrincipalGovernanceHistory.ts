@@ -1,6 +1,6 @@
-import { useQuery } from '@tanstack/react-query';
 import { studentsAPI } from '@repo/core/api';
 import type { PrincipalGovernanceRecord } from '@repo/core/logic';
+import { useQuery } from '@tanstack/react-query';
 
 export function usePrincipalGovernanceHistory(principalId?: string) {
   return useQuery({

@@ -1,5 +1,5 @@
-import { AsyncStorageAdapter } from './AsyncStorageAdapter';
 import type { IStorage } from '../../logic/interfaces/storage.port';
+import { AsyncStorageAdapter } from './AsyncStorageAdapter';
 
 /**
  * FallbackMMKVStorageAdapter — May 2026

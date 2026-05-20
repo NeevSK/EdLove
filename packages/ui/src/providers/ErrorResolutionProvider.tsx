@@ -1,11 +1,11 @@
+import type { ISovereignError } from '@repo/core/lib';
 import type React from 'react';
 import { createContext, useCallback, useContext, useMemo, useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
-import type { ISovereignError } from '@repo/core/lib';
+import { UniversalModal } from '../components/UniversalModal';
 import { Button, ButtonText } from '../components/ui/button';
 import { HStack } from '../components/ui/hstack';
 import { VStack } from '../components/ui/vstack';
-import { UniversalModal } from '../components/UniversalModal';
 
 interface ErrorResolutionContextType {
   resolveError: (error: ISovereignError) => void;
@@ -20,9 +20,7 @@ const ErrorResolutionContext = createContext<ErrorResolutionContextType | undefi
  * A global orchestrator for structured error recovery.
  * Provides high-fidelity feedback with resolution guides and actionable recovery steps.
  */
-export const ErrorResolutionProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+export const ErrorResolutionProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [activeError, setActiveError] = useState<ISovereignError | null>(null);
   const [showDetails, setShowDetails] = useState(false);
 
@@ -69,9 +67,7 @@ export const ErrorResolutionProvider: React.FC<{ children: React.ReactNode }> = 
                   <Text className="text-phase-text-primary font-bold text-sm mb-2">
                     Next Steps:
                   </Text>
-                  <Text className="text-phase-text-secondary leading-5">
-                    {activeError.guide}
-                  </Text>
+                  <Text className="text-phase-text-secondary leading-5">{activeError.guide}</Text>
                 </VStack>
 
                 <Button

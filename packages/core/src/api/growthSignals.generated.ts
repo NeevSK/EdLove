@@ -5,7 +5,6 @@
 
 import type { GrowthDimension } from '../types/Growth';
 
-
 /** All semantic signal types derived from growthSignals.schema.json */
 export type GrowthSignalType =
   | 'app_opened'

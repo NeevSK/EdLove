@@ -1,16 +1,22 @@
-import { IGrowthPort } from '../ports/growth.port';
 import { GROWTH_SIGNAL_MAP, type GrowthSignalType } from '../../api/growthSignals.generated';
-import { 
-  BanyanStage, RiverStage, CrystalTier, 
-  GrowthDimension, UserGrowthState, BhumiStage,
-  Challenge, ChallengeMetric, PersonalCompass,
-  ChallengeProgress, ChallengeType, CrystalDiscovery
+import type { CreateRippleInput, ManifestoVibe } from '../../types/Growth';
+import {
+  type BanyanStage,
+  type BhumiStage,
+  type Challenge,
+  type ChallengeMetric,
+  type ChallengeProgress,
+  type ChallengeType,
+  type CrystalDiscovery,
+  type CrystalTier,
+  GrowthDimension,
+  type PersonalCompass,
+  type RiverStage,
+  type UserGrowthState,
 } from '../../types/Growth';
-import type { CreateRippleInput } from '../../types/Growth';
-import type { ManifestoVibe } from '../../types/Growth';
+import type { IGrowthPort } from '../ports/growth.port';
+
 export * from '../../types/Growth';
-
-
 
 const SIGNAL_TO_CHALLENGE_METRIC: Partial<Record<GrowthSignalType, any>> = {
   resource_read: 'library_resources_opened',
@@ -25,11 +31,35 @@ const SIGNAL_TO_CHALLENGE_METRIC: Partial<Record<GrowthSignalType, any>> = {
   group_message_sent: 'community_posts',
 };
 
-const BANYAN_SIGNALS = new Set<GrowthSignalType>(['peer_mentored', 'circle_facilitated', 'resource_gifted', 'colleague_helped']);
-const RIVER_SIGNALS = new Set<GrowthSignalType>(['lesson_completed', 'deep_study_session', 'reflection_submitted', 'knowledge_connected', 'resource_read']);
-const CRYSTAL_SIGNALS = new Set<GrowthSignalType>(['crystal_found', 'fractal_moment', 'knowledge_connected']);
+const BANYAN_SIGNALS = new Set<GrowthSignalType>([
+  'peer_mentored',
+  'circle_facilitated',
+  'resource_gifted',
+  'colleague_helped',
+]);
+const RIVER_SIGNALS = new Set<GrowthSignalType>([
+  'lesson_completed',
+  'deep_study_session',
+  'reflection_submitted',
+  'knowledge_connected',
+  'resource_read',
+]);
+const CRYSTAL_SIGNALS = new Set<GrowthSignalType>([
+  'crystal_found',
+  'fractal_moment',
+  'knowledge_connected',
+]);
 
-type WhisperedMomentKey = 'still_water' | 'storm_holder' | 'first_offering' | 'caring_teacher' | 'the_seeker' | 'first_branch' | 'the_companion' | 'river_meets_sea' | 'fractal_vision';
+type WhisperedMomentKey =
+  | 'still_water'
+  | 'storm_holder'
+  | 'first_offering'
+  | 'caring_teacher'
+  | 'the_seeker'
+  | 'first_branch'
+  | 'the_companion'
+  | 'river_meets_sea'
+  | 'fractal_vision';
 
 interface WhisperedMomentSpec {
   key: WhisperedMomentKey;
@@ -39,15 +69,55 @@ interface WhisperedMomentSpec {
 }
 
 const WHISPERED_MOMENT_SPECS: WhisperedMomentSpec[] = [
-  { key: 'still_water', name_si: 'නිශ්චල දිය', name_en: 'Still Water', triggerSignals: ['mood_checkin'] },
-  { key: 'storm_holder', name_si: 'කුළු ගෙන සිටින්නා', name_en: 'Storm Holder', triggerSignals: ['fire_journal_entry'] },
-  { key: 'first_offering', name_si: 'ප්‍රථම දානය', name_en: 'First Offering', triggerSignals: ['lesson_material_created', 'resource_uploaded'] },
-  { key: 'caring_teacher', name_si: 'සැලකිලිමත් ගුරුවරිය', name_en: 'The Caring Teacher', triggerSignals: ['assignment_graded'] },
+  {
+    key: 'still_water',
+    name_si: 'නිශ්චල දිය',
+    name_en: 'Still Water',
+    triggerSignals: ['mood_checkin'],
+  },
+  {
+    key: 'storm_holder',
+    name_si: 'කුළු ගෙන සිටින්නා',
+    name_en: 'Storm Holder',
+    triggerSignals: ['fire_journal_entry'],
+  },
+  {
+    key: 'first_offering',
+    name_si: 'ප්‍රථම දානය',
+    name_en: 'First Offering',
+    triggerSignals: ['lesson_material_created', 'resource_uploaded'],
+  },
+  {
+    key: 'caring_teacher',
+    name_si: 'සැලකිලිමත් ගුරුවරිය',
+    name_en: 'The Caring Teacher',
+    triggerSignals: ['assignment_graded'],
+  },
   { key: 'the_seeker', name_si: 'සොයන්නා', name_en: 'The Seeker', triggerSignals: ['app_opened'] },
-  { key: 'first_branch', name_si: 'පළමු අතු', name_en: 'First Branch', triggerSignals: ['peer_mentored', 'circle_facilitated', 'resource_gifted'] },
-  { key: 'the_companion', name_si: 'සහකරු ගුරුවරයා', name_en: 'The Companion', triggerSignals: ['peer_mentored', 'circle_facilitated'] },
-  { key: 'river_meets_sea', name_si: 'ගංගාව මුහුදට හමු වේ', name_en: 'River Meets Sea', triggerSignals: ['reflection_submitted', 'knowledge_connected'] },
-  { key: 'fractal_vision', name_si: 'භාගික දෘෂ්ටිය', name_en: 'Fractal Vision', triggerSignals: ['fractal_moment', 'knowledge_connected'] },
+  {
+    key: 'first_branch',
+    name_si: 'පළමු අතු',
+    name_en: 'First Branch',
+    triggerSignals: ['peer_mentored', 'circle_facilitated', 'resource_gifted'],
+  },
+  {
+    key: 'the_companion',
+    name_si: 'සහකරු ගුරුවරයා',
+    name_en: 'The Companion',
+    triggerSignals: ['peer_mentored', 'circle_facilitated'],
+  },
+  {
+    key: 'river_meets_sea',
+    name_si: 'ගංගාව මුහුදට හමු වේ',
+    name_en: 'River Meets Sea',
+    triggerSignals: ['reflection_submitted', 'knowledge_connected'],
+  },
+  {
+    key: 'fractal_vision',
+    name_si: 'භාගික දෘෂ්ටිය',
+    name_en: 'Fractal Vision',
+    triggerSignals: ['fractal_moment', 'knowledge_connected'],
+  },
 ];
 
 export class GrowthManager {
@@ -79,7 +149,7 @@ export class GrowthManager {
       });
     } catch (e) {
       console.warn('[GrowthManager] Failed to record event', e);
-      return; 
+      return;
     }
 
     // 2. Increment dimension
@@ -99,20 +169,24 @@ export class GrowthManager {
   }
 
   private async checkWhisperedMoments(userId: string, signalType: GrowthSignalType) {
-    const candidateSpecs = WHISPERED_MOMENT_SPECS.filter(s => s.triggerSignals.includes(signalType));
+    const candidateSpecs = WHISPERED_MOMENT_SPECS.filter((s) =>
+      s.triggerSignals.includes(signalType),
+    );
     if (candidateSpecs.length === 0) return;
 
-    const candidateKeys = candidateSpecs.map(s => s.key);
+    const candidateKeys = candidateSpecs.map((s) => s.key);
     const experiencedKeys = await this.growthPort.getExperiencedMomentKeys(userId, candidateKeys);
 
-    const remainingCandidates = candidateSpecs.filter(s => !experiencedKeys.includes(s.key));
-    
-    const metResults = await Promise.all(remainingCandidates.map(async (spec) => ({
-      spec,
-      met: await this.evaluateCondition(userId, spec.key)
-    })));
+    const remainingCandidates = candidateSpecs.filter((s) => !experiencedKeys.includes(s.key));
 
-    const newlyMet = metResults.filter(r => r.met).map(r => r.spec);
+    const metResults = await Promise.all(
+      remainingCandidates.map(async (spec) => ({
+        spec,
+        met: await this.evaluateCondition(userId, spec.key),
+      })),
+    );
+
+    const newlyMet = metResults.filter((r) => r.met).map((r) => r.spec);
     if (newlyMet.length > 0) {
       await this.growthPort.awardMoments(userId, newlyMet);
     }
@@ -120,27 +194,64 @@ export class GrowthManager {
 
   private async evaluateCondition(userId: string, key: WhisperedMomentKey): Promise<boolean> {
     switch (key) {
-      case 'still_water': return (await this.growthPort.countEvents(userId, ['mood_checkin'])) >= 5;
+      case 'still_water':
+        return (await this.growthPort.countEvents(userId, ['mood_checkin'])) >= 5;
       case 'storm_holder': {
         const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
-        return (await this.growthPort.countEvents(userId, ['fire_journal_entry'], { since: sevenDaysAgo })) >= 3;
+        return (
+          (await this.growthPort.countEvents(userId, ['fire_journal_entry'], {
+            since: sevenDaysAgo,
+          })) >= 3
+        );
       }
-      case 'first_offering': return (await this.growthPort.countEvents(userId, ['lesson_material_created', 'resource_uploaded'])) >= 1;
-      case 'caring_teacher': return (await this.growthPort.countEvents(userId, ['assignment_graded'])) >= 10;
+      case 'first_offering':
+        return (
+          (await this.growthPort.countEvents(userId, [
+            'lesson_material_created',
+            'resource_uploaded',
+          ])) >= 1
+        );
+      case 'caring_teacher':
+        return (await this.growthPort.countEvents(userId, ['assignment_graded'])) >= 10;
       case 'the_seeker': {
         const data = await this.growthPort.getEventMetadata(userId, 'app_opened');
-        const sections = new Set(data.map(m => m['section']).filter(Boolean));
-        return ['community', 'library', 'self', 'classroom'].every(s => sections.has(s));
+        const sections = new Set(data.map((m) => m['section']).filter(Boolean));
+        return ['community', 'library', 'self', 'classroom'].every((s) => sections.has(s));
       }
-      case 'first_branch': return (await this.growthPort.countEvents(userId, ['peer_mentored', 'circle_facilitated', 'resource_gifted'])) >= 1;
-      case 'the_companion': return (await this.growthPort.countEvents(userId, ['peer_mentored', 'circle_facilitated'])) >= 3;
-      case 'river_meets_sea': return (await this.growthPort.countEvents(userId, ['reflection_submitted', 'knowledge_connected'])) >= 5;
-      case 'fractal_vision': return (await this.growthPort.countEvents(userId, ['fractal_moment', 'knowledge_connected'])) >= 1;
-      default: return false;
+      case 'first_branch':
+        return (
+          (await this.growthPort.countEvents(userId, [
+            'peer_mentored',
+            'circle_facilitated',
+            'resource_gifted',
+          ])) >= 1
+        );
+      case 'the_companion':
+        return (
+          (await this.growthPort.countEvents(userId, ['peer_mentored', 'circle_facilitated'])) >= 3
+        );
+      case 'river_meets_sea':
+        return (
+          (await this.growthPort.countEvents(userId, [
+            'reflection_submitted',
+            'knowledge_connected',
+          ])) >= 5
+        );
+      case 'fractal_vision':
+        return (
+          (await this.growthPort.countEvents(userId, ['fractal_moment', 'knowledge_connected'])) >=
+          1
+        );
+      default:
+        return false;
     }
   }
 
-  private async advancePaths(userId: string, signalType: GrowthSignalType, metadata: Record<string, any>) {
+  private async advancePaths(
+    userId: string,
+    signalType: GrowthSignalType,
+    metadata: Record<string, any>,
+  ) {
     const state = await this.growthPort.getGrowthState(userId);
     if (!state) return;
 
@@ -152,17 +263,21 @@ export class GrowthManager {
 
     // Banyan (Vata) Path
     if (BANYAN_SIGNALS.has(signalType)) {
-      if (signalType === 'peer_mentored') updates.peer_mentored_count = (state.peer_mentored_count || 0) + 1;
-      if (signalType === 'circle_facilitated') updates.circles_facilitated_count = (state.circles_facilitated_count || 0) + 1;
-      
+      if (signalType === 'peer_mentored')
+        updates.peer_mentored_count = (state.peer_mentored_count || 0) + 1;
+      if (signalType === 'circle_facilitated')
+        updates.circles_facilitated_count = (state.circles_facilitated_count || 0) + 1;
+
       const nextBanyan = this.evaluateBanyanTransition(state.banyan_stage, state);
       if (nextBanyan) updates.banyan_stage = nextBanyan;
     }
 
     // River (Ganga) Path
     if (RIVER_SIGNALS.has(signalType)) {
-      if (signalType === 'lesson_completed') updates.lessons_completed_count = (state.lessons_completed_count || 0) + 1;
-      if (signalType === 'reflection_submitted') updates.reflections_submitted_count = (state.reflections_submitted_count || 0) + 1;
+      if (signalType === 'lesson_completed')
+        updates.lessons_completed_count = (state.lessons_completed_count || 0) + 1;
+      if (signalType === 'reflection_submitted')
+        updates.reflections_submitted_count = (state.reflections_submitted_count || 0) + 1;
 
       const nextRiver = this.evaluateRiverTransition(state.river_stage, state);
       if (nextRiver) updates.river_stage = nextRiver;
@@ -170,32 +285,38 @@ export class GrowthManager {
 
     // Crystal Path
     if (signalType === 'crystal_found' || signalType === 'fractal_moment') {
-        const isFractal = signalType === 'fractal_moment';
-        
-        if (signalType === 'crystal_found') {
-            updates.crystals_found_count = (state.crystals_found_count || 0) + 1;
-        }
-        if (isFractal) {
-            updates.fractal_moments_count = (state.fractal_moments_count || 0) + 1;
-        }
+      const isFractal = signalType === 'fractal_moment';
 
-        // Record the actual discovery record
-        void this.growthPort.recordCrystalDiscovery({
-            user_id: userId,
-            crystal_type: (metadata['crystal_type'] as any) || (isFractal ? 'fractal_crystal' : 'subject_crystal'),
-            subject_tags: (metadata['subject_tags'] as string[]) || [],
-            crystal_name_en: (metadata['name_en'] as string) || (isFractal ? 'Fractal Connection' : 'Knowledge Crystal'),
-            crystal_description_en: (metadata['description_en'] as string) || null,
-            is_fractal_moment: isFractal,
-            source_entity_id: (metadata['source_entity_id'] as string) || null,
-        }).catch(() => {});
+      if (signalType === 'crystal_found') {
+        updates.crystals_found_count = (state.crystals_found_count || 0) + 1;
+      }
+      if (isFractal) {
+        updates.fractal_moments_count = (state.fractal_moments_count || 0) + 1;
+      }
 
-        const nextCrystal = this.evaluateCrystalTransition(state.crystal_tier, {
-            ...state,
-            crystals_found_count: updates.crystals_found_count ?? state.crystals_found_count,
-            fractal_moments_count: updates.fractal_moments_count ?? state.fractal_moments_count
-        });
-        if (nextCrystal) updates.crystal_tier = nextCrystal;
+      // Record the actual discovery record
+      void this.growthPort
+        .recordCrystalDiscovery({
+          user_id: userId,
+          crystal_type:
+            (metadata['crystal_type'] as any) ||
+            (isFractal ? 'fractal_crystal' : 'subject_crystal'),
+          subject_tags: (metadata['subject_tags'] as string[]) || [],
+          crystal_name_en:
+            (metadata['name_en'] as string) ||
+            (isFractal ? 'Fractal Connection' : 'Knowledge Crystal'),
+          crystal_description_en: (metadata['description_en'] as string) || null,
+          is_fractal_moment: isFractal,
+          source_entity_id: (metadata['source_entity_id'] as string) || null,
+        })
+        .catch(() => {});
+
+      const nextCrystal = this.evaluateCrystalTransition(state.crystal_tier, {
+        ...state,
+        crystals_found_count: updates.crystals_found_count ?? state.crystals_found_count,
+        fractal_moments_count: updates.fractal_moments_count ?? state.fractal_moments_count,
+      });
+      if (nextCrystal) updates.crystal_tier = nextCrystal;
     }
 
     if (Object.keys(updates).length > 0) {
@@ -208,73 +329,122 @@ export class GrowthManager {
       case 'bijam':
         return state.presence_signals >= 1 ? 'mula' : null;
       case 'mula':
-        return state.presence_signals >= 5 && (state.nourishing_signals + state.witnessing_signals + state.weaving_signals >= 1) ? 'nala' : null;
+        return state.presence_signals >= 5 &&
+          state.nourishing_signals + state.witnessing_signals + state.weaving_signals >= 1
+          ? 'nala'
+          : null;
       case 'nala':
         return state.weaving_signals >= 1 || state.nourishing_signals >= 1 ? 'patra' : null;
-      case 'patra':
-        const activeDimensions = [state.presence_signals, state.nourishing_signals, state.witnessing_signals, state.weaving_signals, state.blooming_signals].filter(c => c >= 5).length;
+      case 'patra': {
+        const activeDimensions = [
+          state.presence_signals,
+          state.nourishing_signals,
+          state.witnessing_signals,
+          state.weaving_signals,
+          state.blooming_signals,
+        ].filter((c) => c >= 5).length;
         return activeDimensions >= 3 ? 'kamala' : null;
-      case 'kamala':
-        const deepDimensions = [state.presence_signals, state.nourishing_signals, state.witnessing_signals, state.weaving_signals, state.blooming_signals].filter(c => c >= 20).length;
+      }
+      case 'kamala': {
+        const deepDimensions = [
+          state.presence_signals,
+          state.nourishing_signals,
+          state.witnessing_signals,
+          state.weaving_signals,
+          state.blooming_signals,
+        ].filter((c) => c >= 20).length;
         return deepDimensions >= 4 ? 'purna_kamala' : null;
-      default: return null;
+      }
+      default:
+        return null;
     }
   }
 
-  private evaluateBanyanTransition(current: BanyanStage, state: UserGrowthState): BanyanStage | null {
+  private evaluateBanyanTransition(
+    current: BanyanStage,
+    state: UserGrowthState,
+  ): BanyanStage | null {
     switch (current) {
-      case 'sapling': return state.peer_mentored_count >= 1 ? 'roots_spreading' : null;
-      case 'roots_spreading': return state.peer_mentored_count >= 3 ? 'canopy' : null;
-      case 'canopy': return state.circles_facilitated_count >= 1 && state.blooming_signals >= 1 ? 'shade_giver' : null;
-      case 'shade_giver': return state.peer_mentored_count >= 5 && state.circles_facilitated_count >= 3 ? 'forest_maker' : null;
-      default: return null;
+      case 'sapling':
+        return state.peer_mentored_count >= 1 ? 'roots_spreading' : null;
+      case 'roots_spreading':
+        return state.peer_mentored_count >= 3 ? 'canopy' : null;
+      case 'canopy':
+        return state.circles_facilitated_count >= 1 && state.blooming_signals >= 1
+          ? 'shade_giver'
+          : null;
+      case 'shade_giver':
+        return state.peer_mentored_count >= 5 && state.circles_facilitated_count >= 3
+          ? 'forest_maker'
+          : null;
+      default:
+        return null;
     }
   }
 
   private evaluateRiverTransition(current: RiverStage, state: UserGrowthState): RiverStage | null {
     switch (current) {
-      case 'trickle': return state.lessons_completed_count >= 1 ? 'stream' : null;
-      case 'stream': return state.lessons_completed_count >= 5 && state.reflections_submitted_count >= 1 ? 'river' : null;
-      case 'river': return state.lessons_completed_count >= 20 && state.reflections_submitted_count >= 5 ? 'delta' : null;
-      default: return null;
+      case 'trickle':
+        return state.lessons_completed_count >= 1 ? 'stream' : null;
+      case 'stream':
+        return state.lessons_completed_count >= 5 && state.reflections_submitted_count >= 1
+          ? 'river'
+          : null;
+      case 'river':
+        return state.lessons_completed_count >= 20 && state.reflections_submitted_count >= 5
+          ? 'delta'
+          : null;
+      default:
+        return null;
     }
   }
 
-  private evaluateCrystalTransition(current: CrystalTier, state: UserGrowthState): CrystalTier | null {
+  private evaluateCrystalTransition(
+    current: CrystalTier,
+    state: UserGrowthState,
+  ): CrystalTier | null {
     switch (current) {
-      case 'spark': return state.crystals_found_count >= 1 ? 'cluster' : null;
-      case 'cluster': return state.crystals_found_count >= 10 ? 'cave' : null;
-      case 'cave': return state.fractal_moments_count >= 1 ? 'fractal' : null;
-      default: return null;
+      case 'spark':
+        return state.crystals_found_count >= 1 ? 'cluster' : null;
+      case 'cluster':
+        return state.crystals_found_count >= 10 ? 'cave' : null;
+      case 'cave':
+        return state.fractal_moments_count >= 1 ? 'fractal' : null;
+      default:
+        return null;
     }
   }
 
-  private async recordChallengeContribution(userId: string, metric: ChallengeMetric, metadata: Record<string, any>) {
-     const schoolId = metadata['school_id'] as string;
-     const classroomId = metadata['classroom_id'] as string;
+  private async recordChallengeContribution(
+    userId: string,
+    metric: ChallengeMetric,
+    metadata: Record<string, any>,
+  ) {
+    const schoolId = metadata['school_id'] as string;
+    const classroomId = metadata['classroom_id'] as string;
 
-     const challenges = await this.growthPort.getChallenges({ 
-       schoolId, 
-       classroomId, 
-       status: 'active' 
-     });
+    const challenges = await this.growthPort.getChallenges({
+      schoolId,
+      classroomId,
+      status: 'active',
+    });
 
-     for (const challenge of challenges) {
-       if (challenge.metric === metric) {
-         await this.growthPort.updateChallenge(challenge.id, { 
-           current_count: (challenge.current_count || 0) + 1 
-         });
-       }
-     }
+    for (const challenge of challenges) {
+      if (challenge.metric === metric) {
+        await this.growthPort.updateChallenge(challenge.id, {
+          current_count: (challenge.current_count || 0) + 1,
+        });
+      }
+    }
 
-     const compasses = await this.growthPort.getPersonalCompasses({ userId, status: 'active' });
-     for (const compass of compasses) {
-       if (compass.metric === metric) {
-         await this.growthPort.updatePersonalCompass(compass.id, {
-           current_count: (compass.current_count || 0) + 1
-         });
-       }
-     }
+    const compasses = await this.growthPort.getPersonalCompasses({ userId, status: 'active' });
+    for (const compass of compasses) {
+      if (compass.metric === metric) {
+        await this.growthPort.updatePersonalCompass(compass.id, {
+          current_count: (compass.current_count || 0) + 1,
+        });
+      }
+    }
   }
 
   /**
@@ -312,7 +482,7 @@ export class GrowthManager {
     return this.growthPort.createPersonalCompass({
       user_id: userId,
       ...params,
-      status: 'active'
+      status: 'active',
     });
   }
 
@@ -380,8 +550,6 @@ export class GrowthManager {
   async unendorseManifesto(manifestoId: string, userId: string) {
     return this.growthPort.unendorseManifesto(manifestoId, userId);
   }
-
-
 
   /**
    * Challenge Progress & Narrative
@@ -491,4 +659,3 @@ export class GrowthManager {
     return `${metaphor}_ready`;
   }
 }
-

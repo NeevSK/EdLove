@@ -142,7 +142,11 @@ export default function IdentityCard({
     <Center className="h-full">
       <Box className="p-4 bg-white rounded-xl">
         <QRCodeGenerator
-          value={data.id ? QRBuilder.userInvite(data.id, data.capacity || 'member', data.username || undefined) : 'anonymous-user'}
+          value={
+            data.id
+              ? QRBuilder.userInvite(data.id, data.capacity || 'member', data.username || undefined)
+              : 'anonymous-user'
+          }
           size={120}
         />
       </Box>

@@ -1,8 +1,8 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { attendanceAPI } from '../orchestration/operations';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { storage } from '../../logic/managers/StorageManager';
 import { useAuthStore } from '../../store/useAuthStore';
 import { useTemporalStore } from '../../store/useTemporalStore';
-import { storage } from '../../logic/managers/StorageManager';
+import { attendanceAPI } from '../orchestration/operations';
 
 const mockStorage = {
   set: vi.fn(),

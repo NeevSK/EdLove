@@ -1,17 +1,17 @@
-import { useNavigation } from "@react-navigation/native";
-import { VideoPlayer } from "@repo/ui/components/media/VideoPlayer";
+import { useNavigation } from '@react-navigation/native';
+import { VideoPlayer } from '@repo/ui/components/media/VideoPlayer';
 
-import { useCallback } from "react";
+import { useCallback } from 'react';
 
 interface VideoPlayerScreenProps {
-	route: {
-		params: {
-			resourceId: string;
-			title: string;
-			url: string;
-			creator: string;
-		};
-	};
+  route: {
+    params: {
+      resourceId: string;
+      title: string;
+      url: string;
+      creator: string;
+    };
+  };
 }
 
 /**
@@ -19,19 +19,12 @@ interface VideoPlayerScreenProps {
  * Promotes platform-wide consumption of media tools.
  */
 export default function VideoPlayerScreen({ route }: VideoPlayerScreenProps) {
-	const { title, creator, url } = route.params;
-	const navigation = useNavigation<any>();
+  const { title, creator, url } = route.params;
+  const navigation = useNavigation<any>();
 
-	const handleClose = useCallback(() => {
-		navigation.goBack();
-	}, [navigation]);
+  const handleClose = useCallback(() => {
+    navigation.goBack();
+  }, [navigation]);
 
-	return (
-		<VideoPlayer
-			url={url}
-			title={title}
-			creator={creator}
-			onClose={handleClose}
-		/>
-	);
+  return <VideoPlayer url={url} title={title} creator={creator} onClose={handleClose} />;
 }

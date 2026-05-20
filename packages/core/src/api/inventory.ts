@@ -114,4 +114,3 @@ export const inventoryAPI = {
 
 // Satisfy linter for POA metadata linking
 void operationsContract;
-

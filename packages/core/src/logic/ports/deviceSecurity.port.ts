@@ -1,8 +1,12 @@
-import { DeviceTrustSummary, DeviceSecurityEvent, DeviceSecuritySession } from '../../api/deviceTrust';
+import type {
+  DeviceSecurityEvent,
+  DeviceSecuritySession,
+  DeviceTrustSummary,
+} from '../../api/deviceTrust';
 
 /**
  * IDeviceSecurityPort
- * 
+ *
  * The Sovereign Port for Device Security & Trust.
  * Decouples the UI from the underlying Supabase/Realtime implementation.
  */

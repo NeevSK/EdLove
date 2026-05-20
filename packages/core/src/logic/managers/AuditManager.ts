@@ -1,8 +1,8 @@
-import { IAuditRepository, AuditLogEntry } from '../domains/audit/ports';
+import type { AuditLogEntry, IAuditRepository } from '../domains/audit/ports';
 
 /**
  * AuditManager
- * 
+ *
  * Orchestrates platform-wide audit logging and retrieval.
  */
 export class AuditManager {

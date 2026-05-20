@@ -13,12 +13,12 @@
  *   <NavigationContainer>...</NavigationContainer>
  * </PowerSyncGate>
  */
-import React, { useEffect, useRef, type PropsWithChildren } from 'react';
-import { PowerSyncContext } from './powersync-react-shim';
-import { getPowerSyncDB, disconnectPowerSync } from './database';
-import { SupabasePowerSyncConnector } from './SupabasePowerSyncConnector';
+import React, { type PropsWithChildren, useEffect, useRef } from 'react';
 import { sovereignBus } from '../../lib/sync/eventBus';
 import { useStore } from '../../store/useStore';
+import { disconnectPowerSync, getPowerSyncDB } from './database';
+import { PowerSyncContext } from './powersync-react-shim';
+import { SupabasePowerSyncConnector } from './SupabasePowerSyncConnector';
 
 interface PowerSyncGateProps extends PropsWithChildren {
   /** Override — if false, renders children without PowerSync context. */
@@ -54,9 +54,5 @@ export function PowerSyncGate({ children, enabled = true }: PowerSyncGateProps) 
     return <>{children}</>;
   }
 
-  return (
-    <PowerSyncContext.Provider value={db}>
-      {children}
-    </PowerSyncContext.Provider>
-  );
+  return <PowerSyncContext.Provider value={db}>{children}</PowerSyncContext.Provider>;
 }

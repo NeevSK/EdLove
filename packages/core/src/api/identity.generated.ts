@@ -7,9 +7,21 @@
 import { z } from 'zod';
 
 export const CapacitySchema = z.enum([
-  'admin', 'founder', 'developer', 'teacher', 'student',
-  'principal', 'assistantPrincipal', 'gradeHead', 'sectionHead',
-  'parent', 'guardian', 'librarian', 'nurse', 'staff', 'member'
+  'admin',
+  'founder',
+  'developer',
+  'teacher',
+  'student',
+  'principal',
+  'assistantPrincipal',
+  'gradeHead',
+  'sectionHead',
+  'parent',
+  'guardian',
+  'librarian',
+  'nurse',
+  'staff',
+  'member',
 ]);
 
 export const BondSchema = z.object({
@@ -26,8 +38,8 @@ export const IdentitySchema = z.object({
   id: z.uuid(),
   email: z.string().email(),
   name: z.string().optional(),
-  active_bond: BondSchema,
-  available_bonds: z.array(BondSchema),
+  activeBond: BondSchema.nullable(),
+  availableBonds: z.array(BondSchema),
 });
 
 export type Identity = z.infer<typeof IdentitySchema>;

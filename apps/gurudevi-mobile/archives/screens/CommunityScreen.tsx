@@ -1,170 +1,150 @@
-import { useNavigation } from "@react-navigation/native";
-import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { useTracking } from "@repo/core/hooks";
-import { FeatureGuard, useStore, useTemporalStore } from "@repo/core/logic";
-import type { CommunityStackParamList } from "@repo/core/types";
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useTracking } from '@repo/core/hooks';
+import { FeatureGuard, useStore, useTemporalStore } from '@repo/core/logic';
+import type { CommunityStackParamList } from '@repo/core/types';
+import { FadeInDown, GlobalHeader, PositiveInvitation, ScreenWrapper } from '@repo/ui';
 import {
-	FadeInDown,
-	GlobalHeader,
-	PositiveInvitation,
-	ScreenWrapper,
-} from "@repo/ui";
-import {
-	HorizontalChipRow,
-	SanctuaryButton,
-	TemporalNavigator,
-	useBottomTabPadding,
-} from "@repo/ui/components";
-import { SanctuaryFlashList } from "@repo/ui/components/SanctuaryFlashList";
-import { useRegisterFAB } from "@repo/ui/context/FABContext";
-import { useThemedColors } from "@repo/ui/hooks";
-import { Box, Heading, Text, VStack } from "@repo/ui/primitives";
-import { Theme } from "@repo/ui/theme";
-import { Mail, PenTool } from "lucide-react-native";
-import { useEffect, useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { ActivityIndicator, ScrollView } from "react-native";
-import Animated from "react-native-reanimated";
-import { communityAPI } from "../api/community";
-import CommunityHearth from "../components/CommunityHearth";
-import CreateGroupModal from "../components/CreateGroupModal";
-import CreatePostModal from "../components/CreatePostModal";
-import PostCard from "../components/PostCard";
-import SocialShieldModal from "../components/SocialShieldModal";
-import { useCommunity } from "../hooks/useCommunity";
-import { useCommunityFilters } from "../hooks/useCommunityFilters";
-import { useManifestos } from "../hooks/useManifestos";
-import DirectMessagesListScreen from "./DirectMessagesListScreen";
-import GroupsScreen from "./GroupsScreen";
+  HorizontalChipRow,
+  SanctuaryButton,
+  TemporalNavigator,
+  useBottomTabPadding,
+} from '@repo/ui/components';
+import { SanctuaryFlashList } from '@repo/ui/components/SanctuaryFlashList';
+import { useRegisterFAB } from '@repo/ui/context/FABContext';
+import { useThemedColors } from '@repo/ui/hooks';
+import { Box, Heading, Text, VStack } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme';
+import { Mail, PenTool } from 'lucide-react-native';
+import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { ActivityIndicator, ScrollView } from 'react-native';
+import Animated from 'react-native-reanimated';
+import { communityAPI } from '../api/community';
+import CommunityHearth from '../components/CommunityHearth';
+import CreateGroupModal from '../components/CreateGroupModal';
+import CreatePostModal from '../components/CreatePostModal';
+import PostCard from '../components/PostCard';
+import SocialShieldModal from '../components/SocialShieldModal';
+import { useCommunity } from '../hooks/useCommunity';
+import { useCommunityFilters } from '../hooks/useCommunityFilters';
+import { useManifestos } from '../hooks/useManifestos';
+import DirectMessagesListScreen from './DirectMessagesListScreen';
+import GroupsScreen from './GroupsScreen';
 
-type TabType = "feed" | "groups" | "dms";
-type FeedFilter = "all" | string;
+type TabType = 'feed' | 'groups' | 'dms';
+type FeedFilter = 'all' | string;
 export default function CommunityScreen() {
-	const { t } = useTranslation();
-	const navigation =
-		useNavigation<NativeStackNavigationProp<CommunityStackParamList>>();
-	const { schoolId, userId } = useStore((state: any) => ({
-		schoolId: state.user?.school_id,
-		userId: state.user?.id,
-	}));
-	const {
-		posts,
-		groups,
-		loading,
-		fetchPosts,
-		fetchGroups,
-		fetchNextPosts,
-		hasNextPosts,
-		isFetchingNextPosts,
-	} = useCommunity();
-	const [activeTab, setActiveTab] = useState<TabType>("feed");
-	const [activeFeedFilter, setActiveFeedFilter] = useState<FeedFilter>("all");
-	const [_searchQuery, _setSearchQuery] = useState("");
-	const [refreshing, setRefreshing] = useState(false);
-	const [showCreateModal, setShowCreateModal] = useState(false);
-	const [showCreateGroupModal, setShowCreateGroupModal] = useState(false);
-	const [createPostGroupId, setCreatePostGroupId] = useState<
-		string | undefined
-	>(undefined);
-	const [reportPostId, setReportPostId] = useState<string | undefined>(
-		undefined,
-	);
-	const [reportTargetUserId, setReportTargetUserId] = useState<
-		string | undefined
-	>(undefined);
-	const [reportTargetUserName, setReportTargetUserName] = useState<
-		string | undefined
-	>(undefined);
-	const [showReportModal, setShowReportModal] = useState(false);
-	const colors = useThemedColors();
-	const { discoverFeature } = useTracking();
-	const bottomPadding = useBottomTabPadding();
-	const { viewDate, isPastView } = useTemporalStore();
-	const { t: translate } = useTranslation();
-	useEffect(() => {
-		discoverFeature("section_community");
-	}, [discoverFeature]);
-	const { manifestos, endorse, unendorse } = useManifestos(
-		schoolId || "default",
-		userId ?? undefined,
-	);
-	// Filtered data for FlatList
-	const listData = useMemo(() => posts, [posts]);
-	// Derived gating
-	const hasJoinedGroups = useMemo(
-		() => (groups || []).some((g) => g.is_member),
-		[groups],
-	);
-	// Derived feed filter chips via shared hook
-	const feedFilterChips = useCommunityFilters(
-		groups,
-		t("community.filters.allUpdates"),
-	);
-	// Register FAB globally
-	useRegisterFAB({
-		tabType: "community",
-		visible: !!userId,
-		onPress: () => {
-			if (activeTab === "dms") {
-				setActiveTab("groups");
-			} else {
-				handleOpenCreatePost();
-			}
-		},
-		icon: activeTab === "dms" ? <Mail size={24} color="white" /> : undefined,
-	});
-	// Initial data load
-	useEffect(() => {
-		loadData();
-	}, [loadData]);
-	const loadData = async () => {
-		await Promise.all([fetchGroups(), fetchPosts("all")]);
-	};
-	const onRefresh = async () => {
-		setRefreshing(true);
-		await loadData();
-		setRefreshing(false);
-	};
-	const handleOpenCreatePost = (groupId?: string) => {
-		if (!hasJoinedGroups && !groupId) {
-			// If they haven't joined anything, they can't post to 'general' yet (user rule)
-			// Instead, we guide them to the groups tab
-			setActiveTab("groups");
-			return;
-		}
-		setCreatePostGroupId(groupId);
-		setShowCreateModal(true);
-	};
-	const renderFeedFilterChips = () => (
-		(<Animated.View entering={FadeInDown.delay(300).springify()} />),
-		(
-			<HorizontalChipRow
-				chips={feedFilterChips}
-				selectedValue={activeFeedFilter}
-				onSelect={(value) => {
-					setActiveFeedFilter(value);
-					fetchPosts(value);
-				}}
-			/>
-		)
-	);
-	Animated.View;
-	const renderCommunityHearth = () => {
-		return (
-			(<Box mt="$4" />),
-			(
-				<CommunityHearth
-					manifestos={manifestos}
-					userId={userId || "guest"}
-					onPressSpotlight={(postId) => {
-						// Spotlight usually leads to a specific post view or group
-						console.log("Spotlight pressed:", postId);
-					}}
-				/>
-			)
-		);
-	};
-	Box;
+  const { t } = useTranslation();
+  const navigation = useNavigation<NativeStackNavigationProp<CommunityStackParamList>>();
+  const { schoolId, userId } = useStore((state: any) => ({
+    schoolId: state.user?.school_id,
+    userId: state.user?.id,
+  }));
+  const {
+    posts,
+    groups,
+    loading,
+    fetchPosts,
+    fetchGroups,
+    fetchNextPosts,
+    hasNextPosts,
+    isFetchingNextPosts,
+  } = useCommunity();
+  const [activeTab, setActiveTab] = useState<TabType>('feed');
+  const [activeFeedFilter, setActiveFeedFilter] = useState<FeedFilter>('all');
+  const [_searchQuery, _setSearchQuery] = useState('');
+  const [refreshing, setRefreshing] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showCreateGroupModal, setShowCreateGroupModal] = useState(false);
+  const [createPostGroupId, setCreatePostGroupId] = useState<string | undefined>(undefined);
+  const [reportPostId, setReportPostId] = useState<string | undefined>(undefined);
+  const [reportTargetUserId, setReportTargetUserId] = useState<string | undefined>(undefined);
+  const [reportTargetUserName, setReportTargetUserName] = useState<string | undefined>(undefined);
+  const [showReportModal, setShowReportModal] = useState(false);
+  const colors = useThemedColors();
+  const { discoverFeature } = useTracking();
+  const bottomPadding = useBottomTabPadding();
+  const { viewDate, isPastView } = useTemporalStore();
+  const { t: translate } = useTranslation();
+  useEffect(() => {
+    discoverFeature('section_community');
+  }, [discoverFeature]);
+  const { manifestos, endorse, unendorse } = useManifestos(
+    schoolId || 'default',
+    userId ?? undefined,
+  );
+  // Filtered data for FlatList
+  const listData = useMemo(() => posts, [posts]);
+  // Derived gating
+  const hasJoinedGroups = useMemo(() => (groups || []).some((g) => g.is_member), [groups]);
+  // Derived feed filter chips via shared hook
+  const feedFilterChips = useCommunityFilters(groups, t('community.filters.allUpdates'));
+  // Register FAB globally
+  useRegisterFAB({
+    tabType: 'community',
+    visible: !!userId,
+    onPress: () => {
+      if (activeTab === 'dms') {
+        setActiveTab('groups');
+      } else {
+        handleOpenCreatePost();
+      }
+    },
+    icon: activeTab === 'dms' ? <Mail size={24} color="white" /> : undefined,
+  });
+  // Initial data load
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
+  const loadData = async () => {
+    await Promise.all([fetchGroups(), fetchPosts('all')]);
+  };
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await loadData();
+    setRefreshing(false);
+  };
+  const handleOpenCreatePost = (groupId?: string) => {
+    if (!hasJoinedGroups && !groupId) {
+      // If they haven't joined anything, they can't post to 'general' yet (user rule)
+      // Instead, we guide them to the groups tab
+      setActiveTab('groups');
+      return;
+    }
+    setCreatePostGroupId(groupId);
+    setShowCreateModal(true);
+  };
+  const renderFeedFilterChips = () => (
+    (<Animated.View entering={FadeInDown.delay(300).springify()} />),
+    (
+      <HorizontalChipRow
+        chips={feedFilterChips}
+        selectedValue={activeFeedFilter}
+        onSelect={(value) => {
+          setActiveFeedFilter(value);
+          fetchPosts(value);
+        }}
+      />
+    )
+  );
+  Animated.View;
+  const renderCommunityHearth = () => {
+    return (
+      (<Box mt="$4" />),
+      (
+        <CommunityHearth
+          manifestos={manifestos}
+          userId={userId || 'guest'}
+          onPressSpotlight={(postId) => {
+            // Spotlight usually leads to a specific post view or group
+            console.log('Spotlight pressed:', postId);
+          }}
+        />
+      )
+    );
+  };
+  Box;
 }
 return (<ScreenWrapper scroll={false} noTopInset={true}>
             <Box className="flex-1" style={{ backgroundColor: colors.secondary }}>

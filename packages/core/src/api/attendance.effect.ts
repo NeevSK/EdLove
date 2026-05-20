@@ -1,12 +1,12 @@
 import { Data, Effect, pipe } from 'effect';
+import { audit, educational } from '../logic/managers/factory';
 import type {
   AttendanceReport,
   AttendanceSnapshot,
   SchoolAttendancePulse,
 } from '../logic/schemas/attendance.schema';
-import { attendanceProjectionServices } from './runtimes/attendanceProjection.runtime';
-import { educational, audit } from '../logic/managers/factory';
 import type { AttendanceRecord } from '../types';
+import { attendanceProjectionServices } from './runtimes/attendanceProjection.runtime';
 
 /**
  * Custom Error Types for Domain-Specific Failures
@@ -135,8 +135,7 @@ export const attendanceAPI = {
   ): Effect.Effect<AttendanceRecord[], AttendanceError | unknown, never> =>
     Effect.gen(function* () {
       const result = yield* Effect.tryPromise({
-        try: () =>
-          educational.attendance.batchRecord(records) as Promise<AttendanceRecord[]>,
+        try: () => educational.attendance.batchRecord(records) as Promise<AttendanceRecord[]>,
         catch: (e) =>
           new AttendanceError({
             message: 'Failed batch attendance recording',
@@ -172,9 +171,7 @@ export const attendanceAPI = {
     Effect.gen(function* () {
       const records = yield* Effect.tryPromise({
         try: () =>
-          educational.attendance.getByDate(classroomId, viewDate) as Promise<
-            AttendanceRecord[]
-          >,
+          educational.attendance.getByDate(classroomId, viewDate) as Promise<AttendanceRecord[]>,
         catch: (e) =>
           new AttendanceError({
             message: 'Failed to fetch snapshot',

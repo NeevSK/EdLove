@@ -1,31 +1,31 @@
 /// <reference path="../types/external-modules.d.ts" />
 
 import NetInfo from '@react-native-community/netinfo';
+import * as BackgroundTask from 'expo-background-task';
 import * as Device from 'expo-device';
+import * as Font from 'expo-font';
 import * as Haptics from 'expo-haptics';
 import * as Location from 'expo-location';
-import * as SecureStore from 'expo-secure-store';
-import * as BackgroundTask from 'expo-background-task';
-import * as TaskManager from 'expo-task-manager';
 import * as Notifications from 'expo-notifications';
+import * as SecureStore from 'expo-secure-store';
+import * as TaskManager from 'expo-task-manager';
 import { Linking, Platform, Share, StatusBar } from 'react-native';
 import type {
+  BackgroundTaskOptions,
+  BackgroundTaskProvider,
   CoreRuntimeEnvironment,
   DeviceMetadata,
   HapticsProvider,
   LinkingProvider,
   LocationProvider,
   NetworkProvider,
+  SecureStorageOptions,
+  SecureStorageProvider,
   ShareOptions,
   ShareProvider,
   UIProvider,
-  SecureStorageProvider,
-  SecureStorageOptions,
-  BackgroundTaskProvider,
-  BackgroundTaskOptions,
 } from '../types/runtime';
 import { BackgroundTaskResult, BackgroundTaskStatus } from '../types/runtime';
-import * as Font from 'expo-font';
 import { storage } from './storage';
 
 export const nativeStorageProvider = {
@@ -172,7 +172,7 @@ export const nativeNotificationProvider: any = {
   },
   setBadgeCountAsync: (count: number) => Notifications.setBadgeCountAsync(count),
   getBadgeCountAsync: () => Notifications.getBadgeCountAsync(),
-  
+
   addPushTokenListener: (callback: (token: string) => void) => {
     const subscription = Notifications.addPushTokenListener((token: any) => callback(token.data));
     return () => subscription.remove();

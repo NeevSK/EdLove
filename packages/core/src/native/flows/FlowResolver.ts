@@ -49,7 +49,7 @@ export class FlowResolver {
           return await FlowResolver.executeClaimInvite(
             payload.invite_code,
             payload.school_id,
-          payload.capacity as Capacity,
+            payload.capacity as Capacity,
             userId,
           );
 
@@ -116,12 +116,14 @@ export class FlowResolver {
     if (userError) throw userError;
 
     // 2. Join the automated school community group
-    const { error: groupError } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('group_members').upsert({
-      group_id: finalGroupId,
-      user_id: userId,
-      status: 'active',
-      is_admin: false,
-    });
+    const { error: groupError } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+      .from('group_members')
+      .upsert({
+        group_id: finalGroupId,
+        user_id: userId,
+        status: 'active',
+        is_admin: false,
+      });
 
     if (groupError) console.warn('[FlowResolver] Group join warning:', groupError);
 
@@ -140,7 +142,11 @@ export class FlowResolver {
     let finalClassroomId = classroomId;
     if (handle?.startsWith('@')) {
       const h = handle.slice(1);
-      const { data: cls } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('classrooms').select('id').eq('handle', h).single();
+      const { data: cls } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+        .from('classrooms')
+        .select('id')
+        .eq('handle', h)
+        .single();
       if (cls) finalClassroomId = cls.id;
     }
 
@@ -174,12 +180,13 @@ export class FlowResolver {
 
       if (!classroom?.teacher_id) {
         // Unclaimed classroom  claim atomically, only if still null
-        const { data: claimed, error: updateError } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
-          .from('classrooms')
-          .update({ teacher_id: userId })
-          .eq('id', finalClassroomId)
-          .is('teacher_id', null)
-          .select('id');
+        const { data: claimed, error: updateError } =
+          await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+            .from('classrooms')
+            .update({ teacher_id: userId })
+            .eq('id', finalClassroomId)
+            .is('teacher_id', null)
+            .select('id');
         if (updateError) throw updateError;
         // If 0 rows were updated another teacher claimed it first  navigate as a visitor
         if (!claimed || claimed.length === 0) {
@@ -243,10 +250,13 @@ export class FlowResolver {
       }
 
       // Atomic RPC call
-      const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.rpc('claim_invite_code', {
-        p_invite_code: inviteCode,
-        p_user_id: userId,
-      });
+      const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.rpc(
+        'claim_invite_code',
+        {
+          p_invite_code: inviteCode,
+          p_user_id: userId,
+        },
+      );
 
       if (error) throw error;
       if (data && !data.success) {

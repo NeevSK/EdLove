@@ -1,4 +1,4 @@
-import { AuthManager } from './AuthManager';
+import type { AuthManager } from './AuthManager';
 
 /**
  * DeepLinkType
@@ -108,11 +108,7 @@ export class DeepLinkManager {
    * Returns the deep link prefixes for the platform.
    */
   getPrefixes() {
-    return [
-      'gurudevi://',
-      'https://platform.gurudevi.edlove.org',
-      'http://localhost:4000',
-    ];
+    return ['gurudevi://', 'https://platform.gurudevi.edlove.org', 'http://localhost:4000'];
   }
 
   /**

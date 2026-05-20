@@ -9,5 +9,20 @@ export default defineConfig({
     include: ['src/**/*.{test,spec}.ts', 'packages/core/src/**/*.{test,spec}.ts'],
     includeSource: ['src/logic/**/*.ts'],
     passWithNoTests: true,
+    server: {
+      deps: {
+        external: [
+          'react-native',
+          'react-native-mmkv',
+          'expo',
+          'expo-constants',
+          'expo-device',
+          'expo-haptics',
+          'expo-location',
+          'expo-notifications',
+          'expo-secure-store',
+        ],
+      },
+    },
   },
 });

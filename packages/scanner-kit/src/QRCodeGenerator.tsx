@@ -10,94 +10,89 @@
 // resilience — damaged or partially obscured codes still scan. Use 'M' if you
 // need smaller codes.
 
-import QRCode from "qrcode";
-import { useMemo } from "react";
-import { StyleSheet, Text, View } from "react-native";
-import Svg, { Rect } from "react-native-svg";
+import QRCode from 'qrcode';
+import { useMemo } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import Svg, { Rect } from 'react-native-svg';
 
 export interface QRCodeGeneratorProps {
-	value: string;
-	size?: number;
-	/** Foreground (module) color */
-	color?: string;
-	backgroundColor?: string;
-	label?: string;
-	/** Error correction level — H = 30% recovery (default), M = 15%, L = 7% */
-	errorCorrectionLevel?: "L" | "M" | "Q" | "H";
-	/** Border radius for the container */
-	borderRadius?: number;
-	/** Padding inside the container */
-	padding?: number;
+  value: string;
+  size?: number;
+  /** Foreground (module) color */
+  color?: string;
+  backgroundColor?: string;
+  label?: string;
+  /** Error correction level — H = 30% recovery (default), M = 15%, L = 7% */
+  errorCorrectionLevel?: 'L' | 'M' | 'Q' | 'H';
+  /** Border radius for the container */
+  borderRadius?: number;
+  /** Padding inside the container */
+  padding?: number;
 }
 
 export default function QRCodeGenerator({
-	value,
-	size = 150,
-	color = "black",
-	backgroundColor = "white",
-	label,
-	errorCorrectionLevel = "H",
-	borderRadius = 12,
-	padding = 12,
+  value,
+  size = 150,
+  color = 'black',
+  backgroundColor = 'white',
+  label,
+  errorCorrectionLevel = 'H',
+  borderRadius = 12,
+  padding = 12,
 }: QRCodeGeneratorProps) {
-	if (!value) return null;
+  if (!value) return null;
 
-	const matrix = useMemo(() => {
-		try {
-			const qr = QRCode.create(value, { errorCorrectionLevel });
-			return qr.modules;
-		} catch (e) {
-			console.error("QR Generation Error", e);
-			return null;
-		}
-	}, [value, errorCorrectionLevel]);
+  const matrix = useMemo(() => {
+    try {
+      const qr = QRCode.create(value, { errorCorrectionLevel });
+      return qr.modules;
+    } catch (e) {
+      console.error('QR Generation Error', e);
+      return null;
+    }
+  }, [value, errorCorrectionLevel]);
 
-	if (!matrix || matrix.size === 0) {
-		return (
-			<View
-				style={[
-					styles.container,
-					{ justifyContent: "center", alignItems: "center" },
-				]}
-			>
-				<Text>Invalid QR data</Text>
-			</View>
-		);
-	}
+  if (!matrix || matrix.size === 0) {
+    return (
+      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <Text>Invalid QR data</Text>
+      </View>
+    );
+  }
 
-	const sizeCells = matrix.size;
-	const cellSize = size / sizeCells;
+  const sizeCells = matrix.size;
+  const cellSize = size / sizeCells;
 
-	return (
-		<View style={[styles.center, { borderRadius, padding, backgroundColor }]}>
-			<Svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-				{/* Background fill */}
-				<Rect x="0" y="0" width={size} height={size} fill={backgroundColor} />
+  return (
+    <View style={[styles.center, { borderRadius, padding, backgroundColor }]}>
+      <Svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+        {/* Background fill */}
+        <Rect x="0" y="0" width={size} height={size} fill={backgroundColor} />
 
-				{/* QR modules */}
-				{[...matrix.data].map((cell, index) => {
-					if (!cell) return null;
-					const row = Math.floor(index / sizeCells);
-					const col = index % sizeCells;
-					return (
-						<Rect
-							key={`${row}-${col}`}
-							x={col * cellSize}
-							y={row * cellSize}
-							width={cellSize}
-							height={cellSize}
-							fill={color}
-						/>
-					);
-				})}
-			</Svg>
-			{label && <Text style={[styles.label, { color }]}>{label}</Text>}
-		</View>
-	);
+        {/* QR modules */}
+        {[...matrix.data].map((cell, index) => {
+          if (!cell) return null;
+          const row = Math.floor(index / sizeCells);
+          const col = index % sizeCells;
+          return (
+            <Rect
+              key={`${row}-${col}`}
+              x={col * cellSize}
+              y={row * cellSize}
+              width={cellSize}
+              height={cellSize}
+              fill={color}
+            />
+          );
+        })}
+      </Svg>
+      {label && <Text style={[styles.label, { color }]}>{label}</Text>}
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
-	center: { alignItems: "center", justifyContent: "center" },
-	container: { alignItems: "center", justifyContent: "center" },
-	label: { marginTop: 8, fontSize: 12, textAlign: "center" },
+  center: { alignItems: 'center', justifyContent: 'center' },
+  container: { alignItems: 'center', justifyContent: 'center' },
+  label: { marginTop: 8, fontSize: 12, textAlign: 'center' },
 });

@@ -4,11 +4,11 @@ import { User } from '../../../types';
  * OnboardingState - Explicit states for the user onboarding journey.
  * Following the Sovereign Kernel architectural roadmap.
  */
-export type OnboardingState = 
-  | 'ARRIVAL'           // Step 0: User has landed, needs to enter name
+export type OnboardingState =
+  | 'ARRIVAL' // Step 0: User has landed, needs to enter name
   | 'IDENTITY_SELECTION' // Step 1: Name is set, needs to select capacity
-  | 'SANCTUARY_INIT'     // Step 2-6: Capacity is set, completing the sanctuary tour
-  | 'COMPLETED';         // Onboarding finished, profile synced
+  | 'SANCTUARY_INIT' // Step 2-6: Capacity is set, completing the sanctuary tour
+  | 'COMPLETED'; // Onboarding finished, profile synced
 
 export const OnboardingStates = {
   ARRIVAL: 'ARRIVAL',
@@ -24,10 +24,13 @@ import type { Bond } from '../../../types/Identity';
  * This is the single source of truth for "where" a user is in their journey.
  */
 export function getOnboardingState(
-  user: {
-    display_name?: string | null;
-    onboarding_completed?: boolean | null;
-  } | null | undefined,
+  user:
+    | {
+        display_name?: string | null;
+        onboarding_completed?: boolean | null;
+      }
+    | null
+    | undefined,
   activeBond: Bond | null | undefined,
 ): OnboardingState {
   if (!user) return 'ARRIVAL';

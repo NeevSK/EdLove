@@ -1,6 +1,6 @@
-import { User } from '../../types/User';
-import { Bond, Perspective, Capacity } from '../../types/Identity';
-import { Identity } from '../../api/identity.generated';
+import type { Identity } from '../../api/identity.generated';
+import type { Bond, Capacity, Perspective } from '../../types/Identity';
+import type { User } from '../../types/User';
 
 /**
  * IIdentityPort: The Sovereign Identity Interface.

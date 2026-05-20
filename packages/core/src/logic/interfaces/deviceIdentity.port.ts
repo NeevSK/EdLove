@@ -1,18 +1,18 @@
 /**
  * TrustLevel
- * 
+ *
  * Defines the cryptographic strength of the current device session.
  */
 export enum TrustLevel {
-  NONE = 0,      // No device identity
-  SOFT = 1,      // Local storage ID (Install ID)
-  HARDWARE = 2,  // Hardware-bound key exists (Secure Enclave)
-  ATTESTED = 3,  // Hardware-bound key + OS Integrity (DeviceCheck/Play Integrity)
+  NONE = 0, // No device identity
+  SOFT = 1, // Local storage ID (Install ID)
+  HARDWARE = 2, // Hardware-bound key exists (Secure Enclave)
+  ATTESTED = 3, // Hardware-bound key + OS Integrity (DeviceCheck/Play Integrity)
 }
 
 /**
  * IDeviceIdentity
- * 
+ *
  * Sovereign Port for Hardware-Bound Identity.
  * This interface abstracts the underlying security module (Secure Enclave / StrongBox).
  */

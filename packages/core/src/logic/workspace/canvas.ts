@@ -5,16 +5,6 @@ import type {
   WorkspaceZoneId,
 } from '../../types';
 
-export type {
-  ResolvedWorkspaceSurface,
-  WorkspaceLayout,
-  WorkspaceRendererConfig,
-  WorkspaceRendererMode,
-  WorkspaceRendererPlatform,
-  WorkspaceRuntimePlatform,
-  WorkspaceSurfaceDefinition,
-  WorkspaceZoneId,
-} from '../../types';
 
 export const WORKSPACE_CANVAS_ZONES = [
   'today',

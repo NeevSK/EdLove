@@ -16,14 +16,14 @@ export interface ISovereignError {
   timestamp: string;
   code: string;
   message: string;
-  
+
   // Human-facing resolution logic
-  guide: string; 
-  
+  guide: string;
+
   // Agent-facing resolution logic (Operational precision)
-  agentGuide?: string; 
+  agentGuide?: string;
   agentHint?: string; // Short code for agent decision trees (e.g. "RETRY_ON_CONNECT")
-  
+
   context?: Record<string, any>;
   isRetriable?: boolean;
   actions?: ErrorResolutionAction[];

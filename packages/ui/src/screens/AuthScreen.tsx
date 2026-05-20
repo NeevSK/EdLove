@@ -1,12 +1,19 @@
 import { authAPI, identityAPI } from '@repo/core/api';
 import { useIdentity } from '@repo/core/hooks';
-import { coreRuntime, handleAPIError, type Capacity, validateForm, validators, type User } from '@repo/core/logic';
+import {
+  type Capacity,
+  coreRuntime,
+  handleAPIError,
+  type User,
+  validateForm,
+  validators,
+} from '@repo/core/logic';
 import { FlowResolver, GuestDataSync } from '@repo/core/native';
 import * as AuthSession from 'expo-auth-session';
 import * as WebBrowser from 'expo-web-browser';
 import { Mail } from 'lucide-react-native';
 import type React from 'react';
-import { useCallback, useEffect, useReducer, useRef, memo, useMemo } from 'react';
+import { memo, useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BreathAnimation } from '../components/BreathAnimation';
 import { default as GuestDataSyncModal } from '../components/GuestDataSyncModal';
@@ -57,7 +64,6 @@ const GoogleIcon = memo(({ size = 20 }: { size?: number }) => (
   </Box>
 ));
 GoogleIcon.displayName = 'GoogleIcon';
-
 
 const ENTRY_PILLARS = ['Self', 'Classroom', 'Community', 'Library'] as const;
 
@@ -136,18 +142,21 @@ const AuthScreen = memo(({ onSuccess, onBack, initialMode, Scanner }: AuthScreen
   const { accent, text } = useTheme();
   const { showToast } = useSanctuaryToast();
 
-  const initialState: AuthState = useMemo(() => ({
-    email: '',
-    password: '',
-    loading: false,
-    showEmailAuth: initialMode === 'login',
-    isSignUp: initialMode !== 'login',
-    showScanner: false,
-    errors: {},
-    currentUser: null,
-    showSyncModal: false,
-    newUserId: '',
-  }), [initialMode]);
+  const initialState: AuthState = useMemo(
+    () => ({
+      email: '',
+      password: '',
+      loading: false,
+      showEmailAuth: initialMode === 'login',
+      isSignUp: initialMode !== 'login',
+      showScanner: false,
+      errors: {},
+      currentUser: null,
+      showSyncModal: false,
+      newUserId: '',
+    }),
+    [initialMode],
+  );
 
   const [state, dispatch] = useReducer(authReducer, initialState);
   const {
@@ -214,10 +223,11 @@ const AuthScreen = memo(({ onSuccess, onBack, initialMode, Scanner }: AuthScreen
         if (authResponse.type === 'success' && (authResponse as any).url) {
           const url = new URL((authResponse as any).url);
           const params = Object.fromEntries(url.searchParams.entries());
-          const access_token = params['access_token'] || url.hash.match(/access_token=([^&]+)/)?.[1];
+          const access_token =
+            params['access_token'] || url.hash.match(/access_token=([^&]+)/)?.[1];
           const refresh_token =
             params['refresh_token'] || url.hash.match(/refresh_token=([^&]+)/)?.[1];
-            
+
           if (!access_token || !refresh_token) {
             console.error('Missing tokens in auth response');
             showToast({
@@ -232,7 +242,7 @@ const AuthScreen = memo(({ onSuccess, onBack, initialMode, Scanner }: AuthScreen
 
           hapticSuccess();
           const internalId = await identityAPI.getMyInternalId();
-          
+
           // Apply pending school invite if any
           if (internalId) {
             const pendingInvite = await coreRuntime.storage.getItem('pending_invite');
@@ -312,13 +322,17 @@ const AuthScreen = memo(({ onSuccess, onBack, initialMode, Scanner }: AuthScreen
 
         if (isAnon && currentSession?.user) {
           const existingName =
-            (currentUser?.display_name && String(currentUser.display_name).trim()) || 'Sanctuary User';
+            (currentUser?.display_name && String(currentUser.display_name).trim()) ||
+            'Sanctuary User';
           await authAPI.linkAnonymousToEmail(email, password, existingName, 'teacher' as Capacity);
 
           const internalId = await identityAPI.getMyInternalId();
 
           hapticSuccess();
-          showToast({ message: t('auth.signupSuccess') || 'Welcome! Your identity is now secured.', type: 'success' });
+          showToast({
+            message: t('auth.signupSuccess') || 'Welcome! Your identity is now secured.',
+            type: 'success',
+          });
 
           // Check for anonymous data to sync
           const hasGuestData = await GuestDataSync.hasGuestData();
@@ -335,7 +349,11 @@ const AuthScreen = memo(({ onSuccess, onBack, initialMode, Scanner }: AuthScreen
         } else {
           await authAPI.signUp(email, password);
           hapticSuccess();
-          showToast({ message: t('auth.checkEmail') || 'Identity initiated. Please check your email to confirm.', type: 'success' });
+          showToast({
+            message:
+              t('auth.checkEmail') || 'Identity initiated. Please check your email to confirm.',
+            type: 'success',
+          });
         }
       } else {
         showToast({ message: 'Welcome back! Reconnecting...', type: 'info', duration: 2000 });
@@ -363,17 +381,22 @@ const AuthScreen = memo(({ onSuccess, onBack, initialMode, Scanner }: AuthScreen
             }
           }
         }
-        showToast({ message: 'Access granted to your sanctuary.', type: 'success', duration: 2000 });
+        showToast({
+          message: 'Access granted to your sanctuary.',
+          type: 'success',
+          duration: 2000,
+        });
         if (onSuccess) onSuccess();
       }
     } catch (error: any) {
       hapticError();
       const apiError = handleAPIError(error);
-      const baseMsg = typeof apiError === 'string'
-        ? apiError
-        : (apiError as any).message || 'An authentication error occurred';
-      
-      const guidedMsg = isSignUp 
+      const baseMsg =
+        typeof apiError === 'string'
+          ? apiError
+          : (apiError as any).message || 'An authentication error occurred';
+
+      const guidedMsg = isSignUp
         ? `${baseMsg}. If you already have an account, try logging in instead.`
         : `${baseMsg}. Please check your credentials and connection.`;
 
@@ -395,7 +418,7 @@ const AuthScreen = memo(({ onSuccess, onBack, initialMode, Scanner }: AuthScreen
   const handleSignUpMode = useCallback(() => handleModeChange(true), [handleModeChange]);
   const handleLoginMode = useCallback(() => handleModeChange(false), [handleModeChange]);
   const handleGoogleSignIn = useCallback(() => handleOAuthSignIn('google'), [handleOAuthSignIn]);
-  
+
   const handleShowEmailAuth = useCallback(() => {
     hapticLight();
     dispatch({
@@ -417,31 +440,34 @@ const AuthScreen = memo(({ onSuccess, onBack, initialMode, Scanner }: AuthScreen
     dispatch({ type: 'SET_SCANNER', visible: false });
   }, []);
 
-  const handleScan = useCallback(async (data: string) => {
-    hapticSuccess();
-    dispatch({ type: 'SET_SCANNER', visible: false });
-    const userId = await identityAPI.getMyInternalId();
-    if (!userId) {
-      showToast({
-        message: 'Please sign in first to use QR codes',
-        type: 'error',
-      });
-      return;
-    }
-    try {
-      const result = await FlowResolver.resolveQR(JSON.parse(data), userId);
-      if (result.outcome === 'error') {
+  const handleScan = useCallback(
+    async (data: string) => {
+      hapticSuccess();
+      dispatch({ type: 'SET_SCANNER', visible: false });
+      const userId = await identityAPI.getMyInternalId();
+      if (!userId) {
         showToast({
-          message: result.message || 'Unrecognized QR',
+          message: 'Please sign in first to use QR codes',
           type: 'error',
         });
         return;
       }
-      showToast({ message: result.message, type: 'success' });
-    } catch (e) {
-      showToast({ message: 'Invalid QR code format', type: 'error' });
-    }
-  }, [showToast]);
+      try {
+        const result = await FlowResolver.resolveQR(JSON.parse(data), userId);
+        if (result.outcome === 'error') {
+          showToast({
+            message: result.message || 'Unrecognized QR',
+            type: 'error',
+          });
+          return;
+        }
+        showToast({ message: result.message, type: 'success' });
+      } catch (e) {
+        showToast({ message: 'Invalid QR code format', type: 'error' });
+      }
+    },
+    [showToast],
+  );
 
   const handleSyncComplete = useCallback(() => {
     dispatch({ type: 'SET_SYNC_MODAL', isOpen: false });

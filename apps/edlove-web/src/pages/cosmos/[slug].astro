@@ -1,39 +1,39 @@
 ---
-import { getCollection, render } from "astro:content";
-import CosmicParticles from "../../components/CosmicParticles.astro";
-import Layout from "../../layouts/Layout.astro";
-import { absoluteUrl } from "../../lib/site";
+import { getCollection, render } from 'astro:content';
+import CosmicParticles from '../../components/CosmicParticles.astro';
+import Layout from '../../layouts/Layout.astro';
+import { absoluteUrl } from '../../lib/site';
 
 export async function getStaticPaths() {
-	const cosmosEntries = await getCollection("cosmos");
-	return cosmosEntries.map((entry) => ({
-		params: { slug: entry.id },
-		props: { entry },
-	}));
+  const cosmosEntries = await getCollection('cosmos');
+  return cosmosEntries.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
 }
 
 const { entry } = Astro.props;
 const { Content } = await render(entry);
-const articleSlug = entry.id.replace(/\.(md|mdx)$/i, "");
+const articleSlug = entry.id.replace(/\.(md|mdx)$/i, '');
 const articleUrl = absoluteUrl(`/cosmos/${articleSlug}`);
 const structuredData = {
-	"@context": "https://schema.org",
-	"@type": "Article",
-	headline: entry.data.title,
-	description: entry.data.subtitle,
-	url: articleUrl,
-	datePublished: entry.data.publishDate?.toISOString?.() ?? undefined,
-	author: {
-		"@type": "Organization",
-		name: "EdLove",
-	},
-	publisher: {
-		"@type": "Organization",
-		name: "EdLove",
-		url: absoluteUrl("/"),
-	},
-	articleSection: "Cosmos",
-	keywords: [entry.data.origin, entry.data.coreLogic].filter(Boolean),
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: entry.data.title,
+  description: entry.data.subtitle,
+  url: articleUrl,
+  datePublished: entry.data.publishDate?.toISOString?.() ?? undefined,
+  author: {
+    '@type': 'Organization',
+    name: 'EdLove',
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'EdLove',
+    url: absoluteUrl('/'),
+  },
+  articleSection: 'Cosmos',
+  keywords: [entry.data.origin, entry.data.coreLogic].filter(Boolean),
 };
 ---
 

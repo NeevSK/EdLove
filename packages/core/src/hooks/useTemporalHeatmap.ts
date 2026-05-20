@@ -17,7 +17,7 @@ export interface HeatmapData {
  */
 export function useTemporalHeatmap(year: number) {
   const { context } = usePermissions();
-  const userId = context.user_id;
+  const userId = context.userId;
 
   const { data: rawData = [], isLoading } = useQuery({
     queryKey: ['temporal_heatmap', userId, year],

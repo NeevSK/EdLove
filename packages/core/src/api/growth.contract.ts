@@ -97,4 +97,3 @@ export const growthContract = c.router({
     metadata: growthAuthority('create'),
   },
 });
-

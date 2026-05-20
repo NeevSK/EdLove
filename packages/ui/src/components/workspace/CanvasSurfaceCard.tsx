@@ -1,12 +1,12 @@
+import type { ResolvedWorkspaceSurface } from '@repo/core/types';
 import { EyeOff, Info, Lock, MoveDiagonal2, Pin, Sparkles } from 'lucide-react-native';
-import { useCallback } from 'react';
 import type React from 'react';
+import { useCallback } from 'react';
 import { StyleSheet } from 'react-native';
-import { Pressable, View } from '../../primitives';
 import { Text } from '../../gluestack';
 import { useThemedColors } from '../../hooks/useThemedColors';
+import { Pressable, View } from '../../primitives';
 import { Theme } from '../../theme/Theme';
-import type { ResolvedWorkspaceSurface } from '@repo/core/types';
 
 export interface CanvasSurfaceCardProps<
   TSurfaceId extends string = string,
@@ -140,19 +140,19 @@ export function CanvasSurfaceCard<
               {surface.lockReason === 'citizenship'
                 ? 'Elevation Required'
                 : surface.lockReason === 'pro'
-                ? 'Pro-tier Capability'
-                : 'Capability Pending'}
+                  ? 'Pro-tier Capability'
+                  : 'Capability Pending'}
             </Text>
             <Text style={cardStyles.lockedBody}>
               {surface.lockReason === 'citizenship'
                 ? 'Establish your Sanctuary or join an institution to unlock this workspace.'
                 : surface.lockReason === 'pro'
-                ? 'This institutional governance tool is available for Pro and Institutional citizens.'
-                : 'This capability is currently gated by your active bond status.'}
+                  ? 'This institutional governance tool is available for Pro and Institutional citizens.'
+                  : 'This capability is currently gated by your active bond status.'}
             </Text>
           </View>
         ) : (
-          content ?? (
+          (content ?? (
             <View style={cardStyles.placeholderPanel}>
               <Sparkles size={18} color={Theme.colors.sanctuarySaffron} />
               <Text style={cardStyles.placeholderTitle}>Renderer-ready surface</Text>
@@ -161,7 +161,7 @@ export function CanvasSurfaceCard<
                 adopts the canvas renderer.
               </Text>
             </View>
-          )
+          ))
         )}
       </View>
       {actions && !surface.isLocked ? <View style={cardStyles.actionsRow}>{actions}</View> : null}

@@ -1,10 +1,9 @@
+import { educational } from '../logic/managers/factory';
 import type { ClassroomNoteLifecycleEvent } from '../logic/schemas/classroom-note.schema';
 import { APIError } from '../types/API';
 import type { ClassroomNote } from '../types/ClassroomNote';
-import { educational } from '../logic/managers/factory';
 import { identityAPI } from './identity';
 
-export type { ClassroomNote };
 
 export const classroomNotesAPI = {
   /**
@@ -18,7 +17,9 @@ export const classroomNotesAPI = {
    * @policy read ClassroomNote
    */
   async getSnapshotAsOf(classroomId: string, viewDate: string): Promise<ClassroomNote[]> {
-    return educational.classroomNotes.getSnapshotAsOf(classroomId, viewDate) as Promise<ClassroomNote[]>;
+    return educational.classroomNotes.getSnapshotAsOf(classroomId, viewDate) as Promise<
+      ClassroomNote[]
+    >;
   },
 
   /**
@@ -32,7 +33,7 @@ export const classroomNotesAPI = {
   }): Promise<ClassroomNote> {
     const identity = await identityAPI.identifyActiveCitizen();
     if (!identity) throw new APIError('Not authenticated', 'AUTH_REQUIRED');
-    
+
     return educational.classroomNotes.create(identity.id, {
       ...note,
       author_id: identity.id,

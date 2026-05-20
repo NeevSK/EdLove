@@ -11,20 +11,14 @@ declare module 'expo-background-task' {
     Denied = 3,
   }
 
-  export function registerTaskAsync(
-    name: string,
-    options?: Record<string, unknown>,
-  ): Promise<void>;
+  export function registerTaskAsync(name: string, options?: Record<string, unknown>): Promise<void>;
   export function unregisterTaskAsync(name: string): Promise<void>;
   export function getStatusAsync(): Promise<BackgroundTaskStatus>;
   export function triggerTaskWorkerForTestingAsync(name: string): Promise<void>;
 }
 
 declare module 'expo-task-manager' {
-  export function defineTask(
-    name: string,
-    task: () => Promise<number> | number,
-  ): void;
+  export function defineTask(name: string, task: () => Promise<number> | number): void;
   export function isTaskRegisteredAsync(name: string): Promise<boolean>;
 }
 

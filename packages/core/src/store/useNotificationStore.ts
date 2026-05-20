@@ -2,7 +2,6 @@ import { create } from 'zustand';
 import { notification } from '../logic/managers/factory';
 import type { AppNotification } from '../types';
 
-
 interface NotificationState {
   notifications: AppNotification[];
   unreadCount: number;
@@ -33,12 +32,12 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
   setUserId: (userId) => {
     const currentUserId = get().userId;
     if (userId === currentUserId) return;
-    
+
     // Cleanup if switching users
     get().unsubscribe();
-    
+
     set({ userId, notifications: [], unreadCount: 0, error: null });
-    
+
     if (userId) {
       get().loadNotifications();
       get().subscribe();
@@ -53,13 +52,13 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
     try {
       const [notifs, count] = await Promise.all([
         notification.getNotifications(userId),
-        notification.getUnreadCount(userId)
+        notification.getUnreadCount(userId),
       ]);
 
-      set({ 
-        notifications: notifs, 
+      set({
+        notifications: notifs,
         unreadCount: count,
-        isLoading: false 
+        isLoading: false,
       });
     } catch (err: any) {
       set({ error: err.message, isLoading: false });
@@ -113,7 +112,7 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
       (updated) => {
         set((state) => ({
           notifications: state.notifications.map((n) =>
-            n.id === updated.id ? { ...n, is_read: updated.is_read } : n
+            n.id === updated.id ? { ...n, is_read: updated.is_read } : n,
           ),
         }));
         if (updated.is_read) {
@@ -125,7 +124,7 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
         if (status === 'ERROR') {
           set({ error: 'Realtime synchronization failed' });
         }
-      }
+      },
     );
 
     set({ unsubscribeFn: cleanup });

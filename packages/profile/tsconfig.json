@@ -1,12 +1,12 @@
 {
-	"extends": "../../packages/typescript-config/base.json",
-	"compilerOptions": {
-		"outDir": "./dist",
-		"rootDir": "./src",
-		"baseUrl": ".",
-		"paths": {
-			"@repo/profile/*": ["./src/*"]
-		}
-	},
-	"include": ["src/**/*"]
+  "extends": "../../packages/typescript-config/base.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "baseUrl": ".",
+    "paths": {
+      "@repo/profile/*": ["./src/*"]
+    }
+  },
+  "include": ["src/**/*"]
 }

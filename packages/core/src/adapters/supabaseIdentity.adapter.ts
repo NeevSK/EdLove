@@ -1,10 +1,10 @@
+import type { Identity } from '../api/identity.generated';
 import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../api/supabase';
-import { Bond, Perspective, Capacity } from '../types/Identity';
-import { User } from '../types/User';
-import { IIdentityPort } from '../logic/ports/identity.port';
-import { APIError } from '../types/API';
 import { storage } from '../lib/storage';
-import { Identity } from '../api/identity.generated';
+import type { IIdentityPort } from '../logic/ports/identity.port';
+import { APIError } from '../types/API';
+import type { Bond, Capacity, Perspective } from '../types/Identity';
+import type { User } from '../types/User';
 
 /**
  * SupabaseIdentityAdapter: The bridge between Supabase Auth/DB and the Identity Port.
@@ -42,17 +42,19 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
   }
 
   async linkIdentity(userId: string, provider: string, providerUserId: string): Promise<void> {
-    const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('auth_identities').upsert(
-      {
-        user_id: userId,
-        provider,
-        provider_user_id: providerUserId,
-        updated_at: new Date().toISOString(),
-      },
-      {
-        onConflict: 'provider,provider_user_id',
-      },
-    );
+    const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+      .from('auth_identities')
+      .upsert(
+        {
+          user_id: userId,
+          provider,
+          provider_user_id: providerUserId,
+          updated_at: new Date().toISOString(),
+        },
+        {
+          onConflict: 'provider,provider_user_id',
+        },
+      );
 
     if (error) {
       throw new APIError('Failed to link identity', error.code, error);
@@ -83,7 +85,10 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
     let internalId = this.cachedInternalId;
 
     if (!internalId) {
-      internalId = await this.resolveInternalId('__INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__', authUid);
+      internalId = await this.resolveInternalId(
+        '__INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__',
+        authUid,
+      );
       this.cachedAuthUid = authUid;
 
       if (!internalId) {
@@ -94,7 +99,11 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
           .maybeSingle();
 
         if (legacyUser) {
-          await this.linkIdentity(legacyUser.id, '__INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__', authUid);
+          await this.linkIdentity(
+            legacyUser.id,
+            '__INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__',
+            authUid,
+          );
           internalId = legacyUser.id;
         } else {
           await this.linkIdentity(authUid, '__INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__', authUid);
@@ -116,8 +125,8 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
       id: internalId,
       email: profile.email || '',
       name: profile.display_name || undefined,
-      active_bond: perspective.active_bond,
-      available_bonds: perspective.available_bonds,
+      activeBond: (perspective.activeBond || null) as Bond | null,
+      availableBonds: (perspective.availableBonds || []) as Bond[],
     };
   }
 
@@ -163,12 +172,12 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
     if (!identity) return false;
 
     const bonds = await this.getBonds(identity.id);
-    
+
     if (contextId) {
-      return bonds.some(b => b.entity_id === contextId && b.capacity === capacity);
+      return bonds.some((b) => b.entity_id === contextId && b.capacity === capacity);
     }
 
-    return bonds.some(b => b.capacity === capacity);
+    return bonds.some((b) => b.capacity === capacity);
   }
 
   async getActivePerspective(): Promise<Perspective | null> {
@@ -176,17 +185,17 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
 
     const { data } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.auth.getUser();
     if (!data?.user) return null;
-    
+
     // We need the internal ID to fetch bonds
     // Use a local ID lookup to avoid infinite recursion if identifyActiveCitizen calls getActivePerspective
     let userId = this.cachedInternalId;
     if (!userId) {
-       const authUid = data.user.id;
-       userId = await this.resolveInternalId('__INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__', authUid);
-       if (!userId) {
-          // Fallback to authUid if not linked yet
-          userId = authUid;
-       }
+      const authUid = data.user.id;
+      userId = await this.resolveInternalId('__INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__', authUid);
+      if (!userId) {
+        // Fallback to authUid if not linked yet
+        userId = authUid;
+      }
     }
 
     const bonds = await this.getBonds(userId);
@@ -196,9 +205,9 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
     if (persisted) {
       try {
         const parsed = JSON.parse(persisted);
-        const activeBond = bonds.find(b => b.id === parsed.active_bond?.id);
+        const activeBond = bonds.find((b) => b.id === parsed.activeBond?.id);
         if (activeBond) {
-          this.activePerspective = { active_bond: activeBond, available_bonds: bonds };
+          this.activePerspective = { activeBond, availableBonds: bonds };
           return this.activePerspective;
         }
       } catch (e) {
@@ -208,8 +217,8 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
 
     // Default to the first bond as the active perspective if none set
     this.activePerspective = {
-      active_bond: bonds[0]!,
-      available_bonds: bonds,
+      activeBond: bonds[0]!,
+      availableBonds: bonds,
     };
     storage.set(`active_perspective_${userId}`, JSON.stringify(this.activePerspective));
 
@@ -222,15 +231,15 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
     const userId = identity.id;
 
     const bonds = await this.getBonds(userId);
-    const targetBond = bonds.find(b => b.entity_id === entityId && b.capacity === capacity);
+    const targetBond = bonds.find((b) => b.entity_id === entityId && b.capacity === capacity);
 
     if (!targetBond) {
       throw new Error(`User does not have a Bond for Entity ${entityId} with Capacity ${capacity}`);
     }
 
     this.activePerspective = {
-      active_bond: targetBond,
-      available_bonds: bonds,
+      activeBond: targetBond,
+      availableBonds: bonds,
     };
     storage.set(`active_perspective_${userId}`, JSON.stringify(this.activePerspective));
   }
@@ -251,11 +260,11 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
     const schoolId = context['schoolId'] || null;
 
     let citizenship: 'WANDERER' | 'SECOND_CLASS' | 'FIRST_CLASS' = 'WANDERER';
-    
+
     if (!isSupabaseAnonymous) {
       // If authenticated, default to 2nd Class. Upgrade to 1st Class if school context is non-personal.
       citizenship = 'SECOND_CLASS';
-      
+
       if (schoolId) {
         const { data: school } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
           .from('schools')
@@ -282,23 +291,38 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
       })
       .eq('id', userId);
 
-    if (profileError) throw new APIError('Failed to update profile during onboarding', profileError.code, profileError);
+    if (profileError)
+      throw new APIError(
+        'Failed to update profile during onboarding',
+        profileError.code,
+        profileError,
+      );
 
     // Create the formal Bond
     // 1. Wanderer/Anonymous -> PLATFORM bond to GLOBAL
     // 2. 2nd Class Citizen (Authenticated, no school) -> PERSONAL bond to Personal Workspace
     // 3. 1st Class Citizen (Authenticated, has school) -> SCHOOL bond
-    
-    const entity_type = citizenship === 'FIRST_CLASS' ? 'SCHOOL' : (citizenship === 'SECOND_CLASS' ? 'PERSONAL' : 'PLATFORM');
+
+    const entity_type =
+      citizenship === 'FIRST_CLASS'
+        ? 'SCHOOL'
+        : citizenship === 'SECOND_CLASS'
+          ? 'PERSONAL'
+          : 'PLATFORM';
     const entity_id = schoolId || (citizenship === 'WANDERER' ? 'GLOBAL' : 'PERSONAL_WORKSPACE');
 
-    const { error: bondError } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('bonds').upsert({
-      user_id: userId,
-      entity_id,
-      entity_type,
-      capacity: orientation,
-      metadata: context['metadata'] || {},
-    }, { onConflict: 'user_id,entity_id,capacity' });
+    const { error: bondError } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+      .from('bonds')
+      .upsert(
+        {
+          user_id: userId,
+          entity_id,
+          entity_type,
+          capacity: orientation,
+          metadata: context['metadata'] || {},
+        },
+        { onConflict: 'user_id,entity_id,capacity' },
+      );
 
     if (bondError) throw new APIError('Failed to create formal bond', bondError.code, bondError);
 
@@ -308,15 +332,30 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
 
   async updateProfile(userId: string, updates: Partial<User>): Promise<void> {
     const normalizedUpdates: Record<string, unknown> = { ...updates };
-    if ('first_name' in normalizedUpdates || 'last_name' in normalizedUpdates || 'display_name' in normalizedUpdates) {
-      const firstName = typeof normalizedUpdates['first_name'] === 'string' ? normalizedUpdates['first_name'] : null;
-      const lastName = typeof normalizedUpdates['last_name'] === 'string' ? normalizedUpdates['last_name'] : null;
-      const displayName = typeof normalizedUpdates['display_name'] === 'string' ? normalizedUpdates['display_name'] : '';
-      const resolvedName = displayName || [firstName, lastName].filter(Boolean).join(' ') || 'Gurudevi User';
+    if (
+      'first_name' in normalizedUpdates ||
+      'last_name' in normalizedUpdates ||
+      'display_name' in normalizedUpdates
+    ) {
+      const firstName =
+        typeof normalizedUpdates['first_name'] === 'string'
+          ? normalizedUpdates['first_name']
+          : null;
+      const lastName =
+        typeof normalizedUpdates['last_name'] === 'string' ? normalizedUpdates['last_name'] : null;
+      const displayName =
+        typeof normalizedUpdates['display_name'] === 'string'
+          ? normalizedUpdates['display_name']
+          : '';
+      const resolvedName =
+        displayName || [firstName, lastName].filter(Boolean).join(' ') || 'Gurudevi User';
       normalizedUpdates['display_name'] = resolvedName;
     }
 
-    const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('users').update(normalizedUpdates).eq('id', userId);
+    const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+      .from('users')
+      .update(normalizedUpdates)
+      .eq('id', userId);
     if (error) throw new APIError('Failed to update profile', error.code, error);
   }
 
@@ -340,7 +379,10 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
     const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('users')
       .update({
-        display_name: data.displayName || [data.firstName, data.lastName].filter(Boolean).join(' ') || 'Gurudevi User',
+        display_name:
+          data.displayName ||
+          [data.firstName, data.lastName].filter(Boolean).join(' ') ||
+          'Gurudevi User',
         first_name: data.firstName ?? null,
         last_name: data.lastName ?? null,
         username: data.username ?? null,

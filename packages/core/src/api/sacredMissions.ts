@@ -1,6 +1,6 @@
 import { growth } from '../logic';
-import { type SanctuaryManifesto, type ManifestoVibe } from '../types/Growth';
-export * from '../types/Growth';
+import type { ManifestoVibe, SanctuaryManifesto } from '../types/Growth';
+
 
 /**
  * sacredMissionsAPI (Legacy Proxy)
@@ -21,7 +21,11 @@ export const sacredMissionsAPI = {
     return growth.createManifesto(input);
   },
 
-  async endorseManifesto(manifestoId: string, userId: string, commitmentText?: string): Promise<boolean> {
+  async endorseManifesto(
+    manifestoId: string,
+    userId: string,
+    commitmentText?: string,
+  ): Promise<boolean> {
     await growth.endorseManifesto(manifestoId, userId, commitmentText);
     return true;
   },

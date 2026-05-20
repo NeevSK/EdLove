@@ -37,9 +37,12 @@ export const accountingAPI = {
     tx: Omit<z.infer<typeof FinancialTransactionSchema>, 'id'>,
   ): Promise<z.infer<typeof FinancialTransactionSchema>> {
     // In a real implementation, this would be a complex RPC call to handle double-entry
-    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.rpc('record_financial_transaction', {
-      tx_data: tx,
-    });
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.rpc(
+      'record_financial_transaction',
+      {
+        tx_data: tx,
+      },
+    );
 
     if (error) {
       throw new APIError('Failed to record transaction', error.code, error);
@@ -60,9 +63,12 @@ export const paymentsAPI = {
     provider: string;
     metadata?: any;
   }): Promise<z.infer<typeof PaymentIntentSchema>> {
-    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.functions.invoke('create-payment-intent', {
-      body: vars,
-    });
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.functions.invoke(
+      'create-payment-intent',
+      {
+        body: vars,
+      },
+    );
 
     if (error) {
       throw new APIError('Failed to create payment intent', 'PAYMENT_INTENT_ERROR', error);
@@ -93,4 +99,3 @@ export const paymentsAPI = {
 
 // Satisfy contract coverage checks
 void erpContract;
-

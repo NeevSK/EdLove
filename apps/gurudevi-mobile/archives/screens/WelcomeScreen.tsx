@@ -1,103 +1,100 @@
-import { authAPI } from "@repo/core/api";
-import { handleAPIError, LanguageUtils } from "@repo/core/logic";
+import { authAPI } from '@repo/core/api';
+import { handleAPIError, LanguageUtils } from '@repo/core/logic';
 
-import { useState } from "react";
-import { useTranslation } from "react-i18next";
-import { Dimensions, Image } from "react-native";
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Dimensions, Image } from 'react-native';
 import {
-	Box,
-	Button,
-	ButtonText,
-	Checkbox,
-	CheckboxIcon,
-	CheckboxIndicator,
-	CheckIcon,
-	Heading,
-	HStack,
-	hapticError,
-	hapticLight,
-	hapticSuccess,
-	Link,
-	LinkText,
-	Pressable,
-	ScreenWrapper,
-	Text,
-	Theme,
-	Toast,
-	ToastTitle,
-	useThemedColors,
-	useToast,
-	VStack,
-} from "../";
+  Box,
+  Button,
+  ButtonText,
+  Checkbox,
+  CheckboxIcon,
+  CheckboxIndicator,
+  CheckIcon,
+  Heading,
+  HStack,
+  hapticError,
+  hapticLight,
+  hapticSuccess,
+  Link,
+  LinkText,
+  Pressable,
+  ScreenWrapper,
+  Text,
+  Theme,
+  Toast,
+  ToastTitle,
+  useThemedColors,
+  useToast,
+  VStack,
+} from '../';
 
-const { width } = Dimensions.get("window");
-const LOGO = require("../../assets/icon.png");
+const { width } = Dimensions.get('window');
+const LOGO = require('../../assets/icon.png');
 
 const LANGUAGES = [
-	{ code: "en", label: "English" },
-	{ code: "si", label: "Sinhala" },
-	{ code: "ta", label: "Tamil" },
+  { code: 'en', label: 'English' },
+  { code: 'si', label: 'Sinhala' },
+  { code: 'ta', label: 'Tamil' },
 ];
 
 interface WelcomeScreenProps {
-	onLogin?: () => void;
-	onGuest?: () => void;
+  onLogin?: () => void;
+  onGuest?: () => void;
 }
 
-export default function WelcomeScreen({
-	onLogin,
-	onGuest,
-}: WelcomeScreenProps) {
-	const { t, i18n } = useTranslation();
-	const colors = useThemedColors();
-	const [acceptedTerms, setAcceptedTerms] = useState(true);
-	const [isConnecting, setIsConnecting] = useState(false);
-	const toast = useToast();
+export default function WelcomeScreen({ onLogin, onGuest }: WelcomeScreenProps) {
+  const { t, i18n } = useTranslation();
+  const colors = useThemedColors();
+  const [acceptedTerms, setAcceptedTerms] = useState(true);
+  const [isConnecting, setIsConnecting] = useState(false);
+  const toast = useToast();
 
-	const changeLanguage = async (langCode: string) => {
-		hapticLight();
-		await LanguageUtils.setLanguage(langCode as "en" | "si" | "ta");
-	};
+  const changeLanguage = async (langCode: string) => {
+    hapticLight();
+    await LanguageUtils.setLanguage(langCode as 'en' | 'si' | 'ta');
+  };
 
-	const showTermsToast = () => {
-		toast.show({
+  const showTermsToast = () => {
+    toast.show({
             placement: "top",
             render: ({ id }) => (
                 <Toast nativeID={id} variant="accent" action="info"                    <VStack space="xs"                        <ToastTitle>{t('auth.acceptTermsRequired') || "Please accept the Terms and Privacy Pact to continue in the sanctuary"}</ToastTitle                    </VStack                </Toast            ),
         });
-	};
+  };
 
-	const handleStartExploring = async () => {
-		if (!acceptedTerms) {
-			hapticError();
-			showTermsToast();
-			return;
-		}
+  const handleStartExploring = async () => {
+    if (!acceptedTerms) {
+      hapticError();
+      showTermsToast();
+      return;
+    }
 
-		hapticSuccess();
-		setIsConnecting(true);
-		try {
-			await authAPI.signInAnonymously();
-			if (onGuest) onGuest();
-		} catch (error) {
-			handleAPIError(error);
-			setIsConnecting(false);
-		}
-	};
+    hapticSuccess();
+    setIsConnecting(true);
+    try {
+      await authAPI.signInAnonymously();
+      if (onGuest) onGuest();
+    } catch (error) {
+      handleAPIError(error);
+      setIsConnecting(false);
+    }
+  };
 
-	const handleLogin = () => {
-		if (!acceptedTerms) {
-			hapticError();
-			showTermsToast();
-			return;
-		}
-		hapticLight();
-		// Identity Phase: Navigate to Auth screen
-		if (onLogin) onLogin();
-	};
+  const handleLogin = () => {
+    if (!acceptedTerms) {
+      hapticError();
+      showTermsToast();
+      return;
+    }
+    hapticLight();
+    // Identity Phase: Navigate to Auth screen
+    if (onLogin) onLogin();
+  };
 
-	return (
-		<ScreenWrapper scroll            <Box
+  return (
+    <ScreenWrapper scroll            <Box
                 sx={{
                     flex: 1,
                     backgroundColor: colors.primary,
@@ -307,5 +304,5 @@ export default function WelcomeScreen({
                                     </ButtonText                                </Button                            </VStack
                             <Text color={colors.textTertiary} size="xs" textAlign="center"                                {t('welcome.footer')}
                             </Text                        </VStack                    </Box                </VStack            </Box        </ScreenWrapper
-	);
+  );
 }

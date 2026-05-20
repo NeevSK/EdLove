@@ -1,13 +1,11 @@
-import { 
-  createSovereignClient, 
-  SOVEREIGN_API_URL, 
-  type AppType 
-} from './base';
 import { APIError } from '../types/API';
+import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from './base';
+import type { StudentAttendancePulse } from './staffManagement';
+
 
 /**
  * ATTENDANCE API (Sovereign RPC Proxy)
- * 
+ *
  * Siphons Attendance tracking to the Sanctuary API.
  * [BREAKING] Renamed methods to force loud failure in UI.
  */
@@ -22,7 +20,7 @@ export const attendanceAPI = {
     classroom_id: string,
     student_id: string,
     status: string,
-    date: string
+    date: string,
   ) {
     const res = await client.api.attendance.$post({
       json: {
@@ -55,10 +53,23 @@ export const attendanceAPI = {
     return await res.json();
   },
 
-  /**
-   * [LOUD-FAILURE] Method removed. Use operationsAPI.getAttendancePulse.
-   */
-  async getSchoolAttendancePulse(): Promise<never> {
-    throw new Error('attendanceAPI.getSchoolAttendancePulse is DEPRECATED. Use operationsAPI.');
+  async getSchoolAttendancePulse(
+    school_id: string,
+    classroom_id?: string,
+    view_date?: string,
+  ): Promise<StudentAttendancePulse> {
+    const res = await client.api.attendance.pulse.$get({
+      query: {
+        school_id,
+        classroom_id: classroom_id ?? undefined,
+        view_date: view_date ?? undefined,
+      },
+    });
+
+    if (!res.ok) {
+      throw new APIError('Failed to fetch attendance pulse', res.status.toString());
+    }
+
+    return (await res.json()) as StudentAttendancePulse;
   },
 };

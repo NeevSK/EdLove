@@ -1,8 +1,7 @@
-import { CoreRuntimeEnvironment, PushNotificationProvider } from '../../types/runtime';
-import { IPushNotificationPort } from '../ports/pushNotification.port';
+import type { CoreRuntimeEnvironment, PushNotificationProvider } from '../../types/runtime';
+import type { IPushNotificationPort } from '../ports/pushNotification.port';
 
-import { DeepLinkManager } from './DeepLinkManager';
-
+import type { DeepLinkManager } from './DeepLinkManager';
 
 /**
  * PushNotificationManager: Orchestrates native push notifications.
@@ -14,11 +13,10 @@ export class PushNotificationManager {
   constructor(
     coreRuntime: CoreRuntimeEnvironment,
     private pushPort: IPushNotificationPort,
-    private deepLink: DeepLinkManager
+    private deepLink: DeepLinkManager,
   ) {
     this.runtime = coreRuntime.notification;
   }
-
 
   /**
    * Initializes push notifications for the current user.
@@ -35,7 +33,6 @@ export class PushNotificationManager {
         await this.pushPort.registerPushToken(userId, newToken, deviceId, 'mobile');
       });
 
-
       // 2. Setup Notification Listeners
       this.runtime.addNotificationReceivedListener((notification) => {
         console.log('PushNotificationManager: Notification received', notification);
@@ -44,7 +41,7 @@ export class PushNotificationManager {
 
       this.runtime.addNotificationResponseReceivedListener(async (response) => {
         console.log('PushNotificationManager: Notification clicked', response);
-        
+
         // Extract URL from notification data payload
         // Expo payload structure: response.notification.request.content.data
         const data = response.notification?.request?.content?.data as
@@ -59,7 +56,7 @@ export class PushNotificationManager {
       });
 
       const { status } = await this.runtime.getPermissionsAsync();
-      
+
       if (status !== 'granted') {
         const request = await this.runtime.requestPermissionsAsync();
         if (request.status !== 'granted') return false;
@@ -73,7 +70,6 @@ export class PushNotificationManager {
 
       await this.pushPort.registerPushToken(userId, token, deviceId, platform);
       return true;
-
     } catch (error) {
       console.error('PushNotificationManager: Initialization failed', error);
       return false;

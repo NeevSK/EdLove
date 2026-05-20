@@ -1,12 +1,12 @@
-import { useQuery } from '@tanstack/react-query';
 import { studentsAPI, usePermissions } from '@repo/core';
+import { useQuery } from '@tanstack/react-query';
 
 /**
  * useStudentAcademicHistory - Sovereign hook to fetch academic history.
  * Aggregates records across all bonds using the Union of Identity.
  */
 export const useStudentAcademicHistory = (studentId?: string) => {
-  const { ability } = usePermissions();
+  const { can } = usePermissions();
 
   return useQuery({
     queryKey: ['student-academic-history', studentId],
@@ -14,6 +14,6 @@ export const useStudentAcademicHistory = (studentId?: string) => {
       if (!studentId) return [];
       return studentsAPI.getHistoricalAcademicRecords(studentId);
     },
-    enabled: !!studentId && ability.can('read', 'AcademicHistory'),
+    enabled: !!studentId && can('read', 'AcademicHistory'),
   });
 };

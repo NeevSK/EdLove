@@ -7,9 +7,11 @@ import {
   setWorkspaceSurfaceOrder,
   setWorkspaceSurfacePinned,
   setWorkspaceSurfaceZone,
-  type WorkspaceLayout,
-  type WorkspaceSurfaceDefinition,
 } from '../../logic/workspace/canvas';
+import type {
+  WorkspaceLayout,
+  WorkspaceSurfaceDefinition,
+} from '../../types';
 
 type TestSurfaceId = 'teacher' | 'principal' | 'insights' | 'calendar';
 type TestCapabilityKey =

@@ -152,7 +152,7 @@ const NameStep = memo(
       <h2 className="ob-step-title">{t('onboarding.nameTitle')}</h2>
       <p className="ob-step-subtitle">{t('onboarding.nameSubtitle')}</p>
       <ErrorBanner error={error} />
-        <input
+      <input
         className="ob-input"
         type="text"
         placeholder={t('onboarding.namePlaceholder')}
@@ -166,13 +166,17 @@ const NameStep = memo(
       />
       <p className="ob-input-hint">
         {name.trim().length > 0 && name.trim().length < 2
-          ? "Your name is a bit short. Try adding another character."
+          ? 'Your name is a bit short. Try adding another character.'
           : name === 'Guest User'
-          ? "Please choose a name other than 'Guest User'."
-          : "Use the display name you want people to see inside the app."}
+            ? "Please choose a name other than 'Guest User'."
+            : 'Use the display name you want people to see inside the app.'}
       </p>
       <div className="ob-actions">
-        <button className="ob-btn-primary" onClick={onNext} disabled={name.trim().length < 2 || name === 'Guest User'}>
+        <button
+          className="ob-btn-primary"
+          onClick={onNext}
+          disabled={name.trim().length < 2 || name === 'Guest User'}
+        >
           {t('onboarding.continue')} →
         </button>
       </div>
@@ -333,8 +337,15 @@ export default memo(function OnboardingScreenWeb({
   // ── Restore saved progress or pre-fill from existing auth ────────────────────
   useEffect(() => {
     const initOnboarding = async () => {
+      let internalId: string | null = null;
       try {
-        const internalId = await identityAPI.getMyInternalId();
+        const citizen = await identityAPI.identifyActiveCitizen().catch(() => null);
+        internalId = citizen?.id || null;
+      } catch (err) {
+        console.warn('[Onboarding] Failed to identify active citizen:', err);
+      }
+
+      try {
         try {
           const saved = await AsyncStorage.getItem('onboarding_progress');
           if (saved) {
@@ -368,8 +379,9 @@ export default memo(function OnboardingScreenWeb({
         }
 
         // USE NEW DOMAIN STATE API
-        const { state: initialDomainState, profile } =
-          await identityAPI.getOnboardingStatus(internalId);
+        const capacitySummary = await identityAPI.resolveWorkspaceContext(internalId);
+        const initialDomainState = capacitySummary.onboarding_state;
+        const profile = capacitySummary.profile as any;
         const activePerspective = await identity.getActivePerspective();
 
         if (!profile) return;
@@ -377,14 +389,14 @@ export default memo(function OnboardingScreenWeb({
         // If already onboarded in DB, just finish locally
         if (initialDomainState === 'COMPLETED') {
           console.log('✅ Onboarding: Profile already marked as completed in DB, finalizing...');
-          const capacity = (activePerspective?.active_bond.capacity as Capacity) || 'teacher';
-          const resolvedName = profile.display_name || '';
+          const capacity = (activePerspective?.activeBond?.capacity as Capacity) || 'teacher';
+          const resolvedName = profile.display_name || profile.full_name || '';
           dispatch({ type: 'SET_NAME', name: resolvedName });
           onComplete(resolvedName, capacity, isAnonymous);
           return;
         }
 
-        const resolvedName = profile.display_name;
+        const resolvedName = profile.display_name || profile.full_name;
         if (resolvedName && resolvedName !== 'Guest User') {
           dispatch({ type: 'SET_NAME', name: resolvedName });
           if (profile.school_id) {
@@ -450,9 +462,10 @@ export default memo(function OnboardingScreenWeb({
     dispatch({ type: 'SET_PROCESSING', isProcessing: true });
     showToast('Finalizing your sanctuary journey...', 'info', 2000);
     try {
-      const internalId = await identity.getMyInternalId();
+      const citizen = await identityAPI.identifyActiveCitizen();
+      const internalId = citizen?.id;
       if (internalId) {
-        await identityAPI.completeOnboarding(internalId);
+        await identity.completeOnboarding(internalId);
       }
       await AsyncStorage.removeItem('onboarding_progress');
       hapticSuccess();
@@ -485,16 +498,17 @@ export default memo(function OnboardingScreenWeb({
     dispatch({ type: 'SET_PROCESSING', isProcessing: true });
 
     try {
-      const internalId = await identityAPI.getMyInternalId();
+      const citizen = await identityAPI.identifyActiveCitizen();
+      const internalId = citizen?.id;
       if (!internalId) throw new Error('Identity not resolved. Please try again.');
 
       if (currentStep === 0) {
         // Sync Name
         showToast('Syncing your identity...', 'info', 1000);
-        await identityAPI.updateProfile(internalId, { display_name: name });
+        await identityAPI.modifyUserProfile(internalId, { display_name: name });
       } else if (currentStep === 1) {
         // 1. Ensure user has a profile and potentially a school
-        const existingProfile = await identityAPI.getProfile(internalId);
+        const existingProfile = (await identityAPI.fetchUserProfile(internalId)) as any;
         let schoolId = state.schoolId || existingProfile?.school_id;
 
         // Wanderers (Anonymous) don't get a workspace yet.
@@ -522,7 +536,7 @@ export default memo(function OnboardingScreenWeb({
       hapticError();
       const baseMsg = err instanceof Error ? err.message : 'Something went wrong.';
       const guidedMsg = `${baseMsg} Please check your connection and try again.`;
-      
+
       dispatch({
         type: 'SET_ERROR',
         error: guidedMsg,
@@ -571,7 +585,7 @@ export default memo(function OnboardingScreenWeb({
   // Save progress whenever step/name/role changes
   useEffect(() => {
     if (currentStep === 0 && !name) return;
-    void identity.getMyInternalId().then((userId) => {
+    void identity.getUserId().then((userId) => {
       void AsyncStorage.setItem(
         'onboarding_progress',
         JSON.stringify({

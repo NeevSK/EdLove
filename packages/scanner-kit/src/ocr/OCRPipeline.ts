@@ -16,45 +16,38 @@
  *   const result = await proPipeline.recognize(uri, { provider: 'google_vision' });
  */
 
-import { MLKitProvider } from "./providers/MLKitProvider";
-import type { OCRProvider, OCRRawResult, OCRRecognizeOptions } from "./types";
+import { MLKitProvider } from './providers/MLKitProvider';
+import type { OCRProvider, OCRRawResult, OCRRecognizeOptions } from './types';
 
 export class OCRPipeline {
-	private registry = new Map<string, OCRProvider>();
+  private registry = new Map<string, OCRProvider>();
 
-	register(provider: OCRProvider): this {
-		this.registry.set(provider.name, provider);
-		return this;
-	}
+  register(provider: OCRProvider): this {
+    this.registry.set(provider.name, provider);
+    return this;
+  }
 
-	async recognize(
-		imageUri: string,
-		options: OCRRecognizeOptions = {},
-	): Promise<OCRRawResult> {
-		const { provider: providerName = "mlkit" } = options;
-		const provider =
-			this.registry.get(providerName) ?? this.registry.get("mlkit");
+  async recognize(imageUri: string, options: OCRRecognizeOptions = {}): Promise<OCRRawResult> {
+    const { provider: providerName = 'mlkit' } = options;
+    const provider = this.registry.get(providerName) ?? this.registry.get('mlkit');
 
-		if (!provider) {
-			throw new Error(
-				`OCRPipeline: no provider registered for "${providerName}" and no mlkit fallback`,
-			);
-		}
+    if (!provider) {
+      throw new Error(
+        `OCRPipeline: no provider registered for "${providerName}" and no mlkit fallback`,
+      );
+    }
 
-		try {
-			return await provider.recognize(imageUri);
-		} catch (err) {
-			// Fallback to mlkit unless we already are using it
-			if (providerName !== "mlkit") {
-				console.warn(
-					`OCRPipeline: "${providerName}" failed, falling back to mlkit.`,
-					err,
-				);
-				return this.recognize(imageUri, { provider: "mlkit" });
-			}
-			throw err;
-		}
-	}
+    try {
+      return await provider.recognize(imageUri);
+    } catch (err) {
+      // Fallback to mlkit unless we already are using it
+      if (providerName !== 'mlkit') {
+        console.warn(`OCRPipeline: "${providerName}" failed, falling back to mlkit.`, err);
+        return this.recognize(imageUri, { provider: 'mlkit' });
+      }
+      throw err;
+    }
+  }
 }
 
 /**
@@ -62,6 +55,4 @@ export class OCRPipeline {
  * Cloud providers are intentionally NOT registered here  they are added at
  * runtime for Pro users (e.g. in OCRScanner when user selects a cloud backend).
  */
-export const defaultOCRPipeline = new OCRPipeline().register(
-	new MLKitProvider(),
-);
+export const defaultOCRPipeline = new OCRPipeline().register(new MLKitProvider());

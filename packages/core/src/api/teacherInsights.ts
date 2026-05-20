@@ -1,3 +1,4 @@
+import { teacherInsights } from '../logic/managers/factory';
 import type {
   TeacherInsightAuditEvent,
   TeacherInsightLifecycleEvent,
@@ -11,7 +12,6 @@ import type {
   TeacherStudentPotentialUpsert,
   TeacherStudentPotentialZod,
 } from '../logic/schemas/teacher-insights.schema';
-import { teacherInsights } from '../logic/managers/factory';
 
 export const teacherInsightsAPI = {
   /**
@@ -162,4 +162,3 @@ export const teacherInsightsAPI = {
     return teacherInsights.getInsightTimeline(insightType, insightId);
   },
 };
-

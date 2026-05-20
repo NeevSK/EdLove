@@ -1,5 +1,5 @@
-import { useCallback } from 'react';
 import { useAuth, useStore } from '@repo/core/logic';
+import { useCallback } from 'react';
 import OnboardingScreen from './OnboardingScreen';
 
 export function OnboardingWrapper() {

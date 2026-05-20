@@ -1,11 +1,11 @@
-import { useEffect, useMemo, useOptimistic, useTransition, useCallback } from 'react';
-import { useMutationQueue } from '../lib/sync/useMutationQueue';
+import { useCallback, useEffect, useMemo, useOptimistic, useTransition } from 'react';
 import { isQueuedDeviceSecurityMutation } from '../lib/sync/deviceSecurityIntents';
+import { useMutationQueue } from '../lib/sync/useMutationQueue';
 import { useDeviceSecurityStore } from '../store/useDeviceSecurityStore';
 
 /**
  * useDeviceSecurity
- * 
+ *
  * The Sovereign Connector for Device Trust.
  * Now acts as a lightweight interface to the global DeviceSecurityStore.
  */
@@ -34,22 +34,24 @@ export function useDeviceSecurity() {
         return state.filter((d) => d.deviceId !== action.deviceId);
       }
       return state;
-    }
+    },
   );
 
   const [optimisticSessions, addOptimisticSession] = useOptimistic(
     sessions,
     (state, action: { type: 'revoke'; sessionId: string }) => {
       if (action.type === 'revoke') {
-        return state.map((s) => (s.sessionId === action.sessionId ? { ...s, status: 'revoked' as const } : s));
+        return state.map((s) =>
+          s.sessionId === action.sessionId ? { ...s, status: 'revoked' as const } : s,
+        );
       }
       return state;
-    }
+    },
   );
 
   // Sync with mutation queue for offline-resilience awareness
-  const queueLength = useMutationQueue((s) =>
-    s.queue.filter(isQueuedDeviceSecurityMutation).length
+  const queueLength = useMutationQueue(
+    (s) => s.queue.filter(isQueuedDeviceSecurityMutation).length,
   );
 
   useEffect(() => {
@@ -57,19 +59,25 @@ export function useDeviceSecurity() {
   }, [fetchSecuritySummary]);
 
   // Actions wrapped in transitions and optimistic updates
-  const handleRevokeSession = useCallback(async (sessionId: string) => {
-    startTransition(() => {
-      addOptimisticSession({ type: 'revoke', sessionId });
-      revokeSession(sessionId);
-    });
-  }, [revokeSession, addOptimisticSession]);
+  const handleRevokeSession = useCallback(
+    async (sessionId: string) => {
+      startTransition(() => {
+        addOptimisticSession({ type: 'revoke', sessionId });
+        revokeSession(sessionId);
+      });
+    },
+    [revokeSession, addOptimisticSession],
+  );
 
-  const handleUnlinkDevice = useCallback(async (deviceId: string) => {
-    startTransition(() => {
-      addOptimisticDevice({ type: 'unlink', deviceId });
-      unlinkDevice(deviceId);
-    });
-  }, [unlinkDevice, addOptimisticDevice]);
+  const handleUnlinkDevice = useCallback(
+    async (deviceId: string) => {
+      startTransition(() => {
+        addOptimisticDevice({ type: 'unlink', deviceId });
+        unlinkDevice(deviceId);
+      });
+    },
+    [unlinkDevice, addOptimisticDevice],
+  );
 
   // Health Score (Derived Intelligence)
   const healthScore = useMemo(() => {

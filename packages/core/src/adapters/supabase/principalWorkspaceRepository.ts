@@ -1,6 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { selectLatestTemporalRecordsAsOf } from '../../lib/temporalEvents';
 import type { PrincipalWorkspaceRepository } from '../../logic/domains/principalWorkspace/ports';
+import { CapacitySchema } from '../../logic/schemas/capacity.schema';
 import {
   InviteCodeSchema,
   type InviteCodeZod,
@@ -16,7 +17,6 @@ import {
   PrincipalObservationSchema,
   type PrincipalObservationZod,
 } from '../../logic/schemas/principal-workspace.schema';
-import { CapacitySchema } from '../../logic/schemas/capacity.schema';
 import { getTemporalRange } from '../../logic/utils/temporalUtils';
 import { APIError } from '../../types/API';
 
@@ -80,7 +80,9 @@ export const createSupabasePrincipalWorkspaceRepository = (
     async listInviteCodes(schoolId) {
       const { data, error } = await supabase
         .from('invite_codes')
-        .select('code, school_id, capacity, created_by, used, is_active, uses_count, created_at, expires_at')
+        .select(
+          'code, school_id, capacity, created_by, used, is_active, uses_count, created_at, expires_at',
+        )
         .eq('school_id', schoolId)
         .order('created_at', { ascending: false });
 
@@ -102,7 +104,9 @@ export const createSupabasePrincipalWorkspaceRepository = (
       const { data, error } = await supabase
         .from('invite_codes')
         .insert(payload)
-        .select('code, school_id, capacity, created_by, used, is_active, uses_count, created_at, expires_at')
+        .select(
+          'code, school_id, capacity, created_by, used, is_active, uses_count, created_at, expires_at',
+        )
         .single();
 
       if (error) throw new APIError('Failed to generate invite code', error.code, error);

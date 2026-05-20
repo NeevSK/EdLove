@@ -1,5 +1,4 @@
-import { AppNotification, NotificationStatus } from '../../types';
-
+import type { AppNotification, NotificationStatus } from '../../types';
 
 /**
  * INotificationPort: The Sovereign Notification Interface.
@@ -14,8 +13,13 @@ export interface INotificationPort {
   /**
    * Creates a notification for a user.
    */
-  createNotification(userId: string, type: string, title: string, message: string, metadata?: any): Promise<void>;
-
+  createNotification(
+    userId: string,
+    type: string,
+    title: string,
+    message: string,
+    metadata?: any,
+  ): Promise<void>;
 
   /**
    * Resolves the unread count for a user.
@@ -40,6 +44,6 @@ export interface INotificationPort {
     userId: string,
     onInsert: (notification: AppNotification) => void,
     onUpdate: (notification: AppNotification) => void,
-    onStatusChange: (status: NotificationStatus) => void
+    onStatusChange: (status: NotificationStatus) => void,
   ): () => void;
 }

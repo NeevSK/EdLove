@@ -1,7 +1,7 @@
-import { IAuthPort, AuthSession, AuthUser } from '../ports/auth.port';
-import { IIdentityPort } from '../ports/identity.port';
-import { Capacity } from '../../types';
+import type { Capacity } from '../../types';
 import { APIError } from '../../types/API';
+import type { AuthSession, AuthUser, IAuthPort } from '../ports/auth.port';
+import type { IIdentityPort } from '../ports/identity.port';
 
 export interface AuthManagerConfig {
   onSignOut?: () => Promise<void>;
@@ -14,7 +14,7 @@ export class AuthManager {
   constructor(
     private authPort: IAuthPort,
     private identityPort: IIdentityPort,
-    private config: AuthManagerConfig = {}
+    private config: AuthManagerConfig = {},
   ) {}
 
   async getSession(): Promise<AuthSession | null> {
@@ -41,7 +41,7 @@ export class AuthManager {
     return this.authPort.signUp({
       email,
       password,
-      options: { data: { display_name: fullName } }
+      options: { data: { display_name: fullName } },
     });
   }
 
@@ -50,11 +50,16 @@ export class AuthManager {
       data: {
         is_anonymous: true,
         citizenship: 'WANDERER',
-      }
+      },
     });
   }
 
-  async linkAnonymousToEmail(email: string, password: string, fullName: string, capacity: Capacity) {
+  async linkAnonymousToEmail(
+    email: string,
+    password: string,
+    fullName: string,
+    capacity: Capacity,
+  ) {
     // 1. Update Auth Identity
     const { user } = await this.authPort.updateUser({
       email,
@@ -64,14 +69,15 @@ export class AuthManager {
         capacity,
         is_anonymous: false,
         citizenship: 'SECOND_CLASS',
-      }
+      },
     });
 
     if (!user) throw new APIError('Auth update returned no user', 'AUTH_ERROR');
 
     // 2. Resolve Internal Identity
     const identity = await this.identityPort.identifyActiveCitizen();
-    if (!identity) throw new APIError('Cannot resolve user identity after linking', 'IDENTITY_ERROR');
+    if (!identity)
+      throw new APIError('Cannot resolve user identity after linking', 'IDENTITY_ERROR');
     const internalId = identity.id;
 
     // 3. Update Domain Profile
@@ -103,7 +109,7 @@ export class AuthManager {
   async signOut() {
     // 1. Clear identity cache (usually in identityPort implementation)
     // In this manager pattern, we might need a dedicated clear method or it happens in identityPort.
-    
+
     // 2. Platform-specific teardown (PowerSync, etc.) via config
     if (this.config.onSignOut) {
       try {

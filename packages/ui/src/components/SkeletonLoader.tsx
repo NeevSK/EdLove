@@ -36,7 +36,7 @@ const SkeletonLoader: React.FC<SkeletonProps> = ({
       -1,
       true,
     );
-    
+
     // Living Sanctuary: Subtle breathing for the whole container
     containerScale.value = withRepeat(
       withSequence(withTiming(1.005, { duration: 2000 }), withTiming(1, { duration: 2000 })),
@@ -59,10 +59,7 @@ const SkeletonLoader: React.FC<SkeletonProps> = ({
   }));
 
   const flowerStyle = useAnimatedStyle(() => ({
-    transform: [
-      { scale: scale.value },
-      { rotate: `${(scale.value - 1) * 30}deg` }
-    ],
+    transform: [{ scale: scale.value }, { rotate: `${(scale.value - 1) * 30}deg` }],
     opacity: opacity.value * 0.15,
   }));
 
@@ -116,7 +113,15 @@ export const SkeletonAvatar = ({
 }: {
   size?: number;
   className?: string;
-}) => <SkeletonLoader width={size} height={size} borderRadius={size / 2} className={className} withFlower />;
+}) => (
+  <SkeletonLoader
+    width={size}
+    height={size}
+    borderRadius={size / 2}
+    className={className}
+    withFlower
+  />
+);
 
 export const SkeletonTextLine = ({
   width = '100%',

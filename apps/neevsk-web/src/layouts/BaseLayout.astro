@@ -1,75 +1,71 @@
 ---
 export interface Props {
-	title?: string;
-	description?: string;
-	theme?: string;
-	image?: string;
-	noindex?: boolean;
-	structuredData?: Record<string, any> | Array<Record<string, any>>;
+  title?: string;
+  description?: string;
+  theme?: string;
+  image?: string;
+  noindex?: boolean;
+  structuredData?: Record<string, any> | Array<Record<string, any>>;
 }
 
 const {
-	title = SITE_TITLE,
-	description = SITE_DESCRIPTION,
-	theme = "home",
-	image,
-	noindex = false,
-	structuredData = [],
+  title = SITE_TITLE,
+  description = SITE_DESCRIPTION,
+  theme = 'home',
+  image,
+  noindex = false,
+  structuredData = [],
 } = Astro.props;
-import "../styles/global.scss";
-import "../styles/animations.scss";
-import "../styles/backgrounds.scss";
-import "../styles/cursor.scss";
-import "../styles/themes/nature.scss";
-import "../styles/themes/twilight.scss";
-import "../styles/themes/light-tech.scss";
-import "../styles/themes/warm-archive.scss";
-import "../styles/themes/digital-neon.scss";
-import "../styles/creative-signatures.scss";
-import CoherenceMeter from "../components/common/CoherenceMeter.astro";
-import Footer from "../components/common/Footer.astro";
-import Navigation from "../components/common/Navigation.astro";
-import StructuredData from "../components/StructuredData.astro";
+import '../styles/global.scss';
+import '../styles/animations.scss';
+import '../styles/backgrounds.scss';
+import '../styles/cursor.scss';
+import '../styles/themes/nature.scss';
+import '../styles/themes/twilight.scss';
+import '../styles/themes/light-tech.scss';
+import '../styles/themes/warm-archive.scss';
+import '../styles/themes/digital-neon.scss';
+import '../styles/creative-signatures.scss';
+import CoherenceMeter from '../components/common/CoherenceMeter.astro';
+import Footer from '../components/common/Footer.astro';
+import Navigation from '../components/common/Navigation.astro';
+import StructuredData from '../components/StructuredData.astro';
 import {
-	defaultOgImage,
-	PERSON,
-	SITE_DESCRIPTION,
-	SITE_KEYWORDS,
-	SITE_NAME,
-	SITE_TITLE,
-	SITE_URL,
-} from "../lib/site";
+  defaultOgImage,
+  PERSON,
+  SITE_DESCRIPTION,
+  SITE_KEYWORDS,
+  SITE_NAME,
+  SITE_TITLE,
+  SITE_URL,
+} from '../lib/site';
 
 const canonical = Astro.url.href;
 const _ogImage = image ?? defaultOgImage(Astro.url.pathname);
-const _robotsContent = noindex ? "noindex, nofollow" : "index, follow";
+const _robotsContent = noindex ? 'noindex, nofollow' : 'index, follow';
 const _baseStructuredData = [
-	{
-		"@context": "https://schema.org",
-		"@type": "Person",
-		...PERSON,
-	},
-	{
-		"@context": "https://schema.org",
-		"@type": "WebSite",
-		name: SITE_NAME,
-		url: SITE_URL,
-		description: SITE_DESCRIPTION,
-	},
-	{
-		"@context": "https://schema.org",
-		"@type": "WebPage",
-		name: title,
-		description,
-		url: canonical,
-	},
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    ...PERSON,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: SITE_NAME,
+    url: SITE_URL,
+    description: SITE_DESCRIPTION,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: title,
+    description,
+    url: canonical,
+  },
 ]
-	.concat(
-		Array.isArray(structuredData)
-			? (structuredData as any[])
-			: ([structuredData] as any[]),
-	)
-	.filter(Boolean);
+  .concat(Array.isArray(structuredData) ? (structuredData as any[]) : ([structuredData] as any[]))
+  .filter(Boolean);
 ---
 
 <!DOCTYPE html>

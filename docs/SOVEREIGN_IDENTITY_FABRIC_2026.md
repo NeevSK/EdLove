@@ -79,7 +79,7 @@ Annotate API contracts with the specific **Action/Subject** pair.
 Any agent or developer attempting the following must be blocked:
 1.  **Ghost RBAC**: Storing `role`, `authority`, or `platform_roles` as static strings on the `User` record.
 2.  **The Admin Backdoor**: `@@allow('all', auth().authority == 'admin')`. Replace with relationship-based platform ownership.
-3.  **Role Branching**: Using `switch(role)` in the `composer.ts`. Switch on **Active Bonds/Memberships** instead.
+3.  **Role Branching**: Using `switch(role)` in legacy runtime permission composers. Switch on **Active Bonds/Memberships** instead.
 4.  **String Matching**: Checking `profile.role === 'student'` in domain logic. Use `user.hasRelationship('ENROLLED_IN', 'CLASSROOM')`.
 
 ---
@@ -106,7 +106,7 @@ When a relationship changes, an event fires to invalidate the **Identity Cache**
 4.  **Perspective Selection**:
     *   *Default*: System picks the primary Bond (e.g., School Staff).
     *   *Explicit*: User clicks "Switch to Classroom B" -> `switchPerspective`.
-5.  **Capability Seeding**: `usePermissions` calls `composeUserAbilities(activePerspective)`.
+5.  **Capability Seeding**: `usePermissions` consumes the signed permission snapshot and active bond context.
 6.  **UI Gating**: `can('create', 'Lesson')` returns true if the Active Perspective has that relationship.
 7.  **Data Policy (ZenStack)**: The final wall. Even if the UI is tricked, the database policy checks the `memberships` table via RLS.
 
@@ -131,11 +131,11 @@ How to implement a new authorized feature in 5 steps:
     ```
 3.  **Step 3: The Bond (Adapter)**
     Update `SupabaseIdentityAdapter.getBonds()` to fetch this new relationship and map it to a `Bond`.
-4.  **Step 4: The Capability (Composer)**
-    Add the logic to `composer.ts` or a domain-specific ability file.
+4.  **Step 4: The Capability Snapshot**
+    Add the logic to the Cedar policy source and snapshot generator, not a runtime composer.
     ```typescript
-    // community.abilities.ts
-    if (capacity === 'moderator') can('delete', 'Post');
+    // policy or snapshot generator
+    allow(principal, action, resource) when principal has capacity == "moderator";
     ```
 5.  **Step 5: The UI (Hook)**
     Use the `usePermissions` hook to hide/show the button.

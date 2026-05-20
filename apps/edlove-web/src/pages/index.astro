@@ -1,20 +1,20 @@
 ---
-import CinematicBackground from "../components/CinematicBackground.astro";
-import FloatingParticles from "../components/FloatingParticles.astro";
-import Layout from "../layouts/Layout.astro";
-import { absoluteUrl } from "../lib/site";
+import CinematicBackground from '../components/CinematicBackground.astro';
+import FloatingParticles from '../components/FloatingParticles.astro';
+import Layout from '../layouts/Layout.astro';
+import { absoluteUrl } from '../lib/site';
 
 const structuredData = {
-	"@context": "https://schema.org",
-	"@type": "AboutPage",
-	name: "EdLove",
-	description:
-		"EdLove is the educational transformation ecosystem reimagining education with love through philosophy, care, local context, resources, community, and the epistemic core.",
-	url: absoluteUrl("/"),
-	about: {
-		"@type": "Thing",
-		name: "Educational Transformation",
-	},
+  '@context': 'https://schema.org',
+  '@type': 'AboutPage',
+  name: 'EdLove',
+  description:
+    'EdLove is the educational transformation ecosystem reimagining education with love through philosophy, care, local context, resources, community, and the epistemic core.',
+  url: absoluteUrl('/'),
+  about: {
+    '@type': 'Thing',
+    name: 'Educational Transformation',
+  },
 };
 ---
 

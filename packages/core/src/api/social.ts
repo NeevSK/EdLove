@@ -57,7 +57,10 @@ export const socialAPI = {
     const myId = identity?.id;
     if (!myId) return [];
 
-    let query = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('notifications').select('*').eq('user_id', myId);
+    let query = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+      .from('notifications')
+      .select('*')
+      .eq('user_id', myId);
 
     if (options.viewDate) {
       query = applyTemporalFilter(query, {

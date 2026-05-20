@@ -1,17 +1,17 @@
 {
-	"mcpServers": {
-		"platform": {
-			"command": "pnpm.cmd",
-			"args": ["--filter", "@repo/platform-mcp", "start"],
-			"cwd": "C:\\Users\\Naween\\projects\\polymath-platform"
-		},
-		"filesystem": {
-			"command": "npx.cmd",
-			"args": [
-				"-y",
-				"@modelcontextprotocol/server-filesystem",
-				"C:\\Users\\Naween\\projects\\polymath-platform"
-			]
-		}
-	}
+  "mcpServers": {
+    "platform": {
+      "command": "pnpm.cmd",
+      "args": ["--filter", "@repo/platform-mcp", "start"],
+      "cwd": "C:\\Users\\Naween\\projects\\polymath-platform"
+    },
+    "filesystem": {
+      "command": "npx.cmd",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "C:\\Users\\Naween\\projects\\polymath-platform"
+      ]
+    }
+  }
 }

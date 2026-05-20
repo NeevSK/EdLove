@@ -1,14 +1,14 @@
-import { type SupabaseClient } from '@supabase/supabase-js';
-import { 
-  type IRealtimePort, 
-  type RealtimeSubscriptionOptions, 
-  type RealtimeCallback,
-  type IRealtimeSubscription
+import type { SupabaseClient } from '@supabase/supabase-js';
+import type {
+  IRealtimePort,
+  IRealtimeSubscription,
+  RealtimeCallback,
+  RealtimeSubscriptionOptions,
 } from '../../logic/ports/realtime.port';
 
 /**
  * SupabaseRealtimeAdapter
- * 
+ *
  * Implementation of IRealtimePort for Supabase.
  */
 export const createSupabaseRealtimeAdapter = (supabase: SupabaseClient): IRealtimePort => ({
@@ -29,14 +29,14 @@ export const createSupabaseRealtimeAdapter = (supabase: SupabaseClient): IRealti
             new: payload.new,
             old: payload.old,
           });
-        }
+        },
       )
       .subscribe();
 
     return {
       async unsubscribe() {
         await supabase.removeChannel(channel);
-      }
+      },
     };
-  }
+  },
 });

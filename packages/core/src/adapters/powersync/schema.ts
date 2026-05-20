@@ -24,6 +24,8 @@ export const attendance = sqliteTable('attendance', {
   note: text('note'),
   createdAt: text('created_at').notNull(),
   updatedAt: text('updated_at').notNull(),
+  occurredAt: text('occurred_at'),
+  academicCycleId: text('academic_cycle_id'),
 }, (table) => [
   // Compound index on classroom and date for lightning-fast attendance sheets
   index('attendance_classroom_date_idx').on(table.classroomId, table.date),
@@ -68,14 +70,14 @@ export const classrooms = sqliteTable('classrooms', {
 // ─── Moods / Wellbeing ────────────────────────────────────────────────────────
 export const moodLogs = sqliteTable('mood_logs', {
   id: text('id').primaryKey(),
-  studentId: text('student_id').notNull(),
-  recordedBy: text('recorded_by').notNull(),
-  mood: text('mood').notNull(), // e.g. 'happy' | 'neutral' | 'sad'
+  userId: text('user_id').notNull(),
+  moodScore: integer('mood_score').notNull(),
+  mood: text('mood'),
   note: text('note'),
-  recordedAt: text('recorded_at').notNull(),
+  createdAt: text('created_at').notNull(),
 }, (table) => [
-  index('mood_logs_student_idx').on(table.studentId),
-  index('mood_logs_recorded_idx').on(table.recordedAt),
+  index('mood_logs_user_idx').on(table.userId),
+  index('mood_logs_created_idx').on(table.createdAt),
 ]);
 
 // ─── Schools (needed for context) ─────────────────────────────────────────────
@@ -98,20 +100,19 @@ export const cedarPolicies = sqliteTable('cedar_policies', {
   index('cedar_policies_name_idx').on(table.name),
 ]);
 
-// ─── Permission Snapshots (Local Capability Token Claims) ─────────────────────
+// ─── Cryptographically Signed Permission Snapshots ─────────────────────────────
 export const permissionSnapshots = sqliteTable('permission_snapshots', {
-  id: text('id').primaryKey(), // userId or compound
+  id: text('id').primaryKey(), // user-school compound id
   userId: text('user_id').notNull(),
   schoolId: text('school_id').notNull(),
   generatedAt: text('generated_at').notNull(),
   expiresAt: text('expires_at').notNull(),
-  permissions: text('permissions').notNull(), // Serialised JSON string
-  temporalHints: text('temporal_hints'), // Serialised JSON string
-  signature: text('signature').notNull(),
+  permissions: text('permissions').notNull(), // Serialized JSON: Record<Resource, Record<Action, boolean>>
+  temporalHints: text('temporal_hints'),       // Optional temporal lease details/hints (JSON string or null)
+  signature: text('signature').notNull(),      // HMAC SHA-256 Server Cryptographic Signature
 }, (table) => [
   index('permission_snapshots_user_idx').on(table.userId),
 ]);
-
 
 // ─── Form Templates ───────────────────────────────────────────────────────────
 export const formTemplates = sqliteTable('form_templates', {
@@ -149,9 +150,9 @@ export const AppSchema = {
   moodLogs,
   schools,
   cedarPolicies,
+  permissionSnapshots,
   formTemplates,
   formResponses,
-  permissionSnapshots,
 };
 
 // ─── Relational TypeScript Types ──────────────────────────────────────────────
@@ -181,4 +182,3 @@ export type InsertDrizzleFormResponse = typeof formResponses.$inferInsert;
 
 export type PermissionSnapshot = typeof permissionSnapshots.$inferSelect;
 export type InsertPermissionSnapshot = typeof permissionSnapshots.$inferInsert;
-

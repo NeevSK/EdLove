@@ -22,7 +22,7 @@
  *   await schoolForestAPI.sendGratitudeGift(principalId, teacherId, 'lantern', message);
  */
 
-import { composeUserAbilities } from '../logic/permissions/composer';
+import { checkLocalPermission } from '../logic/permissions/localEvaluator';
 import { APIError } from '../types/API';
 import { identityAPI } from './identity';
 import { impactRipplesAPI } from './impactRipples';
@@ -127,7 +127,7 @@ const GIFT_MESSAGES: Record<GiftType, { en: string; si: string; ta: string }> = 
   seed: {
     en: 'What you planted here will grow long after this season.',
     si: 'ඔබ මෙහි රෝපණය කළ දෙය මෙම කාලයෙන් ඔබ්බට වැඩෙනු ඇත.', // pending native review
-    ta: 'நீங்கள் இங்கே நட்டது இந்த பருவக்காலத்திற்கு அப்பால் வளரும்.', // pending native review
+    ta: 'நீங்கள் இங்கே நட்டது இந்த பருவக்காலத்திற்கு அப்பால் வளறும்.', // pending native review
   },
 };
 
@@ -177,7 +177,7 @@ function forestWeather(trees: TeacherTree[]): SchoolForestState['forest_weather'
 function forestNarrative(
   weather: SchoolForestState['forest_weather'],
   trees: TeacherTree[],
-): string {
+ ): string {
   const total = trees.length;
   const active = trees.filter((t) => t.tree_health !== 'seedling').length;
   const needsRain = trees.filter((t) => t.needs_rain).length;
@@ -235,9 +235,14 @@ export const schoolForestAPI = {
     const identity = await identityAPI.identifyActiveCitizen();
     if (!identity) throw new APIError('Not authenticated', 'AUTH_REQUIRED');
 
-    const ability = composeUserAbilities({ user_id: identity.id, school_id: schoolId });
+    const isAllowed = await checkLocalPermission({
+      action: 'read',
+      resourceType: 'SchoolForest',
+      resourceId: schoolId,
+      userContext: { userId: identity.id, schoolId },
+    });
 
-    if (!ability.can('read', 'SchoolForest')) {
+    if (!isAllowed) {
       throw new APIError('Unauthorized to view school forest', 'FORBIDDEN');
     }
 
@@ -299,8 +304,7 @@ export const schoolForestAPI = {
         school_id: schoolId,
         trees: [],
         forest_weather: 'quiet',
-        forest_narrative_en:
-          'The forest is young — teachers are still finding their way here.',
+        forest_narrative_en: 'The forest is young — teachers are still finding their way here.',
         computed_at: now.toISOString(),
       };
     }
@@ -354,10 +358,10 @@ export const schoolForestAPI = {
       const lastSignal =
         signals.length > 0
           ? (signals
-               .slice()
-               .sort(
-                 (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
-               )[0]?.created_at ?? null)
+              .slice()
+              .sort(
+                (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+              )[0]?.created_at ?? null)
           : null;
 
       const daysSince = lastSignal
@@ -476,9 +480,14 @@ export const schoolForestAPI = {
     const identity = await identityAPI.identifyActiveCitizen();
     if (!identity) throw new APIError('Not authenticated', 'AUTH_REQUIRED');
 
-    const ability = composeUserAbilities({ user_id: identity.id, school_id: schoolId });
+    const isAllowed = await checkLocalPermission({
+      action: 'manage',
+      resourceType: 'SchoolForest',
+      resourceId: schoolId || 'school-forest',
+      userContext: { userId: identity.id, schoolId },
+    });
 
-    if (!ability.can('manage', 'SchoolForest')) {
+    if (!isAllowed) {
       throw new APIError('Unauthorized to send gratitude gifts', 'FORBIDDEN');
     }
 
@@ -524,8 +533,13 @@ export const schoolForestAPI = {
     if (!identity) throw new APIError('Not authenticated', 'AUTH_REQUIRED');
 
     if (identity.id !== recipientUserId) {
-      const ability = composeUserAbilities({ user_id: identity.id });
-      if (!ability.can('manage', 'Staff')) {
+      const isAllowed = await checkLocalPermission({
+        action: 'manage',
+        resourceType: 'Staff',
+        resourceId: recipientUserId,
+        userContext: { userId: identity.id },
+      });
+      if (!isAllowed) {
         throw new APIError('Unauthorized to view others gifts', 'FORBIDDEN');
       }
     }

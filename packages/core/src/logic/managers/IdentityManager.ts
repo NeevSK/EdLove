@@ -1,9 +1,8 @@
-import { IIdentityPort } from '../ports/identity.port';
-import { ISessionPort } from '../ports/session.port';
-
-import { Bond, Perspective, Capacity } from '../../types/Identity';
-import { User } from '../../types/User';
-import { Identity } from '../../api/identity.generated';
+import type { Identity } from '../../api/identity.generated';
+import type { Bond, Capacity, Perspective } from '../../types/Identity';
+import type { User } from '../../types/User';
+import type { IIdentityPort } from '../ports/identity.port';
+import type { ISessionPort } from '../ports/session.port';
 
 /**
  * IdentityManager: The Sovereign Orchestrator.
@@ -11,7 +10,6 @@ import { Identity } from '../../api/identity.generated';
  * It coordinates one or more Adapters to fulfill the Identity Port.
  */
 export class IdentityManager implements IIdentityPort, ISessionPort {
-
   constructor(private adapter: IIdentityPort) {}
 
   /**

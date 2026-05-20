@@ -10,13 +10,7 @@ import { useEffect, useState } from 'react';
 import { sovereignBus } from '../eventBus';
 import { useMutationQueue } from '../useMutationQueue';
 
-export type SyncStatusKind =
-  | 'idle'
-  | 'syncing'
-  | 'success'
-  | 'error'
-  | 'conflict'
-  | 'offline';
+export type SyncStatusKind = 'idle' | 'syncing' | 'success' | 'error' | 'conflict' | 'offline';
 
 export interface SyncStatus {
   kind: SyncStatusKind;

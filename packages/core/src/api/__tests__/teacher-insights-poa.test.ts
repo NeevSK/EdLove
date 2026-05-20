@@ -75,4 +75,3 @@ describe('teacher insights POA coverage', () => {
     });
   });
 });
-

@@ -1,6 +1,6 @@
 import { identityAPI } from '../api/identity';
 import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../api/supabase';
-import { composeUserAbilities } from '../logic/permissions/composer';
+import { checkLocalPermission } from '../logic/permissions/localEvaluator';
 import { APIError } from '../types/API';
 
 /**
@@ -32,18 +32,17 @@ export async function requireClassroomAccess(classroomId: string, capability: st
     throw new APIError('Classroom not found', 'NOT_FOUND');
   }
 
-  const ability = composeUserAbilities({
-    user_id: userId,
-    school_id: classroom.school_id!,
+  const isAllowed = await checkLocalPermission({
+    action: capability as any,
+    resourceType: 'Classroom',
+    resourceId: classroomId,
+    userContext: {
+      userId,
+      schoolId: classroom.school_id || undefined,
+    },
   });
 
-  if (
-    !ability.can(capability as any, 'Classroom', {
-      id: classroomId,
-      teacher_id: classroom.teacher_id,
-      school_id: classroom.school_id,
-    } as any)
-  ) {
+  if (!isAllowed) {
     throw new APIError(`Unauthorized: Missing ${capability} for classroom`, 'FORBIDDEN');
   }
 
@@ -55,9 +54,18 @@ export async function requireClassroomAccess(classroomId: string, capability: st
  */
 export async function requireTeacherAccess(schoolId?: string) {
   const userId = await requireAuth();
-  const ability = composeUserAbilities({ user_id: userId, school_id: schoolId });
 
-  if (!ability.can('read', 'TeacherProfile')) {
+  const isAllowed = await checkLocalPermission({
+    action: 'read',
+    resourceType: 'TeacherProfile',
+    resourceId: userId,
+    userContext: {
+      userId,
+      schoolId: schoolId || undefined,
+    },
+  });
+
+  if (!isAllowed) {
     throw new APIError('Unauthorized: Teacher access required', 'FORBIDDEN');
   }
 

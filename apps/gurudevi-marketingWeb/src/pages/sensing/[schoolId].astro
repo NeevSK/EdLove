@@ -1,13 +1,14 @@
 ---
 export const prerender = false;
-import Layout from "../../layouts/Layout.astro";
-import { ClimateSensingScreenWeb } from "@repo/form-builder/screens";
+
+import { ClimateSensingScreenWeb } from '@repo/form-builder/screens';
+import Layout from '../../layouts/Layout.astro';
 
 // Astro dynamic routing
 export function getStaticPaths() {
-	return [
-		{ params: { schoolId: "S-CENTRAL-01" } }, // Optional: Pre-generate some known schools
-	];
+  return [
+    { params: { schoolId: 'S-CENTRAL-01' } }, // Optional: Pre-generate some known schools
+  ];
 }
 
 // Set to 'server' or 'hybrid' to allow dynamic IDs at runtime

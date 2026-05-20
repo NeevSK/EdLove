@@ -41,7 +41,8 @@
     "expo-haptics": "*",
     "date-fns": "^4.1.0",
     "@supabase/supabase-js": "2.102.1",
-    "@supabase/postgrest-js": "2.102.1"
+    "@supabase/postgrest-js": "2.102.1",
+    "drizzle-orm": "^0.39.0"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",

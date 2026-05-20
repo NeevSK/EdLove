@@ -147,11 +147,11 @@ Implements FormStorage and FormSync using SQLite (on-device).
 - FormSync.resolveConflict() — last-write-wins on updatedAt timestamp
 
 Each package imports from @repo/form-builder/engine for the interfaces.
-Each package imports its own infrastructure (supabase-js or expo-sqlite).
+Each package imports its own infrastructure (supabase-js or op-sqlite).
 They must never import from each other.
 
 Use the existing Supabase client already configured in the monorepo.
-Use expo-sqlite for the SQLite adapter.
+Use op-sqlite for the SQLite adapter.
 
 Report the table schemas you need created in Supabase for forms and responses.
 ```

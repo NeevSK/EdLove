@@ -1,5 +1,5 @@
 import { growth } from '../logic/managers/factory';
-import { type GrowthSignalType } from './growthSignals.generated';
+import type { GrowthSignalType } from './growthSignals.generated';
 
 export const growthSignalsAPI = {
   /**

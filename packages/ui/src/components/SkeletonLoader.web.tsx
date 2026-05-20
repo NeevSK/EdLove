@@ -14,7 +14,7 @@ interface SkeletonProps {
 
 /**
  * SkeletonLoader (Web Implementation)
- * 
+ *
  * A high-fidelity, sanctuary-themed loading state for the May 2026 platform.
  * Features:
  * - Organic, directional shimmer using phase-aware accent colors.
@@ -33,7 +33,7 @@ const SkeletonLoader: React.FC<SkeletonProps> = ({
   // Inject the sanctuary shimmer CSS if not already present
   useEffect(() => {
     if (Platform.OS !== 'web') return;
-    
+
     let el = document.getElementById('sanctuary-shimmer-styles');
     if (!el) {
       el = document.createElement('style');
@@ -109,13 +109,8 @@ const SkeletonLoader: React.FC<SkeletonProps> = ({
   };
 
   return (
-    <div
-      className={`sanctuary-skeleton ${className}`}
-      style={skeletonStyle}
-    >
-      {withFlower && (
-        <span className="skeleton-flower">🌸</span>
-      )}
+    <div className={`sanctuary-skeleton ${className}`} style={skeletonStyle}>
+      {withFlower && <span className="skeleton-flower">🌸</span>}
     </div>
   );
 };
@@ -147,7 +142,15 @@ export const SkeletonAvatar = ({
 }: {
   size?: number;
   className?: string;
-}) => <SkeletonLoader width={size} height={size} borderRadius={size / 2} className={className} withFlower />;
+}) => (
+  <SkeletonLoader
+    width={size}
+    height={size}
+    borderRadius={size / 2}
+    className={className}
+    withFlower
+  />
+);
 
 export const SkeletonTextLine = ({
   width = '100%',

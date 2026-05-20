@@ -1,13 +1,12 @@
 import { useCallback, useEffect } from 'react';
-import { useStore } from '../../../store/useStore';
 import { useConflictStore } from '../../../store/useConflictStore';
+import { useStore } from '../../../store/useStore';
 import { classifyError } from '../errorClassifier';
-import { useMutationAuditLog } from '../MutationAuditLog';
 import { sovereignBus } from '../eventBus';
+import { useMutationAuditLog } from '../MutationAuditLog';
 import { MUTATION_REGISTRY } from '../registry';
 import type { QueuedMutation, QueuedMutationDispatchResult } from '../types';
 import { useMutationQueue } from '../useMutationQueue';
-
 
 /**
  * SyncManager
@@ -48,7 +47,7 @@ export default function SyncManager({ dispatchQueuedMutation }: SyncManagerProps
 
     for (const item of currentQueue) {
       // Respect Conflict Locking: Don't retry if a conflict is already active for this mutation
-      if (activeConflicts.some(c => c.id === item.id)) {
+      if (activeConflicts.some((c) => c.id === item.id)) {
         continue;
       }
 
@@ -83,7 +82,11 @@ export default function SyncManager({ dispatchQueuedMutation }: SyncManagerProps
         // Success! (Resonance achieved)
         removeFromQueue(item.id);
         updateEntry(item.id, 'success');
-        sovereignBus.emit('sync:item_succeeded', { mutationId: item.id, name: item.name, scope: item.scope });
+        sovereignBus.emit('sync:item_succeeded', {
+          mutationId: item.id,
+          name: item.name,
+          scope: item.scope,
+        });
         processedCount++;
       } catch (error: any) {
         const errorType = classifyError(error);
@@ -99,7 +102,11 @@ export default function SyncManager({ dispatchQueuedMutation }: SyncManagerProps
 
           moveToDeadLetter(item.id, error.message);
           updateEntry(item.id, 'dead_letter', error.message);
-          sovereignBus.emit('sync:item_moved_to_dlq', { mutationId: item.id, name: item.name, reason: exitReason });
+          sovereignBus.emit('sync:item_moved_to_dlq', {
+            mutationId: item.id,
+            name: item.name,
+            reason: exitReason,
+          });
           failedCount++;
           showToast(`Action required: ${item.name} failed permanentely`, 'error');
         } else if (errorType === 'CONFLICT') {
@@ -153,9 +160,9 @@ export default function SyncManager({ dispatchQueuedMutation }: SyncManagerProps
 
   useEffect(() => {
     if (isOnline && queue.length > 0 && !isSyncing) {
-    processQueue().catch((e) => {
-      console.error('SyncManager: Failed to process sync queue', e);
-    });
+      processQueue().catch((e) => {
+        console.error('SyncManager: Failed to process sync queue', e);
+      });
     }
   }, [isOnline, queue.length, isSyncing, processQueue]);
 

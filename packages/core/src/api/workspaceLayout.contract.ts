@@ -40,4 +40,3 @@ export const workspaceLayoutContract = c.router({
     metadata: workspaceLayoutAuthority('delete', 'WorkspaceLayout'),
   },
 });
-

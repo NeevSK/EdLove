@@ -42,10 +42,13 @@ export const mappingAPI = {
    * Fetch the "School Pulse" for a principal or authorized staff
    */
   async getSchoolPulse(schoolId: string, viewDate?: string): Promise<KnowledgeTopology | null> {
-    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.rpc('get_school_mapping_pulse', {
-      p_school_id: schoolId,
-      p_view_date: viewDate || new Date().toISOString().split('T')[0],
-    });
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.rpc(
+      'get_school_mapping_pulse',
+      {
+        p_school_id: schoolId,
+        p_view_date: viewDate || new Date().toISOString().split('T')[0],
+      },
+    );
 
     if (error) {
       console.error('[MappingAPI] School Pulse error:', error);
@@ -78,10 +81,13 @@ export const mappingAPI = {
    * Generate a signed share link for a topology
    */
   async createShareLink(id: string, expiresDays: number = 7): Promise<string> {
-    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.rpc('generate_mapping_share_token', {
-      p_topology_id: id,
-      p_expires_days: expiresDays,
-    });
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.rpc(
+      'generate_mapping_share_token',
+      {
+        p_topology_id: id,
+        p_expires_days: expiresDays,
+      },
+    );
 
     if (error) throw error;
     return data as string;

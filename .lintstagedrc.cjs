@@ -4,7 +4,5 @@ module.exports = {
     `eslint --fix ${files.join(' ')}`,
     `node scripts/surgical-check.mjs ${files.join(' ')}`,
   ],
-  '*.json': (files) => [
-    `biome check --write --no-errors-on-unmatched ${files.join(' ')}`,
-  ],
+  '*.json': (files) => [`biome check --write --no-errors-on-unmatched ${files.join(' ')}`],
 };

@@ -1,124 +1,121 @@
-import { api } from "@repo/core/api";
+import { api } from '@repo/core/api';
 
-import type { GuardianIdentity } from "./types";
+import type { GuardianIdentity } from './types';
 
 export type GuardianLinkedStudentRow = {
-	id: string;
-	first_name: string;
-	last_name: string;
-	grade: string;
-	classroom_id: string;
+  id: string;
+  first_name: string;
+  last_name: string;
+  grade: string;
+  classroom_id: string;
 };
 
 export async function getGuardianStudentsRows(
-	guardianId: string,
+  guardianId: string,
 ): Promise<GuardianLinkedStudentRow[]> {
-	const students = await api["guardian"].getStudents(guardianId);
-	return students.map((student: { name: string; studentId: string; grade: string; classroom: string }) => {
-		const nameParts = student.name.split(" ");
-		return {
-			id: student.studentId,
-			first_name: nameParts[0] || "",
-			last_name: nameParts.slice(1).join(" "),
-			grade: student.grade,
-			classroom_id: student.classroom,
-		};
-	});
+  const students = await api['guardian'].getStudents(guardianId);
+  return students.map(
+    (student: { name: string; studentId: string; grade: string; classroom: string }) => {
+      const nameParts = student.name.split(' ');
+      return {
+        id: student.studentId,
+        first_name: nameParts[0] || '',
+        last_name: nameParts.slice(1).join(' '),
+        grade: student.grade,
+        classroom_id: student.classroom,
+      };
+    },
+  );
 }
 
-export async function getStudentGuardiansRows(
-	studentId: string,
-): Promise<GuardianIdentity[]> {
-	return api["guardian"].getStudentGuardians(studentId) as Promise<
-		GuardianIdentity[]
-	>;
+export async function getStudentGuardiansRows(studentId: string): Promise<GuardianIdentity[]> {
+  return api['guardian'].getStudentGuardians(studentId) as Promise<GuardianIdentity[]>;
 }
 
-export async function getStudentAttendanceRows(
-	studentId: string,
-	_sinceIso: string,
-) {
-	const guardians = await api["guardian"].getStudentGuardians(studentId);
-	const guardianId = guardians[0]?.id;
-	if (!guardianId) return [];
-	const dashboard = await api["guardian"].getDashboard(guardianId);
-	const student = dashboard.students.find(
-		(entry: { studentId: string }) => entry.studentId === studentId,
-	);
-	if (!student) return [];
-	return [
-		...Array.from({ length: student.attendance.present }, () => ({
-			status: "present",
-		})),
-		...Array.from({ length: student.attendance.absent }, () => ({
-			status: "absent",
-		})),
-		...Array.from({ length: student.attendance.late }, () => ({
-			status: "late",
-		})),
-	];
+export async function getStudentAttendanceRows(studentId: string, _sinceIso: string) {
+  const guardians = await api['guardian'].getStudentGuardians(studentId);
+  const guardianId = guardians[0]?.id;
+  if (!guardianId) return [];
+  const dashboard = await api['guardian'].getDashboard(guardianId);
+  const student = dashboard.students.find(
+    (entry: { studentId: string }) => entry.studentId === studentId,
+  );
+  if (!student) return [];
+  return [
+    ...Array.from({ length: student.attendance.present }, () => ({
+      status: 'present',
+    })),
+    ...Array.from({ length: student.attendance.absent }, () => ({
+      status: 'absent',
+    })),
+    ...Array.from({ length: student.attendance.late }, () => ({
+      status: 'late',
+    })),
+  ];
 }
 
 export async function getStudentRecentGradesRows(studentId: string, limit = 5) {
-	const guardians = await api["guardian"].getStudentGuardians(studentId);
-	const guardianId = guardians[0]?.id;
-	if (!guardianId) return [];
-	const dashboard = await api["guardian"].getDashboard(guardianId);
-	const student = dashboard.students.find(
-		(entry: { studentId: string }) => entry.studentId === studentId,
-	);
-	return (student?.grades.latest || []).slice(0, limit).map((grade: {
-		subject: string;
-		grade: string;
-		percentage: number;
-		date: string;
-		type: string;
-	}) => ({
-		subject: grade.subject,
-		grade: grade.grade,
-		percentage: grade.percentage,
-		created_at: grade.date,
-		type: grade.type,
-	}));
+  const guardians = await api['guardian'].getStudentGuardians(studentId);
+  const guardianId = guardians[0]?.id;
+  if (!guardianId) return [];
+  const dashboard = await api['guardian'].getDashboard(guardianId);
+  const student = dashboard.students.find(
+    (entry: { studentId: string }) => entry.studentId === studentId,
+  );
+  return (student?.grades.latest || [])
+    .slice(0, limit)
+    .map(
+      (grade: {
+        subject: string;
+        grade: string;
+        percentage: number;
+        date: string;
+        type: string;
+      }) => ({
+        subject: grade.subject,
+        grade: grade.grade,
+        percentage: grade.percentage,
+        created_at: grade.date,
+        type: grade.type,
+      }),
+    );
 }
 
 export async function getUpcomingAssignmentsRows(
-	_classroomId: string,
-	afterIso: string,
-	_limit = 3,
+  _classroomId: string,
+  afterIso: string,
+  _limit = 3,
 ) {
-	void afterIso;
-	return [];
+  void afterIso;
+  return [];
 }
 
-export async function getGuardianNotificationsRows(
-	guardianId: string,
-	limit = 10,
-) {
-	const dashboard = await api["guardian"].getDashboard(guardianId);
-	return dashboard.notifications.slice(0, limit).map((notification: {
-		id: string;
-		type: string;
-		title: string;
-		message: string;
-		isRead: boolean;
-		createdAt: string;
-		actionUrl?: string;
-	}) => ({
-		id: notification.id,
-		type: notification.type,
-		title: notification.title,
-		message: notification.message,
-		is_read: notification.isRead,
-		created_at: notification.createdAt,
-		action_url: notification.actionUrl,
-	}));
+export async function getGuardianNotificationsRows(guardianId: string, limit = 10) {
+  const dashboard = await api['guardian'].getDashboard(guardianId);
+  return dashboard.notifications
+    .slice(0, limit)
+    .map(
+      (notification: {
+        id: string;
+        type: string;
+        title: string;
+        message: string;
+        isRead: boolean;
+        createdAt: string;
+        actionUrl?: string;
+      }) => ({
+        id: notification.id,
+        type: notification.type,
+        title: notification.title,
+        message: notification.message,
+        is_read: notification.isRead,
+        created_at: notification.createdAt,
+        action_url: notification.actionUrl,
+      }),
+    );
 }
 
-export async function getUpcomingSchoolEventsRows(
-	afterIso: string,
-	_limit = 5,
-) {
-	void afterIso;
-	return [];
+export async function getUpcomingSchoolEventsRows(afterIso: string, _limit = 5) {
+  void afterIso;
+  return [];
 }

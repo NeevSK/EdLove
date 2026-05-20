@@ -25,6 +25,7 @@
     "clean": "rm -rf .turbo node_modules dist"
   },
   "dependencies": {
+    "@intuitui-labs/form-builder-engine": "workspace:*",
     "@repo/ui": "workspace:*",
     "@repo/core": "workspace:*",
     "@repo/scanner-kit": "workspace:*",

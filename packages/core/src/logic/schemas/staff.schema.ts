@@ -1,5 +1,5 @@
-import { z } from 'zod';
 import { makeModelSchema } from '@repo/schema';
+import { z } from 'zod';
 
 /**
  * StaffPresenceSummarySchema - Daily presence indicators for school staff.

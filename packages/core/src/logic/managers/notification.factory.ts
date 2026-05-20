@@ -1,9 +1,9 @@
-import { NotificationManager } from './NotificationManager';
 import { SupabaseNotificationAdapter } from '../../adapters/supabaseNotification.adapter';
-import { PushNotificationManager } from './PushNotificationManager';
 import { SupabasePushNotificationAdapter } from '../../adapters/supabasePushNotification.adapter';
 import { coreRuntime } from '../runtimeRegistry';
 import { deepLink } from './misc.factory';
+import { NotificationManager } from './NotificationManager';
+import { PushNotificationManager } from './PushNotificationManager';
 
 /**
  * notification: The Global Sovereign Notification Instance.
@@ -18,4 +18,3 @@ export const pushNotification = new PushNotificationManager(
   new SupabasePushNotificationAdapter(),
   deepLink,
 );
-

@@ -1,7 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { z } from 'zod';
-import { LessonSchema } from '../../../logic/schemas/lesson.schema';
 import type { Lesson } from '../../../logic/schemas/lesson.schema';
+import { LessonSchema } from '../../../logic/schemas/lesson.schema';
 import { APIError } from '../../../types/API';
 
 export const createLessonRepository = (supabase: SupabaseClient) => ({

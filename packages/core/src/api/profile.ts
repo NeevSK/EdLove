@@ -1,15 +1,14 @@
-import { 
-  createSovereignClient, 
-  SOVEREIGN_API_URL, 
-  type AppType 
-} from './base';
 import { APIError } from '../types';
+import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from './base';
+import { profile } from '../logic/managers/factory';
+import type { SocialLink } from '../types';
 
 /**
  * PROFILE API (Sovereign RPC Proxy)
- * 
+ *
  * This module siphons Profile requests to the Sanctuary API.
- * It maintains the legacy signature but shifts the transport to RPC.
+ * It maintains the legacy signature but shifts the transport to RPC,
+ * delegating domain actions directly to the sovereign ProfileManager when appropriate.
  */
 
 const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
@@ -85,5 +84,47 @@ export const profileAPI = {
     }
 
     return await res.json();
+  },
+
+  // --- Sovereign Domain Manager Delegation ---
+
+  async getCommunityProfileAsOf(communityId: string, asOf: string) {
+    return profile.getCommunityProfileAsOf(communityId, asOf);
+  },
+
+  async getCommunityProfile(communityId: string) {
+    return profile.getCommunityProfile(communityId);
+  },
+
+  async updateCommunityProfile(communityId: string, field: 'name' | 'description', value: string) {
+    return profile.updateCommunityProfile(communityId, field, value);
+  },
+
+  async getCommunityProfileHistory(communityId: string, limit?: number) {
+    return profile.getCommunityProfileHistory(communityId, limit);
+  },
+
+  async getUserProfileAsOf(userId: string, asOf: string) {
+    return profile.getUserProfileAsOf(userId, asOf);
+  },
+
+  async uploadAvatar(userId: string, localUri: string) {
+    return profile.uploadAvatar(userId, localUri);
+  },
+
+  async getUserProfileHistory(userId: string, limit?: number) {
+    return profile.getUserProfileHistory(userId, limit);
+  },
+
+  async getSocialLinks(userId: string) {
+    return profile.getSocialLinks(userId);
+  },
+
+  async upsertSocialLink(userId: string, link: Partial<SocialLink>) {
+    return profile.upsertSocialLink(userId, link);
+  },
+
+  async deleteSocialLink(linkId: string) {
+    return profile.deleteSocialLink(linkId);
   },
 };

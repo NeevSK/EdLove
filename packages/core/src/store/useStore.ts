@@ -48,7 +48,7 @@ const useStoreFacade = <T>(selector?: (state: TotalState) => T): T | TotalState 
   // If no selector, return the whole thing (Subscribes to EVERYTHING)
   if (!selector) return combinedState;
 
-  // Execute selector. 
+  // Execute selector.
   // Note: If the selector is an anonymous function, this will re-run every render,
   // but it will only trigger a downstream re-render if the returned value (primitive) changes.
   return selector(combinedState);

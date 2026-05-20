@@ -1,39 +1,39 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useNavigation } from "@react-navigation/native";
-import { authAPI, identityAPI } from "@repo/core/api";
-import type { Role } from "@repo/core/logic";
-import { supabase } from "@repo/core/native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
+import { authAPI, identityAPI } from '@repo/core/api';
+import type { Role } from '@repo/core/logic';
+import { supabase } from '@repo/core/native';
 
-import React, { useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
+import React, { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
-	Box,
-	Button,
-	ButtonText,
-	Heading,
-	HStack,
-	hapticError,
-	hapticLight,
-	hapticSuccess,
-	Input,
-	InputField,
-	Pressable,
-	ProgressIndicator,
-	ScreenWrapper,
-	Text,
-	Theme,
-	Toast,
-	ToastTitle,
-	useThemedColors,
-	useToast,
-	VStack,
-} from "../";
+  Box,
+  Button,
+  ButtonText,
+  Heading,
+  HStack,
+  hapticError,
+  hapticLight,
+  hapticSuccess,
+  Input,
+  InputField,
+  Pressable,
+  ProgressIndicator,
+  ScreenWrapper,
+  Text,
+  Theme,
+  Toast,
+  ToastTitle,
+  useThemedColors,
+  useToast,
+  VStack,
+} from '../';
 
-const JOURNEY_PILLARS = ["Self", "Classroom", "Community", "Library"];
+const JOURNEY_PILLARS = ['Self', 'Classroom', 'Community', 'Library'];
 
 interface OnboardingScreenProps {
-	onComplete: (name: string, role: Role, wantsAccount?: boolean) => void;
-	isAnonymous?: boolean;
+  onComplete: (name: string, role: Role, wantsAccount?: boolean) => void;
+  isAnonymous?: boolean;
 }
 
 export default function OnboardingScreen({ onComplete, isAnonymous = false }: OnboardingScreenProps) {

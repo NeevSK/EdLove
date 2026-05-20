@@ -26,12 +26,12 @@ export interface CapacityFeatures {
  */
 export function useCapacityFeatures(): CapacityFeatures {
   const { context } = usePermissions();
-  const isUserAnonymous = !context.user_id;
+  const isUserAnonymous = !context.userId;
   const { isGuest } = useFeatureAccess();
 
   // Combining store anonymity with feature-level anonymous status
   const isAnonymous = isUserAnonymous || isGuest;
-  const capacity = context.active_bond?.capacity || null;
+  const capacity = context.activeBond?.capacity || null;
 
   const features = useMemo(() => {
     // Base features for everyone

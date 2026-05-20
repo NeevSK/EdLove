@@ -5,7 +5,19 @@ import { z } from 'zod';
  */
 export const POAMetadataSchema = z.object({
   policy: z.object({
-    action: z.enum(['manage', 'create', 'read', 'update', 'delete', 'submit', 'verify', 'grade', 'resolve', 'publish', 'override']),
+    action: z.enum([
+      'manage',
+      'create',
+      'read',
+      'update',
+      'delete',
+      'submit',
+      'verify',
+      'grade',
+      'resolve',
+      'publish',
+      'override',
+    ]),
     subject: z.string(),
   }),
 });
@@ -27,10 +39,13 @@ export interface SovereignRoute {
     params?: z.ZodType<any>;
     headers?: z.ZodType<any>;
   };
-  responses: Record<number, {
-    schema: z.ZodType<any>;
-    description: string;
-  }>;
+  responses: Record<
+    number,
+    {
+      schema: z.ZodType<any>;
+      description: string;
+    }
+  >;
   metadata: POAMetadata;
 }
 
@@ -53,9 +68,11 @@ export function adaptToHono(route: SovereignRoute) {
     method: route.method,
     path: route.path,
     request: {
-      body: route.request?.body ? {
-        content: { 'application/json': { schema: route.request.body } }
-      } : undefined,
+      body: route.request?.body
+        ? {
+            content: { 'application/json': { schema: route.request.body } },
+          }
+        : undefined,
       query: route.request?.query,
       params: route.request?.params,
       headers: route.request?.headers,
@@ -66,8 +83,8 @@ export function adaptToHono(route: SovereignRoute) {
         {
           content: { 'application/json': { schema: res.schema } },
           description: res.description,
-        }
-      ])
+        },
+      ]),
     ),
     metadata: route.metadata,
   });
@@ -77,6 +94,8 @@ export function adaptToHono(route: SovereignRoute) {
  * createSovereignClient
  * Creates a type-safe RPC client for the Sovereign API.
  */
-export function createSovereignClient<T extends import('hono').Hono<any, any, any>>(baseUrl: string) {
+export function createSovereignClient<T extends import('hono').Hono<any, any, any>>(
+  baseUrl: string,
+) {
   return hc<T>(baseUrl);
 }

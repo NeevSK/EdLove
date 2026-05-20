@@ -4,13 +4,13 @@ import { SafeZustandStorage } from '../lib/storageWrapper';
 import { sovereignBus } from '../lib/sync/eventBus';
 
 export interface DataConflict {
-  id: string;       // Mutation ID — links back to QueuedMutation
-  scope: string;    // e.g. 'classroom', 'community', 'self'
-  name: string;     // e.g. 'updateAttendance'
-  localData: unknown;   // What the device wanted to write
-  remoteData: unknown;  // What the server says already exists (if known)
+  id: string; // Mutation ID — links back to QueuedMutation
+  scope: string; // e.g. 'classroom', 'community', 'self'
+  name: string; // e.g. 'updateAttendance'
+  localData: unknown; // What the device wanted to write
+  remoteData: unknown; // What the server says already exists (if known)
   timestamp: number;
-  resolvedAt?: number;  // Epoch ms — set when the user resolves it
+  resolvedAt?: number; // Epoch ms — set when the user resolves it
   resolution?: 'local_wins' | 'remote_wins' | 'merged'; // For audit trail
 }
 

@@ -1,25 +1,26 @@
 import { z } from 'zod';
-import { type SovereignContract } from './contract';
 import {
   CommunityGroupSchema,
   CommunityPostSchema,
   GroupMemberSchema,
   GroupMessageSchema,
 } from '../logic/schemas/community.schema';
+import type { SovereignContract } from './contract';
 
 const communityAuthority = (
   action: 'create' | 'read' | 'update' | 'delete',
-  subject: 'Group' | 'Post' | 'User' | 'Comment' | 'Poll'
-) => ({
-  policy: { action, subject },
-}) as const;
+  subject: 'Group' | 'Post' | 'User' | 'Comment' | 'Poll',
+) =>
+  ({
+    policy: { action, subject },
+  }) as const;
 
 /**
  * Community Domain Port
  * Framework-agnostic definition of the Community API.
  * [LOUD-FAILURE] Renamed and expanded for ReBAC compliance.
  */
-export const communityContract: SovereignContract = {
+export const communityContract = {
   getGroups: {
     method: 'get',
     path: '/community/groups',
@@ -125,9 +126,9 @@ export const communityContract: SovereignContract = {
     path: '/community/posts/:postId/reactions',
     request: {
       params: z.strictObject({ postId: z.uuid() }),
-      body: z.strictObject({ 
-        user_id: z.uuid(), 
-        emoji: z.string().optional() 
+      body: z.strictObject({
+        user_id: z.uuid(),
+        emoji: z.string().optional(),
       }),
     },
     responses: {
@@ -241,4 +242,4 @@ export const communityContract: SovereignContract = {
     },
     metadata: communityAuthority('create', 'Post'),
   },
-} as const;
+} as const satisfies SovereignContract;

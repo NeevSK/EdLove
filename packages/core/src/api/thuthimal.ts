@@ -62,10 +62,13 @@ export const thuthimalAPI = {
    */
   async claimGift(input: { gift_token: string; recipient_id: string }): Promise<ClaimResult> {
     const { gift_token: giftToken, recipient_id: recipientId } = input;
-    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.rpc('claim_thuthimal_gift', {
-      p_token: giftToken,
-      p_recipient: recipientId,
-    });
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.rpc(
+      'claim_thuthimal_gift',
+      {
+        p_token: giftToken,
+        p_recipient: recipientId,
+      },
+    );
 
     if (error) throw new Error(`Claim RPC failed: ${error.message}`);
 

@@ -1,12 +1,12 @@
-import { useQuery } from '@tanstack/react-query';
 import { studentsAPI, usePermissions } from '@repo/core';
+import { useQuery } from '@tanstack/react-query';
 
 /**
  * useTeacherProfessionalHistory - Sovereign hook to fetch professional history.
  * Aggregates records across all bonds using the Union of Identity.
  */
 export const useTeacherProfessionalHistory = (teacherId?: string) => {
-  const { ability } = usePermissions();
+  const { can } = usePermissions();
 
   return useQuery({
     queryKey: ['teacher-professional-history', teacherId],
@@ -14,6 +14,6 @@ export const useTeacherProfessionalHistory = (teacherId?: string) => {
       if (!teacherId) return [];
       return studentsAPI.getHistoricalProfessionalRecords(teacherId);
     },
-    enabled: !!teacherId && ability.can('read', 'TeacherProfile'),
+    enabled: !!teacherId && can('read', 'TeacherProfile'),
   });
 };

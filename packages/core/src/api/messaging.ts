@@ -42,9 +42,12 @@ export const messagingAPI = {
    * @policy create User
    */
   async getOrCreateDirectConversation(targetUserId: string): Promise<string> {
-    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.rpc('get_or_create_direct_conversation', {
-      target_user_id: targetUserId,
-    });
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.rpc(
+      'get_or_create_direct_conversation',
+      {
+        target_user_id: targetUserId,
+      },
+    );
 
     if (error) throw error;
     return data;

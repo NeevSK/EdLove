@@ -1,6 +1,8 @@
 import { api } from '../../api';
 import { deviceTrustAPI } from '../../api/deviceTrust';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../../api/supabase';
+import { createSovereignClient, SOVEREIGN_API_URL } from '../../api/base';
+
+const client = createSovereignClient(SOVEREIGN_API_URL);
 
 /**
  * Mutation Registry
@@ -36,15 +38,71 @@ export const MUTATION_REGISTRY: Record<string, MutationFunction> = {
     return api['resources'].delete(vars);
   },
 
-  // Self/Wellbeing (Direct Supabase access)
+  // Self/Wellbeing (Outbox mutations routed securely via Hono Gateway)
   saveJournalEntry: async (vars) => {
-    const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('journal_entries').insert(vars);
-    if (error) throw error;
+    // Encapsulate and route legacy outbox write securely through our PowerSync endpoint
+    const res = await client.api.powersync.upload.$post({
+      json: {
+        crud: [
+          {
+            id: vars.id || (typeof crypto !== 'undefined' ? crypto.randomUUID() : 'temp-id'),
+            op: 'PUT',
+            table: 'fire_journal',
+            opData: vars,
+          },
+        ],
+      },
+    });
+    if (!res.ok) {
+      const err = (await res.json()) as any;
+      throw new Error(err.message || 'Failed to sync outbox journal entry');
+    }
     return true;
   },
   saveDecision: async (vars) => {
-    const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('decision_journals').insert(vars);
-    if (error) throw error;
+    // Encapsulate and route legacy outbox write securely through our PowerSync endpoint
+    const res = await client.api.powersync.upload.$post({
+      json: {
+        crud: [
+          {
+            id: vars.id || (typeof crypto !== 'undefined' ? crypto.randomUUID() : 'temp-id'),
+            op: 'PUT',
+            table: 'mood_logs',
+            opData: vars,
+          },
+        ],
+      },
+    });
+    if (!res.ok) {
+      const err = (await res.json()) as any;
+      throw new Error(err.message || 'Failed to sync outbox decision journal');
+    }
+    return true;
+  },
+
+  logMood: async (vars) => {
+    const res = await client.api.self.mood.$post({
+      json: {
+        user_id: vars.user_id,
+        mood_score: vars.mood_score,
+        mood: vars.mood,
+        note: vars.note,
+      },
+    });
+    if (!res.ok) {
+      const error = (await res.json()) as any;
+      throw new Error(error.message || 'Failed to sync mood log');
+    }
+    return true;
+  },
+  burnJournal: async (vars) => {
+    const res = await client.api.self.journal.burn.$post({
+      json: { content: vars.content },
+    });
+    if (!res.ok) {
+      const error = (await res.json()) as any;
+      throw new Error(error.message || 'Failed to sync burned journal entry');
+    }
     return true;
   },
 

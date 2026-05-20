@@ -138,8 +138,7 @@ function buildPayloadFromParams(
 
     case 'claim_invite': {
       const { invite_code, school_id, capacity } = params;
-      if (!invite_code || !school_id || !capacity)
-        return { ok: false, error: 'invalid', raw };
+      if (!invite_code || !school_id || !capacity) return { ok: false, error: 'invalid', raw };
       return {
         ok: true,
         payload: {

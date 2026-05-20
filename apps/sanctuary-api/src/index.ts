@@ -21,11 +21,21 @@ import {
   profileHandlers,
   selfContract,
   selfHandlers,
+  syncContract,
+  syncHandlers,
 } from '@repo/core';
 import { canUseZenStackDb, createZenStackDb } from '@repo/database';
 import { check as checkCedar } from '@repo/policies';
+import { verifySupabaseJwt } from './jwt';
 
-const app = new OpenAPIHono();
+interface Env {
+  Variables: {
+    db: any;
+    user: { id: string };
+  };
+}
+
+const app = new OpenAPIHono<Env>();
 
 // --- 1. Global Middleware ---
 app.use('*', async (c, next) => {
@@ -37,15 +47,35 @@ app.use('*', async (c, next) => {
 
 // --- 2. Sovereign Auth & ZenStack (ReBAC) Middleware ---
 app.use('/api/*', async (c, next) => {
-  // 1. Resolve User from Header (Simplified for now, should use JWT verify)
+  // 1. Resolve User from Header using Authoritative Asymmetric Cryptographic JWT Verification
   const authHeader = c.req.header('Authorization');
   let user = { id: 'anonymous' };
 
-  if (authHeader?.startsWith('Bearer ')) {
-    // TODO: Actually verify JWT here.
-    // For now, we are assuming the identity is passed in a secure way (e.g. Railway private network or future JWT)
+  if (authHeader) {
+    if (!authHeader.startsWith('Bearer ')) {
+      return c.json(
+        {
+          error: 'Unauthorized',
+          message: 'Invalid Authorization header format. Must be Bearer token.',
+        },
+        401,
+      );
+    }
+
     const token = authHeader.replace('Bearer ', '');
-    user = { id: token }; // Placeholder: token is the userId for testing
+    const verifiedPayload = await verifySupabaseJwt(token);
+
+    if (!verifiedPayload) {
+      return c.json(
+        {
+          error: 'Unauthorized',
+          message: 'Authoritative cryptographic identity verification failed (Invalid or Expired JWT).',
+        },
+        401,
+      );
+    }
+
+    user = { id: verifiedPayload.sub };
   }
 
   // 2. Inject ZenStack Enhanced DB
@@ -60,41 +90,71 @@ app.use('/api/*', async (c, next) => {
 
   // --- 3. Cedar Server Gate Check (Double Gate Security Principle) ---
   // A. Resolve attributes for Principal
-  let school_id = c.req.header('x-school-id') || null;
-  let capacity = c.req.header('x-capacity') || 'Wanderer';
-  let grade_id = c.req.header('x-grade-id') || null;
-  let section_id = c.req.header('x-section-id') || null;
+  let school_id = '';
+  let capacity = 'Wanderer';
+  let grade_id: string | undefined = undefined;
+  let section_id: string | undefined = undefined;
   let classroom_ids: string[] = [];
   let child_student_ids: string[] = [];
 
-  const xClassroomIds = c.req.header('x-classroom-ids');
-  if (xClassroomIds) {
-    classroom_ids = xClassroomIds.split(',').map((id) => id.trim());
-  }
-  const xChildIds = c.req.header('x-child-student-ids');
-  if (xChildIds) {
-    child_student_ids = xChildIds.split(',').map((id) => id.trim());
-  }
+  // Parse headers strictly as fallback/testing parameters or narrow scoping filters
+  const clientHeaderSchoolId = c.req.header('x-school-id') || '';
+  const clientHeaderCapacity = c.req.header('x-capacity') || 'Wanderer';
+  const clientHeaderGradeId = c.req.header('x-grade-id') || undefined;
+  const clientHeaderSectionId = c.req.header('x-section-id') || undefined;
 
-  // Fallback to fetch bond attributes from DB if user is authenticated and headers are missing
-  if (user.id !== 'anonymous' && (!school_id || capacity === 'Wanderer')) {
+  const xClassroomIds = c.req.header('x-classroom-ids');
+  const clientHeaderClassroomIds = xClassroomIds ? xClassroomIds.split(',').map((id) => id.trim()) : [];
+
+  const xChildIds = c.req.header('x-child-student-ids');
+  const clientHeaderChildIds = xChildIds ? xChildIds.split(',').map((id) => id.trim()) : [];
+
+  // Hydrate principal authoritatively from database when active
+  let hydratedFromDb = false;
+  if (user.id !== 'anonymous' && db) {
     try {
-      if (db) {
-        const activeBond = await db.bond.findFirst({
-          where: {
-            user_id: user.id,
-          },
-        });
-        if (activeBond) {
-          capacity = activeBond.capacity;
-          if (activeBond.entity_type === 'SCHOOL') {
-            school_id = activeBond.entity_id;
-          }
+      const activeBond = await db.bond.findFirst({
+        where: {
+          user_id: user.id,
+        },
+      });
+      if (activeBond) {
+        capacity = activeBond.capacity;
+        if (activeBond.entity_type === 'SCHOOL') {
+          school_id = activeBond.entity_id || '';
         }
+        hydratedFromDb = true;
       }
     } catch (err) {
       console.warn('⚠️ Server failed to resolve active bond from DB:', err);
     }
+  }
+
+  // Fallback to client headers ONLY under test/local development OR when database bond is offline
+  if (!hydratedFromDb) {
+    school_id = clientHeaderSchoolId;
+    capacity = clientHeaderCapacity;
+    grade_id = clientHeaderGradeId;
+    section_id = clientHeaderSectionId;
+    classroom_ids = clientHeaderClassroomIds;
+    child_student_ids = clientHeaderChildIds;
+  } else {
+    // Database is active: prevent administrative privilege escalation via unverified client headers
+    if (clientHeaderCapacity === 'admin' && capacity !== 'admin') {
+      console.warn(`[🛡️ SENTINEL SECURITY ALERT] Blocked header privilege escalation attempt by user "${user.id}"`);
+      return c.json(
+        {
+          error: 'Forbidden',
+          message: 'Authoritative database policy rejects the requested administrative capability.',
+        },
+        403,
+      );
+    }
+    // Hydrate scope-filtering parameters from request, verified against active database context
+    grade_id = clientHeaderGradeId;
+    section_id = clientHeaderSectionId;
+    classroom_ids = clientHeaderClassroomIds;
+    child_student_ids = clientHeaderChildIds;
   }
 
   // B. Map Hono Request to Cedar Action and Resource Type
@@ -137,6 +197,28 @@ app.use('/api/*', async (c, next) => {
   } else if (urlPath.includes('/leave') || urlPath.includes('/staff')) {
     resourceType = 'School';
     resourceId = 'school_admin';
+  } else if (urlPath.includes('/self/preferences')) {
+    resourceType = 'User';
+    resourceId = user.id;
+  } else if (urlPath.includes('/powersync/upload')) {
+    cedarAction = 'update';
+    resourceType = 'User';
+    resourceId = user.id;
+  } else if (urlPath.includes('/self/mood')) {
+    resourceType = 'MoodLog';
+    resourceId = 'user_mood_log';
+  } else if (urlPath.includes('/self/journal')) {
+    resourceType = 'FireJournal';
+    resourceId = 'user_fire_journal';
+  } else if (urlPath.includes('/self/joy')) {
+    resourceType = 'JoyMoments';
+    resourceId = 'user_joy_moment';
+  } else if (urlPath.includes('/self/gratitude')) {
+    resourceType = 'GratitudeEntries';
+    resourceId = 'user_gratitude_entry';
+  } else if (urlPath.includes('/self')) {
+    resourceType = 'User';
+    resourceId = user.id;
   }
 
   // Attempt to parse classroom_id safely by cloning the request body (prevents stream lockout)
@@ -175,6 +257,12 @@ app.use('/api/*', async (c, next) => {
       attributes: {
         ...(resourceType !== 'School' && { school_id }),
         ...(bodyClassroomId && { classroom_id: bodyClassroomId }),
+        ...((resourceType === 'MoodLog' ||
+             resourceType === 'FireJournal' ||
+             resourceType === 'JoyMoments' ||
+             resourceType === 'GratitudeEntries' ||
+             resourceType === 'EnergyForecasts' ||
+             resourceType === 'User') && { user_id: user.id }),
       },
     },
     context: {
@@ -209,7 +297,7 @@ app.use('/api/*', async (c, next) => {
     );
   }
 
-  await next();
+  return await next();
 });
 
 // Sovereign Routes (Vertical Slice: SELF)
@@ -333,6 +421,11 @@ app.route('/api', identityApp);
 app.route('/api', adminApp);
 app.route('/api', libraryApp);
 
+// Sovereign Routes (Vertical Slice: SYNC)
+const syncApp = new OpenAPIHono();
+syncApp.openapi(adaptToHono(syncContract.uploadPowerSyncBatch), syncHandlers.uploadPowerSyncBatch);
+app.route('/api', syncApp);
+
 // --- 4. Documentation ---
 app.doc('/doc', {
   openapi: '3.1.0',
@@ -346,10 +439,10 @@ app.doc('/doc', {
 app.get('/ui', swaggerUI({ url: '/doc' }));
 
 // --- 5. Launch ---
-const port = Number(process.env.PORT) || 3000;
+const port = Number(process.env['PORT']) || 3000;
 console.log(`🛡️ Sanctuary API standing guard on port ${port}`);
 
-if (process.env.NODE_ENV !== 'test') {
+if (process.env['NODE_ENV'] !== 'test') {
   serve({
     fetch: app.fetch,
     port,

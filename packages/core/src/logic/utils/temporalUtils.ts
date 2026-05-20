@@ -12,9 +12,9 @@ import {
   startOfYear,
 } from 'date-fns';
 import {
-  useTemporalStore,
   type TemporalCapability,
   type TemporalScale,
+  useTemporalStore,
 } from '../../store/useTemporalStore';
 
 export interface TemporalRange {
@@ -109,5 +109,5 @@ export const getTransactionRange = (validDate: string): TemporalRange => {
 };
 
 export const getCurrentTimestamp = () => {
-	return formatISO(new Date());
+  return formatISO(new Date());
 };

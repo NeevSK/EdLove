@@ -1,11 +1,11 @@
 import { v7 as uuidv7 } from 'uuid';
-import { coreRuntime } from '../logic/runtimeRegistry';
-import { networkManager } from '../logic/managers/NetworkManager';
 import {
   DEVICE_SECURITY_MUTATIONS,
   isOfflineLikeError,
   queueDeviceSecurityIntent,
 } from '../lib/sync/deviceSecurityIntents';
+import { networkManager } from '../logic/managers/NetworkManager';
+import { coreRuntime } from '../logic/runtimeRegistry';
 import { APIError } from '../types/API';
 import { identityAPI } from './identity';
 import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from './supabase';
@@ -424,10 +424,13 @@ export const deviceTrustAPI = {
   }) {
     const resolvedAccountId = await requireAccountId();
     const revokeSessions = input.revokeSessions ?? true;
-    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.rpc('unlink_my_device', {
-      p_device_id: input.deviceId,
-      p_revoke_sessions: revokeSessions,
-    });
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.rpc(
+      'unlink_my_device',
+      {
+        p_device_id: input.deviceId,
+        p_revoke_sessions: revokeSessions,
+      },
+    );
 
     if (error) {
       throw new APIError('Failed to unlink device.', error.code, error);
@@ -500,10 +503,13 @@ export const deviceTrustAPI = {
     idempotencyKey?: string | null;
   }) {
     const reason = input.reason ?? 'manual';
-    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.rpc('revoke_my_other_security_sessions', {
-      p_keep_session_id: input.keepSessionId ?? null,
-      p_reason: reason,
-    });
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.rpc(
+      'revoke_my_other_security_sessions',
+      {
+        p_keep_session_id: input.keepSessionId ?? null,
+        p_reason: reason,
+      },
+    );
 
     if (error) {
       throw new APIError('Failed to revoke other security sessions.', error.code, error);
@@ -537,10 +543,13 @@ export const deviceTrustAPI = {
     idempotencyKey?: string | null;
   }) {
     const reason = input.reason ?? 'signed_out_locally';
-    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.rpc('revoke_my_install_security_sessions', {
-      p_install_id: input.installId,
-      p_reason: reason,
-    });
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.rpc(
+      'revoke_my_install_security_sessions',
+      {
+        p_install_id: input.installId,
+        p_reason: reason,
+      },
+    );
 
     if (error) {
       throw new APIError('Failed to revoke current install security sessions.', error.code, error);
@@ -588,18 +597,23 @@ export const deviceTrustAPI = {
     const resolvedAccountId = await requireAccountId(input.accountId);
     const deviceId =
       input.deviceId ??
-      ((await getStoredServerDeviceId()) ?? (await this.ensureDeviceRegistered()).deviceId);
+      (await getStoredServerDeviceId()) ??
+      (await this.ensureDeviceRegistered()).deviceId;
     const nextMetadata = {
       ...(input.metadata ?? {}),
-      idempotency_key: input.idempotencyKey ?? (input.metadata?.['idempotency_key'] as string | null) ?? null,
+      idempotency_key:
+        input.idempotencyKey ?? (input.metadata?.['idempotency_key'] as string | null) ?? null,
     };
 
-    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.rpc('log_my_device_audit', {
-      p_action: input.action,
-      p_device_id: deviceId,
-      p_account_id: resolvedAccountId,
-      p_metadata: nextMetadata,
-    });
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.rpc(
+      'log_my_device_audit',
+      {
+        p_action: input.action,
+        p_device_id: deviceId,
+        p_account_id: resolvedAccountId,
+        p_metadata: nextMetadata,
+      },
+    );
 
     if (error) {
       throw new APIError('Failed to write device audit log.', error.code, error);

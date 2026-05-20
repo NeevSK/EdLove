@@ -1,6 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { ClassroomSchema } from '../../../logic/schemas/classroom.schema';
 import type { Classroom } from '../../../logic/schemas/classroom.schema';
+import { ClassroomSchema } from '../../../logic/schemas/classroom.schema';
 import { APIError } from '../../../types/API';
 
 const withRange = <T>(query: T, params?: { limit?: number; offset?: number }) => {
@@ -9,7 +9,10 @@ const withRange = <T>(query: T, params?: { limit?: number; offset?: number }) =>
 };
 
 export const createClassroomRepository = (supabase: SupabaseClient) => ({
-  async getClassroomsByTeacher(teacherId: string, params: { limit?: number; offset?: number } = {}) {
+  async getClassroomsByTeacher(
+    teacherId: string,
+    params: { limit?: number; offset?: number } = {},
+  ) {
     let query = supabase
       .from('classrooms')
       .select('*')
@@ -21,7 +24,10 @@ export const createClassroomRepository = (supabase: SupabaseClient) => ({
     return (data || []).map((item) => ClassroomSchema.parse(item)) as Classroom[];
   },
 
-  async getClassroomsByStudent(studentId: string, params: { limit?: number; offset?: number } = {}) {
+  async getClassroomsByStudent(
+    studentId: string,
+    params: { limit?: number; offset?: number } = {},
+  ) {
     let query = supabase
       .from('classroom_students')
       .select('classroom:classrooms (*)')

@@ -64,4 +64,3 @@ describe('principal workspace POA coverage', () => {
     });
   });
 });
-

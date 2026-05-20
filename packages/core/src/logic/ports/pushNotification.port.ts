@@ -6,7 +6,12 @@ export interface IPushNotificationPort {
   /**
    * Registers a device push token for a user.
    */
-  registerPushToken(userId: string, token: string, deviceId: string, platform: string): Promise<void>;
+  registerPushToken(
+    userId: string,
+    token: string,
+    deviceId: string,
+    platform: string,
+  ): Promise<void>;
 
   /**
    * Unregisters a device push token.

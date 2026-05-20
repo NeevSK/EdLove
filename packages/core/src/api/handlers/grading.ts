@@ -1,4 +1,4 @@
-import { type Context } from 'hono';
+import type { Context } from 'hono';
 
 /**
  * Grading Domain Handlers (Hono + ZenStack ReBAC)
@@ -16,7 +16,22 @@ export const gradingHandlers = {
       orderBy: { created_at: 'desc' },
       include: {
         classroom: { select: { name: true, subject: true } },
-      }
+      },
+    });
+
+    return c.json(grades, 200);
+  },
+
+  /**
+   * Retrieve grades for a classroom.
+   */
+  getClassroomGrades: async (c: Context) => {
+    const db = c.get('db');
+    const { classroomId } = c.req.query();
+
+    const grades = await db.grade.findMany({
+      where: { classroom_id: classroomId },
+      orderBy: { created_at: 'desc' },
     });
 
     return c.json(grades, 200);
@@ -52,7 +67,7 @@ export const gradingHandlers = {
         entity_type: 'grade',
         executor_id: user.id,
         metadata: { marks, studentId, classroomId },
-      }
+      },
     });
 
     return c.json(grade, 201);
@@ -81,7 +96,7 @@ export const gradingHandlers = {
         entity_type: 'grade',
         executor_id: user.id,
         metadata: { publication_state: 'published' },
-      }
+      },
     });
 
     return c.json(grade, 200);

@@ -3,9 +3,8 @@ import { ChevronLeft, ChevronRight, ExternalLink, RotateCcw, Share2, X } from 'l
 import type React from 'react';
 import { useCallback, useReducer, useRef } from 'react';
 import { Linking, Share, StyleSheet } from 'react-native';
-import { ActivityIndicator } from '../primitives';
 import { WebView, type WebViewNavigation } from 'react-native-webview';
-import { Pressable, Text, useTheme, View } from '../primitives';
+import { ActivityIndicator, Pressable, Text, useTheme, View } from '../primitives';
 
 export interface InternalBrowserProps {
   url: string;
@@ -13,7 +12,6 @@ export interface InternalBrowserProps {
   title?: string;
   showToolbar?: boolean;
 }
-
 
 // ============================================================================
 // TYPES & REDUCER
@@ -112,7 +110,6 @@ export const InternalBrowser: React.FC<InternalBrowserProps> = ({
       Linking.openURL(currentUrl);
     }
   }, [currentUrl]);
-
 
   return (
     <View style={[styles.container, { backgroundColor: scene.canvas.bg }]}>

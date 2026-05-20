@@ -11,7 +11,9 @@ function getSentryEnvironment() {
 }
 
 function getSentryRelease() {
-  return process.env['EXPO_PUBLIC_SENTRY_RELEASE'] || process.env['npm_package_version'] || undefined;
+  return (
+    process.env['EXPO_PUBLIC_SENTRY_RELEASE'] || process.env['npm_package_version'] || undefined
+  );
 }
 
 async function getBrowserSentry(): Promise<BrowserSentryModule | null> {

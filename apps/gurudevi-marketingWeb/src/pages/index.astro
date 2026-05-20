@@ -1,28 +1,29 @@
 ---
-import Layout from "../layouts/Layout.astro";
-import Header from "../components/Header.astro";
-import Footer from "../components/Footer.astro";
-import StatsSection from "../components/StatsSection.svelte";
-import StoryCard from "../components/StoryCard.astro";
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import StatsSection from '../components/StatsSection.svelte';
+import StoryCard from '../components/StoryCard.astro';
+import Layout from '../layouts/Layout.astro';
 
 const machineReadableData = {
-	"@context": "https://schema.org",
-	"@type": "SoftwareApplication",
-	"name": "Gurudevi",
-	"applicationCategory": "EducationalApplication",
-	"operatingSystem": "Web",
-	"url": "https://platform.gurudevi.edlove.org",
-	"description": "An Education Ecology Support System designed to mend the teaching-learning impedance match.",
-	"offers": {
-		"@type": "Offer",
-		"price": "0",
-		"priceCurrency": "USD"
-	},
-	"potentialAction": {
-		"@type": "ControlAction",
-		"name": "Enter Platform",
-		"target": "https://platform.gurudevi.edlove.org"
-	}
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'Gurudevi',
+  applicationCategory: 'EducationalApplication',
+  operatingSystem: 'Web',
+  url: 'https://platform.gurudevi.edlove.org',
+  description:
+    'An Education Ecology Support System designed to mend the teaching-learning impedance match.',
+  offers: {
+    '@type': 'Offer',
+    price: '0',
+    priceCurrency: 'USD',
+  },
+  potentialAction: {
+    '@type': 'ControlAction',
+    name: 'Enter Platform',
+    target: 'https://platform.gurudevi.edlove.org',
+  },
 };
 ---
 

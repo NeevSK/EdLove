@@ -15,9 +15,12 @@ export interface AuthUser {
 export interface IAuthPort {
   getSession(): Promise<AuthSession | null>;
   getUser(): Promise<AuthUser | null>;
-  
-  signInWithPassword(email: string, password: string): Promise<{ user: AuthUser | null; session: AuthSession | null }>;
-  
+
+  signInWithPassword(
+    email: string,
+    password: string,
+  ): Promise<{ user: AuthUser | null; session: AuthSession | null }>;
+
   signInWithOAuth(params: {
     provider: 'google';
     redirectTo?: string;
@@ -30,7 +33,10 @@ export interface IAuthPort {
     skipBrowserRedirect?: boolean;
   }): Promise<{ url: string | null }>;
 
-  setSession(access_token: string, refresh_token: string): Promise<{ user: AuthUser | null; session: AuthSession | null }>;
+  setSession(
+    access_token: string,
+    refresh_token: string,
+  ): Promise<{ user: AuthUser | null; session: AuthSession | null }>;
 
   signUp(params: {
     email: string;
@@ -38,7 +44,9 @@ export interface IAuthPort {
     options?: { data?: Record<string, any> };
   }): Promise<{ user: AuthUser | null; session: AuthSession | null }>;
 
-  signInAnonymously(options?: { data?: Record<string, any> }): Promise<{ user: AuthUser | null; session: AuthSession | null }>;
+  signInAnonymously(options?: {
+    data?: Record<string, any>;
+  }): Promise<{ user: AuthUser | null; session: AuthSession | null }>;
 
   updateUser(params: {
     email?: string;

@@ -1,10 +1,10 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
+import Reanimated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { useTheme } from '../hooks/useTheme';
 import { Check, Clock, Lock } from '../icons';
 import { Box, HStack, Icon, Pressable, Spinner, Text, VStack } from '../primitives';
 import { Theme } from '../theme/Theme';
-import Reanimated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
 export interface PollOption {
   id: string;
@@ -145,98 +145,98 @@ export function PollWidget({
 }
 
 interface PollOptionRowProps {
-	opt: PollOption;
-	count: number;
-	totalVotes: number;
-	maxCount: number;
-	isSelected: boolean;
-	isExpired: boolean;
-	isVoting: boolean;
-	showResults: boolean;
-	onVote: (optionId: string) => void;
+  opt: PollOption;
+  count: number;
+  totalVotes: number;
+  maxCount: number;
+  isSelected: boolean;
+  isExpired: boolean;
+  isVoting: boolean;
+  showResults: boolean;
+  onVote: (optionId: string) => void;
 }
 
 function PollOptionRow({
-	opt,
-	count,
-	totalVotes,
-	maxCount,
-	isSelected,
-	isExpired,
-	isVoting,
-	showResults,
-	onVote,
+  opt,
+  count,
+  totalVotes,
+  maxCount,
+  isSelected,
+  isExpired,
+  isVoting,
+  showResults,
+  onVote,
 }: PollOptionRowProps) {
-	const theme = useTheme();
-	const progress = useSharedValue(0);
+  const theme = useTheme();
+  const progress = useSharedValue(0);
 
-	React.useEffect(() => {
-		if (showResults) {
-			const pct = totalVotes > 0 ? (count / totalVotes) * 100 : 0;
-			progress.value = withTiming(pct, { duration: 500 });
-		} else {
-			progress.value = 0;
-		}
-	}, [count, totalVotes, showResults, progress]);
+  React.useEffect(() => {
+    if (showResults) {
+      const pct = totalVotes > 0 ? (count / totalVotes) * 100 : 0;
+      progress.value = withTiming(pct, { duration: 500 });
+    } else {
+      progress.value = 0;
+    }
+  }, [count, totalVotes, showResults, progress]);
 
-	const animatedStyle = useAnimatedStyle(() => ({
-		width: `${progress.value}%`,
-	}));
+  const animatedStyle = useAnimatedStyle(() => ({
+    width: `${progress.value}%`,
+  }));
 
-	const isWinner = isExpired && count > 0 && count === maxCount;
-	const canTap = !isExpired && !isVoting;
+  const isWinner = isExpired && count > 0 && count === maxCount;
+  const canTap = !isExpired && !isVoting;
 
-	return (
-		<Pressable
-			onPress={() => onVote(opt.id)}
-			disabled={!canTap}
-			accessibilityRole="button"
-			className={`
+  return (
+    <Pressable
+      onPress={() => onVote(opt.id)}
+      disabled={!canTap}
+      accessibilityRole="button"
+      className={`
         h-12 rounded-xl overflow-hidden relative justify-center border
-        ${isWinner ? "border-sanctuarySaffron" : isSelected ? "border-phase-accent" : "border-phase-interactive"}
-        ${isSelected ? "border-2" : "border-1"}
+        ${isWinner ? 'border-sanctuarySaffron' : isSelected ? 'border-phase-accent' : 'border-phase-interactive'}
+        ${isSelected ? 'border-2' : 'border-1'}
         bg-phase-surface
       `}
-		>
-			{showResults && (
-				<Reanimated.View
-					style={[
-						StyleSheet.absoluteFillObject,
-						{
-							backgroundColor: isWinner
-								? `${Theme.colors.sanctuarySaffron}20`
-								: isSelected
-									? `${theme.accent.action}15`
-									: `${theme.scene.interactive.bg}40`,
-						},
-						animatedStyle,
-					]}
-				/>
-			)}
-			<HStack className="justify-between px-3 z-1 items-center w-full">
-				<HStack className="items-center gap-2 flex-1">
-					<Box
-						className={`
+    >
+      {showResults && (
+        <Reanimated.View
+          style={[
+            StyleSheet.absoluteFillObject,
+            {
+              backgroundColor: isWinner
+                ? `${Theme.colors.sanctuarySaffron}20`
+                : isSelected
+                  ? `${theme.accent.action}15`
+                  : `${theme.scene.interactive.bg}40`,
+            },
+            animatedStyle,
+          ]}
+        />
+      )}
+      <HStack className="justify-between px-3 z-1 items-center w-full">
+        <HStack className="items-center gap-2 flex-1">
+          <Box
+            className={`
               w-[18px] h-[18px] items-center justify-center border-2 rounded-full
-              ${isSelected ? "bg-phase-accent border-phase-accent" : "border-phase-interactive"}
+              ${isSelected ? 'bg-phase-accent border-phase-accent' : 'border-phase-interactive'}
             `}
-					>
-						{isSelected && <Icon as={Check} size={12} color="white" />}
-					</Box>
-					<Text
-						className={`text-phaseText-primary text-sm ${isSelected ? "font-bold" : "font-normal"}`}
-					>
-						{opt.text}
-					</Text>
-				</HStack>
-				{showResults && (
-					<Text
-						className={`font-bold text-xs ${isSelected ? "text-phase-accent" : "text-phaseText-secondary"}`}
-					>
-						{totalVotes > 0 ? Math.round((count / totalVotes) * 100) : 0}%
-					</Text>
-				)}
-			</HStack>
-		</Pressable>
-	);
+          >
+            {isSelected && <Icon as={Check} size={12} color="white" />}
+          </Box>
+          <Text
+            className={`text-phaseText-primary text-sm ${isSelected ? 'font-bold' : 'font-normal'}`}
+          >
+            {opt.text}
+          </Text>
+        </HStack>
+        {showResults && (
+          <Text
+            className={`font-bold text-xs ${isSelected ? 'text-phase-accent' : 'text-phaseText-secondary'}`}
+          >
+            {totalVotes > 0 ? Math.round((count / totalVotes) * 100) : 0}%
+          </Text>
+        )}
+      </HStack>
+    </Pressable>
+  );
 }

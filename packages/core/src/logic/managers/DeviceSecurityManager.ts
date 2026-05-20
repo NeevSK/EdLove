@@ -1,9 +1,13 @@
-import { IDeviceSecurityPort } from '../ports/deviceSecurity.port';
-import { DeviceTrustSummary, DeviceSecurityEvent, DeviceSecuritySession } from '../../api/deviceTrust';
+import type {
+  DeviceSecurityEvent,
+  DeviceSecuritySession,
+  DeviceTrustSummary,
+} from '../../api/deviceTrust';
+import type { IDeviceSecurityPort } from '../ports/deviceSecurity.port';
 
 /**
  * DeviceSecurityManager
- * 
+ *
  * The Orchestrator for Device Trust.
  * Handles the logic of syncing device state and managing revocations.
  */

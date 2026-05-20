@@ -1,4 +1,4 @@
-import { type Context } from 'hono';
+import type { Context } from 'hono';
 
 /**
  * Operations Domain Handlers (Hono + ZenStack ReBAC)
@@ -19,9 +19,9 @@ export const operationsHandlers = {
       orderBy: { created_at: 'desc' },
       include: {
         student: {
-          select: { full_name: true, avatar_url: true }
-        }
-      }
+          select: { full_name: true, avatar_url: true },
+        },
+      },
     });
 
     return c.json(records, 200);
@@ -40,7 +40,7 @@ export const operationsHandlers = {
           student_id: body.student_id,
           classroom_id: body.classroom_id,
           date: body.date,
-        }
+        },
       },
       update: {
         status: body.status,
@@ -63,7 +63,7 @@ export const operationsHandlers = {
   batchRecordAttendance: async (c: Context) => {
     const db = c.get('db');
     const records = await c.req.json();
-    
+
     const results = [];
     for (const item of records) {
       const record = await db.attendanceRecord.upsert({
@@ -72,7 +72,7 @@ export const operationsHandlers = {
             student_id: item.student_id,
             classroom_id: item.classroom_id,
             date: item.date,
-          }
+          },
         },
         update: {
           status: item.status,
@@ -108,7 +108,7 @@ export const operationsHandlers = {
       },
       select: {
         status: true,
-      }
+      },
     });
 
     const stats = {

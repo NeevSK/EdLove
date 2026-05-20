@@ -1,0 +1,30 @@
+{
+  "name": "@intuitui-labs/form-builder-engine",
+  "version": "1.0.0",
+  "description": "Headless offline-first form builder state engine",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "license": "MIT",
+  "scripts": {
+    "build": "pnpm exec tsup src/index.ts --format esm,cjs --dts --clean",
+    "check-types": "tsc --noEmit"
+  },
+  "dependencies": {
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "tsup": "^8.3.5",
+    "typescript": "^5.9.3"
+  }
+}

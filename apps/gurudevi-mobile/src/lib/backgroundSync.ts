@@ -9,7 +9,7 @@
  *
  * Uses coreRuntime.backgroundTask (Hexagonal Port) instead of direct expo-background-task.
  */
-import { useMutationQueue, coreRuntime } from '@repo/core/logic';
+import { coreRuntime, useMutationQueue } from '@repo/core/logic';
 import { MUTATION_REGISTRY, sovereignBus } from '@repo/core/sync';
 import { BackgroundTaskResult, BackgroundTaskStatus } from '@repo/core/types';
 
@@ -54,9 +54,7 @@ coreRuntime.backgroundTask.defineTask(BACKGROUND_SYNC_TASK, async () => {
   // Notify the bus so the foreground UI can update when the app is re-opened
   sovereignBus.emit('background:pulse', { itemsDrained: drained });
 
-  return drained > 0
-    ? BackgroundTaskResult.NewData
-    : BackgroundTaskResult.NoData;
+  return drained > 0 ? BackgroundTaskResult.NewData : BackgroundTaskResult.NoData;
 });
 
 // ─── Registration ─────────────────────────────────────────────────────────────
@@ -65,15 +63,15 @@ export async function registerBackgroundSync(): Promise<void> {
   try {
     const status = await coreRuntime.backgroundTask.getStatusAsync();
 
-    if (
-      status === BackgroundTaskStatus.Restricted ||
-      status === BackgroundTaskStatus.Denied
-    ) {
-      console.warn('[BackgroundSync] OS has restricted background tasks. Falling back to foreground-only sync.');
+    if (status === BackgroundTaskStatus.Restricted || status === BackgroundTaskStatus.Denied) {
+      console.warn(
+        '[BackgroundSync] OS has restricted background tasks. Falling back to foreground-only sync.',
+      );
       return;
     }
 
-    const isRegistered = await coreRuntime.backgroundTask.isTaskRegisteredAsync(BACKGROUND_SYNC_TASK);
+    const isRegistered =
+      await coreRuntime.backgroundTask.isTaskRegisteredAsync(BACKGROUND_SYNC_TASK);
     if (!isRegistered) {
       await coreRuntime.backgroundTask.registerTaskAsync(BACKGROUND_SYNC_TASK, {
         minimumInterval: 15, // minutes

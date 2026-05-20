@@ -1,3 +1,4 @@
+import { educational } from '../logic/managers/factory';
 import {
   SchoolGradeSchema,
   SchoolSchema,
@@ -5,7 +6,6 @@ import {
   SectionSchema,
 } from '../logic/schemas/school.schema';
 import type { SchoolGrade as Grade, School, SchoolStats, Section } from '../types';
-import { educational } from '../logic/managers/factory';
 
 /**
  * API methods for Managing School Institutions.
@@ -85,7 +85,7 @@ export const schoolAPI = {
     // Note: Stats are currently computed in the repository or projection services.
     // We delegate to the educational manager which uses the stats repository.
     const stats = await educational.classrooms.getTeacherStats(schoolId); // This is a bit of a mismatch in names, but follows existing patterns
-    
+
     // Fallback for now to maintain API shape
     const fallbackStats = {
       total_students: 0,

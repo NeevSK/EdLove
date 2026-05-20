@@ -1,9 +1,9 @@
-import { type Inngest } from 'inngest';
-import { type IEventBusPort, type DomainEvent } from '../../logic/ports/eventBus.port';
+import type { Inngest } from 'inngest';
+import type { DomainEvent, IEventBusPort } from '../../logic/ports/eventBus.port';
 
 /**
  * InngestEventBusAdapter
- * 
+ *
  * Concrete implementation of IEventBusPort for Inngest.
  */
 export const createInngestEventBusAdapter = (client: Inngest<any>): IEventBusPort => ({
@@ -17,5 +17,5 @@ export const createInngestEventBusAdapter = (client: Inngest<any>): IEventBusPor
         tenantId: event.metadata?.tenantId,
       },
     });
-  }
+  },
 });

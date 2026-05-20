@@ -98,4 +98,3 @@ export const guardianContract = c.router({
     metadata: guardianAuthority('update', 'GuardianNotificationSettings'),
   },
 });
-

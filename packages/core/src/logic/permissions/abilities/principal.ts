@@ -7,7 +7,8 @@ export const definePrincipalAbilities = (
   builder: AbilityBuilder<AppAbility>,
 ) => {
   const { can } = builder;
-  
+  const schoolId = user.schoolId;
+
   // HEAL 2026: Core visibility even for Wanderers
   can('read', 'PrincipalPulse');
   can('manage', 'PrincipalDashboard');
@@ -15,22 +16,22 @@ export const definePrincipalAbilities = (
   can('read', 'ClassroomList');
   can('read', 'LibrarySearch');
 
-  if (!user.school_id) return;
+  if (!schoolId) return;
 
   can('read', 'TeacherPulse');
   can('read', 'ClassroomList');
 
   // Institutional management
-  can('manage', 'School', { id: user.school_id } as any);
-  can('manage', 'Classroom', { school_id: user.school_id } as any);
-  can('read', 'Lesson', { school_id: user.school_id } as any);
-  can('read', 'Material', { school_id: user.school_id } as any);
+  can('manage', 'School', { id: schoolId } as any);
+  can('manage', 'Classroom', { school_id: schoolId } as any);
+  can('read', 'Lesson', { school_id: schoolId } as any);
+  can('read', 'Material', { school_id: schoolId } as any);
   can('read', 'Grade');
   can('grade', 'Grade');
-  can('manage', 'Student', { school_id: user.school_id } as any);
-  can('manage', 'Staff', { school_id: user.school_id } as any);
-  can('manage', 'Inventory', { school_id: user.school_id } as any);
-  can('read', 'Report', { school_id: user.school_id } as any);
+  can('manage', 'Student', { school_id: schoolId } as any);
+  can('manage', 'Staff', { school_id: schoolId } as any);
+  can('manage', 'Inventory', { school_id: schoolId } as any);
+  can('read', 'Report', { school_id: schoolId } as any);
 
   // Workforce & Leave
   can('manage', 'LeaveApproval');

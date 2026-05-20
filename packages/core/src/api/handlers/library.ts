@@ -1,4 +1,4 @@
-import { type Context } from 'hono';
+import type { Context } from 'hono';
 
 /**
  * Library Domain Handlers (Hono + ZenStack ReBAC)
@@ -22,8 +22,8 @@ export const libraryHandlers = {
       skip: Number(offset) || 0,
       orderBy: { created_at: 'desc' },
       include: {
-        creator: { select: { full_name: true, avatar_url: true } }
-      }
+        creator: { select: { full_name: true, avatar_url: true } },
+      },
     });
 
     return c.json(resources, 200);
@@ -40,8 +40,8 @@ export const libraryHandlers = {
       where: { id },
       include: {
         creator: { select: { full_name: true, avatar_url: true } },
-        _count: { select: { engagements: true } }
-      }
+        _count: { select: { engagements: true } },
+      },
     });
 
     if (!resource) return c.json({ message: 'Resource not found' }, 404);
@@ -108,8 +108,8 @@ export const libraryHandlers = {
       take: Number(limit) || 20,
       skip: Number(offset) || 0,
       include: {
-        creator: { select: { full_name: true, avatar_url: true } }
-      }
+        creator: { select: { full_name: true, avatar_url: true } },
+      },
     });
 
     return c.json(collections, 200);
@@ -127,10 +127,10 @@ export const libraryHandlers = {
       include: {
         nodes: {
           include: {
-            resource: true
-          }
-        }
-      }
+            resource: true,
+          },
+        },
+      },
     });
 
     if (!collection) return c.json({ message: 'Collection not found' }, 404);

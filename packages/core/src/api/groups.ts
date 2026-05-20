@@ -1,13 +1,9 @@
-import { 
-  createSovereignClient, 
-  SOVEREIGN_API_URL, 
-  type AppType 
-} from './base';
 import { APIError } from '../types/API';
+import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from './base';
 
 /**
  * GROUPS API (Sovereign RPC Proxy)
- * 
+ *
  * This module siphons Group requests to the Sanctuary API.
  * PURGED: Direct Supabase access.
  */

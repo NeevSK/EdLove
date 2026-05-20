@@ -1,16 +1,15 @@
 import { growth } from '../logic';
-import { 
-  type Challenge, 
-  type ChallengeMetric, 
-  type PersonalCompass, 
-  type ChallengeProgress 
+import type {
+  Challenge,
+  ChallengeMetric,
+  ChallengeProgress,
+  PersonalCompass,
 } from '../types/Growth';
-export * from '../types/Growth';
 
 
 /**
  * contextualChallengesAPI (Legacy Proxy)
- * 
+ *
  * Superseded by GrowthManager. Now redirects to the sovereign Growth domain.
  */
 export const contextualChallengesAPI = {

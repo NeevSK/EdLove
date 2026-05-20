@@ -11,9 +11,10 @@ import {
   Zap,
 } from 'lucide-react-native';
 import type React from 'react';
-import { useState } from 'react';
+import { memo, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import DeviceSecurityCenter from '../components/DeviceSecurityCenter';
+import { NotificationSettingsPanel } from '../components/NotificationSettingsPanel';
 import { Box } from '../components/ui/box';
 import { Button, ButtonText } from '../components/ui/button';
 import { HStack } from '../components/ui/hstack';
@@ -22,12 +23,10 @@ import { ScrollView } from '../components/ui/scroll-view';
 import { Switch } from '../components/ui/switch';
 import { Heading, Text } from '../components/ui/text';
 import { VStack } from '../components/ui/vstack';
-import { NotificationSettingsPanel } from '../components/NotificationSettingsPanel';
 import { useEnvironment } from '../context';
 import { useTheme } from '../hooks/useTheme';
 import { useSanctuaryToast } from '../providers/ToastProvider';
 import { hapticLight, hapticSuccess } from '../utils/haptics';
-import { useCallback, memo, useMemo } from 'react';
 
 interface SettingsOptionProps {
   icon: React.ReactNode;
@@ -171,43 +170,58 @@ const AppSettingsScreen = memo(function AppSettingsScreen({ navigation }: any) {
     return `${phases[temporalPhase as keyof typeof phases]} • ${time}`;
   }, [temporalPhase, i18n.language, t]);
 
-  const _handleThemeChange = useCallback((mode: 'light' | 'dark' | 'auto') => {
-    setThemeMode(mode);
-    hapticSuccess();
-    setShowThemeModal(false);
-  }, [setThemeMode]);
+  const _handleThemeChange = useCallback(
+    (mode: 'light' | 'dark' | 'auto') => {
+      setThemeMode(mode);
+      hapticSuccess();
+      setShowThemeModal(false);
+    },
+    [setThemeMode],
+  );
 
-  const handleFidelityChange = useCallback(async (level: 'auto' | 'low' | 'high') => {
-    await setFidelityLevel(level);
-    hapticSuccess();
-    setShowFidelityModal(false);
-  }, [setFidelityLevel]);
+  const handleFidelityChange = useCallback(
+    async (level: 'auto' | 'low' | 'high') => {
+      await setFidelityLevel(level);
+      hapticSuccess();
+      setShowFidelityModal(false);
+    },
+    [setFidelityLevel],
+  );
 
-  const handleLanguageChange = useCallback(async (lang: 'en' | 'si' | 'ta') => {
-    await setLanguage(lang);
-    await i18n.changeLanguage(lang);
-    hapticSuccess();
-    setShowLanguageModal(false);
-  }, [setLanguage, i18n]);
+  const handleLanguageChange = useCallback(
+    async (lang: 'en' | 'si' | 'ta') => {
+      await setLanguage(lang);
+      await i18n.changeLanguage(lang);
+      hapticSuccess();
+      setShowLanguageModal(false);
+    },
+    [setLanguage, i18n],
+  );
 
   const handleOpenFidelity = useCallback(() => setShowFidelityModal(true), []);
   const handleCloseFidelity = useCallback(() => setShowFidelityModal(false), []);
-  
+
   const handleOpenLanguage = useCallback(() => setShowLanguageModal(true), []);
   const handleCloseLanguage = useCallback(() => setShowLanguageModal(false), []);
 
-  const handleLivingThemeToggle = useCallback(async (val: boolean) => {
-    await setEnableLivingTheme(val);
-    hapticLight();
-  }, [setEnableLivingTheme]);
+  const handleLivingThemeToggle = useCallback(
+    async (val: boolean) => {
+      await setEnableLivingTheme(val);
+      hapticLight();
+    },
+    [setEnableLivingTheme],
+  );
 
-  const handleProfileVisibilityToggle = useCallback(async (_val: boolean) => {
-    hapticLight();
-    showToast({
-      message: t('settings.profile_visibility_updated', 'Profile visibility updated'),
-      type: 'success',
-    });
-  }, [showToast, t]);
+  const handleProfileVisibilityToggle = useCallback(
+    async (_val: boolean) => {
+      hapticLight();
+      showToast({
+        message: t('settings.profile_visibility_updated', 'Profile visibility updated'),
+        type: 'success',
+      });
+    },
+    [showToast, t],
+  );
 
   const handlePreviewProfile = useCallback(() => {
     hapticLight();
@@ -222,92 +236,105 @@ const AppSettingsScreen = memo(function AppSettingsScreen({ navigation }: any) {
 
   const handleTrubeLab = useCallback(() => navigation.navigate('TrubeLab'), [navigation]);
 
-  const fidelityDescription = useMemo(() => (
-    fidelityLevel === 'auto'
-      ? t('settings.fidelity.auto_desc')
-      : fidelityLevel === 'low'
-        ? t('settings.fidelity.low_desc')
-        : t('settings.fidelity.high_desc')
-  ), [fidelityLevel, t]);
+  const fidelityDescription = useMemo(
+    () =>
+      fidelityLevel === 'auto'
+        ? t('settings.fidelity.auto_desc')
+        : fidelityLevel === 'low'
+          ? t('settings.fidelity.low_desc')
+          : t('settings.fidelity.high_desc'),
+    [fidelityLevel, t],
+  );
 
-  const profileVisibilityTitle = useMemo(() => t('profile.privacy.publicProfile', 'Public Social Profile'), [t]);
-  const profileVisibilityDesc = useMemo(() => (
-    user?.public_profile !== false
-      ? t('profile.privacy.public_on', 'Others can find and view your profile')
-      : t('profile.privacy.public_off', 'Your profile is hidden from the community')
-  ), [user?.public_profile, t]);
+  const profileVisibilityTitle = useMemo(
+    () => t('profile.privacy.publicProfile', 'Public Social Profile'),
+    [t],
+  );
+  const profileVisibilityDesc = useMemo(
+    () =>
+      user?.public_profile !== false
+        ? t('profile.privacy.public_on', 'Others can find and view your profile')
+        : t('profile.privacy.public_off', 'Your profile is hidden from the community'),
+    [user?.public_profile, t],
+  );
 
-  const fidelityOptions = useMemo(() => [
-    {
-      id: 'auto',
-      label: t('settings.fidelity.auto'),
-      description: t('settings.fidelity.auto_full'),
-      icon: (
-        <Box className="text-phase-primary">
-          <Sparkles size={24} />
-        </Box>
-      ),
-      isSelected: fidelityLevel === 'auto',
-    },
-    {
-      id: 'low',
-      label: t('settings.fidelity.low'),
-      description: t('settings.fidelity.low_full'),
-      icon: (
-        <Box className="text-phase-secondary">
-          <Smartphone size={24} />
-        </Box>
-      ),
-      isSelected: fidelityLevel === 'low',
-    },
-    {
-      id: 'high',
-      label: t('settings.fidelity.high'),
-      description: t('settings.fidelity.high_full'),
-      icon: (
-        <Box className="text-phase-secondary">
-          <Sparkles size={24} />
-        </Box>
-      ),
-      isSelected: fidelityLevel === 'high',
-    },
-  ], [fidelityLevel, t]);
+  const fidelityOptions = useMemo(
+    () => [
+      {
+        id: 'auto',
+        label: t('settings.fidelity.auto'),
+        description: t('settings.fidelity.auto_full'),
+        icon: (
+          <Box className="text-phase-primary">
+            <Sparkles size={24} />
+          </Box>
+        ),
+        isSelected: fidelityLevel === 'auto',
+      },
+      {
+        id: 'low',
+        label: t('settings.fidelity.low'),
+        description: t('settings.fidelity.low_full'),
+        icon: (
+          <Box className="text-phase-secondary">
+            <Smartphone size={24} />
+          </Box>
+        ),
+        isSelected: fidelityLevel === 'low',
+      },
+      {
+        id: 'high',
+        label: t('settings.fidelity.high'),
+        description: t('settings.fidelity.high_full'),
+        icon: (
+          <Box className="text-phase-secondary">
+            <Sparkles size={24} />
+          </Box>
+        ),
+        isSelected: fidelityLevel === 'high',
+      },
+    ],
+    [fidelityLevel, t],
+  );
 
-  const languageOptions = useMemo(() => [
-    {
-      id: 'en',
-      label: 'English',
-      description: 'Change the app language to English',
-      icon: (
-        <Box className="text-blue-500">
-          <Globe size={24} />
-        </Box>
-      ),
-      isSelected: language === 'en',
-    },
-    {
-      id: 'si',
-      label: 'සිංහල',
-      description: 'යෙදුමේ භාෂාව සිංහලට වෙනස් කරන්න',
-      icon: (
-        <Box className="text-amber-500">
-          <Globe size={24} />
-        </Box>
-      ),
-      isSelected: language === 'si',
-    },
-    {
-      id: 'ta',
-      label: 'தமிழ்',
-      description: 'පයன்பාට්‍ටින් මොළියෛ තමිළුක්කු මාට්‍රවුම්',
-      icon: (
-        <Box className="text-orange-500">
-          <Globe size={24} />
-        </Box>
-      ),
-      isSelected: language === 'ta',
-    },
-  ], [language]);
+  const languageOptions = useMemo(
+    () => [
+      {
+        id: 'en',
+        label: 'English',
+        description: 'Change the app language to English',
+        icon: (
+          <Box className="text-blue-500">
+            <Globe size={24} />
+          </Box>
+        ),
+        isSelected: language === 'en',
+      },
+      {
+        id: 'si',
+        label: 'සිංහල',
+        description: 'යෙදුමේ භාෂාව සිංහලට වෙනස් කරන්න',
+        icon: (
+          <Box className="text-amber-500">
+            <Globe size={24} />
+          </Box>
+        ),
+        isSelected: language === 'si',
+      },
+      {
+        id: 'ta',
+        label: 'தமிழ்',
+        description: 'පයன்பාට්‍ටින් මොළියෛ තමිළුක්කු මාට්‍රවුම්',
+        icon: (
+          <Box className="text-orange-500">
+            <Globe size={24} />
+          </Box>
+        ),
+        isSelected: language === 'ta',
+      },
+    ],
+    [language],
+  );
 
   const trackColor = useMemo(() => ({ false: '#4B5563', true: accent.action }), [accent.action]);
 
@@ -411,9 +438,7 @@ const AppSettingsScreen = memo(function AppSettingsScreen({ navigation }: any) {
                 <Text className="text-base font-semibold text-phase-primary">
                   {profileVisibilityTitle}
                 </Text>
-                <Text className="text-sm text-phase-secondary">
-                  {profileVisibilityDesc}
-                </Text>
+                <Text className="text-sm text-phase-secondary">{profileVisibilityDesc}</Text>
               </VStack>
             </HStack>
             <Switch

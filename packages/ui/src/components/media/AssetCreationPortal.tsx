@@ -52,9 +52,18 @@ export function AssetCreationModal({
     tags: '',
   });
 
-  const handleSetTitle = useCallback((t: string) => dispatch({ type: 'SET_FIELD', field: 'title', value: t }), []);
-  const handleSetUrl = useCallback((u: string) => dispatch({ type: 'SET_FIELD', field: 'url', value: u }), []);
-  const handleSetDescription = useCallback((d: string) => dispatch({ type: 'SET_FIELD', field: 'description', value: d }), []);
+  const handleSetTitle = useCallback(
+    (t: string) => dispatch({ type: 'SET_FIELD', field: 'title', value: t }),
+    [],
+  );
+  const handleSetUrl = useCallback(
+    (u: string) => dispatch({ type: 'SET_FIELD', field: 'url', value: u }),
+    [],
+  );
+  const handleSetDescription = useCallback(
+    (d: string) => dispatch({ type: 'SET_FIELD', field: 'description', value: d }),
+    [],
+  );
 
   const handleAdd = useCallback(() => {
     if (!formData.title || !formData.url) return;
@@ -156,7 +165,10 @@ export function CollectionCreationModal({
   const { name, description, loading } = state;
 
   const handleSetName = useCallback((val: string) => dispatch({ type: 'SET_NAME', name: val }), []);
-  const handleSetDescription = useCallback((val: string) => dispatch({ type: 'SET_DESCRIPTION', description: val }), []);
+  const handleSetDescription = useCallback(
+    (val: string) => dispatch({ type: 'SET_DESCRIPTION', description: val }),
+    [],
+  );
 
   const handleComplete = useCallback(async () => {
     if (!name.trim()) return;
