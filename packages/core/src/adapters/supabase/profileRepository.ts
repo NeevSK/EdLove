@@ -502,7 +502,7 @@ export const createSupabaseProfileRepository = (): ProfileRepository => ({
         .gte('created_at', previousStart)
         .lte('created_at', previousEnd),
       __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
-        .from('library_items')
+        .from('nodes')
         .select('id', { count: 'exact', head: true })
         .eq('school_id', schoolId)
         .gte('created_at', periodStart)

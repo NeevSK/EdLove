@@ -24,7 +24,7 @@ serve(async (req) => {
 
     // 2. Insert into live resources
     const { data: resource, error: resourceError } = await supabase
-      .from('library_resources')
+      .from('nodes')
       .insert({
         title: staging.title,
         description: staging.description,

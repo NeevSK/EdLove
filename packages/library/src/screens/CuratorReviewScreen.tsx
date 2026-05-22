@@ -93,7 +93,7 @@ export default function CuratorReviewScreen() {
   const fetchBroken = useCallback(async () => {
     dispatch({ type: 'START_LOADING' });
     const { data, error } = await supabase
-      .from('library_resources')
+      .from('nodes')
       .select('*')
       .or('link_status.eq.broken,fail_count.gt.0')
       .order('fail_count', { ascending: false });
@@ -136,7 +136,7 @@ export default function CuratorReviewScreen() {
 
   const handleDeleteResource = useCallback(
     async (id: string) => {
-      const { error } = await supabase.from('library_resources').delete().eq('id', id);
+      const { error } = await supabase.from('nodes').delete().eq('id', id);
       if (!error) {
         showToast('Resource removed.', 'success');
         fetchBroken();

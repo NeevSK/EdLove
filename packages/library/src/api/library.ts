@@ -99,8 +99,8 @@ const rawLibraryAPI = {
   async getResources(filters: ResourceFilters = {}): Promise<LibraryResource[]> {
     let query = supabase.from('nodes').select(`
                 *,
-                creator: users!library_items_uploader_id_fkey(full_name),
-                verified_by_user: users!library_resources_verified_by_fkey(full_name)
+                creator: users!nodes_creator_id_fkey(full_name),
+                verified_by_user: users!nodes_verified_by_fkey(full_name)
       `);
     // Apply filters
     if (filters.type) query = query.eq('type', filters.type);
@@ -224,8 +224,8 @@ const rawLibraryAPI = {
         .from('nodes')
         .select(`
                     *,
-                    creator: users!library_resources_creator_id_fkey(full_name),
-                    verified_by_user: users!library_resources_verified_by_fkey(full_name)
+                    creator: users!nodes_creator_id_fkey(full_name),
+                    verified_by_user: users!nodes_verified_by_fkey(full_name)
                 `)
         .in('id', ids);
       if (error) throw error;
@@ -282,8 +282,8 @@ const rawLibraryAPI = {
       .from('nodes')
       .select(`
                 *,
-                creator: users!library_items_uploader_id_fkey(full_name),
-                verified_by_user: users!library_resources_verified_by_fkey(full_name)
+                creator: users!nodes_creator_id_fkey(full_name),
+                verified_by_user: users!nodes_verified_by_fkey(full_name)
       `)
       .eq('id', id)
       .single();
@@ -375,8 +375,8 @@ const rawLibraryAPI = {
       .eq('id', id)
       .select(`
         *,
-        creator: users!library_resources_creator_id_fkey(full_name),
-          verified_by_user: users!library_resources_verified_by_fkey(full_name)
+        creator: users!nodes_creator_id_fkey(full_name),
+          verified_by_user: users!nodes_verified_by_fkey(full_name)
             `)
       .single();
     if (error) {
@@ -564,8 +564,8 @@ const rawLibraryAPI = {
       .eq('id', resourceId)
       .select(`
             *,
-            creator: users!library_resources_creator_id_fkey(full_name),
-              verified_by_user: users!library_resources_verified_by_fkey(full_name)
+            creator: users!nodes_creator_id_fkey(full_name),
+              verified_by_user: users!nodes_verified_by_fkey(full_name)
                 `)
       .single();
     if (error) {
@@ -589,7 +589,7 @@ const rawLibraryAPI = {
       .select(`
 resource: nodes!resource_engagements_resource_id_fkey(
           *,
-  creator: users!library_resources_creator_id_fkey(full_name)
+  creator: users!nodes_creator_id_fkey(full_name)
 )
   `)
       .eq('user_id', userId)
