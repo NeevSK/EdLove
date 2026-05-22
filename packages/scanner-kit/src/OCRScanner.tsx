@@ -309,9 +309,9 @@ export default function OCRScanner({
             )}
 
             <View style={{ gap: 8 }}>
-              {parsedStudents.map((student, index) => (
+              {parsedStudents.map((student) => (
                 <View
-                  key={index}
+                  key={`${student.index_number}-${student.name}`}
                   style={{
                     backgroundColor: colors.tertiary,
                     padding: 16,

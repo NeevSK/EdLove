@@ -110,7 +110,7 @@ export default function AIAssistantScreen() {
           The AI assistant is personalised to your role, school, and learning orientation. Sign in
           to begin.
         </p>
-        <button className="premium-button" onClick={() => navigation.navigate('Auth')}>
+        <button type="button" className="premium-button" onClick={() => navigation.navigate('Auth')}>
           Sign In
         </button>
       </div>
@@ -166,6 +166,7 @@ export default function AIAssistantScreen() {
               {activeGaps.map((gap) => (
                 <button
                   key={gap.id}
+                  type="button"
                   onClick={() => handleGapPrompt(gap)}
                   style={{
                     background:
@@ -205,6 +206,7 @@ export default function AIAssistantScreen() {
           }}
         >
           <button
+            type="button"
             onClick={clearHistory}
             style={{
               background: 'none',
@@ -244,6 +246,7 @@ export default function AIAssistantScreen() {
           }}
         >
           <button
+            type="button"
             onClick={() => navigation.goBack()}
             style={{
               background: 'none',
@@ -455,6 +458,7 @@ export default function AIAssistantScreen() {
             }}
           />
           <button
+            type="button"
             onClick={handleSend}
             disabled={!draft.trim() || isThinking}
             style={{

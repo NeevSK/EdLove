@@ -1,4 +1,3 @@
-// biome-ignore-start lint/suspicious/noExplicitAny: shims intentionally use explicit any
 // This is an empty type definition file to satisfy legacy peer dependencies.
 // React Native 0.83+ provides its own types.
 //
@@ -92,5 +91,3 @@ declare module 'expo-background-task' {
 }
 
 export {};
-
-// biome-ignore-end lint/suspicious/noExplicitAny

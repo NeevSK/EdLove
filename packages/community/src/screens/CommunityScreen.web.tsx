@@ -8,7 +8,7 @@ import type { CommunityStackParamList } from '@repo/core/types';
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
 import { SanctuaryFlashList } from '@repo/ui/components/SanctuaryFlashList';
 import { WebScreenHeader } from '@repo/ui/components/WebScreenHeader.web';
-import { Bell, Compass, Info, Plus, Shield, Users2 } from '@repo/ui/icons';
+import { Bell, Compass, Info, Plus, Shield, Users } from '@repo/ui/icons';
 import { Box, Heading, Icon, Spinner, Text, VStack } from '@repo/ui/primitives';
 import { useCallback, useEffect, useMemo, useReducer } from 'react';
 import { CommentSheet } from '../components/CommentSheet';
@@ -359,6 +359,7 @@ export default function CommunityScreenWeb() {
         {visibleGroups.map((group) => (
           <button
             key={group.id}
+            type="button"
             className="community-circle-card"
             onClick={() => handleOpenGroup(group.id, group.name)}
           >
@@ -404,6 +405,7 @@ export default function CommunityScreenWeb() {
         {conversations.map((conversation) => (
           <button
             key={conversation.id}
+            type="button"
             className="community-message-row"
             onClick={() => {
               navigation.navigate('DirectMessage', {
@@ -485,6 +487,7 @@ export default function CommunityScreenWeb() {
           actions={
             <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
               <button
+                type="button"
                 className="premium-button"
                 onClick={() =>
                   canCreatePost
@@ -496,6 +499,7 @@ export default function CommunityScreenWeb() {
                 New Post
               </button>
               <button
+                type="button"
                 className="secondary-button"
                 onClick={() =>
                   canCreateGroup
@@ -503,10 +507,10 @@ export default function CommunityScreenWeb() {
                     : openAuthFlow()
                 }
               >
-                <Users2 size={15} />
+                <Users size={15} />
                 New Group
               </button>
-              <button className="secondary-button" aria-label="Notifications">
+              <button type="button" className="secondary-button" aria-label="Notifications">
                 <Bell size={15} />
                 {unreadCount > 0 ? `${unreadCount}` : '0'}
               </button>
@@ -524,6 +528,7 @@ export default function CommunityScreenWeb() {
                 {modeOptions.map((mode) => (
                   <button
                     key={mode.key}
+                    type="button"
                     className={`community-mode-button ${activeMode === mode.key ? 'active' : ''}`}
                     onClick={() => dispatch({ type: 'SET_MODE', mode: mode.key })}
                   >
@@ -543,6 +548,7 @@ export default function CommunityScreenWeb() {
                   .map((group) => (
                     <button
                       key={group.id}
+                      type="button"
                       className={`community-chip ${selectedFilter === group.id ? 'active' : ''}`}
                       onClick={() => {
                         if (canReadFeed) {
@@ -575,6 +581,7 @@ export default function CommunityScreenWeb() {
                 {quickPaths.map((path) => (
                   <button
                     key={path.key}
+                    type="button"
                     className="community-quick-path"
                     onClick={() =>
                       dispatch({
@@ -627,6 +634,7 @@ export default function CommunityScreenWeb() {
                 {modeOptions.map((mode) => (
                   <button
                     key={mode.key}
+                    type="button"
                     className={`community-inline-chip ${activeMode === mode.key ? 'active' : ''}`}
                     onClick={() => dispatch({ type: 'SET_MODE', mode: mode.key })}
                   >

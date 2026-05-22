@@ -106,11 +106,11 @@ export default function TeacherAdminWidget({ onAction }: TeacherAdminWidgetProps
         </Text>
       </HStack>
       <VStack className="gap-2">
-        {rows.map((row, rowIndex) => (
-          <HStack key={rowIndex} className="gap-2">
-            {row.map((action, actionIndex) => (
+        {rows.map((row) => (
+          <HStack key={row.map((action) => action.label).join('|')} className="gap-2">
+            {row.map((action) => (
               <AdminAction
-                key={actionIndex}
+                key={action.label}
                 icon={action.icon}
                 label={action.label}
                 variant={action.variant}

@@ -24,7 +24,7 @@ import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { Box, Heading, Spinner, Text, VStack } from '@repo/ui/primitives';
 import { hapticError, hapticSuccess } from '@repo/ui/utils/haptics';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 type QRHandlerRouteParams = {
@@ -40,7 +40,7 @@ export default function QRHandlerScreen() {
 
   const payload = route.params?.payload;
 
-  const executeAction = async (p: QRPayload) => {
+  const executeAction = useCallback(async (p: QRPayload) => {
     try {
       const myId = await identityAPI.getMyInternalId();
       if (!myId) {
@@ -87,7 +87,7 @@ export default function QRHandlerScreen() {
       setMessage(t('qrHandler.somethingWrong'));
       setTimeout(() => navigation.goBack(), 2500);
     }
-  };
+  }, [navigation, t]);
 
   useEffect(() => {
     if (!payload) {

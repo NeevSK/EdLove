@@ -144,7 +144,7 @@ async function generate() {
   console.log(`\u2705 SQL Seeds generated in ${OUTPUT_DIR}`);
 }
 
-function escape(str: string): string {
+function escapeSql(str: string): string {
   if (!str) return '';
   return str.replace(/'/g, "''");
 }

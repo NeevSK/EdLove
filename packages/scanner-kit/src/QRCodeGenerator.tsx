@@ -40,9 +40,8 @@ export default function QRCodeGenerator({
   borderRadius = 12,
   padding = 12,
 }: QRCodeGeneratorProps) {
-  if (!value) return null;
-
   const matrix = useMemo(() => {
+    if (!value) return null;
     try {
       const qr = QRCode.create(value, { errorCorrectionLevel });
       return qr.modules;

@@ -42,7 +42,9 @@ export class ThemeSwitcher {
       },
     );
 
-    sections.forEach((section) => observer.observe(section));
+    sections.forEach((section) => {
+      observer.observe(section);
+    });
   }
 }
 

@@ -3,39 +3,39 @@
   "version": "1.0.0",
   "description": "Headless offline-first form builder state engine",
   "type": "module",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./src/index.ts",
+  "module": "./src/index.ts",
+  "types": "./src/index.ts",
   "exports": {
     "./core": {
-      "types": "./dist/core/index.d.ts",
-      "import": "./dist/core/index.js",
-      "require": "./dist/core/index.cjs"
+      "types": "./src/core/index.ts",
+      "import": "./src/core/index.ts",
+      "require": "./src/core/index.ts"
     },
     "./ports": {
-      "types": "./dist/ports/index.d.ts",
-      "import": "./dist/ports/index.js",
-      "require": "./dist/ports/index.cjs"
+      "types": "./src/ports/index.ts",
+      "import": "./src/ports/index.ts",
+      "require": "./src/ports/index.ts"
     },
     "./schema": {
-      "types": "./dist/schema/index.d.ts",
-      "import": "./dist/schema/index.js",
-      "require": "./dist/schema/index.cjs"
+      "types": "./src/schema/index.ts",
+      "import": "./src/schema/index.ts",
+      "require": "./src/schema/index.ts"
     },
     "./validation": {
-      "types": "./dist/validation/index.d.ts",
-      "import": "./dist/validation/index.js",
-      "require": "./dist/validation/index.cjs"
+      "types": "./src/validation/index.ts",
+      "import": "./src/validation/index.ts",
+      "require": "./src/validation/index.ts"
     },
     "./hydration": {
-      "types": "./dist/hydration/index.d.ts",
-      "import": "./dist/hydration/index.js",
-      "require": "./dist/hydration/index.cjs"
+      "types": "./src/hydration/index.ts",
+      "import": "./src/hydration/index.ts",
+      "require": "./src/hydration/index.ts"
     },
     "./analytics": {
-      "types": "./dist/analytics/index.d.ts",
-      "import": "./dist/analytics/index.js",
-      "require": "./dist/analytics/index.cjs"
+      "types": "./src/analytics/index.ts",
+      "import": "./src/analytics/index.ts",
+      "require": "./src/analytics/index.ts"
     },
     "./package.json": "./package.json"
   },
