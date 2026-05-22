@@ -1,4 +1,4 @@
-import { useBanyanGrowth, useJourneyHistory } from '@repo/core/hooks';
+import { useBanyanGrowth } from '@repo/core/hooks';
 import { usePermissions, useStore } from '@repo/core/logic';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { VStack } from '@repo/ui/primitives';

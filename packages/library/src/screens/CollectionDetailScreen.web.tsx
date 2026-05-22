@@ -87,7 +87,7 @@ export default function CollectionDetailScreenWeb() {
     ).catch((err: any) => console.error("Couldn't show external link options", err));
   }, []);
 
-  const getYoutubeThumbnail = (url?: string) => {
+  const _getYoutubeThumbnail = (url?: string) => {
     if (!url) return undefined;
     const match = url.match(
       /(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&?]{11})/,

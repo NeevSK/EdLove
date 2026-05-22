@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { StyleSheet, type ViewStyle } from 'react-native';
 import Reanimated, {
   useAnimatedStyle,

@@ -11,7 +11,7 @@ const profileAuthority = (
 
 // --- Sovereign Schemas (Zod v4 functional API) ---
 
-const SocialLinkSchema = z.strictObject({
+const _SocialLinkSchema = z.strictObject({
   id: z.uuid(),
   user_id: z.uuid(),
   platform: z.string(),
@@ -50,7 +50,7 @@ const JourneySnapshotSchema = z.strictObject({
   whispered_moments: z.array(WhisperedMomentSchema),
 });
 
-const JourneyEventSchema = z.strictObject({
+const _JourneyEventSchema = z.strictObject({
   id: z.uuid(),
   timestamp: z.iso.datetime(),
   source: z.enum(['reward', 'growth', 'moment']),
@@ -60,7 +60,7 @@ const JourneyEventSchema = z.strictObject({
   snapshot: z.record(z.string(), z.any()).optional(),
 });
 
-const ProfileHistoryEntrySchema = z.strictObject({
+const _ProfileHistoryEntrySchema = z.strictObject({
   id: z.uuid(),
   operation: z.enum(['insert', 'update', 'delete']),
   recorded_at: z.iso.datetime(),
@@ -68,7 +68,7 @@ const ProfileHistoryEntrySchema = z.strictObject({
   snapshot: z.record(z.string(), z.any()),
 });
 
-const CommunityProfileSchema = z.strictObject({
+const _CommunityProfileSchema = z.strictObject({
   id: z.uuid(),
   name: z.string(),
   description: z.string().nullable().optional(),

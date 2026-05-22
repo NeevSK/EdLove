@@ -42,7 +42,7 @@ export function useSchoolProfile(schoolId: string) {
 
   // ✅ 2026 Sovereign Pattern: Ability-based gate (Union of Identity)
   // This allows editing if the user has the power at THIS school, regardless of active focus.
-  const isEditable = useMemo(() => can('manage', 'School'), [can, schoolId]);
+  const isEditable = useMemo(() => can('manage', 'School'), [can]);
   const addToQueue = useMutationQueue((state) => state.addToQueue);
 
   const fetchSchool = useCallback(async () => {

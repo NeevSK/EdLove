@@ -11,7 +11,7 @@ const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
 
 export const classroomsAPI = {
   async getByTeacher(teacher_id: string, params: { limit?: number; offset?: number } = {}) {
-    const res = await client.api.educational.classrooms['by-teacher'].$get({
+    const res = await (client.api as any).educational.classrooms['by-teacher'].$get({
       query: {
         teacher_id,
         limit: params.limit?.toString(),
@@ -27,7 +27,7 @@ export const classroomsAPI = {
   },
 
   async getByStudent(student_id: string) {
-    const res = await client.api.educational.classrooms['by-student'].$get({
+    const res = await (client.api as any).educational.classrooms['by-student'].$get({
       query: { student_id },
     });
 
@@ -39,7 +39,7 @@ export const classroomsAPI = {
   },
 
   async getTeacherStats(id: string) {
-    const res = await client.api.educational.classrooms.stats.teacher[':id'].$get({
+    const res = await (client.api as any).educational.classrooms.stats.teacher[':id'].$get({
       param: { id },
     });
 
@@ -51,7 +51,7 @@ export const classroomsAPI = {
   },
 
   async getById(id: string) {
-    const res = await client.api.educational.classrooms[':id'].$get({
+    const res = await (client.api as any).educational.classrooms[':id'].$get({
       param: { id },
     });
 

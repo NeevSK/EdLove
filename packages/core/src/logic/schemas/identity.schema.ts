@@ -56,8 +56,8 @@ const normalizePerspectiveInput = (value: unknown) => {
 
   return {
     ...input,
-    activeBond: input['activeBond'] ?? null,
-    availableBonds: input['availableBonds'] ?? [],
+    activeBond: input.activeBond ?? null,
+    availableBonds: input.availableBonds ?? [],
   };
 };
 

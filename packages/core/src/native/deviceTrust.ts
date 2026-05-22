@@ -1,5 +1,5 @@
 import { v7 as uuidv7 } from 'uuid';
-import { identityAPI } from '../api/identity';
+import { type ActiveCitizen, identityAPI } from '../api/identity';
 import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../api/supabase';
 import { coreRuntime } from '../logic/runtimeRegistry';
 import { APIError } from '../types/API';
@@ -92,7 +92,7 @@ async function rpcSingle<T>(fn: string, params: Record<string, unknown>) {
 
 async function requireAccountId(accountId?: string) {
   const identity = await identityAPI.identifyActiveCitizen();
-  const resolved = accountId ?? identity?.id;
+  const resolved = accountId ?? (identity as ActiveCitizen | null)?.id;
   if (!resolved) {
     throw new APIError('No authenticated account is available for device trust operations.');
   }

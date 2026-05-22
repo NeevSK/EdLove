@@ -29,6 +29,8 @@ export default function CreatePostModal({
   const { flags } = usePermissions();
   const { state, actions } = useComposerLogic(groupId, onClose);
 
+  if (!isOpen) return null;
+
   return (
     <ContentComposer
       isOpen={isOpen}

@@ -3,7 +3,6 @@ import {
   CommunityGroupSchema,
   CommunityPostSchema,
   GroupMemberSchema,
-  GroupMessageSchema,
 } from '../logic/schemas/community.schema';
 import type { SovereignContract } from './contract';
 

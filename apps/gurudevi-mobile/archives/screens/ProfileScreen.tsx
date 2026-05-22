@@ -1,7 +1,7 @@
 import { useNavigation } from '@react-navigation/native';
 import { useAccountDeletion, useTracking } from '@repo/core/hooks';
 import { usePermissions, useStore } from '@repo/core/logic';
-import { GlobalHeader, IdentityCard, LogoutModal, ScreenWrapper } from '@repo/ui';
+import { GlobalHeader, IdentityCard, ScreenWrapper } from '@repo/ui';
 import { SanctuaryProgressBar, useBottomTabPadding } from '@repo/ui/components';
 import { useThemedColors } from '@repo/ui/hooks';
 import {
@@ -21,10 +21,8 @@ import {
   Heart,
   HelpCircle,
   Info,
-  LogOut,
   MessageSquare,
   Settings,
-  Trash2,
   UserPlus,
 } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
@@ -57,7 +55,7 @@ import { useProfileCompletion } from '../hooks/useProfileCompletion';
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const CARD_WIDTH = Math.min(SCREEN_WIDTH, 600) - Theme.spacing.xl;
 // --- Internal Sub-Components ---
-const IdentitySection = ({
+const _IdentitySection = ({
   profile,
   navigation,
   colors,
@@ -133,7 +131,7 @@ const IdentitySection = ({
     </Center>
   );
 };
-const StatsSection = ({ profile, role }: any) => {
+const _StatsSection = ({ profile, role }: any) => {
   if (!profile?.id) {
     return null;
   }
@@ -557,7 +555,7 @@ onPress={() => navigation.navigate('AppSettings')}/>
 {
   t;
 }
-/;;;;;>;
+/;;;;;;;;;>;
 }
 colors =
 {
@@ -576,7 +574,7 @@ cardWidth={cardWidth} />
 {
   t;
 }
-/;;;;;>;
+/;;;;;;;;;>;
 }
 colors =
 {
@@ -595,14 +593,14 @@ cardWidth={cardWidth} />
 {
   width;
 }
-/ :;;;;;>Wacddhirt;
+/ :;;;;;;;;;>Wacddhirt;
 }
 >
                                     <AccountActions t=
 {
   t;
 }
-/;;;;;>;
+/;;;;;;;;;>;
 }
 colors =
 {
@@ -631,7 +629,7 @@ Animated.View > <Animated.View entering=
         borderWidth: 1,
         borderColor: colors.border,
 }
-/;;>;
+/;;;;;;>;
 ),
   (
     <TouchableOpacity

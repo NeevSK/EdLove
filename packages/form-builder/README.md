@@ -1,25 +1,20 @@
 # @repo/form-builder
 
-## Purpose
-`@repo/form-builder` owns form construction and form rendering experiences that are shared across domains.
+This package is an internal Gurudevi feature host, not the publishable artifact.
 
-## Owns
-- builder components and form-rendering primitives
-- public-form and builder-specific package screens
-- package-local web/native form variants where the browser experience differs
+The publishable, sovereign boundary is `@intuitui-labs/form-builder-engine`.
 
-## Does Not Own
-- institutional governance logic around who can access a form
-- app-level route registration
-- unrelated classroom or admin orchestration
+## Role
+- app-facing builder and renderer compositions
+- Gurudevi-specific screens and route integrations
+- UI wiring that consumes the engine and repo-local design system packages
 
-## Collaborates With
-- `@repo/core` for hydrated form data and API access
-- `@repo/ui` for shared sanctuary presentation
-- `@repo/scanner-kit` when forms use scan inputs
+## Not the public contract
+- storage adapters
+- validation state model
+- schema runtime
+- form hydration logic
+- analytics primitives
 
-## Web Placement
-Builder and public-form `*.web.tsx` files belong here because they are feature-level web experiences, not app shell concerns.
-
-## App Adapter Rule
-The app may keep thin route adapters for form routes, but form UI composition and submission flow should live here.
+## Rule
+If code needs to be reused outside this monorepo, it belongs in `packages/form-builder-engine` or in a separate adapter package.

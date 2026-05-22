@@ -119,7 +119,7 @@ export default function ContentLibrary() {
   const getResourceConfig = (type: string) => {
     return (
       RESOURCE_TYPE_CONFIG[type] ||
-      RESOURCE_TYPE_CONFIG['note'] || {
+      RESOURCE_TYPE_CONFIG.note || {
         icon: FileText,
         iconClass: 'text-ink',
         label: type,
@@ -130,7 +130,7 @@ export default function ContentLibrary() {
   // Mutations
   const togglePinMutation = useSafeMutation(
     (variables: { id: string; is_pinned: boolean }) =>
-      api['resources'].togglePin(variables.id, variables.is_pinned),
+      api.resources.togglePin(variables.id, variables.is_pinned),
     {
       onMutate: ({ id, is_pinned }) => {
         setResources((prev) => prev.map((r) => (r.id === id ? { ...r, is_pinned } : r)));
@@ -139,7 +139,7 @@ export default function ContentLibrary() {
     },
   );
 
-  const deleteMutation = useSafeMutation((id: string) => api['resources'].delete(id), {
+  const deleteMutation = useSafeMutation((id: string) => api.resources.delete(id), {
     onMutate: (id) => {
       setResources((prev) => prev.filter((r) => r.id !== id));
     },
@@ -149,7 +149,7 @@ export default function ContentLibrary() {
     },
   });
 
-  const addMutation = useSafeMutation((variables: any) => api['resources'].create(variables), {
+  const addMutation = useSafeMutation((variables: any) => api.resources.create(variables), {
     onSuccess: (newResource: any) => {
       hapticSuccess();
       if (newResource) {

@@ -1,5 +1,33 @@
 export type WorkspaceZoneId = 'today' | 'work' | 'institution' | 'outlook' | 'private';
 
+export type WorkspaceSwitcherTargetId =
+  | 'founder'
+  | 'admin'
+  | 'principal'
+  | 'teacher'
+  | 'student'
+  | 'guardian';
+
+export type WorkspaceSwitcherDestination =
+  | {
+      kind: 'route';
+      name: string;
+    }
+  | {
+      kind: 'tab';
+      name: string;
+    };
+
+export interface WorkspaceSwitcherTarget {
+  id: WorkspaceSwitcherTargetId;
+  title: string;
+  description: string;
+  destination: WorkspaceSwitcherDestination | null;
+  enabled: boolean;
+  status: 'current' | 'available' | 'bridge' | 'coming_soon';
+  reason?: string;
+}
+
 export type WorkspaceRendererPlatform = 'mobile' | 'tablet' | 'web';
 
 export type WorkspaceRuntimePlatform = 'android' | 'ios' | 'web';

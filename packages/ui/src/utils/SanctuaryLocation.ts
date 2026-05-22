@@ -1,20 +1,65 @@
 import { coreRuntime } from '@repo/core/logic';
 
+export type LocationPermissionResponse = {
+  status: 'granted' | 'denied';
+};
+
+export type LocationWatchOptions = {
+  accuracy?: number;
+  timeInterval?: number;
+};
+
 /**
  * SanctuaryLocation (Native)
  * Wraps coreRuntime.location for cross-platform safety.
  */
 export const SanctuaryLocation = {
-  requestPermissionsAsync: async () => {
-    return await coreRuntime.location.requestPermissionsAsync();
+  requestPermissionsAsync: async (): Promise<LocationPermissionResponse> => {
+    try {
+      const result = await coreRuntime.location.requestPermissionsAsync();
+      return {
+        status: result.status === 'granted' ? 'granted' : 'denied',
+      };
+    } catch {
+      return { status: 'denied' } as LocationPermissionResponse;
+    }
   },
-  watchPositionAsync: async (options: any, callback: any) => {
-    return await coreRuntime.location.watchPositionAsync(options, callback);
+  watchPositionAsync: async (
+    options: LocationWatchOptions,
+    callback: (location: LocationObject) => void,
+  ) => {
+    try {
+      return await coreRuntime.location.watchPositionAsync(options, callback);
+    } catch {
+      return { remove: () => {} };
+    }
   },
-  Accuracy: coreRuntime.location.Accuracy,
+  get Accuracy() {
+    try {
+      return coreRuntime.location.Accuracy;
+    } catch {
+      return {
+        Lowest: 1,
+        Low: 2,
+        Balanced: 3,
+        High: 4,
+        Highest: 5,
+        BestForNavigation: 6,
+      };
+    }
+  },
 };
 
-// Types can be locally defined or shared in @repo/core/types if needed
-// For now, we'll use 'any' or basic interfaces if we don't want to export them from Location.
 export type LocationSubscription = { remove: () => void };
-export type LocationObject = any;
+export type LocationObject = {
+  coords: {
+    latitude: number;
+    longitude: number;
+    altitude: number | null;
+    accuracy: number | null;
+    altitudeAccuracy: number | null;
+    heading: number | null;
+    speed: number | null;
+  };
+  timestamp: number;
+};

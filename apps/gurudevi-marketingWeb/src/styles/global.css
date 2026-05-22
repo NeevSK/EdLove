@@ -3,17 +3,17 @@
 @theme {
   /* Sanctuary Core Tokens (Web) */
   --color-void-indigo: #0f0f1e;
-  --color-cream-silence: #FFF8E7;
-  --color-temple-stone: #F5F1E8;
-  --color-sanctuary-saffron: #E67E22;
-  --color-temple-gold: #F39C12;
-  --color-ember-red: #FF6347;
-  --color-sage-green: #8FBC8F;
-  --color-teal-water: #5F9EA0;
-  --color-peacock-blue: #1E88A8;
-  --color-mud-brown: #5D4E37;
-  --color-sacred-white: #FFF8F0;
-  --color-charcoal-truth: #2C3E50;
+  --color-cream-silence: #fff8e7;
+  --color-temple-stone: #f5f1e8;
+  --color-sanctuary-saffron: #e67e22;
+  --color-temple-gold: #f39c12;
+  --color-ember-red: #ff6347;
+  --color-sage-green: #8fbc8f;
+  --color-teal-water: #5f9ea0;
+  --color-peacock-blue: #1e88a8;
+  --color-mud-brown: #5d4e37;
+  --color-sacred-white: #fff8f0;
+  --color-charcoal-truth: #2c3e50;
 
   /* Premium Vellum / Saffron Architecture */
   --color-background: var(--color-cream-silence);

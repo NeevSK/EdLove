@@ -1,4 +1,4 @@
-import type { FormConfig } from '@repo/core/types';
+import type { FormConfig } from '@intuitui-labs/form-builder-engine/core';
 
 export interface ClimateSensingData {
   // Section: Material

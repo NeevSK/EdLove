@@ -1,16 +1,16 @@
 @import "tailwindcss";
 
 @theme {
-    --font-serif: "Lora", serif;
-    --font-sans: "Inter", sans-serif;
-    --font-mono: "Space Mono", monospace;
+  --font-serif: "Lora", serif;
+  --font-sans: "Inter", sans-serif;
+  --font-mono: "Space Mono", monospace;
 
-    --color-paper: #fbfaf8;
-    --color-ink: #1c1917;
-    --color-void: #020617;
-    --color-plasma: #6366f1;
-    --color-embers: #f43f5e;
-    --color-gold: #d4a574;
+  --color-paper: #fbfaf8;
+  --color-ink: #1c1917;
+  --color-void: #020617;
+  --color-plasma: #6366f1;
+  --color-embers: #f43f5e;
+  --color-gold: #d4a574;
 }
 
 @layer base {

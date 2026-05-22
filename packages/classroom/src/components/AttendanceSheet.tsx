@@ -109,7 +109,7 @@ export default function AttendanceSheet({
 
   const { mutate: recordAttendance, isLoading: isSyncing } = useSafeMutation(
     ({ studentId, status }: { studentId: string; status: AttendanceStatus }) =>
-      api['attendance'].record(classroomId, studentId, status, date),
+      api.attendance.record(classroomId, studentId, status, date),
     {
       mutationKey: 'recordAttendance',
       scope: 'attendance',

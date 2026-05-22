@@ -1,5 +1,4 @@
-import { FormManager } from '@intuitui-labs/form-builder-engine';
-import { supabase } from '@repo/core/api';
+import { FormManager } from '@intuitui-labs/form-builder-engine/core';
 
 import {
   ArrowRight,
@@ -25,6 +24,28 @@ import NativeForm from '../NativeForm';
 interface ClimateSensingWebProps {
   initialSchoolId?: string;
   initialSchoolName?: string;
+  services?: {
+    searchSchools?: (
+      query: string,
+    ) => Promise<
+      Array<{
+        id: string;
+        name: string;
+        census_id: string | null;
+      }>
+    >;
+    submitPulse?: (input: {
+      schoolId: string;
+      logs: Array<{
+        edu_school_id: string;
+        dimension: string;
+        score: number | null;
+        detailed_context: string;
+        reason_category: string;
+      }>;
+    }) => Promise<void>;
+    getPublicSchoolUrl?: (schoolId: string) => string;
+  };
 }
 
 interface SchoolRegistryItem {
@@ -36,8 +57,8 @@ interface SchoolRegistryItem {
 export const ClimateSensingScreenWeb = ({
   initialSchoolId,
   initialSchoolName,
+  services,
 }: ClimateSensingWebProps) => {
-  // School Identity State
   const [selectedSchool, setSelectedSchool] = useState<SchoolRegistryItem | null>(
     initialSchoolId
       ? {
@@ -50,14 +71,11 @@ export const ClimateSensingScreenWeb = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<SchoolRegistryItem[]>([]);
   const [isSearching, setIsSearching] = useState(false);
-
-  // Submission State
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
   const [copied, setCopied] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
-  // School Registry Search
   useEffect(() => {
     const searchSchools = async () => {
       if (searchQuery.length < 3) {
@@ -66,21 +84,25 @@ export const ClimateSensingScreenWeb = ({
       }
 
       setIsSearching(true);
-      const { data, error } = await supabase
-        .from('schools')
-        .select('id, name, census_id')
-        .ilike('name', `%${searchQuery}%`)
-        .limit(6);
 
-      if (!error && data) {
-        setSearchResults(data);
+      try {
+        if (!services?.searchSchools) {
+          throw new Error('Climate sensing host services are not configured.');
+        }
+
+        const results = await services.searchSchools(searchQuery);
+        setSearchResults(results);
+      } catch (err) {
+        console.error('Failed to search schools:', err);
+        setSearchResults([]);
+      } finally {
+        setIsSearching(false);
       }
-      setIsSearching(false);
     };
 
     const timer = setTimeout(searchSchools, 400);
     return () => clearTimeout(timer);
-  }, [searchQuery]);
+  }, [searchQuery, services]);
 
   const handleSubmit = async (values: ClimateSensingData) => {
     if (!selectedSchool) return;
@@ -88,7 +110,6 @@ export const ClimateSensingScreenWeb = ({
     setSubmitError(null);
 
     try {
-      // Normalize sections into separate pulse logs for granular analysis
       const logs = [
         {
           edu_school_id: selectedSchool.id,
@@ -134,11 +155,11 @@ export const ClimateSensingScreenWeb = ({
         },
       ];
 
-      const { error: insertError } = await supabase.from('edu_school_pulse_logs').insert(logs);
+      if (!services?.submitPulse) {
+        throw new Error('Climate sensing host services are not configured.');
+      }
 
-      if (insertError) throw insertError;
-
-      // Success Transition
+      await services.submitPulse({ schoolId: selectedSchool.id, logs });
       setIsFinished(true);
     } catch (err: any) {
       console.error('Failed to broadcast resonance pulse:', err);
@@ -153,9 +174,10 @@ export const ClimateSensingScreenWeb = ({
     [handleSubmit],
   );
 
-  // View: Success Screen
   if (isFinished && selectedSchool) {
-    const shareUrl = `https://gurudevi.edlove.org/sensing/${selectedSchool.id}`;
+    const shareUrl =
+      services?.getPublicSchoolUrl?.(selectedSchool.id) ??
+      `https://gurudevi.edlove.org/sensing/${selectedSchool.id}`;
 
     return (
       <div className="min-h-screen bg-slate-50 px-6 py-12 selection:bg-teal-100">
@@ -178,9 +200,7 @@ export const ClimateSensingScreenWeb = ({
             <button
               type="button"
               className="group flex items-center justify-center gap-3 rounded-2xl bg-teal-700 px-6 py-4 text-base font-bold text-white transition-all hover:bg-teal-800 hover:shadow-lg active:scale-[0.98]"
-              onClick={() =>
-                window.open('https://gurudevi.edlove.org/map', '_blank', 'noopener,noreferrer')
-              }
+              onClick={() => window.open('https://gurudevi.edlove.org/map', '_blank', 'noopener,noreferrer')}
             >
               <MapIcon size={20} />
               View National Map
@@ -220,7 +240,6 @@ export const ClimateSensingScreenWeb = ({
     );
   }
 
-  // View: School Selection Screen
   if (!selectedSchool) {
     return (
       <div className="min-h-screen bg-slate-50 px-6 py-12 selection:bg-teal-100">
@@ -319,12 +338,10 @@ export const ClimateSensingScreenWeb = ({
     );
   }
 
-  // View: Main Sensing Form
   return (
     <div className="min-h-screen bg-slate-50 px-6 py-12 selection:bg-teal-100">
       <div className="mx-auto w-full max-w-4xl overflow-hidden rounded-[48px] border border-slate-200 bg-white shadow-[0_32px_80px_-24px_rgba(0,0,0,0.12)]">
         <div className="relative bg-teal-800 px-8 py-12 text-white md:px-16 md:py-16">
-          {/* Background Decorative Element */}
           <div className="absolute right-0 top-0 -translate-y-1/2 translate-x-1/4 opacity-10">
             <School size={300} />
           </div>
@@ -373,10 +390,7 @@ export const ClimateSensingScreenWeb = ({
                 <p className="text-sm font-bold">{submitError}</p>
               </div>
             )}
-            <NativeForm
-              manager={manager}
-              submitLabel={isSubmitting ? 'Broadcasting...' : 'Broadcast Resonance Pulse'}
-            />
+            <NativeForm manager={manager} submitLabel={isSubmitting ? 'Broadcasting...' : 'Broadcast Resonance Pulse'} />
           </div>
 
           <div className="bg-slate-50 border-l border-slate-100 p-8 md:p-12">

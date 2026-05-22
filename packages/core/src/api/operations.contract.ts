@@ -1,10 +1,5 @@
 import { z } from 'zod';
-import {
-  AttendanceReportSchema,
-  AttendanceSchema,
-  AttendanceSnapshotSchema,
-  SchoolAttendancePulseSchema,
-} from '../logic/schemas/attendance.schema';
+import { AttendanceSchema, SchoolAttendancePulseSchema } from '../logic/schemas/attendance.schema';
 import type { SovereignContract } from './contract';
 
 const operationsAuthority = (

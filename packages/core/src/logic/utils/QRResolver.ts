@@ -74,12 +74,12 @@ export function resolveQR(raw: string): QRResolveResult {
       const queryString = trimmed.substring(queryStart + 1);
       const params = parseQueryString(queryString);
 
-      const v = parseInt(params['v'] ?? '', 10);
+      const v = parseInt(params.v ?? '', 10);
       if (Number.isNaN(v) || v !== QR_VERSION) {
         return { ok: false, error: 'version_mismatch', raw };
       }
 
-      const action = params['action'] as QRAction | undefined;
+      const action = params.action as QRAction | undefined;
       if (!action) return { ok: false, error: 'invalid', raw };
 
       return buildPayloadFromParams(action, params, raw);

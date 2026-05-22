@@ -33,7 +33,7 @@ describe('Input Component (Robustness)', () => {
 
     // Check if it has the danger border class (simulation)
     const container = getByTestId('input-container');
-    expect(container.props['className']).toContain('border-phase-danger');
+    expect(container.props.className).toContain('border-phase-danger');
   });
 
   it('disables child input when isDisabled is true', async () => {
@@ -43,7 +43,7 @@ describe('Input Component (Robustness)', () => {
       </Input>,
     );
 
-    expect(getByPlaceholderText('Enter name').props['editable']).toBe(false);
+    expect(getByPlaceholderText('Enter name').props.editable).toBe(false);
   });
 
   it('supports icons in slots', async () => {

@@ -18,7 +18,6 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
-import React from 'react';
 
 interface PrincipalOnboardingViewProps {
   onTryDemo: () => void;

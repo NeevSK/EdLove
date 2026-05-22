@@ -1,4 +1,4 @@
-import { GlobalConfig, type IGlobalConfigPort } from '../ports/globalConfig.port';
+import type { IGlobalConfigPort } from '../ports/globalConfig.port';
 
 export class GlobalConfigManager {
   constructor(private port: IGlobalConfigPort) {}

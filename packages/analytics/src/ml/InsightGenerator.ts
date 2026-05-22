@@ -62,7 +62,7 @@ export class InsightGenerator {
     }
 
     // Grade distribution insights
-    const failingStudents = analytics.gradeDistribution['F'] || 0;
+    const failingStudents = analytics.gradeDistribution.F || 0;
     const failingPercentage = (failingStudents / analytics.totalStudents) * 100;
 
     if (failingPercentage > 20) {

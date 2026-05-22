@@ -38,11 +38,11 @@ export function ClaimInviteModal({ isOpen, onClose, onSuccess }: ClaimInviteModa
     if (!inviteCode.trim()) return;
     try {
       setLoading(true);
-      const result = await api['classroomStudents'].claimStudent(inviteCode.trim());
+      const result = await api.classroomStudents.claimStudent(inviteCode.trim());
 
       // Sync school_id if the classroom belongs to a school
       if (result?.classroom_id) {
-        const classroom = await api['classrooms'].getById(result.classroom_id);
+        const classroom = await api.classrooms.getById(result.classroom_id);
 
         if (classroom?.school_id) {
           const userId = await identityAPI.getMyInternalId();

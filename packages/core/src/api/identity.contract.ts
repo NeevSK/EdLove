@@ -32,7 +32,7 @@ const userAuthority = (action: 'resolve' | 'read' | 'update') =>
 export const identityContract = {
   identifyActiveCitizen: {
     method: 'get',
-    path: '/identity/resolve',
+    path: '/identity/resolveIdentity',
     request: {},
     responses: {
       200: {

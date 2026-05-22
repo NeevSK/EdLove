@@ -2,7 +2,6 @@ import { attendanceAPI as rawAttendanceAPI } from '../attendance';
 import { assertContractCoverage, defineContractCoverage } from '../contractCoverage';
 import { inventoryAPI as rawInventoryAPI } from '../inventory';
 import { operationsContract } from '../operations.contract';
-import { createPOAProxy } from '../poaProxy';
 import { schoolAPI as rawSchoolAPI } from '../school';
 import { staffManagementAPI as _staffManagementAPI } from '../staffManagement';
 import { createTemporalPOAProxy } from '../temporalPOAProxy';

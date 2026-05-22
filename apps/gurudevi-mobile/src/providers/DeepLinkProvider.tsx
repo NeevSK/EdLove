@@ -2,6 +2,7 @@ import { coreRuntime, DeepLinkType, deepLink, useAuth } from '@repo/core/logic';
 import { useQRDeepLink } from '@repo/scanner-kit';
 import type React from 'react';
 import { type ReactNode, useEffect } from 'react';
+import { Platform } from 'react-native';
 import { navigationRef } from '../navigation/navigationRef';
 
 /**
@@ -15,8 +16,7 @@ export const DeepLinkProvider: React.FC<{ children: ReactNode }> = ({ children }
   const { session } = useAuth();
 
   useEffect(() => {
-    // Sovereign Web Guard: Early return using web-native check
-    if (coreRuntime.device.getMetadata().platform === 'web') return;
+    if (Platform.OS === 'web') return;
 
     const handleURL = async (url: string) => {
       const result = await deepLink.handleURL(url);
@@ -30,19 +30,19 @@ export const DeepLinkProvider: React.FC<{ children: ReactNode }> = ({ children }
             const nav = navigationRef as unknown as {
               navigate: (name: string, params?: object) => void;
             };
-            nav.navigate('ClassroomInvite', { code: result.params['inviteCode'] });
+            nav.navigate('ClassroomInvite', { code: result.params.inviteCode });
           }
         }
       }
     };
 
-    const subscription = coreRuntime.linking.addEventListener('url', (event) =>
-      handleURL(event.url),
-    );
+    const subscription = coreRuntime.linking.addEventListener('url', (event) => {
+      void handleURL(event.url);
+    });
 
     // Handle cold start
-    coreRuntime.linking.getInitialURL().then((url) => {
-      if (url) handleURL(url);
+    void coreRuntime.linking.getInitialURL().then((url) => {
+      if (url) void handleURL(url);
     });
 
     return () => subscription.remove();

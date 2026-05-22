@@ -4,22 +4,7 @@ import type { LessonMaterial } from '../../types/LessonMaterial';
 import type { EducationalRepository } from '../domains/educational/ports';
 import type { INotificationPort } from '../ports/notification.port';
 import type { ISessionPort } from '../ports/session.port';
-import {
-  type Assignment,
-  AssignmentSubmission,
-  type Classroom,
-  ClassroomGroup,
-  ClassroomLegacyRecord,
-  ClassroomStudent,
-  type Lesson,
-  PrincipalGovernanceRecord,
-  SchoolLegacyRecord,
-  StudentAcademicRecord,
-  StudentAssignment,
-  StudentSubmissionSummary,
-  TeacherProfessionalRecord,
-  TeacherStats,
-} from '../schemas/classroom.schema';
+import type { Assignment, Classroom, Lesson } from '../schemas/classroom.schema';
 import type { ClassroomGradingSettings } from '../schemas/grading.schema';
 import type { CommunityManager } from './CommunityManager';
 import type { GrowthManager } from './GrowthManager';
@@ -109,7 +94,7 @@ export class EducationalManager {
         void this.growth.emitSilent({
           user_id: myId,
           event_type: 'assignment_created',
-          event_metadata: { classroom_id: assignment['classroom_id'] },
+          event_metadata: { classroom_id: assignment.classroom_id },
         });
       }
       return created;

@@ -35,9 +35,9 @@ export default function ClassroomHolisticInsights({ classroomId }: ClassroomHoli
       setIsLoading(true);
       const today = new Date().toISOString().split('T')[0] ?? '';
       const [attendanceSnapshot, gradebookSnapshot, obsData] = await Promise.all([
-        api['attendance'].getClassroomAttendanceSnapshot(classroomId ?? '', today),
-        api['grading'].getGradebookSnapshot(classroomId ?? '', today),
-        api['studentObservations'].getForClassroom(classroomId ?? ''),
+        api.attendance.getClassroomAttendanceSnapshot(classroomId ?? '', today),
+        api.grading.getGradebookSnapshot(classroomId ?? '', today),
+        api.studentObservations.getForClassroom(classroomId ?? ''),
       ]);
 
       setData({

@@ -1,6 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
 import { usePermissions, useTemporalStore } from '@repo/core/logic';
-import type { TemporalScale } from '@repo/core/store';
 
 import FeatureInfoIcon from '@repo/ui/components/FeatureInfoIcon';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';

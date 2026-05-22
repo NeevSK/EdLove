@@ -1,5 +1,3 @@
-import type { Capacity } from '../../types';
-
 export interface AuthSession {
   access_token: string;
   refresh_token: string;
@@ -10,6 +8,16 @@ export interface AuthUser {
   id: string;
   email?: string;
   user_metadata?: Record<string, any>;
+}
+
+export interface AuthMfaFactor {
+  id: string;
+  friendly_name?: string;
+  factor_type: 'totp' | 'phone' | 'webauthn';
+  status: 'verified' | 'unverified';
+  created_at: string;
+  updated_at: string;
+  last_challenged_at?: string;
 }
 
 export interface IAuthPort {
@@ -32,6 +40,38 @@ export interface IAuthPort {
     redirectTo?: string;
     skipBrowserRedirect?: boolean;
   }): Promise<{ url: string | null }>;
+
+  signInWithPasskey(params?: {
+    redirectTo?: string;
+    skipBrowserRedirect?: boolean;
+  }): Promise<{ url: string | null }>;
+
+  registerPasskey(params?: {
+    redirectTo?: string;
+    skipBrowserRedirect?: boolean;
+  }): Promise<{ url: string | null }>;
+
+  listMfaFactors(): Promise<{ all: AuthMfaFactor[]; verified: AuthMfaFactor[] }>;
+
+  enrollTotp(params?: { friendlyName?: string }): Promise<{
+    factorId: string;
+    qrCode?: string | null;
+    secret?: string | null;
+    uri?: string | null;
+  }>;
+
+  challengeTotp(factorId: string): Promise<{ challengeId: string }>;
+
+  verifyTotp(params: {
+    factorId: string;
+    challengeId: string;
+    code: string;
+  }): Promise<{ user: AuthUser | null; session: AuthSession | null }>;
+
+  challengeAndVerifyTotp(params: {
+    factorId: string;
+    code: string;
+  }): Promise<{ user: AuthUser | null; session: AuthSession | null }>;
 
   setSession(
     access_token: string,

@@ -1,17 +1,14 @@
 import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../../api/supabase';
 import type { IGrowthPort } from '../../logic/ports/growth.port';
 import { APIError } from '../../types/API';
-import {
-  type Challenge,
-  type ChallengeMetric,
-  CreateRippleInput,
-  type CrystalDiscovery,
-  type ImpactRipple,
-  ManifestoVibe,
-  type PersonalCompass,
-  RippleType,
-  type SanctuaryManifesto,
-  type UserGrowthState,
+import type {
+  Challenge,
+  ChallengeMetric,
+  CrystalDiscovery,
+  ImpactRipple,
+  PersonalCompass,
+  SanctuaryManifesto,
+  UserGrowthState,
 } from '../../types/Growth';
 
 const WARM_MESSAGES: Record<string, { en: string; si: string; ta: string }> = {

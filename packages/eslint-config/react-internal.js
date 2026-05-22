@@ -7,8 +7,8 @@ import pluginJsxA11y from 'eslint-plugin-jsx-a11y';
 import pluginReact from 'eslint-plugin-react';
 import pluginReactHooks from 'eslint-plugin-react-hooks';
 import globals from 'globals';
-import tseslint from 'typescript-eslint';
 import { config as baseConfig } from './base.js';
+import tseslint from 'typescript-eslint';
 import maxUseStateRule from './rules/max-use-state.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -48,6 +48,8 @@ export const config = [
     rules: {
       // React scope no longer necessary with new JSX transform.
       'react/react-in-jsx-scope': 'off',
+      'react/no-unstable-nested-components': 'error',
+      'react/jsx-no-bind': 'error',
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'error',
       'local/max-use-state': ['error', { max: 3 }],

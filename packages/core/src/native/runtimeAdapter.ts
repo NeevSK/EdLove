@@ -43,8 +43,8 @@ export const nativeStorageProvider = {
 export const nativeDeviceProvider = {
   getMetadata(): DeviceMetadata {
     const constants = (Platform.constants ?? {}) as Record<string, unknown>;
-    const brand = typeof constants['Brand'] === 'string' ? constants['Brand'].trim() : '';
-    const model = typeof constants['Model'] === 'string' ? constants['Model'].trim() : '';
+    const brand = typeof constants.Brand === 'string' ? constants.Brand.trim() : '';
+    const model = typeof constants.Model === 'string' ? constants.Model.trim() : '';
     const parts = [brand, model].filter(Boolean);
 
     return {

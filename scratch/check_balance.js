@@ -1,11 +1,11 @@
-import fs from 'fs';
+import fs from 'node:fs';
 
 const content = fs.readFileSync('packages/library/src/screens/LibraryScreen.web.tsx', 'utf8');
 
 let braces = 0;
 let parens = 0;
 let brackets = 0;
-const angleBrackets = 0; // This is tricky because of generics and comparisons
+const _angleBrackets = 0; // This is tricky because of generics and comparisons
 
 for (let i = 0; i < content.length; i++) {
   const char = content[i];

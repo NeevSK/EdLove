@@ -89,11 +89,14 @@ function scanPackageBoundaries(pkgName) {
         const matches = source.match(deepImportPattern);
         if (matches) {
           const importPath = matches[0];
-          if (!importPath.includes(`packages/${pkgName}/src`) && !importPath.includes(`@repo/${pkgName}/src`)) {
+          if (
+            !importPath.includes(`packages/${pkgName}/src`) &&
+            !importPath.includes(`@repo/${pkgName}/src`)
+          ) {
             violations.push({
               file: relativePath,
               rule: 'No Deep Internal Imports',
-              reason: `Cross-package deep import: "${importPath}" found in [${pkgName}]. You must import from the public entry point instead.`
+              reason: `Cross-package deep import: "${importPath}" found in [${pkgName}]. You must import from the public entry point instead.`,
             });
           }
         }
@@ -102,10 +105,13 @@ function scanPackageBoundaries(pkgName) {
       // 2. Direct Supabase client call check in Presentation/Logic layers
       const hasDirectSupabase = /\bsupabase\s*\.\s*(from|channel|storage)\b/m.test(source);
       if (hasDirectSupabase) {
-        const isApiOrRepoFile = 
-          /\/api\//.test(relativePath) || 
+        const isApiOrRepoFile =
+          /\/api\//.test(relativePath) ||
           /Repository\.(ts|tsx)$/.test(relativePath) ||
-          ((pkgName === 'admin' || pkgName === 'people') && !relativePath.endsWith('.tsx') && !relativePath.includes('/components/') && !relativePath.includes('/hooks/'));
+          ((pkgName === 'admin' || pkgName === 'people') &&
+            !relativePath.endsWith('.tsx') &&
+            !relativePath.includes('/components/') &&
+            !relativePath.includes('/hooks/'));
 
         const isExempt = SUPABASE_EXEMPTIONS.has(relativePath);
 
@@ -113,7 +119,7 @@ function scanPackageBoundaries(pkgName) {
           violations.push({
             file: relativePath,
             rule: 'No Direct Supabase in UI/Hooks',
-            reason: `Direct Supabase client usage outside the approved api/repository boundary. Move direct database queries to custom hooks or repository adapters to preserve offline-first integrity.`
+            reason: `Direct Supabase client usage outside the approved api/repository boundary. Move direct database queries to custom hooks or repository adapters to preserve offline-first integrity.`,
           });
         }
       }
@@ -125,7 +131,8 @@ function scanPackageBoundaries(pkgName) {
           violations.push({
             file: relativePath,
             rule: 'Classroom coupling restriction',
-            reason: 'New classroom -> admin/workforce coupling outside the approved bridge lists. Move ownership or route through public bridges.'
+            reason:
+              'New classroom -> admin/workforce coupling outside the approved bridge lists. Move ownership or route through public bridges.',
           });
         }
       }
@@ -138,15 +145,26 @@ function scanPackageBoundaries(pkgName) {
 console.log('\n>>> Starting Monorepo Dynamic Architecture Boundary Audit <<<\n');
 
 const packagesDir = path.join(repoRoot, 'packages');
-const allPackages = fs.readdirSync(packagesDir).filter(f => fs.statSync(path.join(packagesDir, f)).isDirectory());
+const allPackages = fs
+  .readdirSync(packagesDir)
+  .filter((f) => fs.statSync(path.join(packagesDir, f)).isDirectory());
 
 for (const pkg of allPackages) {
-  if (pkg === 'core' || pkg === 'scripts' || pkg === 'eslint-config' || pkg === 'typescript-config' || pkg === 'platform-mcp') continue;
+  if (
+    pkg === 'core' ||
+    pkg === 'scripts' ||
+    pkg === 'eslint-config' ||
+    pkg === 'typescript-config' ||
+    pkg === 'platform-mcp'
+  )
+    continue;
   console.log(`Auditing boundary rules for package: [${pkg}]...`);
   scanPackageBoundaries(pkg);
 }
 
-console.log(`\nScan completed. Checked ${checkedFilesCount} source files across all active domain packages.`);
+console.log(
+  `\nScan completed. Checked ${checkedFilesCount} source files across all active domain packages.`,
+);
 
 if (violations.length > 0) {
   console.error(`\n❌ Found ${violations.length} boundary violations:\n`);

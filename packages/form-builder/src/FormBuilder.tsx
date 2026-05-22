@@ -1,12 +1,10 @@
-import {
-  type FieldDefinition,
-  FormHydrator,
-  type FormResponse,
-  AnalyticsEngine as formAnalytics,
-} from '@intuitui-labs/form-builder-engine';
-import { api } from '@repo/core/api';
-import { coreRuntime, FeatureGuard, StorageKeys, storage } from '@repo/core/logic';
-import { QRCodeGenerator } from '@repo/scanner-kit';
+import { AnalyticsEngine as formAnalytics } from '@intuitui-labs/form-builder-engine/analytics';
+import { FormHydrator, type HydrationPayload } from '@intuitui-labs/form-builder-engine/hydration';
+import type {
+  FieldDefinition,
+  FormResponse,
+  FormSchema,
+} from '@intuitui-labs/form-builder-engine/schema';
 import { useThemedColors } from '@repo/ui/hooks';
 import {
   Box,
@@ -35,17 +33,19 @@ import {
   Settings2,
   Trash2,
 } from 'lucide-react-native';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import NativeForm from './NativeForm';
+import { defaultFormBuilderServices, type FormBuilderServices } from './services';
 
 interface FormBuilderProps {
   initialFields?: FieldDefinition[];
   onSave?: (fields: FieldDefinition[]) => void;
-  onPublish?: (config: any) => void;
+  onPublish?: (config: FormSchema) => void;
   onClose?: () => void;
   title?: string;
   description?: string;
   isGuest?: boolean;
+  services?: Partial<FormBuilderServices>;
 }
 const FormFieldItem = React.memo(
   ({
@@ -59,7 +59,7 @@ const FormFieldItem = React.memo(
     index: number;
     onRemove: (id: string) => void;
     onUpdate: (id: string, updates: Partial<FieldDefinition>) => void;
-    colors: any;
+    colors: ReturnType<typeof useThemedColors>;
   }) => {
     return (
       <Box className="p-6 bg-white rounded-3xl border border-border flex-row items-center gap-4 shadow-sm mb-4">
@@ -108,8 +108,12 @@ export const FormBuilder = ({
   title = 'Institutional Form Builder',
   description = 'Design dignified, premium data collection experiences.',
   isGuest = false,
+  services: servicesOverride,
 }: FormBuilderProps) => {
   const colors = useThemedColors();
+  const services = { ...defaultFormBuilderServices, ...servicesOverride };
+  const FeatureGate = services.featureGuard;
+  const QRCodeGen = services.qrCodeGenerator;
   const [fields, setFields] = useState<FieldDefinition[]>(
     initialFields.length > 0
       ? initialFields
@@ -147,22 +151,13 @@ export const FormBuilder = ({
   const updateField = useCallback((id: string, updates: Partial<FieldDefinition>) => {
     setFields((prev) => prev.map((f) => (f.id === id ? { ...f, ...updates } : f)));
   }, []);
-  const formSchema: any = { fields: {} };
-  fields.forEach((f) => {
-    formSchema.fields[f.name] = {
-      label: f.label,
-      type: f.type,
-      placeholder: f.placeholder,
-      required: f.required,
-    };
-  });
   const [isSaving, setIsSaving] = useState(false);
   const [templateId, setTemplateId] = useState<string | null>(null);
   const [responses, setResponses] = useState<FormResponse[]>([]);
   const [isFetchingResponses, setIsFetchingResponses] = useState(false);
   // Inject print-friendly styles on web
   useEffect(() => {
-    if (coreRuntime.device.getMetadata().platform !== 'web') return;
+    if (services.runtime.device.getMetadata().platform !== 'web') return;
     const styleId = 'form-builder-print-styles';
     if (typeof document === 'undefined') return;
     if (document.getElementById(styleId)) return;
@@ -187,17 +182,17 @@ export const FormBuilder = ({
       const el = document.getElementById(styleId);
       if (el) el.remove();
     };
-  }, []);
+  }, [services.runtime.device.getMetadata]);
   // Auto-save logic
   useEffect(() => {
     if (fields.length > 0) {
-      storage.set(StorageKeys.DRAFT_FORM, JSON.stringify(fields));
+      services.storage.set(services.storageKeys.DRAFT_FORM, JSON.stringify(fields));
     }
-  }, [fields]);
+  }, [fields, services]);
 
   // Restore draft on mount
   useEffect(() => {
-    const saved = storage.getString(StorageKeys.DRAFT_FORM);
+    const saved = services.storage.getString(services.storageKeys.DRAFT_FORM);
     if (saved && fields.length <= 1) {
       try {
         const parsed = JSON.parse(saved);
@@ -210,17 +205,17 @@ export const FormBuilder = ({
         console.error('Failed to restore form draft:', e);
       }
     }
-  }, []);
+  }, [fields.length, services]);
 
   useEffect(() => {
     if (activeTab === 'analytics' && templateId) {
-      fetchResponses();
+      void fetchResponses();
     }
   }, [activeTab, templateId, fetchResponses]);
   async function fetchResponses() {
     setIsFetchingResponses(true);
     try {
-      const data = await api['forms'].getResponses(templateId!);
+      const data = await services.api.forms.getResponses(templateId!);
       setResponses(data);
     } catch (err) {
       console.error('Failed to fetch responses:', err);
@@ -251,22 +246,44 @@ export const FormBuilder = ({
     document.body.removeChild(a);
   };
   const handlePrintReport = () => {
-    if (coreRuntime.device.getMetadata().platform === 'web') {
+    if (services.runtime.device.getMetadata().platform === 'web') {
       window.print();
     }
   };
-  const previewManager = FormHydrator.hydrate(formSchema, async (values: Record<string, any>) => {
-    console.log('Form Submission Successful:', values);
-  });
+  const previewPayload = useMemo<HydrationPayload>(
+    () => ({
+      fields: fields.map((f) => ({
+        name: f.name,
+        type: f.type,
+        label: f.label,
+        placeholder: f.placeholder,
+        validate: f.required ? 'nonEmpty' : undefined,
+      })),
+    }),
+    [fields],
+  );
+
+  const previewManager = FormHydrator.hydrate(
+    previewPayload,
+    async (values: Record<string, unknown>) => {
+      console.log('Form Submission Successful:', values);
+    },
+  );
   const handleAction = async (publish: boolean = false) => {
     setIsSaving(true);
     try {
-      const { api } = await import('@repo/core/api');
-      const ownerId = await api['identity'].getMyInternalId();
+      const ownerId = await services.api.identity.getMyInternalId();
       if (!ownerId && !isGuest) {
         throw new Error('You must be logged in to save forms.');
       }
-      const payload: any = {
+      const payload: {
+        owner_id: string | null;
+        title: string;
+        description: string;
+        config: FieldDefinition[];
+        is_published: boolean;
+        slug?: string;
+      } = {
         owner_id: ownerId,
         title: title,
         description: description,
@@ -276,11 +293,11 @@ export const FormBuilder = ({
       if (publish && !templateId) {
         payload.slug = `form-${Date.now().toString(36)}-${fieldCounterRef.current++}`;
       }
-      let result: any;
+      let result: { id: string };
       if (templateId) {
-        result = await api['forms'].update(templateId, payload);
+        result = await services.api.forms.update(templateId, payload);
       } else {
-        result = await api['forms'].create(payload);
+        result = await services.api.forms.create(payload);
         setTemplateId(result.id);
       }
       console.log(publish ? 'Form Published!' : 'Form Saved Successfully');
@@ -293,7 +310,7 @@ export const FormBuilder = ({
   const _handleSave = () => handleAction(false);
   const handlePublish = () => handleAction(true);
   return (
-    <FeatureGuard feature="isDevelopingFormBuilder">
+    <FeatureGate feature="isDevelopingFormBuilder">
       <VStack
         className="flex-1 self-center w-full max-w-[1200px] gap-8 p-10"
         sx={{ backgroundColor: colors.backgroundDark }}
@@ -318,7 +335,7 @@ export const FormBuilder = ({
             </Button>
             <Button
               action="primary"
-              onPress={handlePublish}
+              onPress={() => void handlePublish()}
               isDisabled={isSaving}
               className="rounded-xl"
               sx={{ backgroundColor: Theme.colors.sanctuarySaffron }}
@@ -332,8 +349,8 @@ export const FormBuilder = ({
         {/* Sub-navigation */}
         {!previewMode && (
           <HStack className="gap-6 border-b border-border pb-3">
-            {['editor', 'logic', 'analytics'].map((tab) => (
-              <Pressable key={tab} onPress={() => setActiveTab(tab as any)}>
+            {(['editor', 'logic', 'analytics'] as const).map((tab) => (
+              <Pressable key={tab} onPress={() => setActiveTab(tab)}>
                 <Text
                   className={`capitalize ${activeTab === tab ? 'font-bold' : 'font-normal'}`}
                   sx={{
@@ -465,8 +482,11 @@ export const FormBuilder = ({
                 sx={{ borderColor: Theme.colors.sanctuarySaffron }}
               >
                 <Box className="w-[120px] h-[120px] bg-white p-2 rounded-xl border border-border">
-                  <QRCodeGenerator
-                    value={`${coreRuntime.device.getMetadata().platform === 'web' ? window.location.origin : 'https://gurudevi.app'}/f/${templateId}`}
+                  <QRCodeGen
+                    value={
+                      services.getPublicFormUrl?.(templateId) ??
+                      `${window.location.origin}/f/${templateId}`
+                    }
                     size={104}
                     backgroundColor="white"
                     color={Theme.colors.obsidian}
@@ -483,10 +503,10 @@ export const FormBuilder = ({
                     sx={{ color: Theme.colors.sanctuarySaffron }}
                   >
                     SHORT URL:{' '}
-                    {coreRuntime.device.getMetadata().platform === 'web'
-                      ? window.location.origin
-                      : 'https://gurudevi.app'}
-                    /f/{templateId.substring(0, 8)}
+                    {services
+                      .getPublicFormUrl?.(templateId)
+                      ?.replace(templateId, templateId.substring(0, 8)) ??
+                      `${window.location.origin}/f/${templateId.substring(0, 8)}`}
                   </Text>
                 </VStack>
               </Box>
@@ -534,28 +554,33 @@ export const FormBuilder = ({
 
                     {stat.type === 'select' ? (
                       <VStack className="gap-3">
-                        {Object.entries(stat.data).map(([option, count]: any) => {
-                          const percentage = (count / stat.totalResponses) * 100;
-                          return (
-                            <VStack key={option} className="gap-1">
-                              <HStack className="justify-between">
-                                <Text className="text-[13px] font-medium">{option}</Text>
-                                <Text className="text-[12px]" sx={{ color: colors.textSecondary }}>
-                                  {count} ({Math.round(percentage)}%)
-                                </Text>
-                              </HStack>
-                              <Box
-                                className="h-2 rounded-full overflow-hidden"
-                                sx={{ backgroundColor: colors.tertiary }}
-                              >
+                        {Object.entries(stat.data as Record<string, number>).map(
+                          ([option, count]) => {
+                            const percentage = (count / stat.totalResponses) * 100;
+                            return (
+                              <VStack key={option} className="gap-1">
+                                <HStack className="justify-between">
+                                  <Text className="text-[13px] font-medium">{option}</Text>
+                                  <Text
+                                    className="text-[12px]"
+                                    sx={{ color: colors.textSecondary }}
+                                  >
+                                    {count} ({Math.round(percentage)}%)
+                                  </Text>
+                                </HStack>
                                 <Box
-                                  className="h-full bg-sage-green"
-                                  style={{ width: `${percentage}%` }}
-                                />
-                              </Box>
-                            </VStack>
-                          );
-                        })}
+                                  className="h-2 rounded-full overflow-hidden"
+                                  sx={{ backgroundColor: colors.tertiary }}
+                                >
+                                  <Box
+                                    className="h-full bg-sage-green"
+                                    style={{ width: `${percentage}%` }}
+                                  />
+                                </Box>
+                              </VStack>
+                            );
+                          },
+                        )}
                       </VStack>
                     ) : stat.type === 'number' ? (
                       <HStack className="gap-8">
@@ -563,20 +588,23 @@ export const FormBuilder = ({
                           <Text className="text-[12px]" sx={{ color: colors.textTertiary }}>
                             AVERAGE
                           </Text>
-                          <Heading size="lg">{stat.data.average.toFixed(1)}</Heading>
+                          <Heading size="lg">
+                            {(stat.data as { average: number }).average.toFixed(1)}
+                          </Heading>
                         </VStack>
                         <VStack>
                           <Text className="text-[12px]" sx={{ color: colors.textTertiary }}>
                             RANGE
                           </Text>
                           <Text className="font-semibold">
-                            {stat.data.min} - {stat.data.max}
+                            {(stat.data as { min: number; max: number }).min} -{' '}
+                            {(stat.data as { min: number; max: number }).max}
                           </Text>
                         </VStack>
                       </HStack>
                     ) : (
                       <VStack className="gap-2">
-                        {(stat.data as string[]).map((entry, idx) => (
+                        {((stat.data as string[]) ?? []).map((entry, idx) => (
                           <Box
                             key={idx}
                             className="p-3 rounded-xl"
@@ -594,6 +622,6 @@ export const FormBuilder = ({
           </VStack>
         )}
       </VStack>
-    </FeatureGuard>
+    </FeatureGate>
   );
 };

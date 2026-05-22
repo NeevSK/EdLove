@@ -15,7 +15,7 @@ const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
 
 export const profileAPI = {
   async getUserProfile(id: string) {
-    const res = await client.api.profile.users[':id'].$get({
+    const res = await (client.api as any).profile.users[':id'].$get({
       param: { id },
     });
 
@@ -28,7 +28,7 @@ export const profileAPI = {
   },
 
   async updateProfile(id: string, updates: Record<string, any>) {
-    const res = await client.api.profile.users[':id'].$patch({
+    const res = await (client.api as any).profile.users[':id'].$patch({
       param: { id },
       json: updates,
     });
@@ -48,7 +48,7 @@ export const profileAPI = {
       view_scale?: any;
     },
   ) {
-    const res = await client.api.profile.users[':id'].journey.$get({
+    const res = await (client.api as any).profile.users[':id'].journey.$get({
       param: { id },
       query: {
         at: params?.at,
@@ -71,7 +71,7 @@ export const profileAPI = {
       view_scale?: any;
     },
   ) {
-    const res = await client.api.profile.schools[':id'].pulse.$get({
+    const res = await (client.api as any).profile.schools[':id'].pulse.$get({
       param: { id },
       query: {
         view_date: params.view_date,

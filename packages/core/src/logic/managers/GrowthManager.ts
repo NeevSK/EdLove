@@ -1,18 +1,18 @@
 import { GROWTH_SIGNAL_MAP, type GrowthSignalType } from '../../api/growthSignals.generated';
-import type { CreateRippleInput, ManifestoVibe } from '../../types/Growth';
-import {
-  type BanyanStage,
-  type BhumiStage,
-  type Challenge,
-  type ChallengeMetric,
-  type ChallengeProgress,
-  type ChallengeType,
-  type CrystalDiscovery,
-  type CrystalTier,
-  GrowthDimension,
-  type PersonalCompass,
-  type RiverStage,
-  type UserGrowthState,
+import type {
+  BanyanStage,
+  BhumiStage,
+  Challenge,
+  ChallengeMetric,
+  ChallengeProgress,
+  ChallengeType,
+  CreateRippleInput,
+  CrystalDiscovery,
+  CrystalTier,
+  ManifestoVibe,
+  PersonalCompass,
+  RiverStage,
+  UserGrowthState,
 } from '../../types/Growth';
 import type { IGrowthPort } from '../ports/growth.port';
 
@@ -44,7 +44,7 @@ const RIVER_SIGNALS = new Set<GrowthSignalType>([
   'knowledge_connected',
   'resource_read',
 ]);
-const CRYSTAL_SIGNALS = new Set<GrowthSignalType>([
+const _CRYSTAL_SIGNALS = new Set<GrowthSignalType>([
   'crystal_found',
   'fractal_moment',
   'knowledge_connected',
@@ -215,7 +215,7 @@ export class GrowthManager {
         return (await this.growthPort.countEvents(userId, ['assignment_graded'])) >= 10;
       case 'the_seeker': {
         const data = await this.growthPort.getEventMetadata(userId, 'app_opened');
-        const sections = new Set(data.map((m) => m['section']).filter(Boolean));
+        const sections = new Set(data.map((m) => m.section).filter(Boolean));
         return ['community', 'library', 'self', 'classroom'].every((s) => sections.has(s));
       }
       case 'first_branch':
@@ -299,15 +299,14 @@ export class GrowthManager {
         .recordCrystalDiscovery({
           user_id: userId,
           crystal_type:
-            (metadata['crystal_type'] as any) ||
-            (isFractal ? 'fractal_crystal' : 'subject_crystal'),
-          subject_tags: (metadata['subject_tags'] as string[]) || [],
+            (metadata.crystal_type as any) || (isFractal ? 'fractal_crystal' : 'subject_crystal'),
+          subject_tags: (metadata.subject_tags as string[]) || [],
           crystal_name_en:
-            (metadata['name_en'] as string) ||
+            (metadata.name_en as string) ||
             (isFractal ? 'Fractal Connection' : 'Knowledge Crystal'),
-          crystal_description_en: (metadata['description_en'] as string) || null,
+          crystal_description_en: (metadata.description_en as string) || null,
           is_fractal_moment: isFractal,
-          source_entity_id: (metadata['source_entity_id'] as string) || null,
+          source_entity_id: (metadata.source_entity_id as string) || null,
         })
         .catch(() => {});
 
@@ -420,8 +419,8 @@ export class GrowthManager {
     metric: ChallengeMetric,
     metadata: Record<string, any>,
   ) {
-    const schoolId = metadata['school_id'] as string;
-    const classroomId = metadata['classroom_id'] as string;
+    const schoolId = metadata.school_id as string;
+    const classroomId = metadata.classroom_id as string;
 
     const challenges = await this.growthPort.getChallenges({
       schoolId,

@@ -1,4 +1,4 @@
-import { isDemo } from '@repo/core';
+import { isDemo } from '@repo/core/api/demo';
 import { usePermissions } from '@repo/core/logic';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import SanctuaryFlashList from '@repo/ui/components/SanctuaryFlashList';

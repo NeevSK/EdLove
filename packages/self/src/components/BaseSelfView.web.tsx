@@ -4,14 +4,13 @@ import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
 import { SanctuaryCard } from '@repo/ui/components/SanctuaryCard';
 import { TemporalNavigator } from '@repo/ui/components/TemporalNavigator';
 import { Box, HStack, Pressable, ScrollView, Text, VStack } from '@repo/ui/primitives';
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import {
   FEATURE_DISCOVERY_DATA,
   FEATURE_EMOJIS,
   SANCTUARY_DOMAINS,
 } from '../constants/selfRegistry';
-import { useDynamicSelfFeatures } from '../hooks/useDynamicSelfFeatures';
 import { useFeatureActivity } from '../hooks/useFeatureActivity';
 import type { BaseSelfViewProps, SelfViewFeature } from './BaseSelfView.types';
 import { FeatureErrorBoundary } from './FeatureErrorBoundary';

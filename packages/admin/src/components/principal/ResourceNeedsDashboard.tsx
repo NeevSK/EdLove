@@ -73,7 +73,7 @@ export default function ResourceNeedsDashboard({ schoolId }: ResourceNeedsDashbo
   const fetchResourceNeeds = async () => {
     try {
       setIsLoading(true);
-      const data = await api['inventory'].getSchoolResourceNeeds(schoolId);
+      const data = await api.inventory.getSchoolResourceNeeds(schoolId);
       setNeeds(data || []);
     } catch (error) {
       console.error('Failed to fetch resource needs:', error);
@@ -123,7 +123,7 @@ export default function ResourceNeedsDashboard({ schoolId }: ResourceNeedsDashbo
 
       <VStack className="gap-5">
         {needs.map((need) => {
-          const Icon = ICON_MAP[need.icon] || ICON_MAP['other'];
+          const Icon = ICON_MAP[need.icon] || ICON_MAP.other;
           const classes = getPriorityClasses(need.priority);
 
           return (

@@ -21,7 +21,7 @@ export const attendanceAPI = {
     status: string,
     date: string,
   ) {
-    const res = await client.api.attendance.$post({
+    const res = await (client.api as any).attendance.$post({
       json: {
         classroom_id,
         student_id,
@@ -41,7 +41,7 @@ export const attendanceAPI = {
    * [LOUD-FAILURE] Renamed from getByDate.
    */
   async fetchClassroomAttendance(classroom_id: string, date?: string) {
-    const res = await client.api.attendance.$get({
+    const res = await (client.api as any).attendance.$get({
       query: { classroom_id, date },
     });
 
@@ -57,7 +57,7 @@ export const attendanceAPI = {
     classroom_id?: string,
     view_date?: string,
   ): Promise<StudentAttendancePulse> {
-    const res = await client.api.attendance.pulse.$get({
+    const res = await (client.api as any).attendance.pulse.$get({
       query: {
         school_id,
         classroom_id: classroom_id ?? undefined,

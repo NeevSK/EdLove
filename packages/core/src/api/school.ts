@@ -84,7 +84,7 @@ export const schoolAPI = {
   async getSchoolStats(schoolId: string, _viewDate?: string): Promise<SchoolStats> {
     // Note: Stats are currently computed in the repository or projection services.
     // We delegate to the educational manager which uses the stats repository.
-    const stats = await educational.classrooms.getTeacherStats(schoolId); // This is a bit of a mismatch in names, but follows existing patterns
+    const _stats = await educational.classrooms.getTeacherStats(schoolId); // This is a bit of a mismatch in names, but follows existing patterns
 
     // Fallback for now to maintain API shape
     const fallbackStats = {

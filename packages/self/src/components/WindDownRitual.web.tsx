@@ -72,9 +72,9 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
       try {
         if (userId) {
           await saveWindDownRitual(userId, {
-            went_well: values['reflect'] ?? '',
-            to_release: values['release'] ?? '',
-            tomorrow_intent: values['intent'] ?? '',
+            went_well: values.reflect ?? '',
+            to_release: values.release ?? '',
+            tomorrow_intent: values.intent ?? '',
           });
         }
       } catch {

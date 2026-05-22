@@ -1,17 +1,39 @@
-import { FormHydrator } from '@intuitui-labs/form-builder-engine';
+import { FormHydrator } from '@intuitui-labs/form-builder-engine/hydration';
 import { useRoute } from '@react-navigation/native';
-import { api } from '@repo/core/api';
-import type { FormTemplate } from '@repo/core/types';
 
 import LotusLoader from '@repo/ui/components/LotusLoader';
 import { useThemedColors } from '@repo/ui/hooks';
 import { Box, Heading, Text, VStack } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import NativeForm from '../NativeForm';
 
-export default function PublicFormScreenWeb() {
+interface FormTemplateField {
+  name: string;
+  label: string;
+  type: string;
+  placeholder?: string;
+  required?: boolean;
+}
+
+interface FormTemplate {
+  id: string;
+  title: string;
+  description?: string;
+  config: FormTemplateField[];
+}
+
+interface PublicFormScreenServices {
+  loadFormBySlug?: (slug: string) => Promise<FormTemplate>;
+  submitResponse?: (input: { templateId: string; data: Record<string, unknown> }) => Promise<void>;
+}
+
+interface PublicFormScreenWebProps {
+  services?: PublicFormScreenServices;
+}
+
+export default function PublicFormScreenWeb({ services }: PublicFormScreenWebProps) {
   const route = useRoute<any>();
   const { slug } = route.params || {};
   const colors = useThemedColors();
@@ -20,26 +42,34 @@ export default function PublicFormScreenWeb() {
   const [error, setError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
 
-  useEffect(() => {
-    if (slug) {
-      loadTemplate();
-    } else {
-      setError('Form slug is missing.');
-      setLoading(false);
-    }
-  }, [slug, loadTemplate]);
+  const loadTemplate = useMemo(
+    () => async () => {
+      if (!slug) {
+        setError('Form slug is missing.');
+        setLoading(false);
+        return;
+      }
 
-  async function loadTemplate() {
-    try {
-      const data = await api['forms'].getBySlug(slug);
-      setTemplate(data);
-    } catch (err: any) {
-      console.error('Failed to load form:', err);
-      setError(err.message || 'Form not found or is no longer active.');
-    } finally {
-      setLoading(false);
-    }
-  }
+      try {
+        if (!services?.loadFormBySlug) {
+          throw new Error('Public form host service is not configured.');
+        }
+
+        const data = await services.loadFormBySlug(slug);
+        setTemplate(data);
+      } catch (err: any) {
+        console.error('Failed to load form:', err);
+        setError(err.message || 'Form not found or is no longer active.');
+      } finally {
+        setLoading(false);
+      }
+    },
+    [services, slug],
+  );
+
+  useEffect(() => {
+    void loadTemplate();
+  }, [loadTemplate]);
 
   if (loading) {
     return (
@@ -125,8 +155,12 @@ export default function PublicFormScreenWeb() {
 
   const manager = FormHydrator.hydrate(formSchema, async (values: Record<string, any>) => {
     try {
-      await api['forms'].submitResponse({
-        template_id: template.id,
+      if (!services?.submitResponse) {
+        throw new Error('Public form host service is not configured.');
+      }
+
+      await services.submitResponse({
+        templateId: template.id,
         data: values,
       });
       setSubmitted(true);

@@ -8,9 +8,9 @@ type AuthUser = {
 };
 
 let sharedPool: Pool | null = null;
-const { DATABASE_URL } = process.env;
 
 const getPool = () => {
+  const DATABASE_URL = process.env.DATABASE_URL;
   if (!DATABASE_URL) {
     throw new Error('DATABASE_URL is required to initialize the ZenStack client');
   }
@@ -37,4 +37,4 @@ export const createZenStackDb = (user: AuthUser) => {
   });
 };
 
-export const canUseZenStackDb = () => Boolean(DATABASE_URL);
+export const canUseZenStackDb = () => Boolean(process.env.DATABASE_URL);

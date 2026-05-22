@@ -11,15 +11,15 @@ function requireEnvValue(value: string | undefined, envNames: string[]): string 
 }
 
 const supabaseUrl = requireEnvValue(
-  import.meta.env['PUBLIC_SUPABASE_URL'] || import.meta.env['SUPABASE_URL'],
+  import.meta.env.PUBLIC_SUPABASE_URL || import.meta.env.SUPABASE_URL,
   ['PUBLIC_SUPABASE_URL', 'SUPABASE_URL'],
 );
 const supabasePublishableKey = requireEnvValue(
-  import.meta.env['PUBLIC_SUPABASE_PUBLISHABLE_KEY'] || import.meta.env['SUPABASE_PUBLISHABLE_KEY'],
+  import.meta.env.PUBLIC_SUPABASE_PUBLISHABLE_KEY || import.meta.env.SUPABASE_PUBLISHABLE_KEY,
   ['PUBLIC_SUPABASE_PUBLISHABLE_KEY', 'SUPABASE_PUBLISHABLE_KEY'],
 );
 const supabaseServiceRoleKey = requireEnvValue(
-  import.meta.env['SUPABASE_SECRET_KEY'] || import.meta.env['SUPABASE_SERVICE_ROLE_KEY'],
+  import.meta.env.SUPABASE_SECRET_KEY || import.meta.env.SUPABASE_SERVICE_ROLE_KEY,
   ['SUPABASE_SECRET_KEY', 'SUPABASE_SERVICE_ROLE_KEY'],
 );
 

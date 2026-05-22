@@ -22,7 +22,7 @@ import {
 } from '@repo/ui/primitives';
 import { WorkforceShell } from '@repo/workforce';
 import { Hammer, Heart, Library, School, User, Users, X } from 'lucide-react-native';
-import React, { lazy, Suspense, useMemo, useState } from 'react';
+import { lazy, Suspense, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 

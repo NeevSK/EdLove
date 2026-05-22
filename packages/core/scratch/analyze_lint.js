@@ -1,5 +1,5 @@
 /* eslint-disable */
-import fs from 'fs';
+import fs from 'node:fs';
 
 const reportPath = 'eslint_report_honest_final.json';
 const report = JSON.parse(fs.readFileSync(reportPath, 'utf8'));

@@ -155,7 +155,10 @@ export default function SyncManager({ dispatchQueuedMutation }: SyncManagerProps
     setSyncing,
     dispatchQueuedMutation,
     updateEntry,
-    showToast,
+    showToast, // Resonance Fork: Data Conflict detected
+    // Note: addConflict now emits 'conflict:detected' on the SovereignBus internally
+    addConflict,
+    activeConflicts.some,
   ]);
 
   useEffect(() => {

@@ -1,9 +1,9 @@
-import type { WorkspaceSwitcherTarget } from '@repo/core';
 import { WORKSPACE_CANVAS_ZONES } from '@repo/core/logic';
 import { useWorkspaceLayoutSync } from '@repo/core/native';
 import type {
   ResolvedWorkspaceSurface,
   WorkspaceSurfaceDefinition,
+  WorkspaceSwitcherTarget,
   WorkspaceZoneId,
 } from '@repo/core/types';
 

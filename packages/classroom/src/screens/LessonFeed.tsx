@@ -125,9 +125,9 @@ export default function LessonFeed({
     setError(null);
     try {
       const [lessons, materials, assignments] = await Promise.all([
-        api['lessons'].getAll(classroomId),
-        api['lessonMaterials'].getAll(classroomId),
-        api['assignments'].getAll(classroomId),
+        api.lessons.getAll(classroomId),
+        api.lessonMaterials.getAll(classroomId),
+        api.assignments.getAll(classroomId),
       ]);
 
       const now = new Date();

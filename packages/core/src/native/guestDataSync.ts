@@ -92,7 +92,7 @@ export class GuestDataSync {
             id:
               typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
                 ? crypto.randomUUID()
-                : 'temp-id-' + Math.random().toString(36).substr(2, 9),
+                : `temp-id-${Math.random().toString(36).substr(2, 9)}`,
             op: 'PUT',
             table: 'timetable',
             opData: {
@@ -117,7 +117,7 @@ export class GuestDataSync {
             id:
               typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
                 ? crypto.randomUUID()
-                : 'temp-id-' + Math.random().toString(36).substr(2, 9),
+                : `temp-id-${Math.random().toString(36).substr(2, 9)}`,
             op: 'PUT',
             table: 'mood_logs',
             opData: {
@@ -137,7 +137,7 @@ export class GuestDataSync {
             id:
               typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
                 ? crypto.randomUUID()
-                : 'temp-id-' + Math.random().toString(36).substr(2, 9),
+                : `temp-id-${Math.random().toString(36).substr(2, 9)}`,
             op: 'PUT',
             table: 'fire_journal',
             opData: {
@@ -156,7 +156,7 @@ export class GuestDataSync {
             id:
               typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
                 ? crypto.randomUUID()
-                : 'temp-id-' + Math.random().toString(36).substr(2, 9),
+                : `temp-id-${Math.random().toString(36).substr(2, 9)}`,
             op: 'PUT',
             table: 'classroom_student',
             opData: {
@@ -181,7 +181,7 @@ export class GuestDataSync {
         }
 
         const client = createSovereignClient(SOVEREIGN_API_URL);
-        const res = await client.api.powersync.upload.$post(
+        const res = await (client.api as any).powersync.upload.$post(
           {
             json: {
               crud: crudBatch,

@@ -1,7 +1,6 @@
 import { spawn } from 'node:child_process';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
 
 /**
  * Sovereign Audit Sentinel (Node.js version)
@@ -127,7 +126,7 @@ async function generateReport() {
     console.error(`!!! Failed to write log file: ${err.message}`);
   }
 
-  console.log('\n' + '-'.repeat(80));
+  console.log(`\n${'-'.repeat(80)}`);
   console.log('AUDIT SUMMARY');
   console.log(`Duration: ${duration}s`);
   console.log(`Findings: ${findings.length}`);

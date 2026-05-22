@@ -32,7 +32,7 @@ import {
   Plus,
   Search,
 } from 'lucide-react-native';
-import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { libraryAPI } from '../api/library';
 import { CollectionPickerModal } from '../components/CollectionPickerModal';

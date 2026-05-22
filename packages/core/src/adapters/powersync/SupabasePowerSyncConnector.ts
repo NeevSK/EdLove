@@ -22,12 +22,11 @@ import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../../api/supabase';
 import { sovereignBus } from '../../lib/sync/eventBus';
 import type {
   AbstractPowerSyncDatabase,
-  CrudEntry,
   PowerSyncBackendConnector,
   PowerSyncCredentials,
 } from './powersync-shim';
 
-const POWERSYNC_URL = process.env['EXPO_PUBLIC_POWERSYNC_URL'] ?? '';
+const POWERSYNC_URL = process.env.EXPO_PUBLIC_POWERSYNC_URL ?? '';
 
 export class SupabasePowerSyncConnector implements PowerSyncBackendConnector {
   /**
@@ -78,7 +77,7 @@ export class SupabasePowerSyncConnector implements PowerSyncBackendConnector {
         `[PowerSync] Uploading transactional batch of ${batch.crud.length} mutations through Sanctuary API.`,
       );
 
-      const res = await client.api.powersync.upload.$post(
+      const res = await (client.api as any).powersync.upload.$post(
         {
           json: {
             crud: batch.crud.map((c) => ({

@@ -117,8 +117,8 @@ export default function AttendanceScreenWeb() {
       try {
         const attendanceDate = new Date().toISOString().split('T')[0] || new Date().toISOString();
         const [data, snapshot] = await Promise.all([
-          api['classroomStudents'].getAll(classroomId),
-          api['attendance']
+          api.classroomStudents.getAll(classroomId),
+          api.attendance
             .getClassroomAttendanceSnapshot(classroomId, attendanceDate)
             .catch(() => ({ records: [] as AttendanceRecord[] })),
         ]);
@@ -168,7 +168,7 @@ export default function AttendanceScreenWeb() {
   const handleSave = async () => {
     dispatch({ type: 'SAVE_START' });
     try {
-      await api['attendance'].batchRecord(
+      await api.attendance.batchRecord(
         state.students.map((student) => ({
           classroom_id: classroomId,
           student_id: student.student_id,

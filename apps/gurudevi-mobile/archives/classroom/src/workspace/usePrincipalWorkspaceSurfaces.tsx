@@ -1,13 +1,10 @@
 import {
-  DashboardEcho,
   InstitutionalCalendarSection,
   LeaveApprovalSection,
   MorningSituationalBrief,
   PrincipalObservationsSection,
   type PrincipalWorkspaceView,
   type PrincipalZoneId,
-  PulseDashboard,
-  ResourceNeedsDashboard,
   TeacherCarousel,
   usePrincipalWorkspaceShell,
 } from '@repo/admin';
@@ -50,7 +47,7 @@ export function usePrincipalWorkspaceSurfaces({
   onOpenBreathing: () => void;
   onEditSchool: () => void;
 }) {
-  const shell = usePrincipalWorkspaceShell({
+  const _shell = usePrincipalWorkspaceShell({
     schoolId,
     principalId: userId,
     stats,
@@ -77,13 +74,15 @@ export function usePrincipalWorkspaceSurfaces({
   gap: Theme.spacing.lg
 	/),>(<PulseDashboard schoolId=
   schoolId
-  /;>;
+  /
+  >
   ),
     (<ResourceNeedsDashboard schoolId=
 	schoolId
   /),>(<DashboardEcho schoolId=
-  schoolId;
-  />;
+  schoolId
+  /
+  >
   )
   )
   VStack

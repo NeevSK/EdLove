@@ -307,7 +307,7 @@ export default function CommunityScreenWeb() {
         }}
       />
     ),
-    [user, isSocialShieldEnabled, navigation, handleOpenGroup, dispatch],
+    [user, isSocialShieldEnabled, navigation, handleOpenGroup],
   );
 
   const renderPostStream = () => {

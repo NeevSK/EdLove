@@ -3,28 +3,31 @@ export const column = {
   integer: 0 as number,
 };
 
-export class Table<TDefinition extends Record<string, unknown> = Record<string, unknown>> {
-  constructor(_definition: TDefinition) {}
-}
+export class Table<_TDefinition extends Record<string, unknown> = Record<string, unknown>> {}
 
 export class Schema<TTables extends Record<string, Table> = Record<string, Table>> {
   readonly types: {
     [K in keyof TTables]: TTables[K] extends Table<infer TDefinition> ? TDefinition : never;
-  } = {} as any;
-
-  constructor(_tables: TTables) {}
+  } = {} as unknown as {
+    [K in keyof TTables]: TTables[K] extends Table<infer TDefinition> ? TDefinition : never;
+  };
 }
 
 export class PowerSyncDatabase {
-  constructor(_options: {
-    schema: Schema<Record<string, Table>>;
-    database: {
-      dbFilename: string;
-    };
-  }) {}
+  constructor(_options?: { schema: unknown; database: { dbFilename: string } }) {
+    // Mock constructor - accepts options to match real PowerSyncDatabase API
+  }
 
   connect(_connector: unknown): Promise<void> {
     return Promise.resolve();
+  }
+
+  async writeLock<T>(callback: () => T | Promise<T>): Promise<T> {
+    return await callback();
+  }
+
+  async readLock<T>(callback: () => T | Promise<T>): Promise<T> {
+    return await callback();
   }
 
   disconnect(): Promise<void> {

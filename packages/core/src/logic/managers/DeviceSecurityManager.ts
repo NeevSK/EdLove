@@ -1,4 +1,5 @@
 import type {
+  AuthEvent,
   DeviceSecurityEvent,
   DeviceSecuritySession,
   DeviceTrustSummary,
@@ -17,6 +18,7 @@ export class DeviceSecurityManager implements IDeviceSecurityPort {
   async getSecuritySummary(): Promise<{
     devices: DeviceTrustSummary[];
     events: DeviceSecurityEvent[];
+    authEvents: AuthEvent[];
     sessions: DeviceSecuritySession[];
     currentDevice: DeviceTrustSummary | null;
   }> {

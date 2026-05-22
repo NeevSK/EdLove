@@ -22,7 +22,7 @@ export const ValidationEngine = {
     return { isValid: true };
   },
 
-  number(value: any): ValidationResult {
+  number(value: unknown): ValidationResult {
     const num = Number(value);
     if (value === undefined || value === null || value === '' || Number.isNaN(num)) {
       return { isValid: false, error: 'Must be a number' };
@@ -31,7 +31,7 @@ export const ValidationEngine = {
   },
 
   validateField(
-    value: any,
+    value: unknown,
     required: boolean,
     validatorName?: 'email' | 'nonEmpty' | 'number',
     label: string = 'Field',
@@ -51,10 +51,10 @@ export const ValidationEngine = {
     // 2. Map & run validator
     if (validatorName) {
       if (validatorName === 'email') {
-        return this.email(value);
+        return this.email(String(value));
       }
       if (validatorName === 'nonEmpty') {
-        return this.nonEmpty(value, label);
+        return this.nonEmpty(String(value), label);
       }
       if (validatorName === 'number') {
         return this.number(value);

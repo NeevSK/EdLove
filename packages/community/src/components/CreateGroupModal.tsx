@@ -53,6 +53,8 @@ export default function CreateGroupModal({
     }
   }, [createdGroupId, navigation, onClose]);
 
+  if (!isOpen) return null;
+
   if (createdGroupId) {
     const groupQRValue = QRBuilder.group(createdGroupId);
     return (

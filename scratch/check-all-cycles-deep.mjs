@@ -42,7 +42,7 @@ async function checkAllCycles() {
           console.log(`[!] Cycle ${i + 1}: ${cycle.join(' -> ')}`);
         });
       }
-    } catch (err) {
+    } catch (_err) {
       // console.error(`💥 Error checking ${pkgDir}:`, err.message);
     }
   }

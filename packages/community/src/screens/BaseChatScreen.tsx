@@ -125,7 +125,7 @@ export default function BaseChatScreen({
           filter: subscription.filter,
         },
         async (payload) => {
-          const msg = await subscription.fetchById(payload.new['id']);
+          const msg = await subscription.fetchById(payload.new.id);
           if (!msg) return;
           setMessages((prev) => {
             if (prev.some((m) => m.id === msg.id)) return prev;

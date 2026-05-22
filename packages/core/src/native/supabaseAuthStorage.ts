@@ -3,7 +3,7 @@ import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
 import { getActiveAccountId, scopeStorageKey } from '../lib/accountScope';
 
-const supabaseUrl = process.env['EXPO_PUBLIC_SUPABASE_URL'];
+const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
 
 function getProjectRef() {
   if (!supabaseUrl) return 'default';

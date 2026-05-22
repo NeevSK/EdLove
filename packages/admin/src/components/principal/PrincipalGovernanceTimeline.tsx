@@ -182,8 +182,8 @@ export default function PrincipalGovernanceTimeline({
 
       try {
         const [timelineData, snapshotData] = await Promise.all([
-          api['principalWorkspace'].getGovernanceTimeline(principalId, viewDate, limit),
-          api['principalWorkspace'].getGovernanceSnapshotAsOf(principalId, viewDate, 12),
+          api.principalWorkspace.getGovernanceTimeline(principalId, viewDate, limit),
+          api.principalWorkspace.getGovernanceSnapshotAsOf(principalId, viewDate, 12),
         ]);
         if (!isMounted) return;
         dispatch({
@@ -216,7 +216,7 @@ export default function PrincipalGovernanceTimeline({
     dispatch({ type: 'SAVE_FOLLOW_UP_START' });
     try {
       hapticLight();
-      await api['principalWorkspace'].recordObservationFollowUp({
+      await api.principalWorkspace.recordObservationFollowUp({
         schoolId,
         principalId,
         observationId: targetId,
@@ -225,8 +225,8 @@ export default function PrincipalGovernanceTimeline({
       });
 
       const [timelineData, snapshotData] = await Promise.all([
-        api['principalWorkspace'].getGovernanceTimeline(principalId, viewDate, limit),
-        api['principalWorkspace'].getGovernanceSnapshotAsOf(principalId, viewDate, 12),
+        api.principalWorkspace.getGovernanceTimeline(principalId, viewDate, limit),
+        api.principalWorkspace.getGovernanceSnapshotAsOf(principalId, viewDate, 12),
       ]);
       dispatch({
         type: 'SAVE_FOLLOW_UP_SUCCESS',
@@ -288,8 +288,7 @@ export default function PrincipalGovernanceTimeline({
                 </Box>
               </HStack>
               <Text className="text-[13px] text-phaseText-secondary leading-[20px] font-bold italic opacity-90">
-                {(event.snapshot?.['content'] as string) ||
-                  'Official observation state is available.'}
+                {(event.snapshot?.content as string) || 'Official observation state is available.'}
               </Text>
               <Pressable
                 onPress={() => {
@@ -365,7 +364,7 @@ export default function PrincipalGovernanceTimeline({
                   {event.entity_type === 'school_invite'
                     ? `Identity Key ${event.entity_id} assimilated into timeline.`
                     : event.event_type === 'follow_up'
-                      ? `Protocol escalation for Obs ${event.entity_id.substring(0, 6)}: ${(event.snapshot?.['content'] as string) || 'Authorized updates'}.`
+                      ? `Protocol escalation for Obs ${event.entity_id.substring(0, 6)}: ${(event.snapshot?.content as string) || 'Authorized updates'}.`
                       : `Observation ${event.entity_id.substring(0, 6)} committed to official institutional record.`}
                 </Text>
 

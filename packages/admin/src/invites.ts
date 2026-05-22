@@ -7,7 +7,7 @@ export type InviteCode = Awaited<
 
 export const invitesAPI = {
   async listInviteCodes(schoolId: string): Promise<InviteCode[]> {
-    return api['principalWorkspace'].listInviteCodes(schoolId);
+    return api.principalWorkspace.listInviteCodes(schoolId);
   },
 
   async getInviteCodesBySchool(schoolId: string): Promise<InviteCode[]> {
@@ -19,11 +19,11 @@ export const invitesAPI = {
     role: PrincipalInviteRole,
     createdBy: string,
   ): Promise<InviteCode> {
-    return api['principalWorkspace'].generateInviteCode(schoolId, role, createdBy);
+    return api.principalWorkspace.generateInviteCode(schoolId, role, createdBy);
   },
 
   async revokeInviteCode(schoolId: string, inviteCode: string, userId: string): Promise<void> {
-    await api['principalWorkspace'].recordInviteEvent({
+    await api.principalWorkspace.recordInviteEvent({
       schoolId,
       principalId: userId,
       inviteCode,

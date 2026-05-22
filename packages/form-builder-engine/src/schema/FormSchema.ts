@@ -17,14 +17,14 @@ export interface FormField {
   label: string;
   required: boolean;
   placeholder?: string;
-  defaultValue?: any;
+  defaultValue?: unknown;
   options?: { label: string; value: string }[];
   min?: number;
   max?: number;
   scaleType?: 'emoji' | 'numeric';
   order: number;
-  config?: Record<string, any>;
-  conditions?: any[];
+  config?: Record<string, unknown>;
+  conditions?: unknown[];
 }
 
 export interface FieldDefinition {
@@ -34,26 +34,27 @@ export interface FieldDefinition {
   label?: string;
   placeholder?: string;
   required?: boolean;
-  defaultValue?: any;
+  defaultValue?: unknown;
   options?: { label: string; value: string }[];
   min?: number;
   max?: number;
   scaleType?: 'emoji' | 'numeric';
-  config?: Record<string, any>;
+  config?: Record<string, unknown>;
+  conditions?: unknown[];
 }
 
 export interface FormPage {
   id: string;
   title?: string;
   fields: FormField[];
-  conditions?: any[];
+  conditions?: unknown[];
 }
 
 export interface FormSettings {
   isPublished?: boolean;
   category?: string;
   slug?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface FormSchema {
@@ -73,6 +74,6 @@ export interface FormResponse {
   formId: string;
   responderId?: string;
   tenantId: string;
-  data: Record<string, any>;
+  data: Record<string, unknown>;
   submittedAt: string;
 }

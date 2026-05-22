@@ -172,8 +172,8 @@ export function useFounderEcosystemStats() {
         return;
       }
       const [statsData, schoolsData] = await Promise.all([
-        api['founder'].getEcosystemStats(),
-        api['founder'].getAllSchools(),
+        api.founder.getEcosystemStats(),
+        api.founder.getAllSchools(),
       ]);
       dispatch({
         type: 'REFRESH_SUCCESS',
@@ -205,7 +205,7 @@ export async function createFounderSchool(input: {
   type: string;
   created_by: string;
 }) {
-  return api['founder'].createSchool(input);
+  return api.founder.createSchool(input);
 }
 export async function createFounderClassroom(input: {
   school_id: string;
@@ -213,7 +213,7 @@ export async function createFounderClassroom(input: {
   grade_number: number;
   created_by: string;
 }) {
-  return api['founder'].createClassroom(input);
+  return api.founder.createClassroom(input);
 }
 type SchoolStatsState = {
   stats: SchoolStats | null;
@@ -328,8 +328,8 @@ export function useFounderSchoolStats(schoolId: string) {
         statsData = { ...MOCK_SCHOOL_STATS, is_sample: true } as SchoolStats;
       } else {
         [schoolData, statsData] = await Promise.all([
-          api['school'].getSchool(schoolId),
-          api['school'].getSchoolStats(schoolId, viewDate),
+          api.school.getSchool(schoolId),
+          api.school.getSchoolStats(schoolId, viewDate),
         ]);
       }
       dispatch({

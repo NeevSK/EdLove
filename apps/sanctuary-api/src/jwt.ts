@@ -47,8 +47,8 @@ async function getPublicKeyFromJwks(kid: string): Promise<crypto.KeyObject | nul
       activeJwksFetch = (async () => {
         try {
           const supabaseUrl =
-            process.env['EXPO_PUBLIC_SUPABASE_URL'] ||
-            process.env['SUPABASE_URL'] ||
+            process.env.EXPO_PUBLIC_SUPABASE_URL ||
+            process.env.SUPABASE_URL ||
             'https://qzoawolfkuwiuyaoiybz.supabase.co';
           const jwksUrl = `${supabaseUrl}/auth/v1/.well-known/jwks.json`;
 
@@ -96,8 +96,7 @@ async function getPublicKeyFromJwks(kid: string): Promise<crypto.KeyObject | nul
  */
 export async function verifySupabaseJwt(token: string): Promise<VerifiedJwtPayload | null> {
   // Support local development & integration test bypass in non-production environments
-  const isTestOrDev =
-    process.env['NODE_ENV'] === 'test' || process.env['NODE_ENV'] === 'development';
+  const isTestOrDev = process.env.NODE_ENV === 'test' || process.env.NODE_ENV === 'development';
   if (
     isTestOrDev &&
     (token === 'admin-user-1' || token === 'student-user-1' || token === 'teacher-user-1')
@@ -162,7 +161,7 @@ export async function verifySupabaseJwt(token: string): Promise<VerifiedJwtPaylo
     let publicKey: crypto.KeyObject | null = null;
 
     // A. Check for static public key override in environment (e.g. PEM format or JWK JSON)
-    const envKey = process.env['SUPABASE_JWT_PUBLIC_KEY'];
+    const envKey = process.env.SUPABASE_JWT_PUBLIC_KEY;
     if (envKey) {
       try {
         if (envKey.trim().startsWith('{')) {

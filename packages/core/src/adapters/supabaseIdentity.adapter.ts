@@ -210,7 +210,7 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
           this.activePerspective = { activeBond, availableBonds: bonds };
           return this.activePerspective;
         }
-      } catch (e) {
+      } catch (_e) {
         // ignore JSON parse error
       }
     }
@@ -245,7 +245,9 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
   }
 
   async createInitialBond(orientation: Capacity, context: Record<string, any>): Promise<void> {
-    const identity = await this.identifyActiveCitizen();
+    const identity = context.userId
+      ? ({ id: context.userId } as { id: string })
+      : await this.identifyActiveCitizen();
     if (!identity) throw new Error('Not authenticated');
     const userId = identity.id;
 
@@ -257,7 +259,7 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
       .single();
 
     const isSupabaseAnonymous = profile?.is_anonymous ?? true;
-    const schoolId = context['schoolId'] || null;
+    const schoolId = context.schoolId || null;
 
     let citizenship: 'WANDERER' | 'SECOND_CLASS' | 'FIRST_CLASS' = 'WANDERER';
 
@@ -281,10 +283,10 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
     const { error: profileError } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('users')
       .update({
-        display_name: context['displayName'] || 'Gurudevi User',
-        first_name: context['firstName'] ?? null,
-        last_name: context['lastName'] ?? null,
-        username: context['username'] ?? null,
+        display_name: context.displayName || 'Gurudevi User',
+        first_name: context.firstName ?? null,
+        last_name: context.lastName ?? null,
+        username: context.username ?? null,
         identity_state: isSupabaseAnonymous ? 'anonymous' : 'identifying', // Transitioning state
         school_id: schoolId,
         citizenship,
@@ -319,7 +321,7 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
           entity_id,
           entity_type,
           capacity: orientation,
-          metadata: context['metadata'] || {},
+          metadata: context.metadata || {},
         },
         { onConflict: 'user_id,entity_id,capacity' },
       );
@@ -338,18 +340,14 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
       'display_name' in normalizedUpdates
     ) {
       const firstName =
-        typeof normalizedUpdates['first_name'] === 'string'
-          ? normalizedUpdates['first_name']
-          : null;
+        typeof normalizedUpdates.first_name === 'string' ? normalizedUpdates.first_name : null;
       const lastName =
-        typeof normalizedUpdates['last_name'] === 'string' ? normalizedUpdates['last_name'] : null;
+        typeof normalizedUpdates.last_name === 'string' ? normalizedUpdates.last_name : null;
       const displayName =
-        typeof normalizedUpdates['display_name'] === 'string'
-          ? normalizedUpdates['display_name']
-          : '';
+        typeof normalizedUpdates.display_name === 'string' ? normalizedUpdates.display_name : '';
       const resolvedName =
         displayName || [firstName, lastName].filter(Boolean).join(' ') || 'Gurudevi User';
-      normalizedUpdates['display_name'] = resolvedName;
+      normalizedUpdates.display_name = resolvedName;
     }
 
     const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__

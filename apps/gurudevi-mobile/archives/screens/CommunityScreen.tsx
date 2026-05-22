@@ -36,7 +36,7 @@ type TabType = 'feed' | 'groups' | 'dms';
 type FeedFilter = 'all' | string;
 export default function CommunityScreen() {
   const { t } = useTranslation();
-  const navigation = useNavigation<NativeStackNavigationProp<CommunityStackParamList>>();
+  const _navigation = useNavigation<NativeStackNavigationProp<CommunityStackParamList>>();
   const { schoolId, userId } = useStore((state: any) => ({
     schoolId: state.user?.school_id,
     userId: state.user?.id,
@@ -54,17 +54,17 @@ export default function CommunityScreen() {
   const [activeTab, setActiveTab] = useState<TabType>('feed');
   const [activeFeedFilter, setActiveFeedFilter] = useState<FeedFilter>('all');
   const [_searchQuery, _setSearchQuery] = useState('');
-  const [refreshing, setRefreshing] = useState(false);
-  const [showCreateModal, setShowCreateModal] = useState(false);
-  const [showCreateGroupModal, setShowCreateGroupModal] = useState(false);
-  const [createPostGroupId, setCreatePostGroupId] = useState<string | undefined>(undefined);
-  const [reportPostId, setReportPostId] = useState<string | undefined>(undefined);
-  const [reportTargetUserId, setReportTargetUserId] = useState<string | undefined>(undefined);
-  const [reportTargetUserName, setReportTargetUserName] = useState<string | undefined>(undefined);
-  const [showReportModal, setShowReportModal] = useState(false);
-  const colors = useThemedColors();
+  const [_refreshing, setRefreshing] = useState(false);
+  const [_showCreateModal, setShowCreateModal] = useState(false);
+  const [_showCreateGroupModal, _setShowCreateGroupModal] = useState(false);
+  const [_createPostGroupId, setCreatePostGroupId] = useState<string | undefined>(undefined);
+  const [_reportPostId, _setReportPostId] = useState<string | undefined>(undefined);
+  const [_reportTargetUserId, _setReportTargetUserId] = useState<string | undefined>(undefined);
+  const [_reportTargetUserName, _setReportTargetUserName] = useState<string | undefined>(undefined);
+  const [_showReportModal, _setShowReportModal] = useState(false);
+  const _colors = useThemedColors();
   const { discoverFeature } = useTracking();
-  const bottomPadding = useBottomTabPadding();
+  const _bottomPadding = useBottomTabPadding();
   const { viewDate, isPastView } = useTemporalStore();
   const { t: translate } = useTranslation();
   useEffect(() => {
@@ -75,7 +75,7 @@ export default function CommunityScreen() {
     userId ?? undefined,
   );
   // Filtered data for FlatList
-  const listData = useMemo(() => posts, [posts]);
+  const _listData = useMemo(() => posts, [posts]);
   // Derived gating
   const hasJoinedGroups = useMemo(() => (groups || []).some((g) => g.is_member), [groups]);
   // Derived feed filter chips via shared hook
@@ -100,7 +100,7 @@ export default function CommunityScreen() {
   const loadData = async () => {
     await Promise.all([fetchGroups(), fetchPosts('all')]);
   };
-  const onRefresh = async () => {
+  const _onRefresh = async () => {
     setRefreshing(true);
     await loadData();
     setRefreshing(false);
@@ -115,7 +115,7 @@ export default function CommunityScreen() {
     setCreatePostGroupId(groupId);
     setShowCreateModal(true);
   };
-  const renderFeedFilterChips = () => (
+  const _renderFeedFilterChips = () => (
     (<Animated.View entering={FadeInDown.delay(300).springify()} />),
     (
       <HorizontalChipRow
@@ -129,7 +129,7 @@ export default function CommunityScreen() {
     )
   );
   Animated.View;
-  const renderCommunityHearth = () => {
+  const _renderCommunityHearth = () => {
     return (
       (<Box mt="$4" />),
       (

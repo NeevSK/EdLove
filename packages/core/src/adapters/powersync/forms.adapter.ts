@@ -1,12 +1,10 @@
-import {
-  type AggregatedStats,
-  AnalyticsEngine,
-  type FormAnalytics,
-  type FormResponse,
-  type FormSchema,
-  type FormStorage,
-  type FormSync,
-} from '@intuitui-labs/form-builder-engine';
+import { AnalyticsEngine, type FieldAnalytics } from '@intuitui-labs/form-builder-engine/analytics';
+import type {
+  FormAnalytics,
+  FormStorage,
+  FormSync,
+} from '@intuitui-labs/form-builder-engine/ports';
+import type { FormResponse, FormSchema } from '@intuitui-labs/form-builder-engine/schema';
 import { eq } from 'drizzle-orm';
 import { getDrizzleDB } from './database';
 import { formResponses, formTemplates } from './schema';
@@ -133,10 +131,10 @@ export class PowerSyncFormsAdapter implements FormStorage, FormAnalytics, FormSy
   /**
    * Fetch all locally recorded responses for a form template and compute aggregated stats.
    */
-  async aggregate(formId: string): Promise<AggregatedStats[]> {
+  async aggregate(formId: string): Promise<FieldAnalytics[]> {
     const db = getDrizzleDB();
     const schema = await this.load(formId);
-    const fields = schema.pages.flatMap((page) => page.fields);
+    const fields = schema.pages.flatMap((page: FormSchema['pages'][number]) => page.fields);
 
     const rawResponses = await db
       .select()
@@ -152,7 +150,7 @@ export class PowerSyncFormsAdapter implements FormStorage, FormAnalytics, FormSy
       submittedAt: r.submittedAt,
     }));
 
-    return AnalyticsEngine.aggregate(fields, responses) as AggregatedStats[];
+    return AnalyticsEngine.aggregate(fields, responses);
   }
 
   /**
@@ -161,7 +159,7 @@ export class PowerSyncFormsAdapter implements FormStorage, FormAnalytics, FormSy
   async export(formId: string): Promise<string> {
     const db = getDrizzleDB();
     const schema = await this.load(formId);
-    const fields = schema.pages.flatMap((page) => page.fields);
+    const fields = schema.pages.flatMap((page: FormSchema['pages'][number]) => page.fields);
 
     const rawResponses = await db
       .select()

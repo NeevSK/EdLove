@@ -81,6 +81,6 @@ export function useGroupCreation() {
       updateSetup,
       resetProgress,
     }),
-    [state, isLoaded],
+    [state, isLoaded, updateStep, updateDetails, updateSetup, resetProgress],
   );
 }

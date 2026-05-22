@@ -17,7 +17,7 @@ export const resourcesAPI = {
    * [LOUD-FAILURE] Renamed from getAll.
    */
   async getClassroomResources(classroomId: string) {
-    const res = await client.api.educational.classrooms[':classroomId'].resources.$get({
+    const res = await (client.api as any).educational.classrooms[':classroomId'].resources.$get({
       param: { classroomId },
     });
 

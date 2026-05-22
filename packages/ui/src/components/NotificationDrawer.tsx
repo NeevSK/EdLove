@@ -2,10 +2,10 @@ import { Bell, BookOpen, Check, CheckCircle, Info, Users, X } from 'lucide-react
 import { Dimensions } from 'react-native';
 import Animated, { Easing, SlideInLeft, SlideOutLeft } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Box, Heading, HStack, Portal, Pressable, Spinner, Text, VStack } from '../gluestack';
+import { Box, Heading, HStack, Portal, Pressable, Text, VStack } from '../gluestack';
 import { ScrollView } from '../primitives';
 import { hapticLight } from '../utils/haptics';
-import SkeletonLoader, { SkeletonAvatar, SkeletonTextLine } from './SkeletonLoader';
+import { SkeletonAvatar, SkeletonTextLine } from './SkeletonLoader';
 
 const { width } = Dimensions.get('window');
 const DRAWER_WIDTH = width * 0.65;
@@ -213,9 +213,9 @@ export default function NotificationDrawer({
                       const diff = now.getTime() - date.getTime();
                       const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
-                      if (days === 0) groups['Today']?.push(n);
-                      else if (days === 1) groups['Yesterday']?.push(n);
-                      else groups['Earlier']?.push(n);
+                      if (days === 0) groups.Today?.push(n);
+                      else if (days === 1) groups.Yesterday?.push(n);
+                      else groups.Earlier?.push(n);
                     });
 
                     return Object.entries(groups).map(([title, items]) => {

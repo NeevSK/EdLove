@@ -1,4 +1,4 @@
-const fs = require('fs');
+const fs = require('node:fs');
 const results = JSON.parse(
   fs.readFileSync('eslint_output_fresh.json', 'utf8').replace(/^\uFEFF/, ''),
 );

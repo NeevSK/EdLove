@@ -399,10 +399,10 @@ function mergeLayers(
     }
   }
 
-  const db = merged['depth_breadth'] ?? authorityDefaults.depth_breadth;
-  const ra = merged['reflect_act'] ?? authorityDefaults.reflect_act;
-  const ss = merged['solo_social'] ?? authorityDefaults.solo_social;
-  const sz = merged['steady_surge'] ?? authorityDefaults.steady_surge;
+  const db = merged.depth_breadth ?? authorityDefaults.depth_breadth;
+  const ra = merged.reflect_act ?? authorityDefaults.reflect_act;
+  const ss = merged.solo_social ?? authorityDefaults.solo_social;
+  const sz = merged.steady_surge ?? authorityDefaults.steady_surge;
 
   const source: OrientationSeeds['source'] = explicit
     ? Object.keys(signals).length > 0

@@ -1,6 +1,5 @@
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { Box, Text, useTheme, VStack } from '@repo/ui/primitives';
-import React from 'react';
 
 export default function TrubeLabScreen() {
   const { text } = useTheme();

@@ -21,13 +21,13 @@ export async function checkLocalPermission(params: {
   userContext: Partial<UserContext>;
 }): Promise<boolean> {
   try {
-    const legacyContext = params.userContext as any;
+    const legacyContext = params.userContext as Record<string, unknown>;
     const db = getDrizzleDB();
 
     // 2. Fetch the latest cryptographically signed capability snapshot from SQLite
     const snapshotRecord = await db.query.permissionSnapshots.findFirst({
       where: eq(
-        permissionSnapshots.userId,
+        permissionSnapshots.userId as any,
         params.userContext.userId || legacyContext.user_id || '',
       ),
     });

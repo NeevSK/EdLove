@@ -1,5 +1,4 @@
 import { api } from '@repo/core/api';
-import { coreRuntime } from '@repo/core/logic';
 import type { AcademicCycle } from '@repo/core/types';
 
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
@@ -23,6 +22,7 @@ import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 import { Calendar, CheckCircle2, Circle, Clock, Plus, Trash2 } from 'lucide-react-native';
 import { useEffect, useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Platform } from 'react-native';
 
 interface AcademicCycleManagerProps {
   schoolId: string;
@@ -46,7 +46,7 @@ type Action =
   | { type: 'SET_CYCLES'; cycles: AcademicCycle[] }
   | { type: 'SET_LOADING'; isLoading: boolean }
   | { type: 'TOGGLE_FORM' }
-  | { type: 'UPDATE_FORM'; field: keyof State['form']; value: any }
+  | { type: 'UPDATE_FORM'; field: keyof State['form']; value: string | boolean }
   | { type: 'RESET_FORM' }
   | { type: 'SET_SAVING'; isSaving: boolean };
 
@@ -90,7 +90,7 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
 
   const fetchCycles = async () => {
     try {
-      const data = await api['academicCycles'].getAll(schoolId);
+      const data = await api.academicCycles.getAll(schoolId);
       dispatch({ type: 'SET_CYCLES', cycles: data ?? [] });
     } catch (error) {
       console.error('Failed to fetch cycles:', error);
@@ -99,7 +99,7 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
   };
 
   useEffect(() => {
-    fetchCycles();
+    void fetchCycles();
   }, [fetchCycles]);
 
   const handleCreate = async () => {
@@ -114,7 +114,7 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
 
     dispatch({ type: 'SET_SAVING', isSaving: true });
     try {
-      await api['academicCycles'].create({
+      await api.academicCycles.create({
         school_id: schoolId,
         name,
         start_date: new Date(startDate),
@@ -123,12 +123,12 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
       });
       hapticSuccess();
       dispatch({ type: 'RESET_FORM' });
-      fetchCycles();
+      void fetchCycles();
       toast.showToast({
         message: 'Success: Academic cycle created',
         type: 'success',
       });
-    } catch (_error) {
+    } catch {
       toast.showToast({
         message: 'Error: Failed to create academic cycle',
         type: 'error',
@@ -139,14 +139,14 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
 
   const handleSetCurrent = async (cycleId: string) => {
     try {
-      await api['academicCycles'].update(cycleId, schoolId, { is_current: true });
+      await api.academicCycles.update(cycleId, schoolId, { is_current: true });
       hapticLight();
-      fetchCycles();
+      void fetchCycles();
       toast.showToast({
         message: 'Cycle Updated: This cycle is now active',
         type: 'success',
       });
-    } catch (_error) {
+    } catch {
       toast.showToast({
         message: 'Error: Failed to update cycle',
         type: 'error',
@@ -155,34 +155,34 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
   };
 
   const handleDelete = (cycleId: string) => {
-    const isWeb = coreRuntime.device.getMetadata().platform === 'web';
+    const isWeb = Platform.OS === 'web';
     if (isWeb) {
       if (
         window.confirm(
           t('common.confirmDelete') || 'Are you sure you want to delete this academic cycle?',
         )
       ) {
-        executeDelete(cycleId);
+        void executeDelete(cycleId);
       }
     } else {
       // For Zero-Legacy native, we should ideally use a Sanctuary dialog
       // but to remove the RN import while keeping functionality, we'll use a simple confirm fallback
       // if available or assume it's safe to delete for now if we can't easily show a modal here.
       // Actually, we'll just execute it for now to stay within Zero-Legacy UI but we should add a toast.
-      executeDelete(cycleId);
+      void executeDelete(cycleId);
     }
   };
 
   const executeDelete = async (cycleId: string) => {
     try {
-      await api['academicCycles'].delete(cycleId);
+      await api.academicCycles.delete(cycleId);
       hapticLight();
-      fetchCycles();
+      void fetchCycles();
       toast.showToast({
         message: 'Deleted: Cycle removed successfully',
         type: 'success',
       });
-    } catch (_error) {
+    } catch {
       toast.showToast({
         message: 'Error: Failed to delete cycle',
         type: 'error',

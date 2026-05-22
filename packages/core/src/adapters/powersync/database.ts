@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * PowerSync Database Instance — May 2026
  *
@@ -14,6 +15,8 @@
  *   const rows = await db.select().from(students);
  */
 import { wrapPowerSyncWithDrizzle } from '@powersync/drizzle-driver';
+import { assertPowerSyncBootstrapReady } from '../../api/highways';
+import { coreRuntime } from '../../logic/runtimeRegistry';
 import { useStore } from '../../store/useStore';
 import { ErrorCategory, SovereignError } from '../../types/Errors';
 import { PowerSyncDatabase } from './powersync-shim';
@@ -26,6 +29,16 @@ let _permissionValidator: ((params: any) => Promise<boolean>) | null = null;
 
 export function registerPermissionValidator(validator: (params: any) => Promise<boolean>): void {
   _permissionValidator = validator;
+}
+
+function assertBrowserPowerSyncReady() {
+  assertPowerSyncBootstrapReady();
+
+  if (!coreRuntime.isRegistered()) {
+    throw new Error(
+      'PowerSync bootstrap guard: browser code touched PowerSync before runtime registration. Initialize the runtime before accessing PowerSync.',
+    );
+  }
 }
 
 /**
@@ -126,6 +139,7 @@ function createSecureDrizzleProxy(db: any): any {
  * unless a native JSI instance has been injected via setPowerSyncDB().
  */
 export function getPowerSyncDB(): PowerSyncDatabase {
+  assertBrowserPowerSyncReady();
   if (!_instance) {
     _instance = new PowerSyncDatabase({
       schema: AppSchema as any,
@@ -143,6 +157,7 @@ export function getPowerSyncDB(): PowerSyncDatabase {
  * Automatically wraps the active PowerSync database instance.
  */
 export function getDrizzleDB(): ReturnType<typeof wrapPowerSyncWithDrizzle<typeof AppSchema>> {
+  assertBrowserPowerSyncReady();
   if (!_drizzleInstance) {
     const powerSyncDb = getPowerSyncDB();
     const rawDrizzle = wrapPowerSyncWithDrizzle(powerSyncDb as any, { schema: AppSchema });

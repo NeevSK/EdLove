@@ -1,4 +1,4 @@
-import { type SocialLink, User } from '../../types';
+import type { SocialLink } from '../../types';
 import type {
   ProfileJourneyHistoryReadOptions,
   ProfileJourneyReadOptions,
@@ -60,7 +60,7 @@ export class ProfileManager {
     return this.repo.deleteSocialLink(linkId);
   }
 
-  async updateSocialLinksOrder(userId: string, links: { id: string; order_index: number }[]) {
+  async updateSocialLinksOrder(_userId: string, links: { id: string; order_index: number }[]) {
     return this.repo.updateSocialLinksOrder(links);
   }
 

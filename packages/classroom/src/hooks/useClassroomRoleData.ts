@@ -71,7 +71,7 @@ export function useClassroomRoleData(_refreshTrigger: number = 0) {
 
     try {
       // 2. Background Sync: Fetch from the core API boundary
-      const summary = await api['identity'].getClassroomCapacitySummary(userId);
+      const summary = await api.identity.getClassroomCapacitySummary(userId);
       const profileCheck = { data: summary.profile };
       const realClassCount = summary.realClassCount;
 

@@ -16,7 +16,9 @@ import { networkManager } from '../logic/managers/NetworkManager';
 import { storage } from '../logic/managers/StorageManager';
 import { telemetry } from '../logic/managers/TelemetryManager';
 
+import { coreRuntime } from '../logic/runtimeRegistry';
 import { Runtime } from './runtime';
+import { nativeRuntimeEnvironment } from './runtimeAdapter';
 
 /**
  * Sovereign Bootstrap
@@ -48,16 +50,19 @@ export async function bootstrapPlatform() {
   // 2. Initialize Storage
   if (isExpoGo || isWeb || !isReady) {
     storage.registerAdapter(new AsyncStorageAdapter());
-    return;
+  } else {
+    try {
+      const mmkvModule = (await import('react-native-mmkv')) as any;
+      const MMKVClass = mmkvModule.MMKV;
+      const mmkv = new MMKVClass({ id: 'gurudevi-store' });
+      storage.registerAdapter(new FallbackMMKVStorageAdapter(mmkv));
+    } catch (e) {
+      console.warn('Boot: MMKV init failed, falling back to AsyncStorage', e);
+      storage.registerAdapter(new AsyncStorageAdapter());
+    }
   }
 
-  try {
-    const mmkvModule = (await import('react-native-mmkv')) as any;
-    const MMKVClass = mmkvModule.MMKV;
-    const mmkv = new MMKVClass({ id: 'gurudevi-store' });
-    storage.registerAdapter(new FallbackMMKVStorageAdapter(mmkv));
-  } catch (e) {
-    console.warn('Boot: MMKV init failed, falling back to AsyncStorage', e);
-    storage.registerAdapter(new AsyncStorageAdapter());
-  }
+  // 3. Register Core Runtime with all providers (asset, haptics, linking, etc.)
+  //     This must happen after adapter initialization but before app mount
+  coreRuntime.register(nativeRuntimeEnvironment);
 }

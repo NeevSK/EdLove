@@ -8,7 +8,7 @@
  * - Turn In button with success animation
  */
 
-import { coreRuntime, handleAPIError } from '@repo/core/logic';
+import { handleAPIError } from '@repo/core/logic';
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
 import { Camera, CheckCircle2, Send, Trash2, X } from '@repo/ui/icons';
 import {
@@ -30,6 +30,7 @@ import {
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Platform } from 'react-native';
 
 interface SubmissionModalProps {
   isOpen: boolean;
@@ -50,7 +51,7 @@ export default function SubmissionModal({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
 
-  const isWeb = coreRuntime.device.getMetadata().platform === 'web';
+  const isWeb = Platform.OS === 'web';
 
   const requestPermission = async (useCamera: boolean): Promise<boolean> => {
     const { status } = useCamera
@@ -114,7 +115,7 @@ export default function SubmissionModal({
         setPhotoUri(null);
         onClose();
       }, 2000);
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleAPIError(error);
     } finally {
       setIsSubmitting(false);

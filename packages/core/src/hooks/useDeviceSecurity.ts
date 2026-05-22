@@ -13,6 +13,7 @@ export function useDeviceSecurity() {
   const {
     devices,
     events,
+    authEvents,
     sessions,
     currentDevice,
     loading,
@@ -104,6 +105,7 @@ export function useDeviceSecurity() {
     devices: optimisticDevices,
     events,
     sessions: optimisticSessions,
+    authEvents,
     currentDevice,
     loading: loading || isPending,
     error,

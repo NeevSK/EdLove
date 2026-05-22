@@ -3,8 +3,6 @@
  */
 
 import { checkLocalPermission } from '../logic/permissions/localEvaluator';
-import { applyTemporalFilter } from '../logic/utils/temporalUtils';
-import type { TemporalScale } from '../store/useTemporalStore';
 import { APIError } from '../types/API';
 import { identityAPI } from './identity';
 import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from './supabase';

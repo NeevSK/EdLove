@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import type {
+  AuthEvent,
   DeviceSecurityEvent,
   DeviceSecuritySession,
   DeviceTrustSummary,
@@ -9,6 +10,7 @@ import { deviceSecurity } from '../logic/managers/factory';
 interface DeviceSecurityState {
   devices: DeviceTrustSummary[];
   events: DeviceSecurityEvent[];
+  authEvents: AuthEvent[];
   sessions: DeviceSecuritySession[];
   currentDevice: DeviceTrustSummary | null;
   loading: boolean;
@@ -26,6 +28,7 @@ interface DeviceSecurityState {
 export const useDeviceSecurityStore = create<DeviceSecurityState>((set, get) => ({
   devices: [],
   events: [],
+  authEvents: [],
   sessions: [],
   currentDevice: null,
   loading: false,

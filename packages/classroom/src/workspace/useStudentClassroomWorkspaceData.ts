@@ -47,13 +47,13 @@ export function useStudentClassroomWorkspaceData(classroomId: string) {
       setError(null);
 
       const [classroom, lessons, materials, assignments, notes, submissions] = await Promise.all([
-        api['classrooms'].getById(classroomId),
-        api['lessons'].getAll(classroomId),
-        api['lessonMaterials'].getAll(classroomId),
-        api['assignments'].getAll(classroomId),
-        api['classroomNotes'].getAll(classroomId),
+        api.classrooms.getById(classroomId),
+        api.lessons.getAll(classroomId),
+        api.lessonMaterials.getAll(classroomId),
+        api.assignments.getAll(classroomId),
+        api.classroomNotes.getAll(classroomId),
         userId
-          ? api['assignments'].getSubmissionHistoryForStudent(userId, classroomId)
+          ? api.assignments.getSubmissionHistoryForStudent(userId, classroomId)
           : Promise.resolve([]),
       ]);
 

@@ -1,6 +1,5 @@
-import { execSync } from 'child_process';
-import fs from 'fs';
-import path from 'path';
+import { execSync } from 'node:child_process';
+import fs from 'node:fs';
 
 /**
  * 🚀 Shiny Memory Sink Auditor (Node Edition)
@@ -45,13 +44,13 @@ function auditSinks() {
                 file,
                 line: linesBefore,
                 pattern,
-                snippet: body.trim().substring(0, 100).replace(/\n/g, ' ') + '...',
+                snippet: `${body.trim().substring(0, 100).replace(/\n/g, ' ')}...`,
               });
             }
           }
         }
       }
-    } catch (e) {
+    } catch (_e) {
       // Skip if no matches found
     }
   }

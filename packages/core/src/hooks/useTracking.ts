@@ -83,6 +83,6 @@ export function useTracking() {
       isDiscovered,
       trackSnapshot,
     }),
-    [exploredFeatures, isLoading, discoverFeature, trackSnapshot],
+    [exploredFeatures, isLoading, discoverFeature, trackSnapshot, isDiscovered],
   );
 }

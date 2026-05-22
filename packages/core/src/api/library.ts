@@ -22,7 +22,7 @@ export const libraryAPI = {
     offset?: number;
     search?: string;
   }) {
-    const res = await client.api.library.resources.$get({
+    const res = await (client.api as any).library.resources.$get({
       query: {
         type: filters.type,
         subject: filters.subject,
@@ -44,7 +44,7 @@ export const libraryAPI = {
    * Fetches a single resource by ID.
    */
   async identifyResource(id: string) {
-    const res = await client.api.library.resources[':id'].$get({
+    const res = await (client.api as any).library.resources[':id'].$get({
       param: { id },
     });
 
@@ -63,7 +63,7 @@ export const libraryAPI = {
     engagementType: 'view' | 'use' | 'endorse' | 'bookmark',
     classroomId?: string,
   ) {
-    const res = await client.api.library.resources[':id'].engage.$post({
+    const res = await (client.api as any).library.resources[':id'].engage.$post({
       param: { id: resourceId },
       json: {
         engagement_type: engagementType,
@@ -86,7 +86,7 @@ export const libraryAPI = {
     subject?: string;
     search?: string;
   }) {
-    const res = await client.api.library.collections.$get({
+    const res = await (client.api as any).library.collections.$get({
       query: filters,
     });
 

@@ -129,7 +129,7 @@ export default function InventoryView({ classroomId }: InventoryViewProps) {
 
   const reportMutation = useSafeMutation(
     async (variables: { id: string; condition: InventoryCondition }) => {
-      return api['inventory'].update(variables.id, {
+      return api.inventory.update(variables.id, {
         condition: variables.condition,
       });
     },
@@ -146,7 +146,7 @@ export default function InventoryView({ classroomId }: InventoryViewProps) {
 
   const requestMutation = useSafeMutation(
     async (variables: { item_name: string; quantity: string; reason: string }) => {
-      const inventoryService = api['inventory'] as unknown as InventoryAPIProxy;
+      const inventoryService = api.inventory as unknown as InventoryAPIProxy;
       return inventoryService.createRequest({
         classroom_id: classroomId,
         school_id: user?.school_id || '',

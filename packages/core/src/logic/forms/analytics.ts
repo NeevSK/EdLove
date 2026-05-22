@@ -1,1 +1,1 @@
-export * from '@intuitui-labs/form-builder-engine';
+export * from '@intuitui-labs/form-builder-engine/analytics';

@@ -101,7 +101,7 @@ export default function GlobalCreateModal({
       let result;
       if (type === 'school') {
         // 1. Create the school
-        result = await api['founder'].createSchool({
+        result = await api.founder.createSchool({
           name: name.trim(),
           type: schoolType,
           created_by: userId,
@@ -122,7 +122,7 @@ export default function GlobalCreateModal({
         }
       } else if (type === 'classroom') {
         // 1. Create the classroom
-        result = await api['founder'].createClassroom({
+        result = await api.founder.createClassroom({
           school_id: selectedSchoolId,
           name: name.trim(),
           grade_number: 1, // Default to 1

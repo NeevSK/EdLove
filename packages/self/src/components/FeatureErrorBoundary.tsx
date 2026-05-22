@@ -1,5 +1,5 @@
 import { Box, Text, VStack } from '@repo/ui/primitives';
-import React, { Component, type ErrorInfo, type ReactNode } from 'react';
+import { Component, type ErrorInfo, type ReactNode } from 'react';
 
 interface Props {
   children: ReactNode;

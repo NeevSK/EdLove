@@ -108,7 +108,7 @@ export default function BreathGuide({ onComplete }: BreathGuideProps) {
     setState(INITIAL_STATE);
   };
 
-  useEffect(() => () => clearTimer(), []);
+  useEffect(() => () => clearTimer(), [clearTimer]);
 
   const activePhase = CYCLE[state.phaseIdx] ?? CYCLE[0];
   const scale =

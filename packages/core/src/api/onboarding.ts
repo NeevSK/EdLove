@@ -1,12 +1,29 @@
-import { community, educational, notification, profile } from '../logic/managers/factory';
+import { community, educational, identity, notification, profile } from '../logic/managers/factory';
 import type { Capacity } from '../logic/schemas/capacity.schema';
 import type { ClassroomJoinRequest, RequestStatus, SchoolJoinRequest } from '../types/Onboarding';
+import type { Perspective } from '../types/Identity';
 
 /**
  * Onboarding API (Sovereign Orchestration)
  * Handles "No Trust" verification flows for schools and classrooms.
  */
 export const onboardingAPI = {
+  /**
+   * ONBOARDING IDENTITY FLOW
+   */
+
+  async getActivePerspective(): Promise<Perspective | null> {
+    return identity.getActivePerspective();
+  },
+
+  async createInitialBond(orientation: Capacity, context: Record<string, any>): Promise<void> {
+    await identity.createInitialBond(orientation, context);
+  },
+
+  async completeOnboarding(userId: string): Promise<void> {
+    await identity.completeOnboarding(userId);
+  },
+
   /**
    * SCHOOL JOIN FLOW
    */

@@ -4,7 +4,7 @@ import type { Comment } from '@repo/core/types';
 import { ConversationSheet } from '@repo/ui/components/ConversationSheet';
 import { hapticError, hapticSuccess } from '@repo/ui/primitives';
 import { confirmAction } from '@repo/ui/utils';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 
 interface CommentSheetProps {
   postId: string | null;
@@ -94,6 +94,8 @@ export function CommentSheet({
     },
     [toggleUpvote],
   );
+
+  if (!postId) return null;
 
   return (
     <ConversationSheet

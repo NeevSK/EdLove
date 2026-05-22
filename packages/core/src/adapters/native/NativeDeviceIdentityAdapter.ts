@@ -59,7 +59,7 @@ export class NativeDeviceIdentityAdapter implements IDeviceIdentity {
     return `signed_${challenge}_with_${credentials.password}`;
   }
 
-  async getAttestation(alias: string, challenge?: string): Promise<string> {
+  async getAttestation(_alias: string, _challenge?: string): Promise<string> {
     // Implementation for Apple App Attest / Google Play Integrity
     // This typically requires a dedicated native bridge or calling the platform APIs directly.
     return 'production_attestation_token_placeholder';

@@ -1,4 +1,5 @@
-import { studentsAPI, usePermissions } from '@repo/core';
+import { studentsAPI } from '@repo/core/api';
+import { usePermissions } from '@repo/core/logic';
 import { useQuery } from '@tanstack/react-query';
 
 /**

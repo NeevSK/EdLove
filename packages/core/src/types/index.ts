@@ -171,6 +171,9 @@ export type {
   WorkspaceRendererPlatform,
   WorkspaceRuntimePlatform,
   WorkspaceSurfaceDefinition,
+  WorkspaceSwitcherDestination,
+  WorkspaceSwitcherTarget,
+  WorkspaceSwitcherTargetId,
   WorkspaceZoneId,
 } from './Workspace';
 export { APIError };

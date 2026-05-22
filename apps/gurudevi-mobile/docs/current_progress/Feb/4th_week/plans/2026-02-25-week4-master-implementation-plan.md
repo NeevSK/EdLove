@@ -972,8 +972,8 @@ export const groupMessagesAPI = {
 3. Create `packages/community/src/hooks/useGroupChat.ts`:
 ```typescript
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { groupMessagesAPI } from '@repo/core';
-import { useAuth } from '@repo/core'; // or wherever auth hook lives
+import { groupMessagesAPI } from '@repo/core/api';
+import { useAuth } from '@repo/core/hooks'; // or wherever auth hook lives
 
 export function useGroupChat(groupId: string) {
   const [messages, setMessages] = useState<any[]>([]);

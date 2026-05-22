@@ -1,8 +1,7 @@
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import type { WorkspaceSwitcherTarget } from '@repo/core';
 import { resolveWorkspaceSwitcherTargets, usePermissions, useStore } from '@repo/core/logic';
-import type { GuardianStackParamList } from '@repo/core/types';
+import type { GuardianStackParamList, WorkspaceSwitcherTarget } from '@repo/core/types';
 
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { Box, Text } from '@repo/ui/primitives';

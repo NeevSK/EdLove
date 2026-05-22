@@ -77,14 +77,14 @@ export function AssetCreationModal({
       <VStack className="gap-5 p-2">
         <Input className="h-14">
           <InputField
-            placeholder={placeholders['title'] || 'Asset Title'}
+            placeholder={placeholders.title || 'Asset Title'}
             value={formData.title}
             onChangeText={handleSetTitle}
           />
         </Input>
         <Input className="h-14">
           <InputField
-            placeholder={placeholders['url'] || 'Reference URL'}
+            placeholder={placeholders.url || 'Reference URL'}
             value={formData.url}
             onChangeText={handleSetUrl}
             autoCapitalize="none"
@@ -92,7 +92,7 @@ export function AssetCreationModal({
         </Input>
         <Input className="min-h-[100px]">
           <InputField
-            placeholder={placeholders['description'] || 'Description (Optional)'}
+            placeholder={placeholders.description || 'Description (Optional)'}
             value={formData.description}
             onChangeText={handleSetDescription}
             multiline

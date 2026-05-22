@@ -20,20 +20,20 @@ function asAttendancePayload(payload: unknown): AttendanceMutationPayload {
   }
   const record = payload as Record<string, unknown>;
   if (
-    typeof record['classroomId'] !== 'string' ||
-    typeof record['studentId'] !== 'string' ||
-    typeof record['status'] !== 'string' ||
-    typeof record['date'] !== 'string'
+    typeof record.classroomId !== 'string' ||
+    typeof record.studentId !== 'string' ||
+    typeof record.status !== 'string' ||
+    typeof record.date !== 'string'
   ) {
     throw new Error(
       'Attendance mutation payload requires string classroomId, studentId, status, and date fields.',
     );
   }
   return {
-    classroomId: record['classroomId'],
-    studentId: record['studentId'],
-    status: record['status'],
-    date: record['date'],
+    classroomId: record.classroomId,
+    studentId: record.studentId,
+    status: record.status,
+    date: record.date,
   };
 }
 function asInsertablePayload(

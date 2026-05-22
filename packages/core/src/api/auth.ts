@@ -24,6 +24,34 @@ export const authAPI = {
     return auth.linkOAuthIdentity(provider, redirectTo, skipBrowserRedirect);
   },
 
+  async signInWithPasskey(redirectTo?: string, skipBrowserRedirect = false) {
+    return auth.signInWithPasskey(redirectTo, skipBrowserRedirect);
+  },
+
+  async registerPasskey(redirectTo?: string, skipBrowserRedirect = false) {
+    return auth.registerPasskey(redirectTo, skipBrowserRedirect);
+  },
+
+  async listMfaFactors() {
+    return auth.listMfaFactors();
+  },
+
+  async enrollTotp(friendlyName?: string) {
+    return auth.enrollTotp(friendlyName);
+  },
+
+  async challengeTotp(factorId: string) {
+    return auth.challengeTotp(factorId);
+  },
+
+  async verifyTotp(factorId: string, challengeId: string, code: string) {
+    return auth.verifyTotp({ factorId, challengeId, code });
+  },
+
+  async challengeAndVerifyTotp(factorId: string, code: string) {
+    return auth.challengeAndVerifyTotp({ factorId, code });
+  },
+
   async setSession(access_token: string, refresh_token: string) {
     return auth.setSession(access_token, refresh_token);
   },

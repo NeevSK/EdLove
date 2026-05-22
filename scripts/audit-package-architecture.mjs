@@ -102,11 +102,11 @@ if (fs.existsSync(srcDir)) {
         .split('\n')
         .filter(Boolean)
         .forEach((line) => {
-          const [file, ln, ...msgParts] = line.split(':');
+          const [file, _ln, ...msgParts] = line.split(':');
           if (line.includes('@sovereign-ignore')) return;
           addViolation(p.id, file, msgParts.join(':').trim());
         });
-    } catch (e) {}
+    } catch (_e) {}
   }
 
   // State Density Check (Fast)
@@ -120,12 +120,12 @@ if (fs.existsSync(srcDir)) {
       .filter(Boolean)
       .forEach((line) => {
         const [file, count] = line.split(':');
-        if (parseInt(count) > 3) {
+        if (parseInt(count, 10) > 3) {
           // Slightly relaxed
           addViolation('STATE DENSITY', file, `Has ${count} useState hooks. Max recommended is 3.`);
         }
       });
-  } catch (e) {}
+  } catch (_e) {}
 }
 
 // Generate Output
@@ -140,10 +140,10 @@ const finalMarkdown = `# ${report.title}\n\n## Summary\n- Total Violations: ${re
 
 if (isJson) {
   process.stdout.write(
-    '---BEGIN_JSON_REPORT---\n' + JSON.stringify(report, null, 2) + '\n---END_JSON_REPORT---\n',
+    `---BEGIN_JSON_REPORT---\n${JSON.stringify(report, null, 2)}\n---END_JSON_REPORT---\n`,
   );
 } else {
   process.stdout.write(
-    '---BEGIN_MARKDOWN_REPORT---\n' + finalMarkdown + '\n---END_MARKDOWN_REPORT---\n',
+    `---BEGIN_MARKDOWN_REPORT---\n${finalMarkdown}\n---END_MARKDOWN_REPORT---\n`,
   );
 }

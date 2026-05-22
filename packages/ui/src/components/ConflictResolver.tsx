@@ -1,5 +1,5 @@
 import type React from 'react';
-import { AlertTriangle, ArrowLeftRight, Check, X } from '../icons';
+import { AlertTriangle, ArrowLeftRight, Check } from '../icons';
 import { Box, Heading, HStack, Icon, Pressable, Text, VStack } from '../primitives';
 import { Theme } from '../theme/Theme';
 import { hapticLight, hapticSuccess } from '../utils/haptics';

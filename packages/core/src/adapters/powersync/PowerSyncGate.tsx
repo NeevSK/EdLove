@@ -13,7 +13,7 @@
  *   <NavigationContainer>...</NavigationContainer>
  * </PowerSyncGate>
  */
-import React, { type PropsWithChildren, useEffect, useRef } from 'react';
+import { type PropsWithChildren, useEffect, useRef } from 'react';
 import { sovereignBus } from '../../lib/sync/eventBus';
 import { useStore } from '../../store/useStore';
 import { disconnectPowerSync, getPowerSyncDB } from './database';

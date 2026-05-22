@@ -141,7 +141,7 @@ if (fs.existsSync(pnpmRoot)) {
             }
           }
         });
-      } catch (e) {
+      } catch (_e) {
         // Skip inaccessible or non-directory entries
       }
     }

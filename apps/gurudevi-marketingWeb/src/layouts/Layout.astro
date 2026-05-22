@@ -1,12 +1,9 @@
 ---
 import '../styles/global.css';
-import SEO from '../components/SEO.astro';
-import StructuredData from '../components/StructuredData.astro';
 import {
   defaultOgImage,
   ORGANIZATION,
   SITE_DESCRIPTION,
-  SITE_KEYWORDS,
   SITE_NAME,
   SITE_TITLE,
   SITE_URL,
@@ -29,9 +26,9 @@ const {
 } = Astro.props;
 
 const canonical = Astro.url.href;
-const ogImage = image ?? defaultOgImage(Astro.url.pathname);
-const robotsContent = noindex ? 'noindex, nofollow' : 'index, follow';
-const baseStructuredData = [
+const _ogImage = image ?? defaultOgImage(Astro.url.pathname);
+const _robotsContent = noindex ? 'noindex, nofollow' : 'index, follow';
+const _baseStructuredData = [
   {
     '@context': 'https://schema.org',
     '@type': 'Organization',

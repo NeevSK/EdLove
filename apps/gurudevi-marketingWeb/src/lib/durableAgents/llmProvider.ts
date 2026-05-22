@@ -16,21 +16,21 @@ function extractOpenAIText(data: unknown): string | null {
   if (!data || typeof data !== 'object') return null;
   const record = data as Record<string, unknown>;
 
-  if (typeof record['output_text'] === 'string' && record['output_text'].trim()) {
-    return record['output_text'].trim();
+  if (typeof record.output_text === 'string' && record.output_text.trim()) {
+    return record.output_text.trim();
   }
 
-  const output = record['output'];
+  const output = record.output;
   if (!Array.isArray(output)) return null;
 
   const fragments: string[] = [];
   for (const item of output) {
     if (!item || typeof item !== 'object') continue;
-    const content = (item as Record<string, unknown>)['content'];
+    const content = (item as Record<string, unknown>).content;
     if (!Array.isArray(content)) continue;
     for (const part of content) {
       if (!part || typeof part !== 'object') continue;
-      const text = (part as Record<string, unknown>)['text'];
+      const text = (part as Record<string, unknown>).text;
       if (typeof text === 'string' && text.trim()) {
         fragments.push(text.trim());
       }
@@ -43,13 +43,13 @@ function extractOpenAIText(data: unknown): string | null {
 function extractAnthropicText(data: unknown): string | null {
   if (!data || typeof data !== 'object') return null;
   const record = data as Record<string, unknown>;
-  const content = record['content'];
+  const content = record.content;
   if (!Array.isArray(content)) return null;
 
   const fragments: string[] = [];
   for (const part of content) {
     if (!part || typeof part !== 'object') continue;
-    const text = (part as Record<string, unknown>)['text'];
+    const text = (part as Record<string, unknown>).text;
     if (typeof text === 'string' && text.trim()) {
       fragments.push(text.trim());
     }
@@ -62,9 +62,9 @@ async function synthesizeWithOpenAI({
   systemPrompt,
   userPayload,
   maxOutputTokens = 420,
-  openAiModel = import.meta.env['OPENAI_DURABLE_AGENT_MODEL'] || 'gpt-4.1-mini',
+  openAiModel = import.meta.env.OPENAI_DURABLE_AGENT_MODEL || 'gpt-4.1-mini',
 }: SynthesizeDraftInput) {
-  const apiKey = import.meta.env['OPENAI_API_KEY'];
+  const apiKey = import.meta.env.OPENAI_API_KEY;
   if (!apiKey) return null;
 
   const response = await fetch('https://api.openai.com/v1/responses', {
@@ -114,9 +114,9 @@ async function synthesizeWithAnthropic({
   systemPrompt,
   userPayload,
   maxOutputTokens = 420,
-  anthropicModel = import.meta.env['ANTHROPIC_DURABLE_AGENT_MODEL'] || 'claude-3-5-haiku-latest',
+  anthropicModel = import.meta.env.ANTHROPIC_DURABLE_AGENT_MODEL || 'claude-3-5-haiku-latest',
 }: SynthesizeDraftInput) {
-  const apiKey = import.meta.env['ANTHROPIC_API_KEY'];
+  const apiKey = import.meta.env.ANTHROPIC_API_KEY;
   if (!apiKey) return null;
 
   const response = await fetch('https://api.anthropic.com/v1/messages', {
@@ -159,7 +159,7 @@ export async function synthesizeDurableAgentDraft(input: SynthesizeDraftInput): 
   summaryDraft: string;
   synthesisMode: DurableAgentSynthesisMode;
 }> {
-  const preferredProvider = String(import.meta.env['DURABLE_AGENT_PROVIDER'] || '').toLowerCase();
+  const preferredProvider = String(import.meta.env.DURABLE_AGENT_PROVIDER || '').toLowerCase();
 
   const providers =
     preferredProvider === 'anthropic'

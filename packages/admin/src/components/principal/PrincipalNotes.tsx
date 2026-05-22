@@ -1,5 +1,4 @@
 import { api, type PrincipalNote } from '@repo/core/api';
-import { coreRuntime } from '@repo/core/logic';
 
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
@@ -31,7 +30,9 @@ import {
   StickyNote,
   X,
 } from 'lucide-react-native';
-import React, { useCallback, useEffect, useMemo, useReducer } from 'react';
+import type React from 'react';
+import { memo, useCallback, useEffect, useMemo, useReducer } from 'react';
+import { Platform } from 'react-native';
 
 // -- Types ----------------------------------------------------
 
@@ -114,7 +115,13 @@ const notesReducer = (state: State, action: Action): State => {
 
 const NOTE_TYPE_META: Record<
   PrincipalNote['note_type'],
-  { label: string; icon: any; color: string; bg: string; placeholder: string }
+  {
+    label: string;
+    icon: React.ComponentType<{ className?: string; size?: string | number }>;
+    color: string;
+    bg: string;
+    placeholder: string;
+  }
 > = {
   todo: {
     label: 'To-Do',
@@ -208,11 +215,11 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
     isSaving: false,
   });
 
-  const isIos = coreRuntime.device.getMetadata().platform === 'ios';
+  const isIos = Platform.OS === 'ios';
 
   // -- Sub-Components -------------------------------------------
 
-  const NoteCard = React.memo(
+  const NoteCard = memo(
     ({
       note,
       onToggleDone,
@@ -307,7 +314,7 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
 
   const fetchNotes = useCallback(async () => {
     try {
-      const data = await api['principalNotes'].getAll(schoolId);
+      const data = await api.principalNotes.getAll(schoolId);
       dispatch({ type: 'SET_NOTES', notes: data ?? [] });
     } catch (err) {
       console.error('PrincipalNotes: fetch error', err);
@@ -316,7 +323,7 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
   }, [schoolId]);
 
   useEffect(() => {
-    fetchNotes();
+    void fetchNotes();
   }, [fetchNotes]);
 
   const rows = useMemo(() => {
@@ -335,7 +342,7 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
     if (!state.draft.trim()) return;
     dispatch({ type: 'SAVE_START' });
     try {
-      const created = await api['principalNotes'].create({
+      const created = await api.principalNotes.create({
         school_id: schoolId,
         content: state.draft.trim(),
         note_type: state.draftType,
@@ -352,7 +359,7 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
     if (note.note_type !== 'todo') return;
     try {
       hapticLight();
-      const updated = await api['principalNotes'].update(note.id, {
+      const updated = await api.principalNotes.update(note.id, {
         is_done: !note.is_done,
       });
       dispatch({ type: 'UPDATE_NOTE', note: updated });
@@ -365,7 +372,7 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
     if (note.is_done) return;
     try {
       hapticLight();
-      const updated = await api['principalNotes'].update(note.id, {
+      const updated = await api.principalNotes.update(note.id, {
         is_pinned: !note.is_pinned,
       });
       dispatch({ type: 'UPDATE_NOTE', note: updated });
@@ -377,7 +384,7 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
   const handleDelete = async (id: string) => {
     try {
       hapticLight();
-      await api['principalNotes'].delete(id);
+      await api.principalNotes.delete(id);
       dispatch({ type: 'DELETE_NOTE', id });
       showToast({ message: 'Note deleted.', type: 'success' });
     } catch {
@@ -543,7 +550,7 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
             <Pressable
               onPress={() => {
                 hapticLight();
-                handleSave();
+                void handleSave();
               }}
               disabled={!state.draft.trim() || state.isSaving}
               className={`flex-[1.8] h-16 rounded-[20px] bg-phase-interactive shadow-md items-center justify-center active:scale-95 transition-all ${!state.draft.trim() || state.isSaving ? 'opacity-50' : ''}`}

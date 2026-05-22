@@ -27,7 +27,7 @@ function getPackages() {
             dependencies: Object.keys(pkg.dependencies || {}),
             devDependencies: Object.keys(pkg.devDependencies || {}),
           };
-        } catch (e) {
+        } catch (_e) {
           // Skip invalid package.json
         }
       }

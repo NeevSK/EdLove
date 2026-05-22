@@ -1,5 +1,4 @@
-import type { FormManager } from '@intuitui-labs/form-builder-engine';
-import { useForm } from '@repo/core/hooks';
+import type { FormManager, FormState } from '@intuitui-labs/form-builder-engine/core';
 import {
   Box,
   Button,
@@ -19,6 +18,7 @@ import {
 } from '@repo/ui/primitives';
 
 import { Info } from 'lucide-react-native';
+import { useEffect, useState } from 'react';
 
 interface NativeFormProps<T extends Record<string, any>> {
   manager: FormManager<T>;
@@ -29,7 +29,15 @@ export default function NativeForm<T extends Record<string, any>>({
   manager,
   submitLabel = 'Submit',
 }: NativeFormProps<T>) {
-  const state = useForm(manager);
+  const [state, setState] = useState<FormState<T>>(() => manager.getState());
+
+  useEffect(() => {
+    setState(manager.getState());
+    return manager.subscribe((next) => {
+      setState({ ...next });
+    });
+  }, [manager]);
+
   const config = manager.getConfig();
 
   return (

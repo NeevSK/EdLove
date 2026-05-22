@@ -61,7 +61,7 @@ export function isFieldFilled(value: unknown): boolean {
 **Step 2: Create `packages/profile/src/config/profileSections.ts`**
 
 ```typescript
-import type { UserRole } from '@repo/core';
+import type { UserRole } from '@repo/core/types';
 import type { UserProfile } from '../types';
 
 export interface ProfileFieldConfig {
@@ -171,7 +171,7 @@ git commit -m "feat(profile): add isFieldFilled util and PROFILE_SECTIONS manife
 ```typescript
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import type { UserRole } from '@repo/core';
+import type { UserRole } from '@repo/core/types';
 import type { UserProfile } from '../types';
 import { PROFILE_SECTIONS } from '../config/profileSections';
 import { isFieldFilled } from '../lib/isFieldFilled';
@@ -555,7 +555,7 @@ import {
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
 import * as FileSystem from 'expo-file-system';
-import { supabase } from '@repo/core';
+import { supabase } from '@repo/core/supabase';
 import { useTheme } from '@repo/ui';
 import { Camera } from 'lucide-react-native';
 

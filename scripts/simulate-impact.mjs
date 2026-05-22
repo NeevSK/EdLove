@@ -1,5 +1,4 @@
 import { execSync } from 'node:child_process';
-import path from 'node:path';
 
 const symbol = process.argv[2];
 if (!symbol) {
@@ -13,7 +12,7 @@ function runGrep(sym) {
       encoding: 'utf-8',
       maxBuffer: 10 * 1024 * 1024,
     });
-  } catch (e) {
+  } catch (_e) {
     return '';
   }
 }

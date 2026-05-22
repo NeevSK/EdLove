@@ -9,7 +9,7 @@ function runGrep(pattern) {
     return execSync(`git grep -n "${pattern}" -- "${TARGET_DIR}"`, {
       encoding: 'utf-8',
     });
-  } catch (e) {
+  } catch (_e) {
     return '';
   }
 }
@@ -24,7 +24,7 @@ const results = [];
 const componentsSeen = new Set();
 
 lines.forEach((line) => {
-  const [file, lineNumber] = line.split(':');
+  const [file, _lineNumber] = line.split(':');
   if (componentsSeen.has(file)) return;
   componentsSeen.add(file);
 

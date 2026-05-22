@@ -1,5 +1,7 @@
+import { assertHighway } from '../api/highways';
 import { identityAPI } from '../api/identity';
 import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../api/supabase';
+import type { Actions } from '../logic/permissions/abilities/base';
 import { checkLocalPermission } from '../logic/permissions/localEvaluator';
 import { APIError } from '../types/API';
 
@@ -7,6 +9,7 @@ import { APIError } from '../types/API';
  * requireAuth  Ensures the user is authenticated.
  */
 export async function requireAuth() {
+  assertHighway('identity_bootstrap', 'direct-api');
   const identity = await identityAPI.identifyActiveCitizen();
   const userId = identity?.id;
   if (!userId) {
@@ -33,7 +36,7 @@ export async function requireClassroomAccess(classroomId: string, capability: st
   }
 
   const isAllowed = await checkLocalPermission({
-    action: capability as any,
+    action: capability as Actions,
     resourceType: 'Classroom',
     resourceId: classroomId,
     userContext: {

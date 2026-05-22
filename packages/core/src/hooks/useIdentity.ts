@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useCallback, useMemo } from 'react';
 import { authAPI } from '../api/auth';
+import { assertHighway } from '../api/highways';
 import { identityAPI } from '../api/identity';
 
 /**
@@ -18,7 +19,10 @@ export function useIdentity() {
     refetch,
   } = useQuery({
     queryKey: ['identity', 'active-citizen'],
-    queryFn: () => identityAPI.identifyActiveCitizen(),
+    queryFn: () => {
+      assertHighway('identity_bootstrap', 'direct-api');
+      return identityAPI.identifyActiveCitizen();
+    },
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 

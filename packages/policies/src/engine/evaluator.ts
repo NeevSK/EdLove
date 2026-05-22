@@ -1,7 +1,7 @@
-import { readFileSync } from 'fs';
-import { createRequire } from 'module';
-import { dirname, join } from 'path';
-import { fileURLToPath } from 'url';
+import { readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import type { AuthRequest, AuthResponse } from './types';
 
 const require = createRequire(import.meta.url);
@@ -31,7 +31,7 @@ try {
     'school/student.cedar',
     'school/parent.cedar',
     'school/staff.cedar',
-    'guest/wanderer.cedar',
+    'guest/personal.cedar',
   ];
 
   const policyTexts: string[] = [];

@@ -2,6 +2,7 @@ import type { Session } from '@supabase/supabase-js';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Platform } from 'react-native';
 import { authAPI } from '../api/auth';
+import { assertHighway } from '../api/highways';
 import { identityAPI } from '../api/identity';
 import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../api/supabase';
 import type { SchoolType } from '../constants/SriLankanSchools';
@@ -10,6 +11,7 @@ import { clearSentryUser, initSentry, setSentryUser } from '../lib/monitoring/se
 import { useStore } from '../store/useStore';
 import type { User } from '../types';
 import { APIError } from '../types/API';
+import type { Bond } from '../types/Identity';
 
 /**
  * useAuthorityLifecycle
@@ -31,22 +33,27 @@ export function useAuthorityLifecycle() {
   const setAuthSessionResolved = useStore((state) => state.setAuthSessionResolved);
   const setDemoMode = useStore((state) => state.setDemoMode);
 
+  const isAnonymousSession = (currentSession: Session | null) =>
+    !!currentSession?.user && (currentSession.user.is_anonymous || !currentSession.user.email);
+
   const fetchAndSetUserProfile = useCallback(async () => {
     setIsProfileLoading(true);
     try {
+      assertHighway('identity_bootstrap', 'direct-api');
       // 1. Resolve Sovereign Identity (Bonds & Perspectives)
       // [SOVEREIGN-SIPHON] unified into identifyActiveCitizen
       const identity = await identityAPI.identifyActiveCitizen();
 
       if (identity) {
         // 2. Update Store with ReBAC data
+        // Cast simplified bonds to full Bond type - the store layer fills in additional fields
         setUser(identity as unknown as User);
-        setAvailableBonds(identity.availableBonds);
+        setAvailableBonds(identity.availableBonds as unknown as Bond[]);
 
         // Re-calculate perspective from bonds
         setPerspective({
-          activeBond: identity.activeBond,
-          availableBonds: identity.availableBonds,
+          activeBond: identity.activeBond as unknown as Bond | undefined,
+          availableBonds: identity.availableBonds as unknown as Bond[],
         });
 
         // 3. Handle Onboarding & School Logic
@@ -116,8 +123,14 @@ export function useAuthorityLifecycle() {
         setSession(initialSession);
         setAuthSession(initialSession);
 
-        if (initialSession?.user) {
+        if (initialSession?.user && !isAnonymousSession(initialSession)) {
           await fetchAndSetUserProfile();
+        } else if (initialSession?.user) {
+          setUser(null);
+          setPerspective(null);
+          setAvailableBonds([]);
+          setSchoolType(null);
+          setOnboardingCompleted(false);
         }
       } catch (error) {
         if (error instanceof APIError) {
@@ -149,8 +162,14 @@ export function useAuthorityLifecycle() {
         setAuthSession(currentSession);
         setAuthSessionResolved(true);
 
-        if (currentSession?.user) {
+        if (currentSession?.user && !isAnonymousSession(currentSession)) {
           await fetchAndSetUserProfile();
+        } else if (currentSession?.user) {
+          setUser(null);
+          setPerspective(null);
+          setAvailableBonds([]);
+          setSchoolType(null);
+          setOnboardingCompleted(false);
         } else if (event === 'SIGNED_OUT') {
           clearSentryUser();
           setUser(null);
@@ -175,6 +194,8 @@ export function useAuthorityLifecycle() {
     setSchoolType,
     setOnboardingCompleted,
     fetchAndSetUserProfile,
+    setDemoMode,
+    isAnonymousSession,
   ]);
 
   // 4. Realtime Profile Updates (Capability Sync)

@@ -20,7 +20,6 @@
  */
 
 import { api, type ClassroomNote } from '@repo/core/api';
-import { coreRuntime } from '@repo/core/logic';
 
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
 import { useLotusToast } from '@repo/ui/hooks';
@@ -53,7 +52,7 @@ import { hapticLight } from '@repo/ui/utils/haptics';
 
 import type React from 'react';
 import { useEffect, useMemo, useReducer } from 'react';
-import { useTranslation } from 'react-i18next';
+import { Platform } from 'react-native';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -213,7 +212,6 @@ function notesReducer(state: NotesState, action: NotesAction): NotesState {
 
 export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNotesProps) {
   const { showToast } = useLotusToast();
-  const { t } = useTranslation();
 
   const [state, dispatch] = useReducer(notesReducer, {
     notes: [],
@@ -229,7 +227,7 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
     let active = true;
     const loadNotes = async () => {
       try {
-        const data = await api['classroomNotes'].getAll(classroomId);
+        const data = await api.classroomNotes.getAll(classroomId);
         if (active) {
           dispatch({ type: 'SET_NOTES', notes: data || [] });
         }
@@ -253,7 +251,7 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
     if (!state.draft.trim()) return;
     dispatch({ type: 'SET_SAVING', saving: true });
     try {
-      const created = await api['classroomNotes'].create({
+      const created = await api.classroomNotes.create({
         classroom_id: classroomId,
         content: state.draft.trim(),
         note_type: state.draftType,
@@ -274,7 +272,7 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
   const handleDelete = async (id: string) => {
     hapticLight();
     try {
-      await api['classroomNotes'].delete(id);
+      await api.classroomNotes.delete(id);
       dispatch({ type: 'NOTE_DELETED', id });
       showToast({ message: 'Note deleted.', type: 'success' });
     } catch {
@@ -285,7 +283,7 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
   const handleTogglePin = async (note: ClassroomNote) => {
     hapticLight();
     try {
-      const updated = await api['classroomNotes'].update(note.id, {
+      const updated = await api.classroomNotes.update(note.id, {
         is_pinned: !note.is_pinned,
       });
       dispatch({ type: 'NOTE_UPDATED', note: updated });
@@ -298,7 +296,7 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
     hapticLight();
     const next: ClassroomNote['visibility'] = note.visibility === 'private' ? 'class' : 'private';
     try {
-      const updated = await api['classroomNotes'].update(note.id, {
+      const updated = await api.classroomNotes.update(note.id, {
         visibility: next,
       });
       dispatch({ type: 'NOTE_UPDATED', note: updated });
@@ -434,7 +432,7 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
-      behavior={coreRuntime.device.getMetadata().platform === 'ios' ? 'padding' : undefined}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       keyboardVerticalOffset={120}
     >
       <VStack className="flex-1">

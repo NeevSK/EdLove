@@ -213,7 +213,7 @@ export default function PrincipalDashboardWeb({
   const publishedGradingCompletionQuery = useQuery({
     queryKey: ['principal-published-grading-completion', principalSchoolId, viewDate],
     queryFn: () =>
-      api['grading'].getSchoolPublishedGradingCompletion(principalSchoolId, viewDate || '', {
+      api.grading.getSchoolPublishedGradingCompletion(principalSchoolId, viewDate || '', {
         actorId: effectiveUserId,
         accessKind: 'institutional_read',
         reason: 'principal_dashboard_published_grading_completion',

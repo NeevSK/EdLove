@@ -41,7 +41,7 @@ export default function AttendanceReportScreen({
   const fetchData = async (cycleId?: string) => {
     setLoading(true);
     try {
-      const allCycles = await api['academicCycles'].getAll(schoolId);
+      const allCycles = await api.academicCycles.getAll(schoolId);
       setCycles(allCycles);
 
       const targetCycle = cycleId

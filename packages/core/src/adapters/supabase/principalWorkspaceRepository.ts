@@ -9,7 +9,6 @@ import {
   type PrincipalGovernanceEventZod,
   type PrincipalInviteEventCreate,
   PrincipalInviteEventCreateSchema,
-  type PrincipalInviteRole,
   type PrincipalObservationCreate,
   PrincipalObservationCreateSchema,
   type PrincipalObservationFollowUpCreate,
@@ -22,14 +21,14 @@ import { APIError } from '../../types/API';
 
 const normalizeInviteCode = (row: Record<string, unknown>): InviteCodeZod =>
   InviteCodeSchema.parse({
-    code: row['code'],
-    school_id: row['school_id'],
-    capacity: CapacitySchema.parse((row['capacity'] ?? 'teacher') as string),
-    created_by: row['created_by'],
-    used: Boolean(row['used'] ?? !row['is_active']) || Number(row['uses_count'] ?? 0) > 0,
-    created_at: row['created_at'],
-    expires_at: row['expires_at'] ?? null,
-    is_active: Boolean(row['is_active'] ?? true),
+    code: row.code,
+    school_id: row.school_id,
+    capacity: CapacitySchema.parse((row.capacity ?? 'teacher') as string),
+    created_by: row.created_by,
+    used: Boolean(row.used ?? !row.is_active) || Number(row.uses_count ?? 0) > 0,
+    created_at: row.created_at,
+    expires_at: row.expires_at ?? null,
+    is_active: Boolean(row.is_active ?? true),
   });
 
 export const createSupabasePrincipalWorkspaceRepository = (
@@ -91,7 +90,8 @@ export const createSupabasePrincipalWorkspaceRepository = (
     },
 
     async generateInviteCode(schoolId, capacity, createdBy) {
-      const code = `GURU-${Math.random().toString(36).substring(2, 8).toUpperCase().padEnd(6, '0')}-${capacity === 'teacher' ? 'TEACH' : 'ADMIN'}`;
+      const randomPart = crypto.randomUUID().replace(/-/g, '').substring(0, 6).toUpperCase();
+      const code = `GURU-${randomPart}-${capacity === 'teacher' ? 'TEACH' : 'ADMIN'}`;
       const payload = {
         school_id: schoolId,
         code,

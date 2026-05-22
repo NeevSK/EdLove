@@ -1,10 +1,9 @@
-import { ADMIN_REGISTRY, appendAdminWorkspaceSurfaces } from '@repo/admin';
+import { appendAdminWorkspaceSurfaces } from '@repo/admin';
 import { useFeatureRegistry } from '@repo/core/hooks/useFeatureRegistry';
 import { FeatureGuard } from '@repo/core/logic';
 import type {
   ClassroomWorkspaceSurface,
   ClassroomWorkspaceSurfaceId,
-  DomainFeature,
 } from '@repo/core/types/Workspace';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import { SanctuaryNudge } from '@repo/ui/components/SanctuaryNudge';
@@ -174,7 +173,7 @@ export function useClassroomWorkspaceSurfaces({
     });
 
     // --- Teacher Dashboard ---
-    const teacherGate = classroomGated['teacher_dashboard'];
+    const teacherGate = classroomGated.teacher_dashboard;
     if (teacherGate?.visible) {
       const teacherContent =
         classroomData.realClassCount === 0 && !isDemoModeTriggered ? (
@@ -213,7 +212,7 @@ export function useClassroomWorkspaceSurfaces({
     }
 
     // --- Student Dashboard ---
-    const studentGate = classroomGated['student_dashboard'];
+    const studentGate = classroomGated.student_dashboard;
     if (studentGate?.visible) {
       const studentContent =
         classroomData.realClassCount === 0 && !isDemoModeTriggered ? (
@@ -270,5 +269,10 @@ export function useClassroomWorkspaceSurfaces({
     navigation,
     renderNudge,
     surfaceInsights,
+    isPro,
+    userCapabilities,
+    classroomGated.student_dashboard,
+    classroomGated.teacher_dashboard,
+    citizenship,
   ]);
 }

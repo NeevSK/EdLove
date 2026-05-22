@@ -81,12 +81,13 @@ export function usePostsInfiniteQuery(groupId: string = 'all', options: Record<s
 export function useCreatePostMutation() {
   const queryClient = useQueryClient();
   const { user: storeUser } = useStore();
-  const activeBond = useAuthStore((state) => state.activeBond);
+  const _activeBond = useAuthStore((state) => state.activeBond);
 
   return useMutation({
     mutationFn: async (input: any) => {
       const identity = await identityAPI.identifyActiveCitizen();
       if (!identity) throw new APIError('Not authenticated', 'UNAUTHORIZED' as any);
+      if (!identity.activeBond) throw new APIError('No active bond found', 'FORBIDDEN' as any);
 
       return communityAPI.createPost({
         ...input,

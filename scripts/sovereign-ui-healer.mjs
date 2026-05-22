@@ -1,6 +1,6 @@
-import { execSync } from 'child_process';
-import fs from 'fs';
-import path from 'path';
+import { execSync } from 'node:child_process';
+import fs from 'node:fs';
+import path from 'node:path';
 
 /**
  * 🛠️ Sovereign UI Healer
@@ -28,7 +28,7 @@ function heal() {
   let files = [];
   try {
     files = execSync(cmd, { encoding: 'utf8' }).trim().split('\n');
-  } catch (e) {
+  } catch (_e) {
     console.log('No files to heal.');
     return;
   }
@@ -42,8 +42,8 @@ function heal() {
 
     // Skip core files to avoid circular imports
     if (file.includes('primitives.ts')) continue;
-    if (file.includes('components' + path.sep + 'ui')) continue;
-    if (file.includes('gluestack' + path.sep)) continue;
+    if (file.includes(`components${path.sep}ui`)) continue;
+    if (file.includes(`gluestack${path.sep}`)) continue;
 
     // Regex to match imports from 'react-native'
     // Matches: import { View, Text } from 'react-native';
@@ -64,7 +64,7 @@ function heal() {
 
         // Remove .ts extension and ensure ./ prefix
         relPath = relPath.replace(/\.ts$/, '');
-        if (!relPath.startsWith('.')) relPath = './' + relPath;
+        if (!relPath.startsWith('.')) relPath = `./${relPath}`;
 
         const stayImport =
           stay.length > 0 ? `import { ${stay.join(', ')} } from 'react-native';\n` : '';

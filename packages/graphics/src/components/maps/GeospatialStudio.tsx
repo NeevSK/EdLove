@@ -22,7 +22,7 @@ export const GeospatialStudio: React.FC<GeospatialStudioProps> = ({ datasetId })
   const districtData: Record<string, number> = {};
   data.forEach((feature) => {
     if (feature.admin_id) {
-      districtData[feature.admin_id] = feature.properties['viability_score'] || 0;
+      districtData[feature.admin_id] = feature.properties.viability_score || 0;
     }
   });
 
@@ -40,7 +40,7 @@ export const GeospatialStudio: React.FC<GeospatialStudioProps> = ({ datasetId })
         <Text style={{ fontSize: 16, fontWeight: '600' }}>Dataset Features:</Text>
         {data.map((f: any) => (
           <Text key={f.id} style={{ fontSize: 12 }}>
-            {f.properties['school_name']}: {f.properties['viability_score']}
+            {f.properties.school_name}: {f.properties.viability_score}
           </Text>
         ))}
       </View>

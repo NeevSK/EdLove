@@ -381,7 +381,7 @@ export default function TabNavigator({ onTabChange }: { onTabChange?: (tab: stri
           </div>
 
           <nav className="sidebar-nav" aria-label="Main navigation">
-            {TAB_CONFIG.filter((c) => !isAnonymous || c.name !== 'Profile').map((conf) => {
+            {TAB_CONFIG.map((conf) => {
               const isActive = activeTab === conf.name;
               const Icon = conf.icon;
               return (
@@ -618,7 +618,7 @@ export default function TabNavigator({ onTabChange }: { onTabChange?: (tab: stri
                 first; Alerts button toggles notifications. */}
       {isMobileView && !isSidebarExpanded && (
         <nav className="mobile-bottom-nav" aria-label={t('webNav.tabNavigation')}>
-          {TAB_CONFIG.filter((c) => !isAnonymous || c.name !== 'Profile').map((conf) => {
+          {TAB_CONFIG.map((conf) => {
             const isActive = activeTab === conf.name;
             const Icon = conf.icon;
             return (

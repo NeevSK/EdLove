@@ -94,7 +94,7 @@ export function useAppEntryGate({
   const previousOnboardingCompleted = useRef(onboardingCompleted);
 
   useEffect(() => {
-    if (!navigationRef || !navigationRef.isReady()) return;
+    if (!navigationRef?.isReady()) return;
 
     const currentRoute =
       navigationRef.getRootState()?.routes?.[navigationRef.getRootState()?.index ?? -1]?.name;

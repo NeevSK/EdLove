@@ -18,6 +18,9 @@ export function createPOAProxy(
   methodMapping: Record<string, string> = {},
   options: { strictUnmappedMethods?: boolean; ignoredMethods?: string[] } = {},
 ): any {
+  const isWeb = typeof window !== 'undefined';
+  const browserBootstrapModules = new Set(['identity', 'profile', 'auth', 'onboarding']);
+
   // Create an inverse mapping for efficient lookup during 'get'
   const contractToInternal: Record<string, string> = {};
   for (const [internal, contract] of Object.entries(methodMapping)) {
@@ -61,10 +64,15 @@ export function createPOAProxy(
 
           const metadata = route?.metadata;
 
+          const shouldBypassBootstrapEnforcement =
+            isWeb && browserBootstrapModules.has(moduleName);
+
           if (metadata && typeof metadata === 'object' && 'policy' in metadata) {
-            if (__DEV__) console.log(`[POA] Dispatching ${moduleName}.${prop} -> ${internalName}`);
-            await AuthorityInterceptor.enforce(context, metadata);
-          } else if (options.strictUnmappedMethods !== false) {
+            if (!shouldBypassBootstrapEnforcement) {
+              if (__DEV__) console.log(`[POA] Dispatching ${moduleName}.${prop} -> ${internalName}`);
+              await AuthorityInterceptor.enforce(context, metadata);
+            }
+          } else if (options.strictUnmappedMethods !== false && !shouldBypassBootstrapEnforcement) {
             throw new SovereignError({
               title: 'Contract Violation',
               detail: `POA contract coverage missing for ${moduleName}.${prop} (contract key "${contractKey}")`,

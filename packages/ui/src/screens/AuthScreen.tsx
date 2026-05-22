@@ -1,17 +1,13 @@
 import { authAPI, identityAPI } from '@repo/core/api';
 import { useIdentity } from '@repo/core/hooks';
-import {
-  type Capacity,
-  coreRuntime,
-  handleAPIError,
-  type User,
-  validateForm,
-  validators,
-} from '@repo/core/logic';
+import { handleAPIError } from '@repo/core/api/interceptor';
+import { storage } from '@repo/core/storage';
+import { type Capacity, type User } from '@repo/core/types';
+import { validateForm, validators } from '@repo/core/utils';
 import { FlowResolver, GuestDataSync } from '@repo/core/native';
 import * as AuthSession from 'expo-auth-session';
 import * as WebBrowser from 'expo-web-browser';
-import { Mail } from 'lucide-react-native';
+import { Mail, Shield } from 'lucide-react-native';
 import type React from 'react';
 import { memo, useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -223,10 +219,9 @@ const AuthScreen = memo(({ onSuccess, onBack, initialMode, Scanner }: AuthScreen
         if (authResponse.type === 'success' && (authResponse as any).url) {
           const url = new URL((authResponse as any).url);
           const params = Object.fromEntries(url.searchParams.entries());
-          const access_token =
-            params['access_token'] || url.hash.match(/access_token=([^&]+)/)?.[1];
+          const access_token = params.access_token || url.hash.match(/access_token=([^&]+)/)?.[1];
           const refresh_token =
-            params['refresh_token'] || url.hash.match(/refresh_token=([^&]+)/)?.[1];
+            params.refresh_token || url.hash.match(/refresh_token=([^&]+)/)?.[1];
 
           if (!access_token || !refresh_token) {
             console.error('Missing tokens in auth response');
@@ -245,7 +240,7 @@ const AuthScreen = memo(({ onSuccess, onBack, initialMode, Scanner }: AuthScreen
 
           // Apply pending school invite if any
           if (internalId) {
-            const pendingInvite = await coreRuntime.storage.getItem('pending_invite');
+            const pendingInvite = await storage.getStringAsync('pending_invite');
             if (pendingInvite) {
               try {
                 const invite = JSON.parse(pendingInvite);
@@ -253,7 +248,7 @@ const AuthScreen = memo(({ onSuccess, onBack, initialMode, Scanner }: AuthScreen
                   await identityAPI.updateProfile(internalId, {
                     school_id: invite.school_id,
                   });
-                  await coreRuntime.storage.removeItem('pending_invite');
+                  storage.delete('pending_invite');
                   showToast({
                     message: 'Welcome to your new school sanctuary!',
                     type: 'success',
@@ -362,7 +357,7 @@ const AuthScreen = memo(({ onSuccess, onBack, initialMode, Scanner }: AuthScreen
         hapticSuccess();
         const internalId = await identityAPI.getMyInternalId();
         if (internalId) {
-          const pendingInvite = await coreRuntime.storage.getItem('pending_invite');
+          const pendingInvite = await storage.getStringAsync('pending_invite');
           if (pendingInvite) {
             try {
               const invite = JSON.parse(pendingInvite);
@@ -370,7 +365,7 @@ const AuthScreen = memo(({ onSuccess, onBack, initialMode, Scanner }: AuthScreen
                 await identityAPI.updateProfile(internalId, {
                   school_id: invite.school_id,
                 });
-                await coreRuntime.storage.removeItem('pending_invite');
+                storage.delete('pending_invite');
                 showToast({
                   message: 'Reconnected to your school sanctuary!',
                   type: 'success',
@@ -419,6 +414,100 @@ const AuthScreen = memo(({ onSuccess, onBack, initialMode, Scanner }: AuthScreen
   const handleLoginMode = useCallback(() => handleModeChange(false), [handleModeChange]);
   const handleGoogleSignIn = useCallback(() => handleOAuthSignIn('google'), [handleOAuthSignIn]);
 
+  const handlePasskeySignIn = useCallback(async () => {
+    dispatch({ type: 'SET_LOADING', loading: true });
+    hapticLight();
+    showToast({ message: 'Opening passkey sign-in...', type: 'info', duration: 2000 });
+    try {
+      const redirectUrl = getRedirectUrl();
+      const passkeyOptions = await authAPI.signInWithPasskey(redirectUrl, true);
+      const passkeyUrl = (passkeyOptions as { url?: string })?.url;
+
+      if (!passkeyUrl) {
+        showToast({
+          message: 'Passkey sign-in is not available on this device yet.',
+          type: 'error',
+        });
+        return;
+      }
+
+      const authResponse = await WebBrowser.openAuthSessionAsync(passkeyUrl, redirectUrl);
+      if (authResponse.type === 'success' && (authResponse as any).url) {
+        const url = new URL((authResponse as any).url);
+        const params = Object.fromEntries(url.searchParams.entries());
+        const access_token = params.access_token || url.hash.match(/access_token=([^&]+)/)?.[1];
+        const refresh_token = params.refresh_token || url.hash.match(/refresh_token=([^&]+)/)?.[1];
+
+        if (!access_token || !refresh_token) {
+          showToast({
+            message: 'Passkey sign-in finished but no session was returned.',
+            type: 'error',
+          });
+          return;
+        }
+
+        await authAPI.setSession(access_token, refresh_token);
+        hapticSuccess();
+        onSuccess?.();
+      }
+    } catch (err) {
+      handleAPIError(err);
+      showToast({
+        message: 'Passkey sign-in failed. Try Google sign-in or email instead.',
+        type: 'error',
+      });
+    } finally {
+      dispatch({ type: 'SET_LOADING', loading: false });
+    }
+  }, [getRedirectUrl, onSuccess, showToast]);
+
+  const handlePasskeyRegister = useCallback(async () => {
+    dispatch({ type: 'SET_LOADING', loading: true });
+    hapticLight();
+    showToast({ message: 'Creating a passkey...', type: 'info', duration: 2000 });
+    try {
+      const redirectUrl = getRedirectUrl();
+      const passkeyOptions = await authAPI.registerPasskey(redirectUrl, true);
+      const passkeyUrl = (passkeyOptions as { url?: string })?.url;
+
+      if (!passkeyUrl) {
+        showToast({
+          message: 'Passkey setup is not available on this device yet.',
+          type: 'error',
+        });
+        return;
+      }
+
+      const authResponse = await WebBrowser.openAuthSessionAsync(passkeyUrl, redirectUrl);
+      if (authResponse.type === 'success' && (authResponse as any).url) {
+        const url = new URL((authResponse as any).url);
+        const params = Object.fromEntries(url.searchParams.entries());
+        const access_token = params.access_token || url.hash.match(/access_token=([^&]+)/)?.[1];
+        const refresh_token = params.refresh_token || url.hash.match(/refresh_token=([^&]+)/)?.[1];
+
+        if (access_token && refresh_token) {
+          await authAPI.setSession(access_token, refresh_token);
+          hapticSuccess();
+          onSuccess?.();
+          return;
+        }
+      }
+
+      showToast({
+        message: 'Passkey was created, but no session tokens were returned.',
+        type: 'info',
+      });
+    } catch (err) {
+      handleAPIError(err);
+      showToast({
+        message: 'Passkey creation failed. You can continue with Google or email.',
+        type: 'error',
+      });
+    } finally {
+      dispatch({ type: 'SET_LOADING', loading: false });
+    }
+  }, [getRedirectUrl, onSuccess, showToast]);
+
   const handleShowEmailAuth = useCallback(() => {
     hapticLight();
     dispatch({
@@ -462,7 +551,7 @@ const AuthScreen = memo(({ onSuccess, onBack, initialMode, Scanner }: AuthScreen
           return;
         }
         showToast({ message: result.message, type: 'success' });
-      } catch (e) {
+      } catch (_e) {
         showToast({ message: 'Invalid QR code format', type: 'error' });
       }
     },
@@ -642,6 +731,20 @@ const AuthScreen = memo(({ onSuccess, onBack, initialMode, Scanner }: AuthScreen
                     <Button
                       size="lg"
                       variant="outline"
+                      onPress={isSignUp ? handlePasskeyRegister : handlePasskeySignIn}
+                      isDisabled={loading}
+                      className="h-[54px] rounded-2xl border-phase-border bg-transparent"
+                    >
+                      <HStack className="gap-2 items-center">
+                        <Shield size={18} color={text.primary} />
+                        <ButtonText className="text-phase-primary font-medium">
+                          {isSignUp ? 'Create passkey' : 'Use passkey'}
+                        </ButtonText>
+                      </HStack>
+                    </Button>
+                    <Button
+                      size="lg"
+                      variant="outline"
                       onPress={handleShowEmailAuth}
                       isDisabled={loading}
                       className="h-[54px] rounded-2xl border-phase-border bg-transparent"
@@ -748,7 +851,7 @@ const AuthScreen = memo(({ onSuccess, onBack, initialMode, Scanner }: AuthScreen
                 </Box>
               )}
 
-              {errors['_form'] ? (
+              {errors._form ? (
                 <Box
                   className="px-4 py-3 rounded-xl border"
                   style={{
@@ -757,7 +860,7 @@ const AuthScreen = memo(({ onSuccess, onBack, initialMode, Scanner }: AuthScreen
                   }}
                 >
                   <Text className="text-sm" style={{ color: accent.danger }}>
-                    {errors['_form'] as string}
+                    {errors._form as string}
                   </Text>
                 </Box>
               ) : null}

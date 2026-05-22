@@ -41,7 +41,7 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
-import { useReducer, useState } from 'react';
+import { useReducer } from 'react';
 import {
   AttendanceView,
   ClassroomEchoSection,
@@ -237,12 +237,12 @@ export default function TeacherClassroomDashboardWeb() {
     if (!state.newMonthTitle.trim()) return;
     dispatch({ type: 'SET_IS_SUBMITTING', payload: true });
     try {
-      const lessons = await api['lessons'].getAll(classroomId);
+      const lessons = await api.lessons.getAll(classroomId);
       const maxOrder = lessons.reduce(
         (max: number, lesson: any) => Math.max(max, lesson.order_index),
         0,
       );
-      await api['lessons'].create({
+      await api.lessons.create({
         classroom_id: classroomId,
         title: state.newMonthTitle.trim(),
         order_index: maxOrder + 1,
@@ -266,7 +266,7 @@ export default function TeacherClassroomDashboardWeb() {
       if (
         !targetLessonId.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)
       ) {
-        const lesson = await api['lessons'].create({
+        const lesson = await api.lessons.create({
           classroom_id: classroomId,
           title: targetLessonId,
           content: `Materials for ${targetLessonId}`,
@@ -276,7 +276,7 @@ export default function TeacherClassroomDashboardWeb() {
       }
 
       if (state.contentType === 'material') {
-        await api['lessonMaterials'].create({
+        await api.lessonMaterials.create({
           classroom_id: classroomId,
           lesson_id: targetLessonId,
           title: state.form.title,
@@ -286,7 +286,7 @@ export default function TeacherClassroomDashboardWeb() {
           is_pinned: false,
         });
       } else {
-        await api['assignments'].create({
+        await api.assignments.create({
           classroom_id: classroomId,
           lesson_id: targetLessonId,
           title: state.form.title,

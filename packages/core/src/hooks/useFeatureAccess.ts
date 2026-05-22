@@ -40,7 +40,7 @@ export function useFeatureAccess(): FeatureAccess {
       self: 'Create an account to sync your personal data across devices',
       general: 'Create an account to unlock all features',
     };
-    return messages[feature] || messages['general'] || '';
+    return messages[feature] || messages.general || '';
   }, []);
 
   return {

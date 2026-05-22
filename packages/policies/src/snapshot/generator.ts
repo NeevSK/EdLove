@@ -1,4 +1,4 @@
-import crypto from 'crypto';
+import crypto from 'node:crypto';
 import { check } from '../engine/evaluator';
 import type { PermissionSnapshot, UserContext } from './types';
 
@@ -119,7 +119,7 @@ export function generateSnapshot(user: UserContext, secret?: string): Permission
     temporalHints,
   };
 
-  const key = secret || process.env['SNAPSHOT_SECRET'] || 'default-fallback-secret-for-development';
+  const key = secret || process.env.SNAPSHOT_SECRET || 'default-fallback-secret-for-development';
   const signature = crypto.createHmac('sha256', key).update(JSON.stringify(payload)).digest('hex');
 
   return {

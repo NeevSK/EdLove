@@ -47,8 +47,8 @@ export function useDemoBridge() {
       (log) => log.method.startsWith('create') || log.method.startsWith('add'),
     );
     const firstItemName =
-      (firstLog?.payload as Record<string, string> | undefined)?.['name'] ||
-      (firstLog?.payload as Record<string, string> | undefined)?.['title'] ||
+      (firstLog?.payload as Record<string, string> | undefined)?.name ||
+      (firstLog?.payload as Record<string, string> | undefined)?.title ||
       'item';
 
     hapticWarning();

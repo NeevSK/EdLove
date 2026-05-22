@@ -184,7 +184,7 @@ function suggestFix(type, context) {
   }
 }
 
-function summarize(errors, warnings) {
+function summarize(errors, _warnings) {
   if (errors > 0) {
     console.log(chalk.bold.red(`\n🛑 Sentinel Audit failed with ${errors} critical violations.\n`));
     process.exit(1);

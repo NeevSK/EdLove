@@ -9,7 +9,7 @@ import { Inngest } from 'inngest';
  */
 export const inngest = new Inngest({
   id: 'gurudevi-marketing-web',
-  eventKey: import.meta.env['INNGEST_EVENT_KEY'],
+  eventKey: import.meta.env.INNGEST_EVENT_KEY,
 });
 
 export const eventBus = {

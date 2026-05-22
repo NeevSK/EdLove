@@ -13,7 +13,7 @@ export type GuardianLinkedStudentRow = {
 export async function getGuardianStudentsRows(
   guardianId: string,
 ): Promise<GuardianLinkedStudentRow[]> {
-  const students = await api['guardian'].getStudents(guardianId);
+  const students = await api.guardian.getStudents(guardianId);
   return students.map(
     (student: { name: string; studentId: string; grade: string; classroom: string }) => {
       const nameParts = student.name.split(' ');
@@ -29,14 +29,14 @@ export async function getGuardianStudentsRows(
 }
 
 export async function getStudentGuardiansRows(studentId: string): Promise<GuardianIdentity[]> {
-  return api['guardian'].getStudentGuardians(studentId) as Promise<GuardianIdentity[]>;
+  return api.guardian.getStudentGuardians(studentId) as Promise<GuardianIdentity[]>;
 }
 
 export async function getStudentAttendanceRows(studentId: string, _sinceIso: string) {
-  const guardians = await api['guardian'].getStudentGuardians(studentId);
+  const guardians = await api.guardian.getStudentGuardians(studentId);
   const guardianId = guardians[0]?.id;
   if (!guardianId) return [];
-  const dashboard = await api['guardian'].getDashboard(guardianId);
+  const dashboard = await api.guardian.getDashboard(guardianId);
   const student = dashboard.students.find(
     (entry: { studentId: string }) => entry.studentId === studentId,
   );
@@ -55,10 +55,10 @@ export async function getStudentAttendanceRows(studentId: string, _sinceIso: str
 }
 
 export async function getStudentRecentGradesRows(studentId: string, limit = 5) {
-  const guardians = await api['guardian'].getStudentGuardians(studentId);
+  const guardians = await api.guardian.getStudentGuardians(studentId);
   const guardianId = guardians[0]?.id;
   if (!guardianId) return [];
-  const dashboard = await api['guardian'].getDashboard(guardianId);
+  const dashboard = await api.guardian.getDashboard(guardianId);
   const student = dashboard.students.find(
     (entry: { studentId: string }) => entry.studentId === studentId,
   );
@@ -91,7 +91,7 @@ export async function getUpcomingAssignmentsRows(
 }
 
 export async function getGuardianNotificationsRows(guardianId: string, limit = 10) {
-  const dashboard = await api['guardian'].getDashboard(guardianId);
+  const dashboard = await api.guardian.getDashboard(guardianId);
   return dashboard.notifications
     .slice(0, limit)
     .map(

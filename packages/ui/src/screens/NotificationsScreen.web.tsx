@@ -48,7 +48,7 @@ function timeAgo(ts: string): string {
 
 const NotificationRow = memo(
   ({ notif, onRead }: { notif: AppNotification; onRead: (id: string) => Promise<void> }) => {
-    const icon = ICON_MAP[notif.type] ?? ICON_MAP['system'];
+    const icon = ICON_MAP[notif.type] ?? ICON_MAP.system;
 
     const handleClick = useCallback(() => {
       if (!notif.is_read) onRead(notif.id);

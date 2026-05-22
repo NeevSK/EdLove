@@ -14,7 +14,7 @@ export const communityAPI = {
    * Retrieves a list of posts based on filters.
    */
   async getPosts(filters: { limit: number; offset: number; groupId?: string }) {
-    const res = await client.api.community.posts.$get({
+    const res = await (client.api as any).community.posts.$get({
       query: {
         groupId: filters.groupId,
         limit: filters.limit.toString(),
@@ -39,7 +39,7 @@ export const communityAPI = {
     visibility: string;
     author_tier: string;
   }) {
-    const res = await client.api.community.posts.$post({
+    const res = await (client.api as any).community.posts.$post({
       json: params,
     });
 
@@ -54,7 +54,7 @@ export const communityAPI = {
    * Toggles a reaction on a post.
    */
   async togglePostReaction(postId: string, userId: string) {
-    const res = await client.api.community.posts[':postId'].reactions.$post({
+    const res = await (client.api as any).community.posts[':postId'].reactions.$post({
       param: { postId },
       json: { user_id: userId },
     });
@@ -71,7 +71,7 @@ export const communityAPI = {
    * Retrieves comments for a post.
    */
   async getComments(postId: string, limit?: number) {
-    const res = await client.api.community.posts[':postId'].comments.$get({
+    const res = await (client.api as any).community.posts[':postId'].comments.$get({
       param: { postId },
       query: { limit: limit?.toString() },
     });
@@ -87,7 +87,7 @@ export const communityAPI = {
    * Creates a comment on a post.
    */
   async createComment(postId: string, params: { content: string; author_tier: string }) {
-    const res = await client.api.community.posts[':postId'].comments.$post({
+    const res = await (client.api as any).community.posts[':postId'].comments.$post({
       param: { postId },
       json: params,
     });
@@ -103,7 +103,7 @@ export const communityAPI = {
    * Deletes a comment.
    */
   async deleteComment(commentId: string) {
-    const res = await client.api.community.comments[':commentId'].$delete({
+    const res = await (client.api as any).community.comments[':commentId'].$delete({
       param: { commentId },
     });
 
@@ -118,7 +118,7 @@ export const communityAPI = {
    * Toggles upvote on a comment.
    */
   async toggleCommentUpvote(commentId: string) {
-    const res = await client.api.community.comments[':commentId'].upvote.$post({
+    const res = await (client.api as any).community.comments[':commentId'].upvote.$post({
       param: { commentId },
     });
 
@@ -133,7 +133,7 @@ export const communityAPI = {
    * Marks a comment as the official answer.
    */
   async markOfficialAnswer(commentId: string) {
-    const res = await client.api.community.comments[':commentId'].official.$post({
+    const res = await (client.api as any).community.comments[':commentId'].official.$post({
       param: { commentId },
     });
 
@@ -148,7 +148,7 @@ export const communityAPI = {
    * Retrieves poll status for a post.
    */
   async getPollStatus(postId: string) {
-    const res = await client.api.community.polls[':postId'].$get({
+    const res = await (client.api as any).community.polls[':postId'].$get({
       param: { postId },
     });
 
@@ -163,7 +163,7 @@ export const communityAPI = {
    * Votes in a poll.
    */
   async voteInPoll(postId: string, optionId: string) {
-    const res = await client.api.community.polls[':postId'].vote.$post({
+    const res = await (client.api as any).community.polls[':postId'].vote.$post({
       param: { postId },
       json: { option_id: optionId },
     });

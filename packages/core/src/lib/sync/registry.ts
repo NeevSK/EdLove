@@ -24,24 +24,24 @@ export const MUTATION_REGISTRY: Record<string, MutationFunction> = {
 
   // Inventory
   createInventoryRequest: async (vars) => {
-    return api['inventory'].createRequest(vars);
+    return api.inventory.createRequest(vars);
   },
 
   // Resources
   createResource: async (vars) => {
-    return api['resources'].create(vars);
+    return api.resources.create(vars);
   },
   toggleResourcePin: async (vars) => {
-    return api['resources'].togglePin(vars.id, vars.isPinned);
+    return api.resources.togglePin(vars.id, vars.isPinned);
   },
   deleteResource: async (vars) => {
-    return api['resources'].delete(vars);
+    return api.resources.delete(vars);
   },
 
   // Self/Wellbeing (Outbox mutations routed securely via Hono Gateway)
   saveJournalEntry: async (vars) => {
     // Encapsulate and route legacy outbox write securely through our PowerSync endpoint
-    const res = await client.api.powersync.upload.$post({
+    const res = await (client.api as any).powersync.upload.$post({
       json: {
         crud: [
           {
@@ -61,7 +61,7 @@ export const MUTATION_REGISTRY: Record<string, MutationFunction> = {
   },
   saveDecision: async (vars) => {
     // Encapsulate and route legacy outbox write securely through our PowerSync endpoint
-    const res = await client.api.powersync.upload.$post({
+    const res = await (client.api as any).powersync.upload.$post({
       json: {
         crud: [
           {
@@ -81,7 +81,7 @@ export const MUTATION_REGISTRY: Record<string, MutationFunction> = {
   },
 
   logMood: async (vars) => {
-    const res = await client.api.self.mood.$post({
+    const res = await (client.api as any).self.mood.$post({
       json: {
         user_id: vars.user_id,
         mood_score: vars.mood_score,
@@ -96,7 +96,7 @@ export const MUTATION_REGISTRY: Record<string, MutationFunction> = {
     return true;
   },
   burnJournal: async (vars) => {
-    const res = await client.api.self.journal.burn.$post({
+    const res = await (client.api as any).self.journal.burn.$post({
       json: { content: vars.content },
     });
     if (!res.ok) {
@@ -108,13 +108,13 @@ export const MUTATION_REGISTRY: Record<string, MutationFunction> = {
 
   // Classroom (Upstreamed from mobile)
   createStudent: async (vars) => {
-    return api['students'].create(vars);
+    return api.students.create(vars);
   },
   updateAttendance: async (vars) => {
-    return api['attendance'].record(vars.classroomId, vars.studentId, vars.status, vars.date);
+    return api.attendance.record(vars.classroomId, vars.studentId, vars.status, vars.date);
   },
   updateStudent: async (vars) => {
-    return api['students'].update(vars.id, vars.updates);
+    return api.students.update(vars.id, vars.updates);
   },
 
   // Device security

@@ -30,7 +30,7 @@ import type {
 // API CONFIGURATION
 // ============================================================================
 
-const API_BASE_URL = import.meta.env['PUBLIC_API_URL'] || '/api';
+const API_BASE_URL = import.meta.env.PUBLIC_API_URL || '/api';
 const DEFAULT_TIMEOUT = 10000; // 10 seconds
 
 // ============================================================================

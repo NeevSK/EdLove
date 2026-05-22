@@ -41,11 +41,11 @@ export function useTeacherClassroomWorkspaceData(classroomId: string) {
     try {
       const [assignmentData, lessonData, materialData, observationData, notes, layoutData] =
         await Promise.all([
-          api['assignments'].getAll(classroomId),
-          api['lessons'].getAll(classroomId),
-          api['lessonMaterials'].getAll(classroomId),
-          api['teacherInsights'].listStudentObservations(classroomId),
-          api['classroomNotes'].getAll(classroomId),
+          api.assignments.getAll(classroomId),
+          api.lessons.getAll(classroomId),
+          api.lessonMaterials.getAll(classroomId),
+          api.teacherInsights.listStudentObservations(classroomId),
+          api.classroomNotes.getAll(classroomId),
           workspaceLayoutServices.getLayout(currentUserId, classroomId, layoutTarget),
         ]);
 

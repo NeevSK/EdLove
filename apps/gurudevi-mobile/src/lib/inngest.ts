@@ -11,7 +11,7 @@ import { Inngest } from 'inngest';
 const inngestClient = new Inngest({
   id: 'gurudevi-mobile-app',
   // Expo uses process.env with EXPO_PUBLIC_ prefix
-  eventKey: process.env['EXPO_PUBLIC_INNGEST_EVENT_KEY'],
+  eventKey: process.env.EXPO_PUBLIC_INNGEST_EVENT_KEY,
 });
 
 export const inngest = createInngestEventBusAdapter(inngestClient);

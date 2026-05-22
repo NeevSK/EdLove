@@ -1,37 +1,18 @@
 import { academicCyclesAPI } from './academicCycles';
 import { announcementAPI } from './announcements';
-import { assignmentsAPI as rawAssignmentsAPI } from './assignments';
-import { attendanceAPI as rawAttendanceAPI } from './attendance';
 import { authAPI } from './auth';
 import { circleAPI } from './circles';
-import { classroomGroupsAPI as rawClassroomGroupsAPI } from './classroomGroups';
-import { classroomNotesAPI as rawClassroomNotesAPI } from './classroomNotes';
-import { classroomStudentsAPI as rawClassroomStudentsAPI } from './classroomStudents';
-import { classroomsAPI as rawClassroomsAPI } from './classrooms';
-import { communityAPI as rawCommunityAPI } from './community';
-import { communityContract } from './community.contract';
 import { contextualChallengesAPI } from './contextualChallenges';
 import { dailyContentAPI } from './dailyContent';
-import { demoAPI, demoAPI as demoProviderAPI } from './demo';
+import { readLocalFirst, writeLocalFirst } from './dataGateway';
+import { demoAPI } from './demo';
 import { deviceTrustAPI } from './deviceTrust';
 import { echoAPI } from './echo';
-import { educationalContract } from './educational.contract';
-import { accountingAPI as rawAccountingAPI, paymentsAPI as rawPaymentsAPI } from './erp';
 import { formTemplatesAPI } from './formTemplates';
-import { founderAPI as rawFounderAPI } from './founder';
-import { founderContract } from './founder.contract';
-import { gradingAPI as rawGradingAPI } from './grading';
-import { gradingContract } from './grading.contract';
+import { createSovereignGateway, sovereignGateway } from './gateway';
 import { groupsAPI } from './groups';
-import { growthContract } from './growth.contract';
-import { guardianAPI as rawGuardianAPI } from './guardian';
-import { guardianContract } from './guardian.contract';
 import { historyAPI } from './history';
-import { identityContract } from './identity.contract';
-import { inventoryAPI as rawInventoryAPI } from './inventory';
 import { libraryAPI } from './library';
-import { longitudinalAPI as rawLongitudinalAPI } from './longitudinal';
-import { longitudinalContract } from './longitudinal.contract';
 import { mappingAPI } from './mapping';
 import { mediaAPI } from './media';
 import { messagingAPI } from './messaging';
@@ -41,25 +22,16 @@ import { onboardingAPI } from './onboarding';
 import { growthAPI, growthStateAPI, missionsAPI, proAPI, ripplesAPI } from './orchestration/growth';
 import { presenceAPI } from './presence';
 import { principalNotesAPI } from './principalNotes';
-import { principalWorkspaceAPI as rawPrincipalWorkspaceAPI } from './principalWorkspace';
-import { principalWorkspaceContract } from './principalWorkspace.contract';
 import { privacyAPI } from './privacy';
-import { proContract } from './pro.contract';
 import { profileAPI } from './profile';
-import { profileContract } from './profile.contract';
 import { resourcesAPI } from './resources';
 import { rewardsAPI } from './rewards';
-import { schoolAPI as rawSchoolAPI } from './school';
 import { schoolForestAPI } from './schoolForest';
 import { socialAPI } from './social';
-import { staffManagementAPI as rawStaffManagementAPI } from './staffManagement';
 import { studentObservationsAPI } from './studentObservations';
 import { studentPotentialAPI } from './studentPotential';
 import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from './supabase';
 import { tasksAPI } from './teacher';
-import { teacherInsightsAPI as rawTeacherInsightsAPI } from './teacherInsights';
-import { teacherInsightsContract } from './teacherInsights.contract';
-import { thuthimalAPI } from './thuthimal';
 import { trackingAPI } from './tracking';
 import { warmMirrorAPI } from './warmMirror';
 
@@ -181,6 +153,7 @@ export {
   classroomStudentsAPI,
   classroomsAPI,
   communityAPI,
+  createSovereignGateway,
   dailyContentAPI,
   demoAPI,
   echoAPI,
@@ -197,12 +170,15 @@ export {
   onboardingAPI,
   presenceAPI,
   profileAPI,
+  readLocalFirst,
   resourcesAPI,
   rewardsAPI,
   schoolAPI,
   socialAPI,
+  sovereignGateway,
   studentsAPI,
   tasksAPI,
+  writeLocalFirst,
 };
 
 /**

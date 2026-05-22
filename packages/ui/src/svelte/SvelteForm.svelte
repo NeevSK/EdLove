@@ -1,5 +1,6 @@
 <script lang="ts">
-import { type FormConfig, FormManager, type FormState } from '@repo/core';
+import { FormManager } from '@repo/core/forms/form-manager';
+import type { FormConfig, FormState } from '@repo/core/types';
 import { onDestroy } from 'svelte';
 
 let { config }: { config: FormConfig<any> } = $props();

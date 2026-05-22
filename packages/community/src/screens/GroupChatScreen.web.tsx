@@ -91,7 +91,7 @@ export default function GroupChatScreen() {
           const { data } = await supabase
             .from('group_messages')
             .select('*, author:users!group_messages_author_id_fkey(full_name, avatar_url)')
-            .eq('id', payload['new']['id'])
+            .eq('id', payload.new.id)
             .single();
           if (!data) return;
           setMessages((prev) => {

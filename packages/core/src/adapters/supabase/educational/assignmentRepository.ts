@@ -196,12 +196,8 @@ export const createAssignmentRepository = (supabase: SupabaseClient) => ({
 
     return ((data as Record<string, any>[] | null) ?? []).map((row) => ({
       ...row,
-      assignments: Array.isArray(row['assignments'])
-        ? row['assignments'][0]
-        : row['assignments'] || null,
-      classrooms: Array.isArray(row['classrooms'])
-        ? row['classrooms'][0]
-        : row['classrooms'] || null,
+      assignments: Array.isArray(row.assignments) ? row.assignments[0] : row.assignments || null,
+      classrooms: Array.isArray(row.classrooms) ? row.classrooms[0] : row.classrooms || null,
     }));
   },
 });

@@ -46,7 +46,7 @@ export const CyclesDashboard: React.FC<CyclesDashboardProps> = ({
     if (!schoolId) return;
     setLoading(true);
     try {
-      const data = await api['academicCycles'].getAll(schoolId);
+      const data = await api.academicCycles.getAll(schoolId);
       setAcademicCycles(data || []);
     } catch (err) {
       console.error('Failed to load academic cycles:', err);
@@ -63,7 +63,7 @@ export const CyclesDashboard: React.FC<CyclesDashboardProps> = ({
     if (!newName.trim() || !newStart || !schoolId) return;
     setSaving(true);
     try {
-      const cycle = await api['academicCycles'].create({
+      const cycle = await api.academicCycles.create({
         name: newName.trim(),
         school_id: schoolId,
         start_date: newStart,

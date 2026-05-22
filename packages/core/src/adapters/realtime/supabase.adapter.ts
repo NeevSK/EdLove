@@ -1,10 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type {
-  IRealtimePort,
-  IRealtimeSubscription,
-  RealtimeCallback,
-  RealtimeSubscriptionOptions,
-} from '../../logic/ports/realtime.port';
+import type { IRealtimePort } from '../../logic/ports/realtime.port';
 
 /**
  * SupabaseRealtimeAdapter

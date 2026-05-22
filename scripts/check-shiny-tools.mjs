@@ -1,4 +1,4 @@
-import { execSync } from 'child_process';
+import { execSync } from 'node:child_process';
 
 const REQUIRED_TOOLS = [
   {
@@ -54,7 +54,7 @@ for (const tool of REQUIRED_TOOLS) {
     console.log(
       `${colors.green}✅${colors.reset} ${colors.bold}${tool.name.padEnd(10)}${colors.reset} | ${colors.dim}${version}${colors.reset}`,
     );
-  } catch (err) {
+  } catch (_err) {
     allPass = false;
     console.log(
       `${colors.red}❌${colors.reset} ${colors.bold}${tool.name.padEnd(10)}${colors.reset} | ${colors.yellow}MISSING${colors.reset}`,

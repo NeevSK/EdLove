@@ -1,12 +1,10 @@
-import {
-  type AggregatedStats,
-  AnalyticsEngine,
-  type FieldDefinition,
-  type FormAnalytics,
-  type FormResponse,
-  type FormSchema,
-  type FormStorage,
-} from '@intuitui-labs/form-builder-engine';
+import { AnalyticsEngine, type FieldAnalytics } from '@intuitui-labs/form-builder-engine/analytics';
+import type { FormAnalytics, FormStorage } from '@intuitui-labs/form-builder-engine/ports';
+import type {
+  FieldDefinition,
+  FormResponse,
+  FormSchema,
+} from '@intuitui-labs/form-builder-engine/schema';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { APIError } from '../../types/API';
 
@@ -147,7 +145,7 @@ export class SupabaseFormsAdapter implements FormStorage, FormAnalytics {
   /**
    * Fetch all recorded responses for a form template and compute aggregated stats.
    */
-  async aggregate(formId: string): Promise<AggregatedStats[]> {
+  async aggregate(formId: string): Promise<FieldAnalytics[]> {
     const schema = await this.load(formId);
     const fields: FieldDefinition[] = schema.pages.flatMap((page) => page.fields);
 
@@ -169,7 +167,7 @@ export class SupabaseFormsAdapter implements FormStorage, FormAnalytics {
       submittedAt: r.submitted_at,
     }));
 
-    return AnalyticsEngine.aggregate(fields, responses) as AggregatedStats[];
+    return AnalyticsEngine.aggregate(fields, responses);
   }
 
   /**

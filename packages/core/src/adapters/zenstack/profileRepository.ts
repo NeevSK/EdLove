@@ -73,16 +73,16 @@ const mapWhisperedMoments = (
   rows: Record<string, unknown>[] | null | undefined,
 ): WhisperedMomentSnapshot[] =>
   (rows || []).map((row) => ({
-    key: row['moment_key'] as string,
-    name_en: (row['moment_name_en'] as string) || (row['moment_key'] as string),
-    name_si: (row['moment_name_si'] as string) || (row['moment_key'] as string),
-    awarded_at: row['awarded_at'] as string,
+    key: row.moment_key as string,
+    name_en: (row.moment_name_en as string) || (row.moment_key as string),
+    name_si: (row.moment_name_si as string) || (row.moment_key as string),
+    awarded_at: row.awarded_at as string,
   }));
 
 const mapSocialLink = (record: Record<string, unknown> | null | undefined): SocialLink => {
   if (!record) return record as unknown as SocialLink;
-  const createdAt = record['created_at'];
-  const updatedAt = record['updated_at'];
+  const createdAt = record.created_at;
+  const updatedAt = record.updated_at;
   return {
     ...record,
     created_at: createdAt instanceof Date ? createdAt.toISOString() : (createdAt as string),
@@ -110,7 +110,7 @@ export const createZenStackProfileRepository = (
     async getUserProfile(userId) {
       const db = await getDb();
       return normalizeUser(
-        await db['user'].findFirst({ where: { id: userId }, include: { bonds: true } }),
+        await db.user.findFirst({ where: { id: userId }, include: { bonds: true } }),
       );
     },
     async getUserProfileAsOf(userId, asOf) {
@@ -307,9 +307,9 @@ export const createZenStackProfileRepository = (
         title: `Rewards ${row.operation}`,
         snapshot: row.snapshot ?? undefined,
         metadata: {
-          points: ((row.snapshot as Record<string, unknown>)?.['points'] as number) ?? 0,
-          badges: Array.isArray((row.snapshot as Record<string, unknown>)?.['badges'])
-            ? ((row.snapshot as Record<string, unknown>)['badges'] as string[])
+          points: ((row.snapshot as Record<string, unknown>)?.points as number) ?? 0,
+          badges: Array.isArray((row.snapshot as Record<string, unknown>)?.badges)
+            ? ((row.snapshot as Record<string, unknown>).badges as string[])
             : [],
         },
       }));
@@ -322,22 +322,22 @@ export const createZenStackProfileRepository = (
         title: `Growth state ${row.operation}`,
         snapshot: row.snapshot ?? undefined,
         metadata: {
-          bhumi_stage: (row.snapshot as Record<string, unknown>)?.['bhumi_stage'],
-          banyan_stage: (row.snapshot as Record<string, unknown>)?.['banyan_stage'],
-          river_stage: (row.snapshot as Record<string, unknown>)?.['river_stage'],
-          crystal_tier: (row.snapshot as Record<string, unknown>)?.['crystal_tier'],
+          bhumi_stage: (row.snapshot as Record<string, unknown>)?.bhumi_stage,
+          banyan_stage: (row.snapshot as Record<string, unknown>)?.banyan_stage,
+          river_stage: (row.snapshot as Record<string, unknown>)?.river_stage,
+          crystal_tier: (row.snapshot as Record<string, unknown>)?.crystal_tier,
         },
       }));
 
       const momentEvents: ProfileJourneyEvent[] = (momentRows || []).map((row) => ({
-        id: row['id'] as string,
-        timestamp: row['awarded_at'] as string,
+        id: row.id as string,
+        timestamp: row.awarded_at as string,
         source: 'moment',
-        title: (row['moment_name_en'] as string) || (row['moment_key'] as string),
+        title: (row.moment_name_en as string) || (row.moment_key as string),
         metadata: {
-          key: row['moment_key'],
-          name_en: row['moment_name_en'],
-          name_si: row['moment_name_si'],
+          key: row.moment_key,
+          name_en: row.moment_name_en,
+          name_si: row.moment_name_si,
         },
       }));
 
@@ -347,7 +347,7 @@ export const createZenStackProfileRepository = (
     },
     async updateUserProfile(userId, updates) {
       const db = await getDb();
-      const updated = await db['user'].update({
+      const updated = await db.user.update({
         where: { id: userId },
         data: updates,
       });
@@ -358,7 +358,7 @@ export const createZenStackProfileRepository = (
     },
     async getAnonymousFlag(userId) {
       const db = await getDb();
-      const user = await db['user'].findFirst({
+      const user = await db.user.findFirst({
         where: { id: userId },
         select: { is_anonymous: true },
       });
@@ -370,7 +370,7 @@ export const createZenStackProfileRepository = (
 
     async getSocialLinks(userId) {
       const db = await getDb();
-      const records = await db['userSocialLink'].findMany({
+      const records = await db.userSocialLink.findMany({
         where: { user_id: userId },
         orderBy: { order_index: 'asc' },
       });
@@ -380,7 +380,7 @@ export const createZenStackProfileRepository = (
       const db = await getDb();
       let record: Record<string, unknown>;
       if (link.id) {
-        record = await db['userSocialLink'].update({
+        record = await db.userSocialLink.update({
           where: { id: link.id },
           data: link as any,
         });
@@ -388,7 +388,7 @@ export const createZenStackProfileRepository = (
         if (!link.user_id) {
           throw new APIError('user_id is required for social link creation', 'BAD_REQUEST');
         }
-        record = await db['userSocialLink'].create({
+        record = await db.userSocialLink.create({
           data: link as any,
         });
       }
@@ -396,13 +396,13 @@ export const createZenStackProfileRepository = (
     },
     async deleteSocialLink(linkId) {
       const db = await getDb();
-      await db['userSocialLink'].delete({ where: { id: linkId } });
+      await db.userSocialLink.delete({ where: { id: linkId } });
     },
     async updateSocialLinksOrder(links) {
       const db = await getDb();
       await Promise.all(
         links.map((link) =>
-          db['userSocialLink'].update({
+          db.userSocialLink.update({
             where: { id: link.id },
             data: { order_index: link.order_index },
           }),
@@ -433,7 +433,7 @@ export const createZenStackProfileRepository = (
 
     async getCommunityProfile(communityId) {
       const db = await getDb();
-      const group = await db['group'].findFirst({
+      const group = await db.group.findFirst({
         where: { id: communityId },
         select: {
           id: true,
@@ -470,7 +470,7 @@ export const createZenStackProfileRepository = (
     },
     async updateCommunityProfile(communityId, field, value) {
       const db = await getDb();
-      return (await db['group'].update({
+      return (await db.group.update({
         where: { id: communityId },
         data: { [field]: value },
       })) as CommunityProfile;
@@ -487,7 +487,7 @@ export const createZenStackProfileRepository = (
 
       const [postsThisPeriod, postsPreviousPeriod, libraryActivity, groups, classrooms] =
         await Promise.all([
-          db['post'].findMany({
+          db.post.findMany({
             where: {
               school_id: schoolId,
               created_at: {
@@ -497,7 +497,7 @@ export const createZenStackProfileRepository = (
             },
             select: { id: true },
           }),
-          db['post'].findMany({
+          db.post.findMany({
             where: {
               school_id: schoolId,
               created_at: {
@@ -507,7 +507,7 @@ export const createZenStackProfileRepository = (
             },
             select: { id: true },
           }),
-          db['libraryResource'].findMany({
+          db.libraryResource.findMany({
             where: {
               creator_id: { not: undefined },
               created_at: {
@@ -517,11 +517,11 @@ export const createZenStackProfileRepository = (
             },
             select: { id: true },
           }),
-          db['group'].findMany({
+          db.group.findMany({
             where: { school_id: schoolId },
             select: { id: true },
           }),
-          db['classroom'].findMany({
+          db.classroom.findMany({
             where: { school_id: schoolId },
             select: { id: true },
           }),
@@ -561,4 +561,4 @@ export const createZenStackProfileRepository = (
   };
 };
 
-export const isZenStackProfileRepositoryAvailable = () => Boolean(process.env['DATABASE_URL']);
+export const isZenStackProfileRepositoryAvailable = () => Boolean(process.env.DATABASE_URL);

@@ -14,7 +14,7 @@ export const pollKeys = {
  */
 export function usePollHooks(postId: string) {
   const queryClient = useQueryClient();
-  const user = useAuthStore((state) => state.user);
+  const _user = useAuthStore((state) => state.user);
 
   const query = useQuery({
     queryKey: pollKeys.detail(postId),

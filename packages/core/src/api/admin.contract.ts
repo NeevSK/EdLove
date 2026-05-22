@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { SchoolSchema, SectionSchema } from '../logic/schemas/school.schema';
+import { SchoolSchema } from '../logic/schemas/school.schema';
 import {
   CalendarEventSchema,
   StaffLeaveSchema,

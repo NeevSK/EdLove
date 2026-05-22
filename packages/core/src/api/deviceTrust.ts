@@ -7,6 +7,7 @@ import {
 import { networkManager } from '../logic/managers/NetworkManager';
 import { coreRuntime } from '../logic/runtimeRegistry';
 import { APIError } from '../types/API';
+import { assertHighway } from './highways';
 import { identityAPI } from './identity';
 import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from './supabase';
 
@@ -34,6 +35,8 @@ export interface DeviceSecurityEvent {
   accountId: string | null;
   device: DeviceTrustSummary | null;
 }
+
+export type AuthEvent = DeviceSecurityEvent;
 
 export interface DeviceSecuritySession {
   sessionId: string;
@@ -273,6 +276,7 @@ async function runQueuedDeviceSecurityMutation<T>(
 
 async function requireAccountId(accountId?: string) {
   if (accountId) return accountId;
+  assertHighway('identity_bootstrap', 'direct-api');
   const identity = await identityAPI.identifyActiveCitizen();
   if (!identity) {
     throw new APIError('No authenticated account is available for device trust operations.');
@@ -405,6 +409,16 @@ export const deviceTrustAPI = {
     return rows
       .map((row) => normalizeDeviceSecurityEventRow(row))
       .filter((row): row is DeviceSecurityEvent => !!row);
+  },
+
+  async listMyAuthEvents(limit = 50) {
+    const rows = await rpcList<DeviceSecurityEventRow>('list_my_auth_events', {
+      p_limit: limit,
+    });
+
+    return rows
+      .map((row) => normalizeDeviceSecurityEventRow(row))
+      .filter((row): row is AuthEvent => !!row);
   },
 
   async listMySecuritySessions(limit = 20) {
@@ -602,7 +616,7 @@ export const deviceTrustAPI = {
     const nextMetadata = {
       ...(input.metadata ?? {}),
       idempotency_key:
-        input.idempotencyKey ?? (input.metadata?.['idempotency_key'] as string | null) ?? null,
+        input.idempotencyKey ?? (input.metadata?.idempotency_key as string | null) ?? null,
     };
 
     const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.rpc(
@@ -652,13 +666,14 @@ export const deviceTrustAPI = {
   },
 
   async getSecuritySummary() {
-    const [devices, events, sessions, currentDevice] = await Promise.all([
+    const [devices, events, authEvents, sessions, currentDevice] = await Promise.all([
       this.listMyDevices(),
       this.listMySecurityAuditEvents(),
+      this.listMyAuthEvents(),
       this.listMySecuritySessions(),
       this.getCurrentDeviceTrust(),
     ]);
-    return { devices, events, sessions, currentDevice };
+    return { devices, events, authEvents, sessions, currentDevice };
   },
 
   async trustDevice(deviceId: string) {

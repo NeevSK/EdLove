@@ -109,7 +109,7 @@ function migrateFile(filePath) {
           .split(',')
           .map((s) => s.trim())
           .filter(Boolean);
-        const newImport = `import { ${imports.join(', ')}, identityAPI } from '@repo/core';`;
+        const newImport = `import { ${imports.join(', ')}, identityAPI } from '@repo/core/api';`;
         content = content.replace(coreImportRegex, newImport);
       } else {
         // Cleanup potentially messy imports from previous passes
@@ -118,15 +118,15 @@ function migrateFile(filePath) {
           .map((s) => s.trim())
           .filter(Boolean);
         const uniqueImports = [...new Set(cleanedImports)];
-        const cleanedImportLine = `import { ${uniqueImports.join(', ')} } from '@repo/core';`;
+        const cleanedImportLine = `import { ${uniqueImports.join(', ')} } from '@repo/core/api';`;
         content = content.replace(coreImportRegex, cleanedImportLine);
       }
     } else {
       // If it's a file using relative lib imports or needs @repo/core for identityAPI
       if (content.includes('../lib/supabase') && !content.includes('@repo/core')) {
-        content = `import { identityAPI } from '@repo/core';\n${content}`;
+        content = `import { identityAPI } from '@repo/core/api';\n${content}`;
       } else if (!content.includes('identityAPI')) {
-        content = `import { identityAPI } from '@repo/core';\n${content}`;
+        content = `import { identityAPI } from '@repo/core/api';\n${content}`;
       }
     }
 

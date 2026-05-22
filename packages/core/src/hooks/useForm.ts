@@ -1,4 +1,4 @@
-import type { FormManager, FormState } from '@intuitui-labs/form-builder-engine';
+import type { FormManager, FormState } from '@intuitui-labs/form-builder-engine/core';
 import { useEffect, useState } from 'react';
 
 /**

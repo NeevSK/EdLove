@@ -51,7 +51,7 @@ export default function TeacherDashboardWeb({
 }: TeacherDashboardProps) {
   const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<ClassroomStackParamList>>();
-  const colors = useThemedColors();
+  const _colors = useThemedColors();
   const {
     isDemoMode,
     stats,

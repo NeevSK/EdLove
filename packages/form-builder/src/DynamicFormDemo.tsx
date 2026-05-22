@@ -1,4 +1,4 @@
-import { FormHydrator } from '@intuitui-labs/form-builder-engine';
+import { FormHydrator, type HydrationPayload } from '@intuitui-labs/form-builder-engine/hydration';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import { Box, Text, VStack } from '@repo/ui/primitives';
 
@@ -13,16 +13,18 @@ export default function DynamicFormDemo() {
   const [submittedData, setSubmittedData] = useState<any>(null);
 
   // This JSON could come from a database (Supabase)
-  const userGeneratedSchema = {
+  const userGeneratedSchema: HydrationPayload = {
     fields: [
       {
         name: 'fullName',
+        type: 'text',
         label: 'What is your full name?',
         placeholder: 'e.g. John Doe',
         validate: 'nonEmpty',
       },
       {
         name: 'email',
+        type: 'email',
         label: 'Your Contact Email',
         placeholder: 'john@example.com',
         validate: 'email',
@@ -36,10 +38,13 @@ export default function DynamicFormDemo() {
     ],
   };
 
-  const manager = FormHydrator.hydrate(userGeneratedSchema, async (values: Record<string, any>) => {
-    console.log('Dynamic Form Submitted:', values);
-    setSubmittedData(values);
-  });
+  const manager = FormHydrator.hydrate(
+    userGeneratedSchema,
+    async (values: Record<string, unknown>) => {
+      console.log('Dynamic Form Submitted:', values);
+      setSubmittedData(values);
+    },
+  );
 
   return (
     <VStack space="xl" className="p-4">

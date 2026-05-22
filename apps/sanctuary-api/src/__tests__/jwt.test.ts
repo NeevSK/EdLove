@@ -30,7 +30,7 @@ describe('Asymmetric JWT Verification Engine', () => {
   });
 
   afterEach(() => {
-    delete process.env['SUPABASE_JWT_PUBLIC_KEY'];
+    delete process.env.SUPABASE_JWT_PUBLIC_KEY;
     clearJwkCache();
   });
 
@@ -142,7 +142,7 @@ describe('Asymmetric JWT Verification Engine', () => {
     };
 
     const token = signToken(payload, rsaPrivateKey, kidRsa, 'RS256');
-    const tamperedToken = token.slice(0, -5) + 'AAAAA'; // Corrupt signature
+    const tamperedToken = `${token.slice(0, -5)}AAAAA`; // Corrupt signature
     const verified = await verifySupabaseJwt(tamperedToken);
 
     expect(verified).toBeNull();
@@ -151,7 +151,7 @@ describe('Asymmetric JWT Verification Engine', () => {
   it('should fallback to SUPABASE_JWT_PUBLIC_KEY env variable override', async () => {
     // Export public key in PEM format to env
     const pemKey = rsaPublicKey.export({ format: 'pem', type: 'pkcs1' }) as string;
-    process.env['SUPABASE_JWT_PUBLIC_KEY'] = pemKey;
+    process.env.SUPABASE_JWT_PUBLIC_KEY = pemKey;
 
     const payload = {
       sub: 'user-env-override',
@@ -166,7 +166,7 @@ describe('Asymmetric JWT Verification Engine', () => {
   });
 
   it('should support integration test token bypass for local/test environments', async () => {
-    process.env['NODE_ENV'] = 'test';
+    process.env.NODE_ENV = 'test';
     const verifiedAdmin = await verifySupabaseJwt('admin-user-1');
     const verifiedStudent = await verifySupabaseJwt('student-user-1');
 

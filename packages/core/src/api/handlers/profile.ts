@@ -1,5 +1,4 @@
 import type { Context } from 'hono';
-import { z } from 'zod';
 
 /**
  * Profile Domain Handlers (Hono + ZenStack ReBAC)
@@ -84,7 +83,7 @@ export const profileHandlers = {
    * School Pulse Metrics (Aggregation Layer).
    */
   getSchoolPulse: async (c: Context) => {
-    const db = c.get('db');
+    const _db = c.get('db');
     const { id } = c.req.param();
 
     // In a real implementation, this would perform a complex Kysely aggregation

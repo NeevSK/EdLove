@@ -7,13 +7,11 @@ let browserSentryPromise: Promise<BrowserSentryModule | null> | null = null;
 let sentryInitialized = false;
 
 function getSentryEnvironment() {
-  return process.env['EXPO_PUBLIC_SENTRY_ENVIRONMENT'] || process.env['NODE_ENV'] || 'production';
+  return process.env.EXPO_PUBLIC_SENTRY_ENVIRONMENT || process.env.NODE_ENV || 'production';
 }
 
 function getSentryRelease() {
-  return (
-    process.env['EXPO_PUBLIC_SENTRY_RELEASE'] || process.env['npm_package_version'] || undefined
-  );
+  return process.env.EXPO_PUBLIC_SENTRY_RELEASE || process.env.npm_package_version || undefined;
 }
 
 async function getBrowserSentry(): Promise<BrowserSentryModule | null> {
@@ -37,7 +35,7 @@ export const initSentry = () => {
     return;
   }
 
-  const dsn = process.env['EXPO_PUBLIC_SENTRY_DSN'];
+  const dsn = process.env.EXPO_PUBLIC_SENTRY_DSN;
   if (!dsn) {
     console.warn('[Sentry] DSN missing');
     return;

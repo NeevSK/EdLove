@@ -86,7 +86,7 @@ const IdentitySection = ({
   return (
     <Center>
       <Box style={{ width: cardWidth }}>
-        {profile && profile.id && (
+        {profile?.id && (
           <IdentityCard
             data={{ ...(profile as any), id: profile.id, capacity }}
             onViewFullProfile={() => {

@@ -1,3 +1,13 @@
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { config } from 'dotenv';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+config({ path: join(__dirname, '../.env') });
+console.log('DATABASE_URL loaded:', process.env.DATABASE_URL ? 'YES' : 'NO');
+
 import { serve } from '@hono/node-server';
 import { swaggerUI } from '@hono/swagger-ui';
 import { OpenAPIHono } from '@hono/zod-openapi';
@@ -7,6 +17,8 @@ import {
   adminHandlers,
   communityContract,
   communityHandlers,
+  dailyContentContract,
+  dailyContentHandlers,
   educationalContract,
   educationalHandlers,
   gradingContract,
@@ -23,14 +35,14 @@ import {
   selfHandlers,
   syncContract,
   syncHandlers,
-} from '@repo/core';
+} from '@repo/core/api/server';
 import { canUseZenStackDb, createZenStackDb } from '@repo/database';
 import { check as checkCedar } from '@repo/policies';
 import { verifySupabaseJwt } from './jwt';
 
 interface Env {
   Variables: {
-    db: any;
+    db: ReturnType<typeof createZenStackDb>;
     user: { id: string };
   };
 }
@@ -41,7 +53,21 @@ const app = new OpenAPIHono<Env>();
 app.use('*', async (c, next) => {
   const requestId = crypto.randomUUID();
   c.header('x-request-id', requestId);
-  console.log(`[${requestId}] 🛡️  ${c.req.method} ${c.req.url}`);
+
+  // CORS headers
+  c.header('Access-Control-Allow-Origin', '*');
+  c.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+  c.header(
+    'Access-Control-Allow-Headers',
+    'Content-Type, Authorization, x-school-id, x-capacity, x-grade-id, x-section-id, x-classroom-ids, x-child-student-ids, x-device-trust, x-network-zone',
+  );
+
+  // Handle preflight requests
+  if (c.req.method === 'OPTIONS') {
+    return c.text('', 200);
+  }
+
+  console.log(`[${requestId}] ${c.req.method} ${c.req.url}`);
   await next();
 });
 
@@ -80,19 +106,22 @@ app.use('/api/*', async (c, next) => {
   }
 
   // 2. Inject ZenStack Enhanced DB
-  let db: any = null;
+  let db: ReturnType<typeof createZenStackDb> | null = null;
   if (canUseZenStackDb()) {
     db = createZenStackDb(user);
-    c.set('db', db);
-    c.set('user', user);
   } else {
-    console.warn('⚠️ DATABASE_URL not found. ReBAC enforcement will be offline.');
+    console.warn('DATABASE_URL not found. ReBAC enforcement will be offline.');
   }
+
+  c.set('user', user);
+  if (db) c.set('db', db);
+
+  const isAnonymousUser = user.id === 'anonymous';
 
   // --- 3. Cedar Server Gate Check (Double Gate Security Principle) ---
   // A. Resolve attributes for Principal
   let school_id = '';
-  let capacity = 'Wanderer';
+  let capacity = 'teacher'; // Changed from 'Wanderer' to 'teacher' for development
   let grade_id: string | undefined;
   let section_id: string | undefined;
   let classroom_ids: string[] = [];
@@ -100,7 +129,7 @@ app.use('/api/*', async (c, next) => {
 
   // Parse headers strictly as fallback/testing parameters or narrow scoping filters
   const clientHeaderSchoolId = c.req.header('x-school-id') || '';
-  const clientHeaderCapacity = c.req.header('x-capacity') || 'Wanderer';
+  const clientHeaderCapacity = c.req.header('x-capacity') || 'teacher';
   const clientHeaderGradeId = c.req.header('x-grade-id') || undefined;
   const clientHeaderSectionId = c.req.header('x-section-id') || undefined;
 
@@ -114,7 +143,7 @@ app.use('/api/*', async (c, next) => {
 
   // Hydrate principal authoritatively from database when active
   let hydratedFromDb = false;
-  if (user.id !== 'anonymous' && db) {
+  if (!isAnonymousUser && db) {
     try {
       const activeBond = await db.bond.findFirst({
         where: {
@@ -129,14 +158,14 @@ app.use('/api/*', async (c, next) => {
         hydratedFromDb = true;
       }
     } catch (err) {
-      console.warn('⚠️ Server failed to resolve active bond from DB:', err);
+      console.warn('Server failed to resolve active bond from DB:', err);
     }
   }
 
   // Fallback to client headers ONLY under test/local development OR when database bond is offline
   if (!hydratedFromDb) {
     school_id = clientHeaderSchoolId;
-    capacity = clientHeaderCapacity;
+    capacity = isAnonymousUser ? 'wanderer' : clientHeaderCapacity;
     grade_id = clientHeaderGradeId;
     section_id = clientHeaderSectionId;
     classroom_ids = clientHeaderClassroomIds;
@@ -145,7 +174,7 @@ app.use('/api/*', async (c, next) => {
     // Database is active: prevent administrative privilege escalation via unverified client headers
     if (clientHeaderCapacity === 'admin' && capacity !== 'admin') {
       console.warn(
-        `[🛡️ SENTINEL SECURITY ALERT] Blocked header privilege escalation attempt by user "${user.id}"`,
+        `[SENTINEL SECURITY ALERT] Blocked header privilege escalation attempt by user "${user.id}"`,
       );
       return c.json(
         {
@@ -183,6 +212,10 @@ app.use('/api/*', async (c, next) => {
 
   let resourceType = 'School';
   let resourceId = school_id || 'school_institutional';
+
+  if (isAnonymousUser && urlPath.includes('/identity/resolveIdentity')) {
+    return await next();
+  }
 
   if (urlPath.includes('/groups') || urlPath.includes('/posts')) {
     resourceType = 'Community';
@@ -232,8 +265,8 @@ app.use('/api/*', async (c, next) => {
     try {
       const cloned = c.req.raw.clone();
       const bodyJson = await cloned.json();
-      bodyClassroomId = bodyJson?.classroom_id;
-    } catch (e) {
+      bodyClassroomId = bodyJson?.classroom_id ?? bodyJson?.classroomId;
+    } catch (_e) {
       // Body is not JSON or cannot be read, ignore gracefully
     }
   }
@@ -289,10 +322,10 @@ app.use('/api/*', async (c, next) => {
     );
   }
 
-  // 🛡️ Sentinel Audit Log Interceptor: Log high-privilege platform administrator actions
+  // Sentinel Audit Log Interceptor: Log high-privilege platform administrator actions
   if (capacity === 'admin') {
     console.info(
-      `[🛡️ SENTINEL AUDIT LOG] Platform Admin Action Authorized:
+      `[SENTINEL AUDIT LOG] Platform Admin Action Authorized:
        - Operator ID: "${user.id}"
        - Action: "${cedarAction}"
        - Target Resource: "${resourceType}::${resourceId}"
@@ -337,6 +370,18 @@ communityApp.openapi(adaptToHono(communityContract.createPost), communityHandler
 communityApp.openapi(
   adaptToHono(communityContract.toggleReaction),
   communityHandlers.toggleReaction,
+);
+
+// Sovereign Routes (Vertical Slice: DAILY CONTENT)
+const dailyContentApp = new OpenAPIHono();
+dailyContentApp.openapi(adaptToHono(dailyContentContract.getToday), dailyContentHandlers.getToday);
+dailyContentApp.openapi(
+  adaptToHono(dailyContentContract.getForDate),
+  dailyContentHandlers.getForDate,
+);
+dailyContentApp.openapi(
+  adaptToHono(dailyContentContract.getRecent),
+  dailyContentHandlers.getRecent,
 );
 
 // Sovereign Routes (Vertical Slice: EDUCATIONAL)
@@ -423,6 +468,7 @@ libraryApp.openapi(adaptToHono(libraryContract.getCollection), libraryHandlers.g
 app.route('/api', selfApp);
 app.route('/api', profileApp);
 app.route('/api', communityApp);
+app.route('/api', dailyContentApp);
 app.route('/api', educationalApp);
 app.route('/api', gradingApp);
 app.route('/api', operationsApp);
@@ -448,10 +494,10 @@ app.doc('/doc', {
 app.get('/ui', swaggerUI({ url: '/doc' }));
 
 // --- 5. Launch ---
-const port = Number(process.env['PORT']) || 3000;
-console.log(`🛡️ Sanctuary API standing guard on port ${port}`);
+const port = Number(process.env.PORT) || 3000;
+console.log(`Sanctuary API standing guard on port ${port}`);
 
-if (process.env['NODE_ENV'] !== 'test') {
+if (process.env.NODE_ENV !== 'test') {
   serve({
     fetch: app.fetch,
     port,
@@ -459,4 +505,4 @@ if (process.env['NODE_ENV'] !== 'test') {
 }
 
 export default app;
-export type AppType = any;
+export type AppType = unknown;

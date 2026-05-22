@@ -144,12 +144,10 @@ export * from './types';
 
 import { z } from 'zod';
 
-export {
-  AnalyticsEngine as formAnalytics,
-  FormHydrator,
-  FormManager,
-  type FormState,
-} from '@intuitui-labs/form-builder-engine';
+export { AnalyticsEngine as formAnalytics } from '@intuitui-labs/form-builder-engine/analytics';
+export type { FormState } from '@intuitui-labs/form-builder-engine/core';
+export { FormManager } from '@intuitui-labs/form-builder-engine/core';
+export { FormHydrator } from '@intuitui-labs/form-builder-engine/hydration';
 export * from './api';
 export {
   adaptToHono,
@@ -240,9 +238,6 @@ export { UserSchema } from './logic/schemas/user.schema';
 // User and other types are already exported from ./types
 export { validateForm, validators } from './logic/utils/validators';
 export * from './logic/workspace/canvas';
-export {
-  resolveWorkspaceSwitcherTargets,
-  type WorkspaceSwitcherTarget,
-} from './logic/workspace/workspaceSwitcher';
+export { resolveWorkspaceSwitcherTargets } from './logic/workspace/workspaceSwitcher';
 export { useWorkspaceLayoutSync } from './native/useWorkspaceLayoutSync';
 export { z };

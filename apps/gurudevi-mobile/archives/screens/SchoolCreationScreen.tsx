@@ -46,14 +46,14 @@ export default function SchoolCreationScreen() {
     updateHierarchy,
     resetProgress,
   } = useSchoolCreation();
-  const handleNext = () => {
+  const _handleNext = () => {
     if (state.step < TOTAL_STEPS) {
       updateStep(state.step + 1);
     } else {
       handleFinalSubmit();
     }
   };
-  const handleBack = () => {
+  const _handleBack = () => {
     if (state.step > 1) {
       updateStep(state.step - 1);
     }
@@ -108,7 +108,7 @@ export default function SchoolCreationScreen() {
       setIsSubmitting(false);
     }
   };
-  const renderStep = () => {
+  const _renderStep = () => {
     switch (state.step) {
       case 1:
         return <StepBasicInfo data={state.basicInfo} onUpdate={updateBasicInfo} />;

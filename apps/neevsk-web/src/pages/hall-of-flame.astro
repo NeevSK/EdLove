@@ -1,8 +1,5 @@
 ---
 import { getCollection } from 'astro:content';
-import Navigation from '../components/Navigation.astro';
-import RealitySwitch from '../components/RealitySwitch.astro';
-import BaseLayout from '../layouts/BaseLayout.astro';
 import { absoluteUrl } from '../lib/site';
 
 const flameEntries = await getCollection('hall-of-flame', ({ data }) => !data.draft);

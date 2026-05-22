@@ -1,5 +1,70 @@
+import { vi } from 'vitest';
+
 // Direct import of runtimeRegistry to avoid triggering index.ts exports and module-level instantiations
 import { coreRuntime } from '../../../../packages/core/src/logic/runtimeRegistry';
+
+let mockZenStackDbAvailable = true;
+let mockActiveBond: any = null;
+
+export function setMockZenStackDbAvailable(available: boolean) {
+  mockZenStackDbAvailable = available;
+}
+
+export function setMockActiveBond(bond: any) {
+  mockActiveBond = bond;
+}
+
+function createMockDelegate(name: string): any {
+  return new Proxy(
+    {},
+    {
+      get(_target, prop) {
+        if (prop === 'findUnique' && name === 'school') {
+          return async () => ({
+            id: 'mock-school',
+            name: 'Mock School',
+            _count: { classrooms: 0, bonds: 0 },
+          });
+        }
+
+        if (prop === 'create' || prop === 'update' || prop === 'upsert') {
+          return async (args: any = {}) => ({
+            id: `${name}-mock-id`,
+            ...(args?.data ?? {}),
+          });
+        }
+
+        if (prop === 'findMany') return async () => [];
+        if (prop === 'findFirst') {
+          if (name === 'bond') {
+            return async () => mockActiveBond;
+          }
+          return async () => null;
+        }
+
+        if (prop === '$transaction') {
+          return async (callback: (tx: any) => Promise<any>) => callback(mockDb);
+        }
+
+        return createMockDelegate(`${name}.${String(prop)}`);
+      },
+    },
+  );
+}
+
+const mockDb = new Proxy(
+  {},
+  {
+    get(_target, prop) {
+      return createMockDelegate(String(prop));
+    },
+  },
+);
+
+vi.mock('@repo/database', () => ({
+  canUseZenStackDb: () => mockZenStackDbAvailable,
+  createZenStackDb: () => mockDb,
+}));
 
 // Complete Mock CoreRuntimeEnvironment for backend test runs
 const mockStorage = {

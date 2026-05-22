@@ -13,7 +13,7 @@ function runCommand(cmd, args = []) {
   try {
     const fullCmd = `${cmd} ${args.join(' ')}`;
     return execSync(fullCmd, { encoding: 'utf-8', stdio: 'pipe' });
-  } catch (e) {
+  } catch (_e) {
     return '';
   }
 }
@@ -42,14 +42,14 @@ function getPackages() {
 function analyzePackage(pkg) {
   const todoCount = (
     runCommand('rg', ['-c', '"TODO|FIXME"', pkg.fullPath]).match(/\d+/g) || []
-  ).reduce((a, b) => a + parseInt(b), 0);
+  ).reduce((a, b) => a + parseInt(b, 10), 0);
 
   // Get LOC and file count using tokei if available, fallback to simple find
   let sloc = 0;
   try {
     const tokeiOutput = JSON.parse(runCommand('tokei', ['--output', 'json', pkg.fullPath]));
     sloc = tokeiOutput.Total?.code || 0;
-  } catch (e) {
+  } catch (_e) {
     sloc = (runCommand('wc', ['-l', `$(find ${pkg.fullPath} -name "*.ts" -o -name "*.tsx")`]).match(
       /\d+/g,
     ) || [0])[0];

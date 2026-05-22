@@ -11,7 +11,7 @@ const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
 
 export const lessonsAPI = {
   async create(lesson: any) {
-    const res = await client.api.educational.lessons.$post({
+    const res = await (client.api as any).educational.lessons.$post({
       json: lesson,
     });
 

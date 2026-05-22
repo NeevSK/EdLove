@@ -54,7 +54,7 @@ export const staffManagementAPI = {
     schoolId: string,
     viewDate?: string,
   ): Promise<StaffPresenceSummary> {
-    const res = await client.api.admin.schools[':schoolId']['staff-presence'].$get({
+    const res = await (client.api as any).admin.schools[':schoolId']['staff-presence'].$get({
       param: { schoolId },
       query: { viewDate: viewDate ?? undefined },
     });
@@ -67,7 +67,7 @@ export const staffManagementAPI = {
   },
 
   async getTeacherCarousel(schoolId: string, viewDate?: string): Promise<TeacherCarouselItem[]> {
-    const res = await client.api.admin.schools[':schoolId']['teacher-carousel'].$get({
+    const res = await (client.api as any).admin.schools[':schoolId']['teacher-carousel'].$get({
       param: { schoolId },
       query: { viewDate: viewDate ?? undefined },
     });
@@ -87,7 +87,7 @@ export const staffManagementAPI = {
     endDate: string,
     reason?: string,
   ): Promise<boolean> {
-    const res = await client.api.admin.leaves.$post({
+    const res = await (client.api as any).admin.leaves.$post({
       json: {
         schoolId,
         userId,
@@ -107,7 +107,7 @@ export const staffManagementAPI = {
   },
 
   async getPendingLeaves(schoolId: string): Promise<StaffLeaveDTO[]> {
-    const res = await client.api.admin.schools[':schoolId']['pending-leaves'].$get({
+    const res = await (client.api as any).admin.schools[':schoolId']['pending-leaves'].$get({
       param: { schoolId },
     });
 
@@ -119,7 +119,7 @@ export const staffManagementAPI = {
   },
 
   async approveLeave(leaveId: string, reviewedBy: string, approved: boolean): Promise<boolean> {
-    const res = await client.api.admin.leaves[':leaveId'].approve.$post({
+    const res = await (client.api as any).admin.leaves[':leaveId'].approve.$post({
       param: { leaveId },
       json: { reviewedBy, approved },
     });
@@ -137,7 +137,7 @@ export const staffManagementAPI = {
     limit?: number,
     viewDate?: string,
   ): Promise<CalendarEvent[]> {
-    const res = await client.api.admin.schools[':schoolId']['calendar-events'].$get({
+    const res = await (client.api as any).admin.schools[':schoolId']['calendar-events'].$get({
       param: { schoolId },
       query: {
         limit: limit !== undefined ? limit.toString() : undefined,
@@ -163,7 +163,7 @@ export const staffManagementAPI = {
       is_public?: boolean;
     },
   ): Promise<boolean> {
-    const res = await client.api.admin.schools[':schoolId']['calendar-events'].$post({
+    const res = await (client.api as any).admin.schools[':schoolId']['calendar-events'].$post({
       param: { schoolId },
       json: { principalId, event },
     });

@@ -1,5 +1,16 @@
 import { APIError } from '../types/API';
 import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from './base';
+import { assertHighway } from './highways';
+
+/**
+ * Simplified bond structure returned by the identity API
+ * The full Bond structure includes additional fields like user_id, entity_id, etc.
+ * that are filled in by the store layer
+ */
+export interface SimplifiedBond {
+  id: string;
+  capacity: string;
+}
 
 /**
  * IDENTITY API (Sovereign RPC Proxy)
@@ -8,25 +19,46 @@ import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from './base';
  * [BREAKING] Renamed methods to force loud failure in UI.
  */
 
+export interface ActiveCitizen {
+  id: string;
+  email: string;
+  display_name: string;
+  availableBonds: SimplifiedBond[];
+  activeBond?: SimplifiedBond;
+  onboarding_completed?: boolean;
+  schoolId?: string;
+}
+
 const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
+let inFlightIdentityRequest: Promise<ActiveCitizen | null> | null = null;
 
 export const identityAPI = {
   /**
    * [LOUD-FAILURE] Renamed from resolveIdentity.
    */
-  async identifyActiveCitizen() {
-    const res = await client.api.identity.resolveIdentity.$get();
-    if (!res.ok) {
-      throw new APIError('Failed to resolve identity', res.status.toString());
+  async identifyActiveCitizen(): Promise<ActiveCitizen | null> {
+    assertHighway('identity_bootstrap', 'direct-api');
+    if (!inFlightIdentityRequest) {
+      inFlightIdentityRequest = (async () => {
+        const res = await (client.api as any).identity.resolveIdentity.$get();
+        if (!res.ok) {
+          throw new APIError('Failed to resolve identity', res.status.toString());
+        }
+        return await res.json();
+      })().finally(() => {
+        inFlightIdentityRequest = null;
+      });
     }
-    return await res.json();
+
+    return await inFlightIdentityRequest;
   },
 
   /**
    * [LOUD-FAILURE] Renamed from getProfile.
    */
   async fetchUserProfile(id: string) {
-    const res = await client.api.identity.profile[':id'].$get({
+    assertHighway('profile_core', 'direct-api');
+    const res = await (client.api as any).identity.profile[':id'].$get({
       param: { id },
     });
     if (!res.ok) {
@@ -38,8 +70,9 @@ export const identityAPI = {
   /**
    * [LOUD-FAILURE] Renamed from updateProfile.
    */
-  async modifyUserProfile(id: string, updates: any) {
-    const res = await client.api.identity.profile[':id'].$patch({
+  async modifyUserProfile(id: string, updates: Record<string, unknown>) {
+    assertHighway('profile_core', 'direct-api');
+    const res = await (client.api as any).identity.profile[':id'].$patch({
       param: { id },
       json: updates,
     });
@@ -53,7 +86,8 @@ export const identityAPI = {
    * [LOUD-FAILURE] Renamed from getClassroomCapacitySummary.
    */
   async resolveWorkspaceContext(id: string) {
-    const res = await client.api.identity['classroom-capacity-summary'][':id'].$get({
+    assertHighway('workspace_sync', 'direct-api');
+    const res = await (client.api as any).identity['classroom-capacity-summary'][':id'].$get({
       param: { id },
     });
     if (!res.ok) {

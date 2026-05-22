@@ -11,6 +11,22 @@ export const identityHandlers = {
     const db = c.get('db');
     const user = c.get('user');
 
+    if (!db || user.id === 'anonymous') {
+      return c.json(
+        {
+          id: user.id,
+          email: '',
+          full_name: null,
+          display_name: null,
+          school_id: null,
+          onboarding_completed: false,
+          onboarding_state: 'pending',
+          bonds: [],
+        },
+        200,
+      );
+    }
+
     const identity = await db.user.findUnique({
       where: { id: user.id },
       include: {
@@ -50,6 +66,21 @@ export const identityHandlers = {
   getClassroomCapacitySummary: async (c: Context) => {
     const db = c.get('db');
     const { id } = c.req.param();
+
+    if (!db || id === 'anonymous') {
+      return c.json(
+        {
+          user_id: id,
+          school_id: null,
+          profile_completed: false,
+          onboarding_completed: false,
+          onboarding_state: 'pending',
+          real_class_count: 0,
+          profile: null,
+        },
+        200,
+      );
+    }
 
     const [user, classrooms] = await Promise.all([
       db.user.findUnique({ where: { id } }),

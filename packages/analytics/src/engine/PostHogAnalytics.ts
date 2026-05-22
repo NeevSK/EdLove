@@ -43,7 +43,7 @@ export class PostHogAnalytics {
         this.instance.capture(event, properties);
       } else {
         this.instance.capture({
-          distinctId: properties?.['distinctId'] || 'server_system',
+          distinctId: properties?.distinctId || 'server_system',
           event,
           properties,
         });
@@ -80,7 +80,7 @@ export class PostHogAnalytics {
         });
       } else {
         this.instance.capture({
-          distinctId: properties?.['distinctId'] || 'server_system',
+          distinctId: properties?.distinctId || 'server_system',
           event: '$screen',
           properties: {
             $screen_name: name,

@@ -23,7 +23,7 @@ import {
   Text,
   VStack,
 } from '@repo/ui/primitives';
-import React, { useCallback, useEffect, useReducer } from 'react';
+import { useCallback, useEffect, useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
 import { communityAPI as community } from '../api/community';
 import type { AnnouncementWithAuthor } from '../types/Community';

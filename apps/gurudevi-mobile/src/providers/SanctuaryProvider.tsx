@@ -66,10 +66,10 @@ export function SanctuaryProvider({ children }: SanctuaryProviderProps) {
                 <ToastProvider>
                   <ExternalLinkProvider>
                     <AnalyticsProvider
-                      apiKey={process.env['EXPO_PUBLIC_POSTHOG_API_KEY']}
+                      apiKey={process.env.EXPO_PUBLIC_POSTHOG_API_KEY}
                       enabled={flags?.isAnalyticsEnabled}
                       options={{
-                        host: process.env['EXPO_PUBLIC_POSTHOG_HOST'] || 'https://app.posthog.com',
+                        host: process.env.EXPO_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com',
                       }}
                     >
                       <Box className="flex-1">{children}</Box>

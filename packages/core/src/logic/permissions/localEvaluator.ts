@@ -1,3 +1,4 @@
+/* eslint-disable import-x/no-unresolved */
 import { eq } from 'drizzle-orm';
 import { getDrizzleDB, registerPermissionValidator } from '../../adapters/powersync/database';
 import { cedarPolicies, classrooms, schools } from '../../adapters/powersync/schema';
@@ -20,8 +21,8 @@ export interface CedarEvaluationContext {
  * and only invalidating the cache when the sync table content changes.
  */
 let cachedPolicyString = '';
-let cachedPolicySize = 0;
-let isCacheValid = false;
+let _cachedPolicySize = 0;
+let _isCacheValid = false;
 
 // Max allowable local policy size (e.g. 100KB) to prevent Hermes/Android WASM memory crashes.
 const MAX_LOCAL_POLICY_SIZE_BYTES = 100 * 1024;
@@ -33,7 +34,7 @@ const MAX_LOCAL_POLICY_SIZE_BYTES = 100 * 1024;
 export async function getLocalResourceAttributes(
   resourceType: string,
   resourceId: string,
-): Promise<Record<string, any>> {
+): Promise<Record<string, unknown>> {
   const db = getDrizzleDB();
 
   try {
@@ -75,7 +76,7 @@ export async function getLocalResourceAttributes(
  * If a rooted device injects local policies, we detect signature mismatch and fail-safe.
  */
 export async function verifyLocalPolicySignature(
-  policySet: string,
+  _policySet: string,
   signatureHex?: string,
 ): Promise<boolean> {
   // Real implementation will use expo-crypto or isomorphic-webcrypto to verify against public keys.
@@ -109,7 +110,7 @@ export async function checkLocalPermission(params: {
   userContext: Partial<UserContext>;
 }): Promise<boolean> {
   try {
-    const legacyContext = params.userContext as any;
+    const legacyContext = params.userContext as Record<string, unknown>;
     // 2. Fetch current Device Trust details
     const isTrusted = await DeviceTrustEngine.checkDeviceTrustStatus();
     const trustSummary = await deviceTrustAPI.getCurrentDeviceTrust();
@@ -141,8 +142,8 @@ export async function checkLocalPermission(params: {
     if (rawPolicyString !== cachedPolicyString) {
       // Policies modified or synched newly -> invalidate and compile cache
       cachedPolicyString = rawPolicyString;
-      cachedPolicySize = policySizeBytes;
-      isCacheValid = true;
+      _cachedPolicySize = policySizeBytes;
+      _isCacheValid = true;
 
       // Perform security signature verification
       const isSignatureValid = await verifyLocalPolicySignature(rawPolicyString);
@@ -178,16 +179,22 @@ export async function checkLocalPermission(params: {
         policies: cachedPolicyString,
         schema: '',
         request: {
-          principal: { type: 'User', id: params.userContext.userId || legacyContext.user_id || '' },
+          principal: {
+            type: 'User',
+            id: params.userContext.userId || legacyContext.user_id || '',
+          },
           action: { type: 'Action', id: params.action },
           resource: { type: params.resourceType as string, id: params.resourceId },
-          context: contextPayload as any,
+          context: contextPayload as unknown,
         },
         entities: [
           {
             uid: { type: 'User', id: params.userContext.userId || legacyContext.user_id || '' },
             attrs: {
-              school_id: params.userContext.schoolId || legacyContext.school_id || '',
+              school_id:
+                params.userContext.schoolId ||
+                (legacyContext.school_id as string | undefined) ||
+                '',
               capacity: params.userContext.capacity || '',
               classroom_ids: classroomId ? [classroomId] : [],
             },

@@ -1,8 +1,7 @@
 import { useClassroomLegacyHistory } from '@repo/profile';
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { Box, HStack, Icon, ScrollView, Text, VStack } from '@repo/ui/primitives';
-import { Award, BookOpen, Calendar, School, User, Users } from 'lucide-react-native';
-import React from 'react';
+import { Award, Calendar, School, User, Users } from 'lucide-react-native';
 import Animated, { FadeInRight } from 'react-native-reanimated';
 
 type ClassroomLegacyRecord = {

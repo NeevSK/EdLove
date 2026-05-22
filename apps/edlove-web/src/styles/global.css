@@ -5,9 +5,9 @@
 
 @theme {
   /* Typography */
-  --font-heading: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-body: 'Lora', 'Georgia', 'Times New Roman', serif;
-  --font-mono: 'Fira Code', 'Courier New', monospace;
+  --font-heading: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-body: "Lora", "Georgia", "Times New Roman", serif;
+  --font-mono: "Fira Code", "Courier New", monospace;
 
   /* Type Scale (Universal Balance - Adult Proportions) */
   --text-xs: 0.75rem;
@@ -79,8 +79,8 @@
   --color-gold: #e7cb16ff;
 
   /* Legacy mapping for compatibility during transition */
-  --color-midnightInk: #2D3561;
-  --color-warmPaper: #FAF9F6;
+  --color-midnightInk: #2d3561;
+  --color-warmPaper: #faf9f6;
   --color-agedGold: #e7cb16ff;
 
   --font-serif: var(--font-body);

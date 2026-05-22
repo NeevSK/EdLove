@@ -1,14 +1,10 @@
 import { authAPI, identityAPI } from '@repo/core/api';
 import { useIdentity } from '@repo/core/hooks';
-import {
-  type Capacity,
-  coreRuntime,
-  handleAPIError,
-  type User,
-  validateForm,
-  validators,
-} from '@repo/core/logic';
-
+import { handleAPIError } from '@repo/core/api/interceptor';
+import { storage } from '@repo/core/storage';
+import { type Capacity, type User } from '@repo/core/types';
+import { validateForm, validators } from '@repo/core/utils';
+import { Key } from 'lucide-react-native';
 import { memo, useCallback, useEffect, useMemo, useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BreathAnimation } from '../components/BreathAnimation';
@@ -83,7 +79,7 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
 export const AuthScreenWeb = memo(
   ({ onContinueAsGuest, onSuccess, onBack, initialMode }: AuthScreenProps) => {
     const { t } = useTranslation();
-    useTheme();
+    const { accent } = useTheme();
     const { showToast } = useSanctuaryToast();
     const { profile: myProfile } = useIdentity();
 
@@ -108,7 +104,7 @@ export const AuthScreenWeb = memo(
         const internalId = await identityAPI.getMyInternalId();
         if (!internalId) return;
 
-        const pendingInvite = await coreRuntime.storage.getItem('pending_invite');
+        const pendingInvite = await storage.getStringAsync('pending_invite');
         if (!pendingInvite) return;
 
         try {
@@ -118,7 +114,7 @@ export const AuthScreenWeb = memo(
           await identityAPI.updateProfile(internalId, {
             school_id: invite.school_id,
           });
-          await coreRuntime.storage.removeItem('pending_invite');
+          storage.delete('pending_invite');
           showToast({
             message: successMessage,
             type: 'success',
@@ -172,6 +168,31 @@ export const AuthScreenWeb = memo(
         const apiError = handleAPIError(err);
         showToast({
           message: (apiError as any)?.message || 'Google sign-in failed. Please try again.',
+          type: 'error',
+        });
+      } finally {
+        dispatch({ type: 'SET_LOADING', loading: false });
+      }
+    }, [showToast]);
+
+    const handlePasskeyAuth = useCallback(async () => {
+      dispatch({ type: 'SET_LOADING', loading: true });
+      dispatch({ type: 'SET_ERRORS', errors: {} });
+      showToast({ message: 'Opening passkey sign-in...', type: 'info', duration: 2000 });
+      try {
+        const redirectUrl = window.location.origin;
+        const session = await authAPI.getAuthSession().catch(() => null);
+        const isAnonymousSession = session?.user?.is_anonymous || !session?.user?.email;
+
+        if (isAnonymousSession && session?.user) {
+          await authAPI.registerPasskey(redirectUrl, true);
+        } else {
+          await authAPI.signInWithPasskey(redirectUrl, true);
+        }
+      } catch (err: unknown) {
+        const apiError = handleAPIError(err);
+        showToast({
+          message: (apiError as any)?.message || 'Passkey sign-in failed. Please try again.',
           type: 'error',
         });
       } finally {
@@ -365,6 +386,10 @@ export const AuthScreenWeb = memo(
                         <Text className="text-sm text-phase-secondary">
                           Start with Google or email.
                         </Text>
+                        <Text className="text-xs text-phase-secondary/75 leading-5">
+                          Shared devices can keep separate accounts. Use account switching plus a
+                          local PIN or biometric lock for protected identities.
+                        </Text>
                       </VStack>
                       <VStack className="p-4 rounded-2xl bg-phase-surface/50 border border-phase-border gap-1">
                         <Text className="font-bold text-phase-primary">Guest-safe</Text>
@@ -450,6 +475,25 @@ export const AuthScreenWeb = memo(
                       </ButtonText>
                     </HStack>
                   </Button>
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    onPress={handlePasskeyAuth}
+                    isDisabled={loading}
+                    className="h-[60px] rounded-2xl border-phase-border bg-phase-surface/50"
+                  >
+                    <HStack className="gap-3 items-center">
+                      <Box className="w-7 h-7 rounded-full bg-phase-primary/10 items-center justify-center">
+                        <Key size={16} color={accent.action} />
+                      </Box>
+                      <ButtonText className="text-phase-primary font-bold">Use Passkey</ButtonText>
+                    </HStack>
+                  </Button>
+
+                  <Text className="text-center text-xs text-phase-secondary/75 leading-5">
+                    Social login stays the main path. Passkeys are available as a faster,
+                    phishing-resistant option.
+                  </Text>
 
                   {!showEmailForm && (
                     <Button
@@ -486,10 +530,8 @@ export const AuthScreenWeb = memo(
                                 autoComplete="email"
                               />
                             </Input>
-                            {errors['email'] && (
-                              <Text className="text-xs text-phase-error ml-1">
-                                {errors['email']}
-                              </Text>
+                            {errors.email && (
+                              <Text className="text-xs text-phase-error ml-1">{errors.email}</Text>
                             )}
                           </VStack>
 
@@ -506,9 +548,9 @@ export const AuthScreenWeb = memo(
                                 className="text-phase-primary"
                               />
                             </Input>
-                            {errors['password'] && (
+                            {errors.password && (
                               <Text className="text-xs text-phase-error ml-1">
-                                {errors['password']}
+                                {errors.password}
                               </Text>
                             )}
                           </VStack>
@@ -547,9 +589,9 @@ export const AuthScreenWeb = memo(
                   )}
                 </VStack>
 
-                {errors['_form'] && (
+                {errors._form && (
                   <Box className="p-4 rounded-xl border border-phase-error/20 bg-phase-error/5">
-                    <Text className="text-phase-error text-center text-sm">{errors['_form']}</Text>
+                    <Text className="text-phase-error text-center text-sm">{errors._form}</Text>
                   </Box>
                 )}
               </VStack>

@@ -3,7 +3,7 @@ import { Box, Heading, HStack, Icon, Text, VStack } from '@repo/ui/primitives';
 import { formatDistanceToNow } from 'date-fns';
 import { Award, BookOpen, Clock } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { type GradeRow, useStudentGrades } from '../hooks/useStudentGrades';
+import { useStudentGrades } from '../hooks/useStudentGrades';
 
 interface MyGradesViewProps {
   userId?: string;

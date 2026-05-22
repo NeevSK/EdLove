@@ -22,7 +22,7 @@ type WorkspaceClassroom = {
 
 export function useTeacherWorkspaceShell(
   navigation: NavigationProp<ClassroomStackParamList>,
-  onRefresh?: () => void,
+  _onRefresh?: () => void,
 ) {
   const { isDemoMode } = useStore();
   const { isGuest } = useFeatureAccess();
@@ -123,7 +123,7 @@ export function useTeacherWorkspaceShell(
         });
       }
     },
-    [bumpRefresh, showToast],
+    [bumpRefresh, showToast, setIsScannerOpen],
   );
 
   const handleAdminAction = useCallback(

@@ -1,5 +1,3 @@
-import { User } from '../../../types';
-
 /**
  * OnboardingState - Explicit states for the user onboarding journey.
  * Following the Sovereign Kernel architectural roadmap.

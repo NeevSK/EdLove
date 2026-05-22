@@ -15,7 +15,6 @@ import type {
   CommunityStackParamList,
   DirectConversation,
   SanctuaryGroup,
-  SanctuaryManifesto,
 } from '@repo/core/types';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import { HorizontalChipRow } from '@repo/ui/components/HorizontalChipRow';

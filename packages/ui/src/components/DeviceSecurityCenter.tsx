@@ -1,26 +1,9 @@
 import { useAuthStore, useDeviceSecurity } from '@repo/core/logic';
-import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useCallback, useMemo, useOptimistic, useReducer, useTransition } from 'react';
 import { Platform, StyleSheet } from 'react-native';
 import { Box, Button, ButtonText, Heading, HStack, Spinner, Text, VStack } from '../gluestack';
-import {
-  Activity,
-  AlertTriangle,
-  CheckCircle2,
-  Clock3,
-  History,
-  Key,
-  Laptop,
-  Lock,
-  Shield,
-  Smartphone,
-  Tablet,
-  Trash2,
-  User,
-  UserMinus,
-  Users,
-} from '../icons';
+import { Activity, Clock3, History, Key, Laptop, Lock, Smartphone, Tablet, Trash2 } from '../icons';
 import { useSanctuaryToast } from '../providers/ToastProvider';
 import { hapticError, hapticLight, hapticSuccess } from '../utils/haptics';
 import DeviceAccountManager from './DeviceAccountManager';
@@ -91,7 +74,7 @@ const getDeviceIcon = (platform: string | null) => {
 
 // ── Row Orchestrator Components ─────────────────────────────────────────────
 
-const StatPill = React.memo(
+const _StatPill = React.memo(
   ({
     label,
     value,
@@ -156,6 +139,7 @@ export default function DeviceSecurityCenter({ compact = false }: { compact?: bo
     currentDevice,
     devices,
     events,
+    authEvents,
     sessions,
     loading,
     error,
@@ -168,7 +152,7 @@ export default function DeviceSecurityCenter({ compact = false }: { compact?: bo
 
   const { showToast } = useSanctuaryToast();
   const [state, dispatch] = useReducer(reducer, initialState);
-  const [isPending, startTransition] = useTransition();
+  const [_isPending, startTransition] = useTransition();
 
   // ✅ 2026 Optimistic Updates: The device vanishes instantly from the trust list
   const [optimisticDevices, addOptimisticDevice] = useOptimistic(
@@ -204,7 +188,7 @@ export default function DeviceSecurityCenter({ compact = false }: { compact?: bo
         type: 'success',
       });
       await refresh();
-    } catch (err) {
+    } catch (_err) {
       hapticError();
       showToast?.({ message: 'Failed to remove device.', type: 'error' });
     } finally {
@@ -226,7 +210,7 @@ export default function DeviceSecurityCenter({ compact = false }: { compact?: bo
         type: 'success',
       });
       await refresh();
-    } catch (err) {
+    } catch (_err) {
       hapticError();
       showToast?.({ message: 'Failed to revoke session.', type: 'error' });
     } finally {
@@ -246,7 +230,7 @@ export default function DeviceSecurityCenter({ compact = false }: { compact?: bo
       if (action.type === 'unlinkDevice') performUnlinkDevice(action.deviceId, action.isCurrent);
       if (action.type === 'revokeSession') performRevokeSession(action.sessionId, action.isCurrent);
     },
-    [isOnline],
+    [isOnline, performUnlinkDevice, performRevokeSession],
   );
 
   // ── Row Orchestrator Pattern ──────────────────────────────────────────────
@@ -304,6 +288,18 @@ export default function DeviceSecurityCenter({ compact = false }: { compact?: bo
       });
 
     // 6. Recent Activity
+    if (authEvents.length > 0) {
+      items.push({
+        type: 'SECTION_HEADER',
+        title: 'Auth Events',
+        subtitle: 'How this account authenticated over time.',
+        icon: Key,
+      });
+      authEvents.slice(0, 5).forEach((e) => {
+        items.push({ type: 'AUTH_EVENT_ROW', event: e });
+      });
+    }
+
     if (events.length > 0) {
       items.push({
         type: 'SECTION_HEADER',
@@ -329,6 +325,7 @@ export default function DeviceSecurityCenter({ compact = false }: { compact?: bo
     optimisticDevices,
     optimisticSessions,
     events,
+    authEvents,
   ]);
 
   // ── Render ────────────────────────────────────────────────────────────────
@@ -462,6 +459,21 @@ export default function DeviceSecurityCenter({ compact = false }: { compact?: bo
                   className="gap-3 items-center py-2 border-b border-phase-border/50"
                 >
                   <Clock3 size={14} className="text-phase-secondary" />
+                  <Text className="text-xs flex-1 text-phase-secondary">
+                    {row.event.action.replace(/_/g, ' ')}
+                  </Text>
+                  <Text className="text-[10px] opacity-40">
+                    {relativeTime(row.event.createdAt)}
+                  </Text>
+                </HStack>
+              );
+            case 'AUTH_EVENT_ROW':
+              return (
+                <HStack
+                  key={row.event.id}
+                  className="gap-3 items-center py-2 border-b border-phase-border/50"
+                >
+                  <Key size={14} className="text-phase-secondary" />
                   <Text className="text-xs flex-1 text-phase-secondary">
                     {row.event.action.replace(/_/g, ' ')}
                   </Text>

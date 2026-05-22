@@ -19,7 +19,7 @@ export function useLocalPermission(
   action: Actions,
   resourceType: SubjectType,
   resourceId: string,
-  trigger?: any,
+  _trigger?: any,
 ) {
   const { context } = usePermissions();
   const [isAllowed, setIsAllowed] = useState<boolean | null>(null);
@@ -45,7 +45,7 @@ export function useLocalPermission(
     return () => {
       active = false;
     };
-  }, [action, resourceType, resourceId, context, trigger]);
+  }, [action, resourceType, resourceId, context]);
 
   return {
     isLoading: isAllowed === null,

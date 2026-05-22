@@ -52,7 +52,7 @@ try {
 
   console.log('\n✅ Surgical Sentinel: Package integrity verified.');
   process.exit(0);
-} catch (error) {
+} catch (_error) {
   console.error('\n❌ Surgical Sentinel: Impurities detected in affected packages.');
   process.exit(1);
 }

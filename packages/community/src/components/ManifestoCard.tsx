@@ -43,7 +43,7 @@ export default function ManifestoCard({
     },
   };
 
-  const config = (vibeConfig[vibe] || vibeConfig['visionary']) as {
+  const config = (vibeConfig[vibe] || vibeConfig.visionary) as {
     icon: any;
     color: string;
     textColorClass: string;

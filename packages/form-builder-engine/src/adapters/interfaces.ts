@@ -12,7 +12,7 @@ export interface AggregatedStats {
   label: string;
   type: string;
   totalResponses: number;
-  data: any;
+  data: unknown;
 }
 
 export interface FormAnalytics {
@@ -25,4 +25,9 @@ export interface FormSync {
   push(form: FormSchema): Promise<void>;
   pull(since: Date): Promise<FormSchema[]>;
   resolveConflict(local: FormSchema, remote: FormSchema): FormSchema;
+}
+
+export interface QRCodePort {
+  buildPublicFormUrl(slug: string): string;
+  buildQRCodeUrl(publicUrl: string): string;
 }

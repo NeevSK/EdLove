@@ -71,7 +71,7 @@ export const staffOperationsAPI = {
     schoolId: string,
     classroomId?: string,
     date?: string,
-    options?: { actorId?: string; accessKind?: string; reason?: string },
+    _options?: { actorId?: string; accessKind?: string; reason?: string },
   ): Promise<StudentPrincipalPulse> {
     const [attendancePulse, submissionRate, pendingEnrollments] = await Promise.all([
       attendanceAPI.getSchoolAttendancePulse(schoolId, classroomId, date),

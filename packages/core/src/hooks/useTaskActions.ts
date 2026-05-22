@@ -6,21 +6,21 @@ export function useTaskActions() {
 
   const addTask = useMutation({
     mutationFn: async ({ title, teacherId }: { title: string; teacherId: string }) => {
-      return api['tasks'].create(title, teacherId);
+      return api.tasks.create(title, teacherId);
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tasks'] }),
   });
 
   const toggleTask = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: boolean }) => {
-      return api['tasks'].updateStatus(id, status);
+      return api.tasks.updateStatus(id, status);
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tasks'] }),
   });
 
   const deleteTask = useMutation({
     mutationFn: async (id: string) => {
-      return api['tasks'].delete(id);
+      return api.tasks.delete(id);
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tasks'] }),
   });

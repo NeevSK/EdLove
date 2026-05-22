@@ -30,18 +30,18 @@ const normalizeUserContextInput = (value: unknown) => {
 
   return {
     ...input,
-    userId: input['userId'] ?? null,
-    primaryCapacity: input['primaryCapacity'] ?? null,
-    activeBond: input['activeBond'] ?? null,
-    schoolId: input['schoolId'] ?? null,
-    tenancyName: input['tenancyName'] ?? null,
-    tenantKind: input['tenantKind'] ?? 'customer',
-    sectionId: input['sectionId'] ?? null,
-    gradeId: input['gradeId'] ?? null,
-    classroomId: input['classroomId'] ?? null,
-    isAnonymous: input['isAnonymous'] ?? false,
-    hasGlobalAccess: input['hasGlobalAccess'] ?? false,
-    isPersonal: input['isPersonal'] ?? false,
+    userId: input.userId ?? null,
+    primaryCapacity: input.primaryCapacity ?? null,
+    activeBond: input.activeBond ?? null,
+    schoolId: input.schoolId ?? null,
+    tenancyName: input.tenancyName ?? null,
+    tenantKind: input.tenantKind ?? 'customer',
+    sectionId: input.sectionId ?? null,
+    gradeId: input.gradeId ?? null,
+    classroomId: input.classroomId ?? null,
+    isAnonymous: input.isAnonymous ?? false,
+    hasGlobalAccess: input.hasGlobalAccess ?? false,
+    isPersonal: input.isPersonal ?? false,
   };
 };
 

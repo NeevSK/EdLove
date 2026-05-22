@@ -1,4 +1,4 @@
-import { FormManager } from '@intuitui-labs/form-builder-engine';
+import { FormManager } from '@intuitui-labs/form-builder-engine/core';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import { Box, Center, ScrollView, Text, View } from '@repo/ui/primitives';
 

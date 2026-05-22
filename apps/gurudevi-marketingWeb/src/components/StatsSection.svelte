@@ -1,5 +1,5 @@
 <script lang="ts">
-const statDefs = [
+const _statDefs = [
   {
     key: 'teachers_count' as const,
     label: 'Teachers',
@@ -22,14 +22,14 @@ const statDefs = [
   },
 ];
 
-const stats = {
+const _stats = {
   teachers_count: 0,
   students_count: 0,
   schools_count: 0,
   lessons_shared_count: 0,
 };
 
-function formatCount(value: number): string {
+function _formatCount(value: number): string {
   return new Intl.NumberFormat('en-US').format(value);
 }
 </script>

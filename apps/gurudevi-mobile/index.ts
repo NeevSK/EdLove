@@ -6,11 +6,12 @@ import 'react-native-get-random-values';
 import '@repo/ui/global.css';
 import { bootstrapPlatform } from '@repo/core/native';
 import { registerRootComponent } from 'expo';
+
 import App from './App';
 import { registerBackgroundSync } from './src/lib/backgroundSync';
 
-// Initialize platform adapters
-bootstrapPlatform().then(() => {
-  registerBackgroundSync();
+// Initialize platform adapters once, then mount the app root.
+void bootstrapPlatform().then(() => {
+  void registerBackgroundSync();
   registerRootComponent(App);
 });

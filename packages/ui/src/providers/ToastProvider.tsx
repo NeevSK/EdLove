@@ -1,6 +1,7 @@
 import type React from 'react';
 import { createContext, useCallback, useContext, useMemo, useReducer, useRef } from 'react';
 import Animated, { FadeInUp, FadeOutUp, Layout } from 'react-native-reanimated';
+import { Platform, View } from 'react-native';
 import { Toast, ToastTitle } from '../components/ui/toast';
 import { VStack } from '../components/ui/vstack';
 
@@ -105,24 +106,31 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         className="absolute top-12 left-4 right-4 z-[1000] gap-2"
         style={{ pointerEvents: 'box-none' }}
       >
-        {toasts.map((toast) => (
-          <Animated.View
-            key={toast.id}
-            entering={FadeInUp}
-            exiting={FadeOutUp}
-            layout={Layout.springify()}
-            className="w-full"
-            style={{ pointerEvents: 'auto' }}
-          >
-            <Toast action={mapTypeToVariant(toast.type)}>
-              <VStack className="flex-1">
-                <ToastTitle>
-                  {getIcon(toast.type)} {toast.message}
-                </ToastTitle>
-              </VStack>
-            </Toast>
-          </Animated.View>
-        ))}
+        {toasts.map((toast) => {
+          const ToastContainer = Platform.OS === 'web' ? View : Animated.View;
+          const toastProps =
+            Platform.OS === 'web'
+              ? ({ className: 'w-full', style: { pointerEvents: 'auto' } } as const)
+              : ({
+                  entering: FadeInUp,
+                  exiting: FadeOutUp,
+                  layout: Layout.springify(),
+                  className: 'w-full',
+                  style: { pointerEvents: 'auto' },
+                } as const);
+
+          return (
+            <ToastContainer key={toast.id} {...toastProps}>
+              <Toast action={mapTypeToVariant(toast.type)}>
+                <VStack className="flex-1">
+                  <ToastTitle>
+                    {getIcon(toast.type)} {toast.message}
+                  </ToastTitle>
+                </VStack>
+              </Toast>
+            </ToastContainer>
+          );
+        })}
       </VStack>
     </ToastContext.Provider>
   );

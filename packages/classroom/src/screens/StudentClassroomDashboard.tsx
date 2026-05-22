@@ -247,7 +247,7 @@ export default function StudentClassroomDashboard({ route, navigation }: Props) 
           assignmentTitle={submissionModal.title}
           onClose={() => setSubmissionModal(null)}
           onSubmit={async (content: string, photoUri?: string) => {
-            await api['assignments'].submitSubmission(submissionModal.id, content, photoUri);
+            await api.assignments.submitSubmission(submissionModal.id, content, photoUri);
             setSubmissionModal(null);
             await workspace.refresh();
           }}

@@ -242,8 +242,8 @@ describe('Sovereign Authorization Engine', () => {
 
     expect(snapshot.userId).toBe('principal-1');
     expect(snapshot.schoolId).toBe('school-a');
-    expect(snapshot.permissions['Classroom']?.['create']).toBe(true);
-    expect(snapshot.permissions['Classroom']?.['delete']).toBe(true);
+    expect(snapshot.permissions.Classroom?.create).toBe(true);
+    expect(snapshot.permissions.Classroom?.delete).toBe(true);
     expect(snapshot.signature).toBeDefined();
   });
 });

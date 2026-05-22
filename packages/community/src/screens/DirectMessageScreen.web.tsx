@@ -116,7 +116,7 @@ export default function DirectMessageScreen() {
           const { data } = await supabase
             .from('direct_messages')
             .select('*, author:users!direct_messages_sender_id_fkey(full_name, avatar_url)')
-            .eq('id', payload['new']['id'])
+            .eq('id', payload.new.id)
             .single();
           if (!data) return;
           setMessages((prev) => {

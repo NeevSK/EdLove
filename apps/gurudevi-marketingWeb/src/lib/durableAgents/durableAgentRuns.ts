@@ -64,8 +64,8 @@ export function materializeDurableAgentRun(
   const completedMetadata = asRecord(completed?.metadata);
   const failedMetadata = asRecord(failed?.metadata);
   const promotedMetadata = asRecord(promoted?.metadata);
-  const evidence = asRecord(completedMetadata?.['evidence']);
-  const classroom = asRecord(evidence?.['classroom']);
+  const evidence = asRecord(completedMetadata?.evidence);
+  const classroom = asRecord(evidence?.classroom);
   return {
     runId: first.entity_id,
     status: deriveRunStatus(rows),
@@ -84,8 +84,8 @@ export function materializeDurableAgentRun(
     teacherId: pickString(requestedMetadata, 'teacherId'),
     requestedBy: pickString(requestedMetadata, 'requestedBy'),
     summaryDraft: pickString(completedMetadata, 'summaryDraft'),
-    evidence: completedMetadata?.['evidence'] ?? null,
-    governor: completedMetadata?.['governor'] ?? null,
+    evidence: completedMetadata?.evidence ?? null,
+    governor: completedMetadata?.governor ?? null,
     promotedTeacherNoteId: pickString(promotedMetadata, 'teacherNoteId'),
     promotionMode: pickString(promotedMetadata, 'promotionMode'),
     promotedAt: promoted?.created_at ?? null,

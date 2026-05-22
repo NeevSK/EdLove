@@ -37,7 +37,7 @@ describe('API Schema Validation (Zero-Trust)', () => {
 
     test('should fail if ID is not a UUID', () => {
       const invalid = { ...validClassroom, id: 'not-a-uuid' };
-      const result = ClassroomSchema.safeParse(invalid);
+      const _result = ClassroomSchema.safeParse(invalid);
       // NOTE: Generated schemas might only enforce String if not specifically tagged as UUID in ZModel
       // expect(result.success).toBe(false);
     });

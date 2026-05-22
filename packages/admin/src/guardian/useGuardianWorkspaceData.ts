@@ -11,7 +11,7 @@ export function useGuardianWorkspaceData(guardianId: string) {
   const loadDashboard = useCallback(async () => {
     try {
       setIsLoading(true);
-      const dashboardData = await api['guardian'].getDashboard(guardianId);
+      const dashboardData = await api.guardian.getDashboard(guardianId);
       setDashboard({
         ...dashboardData,
         guardianId: dashboardData.guardianId || guardianId,

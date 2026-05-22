@@ -51,7 +51,7 @@ export default function InviteManager({ schoolId, userId, onBack }: InviteManage
     setIsLoading(true);
     setError(null);
     try {
-      const codes = await api['school'].getInviteCodes(schoolId);
+      const codes = await api.school.getInviteCodes(schoolId);
       setInviteCodes(codes);
     } catch (err: any) {
       const apiError = handleAPIError(err, true);
@@ -68,7 +68,7 @@ export default function InviteManager({ schoolId, userId, onBack }: InviteManage
     setError(null);
     try {
       hapticLight();
-      await api['school'].generateInviteCode(schoolId, capacity, userId);
+      await api.school.generateInviteCode(schoolId, capacity, userId);
       await loadInviteCodes();
     } catch (err: any) {
       const apiError = handleAPIError(err, true);

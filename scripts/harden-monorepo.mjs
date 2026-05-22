@@ -89,7 +89,7 @@ async function harden() {
       }
     }
 
-    fs.writeFileSync(pkgJsonPath, JSON.stringify(pkgJson, null, 2) + '\n');
+    fs.writeFileSync(pkgJsonPath, `${JSON.stringify(pkgJson, null, 2)}\n`);
     console.log(`  ✅ Updated package.json scripts & devDeps`);
 
     // 2. Ensure vitest.config.ts
@@ -139,7 +139,7 @@ async function harden() {
   console.log('\n✨ Hardening complete! Running pnpm install to sync...');
   try {
     execSync('pnpm install', { stdio: 'inherit' });
-  } catch (e) {
+  } catch (_e) {
     console.error('❌ pnpm install failed, please run it manually.');
   }
 }

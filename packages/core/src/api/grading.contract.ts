@@ -1,7 +1,6 @@
 import { z } from 'zod';
 import {
   ClassroomGradingSettingsSchema,
-  GradebookSnapshotSchema,
   StudentGradeSchema,
 } from '../logic/schemas/grading.schema';
 import type { SovereignContract } from './contract';

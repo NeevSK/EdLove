@@ -121,7 +121,7 @@ export default function BreathGuide({ onComplete }: BreathGuideProps) {
     if (!firstStep) return;
     triggerHaptic(firstStep.phase);
     timerRef.current = setTimeout(() => stepForward(0, 0), firstStep.duration);
-  }, [clearTimer, sequence]);
+  }, [clearTimer, sequence, triggerHaptic, stepForward]);
 
   const stopSession = useCallback(() => {
     clearTimer();

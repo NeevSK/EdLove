@@ -29,7 +29,7 @@ export default function StudentDashboard({ forceDemo, userId }: StudentDashboard
   const showToast = useStore((state: any) => state.showToast);
   const { isGuest } = useFeatureAccess();
   const { isPastView } = useTemporalStore();
-  const colors = useThemedColors();
+  const _colors = useThemedColors();
   const { isDemoExperience, stats } = useStudentWorkspaceData(forceDemo);
 
   useRegisterFAB({

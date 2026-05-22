@@ -1,4 +1,5 @@
 import {
+  type AuthEvent,
   type DeviceSecurityEvent,
   type DeviceSecuritySession,
   type DeviceTrustSummary,
@@ -15,6 +16,7 @@ export class SupabaseDeviceSecurityAdapter implements IDeviceSecurityPort {
   async getSecuritySummary(): Promise<{
     devices: DeviceTrustSummary[];
     events: DeviceSecurityEvent[];
+    authEvents: AuthEvent[];
     sessions: DeviceSecuritySession[];
     currentDevice: DeviceTrustSummary | null;
   }> {

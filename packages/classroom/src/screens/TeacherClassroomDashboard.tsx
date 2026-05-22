@@ -272,13 +272,13 @@ export default function TeacherClassroomDashboard({ route, navigation }: Props) 
     if (!newMonthTitle.trim()) return;
     setIsSubmitting(true);
     try {
-      const lessons = await api['lessons'].getAll(classroomId);
+      const lessons = await api.lessons.getAll(classroomId);
       const maxOrder = lessons.reduce(
         (max: number, l: { order_index?: number | null }) => Math.max(max, l.order_index ?? 0),
         0,
       );
 
-      await api['lessons'].create({
+      await api.lessons.create({
         classroom_id: classroomId,
         title: newMonthTitle,
         order_index: maxOrder + 1,
@@ -303,7 +303,7 @@ export default function TeacherClassroomDashboard({ route, navigation }: Props) 
       if (
         !targetLessonId.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)
       ) {
-        const newLesson = await api['lessons'].create({
+        const newLesson = await api.lessons.create({
           classroom_id: classroomId,
           title: targetLessonId,
           content: `Materials for ${targetLessonId}`,
@@ -313,7 +313,7 @@ export default function TeacherClassroomDashboard({ route, navigation }: Props) 
       }
 
       if (contentType === 'material') {
-        await api['lessonMaterials'].create({
+        await api.lessonMaterials.create({
           classroom_id: classroomId,
           lesson_id: targetLessonId,
           title: formTitle,
@@ -323,7 +323,7 @@ export default function TeacherClassroomDashboard({ route, navigation }: Props) 
           is_pinned: false,
         });
       } else {
-        await api['assignments'].create({
+        await api.assignments.create({
           classroom_id: classroomId,
           lesson_id: targetLessonId,
           title: formTitle,
@@ -605,7 +605,7 @@ export default function TeacherClassroomDashboard({ route, navigation }: Props) 
             layout={canvasLayout}
             renderSurfaceContent={renderSurfaceContent}
             getSurfaceTitle={(s) => s.title || ''}
-            getSurfaceSubtitle={(s) => FEATURE_TONES[activeFeature].label}
+            getSurfaceSubtitle={(_s) => FEATURE_TONES[activeFeature].label}
             onReorder={(id, newIndex) => {
               // Calculate new order and save to Sovereign state
               const currentOrder =

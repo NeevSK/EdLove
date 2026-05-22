@@ -1,10 +1,5 @@
 import type { Context } from 'hono';
-import { z } from 'zod';
-import {
-  FireJournalEntrySchema,
-  MoodLogSchema,
-  UserPreferencesSchema,
-} from '../../logic/schemas/self.schema';
+import { MoodLogSchema, UserPreferencesSchema } from '../../logic/schemas/self.schema';
 
 /**
  * Self Domain Handlers (Hono + ZenStack ReBAC)

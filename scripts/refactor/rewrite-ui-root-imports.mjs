@@ -224,7 +224,7 @@ function collectBindingNames(name, out) {
 }
 
 const exportMap = new Map(explicitMap);
-for (const [name, specifier] of collectLocalExports(path.join(uiRoot, 'primitives.ts'))) {
+for (const [name, _specifier] of collectLocalExports(path.join(uiRoot, 'primitives.ts'))) {
   exportMap.set(name, '@repo/ui/primitives');
 }
 const componentMap = collectExportNames(
@@ -237,25 +237,25 @@ for (const [name, specifier] of screenMap) exportMap.set(name, specifier);
 for (const name of collectLocalExports(path.join(uiRoot, 'theme', 'Theme.ts'))) {
   exportMap.set(name, '@repo/ui/theme');
 }
-for (const [name, specifier] of collectExportNames(
+for (const [name, _specifier] of collectExportNames(
   path.join(uiRoot, 'hooks', 'index.ts'),
   '@repo/ui/hooks',
 )) {
   exportMap.set(name, '@repo/ui/hooks');
 }
-for (const [name, specifier] of collectExportNames(
+for (const [name, _specifier] of collectExportNames(
   path.join(uiRoot, 'providers', 'index.ts'),
   '@repo/ui/providers',
 )) {
   exportMap.set(name, '@repo/ui/providers');
 }
-for (const [name, specifier] of collectExportNames(
+for (const [name, _specifier] of collectExportNames(
   path.join(uiRoot, 'context', 'index.ts'),
   '@repo/ui/context',
 )) {
   exportMap.set(name, '@repo/ui/context');
 }
-for (const [name, specifier] of collectExportNames(
+for (const [name, _specifier] of collectExportNames(
   path.join(uiRoot, 'utils', 'index.ts'),
   '@repo/ui/utils',
 )) {

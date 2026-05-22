@@ -1,5 +1,5 @@
 import { profileAPI } from '@repo/core/api';
-import { type Capacity, handleAPIError, useAuth, usePermissions } from '@repo/core/logic';
+import { type Capacity, handleAPIError, usePermissions } from '@repo/core/logic';
 import {
   Box,
   Button,
@@ -169,14 +169,14 @@ export default function EditProfileModal({
       const isStudent = can('update', 'StudentProfile');
 
       const updates: Record<string, unknown> = {
-        ['display_name']: fullName,
-        ['first_name']: firstName,
-        ['last_name']: lastName,
-        ['username']: username || null,
-        ['phone']: phone,
-        ['bio']: bio,
-        ['nic_number']: isStaff ? nicNumber : null,
-        ['index_number']: isStudent ? indexNumber : null,
+        display_name: fullName,
+        first_name: firstName,
+        last_name: lastName,
+        username: username || null,
+        phone: phone,
+        bio: bio,
+        nic_number: isStaff ? nicNumber : null,
+        index_number: isStudent ? indexNumber : null,
       };
 
       if (avatarUrl?.startsWith('file://')) {
@@ -185,7 +185,7 @@ export default function EditProfileModal({
             currentProfile.id,
             avatarUrl,
           )) as UserProfile;
-          updates['avatar_url'] = updatedProfile['avatar_url'];
+          updates.avatar_url = updatedProfile.avatar_url;
         } catch (uploadError) {
           handleAPIError(uploadError);
         }
@@ -193,7 +193,7 @@ export default function EditProfileModal({
         avatarUrl &&
         (avatarUrl.startsWith('http://') || avatarUrl.startsWith('https://'))
       ) {
-        updates['avatar_url'] = avatarUrl;
+        updates.avatar_url = avatarUrl;
       }
 
       // Capacity updates are restricted to platform admins in V3

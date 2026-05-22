@@ -42,10 +42,10 @@ export default function ClassroomScreen() {
   const { setBreathingOpen } = useStore();
   const [refreshTrigger, _setRefreshTrigger] = useState(0);
   const { data: classroomData, loading, fetchRoleData } = useClassroomRoleData(refreshTrigger);
-  const [isCreateSchoolOpen, setIsCreateSchoolOpen] = useState(false);
-  const [isCreateClassroomOpen, setIsCreateClassroomOpen] = useState(false);
-  const [isClaimInviteOpen, setIsClaimInviteOpen] = useState(false);
-  const [isDemoModeTriggered, setIsDemoModeTriggered] = useState(false);
+  const [_isCreateSchoolOpen, _setIsCreateSchoolOpen] = useState(false);
+  const [_isCreateClassroomOpen, _setIsCreateClassroomOpen] = useState(false);
+  const [_isClaimInviteOpen, _setIsClaimInviteOpen] = useState(false);
+  const [_isDemoModeTriggered, _setIsDemoModeTriggered] = useState(false);
   useEffect(() => {
     fetchRoleData();
   }, [fetchRoleData]);
@@ -57,7 +57,7 @@ export default function ClassroomScreen() {
     }, [fetchRoleData]),
   );
   // Nudge system - pro-active well-being suggestions
-  const renderNudge = () => {
+  const _renderNudge = () => {
     if (classroomData && !classroomData.profileCompleted && !isGuest) {
       return (
         <SanctuaryNudge

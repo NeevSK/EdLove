@@ -18,7 +18,7 @@ import { identityAPI } from '@repo/core/api';
 import { FlowResolver } from '@repo/core/native';
 import { ScreenWrapper } from '@repo/ui';
 import { useThemedColors } from '@repo/ui/hooks';
-import { type Box, Heading, Text, VStack } from '@repo/ui/primitives';
+import { type Box, Heading, Text } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
 import { hapticError, hapticSuccess } from '@repo/ui/utils/haptics';
 import { useEffect, useState } from 'react';

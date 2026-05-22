@@ -53,8 +53,8 @@ function parseExports(filePath) {
       target = path.join(absSource, 'index.ts');
       if (!fs.existsSync(target)) target = path.join(absSource, 'index.tsx');
     } else {
-      if (fs.existsSync(target + '.ts')) target += '.ts';
-      else if (fs.existsSync(target + '.tsx')) target += '.tsx';
+      if (fs.existsSync(`${target}.ts`)) target += '.ts';
+      else if (fs.existsSync(`${target}.tsx`)) target += '.tsx';
     }
     if (fs.existsSync(target)) parseExports(target);
   }
@@ -67,7 +67,7 @@ parseExports(path.join(SRC_ROOT, 'components', 'index.ts'));
 
 console.log(`📦 Mapped ${masterMap.size} symbols.`);
 
-const globPath = SRC_ROOT.replace(/\\/g, '/') + '/**/*.{ts,tsx}';
+const globPath = `${SRC_ROOT.replace(/\\/g, '/')}/**/*.{ts,tsx}`;
 const files = globSync(globPath);
 console.log(`📂 Scanning ${files.length} files...`);
 
@@ -123,7 +123,7 @@ for (const file of files) {
 
           let relPath = path.relative(currentDir, absTarget).replace(/\\/g, '/');
           relPath = relPath.replace(/\.tsx?$/, '');
-          if (!relPath.startsWith('.')) relPath = './' + relPath;
+          if (!relPath.startsWith('.')) relPath = `./${relPath}`;
 
           if (!movedImports.has(relPath)) movedImports.set(relPath, []);
           movedImports.get(relPath).push(item);

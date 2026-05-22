@@ -64,7 +64,7 @@ export const useConflictStore = create<ConflictStore>()(
 
         const resolved: DataConflict = {
           ...conflict,
-          resolvedAt: new Date().getTime(),
+          resolvedAt: Date.now(),
           resolution,
         };
 

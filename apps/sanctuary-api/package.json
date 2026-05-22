@@ -18,6 +18,7 @@
     "@repo/core": "workspace:*",
     "@repo/database": "workspace:*",
     "@repo/policies": "workspace:*",
+    "dotenv": "^16.6.1",
     "hono": "^4.7.4",
     "zod": "^3.24.2"
   },

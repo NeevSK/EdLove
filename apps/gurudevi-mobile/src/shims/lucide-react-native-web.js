@@ -12,7 +12,7 @@ const _React = require('react');
 let LucideWeb = null;
 try {
   LucideWeb = require('lucide-react');
-} catch (e) {
+} catch (_e) {
   // Silent fallback to maintain a clean console as requested
 }
 
@@ -74,7 +74,7 @@ const IconProxy = new Proxy(LotusFallback, {
         const normalized = prop.replace(/Icon$/, '');
         if (LucideWeb[normalized]) return LucideWeb[normalized];
       }
-    } catch (e) {
+    } catch (_e) {
       // Silent fallback
     }
 

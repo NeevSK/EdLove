@@ -34,7 +34,7 @@ export const getCurrentTimeMillis = () => {
     }
   }
   // eslint-disable-next-line no-restricted-syntax
-  return new Date().getTime();
+  return Date.now();
 };
 
 export const getZonedDateTime = (timeZone: string = 'Asia/Colombo') => {

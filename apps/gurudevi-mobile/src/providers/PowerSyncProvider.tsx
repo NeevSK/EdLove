@@ -14,14 +14,17 @@
  * @see https://docs.powersync.com/usage/use-case-examples/drizzle
  */
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { DrizzleAppSchema, wrapPowerSyncWithDrizzle } from '@powersync/drizzle-driver';
 import { OPSqliteOpenFactory } from '@powersync/op-sqlite';
 import { PowerSyncContext } from '@powersync/react';
 import { PowerSyncDatabase } from '@powersync/react-native';
+import { assertPowerSyncBootstrapReady } from '@repo/core/api/highways';
 import { AppSchema, injectNativePowerSyncDB } from '@repo/core/powersync';
 import * as Crypto from 'expo-crypto';
 import * as SecureStore from 'expo-secure-store';
-import React, { type PropsWithChildren, useEffect, useRef, useState } from 'react';
+import { type PropsWithChildren, useEffect, useRef, useState } from 'react';
+import { Platform } from 'react-native';
 
 const SQLCIPHER_KEY_STORAGE_KEY = 'gurudevi-sqlite-cipher-key';
 
@@ -54,7 +57,7 @@ async function getOrCreateEncryptionKey(): Promise<string> {
   }
 }
 
-interface PowerSyncProviderProps extends PropsWithChildren {}
+type PowerSyncProviderProps = PropsWithChildren;
 
 export function PowerSyncProvider({ children }: PowerSyncProviderProps) {
   const [initialized, setInitialized] = useState(false);
@@ -65,6 +68,10 @@ export function PowerSyncProvider({ children }: PowerSyncProviderProps) {
 
     async function initDB() {
       try {
+        if (Platform.OS === 'web') {
+          assertPowerSyncBootstrapReady();
+        }
+
         if (_nativePowerSyncInstance && _nativeDrizzleInstance) {
           dbRef.current = _nativePowerSyncInstance;
           if (active) setInitialized(true);
@@ -108,7 +115,7 @@ export function PowerSyncProvider({ children }: PowerSyncProviderProps) {
       }
     }
 
-    initDB();
+    void initDB();
 
     return () => {
       active = false;

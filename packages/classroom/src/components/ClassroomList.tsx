@@ -37,12 +37,12 @@ async function getSchoolScopedClassroomsForPrincipal(
   userId: string,
   pagination: { limit: number; offset: number },
 ) {
-  const summary = await api['identity'].getClassroomCapacitySummary(userId);
+  const summary = await api.identity.getClassroomCapacitySummary(userId);
   if (!summary.schoolId) {
     return [];
   }
 
-  return api['classrooms'].getBySchool(summary.schoolId, pagination);
+  return api.classrooms.getBySchool(summary.schoolId, pagination);
 }
 
 export default function ClassroomList({
@@ -117,9 +117,9 @@ export default function ClassroomList({
           let realData: WorkspaceClassroom[] = [];
 
           if (can('manage', 'TeacherDashboard')) {
-            realData = await api['classrooms'].getByTeacher(userId, pagination);
+            realData = await api.classrooms.getByTeacher(userId, pagination);
           } else if (can('manage', 'StudentDashboard')) {
-            realData = await api['classrooms'].getByStudent(userId, pagination);
+            realData = await api.classrooms.getByStudent(userId, pagination);
           } else if (can('manage', 'PrincipalDashboard')) {
             realData = await getSchoolScopedClassroomsForPrincipal(userId, pagination);
           }
@@ -190,9 +190,9 @@ export default function ClassroomList({
       let newData: WorkspaceClassroom[] = [];
 
       if (can('manage', 'TeacherDashboard')) {
-        newData = await api['classrooms'].getByTeacher(userId, pagination);
+        newData = await api.classrooms.getByTeacher(userId, pagination);
       } else if (can('manage', 'StudentDashboard')) {
-        newData = await api['classrooms'].getByStudent(userId, pagination);
+        newData = await api.classrooms.getByStudent(userId, pagination);
       } else if (can('manage', 'PrincipalDashboard')) {
         newData = await getSchoolScopedClassroomsForPrincipal(userId, pagination);
       }

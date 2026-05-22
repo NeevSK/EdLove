@@ -2,7 +2,6 @@ import { useStudentAcademicHistory } from '@repo/profile';
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { Box, HStack, Icon, ScrollView, Text, VStack } from '@repo/ui/primitives';
 import { Calendar, GraduationCap, School } from 'lucide-react-native';
-import React from 'react';
 import Animated, { FadeInRight } from 'react-native-reanimated';
 
 type AcademicRecord = {

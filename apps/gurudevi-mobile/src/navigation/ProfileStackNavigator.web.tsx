@@ -7,8 +7,6 @@ import ProfileScreenWeb from '@repo/profile/screens/ProfileScreen.web';
 import PrivacyLedgerScreen from '@repo/self/screens/PrivacyLedgerScreen';
 import { useTheme } from '@repo/ui/primitives';
 
-import AppSettingsScreenWeb from '@repo/ui/screens/AppSettingsScreen';
-
 const Stack = createNativeStackNavigator<ProfileStackParamList>();
 
 export default function ProfileStackNavigatorWeb() {
@@ -25,7 +23,6 @@ export default function ProfileStackNavigatorWeb() {
     >
       <Stack.Screen name="ProfileMain" component={ProfileScreenWeb} />
       <Stack.Screen name="FullProfile" component={FullProfileScreen} />
-      <Stack.Screen name="AppSettings" component={AppSettingsScreenWeb} />
       <Stack.Screen name="PrivacyLedger" component={PrivacyLedgerScreen} />
     </Stack.Navigator>
   );

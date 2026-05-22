@@ -1,16 +1,12 @@
-import {
-  BanyanStage,
-  type Challenge,
-  type ChallengeMetric,
-  CreateRippleInput,
-  type CrystalDiscovery,
-  GrowthDimension,
-  type ImpactRipple,
-  type ManifestoVibe,
-  type PersonalCompass,
-  RiverStage,
-  type SanctuaryManifesto,
-  type UserGrowthState,
+import type {
+  Challenge,
+  ChallengeMetric,
+  CrystalDiscovery,
+  ImpactRipple,
+  ManifestoVibe,
+  PersonalCompass,
+  SanctuaryManifesto,
+  UserGrowthState,
 } from '../../types/Growth';
 
 export interface IGrowthPort {

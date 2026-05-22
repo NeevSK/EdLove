@@ -1,7 +1,7 @@
 import { cryptoManager } from '../logic/managers/CryptoManager';
 import { getActiveAccountId, scopeStorageKey } from './accountScope';
 
-const SUPABASE_URL = process.env['EXPO_PUBLIC_SUPABASE_URL'];
+const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL;
 
 function getProjectRef() {
   if (!SUPABASE_URL) return 'default';

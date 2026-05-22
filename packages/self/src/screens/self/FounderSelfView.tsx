@@ -3,7 +3,7 @@ import { usePermissions, useStore } from '@repo/core/logic';
 
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
-import { Box, useTheme, VStack } from '@repo/ui/primitives';
+import { Box, VStack } from '@repo/ui/primitives';
 
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';

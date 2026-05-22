@@ -5,7 +5,7 @@ export interface FieldAnalytics {
   label: string;
   type: string;
   totalResponses: number;
-  data: any; // Frequency counts, averages, or raw list
+  data: unknown; // Frequency counts, averages, or raw list
 }
 
 export const AnalyticsEngine = {
@@ -19,7 +19,7 @@ export const AnalyticsEngine = {
         .map((r) => r.data[field.name])
         .filter((v) => v !== undefined && v !== null);
 
-      let aggregatedData: any = null;
+      let aggregatedData: unknown = null;
 
       if (field.type === 'select') {
         const initialCounts: Record<string, number> = {};
@@ -27,8 +27,9 @@ export const AnalyticsEngine = {
           initialCounts[opt.value] = 0;
         });
 
-        aggregatedData = values.reduce((acc: any, val: any) => {
-          acc[val] = (acc[val] || 0) + 1;
+        aggregatedData = values.reduce<Record<string, number>>((acc, val) => {
+          const key = String(val);
+          acc[key] = (acc[key] || 0) + 1;
           return acc;
         }, initialCounts);
       } else if (field.type === 'number') {
@@ -115,17 +116,5 @@ ${row.map((val) => `    <Cell><Data ss:Type="${typeof val === 'number' ? 'Number
       .join('\n');
 
     return `${xmlHeader}\n${headerRow}\n${dataRows}\n${xmlFooter}`;
-  },
-
-  /**
-   * Generates a QR Code URL for a given form slug without strict browser dependencies
-   */
-  getQRCodeURL(slug: string, baseUrl?: string): string {
-    const origin =
-      baseUrl ||
-      (typeof window !== 'undefined' ? window.location?.origin : '') ||
-      'https://sovereign.gurudevi.org';
-    const publicURL = `${origin}/form/${slug}`;
-    return `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(publicURL)}&bgcolor=FFFFFF&color=333333&qzone=2&margin=0`;
   },
 };

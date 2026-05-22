@@ -27,7 +27,7 @@ import {
   useStore,
 } from '@repo/core/logic';
 import { clearSentryUser, initSentry, injectPostHog, setSentryUser } from '@repo/core/monitoring';
-import { bootstrapPlatform, nativeRuntimeEnvironment, storage } from '@repo/core/native';
+import { storage } from '@repo/core/native';
 import { SyncManager } from '@repo/core/sync';
 import { useQRDeepLink } from '@repo/scanner-kit';
 import ErrorBoundary from '@repo/ui/components/ErrorBoundary';
@@ -42,8 +42,7 @@ import { ToastProvider } from '@repo/ui/providers';
 import { OnboardingWrapper } from '@repo/ui/screens/OnboardingWrapper';
 import { sanctuarySaffron } from '@repo/ui/theme';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import * as Linking from 'expo-linking';
-import React, { lazy, Suspense, useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import CommandPalette from './src/components/web/CommandPalette';
@@ -185,29 +184,22 @@ function App() {
   const hideToast = useStore((state) => state.hideToast);
 
   useEffect(() => {
-    // 1. Unified Sovereign Bootstrap
-    // Registers all core managers (Storage, Crypto, Telemetry)
-    // AND injects the native runtime adapters (Device, Linking, Haptics)
-    void bootstrapPlatform().then(() => {
-      coreRuntime.register(nativeRuntimeEnvironment);
+    // Telemetry + asset loading run after the app shell is mounted.
+    injectPostHog(initTracker);
+    initSentry();
 
-      // 2. Telemetry Injection
-      injectPostHog(initTracker);
-      initSentry();
-
-      const posthogApiKey = process.env['EXPO_PUBLIC_POSTHOG_API_KEY'];
-      if (posthogApiKey) {
-        const posthogHost = process.env['EXPO_PUBLIC_POSTHOG_HOST'] || 'https://eu.i.posthog.com';
-        void initPostHog(posthogApiKey, { host: posthogHost }).then(() => {
-          trackEvent('app_initialized', { platform: coreRuntime.device.getMetadata().platform });
-        });
-      }
-
-      // 3. Sovereign Asset Loading (Fonts, etc.)
-      // Decoupled via coreRuntime.asset port
-      void coreRuntime.asset.loadAsync(fontAssets).then(() => {
-        setFontsLoaded(true);
+    const posthogApiKey = process.env.EXPO_PUBLIC_POSTHOG_API_KEY;
+    if (posthogApiKey) {
+      const posthogHost = process.env.EXPO_PUBLIC_POSTHOG_HOST || 'https://eu.i.posthog.com';
+      void initPostHog(posthogApiKey, { host: posthogHost }).then(() => {
+        trackEvent('app_initialized', { platform: Platform.OS });
       });
+    }
+
+    // Asset loading is intentionally late: it depends on the runtime being ready,
+    // but not on the bootstrap sequence owning the React tree.
+    void coreRuntime.asset.loadAsync(fontAssets).then(() => {
+      setFontsLoaded(true);
     });
   }, []);
 
@@ -243,7 +235,8 @@ function App() {
     // Initialize Push Notifications
     const initPush = async () => {
       const deviceId =
-        storage.getString('device_id') || `dev_${Math.random().toString(36).substring(7)}`;
+        storage.getString('device_id') ||
+        `dev_${globalThis.crypto?.randomUUID?.().replace(/-/g, '').slice(0, 12) ?? 'local'}`;
       if (!storage.contains('device_id')) {
         storage.set('device_id', deviceId);
       }

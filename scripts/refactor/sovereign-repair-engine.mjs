@@ -1,5 +1,5 @@
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 import ts from 'typescript';
 
 /**
@@ -16,7 +16,7 @@ const INTERNAL_PACKAGES = [
   { name: '@repo/graphics', path: 'packages/graphics' },
 ];
 
-const subpathMap = new Map(); // Absolute File Path -> Subpath (e.g. @repo/core/api)
+const _subpathMap = new Map(); // Absolute File Path -> Subpath (e.g. @repo/core/api)
 const exportMap = new Map(); // Exported Name -> Subpath
 
 function resolveModule(fromFile, specifier) {

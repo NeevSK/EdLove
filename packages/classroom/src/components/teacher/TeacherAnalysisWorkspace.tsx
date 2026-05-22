@@ -31,11 +31,11 @@ export default function TeacherAnalysisWorkspace({
     try {
       const today = new Date().toISOString().split('T')[0];
       const [gradebookSnapshot, attendanceSnapshot, observationData] = await Promise.all([
-        api['grading'].getGradebookSnapshot(classroomId, today || '').catch(() => ({ grades: [] })),
-        api['attendance']
+        api.grading.getGradebookSnapshot(classroomId, today || '').catch(() => ({ grades: [] })),
+        api.attendance
           .getClassroomAttendanceSnapshot(classroomId, today || '')
           .catch(() => ({ records: [] })),
-        api['studentObservations'].getForClassroom(classroomId).catch(() => []),
+        api.studentObservations.getForClassroom(classroomId).catch(() => []),
       ]);
       setGrades(gradebookSnapshot.grades || []);
       setAttendance(attendanceSnapshot.records || []);

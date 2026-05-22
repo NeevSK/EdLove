@@ -52,12 +52,12 @@ async function runSentinel() {
 
       if (circular.length > 0) {
         console.error(chalk.red(`  ❌ RUNTIME CYCLE FOUND`));
-        circular.forEach((cycle, i) => {
+        circular.forEach((cycle, _i) => {
           console.error(chalk.red(`     ${cycle.join(' ➔ ')}`));
         });
         totalErrors += circular.length;
       }
-    } catch (e) {}
+    } catch (_e) {}
 
     // --- 2. Rust-Powered Boundary Scan (fd + custom checks) ---
     try {
@@ -114,7 +114,7 @@ async function runSentinel() {
                 `bat --color=always --line-range ${Math.max(1, lineNum - 1)}:${lineNum + 1} --style=numbers,grid "${file}"`,
               ).toString();
               console.log(snippet);
-            } catch (e) {
+            } catch (_e) {
               console.log(chalk.dim(`     > ${line.trim()}`));
             }
 

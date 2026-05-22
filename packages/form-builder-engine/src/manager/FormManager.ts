@@ -1,6 +1,6 @@
-import { ValidationEngine, type ValidationResult } from '../validation/ValidationEngine';
+import type { ValidationResult } from '../validation/ValidationEngine';
 
-export interface FormFieldConfig<T = any> {
+export interface FormFieldConfig<T = unknown> {
   label?: string;
   type: string;
   placeholder?: string;
@@ -10,16 +10,16 @@ export interface FormFieldConfig<T = any> {
   min?: number;
   max?: number;
   scaleType?: 'emoji' | 'numeric';
-  validators?: Array<(value: any) => ValidationResult>;
+  validators?: Array<(value: T) => ValidationResult>;
 }
 
-export interface FormConfig<T extends Record<string, any> = any> {
+export interface FormConfig<T extends Record<string, unknown> = Record<string, unknown>> {
   fields: { [K in keyof T]: FormFieldConfig<T[K]> };
   onSubmit: (values: T) => Promise<void> | void;
   onError?: (error: string) => void;
 }
 
-export type FormState<T extends Record<string, any>> = {
+export type FormState<T extends Record<string, unknown>> = {
   values: T;
   errors: Partial<Record<keyof T, string>>;
   isSubmitting: boolean;
@@ -29,7 +29,7 @@ export type FormState<T extends Record<string, any>> = {
   submitSuccess: boolean;
 };
 
-export class FormManager<T extends Record<string, any>> {
+export class FormManager<T extends Record<string, unknown>> {
   private state: FormState<T>;
   private subscribers: Set<(state: FormState<T>) => void> = new Set();
   public config: FormConfig<T>;
@@ -39,7 +39,7 @@ export class FormManager<T extends Record<string, any>> {
 
     const initialValues = {} as T;
     for (const key in config.fields) {
-      (initialValues as Record<string, any>)[key] = config.fields[key].defaultValue ?? '';
+      (initialValues as Record<string, unknown>)[key] = config.fields[key].defaultValue ?? '';
     }
 
     this.state = {
@@ -144,7 +144,7 @@ export class FormManager<T extends Record<string, any>> {
   public reset() {
     const initialValues = {} as T;
     for (const key in this.config.fields) {
-      (initialValues as Record<string, any>)[key] = this.config.fields[key].defaultValue ?? '';
+      (initialValues as Record<string, unknown>)[key] = this.config.fields[key].defaultValue ?? '';
     }
 
     this.state = {

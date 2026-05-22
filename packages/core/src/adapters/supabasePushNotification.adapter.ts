@@ -32,7 +32,7 @@ export class SupabasePushNotificationAdapter implements IPushNotificationPort {
     }
   }
 
-  async unregisterPushToken(userId: string, deviceId: string): Promise<void> {
+  async unregisterPushToken(_userId: string, deviceId: string): Promise<void> {
     const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('user_push_tokens')
       .delete()

@@ -43,7 +43,7 @@ if (user.role === 'admin') { ... } // This field no longer exists!
 To switch workspaces (e.g., from one school to another), use `identityAPI.switchPerspective`.
 
 ```typescript
-import { identityAPI } from '@repo/core';
+import { identityAPI } from '@repo/core/api';
 
 const handleSwitch = async (schoolId: string) => {
   await identityAPI.switchPerspective(schoolId, 'teacher');
@@ -56,11 +56,11 @@ const handleSwitch = async (schoolId: string) => {
 ## 3. Downstream Consumers (Apps & UI)
 
 ### 3.1. Bootstrapping (@repo/ui & Apps)
-Every application must be wrapped in the `AuthorityLifecycleProvider` (from `@repo/core`) to ensure the identity fabric is initialized and reactive.
+Every application must be wrapped in the `AuthorityLifecycleProvider` (from `@repo/core/logic`) to ensure the identity fabric is initialized and reactive.
 
 ```tsx
 // apps/gurudevi-web/App.tsx
-import { AuthorityLifecycleProvider } from '@repo/core';
+import { AuthorityLifecycleProvider } from '@repo/core/logic';
 
 export const App = () => (
   <AuthProvider>

@@ -103,6 +103,6 @@ export function useClassroomCreation() {
       updateAesthetics,
       resetProgress,
     }),
-    [state, isLoaded],
+    [state, isLoaded, updateAcademic, updateStep, updateAesthetics, updateDetails, resetProgress],
   );
 }

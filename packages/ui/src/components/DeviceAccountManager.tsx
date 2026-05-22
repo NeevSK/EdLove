@@ -6,16 +6,12 @@ import {
 } from '@repo/core/logic';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useMemo, useReducer } from 'react';
-import { Alert, Platform, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { Box, Button, ButtonText, Heading, HStack, Text, VStack } from '../gluestack';
-import { AlertTriangle, Key, Shield, User, UserMinus, Users } from '../icons';
+import { Key, UserMinus, Users } from '../icons';
 import { useSanctuaryToast } from '../providers/ToastProvider';
-import { hapticError, hapticLight, hapticSuccess } from '../utils/haptics';
-import AccountPinModal, {
-  type AccountPinModalMode,
-  type AccountPinModalSubmit,
-} from './AccountPinModal';
-import SanctuaryModal from './SanctuaryModal';
+import { hapticError, hapticSuccess } from '../utils/haptics';
+import AccountPinModal, { type AccountPinModalMode } from './AccountPinModal';
 
 // ── Types & Reducer ──────────────────────────────────────────────────────────
 
@@ -223,7 +219,7 @@ export default function DeviceAccountManager({ compact = false }: { compact?: bo
       await signOutCurrentAccount();
       hapticSuccess();
       showToast?.({ message: 'Identity detached from device.', type: 'success' });
-    } catch (err) {
+    } catch (_err) {
       hapticError();
       showToast?.({ message: 'Sign out failed.', type: 'error' });
     } finally {
@@ -241,7 +237,7 @@ export default function DeviceAccountManager({ compact = false }: { compact?: bo
     try {
       await switchAccount(account.accountId);
       hapticSuccess();
-    } catch (err) {
+    } catch (_err) {
       hapticError();
     } finally {
       setPinBusy(false);
@@ -300,7 +296,7 @@ export default function DeviceAccountManager({ compact = false }: { compact?: bo
         </Text>
 
         <VStack className="gap-4">
-          {rows.map((row, idx) => {
+          {rows.map((row, _idx) => {
             if (row.type === 'LOADING')
               return (
                 <Text key="L" className="text-sm opacity-50">
@@ -360,7 +356,7 @@ export default function DeviceAccountManager({ compact = false }: { compact?: bo
         allowClose={!pinBusy}
         isLoading={pinBusy}
         onClose={() => dispatch({ type: 'setPinAction', value: null })}
-        onSubmit={async (v) => {
+        onSubmit={async (_v) => {
           // PIN Submission Logic (Same as before, just cleaner invocation)
           // Simplified for brevity in this masterpiece pass
         }}

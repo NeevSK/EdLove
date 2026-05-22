@@ -717,7 +717,7 @@ class PolymathPlatformServer {
       ];
 
       // Smart Selection Strategy
-      const mcpMode = process.env['MCP_MODE'];
+      const mcpMode = process.env.MCP_MODE;
       if (mcpMode === 'GATEWAY' || !mcpMode) {
         return { tools: gatewayTools };
       }
