@@ -121,7 +121,9 @@ export function ResourceList({
       <FlashPlaySheet
         resource={flashPlayResource}
         onClose={handleCloseFlashPlay}
-        onReportBroken={handleReportBroken}
+        onReportBroken={(id) => {
+          void handleReportBroken(id);
+        }}
         onOpenAnotherWay={
           onOpenResourceOptions
             ? () => {

@@ -217,7 +217,7 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
   }, [studentName, state.analysis]);
   useEffect(() => {
     if (visible && studentId && classroomId) {
-      loadAnalysis();
+      void loadAnalysis();
     }
   }, [visible, studentId, classroomId, loadAnalysis]);
   // Delete legacy un-memoized handlers
@@ -299,7 +299,9 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
             </VStack>
             <HStack className="items-center gap-3">
               <Pressable
-                onPress={handleExport}
+                onPress={() => {
+                  void handleExport();
+                }}
                 className={`w-10 h-10 rounded-full bg-sanctuarySaffron/10 items-center justify-center ${state.exporting ? 'opacity-50' : ''}`}
                 disabled={state.exporting}
               >
@@ -342,8 +344,8 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
                     ))}
 
                     {/* Axes */}
-                    {layout.axes.map((axis, i) => (
-                      <G key={`axis-${i}`}>
+                    {layout.axes.map((axis) => (
+                      <G key={`axis-${axis.attribute}`}>
                         <Line
                           x1={layout.center.x}
                           y1={layout.center.y}
@@ -375,9 +377,9 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
                     />
 
                     {/* Data points */}
-                    {layout.points.map((p, i) => (
+                    {layout.points.map((p) => (
                       <Circle
-                        key={`pt-${i}`}
+                        key={`pt-${p.x}-${p.y}`}
                         cx={p.x}
                         cy={p.y}
                         r={4}
@@ -403,7 +405,9 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
                     </Text>
                   </HStack>
                   <Pressable
-                    onPress={handleGetAIInsights}
+                    onPress={() => {
+                      void handleGetAIInsights();
+                    }}
                     disabled={state.loadingAI}
                     className="flex-row items-center gap-1.5 px-3 py-1.5 rounded-xl bg-sanctuarySaffron/10 border border-sanctuarySaffron/20"
                   >
@@ -487,7 +491,9 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
           </Pressable>
           <Pressable
             className="flex-[2] h-[50px] bg-sanctuarySaffron rounded-2xl justify-center items-center"
-            onPress={handleSave}
+            onPress={() => {
+              void handleSave();
+            }}
             disabled={state.saving}
           >
             {state.saving ? (

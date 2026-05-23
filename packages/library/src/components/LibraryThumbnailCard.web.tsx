@@ -75,8 +75,9 @@ export function LibraryThumbnailCard({
   const tintBorder = `${cfg.color}33`;
 
   return (
-    <div
+    <button
       className="sanctuary-card"
+      type="button"
       onClick={onPress}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -185,7 +186,7 @@ export function LibraryThumbnailCard({
                 type="button"
                 onClick={(event) => {
                   event.stopPropagation();
-                  return onBookmarkToggle();
+                  void onBookmarkToggle();
                 }}
                 style={{
                   width: '30px',
@@ -317,7 +318,7 @@ export function LibraryThumbnailCard({
           </div>
         </div>
       </div>
-    </div>
+    </button>
   );
 }
 
