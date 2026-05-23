@@ -73,6 +73,9 @@ const MapInvitation = React.memo(({ onPress }: { onPress: () => void }) => {
     <AnimatedView entering={FadeInDown.delay(200).springify()}>
       <Pressable
         onPress={onPress}
+        accessibilityRole="button"
+        accessibilityLabel="Enter the Cosmos"
+        accessibilityHint="Shift from shelves into constellation-style discovery when you want relationships, not just a list"
         className="mx-4 my-4 rounded-[24px] overflow-hidden bg-phase-surface border border-phase-border"
       >
         <Box className="absolute inset-0">
@@ -103,6 +106,7 @@ const MapInvitation = React.memo(({ onPress }: { onPress: () => void }) => {
     </AnimatedView>
   );
 });
+MapInvitation.displayName = 'MapInvitation';
 
 const CuratorInvitation = React.memo(({ onPress }: { onPress: () => void }) => {
   const theme = useTheme();
@@ -111,6 +115,9 @@ const CuratorInvitation = React.memo(({ onPress }: { onPress: () => void }) => {
     <AnimatedView entering={FadeInDown.delay(300).springify()}>
       <Pressable
         onPress={onPress}
+        accessibilityRole="button"
+        accessibilityLabel="Curator Dashboard"
+        accessibilityHint="Review, polish, and publish new knowledge streams without leaving the sanctuary shell"
         className="mx-4 mt-0 mb-4 rounded-[24px] overflow-hidden bg-phase-surface border border-phase-accent/20"
       >
         <Box className="absolute inset-0">
@@ -140,6 +147,7 @@ const CuratorInvitation = React.memo(({ onPress }: { onPress: () => void }) => {
     </AnimatedView>
   );
 });
+CuratorInvitation.displayName = 'CuratorInvitation';
 
 export default function LibraryScreen() {
   const { t } = useTranslation();
@@ -318,16 +326,14 @@ export default function LibraryScreen() {
   } = useLibrary(libraryFilters, libraryFilters);
 
   // Get Bookmarks
-  const {
-    resources: bookmarkedResources,
-    isLoading: loadingBookmarks,
-    refetch: refetchBookmarks,
-  } = useBookmarkedResources(user?.id);
+  const { resources: bookmarkedResources, refetch: refetchBookmarks } = useBookmarkedResources(
+    user?.id,
+  );
 
   React.useEffect(() => {
-    discoverFeature('section_library');
+    void discoverFeature('section_library');
     dispatch({ type: 'SET_SYNCING', isSyncing: true });
-    syncLibrary()
+    void syncLibrary()
       .catch((err) => console.error('Library sync failed:', err))
       .finally(() => dispatch({ type: 'SET_SYNCING', isSyncing: false }));
   }, [syncLibrary, discoverFeature]);
@@ -395,6 +401,98 @@ export default function LibraryScreen() {
 
   const heroResource = trending[0] ?? newArrivals[0] ?? null;
 
+  // Shelf data for shelf view mode
+  const shelfData = useMemo(() => {
+    const rows: any[] = [{ type: 'PULSE', id: 'pulse' }];
+
+    if (heroResource) {
+      rows.push({
+        type: 'HERO',
+        id: 'hero',
+        resource: heroResource,
+      });
+    }
+
+    rows.push({ type: 'MAP_INVITATION', id: 'map-invit' });
+
+    // Only show curator if allowed
+    rows.push({
+      type: 'CURATOR_INVITATION_GUARD',
+      id: 'curator-invit',
+    });
+
+    const deskItemsResources = deskItems?.filter((r: any) => r.type === 'resource') || [];
+    if (deskItemsResources.length > 0) {
+      rows.push({
+        type: 'CONTINUE_LEARNING',
+        id: 'continue',
+        items: deskItemsResources,
+      });
+    }
+
+    if (bookmarkedResources.length > 0) {
+      rows.push({
+        type: 'BOOKMARKS',
+        id: 'bookmarks',
+        items: bookmarkedResources,
+      });
+    }
+
+    if (collections.length > 0) {
+      rows.push({
+        type: 'COLLECTIONS',
+        id: 'collections',
+        items: collections,
+        isUser: rawUserCollections.length > 0,
+      });
+    }
+
+    // Dynamic shelves
+    orderedShelfDefs.forEach((shelf) => {
+      const items = resources.filter((r: LibraryResource) =>
+        (shelf.types as readonly string[]).includes(r.type),
+      );
+      if (items.length > 0) {
+        rows.push({
+          type: 'SHELF',
+          id: `shelf-${shelf.label}`,
+          label: shelf.label,
+          items,
+        });
+      }
+    });
+
+    if (trending.length > 0) {
+      rows.push({
+        type: 'SHELF',
+        id: 'shelf-trending',
+        label: '⭐ Trending',
+        items: trending,
+      });
+    }
+
+    if (newArrivals.length > 0) {
+      rows.push({
+        type: 'SHELF',
+        id: 'shelf-new',
+        label: '✨ New Arrivals',
+        items: newArrivals,
+      });
+    }
+
+    return rows;
+  }, [
+    heroResource,
+    resources,
+    bookmarkedResources,
+    collections,
+    deskItems,
+    rawUserCollections,
+    orderedShelfDefs,
+    trending,
+    newArrivals,
+  ]);
+
   const handleOpenResource = useCallback(
     (resource: LibraryResource) => {
       if (!resource.url) return;
@@ -436,26 +534,32 @@ export default function LibraryScreen() {
     );
   }, []);
 
-  const handleAddResource = useCallback(async () => {
-    try {
-      await fetchResources();
-      await refetchBookmarks();
-    } catch (err) {
-      console.error('Failed to refresh after add', err);
-    }
+  const handleAddResource = useCallback(() => {
+    const add = async () => {
+      try {
+        await fetchResources();
+        await refetchBookmarks();
+      } catch (err) {
+        console.error('Failed to refresh after add', err);
+      }
+    };
+    void add();
   }, [fetchResources, refetchBookmarks]);
 
   const handleBookmark = useCallback(
-    async (resource: LibraryResource) => {
+    (resource: LibraryResource) => {
       if (isPastView || !user?.id) return;
-      try {
-        await bookmarkResource({ resourceId: resource.id, userId: user.id });
-        await refetchBookmarks();
-      } catch (err) {
-        console.error('Failed to bookmark:', err);
-      }
+      const bookmark = async () => {
+        try {
+          await bookmarkResource({ resourceId: resource.id, userId: user.id });
+          await refetchBookmarks();
+        } catch (err) {
+          console.error('Failed to bookmark:', err);
+        }
+      };
+      void bookmark();
     },
-    [isPastView, user?.id, bookmarkResource, refetchBookmarks],
+    [isPastView, user, bookmarkResource, refetchBookmarks],
   );
 
   const handleShare = useCallback(async (resource: LibraryResource) => {
@@ -472,41 +576,47 @@ export default function LibraryScreen() {
   }, []);
 
   const handleAddToCollection = useCallback(
-    async (collectionId: string) => {
+    (collectionId: string) => {
       if (isPastView || !selectedResource) return;
-      try {
-        await addToCollection({
-          collectionId,
-          resourceId: selectedResource.id,
-        });
-        dispatch({ type: 'SET_MODAL', name: 'picker', isOpen: false });
-      } catch (err) {
-        console.error('Failed to add to collection:', err);
-      }
+      const add = async () => {
+        try {
+          await addToCollection({
+            collectionId,
+            resourceId: selectedResource.id,
+          });
+          dispatch({ type: 'SET_MODAL', name: 'picker', isOpen: false });
+        } catch (err) {
+          console.error('Failed to add to collection:', err);
+        }
+      };
+      void add();
     },
     [isPastView, selectedResource, addToCollection],
   );
 
-  const onRefresh = useCallback(async () => {
-    dispatch({ type: 'SET_REFRESHING', refreshing: true });
-    await fetchResources();
-    const userId = await identityAPI.getMyInternalId();
+  const onRefresh = useCallback(() => {
+    const runRefresh = async () => {
+      dispatch({ type: 'SET_REFRESHING', refreshing: true });
+      await fetchResources();
+      const userId = await identityAPI.getMyInternalId();
 
-    if (resources.length === 0) {
-      const pub = await libraryAPI.getCollections({
-        limit: 10,
-        visibility: 'public',
-        userId: userId ?? undefined,
-        viewDate,
-        viewScale,
-      });
-      dispatch({ type: 'SET_PUBLIC_COLLECTIONS', collections: pub });
-    }
-    dispatch({ type: 'SET_REFRESHING', refreshing: false });
+      if (resources.length === 0) {
+        const pub = await libraryAPI.getCollections({
+          limit: 10,
+          visibility: 'public',
+          userId: userId ?? undefined,
+          viewDate,
+          viewScale,
+        });
+        dispatch({ type: 'SET_PUBLIC_COLLECTIONS', collections: pub });
+      }
+      dispatch({ type: 'SET_REFRESHING', refreshing: false });
+    };
+    void runRefresh().catch((err) => console.error('Refresh failed:', err));
   }, [fetchResources, resources.length, viewDate, viewScale]);
 
   const handleCreateCollection = useCallback(
-    async (data: any) => {
+    async (data: { name: string; description: string }) => {
       if (isPastView) return;
       try {
         const userId = await identityAPI.getMyInternalId();
@@ -558,16 +668,20 @@ export default function LibraryScreen() {
   );
 
   const handleEndReached = useCallback(() => {
-    if (hasNextResources && !isFetchingNextResources) fetchNextResources();
+    if (hasNextResources && !isFetchingNextResources) void fetchNextResources();
   }, [hasNextResources, isFetchingNextResources, fetchNextResources]);
+
+  const handleOpenAddModal = useCallback(() => {
+    dispatch({ type: 'SET_MODAL', name: 'add', isOpen: true });
+  }, []);
 
   const fabConfig = useMemo(
     () => ({
       tabType: 'library' as const,
-      onPress: () => dispatch({ type: 'SET_MODAL', name: 'add', isOpen: true }),
+      onPress: handleOpenAddModal,
       visible: !loading && !isPastView,
     }),
-    [loading, isPastView],
+    [loading, isPastView, handleOpenAddModal],
   );
 
   useRegisterFAB(fabConfig);
@@ -575,6 +689,98 @@ export default function LibraryScreen() {
   const handleLongPressResource = useCallback((res: LibraryResource) => {
     dispatch({ type: 'SET_SELECTED_RESOURCE', resource: res });
     dispatch({ type: 'SET_MODAL', name: 'actionSheet', isOpen: true });
+  }, []);
+
+  const handleSearchChangeText = useCallback((text: string) => {
+    dispatch({ type: 'SET_SEARCH', query: text });
+  }, []);
+
+  const handleNavigateToMap = useCallback(() => {
+    navigation.navigate('LibraryMap' as any);
+  }, [navigation]);
+
+  const handleNavigateToCuratorReview = useCallback(() => {
+    navigation.navigate('CuratorReview' as any);
+  }, [navigation]);
+
+  const handleRetry = useCallback(() => {
+    void fetchResources();
+  }, [fetchResources]);
+
+  const handleSelectCategory = useCallback((id: string) => {
+    dispatch({ type: 'SET_CATEGORY', id });
+  }, []);
+
+  const handleSelectSort = useCallback((v: string) => {
+    dispatch({ type: 'SET_SORT', sort: v as any });
+  }, []);
+
+  const handleSetViewModeShelf = useCallback(() => {
+    dispatch({ type: 'SET_VIEW_MODE', mode: 'shelf' });
+  }, []);
+
+  const handleSetViewModeGrid = useCallback(() => {
+    dispatch({ type: 'SET_VIEW_MODE', mode: 'grid' });
+  }, []);
+
+  const handleSetViewModeList = useCallback(() => {
+    dispatch({ type: 'SET_VIEW_MODE', mode: 'list' });
+  }, []);
+
+  const handleCloseAddModal = useCallback(() => {
+    dispatch({ type: 'SET_MODAL', name: 'add', isOpen: false });
+  }, []);
+
+  const handleOpenCollectionModal = useCallback(() => {
+    if (!isPastView) {
+      dispatch({
+        type: 'SET_MODAL',
+        name: 'collection',
+        isOpen: true,
+      });
+    }
+  }, [isPastView]);
+
+  const handleCloseCollectionModal = useCallback(() => {
+    dispatch({ type: 'SET_MODAL', name: 'collection', isOpen: false });
+  }, []);
+
+  const handleCloseActionSheet = useCallback(() => {
+    dispatch({ type: 'SET_MODAL', name: 'actionSheet', isOpen: false });
+  }, []);
+
+  const handleActionSheetBookmark = useCallback(() => {
+    if (selectedResource) {
+      void handleBookmark(selectedResource);
+    }
+  }, [selectedResource, handleBookmark]);
+
+  const handleActionSheetAddToCollection = useCallback(() => {
+    dispatch({ type: 'SET_MODAL', name: 'picker', isOpen: true });
+  }, []);
+
+  const handleActionSheetShare = useCallback(() => {
+    if (selectedResource) {
+      void handleShare(selectedResource);
+    }
+  }, [selectedResource, handleShare]);
+
+  const handleCloseCollectionPicker = useCallback(() => {
+    dispatch({ type: 'SET_MODAL', name: 'picker', isOpen: false });
+  }, []);
+
+  const handleOpenCollectionDetail = useCallback(
+    (collection: any) => {
+      navigation.navigate('CollectionDetail', {
+        id: collection.id,
+        title: collection.name,
+      });
+    },
+    [navigation],
+  );
+
+  const handlePullToDesk = useCallback((res: LibraryResource) => {
+    console.log('Pull', res.id);
   }, []);
 
   const renderShelf = useCallback(
@@ -599,6 +805,101 @@ export default function LibraryScreen() {
     [handleOpenResource, handleBookmark, handleLongPressResource],
   );
 
+  const keyExtractor = useCallback((item: any) => item.id, []);
+
+  const renderFlatListItem = useCallback(
+    ({ item }: { item: any }) => {
+      switch (item.type) {
+        case 'PULSE':
+          return (
+            <SanctuaryPulse
+              resourceCount={resources.length}
+              collectionCount={collections.length}
+              bookmarkCount={bookmarkedResources.length}
+            />
+          );
+        case 'HERO':
+          return <HeroBanner resource={item.resource} onPress={handleOpenResource} />;
+        case 'MAP_INVITATION':
+          return <MapInvitation onPress={handleNavigateToMap} />;
+        case 'CURATOR_INVITATION_GUARD':
+          return (
+            <FeatureGuard
+              feature="isLibraryManagementEnabled"
+              action="manage"
+              subject="LibraryCuratorDashboard"
+            >
+              <CuratorInvitation onPress={handleNavigateToCuratorReview} />
+            </FeatureGuard>
+          );
+        case 'CONTINUE_LEARNING':
+          return (
+            <SmartShelf title="▶ Continue Learning">
+              {item.items.map((res: any) => (
+                <LibraryThumbnailCard
+                  key={`continue-${res.id}`}
+                  resource={res}
+                  onPress={handleOpenResource}
+                  onLongPress={handleOpenResourceOptions}
+                />
+              ))}
+            </SmartShelf>
+          );
+        case 'BOOKMARKS':
+          return (
+            <SmartShelf title="🔖 My Bookmarks">
+              {item.items.map((res: any) => (
+                <LibraryThumbnailCard
+                  key={`bookmark-${res.id}`}
+                  resource={res}
+                  onPress={handleOpenResource}
+                  onBookmarkToggle={handleBookmark}
+                  onLongPress={handleLongPressResource}
+                />
+              ))}
+            </SmartShelf>
+          );
+        case 'COLLECTIONS':
+          return (
+            <Box className="mb-lg">
+              <SmartShelf title={item.isUser ? '📚 Your Collections' : '🌟 Discover Collections'}>
+                {item.items.map((col: any) => (
+                  <CollectionCard
+                    key={col.id}
+                    title={col.name}
+                    creator={col.creator_name}
+                    resourceCount={col.resource_ids?.length || 0}
+                    subjectTag={col.subjects?.[0] || 'General'}
+                    thumbnailUrl={col.thumbnail_url}
+                    verified={col.is_official}
+                    contextData={col}
+                    onPress={handleOpenCollectionDetail}
+                  />
+                ))}
+              </SmartShelf>
+            </Box>
+          );
+        case 'SHELF':
+          return renderShelf(item.label, item.items);
+        default:
+          return null;
+      }
+    },
+    [
+      resources.length,
+      collections.length,
+      bookmarkedResources.length,
+      handleOpenResource,
+      handleNavigateToMap,
+      handleNavigateToCuratorReview,
+      handleOpenResourceOptions,
+      handleBookmark,
+      handleLongPressResource,
+      handleOpenCollectionDetail,
+      renderShelf,
+    ],
+  );
+
   return (
     <ScreenWrapper scroll={!isSearchMode} noTopInset={true}>
       <GlobalHeader
@@ -607,7 +908,7 @@ export default function LibraryScreen() {
         showSearch
         searchProps={{
           value: searchQuery,
-          onChangeText: (text) => dispatch({ type: 'SET_SEARCH', query: text }),
+          onChangeText: handleSearchChangeText,
           placeholder: t('library.searchPlaceholder'),
         }}
         rightAction={
@@ -618,7 +919,10 @@ export default function LibraryScreen() {
               </AnimatedView>
             )}
             <Pressable
-              onPress={() => navigation.navigate('LibraryMap' as any)}
+              onPress={handleNavigateToMap}
+              accessibilityRole="button"
+              accessibilityLabel="Library Map"
+              accessibilityHint="Opens constellation view of sanctuary wisdom"
               className="p-2 rounded-xl bg-phase-interactive/10 border border-phase-interactive/15 mr-1"
             >
               <Icon as={MapIcon} size={20} color={theme.text.primary} />
@@ -635,7 +939,12 @@ export default function LibraryScreen() {
           <Text className="text-phase-danger text-center">
             {t('library.errorLoading') || 'Failed to load sanctuary wisdom.'}
           </Text>
-          <Pressable onPress={() => fetchResources()}>
+          <Pressable
+            onPress={handleRetry}
+            accessibilityRole="button"
+            accessibilityLabel="Retry"
+            accessibilityHint="Retries loading sanctuary wisdom"
+          >
             <Text className="text-phase-accent font-bold">Retry</Text>
           </Pressable>
         </VStack>
@@ -651,14 +960,10 @@ export default function LibraryScreen() {
             <FeatureGuard feature="isLibraryManagementEnabled" action="create" subject="Library">
               <HStack className="px-md py-3 gap-3">
                 <Pressable
-                  onPress={() =>
-                    !isPastView &&
-                    dispatch({
-                      type: 'SET_MODAL',
-                      name: 'collection',
-                      isOpen: true,
-                    })
-                  }
+                  onPress={handleOpenCollectionModal}
+                  accessibilityRole="button"
+                  accessibilityLabel="Create Collection"
+                  accessibilityHint="Opens a form to create a new resource collection"
                   className="flex-row items-center gap-2 px-4 py-2.5 rounded-2xl bg-phase-interactive/10 border border-phase-interactive/50"
                 >
                   <Icon as={Library} size={14} color={theme.accent.action} />
@@ -673,7 +978,7 @@ export default function LibraryScreen() {
               <HorizontalChipRow
                 chips={chipData}
                 selectedValue={selectedCategoryId}
-                onSelect={(id) => dispatch({ type: 'SET_CATEGORY', id })}
+                onSelect={handleSelectCategory}
                 size="sm"
               />
             </AnimatedView>
@@ -684,13 +989,16 @@ export default function LibraryScreen() {
                   <HorizontalChipRow
                     chips={sortChips}
                     selectedValue={selectedSort}
-                    onSelect={(v) => dispatch({ type: 'SET_SORT', sort: v as any })}
+                    onSelect={handleSelectSort}
                     size="sm"
                   />
                 </Box>
                 <HStack className="gap-1 p-1 rounded-xl border border-phase-border bg-phase-surface/80">
                   <Pressable
-                    onPress={() => dispatch({ type: 'SET_VIEW_MODE', mode: 'shelf' })}
+                    onPress={handleSetViewModeShelf}
+                    accessibilityRole="button"
+                    accessibilityLabel="Shelf layout"
+                    accessibilityHint="Shows resources in a grouped shelf view"
                     className={`w-8 h-8 rounded-lg justify-center items-center ${viewMode === 'shelf' ? 'bg-phase-interactive' : ''}`}
                   >
                     <Icon
@@ -700,7 +1008,10 @@ export default function LibraryScreen() {
                     />
                   </Pressable>
                   <Pressable
-                    onPress={() => dispatch({ type: 'SET_VIEW_MODE', mode: 'grid' })}
+                    onPress={handleSetViewModeGrid}
+                    accessibilityRole="button"
+                    accessibilityLabel="Grid layout"
+                    accessibilityHint="Shows resources in a grid view"
                     className={`w-8 h-8 rounded-lg justify-center items-center ${viewMode === 'grid' ? 'bg-phase-interactive' : ''}`}
                   >
                     <Icon
@@ -710,7 +1021,10 @@ export default function LibraryScreen() {
                     />
                   </Pressable>
                   <Pressable
-                    onPress={() => dispatch({ type: 'SET_VIEW_MODE', mode: 'list' })}
+                    onPress={handleSetViewModeList}
+                    accessibilityRole="button"
+                    accessibilityLabel="List layout"
+                    accessibilityHint="Shows resources in a detailed list view"
                     className={`w-8 h-8 rounded-lg justify-center items-center ${viewMode === 'list' ? 'bg-phase-interactive' : ''}`}
                   >
                     <Icon
@@ -726,196 +1040,9 @@ export default function LibraryScreen() {
             {viewMode === 'shelf' && !isSearchMode ? (
               <Box className="flex-1">
                 <FlatList
-                  data={useMemo(() => {
-                    const rows: any[] = [{ type: 'PULSE', id: 'pulse' }];
-
-                    if (heroResource) {
-                      rows.push({
-                        type: 'HERO',
-                        id: 'hero',
-                        resource: heroResource,
-                      });
-                    }
-
-                    rows.push({ type: 'MAP_INVITATION', id: 'map-invit' });
-
-                    // Only show curator if allowed
-                    rows.push({
-                      type: 'CURATOR_INVITATION_GUARD',
-                      id: 'curator-invit',
-                    });
-
-                    const deskItemsResources =
-                      deskItems?.filter((r: any) => r.type === 'resource') || [];
-                    if (deskItemsResources.length > 0) {
-                      rows.push({
-                        type: 'CONTINUE_LEARNING',
-                        id: 'continue',
-                        items: deskItemsResources,
-                      });
-                    }
-
-                    if (bookmarkedResources.length > 0) {
-                      rows.push({
-                        type: 'BOOKMARKS',
-                        id: 'bookmarks',
-                        items: bookmarkedResources,
-                      });
-                    }
-
-                    if (collections.length > 0) {
-                      rows.push({
-                        type: 'COLLECTIONS',
-                        id: 'collections',
-                        items: collections,
-                        isUser: rawUserCollections.length > 0,
-                      });
-                    }
-
-                    // Dynamic shelves
-                    orderedShelfDefs.forEach((shelf) => {
-                      const items = resources.filter((r: LibraryResource) =>
-                        (shelf.types as readonly string[]).includes(r.type),
-                      );
-                      if (items.length > 0) {
-                        rows.push({
-                          type: 'SHELF',
-                          id: `shelf-${shelf.label}`,
-                          label: shelf.label,
-                          items,
-                        });
-                      }
-                    });
-
-                    if (trending.length > 0) {
-                      rows.push({
-                        type: 'SHELF',
-                        id: 'shelf-trending',
-                        label: '⭐ Trending',
-                        items: trending,
-                      });
-                    }
-
-                    if (newArrivals.length > 0) {
-                      rows.push({
-                        type: 'SHELF',
-                        id: 'shelf-new',
-                        label: '✨ New Arrivals',
-                        items: newArrivals,
-                      });
-                    }
-
-                    return rows;
-                  }, [
-                    heroResource,
-                    resources,
-                    bookmarkedResources,
-                    collections,
-                    deskItems,
-                    rawUserCollections,
-                    orderedShelfDefs,
-                    trending,
-                    newArrivals,
-                  ])}
-                  keyExtractor={(item) => item.id}
-                  renderItem={({ item }) => {
-                    switch (item.type) {
-                      case 'PULSE':
-                        return (
-                          <SanctuaryPulse
-                            resourceCount={resources.length}
-                            collectionCount={collections.length}
-                            bookmarkCount={bookmarkedResources.length}
-                          />
-                        );
-                      case 'HERO':
-                        return (
-                          <HeroBanner
-                            resource={item.resource}
-                            onPress={() => handleOpenResource(item.resource)}
-                          />
-                        );
-                      case 'MAP_INVITATION':
-                        return (
-                          <MapInvitation onPress={() => navigation.navigate('LibraryMap' as any)} />
-                        );
-                      case 'CURATOR_INVITATION_GUARD':
-                        return (
-                          <FeatureGuard
-                            feature="isLibraryManagementEnabled"
-                            action="manage"
-                            subject="LibraryCuratorDashboard"
-                          >
-                            <CuratorInvitation
-                              onPress={() => navigation.navigate('CuratorReview' as any)}
-                            />
-                          </FeatureGuard>
-                        );
-                      case 'CONTINUE_LEARNING':
-                        return (
-                          <SmartShelf title="▶ Continue Learning">
-                            {item.items.map((res: any) => (
-                              <LibraryThumbnailCard
-                                key={`continue-${res.id}`}
-                                title={res.title}
-                                type={res.type}
-                                onPress={() => handleOpenResource(res)}
-                                onLongPress={
-                                  res.url ? () => handleOpenResourceOptions(res) : undefined
-                                }
-                              />
-                            ))}
-                          </SmartShelf>
-                        );
-                      case 'BOOKMARKS':
-                        return (
-                          <SmartShelf title="🔖 My Bookmarks">
-                            {item.items.map((res: any) => (
-                              <LibraryThumbnailCard
-                                key={`bookmark-${res.id}`}
-                                resource={res}
-                                onPress={handleOpenResource}
-                                onBookmarkToggle={handleBookmark}
-                                onLongPress={handleLongPressResource}
-                              />
-                            ))}
-                          </SmartShelf>
-                        );
-                      case 'COLLECTIONS':
-                        return (
-                          <Box className="mb-lg">
-                            <SmartShelf
-                              title={
-                                item.isUser ? '📚 Your Collections' : '🌟 Discover Collections'
-                              }
-                            >
-                              {item.items.map((col: any) => (
-                                <CollectionCard
-                                  key={col.id}
-                                  title={col.name}
-                                  creator={col.creator_name}
-                                  resourceCount={col.resource_ids?.length || 0}
-                                  subjectTag={col.subjects?.[0] || 'General'}
-                                  thumbnailUrl={col.thumbnail_url}
-                                  verified={col.is_official}
-                                  contextData={col}
-                                  onPress={(collection) =>
-                                    navigation.navigate('CollectionDetail', {
-                                      id: collection.id,
-                                      title: collection.name,
-                                    })
-                                  }
-                                />
-                              ))}
-                            </SmartShelf>
-                          </Box>
-                        );
-                      case 'SHELF':
-                        return renderShelf(item.label, item.items);
-                      default:
-                        return null;
-                    }
-                  }}
+                  data={shelfData}
+                  keyExtractor={keyExtractor}
+                  renderItem={renderFlatListItem}
                   contentContainerStyle={{
                     paddingBottom: bottomPadding + 40,
                     paddingTop: Theme.spacing.md,
@@ -933,7 +1060,7 @@ export default function LibraryScreen() {
                 resources={resources}
                 onOpenResource={handleOpenResource}
                 onOpenResourceOptions={handleOpenResourceOptions}
-                onPullToDesk={(res) => console.log('Pull', res.id)}
+                onPullToDesk={handlePullToDesk}
                 viewMode={viewMode === 'grid' ? 'grid' : 'list'}
                 ListHeaderComponent={
                   <Box className="p-md">
@@ -955,28 +1082,28 @@ export default function LibraryScreen() {
 
       <AssetCreationModal
         isOpen={isAddModalOpen && !isPastView}
-        onClose={() => dispatch({ type: 'SET_MODAL', name: 'add', isOpen: false })}
+        onClose={handleCloseAddModal}
         onAdd={handleAddResource}
       />
       <CollectionCreationModal
         isOpen={isAddCollectionModalOpen && !isPastView}
-        onClose={() => dispatch({ type: 'SET_MODAL', name: 'collection', isOpen: false })}
+        onClose={handleCloseCollectionModal}
         onSubmit={handleCreateCollection}
       />
       {selectedResource && (
         <ResourceActionSheet
           visible={isActionSheetVisible}
-          onClose={() => dispatch({ type: 'SET_MODAL', name: 'actionSheet', isOpen: false })}
+          onClose={handleCloseActionSheet}
           resource={selectedResource}
-          onBookmark={() => handleBookmark(selectedResource)}
-          onAddToCollection={() => dispatch({ type: 'SET_MODAL', name: 'picker', isOpen: true })}
-          onShare={() => handleShare(selectedResource)}
+          onBookmark={handleActionSheetBookmark}
+          onAddToCollection={handleActionSheetAddToCollection}
+          onShare={handleActionSheetShare}
         />
       )}
 
       <CollectionPickerModal
         visible={isCollectionPickerVisible}
-        onClose={() => dispatch({ type: 'SET_MODAL', name: 'picker', isOpen: false })}
+        onClose={handleCloseCollectionPicker}
         collections={rawUserCollections as any}
         onSelect={handleAddToCollection}
         isAdding={isAddingToCollection}
@@ -987,7 +1114,7 @@ export default function LibraryScreen() {
 
 interface HeroBannerProps {
   resource: LibraryResource;
-  onPress: () => void;
+  onPress: (resource: LibraryResource) => void;
 }
 
 const _HERO_HEIGHT = 220;
@@ -1053,11 +1180,21 @@ const SanctuaryPulse = React.memo(
     );
   },
 );
+SanctuaryPulse.displayName = 'SanctuaryPulse';
 
 const HeroBanner = React.memo(({ resource, onPress }: HeroBannerProps) => {
   const theme = useTheme();
+  const handlePress = useCallback(() => {
+    onPress(resource);
+  }, [resource, onPress]);
+
   return (
-    <Pressable onPress={onPress}>
+    <Pressable
+      onPress={handlePress}
+      accessibilityRole="button"
+      accessibilityLabel={`Featured resource: ${resource.title}`}
+      accessibilityHint="Opens the featured resource"
+    >
       <Box className="h-[240px] overflow-hidden bg-phase-surface/50 mb-md mx-md rounded-3xl border border-phase-border">
         {resource.media?.url ? (
           <ImageBackground
@@ -1080,6 +1217,7 @@ const HeroBanner = React.memo(({ resource, onPress }: HeroBannerProps) => {
     </Pressable>
   );
 });
+HeroBanner.displayName = 'HeroBanner';
 
 function HeroOverlay({ resource, theme }: { resource: LibraryResource; theme: any }) {
   return (

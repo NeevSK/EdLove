@@ -27,7 +27,7 @@ import {
   File,
   FileText,
   Link,
-  Map,
+  Map as MapIcon,
   StickyNote,
   ThumbsUp,
   Video,
@@ -85,7 +85,7 @@ const TYPE_CONFIG: Record<
   pdf: { icon: File, color: Theme.colors.emberRed, label: 'PDF' },
   doc: { icon: FileText, color: Theme.colors.starlightGray, label: 'Doc' },
   note: { icon: StickyNote, color: Theme.colors.sageGreen, label: 'Note' },
-  map: { icon: Map, color: Theme.colors.sageGreen, label: 'Map' },
+  map: { icon: MapIcon, color: Theme.colors.sageGreen, label: 'Map' },
   infographic: {
     icon: BarChart2,
     color: Theme.colors.amberGlow,
@@ -244,6 +244,12 @@ export const LibraryThumbnailCard = React.memo(
                       onPress={handleBookmarkToggle}
                       className="p-1 rounded-full bg-white/90 shadow-sm"
                       accessibilityRole="button"
+                      accessibilityLabel={has_bookmarked ? 'Unbookmark' : 'Bookmark'}
+                      accessibilityHint={
+                        has_bookmarked
+                          ? 'Removes this resource from bookmarks'
+                          : 'Bookmarks this resource'
+                      }
                     >
                       <Bookmark
                         size={14}
@@ -314,5 +320,6 @@ export const LibraryThumbnailCard = React.memo(
     );
   },
 );
+LibraryThumbnailCard.displayName = 'LibraryThumbnailCard';
 
 export default LibraryThumbnailCard;
