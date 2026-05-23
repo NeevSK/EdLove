@@ -27,7 +27,7 @@ import {
 import { hapticLight, hapticMedium } from '@repo/ui/utils/haptics';
 
 import { Bell, Clock, Droplet, Edit, Plus, Trash2 } from 'lucide-react-native';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   createReminder,
@@ -68,13 +68,21 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
   const [description, setDescription] = useState('');
   const [iconType, setIconType] = useState('bell');
 
-  useEffect(() => {
-    if (userId) {
-      fetchReminders();
-    }
-  }, [userId, fetchReminders]);
+  const createDefaultReminder = useCallback(async () => {
+    if (!userId) return;
 
-  async function fetchReminders() {
+    try {
+      const data = await createReminder(userId, {
+        ...DEFAULT_REMINDER,
+        is_active: true,
+      });
+      setReminders([data]);
+    } catch (error) {
+      console.error('Error creating default reminder:', error);
+    }
+  }, [userId]);
+
+  const fetchReminders = useCallback(async () => {
     try {
       if (!userId) return;
       const data = await fetchReminderRecords(userId);
@@ -89,21 +97,13 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
     } finally {
       setIsLoading(false);
     }
-  }
+  }, [userId, createDefaultReminder]);
 
-  async function createDefaultReminder() {
-    if (!userId) return;
-
-    try {
-      const data = await createReminder(userId, {
-        ...DEFAULT_REMINDER,
-        is_active: true,
-      });
-      setReminders([data]);
-    } catch (error) {
-      console.error('Error creating default reminder:', error);
+  useEffect(() => {
+    if (userId) {
+      void fetchReminders();
     }
-  }
+  }, [userId, fetchReminders]);
 
   const openCreateModal = () => {
     setEditingReminder(null);
@@ -233,7 +233,11 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
               >
                 <HStack className="gap-4 items-center">
                   {/* Icon */}
-                  <Pressable onPress={() => toggleReminder(reminder)}>
+                  <Pressable
+                    onPress={() => {
+                      void toggleReminder(reminder);
+                    }}
+                  >
                     <Box className="w-10 h-10 rounded-full bg-obsidian items-center justify-center">
                       <Icon
                         as={IconComponent}
@@ -263,7 +267,11 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
                             <Icon as={Edit} className="text-mistGray" size={16} />
                           </Box>
                         </Pressable>
-                        <Pressable onPress={() => deleteReminder(reminder.id)}>
+                        <Pressable
+                          onPress={() => {
+                            void deleteReminder(reminder.id);
+                          }}
+                        >
                           <Box className="w-9 h-9 rounded-full bg-obsidian items-center justify-center">
                             <Icon as={Trash2} className="text-emberRed" size={16} />
                           </Box>
@@ -366,7 +374,9 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
               </Button>
               <Button
                 className="flex-1 bg-sanctuarySaffron"
-                onPress={saveReminder}
+                onPress={() => {
+                  void saveReminder();
+                }}
                 isDisabled={!title.trim()}
               >
                 <ButtonText className="text-white">

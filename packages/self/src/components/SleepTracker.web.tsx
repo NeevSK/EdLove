@@ -1,4 +1,4 @@
-﻿/**
+/**
  * SleepTracker.web.tsx
  *
  * Web override. Uses an HTML range input and the shared self repository
@@ -174,7 +174,10 @@ export default function SleepTracker({ userId }: SleepTrackerProps) {
           </div>
           {isMorning && !isPastView ? (
             <button
-              onClick={handleSave}
+              type="button"
+              onClick={() => {
+                void handleSave();
+              }}
               disabled={saving}
               style={{
                 padding: '10px',

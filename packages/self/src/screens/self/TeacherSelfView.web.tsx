@@ -96,10 +96,10 @@ export default function TeacherSelfView() {
           Professional Ecology
         </h3>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          <button className="sidebar-item" onClick={() => {}}>
+          <button type="button" className="sidebar-item" onClick={() => {}}>
             <Icon as={Users} size={16} /> <span>Educational Ecology</span>
           </button>
-          <button className="sidebar-item" onClick={() => {}}>
+          <button type="button" className="sidebar-item" onClick={() => {}}>
             <Icon as={MessageSquare} size={16} /> <span>Faculty Resonance</span>
           </button>
         </div>

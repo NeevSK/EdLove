@@ -22,7 +22,7 @@ import {
   Calendar,
   ChevronLeft,
   FolderCheck,
-  Map,
+  Map as MapIcon,
   Microscope,
   PenTool,
   RefreshCw,
@@ -76,7 +76,7 @@ const QUESTIONS: Question[] = [
         delta: { depth_breadth: -20, reflect_act: -10 },
       },
       {
-        icon: Map,
+        icon: MapIcon,
         label: 'Expansive Journey',
         description: 'Browse widely — follow curiosity wherever it leads',
         delta: { depth_breadth: 20, reflect_act: 10 },
@@ -262,7 +262,7 @@ export const OrientationCaptureStep = ({
           {question.options.map((opt, i) => {
             const isSelected = selected === i;
             return (
-              <Animated.View key={i} entering={FadeInRight.delay(i * 100)} layout={Layout}>
+              <Animated.View key={opt.label} entering={FadeInRight.delay(i * 100)} layout={Layout}>
                 <Pressable
                   onPress={() => handleSelect(i)}
                   accessibilityRole="button"

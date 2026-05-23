@@ -105,6 +105,7 @@ export default function JoyJar({ userId }: JoyJarProps) {
           )}
         </div>
         <button
+          type="button"
           onClick={() => setShowForm((v) => !v)}
           style={{
             display: 'flex',
@@ -148,6 +149,7 @@ export default function JoyJar({ userId }: JoyJarProps) {
           >
             {CATEGORIES.map((cat) => (
               <button
+                type="button"
                 key={cat.value}
                 onClick={() => setCategory(cat.value)}
                 style={{
@@ -187,7 +189,9 @@ export default function JoyJar({ userId }: JoyJarProps) {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === 'Enter' && e.ctrlKey) handleSave();
+              if (e.key === 'Enter' && e.ctrlKey) {
+                void handleSave();
+              }
             }}
             placeholder="Describe this moment of joy\u2026"
             rows={3}
@@ -206,7 +210,10 @@ export default function JoyJar({ userId }: JoyJarProps) {
             }}
           />
           <button
-            onClick={handleSave}
+            type="button"
+            onClick={() => {
+              void handleSave();
+            }}
             disabled={saving || !description.trim()}
             style={{
               padding: '10px',

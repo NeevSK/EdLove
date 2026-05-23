@@ -161,12 +161,20 @@ export default function ResonancePatternCard({
     gradeNumber,
   });
 
-  const seeds: Record<string, number> = {
-    depth_breadth: inferredSeeds.depth_breadth,
-    reflect_act: inferredSeeds.reflect_act,
-    solo_social: inferredSeeds.solo_social,
-    steady_surge: inferredSeeds.steady_surge,
-  };
+  const seeds = useMemo(
+    () => ({
+      depth_breadth: inferredSeeds.depth_breadth,
+      reflect_act: inferredSeeds.reflect_act,
+      solo_social: inferredSeeds.solo_social,
+      steady_surge: inferredSeeds.steady_surge,
+    }),
+    [
+      inferredSeeds.depth_breadth,
+      inferredSeeds.reflect_act,
+      inferredSeeds.solo_social,
+      inferredSeeds.steady_surge,
+    ],
+  );
 
   const isForming = isDefault && confidence < 0.25;
   const points = useMemo(() => buildPoints(seeds), [seeds]);

@@ -74,6 +74,7 @@ export default function StudentGoals({ userId }: StudentGoalsProps) {
           )}
         </div>
         <button
+          type="button"
           onClick={() => setShowForm((v) => !v)}
           style={{
             fontSize: '11px',
@@ -95,7 +96,11 @@ export default function StudentGoals({ userId }: StudentGoalsProps) {
           <input
             value={text}
             onChange={(e) => setText(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                void handleAdd();
+              }
+            }}
             placeholder="What do you want to achieve?"
             style={{
               flex: 1,
@@ -110,7 +115,10 @@ export default function StudentGoals({ userId }: StudentGoalsProps) {
             }}
           />
           <button
-            onClick={handleAdd}
+            type="button"
+            onClick={() => {
+              void handleAdd();
+            }}
             disabled={saving || !text.trim()}
             style={{
               padding: '9px 14px',
@@ -162,7 +170,10 @@ export default function StudentGoals({ userId }: StudentGoalsProps) {
                 }}
               >
                 <button
-                  onClick={() => handleToggle(goal)}
+                  type="button"
+                  onClick={() => {
+                    void handleToggle(goal);
+                  }}
                   disabled={updating === goal.id}
                   style={{
                     background: 'none',
@@ -200,7 +211,9 @@ export default function StudentGoals({ userId }: StudentGoalsProps) {
                   max={100}
                   step={5}
                   value={goal.progress ?? 0}
-                  onChange={(e) => handleProgress(goal, Number(e.target.value))}
+                  onChange={(e) => {
+                    void handleProgress(goal, Number(e.target.value));
+                  }}
                   style={{
                     accentColor: 'var(--water)',
                     marginLeft: '28px',

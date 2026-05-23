@@ -58,17 +58,17 @@ export function PulseDashboard({ onEnterDetails }: { onEnterDetails: () => void 
     refresh: refreshActions,
   } = usePendingActions(user?.id);
 
-  const loadContent = async () => {
+  const loadContent = useCallback(async () => {
     try {
       const content = await dailyContentAPI.getTodaysContent();
       setDailyContent(content);
     } catch (err) {
       console.error('Failed to load daily content:', err);
     }
-  };
+  }, []);
 
   useEffect(() => {
-    loadContent();
+    void loadContent();
   }, [loadContent]);
 
   const onRefresh = useCallback(async () => {
@@ -92,7 +92,13 @@ export function PulseDashboard({ onEnterDetails }: { onEnterDetails: () => void 
       contentContainerStyle={{ paddingBottom: 120 }}
       showsVerticalScrollIndicator={false}
       refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#F6BF8C" />
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={() => {
+            void onRefresh();
+          }}
+          tintColor="#F6BF8C"
+        />
       }
     >
       <VStack className="px-lg pt-xl gap-8">

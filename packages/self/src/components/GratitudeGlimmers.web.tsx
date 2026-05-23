@@ -101,6 +101,7 @@ export default function GratitudeGlimmers({ userId }: GratitudeGlimmersProps) {
           )}
         </div>
         <button
+          type="button"
           onClick={() => setShowForm((v) => !v)}
           style={{
             display: 'flex',
@@ -138,6 +139,7 @@ export default function GratitudeGlimmers({ userId }: GratitudeGlimmersProps) {
           <div style={{ display: 'flex', gap: '8px' }}>
             {CATEGORIES.map((cat) => (
               <button
+                type="button"
                 key={cat.value}
                 onClick={() => setCategory(cat.value)}
                 style={{
@@ -161,7 +163,9 @@ export default function GratitudeGlimmers({ userId }: GratitudeGlimmersProps) {
             value={content}
             onChange={(e) => setContent(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === 'Enter' && e.ctrlKey) handleSave();
+              if (e.key === 'Enter' && e.ctrlKey) {
+                void handleSave();
+              }
             }}
             placeholder="What's one thing you're grateful for right now?"
             rows={3}
@@ -180,7 +184,10 @@ export default function GratitudeGlimmers({ userId }: GratitudeGlimmersProps) {
             }}
           />
           <button
-            onClick={handleSave}
+            type="button"
+            onClick={() => {
+              void handleSave();
+            }}
             disabled={saving || !content.trim()}
             style={{
               padding: '10px',

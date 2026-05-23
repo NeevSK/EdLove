@@ -20,7 +20,7 @@ import {
 } from '@repo/ui/primitives';
 
 import { Bell, Droplets, Plus, Trash2, X } from 'lucide-react-native';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Animated, { FadeInDown, Layout } from 'react-native-reanimated';
 import {
   createReminder,
@@ -53,21 +53,7 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
   const [toggling, setToggling] = useState<string | null>(null);
   const [deleting, setDeleting] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!userId) {
-      setIsLoading(false);
-      return;
-    }
-    fetchReminders(userId)
-      .then((data) => {
-        if (data.length === 0) createDefault();
-        else setReminders(data);
-      })
-      .catch(() => {})
-      .finally(() => setIsLoading(false));
-  }, [userId, createDefault]);
-
-  async function createDefault() {
+  const createDefault = useCallback(async () => {
     if (!userId) return;
     const data = await createReminder(userId, {
       ...DEFAULT_REMINDER,
@@ -75,7 +61,24 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
       icon_type: DEFAULT_REMINDER.icon_type,
     });
     if (data) setReminders([data]);
-  }
+  }, [userId]);
+
+  useEffect(() => {
+    if (!userId) {
+      setIsLoading(false);
+      return;
+    }
+    fetchReminders(userId)
+      .then((data) => {
+        if (data.length === 0) {
+          void createDefault();
+        } else {
+          setReminders(data);
+        }
+      })
+      .catch(() => {})
+      .finally(() => setIsLoading(false));
+  }, [userId, createDefault]);
 
   const handleAdd = async () => {
     if (!title.trim() || !userId) return;
@@ -179,7 +182,9 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
             </VStack>
 
             <Button
-              onPress={handleAdd}
+              onPress={() => {
+                void handleAdd();
+              }}
               disabled={saving || !title.trim()}
               className="bg-sanctuarySaffron shadow-lg shadow-sanctuarySaffron/20 h-12 rounded-xl"
             >
@@ -242,7 +247,9 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
 
                 <HStack className="items-center gap-3">
                   <Pressable
-                    onPress={() => handleToggle(r)}
+                    onPress={() => {
+                      void handleToggle(r);
+                    }}
                     disabled={toggling === r.id}
                     className={`w-10 h-6 rounded-full items-center justify-center px-1 transition-all ${r.is_active ? 'bg-emeraldGreen/20 overflow-hidden' : 'bg-white/10 opacity-30'}`}
                   >
@@ -253,7 +260,9 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
 
                   {!r.is_default && (
                     <Pressable
-                      onPress={() => handleDelete(r.id)}
+                      onPress={() => {
+                        void handleDelete(r.id);
+                      }}
                       disabled={deleting === r.id}
                       className="p-2 hover:bg-emberRed/10 rounded-lg active:scale-90"
                     >

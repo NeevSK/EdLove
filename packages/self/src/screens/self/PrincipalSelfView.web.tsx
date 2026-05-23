@@ -93,10 +93,10 @@ export default function PrincipalSelfView() {
           Leadership ecology
         </h3>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          <button className="sidebar-item" onClick={() => {}}>
+          <button type="button" className="sidebar-item" onClick={() => {}}>
             <Icon as={Activity} size={16} /> <span>Leadership Ecology</span>
           </button>
-          <button className="sidebar-item" onClick={() => {}}>
+          <button type="button" className="sidebar-item" onClick={() => {}}>
             <Icon as={BookOpen} size={16} /> <span>Governance Ledger</span>
           </button>
         </div>
