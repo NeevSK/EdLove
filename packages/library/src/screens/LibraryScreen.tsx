@@ -14,6 +14,7 @@ import {
   CollectionCreationModal,
 } from '@repo/ui/components/media/AssetCreationPortal';
 import { ResourceActionSheet } from '@repo/ui/components/media/ResourceActionSheet';
+import SanctuaryFlashList from '@repo/ui/components/SanctuaryFlashList';
 import ScreenWrapper, { useBottomTabPadding } from '@repo/ui/components/ScreenWrapper';
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { SmartShelf } from '@repo/ui/components/SmartShelf';
@@ -22,7 +23,6 @@ import { useRegisterFAB } from '@repo/ui/context/FABContext';
 import {
   AnimatedView,
   Box,
-  FlatList,
   HStack,
   Icon,
   ImageBackground,
@@ -45,7 +45,7 @@ import {
   Play,
   Plus,
 } from 'lucide-react-native';
-import React, { useCallback, useMemo, useReducer, useRef } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FadeInDown } from 'react-native-reanimated';
 import { libraryAPI } from '../api/library';
@@ -66,7 +66,7 @@ const LIBRARY_UI_CATEGORIES = [
   { id: 'note', en: 'Personal Notes' },
 ];
 
-const MapInvitation = React.memo(({ onPress }: { onPress: () => void }) => {
+const MapInvitation = memo(({ onPress }: { onPress: () => void }) => {
   const theme = useTheme();
 
   return (
@@ -108,7 +108,7 @@ const MapInvitation = React.memo(({ onPress }: { onPress: () => void }) => {
 });
 MapInvitation.displayName = 'MapInvitation';
 
-const CuratorInvitation = React.memo(({ onPress }: { onPress: () => void }) => {
+const CuratorInvitation = memo(({ onPress }: { onPress: () => void }) => {
   const theme = useTheme();
 
   return (
@@ -276,7 +276,7 @@ export default function LibraryScreen() {
   const _showToast = useStore((state) => state.showToast);
 
   // Search Debouncing (Orchestrated by Reducer)
-  React.useEffect(() => {
+  useEffect(() => {
     const handler = setTimeout(() => {
       dispatch({ type: 'SET_DEBOUNCED_SEARCH', query: searchQuery });
     }, 500);
@@ -330,7 +330,7 @@ export default function LibraryScreen() {
     user?.id,
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     void discoverFeature('section_library');
     dispatch({ type: 'SET_SYNCING', isSyncing: true });
     void syncLibrary()
@@ -338,7 +338,7 @@ export default function LibraryScreen() {
       .finally(() => dispatch({ type: 'SET_SYNCING', isSyncing: false }));
   }, [syncLibrary, discoverFeature]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (
       !loading &&
       rawResources.length === 0 &&
@@ -1039,20 +1039,18 @@ export default function LibraryScreen() {
 
             {viewMode === 'shelf' && !isSearchMode ? (
               <Box className="flex-1">
-                <FlatList
+                <SanctuaryFlashList
                   data={shelfData}
                   keyExtractor={keyExtractor}
                   renderItem={renderFlatListItem}
+                  estimatedItemSize={280}
                   contentContainerStyle={{
                     paddingBottom: bottomPadding + 40,
                     paddingTop: Theme.spacing.md,
                   }}
                   showsVerticalScrollIndicator={false}
-                  refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-                  removeClippedSubviews={coreRuntime.device.getMetadata().platform !== 'web'}
-                  initialNumToRender={4}
-                  maxToRenderPerBatch={2}
-                  windowSize={5}
+                  refreshing={refreshing}
+                  onRefresh={onRefresh}
                 />
               </Box>
             ) : (
@@ -1119,7 +1117,7 @@ interface HeroBannerProps {
 
 const _HERO_HEIGHT = 220;
 
-const SanctuaryPulse = React.memo(
+const SanctuaryPulse = memo(
   ({
     resourceCount,
     collectionCount,
@@ -1182,7 +1180,7 @@ const SanctuaryPulse = React.memo(
 );
 SanctuaryPulse.displayName = 'SanctuaryPulse';
 
-const HeroBanner = React.memo(({ resource, onPress }: HeroBannerProps) => {
+const HeroBanner = memo(({ resource, onPress }: HeroBannerProps) => {
   const theme = useTheme();
   const handlePress = useCallback(() => {
     onPress(resource);
