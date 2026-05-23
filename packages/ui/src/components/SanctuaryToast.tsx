@@ -1,5 +1,6 @@
 import { AlertCircle, CheckCircle, Info, X } from 'lucide-react-native';
 import { useCallback, useEffect } from 'react';
+import { Platform } from 'react-native';
 import Animated, {
   runOnJS,
   useAnimatedStyle,
@@ -29,7 +30,7 @@ export default function SanctuaryToast({
   onHide,
   duration = 3000,
 }: SanctuaryToastProps) {
-  const translateY = useSharedValue(100);
+  const translateY = useSharedValue(-120);
   const opacity = useSharedValue(0);
 
   const getIconData = () => {
@@ -47,12 +48,12 @@ export default function SanctuaryToast({
 
   const hide = useCallback(() => {
     opacity.value = withTiming(0);
-    translateY.value = withTiming(100, {}, (finished) => {
+    translateY.value = withTiming(-120, {}, (finished) => {
       if (finished && visible) {
         runOnJS(onHide)();
       }
     });
-  }, [opacity, translateY, visible, onHide]);
+  }, [visible, onHide, opacity, translateY]);
 
   useEffect(() => {
     if (!visible) {
@@ -60,7 +61,7 @@ export default function SanctuaryToast({
       return;
     }
 
-    translateY.value = withSpring(0, { damping: 15 });
+    translateY.value = withSpring(0, { damping: 15, stiffness: 100 });
     opacity.value = withTiming(1);
 
     const timer = setTimeout(() => {
@@ -68,7 +69,7 @@ export default function SanctuaryToast({
     }, duration);
 
     return () => clearTimeout(timer);
-  }, [visible, translateY, opacity, hide, duration]);
+  }, [visible, hide, duration, opacity, translateY]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }],
@@ -79,24 +80,42 @@ export default function SanctuaryToast({
 
   return (
     <Animated.View
+      pointerEvents="box-none"
       style={[
         {
           position: 'absolute',
-          bottom: 100,
+          top: Platform.OS === 'web' ? 24 : 60,
           left: 20,
           right: 20,
           alignItems: 'center',
-          zIndex: 1000,
+          zIndex: 999999,
         },
         animatedStyle,
       ]}
     >
-      <Box className="bg-phase-surface p-4 rounded-xl border border-white/10 shadow-xl w-full max-w-[400px]">
+      <Box
+        style={{
+          backgroundColor: '#1C1917', // Solid warm black (Stone 900)
+          borderWidth: 1,
+          borderColor: 'rgba(246, 191, 140, 0.2)', // Accent gold tint
+          borderRadius: 16,
+          padding: 16,
+          width: '100%',
+          maxWidth: 420,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 10 },
+          shadowOpacity: 0.35,
+          shadowRadius: 20,
+          elevation: 12,
+        }}
+      >
         <HStack className="items-center gap-3">
           <Icon color={iconColor} size={24} />
-          <Text className="text-white text-sm font-medium flex-1">{message}</Text>
+          <Text style={{ color: '#FFFFFF', flex: 1, fontSize: 14, fontWeight: '500' }}>
+            {message}
+          </Text>
           <Pressable accessibilityRole="button" onPress={hide} className="p-1 active:opacity-60">
-            <X className="text-phase-text-secondary" size={18} color="#666" />
+            <X size={18} color="#9CA3AF" />
           </Pressable>
         </HStack>
       </Box>

@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { authAPI, identityAPI, onboardingAPI } from '@repo/core/api';
 import { useStore } from '@repo/core/store';
-import { type Capacity } from '@repo/core/types';
+import type { Capacity } from '@repo/core/types';
 
 import type React from 'react';
 import { memo, useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
@@ -166,7 +166,6 @@ const NameStep = memo(
     onNext,
     canProceed,
     isLoading,
-    error,
     onBackToWelcome,
   }: {
     t: (key: string) => string;
@@ -175,7 +174,6 @@ const NameStep = memo(
     onNext: () => void;
     canProceed: boolean;
     isLoading?: boolean;
-    error: string | null;
     onBackToWelcome: () => void;
   }) => (
     <StepShell
@@ -185,7 +183,6 @@ const NameStep = memo(
       subtitle={t('onboarding.nameSubtitle') || "Let's start your journey with a name."}
     >
       <VStack className="gap-6">
-        <ErrorBanner error={error} />
         <Input className="rounded-comfortable border-phase-text-tertiary">
           <InputField
             placeholder={t('onboarding.namePlaceholder')}
@@ -240,7 +237,6 @@ const IdentityStep = memo(
     onNext,
     isLoading,
     isAnonymous,
-    error,
   }: {
     t: (key: string) => string;
     capacity: Capacity;
@@ -249,7 +245,6 @@ const IdentityStep = memo(
     onNext: () => void;
     isLoading?: boolean;
     isAnonymous?: boolean;
-    error: string | null;
   }) => (
     <VStack className="gap-6 mt-8 px-6">
       <ProgressIndicator currentStep={1} totalSteps={TOTAL_STEPS} />
@@ -259,7 +254,6 @@ const IdentityStep = memo(
       <Text className="text-md text-phase-text-secondary text-center">
         {t('onboarding.roleSubtitle')}
       </Text>
-      <ErrorBanner error={error} />
       {isAnonymous && (
         <Text className="text-xs text-phase-text-tertiary text-center mb-2">
           (Anonymous Session)
@@ -340,7 +334,6 @@ const TourStep = memo(
     onNext,
     onSkip,
     isLoading,
-    error,
   }: {
     t: (key: string) => string;
     index: number;
@@ -349,7 +342,6 @@ const TourStep = memo(
     onNext: () => void;
     onSkip: () => void;
     isLoading?: boolean;
-    error: string | null;
   }) => (
     <VStack className="gap-6 mt-8 px-6 flex-1">
       <ProgressIndicator currentStep={index} totalSteps={TOTAL_STEPS} />
@@ -363,7 +355,6 @@ const TourStep = memo(
         <Text className="text-phase-text-secondary text-center text-lg font-bold">
           {screen.subtitle}
         </Text>
-        <ErrorBanner error={error} />
         <Box className="flex-1 justify-center py-4">
           <Text className="text-center text-phase-text-primary text-md leading-relaxed">
             {screen.content}
@@ -429,9 +420,9 @@ const OnboardingScreen = memo(function OnboardingScreen({
   const isOnline = useStore((s) => s.isOnline);
   const showToast = useStore((s) => s.showToast);
   const resolvedInternalIdRef = useRef<string | null>(null);
-  const resolvedCitizenRef = useRef<Awaited<ReturnType<typeof identityAPI.identifyActiveCitizen>> | null>(
-    null,
-  );
+  const resolvedCitizenRef = useRef<Awaited<
+    ReturnType<typeof identityAPI.identifyActiveCitizen>
+  > | null>(null);
   const anonymousBootstrapRequestedRef = useRef(false);
 
   // ── Restore saved progress or pre-fill from existing auth ──────────
@@ -757,6 +748,10 @@ const OnboardingScreen = memo(function OnboardingScreen({
             </Text>
           </VStack>
 
+          <Box className="px-6">
+            <ErrorBanner error={error} />
+          </Box>
+
           {isProcessing ? (
             <Center className="flex-1">
               <Text className="text-phase-text-primary">Finalizing your sanctuary...</Text>
@@ -768,10 +763,11 @@ const OnboardingScreen = memo(function OnboardingScreen({
                   t={t}
                   name={name}
                   onNameChange={handleNameChange}
-                  onNext={handleNext}
+                  onNext={() => {
+                    void handleNext();
+                  }}
                   canProceed={canProceed}
                   isLoading={isProcessing}
-                  error={error}
                   onBackToWelcome={handleBackToWelcome}
                 />
               )}
@@ -781,10 +777,11 @@ const OnboardingScreen = memo(function OnboardingScreen({
                   capacity={selectedCapacity}
                   onCapacitySelect={handleCapacitySelect}
                   onBack={handleBack}
-                  onNext={handleNext}
+                  onNext={() => {
+                    void handleNext();
+                  }}
                   isLoading={isProcessing}
                   isAnonymous={isAnonymous}
-                  error={error}
                 />
               )}
               {currentStep >= 2 && currentStep <= 6 && currentTourScreen && (
@@ -793,10 +790,11 @@ const OnboardingScreen = memo(function OnboardingScreen({
                   index={currentStep}
                   screen={currentTourScreen}
                   onBack={handleBack}
-                  onNext={handleNext}
+                  onNext={() => {
+                    void handleNext();
+                  }}
                   onSkip={handleSkipTour}
                   isLoading={isProcessing}
-                  error={error}
                 />
               )}
             </>

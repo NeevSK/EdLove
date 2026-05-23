@@ -4,8 +4,8 @@
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { authAPI, identityAPI, onboardingAPI } from '@repo/core/api';
-import { type Capacity } from '@repo/core/types';
 import { useStore } from '@repo/core/store';
+import type { Capacity } from '@repo/core/types';
 import { memo, useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useWindowDimensions } from 'react-native';
@@ -108,6 +108,7 @@ const LanguagePillRow = memo(
     <div className="ob-lang-row">
       {LANGUAGES.map((lang) => (
         <button
+          type="button"
           key={lang.code}
           className={`ob-lang-pill ${currentLang?.startsWith(lang.code) ? 'active' : ''}`}
           onClick={() => onLanguageChange(lang.code)}
@@ -137,13 +138,11 @@ const NameStep = memo(
     name,
     onNameChange,
     onNext,
-    error,
   }: {
     t: (key: string) => string;
     name: string;
     onNameChange: (val: string) => void;
     onNext: () => void;
-    error: string | null;
   }) => (
     <div className="ob-step">
       <div className="ob-step-shell">
@@ -152,7 +151,6 @@ const NameStep = memo(
       </div>
       <h2 className="ob-step-title">{t('onboarding.nameTitle')}</h2>
       <p className="ob-step-subtitle">{t('onboarding.nameSubtitle')}</p>
-      <ErrorBanner error={error} />
       <input
         className="ob-input"
         type="text"
@@ -173,6 +171,7 @@ const NameStep = memo(
       </p>
       <div className="ob-actions">
         <button
+          type="button"
           className="ob-btn-primary"
           onClick={onNext}
           disabled={name.trim().length < 2 || name === 'Guest User'}
@@ -194,7 +193,6 @@ const IdentityStep = memo(
     onCapacitySelect,
     onBack,
     onNext,
-    error,
   }: {
     t: (key: string) => string;
     capacity: Capacity;
@@ -203,7 +201,6 @@ const IdentityStep = memo(
     onCapacitySelect: (val: Capacity) => void;
     onBack: () => void;
     onNext: () => void;
-    error: string | null;
   }) => (
     <div className="ob-step">
       <div className="ob-step-shell">
@@ -212,11 +209,11 @@ const IdentityStep = memo(
       </div>
       <h2 className="ob-step-title">{t('onboarding.roleTitle')}</h2>
       <p className="ob-step-subtitle">{t('onboarding.roleSubtitle')}</p>
-      <ErrorBanner error={error} />
       {isAnonymous && <div className="ob-anonymous-tag">(Anonymous Session)</div>}
       <div className="ob-role-grid">
         {CAPACITY_OPTIONS.map((r) => (
           <button
+            type="button"
             key={r.value}
             className={`ob-role-card ${capacity === r.value ? 'selected' : ''}`}
             onClick={() => onCapacitySelect(r.value as Capacity)}
@@ -228,10 +225,10 @@ const IdentityStep = memo(
         ))}
       </div>
       <div className="ob-actions">
-        <button className="ob-btn-secondary" onClick={onBack}>
+        <button type="button" className="ob-btn-secondary" onClick={onBack}>
           ← {t('onboarding.back')}
         </button>
-        <button className="ob-btn-primary" onClick={onNext} disabled={isCompleting}>
+        <button type="button" className="ob-btn-primary" onClick={onNext} disabled={isCompleting}>
           {isCompleting ? t('onboarding.saving') : t('onboarding.continue')} →
         </button>
       </div>
@@ -249,7 +246,6 @@ const TourStep = memo(
     onBack,
     onNext,
     onSkip,
-    error,
   }: {
     t: (key: string) => string;
     currentStep: number;
@@ -258,7 +254,6 @@ const TourStep = memo(
     onBack: () => void;
     onNext: () => void;
     onSkip: () => void;
-    error: string | null;
   }) => (
     <div className="ob-step">
       <div className="ob-step-shell">
@@ -267,13 +262,12 @@ const TourStep = memo(
       </div>
       <h2 className="ob-step-title">{screen.title}</h2>
       <p className="ob-step-subtitle">{screen.subtitle}</p>
-      <ErrorBanner error={error} />
       <div className="ob-tour-content">{screen.content}</div>
       <div className="ob-actions">
-        <button className="ob-btn-secondary" onClick={onBack}>
+        <button type="button" className="ob-btn-secondary" onClick={onBack}>
           ← {t('onboarding.back')}
         </button>
-        <button className="ob-btn-primary" onClick={onNext} disabled={isCompleting}>
+        <button type="button" className="ob-btn-primary" onClick={onNext} disabled={isCompleting}>
           {isCompleting
             ? t('onboarding.saving')
             : currentStep === 6
@@ -282,7 +276,7 @@ const TourStep = memo(
           →
         </button>
       </div>
-      <button className="ob-btn-link" onClick={onSkip}>
+      <button type="button" className="ob-btn-link" onClick={onSkip}>
         {t('onboarding.skip')}
       </button>
     </div>
@@ -335,9 +329,9 @@ export default memo(function OnboardingScreenWeb({
   const showToast = useStore((s) => s.showToast);
   const isNarrow = width < 900;
   const resolvedInternalIdRef = useRef<string | null>(null);
-  const resolvedCitizenRef = useRef<Awaited<ReturnType<typeof identityAPI.identifyActiveCitizen>> | null>(
-    null,
-  );
+  const resolvedCitizenRef = useRef<Awaited<
+    ReturnType<typeof identityAPI.identifyActiveCitizen>
+  > | null>(null);
   const anonymousBootstrapRequestedRef = useRef(false);
 
   // ── Restore saved progress or pre-fill from existing auth ────────────────────
@@ -621,8 +615,9 @@ export default memo(function OnboardingScreenWeb({
           t={t}
           name={name}
           onNameChange={handleNameChange}
-          onNext={handleNext}
-          error={error}
+          onNext={() => {
+            void handleNext();
+          }}
         />
       );
     }
@@ -635,8 +630,9 @@ export default memo(function OnboardingScreenWeb({
           isAnonymous={isAnonymous}
           onCapacitySelect={handleCapacitySelect}
           onBack={handleBack}
-          onNext={handleNext}
-          error={error}
+          onNext={() => {
+            void handleNext();
+          }}
         />
       );
     }
@@ -648,9 +644,10 @@ export default memo(function OnboardingScreenWeb({
           screen={currentTourScreen}
           isCompleting={isProcessing}
           onBack={handleBack}
-          onNext={handleNext}
+          onNext={() => {
+            void handleNext();
+          }}
           onSkip={handleSkipTour}
-          error={error}
         />
       );
     }
@@ -661,7 +658,6 @@ export default memo(function OnboardingScreenWeb({
     name,
     handleNameChange,
     handleNext,
-    error,
     selectedCapacity,
     isProcessing,
     isAnonymous,
@@ -688,7 +684,10 @@ export default memo(function OnboardingScreenWeb({
               style={{ width: `${(currentStep / (TOTAL_STEPS - 1)) * 100}%` }}
             />
           </div>
-          <div className="ob-narrow-content">{renderCurrentStep()}</div>
+          <div className="ob-narrow-content">
+            <ErrorBanner error={error} />
+            {renderCurrentStep()}
+          </div>
         </div>
       ) : (
         <div className="ob-split">
@@ -730,11 +729,13 @@ export default memo(function OnboardingScreenWeb({
               <div className="ob-dots" role="progressbar">
                 {Array.from({ length: TOTAL_STEPS }).map((_, i) => (
                   <div
+                    // biome-ignore lint/suspicious/noArrayIndexKey: stable progress dots
                     key={i}
                     className={`ob-dot ${i === currentStep ? 'active' : i < currentStep ? 'done' : ''}`}
                   />
                 ))}
               </div>
+              <ErrorBanner error={error} />
               {renderCurrentStep()}
             </div>
           </div>

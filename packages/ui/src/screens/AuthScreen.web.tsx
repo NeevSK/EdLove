@@ -1,8 +1,8 @@
 import { authAPI, identityAPI } from '@repo/core/api';
-import { useIdentity } from '@repo/core/hooks';
 import { handleAPIError } from '@repo/core/api/interceptor';
+import { useIdentity } from '@repo/core/hooks';
 import { storage } from '@repo/core/storage';
-import { type Capacity, type User } from '@repo/core/types';
+import type { Capacity, User } from '@repo/core/types';
 import { validateForm, validators } from '@repo/core/utils';
 import { Key } from 'lucide-react-native';
 import { memo, useCallback, useEffect, useMemo, useReducer } from 'react';
@@ -462,7 +462,9 @@ export const AuthScreenWeb = memo(
                 <VStack className="gap-4 w-full">
                   <Button
                     size="lg"
-                    onPress={handleGoogleAuth}
+                    onPress={() => {
+                      void handleGoogleAuth();
+                    }}
                     isDisabled={loading}
                     className="h-[60px] rounded-2xl bg-phase-primary shadow-xl hover:translate-y-[-1px] transition-transform"
                   >
@@ -478,7 +480,9 @@ export const AuthScreenWeb = memo(
                   <Button
                     size="lg"
                     variant="outline"
-                    onPress={handlePasskeyAuth}
+                    onPress={() => {
+                      void handlePasskeyAuth();
+                    }}
                     isDisabled={loading}
                     className="h-[60px] rounded-2xl border-phase-border bg-phase-surface/50"
                   >
@@ -557,7 +561,9 @@ export const AuthScreenWeb = memo(
 
                           <Button
                             size="lg"
-                            onPress={handleEmailAuth}
+                            onPress={() => {
+                              void handleEmailAuth();
+                            }}
                             isDisabled={loading}
                             className="h-[56px] rounded-2xl bg-phase-primary mt-2"
                           >
@@ -581,7 +587,13 @@ export const AuthScreenWeb = memo(
                   )}
 
                   {mode === 'login' && !showEmailForm && (
-                    <Button variant="ghost" onPress={handleGuest} className="h-auto py-2">
+                    <Button
+                      variant="ghost"
+                      onPress={() => {
+                        void handleGuest();
+                      }}
+                      className="h-auto py-2"
+                    >
                       <ButtonText className="text-phase-secondary font-medium">
                         Continue as Guest
                       </ButtonText>

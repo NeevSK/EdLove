@@ -1,10 +1,10 @@
 import { authAPI, identityAPI } from '@repo/core/api';
-import { useIdentity } from '@repo/core/hooks';
 import { handleAPIError } from '@repo/core/api/interceptor';
-import { storage } from '@repo/core/storage';
-import { type Capacity, type User } from '@repo/core/types';
-import { validateForm, validators } from '@repo/core/utils';
+import { useIdentity } from '@repo/core/hooks';
 import { FlowResolver, GuestDataSync } from '@repo/core/native';
+import { storage } from '@repo/core/storage';
+import type { Capacity, User } from '@repo/core/types';
+import { validateForm, validators } from '@repo/core/utils';
 import * as AuthSession from 'expo-auth-session';
 import * as WebBrowser from 'expo-web-browser';
 import { Mail, Shield } from 'lucide-react-native';
@@ -714,7 +714,9 @@ const AuthScreen = memo(({ onSuccess, onBack, initialMode, Scanner }: AuthScreen
                     </VStack>
                     <Button
                       size="lg"
-                      onPress={handleGoogleSignIn}
+                      onPress={() => {
+                        void handleGoogleSignIn();
+                      }}
                       isDisabled={loading}
                       className="h-16 rounded-2xl w-full"
                       style={{ backgroundColor: accent.action }}
@@ -731,7 +733,9 @@ const AuthScreen = memo(({ onSuccess, onBack, initialMode, Scanner }: AuthScreen
                     <Button
                       size="lg"
                       variant="outline"
-                      onPress={isSignUp ? handlePasskeyRegister : handlePasskeySignIn}
+                      onPress={() => {
+                        void (isSignUp ? handlePasskeyRegister() : handlePasskeySignIn());
+                      }}
                       isDisabled={loading}
                       className="h-[54px] rounded-2xl border-phase-border bg-transparent"
                     >
@@ -801,13 +805,17 @@ const AuthScreen = memo(({ onSuccess, onBack, initialMode, Scanner }: AuthScreen
                             className="text-phase-primary"
                             placeholderTextColor={text.muted}
                             returnKeyType="go"
-                            onSubmitEditing={handleAuth}
+                            onSubmitEditing={() => {
+                              void handleAuth();
+                            }}
                           />
                         </Input>
 
                         <Button
                           size="lg"
-                          onPress={handleAuth}
+                          onPress={() => {
+                            void handleAuth();
+                          }}
                           isDisabled={loading}
                           className="h-[56px] rounded-xl mt-2"
                           style={{ backgroundColor: accent.action }}
